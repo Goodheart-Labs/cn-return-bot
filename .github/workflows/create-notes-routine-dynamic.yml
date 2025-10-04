@@ -2,7 +2,7 @@ name: Create Notes Routine (Dynamic Branch Discovery)
 
 on:
   schedule:
-    - cron: "0 * * * *" # Runs every hour at minute 0
+    - cron: "*/30 * * * *" # TEMPORARY: Runs every 30 minutes (was hourly)
   workflow_dispatch:
 
 jobs:

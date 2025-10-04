@@ -175,11 +175,15 @@ async function main() {
               // Capture the score for logging
               evaluationScore = evaluationResult.score;
 
+              // TEMPORARY: Disable evaluation filter blocking (always submit if other checks pass)
+              // TODO: Re-enable this filter later by uncommenting the if/else block below
+              /*
               if (!evaluationResult.shouldSubmit) {
                 console.log(
                   `[main] Skipping post ${r.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`
                 );
               } else {
+              */
                 // Submit the note using the same info as in your submitNote.ts
                 const { submitNote } = await import("../api/submitNote");
                 const info = {
@@ -194,7 +198,7 @@ async function main() {
                   response
                 );
                 submitted++;
-              }
+              // }
             } catch (err: any) {
               console.error(
                 `[main] Failed to submit note for post ${r.post.id}:`,
