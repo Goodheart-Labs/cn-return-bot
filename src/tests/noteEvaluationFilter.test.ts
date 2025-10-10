@@ -1,26 +1,32 @@
+import { describe, test, expect, beforeEach, mock } from "bun:test";
 import { shouldSubmitNote, evaluateNote } from "../filters/noteEvaluationFilter";
 
 // Mock the getOAuth1Headers function to avoid needing real credentials in tests
-jest.mock("../api/getOAuthToken", () => ({
-  getOAuth1Headers: jest.fn(() => ({
+mock.module("../api/getOAuthToken", () => ({
+  getOAuth1Headers: mock(() => ({
     Authorization: "OAuth oauth_consumer_key=\"test\", oauth_token=\"test\""
   }))
 }));
 
 // Mock axios
-jest.mock("axios");
+mock.module("axios", () => ({
+  default: {
+    post: mock()
+  }
+}));
+
 import axios from "axios";
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as any;
 
 describe("Note Evaluation Filter", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    mock.restore();
   });
 
   describe("shouldSubmitNote", () => {
     test("should return true for score above threshold", async () => {
       // Mock API response with good score
-      mockedAxios.post.mockResolvedValueOnce({
+      mockedAxios.post.mockResolvedValue({
         data: {
           data: {
             claim_opinion_score: 2.5
@@ -37,7 +43,7 @@ describe("Note Evaluation Filter", () => {
 
     test("should return false for score below threshold", async () => {
       // Mock API response with poor score
-      mockedAxios.post.mockResolvedValueOnce({
+      mockedAxios.post.mockResolvedValue({
         data: {
           data: {
             claim_opinion_score: -2.0
@@ -54,7 +60,7 @@ describe("Note Evaluation Filter", () => {
 
     test("should return false when API call fails", async () => {
       // Mock API failure
-      mockedAxios.post.mockRejectedValueOnce(new Error("Network error"));
+      mockedAxios.post.mockRejectedValue(new Error("Network error"));
 
       const result = await shouldSubmitNote("1234567890", "This is a test note with sources: https://example.com");
 
@@ -65,7 +71,7 @@ describe("Note Evaluation Filter", () => {
 
     test("should return false when API returns errors", async () => {
       // Mock API response with errors
-      mockedAxios.post.mockResolvedValueOnce({
+      mockedAxios.post.mockResolvedValue({
         data: {
           errors: [{ message: "Invalid request" }]
         }
@@ -80,7 +86,7 @@ describe("Note Evaluation Filter", () => {
 
     test("should use custom threshold", async () => {
       // Mock API response with score of 0
-      mockedAxios.post.mockResolvedValueOnce({
+      mockedAxios.post.mockResolvedValue({
         data: {
           data: {
             claim_opinion_score: 0
@@ -98,7 +104,7 @@ describe("Note Evaluation Filter", () => {
   describe("evaluateNote", () => {
     test("should call API with correct parameters", async () => {
       // Mock successful API response
-      mockedAxios.post.mockResolvedValueOnce({
+      mockedAxios.post.mockResolvedValue({
         data: {
           data: {
             claim_opinion_score: 1.5

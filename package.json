@@ -22,7 +22,7 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "^1.2.23"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
