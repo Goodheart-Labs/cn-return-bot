@@ -241,9 +241,9 @@ export function createLogEntry(
       ? noteResult.note + " " + noteResult.url
       : noteResult.note || "";
 
-  // Determine if it would be posted (1 if all conditions pass including evaluation score >= -1.0, 0 otherwise)
+  // Determine if it would be posted (1 if all conditions pass including evaluation score >= 0, 0 otherwise)
   const checkYes = checkResult && checkResult.trim().toUpperCase() === "YES";
-  const passesEvaluationScore = claimOpinionScore === undefined || claimOpinionScore >= -1.0;
+  const passesEvaluationScore = claimOpinionScore === undefined || claimOpinionScore >= 0;
   const wouldBePosted =
     noteResult.status === "CORRECTION WITH TRUSTWORTHY CITATION" &&
     checkYes &&

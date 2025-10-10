@@ -170,7 +170,7 @@ async function main() {
               // Evaluate note quality before submission
               const { shouldSubmitNote } = await import("../filters/noteEvaluationFilter");
               const noteText = r.noteResult.note + " " + r.noteResult.url;
-              const evaluationResult = await shouldSubmitNote(r.post.id, noteText, -1.0); // Updated threshold to -1.0
+              const evaluationResult = await shouldSubmitNote(r.post.id, noteText, 0); // Production threshold: only submit scores >= 0
 
               // Capture the score for logging
               evaluationScore = evaluationResult.score;
