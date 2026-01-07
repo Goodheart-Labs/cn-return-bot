@@ -175,7 +175,7 @@ function formatDateForUrl(date: Date): string {
  * Try to download notes file, trying multiple days backwards
  */
 async function downloadNotesFile(partition: string = "00000"): Promise<string | null> {
-  const fileName = `notes-${partition}.tsv`;
+  const fileName = `notes-${partition}.tsv.gz`;
   const outputPath = `${DATA_DIR}/${fileName}`;
 
   // Try up to 7 days back (CN data can have delays)
