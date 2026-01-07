@@ -170,7 +170,7 @@ async function downloadNotesFile(partition: string = "00000"): Promise<string> {
 
   // Try today first
   const todayDate = getTodayDateString();
-  const todayUrl = `${CN_DATA_BASE_URL}/${todayDate}/${fileName}`;
+  const todayUrl = `${CN_DATA_BASE_URL}/${todayDate}/notes/${fileName}`;
 
   try {
     await downloadFile(todayUrl, outputPath);
@@ -183,7 +183,7 @@ async function downloadNotesFile(partition: string = "00000"): Promise<string> {
   const yesterday = new Date();
   yesterday.setUTCDate(yesterday.getUTCDate() - 1);
   const yesterdayDate = `${yesterday.getUTCFullYear()}/${String(yesterday.getUTCMonth() + 1).padStart(2, "0")}/${String(yesterday.getUTCDate()).padStart(2, "0")}`;
-  const yesterdayUrl = `${CN_DATA_BASE_URL}/${yesterdayDate}/${fileName}`;
+  const yesterdayUrl = `${CN_DATA_BASE_URL}/${yesterdayDate}/notes/${fileName}`;
 
   await downloadFile(yesterdayUrl, outputPath);
   return outputPath;
