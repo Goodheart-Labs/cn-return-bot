@@ -39,6 +39,9 @@ query-cache.db
 
 TODO.md
 
+# Downloaded CN public data
+cn-data/
+
 # Elo rating web app compiled files
 src/elo-rating-web/dist/
 src/elo-rating-web/*.js
