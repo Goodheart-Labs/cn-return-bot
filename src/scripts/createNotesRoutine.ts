@@ -1,8 +1,4 @@
 import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
-import { versionOneFn as searchV1 } from "../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeV1 } from "../pipeline/writeNoteWithSearchGoal";
-import { multiSourceSearch } from "../pipeline/multiSourceSearch";
-import { check as checkV1 } from "../pipeline/check";
 import { AirtableLogger, createLogEntry } from "../api/airtableLogger";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
@@ -11,8 +7,9 @@ import {
   selectRandomBot,
   getBotProbabilities,
   getEnabledBots,
-  BotConfig,
-} from "../lib/botConfig";
+  Bot,
+  PipelineResult,
+} from "../bots";
 
 const maxPosts = 10; // Maximum posts to process per run
 const concurrencyLimit = 3; // Process 3 posts at a time to avoid rate limiting
@@ -24,91 +21,6 @@ const globalTimeout = setTimeout(() => {
   console.log("[main] Maximum runtime reached (5 minutes), forcing exit");
   process.exit(0);
 }, MAX_RUNTIME_MS);
-
-async function runPipeline(post: any, idx: number, bot: BotConfig) {
-  console.log(
-    `[runPipeline] Starting pipeline for post #${idx + 1} (ID: ${post.id}) with bot: ${bot.id}`
-  );
-  try {
-    // Get the original tweet content (handling retweets)
-    const originalContent = getOriginalTweetContent(post);
-
-    console.log(
-      `[runPipeline] Processing ${
-        originalContent.isRetweet ? "retweet" : "original tweet"
-      } for post #${idx + 1}`
-    );
-
-    // Use different search strategy based on bot config
-    let searchContextResult: {
-      text: string;
-      searchResults: string;
-      citations?: string[];
-      retweetContext?: string;
-    };
-
-    if (bot.searchStrategy === "multi-source") {
-      console.log(`[runPipeline] Using multi-source search for bot: ${bot.id}`);
-      searchContextResult = await multiSourceSearch({
-        text: originalContent.text,
-        media: originalContent.media,
-        retweetContext: originalContent.retweetContext,
-      });
-    } else {
-      // Default: use Perplexity search
-      searchContextResult = await searchV1(
-        {
-          text: originalContent.text,
-          media: originalContent.media,
-          searchResults: "",
-          retweetContext: originalContent.retweetContext,
-        },
-        { model: bot.searchModel || "perplexity/sonar" }
-      );
-    }
-    console.log(
-      `[runPipeline] Search context complete for post #${idx + 1} (ID: ${
-        post.id
-      })`
-    );
-
-    // Use bot's note model
-    const noteResult = await writeV1(
-      {
-        text: searchContextResult.text,
-        searchResults: searchContextResult.searchResults,
-        citations: searchContextResult.citations || [],
-      },
-      { model: bot.noteModel }
-    );
-    console.log(
-      `[runPipeline] Note generated for post #${idx + 1} (ID: ${post.id}) using ${bot.noteModel}`
-    );
-
-    const checkResult = await checkV1({
-      note: noteResult.note,
-      url: noteResult.url,
-      status: noteResult.status,
-    });
-    console.log(
-      `[runPipeline] Check complete for post #${idx + 1} (ID: ${post.id})`
-    );
-
-    return {
-      post,
-      botId: bot.id,
-      searchContextResult,
-      noteResult,
-      checkResult,
-    };
-  } catch (err) {
-    console.error(
-      `[runPipeline] Error in pipeline for post #${idx + 1} (ID: ${post.id}) with bot ${bot.id}:`,
-      err
-    );
-    return null;
-  }
-}
 
 async function main() {
   try {
@@ -156,11 +68,9 @@ async function main() {
       if (match && match[1]) skipPostIds.add(match[1]);
     });
 
-    console.log(
-      `[main] Skipping ${skipPostIds.size} already-processed posts`
-    );
+    console.log(`[main] Skipping ${skipPostIds.size} already-processed posts`);
 
-    let posts = await fetchEligiblePosts(maxPosts, skipPostIds, 3); // Fetch up to 3 pages to get at least 10 posts
+    let posts = await fetchEligiblePosts(maxPosts, skipPostIds, 3);
 
     if (!posts.length) {
       console.log("No new eligible posts found.");
@@ -170,7 +80,6 @@ async function main() {
     console.log(`[main] Starting pipelines for ${posts.length} posts...`);
 
     const queue = new PQueue({ concurrency: concurrencyLimit });
-    const results: any[] = [];
     let submitted = 0;
 
     // Add progress logging
@@ -181,13 +90,26 @@ async function main() {
     // Add all tasks to the queue
     for (const [idx, post] of posts.entries()) {
       queue.add(async () => {
+        // Get the original tweet content (handling retweets)
+        const content = getOriginalTweetContent(post);
+
+        console.log(
+          `[main] Processing post #${idx + 1} (ID: ${post.id}) - ${
+            content.isRetweet ? "retweet" : "original"
+          }`
+        );
+
         // Try bots until one succeeds or we run out of retries
-        let r: Awaited<ReturnType<typeof runPipeline>> = null;
-        let selectedBot: BotConfig | null = null;
+        let result: PipelineResult | null = null;
+        let selectedBot: Bot | null = null;
         const triedBots = new Set<string>();
         const enabledBots = getEnabledBots();
 
-        for (let attempt = 0; attempt < MAX_BOT_RETRIES && attempt < enabledBots.length; attempt++) {
+        for (
+          let attempt = 0;
+          attempt < MAX_BOT_RETRIES && attempt < enabledBots.length;
+          attempt++
+        ) {
           // Select a random bot, excluding already tried ones
           let bot = selectRandomBot();
           let retryCount = 0;
@@ -205,44 +127,57 @@ async function main() {
 
           triedBots.add(bot.id);
           selectedBot = bot;
-          console.log(`[main] Tweet ${post.id} attempt ${attempt + 1} with bot: ${bot.id}`);
+          console.log(
+            `[main] Tweet ${post.id} attempt ${attempt + 1} with bot: ${bot.id}`
+          );
           botUsage[bot.id] = (botUsage[bot.id] || 0) + 1;
 
-          r = await runPipeline(post, idx, bot);
-          if (r) break; // Success, exit retry loop
+          // Run the bot's pipeline
+          result = await bot.runPipeline(post, content);
+          if (result) break; // Success, exit retry loop
 
-          console.log(`[main] Bot ${bot.id} failed for post ${post.id}, trying another bot...`);
+          console.log(
+            `[main] Bot ${bot.id} failed for post ${post.id}, trying another bot...`
+          );
         }
 
-        if (!r || !selectedBot) return;
+        if (!result || !selectedBot) return;
 
         // Check if the source verification passed
         const checkYes =
-          r.checkResult && r.checkResult.trim().toUpperCase() === "YES";
+          result.checkResult &&
+          result.checkResult.trim().toUpperCase() === "YES";
 
         // Initialize evaluation score
         let evaluationScore: number | undefined = undefined;
 
         if (
-          r.noteResult.status === "CORRECTION WITH TRUSTWORTHY CITATION" &&
+          result.noteResult.status === "CORRECTION WITH TRUSTWORTHY CITATION" &&
           checkYes
         ) {
           if (shouldSubmitNotes) {
             try {
               // Evaluate note quality before submission
-              const { shouldSubmitNote } = await import("../filters/noteEvaluationFilter");
-              const noteText = r.noteResult.note + " " + r.noteResult.url;
-              const evaluationResult = await shouldSubmitNote(r.post.id, noteText, 0); // Production threshold: only submit scores >= 0
+              const { shouldSubmitNote } = await import(
+                "../filters/noteEvaluationFilter"
+              );
+              const noteText =
+                result.noteResult.note + " " + result.noteResult.url;
+              const evaluationResult = await shouldSubmitNote(
+                result.post.id,
+                noteText,
+                0
+              );
 
               // Capture the score for logging
               evaluationScore = evaluationResult.score;
 
               if (!evaluationResult.shouldSubmit) {
                 console.log(
-                  `[main] Skipping post ${r.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`
+                  `[main] Skipping post ${result.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`
                 );
               } else {
-                // Submit the note using the same info as in your submitNote.ts
+                // Submit the note
                 const { submitNote } = await import("../api/submitNote");
                 const info = {
                   classification: "misinformed_or_potentially_misleading",
@@ -250,9 +185,9 @@ async function main() {
                   text: noteText,
                   trustworthy_sources: true,
                 };
-                const response = await submitNote(r.post.id, info);
+                const response = await submitNote(result.post.id, info);
                 console.log(
-                  `[main] Submitted note for post ${r.post.id} (bot: ${selectedBot.id}, score: ${evaluationResult.score}):`,
+                  `[main] Submitted note for post ${result.post.id} (bot: ${selectedBot.id}, score: ${evaluationResult.score}):`,
                   response
                 );
                 submitted++;
@@ -260,38 +195,43 @@ async function main() {
                 // Log to Supabase if enabled
                 if (supabaseLogger && response?.data?.id) {
                   try {
-                    // Get or create bot config in Supabase
-                    const botConfig = await supabaseLogger.getOrCreateBotConfig(selectedBot.id);
+                    const botConfig =
+                      await supabaseLogger.getOrCreateBotConfig(selectedBot.id);
                     await supabaseLogger.logNoteSubmission({
                       note_id: response.data.id,
-                      tweet_id: r.post.id,
+                      tweet_id: result.post.id,
                       bot_config_id: botConfig.id,
                       note_text: noteText,
-                      source_url: r.noteResult.url,
+                      source_url: result.noteResult.url,
                       evaluation_score: evaluationResult.score,
                       commit_sha: commit,
                     });
-                    console.log(`[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`);
+                    console.log(
+                      `[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`
+                    );
                   } catch (supabaseErr) {
-                    console.error("[main] Failed to log to Supabase:", supabaseErr);
+                    console.error(
+                      "[main] Failed to log to Supabase:",
+                      supabaseErr
+                    );
                   }
                 }
               }
             } catch (err: any) {
               console.error(
-                `[main] Failed to submit note for post ${r.post.id}:`,
+                `[main] Failed to submit note for post ${result.post.id}:`,
                 err.response?.data || err
               );
             }
           }
         }
 
-        // Create log entry for this result (now including the evaluation score and bot ID)
+        // Create log entry for this result
         const logEntry = createLogEntry(
-          r.post,
-          r.searchContextResult,
-          r.noteResult,
-          r.checkResult,
+          result.post,
+          result.searchContextResult,
+          result.noteResult,
+          result.checkResult,
           selectedBot.id,
           commit,
           evaluationScore
@@ -300,7 +240,7 @@ async function main() {
       });
     }
 
-    await queue.onIdle(); // Wait for all tasks to complete
+    await queue.onIdle();
     console.log(
       `[main] All ${posts.length} posts processed with concurrency limit of ${concurrencyLimit}`
     );
@@ -342,7 +282,6 @@ async function main() {
       "Error in create notes routine script:",
       error.response?.data || error
     );
-    // Clear the global timeout and exit with error
     clearTimeout(globalTimeout);
     process.exit(1);
   }
