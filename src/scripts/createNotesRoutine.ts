@@ -1,16 +1,23 @@
 import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
 import { versionOneFn as searchV1 } from "../pipeline/searchContextGoal";
 import { writeNoteWithSearchFn as writeV1 } from "../pipeline/writeNoteWithSearchGoal";
+import { multiSourceSearch } from "../pipeline/multiSourceSearch";
 import { check as checkV1 } from "../pipeline/check";
 import { AirtableLogger, createLogEntry } from "../api/airtableLogger";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import PQueue from "p-queue";
-import { execSync } from "child_process";
+import {
+  selectRandomBot,
+  getBotProbabilities,
+  getEnabledBots,
+  BotConfig,
+} from "../lib/botConfig";
 
 const maxPosts = 10; // Maximum posts to process per run
 const concurrencyLimit = 3; // Process 3 posts at a time to avoid rate limiting
 const MAX_RUNTIME_MS = 5 * 60 * 1000; // 5 minutes maximum runtime
+const MAX_BOT_RETRIES = 3; // Maximum retries with different bots
 
 // Global timeout to prevent hanging
 const globalTimeout = setTimeout(() => {
@@ -18,9 +25,9 @@ const globalTimeout = setTimeout(() => {
   process.exit(0);
 }, MAX_RUNTIME_MS);
 
-async function runPipeline(post: any, idx: number) {
+async function runPipeline(post: any, idx: number, bot: BotConfig) {
   console.log(
-    `[runPipeline] Starting pipeline for post #${idx + 1} (ID: ${post.id})`
+    `[runPipeline] Starting pipeline for post #${idx + 1} (ID: ${post.id}) with bot: ${bot.id}`
   );
   try {
     // Get the original tweet content (handling retweets)
@@ -32,31 +39,50 @@ async function runPipeline(post: any, idx: number) {
       } for post #${idx + 1}`
     );
 
-    const searchContextResult = await searchV1(
-      {
+    // Use different search strategy based on bot config
+    let searchContextResult: {
+      text: string;
+      searchResults: string;
+      citations?: string[];
+      retweetContext?: string;
+    };
+
+    if (bot.searchStrategy === "multi-source") {
+      console.log(`[runPipeline] Using multi-source search for bot: ${bot.id}`);
+      searchContextResult = await multiSourceSearch({
         text: originalContent.text,
         media: originalContent.media,
-        searchResults: "",
         retweetContext: originalContent.retweetContext,
-      },
-      { model: "perplexity/sonar" }
-    );
+      });
+    } else {
+      // Default: use Perplexity search
+      searchContextResult = await searchV1(
+        {
+          text: originalContent.text,
+          media: originalContent.media,
+          searchResults: "",
+          retweetContext: originalContent.retweetContext,
+        },
+        { model: bot.searchModel || "perplexity/sonar" }
+      );
+    }
     console.log(
       `[runPipeline] Search context complete for post #${idx + 1} (ID: ${
         post.id
       })`
     );
 
+    // Use bot's note model
     const noteResult = await writeV1(
       {
         text: searchContextResult.text,
         searchResults: searchContextResult.searchResults,
         citations: searchContextResult.citations || [],
       },
-      { model: "anthropic/claude-sonnet-4" }
+      { model: bot.noteModel }
     );
     console.log(
-      `[runPipeline] Note generated for post #${idx + 1} (ID: ${post.id})`
+      `[runPipeline] Note generated for post #${idx + 1} (ID: ${post.id}) using ${bot.noteModel}`
     );
 
     const checkResult = await checkV1({
@@ -70,13 +96,14 @@ async function runPipeline(post: any, idx: number) {
 
     return {
       post,
+      botId: bot.id,
       searchContextResult,
       noteResult,
       checkResult,
     };
   } catch (err) {
     console.error(
-      `[runPipeline] Error in pipeline for post #${idx + 1} (ID: ${post.id}):`,
+      `[runPipeline] Error in pipeline for post #${idx + 1} (ID: ${post.id}) with bot ${bot.id}:`,
       err
     );
     return null;
@@ -85,28 +112,15 @@ async function runPipeline(post: any, idx: number) {
 
 async function main() {
   try {
-    // Get current branch name
-    let currentBranch = "unknown";
-    try {
-      currentBranch = execSync("git rev-parse --abbrev-ref HEAD", {
-        encoding: "utf8",
-      }).trim();
-    } catch (error) {
-      console.warn("[main] Could not determine current branch, assuming main");
-      currentBranch = "main";
-    }
+    // Always submit notes (all bots run in production mode)
+    const shouldSubmitNotes = true;
 
-    // Determine if we should run in simulation mode (skip actual submission)
-    const shouldSubmitNotes = currentBranch === "main";
-
-    console.log(`[main] Current branch: ${currentBranch}`);
-    console.log(`[main] Should submit notes: ${shouldSubmitNotes}`);
-
-    if (!shouldSubmitNotes) {
-      console.log(
-        `[main] Running in SIMULATION MODE - notes will be generated and logged but not submitted to X.com`
-      );
-    }
+    // Log bot selection probabilities
+    const botProbs = getBotProbabilities();
+    console.log(`[main] Bot selection probabilities:`);
+    botProbs.forEach((b) => {
+      console.log(`  - ${b.id}: ${b.probability.toFixed(1)}%`);
+    });
 
     // Get commit hash from environment variable (available in GitHub Actions)
     const commit = process.env.GITHUB_SHA;
@@ -117,14 +131,10 @@ async function main() {
 
     // Initialize Supabase logger (optional - only if env vars are set)
     let supabaseLogger: SupabaseLogger | null = null;
-    let botConfigId: string | undefined;
     if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
       try {
         supabaseLogger = new SupabaseLogger();
-        // Get or create bot config for this branch
-        const botConfig = await supabaseLogger.getOrCreateBotConfig(currentBranch);
-        botConfigId = botConfig.id;
-        console.log(`[main] Supabase logging enabled for bot config: ${currentBranch}`);
+        console.log(`[main] Supabase logging enabled`);
       } catch (err) {
         console.warn("[main] Failed to initialize Supabase logger:", err);
         supabaseLogger = null;
@@ -133,10 +143,11 @@ async function main() {
       console.log("[main] Supabase logging disabled (env vars not set)");
     }
 
-    // Get existing URLs from Airtable for this specific bot
-    const existingUrls = await airtableLogger.getExistingUrlsForBot(
-      currentBranch
-    );
+    // Track bot usage for summary
+    const botUsage: Record<string, number> = {};
+
+    // Get existing URLs from Airtable (check all bots)
+    const existingUrls = await airtableLogger.getExistingUrls();
 
     // Convert URLs to post IDs (extract ID from URL)
     const skipPostIds = new Set<string>();
@@ -146,7 +157,7 @@ async function main() {
     });
 
     console.log(
-      `[main] Skipping ${skipPostIds.size} already-processed posts for bot '${currentBranch}'`
+      `[main] Skipping ${skipPostIds.size} already-processed posts`
     );
 
     let posts = await fetchEligiblePosts(maxPosts, skipPostIds, 3); // Fetch up to 3 pages to get at least 10 posts
@@ -170,8 +181,40 @@ async function main() {
     // Add all tasks to the queue
     for (const [idx, post] of posts.entries()) {
       queue.add(async () => {
-        const r = await runPipeline(post, idx);
-        if (!r) return;
+        // Try bots until one succeeds or we run out of retries
+        let r: Awaited<ReturnType<typeof runPipeline>> = null;
+        let selectedBot: BotConfig | null = null;
+        const triedBots = new Set<string>();
+        const enabledBots = getEnabledBots();
+
+        for (let attempt = 0; attempt < MAX_BOT_RETRIES && attempt < enabledBots.length; attempt++) {
+          // Select a random bot, excluding already tried ones
+          let bot = selectRandomBot();
+          let retryCount = 0;
+          while (triedBots.has(bot.id) && retryCount < 10) {
+            bot = selectRandomBot();
+            retryCount++;
+          }
+
+          if (triedBots.has(bot.id)) {
+            // All bots tried, find one we haven't tried
+            const untried = enabledBots.find((b) => !triedBots.has(b.id));
+            if (!untried) break;
+            bot = untried;
+          }
+
+          triedBots.add(bot.id);
+          selectedBot = bot;
+          console.log(`[main] Tweet ${post.id} attempt ${attempt + 1} with bot: ${bot.id}`);
+          botUsage[bot.id] = (botUsage[bot.id] || 0) + 1;
+
+          r = await runPipeline(post, idx, bot);
+          if (r) break; // Success, exit retry loop
+
+          console.log(`[main] Bot ${bot.id} failed for post ${post.id}, trying another bot...`);
+        }
+
+        if (!r || !selectedBot) return;
 
         // Check if the source verification passed
         const checkYes =
@@ -209,7 +252,7 @@ async function main() {
                 };
                 const response = await submitNote(r.post.id, info);
                 console.log(
-                  `[main] Submitted note for post ${r.post.id} (evaluation score: ${evaluationResult.score}):`,
+                  `[main] Submitted note for post ${r.post.id} (bot: ${selectedBot.id}, score: ${evaluationResult.score}):`,
                   response
                 );
                 submitted++;
@@ -217,16 +260,18 @@ async function main() {
                 // Log to Supabase if enabled
                 if (supabaseLogger && response?.data?.id) {
                   try {
+                    // Get or create bot config in Supabase
+                    const botConfig = await supabaseLogger.getOrCreateBotConfig(selectedBot.id);
                     await supabaseLogger.logNoteSubmission({
                       note_id: response.data.id,
                       tweet_id: r.post.id,
-                      bot_config_id: botConfigId,
+                      bot_config_id: botConfig.id,
                       note_text: noteText,
                       source_url: r.noteResult.url,
                       evaluation_score: evaluationResult.score,
                       commit_sha: commit,
                     });
-                    console.log(`[main] Logged note ${response.data.id} to Supabase`);
+                    console.log(`[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`);
                   } catch (supabaseErr) {
                     console.error("[main] Failed to log to Supabase:", supabaseErr);
                   }
@@ -238,20 +283,16 @@ async function main() {
                 err.response?.data || err
               );
             }
-          } else {
-            console.log(
-              `[main] SIMULATION MODE: Would submit note for post ${r.post.id} but skipping actual submission`
-            );
           }
         }
 
-        // Create log entry for this result (now including the evaluation score)
+        // Create log entry for this result (now including the evaluation score and bot ID)
         const logEntry = createLogEntry(
           r.post,
           r.searchContextResult,
           r.noteResult,
           r.checkResult,
-          currentBranch,
+          selectedBot.id,
           commit,
           evaluationScore
         );
@@ -275,6 +316,12 @@ async function main() {
         console.error("[main] Failed to log to Airtable:", err);
       }
     }
+
+    // Log bot usage summary
+    console.log(`[main] Bot usage summary:`);
+    Object.entries(botUsage).forEach(([botId, count]) => {
+      console.log(`  - ${botId}: ${count} tweets`);
+    });
 
     if (logEntries.length === 0) {
       console.log(
