@@ -5,7 +5,6 @@
  * - Perplexity (existing)
  * - Serper (Google)
  * - Exa
- * - X API
  */
 
 import { llm } from "./llm";
@@ -20,7 +19,6 @@ export interface MultiSearchResult {
     perplexity: boolean;
     google: boolean;
     exa: boolean;
-    x: boolean;
   };
 }
 
@@ -246,70 +244,6 @@ async function searchExa(topic: string): Promise<SearchSourceResult> {
 }
 
 /**
- * Search using X API
- */
-async function searchX(topic: string): Promise<SearchSourceResult> {
-  const bearerToken = process.env.X_SEARCH_BEARER_TOKEN;
-
-  if (!bearerToken) {
-    return {
-      source: "x",
-      results: "",
-      citations: [],
-      success: false,
-      error: "X Search API not configured",
-    };
-  }
-
-  try {
-    const params = new URLSearchParams({
-      query: `${topic} -is:retweet`,
-      max_results: "10",
-      "tweet.fields": "author_id,created_at,public_metrics",
-    });
-
-    const response = await fetch(
-      `https://api.twitter.com/2/tweets/search/recent?${params}`,
-      {
-        headers: {
-          Authorization: `Bearer ${bearerToken}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`X API error: ${response.status}`);
-    }
-
-    const data = (await response.json()) as any;
-    const tweets = data.data || [];
-
-    const results = tweets
-      .map(
-        (t: any, i: number) =>
-          `${i + 1}. Tweet: ${t.text}\n   Engagement: ${t.public_metrics?.like_count || 0} likes`
-      )
-      .join("\n\n");
-
-    // X tweets don't have traditional URLs in this context
-    return {
-      source: "x",
-      results: results || "No relevant tweets found",
-      citations: [],
-      success: true,
-    };
-  } catch (err: any) {
-    return {
-      source: "x",
-      results: "",
-      citations: [],
-      success: false,
-      error: err.message,
-    };
-  }
-}
-
-/**
  * Perform multi-source search
  */
 export async function multiSourceSearch(input: {
@@ -323,13 +257,11 @@ export async function multiSourceSearch(input: {
 
   // Run all searches in parallel
   console.log("[multiSourceSearch] Running parallel searches...");
-  const [perplexityResult, googleResult, exaResult, xResult] =
-    await Promise.all([
-      searchPerplexity(input.text, input.media, input.retweetContext),
-      searchGoogle(topic),
-      searchExa(topic),
-      searchX(topic),
-    ]);
+  const [perplexityResult, googleResult, exaResult] = await Promise.all([
+    searchPerplexity(input.text, input.media, input.retweetContext),
+    searchGoogle(topic),
+    searchExa(topic),
+  ]);
 
   // Log results
   console.log(
@@ -340,9 +272,6 @@ export async function multiSourceSearch(input: {
   );
   console.log(
     `[multiSourceSearch] exa: ${exaResult.success ? `${exaResult.citations.length} results found` : `failed - ${exaResult.error}`}`
-  );
-  console.log(
-    `[multiSourceSearch] x: ${xResult.success ? "results found" : `failed - ${xResult.error}`}`
   );
 
   // Combine results
@@ -366,10 +295,6 @@ export async function multiSourceSearch(input: {
     allCitations.push(...exaResult.citations);
   }
 
-  if (xResult.success && xResult.results) {
-    combinedResults.push(`=== X/TWITTER SEARCH ===\n${xResult.results}`);
-  }
-
   // Deduplicate citations
   const uniqueCitations = [...new Set(allCitations)];
 
@@ -382,7 +307,6 @@ export async function multiSourceSearch(input: {
       perplexity: perplexityResult.success,
       google: googleResult.success,
       exa: exaResult.success,
-      x: xResult.success,
     },
   };
 }
