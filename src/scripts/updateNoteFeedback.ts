@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { SupabaseLogger, Note } from "../api/supabaseClient";
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { createReadStream } from "fs";
