@@ -1,11 +1,12 @@
 import "dotenv/config";
 import { SupabaseLogger, Note } from "../api/supabaseClient";
-import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from "fs";
 import { createReadStream } from "fs";
 import { createInterface } from "readline";
 import { pipeline } from "stream/promises";
 import { createGunzip } from "zlib";
 import { Readable } from "stream";
+import { execSync } from "child_process";
 
 const CN_DATA_BASE_URL = "https://ton.twimg.com/birdwatch-public-data";
 const DATA_DIR = "./cn-data";
@@ -175,8 +176,10 @@ function formatDateForUrl(date: Date): string {
  * Try to download notes file, trying multiple days backwards
  */
 async function downloadNotesFile(partition: string = "00000"): Promise<string | null> {
-  const fileName = `notes-${partition}.tsv.gz`;
-  const outputPath = `${DATA_DIR}/${fileName}`;
+  const zipFileName = `notes-${partition}.zip`;
+  const tsvFileName = `notes-${partition}.tsv`;
+  const zipPath = `${DATA_DIR}/${zipFileName}`;
+  const tsvPath = `${DATA_DIR}/${tsvFileName}`;
 
   // Try up to 7 days back (CN data can have delays)
   const maxDaysBack = 7;
@@ -185,12 +188,20 @@ async function downloadNotesFile(partition: string = "00000"): Promise<string | 
     const date = new Date();
     date.setUTCDate(date.getUTCDate() - daysBack);
     const dateStr = formatDateForUrl(date);
-    const url = `${CN_DATA_BASE_URL}/${dateStr}/notes/${fileName}`;
+    const url = `${CN_DATA_BASE_URL}/${dateStr}/notes/${zipFileName}`;
 
     try {
-      await downloadFile(url, outputPath);
+      await downloadFile(url, zipPath);
       console.log(`[updateNoteFeedback] Successfully downloaded data from ${dateStr}`);
-      return outputPath;
+
+      // Extract the zip file
+      console.log(`[updateNoteFeedback] Extracting ${zipFileName}...`);
+      execSync(`unzip -o "${zipPath}" -d "${DATA_DIR}"`, { stdio: "pipe" });
+
+      // Clean up zip file
+      unlinkSync(zipPath);
+
+      return tsvPath;
     } catch (err) {
       if (daysBack < maxDaysBack - 1) {
         console.log(`[updateNoteFeedback] No data for ${dateStr}, trying earlier...`);
