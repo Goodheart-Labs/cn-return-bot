@@ -1,16 +1,20 @@
 import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
-import { versionOneFn as searchV1 } from "../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeV1 } from "../pipeline/writeNoteWithSearchGoal";
-import { check as checkV1 } from "../pipeline/check";
 import { AirtableLogger, createLogEntry } from "../api/airtableLogger";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import PQueue from "p-queue";
-import { execSync } from "child_process";
+import {
+  selectRandomBot,
+  getBotProbabilities,
+  getEnabledBots,
+  Bot,
+  PipelineResult,
+} from "../bots";
 
 const maxPosts = 10; // Maximum posts to process per run
 const concurrencyLimit = 3; // Process 3 posts at a time to avoid rate limiting
 const MAX_RUNTIME_MS = 5 * 60 * 1000; // 5 minutes maximum runtime
+const MAX_BOT_RETRIES = 3; // Maximum retries with different bots
 
 // Global timeout to prevent hanging
 const globalTimeout = setTimeout(() => {
@@ -18,95 +22,17 @@ const globalTimeout = setTimeout(() => {
   process.exit(0);
 }, MAX_RUNTIME_MS);
 
-async function runPipeline(post: any, idx: number) {
-  console.log(
-    `[runPipeline] Starting pipeline for post #${idx + 1} (ID: ${post.id})`
-  );
-  try {
-    // Get the original tweet content (handling retweets)
-    const originalContent = getOriginalTweetContent(post);
-
-    console.log(
-      `[runPipeline] Processing ${
-        originalContent.isRetweet ? "retweet" : "original tweet"
-      } for post #${idx + 1}`
-    );
-
-    const searchContextResult = await searchV1(
-      {
-        text: originalContent.text,
-        media: originalContent.media,
-        searchResults: "",
-        retweetContext: originalContent.retweetContext,
-      },
-      { model: "perplexity/sonar" }
-    );
-    console.log(
-      `[runPipeline] Search context complete for post #${idx + 1} (ID: ${
-        post.id
-      })`
-    );
-
-    const noteResult = await writeV1(
-      {
-        text: searchContextResult.text,
-        searchResults: searchContextResult.searchResults,
-        citations: searchContextResult.citations || [],
-      },
-      { model: "anthropic/claude-sonnet-4" }
-    );
-    console.log(
-      `[runPipeline] Note generated for post #${idx + 1} (ID: ${post.id})`
-    );
-
-    const checkResult = await checkV1({
-      note: noteResult.note,
-      url: noteResult.url,
-      status: noteResult.status,
-    });
-    console.log(
-      `[runPipeline] Check complete for post #${idx + 1} (ID: ${post.id})`
-    );
-
-    return {
-      post,
-      searchContextResult,
-      noteResult,
-      checkResult,
-    };
-  } catch (err) {
-    console.error(
-      `[runPipeline] Error in pipeline for post #${idx + 1} (ID: ${post.id}):`,
-      err
-    );
-    return null;
-  }
-}
-
 async function main() {
   try {
-    // Get current branch name
-    let currentBranch = "unknown";
-    try {
-      currentBranch = execSync("git rev-parse --abbrev-ref HEAD", {
-        encoding: "utf8",
-      }).trim();
-    } catch (error) {
-      console.warn("[main] Could not determine current branch, assuming main");
-      currentBranch = "main";
-    }
+    // Always submit notes (all bots run in production mode)
+    const shouldSubmitNotes = true;
 
-    // Determine if we should run in simulation mode (skip actual submission)
-    const shouldSubmitNotes = currentBranch === "main";
-
-    console.log(`[main] Current branch: ${currentBranch}`);
-    console.log(`[main] Should submit notes: ${shouldSubmitNotes}`);
-
-    if (!shouldSubmitNotes) {
-      console.log(
-        `[main] Running in SIMULATION MODE - notes will be generated and logged but not submitted to X.com`
-      );
-    }
+    // Log bot selection probabilities
+    const botProbs = getBotProbabilities();
+    console.log(`[main] Bot selection probabilities:`);
+    botProbs.forEach((b) => {
+      console.log(`  - ${b.id}: ${b.probability.toFixed(1)}%`);
+    });
 
     // Get commit hash from environment variable (available in GitHub Actions)
     const commit = process.env.GITHUB_SHA;
@@ -117,14 +43,10 @@ async function main() {
 
     // Initialize Supabase logger (optional - only if env vars are set)
     let supabaseLogger: SupabaseLogger | null = null;
-    let botConfigId: string | undefined;
     if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
       try {
         supabaseLogger = new SupabaseLogger();
-        // Get or create bot config for this branch
-        const botConfig = await supabaseLogger.getOrCreateBotConfig(currentBranch);
-        botConfigId = botConfig.id;
-        console.log(`[main] Supabase logging enabled for bot config: ${currentBranch}`);
+        console.log(`[main] Supabase logging enabled`);
       } catch (err) {
         console.warn("[main] Failed to initialize Supabase logger:", err);
         supabaseLogger = null;
@@ -133,10 +55,11 @@ async function main() {
       console.log("[main] Supabase logging disabled (env vars not set)");
     }
 
-    // Get existing URLs from Airtable for this specific bot
-    const existingUrls = await airtableLogger.getExistingUrlsForBot(
-      currentBranch
-    );
+    // Track bot usage for summary
+    const botUsage: Record<string, number> = {};
+
+    // Get existing URLs from Airtable (check all bots)
+    const existingUrls = await airtableLogger.getExistingUrls();
 
     // Convert URLs to post IDs (extract ID from URL)
     const skipPostIds = new Set<string>();
@@ -145,11 +68,9 @@ async function main() {
       if (match && match[1]) skipPostIds.add(match[1]);
     });
 
-    console.log(
-      `[main] Skipping ${skipPostIds.size} already-processed posts for bot '${currentBranch}'`
-    );
+    console.log(`[main] Skipping ${skipPostIds.size} already-processed posts`);
 
-    let posts = await fetchEligiblePosts(maxPosts, skipPostIds, 3); // Fetch up to 3 pages to get at least 10 posts
+    let posts = await fetchEligiblePosts(maxPosts, skipPostIds, 3);
 
     if (!posts.length) {
       console.log("No new eligible posts found.");
@@ -159,7 +80,6 @@ async function main() {
     console.log(`[main] Starting pipelines for ${posts.length} posts...`);
 
     const queue = new PQueue({ concurrency: concurrencyLimit });
-    const results: any[] = [];
     let submitted = 0;
 
     // Add progress logging
@@ -170,36 +90,94 @@ async function main() {
     // Add all tasks to the queue
     for (const [idx, post] of posts.entries()) {
       queue.add(async () => {
-        const r = await runPipeline(post, idx);
-        if (!r) return;
+        // Get the original tweet content (handling retweets)
+        const content = getOriginalTweetContent(post);
+
+        console.log(
+          `[main] Processing post #${idx + 1} (ID: ${post.id}) - ${
+            content.isRetweet ? "retweet" : "original"
+          }`
+        );
+
+        // Try bots until one succeeds or we run out of retries
+        let result: PipelineResult | null = null;
+        let selectedBot: Bot | null = null;
+        const triedBots = new Set<string>();
+        const enabledBots = getEnabledBots();
+
+        for (
+          let attempt = 0;
+          attempt < MAX_BOT_RETRIES && attempt < enabledBots.length;
+          attempt++
+        ) {
+          // Select a random bot, excluding already tried ones
+          let bot = selectRandomBot();
+          let retryCount = 0;
+          while (triedBots.has(bot.id) && retryCount < 10) {
+            bot = selectRandomBot();
+            retryCount++;
+          }
+
+          if (triedBots.has(bot.id)) {
+            // All bots tried, find one we haven't tried
+            const untried = enabledBots.find((b) => !triedBots.has(b.id));
+            if (!untried) break;
+            bot = untried;
+          }
+
+          triedBots.add(bot.id);
+          selectedBot = bot;
+          console.log(
+            `[main] Tweet ${post.id} attempt ${attempt + 1} with bot: ${bot.id}`
+          );
+          botUsage[bot.id] = (botUsage[bot.id] || 0) + 1;
+
+          // Run the bot's pipeline
+          result = await bot.runPipeline(post, content);
+          if (result) break; // Success, exit retry loop
+
+          console.log(
+            `[main] Bot ${bot.id} failed for post ${post.id}, trying another bot...`
+          );
+        }
+
+        if (!result || !selectedBot) return;
 
         // Check if the source verification passed
         const checkYes =
-          r.checkResult && r.checkResult.trim().toUpperCase() === "YES";
+          result.checkResult &&
+          result.checkResult.trim().toUpperCase() === "YES";
 
         // Initialize evaluation score
         let evaluationScore: number | undefined = undefined;
 
         if (
-          r.noteResult.status === "CORRECTION WITH TRUSTWORTHY CITATION" &&
+          result.noteResult.status === "CORRECTION WITH TRUSTWORTHY CITATION" &&
           checkYes
         ) {
           if (shouldSubmitNotes) {
             try {
               // Evaluate note quality before submission
-              const { shouldSubmitNote } = await import("../filters/noteEvaluationFilter");
-              const noteText = r.noteResult.note + " " + r.noteResult.url;
-              const evaluationResult = await shouldSubmitNote(r.post.id, noteText, 0); // Production threshold: only submit scores >= 0
+              const { shouldSubmitNote } = await import(
+                "../filters/noteEvaluationFilter"
+              );
+              const noteText =
+                result.noteResult.note + " " + result.noteResult.url;
+              const evaluationResult = await shouldSubmitNote(
+                result.post.id,
+                noteText,
+                0
+              );
 
               // Capture the score for logging
               evaluationScore = evaluationResult.score;
 
               if (!evaluationResult.shouldSubmit) {
                 console.log(
-                  `[main] Skipping post ${r.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`
+                  `[main] Skipping post ${result.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`
                 );
               } else {
-                // Submit the note using the same info as in your submitNote.ts
+                // Submit the note
                 const { submitNote } = await import("../api/submitNote");
                 const info = {
                   classification: "misinformed_or_potentially_misleading",
@@ -207,9 +185,9 @@ async function main() {
                   text: noteText,
                   trustworthy_sources: true,
                 };
-                const response = await submitNote(r.post.id, info);
+                const response = await submitNote(result.post.id, info);
                 console.log(
-                  `[main] Submitted note for post ${r.post.id} (evaluation score: ${evaluationResult.score}):`,
+                  `[main] Submitted note for post ${result.post.id} (bot: ${selectedBot.id}, score: ${evaluationResult.score}):`,
                   response
                 );
                 submitted++;
@@ -217,41 +195,44 @@ async function main() {
                 // Log to Supabase if enabled
                 if (supabaseLogger && response?.data?.id) {
                   try {
+                    const botConfig =
+                      await supabaseLogger.getOrCreateBotConfig(selectedBot.id);
                     await supabaseLogger.logNoteSubmission({
                       note_id: response.data.id,
-                      tweet_id: r.post.id,
-                      bot_config_id: botConfigId,
+                      tweet_id: result.post.id,
+                      bot_config_id: botConfig.id,
                       note_text: noteText,
-                      source_url: r.noteResult.url,
+                      source_url: result.noteResult.url,
                       evaluation_score: evaluationResult.score,
                       commit_sha: commit,
                     });
-                    console.log(`[main] Logged note ${response.data.id} to Supabase`);
+                    console.log(
+                      `[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`
+                    );
                   } catch (supabaseErr) {
-                    console.error("[main] Failed to log to Supabase:", supabaseErr);
+                    console.error(
+                      "[main] Failed to log to Supabase:",
+                      supabaseErr
+                    );
                   }
                 }
               }
             } catch (err: any) {
               console.error(
-                `[main] Failed to submit note for post ${r.post.id}:`,
+                `[main] Failed to submit note for post ${result.post.id}:`,
                 err.response?.data || err
               );
             }
-          } else {
-            console.log(
-              `[main] SIMULATION MODE: Would submit note for post ${r.post.id} but skipping actual submission`
-            );
           }
         }
 
-        // Create log entry for this result (now including the evaluation score)
+        // Create log entry for this result
         const logEntry = createLogEntry(
-          r.post,
-          r.searchContextResult,
-          r.noteResult,
-          r.checkResult,
-          currentBranch,
+          result.post,
+          result.searchContextResult,
+          result.noteResult,
+          result.checkResult,
+          selectedBot.id,
           commit,
           evaluationScore
         );
@@ -259,7 +240,7 @@ async function main() {
       });
     }
 
-    await queue.onIdle(); // Wait for all tasks to complete
+    await queue.onIdle();
     console.log(
       `[main] All ${posts.length} posts processed with concurrency limit of ${concurrencyLimit}`
     );
@@ -275,6 +256,12 @@ async function main() {
         console.error("[main] Failed to log to Airtable:", err);
       }
     }
+
+    // Log bot usage summary
+    console.log(`[main] Bot usage summary:`);
+    Object.entries(botUsage).forEach(([botId, count]) => {
+      console.log(`  - ${botId}: ${count} tweets`);
+    });
 
     if (logEntries.length === 0) {
       console.log(
@@ -295,7 +282,6 @@ async function main() {
       "Error in create notes routine script:",
       error.response?.data || error
     );
-    // Clear the global timeout and exit with error
     clearTimeout(globalTimeout);
     process.exit(1);
   }
