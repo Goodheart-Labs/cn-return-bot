@@ -162,31 +162,44 @@ function getTodayDateString(): string {
 }
 
 /**
- * Try to download notes file, trying today first then yesterday
+ * Format a date as YYYY/MM/DD for CN data URL
  */
-async function downloadNotesFile(partition: string = "00000"): Promise<string> {
+function formatDateForUrl(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}/${month}/${day}`;
+}
+
+/**
+ * Try to download notes file, trying multiple days backwards
+ */
+async function downloadNotesFile(partition: string = "00000"): Promise<string | null> {
   const fileName = `notes-${partition}.tsv`;
   const outputPath = `${DATA_DIR}/${fileName}`;
 
-  // Try today first
-  const todayDate = getTodayDateString();
-  const todayUrl = `${CN_DATA_BASE_URL}/${todayDate}/notes/${fileName}`;
+  // Try up to 7 days back (CN data can have delays)
+  const maxDaysBack = 7;
 
-  try {
-    await downloadFile(todayUrl, outputPath);
-    return outputPath;
-  } catch (err) {
-    console.log(`[updateNoteFeedback] Today's file not available, trying yesterday...`);
+  for (let daysBack = 0; daysBack < maxDaysBack; daysBack++) {
+    const date = new Date();
+    date.setUTCDate(date.getUTCDate() - daysBack);
+    const dateStr = formatDateForUrl(date);
+    const url = `${CN_DATA_BASE_URL}/${dateStr}/notes/${fileName}`;
+
+    try {
+      await downloadFile(url, outputPath);
+      console.log(`[updateNoteFeedback] Successfully downloaded data from ${dateStr}`);
+      return outputPath;
+    } catch (err) {
+      if (daysBack < maxDaysBack - 1) {
+        console.log(`[updateNoteFeedback] No data for ${dateStr}, trying earlier...`);
+      }
+    }
   }
 
-  // Try yesterday
-  const yesterday = new Date();
-  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-  const yesterdayDate = `${yesterday.getUTCFullYear()}/${String(yesterday.getUTCMonth() + 1).padStart(2, "0")}/${String(yesterday.getUTCDate()).padStart(2, "0")}`;
-  const yesterdayUrl = `${CN_DATA_BASE_URL}/${yesterdayDate}/notes/${fileName}`;
-
-  await downloadFile(yesterdayUrl, outputPath);
-  return outputPath;
+  console.error(`[updateNoteFeedback] Could not find CN data for partition ${partition} in the last ${maxDaysBack} days`);
+  return null;
 }
 
 /**
@@ -248,9 +261,15 @@ async function main() {
   const allResults = new Map<string, CNNoteRow>();
   const foundInPartition = new Map<string, string>(); // note_id -> partition
 
+  let downloadSucceeded = false;
   for (const partition of partitionsToCheck) {
     try {
       const filePath = await downloadNotesFile(partition);
+      if (!filePath) {
+        console.log(`[updateNoteFeedback] Skipping partition ${partition} - no data available`);
+        continue;
+      }
+      downloadSucceeded = true;
       const results = await parseNotesFile(filePath, noteIdsToFind);
 
       for (const [noteId, row] of results) {
@@ -277,11 +296,14 @@ async function main() {
     console.log(`[updateNoteFeedback] ${noteIdsToFind.size} notes not found, trying partition 00001...`);
     try {
       const filePath = await downloadNotesFile("00001");
-      const results = await parseNotesFile(filePath, noteIdsToFind);
+      if (filePath) {
+        downloadSucceeded = true;
+        const results = await parseNotesFile(filePath, noteIdsToFind);
 
-      for (const [noteId, row] of results) {
-        allResults.set(noteId, row);
-        foundInPartition.set(noteId, "00001");
+        for (const [noteId, row] of results) {
+          allResults.set(noteId, row);
+          foundInPartition.set(noteId, "00001");
+        }
       }
     } catch (err) {
       console.error("[updateNoteFeedback] Error processing partition 00001:", err);
@@ -328,7 +350,11 @@ async function main() {
 
   console.log(`[updateNoteFeedback] Updated ${updatedCount} notes`);
   console.log(`[updateNoteFeedback] ${newlyHelpfulCount} notes newly helpful`);
-  console.log(`[updateNoteFeedback] ${noteIdsToFind.size} notes not found in CN data (may be too new)`);
+  if (!downloadSucceeded) {
+    console.log(`[updateNoteFeedback] WARNING: Could not download any CN data files - check if data exists for recent dates`);
+  } else if (noteIdsToFind.size > 0) {
+    console.log(`[updateNoteFeedback] ${noteIdsToFind.size} notes not found in CN data (may be too new - notes appear after ~48hrs)`);
+  }
 
   process.exit(0);
 }
