@@ -3,6 +3,7 @@ import { versionOneFn as searchV1 } from "../pipeline/searchContextGoal";
 import { writeNoteWithSearchFn as writeV1 } from "../pipeline/writeNoteWithSearchGoal";
 import { check as checkV1 } from "../pipeline/check";
 import { AirtableLogger, createLogEntry } from "../api/airtableLogger";
+import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import PQueue from "p-queue";
 import { execSync } from "child_process";
@@ -114,6 +115,24 @@ async function main() {
     const airtableLogger = new AirtableLogger();
     const logEntries: any[] = [];
 
+    // Initialize Supabase logger (optional - only if env vars are set)
+    let supabaseLogger: SupabaseLogger | null = null;
+    let botConfigId: string | undefined;
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
+      try {
+        supabaseLogger = new SupabaseLogger();
+        // Get or create bot config for this branch
+        const botConfig = await supabaseLogger.getOrCreateBotConfig(currentBranch);
+        botConfigId = botConfig.id;
+        console.log(`[main] Supabase logging enabled for bot config: ${currentBranch}`);
+      } catch (err) {
+        console.warn("[main] Failed to initialize Supabase logger:", err);
+        supabaseLogger = null;
+      }
+    } else {
+      console.log("[main] Supabase logging disabled (env vars not set)");
+    }
+
     // Get existing URLs from Airtable for this specific bot
     const existingUrls = await airtableLogger.getExistingUrlsForBot(
       currentBranch
@@ -194,6 +213,24 @@ async function main() {
                   response
                 );
                 submitted++;
+
+                // Log to Supabase if enabled
+                if (supabaseLogger && response?.data?.id) {
+                  try {
+                    await supabaseLogger.logNoteSubmission({
+                      note_id: response.data.id,
+                      tweet_id: r.post.id,
+                      bot_config_id: botConfigId,
+                      note_text: noteText,
+                      source_url: r.noteResult.url,
+                      evaluation_score: evaluationResult.score,
+                      commit_sha: commit,
+                    });
+                    console.log(`[main] Logged note ${response.data.id} to Supabase`);
+                  } catch (supabaseErr) {
+                    console.error("[main] Failed to log to Supabase:", supabaseErr);
+                  }
+                }
               }
             } catch (err: any) {
               console.error(

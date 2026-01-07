@@ -1,0 +1,28 @@
+name: Update Note Feedback
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC (after CN data is typically updated)
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-feedback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Update note feedback from CN public data
+        run: bun run update-feedback
