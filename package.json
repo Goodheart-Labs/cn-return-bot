@@ -32,6 +32,7 @@
     "typecheck": "tsc --noEmit",
     "test-airtable": "bun run src/test-airtable-logger.ts",
     "routine": "bun run src/scripts/createNotesRoutine.ts",
+    "update-feedback": "bun run src/scripts/updateNoteFeedback.ts",
     "test": "bun run src/scripts/run.ts",
     "build-elo": "cd src/elo-rating-web && bun build ./app.ts ./airtableClient.ts ./eloCalculator.ts ./types.ts ./cacheManager.ts --outdir ./dist --target browser",
     "serve-elo": "bun run src/elo-rating-web/server.ts",

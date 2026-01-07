@@ -49,6 +49,9 @@ jobs:
       AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
       AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
       AIRTABLE_TABLE_NAME: ${{ secrets.AIRTABLE_TABLE_NAME }}
+      # Supabase credentials for feedback tracking
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
     steps:
       - name: Checkout specific branch
         uses: actions/checkout@v4
