@@ -38,7 +38,7 @@ export const geminiFlash: Bot = {
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: NOTE_MODEL }
+        { model: NOTE_MODEL, currentDate: new Date().toISOString().split("T")[0] }
       );
 
       // 3. Check the note
