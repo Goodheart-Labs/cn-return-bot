@@ -22,12 +22,20 @@ const promptTemplate = ({
   searchResults,
   citations,
   retweetContext,
+  currentDate,
 }: {
   text: string;
   searchResults: string;
   citations: string[];
   retweetContext?: string;
+  currentDate?: string;
 }) => `TASK: Analyze this X post and determine if it contains factual errors that require correction.${
+  currentDate
+    ? `
+
+Today's date is ${currentDate}.`
+    : ""
+}${
   retweetContext
     ? `
 
@@ -73,6 +81,7 @@ const retryPromptTemplate = ({
   searchResults,
   citations,
   retweetContext,
+  currentDate,
   previousNote,
   characterCount,
 }: {
@@ -80,9 +89,16 @@ const retryPromptTemplate = ({
   searchResults: string;
   citations: string[];
   retweetContext?: string;
+  currentDate?: string;
   previousNote: string;
   characterCount: number;
 }) => `TASK: Analyze this X post and determine if it contains factual errors that require correction.${
+  currentDate
+    ? `
+
+Today's date is ${currentDate}.`
+    : ""
+}${
   retweetContext
     ? `
 
@@ -150,6 +166,7 @@ export async function writeNoteWithSearchFn(
   }: z.infer<typeof textAndSearchResults>,
   config: {
     model: string;
+    currentDate?: string;
   }
 ) {
   const maxRetries = 3;
@@ -168,6 +185,7 @@ export async function writeNoteWithSearchFn(
           searchResults,
           citations,
           retweetContext,
+          currentDate: config.currentDate,
         });
       } else {
         // Retry attempt - use previous result to provide feedback
@@ -180,6 +198,7 @@ export async function writeNoteWithSearchFn(
           searchResults,
           citations,
           retweetContext,
+          currentDate: config.currentDate,
           previousNote: previousParsed.note,
           characterCount: previousParsed.note.length,
         });
