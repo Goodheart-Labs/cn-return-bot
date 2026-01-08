@@ -2,6 +2,7 @@ import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
 import { AirtableLogger, createLogEntry } from "../api/airtableLogger";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
+import { closeBrowser } from "../pipeline/browserManager";
 import PQueue from "p-queue";
 import {
   selectRandomBot,
@@ -17,8 +18,9 @@ const MAX_RUNTIME_MS = 5 * 60 * 1000; // 5 minutes maximum runtime
 const MAX_BOT_RETRIES = 3; // Maximum retries with different bots
 
 // Global timeout to prevent hanging
-const globalTimeout = setTimeout(() => {
+const globalTimeout = setTimeout(async () => {
   console.log("[main] Maximum runtime reached (5 minutes), forcing exit");
+  await closeBrowser();
   process.exit(0);
 }, MAX_RUNTIME_MS);
 
@@ -75,6 +77,7 @@ async function main() {
     if (!posts.length) {
       console.log("No new eligible posts found.");
       clearTimeout(globalTimeout);
+      await closeBrowser();
       process.exit(0);
     }
     console.log(`[main] Starting pipelines for ${posts.length} posts...`);
@@ -276,6 +279,7 @@ async function main() {
 
     // Clear the global timeout and exit successfully
     clearTimeout(globalTimeout);
+    await closeBrowser();
     console.log("[main] Process completed successfully, exiting");
     process.exit(0);
   } catch (error: any) {
@@ -284,6 +288,7 @@ async function main() {
       error.response?.data || error
     );
     clearTimeout(globalTimeout);
+    await closeBrowser();
     process.exit(1);
   }
 }

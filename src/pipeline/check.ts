@@ -1,9 +1,9 @@
 import { createGoal } from "@tonerow/agent-framework";
 import { llm } from "./llm";
-import { chromium } from "playwright";
 import { z } from "zod";
 import { writeNoteOutput } from "./schemas";
 import { writeNoteWithSearch } from "./writeNoteWithSearchGoal";
+import { getBrowser } from "./browserManager";
 
 const prompt = (
   missingContext: string,
@@ -34,7 +34,7 @@ Do not provide any other text, quotes, or explanations. Just respond with YES or
 
 // Helper to fetch and simplify page content
 async function fetchAndSimplifyContent(url: string): Promise<string> {
-  const browser = await chromium.launch();
+  const browser = await getBrowser(); // Reuse shared browser instance
   const page = await browser.newPage();
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });
@@ -47,7 +47,7 @@ async function fetchAndSimplifyContent(url: string): Promise<string> {
     });
     return content;
   } finally {
-    await browser.close();
+    await page.close(); // Close page, not browser
   }
 }
 

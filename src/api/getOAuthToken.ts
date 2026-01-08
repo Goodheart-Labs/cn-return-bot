@@ -4,10 +4,22 @@ import OAuth from "oauth-1.0a";
 
 // === CONFIGURATION ===
 // Set these from your Twitter/X Developer Portal app settings:
-const consumer_key = process.env.X_API_KEY as string; // <-- From your env
-const consumer_secret = process.env.X_API_KEY_SECRET as string; // <-- From your env
-const access_token = process.env.X_ACCESS_TOKEN as string; // <-- From your env
-const access_token_secret = process.env.X_ACCESS_TOKEN_SECRET as string; // <-- From your env
+function getRequiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(
+      `Missing required environment variable: ${name}\n` +
+      `Set this in your .env.local file or GitHub Actions secrets.`
+    );
+  }
+  return value;
+}
+
+// These will throw immediately at module load if not set
+const consumer_key = getRequiredEnv("X_API_KEY");
+const consumer_secret = getRequiredEnv("X_API_KEY_SECRET");
+const access_token = getRequiredEnv("X_ACCESS_TOKEN");
+const access_token_secret = getRequiredEnv("X_ACCESS_TOKEN_SECRET");
 
 // === OAuth1 Helper Function ===
 export function getOAuth1Headers(
@@ -46,25 +58,9 @@ export function getOAuth1Headers(
 }
 
 // === OAuth1 Token Validation ===
+// Note: Env vars are validated at module load, so this function
+// focuses on testing that the tokens actually work with the API.
 export async function validateOAuth1Tokens() {
-  if (
-    !consumer_key ||
-    !consumer_secret ||
-    !access_token ||
-    !access_token_secret
-  ) {
-    console.error("\n❌ Missing OAuth1 environment variables!");
-    console.log("\nRequired environment variables:");
-    console.log("- X_API_KEY");
-    console.log("- X_API_KEY_SECRET");
-    console.log("- X_ACCESS_TOKEN");
-    console.log("- X_ACCESS_TOKEN_SECRET");
-    console.log(
-      "\nYou can get these from your Twitter/X Developer Portal app settings."
-    );
-    return false;
-  }
-
   try {
     // Test the tokens by making a simple API call
     const headers = getOAuth1Headers("https://api.twitter.com/2/users/me");
