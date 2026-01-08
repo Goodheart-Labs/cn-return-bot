@@ -25,6 +25,7 @@ export interface Note {
   tweet_id: string;
   notewriter_id?: string;
   bot_config_id?: string;
+  bot_name?: string;
   note_text: string;
   source_url?: string;
   evaluation_score?: number;

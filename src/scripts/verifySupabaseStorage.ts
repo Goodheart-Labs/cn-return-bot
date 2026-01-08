@@ -87,10 +87,28 @@ async function verifySupabaseStorage() {
         }
       }
 
+      // Bot name breakdown
+      const { data: botBreakdown } = await client
+        .from("notes")
+        .select("bot_name");
+
+      if (botBreakdown) {
+        const botCounts: Record<string, number> = {};
+        for (const note of botBreakdown) {
+          const botName = note.bot_name || "UNKNOWN";
+          botCounts[botName] = (botCounts[botName] || 0) + 1;
+        }
+        console.log("\nBot breakdown:");
+        for (const [botName, count] of Object.entries(botCounts).sort((a, b) => b[1] - a[1])) {
+          console.log(`  - ${botName}: ${count}`);
+        }
+      }
+
       console.log("\nMost recent 10 notes:");
       for (const note of notes) {
         console.log(`\n  📌 Note ID: ${note.note_id}`);
         console.log(`     Tweet ID: ${note.tweet_id}`);
+        console.log(`     Bot: ${note.bot_name || "Unknown"}`);
         console.log(`     Status: ${note.cn_status || "Not checked"}`);
         console.log(`     Submitted: ${note.submitted_at}`);
         console.log(`     Helpful: ${note.helpful_count} | Somewhat: ${note.somewhat_helpful_count} | Not: ${note.not_helpful_count}`);

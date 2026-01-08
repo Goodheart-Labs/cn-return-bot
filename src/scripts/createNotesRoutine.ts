@@ -201,6 +201,7 @@ async function main() {
                       note_id: response.data.id,
                       tweet_id: result.post.id,
                       bot_config_id: botConfig.id,
+                      bot_name: selectedBot.id,
                       note_text: noteText,
                       source_url: result.noteResult.url,
                       evaluation_score: evaluationResult.score,
