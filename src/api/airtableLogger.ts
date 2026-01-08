@@ -66,7 +66,8 @@ export class AirtableLogger {
         .select({
           fields: ["URL", "Bot name"],
           pageSize: 100,
-          filterByFormula: `{Bot name} = '${botName}'`,
+          // Escape single quotes to prevent formula injection
+          filterByFormula: `{Bot name} = '${botName.replace(/'/g, "\\'")}'`,
         })
         .eachPage((records, fetchNextPage) => {
           records.forEach((record) => {
