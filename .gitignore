@@ -44,4 +44,4 @@ cn-data/
 
 # Elo rating web app compiled files
 src/elo-rating-web/dist/
-src/elo-rating-web/*.js
+src/elo-rating-web/*.jsscraped-notes-*.json

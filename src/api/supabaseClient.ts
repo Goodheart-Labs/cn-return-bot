@@ -54,6 +54,8 @@ export interface NoteStatusHistory {
 
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
   submitted_at?: string;
+  view_count?: number;
+  views_last_updated_at?: string;
 };
 
 let supabaseInstance: SupabaseClient | null = null;
@@ -232,5 +234,133 @@ export class SupabaseLogger {
     }
 
     return data || [];
+  }
+
+  /**
+   * Update view count for a note
+   */
+  async updateViewCount(noteId: string, viewCount: number): Promise<void> {
+    const { error } = await this.client
+      .from("notes")
+      .update({
+        view_count: viewCount,
+        views_last_updated_at: new Date().toISOString(),
+      })
+      .eq("note_id", noteId);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error updating view count:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get note by note_id
+   */
+  async getNoteByNoteId(noteId: string): Promise<Note | null> {
+    const { data, error } = await this.client
+      .from("notes")
+      .select()
+      .eq("note_id", noteId)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        // Not found
+        return null;
+      }
+      console.error("[SupabaseLogger] Error fetching note:", error);
+      throw error;
+    }
+
+    return data;
+  }
+
+  /**
+   * Update an existing note with manual scraped data
+   * Throws error if note doesn't exist - use logUnmatchedScrapedNote() for unmatched notes
+   */
+  async updateScrapedNote(data: {
+    note_id: string;
+    cn_status?: string;
+    view_count?: number;
+  }): Promise<Note> {
+    // Check if note exists
+    const existing = await this.getNoteByNoteId(data.note_id);
+
+    if (!existing) {
+      throw new Error(
+        `Note ${data.note_id} not found in database. Use logUnmatchedScrapedNote() to record unmatched notes.`
+      );
+    }
+
+    // Update existing note
+    const updateData: any = {
+      last_checked_at: new Date().toISOString(),
+    };
+
+    if (data.cn_status) updateData.cn_status = data.cn_status;
+    if (data.view_count !== undefined) {
+      updateData.view_count = data.view_count;
+      updateData.views_last_updated_at = new Date().toISOString();
+    }
+
+    const { data: updated, error } = await this.client
+      .from("notes")
+      .update(updateData)
+      .eq("note_id", data.note_id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("[SupabaseLogger] Error updating scraped note:", error);
+      throw error;
+    }
+
+    console.log(`[SupabaseLogger] Updated note ${data.note_id} with scraped data`);
+    return updated;
+  }
+
+  /**
+   * Upsert an unmatched scraped note (note found on X but not in our database)
+   * These are notes created before tracking started
+   * If the note exists in unmatched table, updates view count and status. If not, creates it.
+   */
+  async upsertUnmatchedScrapedNote(data: {
+    note_id: string;
+    tweet_id: string;
+    note_text: string;
+    cn_status?: string;
+    view_count?: number;
+    source_url?: string;
+  }): Promise<void> {
+    const now = new Date().toISOString();
+    const upsertData: any = {
+      note_id: data.note_id,
+      tweet_id: data.tweet_id,
+      note_text: data.note_text,
+      cn_status: data.cn_status,
+      source_url: data.source_url,
+      last_checked_at: now,
+    };
+
+    // Add view count fields if provided
+    if (data.view_count !== undefined) {
+      upsertData.view_count = data.view_count;
+      upsertData.views_last_updated_at = now;
+    }
+
+    const { error } = await this.client
+      .from("unmatched_scraped_notes")
+      .upsert(upsertData, {
+        onConflict: "note_id",
+      });
+
+    if (error) {
+      console.error("[SupabaseLogger] Error upserting unmatched note:", error);
+      throw error;
+    }
+
+    console.log(`[SupabaseLogger] Upserted unmatched note ${data.note_id}`);
   }
 }
