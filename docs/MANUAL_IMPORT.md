@@ -6,7 +6,7 @@ This guide explains how to manually import Community Notes data that you've scra
 
 - **View count tracking**: Update view counts for notes created by your bots
 - **Historical tracking**: Track how your notes perform over time
-- **Discovery**: Find and log notes that might be from others or before tracking started
+- **Pre-tracking notes**: Log notes that were created before tracking started
 
 ## Quick Start
 
@@ -27,8 +27,7 @@ The import script has **two behaviors**:
 
 ### 2. Unmatched Notes (NOT in database)
 - **Logs to separate table** `unmatched_scraped_notes`
-- These are likely notes created by other contributors or before your tracking started
-- Useful for discovering what other notes exist on tweets you're monitoring
+- These are notes created before your tracking started
 
 ## JSON File Format
 
@@ -67,10 +66,12 @@ The import script has **two behaviors**:
 
 ### Finding Note and Tweet IDs
 
-You'll need to manually extract these from X.com. Here's where to find them:
+The easiest way is to check your Airtable logs - they contain the note IDs and tweet IDs for all notes your bots have created.
+
+For manual extraction from X.com:
 
 1. **Tweet ID**: In the tweet URL: `https://x.com/username/status/[TWEET_ID]`
-2. **Note ID**: In the note details or from browser inspector tools
+2. **Note ID**: Check your bot's submission logs or Airtable records
 
 ### Scraping a Note - Example
 
@@ -82,11 +83,14 @@ Shown on X · 3,300+ views
 The post incorrectly characterizes the Bills as "cheap"...
 ```
 
-Extract:
-- **`cn_status`**: `"CURRENTLY_RATED_HELPFUL"`
-- **`view_count`**: `3300`
-- **`note_text`**: The full note text
-- **`note_id`** and **`tweet_id`**: From the URLs/page source
+Extract from the page:
+- **`cn_status`**: `"CURRENTLY_RATED_HELPFUL"` (from "Currently rated helpful")
+- **`view_count`**: `3300` (from "3,300+ views")
+- **`note_text`**: The full note text (copy from the page)
+
+Get from your logs/Airtable:
+- **`note_id`**: From your bot's submission records
+- **`tweet_id`**: From the tweet URL
 
 ## Script Behavior
 
@@ -100,7 +104,7 @@ Extract:
 ### For Unmatched Notes (NOT in your database)
 - Creates entry in `unmatched_scraped_notes` table
 - Records: note_id, tweet_id, note_text, cn_status, view_count, source_url
-- Allows you to discover notes from other contributors
+- Tracks notes created before your tracking started
 
 ## Database Setup
 
@@ -146,20 +150,21 @@ Output:
 - Status: CURRENTLY_RATED_HELPFUL
 ```
 
-### Example 2: Discover Other Contributors' Notes
+### Example 2: Import Pre-Tracking Notes
 
-You found a note on a tweet but it's not yours:
+You have notes from before Supabase tracking was implemented:
 
 ```json
 {
   "import_date": "2026-01-09",
-  "description": "Found someone else's note on a tweet we monitor",
+  "description": "Historical notes from before tracking started",
   "notes": [
     {
       "note_id": "9999999999",
       "tweet_id": "1111111111",
       "note_text": "This claim is misleading...",
-      "cn_status": "NEEDS_MORE_RATINGS"
+      "cn_status": "NEEDS_MORE_RATINGS",
+      "view_count": 1200
     }
   ]
 }
@@ -167,18 +172,20 @@ You found a note on a tweet but it's not yours:
 
 Output:
 ```
-⚠ Note not in database - logged as unmatched
-- This note was likely created by someone else or before tracking started
+⚠ Note not in main database - tracked separately
+- This note was created before tracking started
+- View count: 1200
+- Status: NEEDS_MORE_RATINGS
 ```
 
 ## Tips
 
-1. **Use the template**: Start with `scraped-notes-template.json` and modify it
+1. **Start with Airtable**: Export your note IDs and tweet IDs from Airtable logs
 2. **Validate JSON**: Use a JSON validator before importing
 3. **Test with one note first**: Verify the process works
-4. **Keep your JSON files**: Store them for record-keeping
-5. **Regular updates**: Scrape and import view counts weekly to track growth
-6. **Check unmatched notes**: Periodically review `unmatched_scraped_notes` to see what others are contributing
+4. **Keep your JSON files**: Store them for record-keeping and historical reference
+5. **Regular updates**: Scrape and import view counts weekly to track growth over time
+6. **Safe to re-import**: Running the script multiple times with the same notes is safe - it updates existing records
 
 ## Troubleshooting
 
@@ -191,10 +198,10 @@ Output:
 ### "Table unmatched_scraped_notes does not exist"
 - Run the migration: `migrations/003_create_unmatched_scraped_notes.sql`
 
-### Note IDs are hard to find
-- Use browser developer tools (F12)
-- Look at network requests when viewing a note
-- Check the page HTML source
+### Can't find note IDs
+- Check your Airtable logs - they have all the note IDs from your bot submissions
+- Look in your bot's console output logs if available
+- Note IDs are returned when your bot submits a note
 
 ## Files
 

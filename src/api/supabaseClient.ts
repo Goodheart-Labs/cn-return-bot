@@ -323,8 +323,8 @@ export class SupabaseLogger {
 
   /**
    * Upsert an unmatched scraped note (note found on X but not in our database)
-   * These are likely notes created by others or before tracking started
-   * If the note exists, updates view count and status. If not, creates it.
+   * These are notes created before tracking started
+   * If the note exists in unmatched table, updates view count and status. If not, creates it.
    */
   async upsertUnmatchedScrapedNote(data: {
     note_id: string;

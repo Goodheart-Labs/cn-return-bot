@@ -138,7 +138,7 @@ async function main() {
 
         unmatchedCount++;
         console.log(`  ⚠ Note not in main database - tracked separately`);
-        console.log(`  - This note was likely created by someone else or before tracking started`);
+        console.log(`  - This note was created before tracking started`);
 
         // Show key info
         if (note.view_count !== undefined) {

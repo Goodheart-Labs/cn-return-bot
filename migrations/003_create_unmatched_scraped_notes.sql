@@ -1,6 +1,6 @@
 -- Create table for tracking unmatched scraped notes
 -- These are notes found on X.com that aren't in our main notes table
--- (likely created by others or before our tracking started)
+-- (created before our tracking started)
 
 CREATE TABLE IF NOT EXISTS unmatched_scraped_notes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
