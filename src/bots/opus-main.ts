@@ -10,7 +10,7 @@ import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal"
 import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
 import { check as checkNote } from "../pipeline/check";
 
-const NOTE_MODEL = "anthropic/claude-opus-4-5-20251101";
+const NOTE_MODEL = "anthropic/claude-opus-4.5";
 
 export const opusMain: Bot = {
   id: "opus-main",
