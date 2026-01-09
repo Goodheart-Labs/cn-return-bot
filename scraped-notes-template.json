@@ -8,9 +8,7 @@
       "note_text": "The post incorrectly characterizes the Bills as \"cheap\" for not paying people to shovel snow. The Buffalo Bills are actually paying people to shovel snow at Highmark Stadium, not seeking unpaid volunteers. https://www.buffalobills.com/news/snow-shovelers-needed-at-highmark-stadium-for-week-18",
       "cn_status": "CURRENTLY_RATED_HELPFUL",
       "view_count": 3300,
-      "bot_name": "opus-main",
-      "source_url": "https://www.buffalobills.com/news/snow-shovelers-needed-at-highmark-stadium-for-week-18",
-      "submitted_at": "2026-01-01T12:00:00Z"
+      "source_url": "https://www.buffalobills.com/news/snow-shovelers-needed-at-highmark-stadium-for-week-18"
     },
     {
       "note_id": "1234567890123456790",
@@ -18,9 +16,7 @@
       "note_text": "Solar panels don't contain lithium. Solar fires are caused by electrical faults (wiring, inverters, installation issues), not lithium combustion like EV batteries. https://www.ecoflow.com/us/blog/solar-panel-fire-risk-facts",
       "cn_status": "CURRENTLY_RATED_HELPFUL",
       "view_count": 5900,
-      "bot_name": "opus-main",
-      "source_url": "https://www.ecoflow.com/us/blog/solar-panel-fire-risk-facts",
-      "submitted_at": "2026-01-01T13:30:00Z"
+      "source_url": "https://www.ecoflow.com/us/blog/solar-panel-fire-risk-facts"
     }
   ]
 }

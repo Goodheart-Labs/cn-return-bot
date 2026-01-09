@@ -1,51 +1,41 @@
 {
   "import_date": "2026-01-09",
-  "description": "Manual scrape from X.com - Community Notes created by bot",
+  "description": "Manual scrape from X.com - Community Notes (TEMPLATE - fill in note_id and tweet_id)",
   "notes": [
     {
       "note_id": "EXTRACT_FROM_X",
       "tweet_id": "EXTRACT_FROM_X",
       "note_text": "The \"18,000 organs\" claim is false. This figure comes from a single unverified 2016 Iranian state-affiliated website with no evidence. No credible sources confirm systematic Syrian organ harvesting since 2012 or this specific number. https://en.abna24.com/news/844401/Israel-harvested-18-000-organs-from-dead-Syrians-during-the-war",
       "cn_status": "NEEDS_MORE_RATINGS",
-      "bot_name": "opus-main",
-      "source_url": "https://en.abna24.com/news/844401/Israel-harvested-18-000-organs-from-dead-Syrians-during-the-war",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://en.abna24.com/news/844401/Israel-harvested-18-000-organs-from-dead-Syrians-during-the-war"
     },
     {
       "note_id": "EXTRACT_FROM_X",
       "tweet_id": "EXTRACT_FROM_X",
       "note_text": "No scientific species called \"giant mantis sea spider\" exists. Giant sea spiders belong to genus Colossendeis, not \"mantis\" variants. The term incorrectly conflates sea spiders with other marine creatures. https://www.mbari.org/animal/giant-sea-spider/",
       "cn_status": "NEEDS_MORE_RATINGS",
-      "bot_name": "opus-main",
-      "source_url": "https://www.mbari.org/animal/giant-sea-spider/",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://www.mbari.org/animal/giant-sea-spider/"
     },
     {
       "note_id": "EXTRACT_FROM_X",
       "tweet_id": "EXTRACT_FROM_X",
       "note_text": "Earth doesn't \"set\" from Moon's surface due to tidal locking - Earth stays fixed in lunar sky. \"Earthrise\" only occurs from lunar orbit, not surface. Apollo 8's famous Earthrise photo was taken from orbit, not ground. https://en.wikipedia.org/wiki/Earthrise",
       "cn_status": "NEEDS_MORE_RATINGS",
-      "bot_name": "opus-main",
-      "source_url": "https://en.wikipedia.org/wiki/Earthrise",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://en.wikipedia.org/wiki/Earthrise"
     },
     {
       "note_id": "EXTRACT_FROM_X",
       "tweet_id": "EXTRACT_FROM_X",
       "note_text": "London officials denied deliberate removal. Technical issues affected multiple blue/white flags (Guatemala, Argentina, Honduras) identically during the animated display. https://www.standard.co.uk/news/london/london-nye-fireworks-israeli-flag-star-of-david-outrage-b1264601.html",
       "cn_status": "NEEDS_MORE_RATINGS",
-      "bot_name": "opus-main",
-      "source_url": "https://www.standard.co.uk/news/london/london-nye-fireworks-israeli-flag-star-of-david-outrage-b1264601.html",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://www.standard.co.uk/news/london/london-nye-fireworks-israeli-flag-star-of-david-outrage-b1264601.html"
     },
     {
       "note_id": "EXTRACT_FROM_X",
       "tweet_id": "EXTRACT_FROM_X",
       "note_text": "The Star of David wasn't \"removed\" but affected by a technical glitch that also impacted Guatemala, Argentina & Honduras flags. The Star became faintly visible at sequence end. City Hall denied intentional censorship. https://www.gbnews.com/news/sadiq-khan-new-year-london-fireworks-israel",
       "cn_status": "NEEDS_MORE_RATINGS",
-      "bot_name": "opus-main",
-      "source_url": "https://www.gbnews.com/news/sadiq-khan-new-year-london-fireworks-israel",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://www.gbnews.com/news/sadiq-khan-new-year-london-fireworks-israel"
     },
     {
       "note_id": "EXTRACT_FROM_X",
@@ -53,9 +43,7 @@
       "note_text": "The post incorrectly characterizes the Bills as \"cheap\" for not paying people to shovel snow. The Buffalo Bills are actually paying people to shovel snow at Highmark Stadium, not seeking unpaid volunteers. https://www.buffalobills.com/news/snow-shovelers-needed-at-highmark-stadium-for-week-18",
       "cn_status": "CURRENTLY_RATED_HELPFUL",
       "view_count": 3300,
-      "bot_name": "opus-main",
-      "source_url": "https://www.buffalobills.com/news/snow-shovelers-needed-at-highmark-stadium-for-week-18",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://www.buffalobills.com/news/snow-shovelers-needed-at-highmark-stadium-for-week-18"
     },
     {
       "note_id": "EXTRACT_FROM_X",
@@ -63,36 +51,28 @@
       "note_text": "Solar panels don't contain lithium. Solar fires are caused by electrical faults (wiring, inverters, installation issues), not lithium combustion like EV batteries. https://www.ecoflow.com/us/blog/solar-panel-fire-risk-facts",
       "cn_status": "CURRENTLY_RATED_HELPFUL",
       "view_count": 5900,
-      "bot_name": "opus-main",
-      "source_url": "https://www.ecoflow.com/us/blog/solar-panel-fire-risk-facts",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://www.ecoflow.com/us/blog/solar-panel-fire-risk-facts"
     },
     {
       "note_id": "EXTRACT_FROM_X",
       "tweet_id": "EXTRACT_FROM_X",
       "note_text": "The post contains two factual errors: First, a 10-game winning streak spans roughly 5-6 weeks, not \"two months.\" Second, the Sabres are actually in a playoff position with 46 points, having passed the Florida Panthers (45 points). https://allwny.com/2025/12/31/sabres-win-steak-hits-double-digits/",
       "cn_status": "NEEDS_MORE_RATINGS",
-      "bot_name": "opus-main",
-      "source_url": "https://allwny.com/2025/12/31/sabres-win-steak-hits-double-digits/",
-      "submitted_at": "2025-12-30T00:00:00Z"
+      "source_url": "https://allwny.com/2025/12/31/sabres-win-steak-hits-double-digits/"
     },
     {
       "note_id": "EXTRACT_FROM_X",
       "tweet_id": "EXTRACT_FROM_X",
       "note_text": "Post falsely claims real snow \"doesn't melt when heat is applied\" and \"gives off chemical smell.\" Video shows commercial plastic snow products (Wizard Snow™, FauxSno) designed to never melt for decorations/film sets, not real snow which melts at 32°F. https://store.monkeywrenchpro.com/plastic-snow-1-lb-bag/",
       "cn_status": "NEEDS_MORE_RATINGS",
-      "bot_name": "opus-main",
-      "source_url": "https://store.monkeywrenchpro.com/plastic-snow-1-lb-bag/",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://store.monkeywrenchpro.com/plastic-snow-1-lb-bag/"
     },
     {
       "note_id": "EXTRACT_FROM_X",
       "tweet_id": "EXTRACT_FROM_X",
       "note_text": "The man who refused to bathe for 60 years was Iranian, not Indian. Amou Haji was from the village of Dejgah in Iran's Fars province and died in October 2022 at age 94. https://www.latintimes.com/man-who-hasnt-taken-bath-60-years-dies-months-after-taking-his-first-wash-530744",
       "cn_status": "NEEDS_MORE_RATINGS",
-      "bot_name": "opus-main",
-      "source_url": "https://www.latintimes.com/man-who-hasnt-taken-bath-60-years-dies-months-after-taking-his-first-wash-530744",
-      "submitted_at": "2026-01-01T00:00:00Z"
+      "source_url": "https://www.latintimes.com/man-who-hasnt-taken-bath-60-years-dies-months-after-taking-his-first-wash-530744"
     }
   ]
 }

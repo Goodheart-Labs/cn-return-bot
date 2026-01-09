@@ -3,8 +3,8 @@
  *
  * This script allows you to manually import community notes data that you've scraped.
  * It will:
- * - Create new notes if they don't exist
  * - Update existing notes with new view counts and status
+ * - Log unmatched notes (not in our DB) to a separate table for tracking
  * - Track view counts over time via history table
  *
  * Usage:
@@ -22,9 +22,7 @@ interface ScrapedNote {
   note_text: string;
   cn_status?: string;
   view_count?: number;
-  bot_name?: string;
   source_url?: string;
-  submitted_at?: string; // ISO string format
 }
 
 interface ImportData {
@@ -87,8 +85,8 @@ async function main() {
   }
 
   // Import each note
-  let createdCount = 0;
   let updatedCount = 0;
+  let unmatchedCount = 0;
   let errorCount = 0;
 
   for (const [idx, note] of importData.notes.entries()) {
@@ -96,36 +94,59 @@ async function main() {
 
     try {
       const existing = await supabase.getNoteByNoteId(note.note_id);
-      const isNewNote = !existing;
 
-      const result = await supabase.upsertScrapedNote(note);
+      if (existing) {
+        // Note exists in our database - update it
+        await supabase.updateScrapedNote({
+          note_id: note.note_id,
+          cn_status: note.cn_status,
+          view_count: note.view_count,
+        });
 
-      if (isNewNote) {
-        createdCount++;
-        console.log(`  ✓ Created new note`);
-      } else {
         updatedCount++;
         console.log(`  ✓ Updated existing note`);
-      }
 
-      // Log to status history if we have status or view count
-      if (note.cn_status || note.view_count !== undefined) {
-        await supabase.logStatusHistory(
-          note.note_id,
-          note.cn_status || existing?.cn_status || "UNKNOWN",
-          {
-            view_count: note.view_count,
-          }
-        );
-        console.log(`  ✓ Logged to status history`);
-      }
+        // Log to status history if we have status or view count
+        if (note.cn_status || note.view_count !== undefined) {
+          await supabase.logStatusHistory(
+            note.note_id,
+            note.cn_status || existing.cn_status || "UNKNOWN",
+            {
+              view_count: note.view_count,
+            }
+          );
+          console.log(`  ✓ Logged to status history`);
+        }
 
-      // Show key info
-      if (note.view_count !== undefined) {
-        console.log(`  - View count: ${note.view_count}`);
-      }
-      if (note.cn_status) {
-        console.log(`  - Status: ${note.cn_status}`);
+        // Show key info
+        if (note.view_count !== undefined) {
+          console.log(`  - View count: ${note.view_count}`);
+        }
+        if (note.cn_status) {
+          console.log(`  - Status: ${note.cn_status}`);
+        }
+      } else {
+        // Note not in our database - upsert to unmatched table
+        await supabase.upsertUnmatchedScrapedNote({
+          note_id: note.note_id,
+          tweet_id: note.tweet_id,
+          note_text: note.note_text,
+          cn_status: note.cn_status,
+          view_count: note.view_count,
+          source_url: note.source_url,
+        });
+
+        unmatchedCount++;
+        console.log(`  ⚠ Note not in main database - tracked separately`);
+        console.log(`  - This note was likely created by someone else or before tracking started`);
+
+        // Show key info
+        if (note.view_count !== undefined) {
+          console.log(`  - View count: ${note.view_count}`);
+        }
+        if (note.cn_status) {
+          console.log(`  - Status: ${note.cn_status}`);
+        }
       }
     } catch (err) {
       errorCount++;
@@ -135,9 +156,12 @@ async function main() {
 
   console.log("\n" + "=".repeat(60));
   console.log("[importScrapedNotes] Import complete!");
-  console.log(`  - Created: ${createdCount} notes`);
-  console.log(`  - Updated: ${updatedCount} notes`);
+  console.log(`  - Updated: ${updatedCount} notes (in main notes table)`);
+  console.log(`  - Unmatched: ${unmatchedCount} notes (tracked in unmatched_scraped_notes table)`);
   console.log(`  - Errors: ${errorCount} notes`);
+  if (unmatchedCount > 0) {
+    console.log(`\nℹ️  Unmatched notes are tracked separately with view counts over time.`);
+  }
   console.log("=".repeat(60));
 
   process.exit(errorCount > 0 ? 1 : 0);
