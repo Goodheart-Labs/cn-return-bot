@@ -22,7 +22,6 @@ The import script has **two behaviors**:
 
 ### 1. Matched Notes (exist in database)
 - **Updates** the note with new view count and status
-- Logs changes to `note_status_history` table for tracking over time
 - These are notes your bot created that are now being updated with fresh data
 
 ### 2. Unmatched Notes (NOT in database)
@@ -94,12 +93,11 @@ Get from your logs/Airtable:
 
 ## Script Behavior
 
-###For Matched Notes (in your database)
+### For Matched Notes (in your database)
 - Updates `cn_status` if provided
 - Updates `view_count` if provided
 - Updates `views_last_updated_at` timestamp
 - Updates `last_checked_at` timestamp
-- Logs to `note_status_history` for tracking changes
 
 ### For Unmatched Notes (NOT in your database)
 - Creates entry in `unmatched_scraped_notes` table

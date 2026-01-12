@@ -106,18 +106,6 @@ async function main() {
         updatedCount++;
         console.log(`  ✓ Updated existing note`);
 
-        // Log to status history if we have status or view count
-        if (note.cn_status || note.view_count !== undefined) {
-          await supabase.logStatusHistory(
-            note.note_id,
-            note.cn_status || existing.cn_status || "UNKNOWN",
-            {
-              view_count: note.view_count,
-            }
-          );
-          console.log(`  ✓ Logged to status history`);
-        }
-
         // Show key info
         if (note.view_count !== undefined) {
           console.log(`  - View count: ${note.view_count}`);

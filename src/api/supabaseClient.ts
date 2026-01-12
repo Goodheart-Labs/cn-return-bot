@@ -41,17 +41,6 @@ export interface Note {
   last_checked_at?: string;
 }
 
-export interface NoteStatusHistory {
-  id: string;
-  note_id: string;
-  status: string;
-  helpful_count?: number;
-  somewhat_helpful_count?: number;
-  not_helpful_count?: number;
-  view_count?: number;
-  recorded_at: string;
-}
-
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
   submitted_at?: string;
   view_count?: number;
@@ -187,31 +176,6 @@ export class SupabaseLogger {
 
     if (error) {
       console.error("[SupabaseLogger] Error updating note feedback:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Log status history for tracking changes over time
-   */
-  async logStatusHistory(
-    noteId: string,
-    status: string,
-    counts?: {
-      helpful_count?: number;
-      somewhat_helpful_count?: number;
-      not_helpful_count?: number;
-      view_count?: number;
-    }
-  ): Promise<void> {
-    const { error } = await this.client.from("note_status_history").insert({
-      note_id: noteId,
-      status,
-      ...counts,
-    });
-
-    if (error) {
-      console.error("[SupabaseLogger] Error logging status history:", error);
       throw error;
     }
   }

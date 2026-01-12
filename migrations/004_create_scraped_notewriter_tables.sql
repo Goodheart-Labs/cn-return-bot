@@ -1,6 +1,9 @@
 -- Create tables for tracking scraped notewriter data
 -- Separate from main notes table to avoid mixing with certain data
 
+-- Drop the old note_status_history table (replaced by scraped_notewriter_snapshots)
+DROP TABLE IF EXISTS note_status_history;
+
 -- Table for the notes themselves (one row per note, immutable core data)
 CREATE TABLE IF NOT EXISTS scraped_notewriter_notes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
