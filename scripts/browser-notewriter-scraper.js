@@ -41,6 +41,8 @@
         if (text.includes('Currently rated helpful')) status = 'CURRENTLY_RATED_HELPFUL';
         else if (text.includes('Needs more ratings')) status = 'NEEDS_MORE_RATINGS';
         else if (text.includes('Currently not rated helpful')) status = 'CURRENTLY_NOT_RATED_HELPFUL';
+        // "Shown on X" with views means it was/is helpful
+        else if (text.match(/Shown on X[^·]*·.*views/i)) status = 'SHOWN_ON_X';
         else if (text.includes('Not shown on X')) status = 'NOT_SHOWN_ON_X';
 
         // Find source URLs (external links)
@@ -62,10 +64,18 @@
           }
         });
 
-        // Try to find view count (various patterns)
-        const viewMatch = text.match(/([\d,]+)\s*views?/i) ||
-                          text.match(/Views?\s*:?\s*([\d,]+)/i);
-        const viewCount = viewMatch ? parseInt(viewMatch[1].replace(/,/g, '')) : null;
+        // Try to find view count - pattern: "Shown on X · 15.1K+ views"
+        let viewCount = null;
+        const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i) ||
+                          text.match(/([\d,.]+)([KMB]?)\+?\s*views?/i);
+        if (viewMatch) {
+          let num = parseFloat(viewMatch[1].replace(/,/g, ''));
+          const suffix = (viewMatch[2] || '').toUpperCase();
+          if (suffix === 'K') num *= 1000;
+          else if (suffix === 'M') num *= 1000000;
+          else if (suffix === 'B') num *= 1000000000;
+          viewCount = Math.round(num);
+        }
 
         // Try to find rating counts
         const helpfulMatch = text.match(/(\d+)\s*helpful/i);
