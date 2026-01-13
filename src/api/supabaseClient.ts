@@ -363,4 +363,75 @@ export class SupabaseLogger {
 
     console.log(`[SupabaseLogger] Upserted unmatched note ${data.note_id}`);
   }
+
+  // ============================================
+  // Scraped Notewriter Data Methods
+  // ============================================
+
+  async upsertScrapedNotewriterNote(data: {
+    note_id: string;
+    tweet_id: string;
+    note_text?: string;
+    source_url?: string;
+  }): Promise<void> {
+    const { error } = await this.client
+      .from("scraped_notewriter_notes")
+      .upsert(
+        {
+          note_id: data.note_id,
+          tweet_id: data.tweet_id,
+          note_text: data.note_text,
+          source_url: data.source_url,
+        },
+        {
+          onConflict: "note_id",
+          ignoreDuplicates: true,
+        }
+      );
+
+    if (error) {
+      console.error("[SupabaseLogger] Error upserting scraped notewriter note:", error);
+      throw error;
+    }
+  }
+
+  async insertScrapedNotewriterSnapshot(data: {
+    note_id: string;
+    cn_status?: string;
+    view_count?: number;
+    helpful_count?: number;
+    somewhat_helpful_count?: number;
+    not_helpful_count?: number;
+  }): Promise<void> {
+    const { error } = await this.client
+      .from("scraped_notewriter_snapshots")
+      .insert({
+        note_id: data.note_id,
+        cn_status: data.cn_status,
+        view_count: data.view_count,
+        helpful_count: data.helpful_count,
+        somewhat_helpful_count: data.somewhat_helpful_count,
+        not_helpful_count: data.not_helpful_count,
+      });
+
+    if (error) {
+      console.error("[SupabaseLogger] Error inserting scraped notewriter snapshot:", error);
+      throw error;
+    }
+  }
+
+  async scrapedNotewriterNoteExists(noteId: string): Promise<boolean> {
+    const { data, error } = await this.client
+      .from("scraped_notewriter_notes")
+      .select("note_id")
+      .eq("note_id", noteId)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("[SupabaseLogger] Error checking scraped notewriter note:", error);
+      throw error;
+    }
+
+    return !!data;
+  }
 }
