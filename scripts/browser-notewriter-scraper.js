@@ -182,13 +182,62 @@
     return data;
   }
 
+  // Search for text on the page (scrolls until found)
+  async function search(query) {
+    console.log(`🔍 Searching for "${query}"...`);
+    let found = false;
+    let lastHeight = 0;
+    let stuck = 0;
+
+    // First scroll to top
+    window.scrollTo(0, 0);
+    await new Promise(r => setTimeout(r, 500));
+
+    while (!found && stuck < 20) {
+      const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
+      for (const cell of cells) {
+        if (cell.innerText.toLowerCase().includes(query.toLowerCase())) {
+          cell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          cell.style.outline = '3px solid red';
+          cell.style.background = 'rgba(255,0,0,0.1)';
+          console.log('✅ Found! Highlighted in red.');
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        window.scrollBy(0, 800);
+        await new Promise(r => setTimeout(r, 250));
+        if (document.body.scrollHeight === lastHeight) stuck++;
+        else { stuck = 0; lastHeight = document.body.scrollHeight; }
+      }
+    }
+
+    if (!found) console.log('❌ Not found');
+    return found;
+  }
+
+  // Verify: check notes with view_count and show them
+  function verify() {
+    const withViews = [...notes.values()].filter(n => n.view_count);
+    console.log(`\n📊 ${withViews.length} notes with views:\n`);
+    withViews.sort((a, b) => (b.view_count || 0) - (a.view_count || 0));
+    withViews.forEach(n => {
+      console.log(`${n.view_count.toLocaleString().padStart(12)} | ${n.note_text?.slice(0, 50)}...`);
+    });
+    return withViews;
+  }
+
   // Expose controls globally
   window._scraper = {
     notes,
     extractNotes,
     start: autoScroll,
     stop,
-    export: exportData
+    export: exportData,
+    search,
+    verify
   };
 
   // Start automatically
