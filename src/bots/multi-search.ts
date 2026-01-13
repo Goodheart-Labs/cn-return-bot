@@ -15,7 +15,7 @@ import { multiSourceSearch } from "../pipeline/multiSourceSearch";
 import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
 import { check as checkNote } from "../pipeline/check";
 
-const NOTE_MODEL = "anthropic/claude-opus-4.5";
+const NOTE_MODEL = "anthropic/claude-opus-4-5-20251101";
 
 export const multiSearch: Bot = {
   id: "multi-search",

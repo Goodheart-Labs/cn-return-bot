@@ -41,6 +41,17 @@ export interface Note {
   last_checked_at?: string;
 }
 
+export interface NoteStatusHistory {
+  id: string;
+  note_id: string;
+  status: string;
+  helpful_count?: number;
+  somewhat_helpful_count?: number;
+  not_helpful_count?: number;
+  view_count?: number;
+  recorded_at: string;
+}
+
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
   submitted_at?: string;
   view_count?: number;
@@ -176,6 +187,31 @@ export class SupabaseLogger {
 
     if (error) {
       console.error("[SupabaseLogger] Error updating note feedback:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Log status history for tracking changes over time
+   */
+  async logStatusHistory(
+    noteId: string,
+    status: string,
+    counts?: {
+      helpful_count?: number;
+      somewhat_helpful_count?: number;
+      not_helpful_count?: number;
+      view_count?: number;
+    }
+  ): Promise<void> {
+    const { error } = await this.client.from("note_status_history").insert({
+      note_id: noteId,
+      status,
+      ...counts,
+    });
+
+    if (error) {
+      console.error("[SupabaseLogger] Error logging status history:", error);
       throw error;
     }
   }
@@ -326,86 +362,5 @@ export class SupabaseLogger {
     }
 
     console.log(`[SupabaseLogger] Upserted unmatched note ${data.note_id}`);
-  }
-
-  // ============================================
-  // Scraped Notewriter Data Methods
-  // ============================================
-
-  /**
-   * Upsert a note to the scraped_notewriter_notes table
-   * Creates if not exists, does nothing if exists (immutable core data)
-   */
-  async upsertScrapedNotewriterNote(data: {
-    note_id: string;
-    tweet_id: string;
-    note_text?: string;
-    source_url?: string;
-  }): Promise<void> {
-    const { error } = await this.client
-      .from("scraped_notewriter_notes")
-      .upsert(
-        {
-          note_id: data.note_id,
-          tweet_id: data.tweet_id,
-          note_text: data.note_text,
-          source_url: data.source_url,
-        },
-        {
-          onConflict: "note_id",
-          ignoreDuplicates: true, // Don't update if exists
-        }
-      );
-
-    if (error) {
-      console.error("[SupabaseLogger] Error upserting scraped notewriter note:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Insert a snapshot for a scraped note (always creates new row for time-series tracking)
-   */
-  async insertScrapedNotewriterSnapshot(data: {
-    note_id: string;
-    cn_status?: string;
-    view_count?: number;
-    helpful_count?: number;
-    somewhat_helpful_count?: number;
-    not_helpful_count?: number;
-  }): Promise<void> {
-    const { error } = await this.client
-      .from("scraped_notewriter_snapshots")
-      .insert({
-        note_id: data.note_id,
-        cn_status: data.cn_status,
-        view_count: data.view_count,
-        helpful_count: data.helpful_count,
-        somewhat_helpful_count: data.somewhat_helpful_count,
-        not_helpful_count: data.not_helpful_count,
-      });
-
-    if (error) {
-      console.error("[SupabaseLogger] Error inserting scraped notewriter snapshot:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Check if a scraped notewriter note exists
-   */
-  async scrapedNotewriterNoteExists(noteId: string): Promise<boolean> {
-    const { data, error } = await this.client
-      .from("scraped_notewriter_notes")
-      .select("note_id")
-      .eq("note_id", noteId)
-      .single();
-
-    if (error && error.code !== "PGRST116") {
-      console.error("[SupabaseLogger] Error checking scraped notewriter note:", error);
-      throw error;
-    }
-
-    return !!data;
   }
 }
