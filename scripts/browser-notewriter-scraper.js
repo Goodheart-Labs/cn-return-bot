@@ -64,10 +64,10 @@
           }
         });
 
-        // Try to find view count - pattern: "Shown on X · 15.1K+ views"
+        // Try to find view count - ONLY match "Shown on X · 15.1K+ views" pattern
+        // Do NOT use a fallback - too easy to match numbers in tweet text
         let viewCount = null;
-        const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i) ||
-                          text.match(/([\d,.]+)([KMB]?)\+?\s*views?/i);
+        const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i);
         if (viewMatch) {
           let num = parseFloat(viewMatch[1].replace(/,/g, ''));
           const suffix = (viewMatch[2] || '').toUpperCase();
