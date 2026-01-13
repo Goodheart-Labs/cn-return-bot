@@ -4,10 +4,10 @@ Scrapes note data from the X/Twitter Community Notes notewriter page.
 
 ## Why a scraper?
 
-The notewriter page (`x.com/i/communitynotes/u/[username]`) uses a virtualized list that only renders visible items. This means:
-- Ctrl+F doesn't work
+The notewriter page (`x.com/i/communitynotes/u/[username]`) is hard to work with manually:
+- Virtualized list (only renders visible items) breaks Ctrl+F
 - Copy/paste doesn't capture URLs
-- "View details" is a button (not a link), so note IDs aren't easily accessible
+- "View details" is a button not a link, so note IDs aren't accessible from the list
 
 ## Usage
 
