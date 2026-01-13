@@ -96,15 +96,15 @@ async function main() {
   }
   console.log();
 
-  // Filter out notes without required fields
+  // Filter out notes without required fields, use tweet_id as fallback for note_id
   const validNotes = importData.notes.filter((note) => {
-    if (!note.note_id) {
-      console.warn(`  ⚠ Skipping note without note_id (tweet: ${note.tweet_id})`);
+    if (!note.tweet_id) {
+      console.warn(`  ⚠ Skipping note without tweet_id`);
       return false;
     }
-    if (!note.tweet_id) {
-      console.warn(`  ⚠ Skipping note without tweet_id (note: ${note.note_id})`);
-      return false;
+    // Use tweet_id as note_id if note_id is empty (scraper couldn't find it)
+    if (!note.note_id) {
+      note.note_id = `tweet_${note.tweet_id}`;
     }
     return true;
   });
