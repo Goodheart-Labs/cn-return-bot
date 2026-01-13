@@ -102,12 +102,9 @@
   }
 
   function autoScroll() {
-    const scrollContainer = document.querySelector('[data-testid="primaryColumn"]') ||
-                           document.documentElement;
-
-    let lastScrollHeight = 0;
+    let lastNoteCount = 0;
     let stuckCount = 0;
-    const maxStuck = 5; // Stop if scroll position doesn't change 5 times
+    const maxStuck = 10; // Stop if no new notes found after 10 scroll attempts
 
     console.log('🚀 Starting auto-scroll scraper...');
     console.log('   Stop anytime with: _scraper.stop()');
@@ -122,31 +119,31 @@
       }
 
       // Extract notes from current view
-      const newNotes = extractNotes();
+      extractNotes();
 
-      // Scroll down
-      window.scrollBy(0, 800);
+      // Scroll down - use scrollIntoView on last element for more reliable scrolling
+      const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
+      if (cells.length > 0) {
+        cells[cells.length - 1].scrollIntoView({ behavior: 'instant', block: 'end' });
+      }
+      window.scrollBy(0, 500); // Extra nudge
 
-      // Check if we're stuck (reached bottom)
-      const currentScroll = window.scrollY;
-      if (currentScroll === lastScrollHeight) {
+      // Check if we're stuck (no new notes found)
+      if (notes.size === lastNoteCount) {
         stuckCount++;
         if (stuckCount >= maxStuck) {
           console.log('✅ Reached end of list!');
           stop();
+          exportData();
           return;
         }
       } else {
+        console.log(`📝 Found ${notes.size} notes total (+${notes.size - lastNoteCount} new)`);
         stuckCount = 0;
       }
-      lastScrollHeight = currentScroll;
+      lastNoteCount = notes.size;
 
-      // Progress update
-      if (newNotes > 0) {
-        console.log(`📝 Found ${notes.size} notes total (+${newNotes} new)`);
-      }
-
-    }, 300); // Scroll every 300ms - fast but gives DOM time to render
+    }, 400); // Scroll every 400ms
   }
 
   function stop() {
