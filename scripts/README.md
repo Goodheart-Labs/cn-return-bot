@@ -45,31 +45,6 @@ npx tsx src/scripts/importNotewriterData.ts ./scraped-notes.json
 
 This upserts to `scraped_notewriter_notes` and inserts a snapshot to `scraped_notewriter_snapshots`.
 
-## Database tables
+## Database
 
-- `scraped_notewriter_notes` - One row per note (immutable core data)
-- `scraped_notewriter_snapshots` - Time-series tracking (new row each scrape)
-
-## Verifying data
-
-After import, check notes with views in Supabase:
-
-```sql
-SELECT
-  n.note_id,
-  LEFT(n.note_text, 80) as note_preview,
-  s.view_count,
-  s.cn_status
-FROM scraped_notewriter_notes n
-JOIN scraped_notewriter_snapshots s ON n.note_id = s.note_id
-WHERE s.view_count IS NOT NULL
-ORDER BY s.view_count DESC;
-```
-
-To open tweets for manual verification:
-
-```js
-// In browser console after scraping
-const withViews = [..._scraper.notes.values()].filter(n => n.view_count);
-withViews.slice(0, 5).forEach(n => window.open(n.tweet_url, '_blank'));
-```
+See `migrations/004_create_scraped_notewriter_tables.sql` for schema.
