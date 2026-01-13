@@ -64,10 +64,10 @@
           }
         });
 
-        // Try to find view count - pattern: "Shown on X · 15.1K+ views"
+        // Try to find view count - ONLY match "Shown on X · 15.1K+ views" pattern
+        // Do NOT use a fallback - too easy to match numbers in tweet text
         let viewCount = null;
-        const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i) ||
-                          text.match(/([\d,.]+)([KMB]?)\+?\s*views?/i);
+        const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i);
         if (viewMatch) {
           let num = parseFloat(viewMatch[1].replace(/,/g, ''));
           const suffix = (viewMatch[2] || '').toUpperCase();
@@ -102,12 +102,9 @@
   }
 
   function autoScroll() {
-    const scrollContainer = document.querySelector('[data-testid="primaryColumn"]') ||
-                           document.documentElement;
-
-    let lastScrollHeight = 0;
+    let lastNoteCount = 0;
     let stuckCount = 0;
-    const maxStuck = 5; // Stop if scroll position doesn't change 5 times
+    const maxStuck = 10; // Stop if no new notes found after 10 scroll attempts
 
     console.log('🚀 Starting auto-scroll scraper...');
     console.log('   Stop anytime with: _scraper.stop()');
@@ -122,31 +119,31 @@
       }
 
       // Extract notes from current view
-      const newNotes = extractNotes();
+      extractNotes();
 
-      // Scroll down
-      window.scrollBy(0, 800);
+      // Scroll down - use scrollIntoView on last element for more reliable scrolling
+      const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
+      if (cells.length > 0) {
+        cells[cells.length - 1].scrollIntoView({ behavior: 'instant', block: 'end' });
+      }
+      window.scrollBy(0, 500); // Extra nudge
 
-      // Check if we're stuck (reached bottom)
-      const currentScroll = window.scrollY;
-      if (currentScroll === lastScrollHeight) {
+      // Check if we're stuck (no new notes found)
+      if (notes.size === lastNoteCount) {
         stuckCount++;
         if (stuckCount >= maxStuck) {
           console.log('✅ Reached end of list!');
           stop();
+          exportData();
           return;
         }
       } else {
+        console.log(`📝 Found ${notes.size} notes total (+${notes.size - lastNoteCount} new)`);
         stuckCount = 0;
       }
-      lastScrollHeight = currentScroll;
+      lastNoteCount = notes.size;
 
-      // Progress update
-      if (newNotes > 0) {
-        console.log(`📝 Found ${notes.size} notes total (+${newNotes} new)`);
-      }
-
-    }, 300); // Scroll every 300ms - fast but gives DOM time to render
+    }, 400); // Scroll every 400ms
   }
 
   function stop() {
@@ -185,13 +182,62 @@
     return data;
   }
 
+  // Search for text on the page (scrolls until found)
+  async function search(query) {
+    console.log(`🔍 Searching for "${query}"...`);
+    let found = false;
+    let lastHeight = 0;
+    let stuck = 0;
+
+    // First scroll to top
+    window.scrollTo(0, 0);
+    await new Promise(r => setTimeout(r, 500));
+
+    while (!found && stuck < 20) {
+      const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
+      for (const cell of cells) {
+        if (cell.innerText.toLowerCase().includes(query.toLowerCase())) {
+          cell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          cell.style.outline = '3px solid red';
+          cell.style.background = 'rgba(255,0,0,0.1)';
+          console.log('✅ Found! Highlighted in red.');
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        window.scrollBy(0, 800);
+        await new Promise(r => setTimeout(r, 250));
+        if (document.body.scrollHeight === lastHeight) stuck++;
+        else { stuck = 0; lastHeight = document.body.scrollHeight; }
+      }
+    }
+
+    if (!found) console.log('❌ Not found');
+    return found;
+  }
+
+  // Verify: check notes with view_count and show them
+  function verify() {
+    const withViews = [...notes.values()].filter(n => n.view_count);
+    console.log(`\n📊 ${withViews.length} notes with views:\n`);
+    withViews.sort((a, b) => (b.view_count || 0) - (a.view_count || 0));
+    withViews.forEach(n => {
+      console.log(`${n.view_count.toLocaleString().padStart(12)} | ${n.note_text?.slice(0, 50)}...`);
+    });
+    return withViews;
+  }
+
   // Expose controls globally
   window._scraper = {
     notes,
     extractNotes,
     start: autoScroll,
     stop,
-    export: exportData
+    export: exportData,
+    search,
+    verify
   };
 
   // Start automatically

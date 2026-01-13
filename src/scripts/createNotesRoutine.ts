@@ -209,7 +209,6 @@ async function main() {
                       source_url: result.noteResult.url,
                       evaluation_score: evaluationResult.score,
                       commit_sha: commit,
-                      submitted_at: new Date().toISOString(),
                     });
                     console.log(
                       `[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`

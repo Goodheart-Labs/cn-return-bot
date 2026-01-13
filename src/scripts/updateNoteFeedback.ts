@@ -346,6 +346,9 @@ async function main() {
         first_helpful_at: isNewlyHelpful ? new Date().toISOString() : existingNote?.first_helpful_at,
       });
 
+      // Log status history
+      await supabase.logStatusHistory(noteId, row.currentStatus);
+
       updatedCount++;
       if (isNewlyHelpful) {
         newlyHelpfulCount++;
