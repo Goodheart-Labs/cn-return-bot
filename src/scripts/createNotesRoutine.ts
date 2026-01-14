@@ -80,6 +80,23 @@ async function main() {
       await closeBrowser();
       process.exit(0);
     }
+
+    // Log media breakdown for tracking video tweet percentage
+    const videoCount = posts.filter((p) =>
+      p.media?.some((m) => m.type === "video")
+    ).length;
+    const photoCount = posts.filter(
+      (p) =>
+        p.media?.some((m) => m.type === "photo") &&
+        !p.media?.some((m) => m.type === "video")
+    ).length;
+    const textOnlyCount = posts.filter(
+      (p) => !p.media || p.media.length === 0
+    ).length;
+    console.log(
+      `[main] Media breakdown: ${videoCount} video (${((videoCount / posts.length) * 100).toFixed(0)}%), ${photoCount} photo-only, ${textOnlyCount} text-only`
+    );
+
     console.log(`[main] Starting pipelines for ${posts.length} posts...`);
 
     const queue = new PQueue({ concurrency: concurrencyLimit });
