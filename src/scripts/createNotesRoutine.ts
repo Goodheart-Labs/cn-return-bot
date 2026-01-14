@@ -113,11 +113,36 @@ async function main() {
         // Get the original tweet content (handling retweets)
         const content = getOriginalTweetContent(post);
 
+        // Check for video content
+        const hasVideo = post.media?.some((m) => m.type === "video") ?? false;
+        const hasPhoto = post.media?.some((m) => m.type === "photo") ?? false;
+        const videoMedia = post.media?.find((m) => m.type === "video");
+
         console.log(
           `[main] Processing post #${idx + 1} (ID: ${post.id}) - ${
             content.isRetweet ? "retweet" : "original"
-          }`
+          }${hasVideo ? " [VIDEO]" : ""}`
         );
+
+        // Log video posts to Supabase for tracking
+        if (hasVideo && supabaseLogger) {
+          try {
+            await supabaseLogger.logSkippedPost({
+              tweet_id: post.id,
+              author_id: post.author_id,
+              tweet_text: post.text.slice(0, 500),
+              skip_reason: "has_video",
+              has_video: true,
+              has_photo: hasPhoto,
+              media_count: post.media?.length ?? 0,
+              video_duration_ms: videoMedia?.duration_ms,
+              pipeline_stage: "pre_processing",
+              commit_sha: commit,
+            });
+          } catch (err) {
+            console.warn(`[main] Failed to log video post ${post.id}:`, err);
+          }
+        }
 
         // Try bots until one succeeds or we run out of retries
         let result: PipelineResult | null = null;

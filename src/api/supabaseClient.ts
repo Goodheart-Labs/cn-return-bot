@@ -434,4 +434,91 @@ export class SupabaseLogger {
 
     return !!data;
   }
+
+  // ============================================
+  // Skipped Posts Tracking
+  // ============================================
+
+  /**
+   * Log a post that was skipped during processing
+   */
+  async logSkippedPost(data: {
+    tweet_id: string;
+    author_id?: string;
+    tweet_text?: string;
+    skip_reason: string;
+    has_video?: boolean;
+    has_photo?: boolean;
+    media_count?: number;
+    video_duration_ms?: number;
+    bot_id?: string;
+    pipeline_stage?: string;
+    error_message?: string;
+    commit_sha?: string;
+  }): Promise<void> {
+    const { error } = await this.client.from("skipped_posts").insert({
+      tweet_id: data.tweet_id,
+      author_id: data.author_id,
+      tweet_text: data.tweet_text,
+      skip_reason: data.skip_reason,
+      has_video: data.has_video ?? false,
+      has_photo: data.has_photo ?? false,
+      media_count: data.media_count ?? 0,
+      video_duration_ms: data.video_duration_ms,
+      bot_id: data.bot_id,
+      pipeline_stage: data.pipeline_stage,
+      error_message: data.error_message,
+      commit_sha: data.commit_sha,
+    });
+
+    if (error) {
+      // Don't throw on duplicate - just log
+      if (error.code === "23505") {
+        console.log(`[SupabaseLogger] Skipped post ${data.tweet_id} already logged`);
+        return;
+      }
+      console.error("[SupabaseLogger] Error logging skipped post:", error);
+      throw error;
+    }
+
+    console.log(
+      `[SupabaseLogger] Logged skipped post ${data.tweet_id}: ${data.skip_reason}`
+    );
+  }
+
+  /**
+   * Get skip statistics for a date range
+   */
+  async getSkipStats(
+    since?: Date
+  ): Promise<{ reason: string; count: number; video_count: number }[]> {
+    let query = this.client
+      .from("skipped_posts")
+      .select("skip_reason, has_video");
+
+    if (since) {
+      query = query.gte("created_at", since.toISOString());
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching skip stats:", error);
+      throw error;
+    }
+
+    // Aggregate by reason
+    const stats = new Map<string, { count: number; video_count: number }>();
+    for (const row of data || []) {
+      const existing = stats.get(row.skip_reason) || { count: 0, video_count: 0 };
+      existing.count++;
+      if (row.has_video) existing.video_count++;
+      stats.set(row.skip_reason, existing);
+    }
+
+    return Array.from(stats.entries()).map(([reason, counts]) => ({
+      reason,
+      ...counts,
+    }));
+  }
 }
