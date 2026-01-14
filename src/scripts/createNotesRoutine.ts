@@ -236,8 +236,26 @@ async function main() {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: "failed",
                 outcome_reason: "all_bots_failed",
-                final_stage: "search",
+                final_stage: "started",
                 bot_id: selectedBot?.id,
+              });
+            } catch (err) {
+              console.warn(`[main] Failed to complete pipeline run:`, err);
+            }
+          }
+          return;
+        }
+
+        // Handle bot error (returned result with error)
+        if (result.error) {
+          if (supabaseLogger && pipelineRunId) {
+            try {
+              await supabaseLogger.completePipelineRun(pipelineRunId, {
+                outcome: "failed",
+                outcome_reason: "bot_error",
+                error_message: result.error.slice(0, 500),
+                final_stage: result.lastStage,
+                bot_id: selectedBot.id,
               });
             } catch (err) {
               console.warn(`[main] Failed to complete pipeline run:`, err);
@@ -405,9 +423,13 @@ async function main() {
             // Log submission failure
             if (supabaseLogger && pipelineRunId) {
               try {
+                const errorText = err.response?.data
+                  ? JSON.stringify(err.response.data).slice(0, 500)
+                  : (err.message || String(err)).slice(0, 500);
                 await supabaseLogger.completePipelineRun(pipelineRunId, {
                   outcome: "failed",
                   outcome_reason: "submission_error",
+                  error_message: errorText,
                   final_stage: "submission",
                   bot_id: selectedBot.id,
                 });

@@ -488,6 +488,7 @@ export class SupabaseLogger {
     data: {
       outcome: "submitted" | "filtered" | "failed" | "rejected";
       outcome_reason?: string;
+      error_message?: string;
       final_stage: string;
       note_id?: string;
       bot_id?: string;
@@ -498,6 +499,7 @@ export class SupabaseLogger {
       .update({
         outcome: data.outcome,
         outcome_reason: data.outcome_reason,
+        error_message: data.error_message,
         final_stage: data.final_stage,
         note_id: data.note_id,
         bot_id: data.bot_id,
