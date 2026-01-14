@@ -124,9 +124,9 @@
       // Scroll down - use scrollIntoView on last element for more reliable scrolling
       const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
       if (cells.length > 0) {
-        cells[cells.length - 1].scrollIntoView({ behavior: 'instant', block: 'end' });
+        cells[cells.length - 1].scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
-      window.scrollBy(0, 500); // Extra nudge
+      window.scrollBy(0, 300); // Smaller scroll increment
 
       // Check if we're stuck (no new notes found)
       if (notes.size === lastNoteCount) {
@@ -143,7 +143,7 @@
       }
       lastNoteCount = notes.size;
 
-    }, 400); // Scroll every 400ms
+    }, 800); // Slower: 800ms between scrolls (was 400ms)
   }
 
   function stop() {
