@@ -7,6 +7,8 @@
 export interface PipelineResult {
   post: any;
   botId: string;
+  /** Last stage the bot successfully completed */
+  lastStage: string;
   searchContextResult: {
     text: string;
     searchResults: string;
@@ -19,6 +21,8 @@ export interface PipelineResult {
     status: string;
   };
   checkResult: string;
+  /** If the bot failed, this contains error info */
+  error?: string;
 }
 
 export interface PostContent {

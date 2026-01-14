@@ -434,4 +434,183 @@ export class SupabaseLogger {
 
     return !!data;
   }
+
+  // ============================================
+  // Pipeline Tracking
+  // ============================================
+
+  /**
+   * Create a new pipeline run record when a tweet starts processing
+   * Returns the run ID to attach scores to later
+   */
+  async createPipelineRun(data: {
+    tweet_id: string;
+    author_id?: string;
+    tweet_text?: string;
+    has_video?: boolean;
+    has_photo?: boolean;
+    media_count?: number;
+    video_duration_ms?: number;
+    bot_id?: string;
+    commit_sha?: string;
+  }): Promise<string> {
+    const { data: result, error } = await this.client
+      .from("pipeline_runs")
+      .insert({
+        tweet_id: data.tweet_id,
+        author_id: data.author_id,
+        tweet_text: data.tweet_text,
+        has_video: data.has_video ?? false,
+        has_photo: data.has_photo ?? false,
+        media_count: data.media_count ?? 0,
+        video_duration_ms: data.video_duration_ms,
+        bot_id: data.bot_id,
+        commit_sha: data.commit_sha,
+        outcome: "in_progress", // Will be updated when pipeline completes
+        final_stage: "started",
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("[SupabaseLogger] Error creating pipeline run:", error);
+      throw error;
+    }
+
+    return result.id;
+  }
+
+  /**
+   * Update pipeline run with final outcome
+   */
+  async completePipelineRun(
+    runId: string,
+    data: {
+      outcome: "submitted" | "filtered" | "failed" | "rejected";
+      outcome_reason?: string;
+      error_message?: string;
+      final_stage: string;
+      note_id?: string;
+      bot_id?: string;
+    }
+  ): Promise<void> {
+    const { error } = await this.client
+      .from("pipeline_runs")
+      .update({
+        outcome: data.outcome,
+        outcome_reason: data.outcome_reason,
+        error_message: data.error_message,
+        final_stage: data.final_stage,
+        note_id: data.note_id,
+        bot_id: data.bot_id,
+      })
+      .eq("id", runId);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error completing pipeline run:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Add a score to a pipeline run
+   */
+  async addPipelineScore(
+    runId: string,
+    data: {
+      score_type: string;
+      score_value?: number;
+      score_label?: string;
+      score_metadata?: Record<string, unknown>;
+    }
+  ): Promise<void> {
+    const { error } = await this.client.from("pipeline_scores").insert({
+      pipeline_run_id: runId,
+      score_type: data.score_type,
+      score_value: data.score_value,
+      score_label: data.score_label,
+      score_metadata: data.score_metadata,
+    });
+
+    if (error) {
+      console.error("[SupabaseLogger] Error adding pipeline score:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Convenience method: log a filtered post (didn't enter main pipeline)
+   */
+  async logFilteredPost(data: {
+    tweet_id: string;
+    author_id?: string;
+    tweet_text?: string;
+    has_video?: boolean;
+    has_photo?: boolean;
+    media_count?: number;
+    video_duration_ms?: number;
+    filter_reason: string;
+    commit_sha?: string;
+  }): Promise<void> {
+    const { error } = await this.client.from("pipeline_runs").insert({
+      tweet_id: data.tweet_id,
+      author_id: data.author_id,
+      tweet_text: data.tweet_text,
+      has_video: data.has_video ?? false,
+      has_photo: data.has_photo ?? false,
+      media_count: data.media_count ?? 0,
+      video_duration_ms: data.video_duration_ms,
+      commit_sha: data.commit_sha,
+      outcome: "filtered",
+      outcome_reason: data.filter_reason,
+      final_stage: "filtering",
+    });
+
+    if (error) {
+      console.error("[SupabaseLogger] Error logging filtered post:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get pipeline statistics
+   */
+  async getPipelineStats(since?: Date): Promise<{
+    total: number;
+    by_outcome: Record<string, number>;
+    by_stage: Record<string, number>;
+    video_count: number;
+  }> {
+    let query = this.client
+      .from("pipeline_runs")
+      .select("outcome, final_stage, has_video");
+
+    if (since) {
+      query = query.gte("created_at", since.toISOString());
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching pipeline stats:", error);
+      throw error;
+    }
+
+    const by_outcome: Record<string, number> = {};
+    const by_stage: Record<string, number> = {};
+    let video_count = 0;
+
+    for (const row of data || []) {
+      by_outcome[row.outcome] = (by_outcome[row.outcome] || 0) + 1;
+      by_stage[row.final_stage] = (by_stage[row.final_stage] || 0) + 1;
+      if (row.has_video) video_count++;
+    }
+
+    return {
+      total: data?.length || 0,
+      by_outcome,
+      by_stage,
+      video_count,
+    };
+  }
 }

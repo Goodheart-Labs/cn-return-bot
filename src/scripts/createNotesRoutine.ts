@@ -16,6 +16,7 @@ const maxPosts = 10; // Maximum posts to process per run
 const concurrencyLimit = 3; // Process 3 posts at a time to avoid rate limiting
 const MAX_RUNTIME_MS = 5 * 60 * 1000; // 5 minutes maximum runtime
 const MAX_BOT_RETRIES = 3; // Maximum retries with different bots
+const MAX_VIDEO_RATIO = 0.25; // Max 25% video posts per run
 
 // Global timeout to prevent hanging
 const globalTimeout = setTimeout(async () => {
@@ -80,6 +81,66 @@ async function main() {
       await closeBrowser();
       process.exit(0);
     }
+
+    // Separate video and non-video posts
+    const videoPosts = posts.filter((p) =>
+      p.media?.some((m) => m.type === "video")
+    );
+    const nonVideoPosts = posts.filter(
+      (p) => !p.media?.some((m) => m.type === "video")
+    );
+
+    // Cap video posts at MAX_VIDEO_RATIO of total batch
+    const maxVideoCount = Math.floor(posts.length * MAX_VIDEO_RATIO);
+    const cappedVideoPosts = videoPosts.slice(0, Math.max(1, maxVideoCount)); // At least 1 video post if any exist
+    const skippedVideoPosts = videoPosts.slice(cappedVideoPosts.length);
+
+    // Rebuild posts array with capped video posts
+    posts = [...nonVideoPosts, ...cappedVideoPosts];
+
+    // Log filtered video posts to pipeline tracking
+    if (skippedVideoPosts.length > 0) {
+      console.log(
+        `[main] Capping video posts: keeping ${cappedVideoPosts.length}, skipping ${skippedVideoPosts.length} (max ${(MAX_VIDEO_RATIO * 100).toFixed(0)}% per run)`
+      );
+      if (supabaseLogger) {
+        for (const post of skippedVideoPosts) {
+          try {
+            const videoMedia = post.media?.find((m) => m.type === "video");
+            await supabaseLogger.logFilteredPost({
+              tweet_id: post.id,
+              author_id: post.author_id,
+              tweet_text: post.text.slice(0, 500),
+              has_video: true,
+              has_photo: post.media?.some((m) => m.type === "photo") ?? false,
+              media_count: post.media?.length ?? 0,
+              video_duration_ms: videoMedia?.duration_ms,
+              filter_reason: "video_cap_exceeded",
+              commit_sha: commit,
+            });
+          } catch (err) {
+            console.warn(`[main] Failed to log filtered video post ${post.id}:`, err);
+          }
+        }
+      }
+    }
+
+    // Log media breakdown for tracking
+    const finalVideoCount = posts.filter((p) =>
+      p.media?.some((m) => m.type === "video")
+    ).length;
+    const photoCount = posts.filter(
+      (p) =>
+        p.media?.some((m) => m.type === "photo") &&
+        !p.media?.some((m) => m.type === "video")
+    ).length;
+    const textOnlyCount = posts.filter(
+      (p) => !p.media || p.media.length === 0
+    ).length;
+    console.log(
+      `[main] Media breakdown: ${finalVideoCount} video (${((finalVideoCount / posts.length) * 100).toFixed(0)}%), ${photoCount} photo-only, ${textOnlyCount} text-only`
+    );
+
     console.log(`[main] Starting pipelines for ${posts.length} posts...`);
 
     const queue = new PQueue({ concurrency: concurrencyLimit });
@@ -96,11 +157,35 @@ async function main() {
         // Get the original tweet content (handling retweets)
         const content = getOriginalTweetContent(post);
 
+        // Check for video content
+        const hasVideo = post.media?.some((m) => m.type === "video") ?? false;
+        const hasPhoto = post.media?.some((m) => m.type === "photo") ?? false;
+        const videoMedia = post.media?.find((m) => m.type === "video");
+
         console.log(
           `[main] Processing post #${idx + 1} (ID: ${post.id}) - ${
             content.isRetweet ? "retweet" : "original"
-          }`
+          }${hasVideo ? " [VIDEO]" : ""}`
         );
+
+        // Create pipeline run for tracking
+        let pipelineRunId: string | null = null;
+        if (supabaseLogger) {
+          try {
+            pipelineRunId = await supabaseLogger.createPipelineRun({
+              tweet_id: post.id,
+              author_id: post.author_id,
+              tweet_text: post.text.slice(0, 500),
+              has_video: hasVideo,
+              has_photo: hasPhoto,
+              media_count: post.media?.length ?? 0,
+              video_duration_ms: videoMedia?.duration_ms,
+              commit_sha: commit,
+            });
+          } catch (err) {
+            console.warn(`[main] Failed to create pipeline run for ${post.id}:`, err);
+          }
+        }
 
         // Try bots until one succeeds or we run out of retries
         let result: PipelineResult | null = null;
@@ -144,88 +229,213 @@ async function main() {
           );
         }
 
-        if (!result || !selectedBot) return;
+        // Handle pipeline failure (no result from any bot)
+        if (!result || !selectedBot) {
+          if (supabaseLogger && pipelineRunId) {
+            try {
+              await supabaseLogger.completePipelineRun(pipelineRunId, {
+                outcome: "failed",
+                outcome_reason: "all_bots_failed",
+                final_stage: "started",
+                bot_id: selectedBot?.id,
+              });
+            } catch (err) {
+              console.warn(`[main] Failed to complete pipeline run:`, err);
+            }
+          }
+          return;
+        }
+
+        // Handle bot error (returned result with error)
+        if (result.error) {
+          if (supabaseLogger && pipelineRunId) {
+            try {
+              await supabaseLogger.completePipelineRun(pipelineRunId, {
+                outcome: "failed",
+                outcome_reason: "bot_error",
+                error_message: result.error.slice(0, 500),
+                final_stage: result.lastStage,
+                bot_id: selectedBot.id,
+              });
+            } catch (err) {
+              console.warn(`[main] Failed to complete pipeline run:`, err);
+            }
+          }
+          return;
+        }
 
         // Check if the source verification passed
         const checkYes =
           result.checkResult &&
           result.checkResult.trim().toUpperCase() === "YES";
 
+        // Log check score
+        if (supabaseLogger && pipelineRunId) {
+          try {
+            await supabaseLogger.addPipelineScore(pipelineRunId, {
+              score_type: "check",
+              score_label: result.checkResult?.trim().toUpperCase(),
+            });
+          } catch (err) {
+            console.warn(`[main] Failed to log check score:`, err);
+          }
+        }
+
         // Initialize evaluation score
         let evaluationScore: number | undefined = undefined;
 
-        if (
-          result.noteResult.status === "CORRECTION WITH TRUSTWORTHY CITATION" &&
-          checkYes
-        ) {
-          if (shouldSubmitNotes) {
+        // Check if note writing produced a valid correction
+        if (result.noteResult.status !== "CORRECTION WITH TRUSTWORTHY CITATION") {
+          // No correction needed or couldn't find one
+          if (supabaseLogger && pipelineRunId) {
             try {
-              // Evaluate note quality before submission
-              const { shouldSubmitNote } = await import(
-                "../filters/noteEvaluationFilter"
+              await supabaseLogger.completePipelineRun(pipelineRunId, {
+                outcome: "rejected",
+                outcome_reason: "no_correction_needed",
+                final_stage: "note_writing",
+                bot_id: selectedBot.id,
+              });
+            } catch (err) {
+              console.warn(`[main] Failed to complete pipeline run:`, err);
+            }
+          }
+        } else if (!checkYes) {
+          // Check failed
+          if (supabaseLogger && pipelineRunId) {
+            try {
+              await supabaseLogger.completePipelineRun(pipelineRunId, {
+                outcome: "rejected",
+                outcome_reason: "check_failed",
+                final_stage: "check",
+                bot_id: selectedBot.id,
+              });
+            } catch (err) {
+              console.warn(`[main] Failed to complete pipeline run:`, err);
+            }
+          }
+        } else if (shouldSubmitNotes) {
+          try {
+            // Evaluate note quality before submission
+            const { shouldSubmitNote } = await import(
+              "../filters/noteEvaluationFilter"
+            );
+            const noteText =
+              result.noteResult.note + " " + result.noteResult.url;
+            const evaluationResult = await shouldSubmitNote(
+              result.post.id,
+              noteText,
+              0
+            );
+
+            // Capture the score for logging
+            evaluationScore = evaluationResult.score;
+
+            // Log evaluation score
+            if (supabaseLogger && pipelineRunId) {
+              try {
+                await supabaseLogger.addPipelineScore(pipelineRunId, {
+                  score_type: "evaluation",
+                  score_value: evaluationResult.score,
+                  score_metadata: evaluationResult.error ? { error: evaluationResult.error } : undefined,
+                });
+              } catch (err) {
+                console.warn(`[main] Failed to log evaluation score:`, err);
+              }
+            }
+
+            if (!evaluationResult.shouldSubmit) {
+              console.log(
+                `[main] Skipping post ${result.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`
               );
-              const noteText =
-                result.noteResult.note + " " + result.noteResult.url;
-              const evaluationResult = await shouldSubmitNote(
-                result.post.id,
-                noteText,
-                0
-              );
-
-              // Capture the score for logging
-              evaluationScore = evaluationResult.score;
-
-              if (!evaluationResult.shouldSubmit) {
-                console.log(
-                  `[main] Skipping post ${result.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`
-                );
-              } else {
-                // Submit the note
-                const { submitNote } = await import("../api/submitNote");
-                const info = {
-                  classification: "misinformed_or_potentially_misleading",
-                  misleading_tags: ["disputed_claim_as_fact"],
-                  text: noteText,
-                  trustworthy_sources: true,
-                };
-                const response = await submitNote(result.post.id, info);
-                console.log(
-                  `[main] Submitted note for post ${result.post.id} (bot: ${selectedBot.id}, score: ${evaluationResult.score}):`,
-                  response
-                );
-                submitted++;
-
-                // Log to Supabase if enabled
-                if (supabaseLogger && response?.data?.id) {
-                  try {
-                    const botConfig =
-                      await supabaseLogger.getOrCreateBotConfig(selectedBot.id);
-                    await supabaseLogger.logNoteSubmission({
-                      note_id: response.data.id,
-                      tweet_id: result.post.id,
-                      bot_config_id: botConfig.id,
-                      bot_name: selectedBot.id,
-                      note_text: noteText,
-                      source_url: result.noteResult.url,
-                      evaluation_score: evaluationResult.score,
-                      commit_sha: commit,
-                    });
-                    console.log(
-                      `[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`
-                    );
-                  } catch (supabaseErr) {
-                    console.error(
-                      "[main] Failed to log to Supabase:",
-                      supabaseErr
-                    );
-                  }
+              if (supabaseLogger && pipelineRunId) {
+                try {
+                  await supabaseLogger.completePipelineRun(pipelineRunId, {
+                    outcome: "rejected",
+                    outcome_reason: "low_evaluation_score",
+                    final_stage: "evaluation",
+                    bot_id: selectedBot.id,
+                  });
+                } catch (err) {
+                  console.warn(`[main] Failed to complete pipeline run:`, err);
                 }
               }
-            } catch (err: any) {
-              console.error(
-                `[main] Failed to submit note for post ${result.post.id}:`,
-                err.response?.data || err
+            } else {
+              // Submit the note
+              const { submitNote } = await import("../api/submitNote");
+              const info = {
+                classification: "misinformed_or_potentially_misleading",
+                misleading_tags: ["disputed_claim_as_fact"],
+                text: noteText,
+                trustworthy_sources: true,
+              };
+              const response = await submitNote(result.post.id, info);
+              console.log(
+                `[main] Submitted note for post ${result.post.id} (bot: ${selectedBot.id}, score: ${evaluationResult.score}):`,
+                response
               );
+              submitted++;
+
+              // Log successful submission to pipeline tracking
+              if (supabaseLogger && pipelineRunId) {
+                try {
+                  await supabaseLogger.completePipelineRun(pipelineRunId, {
+                    outcome: "submitted",
+                    final_stage: "submission",
+                    bot_id: selectedBot.id,
+                    note_id: response?.data?.id,
+                  });
+                } catch (err) {
+                  console.warn(`[main] Failed to complete pipeline run:`, err);
+                }
+              }
+
+              // Also log to notes table if enabled
+              if (supabaseLogger && response?.data?.id) {
+                try {
+                  const botConfig =
+                    await supabaseLogger.getOrCreateBotConfig(selectedBot.id);
+                  await supabaseLogger.logNoteSubmission({
+                    note_id: response.data.id,
+                    tweet_id: result.post.id,
+                    bot_config_id: botConfig.id,
+                    bot_name: selectedBot.id,
+                    note_text: noteText,
+                    source_url: result.noteResult.url,
+                    evaluation_score: evaluationResult.score,
+                    commit_sha: commit,
+                  });
+                  console.log(
+                    `[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`
+                  );
+                } catch (supabaseErr) {
+                  console.error(
+                    "[main] Failed to log to Supabase:",
+                    supabaseErr
+                  );
+                }
+              }
+            }
+          } catch (err: any) {
+            console.error(
+              `[main] Failed to submit note for post ${result.post.id}:`,
+              err.response?.data || err
+            );
+            // Log submission failure
+            if (supabaseLogger && pipelineRunId) {
+              try {
+                const errorText = err.response?.data
+                  ? JSON.stringify(err.response.data).slice(0, 500)
+                  : (err.message || String(err)).slice(0, 500);
+                await supabaseLogger.completePipelineRun(pipelineRunId, {
+                  outcome: "failed",
+                  outcome_reason: "submission_error",
+                  error_message: errorText,
+                  final_stage: "submission",
+                  bot_id: selectedBot.id,
+                });
+              } catch (logErr) {
+                console.warn(`[main] Failed to complete pipeline run:`, logErr);
+              }
             }
           }
         }

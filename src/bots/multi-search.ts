@@ -25,6 +25,7 @@ export const multiSearch: Bot = {
   weight: 10,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
+    let lastStage = "started";
     try {
       // 1. Multi-source search (Perplexity + Google + Exa + X)
       const searchResult = await multiSourceSearch({
@@ -32,6 +33,7 @@ export const multiSearch: Bot = {
         media: content.media,
         retweetContext: content.retweetContext,
       });
+      lastStage = "search";
 
       // 2. Write note with Opus 4.5
       const noteResult = await writeNote(
@@ -42,6 +44,7 @@ export const multiSearch: Bot = {
         },
         { model: NOTE_MODEL, currentDate: new Date().toISOString().split("T")[0] }
       );
+      lastStage = "note_writing";
 
       // 3. Check the note
       const checkResult = await checkNote({
@@ -49,17 +52,27 @@ export const multiSearch: Bot = {
         url: noteResult.url,
         status: noteResult.status,
       });
+      lastStage = "check";
 
       return {
         post,
         botId: this.id,
+        lastStage,
         searchContextResult: searchResult,
         noteResult,
         checkResult,
       };
-    } catch (err) {
-      console.error(`[${this.id}] Pipeline error:`, err);
-      return null;
+    } catch (err: any) {
+      console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
+      return {
+        post,
+        botId: this.id,
+        lastStage,
+        searchContextResult: { text: content.text, searchResults: "", citations: [] },
+        noteResult: { note: "", url: "", status: "ERROR" },
+        checkResult: "",
+        error: err?.message || String(err),
+      };
     }
   },
 };

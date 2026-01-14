@@ -16,9 +16,10 @@ export const geminiFlash: Bot = {
   id: "gemini-flash",
   name: "Gemini Flash (Cheap)",
   description: "Cost-effective bot using Gemini 2.0 Flash - fast and cheap",
-  weight: 10,
+  weight: 0, // Disabled - performing poorly
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
+    let lastStage = "started";
     try {
       // 1. Search with Perplexity
       const searchResult = await perplexitySearch(
@@ -30,6 +31,7 @@ export const geminiFlash: Bot = {
         },
         { model: "perplexity/sonar" }
       );
+      lastStage = "search";
 
       // 2. Write note with Gemini Flash
       const noteResult = await writeNote(
@@ -40,6 +42,7 @@ export const geminiFlash: Bot = {
         },
         { model: NOTE_MODEL, currentDate: new Date().toISOString().split("T")[0] }
       );
+      lastStage = "note_writing";
 
       // 3. Check the note
       const checkResult = await checkNote({
@@ -47,17 +50,27 @@ export const geminiFlash: Bot = {
         url: noteResult.url,
         status: noteResult.status,
       });
+      lastStage = "check";
 
       return {
         post,
         botId: this.id,
+        lastStage,
         searchContextResult: searchResult,
         noteResult,
         checkResult,
       };
-    } catch (err) {
-      console.error(`[${this.id}] Pipeline error:`, err);
-      return null;
+    } catch (err: any) {
+      console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
+      return {
+        post,
+        botId: this.id,
+        lastStage,
+        searchContextResult: { text: content.text, searchResults: "", citations: [] },
+        noteResult: { note: "", url: "", status: "ERROR" },
+        checkResult: "",
+        error: err?.message || String(err),
+      };
     }
   },
 };
