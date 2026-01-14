@@ -436,65 +436,152 @@ export class SupabaseLogger {
   }
 
   // ============================================
-  // Skipped Posts Tracking
+  // Pipeline Tracking
   // ============================================
 
   /**
-   * Log a post that was skipped during processing
+   * Create a new pipeline run record when a tweet starts processing
+   * Returns the run ID to attach scores to later
    */
-  async logSkippedPost(data: {
+  async createPipelineRun(data: {
     tweet_id: string;
     author_id?: string;
     tweet_text?: string;
-    skip_reason: string;
     has_video?: boolean;
     has_photo?: boolean;
     media_count?: number;
     video_duration_ms?: number;
     bot_id?: string;
-    pipeline_stage?: string;
-    error_message?: string;
+    commit_sha?: string;
+  }): Promise<string> {
+    const { data: result, error } = await this.client
+      .from("pipeline_runs")
+      .insert({
+        tweet_id: data.tweet_id,
+        author_id: data.author_id,
+        tweet_text: data.tweet_text,
+        has_video: data.has_video ?? false,
+        has_photo: data.has_photo ?? false,
+        media_count: data.media_count ?? 0,
+        video_duration_ms: data.video_duration_ms,
+        bot_id: data.bot_id,
+        commit_sha: data.commit_sha,
+        outcome: "in_progress", // Will be updated when pipeline completes
+        final_stage: "started",
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("[SupabaseLogger] Error creating pipeline run:", error);
+      throw error;
+    }
+
+    return result.id;
+  }
+
+  /**
+   * Update pipeline run with final outcome
+   */
+  async completePipelineRun(
+    runId: string,
+    data: {
+      outcome: "submitted" | "filtered" | "failed" | "rejected";
+      outcome_reason?: string;
+      final_stage: string;
+      note_id?: string;
+      bot_id?: string;
+    }
+  ): Promise<void> {
+    const { error } = await this.client
+      .from("pipeline_runs")
+      .update({
+        outcome: data.outcome,
+        outcome_reason: data.outcome_reason,
+        final_stage: data.final_stage,
+        note_id: data.note_id,
+        bot_id: data.bot_id,
+      })
+      .eq("id", runId);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error completing pipeline run:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Add a score to a pipeline run
+   */
+  async addPipelineScore(
+    runId: string,
+    data: {
+      score_type: string;
+      score_value?: number;
+      score_label?: string;
+      score_metadata?: Record<string, unknown>;
+    }
+  ): Promise<void> {
+    const { error } = await this.client.from("pipeline_scores").insert({
+      pipeline_run_id: runId,
+      score_type: data.score_type,
+      score_value: data.score_value,
+      score_label: data.score_label,
+      score_metadata: data.score_metadata,
+    });
+
+    if (error) {
+      console.error("[SupabaseLogger] Error adding pipeline score:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Convenience method: log a filtered post (didn't enter main pipeline)
+   */
+  async logFilteredPost(data: {
+    tweet_id: string;
+    author_id?: string;
+    tweet_text?: string;
+    has_video?: boolean;
+    has_photo?: boolean;
+    media_count?: number;
+    video_duration_ms?: number;
+    filter_reason: string;
     commit_sha?: string;
   }): Promise<void> {
-    const { error } = await this.client.from("skipped_posts").insert({
+    const { error } = await this.client.from("pipeline_runs").insert({
       tweet_id: data.tweet_id,
       author_id: data.author_id,
       tweet_text: data.tweet_text,
-      skip_reason: data.skip_reason,
       has_video: data.has_video ?? false,
       has_photo: data.has_photo ?? false,
       media_count: data.media_count ?? 0,
       video_duration_ms: data.video_duration_ms,
-      bot_id: data.bot_id,
-      pipeline_stage: data.pipeline_stage,
-      error_message: data.error_message,
       commit_sha: data.commit_sha,
+      outcome: "filtered",
+      outcome_reason: data.filter_reason,
+      final_stage: "filtering",
     });
 
     if (error) {
-      // Don't throw on duplicate - just log
-      if (error.code === "23505") {
-        console.log(`[SupabaseLogger] Skipped post ${data.tweet_id} already logged`);
-        return;
-      }
-      console.error("[SupabaseLogger] Error logging skipped post:", error);
+      console.error("[SupabaseLogger] Error logging filtered post:", error);
       throw error;
     }
-
-    console.log(
-      `[SupabaseLogger] Logged skipped post ${data.tweet_id}: ${data.skip_reason}`
-    );
   }
 
   /**
-   * Get skip statistics for a date range
+   * Get pipeline statistics
    */
-  async getSkipStats(
-    since?: Date
-  ): Promise<{ reason: string; count: number; video_count: number }[]> {
+  async getPipelineStats(since?: Date): Promise<{
+    total: number;
+    by_outcome: Record<string, number>;
+    by_stage: Record<string, number>;
+    video_count: number;
+  }> {
     let query = this.client
-      .from("skipped_posts")
-      .select("skip_reason, has_video");
+      .from("pipeline_runs")
+      .select("outcome, final_stage, has_video");
 
     if (since) {
       query = query.gte("created_at", since.toISOString());
@@ -503,22 +590,25 @@ export class SupabaseLogger {
     const { data, error } = await query;
 
     if (error) {
-      console.error("[SupabaseLogger] Error fetching skip stats:", error);
+      console.error("[SupabaseLogger] Error fetching pipeline stats:", error);
       throw error;
     }
 
-    // Aggregate by reason
-    const stats = new Map<string, { count: number; video_count: number }>();
+    const by_outcome: Record<string, number> = {};
+    const by_stage: Record<string, number> = {};
+    let video_count = 0;
+
     for (const row of data || []) {
-      const existing = stats.get(row.skip_reason) || { count: 0, video_count: 0 };
-      existing.count++;
-      if (row.has_video) existing.video_count++;
-      stats.set(row.skip_reason, existing);
+      by_outcome[row.outcome] = (by_outcome[row.outcome] || 0) + 1;
+      by_stage[row.final_stage] = (by_stage[row.final_stage] || 0) + 1;
+      if (row.has_video) video_count++;
     }
 
-    return Array.from(stats.entries()).map(([reason, counts]) => ({
-      reason,
-      ...counts,
-    }));
+    return {
+      total: data?.length || 0,
+      by_outcome,
+      by_stage,
+      video_count,
+    };
   }
 }

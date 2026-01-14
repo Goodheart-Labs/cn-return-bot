@@ -16,7 +16,7 @@ export const geminiFlash: Bot = {
   id: "gemini-flash",
   name: "Gemini Flash (Cheap)",
   description: "Cost-effective bot using Gemini 2.0 Flash - fast and cheap",
-  weight: 10,
+  weight: 0, // Disabled - performing poorly
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     try {
