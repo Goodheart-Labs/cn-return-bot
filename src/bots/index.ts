@@ -8,9 +8,19 @@ import { Bot } from "./types";
 import { opusMain } from "./opus-main";
 import { geminiFlash } from "./gemini-flash";
 import { multiSearch } from "./multi-search";
+import { opusScored } from "./opus-scored";
+import { deepseek } from "./deepseek";
+import { gemini3Flash } from "./gemini-3-flash";
 
 // Register all bots here
-export const bots: Bot[] = [opusMain, geminiFlash, multiSearch];
+export const bots: Bot[] = [
+  opusMain,
+  geminiFlash,
+  multiSearch,
+  opusScored,
+  deepseek,
+  gemini3Flash,
+];
 
 /**
  * Get all enabled bots (currently all bots are enabled)
@@ -44,8 +54,8 @@ export function selectRandomBot(): Bot {
     }
   }
 
-  // Fallback to first enabled bot (shouldn't happen)
-  return enabledBots[0];
+  // Fallback to first enabled bot (shouldn't happen due to length check above)
+  return enabledBots[0]!;
 }
 
 /**

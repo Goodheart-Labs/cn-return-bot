@@ -16,7 +16,6 @@ const maxPosts = 10; // Maximum posts to process per run
 const concurrencyLimit = 3; // Process 3 posts at a time to avoid rate limiting
 const MAX_RUNTIME_MS = 5 * 60 * 1000; // 5 minutes maximum runtime
 const MAX_BOT_RETRIES = 3; // Maximum retries with different bots
-const MAX_VIDEO_RATIO = 0.25; // Max 25% video posts per run
 
 // Global timeout to prevent hanging
 const globalTimeout = setTimeout(async () => {
@@ -82,51 +81,8 @@ async function main() {
       process.exit(0);
     }
 
-    // Separate video and non-video posts
-    const videoPosts = posts.filter((p) =>
-      p.media?.some((m) => m.type === "video")
-    );
-    const nonVideoPosts = posts.filter(
-      (p) => !p.media?.some((m) => m.type === "video")
-    );
-
-    // Cap video posts at MAX_VIDEO_RATIO of total batch
-    const maxVideoCount = Math.floor(posts.length * MAX_VIDEO_RATIO);
-    const cappedVideoPosts = videoPosts.slice(0, Math.max(1, maxVideoCount)); // At least 1 video post if any exist
-    const skippedVideoPosts = videoPosts.slice(cappedVideoPosts.length);
-
-    // Rebuild posts array with capped video posts
-    posts = [...nonVideoPosts, ...cappedVideoPosts];
-
-    // Log filtered video posts to pipeline tracking
-    if (skippedVideoPosts.length > 0) {
-      console.log(
-        `[main] Capping video posts: keeping ${cappedVideoPosts.length}, skipping ${skippedVideoPosts.length} (max ${(MAX_VIDEO_RATIO * 100).toFixed(0)}% per run)`
-      );
-      if (supabaseLogger) {
-        for (const post of skippedVideoPosts) {
-          try {
-            const videoMedia = post.media?.find((m) => m.type === "video");
-            await supabaseLogger.logFilteredPost({
-              tweet_id: post.id,
-              author_id: post.author_id,
-              tweet_text: post.text.slice(0, 500),
-              has_video: true,
-              has_photo: post.media?.some((m) => m.type === "photo") ?? false,
-              media_count: post.media?.length ?? 0,
-              video_duration_ms: videoMedia?.duration_ms,
-              filter_reason: "video_cap_exceeded",
-              commit_sha: commit,
-            });
-          } catch (err) {
-            console.warn(`[main] Failed to log filtered video post ${post.id}:`, err);
-          }
-        }
-      }
-    }
-
     // Log media breakdown for tracking
-    const finalVideoCount = posts.filter((p) =>
+    const videoCount = posts.filter((p) =>
       p.media?.some((m) => m.type === "video")
     ).length;
     const photoCount = posts.filter(
@@ -138,7 +94,7 @@ async function main() {
       (p) => !p.media || p.media.length === 0
     ).length;
     console.log(
-      `[main] Media breakdown: ${finalVideoCount} video (${((finalVideoCount / posts.length) * 100).toFixed(0)}%), ${photoCount} photo-only, ${textOnlyCount} text-only`
+      `[main] Media breakdown: ${videoCount} video (${((videoCount / posts.length) * 100).toFixed(0)}%), ${photoCount} photo-only, ${textOnlyCount} text-only`
     );
 
     console.log(`[main] Starting pipelines for ${posts.length} posts...`);
@@ -281,11 +237,56 @@ async function main() {
           }
         }
 
+        // Log scoring filter results if present (from opus-scored bot)
+        const scoringResults = (result as any).scoringResults;
+        if (supabaseLogger && pipelineRunId && scoringResults) {
+          try {
+            // Log each scoring filter
+            if (scoringResults.positive) {
+              await supabaseLogger.addPipelineScore(pipelineRunId, {
+                score_type: "positive_claims",
+                score_value: scoringResults.positive.score,
+                score_metadata: { reasoning: scoringResults.positive.reasoning },
+              });
+            }
+            if (scoringResults.disagreement) {
+              await supabaseLogger.addPipelineScore(pipelineRunId, {
+                score_type: "disagreement",
+                score_value: scoringResults.disagreement.score,
+                score_metadata: { reasoning: scoringResults.disagreement.reasoning },
+              });
+            }
+            if (scoringResults.helpfulness) {
+              await supabaseLogger.addPipelineScore(pipelineRunId, {
+                score_type: "helpfulness",
+                score_value: scoringResults.helpfulness.score,
+                score_metadata: { reasoning: scoringResults.helpfulness.reasoning },
+              });
+            }
+          } catch (err) {
+            console.warn(`[main] Failed to log scoring filter results:`, err);
+          }
+        }
+
         // Initialize evaluation score
         let evaluationScore: number | undefined = undefined;
 
         // Check if note writing produced a valid correction
-        if (result.noteResult.status !== "CORRECTION WITH TRUSTWORTHY CITATION") {
+        if (result.noteResult.status === "SCORING_FILTERS_FAILED") {
+          // Scoring filters rejected the note
+          if (supabaseLogger && pipelineRunId) {
+            try {
+              await supabaseLogger.completePipelineRun(pipelineRunId, {
+                outcome: "rejected",
+                outcome_reason: "scoring_filters_failed",
+                final_stage: "scoring",
+                bot_id: selectedBot.id,
+              });
+            } catch (err) {
+              console.warn(`[main] Failed to complete pipeline run:`, err);
+            }
+          }
+        } else if (result.noteResult.status !== "CORRECTION WITH TRUSTWORTHY CITATION") {
           // No correction needed or couldn't find one
           if (supabaseLogger && pipelineRunId) {
             try {
