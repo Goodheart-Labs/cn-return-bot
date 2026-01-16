@@ -20,12 +20,16 @@ export interface AllFilterScores {
   helpfulness: FilterScore;
 }
 
+/** Default model for scoring filters */
+const DEFAULT_SCORING_MODEL = "anthropic/claude-sonnet-4";
+
 /**
  * Positive claims filter - checks if note uses positive framing
  * (says what DID happen rather than what DIDN'T happen)
  */
 export async function checkPositiveClaims(
-  noteText: string
+  noteText: string,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<FilterScore> {
   const prompt = `Evaluate if this Community Note uses positive framing (says only what DID happen) rather than any negative claims (what DIDN'T happen).
 
@@ -51,14 +55,27 @@ IMPORTANT: Return ONLY a JSON object with:
 
   try {
     const result = await llm.create({
-      model: "anthropic/claude-sonnet-4",
+      model,
       temperature: 0.2,
       response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }],
     });
 
     const content = result.choices?.[0]?.message?.content || "{}";
-    const parsed = JSON.parse(content);
+
+    let parsed: { score?: number; reasoning?: string };
+    try {
+      parsed = JSON.parse(content);
+    } catch (parseError) {
+      console.error("[scoringFilters] JSON parse error in positive claims filter:", parseError);
+      console.error("[scoringFilters] Raw content:", content);
+      return {
+        name: "Positive claims filter",
+        score: 0,
+        passed: false,
+        reasoning: "Failed to parse LLM response as JSON",
+      };
+    }
 
     return {
       name: "Positive claims filter",
@@ -70,9 +87,9 @@ IMPORTANT: Return ONLY a JSON object with:
     console.error("[scoringFilters] Error in positive claims filter:", error);
     return {
       name: "Positive claims filter",
-      score: 0.5,
-      passed: true,
-      reasoning: "Error in filter, defaulting to neutral",
+      score: 0,
+      passed: false,
+      reasoning: "Error in filter, failing safely",
     };
   }
 }
@@ -82,7 +99,8 @@ IMPORTANT: Return ONLY a JSON object with:
  */
 export async function checkSubstantiveDisagreement(
   noteText: string,
-  postText: string
+  postText: string,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<FilterScore> {
   const prompt = `Evaluate if the Community Note substantively disagrees with the original post.
 
@@ -107,14 +125,27 @@ IMPORTANT: Return ONLY a JSON object with:
 
   try {
     const result = await llm.create({
-      model: "anthropic/claude-sonnet-4",
+      model,
       temperature: 0.2,
       response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }],
     });
 
     const content = result.choices?.[0]?.message?.content || "{}";
-    const parsed = JSON.parse(content);
+
+    let parsed: { score?: number; reasoning?: string };
+    try {
+      parsed = JSON.parse(content);
+    } catch (parseError) {
+      console.error("[scoringFilters] JSON parse error in disagreement filter:", parseError);
+      console.error("[scoringFilters] Raw content:", content);
+      return {
+        name: "Substantive disagreement filter",
+        score: 0,
+        passed: false,
+        reasoning: "Failed to parse LLM response as JSON",
+      };
+    }
 
     return {
       name: "Substantive disagreement filter",
@@ -126,9 +157,9 @@ IMPORTANT: Return ONLY a JSON object with:
     console.error("[scoringFilters] Error in disagreement filter:", error);
     return {
       name: "Substantive disagreement filter",
-      score: 0.5,
-      passed: true,
-      reasoning: "Error in filter, defaulting to neutral",
+      score: 0,
+      passed: false,
+      reasoning: "Error in filter, failing safely",
     };
   }
 }
@@ -140,7 +171,8 @@ export async function predictHelpfulness(
   noteText: string,
   tweetText: string,
   searchResults: string,
-  url: string
+  url: string,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<FilterScore> {
   const prompt = `Predict whether this Community Note will be rated as "Currently Rated Helpful" on X/Twitter.
 
@@ -176,14 +208,27 @@ IMPORTANT: Return ONLY a JSON object with:
 
   try {
     const result = await llm.create({
-      model: "anthropic/claude-sonnet-4",
+      model,
       temperature: 0.2,
       response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }],
     });
 
     const content = result.choices?.[0]?.message?.content || "{}";
-    const parsed = JSON.parse(content);
+
+    let parsed: { score?: number; reasoning?: string };
+    try {
+      parsed = JSON.parse(content);
+    } catch (parseError) {
+      console.error("[scoringFilters] JSON parse error in helpfulness filter:", parseError);
+      console.error("[scoringFilters] Raw content:", content);
+      return {
+        name: "Helpfulness prediction",
+        score: 0,
+        passed: false,
+        reasoning: "Failed to parse LLM response as JSON",
+      };
+    }
 
     return {
       name: "Helpfulness prediction",
@@ -195,9 +240,9 @@ IMPORTANT: Return ONLY a JSON object with:
     console.error("[scoringFilters] Error in helpfulness filter:", error);
     return {
       name: "Helpfulness prediction",
-      score: 0.5,
-      passed: true,
-      reasoning: "Error in filter, defaulting to neutral",
+      score: 0,
+      passed: false,
+      reasoning: "Error in filter, failing safely",
     };
   }
 }
@@ -209,15 +254,16 @@ export async function runScoringFilters(
   noteText: string,
   postText: string,
   searchResults: string,
-  url: string
+  url: string,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<AllFilterScores> {
   console.log("[scoringFilters] Running scoring filters...");
 
   // Run filters in parallel for speed
   const [positive, disagreement, helpfulness] = await Promise.all([
-    checkPositiveClaims(noteText),
-    checkSubstantiveDisagreement(noteText, postText),
-    predictHelpfulness(noteText, postText, searchResults, url),
+    checkPositiveClaims(noteText, model),
+    checkSubstantiveDisagreement(noteText, postText, model),
+    predictHelpfulness(noteText, postText, searchResults, url, model),
   ]);
 
   // Log results

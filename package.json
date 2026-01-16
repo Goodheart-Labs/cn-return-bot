@@ -23,13 +23,11 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "^1.2.23"
-  },
-  "peerDependencies": {
-    "typescript": "^5.9.3"
+    "@types/bun": "^1.2.23",
+    "typescript": "5.9.3"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bunx --bun typescript@5.9.3 --noEmit",
     "test-airtable": "bun run src/test-airtable-logger.ts",
     "routine": "bun run src/scripts/createNotesRoutine.ts",
     "update-feedback": "bun run src/scripts/updateNoteFeedback.ts",

@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     // Environment setup & latest features
-    "lib": ["ESNext", "dom"],
+    "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
 
-    // Bundler mode
-    "moduleResolution": "bundler",
+    // Bundler mode - compatible with Bun
+    "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true,
 
@@ -25,6 +25,7 @@
     "noPropertyAccessFromIndexSignature": false
   },
   "exclude": [
-    "src/elo-rating-web/**/*"
+    "src/elo-rating-web/**/*",
+    "node_modules"
   ]
 }

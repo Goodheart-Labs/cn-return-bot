@@ -10,7 +10,12 @@ import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal"
 import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
 import { check as checkNote } from "../pipeline/check";
 
-const NOTE_MODEL = "google/gemini-3-flash-preview";
+// Bot model configuration - easy to tweak per-bot
+const MODELS = {
+  search: "perplexity/sonar",
+  noteWriting: "google/gemini-3-flash-preview",
+  checking: "anthropic/claude-sonnet-4", // use sonnet for checking
+};
 
 export const gemini3Flash: Bot = {
   id: "gemini-3-flash",
@@ -29,27 +34,30 @@ export const gemini3Flash: Bot = {
           searchResults: "",
           retweetContext: content.retweetContext,
         },
-        { model: "perplexity/sonar" }
+        { model: MODELS.search }
       );
       lastStage = "search";
 
-      // 2. Write note with Gemini 3 Flash
+      // 2. Write note
       const noteResult = await writeNote(
         {
           text: searchResult.text,
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: NOTE_MODEL }
+        { model: MODELS.noteWriting }
       );
       lastStage = "note_writing";
 
       // 3. Check the note
-      const checkResult = await checkNote({
-        note: noteResult.note,
-        url: noteResult.url,
-        status: noteResult.status,
-      });
+      const checkResult = await checkNote(
+        {
+          note: noteResult.note,
+          url: noteResult.url,
+          status: noteResult.status,
+        },
+        { model: MODELS.checking }
+      );
       lastStage = "check";
 
       return {
