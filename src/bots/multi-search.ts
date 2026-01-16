@@ -15,7 +15,11 @@ import { multiSourceSearch } from "../pipeline/multiSourceSearch";
 import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
 import { check as checkNote } from "../pipeline/check";
 
-const NOTE_MODEL = "anthropic/claude-opus-4.5";
+// Bot model configuration - easy to tweak per-bot
+const MODELS = {
+  noteWriting: "anthropic/claude-opus-4.5",
+  checking: "anthropic/claude-sonnet-4", // cheaper for validation
+};
 
 export const multiSearch: Bot = {
   id: "multi-search",
@@ -35,23 +39,26 @@ export const multiSearch: Bot = {
       });
       lastStage = "search";
 
-      // 2. Write note with Opus 4.5
+      // 2. Write note
       const noteResult = await writeNote(
         {
           text: searchResult.text,
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: NOTE_MODEL, currentDate: new Date().toISOString().split("T")[0] }
+        { model: MODELS.noteWriting, currentDate: new Date().toISOString().split("T")[0] }
       );
       lastStage = "note_writing";
 
       // 3. Check the note
-      const checkResult = await checkNote({
-        note: noteResult.note,
-        url: noteResult.url,
-        status: noteResult.status,
-      });
+      const checkResult = await checkNote(
+        {
+          note: noteResult.note,
+          url: noteResult.url,
+          status: noteResult.status,
+        },
+        { model: MODELS.checking }
+      );
       lastStage = "check";
 
       return {

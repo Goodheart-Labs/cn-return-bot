@@ -15,7 +15,13 @@ import {
   AllFilterScores,
 } from "../pipeline/scoringFilters";
 
-const NOTE_MODEL = "anthropic/claude-opus-4.5";
+// Bot model configuration - easy to tweak per-bot
+const MODELS = {
+  search: "perplexity/sonar",
+  noteWriting: "anthropic/claude-opus-4.5",
+  checking: "anthropic/claude-opus-4.5",
+  scoring: "anthropic/claude-sonnet-4", // cheaper for validation
+};
 
 export const opusScored: Bot = {
   id: "opus-scored",
@@ -38,27 +44,30 @@ export const opusScored: Bot = {
           searchResults: "",
           retweetContext: content.retweetContext,
         },
-        { model: "perplexity/sonar" }
+        { model: MODELS.search }
       );
       lastStage = "search";
 
-      // 2. Write note with Opus 4.5
+      // 2. Write note
       const noteResult = await writeNote(
         {
           text: searchResult.text,
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: NOTE_MODEL }
+        { model: MODELS.noteWriting }
       );
       lastStage = "note_writing";
 
       // 3. Check the note
-      const checkResult = await checkNote({
-        note: noteResult.note,
-        url: noteResult.url,
-        status: noteResult.status,
-      });
+      const checkResult = await checkNote(
+        {
+          note: noteResult.note,
+          url: noteResult.url,
+          status: noteResult.status,
+        },
+        { model: MODELS.checking }
+      );
       lastStage = "check";
 
       // 4. Run scoring filters (only if note looks valid)
@@ -72,7 +81,8 @@ export const opusScored: Bot = {
           noteResult.note,
           content.text,
           searchResult.searchResults,
-          noteResult.url
+          noteResult.url,
+          MODELS.scoring
         );
         lastStage = "scoring";
 

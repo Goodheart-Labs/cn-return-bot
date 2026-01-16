@@ -225,12 +225,11 @@ export async function writeNoteWithSearchFn(
       // Store for potential retry
       previousParsed = parsed;
 
-      // If we've reached max retries, return the last result even if it's too long
+      // If we've reached max retries, reject the note - it will fail X's API anyway
       if (attempt >= maxRetries) {
-        console.warn(
-          `Note still exceeds 275 characters after ${maxRetries} attempts: ${parsed.note.length} characters`
-        );
-        return parsed;
+        const errorMsg = `Note exceeds 275 character limit after ${maxRetries} attempts: ${parsed.note.length} characters`;
+        console.error(errorMsg);
+        throw new Error(errorMsg);
       }
     }
 

@@ -51,7 +51,12 @@ async function fetchAndSimplifyContent(url: string): Promise<string> {
   }
 }
 
-export async function check({ url, note }: z.infer<typeof writeNoteOutput>) {
+export async function check(
+  { url, note }: z.infer<typeof writeNoteOutput>,
+  config?: { model?: string }
+) {
+  const model = config?.model ?? "anthropic/claude-sonnet-4";
+
   try {
     if (!url) {
       return "NO";
@@ -61,7 +66,7 @@ export async function check({ url, note }: z.infer<typeof writeNoteOutput>) {
     const sourceContent = await fetchAndSimplifyContent(url);
 
     const result = await llm.create({
-      model: "anthropic/claude-sonnet-4",
+      model,
       temperature: 0,
       messages: [
         {

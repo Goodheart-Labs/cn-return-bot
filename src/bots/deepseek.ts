@@ -10,7 +10,12 @@ import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal"
 import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
 import { check as checkNote } from "../pipeline/check";
 
-const NOTE_MODEL = "deepseek/deepseek-chat";
+// Bot model configuration - easy to tweak per-bot
+const MODELS = {
+  search: "perplexity/sonar",
+  noteWriting: "deepseek/deepseek-chat",
+  checking: "anthropic/claude-sonnet-4", // use sonnet for checking
+};
 
 export const deepseek: Bot = {
   id: "deepseek",
@@ -29,27 +34,30 @@ export const deepseek: Bot = {
           searchResults: "",
           retweetContext: content.retweetContext,
         },
-        { model: "perplexity/sonar" }
+        { model: MODELS.search }
       );
       lastStage = "search";
 
-      // 2. Write note with DeepSeek V3
+      // 2. Write note
       const noteResult = await writeNote(
         {
           text: searchResult.text,
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: NOTE_MODEL }
+        { model: MODELS.noteWriting }
       );
       lastStage = "note_writing";
 
       // 3. Check the note
-      const checkResult = await checkNote({
-        note: noteResult.note,
-        url: noteResult.url,
-        status: noteResult.status,
-      });
+      const checkResult = await checkNote(
+        {
+          note: noteResult.note,
+          url: noteResult.url,
+          status: noteResult.status,
+        },
+        { model: MODELS.checking }
+      );
       lastStage = "check";
 
       return {

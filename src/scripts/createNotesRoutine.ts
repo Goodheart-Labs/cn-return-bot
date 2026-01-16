@@ -1,5 +1,4 @@
 import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
-import { AirtableLogger, createLogEntry } from "../api/airtableLogger";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import { closeBrowser } from "../pipeline/browserManager";
@@ -39,10 +38,6 @@ async function main() {
     // Get commit hash from environment variable (available in GitHub Actions)
     const commit = process.env.GITHUB_SHA;
 
-    // Initialize Airtable logger
-    const airtableLogger = new AirtableLogger();
-    const logEntries: any[] = [];
-
     // Initialize Supabase logger (optional - only if env vars are set)
     let supabaseLogger: SupabaseLogger | null = null;
     if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
@@ -60,17 +55,18 @@ async function main() {
     // Track bot usage for summary
     const botUsage: Record<string, number> = {};
 
-    // Get existing URLs from Airtable (check all bots)
-    const existingUrls = await airtableLogger.getExistingUrls();
-
-    // Convert URLs to post IDs (extract ID from URL)
-    const skipPostIds = new Set<string>();
-    existingUrls.forEach((url) => {
-      const match = url.match(/status\/(\d+)$/);
-      if (match && match[1]) skipPostIds.add(match[1]);
-    });
-
-    console.log(`[main] Skipping ${skipPostIds.size} already-processed posts`);
+    // Get existing tweet IDs from Supabase (to avoid reprocessing)
+    let skipPostIds = new Set<string>();
+    if (supabaseLogger) {
+      try {
+        skipPostIds = await supabaseLogger.getProcessedTweetIds();
+        console.log(`[main] Skipping ${skipPostIds.size} already-processed posts`);
+      } catch (err) {
+        console.warn("[main] Failed to get processed tweet IDs:", err);
+      }
+    } else {
+      console.log("[main] No Supabase logger - not skipping any posts");
+    }
 
     let posts = await fetchEligiblePosts(maxPosts, skipPostIds, 3);
 
@@ -441,17 +437,6 @@ async function main() {
           }
         }
 
-        // Create log entry for this result
-        const logEntry = createLogEntry(
-          result.post,
-          result.searchContextResult,
-          result.noteResult,
-          result.checkResult,
-          selectedBot.id,
-          commit,
-          evaluationScore
-        );
-        logEntries.push(logEntry);
       });
     }
 
@@ -460,33 +445,15 @@ async function main() {
       `[main] All ${posts.length} posts processed with concurrency limit of ${concurrencyLimit}`
     );
 
-    // Log all entries to Airtable
-    if (logEntries.length > 0) {
-      try {
-        await airtableLogger.logMultipleEntries(logEntries);
-        console.log(
-          `[main] Successfully logged ${logEntries.length} entries to Airtable`
-        );
-      } catch (err) {
-        console.error("[main] Failed to log to Airtable:", err);
-      }
-    }
-
     // Log bot usage summary
     console.log(`[main] Bot usage summary:`);
     Object.entries(botUsage).forEach(([botId, count]) => {
       console.log(`  - ${botId}: ${count} tweets`);
     });
 
-    if (logEntries.length === 0) {
-      console.log(
-        "No posts with status 'CORRECTION WITH TRUSTWORTHY CITATION' found."
-      );
-    } else {
-      console.log(
-        `[main] Successfully processed ${logEntries.length} posts, submitted ${submitted} notes`
-      );
-    }
+    console.log(
+      `[main] Successfully processed ${posts.length} posts, submitted ${submitted} notes`
+    );
 
     // Clear the global timeout and exit successfully
     clearTimeout(globalTimeout);

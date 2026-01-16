@@ -7,7 +7,6 @@
     "@tonerow/agent-framework": "0.1.0",
     "@types/p-queue": "^3.2.1",
     "ai": "^4",
-    "airtable": "^0.12.2",
     "axios": "^1.10.0",
     "dotenv": "^17.2.1",
     "oauth-1.0a": "^2.2.6",
@@ -23,14 +22,11 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "^1.2.23"
-  },
-  "peerDependencies": {
-    "typescript": "^5.9.3"
+    "@types/bun": "^1.2.23",
+    "typescript": "5.9.3"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test-airtable": "bun run src/test-airtable-logger.ts",
+    "typecheck": "bunx --bun typescript@5.9.3 --noEmit",
     "routine": "bun run src/scripts/createNotesRoutine.ts",
     "update-feedback": "bun run src/scripts/updateNoteFeedback.ts",
     "test": "bun run src/scripts/run.ts",
