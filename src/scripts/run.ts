@@ -3,7 +3,6 @@ import type { Post } from "../api/fetchEligiblePosts";
 import { versionOneFn as searchV1 } from "../pipeline/searchContextGoal";
 import { writeNoteWithSearchFn as writeV1 } from "../pipeline/writeNoteWithSearchGoal";
 import { check as checkV1 } from "../pipeline/check";
-import { AirtableLogger, createLogEntry } from "../api/airtableLogger";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import fs from "fs";
 import path from "path";
@@ -168,29 +167,14 @@ function renderHtml(results: any[]) {
 
 async function main() {
   try {
-    // Initialize Airtable logger to check existing posts
-    const airtableLogger = new AirtableLogger();
-    const logEntries: any[] = [];
-    
-    // Get existing URLs from Airtable
-    const existingUrls = await airtableLogger.getExistingUrls();
-    
-    // Convert URLs to post IDs (extract ID from URL)
-    const skipPostIds = new Set<string>();
-    existingUrls.forEach(url => {
-      const match = url.match(/status\/(\d+)$/);
-      if (match && match[1]) skipPostIds.add(match[1]);
-    });
-    
-    console.log(`[main] Skipping ${skipPostIds.size} already-processed posts`);
-
-    let posts: Post[] = await fetchEligiblePosts(5, skipPostIds);
+    // Fetch posts without skipping any (this is a test script)
+    let posts: Post[] = await fetchEligiblePosts(5);
     console.log(
-      `[main] Fetched ${posts.length} new posts:`,
+      `[main] Fetched ${posts.length} posts:`,
       posts.map((p) => p.id)
     );
     if (!posts.length) {
-      console.log("No new eligible posts found.");
+      console.log("No eligible posts found.");
       return;
     }
 
@@ -202,32 +186,6 @@ async function main() {
     console.log(
       `[main] All pipelines complete. Results count: ${results.length}`
     );
-
-    // Create log entries for Airtable
-    for (const r of results) {
-      if (!r) continue;
-      
-      const logEntry = createLogEntry(
-        r.post,
-        r.searchContextResult,
-        r.noteResult,
-        r.checkResult,
-        "first-bot"
-      );
-      logEntries.push(logEntry);
-    }
-
-    // Log all entries to Airtable
-    if (logEntries.length > 0) {
-      try {
-        await airtableLogger.logMultipleEntries(logEntries);
-        console.log(
-          `[main] Successfully logged ${logEntries.length} entries to Airtable`
-        );
-      } catch (err) {
-        console.error("[main] Failed to log to Airtable:", err);
-      }
-    }
 
     // Write HTML output
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");

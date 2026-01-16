@@ -66,12 +66,12 @@ The import script has **two behaviors**:
 
 ### Finding Note and Tweet IDs
 
-The easiest way is to check your Airtable logs - they contain the note IDs and tweet IDs for all notes your bots have created.
+The easiest way is to check your Supabase `notes` table - it contains the note IDs and tweet IDs for all notes your bots have created.
 
 For manual extraction from X.com:
 
 1. **Tweet ID**: In the tweet URL: `https://x.com/username/status/[TWEET_ID]`
-2. **Note ID**: Check your bot's submission logs or Airtable records
+2. **Note ID**: Check your bot's submission logs or Supabase `notes` table
 
 ### Scraping a Note - Example
 
@@ -88,7 +88,7 @@ Extract from the page:
 - **`view_count`**: `3300` (from "3,300+ views")
 - **`note_text`**: The full note text (copy from the page)
 
-Get from your logs/Airtable:
+Get from your logs/Supabase:
 - **`note_id`**: From your bot's submission records
 - **`tweet_id`**: From the tweet URL
 
@@ -180,7 +180,7 @@ Output:
 
 ## Tips
 
-1. **Start with Airtable**: Export your note IDs and tweet IDs from Airtable logs
+1. **Start with Supabase**: Export your note IDs and tweet IDs from the `notes` table
 2. **Validate JSON**: Use a JSON validator before importing
 3. **Test with one note first**: Verify the process works
 4. **Keep your JSON files**: Store them for record-keeping and historical reference
@@ -199,7 +199,7 @@ Output:
 - Run the migration: `migrations/003_create_unmatched_scraped_notes.sql`
 
 ### Can't find note IDs
-- Check your Airtable logs - they have all the note IDs from your bot submissions
+- Check your Supabase `notes` table - it has all the note IDs from your bot submissions
 - Look in your bot's console output logs if available
 - Note IDs are returned when your bot submits a note
 

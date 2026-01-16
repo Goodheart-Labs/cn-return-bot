@@ -573,6 +573,48 @@ export class SupabaseLogger {
   }
 
   /**
+   * Get tweet IDs that have already been processed (to avoid duplicates)
+   */
+  async getProcessedTweetIds(): Promise<Set<string>> {
+    const tweetIds = new Set<string>();
+
+    try {
+      // Get from pipeline_runs (recent processing attempts)
+      const { data: pipelineData, error: pipelineError } = await this.client
+        .from("pipeline_runs")
+        .select("tweet_id");
+
+      if (pipelineError) {
+        console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
+      } else if (pipelineData) {
+        pipelineData.forEach((row) => {
+          if (row.tweet_id) tweetIds.add(row.tweet_id);
+        });
+      }
+
+      // Also get from notes table (submitted notes)
+      const { data: notesData, error: notesError } = await this.client
+        .from("notes")
+        .select("tweet_id");
+
+      if (notesError) {
+        console.error("[SupabaseLogger] Error fetching notes:", notesError);
+      } else if (notesData) {
+        notesData.forEach((row) => {
+          if (row.tweet_id) tweetIds.add(row.tweet_id);
+        });
+      }
+
+      console.log(`[SupabaseLogger] Found ${tweetIds.size} already-processed tweet IDs`);
+      return tweetIds;
+    } catch (error) {
+      console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);
+      // Return empty set on error to allow processing to continue
+      return new Set();
+    }
+  }
+
+  /**
    * Get pipeline statistics
    */
   async getPipelineStats(since?: Date): Promise<{
