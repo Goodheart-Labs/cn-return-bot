@@ -52,6 +52,17 @@ export interface NoteStatusHistory {
   recorded_at: string;
 }
 
+export interface PublicDataSnapshot {
+  id?: string;
+  note_id: string;
+  tweet_id: string;
+  current_status?: string;
+  is_ours: boolean;
+  snapshot_date: string;
+  created_at_millis?: number;
+  created_at?: string;
+}
+
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
   submitted_at?: string;
   view_count?: number;
@@ -654,5 +665,17 @@ export class SupabaseLogger {
       by_stage,
       video_count,
     };
+  }
+
+  /**
+   * Insert a snapshot from the public CN data dump
+   */
+  async insertPublicDataSnapshot(snapshot: Omit<PublicDataSnapshot, "id" | "created_at">): Promise<void> {
+    const { error } = await this.client.from("public_data_snapshots").insert(snapshot);
+
+    if (error) {
+      // Re-throw to let caller handle (e.g., ignore duplicate key errors)
+      throw error;
+    }
   }
 }
