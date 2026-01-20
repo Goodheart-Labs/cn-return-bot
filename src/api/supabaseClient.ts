@@ -52,6 +52,18 @@ export interface NoteStatusHistory {
   recorded_at: string;
 }
 
+export interface PublicDataSnapshot {
+  id?: string;
+  note_id: string;
+  tweet_id: string;
+  current_status?: string;
+  is_ours: boolean;
+  snapshot_date: string;
+  created_at_millis?: number;
+  note_text?: string;
+  created_at?: string;
+}
+
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
   submitted_at?: string;
   view_count?: number;
@@ -435,6 +447,52 @@ export class SupabaseLogger {
     return !!data;
   }
 
+  /**
+   * Find a scraped note by tweet_id and return its current note_id
+   */
+  async findScrapedNoteByTweetId(tweetId: string): Promise<string | null> {
+    const { data, error } = await this.client
+      .from("scraped_notewriter_notes")
+      .select("note_id")
+      .eq("tweet_id", tweetId)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("[SupabaseLogger] Error finding scraped note by tweet_id:", error);
+      throw error;
+    }
+
+    return data?.note_id || null;
+  }
+
+  /**
+   * Update a scraped note's note_id (e.g., from tweet_XXXX placeholder to real ID)
+   * Also updates any snapshots that reference the old note_id
+   */
+  async updateScrapedNoteId(oldNoteId: string, newNoteId: string): Promise<void> {
+    // Update snapshots first (they have foreign key to notes)
+    const { error: snapshotError } = await this.client
+      .from("scraped_notewriter_snapshots")
+      .update({ note_id: newNoteId })
+      .eq("note_id", oldNoteId);
+
+    if (snapshotError) {
+      console.error("[SupabaseLogger] Error updating snapshot note_ids:", snapshotError);
+      throw snapshotError;
+    }
+
+    // Update the note itself
+    const { error: noteError } = await this.client
+      .from("scraped_notewriter_notes")
+      .update({ note_id: newNoteId })
+      .eq("note_id", oldNoteId);
+
+    if (noteError) {
+      console.error("[SupabaseLogger] Error updating note_id:", noteError);
+      throw noteError;
+    }
+  }
+
   // ============================================
   // Pipeline Tracking
   // ============================================
@@ -654,5 +712,23 @@ export class SupabaseLogger {
       by_stage,
       video_count,
     };
+  }
+
+  /**
+   * Insert a snapshot from the public CN data dump
+   */
+  async insertPublicDataSnapshot(snapshot: Omit<PublicDataSnapshot, "id" | "created_at">): Promise<void> {
+    // Use upsert to update note_text if it was previously null
+    const { error } = await this.client
+      .from("public_data_snapshots")
+      .upsert(snapshot, {
+        onConflict: "note_id,snapshot_date",
+        ignoreDuplicates: false,
+      });
+
+    if (error) {
+      // Re-throw to let caller handle
+      throw error;
+    }
   }
 }
