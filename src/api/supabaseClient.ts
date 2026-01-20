@@ -468,9 +468,43 @@ export class SupabaseLogger {
   /**
    * Update a scraped note's note_id (e.g., from tweet_XXXX placeholder to real ID)
    * Also updates any snapshots that reference the old note_id
+   *
+   * Since note_id is the primary key, we need to:
+   * 1. Get the old note's data
+   * 2. Insert new note with real ID
+   * 3. Update snapshots to point to new ID
+   * 4. Delete old note
    */
   async updateScrapedNoteId(oldNoteId: string, newNoteId: string): Promise<void> {
-    // Update snapshots first (they have foreign key to notes)
+    // 1. Get the old note's data
+    const { data: oldNote, error: fetchError } = await this.client
+      .from("scraped_notewriter_notes")
+      .select("*")
+      .eq("note_id", oldNoteId)
+      .single();
+
+    if (fetchError) {
+      console.error("[SupabaseLogger] Error fetching old note:", fetchError);
+      throw fetchError;
+    }
+
+    // 2. Insert new note with real ID (copy all fields except note_id)
+    const { error: insertError } = await this.client
+      .from("scraped_notewriter_notes")
+      .insert({
+        note_id: newNoteId,
+        tweet_id: oldNote.tweet_id,
+        note_text: oldNote.note_text,
+        source_url: oldNote.source_url,
+        created_at: oldNote.created_at,
+      });
+
+    if (insertError) {
+      console.error("[SupabaseLogger] Error inserting note with new ID:", insertError);
+      throw insertError;
+    }
+
+    // 3. Update snapshots to point to new note_id
     const { error: snapshotError } = await this.client
       .from("scraped_notewriter_snapshots")
       .update({ note_id: newNoteId })
@@ -481,15 +515,15 @@ export class SupabaseLogger {
       throw snapshotError;
     }
 
-    // Update the note itself
-    const { error: noteError } = await this.client
+    // 4. Delete the old note
+    const { error: deleteError } = await this.client
       .from("scraped_notewriter_notes")
-      .update({ note_id: newNoteId })
+      .delete()
       .eq("note_id", oldNoteId);
 
-    if (noteError) {
-      console.error("[SupabaseLogger] Error updating note_id:", noteError);
-      throw noteError;
+    if (deleteError) {
+      console.error("[SupabaseLogger] Error deleting old note:", deleteError);
+      throw deleteError;
     }
   }
 
