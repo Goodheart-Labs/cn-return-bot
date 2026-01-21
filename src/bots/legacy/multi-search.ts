@@ -1,5 +1,5 @@
 /**
- * Multi-Search Bot
+ * Multi-Search Bot (LEGACY - disabled)
  *
  * Uses multiple search sources for comprehensive context:
  * - Perplexity
@@ -10,10 +10,10 @@
  * Requires env vars: SERPER_API_KEY, EXA_API_KEY, X_SEARCH_BEARER_TOKEN
  */
 
-import { Bot, PipelineResult, PostContent } from "./types";
-import { multiSourceSearch } from "../pipeline/multiSourceSearch";
-import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
-import { check as checkNote } from "../pipeline/check";
+import { Bot, PipelineResult, PostContent } from "../types";
+import { multiSourceSearch } from "../../pipeline/multiSourceSearch";
+import { writeNoteWithSearchFn as writeNote } from "../../pipeline/writeNoteWithSearchGoal";
+import { check as checkNote } from "../../pipeline/check";
 
 // Bot model configuration - easy to tweak per-bot
 const MODELS = {
@@ -26,7 +26,7 @@ export const multiSearch: Bot = {
   name: "Multi-Source Search",
   description:
     "Extracts topic first, then searches Perplexity + Google + Exa + X for comprehensive context",
-  weight: 10,
+  weight: 0, // LEGACY - disabled
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
