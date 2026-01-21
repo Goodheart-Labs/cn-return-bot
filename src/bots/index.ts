@@ -6,19 +6,25 @@
 
 import { Bot } from "./types";
 import { opusMain } from "./opus-main";
-import { geminiFlash } from "./gemini-flash";
-import { multiSearch } from "./multi-search";
 import { opusScored } from "./opus-scored";
+import { opusStrict } from "./opus-strict";
 import { deepseek } from "./deepseek";
-import { gemini3Flash } from "./gemini-3-flash";
+
+// Legacy bots (weight=0, kept for historical data)
+import { geminiFlash } from "./legacy/gemini-flash";
+import { multiSearch } from "./legacy/multi-search";
+import { gemini3Flash } from "./legacy/gemini-3-flash";
 
 // Register all bots here
 export const bots: Bot[] = [
+  // Active bots
   opusMain,
+  opusScored,
+  opusStrict,
+  deepseek,
+  // Legacy bots (disabled)
   geminiFlash,
   multiSearch,
-  opusScored,
-  deepseek,
   gemini3Flash,
 ];
 

@@ -64,6 +64,36 @@ export interface PublicDataSnapshot {
   created_at?: string;
 }
 
+/**
+ * Note enriched with latest snapshot data
+ * - effective_status: public data status OR fallback to snapshot status
+ * - view_count: always from snapshot (only source)
+ */
+export interface NoteWithSnapshot {
+  id: string;
+  note_id: string;
+  tweet_id: string;
+  bot_name?: string;
+  note_text: string;
+  source_url?: string;
+  evaluation_score?: number;
+  submitted_at: string;
+
+  // Effective values (computed)
+  effective_status: string;
+  view_count: number;
+  status_source: "public_data" | "snapshot" | "unknown";
+
+  // Raw values
+  public_data_status?: string;
+  snapshot_status?: string;
+  snapshot_views?: number;
+  snapshot_scraped_at?: string;
+
+  // Timestamps
+  first_helpful_at?: string;
+}
+
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
   submitted_at?: string;
   view_count?: number;
@@ -491,6 +521,102 @@ export class SupabaseLogger {
       console.error("[SupabaseLogger] Error updating note_id:", noteError);
       throw noteError;
     }
+  }
+
+  // ============================================
+  // Notes with Snapshot Data
+  // ============================================
+
+  /**
+   * Get all notes enriched with their latest snapshot data.
+   *
+   * Logic:
+   * - status: prefer notes.cn_status (public data), fallback to latest snapshot
+   * - views: always from latest snapshot (only source)
+   */
+  async getNotesWithLatestSnapshots(): Promise<NoteWithSnapshot[]> {
+    // Get all notes
+    const { data: notes, error: notesError } = await this.client
+      .from("notes")
+      .select("*");
+
+    if (notesError) {
+      console.error("[SupabaseLogger] Error fetching notes:", notesError);
+      throw notesError;
+    }
+
+    if (!notes || notes.length === 0) {
+      return [];
+    }
+
+    // Get all snapshots ordered by scraped_at DESC
+    const { data: snapshots, error: snapshotError } = await this.client
+      .from("scraped_notewriter_snapshots")
+      .select("note_id, cn_status, view_count, scraped_at")
+      .order("scraped_at", { ascending: false });
+
+    if (snapshotError) {
+      console.error("[SupabaseLogger] Error fetching snapshots:", snapshotError);
+      throw snapshotError;
+    }
+
+    // Build latest snapshot per note_id
+    const latestSnapshot: Record<
+      string,
+      { cn_status?: string; view_count?: number; scraped_at: string }
+    > = {};
+    for (const snap of snapshots || []) {
+      if (!latestSnapshot[snap.note_id]) {
+        latestSnapshot[snap.note_id] = {
+          cn_status: snap.cn_status,
+          view_count: snap.view_count,
+          scraped_at: snap.scraped_at,
+        };
+      }
+    }
+
+    // Enrich notes with snapshot data
+    return notes.map((note) => {
+      const snap = latestSnapshot[note.note_id];
+
+      // Status: prefer public data, fallback to snapshot
+      const publicDataStatus = note.cn_status;
+      const snapshotStatus = snap?.cn_status;
+      const effectiveStatus = publicDataStatus || snapshotStatus || "unknown";
+
+      // Determine source
+      let statusSource: "public_data" | "snapshot" | "unknown" = "unknown";
+      if (publicDataStatus) {
+        statusSource = "public_data";
+      } else if (snapshotStatus) {
+        statusSource = "snapshot";
+      }
+
+      return {
+        id: note.id,
+        note_id: note.note_id,
+        tweet_id: note.tweet_id,
+        bot_name: note.bot_name,
+        note_text: note.note_text,
+        source_url: note.source_url,
+        evaluation_score: note.evaluation_score,
+        submitted_at: note.submitted_at,
+
+        // Computed values
+        effective_status: effectiveStatus,
+        view_count: snap?.view_count || 0,
+        status_source: statusSource,
+
+        // Raw values
+        public_data_status: publicDataStatus,
+        snapshot_status: snapshotStatus,
+        snapshot_views: snap?.view_count,
+        snapshot_scraped_at: snap?.scraped_at,
+
+        // Timestamps
+        first_helpful_at: note.first_helpful_at,
+      };
+    });
   }
 
   // ============================================

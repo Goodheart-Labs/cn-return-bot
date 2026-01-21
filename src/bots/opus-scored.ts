@@ -28,7 +28,7 @@ export const opusScored: Bot = {
   name: "Opus (Scored)",
   description:
     "Opus 4.5 with scoring filters: positive claims, disagreement, helpfulness",
-  weight: 30, // ~25% of traffic (30 / 120 total)
+  weight: 10,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

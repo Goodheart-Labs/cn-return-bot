@@ -1,14 +1,14 @@
 /**
- * Gemini Flash Bot
+ * Gemini Flash Bot (LEGACY - disabled)
  *
  * Cost-effective bot using Gemini 2.0 Flash.
  * Fast and cheap - good for testing if expensive models are necessary.
  */
 
-import { Bot, PipelineResult, PostContent } from "./types";
-import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
-import { check as checkNote } from "../pipeline/check";
+import { Bot, PipelineResult, PostContent } from "../types";
+import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
+import { writeNoteWithSearchFn as writeNote } from "../../pipeline/writeNoteWithSearchGoal";
+import { check as checkNote } from "../../pipeline/check";
 
 // Bot model configuration - easy to tweak per-bot
 const MODELS = {
@@ -21,7 +21,7 @@ export const geminiFlash: Bot = {
   id: "gemini-flash",
   name: "Gemini Flash (Cheap)",
   description: "Cost-effective bot using Gemini 2.0 Flash - fast and cheap",
-  weight: 0, // Disabled - performing poorly
+  weight: 0, // LEGACY - disabled
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

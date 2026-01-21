@@ -1,14 +1,14 @@
 /**
- * Gemini 3 Flash Bot
+ * Gemini 3 Flash Bot (LEGACY - disabled)
  *
  * Uses Google's Gemini 3 Flash Preview for note writing.
  * Newer than Gemini 2 Flash, potentially better quality.
  */
 
-import { Bot, PipelineResult, PostContent } from "./types";
-import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
-import { check as checkNote } from "../pipeline/check";
+import { Bot, PipelineResult, PostContent } from "../types";
+import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
+import { writeNoteWithSearchFn as writeNote } from "../../pipeline/writeNoteWithSearchGoal";
+import { check as checkNote } from "../../pipeline/check";
 
 // Bot model configuration - easy to tweak per-bot
 const MODELS = {
@@ -21,7 +21,7 @@ export const gemini3Flash: Bot = {
   id: "gemini-3-flash",
   name: "Gemini 3 Flash",
   description: "Google's Gemini 3 Flash Preview for note writing",
-  weight: 10,
+  weight: 0, // LEGACY - disabled
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
