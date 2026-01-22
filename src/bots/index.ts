@@ -8,24 +8,24 @@ import { Bot } from "./types";
 import { opusMain } from "./opus-main";
 import { opusScored } from "./opus-scored";
 import { opusStrict } from "./opus-strict";
-import { deepseek } from "./deepseek";
 
 // Legacy bots (weight=0, kept for historical data)
 import { geminiFlash } from "./legacy/gemini-flash";
 import { multiSearch } from "./legacy/multi-search";
 import { gemini3Flash } from "./legacy/gemini-3-flash";
+import { deepseek } from "./legacy/deepseek";
 
 // Register all bots here
 export const bots: Bot[] = [
-  // Active bots
-  opusMain,
-  opusScored,
-  opusStrict,
-  deepseek,
+  // Active bots (weights total 100)
+  opusMain,      // 55%
+  opusScored,    // 30%
+  opusStrict,    // 15%
   // Legacy bots (disabled)
   geminiFlash,
   multiSearch,
   gemini3Flash,
+  deepseek,
 ];
 
 /**
