@@ -40,7 +40,7 @@ export const opusStrict: Bot = {
   name: "Opus (Strict)",
   description:
     "Opus 4.5 with stricter quality filters: higher thresholds (0.7) and min note length",
-  weight: 10,
+  weight: 15,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
