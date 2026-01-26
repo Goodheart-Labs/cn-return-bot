@@ -14,6 +14,13 @@
  *    bun run src/scripts/scrapeNotewriterClickThrough.ts [username] [maxNotes] [--fresh]
  *
  *    --fresh: Refresh page and start from top (otherwise continues from current scroll position)
+ *
+ * SECURITY WARNING:
+ * The remote debugging port (9222) gives FULL control over the browser to any process
+ * that can connect to it. This includes access to all logged-in sessions and cookies.
+ * - Only run this on a trusted machine
+ * - Use --remote-debugging-address=127.0.0.1 to restrict to localhost only
+ * - Close Chrome when done scraping
  */
 
 import "dotenv/config";
@@ -21,6 +28,12 @@ import puppeteer, { Page } from "puppeteer-core";
 import { SupabaseLogger } from "../api/supabaseClient";
 
 const DEFAULT_USERNAME = "wholesome-raspberry-stilt";
+
+// Randomized delays to mimic human behavior and avoid detection
+function randomDelay(minMs: number, maxMs: number): Promise<void> {
+  const delay = minMs + Math.random() * (maxMs - minMs);
+  return new Promise(r => setTimeout(r, delay));
+}
 
 interface ScrapedNote {
   note_id: string;
@@ -268,7 +281,7 @@ async function main() {
       await cell.evaluate(el => {
         el.scrollIntoView({ behavior: 'instant', block: 'center' });
       });
-      await new Promise(r => setTimeout(r, 500)); // Increased wait for render
+      await randomDelay(400, 800); // Human-like delay for render
 
       // Find and click the "View details" element
       // First, try to find a direct link to /communitynotes/t/
@@ -349,8 +362,8 @@ async function main() {
         continue;
       }
 
-      // Wait for modal panel to appear (increased from 1000ms for reliability)
-      await new Promise(r => setTimeout(r, 1500));
+      // Wait for modal panel to appear with human-like timing
+      await randomDelay(1200, 2000);
 
       // Check if modal panel opened by looking for "Note Details" heading or Note ID
       // IMPORTANT: Only look at the modal content, not the entire page body
@@ -453,7 +466,7 @@ async function main() {
         console.log(`   ⚠️ Modal didn't open or couldn't extract Note ID for tweet ${tweetData.tweetId || 'unavailable'}`);
         // Try pressing Escape to close any partial modal
         await page.keyboard.press('Escape');
-        await new Promise(r => setTimeout(r, 300));
+        await randomDelay(200, 400);
         continue;
       }
 
@@ -461,7 +474,7 @@ async function main() {
       if (collectedNotes.has(modalData.noteId)) {
         // Close modal and continue
         await page.keyboard.press('Escape');
-        await new Promise(r => setTimeout(r, 300));
+        await randomDelay(200, 400);
         continue;
       }
 
@@ -522,7 +535,7 @@ async function main() {
         await page.keyboard.press('Escape');
       }
 
-      await new Promise(r => setTimeout(r, 500));
+      await randomDelay(400, 800); // Human-like pause before next note
     }
 
     if (!foundNewNote) {
@@ -603,7 +616,7 @@ async function main() {
       }
     }
 
-    await new Promise(r => setTimeout(r, 1500));
+    await randomDelay(1200, 2000); // Human-like scroll pause
   }
   } catch (loopErr: unknown) {
     // Catch any Puppeteer errors (ProtocolError, etc.) so we can still import collected notes
@@ -637,14 +650,12 @@ async function main() {
     try {
       // Check if note exists
       const exists = await supabase.scrapedNotewriterNoteExists(note.note_id);
-      console.log(`   DEBUG: note_id=${note.note_id}, exists=${exists}`);
 
       // Also check if there's a placeholder entry for this tweet (only if we have a real tweet_id)
       let placeholderExists = false;
       const placeholderId = note.tweet_id.startsWith('unavailable_') ? null : `tweet_${note.tweet_id}`;
       if (placeholderId) {
         placeholderExists = await supabase.scrapedNotewriterNoteExists(placeholderId);
-        console.log(`   DEBUG: placeholderId=${placeholderId}, placeholderExists=${placeholderExists}`);
       }
 
       if (placeholderExists && placeholderId) {
@@ -654,7 +665,6 @@ async function main() {
         console.log(`${progress} ✓ UPDATED: ${placeholderId.substring(0, 20)}... → ${note.note_id.substring(0, 15)}...`);
       } else if (!exists) {
         // Brand new note - always upsert to ensure it exists before snapshot
-        console.log(`   DEBUG: Creating new note...`);
         await supabase.upsertScrapedNotewriterNote({
           note_id: note.note_id,
           tweet_id: note.tweet_id,
@@ -664,7 +674,6 @@ async function main() {
         newNotes++;
         console.log(`${progress} ✓ NEW: ${note.note_id.substring(0, 20)}...`);
       } else {
-        console.log(`${progress} EXISTS (skipping note creation)`);
         existingNotes++;
       }
 
