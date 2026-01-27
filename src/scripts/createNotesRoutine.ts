@@ -55,12 +55,14 @@ async function main() {
     // Track bot usage for summary
     const botUsage: Record<string, number> = {};
 
-    // Get existing tweet IDs from Supabase (to avoid reprocessing)
+    // Get tweet IDs to permanently skip (submitted + 2x no-correction-needed)
     let skipPostIds = new Set<string>();
+    let allProcessedIds = new Set<string>();
     if (supabaseLogger) {
       try {
         skipPostIds = await supabaseLogger.getProcessedTweetIds();
-        console.log(`[main] Skipping ${skipPostIds.size} already-processed posts`);
+        allProcessedIds = await supabaseLogger.getAllProcessedTweetIds();
+        console.log(`[main] Permanently skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed`);
       } catch (err) {
         console.warn("[main] Failed to get processed tweet IDs:", err);
       }
@@ -68,10 +70,23 @@ async function main() {
       console.log("[main] No Supabase logger - not skipping any posts");
     }
 
-    let posts = await fetchEligiblePosts(maxPosts, skipPostIds, 3);
+    // Fetch eligible posts, only excluding permanently-skipped tweets
+    const allEligible = await fetchEligiblePosts(maxPosts * 2, skipPostIds, 3);
+
+    // Separate into new tweets and retries
+    const newPosts = allEligible.filter((p) => !allProcessedIds.has(p.id));
+    const retryPosts = allEligible.filter((p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id));
+
+    // New tweets first, then fill remaining slots with retries
+    const posts = [
+      ...newPosts.slice(0, maxPosts),
+      ...retryPosts.slice(0, Math.max(0, maxPosts - newPosts.length)),
+    ].slice(0, maxPosts);
+
+    console.log(`[main] ${newPosts.length} new, ${retryPosts.length} retryable → processing ${posts.length} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`);
 
     if (!posts.length) {
-      console.log("No new eligible posts found.");
+      console.log("No eligible posts found (new or retryable).");
       clearTimeout(globalTimeout);
       await closeBrowser();
       process.exit(0);

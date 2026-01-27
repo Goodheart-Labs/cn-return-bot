@@ -5,15 +5,15 @@
  * Runs positive claims, disagreement, and helpfulness filters before deciding to post.
  */
 
-import { Bot, PipelineResult, PostContent } from "./types";
-import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
-import { check as checkNote } from "../pipeline/check";
+import { Bot, PipelineResult, PostContent } from "../types";
+import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
+import { writeNoteWithSearchFn as writeNote } from "../../pipeline/writeNoteWithSearchGoal";
+import { check as checkNote } from "../../pipeline/check";
 import {
   runScoringFilters,
   checkAllThresholds,
   AllFilterScores,
-} from "../pipeline/scoringFilters";
+} from "../../pipeline/scoringFilters";
 
 // Bot model configuration - easy to tweak per-bot
 const MODELS = {
@@ -28,7 +28,7 @@ export const opusScored: Bot = {
   name: "Opus (Scored)",
   description:
     "Opus 4.5 with scoring filters: positive claims, disagreement, helpfulness",
-  weight: 30,
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
