@@ -53,58 +53,6 @@ async function waitForSelector(page: Page, selector: string, timeout = 5000): Pr
   }
 }
 
-async function extractNoteFromDetailPage(page: Page): Promise<{ noteId: string; createdAt: string; status: string } | null> {
-  // Wait for detail page to load
-  await new Promise(r => setTimeout(r, 1000));
-
-  const url = page.url();
-
-  // Check if we're on a note detail page
-  const noteIdMatch = url.match(/\/communitynotes\/t\/(\d+)/);
-  if (!noteIdMatch) {
-    return null;
-  }
-
-  const noteId = noteIdMatch[1];
-
-  // Extract created date and status from the page
-  // Target the main content area, not the entire body (to avoid pollution from sidebars/lists)
-  const pageData = await page.evaluate(() => {
-    // Try to find the main content container
-    const main = document.querySelector('main') ||
-                 document.querySelector('[data-testid="primaryColumn"]') ||
-                 document.querySelector('[role="main"]');
-
-    const text = main ? (main as HTMLElement).innerText : document.body.innerText;
-
-    // Look for status indicators - order matters!
-    let status = 'UNKNOWN';
-    if (text.includes('Currently not rated helpful')) {
-      status = 'CURRENTLY_RATED_NOT_HELPFUL';
-    } else if (text.includes('Currently rated helpful')) {
-      status = 'CURRENTLY_RATED_HELPFUL';
-    } else if (text.includes('Needs more ratings')) {
-      status = 'NEEDS_MORE_RATINGS';
-    } else if (text.match(/Shown on X/i) && !text.includes('Not shown on X')) {
-      status = 'SHOWN_ON_X';
-    } else if (text.includes('Not shown on X')) {
-      status = 'NOT_SHOWN_ON_X';
-    }
-
-    // Look for created date (format: "Jan 21, 2026" or similar)
-    const dateMatch = text.match(/(?:Created|Written)[:\s]*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})/i);
-    const createdAt = dateMatch ? dateMatch[1] : '';
-
-    return { status, createdAt };
-  });
-
-  return {
-    noteId,
-    createdAt: pageData.createdAt,
-    status: pageData.status
-  };
-}
-
 async function main() {
   // Parse args - support --fresh flag anywhere
   const args = process.argv.slice(2);
@@ -351,24 +299,32 @@ async function main() {
 
       console.log(`   🖱️ Clicking View details at (${clickResult.x.toFixed(0)}, ${clickResult.y.toFixed(0)}) [${clickResult.tag}]`);
 
-      // Use page.mouse.click for a real mouse click, with timeout protection
-      try {
-        await Promise.race([
-          page.mouse.click(clickResult.x, clickResult.y),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Click timeout')), 10000))
-        ]);
-      } catch (clickErr) {
-        console.log(`   ⚠️ Click error (skipping): ${clickErr}`);
-        continue;
-      }
+      // Retry click + modal extraction up to 2 times for transient failures
+      let modalData: { noteId: string | null; status: string; submittedDate: string; usedFallback?: boolean } | null = null;
+      for (let clickAttempt = 0; clickAttempt < 2; clickAttempt++) {
+        if (clickAttempt > 0) {
+          console.log(`   🔄 Retry ${clickAttempt} for click...`);
+          await randomDelay(500, 1000);
+        }
 
-      // Wait for modal panel to appear with human-like timing
-      await randomDelay(1200, 2000);
+        // Use page.mouse.click for a real mouse click, with timeout protection
+        try {
+          await Promise.race([
+            page.mouse.click(clickResult.x, clickResult.y),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Click timeout')), 10000))
+          ]);
+        } catch (clickErr) {
+          console.log(`   ⚠️ Click error: ${clickErr}`);
+          continue;
+        }
+
+        // Wait for modal panel to appear with human-like timing
+        await randomDelay(1200, 2000);
 
       // Check if modal panel opened by looking for "Note Details" heading or Note ID
       // IMPORTANT: Only look at the modal content, not the entire page body
       // (background list may have notes with different statuses that pollute detection)
-      const modalData = await page.evaluate(() => {
+      modalData = await page.evaluate(() => {
         // Find the modal element - X uses various dialog selectors
         const modal = document.querySelector('[data-testid="sheetDialog"]') ||
                       document.querySelector('[role="dialog"]') ||
@@ -461,6 +417,14 @@ async function main() {
 
         return { noteId, status, submittedDate, usedFallback };
       });
+
+        // If we got data, break out of retry loop
+        if (modalData?.noteId) break;
+
+        // Close any partial modal before retrying
+        await page.keyboard.press('Escape');
+        await randomDelay(200, 400);
+      } // end retry loop
 
       if (!modalData || !modalData.noteId) {
         console.log(`   ⚠️ Modal didn't open or couldn't extract Note ID for tweet ${tweetData.tweetId || 'unavailable'}`);
@@ -648,6 +612,21 @@ async function main() {
     const progress = `[${idx + 1}/${noteArray.length}]`;
 
     try {
+      // Validate note data before DB insertion
+      if (!note.note_id || !/^\d{18,20}$/.test(note.note_id)) {
+        console.error(`${progress} ✗ SKIP: Invalid note_id: ${note.note_id}`);
+        errorCount++;
+        continue;
+      }
+      if (!note.tweet_id) {
+        console.error(`${progress} ✗ SKIP: Missing tweet_id for note ${note.note_id}`);
+        errorCount++;
+        continue;
+      }
+      if (!note.cn_status || note.cn_status === 'UNKNOWN') {
+        console.warn(`${progress} ⚠️ Note ${note.note_id} has unknown status, proceeding anyway`);
+      }
+
       // Check if note exists
       const exists = await supabase.scrapedNotewriterNoteExists(note.note_id);
 
