@@ -523,6 +523,61 @@ export class SupabaseLogger {
     }
   }
 
+  /**
+   * Get pipeline run outcomes grouped by bot
+   */
+  async getPipelineRunsByBot(): Promise<Record<string, { total: number; submitted: number; filtered: number; failed: number; rejected: number; created_at_min?: string; created_at_max?: string }>> {
+    const { data, error } = await this.client
+      .from("pipeline_runs")
+      .select("bot_id, outcome, created_at");
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching pipeline runs by bot:", error);
+      return {};
+    }
+
+    const result: Record<string, { total: number; submitted: number; filtered: number; failed: number; rejected: number; created_at_min?: string; created_at_max?: string }> = {};
+
+    for (const row of data || []) {
+      const bot = row.bot_id || "unknown";
+      if (!result[bot]) {
+        result[bot] = { total: 0, submitted: 0, filtered: 0, failed: 0, rejected: 0 };
+      }
+      result[bot].total++;
+      const outcome = row.outcome as "submitted" | "filtered" | "failed" | "rejected";
+      if (outcome in result[bot]) {
+        result[bot][outcome]++;
+      }
+      if (!result[bot].created_at_min || row.created_at < result[bot].created_at_min!) {
+        result[bot].created_at_min = row.created_at;
+      }
+      if (!result[bot].created_at_max || row.created_at > result[bot].created_at_max!) {
+        result[bot].created_at_max = row.created_at;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Get scraped note IDs in a given range (for coverage checks)
+   */
+  async getScrapedNoteIdsInRange(minId: string, maxId: string): Promise<string[]> {
+    const { data, error } = await this.client
+      .from("scraped_notewriter_notes")
+      .select("note_id")
+      .gte("note_id", minId)
+      .lte("note_id", maxId)
+      .not("note_id", "like", "tweet_%");
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching note IDs in range:", error);
+      return [];
+    }
+
+    return (data || []).map((n: { note_id: string }) => n.note_id);
+  }
+
   // ============================================
   // Notes with Snapshot Data
   // ============================================
