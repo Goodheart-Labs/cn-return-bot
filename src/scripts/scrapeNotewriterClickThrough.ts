@@ -131,6 +131,61 @@ async function main() {
   let stuckCount = 0;
   const maxStuck = 50; // Increased to handle patches of unavailable posts
 
+  // Initialize Supabase early for incremental saving
+  const supabase = new SupabaseLogger();
+  let newNotes = 0;
+  let updatedIds = 0;
+  let existingNotes = 0;
+  let snapshotsCreated = 0;
+  let errorCount = 0;
+
+  async function saveNoteIncrementally(note: ScrapedNote): Promise<void> {
+    try {
+      // Validate
+      if (!note.note_id || !/^\d{18,20}$/.test(note.note_id)) {
+        console.error(`   ✗ SKIP: Invalid note_id: ${note.note_id}`);
+        errorCount++;
+        return;
+      }
+      if (!note.tweet_id) {
+        console.error(`   ✗ SKIP: Missing tweet_id for note ${note.note_id}`);
+        errorCount++;
+        return;
+      }
+
+      const exists = await supabase.scrapedNotewriterNoteExists(note.note_id);
+      const placeholderId = note.tweet_id.startsWith('unavailable_') ? null : `tweet_${note.tweet_id}`;
+      let placeholderExists = false;
+      if (placeholderId) {
+        placeholderExists = await supabase.scrapedNotewriterNoteExists(placeholderId);
+      }
+
+      if (placeholderExists && placeholderId) {
+        await supabase.updateScrapedNoteId(placeholderId, note.note_id);
+        updatedIds++;
+      } else if (!exists) {
+        await supabase.upsertScrapedNotewriterNote({
+          note_id: note.note_id,
+          tweet_id: note.tweet_id,
+          note_text: note.note_text,
+          source_url: note.source_url,
+        });
+        newNotes++;
+      } else {
+        existingNotes++;
+      }
+
+      await supabase.insertScrapedNotewriterSnapshot({
+        note_id: note.note_id,
+        cn_status: note.cn_status,
+      });
+      snapshotsCreated++;
+    } catch (err) {
+      errorCount++;
+      console.error(`   ✗ DB ERROR: ${note.note_id}:`, err);
+    }
+  }
+
   // Wrap entire scraping loop in try-catch to ensure we always get to import
   // even if Puppeteer throws a ProtocolError
   try {
@@ -458,6 +513,9 @@ async function main() {
       foundNewNote = true;
       console.log(`   ✓ ${collectedNotes.size}: ${modalData.noteId} (${modalData.status})`);
 
+      // Save to DB immediately so data isn't lost if process is killed
+      await saveNoteIncrementally(note);
+
       // Close the modal by clicking the X button
       const closed = await page.evaluate(() => {
         // Look for close button with X
@@ -596,80 +654,9 @@ async function main() {
     process.exit(0);
   }
 
-  // Import to Supabase
-  console.log("💾 Importing to Supabase...\n");
-
-  const supabase = new SupabaseLogger();
-
-  let newNotes = 0;
-  let updatedIds = 0;
-  let existingNotes = 0;
-  let snapshotsCreated = 0;
-  let errorCount = 0;
-
-  const noteArray = [...collectedNotes.values()];
-  for (const [idx, note] of noteArray.entries()) {
-    const progress = `[${idx + 1}/${noteArray.length}]`;
-
-    try {
-      // Validate note data before DB insertion
-      if (!note.note_id || !/^\d{18,20}$/.test(note.note_id)) {
-        console.error(`${progress} ✗ SKIP: Invalid note_id: ${note.note_id}`);
-        errorCount++;
-        continue;
-      }
-      if (!note.tweet_id) {
-        console.error(`${progress} ✗ SKIP: Missing tweet_id for note ${note.note_id}`);
-        errorCount++;
-        continue;
-      }
-      if (!note.cn_status || note.cn_status === 'UNKNOWN') {
-        console.warn(`${progress} ⚠️ Note ${note.note_id} has unknown status, proceeding anyway`);
-      }
-
-      // Check if note exists
-      const exists = await supabase.scrapedNotewriterNoteExists(note.note_id);
-
-      // Also check if there's a placeholder entry for this tweet (only if we have a real tweet_id)
-      let placeholderExists = false;
-      const placeholderId = note.tweet_id.startsWith('unavailable_') ? null : `tweet_${note.tweet_id}`;
-      if (placeholderId) {
-        placeholderExists = await supabase.scrapedNotewriterNoteExists(placeholderId);
-      }
-
-      if (placeholderExists && placeholderId) {
-        // Update placeholder with real ID - this also migrates snapshots
-        await supabase.updateScrapedNoteId(placeholderId, note.note_id);
-        updatedIds++;
-        console.log(`${progress} ✓ UPDATED: ${placeholderId.substring(0, 20)}... → ${note.note_id.substring(0, 15)}...`);
-      } else if (!exists) {
-        // Brand new note - always upsert to ensure it exists before snapshot
-        await supabase.upsertScrapedNotewriterNote({
-          note_id: note.note_id,
-          tweet_id: note.tweet_id,
-          note_text: note.note_text,
-          source_url: note.source_url,
-        });
-        newNotes++;
-        console.log(`${progress} ✓ NEW: ${note.note_id.substring(0, 20)}...`);
-      } else {
-        existingNotes++;
-      }
-
-      // Always create a snapshot - the note should now exist
-      await supabase.insertScrapedNotewriterSnapshot({
-        note_id: note.note_id,
-        cn_status: note.cn_status,
-      });
-      snapshotsCreated++;
-    } catch (err) {
-      errorCount++;
-      console.error(`${progress} ✗ ERROR: ${note.note_id}:`, err);
-    }
-  }
-
+  // Notes were already saved incrementally during scraping
   console.log("\n" + "=".repeat(60));
-  console.log("✅ Import complete!");
+  console.log("✅ Scrape & import complete!");
   console.log(`   • New notes:         ${newNotes}`);
   console.log(`   • Updated IDs:       ${updatedIds}`);
   console.log(`   • Existing notes:    ${existingNotes}`);
