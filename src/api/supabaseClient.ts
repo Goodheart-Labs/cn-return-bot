@@ -92,6 +92,9 @@ export interface NoteWithSnapshot {
 
   // Timestamps
   first_helpful_at?: string;
+
+  // Media info (from pipeline_runs)
+  has_video?: boolean;
 }
 
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
@@ -548,6 +551,7 @@ export class SupabaseLogger {
       if (outcome in result[bot]) {
         result[bot][outcome]++;
       }
+      // Track date range
       if (!result[bot].created_at_min || row.created_at < result[bot].created_at_min!) {
         result[bot].created_at_min = row.created_at;
       }
@@ -615,6 +619,25 @@ export class SupabaseLogger {
       throw snapshotError;
     }
 
+    // Get video info from pipeline_runs
+    const { data: pipelineRuns, error: pipelineError } = await this.client
+      .from("pipeline_runs")
+      .select("tweet_id, has_video")
+      .eq("outcome", "submitted");
+
+    if (pipelineError) {
+      console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
+      // Don't throw - video info is optional
+    }
+
+    // Build tweet_id -> has_video map
+    const videoInfo: Record<string, boolean> = {};
+    for (const run of pipelineRuns || []) {
+      if (run.tweet_id && run.has_video !== null) {
+        videoInfo[run.tweet_id] = run.has_video;
+      }
+    }
+
     // Build latest snapshot per note_id
     const latestSnapshot: Record<
       string,
@@ -670,6 +693,9 @@ export class SupabaseLogger {
 
         // Timestamps
         first_helpful_at: note.first_helpful_at,
+
+        // Media info
+        has_video: videoInfo[note.tweet_id],
       };
     });
   }
@@ -812,26 +838,15 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get tweet IDs that have already been processed (to avoid duplicates)
+   * Get tweet IDs that should be permanently skipped:
+   * - Tweets that were submitted (have a note)
+   * - Tweets with 2+ "no_correction_needed" rejections
    */
   async getProcessedTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
 
     try {
-      // Get from pipeline_runs (recent processing attempts)
-      const { data: pipelineData, error: pipelineError } = await this.client
-        .from("pipeline_runs")
-        .select("tweet_id");
-
-      if (pipelineError) {
-        console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
-      } else if (pipelineData) {
-        pipelineData.forEach((row) => {
-          if (row.tweet_id) tweetIds.add(row.tweet_id);
-        });
-      }
-
-      // Also get from notes table (submitted notes)
+      // Get submitted notes - always skip these
       const { data: notesData, error: notesError } = await this.client
         .from("notes")
         .select("tweet_id");
@@ -844,11 +859,67 @@ export class SupabaseLogger {
         });
       }
 
-      console.log(`[SupabaseLogger] Found ${tweetIds.size} already-processed tweet IDs`);
+      // Get tweets with 2+ "no_correction_needed" rejections
+      const { data: pipelineData, error: pipelineError } = await this.client
+        .from("pipeline_runs")
+        .select("tweet_id")
+        .eq("outcome", "rejected")
+        .eq("outcome_reason", "no_correction_needed");
+
+      if (pipelineError) {
+        console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
+      } else if (pipelineData) {
+        const rejectionCounts = new Map<string, number>();
+        pipelineData.forEach((row) => {
+          if (row.tweet_id) {
+            rejectionCounts.set(row.tweet_id, (rejectionCounts.get(row.tweet_id) || 0) + 1);
+          }
+        });
+        for (const [tweetId, count] of rejectionCounts) {
+          if (count >= 2) {
+            tweetIds.add(tweetId);
+          }
+        }
+      }
+
+      console.log(`[SupabaseLogger] Found ${tweetIds.size} permanently-skipped tweet IDs`);
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);
-      // Return empty set on error to allow processing to continue
+      return new Set();
+    }
+  }
+
+  /**
+   * Get all tweet IDs that have ever been processed (pipeline_runs + notes).
+   * Used to distinguish new tweets from retries.
+   */
+  async getAllProcessedTweetIds(): Promise<Set<string>> {
+    const tweetIds = new Set<string>();
+    try {
+      const { data, error } = await this.client
+        .from("pipeline_runs")
+        .select("tweet_id");
+
+      if (!error && data) {
+        data.forEach((row) => {
+          if (row.tweet_id) tweetIds.add(row.tweet_id);
+        });
+      }
+
+      const { data: notesData, error: notesError } = await this.client
+        .from("notes")
+        .select("tweet_id");
+
+      if (!notesError && notesData) {
+        notesData.forEach((row) => {
+          if (row.tweet_id) tweetIds.add(row.tweet_id);
+        });
+      }
+
+      return tweetIds;
+    } catch (error) {
+      console.error("[SupabaseLogger] Error fetching all processed tweet IDs:", error);
       return new Set();
     }
   }

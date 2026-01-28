@@ -10,14 +10,14 @@
  * - opus-main has best delta (helpful - not helpful) at 19.4%
  */
 
-import { Bot, PipelineResult, PostContent } from "./types";
-import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
-import { check as checkNote } from "../pipeline/check";
+import { Bot, PipelineResult, PostContent } from "../types";
+import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
+import { writeNoteWithSearchFn as writeNote } from "../../pipeline/writeNoteWithSearchGoal";
+import { check as checkNote } from "../../pipeline/check";
 import {
   runScoringFilters,
   AllFilterScores,
-} from "../pipeline/scoringFilters";
+} from "../../pipeline/scoringFilters";
 
 // Bot model configuration
 const MODELS = {
@@ -40,7 +40,7 @@ export const opusStrict: Bot = {
   name: "Opus (Strict)",
   description:
     "Opus 4.5 with stricter quality filters: higher thresholds (0.7) and min note length",
-  weight: 15,
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
