@@ -1,6 +1,6 @@
 # Notewriter Scraper
 
-Scrapes note data from the X/Twitter Community Notes notewriter page.
+Scrapes our bot-written notes from the X/Twitter Community Notes notewriter page to track their status changes and view counts over time.
 
 ## Why a scraper?
 

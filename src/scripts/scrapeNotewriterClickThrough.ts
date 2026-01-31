@@ -59,9 +59,17 @@ async function main() {
   const freshStart = args.includes('--fresh');
   const nonFlagArgs = args.filter(a => !a.startsWith('--'));
 
-  const username = nonFlagArgs[0] || DEFAULT_USERNAME;
+  // If first non-flag arg is purely numeric, treat it as maxNotes (not username)
+  let username = DEFAULT_USERNAME;
+  let maxNotesStr = "500";
+  if (nonFlagArgs.length === 1 && /^\d+$/.test(nonFlagArgs[0])) {
+    maxNotesStr = nonFlagArgs[0];
+  } else {
+    username = nonFlagArgs[0] || DEFAULT_USERNAME;
+    maxNotesStr = nonFlagArgs[1] || "500";
+  }
   const notewriterUrl = `https://x.com/i/communitynotes/u/${username}`;
-  const maxNotes = parseInt(nonFlagArgs[1] || "500", 10);
+  const maxNotes = parseInt(maxNotesStr, 10);
 
   console.log("🔌 Connecting to Chrome on port 9222...\n");
 
