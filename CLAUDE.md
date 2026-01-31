@@ -24,8 +24,8 @@ A bot that automatically writes Community Notes for X/Twitter posts. Runs on Git
 ## Database tables (Supabase)
 
 - `notes` - Bot-submitted notes with tracking (since Jan 7, 2026)
-- `scraped_notewriter_notes` - All notes scraped from notewriter page (back to Aug 2025). Older entries have placeholder note_ids like `tweet_XXXXX`
-- `scraped_notewriter_snapshots` - Point-in-time status/view counts for scraped notes
+- `scraped_notewriter_notes` - Bot-written notes scraped back from the notewriter page for tracking (back to Aug 2025). Older entries have placeholder note_ids like `tweet_XXXXX`
+- `scraped_notewriter_snapshots` - Point-in-time status/view counts for our bot-written notes (from scraping)
 - `pipeline_runs` - Every tweet processed, with outcome (submitted/filtered/failed/rejected)
 - `pipeline_scores` - Scores attached to pipeline runs
 - `notewriters` - Notewriter accounts
@@ -34,7 +34,13 @@ A bot that automatically writes Community Notes for X/Twitter posts. Runs on Git
 
 ## Notewriter scraper
 
-To scrape view counts from the Community Notes notewriter page, see `scripts/README.md`. Data goes into `scraped_notewriter_notes` and `scraped_notewriter_snapshots` tables.
+Scrapes our own bot-written notes from the notewriter page to track status changes and view counts over time. See `scripts/README.md` for usage. Data goes into `scraped_notewriter_notes` and `scraped_notewriter_snapshots` tables.
+
+To run the scraper, just run it directly — Chrome with remote debugging will already be available or will launch automatically. Don't ask the user to manually navigate to the notewriter page.
+
+```bash
+bun run src/scripts/scrapeNotewriterClickThrough.ts 20
+```
 
 ## Gotchas
 

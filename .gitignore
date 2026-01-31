@@ -44,4 +44,24 @@ cn-data/
 
 # Elo rating web app compiled files
 src/elo-rating-web/dist/
-src/elo-rating-web/*.jsscraped-notes-*.json
+src/elo-rating-web/*.js
+
+# Scraped data dumps
+scraped-notes*.json
+scraped-notes*.md
+scraped-visible-text*.txt
+comparison-data.json
+scraper-visible-text-overlap-analysis.md
+
+# Generated HTML reports (regenerate with bun run src/scripts/generate*.ts)
+docs/*.html
+
+# Temp notes / not for git
+don't push to git*.md
+dont push to git*.md
+
+# Playground
+cn-bot-playground/
+
+# Dynamic workflow (not checked in)
+create-notes-routine-dynamic.yml
