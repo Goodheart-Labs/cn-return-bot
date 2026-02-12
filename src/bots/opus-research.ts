@@ -1,0 +1,157 @@
+/**
+ * Opus Research Bot
+ *
+ * Research bot that uses Grok for initial X/Twitter search, then Claude for everything else.
+ * Flow:
+ * 1. Grok searches X for context (parallel with Claude's first search)
+ * 2. Claude analyzes gaps and does follow-up research (1-2 rounds)
+ * 3. Claude writes the note from accumulated research
+ * 4. Claude checks the note against its source
+ */
+
+import { Bot, PipelineResult } from "./types";
+import { check as checkNote } from "../pipeline/check";
+import {
+  searchXWithGrok,
+  extractGrokQuotedTweet,
+  compareQuotedTweets,
+} from "../pipeline/grokSearch";
+import { claudeFirstSearch, followUpResearch } from "../pipeline/researchLoop";
+import { writeNoteFn as writeNote } from "../pipeline/writeNote";
+
+const MODELS = {
+  grokSearch: "grok-4-fast",
+  research: "anthropic/claude-opus-4.6",
+  analysis: "anthropic/claude-opus-4.6",
+  noteWriting: "anthropic/claude-opus-4.6",
+  checking: "anthropic/claude-opus-4.6",
+};
+
+export const opusResearch: Bot = {
+  id: "opus-research",
+  name: "Opus 4.6 + Grok X Search",
+  description:
+    "Research bot: Grok for initial X search, Claude Opus 4.6 for analysis and note writing",
+  weight: 15,
+
+  async runPipeline(post, content): Promise<PipelineResult | null> {
+    let lastStage = "started";
+    const allResearch: string[] = [];
+    let collectedUrls: string[] = [];
+
+    try {
+      // 1. Run Grok X search and Claude first search IN PARALLEL
+      console.log(`[${this.id}] Starting parallel searches (Grok + Claude)...`);
+      const [grokResult, claudeFirstResult] = await Promise.all([
+        searchXWithGrok(post.id, content.text, { model: MODELS.grokSearch }),
+        claudeFirstSearch(content.text, { model: MODELS.research }, content.retweetContext),
+      ]);
+      lastStage = "parallel_search";
+      allResearch.push(`--- Grok X Search ---\n${grokResult}`);
+      allResearch.push(`--- Claude Initial Research ---\n${claudeFirstResult}`);
+      console.log(`[${this.id}] Parallel searches complete`);
+
+      // 2. Compare Grok's quoted tweet with our retweetContext
+      const grokQuotedTweet = extractGrokQuotedTweet(grokResult);
+      const quoteMismatch = compareQuotedTweets(grokQuotedTweet, content.retweetContext);
+      if (quoteMismatch) {
+        throw new Error(quoteMismatch);
+      }
+
+      // 3. First follow-up research - analyze and extract URLs
+      console.log(`[${this.id}] Claude follow-up research (round 1)...`);
+      const followUp1 = await followUpResearch(
+        content.text,
+        allResearch.join("\n\n"),
+        1,
+        { model: MODELS.analysis },
+        content.retweetContext,
+        grokResult
+      );
+      lastStage = "follow_up_1";
+      allResearch.push(`--- Claude Follow-up 1 ---\n${followUp1.content}`);
+      collectedUrls.push(...followUp1.urls);
+      console.log(`[${this.id}] URLs found: ${followUp1.urls.length}`);
+
+      // 4. Optional second follow-up - only if more research needed
+      if (followUp1.hasGaps) {
+        console.log(`[${this.id}] More research needed: ${followUp1.researchRequest}`);
+
+        const followUp2 = await followUpResearch(
+          content.text,
+          allResearch.join("\n\n"),
+          2,
+          { model: MODELS.analysis },
+          content.retweetContext,
+          grokResult
+        );
+        lastStage = "follow_up_2";
+        allResearch.push(`--- Claude Follow-up 2 ---\n${followUp2.content}`);
+        collectedUrls.push(...followUp2.urls);
+
+        if (!followUp2.hasGaps) {
+          console.log(`[${this.id}] Satisfied after follow-up 2, proceeding to note writing`);
+        } else {
+          console.log(`[${this.id}] Still has gaps but proceeding (max iterations reached)`);
+        }
+      } else {
+        console.log(`[${this.id}] No additional research needed, proceeding to note writing`);
+      }
+
+      // 5. Write note with all accumulated research
+      console.log(`[${this.id}] Writing note with ${allResearch.length} research rounds...`);
+      const combinedResearch = allResearch
+        .map((r, i) => `--- Research Round ${i + 1} ---\n${r}`)
+        .join("\n\n");
+      const noteResult = await writeNote(
+        {
+          text: content.text,
+          searchResults: combinedResearch,
+          citations: collectedUrls,
+          retweetContext: content.retweetContext,
+        },
+        { model: MODELS.noteWriting }
+      );
+      lastStage = "note_writing";
+
+      // 6. Check the note
+      const checkResult = await checkNote(
+        {
+          note: noteResult.note,
+          url: noteResult.url,
+          status: noteResult.status,
+        },
+        { model: MODELS.checking }
+      );
+      lastStage = "check";
+
+      return {
+        post,
+        botId: this.id,
+        lastStage,
+        searchContextResult: {
+          text: content.text,
+          searchResults: allResearch.join("\n\n---\n\n"),
+          citations: collectedUrls,
+        },
+        noteResult,
+        checkResult,
+      };
+    } catch (err: any) {
+      console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
+      return {
+        post,
+        botId: this.id,
+        lastStage,
+        searchContextResult: {
+          text: content.text,
+          searchResults: allResearch.join("\n\n") || "",
+          citations: collectedUrls,
+        },
+        noteResult: { note: "", url: "", status: "ERROR" },
+        checkResult: "",
+        error: err?.message || String(err),
+      };
+    }
+  },
+};

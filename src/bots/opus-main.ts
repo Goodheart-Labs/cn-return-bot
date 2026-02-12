@@ -1,32 +1,30 @@
 /**
- * Opus Main Bot
+ * Opus Main v2 Bot
  *
  * Primary bot using Claude Opus 4.5 with standard Perplexity search.
- * This is the "production quality" bot that handles most traffic.
+ * Uses the unified writeNote pipeline with URL-aware character counting.
  */
 
-import { Bot, PipelineResult, PostContent } from "./types";
+import { Bot, PipelineResult } from "./types";
 import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeNote } from "../pipeline/writeNoteWithSearchGoal";
+import { writeNoteFn as writeNote } from "../pipeline/writeNote";
 import { check as checkNote } from "../pipeline/check";
 
-// Bot model configuration - easy to tweak per-bot
 const MODELS = {
   search: "perplexity/sonar",
   noteWriting: "anthropic/claude-opus-4.5",
-  checking: "anthropic/claude-sonnet-4", // cheaper for validation
+  checking: "anthropic/claude-sonnet-4",
 };
 
 export const opusMain: Bot = {
-  id: "opus-main",
-  name: "Opus 4.5 (Main)",
-  description: "Primary bot using Claude Opus 4.5 for highest quality notes",
+  id: "opus-main-v2",
+  name: "Opus 4.5 (Main v2)",
+  description: "Primary bot using Claude Opus 4.5 with unified note writer",
   weight: 70,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {
-      // 1. Search with Perplexity
       const searchResult = await perplexitySearch(
         {
           text: content.text,
@@ -38,7 +36,6 @@ export const opusMain: Bot = {
       );
       lastStage = "search";
 
-      // 2. Write note
       const noteResult = await writeNote(
         {
           text: searchResult.text,
@@ -49,7 +46,6 @@ export const opusMain: Bot = {
       );
       lastStage = "note_writing";
 
-      // 3. Check the note
       const checkResult = await checkNote(
         {
           note: noteResult.note,

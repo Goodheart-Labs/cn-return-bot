@@ -1,8 +1,8 @@
 /**
- * Opus Concise Bot
+ * Kimi K2.5 Bot
  *
- * Variant of opus-main that focuses on staying within the 275 character limit.
- * Uses URL-aware character counting (X shortens URLs via t.co, so URLs count as 1 char).
+ * Experimental bot using Moonshot's Kimi K2.5 for note writing and checking.
+ * Uses Perplexity for search (same as opus-main).
  */
 
 import { Bot, PipelineResult } from "./types";
@@ -12,20 +12,20 @@ import { check as checkNote } from "../pipeline/check";
 
 const MODELS = {
   search: "perplexity/sonar",
-  noteWriting: "anthropic/claude-opus-4.5",
-  checking: "anthropic/claude-sonnet-4",
+  noteWriting: "moonshotai/kimi-k2.5",
+  checking: "moonshotai/kimi-k2.5",
 };
 
-export const opusConcise: Bot = {
-  id: "opus-concise",
-  name: "Opus 4.5 (Concise)",
-  description:
-    "Opus 4.5 variant focused on staying within 275 char limit using URL-aware counting",
-  weight: 15,
+export const kimiK2: Bot = {
+  id: "kimi-k2",
+  name: "Kimi K2.5",
+  description: "Experimental bot using Moonshot Kimi K2.5 for note writing",
+  weight: 0, // Disabled by default - set weight > 0 to enable
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {
+      // 1. Search with Perplexity
       const searchResult = await perplexitySearch(
         {
           text: content.text,
@@ -37,6 +37,7 @@ export const opusConcise: Bot = {
       );
       lastStage = "search";
 
+      // 2. Write note with Kimi K2.5
       const noteResult = await writeNote(
         {
           text: searchResult.text,
@@ -47,6 +48,7 @@ export const opusConcise: Bot = {
       );
       lastStage = "note_writing";
 
+      // 3. Check the note with Kimi K2.5
       const checkResult = await checkNote(
         {
           note: noteResult.note,
@@ -71,11 +73,7 @@ export const opusConcise: Bot = {
         post,
         botId: this.id,
         lastStage,
-        searchContextResult: {
-          text: content.text,
-          searchResults: "",
-          citations: [],
-        },
+        searchContextResult: { text: content.text, searchResults: "", citations: [] },
         noteResult: { note: "", url: "", status: "ERROR" },
         checkResult: "",
         error: err?.message || String(err),

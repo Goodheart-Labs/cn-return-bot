@@ -1,8 +1,7 @@
 /**
- * Opus Concise Bot
+ * Opus 4.6 Bot
  *
- * Variant of opus-main that focuses on staying within the 275 character limit.
- * Uses URL-aware character counting (X shortens URLs via t.co, so URLs count as 1 char).
+ * Same pipeline as opus-main but using Claude Opus 4.6 for all non-search stages.
  */
 
 import { Bot, PipelineResult } from "./types";
@@ -12,16 +11,15 @@ import { check as checkNote } from "../pipeline/check";
 
 const MODELS = {
   search: "perplexity/sonar",
-  noteWriting: "anthropic/claude-opus-4.5",
-  checking: "anthropic/claude-sonnet-4",
+  noteWriting: "anthropic/claude-opus-4.6",
+  checking: "anthropic/claude-opus-4.6",
 };
 
-export const opusConcise: Bot = {
-  id: "opus-concise",
-  name: "Opus 4.5 (Concise)",
-  description:
-    "Opus 4.5 variant focused on staying within 275 char limit using URL-aware counting",
-  weight: 15,
+export const opus46: Bot = {
+  id: "opus-4.6",
+  name: "Opus 4.6",
+  description: "Claude Opus 4.6 for note writing and checking",
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
@@ -71,11 +69,7 @@ export const opusConcise: Bot = {
         post,
         botId: this.id,
         lastStage,
-        searchContextResult: {
-          text: content.text,
-          searchResults: "",
-          citations: [],
-        },
+        searchContextResult: { text: content.text, searchResults: "", citations: [] },
         noteResult: { note: "", url: "", status: "ERROR" },
         checkResult: "",
         error: err?.message || String(err),

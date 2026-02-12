@@ -1,14 +1,15 @@
 /**
- * Opus Concise Bot
+ * Opus Main Bot (LEGACY - disabled)
  *
- * Variant of opus-main that focuses on staying within the 275 character limit.
- * Uses URL-aware character counting (X shortens URLs via t.co, so URLs count as 1 char).
+ * Original primary bot using the legacy note writer (raw character counting,
+ * no URL-aware length, no CRITICAL LENGTH CONSTRAINT in prompt).
+ * Kept for historical data tracking.
  */
 
-import { Bot, PipelineResult } from "./types";
-import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteFn as writeNote } from "../pipeline/writeNote";
-import { check as checkNote } from "../pipeline/check";
+import { Bot, PipelineResult } from "../types";
+import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
+import { writeNoteWithSearchFn as writeNote } from "../../pipeline/legacy/writeNoteLegacy";
+import { check as checkNote } from "../../pipeline/check";
 
 const MODELS = {
   search: "perplexity/sonar",
@@ -16,12 +17,11 @@ const MODELS = {
   checking: "anthropic/claude-sonnet-4",
 };
 
-export const opusConcise: Bot = {
-  id: "opus-concise",
-  name: "Opus 4.5 (Concise)",
-  description:
-    "Opus 4.5 variant focused on staying within 275 char limit using URL-aware counting",
-  weight: 15,
+export const opusMainLegacy: Bot = {
+  id: "opus-main",
+  name: "Opus 4.5 (Main Legacy)",
+  description: "Original primary bot using legacy note writer (raw char counting)",
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
@@ -71,11 +71,7 @@ export const opusConcise: Bot = {
         post,
         botId: this.id,
         lastStage,
-        searchContextResult: {
-          text: content.text,
-          searchResults: "",
-          citations: [],
-        },
+        searchContextResult: { text: content.text, searchResults: "", citations: [] },
         noteResult: { note: "", url: "", status: "ERROR" },
         checkResult: "",
         error: err?.message || String(err),

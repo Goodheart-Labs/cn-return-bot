@@ -1,8 +1,8 @@
 /**
- * Opus Concise Bot
+ * Sonar Pro Bot
  *
- * Variant of opus-main that focuses on staying within the 275 character limit.
- * Uses URL-aware character counting (X shortens URLs via t.co, so URLs count as 1 char).
+ * Same pipeline as opus-main but uses Perplexity's Sonar Pro for search,
+ * which provides deeper, more thorough search results.
  */
 
 import { Bot, PipelineResult } from "./types";
@@ -11,17 +11,16 @@ import { writeNoteFn as writeNote } from "../pipeline/writeNote";
 import { check as checkNote } from "../pipeline/check";
 
 const MODELS = {
-  search: "perplexity/sonar",
+  search: "perplexity/sonar-pro",
   noteWriting: "anthropic/claude-opus-4.5",
   checking: "anthropic/claude-sonnet-4",
 };
 
-export const opusConcise: Bot = {
-  id: "opus-concise",
-  name: "Opus 4.5 (Concise)",
-  description:
-    "Opus 4.5 variant focused on staying within 275 char limit using URL-aware counting",
-  weight: 15,
+export const sonarPro: Bot = {
+  id: "sonar-pro",
+  name: "Opus 4.5 + Sonar Pro",
+  description: "Opus 4.5 with Perplexity Sonar Pro for deeper search results",
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
@@ -71,11 +70,7 @@ export const opusConcise: Bot = {
         post,
         botId: this.id,
         lastStage,
-        searchContextResult: {
-          text: content.text,
-          searchResults: "",
-          citations: [],
-        },
+        searchContextResult: { text: content.text, searchResults: "", citations: [] },
         noteResult: { note: "", url: "", status: "ERROR" },
         checkResult: "",
         error: err?.message || String(err),

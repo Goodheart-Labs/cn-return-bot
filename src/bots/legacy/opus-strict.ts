@@ -12,7 +12,7 @@
 
 import { Bot, PipelineResult, PostContent } from "../types";
 import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeNote } from "../../pipeline/writeNoteWithSearchGoal";
+import { writeNoteFn as writeNote } from "../../pipeline/writeNote";
 import { check as checkNote } from "../../pipeline/check";
 import {
   runScoringFilters,

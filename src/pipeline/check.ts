@@ -2,7 +2,7 @@ import { createGoal } from "@tonerow/agent-framework";
 import { llm } from "./llm";
 import { z } from "zod";
 import { writeNoteOutput } from "./schemas";
-import { writeNoteWithSearch } from "./writeNoteWithSearchGoal";
+import { writeNote } from "./writeNote";
 import { getBrowser } from "./browserManager";
 
 const prompt = (
@@ -94,4 +94,4 @@ export const checkSource = createGoal({
 const c = checkSource.register({ name: "check" });
 c.define(check);
 
-checkSource.testFrom(writeNoteWithSearch);
+checkSource.testFrom(writeNote);
