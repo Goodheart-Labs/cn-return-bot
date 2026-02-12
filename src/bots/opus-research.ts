@@ -41,21 +41,32 @@ export const opusResearch: Bot = {
 
     try {
       // 1. Run Grok X search and Claude first search IN PARALLEL
+      // Grok failure is non-fatal; Claude failure aborts the pipeline
       console.log(`[${this.id}] Starting parallel searches (Grok + Claude)...`);
-      const [grokResult, claudeFirstResult] = await Promise.all([
-        searchXWithGrok(post.id, content.text, { model: MODELS.grokSearch }),
+      const [grokSettled, claudeFirstResult] = await Promise.all([
+        searchXWithGrok(post.id, content.text, { model: MODELS.grokSearch })
+          .catch((err) => {
+            console.warn(`[${this.id}] Grok search failed (continuing without it):`, err?.message || err);
+            return null;
+          }),
         claudeFirstSearch(content.text, { model: MODELS.research }, content.retweetContext),
       ]);
       lastStage = "parallel_search";
-      allResearch.push(`--- Grok X Search ---\n${grokResult}`);
+      const grokResult = grokSettled;
+      if (grokResult) {
+        allResearch.push(`--- Grok X Search ---\n${grokResult}`);
+      }
       allResearch.push(`--- Claude Initial Research ---\n${claudeFirstResult}`);
-      console.log(`[${this.id}] Parallel searches complete`);
+      console.log(`[${this.id}] Parallel searches complete (Grok: ${grokResult ? "ok" : "failed"})`);
 
-      // 2. Compare Grok's quoted tweet with our retweetContext
-      const grokQuotedTweet = extractGrokQuotedTweet(grokResult);
-      const quoteMismatch = compareQuotedTweets(grokQuotedTweet, content.retweetContext);
-      if (quoteMismatch) {
-        throw new Error(quoteMismatch);
+      // 2. Compare Grok's quoted tweet with our retweetContext (warning only)
+      if (grokResult) {
+        const grokQuotedTweet = extractGrokQuotedTweet(grokResult);
+        const quoteMismatch = compareQuotedTweets(grokQuotedTweet, content.retweetContext);
+        if (quoteMismatch) {
+          console.warn(`[${this.id}] Quote tweet mismatch (continuing): ${quoteMismatch}`);
+          allResearch.push(`--- Quote Tweet Mismatch Warning ---\n${quoteMismatch}`);
+        }
       }
 
       // 3. First follow-up research - analyze and extract URLs
@@ -66,7 +77,7 @@ export const opusResearch: Bot = {
         1,
         { model: MODELS.analysis },
         content.retweetContext,
-        grokResult
+        grokResult ?? undefined
       );
       lastStage = "follow_up_1";
       allResearch.push(`--- Claude Follow-up 1 ---\n${followUp1.content}`);
@@ -83,7 +94,7 @@ export const opusResearch: Bot = {
           2,
           { model: MODELS.analysis },
           content.retweetContext,
-          grokResult
+          grokResult ?? undefined
         );
         lastStage = "follow_up_2";
         allResearch.push(`--- Claude Follow-up 2 ---\n${followUp2.content}`);

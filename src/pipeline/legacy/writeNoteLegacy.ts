@@ -67,7 +67,7 @@ Post perhaps in need of community note:
 ${text}
 \`\`\`
 
-Perpelexity search results:
+Perplexity search results:
 \`\`\`
 ${searchResults}
 
@@ -143,7 +143,7 @@ Post perhaps in need of community note:
 ${text}
 \`\`\`
 
-Perpelexity search results:
+Perplexity search results:
 \`\`\`
 ${searchResults}
 

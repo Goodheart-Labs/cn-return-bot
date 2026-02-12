@@ -3,6 +3,10 @@
  *
  * Multi-round research using Claude: initial fact-check search,
  * then follow-up rounds to analyze gaps and gather more evidence.
+ *
+ * NOTE: This module uses OpenAI-compatible `llm.create` (via OpenRouter),
+ * while grokSearch.ts uses Vercel AI SDK's `generateText`. Error handling
+ * and response parsing differ between the two code paths.
  */
 
 import { llm } from "./llm";
@@ -108,7 +112,7 @@ export async function followUpResearch(
   const researchRequest = requestMatch?.[1]?.trim() || "None";
 
   const urlMatches = content.match(/https?:\/\/[^\s\])"'>]+/g) || [];
-  const urls = [...new Set(urlMatches)];
+  const urls = [...new Set(urlMatches.map((u) => u.replace(/[.,;:!?)]+$/, "")))];
 
   const hasGaps =
     researchRequest.toLowerCase() !== "none" && researchRequest !== "";
