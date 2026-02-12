@@ -20,7 +20,7 @@ export const opusMain: Bot = {
   id: "opus-main-v2",
   name: "Opus 4.5 (Main v2)",
   description: "Primary bot using Claude Opus 4.5 with unified note writer",
-  weight: 70,
+  weight: 35,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

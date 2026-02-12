@@ -32,7 +32,7 @@ export const opusResearch: Bot = {
   name: "Opus 4.6 + Grok X Search",
   description:
     "Research bot: Grok for initial X search, Claude Opus 4.6 for analysis and note writing",
-  weight: 15,
+  weight: 10,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

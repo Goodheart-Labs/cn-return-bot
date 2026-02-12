@@ -20,7 +20,7 @@ export const kimiK2: Bot = {
   id: "kimi-k2",
   name: "Kimi K2.5",
   description: "Experimental bot using Moonshot Kimi K2.5 for note writing",
-  weight: 0, // Disabled by default - set weight > 0 to enable
+  weight: 10,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
