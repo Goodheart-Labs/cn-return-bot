@@ -6,28 +6,38 @@
 
 import { Bot } from "./types";
 import { opusMain } from "./opus-main";
-import { opusConcise } from "./opus-concise";
+import { opusResearch } from "./opus-research";
+import { kimiK2 } from "./kimi-k2";
+import { opus46 } from "./opus-4.6";
+import { sonarPro } from "./sonar-pro";
 
 // Legacy bots (weight=0, kept for historical data)
+import { opusConcise } from "./opus-concise";
 import { geminiFlash } from "./legacy/gemini-flash";
 import { multiSearch } from "./legacy/multi-search";
 import { gemini3Flash } from "./legacy/gemini-3-flash";
 import { deepseek } from "./legacy/deepseek";
 import { opusScored } from "./legacy/opus-scored";
 import { opusStrict } from "./legacy/opus-strict";
+import { opusMainLegacy } from "./legacy/opus-main";
 
 // Register all bots here
 export const bots: Bot[] = [
   // Active bots
-  opusMain,      // 70%
-  opusConcise,   // 30%
+  opus46,         // 35%
+  opusMain,       // 35%
+  opusResearch,   // 10%
+  kimiK2,         // 10%
+  sonarPro,       // 10%
   // Legacy bots (disabled)
+  opusConcise,
   geminiFlash,
   multiSearch,
   gemini3Flash,
   deepseek,
   opusScored,
   opusStrict,
+  opusMainLegacy,
 ];
 
 /**

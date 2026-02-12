@@ -1,14 +1,15 @@
 /**
- * Opus Main v2 Bot
+ * Opus Main Bot (LEGACY - disabled)
  *
- * Primary bot using Claude Opus 4.5 with standard Perplexity search.
- * Uses the unified writeNote pipeline with URL-aware character counting.
+ * Original primary bot using the legacy note writer (raw character counting,
+ * no URL-aware length, no CRITICAL LENGTH CONSTRAINT in prompt).
+ * Kept for historical data tracking.
  */
 
-import { Bot, PipelineResult } from "./types";
-import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteFn as writeNote } from "../pipeline/writeNote";
-import { check as checkNote } from "../pipeline/check";
+import { Bot, PipelineResult } from "../types";
+import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
+import { writeNoteWithSearchFn as writeNote } from "../../pipeline/legacy/writeNoteLegacy";
+import { check as checkNote } from "../../pipeline/check";
 
 const MODELS = {
   search: "perplexity/sonar",
@@ -16,11 +17,11 @@ const MODELS = {
   checking: "anthropic/claude-sonnet-4",
 };
 
-export const opusMain: Bot = {
-  id: "opus-main-v2",
-  name: "Opus 4.5 (Main v2)",
-  description: "Primary bot using Claude Opus 4.5 with unified note writer",
-  weight: 35,
+export const opusMainLegacy: Bot = {
+  id: "opus-main",
+  name: "Opus 4.5 (Main Legacy)",
+  description: "Original primary bot using legacy note writer (raw char counting)",
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

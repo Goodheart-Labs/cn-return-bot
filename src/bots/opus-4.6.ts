@@ -1,8 +1,7 @@
 /**
- * Opus Main v2 Bot
+ * Opus 4.6 Bot
  *
- * Primary bot using Claude Opus 4.5 with standard Perplexity search.
- * Uses the unified writeNote pipeline with URL-aware character counting.
+ * Same pipeline as opus-main but using Claude Opus 4.6 for all non-search stages.
  */
 
 import { Bot, PipelineResult } from "./types";
@@ -12,14 +11,14 @@ import { check as checkNote } from "../pipeline/check";
 
 const MODELS = {
   search: "perplexity/sonar",
-  noteWriting: "anthropic/claude-opus-4.5",
-  checking: "anthropic/claude-sonnet-4",
+  noteWriting: "anthropic/claude-opus-4.6",
+  checking: "anthropic/claude-opus-4.6",
 };
 
-export const opusMain: Bot = {
-  id: "opus-main-v2",
-  name: "Opus 4.5 (Main v2)",
-  description: "Primary bot using Claude Opus 4.5 with unified note writer",
+export const opus46: Bot = {
+  id: "opus-4.6",
+  name: "Opus 4.6",
+  description: "Claude Opus 4.6 for note writing and checking",
   weight: 35,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {

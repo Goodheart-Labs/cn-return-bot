@@ -3,11 +3,16 @@ import { z } from "zod";
 import { llm } from "./llm";
 import { searchVersionOne } from "./searchContextGoal";
 import { textAndSearchResults, writeNoteOutput } from "./schemas";
-import { zodResponseFormat } from "openai/helpers/zod.mjs";
 import { parseStatusNoteUrl } from "./parseStatusNoteUrl";
+/**
+ * Count note length treating URLs as 1 character each (X shortens URLs via t.co)
+ */
+export function countNoteLength(note: string): number {
+  return note.replace(/https?:\/\/\S+/g, "X").length;
+}
 
 // Define the goal schema, similar to searchContext.ts
-export const writeNoteWithSearchGoal = createGoal({
+export const writeNoteGoal = createGoal({
   name: "write note with search",
   description:
     "Write a Community Note for a post on X using search results for context.",
@@ -15,7 +20,7 @@ export const writeNoteWithSearchGoal = createGoal({
   output: writeNoteOutput,
 });
 
-writeNoteWithSearchGoal.testFrom(searchVersionOne);
+writeNoteGoal.testFrom(searchVersionOne);
 
 const promptTemplate = ({
   text,
@@ -51,15 +56,17 @@ CRITICAL ANALYSIS STEPS:
 
 ONLY correct posts with clear factual errors supported by direct, relevant sources. Avoid:
 - General background context that doesn't contradict the claim
-- Sources about different timeframes than what the post discusses  
+- Sources about different timeframes than what the post discusses
 - Correcting things the post never actually claimed
 - Vague corrections that don't directly address the core assertion
+
+CRITICAL LENGTH CONSTRAINT: Your note text MUST be under 275 characters. URLs are shortened by X and count as only 1 character toward this limit. Be concise - every word must earn its place.
 
 Please start by responding with one of the following statuses "TWEET NOT SIGNIFICANTLY INCORRECT" "NO MISSING CONTEXT" "CORRECTION WITH TRUSTWORTHY CITATION" "CORRECTION WITHOUT TRUSTWORTHY CITATION"
 
 Format:
 [Status]
-[Direct correction stating exactly what is wrong]
+[Direct correction stating exactly what is wrong - MUST be under 275 chars with URLs counting as 1]
 [URL that specifically contradicts the claim]
 
 Post perhaps in need of community note:
@@ -67,7 +74,7 @@ Post perhaps in need of community note:
 ${text}
 \`\`\`
 
-Perpelexity search results:
+Research context:
 \`\`\`
 ${searchResults}
 
@@ -114,22 +121,24 @@ CRITICAL ANALYSIS STEPS:
 
 ONLY correct posts with clear factual errors supported by direct, relevant sources. Avoid:
 - General background context that doesn't contradict the claim
-- Sources about different timeframes than what the post discusses  
+- Sources about different timeframes than what the post discusses
 - Correcting things the post never actually claimed
 - Vague corrections that don't directly address the core assertion
+
+CRITICAL LENGTH CONSTRAINT: Your note text MUST be under 275 characters. URLs are shortened by X and count as only 1 character toward this limit. Be concise - every word must earn its place.
 
 Please start by responding with one of the following statuses "TWEET NOT SIGNIFICANTLY INCORRECT" "NO MISSING CONTEXT" "CORRECTION WITH TRUSTWORTHY CITATION" "CORRECTION WITHOUT TRUSTWORTHY CITATION"
 
 Format:
 [Status]
-[Direct correction stating exactly what is wrong]
+[Direct correction stating exactly what is wrong - MUST be under 275 chars with URLs counting as 1]
 [URL that specifically contradicts the claim]
 
-🚨 CRITICAL FAILURE: Your previous note was ${characterCount} characters - this VIOLATES the strict 275 character limit! You MUST drastically reduce this length NOW. This is NOT a suggestion - it is MANDATORY.
+🚨 CRITICAL FAILURE: Your previous note was ${characterCount} characters (with URLs as 1 char) - this VIOLATES the strict 275 character limit! You MUST drastically reduce this length NOW. This is NOT a suggestion - it is MANDATORY.
 
 REQUIRED ACTIONS:
 - CUT unnecessary words and filler phrases
-- Use shorter synonyms and abbreviations  
+- Use shorter synonyms and abbreviations
 - ELIMINATE any non-essential details
 - Remove redundant information
 - Make every single word count
@@ -143,7 +152,7 @@ Post perhaps in need of community note:
 ${text}
 \`\`\`
 
-Perpelexity search results:
+Research context:
 \`\`\`
 ${searchResults}
 
@@ -152,12 +161,12 @@ Citations:
 ${citations.join("\n")}
 \`\`\``;
 
-export const writeNoteWithSearch = writeNoteWithSearchGoal.register({
-  name: "write note with search v1",
+export const writeNote = writeNoteGoal.register({
+  name: "write note v1",
   config: [{ model: "anthropic/claude-sonnet-4" }],
 });
 
-export async function writeNoteWithSearchFn(
+export async function writeNoteFn(
   {
     text,
     searchResults,
@@ -179,7 +188,6 @@ export async function writeNoteWithSearchFn(
 
       let prompt: string;
       if (attempt === 1) {
-        // First attempt - use original prompt
         prompt = promptTemplate({
           text,
           searchResults,
@@ -188,7 +196,6 @@ export async function writeNoteWithSearchFn(
           currentDate: config.currentDate,
         });
       } else {
-        // Retry attempt - use previous result to provide feedback
         if (!previousParsed) {
           throw new Error("Previous result not available for retry");
         }
@@ -200,7 +207,7 @@ export async function writeNoteWithSearchFn(
           retweetContext,
           currentDate: config.currentDate,
           previousNote: previousParsed.note,
-          characterCount: previousParsed.note.length,
+          characterCount: countNoteLength(previousParsed.note),
         });
       }
 
@@ -217,17 +224,15 @@ export async function writeNoteWithSearchFn(
       const content = result.choices?.[0]?.message?.content ?? "";
       const parsed = parseStatusNoteUrl(content);
 
-      // Check if note is within character limit
-      if (parsed.note.length <= 275) {
+      const effectiveLength = countNoteLength(parsed.note);
+      if (effectiveLength <= 275) {
         return parsed;
       }
 
-      // Store for potential retry
       previousParsed = parsed;
 
-      // If we've reached max retries, reject the note - it will fail X's API anyway
       if (attempt >= maxRetries) {
-        const errorMsg = `Note exceeds 275 character limit after ${maxRetries} attempts: ${parsed.note.length} characters`;
+        const errorMsg = `Note exceeds 275 character limit after ${maxRetries} attempts: ${effectiveLength} effective characters (${parsed.note.length} raw)`;
         console.error(errorMsg);
         throw new Error(errorMsg);
       }
@@ -235,9 +240,9 @@ export async function writeNoteWithSearchFn(
 
     throw new Error("Unexpected error in retry logic");
   } catch (error) {
-    console.error("Error in writeNoteWithSearchFn:", error);
+    console.error("Error in writeNoteFn:", error);
     throw error;
   }
 }
 
-writeNoteWithSearch.define(writeNoteWithSearchFn);
+writeNote.define(writeNoteFn);

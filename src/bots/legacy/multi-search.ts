@@ -12,7 +12,7 @@
 
 import { Bot, PipelineResult, PostContent } from "../types";
 import { multiSourceSearch } from "../../pipeline/multiSourceSearch";
-import { writeNoteWithSearchFn as writeNote } from "../../pipeline/writeNoteWithSearchGoal";
+import { writeNoteFn as writeNote } from "../../pipeline/writeNote";
 import { check as checkNote } from "../../pipeline/check";
 
 // Bot model configuration - easy to tweak per-bot

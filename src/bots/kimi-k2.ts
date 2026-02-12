@@ -1,8 +1,8 @@
 /**
- * Opus Main v2 Bot
+ * Kimi K2.5 Bot
  *
- * Primary bot using Claude Opus 4.5 with standard Perplexity search.
- * Uses the unified writeNote pipeline with URL-aware character counting.
+ * Experimental bot using Moonshot's Kimi K2.5 for note writing and checking.
+ * Uses Perplexity for search (same as opus-main).
  */
 
 import { Bot, PipelineResult } from "./types";
@@ -12,19 +12,20 @@ import { check as checkNote } from "../pipeline/check";
 
 const MODELS = {
   search: "perplexity/sonar",
-  noteWriting: "anthropic/claude-opus-4.5",
-  checking: "anthropic/claude-sonnet-4",
+  noteWriting: "moonshotai/kimi-k2.5",
+  checking: "moonshotai/kimi-k2.5",
 };
 
-export const opusMain: Bot = {
-  id: "opus-main-v2",
-  name: "Opus 4.5 (Main v2)",
-  description: "Primary bot using Claude Opus 4.5 with unified note writer",
-  weight: 35,
+export const kimiK2: Bot = {
+  id: "kimi-k2",
+  name: "Kimi K2.5",
+  description: "Experimental bot using Moonshot Kimi K2.5 for note writing",
+  weight: 10,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {
+      // 1. Search with Perplexity
       const searchResult = await perplexitySearch(
         {
           text: content.text,
@@ -36,6 +37,7 @@ export const opusMain: Bot = {
       );
       lastStage = "search";
 
+      // 2. Write note with Kimi K2.5
       const noteResult = await writeNote(
         {
           text: searchResult.text,
@@ -46,6 +48,7 @@ export const opusMain: Bot = {
       );
       lastStage = "note_writing";
 
+      // 3. Check the note with Kimi K2.5
       const checkResult = await checkNote(
         {
           note: noteResult.note,
