@@ -1,9 +1,10 @@
 {
   "dependencies": {
-    "@supabase/supabase-js": "^2.47.0",
     "@ai-sdk/openai": "^1.3.23",
+    "@ai-sdk/xai": "^3.0.56",
     "@clack/prompts": "^0.11.0",
     "@openrouter/ai-sdk-provider": "^1.0.0-beta.1",
+    "@supabase/supabase-js": "^2.47.0",
     "@tonerow/agent-framework": "0.1.0",
     "@types/p-queue": "^3.2.1",
     "ai": "^4",
