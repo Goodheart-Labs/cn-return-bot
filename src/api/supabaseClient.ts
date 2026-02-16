@@ -62,6 +62,8 @@ export interface PublicDataSnapshot {
   created_at_millis?: number;
   note_text?: string;
   created_at?: string;
+  core_note_intercept?: number;
+  core_note_factor1?: number;
 }
 
 /**
@@ -128,6 +130,26 @@ export class SupabaseLogger {
 
   constructor() {
     this.client = getSupabaseClient();
+  }
+
+  /**
+   * Fetch all rows from a query, paginating past Supabase's 1000-row default limit.
+   */
+  private async fetchAllRows<T>(
+    buildQuery: (from: SupabaseClient) => any
+  ): Promise<T[]> {
+    const PAGE_SIZE = 1000;
+    const allRows: T[] = [];
+    let offset = 0;
+    while (true) {
+      const { data, error } = await (buildQuery(this.client) as any).range(offset, offset + PAGE_SIZE - 1);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+      allRows.push(...data);
+      if (data.length < PAGE_SIZE) break;
+      offset += PAGE_SIZE;
+    }
+    return allRows;
   }
 
   /**
@@ -442,6 +464,8 @@ export class SupabaseLogger {
 
   async insertScrapedNotewriterSnapshot(data: {
     note_id: string;
+    tweet_id?: string;
+    note_text?: string;
     cn_status?: string;
     view_count?: number;
     helpful_count?: number;
@@ -452,6 +476,8 @@ export class SupabaseLogger {
       .from("scraped_notewriter_snapshots")
       .insert({
         note_id: data.note_id,
+        tweet_id: data.tweet_id,
+        note_text: data.note_text,
         cn_status: data.cn_status,
         view_count: data.view_count,
         helpful_count: data.helpful_count,
@@ -530,18 +556,13 @@ export class SupabaseLogger {
    * Get pipeline run outcomes grouped by bot
    */
   async getPipelineRunsByBot(): Promise<Record<string, { total: number; submitted: number; filtered: number; failed: number; rejected: number; created_at_min?: string; created_at_max?: string }>> {
-    const { data, error } = await this.client
-      .from("pipeline_runs")
-      .select("bot_id, outcome, created_at");
-
-    if (error) {
-      console.error("[SupabaseLogger] Error fetching pipeline runs by bot:", error);
-      return {};
-    }
+    const data = await this.fetchAllRows<{ bot_id: string; outcome: string; created_at: string }>(
+      (client) => client.from("pipeline_runs").select("bot_id, outcome, created_at")
+    );
 
     const result: Record<string, { total: number; submitted: number; filtered: number; failed: number; rejected: number; created_at_min?: string; created_at_max?: string }> = {};
 
-    for (const row of data || []) {
+    for (const row of data) {
       const bot = row.bot_id || "unknown";
       if (!result[bot]) {
         result[bot] = { total: 0, submitted: 0, filtered: 0, failed: 0, rejected: 0 };
@@ -608,24 +629,20 @@ export class SupabaseLogger {
       return [];
     }
 
-    // Get all snapshots ordered by scraped_at DESC
-    const { data: snapshots, error: snapshotError } = await this.client
-      .from("scraped_notewriter_snapshots")
-      .select("note_id, cn_status, view_count, scraped_at")
-      .order("scraped_at", { ascending: false });
-
-    if (snapshotError) {
-      console.error("[SupabaseLogger] Error fetching snapshots:", snapshotError);
-      throw snapshotError;
-    }
+    // Get all snapshots ordered by scraped_at DESC (paginated to avoid 1000-row default limit)
+    const snapshots = await this.fetchAllRows<{ note_id: string; cn_status: string; view_count: number; scraped_at: string }>(
+      (client) => client.from("scraped_notewriter_snapshots")
+        .select("note_id, cn_status, view_count, scraped_at")
+        .order("scraped_at", { ascending: false })
+    );
 
     // Get video info from pipeline_runs
-    const { data: pipelineRuns, error: pipelineError } = await this.client
-      .from("pipeline_runs")
-      .select("tweet_id, has_video")
-      .eq("outcome", "submitted");
-
-    if (pipelineError) {
+    let pipelineRuns: Array<{ tweet_id: string; has_video: boolean }> = [];
+    try {
+      pipelineRuns = await this.fetchAllRows<{ tweet_id: string; has_video: boolean }>(
+        (client) => client.from("pipeline_runs").select("tweet_id, has_video").eq("outcome", "submitted")
+      );
+    } catch (pipelineError) {
       console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       // Don't throw - video info is optional
     }
@@ -859,16 +876,13 @@ export class SupabaseLogger {
         });
       }
 
-      // Get tweets with 2+ "no_correction_needed" rejections
-      const { data: pipelineData, error: pipelineError } = await this.client
-        .from("pipeline_runs")
-        .select("tweet_id")
-        .eq("outcome", "rejected")
-        .eq("outcome_reason", "no_correction_needed");
-
-      if (pipelineError) {
-        console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
-      } else if (pipelineData) {
+      // Get tweets with 2+ "no_correction_needed" rejections (paginated)
+      try {
+        const pipelineData = await this.fetchAllRows<{ tweet_id: string }>(
+          (client) => client.from("pipeline_runs").select("tweet_id")
+            .eq("outcome", "rejected")
+            .eq("outcome_reason", "no_correction_needed")
+        );
         const rejectionCounts = new Map<string, number>();
         pipelineData.forEach((row) => {
           if (row.tweet_id) {
@@ -880,6 +894,8 @@ export class SupabaseLogger {
             tweetIds.add(tweetId);
           }
         }
+      } catch (pipelineError) {
+        console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       }
 
       console.log(`[SupabaseLogger] Found ${tweetIds.size} permanently-skipped tweet IDs`);
@@ -897,25 +913,19 @@ export class SupabaseLogger {
   async getAllProcessedTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
     try {
-      const { data, error } = await this.client
-        .from("pipeline_runs")
-        .select("tweet_id");
+      const pipelineRows = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("pipeline_runs").select("tweet_id")
+      );
+      pipelineRows.forEach((row) => {
+        if (row.tweet_id) tweetIds.add(row.tweet_id);
+      });
 
-      if (!error && data) {
-        data.forEach((row) => {
-          if (row.tweet_id) tweetIds.add(row.tweet_id);
-        });
-      }
-
-      const { data: notesData, error: notesError } = await this.client
-        .from("notes")
-        .select("tweet_id");
-
-      if (!notesError && notesData) {
-        notesData.forEach((row) => {
-          if (row.tweet_id) tweetIds.add(row.tweet_id);
-        });
-      }
+      const notesRows = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("notes").select("tweet_id")
+      );
+      notesRows.forEach((row) => {
+        if (row.tweet_id) tweetIds.add(row.tweet_id);
+      });
 
       return tweetIds;
     } catch (error) {
@@ -933,37 +943,227 @@ export class SupabaseLogger {
     by_stage: Record<string, number>;
     video_count: number;
   }> {
-    let query = this.client
-      .from("pipeline_runs")
-      .select("outcome, final_stage, has_video");
-
-    if (since) {
-      query = query.gte("created_at", since.toISOString());
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("[SupabaseLogger] Error fetching pipeline stats:", error);
-      throw error;
-    }
+    const sinceIso = since?.toISOString();
+    const data = await this.fetchAllRows<{ outcome: string; final_stage: string; has_video: boolean }>(
+      (client) => {
+        let q = client.from("pipeline_runs").select("outcome, final_stage, has_video");
+        if (sinceIso) q = q.gte("created_at", sinceIso);
+        return q;
+      }
+    );
 
     const by_outcome: Record<string, number> = {};
     const by_stage: Record<string, number> = {};
     let video_count = 0;
 
-    for (const row of data || []) {
+    for (const row of data) {
       by_outcome[row.outcome] = (by_outcome[row.outcome] || 0) + 1;
       by_stage[row.final_stage] = (by_stage[row.final_stage] || 0) + 1;
       if (row.has_video) video_count++;
     }
 
     return {
-      total: data?.length || 0,
+      total: data.length,
       by_outcome,
       by_stage,
       video_count,
     };
+  }
+
+  /**
+   * Get summary stats across ALL scraped notewriter notes (latest snapshot per note).
+   * This includes notes that predate bot tracking.
+   */
+  async getScrapedNoteSummary(): Promise<{ totalNotes: number; totalViews: number; totalHelpful: number; totalNotHelpful: number; totalNeedsMore: number }> {
+    const snapshots = await this.fetchAllRows<{ note_id: string; view_count: number; cn_status: string; scraped_at: string }>(
+      (client) => client.from("scraped_notewriter_snapshots")
+        .select("note_id, view_count, cn_status, scraped_at")
+        .order("scraped_at", { ascending: false })
+    );
+
+    const latestByNote = new Map<string, { views: number; status: string }>();
+    for (const snap of snapshots) {
+      if (!latestByNote.has(snap.note_id)) {
+        latestByNote.set(snap.note_id, { views: snap.view_count || 0, status: snap.cn_status || "" });
+      }
+    }
+
+    let totalViews = 0, totalHelpful = 0, totalNotHelpful = 0, totalNeedsMore = 0;
+    for (const { views, status } of latestByNote.values()) {
+      totalViews += views;
+      const s = status.toUpperCase().replace(/\s+/g, "_");
+      if (s === "CURRENTLY_RATED_HELPFUL" || s === "SHOWN_ON_X") totalHelpful++;
+      else if (s === "CURRENTLY_RATED_NOT_HELPFUL" || s === "NOT_SHOWN_ON_X") totalNotHelpful++;
+      else if (s === "NEEDS_MORE_RATINGS") totalNeedsMore++;
+    }
+
+    return { totalNotes: latestByNote.size, totalViews, totalHelpful, totalNotHelpful, totalNeedsMore };
+  }
+
+  /**
+   * Derive canonical tweet_ids for scraped notes using snapshot majority vote.
+   *
+   * For each note_id in scraped_notewriter_notes:
+   * - Collect all non-null tweet_ids from its snapshots
+   * - If the top tweet_id has >= 2/3 of votes AND matches the `notes` table (if entry exists), clear the flag
+   * - Otherwise, set tweet_id_flag with the reason
+   * - Update scraped_notewriter_notes.tweet_id to the majority winner (if there is one)
+   *
+   * Returns summary stats.
+   */
+  async deriveTweetIds(): Promise<{ total: number; updated: number; flagged: number; noVotes: number }> {
+    // 1. Get all snapshots with tweet_id
+    const snapshots = await this.fetchAllRows<{ note_id: string; tweet_id: string | null }>(
+      (client) => client.from("scraped_notewriter_snapshots")
+        .select("note_id, tweet_id")
+    );
+
+    // 2. Get all scraped notes
+    const scrapedNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
+      (client) => client.from("scraped_notewriter_notes")
+        .select("note_id, tweet_id")
+    );
+
+    // 3. Get bot-submitted notes (source of truth for tweet_id)
+    const botNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
+      (client) => client.from("notes")
+        .select("note_id, tweet_id")
+    );
+    const botTweetIds = new Map<string, string>();
+    for (const n of botNotes) {
+      if (n.note_id && n.tweet_id) botTweetIds.set(n.note_id, n.tweet_id);
+    }
+
+    // 4. Build vote tallies per note_id
+    const votesPerNote = new Map<string, Map<string, number>>();
+    for (const snap of snapshots) {
+      if (!snap.tweet_id) continue;
+      if (!votesPerNote.has(snap.note_id)) votesPerNote.set(snap.note_id, new Map());
+      const tally = votesPerNote.get(snap.note_id)!;
+      tally.set(snap.tweet_id, (tally.get(snap.tweet_id) || 0) + 1);
+    }
+
+    // 5. For each scraped note, compute majority and flag
+    let updated = 0, flagged = 0, noVotes = 0;
+
+    for (const note of scrapedNotes) {
+      const tally = votesPerNote.get(note.note_id);
+
+      if (!tally || tally.size === 0) {
+        noVotes++;
+        continue;
+      }
+
+      // Find the winner
+      const sorted = [...tally.entries()].sort((a, b) => b[1] - a[1]);
+      const [winnerTweetId, winnerCount] = sorted[0]!;
+      const totalVotes = [...tally.values()].reduce((a, b) => a + b, 0);
+      const winnerShare = winnerCount / totalVotes;
+
+      // Check conditions
+      const botTweetId = botTweetIds.get(note.note_id);
+      const hasSuperMajority = winnerShare >= 2 / 3;
+      const matchesBot = !botTweetId || botTweetId === winnerTweetId;
+
+      let flag: string | null = null;
+      if (!hasSuperMajority) {
+        flag = `split:${sorted.map(([id, c]) => `${id.slice(-6)}=${c}`).join("/")}`;
+      } else if (!matchesBot) {
+        flag = `disagrees_with_notes_table:snapshots=${winnerTweetId},notes=${botTweetId}`;
+      }
+
+      // Update if tweet_id changed or flag changed
+      const needsUpdate = winnerTweetId !== note.tweet_id || flag !== null;
+      if (needsUpdate) {
+        const updateData: Record<string, any> = { tweet_id_flag: flag };
+        if (hasSuperMajority) {
+          updateData.tweet_id = winnerTweetId;
+        }
+        const { error } = await this.client
+          .from("scraped_notewriter_notes")
+          .update(updateData)
+          .eq("note_id", note.note_id);
+        if (error) {
+          console.error(`[deriveTweetIds] Error updating ${note.note_id}:`, error);
+        } else {
+          updated++;
+        }
+      }
+
+      if (flag) flagged++;
+    }
+
+    return { total: scrapedNotes.length, updated, flagged, noVotes };
+  }
+
+  /**
+   * Detect anomalies in snapshot data across scrapes.
+   *
+   * Checks for:
+   * 1. View count decreasing between consecutive snapshots (virtualizer corruption)
+   * 2. Note text changing between snapshots (virtualizer corruption — note text is immutable on X)
+   *
+   * Returns list of anomalies found.
+   */
+  async detectSnapshotAnomalies(): Promise<{
+    viewCountDecreases: Array<{ note_id: string; from: number; to: number; fromDate: string; toDate: string }>;
+    noteTextChanges: Array<{ note_id: string; texts: string[]; dates: string[] }>;
+  }> {
+    // Fetch all snapshots with relevant fields, ordered by scraped_at
+    const snapshots = await this.fetchAllRows<{
+      note_id: string;
+      view_count: number | null;
+      note_text: string | null;
+      cn_status: string | null;
+      scraped_at: string;
+    }>(
+      (client) => client.from("scraped_notewriter_snapshots")
+        .select("note_id, view_count, note_text, cn_status, scraped_at")
+        .order("scraped_at", { ascending: true })
+    );
+
+    // Group by note_id
+    const byNote = new Map<string, typeof snapshots>();
+    for (const snap of snapshots) {
+      if (!byNote.has(snap.note_id)) byNote.set(snap.note_id, []);
+      byNote.get(snap.note_id)!.push(snap);
+    }
+
+    const viewCountDecreases: Array<{ note_id: string; from: number; to: number; fromDate: string; toDate: string }> = [];
+    const noteTextChanges: Array<{ note_id: string; texts: string[]; dates: string[] }> = [];
+
+    for (const [noteId, noteSnaps] of byNote) {
+      // 1. Check for view count decreases
+      let maxViewsSeen = 0;
+      for (const snap of noteSnaps) {
+        const views = snap.view_count || 0;
+        if (views > 0 && views < maxViewsSeen) {
+          viewCountDecreases.push({
+            note_id: noteId,
+            from: maxViewsSeen,
+            to: views,
+            fromDate: noteSnaps.find(s => (s.view_count || 0) === maxViewsSeen)?.scraped_at.slice(0, 10) || "?",
+            toDate: snap.scraped_at.slice(0, 10),
+          });
+        }
+        if (views > maxViewsSeen) maxViewsSeen = views;
+      }
+
+      // 2. Check for note text changes (only among snapshots that have note_text)
+      const withText = noteSnaps.filter(s => s.note_text && s.note_text.length > 10);
+      if (withText.length >= 2) {
+        const uniqueTexts = new Set(withText.map(s => s.note_text!));
+        if (uniqueTexts.size > 1) {
+          noteTextChanges.push({
+            note_id: noteId,
+            texts: [...uniqueTexts].map(t => t.slice(0, 100)),
+            dates: withText.map(s => s.scraped_at.slice(0, 10)),
+          });
+        }
+      }
+    }
+
+    return { viewCountDecreases, noteTextChanges };
   }
 
   /**

@@ -17,6 +17,8 @@ interface CNStatusRow {
   noteId: string;
   currentStatus: string;
   createdAtMillis: string;
+  coreNoteIntercept: string;
+  coreNoteFactor1: string;
 }
 
 interface CNNoteRow {
@@ -52,7 +54,7 @@ function getPrimaryPartition(cache: PartitionCache): string | null {
   const entries = Object.entries(cache.partitionCounts);
   if (entries.length === 0) return null;
   entries.sort((a, b) => b[1] - a[1]);
-  const [partition, count] = entries[0];
+  const [partition, count] = entries[0]!;
   if (count >= 5) {
     console.log(`[updateNoteFeedback] Primary partition: ${partition} (${count} notes)`);
     return partition;
@@ -95,7 +97,7 @@ function parseTsvFile<T>(
 
   if (lines.length === 0) return [];
 
-  const headers = lines[0].split("\t");
+  const headers = lines[0]!.split("\t");
   const columnIndices: Record<string, number> = {};
   for (const col of columnsNeeded) {
     columnIndices[col] = headers.indexOf(col);
@@ -104,14 +106,14 @@ function parseTsvFile<T>(
   const results: T[] = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i]!;
     if (!line.trim()) continue;
 
     const values = line.split("\t");
     const row: Record<string, string> = {};
 
     for (const col of columnsNeeded) {
-      const idx = columnIndices[col];
+      const idx = columnIndices[col] ?? -1;
       row[col] = idx >= 0 ? values[idx] || "" : "";
     }
 
@@ -210,7 +212,7 @@ async function main() {
   console.log("[updateNoteFeedback] Parsing noteStatusHistory...");
   const allStatusRows = parseTsvFile<CNStatusRow>(
     statusResult.path,
-    ["noteId", "currentStatus", "createdAtMillis"]
+    ["noteId", "currentStatus", "createdAtMillis", "coreNoteIntercept", "coreNoteFactor1"]
   );
   console.log(`[updateNoteFeedback] Found ${allStatusRows.length} total status rows`);
 
@@ -250,6 +252,8 @@ async function main() {
     currentStatus: string;
     isOurs: boolean;
     createdAtMillis: string;
+    coreNoteIntercept?: number;
+    coreNoteFactor1?: number;
   }> = [];
 
   // Add our notes
@@ -263,6 +267,8 @@ async function main() {
       currentStatus: status?.currentStatus || "",
       isOurs: true,
       createdAtMillis: status?.createdAtMillis || "",
+      coreNoteIntercept: status?.coreNoteIntercept ? parseFloat(status.coreNoteIntercept) : undefined,
+      coreNoteFactor1: status?.coreNoteFactor1 ? parseFloat(status.coreNoteFactor1) : undefined,
     });
   }
 
@@ -280,6 +286,8 @@ async function main() {
         currentStatus: status?.currentStatus || "",
         isOurs: false,
         createdAtMillis: noteRow.createdAtMillis,
+        coreNoteIntercept: status?.coreNoteIntercept ? parseFloat(status.coreNoteIntercept) : undefined,
+        coreNoteFactor1: status?.coreNoteFactor1 ? parseFloat(status.coreNoteFactor1) : undefined,
       });
       competingCount++;
     }
@@ -302,6 +310,8 @@ async function main() {
         is_ours: note.isOurs,
         snapshot_date: snapshotDate,
         created_at_millis: note.createdAtMillis ? parseInt(note.createdAtMillis) : undefined,
+        core_note_intercept: note.coreNoteIntercept,
+        core_note_factor1: note.coreNoteFactor1,
       });
       snapshotCount++;
 

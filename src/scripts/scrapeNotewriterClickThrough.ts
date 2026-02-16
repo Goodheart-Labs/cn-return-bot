@@ -1,8 +1,9 @@
 /**
- * Click-Through Notewriter Scraper
+ * Click-Through Notewriter Scraper (Parallel Tabs)
  *
- * Scrolls slowly through the notewriter page, clicking "View details" for each note
- * to get accurate note IDs and statuses from the detail page.
+ * Opens multiple browser tabs to scrape the notewriter page in parallel.
+ * Each tab scrolls to a different starting position, then clicks "View details"
+ * for each note to get accurate note IDs and statuses from the detail modal.
  *
  * USAGE:
  * 1. Start Chrome with remote debugging:
@@ -11,9 +12,11 @@
  * 2. Navigate to your notewriter page and log in
  *
  * 3. Run this script:
- *    bun run src/scripts/scrapeNotewriterClickThrough.ts [username] [maxNotes] [--fresh]
+ *    bun run src/scripts/scrapeNotewriterClickThrough.ts [maxNotes] [--fresh] [--tabs N]
  *
  *    --fresh: Refresh page and start from top (otherwise continues from current scroll position)
+ *    --tabs N: Number of parallel tabs (default 1, max 5). Each tab scrapes a different
+ *              section of the list simultaneously.
  *
  * SECURITY WARNING:
  * The remote debugging port (9222) gives FULL control over the browser to any process
@@ -24,12 +27,13 @@
  */
 
 import "dotenv/config";
-import puppeteer, { Page } from "puppeteer-core";
+import puppeteer, { type Browser, type Page } from "puppeteer-core";
 import { SupabaseLogger } from "../api/supabaseClient";
 
 const DEFAULT_USERNAME = "wholesome-raspberry-stilt";
+const SCROLL_PX = 600;
+const SCROLLS_PER_TAB_OFFSET = 80; // ~48,000px per tab, roughly 1/3 of a 500-note list
 
-// Randomized delays to mimic human behavior and avoid detection
 function randomDelay(minMs: number, maxMs: number): Promise<void> {
   const delay = minMs + Math.random() * (maxMs - minMs);
   return new Promise(r => setTimeout(r, delay));
@@ -42,73 +46,28 @@ interface ScrapedNote {
   cn_status: string;
   created_at?: string;
   source_url?: string;
+  view_count?: number;
 }
 
-async function waitForSelector(page: Page, selector: string, timeout = 5000): Promise<boolean> {
-  try {
-    await page.waitForSelector(selector, { timeout });
-    return true;
-  } catch {
-    return false;
+/** Fast-scroll a page without clicking, to reach a starting position for scraping. */
+async function quickScroll(page: Page, scrollCount: number, tabId: number): Promise<void> {
+  console.log(`   [Tab ${tabId}] Quick-scrolling ${scrollCount} times to reach starting position...`);
+  for (let i = 0; i < scrollCount; i++) {
+    await page.evaluate((px) => {
+      const html = document.documentElement;
+      html.scrollTop += px;
+      html.dispatchEvent(new Event('scroll', { bubbles: true }));
+      window.dispatchEvent(new Event('scroll', { bubbles: true }));
+    }, SCROLL_PX);
+    await new Promise(r => setTimeout(r, 200));
   }
+  const pos = await page.evaluate(() => document.documentElement.scrollTop);
+  console.log(`   [Tab ${tabId}] Reached scrollTop=${pos}`);
 }
 
-async function main() {
-  // Parse args - support --fresh flag anywhere
-  const args = process.argv.slice(2);
-  const freshStart = args.includes('--fresh');
-  const nonFlagArgs = args.filter(a => !a.startsWith('--'));
-
-  const username = nonFlagArgs[0] || DEFAULT_USERNAME;
-  const notewriterUrl = `https://x.com/i/communitynotes/u/${username}`;
-  const maxNotes = parseInt(nonFlagArgs[1] || "500", 10);
-
-  console.log("🔌 Connecting to Chrome on port 9222...\n");
-
-  let browser;
-  try {
-    browser = await puppeteer.connect({
-      browserURL: "http://127.0.0.1:9222",
-      protocolTimeout: 120000,
-    });
-  } catch (err) {
-    console.error("❌ Failed to connect to Chrome.");
-    console.error("Make sure Chrome is running with remote debugging:");
-    console.error('  /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile');
-    process.exit(1);
-  }
-
-  console.log("✅ Connected to Chrome\n");
-
-  const pages = await browser.pages();
-  let page = pages.find((p) => p.url().includes("communitynotes"));
-
-  if (!page) {
-    console.log(`📄 Opening new tab: ${notewriterUrl}`);
-    page = await browser.newPage();
-    await page.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
-  } else {
-    console.log(`📄 Found existing notewriter tab: ${page.url()}`);
-    // Navigate to correct URL if needed, or refresh if --fresh
-    if (freshStart || !page.url().includes(username)) {
-      console.log(`   ${freshStart ? '🔄 Fresh start - reloading' : 'Navigating to'} ${notewriterUrl}`);
-      await page.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
-    }
-  }
-
-  // If fresh start, scroll to top
-  if (freshStart) {
-    console.log("   📍 Scrolling to top of list...");
-    await page.evaluate(() => {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    });
-    await new Promise(r => setTimeout(r, 1000));
-  }
-
-  // Wait for content to load
-  console.log("   Waiting for page to load...");
+/** Wait for notewriter content to appear on a page. */
+async function waitForContent(page: Page, tabId: number): Promise<void> {
+  console.log(`   [Tab ${tabId}] Waiting for page to load...`);
   for (let i = 0; i < 30; i++) {
     await new Promise((r) => setTimeout(r, 1000));
     const hasContent = await page.evaluate(() =>
@@ -117,54 +76,64 @@ async function main() {
       document.body.innerText.includes('Writing Impact')
     );
     if (hasContent) {
-      console.log(`   Content detected after ${i + 1} seconds`);
-      break;
+      console.log(`   [Tab ${tabId}] Content detected after ${i + 1} seconds`);
+      return;
     }
   }
+  console.log(`   [Tab ${tabId}] Warning: content not detected after 30s, proceeding anyway`);
+}
 
-  console.log("\n✅ Page loaded\n");
-  console.log(`🚀 Starting click-through scrape (max ${maxNotes} notes)...\n`);
-
-  const collectedNotes = new Map<string, ScrapedNote>();
+/**
+ * Scrape notes from a single tab. Multiple instances run in parallel,
+ * sharing a collectedNotes map for deduplication.
+ */
+async function scrapeTab(
+  page: Page,
+  collectedNotes: Map<string, ScrapedNote>,
+  tabId: number,
+  maxNotes: number,
+): Promise<void> {
+  const prefix = `[Tab ${tabId}]`;
   const processedCells = new Set<string>();
   let scrollCount = 0;
   let stuckCount = 0;
-  const maxStuck = 50; // Increased to handle patches of unavailable posts
+  const stuckBeforePause = 10;
+  const maxRetries = 5;
+  let retryCount = 0;
+  let consecutiveOverlaps = 0;
+  const overlapJumpThreshold = 15; // Jump ahead after this many consecutive already-scraped notes
+  let jumpCount = 0;
+  const maxJumps = 3; // Max times we jump ahead before giving up on this tab
 
-  // Wrap entire scraping loop in try-catch to ensure we always get to import
-  // even if Puppeteer throws a ProtocolError
   try {
-  while (collectedNotes.size < maxNotes && stuckCount < maxStuck) {
+  while (collectedNotes.size < maxNotes && retryCount <= maxRetries) {
     scrollCount++;
 
     // Get all visible cells
     const cells = await page.$$('[data-testid="cellInnerDiv"]');
 
-    // Debug: log scroll position and cell fingerprints
+    // Debug: log scroll position
     const debugInfo = await page.evaluate(() => {
       const scrollY = window.scrollY;
       const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
       const fingerprints = [...cells].map(c => (c as HTMLElement).innerText.slice(0, 50).replace(/\n/g, ' '));
       return { scrollY, fingerprints };
     });
-    console.log(`\n📜 Scroll ${scrollCount}: Found ${cells.length} cells at scrollY=${debugInfo.scrollY}`);
-    console.log(`   Fingerprints: ${debugInfo.fingerprints.map(f => f.slice(0, 30) + '...').join(' | ')}`);
+    console.log(`\n${prefix} 📜 Scroll ${scrollCount}: ${cells.length} cells at scrollY=${debugInfo.scrollY}`);
 
     let foundNewNote = false;
 
     for (const cell of cells) {
+      // Check shared cap before processing each cell
+      if (collectedNotes.size >= maxNotes) break;
+
       // Generate a fingerprint for this cell to avoid reprocessing
-      // For "Post unavailable" cells, we can't use text alone - they're identical
-      // Instead, use the View details link href which contains the unique note ID
       const cellFingerprint = await cell.evaluate(el => {
-        const text = el.innerText.slice(0, 100);
-        // Look for the View details link which has the note ID
+        const text = (el as HTMLElement).innerText.slice(0, 100);
         const detailsLink = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
         if (detailsLink) {
-          // Use the note ID from the link for uniqueness
           return detailsLink.href;
         }
-        // Fallback to text for cells with visible tweet content
         return text;
       });
 
@@ -173,7 +142,7 @@ async function main() {
       }
       processedCells.add(cellFingerprint);
 
-      // Try to find tweet ID from the cell (may be null for "Post unavailable")
+      // Try to find tweet ID from the cell
       const tweetData = await cell.evaluate(el => {
         const tweetLink = el.querySelector('a[href*="/status/"]') as HTMLAnchorElement;
         if (tweetLink) {
@@ -181,7 +150,6 @@ async function main() {
           return { tweetId: match?.[1] || null, tweetUrl: tweetLink.href };
         }
 
-        // Fallback: look for IDs in data attributes
         const allElements = [...el.querySelectorAll('*')];
         for (const elem of allElements) {
           for (const attr of elem.attributes) {
@@ -194,16 +162,16 @@ async function main() {
         return { tweetId: null, tweetUrl: null };
       });
 
-      // Skip if we already have this tweet (only if we have a tweet ID to compare)
+      // Skip if we already have this tweet (another tab got it)
       if (tweetData.tweetId && [...collectedNotes.values()].some(n => n.tweet_id === tweetData.tweetId)) {
+        consecutiveOverlaps++;
         continue;
       }
 
       // Extract note text and source URL from cell
       const cellData = await cell.evaluate(el => {
-        const text = el.innerText;
+        const text = (el as HTMLElement).innerText;
 
-        // Extract note text - longest text block that's not boilerplate
         const paragraphs = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
         let noteText = '';
         paragraphs.forEach(p => {
@@ -217,24 +185,32 @@ async function main() {
           }
         });
 
-        // Extract source URLs
         const sourceLinks = [...el.querySelectorAll('a[href^="http"]')]
           .map((a) => (a as HTMLAnchorElement).href)
           .filter((h) => !h.includes('x.com') && !h.includes('twitter.com'));
 
-        return { noteText, sourceUrl: sourceLinks[0] || null };
+        let viewCount: number | null = null;
+        const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i);
+        if (viewMatch) {
+          let num = parseFloat(viewMatch[1]!.replace(/,/g, ''));
+          const suffix = (viewMatch[2] || '').toUpperCase();
+          if (suffix === 'K') num *= 1000;
+          else if (suffix === 'M') num *= 1000000;
+          else if (suffix === 'B') num *= 1000000000;
+          viewCount = Math.round(num);
+        }
+
+        return { noteText, sourceUrl: sourceLinks[0] || null, viewCount };
       });
 
-      // Scroll cell into view first and wait for content to render
+      // Scroll cell into view
       await cell.evaluate(el => {
         el.scrollIntoView({ behavior: 'instant', block: 'center' });
       });
-      await randomDelay(400, 800); // Human-like delay for render
+      await randomDelay(100, 200);
 
       // Find and click the "View details" element
-      // First, try to find a direct link to /communitynotes/t/
       const clickResult = await cell.evaluate(el => {
-        // Best case: find an <a> link that goes to /communitynotes/t/
         const noteLink = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
         if (noteLink) {
           const rect = noteLink.getBoundingClientRect();
@@ -247,8 +223,6 @@ async function main() {
           };
         }
 
-        // Next: look for a button/span with "View details" that's a DIRECT child of this cell
-        // (not from some random other part of the page)
         const buttons = el.querySelectorAll('button, [role="button"]');
         for (const btn of buttons) {
           if (btn.textContent?.includes('View details')) {
@@ -263,7 +237,6 @@ async function main() {
           }
         }
 
-        // Last resort: find span with "View details" that's specifically in this cell
         const spans = el.querySelectorAll('span');
         for (const span of spans) {
           if (span.textContent === 'View details') {
@@ -281,109 +254,93 @@ async function main() {
         return { found: false, x: 0, y: 0, tag: '', href: '' };
       });
 
-      if (!clickResult.found) {
-        // No View details = unavailable post, just skip silently
-        continue;
-      }
-
-      // Sanity check - coordinates should be on screen and not at origin
-      if (clickResult.x === 0 && clickResult.y === 0) {
-        // Button not rendered properly, skip silently
-        continue;
-      }
-
+      if (!clickResult.found) continue;
+      if (clickResult.x === 0 && clickResult.y === 0) continue;
       if (clickResult.y < 0 || clickResult.y > 2000) {
-        console.log(`   ⚠️ View details off-screen (y=${clickResult.y}) for tweet ${tweetData.tweetId}`);
+        console.log(`   ${prefix} ⚠️ View details off-screen (y=${clickResult.y}) for tweet ${tweetData.tweetId}`);
         continue;
       }
 
-      console.log(`   🖱️ Clicking View details at (${clickResult.x.toFixed(0)}, ${clickResult.y.toFixed(0)}) [${clickResult.tag}]`);
+      console.log(`   ${prefix} 🖱️ Clicking View details at (${clickResult.x.toFixed(0)}, ${clickResult.y.toFixed(0)}) [${clickResult.tag}]`);
 
-      // Retry click + modal extraction up to 2 times for transient failures
+      // Retry click + modal extraction up to 2 times
       let modalData: { noteId: string | null; status: string; submittedDate: string; usedFallback?: boolean } | null = null;
       for (let clickAttempt = 0; clickAttempt < 2; clickAttempt++) {
         if (clickAttempt > 0) {
-          console.log(`   🔄 Retry ${clickAttempt} for click...`);
+          console.log(`   ${prefix} 🔄 Retry ${clickAttempt} for click...`);
           await randomDelay(500, 1000);
         }
 
-        // Use page.mouse.click for a real mouse click, with timeout protection
         try {
           await Promise.race([
             page.mouse.click(clickResult.x, clickResult.y),
             new Promise((_, reject) => setTimeout(() => reject(new Error('Click timeout')), 10000))
           ]);
         } catch (clickErr) {
-          console.log(`   ⚠️ Click error: ${clickErr}`);
+          console.log(`   ${prefix} ⚠️ Click error: ${clickErr}`);
           continue;
         }
 
-        // Wait for modal panel to appear with human-like timing
-        await randomDelay(1200, 2000);
+        // Wait for modal — poll instead of fixed sleep
+        for (let waitMs = 0; waitMs < 3000; waitMs += 150) {
+          const hasModal = await page.evaluate(() => {
+            const modal = document.querySelector('[data-testid="sheetDialog"]') ||
+                          document.querySelector('[role="dialog"]') ||
+                          document.querySelector('[aria-modal="true"]') ||
+                          document.querySelector('[data-testid="Drawer"]');
+            if (modal && (modal as HTMLElement).innerText.includes('Note ID')) return true;
+            return document.body.innerText.includes('Note Details');
+          });
+          if (hasModal) break;
+          await new Promise(r => setTimeout(r, 150));
+        }
 
-      // Check if modal panel opened by looking for "Note Details" heading or Note ID
-      // IMPORTANT: Only look at the modal content, not the entire page body
-      // (background list may have notes with different statuses that pollute detection)
+      // Extract data from modal
       modalData = await page.evaluate(() => {
-        // Find the modal element - X uses various dialog selectors
         const modal = document.querySelector('[data-testid="sheetDialog"]') ||
                       document.querySelector('[role="dialog"]') ||
                       document.querySelector('[aria-modal="true"]') ||
                       document.querySelector('[data-testid="Drawer"]');
 
-        // If no modal found, try to find content near "Note Details" heading
         let modalText = '';
         let usedFallback = false;
         if (modal) {
           modalText = (modal as HTMLElement).innerText;
         } else {
-          // Fallback: look for a section containing "Note Details" or "Note ID"
-          // Sort by text length to find the smallest container that has what we need
           const candidates: { el: HTMLElement; len: number }[] = [];
           const allElements = document.querySelectorAll('div, section, aside');
           for (const el of allElements) {
             const text = (el as HTMLElement).innerText;
             if (text.includes('Note Details') || text.includes('Note ID')) {
-              // Found a container with note details
               if (text.length > 100 && text.length < 10000) {
                 candidates.push({ el: el as HTMLElement, len: text.length });
               }
             }
           }
-          // Pick the smallest matching container (most targeted)
           if (candidates.length > 0) {
             candidates.sort((a, b) => a.len - b.len);
-            modalText = candidates[0].el.innerText;
+            modalText = candidates[0]!.el.innerText;
           }
         }
 
-        // If still no modal text, check if Note Details is visible at all
         if (!modalText) {
           const bodyText = document.body.innerText;
           if (!bodyText.includes('Note Details') && !bodyText.includes('Note ID')) {
             return null;
           }
-          // Last resort: use body text but extract status more carefully
-          // Look for the status line that appears right after the Note ID
           modalText = bodyText;
           usedFallback = true;
         }
 
-        // Extract Note ID from the modal
         const noteIdMatch = modalText.match(/Note ID[:\s]*(\d{18,20})/i);
-        const noteId = noteIdMatch ? noteIdMatch[1] : null;
+        const noteId = noteIdMatch ? (noteIdMatch[1] ?? null) : null;
 
-        // Extract status - order matters! Check most specific first
         let status = 'UNKNOWN';
 
         if (usedFallback && noteId) {
-          // When using body text fallback, we need to be more careful
-          // Find the text around the Note ID and look for status there
           const noteIdPos = modalText.indexOf('Note ID');
           if (noteIdPos !== -1) {
-            // Look at text after the Note ID (where status should be in the modal)
             const textAfterNoteId = modalText.substring(noteIdPos, noteIdPos + 500);
-
             if (textAfterNoteId.includes('Currently not rated helpful')) {
               status = 'CURRENTLY_RATED_NOT_HELPFUL';
             } else if (textAfterNoteId.includes('Currently rated helpful')) {
@@ -397,7 +354,6 @@ async function main() {
             }
           }
         } else {
-          // Normal modal detection - "Currently not rated helpful" must be checked before "Currently rated helpful"
           if (modalText.includes('Currently not rated helpful')) {
             status = 'CURRENTLY_RATED_NOT_HELPFUL';
           } else if (modalText.includes('Currently rated helpful')) {
@@ -411,40 +367,36 @@ async function main() {
           }
         }
 
-        // Extract submitted date
         const dateMatch = modalText.match(/Note submitted[:\s]*([\d:]+\s*(?:AM|PM)?)\s*[·•]\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})/i);
-        const submittedDate = dateMatch ? dateMatch[2] : '';
+        const submittedDate = dateMatch ? (dateMatch[2] ?? '') : '';
 
         return { noteId, status, submittedDate, usedFallback };
       });
 
-        // If we got data, break out of retry loop
         if (modalData?.noteId) break;
 
-        // Close any partial modal before retrying
         await page.keyboard.press('Escape');
         await randomDelay(200, 400);
       } // end retry loop
 
       if (!modalData || !modalData.noteId) {
-        console.log(`   ⚠️ Modal didn't open or couldn't extract Note ID for tweet ${tweetData.tweetId || 'unavailable'}`);
-        // Try pressing Escape to close any partial modal
+        console.log(`   ${prefix} ⚠️ Modal didn't open or couldn't extract Note ID for tweet ${tweetData.tweetId || 'unavailable'}`);
         await page.keyboard.press('Escape');
         await randomDelay(200, 400);
         continue;
       }
 
-      // Skip if we already have this note
+      // Skip if another tab already got this note
       if (collectedNotes.has(modalData.noteId)) {
-        // Close modal and continue
+        consecutiveOverlaps++;
         await page.keyboard.press('Escape');
-        await randomDelay(200, 400);
+        await randomDelay(100, 200);
         continue;
       }
 
-      console.log(`   ✓ Found Note ID: ${modalData.noteId} (${modalData.status})${!tweetData.tweetId ? ' [Post unavailable]' : ''}`);
+      const viewInfo = cellData.viewCount ? ` [${cellData.viewCount.toLocaleString()} views]` : '';
+      console.log(`   ${prefix} ✓ Found Note ID: ${modalData.noteId} (${modalData.status})${viewInfo}${!tweetData.tweetId ? ' [Post unavailable]' : ''}`);
 
-      // Store the note - use note_id as fallback tweet_id for unavailable posts
       const note: ScrapedNote = {
         note_id: modalData.noteId,
         tweet_id: tweetData.tweetId || `unavailable_${modalData.noteId}`,
@@ -452,22 +404,21 @@ async function main() {
         cn_status: modalData.status,
         created_at: modalData.submittedDate,
         source_url: cellData.sourceUrl || undefined,
+        view_count: cellData.viewCount || undefined,
       };
 
       collectedNotes.set(modalData.noteId, note);
       foundNewNote = true;
-      console.log(`   ✓ ${collectedNotes.size}: ${modalData.noteId} (${modalData.status})`);
+      consecutiveOverlaps = 0; // Reset overlap counter on new find
+      console.log(`   ${prefix} ✓ Total ${collectedNotes.size}: ${modalData.noteId} (${modalData.status})`);
 
-      // Close the modal by clicking the X button
+      // Close the modal
       const closed = await page.evaluate(() => {
-        // Look for close button with X
         const closeSelectors = [
           '[aria-label="Close"]',
           '[data-testid="xMigrationBottomBar"] button',
           'div[role="dialog"] button',
         ];
-
-        // First try aria-label close
         for (const selector of closeSelectors) {
           const btn = document.querySelector(selector) as HTMLElement;
           if (btn) {
@@ -475,12 +426,9 @@ async function main() {
             return true;
           }
         }
-
-        // Look for any button near "Note Details" that might be the X
         const buttons = document.querySelectorAll('button');
         for (const btn of buttons) {
           const rect = btn.getBoundingClientRect();
-          // X button is usually in top-left of modal, small size
           if (rect.width < 50 && rect.height < 50) {
             const text = btn.textContent?.trim() || '';
             const ariaLabel = btn.getAttribute('aria-label') || '';
@@ -490,106 +438,227 @@ async function main() {
             }
           }
         }
-
         return false;
       });
 
       if (!closed) {
-        // Fallback: press Escape
         await page.keyboard.press('Escape');
       }
 
-      await randomDelay(400, 800); // Human-like pause before next note
+      await randomDelay(100, 250);
     }
 
     if (!foundNewNote) {
       stuckCount++;
-      console.log(`   ⏳ No new notes (stuck: ${stuckCount}/${maxStuck})`);
+      if (stuckCount >= stuckBeforePause) {
+        retryCount++;
+        if (retryCount > maxRetries) {
+          console.log(`\n   ${prefix} 🛑 Exhausted ${maxRetries} retries. Tab stopping.`);
+          break;
+        }
+        // Unstick the virtualizer: scroll up a big chunk, wait, then scroll back down
+        console.log(`\n   ${prefix} 🔄 Stuck after ${stuckCount} scrolls. Jiggling scroll to unstick virtualizer (retry ${retryCount}/${maxRetries})...`);
+        const jiggleDistance = 3000 + (retryCount * 2000); // Scroll up further each retry
+        await page.evaluate((dist) => {
+          const html = document.documentElement;
+          html.scrollTop = Math.max(0, html.scrollTop - dist);
+          html.dispatchEvent(new Event('scroll', { bubbles: true }));
+          window.dispatchEvent(new Event('scroll', { bubbles: true }));
+        }, jiggleDistance);
+        await new Promise(r => setTimeout(r, 2000)); // Let virtualizer re-render
+        // Scroll back down past where we were
+        await page.evaluate((dist) => {
+          const html = document.documentElement;
+          html.scrollTop += dist + 600; // Go slightly past original position
+          html.dispatchEvent(new Event('scroll', { bubbles: true }));
+          window.dispatchEvent(new Event('scroll', { bubbles: true }));
+        }, jiggleDistance);
+        await new Promise(r => setTimeout(r, 1000));
+        stuckCount = 0;
+        processedCells.clear(); // Clear fingerprints since we're in shifted territory
+        console.log(`   ${prefix} ▶️  Resuming after jiggle...`);
+      }
     } else {
       stuckCount = 0;
+      retryCount = 0;
     }
 
-    // Try multiple scroll methods in order of preference
-    // 1. JavaScript scroll on the body/document (works for some pages)
-    // 2. Mouse wheel (works for virtualized lists)
-    // 3. Keyboard PageDown (fallback)
-    let scrollSucceeded = false;
+    // Check if we're in another tab's territory — jump far ahead to find uncovered ground
+    if (consecutiveOverlaps >= overlapJumpThreshold) {
+      jumpCount++;
+      if (jumpCount > maxJumps) {
+        console.log(`\n   ${prefix} 🏁 Hit overlap ${maxJumps} times, no more uncovered territory. Tab done.`);
+        break;
+      }
+      const jumpScrolls = SCROLLS_PER_TAB_OFFSET; // Jump same distance as initial tab spacing
+      console.log(`\n   ${prefix} 🔀 Overlapping with another tab (${consecutiveOverlaps} dupes). Jumping ahead ${jumpScrolls} scrolls (jump ${jumpCount}/${maxJumps})...`);
+      consecutiveOverlaps = 0;
+      processedCells.clear(); // Clear fingerprints since we're in new territory
+      await quickScroll(page, jumpScrolls, tabId);
+      continue; // Skip the normal scroll, go straight to processing
+    }
 
-    // First try JavaScript scroll
+    // Scroll down
     try {
-      const scrolled = await page.evaluate(() => {
-        // Try scrolling window directly
-        const beforeY = window.scrollY;
-        window.scrollBy(0, 600);
-        if (window.scrollY !== beforeY) return true;
+      const scrollResult = await page.evaluate((px) => {
+        const html = document.documentElement;
+        const before = html.scrollTop;
+        const maxScroll = html.scrollHeight - html.clientHeight;
+        html.scrollTop = Math.min(before + px, maxScroll);
+        html.dispatchEvent(new Event('scroll', { bubbles: true }));
+        window.dispatchEvent(new Event('scroll', { bubbles: true }));
+        return {
+          moved: html.scrollTop !== before,
+          scrollTop: html.scrollTop,
+          maxScroll,
+          atBottom: html.scrollTop >= maxScroll - 10,
+        };
+      }, SCROLL_PX);
 
-        // Try scrolling document element
-        const docBefore = document.documentElement.scrollTop;
-        document.documentElement.scrollTop += 600;
-        if (document.documentElement.scrollTop !== docBefore) return true;
-
-        // Try scrolling body
-        const bodyBefore = document.body.scrollTop;
-        document.body.scrollTop += 600;
-        if (document.body.scrollTop !== bodyBefore) return true;
-
-        // Try finding a scrollable container
-        const containers = document.querySelectorAll('[style*="overflow"]');
-        for (const c of containers) {
-          const el = c as HTMLElement;
-          const before = el.scrollTop;
-          el.scrollTop += 600;
-          if (el.scrollTop !== before) return true;
-        }
-
-        return false;
-      });
-      scrollSucceeded = scrolled;
-    } catch {
-      // JS scroll failed
-    }
-
-    // If JS didn't work, try mouse wheel with timeout
-    // Note: Puppeteer's wheel() can throw ProtocolError on timeout even with Promise.race
-    // so we need a broader try-catch to prevent crashes
-    if (!scrollSucceeded) {
-      try {
-        await Promise.race([
-          (async () => {
-            await page.mouse.move(500, 400);
-            await page.mouse.wheel({ deltaY: 800 });
-          })(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Scroll timeout')), 5000))
-        ]);
-        scrollSucceeded = true;
-      } catch (scrollErr: unknown) {
-        // Log but don't crash - includes ProtocolError timeouts from Puppeteer internals
-        const errMsg = scrollErr instanceof Error ? scrollErr.message : String(scrollErr);
-        console.log(`   ⚠️ Scroll error: ${errMsg.slice(0, 60)}`);
+      if (scrollResult.atBottom) {
+        console.log(`   ${prefix} 📍 At bottom of page (${scrollResult.scrollTop}/${scrollResult.maxScroll})`);
       }
+    } catch (scrollErr: unknown) {
+      const errMsg = scrollErr instanceof Error ? scrollErr.message : String(scrollErr);
+      console.log(`   ${prefix} ⚠️ Scroll error: ${errMsg.slice(0, 60)}`);
     }
 
-    // Final fallback: keyboard
-    if (!scrollSucceeded) {
-      try {
-        await page.keyboard.press('PageDown');
-        await page.keyboard.press('PageDown');
-        await page.keyboard.press('PageDown');
-      } catch {
-        console.log(`   ⚠️ All scroll methods failed`);
-      }
-    }
-
-    await randomDelay(1200, 2000); // Human-like scroll pause
+    await randomDelay(300, 500);
   }
   } catch (loopErr: unknown) {
-    // Catch any Puppeteer errors (ProtocolError, etc.) so we can still import collected notes
     const errMsg = loopErr instanceof Error ? loopErr.message : String(loopErr);
-    console.log(`\n⚠️ Scraping interrupted by error: ${errMsg.slice(0, 100)}`);
-    console.log(`   Proceeding to import ${collectedNotes.size} notes collected so far...`);
+    console.log(`\n${prefix} ⚠️ Scraping interrupted: ${errMsg.slice(0, 100)}`);
+    console.log(`   ${prefix} Collected ${collectedNotes.size} notes so far across all tabs`);
   }
 
-  console.log(`\n✅ Scraping complete! Collected ${collectedNotes.size} notes\n`);
+  console.log(`\n${prefix} ✅ Tab finished. Total notes across all tabs: ${collectedNotes.size}`);
+}
+
+
+async function main() {
+  // Parse args
+  const args = process.argv.slice(2);
+  const freshStart = args.includes('--fresh');
+
+  // Parse --tabs N (and note which arg indices are consumed by flags)
+  const tabsFlagIdx = args.indexOf('--tabs');
+  const numTabs = tabsFlagIdx !== -1 && args[tabsFlagIdx + 1]
+    ? Math.min(Math.max(parseInt(args[tabsFlagIdx + 1]!, 10) || 1, 1), 5)
+    : 1;
+
+  // Filter out flag args AND their values (e.g. --tabs 3 removes both)
+  const flagValueIndices = new Set<number>();
+  if (tabsFlagIdx !== -1) {
+    flagValueIndices.add(tabsFlagIdx);
+    flagValueIndices.add(tabsFlagIdx + 1);
+  }
+  const nonFlagArgs = args.filter((a, i) => !a.startsWith('--') && !flagValueIndices.has(i));
+
+  // Smart arg parsing: if first non-flag arg is a number, treat it as maxNotes
+  let username = DEFAULT_USERNAME;
+  let maxNotes = 500;
+  if (nonFlagArgs.length === 1 && /^\d+$/.test(nonFlagArgs[0]!)) {
+    maxNotes = parseInt(nonFlagArgs[0]!, 10);
+  } else {
+    username = nonFlagArgs[0] || DEFAULT_USERNAME;
+    maxNotes = parseInt(nonFlagArgs[1] || "500", 10);
+  }
+  const notewriterUrl = `https://x.com/i/communitynotes/u/${username}`;
+
+  console.log("🔌 Connecting to Chrome on port 9222...\n");
+
+  let browser: Browser;
+  try {
+    browser = await puppeteer.connect({
+      browserURL: "http://127.0.0.1:9222",
+      protocolTimeout: 120000,
+    });
+  } catch (err) {
+    console.error("❌ Failed to connect to Chrome.");
+    console.error("Make sure Chrome is running with remote debugging:");
+    console.error('  /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile');
+    process.exit(1);
+  }
+
+  console.log("✅ Connected to Chrome\n");
+  console.log(`🚀 Starting scrape with ${numTabs} tab${numTabs > 1 ? 's' : ''} (max ${maxNotes} notes)...\n`);
+
+  // Open tabs
+  const tabPages: Page[] = [];
+
+  for (let i = 0; i < numTabs; i++) {
+    let tabPage: Page | undefined;
+
+    if (i === 0) {
+      // First tab: reuse existing notewriter tab if present
+      const existingPages = await browser.pages();
+      tabPage = existingPages.find((p) => p.url().includes("communitynotes"));
+
+      if (!tabPage) {
+        console.log(`📄 [Tab 0] Opening new tab: ${notewriterUrl}`);
+        tabPage = await browser.newPage();
+        await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+      } else {
+        console.log(`📄 [Tab 0] Found existing notewriter tab: ${tabPage.url()}`);
+        if (freshStart || !tabPage.url().includes(username)) {
+          console.log(`   [Tab 0] ${freshStart ? '🔄 Fresh start - reloading' : 'Navigating to'} ${notewriterUrl}`);
+          await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+        }
+      }
+    } else {
+      // Additional tabs: always open fresh
+      console.log(`📄 [Tab ${i}] Opening new tab: ${notewriterUrl}`);
+      tabPage = await browser.newPage();
+      await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+    }
+
+    // If fresh start, scroll to top
+    if (freshStart) {
+      await tabPage.evaluate(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
+      await new Promise(r => setTimeout(r, 500));
+    }
+
+    tabPages.push(tabPage);
+  }
+
+  // Wait for content on all tabs
+  await Promise.all(tabPages.map((p, i) => waitForContent(p, i)));
+
+  // Position tabs: tab i scrolls past (i * SCROLLS_PER_TAB_OFFSET) positions
+  if (numTabs > 1) {
+    console.log(`\n📍 Positioning ${numTabs} tabs across the notewriter list...\n`);
+    // Position tabs 1-N (tab 0 starts from current position)
+    await Promise.all(
+      tabPages.slice(1).map((p, idx) =>
+        quickScroll(p, (idx + 1) * SCROLLS_PER_TAB_OFFSET, idx + 1)
+      )
+    );
+  }
+
+  console.log(`\n${"=".repeat(60)}`);
+  console.log(`🏁 All ${numTabs} tabs ready. Starting parallel scrape...\n`);
+
+  // Shared map — JS is single-threaded so no race conditions
+  const collectedNotes = new Map<string, ScrapedNote>();
+
+  // Run all tabs in parallel
+  await Promise.all(
+    tabPages.map((p, i) => scrapeTab(p, collectedNotes, i, maxNotes))
+  );
+
+  console.log(`\n✅ All tabs finished! Collected ${collectedNotes.size} notes total\n`);
+
+  // Close extra tabs (keep tab 0)
+  for (let i = 1; i < tabPages.length; i++) {
+    try {
+      await tabPages[i]!.close();
+      console.log(`   Closed tab ${i}`);
+    } catch { /* tab may already be closed */ }
+  }
 
   if (collectedNotes.size === 0) {
     console.log("No notes collected.");
@@ -612,7 +681,6 @@ async function main() {
     const progress = `[${idx + 1}/${noteArray.length}]`;
 
     try {
-      // Validate note data before DB insertion
       if (!note.note_id || !/^\d{18,20}$/.test(note.note_id)) {
         console.error(`${progress} ✗ SKIP: Invalid note_id: ${note.note_id}`);
         errorCount++;
@@ -627,10 +695,8 @@ async function main() {
         console.warn(`${progress} ⚠️ Note ${note.note_id} has unknown status, proceeding anyway`);
       }
 
-      // Check if note exists
       const exists = await supabase.scrapedNotewriterNoteExists(note.note_id);
 
-      // Also check if there's a placeholder entry for this tweet (only if we have a real tweet_id)
       let placeholderExists = false;
       const placeholderId = note.tweet_id.startsWith('unavailable_') ? null : `tweet_${note.tweet_id}`;
       if (placeholderId) {
@@ -638,12 +704,10 @@ async function main() {
       }
 
       if (placeholderExists && placeholderId) {
-        // Update placeholder with real ID - this also migrates snapshots
         await supabase.updateScrapedNoteId(placeholderId, note.note_id);
         updatedIds++;
         console.log(`${progress} ✓ UPDATED: ${placeholderId.substring(0, 20)}... → ${note.note_id.substring(0, 15)}...`);
       } else if (!exists) {
-        // Brand new note - always upsert to ensure it exists before snapshot
         await supabase.upsertScrapedNotewriterNote({
           note_id: note.note_id,
           tweet_id: note.tweet_id,
@@ -656,10 +720,12 @@ async function main() {
         existingNotes++;
       }
 
-      // Always create a snapshot - the note should now exist
       await supabase.insertScrapedNotewriterSnapshot({
         note_id: note.note_id,
+        tweet_id: note.tweet_id,
+        note_text: note.note_text,
         cn_status: note.cn_status,
+        view_count: note.view_count,
       });
       snapshotsCreated++;
     } catch (err) {
@@ -677,11 +743,11 @@ async function main() {
   console.log(`   • Errors:            ${errorCount}`);
   console.log("=".repeat(60));
 
-  // Coverage check: compare scraped notes against all known notes in the ID range
+  // Coverage check
   const scrapedIds = [...collectedNotes.keys()].filter(id => /^\d+$/.test(id)).sort();
   if (scrapedIds.length >= 2) {
-    const minId = scrapedIds[0];
-    const maxId = scrapedIds[scrapedIds.length - 1];
+    const minId = scrapedIds[0]!;
+    const maxId = scrapedIds[scrapedIds.length - 1]!;
 
     const knownIds = await supabase.getScrapedNoteIdsInRange(minId, maxId);
 
@@ -706,6 +772,38 @@ async function main() {
       } else if (missed.length > 10) {
         console.log(`   • First 10 missed: ${missed.slice(0, 10).join(", ")}`);
       }
+    }
+  }
+
+  // Derive canonical tweet_ids from snapshot majority vote
+  console.log("\n🔗 Deriving tweet_ids from snapshot majority vote...");
+  const deriveResult = await supabase.deriveTweetIds();
+  console.log(`   • Total notes:  ${deriveResult.total}`);
+  console.log(`   • Updated:      ${deriveResult.updated}`);
+  console.log(`   • Flagged:      ${deriveResult.flagged}`);
+  console.log(`   • No votes yet: ${deriveResult.noVotes}`);
+
+  // Detect snapshot anomalies
+  console.log("\n🔍 Detecting snapshot anomalies...");
+  const anomalies = await supabase.detectSnapshotAnomalies();
+  console.log(`   • View count decreases: ${anomalies.viewCountDecreases.length}`);
+  console.log(`   • Note text changes:    ${anomalies.noteTextChanges.length}`);
+  if (anomalies.viewCountDecreases.length > 0) {
+    console.log("\n   View count decreases (likely virtualizer corruption):");
+    for (const a of anomalies.viewCountDecreases.slice(0, 10)) {
+      console.log(`     ${a.note_id}: ${a.from} → ${a.to} (${a.fromDate} → ${a.toDate})`);
+    }
+    if (anomalies.viewCountDecreases.length > 10) {
+      console.log(`     ... and ${anomalies.viewCountDecreases.length - 10} more`);
+    }
+  }
+  if (anomalies.noteTextChanges.length > 0) {
+    console.log("\n   Note text changes (likely virtualizer corruption):");
+    for (const a of anomalies.noteTextChanges.slice(0, 10)) {
+      console.log(`     ${a.note_id}: ${a.texts.length} different texts across ${a.dates.length} snapshots`);
+    }
+    if (anomalies.noteTextChanges.length > 10) {
+      console.log(`     ... and ${anomalies.noteTextChanges.length - 10} more`);
     }
   }
 

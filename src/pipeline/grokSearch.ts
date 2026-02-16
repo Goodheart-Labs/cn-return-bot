@@ -52,12 +52,12 @@ export async function searchXWithGrok(
   const prompt = PROMPTS.search(tweetUrl, tweetText);
 
   const { text } = await generateText({
-    model: xai.responses(config.model),
+    model: xai.responses(config.model) as any,
     prompt,
     tools: {
       x_search: xai.tools.xSearch({
         enableImageUnderstanding: true,
-      }),
+      }) as any,
     },
   });
 

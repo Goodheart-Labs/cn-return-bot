@@ -44,4 +44,18 @@ cn-data/
 
 # Elo rating web app compiled files
 src/elo-rating-web/dist/
-src/elo-rating-web/*.jsscraped-notes-*.json
+src/elo-rating-web/*.js
+
+# Scraped data files (data lives in Supabase)
+scraped-notes*.json
+scraped-notes*.md
+scraped-visible-text*.txt
+scraper-visible-text*.md
+flagged-notes.json
+comparison-data.json
+
+# Generated reports (output of src/reports/ scripts)
+tmp/reports/
+
+# Bot playground (Next.js app) - track source but not node_modules
+cn-bot-playground/node_modules/

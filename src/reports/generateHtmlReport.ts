@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { SupabaseLogger } from "../api/supabaseClient";
+import { bots as botRegistry } from "../bots";
 import { writeFileSync } from "fs";
 
 const supabase = new SupabaseLogger();
@@ -8,9 +9,33 @@ const notes = await supabase.getNotesWithLatestSnapshots();
 // Fetch pipeline run data per bot (attempts, outcomes)
 const pipelineData = await supabase.getPipelineRunsByBot();
 
-// Define active vs legacy bots
-const activeBots = ["opus-main", "opus-scored", "opus-strict"];
-const legacyBots = ["gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "test-bot"];
+// Fetch summary stats across ALL scraped notes (including pre-bot-tracking)
+const scrapedSummary = await supabase.getScrapedNoteSummary();
+
+// Derive active vs legacy from bot registry (weight > 0 = active)
+const activeBots = botRegistry.filter((b) => b.weight > 0).map((b) => b.id);
+const legacyBots = botRegistry.filter((b) => b.weight === 0).map((b) => b.id);
+
+// Validate: every bot in the data must be in the registry
+const knownIds = new Set([...activeBots, ...legacyBots]);
+const unknownBots = new Set<string>();
+for (const note of notes) {
+  const name = note.bot_name || "unknown";
+  if (name !== "unknown" && !knownIds.has(name)) {
+    unknownBots.add(name);
+  }
+}
+for (const botId of Object.keys(pipelineData)) {
+  if (botId !== "unknown" && !knownIds.has(botId)) {
+    unknownBots.add(botId);
+  }
+}
+if (unknownBots.size > 0) {
+  throw new Error(
+    `Found bots in data that are not in registry.ts: ${[...unknownBots].join(", ")}. ` +
+    `Add them to src/bots/index.ts.`
+  );
+}
 
 // Format notes data for client-side rendering
 const notesData = notes.map((note) => ({
@@ -211,24 +236,6 @@ const html = `<!DOCTYPE html>
   </div>
 
   <div class="summary">
-    <h2>Summary</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Bot</th>
-          <th>Total</th>
-          <th class="helpful">Helpful</th>
-          <th class="not-helpful">Not Helpful</th>
-          <th class="needs-more">Needs More</th>
-        </tr>
-      </thead>
-      <tbody id="summary-table-body">
-      </tbody>
-    </table>
-    <p class="generated">Generated: ${new Date().toISOString().split("T")[0]}</p>
-  </div>
-
-  <div class="summary">
     <h2>Pipeline Attempts</h2>
     <table>
       <thead>
@@ -254,6 +261,7 @@ const html = `<!DOCTYPE html>
     const legacyBots = ${JSON.stringify(legacyBots)};
     const colors = ${JSON.stringify(colors)};
     const pipelineByBot = ${JSON.stringify(pipelineData)};
+    const scrapedSummary = ${JSON.stringify(scrapedSummary)};
 
     // Charts
     let notesChart, rateChart, activeStatusChart, legacyStatusChart;
@@ -265,10 +273,10 @@ const html = `<!DOCTYPE html>
     }
 
     function getStatus(status) {
-      const s = status.toLowerCase().replace(/_/g, " ");
-      if (s.includes("helpful") && !s.includes("not")) return "helpful";
-      if (s.includes("not helpful")) return "notHelpful";
-      if (s.includes("needs more")) return "needsMore";
+      const s = status.toUpperCase().replace(/\\s+/g, "_");
+      if (s === "CURRENTLY_RATED_HELPFUL" || s === "SHOWN_ON_X") return "helpful";
+      if (s === "CURRENTLY_RATED_NOT_HELPFUL" || s === "NOT_SHOWN_ON_X") return "notHelpful";
+      if (s === "NEEDS_MORE_RATINGS") return "needsMore";
       return "unknown";
     }
 
@@ -329,11 +337,13 @@ const html = `<!DOCTYPE html>
       const knownTotal = totalHelpful + totalNotHelpful + totalNeedsMore;
       const helpfulRate = knownTotal > 0 ? ((totalHelpful / knownTotal) * 100).toFixed(1) : "N/A";
 
-      // Update cards
-      document.getElementById('total-notes').textContent = totalNotes;
-      document.getElementById('helpful-rate').textContent = helpfulRate + '%';
-      document.getElementById('total-views').textContent = formatViews(totalViews);
-      document.getElementById('awaiting-ratings').textContent = totalNeedsMore;
+      // Update cards — use scraped summary for top-level totals (covers all ~1400 notes)
+      const scrapedKnown = scrapedSummary.totalHelpful + scrapedSummary.totalNotHelpful + scrapedSummary.totalNeedsMore;
+      const scrapedHelpfulRate = scrapedKnown > 0 ? ((scrapedSummary.totalHelpful / scrapedKnown) * 100).toFixed(1) : "N/A";
+      document.getElementById('total-notes').textContent = scrapedSummary.totalNotes;
+      document.getElementById('helpful-rate').textContent = scrapedHelpfulRate + '%';
+      document.getElementById('total-views').textContent = formatViews(scrapedSummary.totalViews);
+      document.getElementById('awaiting-ratings').textContent = scrapedSummary.totalNeedsMore;
 
       // Sort active bots by total
       const sortedActive = [...activeBots].sort((a, b) => (activeStats[b]?.total || 0) - (activeStats[a]?.total || 0));
@@ -436,44 +446,6 @@ const html = `<!DOCTYPE html>
         }
       });
 
-      // Update table
-      const tbody = document.getElementById('summary-table-body');
-      tbody.innerHTML = '';
-
-      // Active bots first
-      for (const bot of sortedActive) {
-        const s = activeStats[bot];
-        if (!s || s.total === 0) continue;
-        tbody.innerHTML += \`<tr>
-          <td><strong>\${bot}</strong></td>
-          <td>\${s.total}</td>
-          <td class="helpful">\${s.helpful} <span class="pct">(\${Math.round(s.helpful / s.total * 100)}%)</span></td>
-          <td class="not-helpful">\${s.notHelpful} <span class="pct">(\${Math.round(s.notHelpful / s.total * 100)}%)</span></td>
-          <td class="needs-more">\${s.needsMore} <span class="pct">(\${Math.round(s.needsMore / s.total * 100)}%)</span></td>
-        </tr>\`;
-      }
-
-      // Legacy bots
-      for (const bot of sortedLegacy) {
-        const s = legacyStats[bot];
-        if (!s || s.total === 0) continue;
-        tbody.innerHTML += \`<tr class="legacy-row">
-          <td><strong>\${bot} <span class="legacy">(legacy)</span></strong></td>
-          <td>\${s.total}</td>
-          <td class="helpful">\${s.helpful} <span class="pct">(\${Math.round(s.helpful / s.total * 100)}%)</span></td>
-          <td class="not-helpful">\${s.notHelpful} <span class="pct">(\${Math.round(s.notHelpful / s.total * 100)}%)</span></td>
-          <td class="needs-more">\${s.needsMore} <span class="pct">(\${Math.round(s.needsMore / s.total * 100)}%)</span></td>
-        </tr>\`;
-      }
-
-      // Total row
-      tbody.innerHTML += \`<tr style="font-weight: bold; border-top: 2px solid #333;">
-        <td>Total</td>
-        <td>\${totalNotes}</td>
-        <td class="helpful">\${totalHelpful} <span class="pct">(\${knownTotal > 0 ? Math.round(totalHelpful / knownTotal * 100) : 0}%)</span></td>
-        <td class="not-helpful">\${totalNotHelpful} <span class="pct">(\${knownTotal > 0 ? Math.round(totalNotHelpful / knownTotal * 100) : 0}%)</span></td>
-        <td class="needs-more">\${totalNeedsMore} <span class="pct">(\${knownTotal > 0 ? Math.round(totalNeedsMore / knownTotal * 100) : 0}%)</span></td>
-      </tr>\`;
     }
 
     let currentTimeFilter = 'all';
@@ -542,5 +514,5 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
-writeFileSync("docs/full-bot-report.html", html);
-console.log("Report generated: docs/full-bot-report.html");
+writeFileSync("tmp/reports/full-bot-report.html", html);
+console.log("Report generated: tmp/reports/full-bot-report.html");
