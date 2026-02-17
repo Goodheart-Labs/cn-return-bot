@@ -213,7 +213,7 @@ async function main() {
     "NH avg".padStart(10) +
     "Sep".padStart(8)
   );
-  console.log("\u2500".repeat(69));
+  console.log("─".repeat(69));
 
   for (const r of results) {
     const corr = isNaN(r.correlation) ? "N/A" : r.correlation.toFixed(3);
@@ -258,7 +258,7 @@ async function main() {
     // Rolling window stats
     const WINDOW = 5;
     console.log("Date".padEnd(22) + "Pred".padStart(8) + "Actual".padStart(8) + "Error".padStart(8) + `  Roll${WINDOW} MAE`);
-    console.log("\u2500".repeat(55));
+    console.log("─".repeat(55));
 
     for (let i = 0; i < sorted.length; i++) {
       const s = sorted[i]!;

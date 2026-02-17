@@ -1,147 +1,149 @@
 /**
- * Human Prediction CLI
+ * Human Prediction Script
  *
- * Interactive tool for manually predicting coreNoteIntercept scores.
- * Shows each submitted note that doesn't yet have a pred_human score
- * and prompts for your prediction.
+ * Interactive CLI for manual helpfulness predictions.
+ * Shows recently submitted notes and prompts for a decimal prediction
+ * of the coreNoteIntercept score (>0.4 = helpful, <-0.04 = not helpful).
+ *
+ * Predictions are stored in pipeline_scores as "pred_human" and included
+ * in the evaluatePredictors.ts leaderboard alongside automated methods.
  *
  * Usage: bun run src/scripts/humanPredict.ts
  */
 
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
-import * as readline from "readline";
+import { createInterface } from "readline";
 
 const client = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-function prompt(rl: readline.Interface, question: string): Promise<string> {
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+function ask(question: string): Promise<string> {
   return new Promise((resolve) => {
     rl.question(question, (answer) => resolve(answer.trim()));
   });
 }
 
 async function main() {
-  // 1. Get all submitted pipeline runs with note_ids
+  // Get submitted pipeline runs that don't yet have a pred_human score
   const { data: runs, error: runsError } = await client
     .from("pipeline_runs")
-    .select("id, note_id, tweet_id, created_at")
+    .select("id, tweet_id, tweet_text, bot_id, note_id, created_at")
     .eq("outcome", "submitted")
     .not("note_id", "is", null)
     .order("created_at", { ascending: false });
 
-  if (runsError || !runs) {
+  if (runsError) {
     console.error("Error fetching pipeline runs:", runsError);
     process.exit(1);
   }
 
-  // 2. Get existing human predictions
+  if (!runs || runs.length === 0) {
+    console.log("No submitted notes found.");
+    process.exit(0);
+  }
+
+  // Get existing pred_human scores
+  const runIds = runs.map((r) => r.id);
   const { data: existingScores } = await client
     .from("pipeline_scores")
     .select("pipeline_run_id")
-    .eq("score_type", "pred_human");
+    .eq("score_type", "pred_human")
+    .in("pipeline_run_id", runIds);
 
   const alreadyPredicted = new Set(
     (existingScores || []).map((s) => s.pipeline_run_id)
   );
 
-  // 3. Get note texts from the notes table
+  // Get note texts from notes table
   const noteIds = runs.map((r) => r.note_id).filter(Boolean);
   const { data: notes } = await client
     .from("notes")
-    .select("note_id, tweet_id, note_text, source_url, bot_name")
+    .select("note_id, note_text, source_url")
     .in("note_id", noteIds);
 
-  const noteByNoteId = new Map(
+  const noteMap = new Map(
     (notes || []).map((n) => [n.note_id, n])
   );
 
-  // 4. Filter to runs that need predictions
-  const needsPrediction = runs.filter((r) => !alreadyPredicted.has(r.id));
+  // Filter to unpredicted notes
+  const unpredicted = runs.filter((r) => !alreadyPredicted.has(r.id));
 
-  if (needsPrediction.length === 0) {
-    console.log("All submitted notes already have human predictions!");
+  if (unpredicted.length === 0) {
+    console.log("All submitted notes already have human predictions.");
     process.exit(0);
   }
 
-  console.log(`\n${needsPrediction.length} notes need human predictions.`);
-  console.log("Enter a decimal prediction (your estimate of coreNoteIntercept).");
-  console.log("  > 0.4 = helpful, < -0.04 = not helpful");
-  console.log("  Press Enter to skip, 'q' to quit.\n");
-
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  console.log(`\n${unpredicted.length} notes need predictions (${alreadyPredicted.size} already done)\n`);
+  console.log("Scoring guide: >0.4 = helpful, <-0.04 = not helpful");
+  console.log("Enter a decimal, or press Enter to skip, or 'q' to quit.\n");
 
   let predicted = 0;
-  let skipped = 0;
 
-  for (let i = 0; i < needsPrediction.length; i++) {
-    const run = needsPrediction[i]!;
-    const note = noteByNoteId.get(run.note_id);
+  for (const run of unpredicted) {
+    const note = noteMap.get(run.note_id);
+    const tweetUrl = `https://x.com/i/status/${run.tweet_id}`;
 
-    console.log(`\n--- Note ${i + 1}/${needsPrediction.length} ---`);
-    console.log(`Pipeline run: ${run.id}`);
-    console.log(`Note ID: ${run.note_id}`);
-    console.log(`Tweet ID: ${run.tweet_id || note?.tweet_id || "unknown"}`);
-    if (note?.bot_name) console.log(`Bot: ${note.bot_name}`);
-    console.log(`Submitted: ${run.created_at}`);
+    console.log("─".repeat(60));
+    console.log(`Tweet: ${tweetUrl}`);
+    console.log(`Tweet text: ${(run.tweet_text || "").slice(0, 300)}`);
+    console.log(`Bot: ${run.bot_id}`);
+    console.log(`Date: ${run.created_at}`);
 
-    if (note?.source_url) {
-      console.log(`Source: ${note.source_url}`);
-    }
-
-    if (note?.note_text) {
-      console.log(`\nNote text:\n${note.note_text}\n`);
+    if (note) {
+      console.log(`\nNote: ${note.note_text}`);
+      console.log(`Source: ${note.source_url || "(none)"}`);
     } else {
-      console.log("\n(Note text not available)\n");
+      console.log(`\nNote text not found (note_id: ${run.note_id})`);
     }
 
-    const answer = await prompt(rl, "Your prediction (decimal): ");
+    console.log();
+    const answer = await ask("Your prediction: ");
 
-    if (answer.toLowerCase() === "q") {
-      console.log("\nQuitting.");
+    if (answer === "q" || answer === "quit") {
       break;
     }
 
     if (answer === "") {
-      skipped++;
+      console.log("Skipped.\n");
       continue;
     }
 
     const value = parseFloat(answer);
     if (isNaN(value)) {
-      console.log("Invalid number, skipping.");
-      skipped++;
+      console.log("Invalid number, skipping.\n");
       continue;
     }
 
-    // Store the prediction
+    // Store prediction
     const { error } = await client.from("pipeline_scores").insert({
       pipeline_run_id: run.id,
       score_type: "pred_human",
       score_value: value,
-      score_metadata: { source: "humanPredict.ts" },
     });
 
     if (error) {
-      console.error(`Error saving prediction: ${error.message}`);
+      console.error("Error saving prediction:", error);
     } else {
       predicted++;
-      console.log(`Saved: ${value}`);
+      console.log(`Saved: ${value}\n`);
     }
   }
 
+  console.log(`\nDone. ${predicted} predictions saved.`);
   rl.close();
-
-  console.log(`\nDone! Predicted: ${predicted}, Skipped: ${skipped}`);
   process.exit(0);
 }
 
 main().catch((err) => {
   console.error("Fatal error:", err);
+  rl.close();
   process.exit(1);
 });
