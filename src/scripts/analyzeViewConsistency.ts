@@ -54,8 +54,8 @@ async function analyzeViewConsistency() {
     let hasDecrease = false;
 
     for (let i = 1; i < scrapes.length; i++) {
-      const prev = scrapes[i - 1].view_count;
-      const curr = scrapes[i].view_count;
+      const prev = scrapes[i - 1]!.view_count;
+      const curr = scrapes[i]!.view_count;
 
       if (curr > prev) hasIncrease = true;
       if (curr < prev) hasDecrease = true;
@@ -109,7 +109,7 @@ async function analyzeViewConsistency() {
 
   // Calculate total views for notes with 2+ scrapes (using latest)
   const totalViewsMultipleScrapes = notesWithMultipleScrapes.reduce(
-    (sum, { scrapes }) => sum + scrapes[scrapes.length - 1].view_count,
+    (sum, { scrapes }) => sum + scrapes[scrapes.length - 1]!.view_count,
     0
   );
 

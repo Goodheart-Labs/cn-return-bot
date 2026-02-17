@@ -48,7 +48,7 @@ const dailyBotColors: Record<string, string> = {
 };
 const dailyDatasets = dailyBots.map(bot => ({
   label: bot,
-  data: dailyDays.map(d => dailyByDayBot[d][bot] || 0),
+  data: dailyDays.map(d => dailyByDayBot[d]?.[bot] || 0),
   backgroundColor: dailyBotColors[bot] || "rgba(107, 114, 128, 0.8)",
 }));
 
@@ -271,24 +271,6 @@ const html = `<!DOCTYPE html>
   </div>
 
   <div class="summary">
-    <h2>Summary</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Bot</th>
-          <th>Total</th>
-          <th class="helpful">Helpful</th>
-          <th class="not-helpful">Not Helpful</th>
-          <th class="needs-more">Needs More</th>
-        </tr>
-      </thead>
-      <tbody id="summary-table-body">
-      </tbody>
-    </table>
-    <p class="generated">Generated: ${new Date().toISOString().split("T")[0]}</p>
-  </div>
-
-  <div class="summary">
     <h2>Pipeline Attempts</h2>
     <table>
       <thead>
@@ -329,10 +311,10 @@ const html = `<!DOCTYPE html>
     }
 
     function getStatus(status) {
-      const s = status.toLowerCase().replace(/_/g, " ");
-      if (s.includes("helpful") && !s.includes("not")) return "helpful";
-      if (s.includes("not helpful")) return "notHelpful";
-      if (s.includes("needs more")) return "needsMore";
+      const s = status.toUpperCase().replace(/\\s+/g, "_");
+      if (s === "CURRENTLY_RATED_HELPFUL" || s === "SHOWN_ON_X") return "helpful";
+      if (s === "CURRENTLY_RATED_NOT_HELPFUL" || s === "NOT_SHOWN_ON_X") return "notHelpful";
+      if (s === "NEEDS_MORE_RATINGS") return "needsMore";
       return "unknown";
     }
 
@@ -713,5 +695,5 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
-writeFileSync("docs/full-bot-report.html", html);
-console.log("Report generated: docs/full-bot-report.html");
+writeFileSync("tmp/reports/full-bot-report.html", html);
+console.log("Report generated: tmp/reports/full-bot-report.html");

@@ -426,6 +426,24 @@ async function main() {
                   );
                 }
               }
+
+              // Fire-and-forget: run prediction scores for later evaluation
+              if (supabaseLogger && pipelineRunId) {
+                const { runPredictionScores } = await import(
+                  "../pipeline/predictionScores"
+                );
+                runPredictionScores({
+                  pipelineRunId,
+                  noteText,
+                  sourceUrl: result.noteResult.url,
+                  tweetText: content.text,
+                  searchResults: result.searchContextResult.searchResults,
+                  postId: result.post.id,
+                  supabaseLogger,
+                }).catch((err) =>
+                  console.warn("[main] Prediction scores failed (non-fatal):", err)
+                );
+              }
             }
           } catch (err: any) {
             console.error(

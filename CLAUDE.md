@@ -34,12 +34,22 @@ A bot that automatically writes Community Notes for X/Twitter posts. Runs on Git
 
 ## Notewriter scraper
 
-Scrapes our own bot-written notes from the notewriter page to track status changes and view counts over time. See `scripts/README.md` for usage. Data goes into `scraped_notewriter_notes` and `scraped_notewriter_snapshots` tables.
+The main scraper is `src/scripts/scrapeNotewriterClickThrough.ts`. It connects to a local Chrome via Puppeteer CDP (port 9222), scrolls through the notewriter page, clicks "View details" on each note to extract the real note ID and status from the modal, then imports to Supabase.
 
-To run the scraper, just run it directly — Chrome with remote debugging will already be available or will launch automatically. Don't ask the user to manually navigate to the notewriter page.
+- **Notewriter account**: `wholesome-raspberry-stilt` (the only active one)
+- **Primary purpose**: Full coverage audit — ensure every note we've written is tracked in the DB
+- **Data destination**: `scraped_notewriter_notes` + `scraped_notewriter_snapshots` tables
+- **Key technical detail**: X's notewriter page scrolls on `document.documentElement` (the `<html>` element), NOT window or body. The virtualizer only renders ~5-10 cells at a time.
+- **One scraper**: Only `scrapeNotewriterClickThrough.ts` exists. Legacy scrapers were deleted Feb 2026.
 
+Usage:
 ```bash
-bun run src/scripts/scrapeNotewriterClickThrough.ts 20
+# Start Chrome with remote debugging first
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile
+
+# Run scraper (number = max notes to scrape)
+bun run src/scripts/scrapeNotewriterClickThrough.ts 50
+bun run src/scripts/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page first
 ```
 
 ## Gotchas
