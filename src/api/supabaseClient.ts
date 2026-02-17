@@ -97,6 +97,9 @@ export interface NoteWithSnapshot {
 
   // Media info (from pipeline_runs)
   has_video?: boolean;
+
+  // Retry info
+  is_retry?: boolean;
 }
 
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
@@ -585,6 +588,26 @@ export class SupabaseLogger {
   }
 
   /**
+   * Get raw pipeline runs with timestamps for client-side filtering
+   */
+  async getPipelineRunsRaw(): Promise<Array<{ bot_id: string; outcome: string; created_at: string }>> {
+    const { data, error } = await this.client
+      .from("pipeline_runs")
+      .select("bot_id, outcome, created_at");
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching raw pipeline runs:", error);
+      return [];
+    }
+
+    return (data || []).map(r => ({
+      bot_id: r.bot_id || "unknown",
+      outcome: r.outcome,
+      created_at: r.created_at,
+    }));
+  }
+
+  /**
    * Get scraped note IDs in a given range (for coverage checks)
    */
   async getScrapedNoteIdsInRange(minId: string, maxId: string): Promise<string[]> {
@@ -642,11 +665,30 @@ export class SupabaseLogger {
       // Don't throw - video info is optional
     }
 
+    // Get submitted/failed pipeline_runs to determine retry status (count actual attempts per tweet_id)
+    // Excludes filtered/rejected runs since those aren't real submission attempts
+    const { data: allRuns, error: allRunsError } = await this.client
+      .from("pipeline_runs")
+      .select("tweet_id")
+      .in("outcome", ["submitted", "failed"]);
+
+    if (allRunsError) {
+      console.error("[SupabaseLogger] Error fetching all pipeline runs:", allRunsError);
+    }
+
     // Build tweet_id -> has_video map
     const videoInfo: Record<string, boolean> = {};
     for (const run of pipelineRuns || []) {
       if (run.tweet_id && run.has_video !== null) {
         videoInfo[run.tweet_id] = run.has_video;
+      }
+    }
+
+    // Build tweet_id -> run count map (>1 means retry)
+    const runCounts: Record<string, number> = {};
+    for (const run of allRuns || []) {
+      if (run.tweet_id) {
+        runCounts[run.tweet_id] = (runCounts[run.tweet_id] || 0) + 1;
       }
     }
 
@@ -708,6 +750,9 @@ export class SupabaseLogger {
 
         // Media info
         has_video: videoInfo[note.tweet_id],
+
+        // Retry info
+        is_retry: (runCounts[note.tweet_id] || 1) > 1,
       };
     });
   }
@@ -813,6 +858,48 @@ export class SupabaseLogger {
       console.error("[SupabaseLogger] Error adding pipeline score:", error);
       throw error;
     }
+  }
+
+  /**
+   * Get pipeline outcomes grouped by bot for reporting
+   */
+  async getPipelineOutcomesByBot(): Promise<{
+    bot_id: string;
+    note_not_needed: number;
+    failed_to_write: number;
+  }[]> {
+    const { data, error } = await this.client
+      .from("pipeline_runs")
+      .select("bot_id, outcome, outcome_reason")
+      .in("outcome", ["rejected", "failed"]);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching pipeline outcomes:", error);
+      throw error;
+    }
+
+    // Group by bot_id
+    const byBot: Record<string, { note_not_needed: number; failed_to_write: number }> = {};
+
+    for (const row of data || []) {
+      const botId = row.bot_id || "unknown";
+      if (!byBot[botId]) {
+        byBot[botId] = { note_not_needed: 0, failed_to_write: 0 };
+      }
+
+      // "Note Not Needed" = rejected with outcome_reason = "no_correction_needed"
+      if (row.outcome === "rejected" && row.outcome_reason === "no_correction_needed") {
+        byBot[botId].note_not_needed++;
+      } else {
+        // Everything else (failed or other rejected reasons) = "Failed to Write"
+        byBot[botId].failed_to_write++;
+      }
+    }
+
+    return Object.entries(byBot).map(([bot_id, counts]) => ({
+      bot_id,
+      ...counts,
+    }));
   }
 
   /**

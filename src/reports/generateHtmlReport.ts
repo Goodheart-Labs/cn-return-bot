@@ -1,41 +1,56 @@
 import "dotenv/config";
 import { SupabaseLogger } from "../api/supabaseClient";
-import { bots as botRegistry } from "../bots";
 import { writeFileSync } from "fs";
 
 const supabase = new SupabaseLogger();
 const notes = await supabase.getNotesWithLatestSnapshots();
 
-// Fetch pipeline run data per bot (attempts, outcomes)
+// Fetch pipeline run data per bot (attempts, outcomes) - aggregated for backward compat
 const pipelineData = await supabase.getPipelineRunsByBot();
 
-// Fetch summary stats across ALL scraped notes (including pre-bot-tracking)
-const scrapedSummary = await supabase.getScrapedNoteSummary();
+// Fetch raw pipeline runs with timestamps for client-side filtering
+const pipelineRuns = await supabase.getPipelineRunsRaw();
 
-// Derive active vs legacy from bot registry (weight > 0 = active)
-const activeBots = botRegistry.filter((b) => b.weight > 0).map((b) => b.id);
-const legacyBots = botRegistry.filter((b) => b.weight === 0).map((b) => b.id);
+// Fetch pipeline outcomes (rejected/failed) per bot
+const pipelineOutcomes = await supabase.getPipelineOutcomesByBot();
 
-// Validate: every bot in the data must be in the registry
-const knownIds = new Set([...activeBots, ...legacyBots]);
-const unknownBots = new Set<string>();
+// Define active vs legacy bots
+const activeBots = ["opus-main", "opus-concise"];
+const legacyBots = ["opus-scored", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek"];
+
+// Check for notes from unknown bots
+const knownBots = new Set([...activeBots, ...legacyBots]);
+const unknownBotNotes = notes.filter(n => n.bot_name && !knownBots.has(n.bot_name));
+if (unknownBotNotes.length > 0) {
+  const unknownBots = [...new Set(unknownBotNotes.map(n => n.bot_name))];
+  throw new Error(`Found ${unknownBotNotes.length} notes from unknown bots: ${unknownBots.join(", ")}. Add them to activeBots or legacyBots in generateHtmlReport.ts`);
+}
+
+// Compute notes per day by bot for daily chart
+const dailyByDayBot: Record<string, Record<string, number>> = {};
 for (const note of notes) {
-  const name = note.bot_name || "unknown";
-  if (name !== "unknown" && !knownIds.has(name)) {
-    unknownBots.add(name);
-  }
+  const day = note.submitted_at.slice(0, 10);
+  const bot = note.bot_name || "unknown";
+  if (!dailyByDayBot[day]) dailyByDayBot[day] = {};
+  dailyByDayBot[day][bot] = (dailyByDayBot[day][bot] || 0) + 1;
 }
-for (const botId of Object.keys(pipelineData)) {
-  if (botId !== "unknown" && !knownIds.has(botId)) {
-    unknownBots.add(botId);
-  }
-}
-if (unknownBots.size > 0) {
-  throw new Error(
-    `Found bots in data that are not in registry.ts: ${[...unknownBots].join(", ")}. ` +
-    `Add them to src/bots/index.ts.`
-  );
-}
+const dailyDays = Object.keys(dailyByDayBot).sort();
+const dailyBots = [...new Set(notes.map(n => n.bot_name || "unknown"))].sort();
+const dailyBotColors: Record<string, string> = {
+  "opus-main": "rgba(59, 130, 246, 0.8)",
+  "opus-concise": "rgba(34, 197, 94, 0.8)",
+  "gemini-flash": "rgba(245, 158, 11, 0.8)",
+  "opus-scored": "rgba(168, 85, 247, 0.8)",
+  "multi-search": "rgba(20, 184, 166, 0.8)",
+  "gemini-3-flash": "rgba(236, 72, 153, 0.8)",
+  "deepseek": "rgba(239, 68, 68, 0.8)",
+  "unknown": "rgba(156, 163, 175, 0.8)",
+};
+const dailyDatasets = dailyBots.map(bot => ({
+  label: bot,
+  data: dailyDays.map(d => dailyByDayBot[d]?.[bot] || 0),
+  backgroundColor: dailyBotColors[bot] || "rgba(107, 114, 128, 0.8)",
+}));
 
 // Format notes data for client-side rendering
 const notesData = notes.map((note) => ({
@@ -190,6 +205,14 @@ const html = `<!DOCTYPE html>
           <button onclick="setMediaFilter('no-video')" id="btn-media-no-video">No Video</button>
         </span>
       </div>
+      <div>
+        <span class="filter-label">Attempt:</span>
+        <span class="filter-group">
+          <button onclick="setAttemptFilter('all')" id="btn-attempt-all" class="active">All</button>
+          <button onclick="setAttemptFilter('first')" id="btn-attempt-first">First Try</button>
+          <button onclick="setAttemptFilter('retry')" id="btn-attempt-retry">Retry</button>
+        </span>
+      </div>
     </div>
   </div>
 
@@ -235,6 +258,18 @@ const html = `<!DOCTYPE html>
     <canvas id="legacyStatusChart"></canvas>
   </div>
 
+  <div class="section-title">All Outcomes by Bot</div>
+  <div class="chart-container">
+    <div class="chart-title">Submitted + Rejected + Failed</div>
+    <canvas id="pipelineOutcomesChart"></canvas>
+  </div>
+
+  <div class="section-title">Notes Per Day</div>
+  <div class="chart-container">
+    <div class="chart-title">Notes Submitted Per Day (Stacked by Bot)</div>
+    <canvas id="dailyNotesChart"></canvas>
+  </div>
+
   <div class="summary">
     <h2>Pipeline Attempts</h2>
     <table>
@@ -261,10 +296,13 @@ const html = `<!DOCTYPE html>
     const legacyBots = ${JSON.stringify(legacyBots)};
     const colors = ${JSON.stringify(colors)};
     const pipelineByBot = ${JSON.stringify(pipelineData)};
-    const scrapedSummary = ${JSON.stringify(scrapedSummary)};
+    const pipelineOutcomesData = ${JSON.stringify(pipelineOutcomes)};
+    const rawPipelineRuns = ${JSON.stringify(pipelineRuns)};
 
     // Charts
-    let notesChart, rateChart, activeStatusChart, legacyStatusChart;
+    let notesChart, rateChart, activeStatusChart, legacyStatusChart, pipelineOutcomesChart, dailyNotesChart;
+    const dailyDays = ${JSON.stringify(dailyDays)};
+    const dailyDatasets = ${JSON.stringify(dailyDatasets)};
 
     function formatViews(n) {
       if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
@@ -294,7 +332,7 @@ const html = `<!DOCTYPE html>
       return stats;
     }
 
-    function filterNotes(timeFilter, mediaFilter) {
+    function filterNotes(timeFilter, mediaFilter, attemptFilter) {
       let notes = allNotes;
 
       // Time filter
@@ -314,11 +352,18 @@ const html = `<!DOCTYPE html>
         notes = notes.filter(n => n.has_video === false);
       }
 
+      // Attempt filter
+      if (attemptFilter === 'first') {
+        notes = notes.filter(n => !n.is_retry);
+      } else if (attemptFilter === 'retry') {
+        notes = notes.filter(n => n.is_retry === true);
+      }
+
       return notes;
     }
 
     function updateCharts() {
-      const notes = filterNotes(currentTimeFilter, currentMediaFilter);
+      const notes = filterNotes(currentTimeFilter, currentMediaFilter, currentAttemptFilter);
       const activeStats = computeStats(notes, activeBots);
       const legacyStats = computeStats(notes, legacyBots);
 
@@ -337,13 +382,11 @@ const html = `<!DOCTYPE html>
       const knownTotal = totalHelpful + totalNotHelpful + totalNeedsMore;
       const helpfulRate = knownTotal > 0 ? ((totalHelpful / knownTotal) * 100).toFixed(1) : "N/A";
 
-      // Update cards — use scraped summary for top-level totals (covers all ~1400 notes)
-      const scrapedKnown = scrapedSummary.totalHelpful + scrapedSummary.totalNotHelpful + scrapedSummary.totalNeedsMore;
-      const scrapedHelpfulRate = scrapedKnown > 0 ? ((scrapedSummary.totalHelpful / scrapedKnown) * 100).toFixed(1) : "N/A";
-      document.getElementById('total-notes').textContent = scrapedSummary.totalNotes;
-      document.getElementById('helpful-rate').textContent = scrapedHelpfulRate + '%';
-      document.getElementById('total-views').textContent = formatViews(scrapedSummary.totalViews);
-      document.getElementById('awaiting-ratings').textContent = scrapedSummary.totalNeedsMore;
+      // Update cards
+      document.getElementById('total-notes').textContent = totalNotes;
+      document.getElementById('helpful-rate').textContent = helpfulRate + '%';
+      document.getElementById('total-views').textContent = formatViews(totalViews);
+      document.getElementById('awaiting-ratings').textContent = totalNeedsMore;
 
       // Sort active bots by total
       const sortedActive = [...activeBots].sort((a, b) => (activeStats[b]?.total || 0) - (activeStats[a]?.total || 0));
@@ -446,10 +489,122 @@ const html = `<!DOCTYPE html>
         }
       });
 
+      // Pipeline outcomes chart (rejected/failed + submitted note statuses)
+      if (pipelineOutcomesChart) pipelineOutcomesChart.destroy();
+      const outcomesByBot = {};
+      for (const item of pipelineOutcomesData) {
+        outcomesByBot[item.bot_id] = item;
+      }
+
+      // Combine active and legacy stats with pipeline outcomes
+      const allBotsForOutcomes = [...activeBots, ...legacyBots];
+      const combinedStats = {};
+      for (const bot of allBotsForOutcomes) {
+        const noteStats = activeStats[bot] || legacyStats[bot] || { helpful: 0, notHelpful: 0, needsMore: 0 };
+        const pipelineOutcomes = outcomesByBot[bot] || { note_not_needed: 0, failed_to_write: 0 };
+        combinedStats[bot] = {
+          helpful: noteStats.helpful || 0,
+          notHelpful: noteStats.notHelpful || 0,
+          needsMore: noteStats.needsMore || 0,
+          noteNotNeeded: pipelineOutcomes.note_not_needed || 0,
+          failedToWrite: pipelineOutcomes.failed_to_write || 0
+        };
+      }
+
+      pipelineOutcomesChart = new Chart(document.getElementById('pipelineOutcomesChart'), {
+        type: 'bar',
+        data: {
+          labels: allBotsForOutcomes,
+          datasets: [
+            { label: 'Helpful', data: allBotsForOutcomes.map(b => combinedStats[b].helpful), backgroundColor: 'rgba(34, 197, 94, 0.8)' },
+            { label: 'Not Helpful', data: allBotsForOutcomes.map(b => combinedStats[b].notHelpful), backgroundColor: 'rgba(239, 68, 68, 0.8)' },
+            { label: 'Needs More', data: allBotsForOutcomes.map(b => combinedStats[b].needsMore), backgroundColor: 'rgba(245, 158, 11, 0.8)' },
+            { label: 'Note Not Needed', data: allBotsForOutcomes.map(b => combinedStats[b].noteNotNeeded), backgroundColor: 'rgba(59, 130, 246, 0.8)' },
+            { label: 'Failed to Write', data: allBotsForOutcomes.map(b => combinedStats[b].failedToWrite), backgroundColor: 'rgba(156, 163, 175, 0.8)' }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom' } },
+          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+        }
+      });
+
+      // Daily notes chart (uses filtered notes)
+      if (dailyNotesChart) dailyNotesChart.destroy();
+      const filteredByDay = {};
+      const filteredBots = new Set();
+      for (const note of notes) {
+        const day = note.submitted_at.slice(0, 10);
+        const bot = note.bot_name || 'unknown';
+        filteredBots.add(bot);
+        if (!filteredByDay[day]) filteredByDay[day] = {};
+        filteredByDay[day][bot] = (filteredByDay[day][bot] || 0) + 1;
+      }
+      const filteredDays = Object.keys(filteredByDay).sort();
+      const botColorMap = {};
+      for (const ds of dailyDatasets) botColorMap[ds.label] = ds.backgroundColor;
+      const filteredDatasets = [...filteredBots].sort().map(bot => ({
+        label: bot,
+        data: filteredDays.map(d => filteredByDay[d]?.[bot] || 0),
+        backgroundColor: botColorMap[bot] || 'rgba(107, 114, 128, 0.8)',
+      }));
+      dailyNotesChart = new Chart(document.getElementById('dailyNotesChart'), {
+        type: 'bar',
+        data: { labels: filteredDays, datasets: filteredDatasets },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom' } },
+          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Notes' } } }
+        }
+      });
+
+      // Update pipeline table with same filters
+      renderPipelineTable();
+
+      // Update table
+      const tbody = document.getElementById('summary-table-body');
+      tbody.innerHTML = '';
+
+      // Active bots first
+      for (const bot of sortedActive) {
+        const s = activeStats[bot];
+        if (!s || s.total === 0) continue;
+        tbody.innerHTML += \`<tr>
+          <td><strong>\${bot}</strong></td>
+          <td>\${s.total}</td>
+          <td class="helpful">\${s.helpful} <span class="pct">(\${Math.round(s.helpful / s.total * 100)}%)</span></td>
+          <td class="not-helpful">\${s.notHelpful} <span class="pct">(\${Math.round(s.notHelpful / s.total * 100)}%)</span></td>
+          <td class="needs-more">\${s.needsMore} <span class="pct">(\${Math.round(s.needsMore / s.total * 100)}%)</span></td>
+        </tr>\`;
+      }
+
+      // Legacy bots
+      for (const bot of sortedLegacy) {
+        const s = legacyStats[bot];
+        if (!s || s.total === 0) continue;
+        tbody.innerHTML += \`<tr class="legacy-row">
+          <td><strong>\${bot} <span class="legacy">(legacy)</span></strong></td>
+          <td>\${s.total}</td>
+          <td class="helpful">\${s.helpful} <span class="pct">(\${Math.round(s.helpful / s.total * 100)}%)</span></td>
+          <td class="not-helpful">\${s.notHelpful} <span class="pct">(\${Math.round(s.notHelpful / s.total * 100)}%)</span></td>
+          <td class="needs-more">\${s.needsMore} <span class="pct">(\${Math.round(s.needsMore / s.total * 100)}%)</span></td>
+        </tr>\`;
+      }
+
+      // Total row
+      tbody.innerHTML += \`<tr style="font-weight: bold; border-top: 2px solid #333;">
+        <td>Total</td>
+        <td>\${totalNotes}</td>
+        <td class="helpful">\${totalHelpful} <span class="pct">(\${knownTotal > 0 ? Math.round(totalHelpful / knownTotal * 100) : 0}%)</span></td>
+        <td class="not-helpful">\${totalNotHelpful} <span class="pct">(\${knownTotal > 0 ? Math.round(totalNotHelpful / knownTotal * 100) : 0}%)</span></td>
+        <td class="needs-more">\${totalNeedsMore} <span class="pct">(\${knownTotal > 0 ? Math.round(totalNeedsMore / knownTotal * 100) : 0}%)</span></td>
+      </tr>\`;
     }
 
     let currentTimeFilter = 'all';
     let currentMediaFilter = 'all';
+    let currentAttemptFilter = 'all';
 
     function setTimeFilter(filter) {
       currentTimeFilter = filter;
@@ -465,16 +620,42 @@ const html = `<!DOCTYPE html>
       updateCharts();
     }
 
-    // Populate pipeline table
+    function setAttemptFilter(filter) {
+      currentAttemptFilter = filter;
+      document.querySelectorAll('#btn-attempt-all, #btn-attempt-first, #btn-attempt-retry').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-attempt-' + filter).classList.add('active');
+      updateCharts();
+    }
+
+    // Populate pipeline table (respects time filter)
     function renderPipelineTable() {
       const tbody = document.getElementById('pipeline-table-body');
       tbody.innerHTML = '';
+
+      // Filter raw pipeline runs by current time filter
+      let runs = rawPipelineRuns;
+      const now = new Date();
+      if (currentTimeFilter === 'week') {
+        const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        runs = runs.filter(r => new Date(r.created_at) >= cutoff);
+      } else if (currentTimeFilter === 'month') {
+        const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        runs = runs.filter(r => new Date(r.created_at) >= cutoff);
+      }
+
+      // Aggregate filtered runs by bot
+      const byBot = {};
+      for (const r of runs) {
+        if (!byBot[r.bot_id]) byBot[r.bot_id] = { total: 0, submitted: 0, filtered: 0, failed: 0, rejected: 0 };
+        byBot[r.bot_id].total++;
+        if (r.outcome in byBot[r.bot_id]) byBot[r.bot_id][r.outcome]++;
+      }
 
       const allBotIds = [...activeBots, ...legacyBots];
       let grandTotal = 0, grandSubmitted = 0, grandFiltered = 0, grandFailed = 0, grandRejected = 0;
 
       for (const bot of allBotIds) {
-        const p = pipelineByBot[bot];
+        const p = byBot[bot];
         if (!p || p.total === 0) continue;
         const submitRate = p.total > 0 ? Math.round(p.submitted / p.total * 100) : 0;
         const isLegacy = legacyBots.includes(bot);

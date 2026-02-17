@@ -24,8 +24,8 @@ A bot that automatically writes Community Notes for X/Twitter posts. Runs on Git
 ## Database tables (Supabase)
 
 - `notes` - Bot-submitted notes with tracking (since Jan 7, 2026)
-- `scraped_notewriter_notes` - All notes scraped from notewriter page (back to Aug 2025). Older entries have placeholder note_ids like `tweet_XXXXX`
-- `scraped_notewriter_snapshots` - Point-in-time status/view counts for scraped notes
+- `scraped_notewriter_notes` - Bot-written notes scraped back from the notewriter page for tracking (back to Aug 2025). Older entries have placeholder note_ids like `tweet_XXXXX`
+- `scraped_notewriter_snapshots` - Point-in-time status/view counts for our bot-written notes (from scraping)
 - `pipeline_runs` - Every tweet processed, with outcome (submitted/filtered/failed/rejected)
 - `pipeline_scores` - Scores attached to pipeline runs
 - `notewriters` - Notewriter accounts
@@ -34,13 +34,12 @@ A bot that automatically writes Community Notes for X/Twitter posts. Runs on Git
 
 ## Notewriter scraper
 
-The main scraper is `src/scripts/scrapeNotewriterClickThrough.ts`. It connects to a local Chrome via Puppeteer CDP (port 9222), scrolls through the notewriter page, clicks "View details" on each note to extract the real note ID and status from the modal, then imports to Supabase. There are about 500 notes in the page in total though often the scraper gets stuck. In nathan's 10s of scraping runs, restarting the notewriter has always worked. And only about twice has the scraper got to the bottom. You're strong prior should be that we are not at the bottom yet. 
+The main scraper is `src/scripts/scrapeNotewriterClickThrough.ts`. It connects to a local Chrome via Puppeteer CDP (port 9222), scrolls through the notewriter page, clicks "View details" on each note to extract the real note ID and status from the modal, then imports to Supabase.
 
 - **Notewriter account**: `wholesome-raspberry-stilt` (the only active one)
-- **Primary purpose**: Full coverage audit — ensure every note we've written is tracked in the DB. This allows for the later evauation of the note writing bots. 
+- **Primary purpose**: Full coverage audit — ensure every note we've written is tracked in the DB
 - **Data destination**: `scraped_notewriter_notes` + `scraped_notewriter_snapshots` tables
 - **Key technical detail**: X's notewriter page scrolls on `document.documentElement` (the `<html>` element), NOT window or body. The virtualizer only renders ~5-10 cells at a time.
-- **Automation goal**: Run daily on a service (unsolved: headless X authentication)
 - **One scraper**: Only `scrapeNotewriterClickThrough.ts` exists. Legacy scrapers were deleted Feb 2026.
 
 Usage:

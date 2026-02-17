@@ -83,6 +83,60 @@ async function waitForContent(page: Page, tabId: number): Promise<void> {
   console.log(`   [Tab ${tabId}] Warning: content not detected after 30s, proceeding anyway`);
 }
 
+// Shared incremental saving state (module-level so all tabs + main() can access)
+const supabase = new SupabaseLogger();
+let newNotes = 0;
+let updatedIds = 0;
+let existingNotes = 0;
+let snapshotsCreated = 0;
+let errorCount = 0;
+
+async function saveNoteIncrementally(note: ScrapedNote): Promise<void> {
+  try {
+    if (!note.note_id || !/^\d{18,20}$/.test(note.note_id)) {
+      console.error(`   ✗ SKIP: Invalid note_id: ${note.note_id}`);
+      errorCount++;
+      return;
+    }
+    if (!note.tweet_id) {
+      console.error(`   ✗ SKIP: Missing tweet_id for note ${note.note_id}`);
+      errorCount++;
+      return;
+    }
+
+    const exists = await supabase.scrapedNotewriterNoteExists(note.note_id);
+    const placeholderId = note.tweet_id.startsWith('unavailable_') ? null : `tweet_${note.tweet_id}`;
+    let placeholderExists = false;
+    if (placeholderId) {
+      placeholderExists = await supabase.scrapedNotewriterNoteExists(placeholderId);
+    }
+
+    if (placeholderExists && placeholderId) {
+      await supabase.updateScrapedNoteId(placeholderId, note.note_id);
+      updatedIds++;
+    } else if (!exists) {
+      await supabase.upsertScrapedNotewriterNote({
+        note_id: note.note_id,
+        tweet_id: note.tweet_id,
+        note_text: note.note_text,
+        source_url: note.source_url,
+      });
+      newNotes++;
+    } else {
+      existingNotes++;
+    }
+
+    await supabase.insertScrapedNotewriterSnapshot({
+      note_id: note.note_id,
+      cn_status: note.cn_status,
+    });
+    snapshotsCreated++;
+  } catch (err) {
+    errorCount++;
+    console.error(`   ✗ DB ERROR: ${note.note_id}:`, err);
+  }
+}
+
 /**
  * Scrape notes from a single tab. Multiple instances run in parallel,
  * sharing a collectedNotes map for deduplication.
@@ -101,9 +155,9 @@ async function scrapeTab(
   const maxRetries = 5;
   let retryCount = 0;
   let consecutiveOverlaps = 0;
-  const overlapJumpThreshold = 15; // Jump ahead after this many consecutive already-scraped notes
+  const overlapJumpThreshold = 15;
   let jumpCount = 0;
-  const maxJumps = 3; // Max times we jump ahead before giving up on this tab
+  const maxJumps = 3;
 
   try {
   while (collectedNotes.size < maxNotes && retryCount <= maxRetries) {
@@ -412,6 +466,9 @@ async function scrapeTab(
       consecutiveOverlaps = 0; // Reset overlap counter on new find
       console.log(`   ${prefix} ✓ Total ${collectedNotes.size}: ${modalData.noteId} (${modalData.status})`);
 
+      // Save to DB immediately so data isn't lost if process is killed
+      await saveNoteIncrementally(note);
+
       // Close the modal
       const closed = await page.evaluate(() => {
         const closeSelectors = [
@@ -665,77 +722,9 @@ async function main() {
     process.exit(0);
   }
 
-  // Import to Supabase
-  console.log("💾 Importing to Supabase...\n");
-
-  const supabase = new SupabaseLogger();
-
-  let newNotes = 0;
-  let updatedIds = 0;
-  let existingNotes = 0;
-  let snapshotsCreated = 0;
-  let errorCount = 0;
-
-  const noteArray = [...collectedNotes.values()];
-  for (const [idx, note] of noteArray.entries()) {
-    const progress = `[${idx + 1}/${noteArray.length}]`;
-
-    try {
-      if (!note.note_id || !/^\d{18,20}$/.test(note.note_id)) {
-        console.error(`${progress} ✗ SKIP: Invalid note_id: ${note.note_id}`);
-        errorCount++;
-        continue;
-      }
-      if (!note.tweet_id) {
-        console.error(`${progress} ✗ SKIP: Missing tweet_id for note ${note.note_id}`);
-        errorCount++;
-        continue;
-      }
-      if (!note.cn_status || note.cn_status === 'UNKNOWN') {
-        console.warn(`${progress} ⚠️ Note ${note.note_id} has unknown status, proceeding anyway`);
-      }
-
-      const exists = await supabase.scrapedNotewriterNoteExists(note.note_id);
-
-      let placeholderExists = false;
-      const placeholderId = note.tweet_id.startsWith('unavailable_') ? null : `tweet_${note.tweet_id}`;
-      if (placeholderId) {
-        placeholderExists = await supabase.scrapedNotewriterNoteExists(placeholderId);
-      }
-
-      if (placeholderExists && placeholderId) {
-        await supabase.updateScrapedNoteId(placeholderId, note.note_id);
-        updatedIds++;
-        console.log(`${progress} ✓ UPDATED: ${placeholderId.substring(0, 20)}... → ${note.note_id.substring(0, 15)}...`);
-      } else if (!exists) {
-        await supabase.upsertScrapedNotewriterNote({
-          note_id: note.note_id,
-          tweet_id: note.tweet_id,
-          note_text: note.note_text,
-          source_url: note.source_url,
-        });
-        newNotes++;
-        console.log(`${progress} ✓ NEW: ${note.note_id.substring(0, 20)}...`);
-      } else {
-        existingNotes++;
-      }
-
-      await supabase.insertScrapedNotewriterSnapshot({
-        note_id: note.note_id,
-        tweet_id: note.tweet_id,
-        note_text: note.note_text,
-        cn_status: note.cn_status,
-        view_count: note.view_count,
-      });
-      snapshotsCreated++;
-    } catch (err) {
-      errorCount++;
-      console.error(`${progress} ✗ ERROR: ${note.note_id}:`, err);
-    }
-  }
-
+  // Notes were already saved incrementally during scraping
   console.log("\n" + "=".repeat(60));
-  console.log("✅ Import complete!");
+  console.log("✅ Scrape & import complete!");
   console.log(`   • New notes:         ${newNotes}`);
   console.log(`   • Updated IDs:       ${updatedIds}`);
   console.log(`   • Existing notes:    ${existingNotes}`);

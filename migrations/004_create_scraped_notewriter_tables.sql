@@ -40,8 +40,8 @@ CREATE INDEX IF NOT EXISTS idx_scraped_notewriter_snapshots_scraped_at
   ON scraped_notewriter_snapshots(scraped_at DESC);
 
 -- Comments
-COMMENT ON TABLE scraped_notewriter_notes IS 'Notes scraped from X.com notewriter page - core immutable data';
-COMMENT ON TABLE scraped_notewriter_snapshots IS 'Time-series snapshots of note status/metrics from scraping';
+COMMENT ON TABLE scraped_notewriter_notes IS 'Bot-written notes scraped back from X.com notewriter page for tracking - core immutable data';
+COMMENT ON TABLE scraped_notewriter_snapshots IS 'Time-series snapshots of note status/metrics from scraping our bot-written notes';
 COMMENT ON COLUMN scraped_notewriter_snapshots.view_count IS 'Number of views at time of scrape';
 COMMENT ON COLUMN scraped_notewriter_snapshots.helpful_count IS 'Helpful ratings at time of scrape';
 COMMENT ON COLUMN scraped_notewriter_snapshots.somewhat_helpful_count IS 'Somewhat helpful ratings at time of scrape';

@@ -54,8 +54,16 @@ scraper-visible-text*.md
 flagged-notes.json
 comparison-data.json
 
-# Generated reports (output of src/reports/ scripts)
+# Generated reports
 tmp/reports/
+docs/*.html
 
-# Bot playground (Next.js app) - track source but not node_modules
-cn-bot-playground/node_modules/
+# Temp notes / not for git
+don't push to git*.md
+dont push to git*.md
+
+# Playground
+cn-bot-playground/
+
+# Dynamic workflow (not checked in)
+create-notes-routine-dynamic.yml
