@@ -152,12 +152,32 @@ function parsePostsResponse(data: any): Post[] {
         if (referencedTweet) {
           const referencedData = referencedTweetsMap.get(referencedTweet.id);
           if (referencedData) {
+            // Resolve media keys for the referenced tweet
+            const refMedia = [];
+            if (referencedData.attachments?.media_keys) {
+              for (const mediaKey of referencedData.attachments.media_keys) {
+                const mediaData = mediaMap.get(mediaKey);
+                if (mediaData) {
+                  refMedia.push({
+                    media_key: mediaData.media_key,
+                    type: mediaData.type,
+                    url: mediaData.url,
+                    preview_image_url: mediaData.preview_image_url,
+                    height: mediaData.height,
+                    width: mediaData.width,
+                    duration_ms: mediaData.duration_ms,
+                    view_count: mediaData.public_metrics?.view_count,
+                    variants: mediaData.variants,
+                  });
+                }
+              }
+            }
             referencedTweetData = {
               id: referencedData.id,
               author_id: referencedData.author_id,
               created_at: referencedData.created_at,
               text: referencedData.text,
-              media: [], // TODO: Add media handling for referenced tweets if needed
+              media: refMedia,
             };
           }
         }

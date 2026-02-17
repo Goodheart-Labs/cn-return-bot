@@ -615,17 +615,12 @@ export class SupabaseLogger {
    * - views: always from latest snapshot (only source)
    */
   async getNotesWithLatestSnapshots(): Promise<NoteWithSnapshot[]> {
-    // Get all notes
-    const { data: notes, error: notesError } = await this.client
-      .from("notes")
-      .select("*");
+    // Get all notes (paginated to avoid 1000-row default limit)
+    const notes = await this.fetchAllRows<any>(
+      (client) => client.from("notes").select("*")
+    );
 
-    if (notesError) {
-      console.error("[SupabaseLogger] Error fetching notes:", notesError);
-      throw notesError;
-    }
-
-    if (!notes || notes.length === 0) {
+    if (notes.length === 0) {
       return [];
     }
 

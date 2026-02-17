@@ -20,6 +20,24 @@ const client = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
+/** Paginate past Supabase's 1000-row default limit */
+async function fetchAll<T>(
+  buildQuery: () => any
+): Promise<T[]> {
+  const PAGE_SIZE = 1000;
+  const all: T[] = [];
+  let offset = 0;
+  while (true) {
+    const { data, error } = await buildQuery().range(offset, offset + PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+  return all;
+}
+
 const rl = createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -32,45 +50,53 @@ function ask(question: string): Promise<string> {
 }
 
 async function main() {
-  // Get submitted pipeline runs that don't yet have a pred_human score
-  const { data: runs, error: runsError } = await client
-    .from("pipeline_runs")
-    .select("id, tweet_id, tweet_text, bot_id, note_id, created_at")
-    .eq("outcome", "submitted")
-    .not("note_id", "is", null)
-    .order("created_at", { ascending: false });
+  // Get submitted pipeline runs that don't yet have a pred_human score (paginated)
+  const runs = await fetchAll<{ id: string; tweet_id: string; tweet_text: string; bot_id: string; note_id: string; created_at: string }>(
+    () => client
+      .from("pipeline_runs")
+      .select("id, tweet_id, tweet_text, bot_id, note_id, created_at")
+      .eq("outcome", "submitted")
+      .not("note_id", "is", null)
+      .order("created_at", { ascending: false })
+  );
 
-  if (runsError) {
-    console.error("Error fetching pipeline runs:", runsError);
-    process.exit(1);
-  }
-
-  if (!runs || runs.length === 0) {
+  if (runs.length === 0) {
     console.log("No submitted notes found.");
     process.exit(0);
   }
 
-  // Get existing pred_human scores
+  // Get existing pred_human scores (batched to avoid URL length limits)
   const runIds = runs.map((r) => r.id);
-  const { data: existingScores } = await client
-    .from("pipeline_scores")
-    .select("pipeline_run_id")
-    .eq("score_type", "pred_human")
-    .in("pipeline_run_id", runIds);
+  const allExistingScores: Array<{ pipeline_run_id: string }> = [];
+  const BATCH_SIZE = 200;
+  for (let i = 0; i < runIds.length; i += BATCH_SIZE) {
+    const batch = runIds.slice(i, i + BATCH_SIZE);
+    const { data } = await client
+      .from("pipeline_scores")
+      .select("pipeline_run_id")
+      .eq("score_type", "pred_human")
+      .in("pipeline_run_id", batch);
+    if (data) allExistingScores.push(...data);
+  }
 
   const alreadyPredicted = new Set(
-    (existingScores || []).map((s) => s.pipeline_run_id)
+    allExistingScores.map((s) => s.pipeline_run_id)
   );
 
-  // Get note texts from notes table
+  // Get note texts from notes table (batched)
   const noteIds = runs.map((r) => r.note_id).filter(Boolean);
-  const { data: notes } = await client
-    .from("notes")
-    .select("note_id, note_text, source_url")
-    .in("note_id", noteIds);
+  const allNotes: Array<{ note_id: string; note_text: string; source_url: string }> = [];
+  for (let i = 0; i < noteIds.length; i += BATCH_SIZE) {
+    const batch = noteIds.slice(i, i + BATCH_SIZE);
+    const { data } = await client
+      .from("notes")
+      .select("note_id, note_text, source_url")
+      .in("note_id", batch);
+    if (data) allNotes.push(...data);
+  }
 
   const noteMap = new Map(
-    (notes || []).map((n) => [n.note_id, n])
+    allNotes.map((n) => [n.note_id, n])
   );
 
   // Filter to unpredicted notes

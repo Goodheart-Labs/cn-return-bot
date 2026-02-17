@@ -54,6 +54,7 @@ const HIGH_TRUST_DOMAINS = new Set([
   "usatoday.com",
   "latimes.com",
   "chicagotribune.com",
+  "bloomberg.com",
   // International news
   "aljazeera.com",
   "dw.com",
@@ -100,7 +101,6 @@ const MEDIUM_TRUST_DOMAINS = new Set([
   "zdnet.com",
   "cnet.com",
   // Business news
-  "bloomberg.com",
   "cnbc.com",
   "businessinsider.com",
   "forbes.com",

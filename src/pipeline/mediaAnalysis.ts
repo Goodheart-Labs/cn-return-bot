@@ -10,10 +10,22 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { tmpdir } from "os";
 import { join } from "path";
-import { readFile, rm, mkdir, stat } from "fs/promises";
+import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { llm } from "./llm";
 
 const execAsync = promisify(exec);
+
+let ffmpegAvailable: boolean | null = null;
+async function checkFfmpeg(): Promise<boolean> {
+  if (ffmpegAvailable !== null) return ffmpegAvailable;
+  try {
+    await execAsync("ffmpeg -version", { timeout: 5000 });
+    ffmpegAvailable = true;
+  } catch {
+    ffmpegAvailable = false;
+  }
+  return ffmpegAvailable;
+}
 
 export interface VideoAnalysisResult {
   url: string;
@@ -49,91 +61,6 @@ function validateUrl(url: string): boolean {
     return parsed.protocol === "http:" || parsed.protocol === "https:";
   } catch {
     return false;
-  }
-}
-
-/**
- * Download a file from URL to temp location
- * Note: Caller is responsible for cleaning up the returned directory
- */
-async function downloadToTemp(url: string, filename: string): Promise<{ path: string; tmpDir: string }> {
-  if (!validateUrl(url)) {
-    throw new Error(`Invalid URL: ${url}`);
-  }
-
-  const tmpDir = join(tmpdir(), `cn-media-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-  await mkdir(tmpDir, { recursive: true });
-  const outputPath = join(tmpDir, filename);
-
-  // Use fetch instead of curl to avoid shell injection
-  const response = await fetch(url, { redirect: "follow" });
-  if (!response.ok) {
-    throw new Error(`Failed to download: ${response.status}`);
-  }
-  const buffer = Buffer.from(await response.arrayBuffer());
-  const { writeFile } = await import("fs/promises");
-  await writeFile(outputPath, buffer);
-
-  return { path: outputPath, tmpDir };
-}
-
-/**
- * Extract frames from video using FFmpeg
- */
-export async function extractVideoFrames(
-  videoUrl: string,
-  maxFrames: number = 4
-): Promise<{ frames: Buffer[]; tmpDir: string }> {
-  if (!validateUrl(videoUrl)) {
-    console.error("[mediaAnalysis] Invalid video URL:", videoUrl);
-    return { frames: [], tmpDir: "" };
-  }
-
-  const tmpDir = join(tmpdir(), `cn-frames-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-
-  try {
-    await mkdir(tmpDir, { recursive: true });
-
-    // Download video using fetch (safe from shell injection)
-    const videoPath = join(tmpDir, "video.mp4");
-    const response = await fetch(videoUrl, { redirect: "follow" });
-    if (!response.ok) {
-      throw new Error(`Failed to download video: ${response.status}`);
-    }
-    const videoBuffer = Buffer.from(await response.arrayBuffer());
-    const { writeFile } = await import("fs/promises");
-    await writeFile(videoPath, videoBuffer);
-
-    // Extract frames at intervals using FFmpeg
-    // Note: videoPath is controlled by us (tmpdir), not user input
-    // fps=1/5 = one frame every 5 seconds
-    const cmd = `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v ${maxFrames} "${tmpDir}/frame%03d.jpg" -y 2>&1`;
-
-    await execAsync(cmd, { timeout: 60000 }).catch((err) => {
-      console.error("[mediaAnalysis] FFmpeg frame extraction error:", err.message);
-    });
-
-    // Read extracted frames
-    const frames: Buffer[] = [];
-    for (let i = 1; i <= maxFrames; i++) {
-      const framePath = join(tmpDir, `frame${String(i).padStart(3, "0")}.jpg`);
-      try {
-        const frameStat = await stat(framePath);
-        if (frameStat.size > 0) {
-          const frame = await readFile(framePath);
-          frames.push(frame);
-        }
-      } catch {
-        // Frame doesn't exist, video may be shorter
-        break;
-      }
-    }
-
-    console.log(`[mediaAnalysis] Extracted ${frames.length} frames from video`);
-    return { frames, tmpDir };
-  } catch (err: any) {
-    console.error("[mediaAnalysis] Frame extraction failed:", err.message);
-    return { frames: [], tmpDir };
   }
 }
 
@@ -211,98 +138,6 @@ async function transcribeWithOpenRouter(audioBuffer: Buffer): Promise<string> {
 
   const result = await response.json();
   return (result.choices?.[0]?.message?.content || "").trim();
-}
-
-/**
- * Transcribe audio from video - tries Groq first (fast & free), falls back to OpenRouter
- */
-export async function transcribeVideoAudio(
-  videoUrl: string
-): Promise<string> {
-  if (!validateUrl(videoUrl)) {
-    console.error("[mediaAnalysis] Invalid video URL for transcription:", videoUrl);
-    return "";
-  }
-
-  const groqApiKey = process.env.GROQ_API_KEY;
-  const openRouterKey = process.env.OPENROUTER_API_KEY;
-
-  if (!groqApiKey && !openRouterKey) {
-    console.log("[mediaAnalysis] No transcription API key set (GROQ_API_KEY or OPENROUTER_API_KEY), skipping transcription");
-    return "";
-  }
-
-  const tmpDir = join(tmpdir(), `cn-audio-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-
-  try {
-    await mkdir(tmpDir, { recursive: true });
-
-    // Download video using fetch (safe from shell injection)
-    const videoPath = join(tmpDir, "video.mp4");
-    const response = await fetch(videoUrl, { redirect: "follow" });
-    if (!response.ok) {
-      throw new Error(`Failed to download video: ${response.status}`);
-    }
-    const videoBuffer = Buffer.from(await response.arrayBuffer());
-    const { writeFile } = await import("fs/promises");
-    await writeFile(videoPath, videoBuffer);
-
-    // Extract audio to mp3 using FFmpeg
-    // Note: paths are controlled by us (tmpdir), not user input
-    const audioPath = join(tmpDir, "audio.mp3");
-    await execAsync(
-      `ffmpeg -i "${videoPath}" -vn -acodec libmp3lame -ar 16000 -ac 1 "${audioPath}" -y 2>&1`,
-      { timeout: 60000 }
-    );
-
-    // Check if audio file was created
-    try {
-      const audioStat = await stat(audioPath);
-      if (audioStat.size < 1000) {
-        console.log("[mediaAnalysis] Audio file too small, video may have no audio");
-        return "";
-      }
-    } catch {
-      console.log("[mediaAnalysis] No audio extracted from video");
-      return "";
-    }
-
-    // Read audio file
-    const audioBuffer = await readFile(audioPath);
-
-    // Try Groq first (faster and free), fall back to OpenRouter
-    let transcription = "";
-
-    if (groqApiKey) {
-      try {
-        console.log("[mediaAnalysis] Transcribing with Groq Whisper...");
-        transcription = await transcribeWithGroq(audioBuffer);
-        console.log(`[mediaAnalysis] Groq transcribed ${transcription.length} characters`);
-      } catch (err: any) {
-        console.error("[mediaAnalysis] Groq transcription failed:", err.message);
-      }
-    }
-
-    if (!transcription && openRouterKey) {
-      try {
-        console.log("[mediaAnalysis] Falling back to OpenRouter audio transcription...");
-        transcription = await transcribeWithOpenRouter(audioBuffer);
-        console.log(`[mediaAnalysis] OpenRouter transcribed ${transcription.length} characters`);
-      } catch (err: any) {
-        console.error("[mediaAnalysis] OpenRouter transcription failed:", err.message);
-      }
-    }
-
-    return transcription;
-  } catch (err: any) {
-    console.error("[mediaAnalysis] Audio transcription failed:", err.message);
-    return "";
-  } finally {
-    // Cleanup
-    try {
-      await rm(tmpDir, { recursive: true, force: true });
-    } catch {}
-  }
 }
 
 /**
@@ -432,6 +267,9 @@ Frame 2: [description]
 
 /**
  * Analyze a single video
+ *
+ * Downloads the video once and reuses the local file for both
+ * frame extraction and audio transcription.
  */
 async function analyzeVideo(
   videoUrl: string,
@@ -447,20 +285,95 @@ async function analyzeVideo(
 
   console.log(`[mediaAnalysis] Analyzing video: ${videoUrl.substring(0, 50)}...`);
 
-  let tmpDir = "";
+  if (!validateUrl(videoUrl)) {
+    console.error("[mediaAnalysis] Invalid video URL:", videoUrl);
+    return { url: videoUrl, keyFrameDescriptions: [], hasAudio: false, error: "Invalid URL" };
+  }
+
+  const tmpDir = join(tmpdir(), `cn-video-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
   try {
-    // Extract frames
-    const { frames, tmpDir: frameTmpDir } = await extractVideoFrames(videoUrl, maxFrames);
-    tmpDir = frameTmpDir;
+    await mkdir(tmpDir, { recursive: true });
+
+    // Download video once
+    const videoPath = join(tmpDir, "video.mp4");
+    const response = await fetch(videoUrl, { redirect: "follow" });
+    if (!response.ok) {
+      throw new Error(`Failed to download video: ${response.status}`);
+    }
+    await writeFile(videoPath, Buffer.from(await response.arrayBuffer()));
+
+    // Extract frames from local file
+    const frames: Buffer[] = [];
+    await execAsync(
+      `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v ${maxFrames} "${tmpDir}/frame%03d.jpg" -y 2>&1`,
+      { timeout: 60000 }
+    ).catch((err) => {
+      console.error("[mediaAnalysis] FFmpeg frame extraction error:", err.message);
+    });
+
+    for (let i = 1; i <= maxFrames; i++) {
+      const framePath = join(tmpDir, `frame${String(i).padStart(3, "0")}.jpg`);
+      try {
+        const frameStat = await stat(framePath);
+        if (frameStat.size > 0) {
+          frames.push(await readFile(framePath));
+        }
+      } catch {
+        break;
+      }
+    }
+    console.log(`[mediaAnalysis] Extracted ${frames.length} frames from video`);
 
     // Describe frames
     const frameDescriptions = await describeVideoFrames(frames, visionModel);
 
-    // Transcribe audio (if enabled)
+    // Extract audio and transcribe from local file
     let transcription = "";
     if (shouldTranscribe) {
-      transcription = await transcribeVideoAudio(videoUrl);
+      const groqApiKey = process.env.GROQ_API_KEY;
+      const openRouterKey = process.env.OPENROUTER_API_KEY;
+
+      if (groqApiKey || openRouterKey) {
+        try {
+          const audioPath = join(tmpDir, "audio.mp3");
+          await execAsync(
+            `ffmpeg -i "${videoPath}" -vn -acodec libmp3lame -ar 16000 -ac 1 "${audioPath}" -y 2>&1`,
+            { timeout: 60000 }
+          );
+
+          const audioStat = await stat(audioPath);
+          if (audioStat.size >= 1000) {
+            const audioBuffer = await readFile(audioPath);
+
+            if (groqApiKey) {
+              try {
+                console.log("[mediaAnalysis] Transcribing with Groq Whisper...");
+                transcription = await transcribeWithGroq(audioBuffer);
+                console.log(`[mediaAnalysis] Groq transcribed ${transcription.length} characters`);
+              } catch (err: any) {
+                console.error("[mediaAnalysis] Groq transcription failed:", err.message);
+              }
+            }
+
+            if (!transcription && openRouterKey) {
+              try {
+                console.log("[mediaAnalysis] Falling back to OpenRouter audio transcription...");
+                transcription = await transcribeWithOpenRouter(audioBuffer);
+                console.log(`[mediaAnalysis] OpenRouter transcribed ${transcription.length} characters`);
+              } catch (err: any) {
+                console.error("[mediaAnalysis] OpenRouter transcription failed:", err.message);
+              }
+            }
+          } else {
+            console.log("[mediaAnalysis] Audio file too small, video may have no audio");
+          }
+        } catch (err: any) {
+          console.error("[mediaAnalysis] Audio extraction failed:", err.message);
+        }
+      } else {
+        console.log("[mediaAnalysis] No transcription API key set, skipping transcription");
+      }
     }
 
     return {
@@ -478,12 +391,9 @@ async function analyzeVideo(
       error: err.message,
     };
   } finally {
-    // Cleanup
-    if (tmpDir) {
-      try {
-        await rm(tmpDir, { recursive: true, force: true });
-      } catch {}
-    }
+    try {
+      await rm(tmpDir, { recursive: true, force: true });
+    } catch {}
   }
 }
 
@@ -548,7 +458,10 @@ export async function analyzeMedia(
   const imageItems = media.filter((m) => m.type === "photo");
 
   // Analyze videos (sequentially to avoid overwhelming FFmpeg)
-  for (const video of videoItems) {
+  if (videoItems.length > 0 && !(await checkFfmpeg())) {
+    console.log("[mediaAnalysis] FFmpeg not available, skipping video analysis");
+  }
+  for (const video of ffmpegAvailable ? videoItems : []) {
     const videoUrl = getBestUrl(video);
     if (!videoUrl) {
       console.log("[mediaAnalysis] Skipping video: no downloadable URL found");

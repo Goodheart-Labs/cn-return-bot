@@ -16,6 +16,24 @@ const client = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
+/** Paginate past Supabase's 1000-row default limit */
+async function fetchAll<T>(
+  buildQuery: () => any
+): Promise<T[]> {
+  const PAGE_SIZE = 1000;
+  const all: T[] = [];
+  let offset = 0;
+  while (true) {
+    const { data, error } = await buildQuery().range(offset, offset + PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+  return all;
+}
+
 interface ScoredNote {
   pipelineRunId: string;
   noteId: string;
@@ -43,34 +61,28 @@ function pearsonCorrelation(x: number[], y: number[]): number {
 }
 
 async function main() {
-  // 1. Get all submitted pipeline runs with note_ids
-  const { data: runs, error: runsError } = await client
-    .from("pipeline_runs")
-    .select("id, note_id, created_at")
-    .eq("outcome", "submitted")
-    .not("note_id", "is", null);
+  // 1. Get all submitted pipeline runs with note_ids (paginated)
+  const runs = await fetchAll<{ id: string; note_id: string; created_at: string }>(
+    () => client
+      .from("pipeline_runs")
+      .select("id, note_id, created_at")
+      .eq("outcome", "submitted")
+      .not("note_id", "is", null)
+  );
 
-  if (runsError || !runs) {
-    console.error("Error fetching pipeline runs:", runsError);
-    process.exit(1);
-  }
-
-  // 2. Get latest public_data_snapshot per note_id (for coreNoteIntercept)
-  const { data: snapshots, error: snapError } = await client
-    .from("public_data_snapshots")
-    .select("note_id, core_note_intercept, current_status, snapshot_date")
-    .eq("is_ours", true)
-    .not("core_note_intercept", "is", null)
-    .order("snapshot_date", { ascending: false });
-
-  if (snapError) {
-    console.error("Error fetching snapshots:", snapError);
-    process.exit(1);
-  }
+  // 2. Get latest public_data_snapshot per note_id (for coreNoteIntercept, paginated)
+  const snapshots = await fetchAll<{ note_id: string; core_note_intercept: string; current_status: string; snapshot_date: string }>(
+    () => client
+      .from("public_data_snapshots")
+      .select("note_id, core_note_intercept, current_status, snapshot_date")
+      .eq("is_ours", true)
+      .not("core_note_intercept", "is", null)
+      .order("snapshot_date", { ascending: false })
+  );
 
   // Latest intercept per note
   const interceptByNoteId = new Map<string, number>();
-  for (const snap of snapshots || []) {
+  for (const snap of snapshots) {
     if (!interceptByNoteId.has(snap.note_id) && snap.core_note_intercept != null) {
       interceptByNoteId.set(snap.note_id, parseFloat(snap.core_note_intercept));
     }

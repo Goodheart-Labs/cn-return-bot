@@ -3,6 +3,22 @@ dotenv.config();
 import { createClient } from "@supabase/supabase-js";
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 
+/** Paginate past Supabase's 1000-row default limit */
+async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
+  const PAGE_SIZE = 1000;
+  const all: T[] = [];
+  let offset = 0;
+  while (true) {
+    const { data, error } = await buildQuery().range(offset, offset + PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+  return all;
+}
+
 // 1. Scraped notes with "unavailable" tweet IDs
 const { data: unavailable } = await supabase
   .from("scraped_notewriter_notes")
@@ -30,15 +46,15 @@ for (const n of (placeholders || []).slice(0, 15)) {
 }
 
 // 3. Snapshots referencing note_ids that don't exist in scraped_notewriter_notes
-const { data: allSnapshots } = await supabase
-  .from("scraped_notewriter_snapshots")
-  .select("note_id, cn_status, scraped_at");
-const { data: allScrapedNotes } = await supabase
-  .from("scraped_notewriter_notes")
-  .select("note_id");
+const allSnapshots = await fetchAll<{ note_id: string; cn_status: string; scraped_at: string }>(
+  () => supabase.from("scraped_notewriter_snapshots").select("note_id, cn_status, scraped_at")
+);
+const allScrapedNotes = await fetchAll<{ note_id: string }>(
+  () => supabase.from("scraped_notewriter_notes").select("note_id")
+);
 
-const scrapedNoteIds = new Set((allScrapedNotes || []).map(n => n.note_id));
-const orphanSnapshots = (allSnapshots || []).filter(s => !scrapedNoteIds.has(s.note_id));
+const scrapedNoteIds = new Set(allScrapedNotes.map(n => n.note_id));
+const orphanSnapshots = allSnapshots.filter(s => !scrapedNoteIds.has(s.note_id));
 const orphanByNote = new Map<string, number>();
 for (const s of orphanSnapshots) {
   orphanByNote.set(s.note_id, (orphanByNote.get(s.note_id) || 0) + 1);
@@ -63,10 +79,12 @@ for (const n of (emptyText || []).slice(0, 15)) {
 }
 
 // 5. Notes in our notes table that have no matching scraped entry
-const { data: ourNotes } = await supabase.from("notes").select("note_id, tweet_id, bot_name, submitted_at");
-const unmatched = (ourNotes || []).filter(n => !scrapedNoteIds.has(n.note_id));
+const ourNotes = await fetchAll<{ note_id: string; tweet_id: string; bot_name: string; submitted_at: string }>(
+  () => supabase.from("notes").select("note_id, tweet_id, bot_name, submitted_at")
+);
+const unmatched = ourNotes.filter(n => !scrapedNoteIds.has(n.note_id));
 console.log(`\n=== OUR NOTES NOT IN SCRAPED DATA ===`);
-console.log(`${unmatched.length} of ${ourNotes?.length} notes have no scraped match`);
+console.log(`${unmatched.length} of ${ourNotes.length} notes have no scraped match`);
 for (const n of unmatched.slice(0, 20)) {
   const url = `https://x.com/i/status/${n.tweet_id}`;
   console.log(`  note_id: ${n.note_id}  bot: ${n.bot_name}  date: ${n.submitted_at?.slice(0, 10)}  ${url}`);

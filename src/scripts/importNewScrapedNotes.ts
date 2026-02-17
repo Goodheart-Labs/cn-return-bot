@@ -13,7 +13,7 @@ interface NoteData {
   view_count?: number;
 }
 
-// Data extracted from docs/new-notes-to-upload.md
+// Manually collected notes already imported into Supabase (one-shot script, Jan 2026)
 const notes: NoteData[] = [
   {
     note_id: "2012678261562576959",
@@ -108,7 +108,7 @@ const notes: NoteData[] = [
   },
   {
     note_id: "2012717993990533314",
-    tweet_id: "unknown", // Post deleted
+    tweet_id: "deleted", // Post deleted
     note_text: "This claim is false. No \"Blue States Only\" tour exists. This originated from satire/misinformation. The Eras Tour's U.S. leg ended Nov 3, 2024 in Indianapolis, with only Canada dates remaining. No manager confirmed any sales slump.",
     cn_status: "CURRENTLY_RATED_HELPFUL",
   },
@@ -132,7 +132,7 @@ const notes: NoteData[] = [
   },
   {
     note_id: "2012609093190463994",
-    tweet_id: "unknown", // Post deleted
+    tweet_id: "deleted", // Post deleted
     note_text: "This post shares a fabricated quote and incident. David Muir never \"snapped\" on air with this statement. Snopes traced this claim to a blog post containing AI-generated misinformation and rated it false. The dramatic studio scene described never occurred.",
     cn_status: "NEEDS_MORE_RATINGS",
   },
@@ -220,7 +220,7 @@ const notes: NoteData[] = [
   },
   {
     note_id: "2012158672235884992",
-    tweet_id: "unknown", // Post deleted
+    tweet_id: "deleted", // Post deleted
     note_text: "This is misleading. A cease & desist under § 1692c(c) only stops collectors from contacting you—it doesn't remove collections from your credit report. CFPB complaints also don't auto-delete debts. Valid collections stay on reports up to 7 years under FCRA.",
     cn_status: "NEEDS_MORE_RATINGS",
   },
