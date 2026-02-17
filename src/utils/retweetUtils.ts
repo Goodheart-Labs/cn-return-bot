@@ -1,8 +1,11 @@
 import type { Post } from "../api/fetchEligiblePosts";
 
-export function getOriginalTweetContent(post: Post): { 
-  text: string; 
-  media: string[]; 
+import type { MediaItem } from "../bots/types";
+
+export function getOriginalTweetContent(post: Post): {
+  text: string;
+  media: string[];
+  mediaItems?: MediaItem[];
   isRetweet: boolean;
   retweetContext?: string;
 } {
@@ -53,6 +56,13 @@ export function getOriginalTweetContent(post: Post): {
   return {
     text: post.text,
     media: post.media?.map(m => m.url || m.preview_image_url).filter(Boolean) || [],
+    mediaItems: post.media?.map(m => ({
+      type: m.type,
+      url: m.url,
+      preview_image_url: m.preview_image_url,
+      variants: m.variants,
+      duration_ms: m.duration_ms,
+    })) || [],
     isRetweet: false
   };
 }

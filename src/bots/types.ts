@@ -25,9 +25,20 @@ export interface PipelineResult {
   error?: string;
 }
 
+export interface MediaItem {
+  type: string;
+  url?: string;
+  preview_image_url?: string;
+  variants?: Array<{ bit_rate?: number; content_type: string; url: string }>;
+  duration_ms?: number;
+}
+
 export interface PostContent {
   text: string;
+  /** Image/preview URLs for passing to LLM vision (backward compat) */
   media: string[];
+  /** Full media objects with type, variants, etc. for media analysis */
+  mediaItems?: MediaItem[];
   retweetContext?: string;
   isRetweet: boolean;
 }

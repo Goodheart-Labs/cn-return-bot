@@ -46,7 +46,7 @@ export async function fetchEligiblePosts(
       max_results: fetchLimit.toString(),
       "tweet.fields": "created_at,author_id,referenced_tweets",
       "media.fields":
-        "type,url,preview_image_url,height,width,duration_ms,public_metrics",
+        "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
       expansions: "attachments.media_keys,referenced_tweets.id",
       test_mode: "false",
     });
@@ -138,6 +138,7 @@ function parsePostsResponse(data: any): Post[] {
               width: mediaData.width,
               duration_ms: mediaData.duration_ms,
               view_count: mediaData.public_metrics?.view_count,
+              variants: mediaData.variants,
             });
           }
         }

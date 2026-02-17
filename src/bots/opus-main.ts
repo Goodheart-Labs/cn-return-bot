@@ -9,11 +9,13 @@ import { Bot, PipelineResult } from "./types";
 import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
 import { writeNoteFn as writeNote } from "../pipeline/writeNote";
 import { check as checkNote } from "../pipeline/check";
+import { analyzeMedia } from "../pipeline/mediaAnalysis";
 
 const MODELS = {
   search: "perplexity/sonar",
   noteWriting: "anthropic/claude-opus-4.5",
   checking: "anthropic/claude-sonnet-4",
+  vision: "anthropic/claude-sonnet-4",
 };
 
 export const opusMain: Bot = {
@@ -25,11 +27,26 @@ export const opusMain: Bot = {
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {
+      // Media analysis (non-fatal — continues without it on failure)
+      let mediaContext = "";
+      if (content.mediaItems?.length) {
+        try {
+          const mediaResult = await analyzeMedia(content.mediaItems, {
+            visionModel: MODELS.vision,
+          });
+          mediaContext = mediaResult.contextForSearch;
+          lastStage = "media_analysis";
+          console.log(`[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`);
+        } catch (err: any) {
+          console.error(`[${this.id}] Media analysis failed (continuing):`, err.message);
+        }
+      }
+
       const searchResult = await perplexitySearch(
         {
           text: content.text,
           media: content.media,
-          searchResults: "",
+          searchResults: mediaContext,
           retweetContext: content.retweetContext,
         },
         { model: MODELS.search }
