@@ -28,11 +28,207 @@
 
 import "dotenv/config";
 import puppeteer, { type Browser, type Page } from "puppeteer-core";
-import { SupabaseLogger } from "../api/supabaseClient";
+import { getSupabaseClient, SupabaseLogger } from "../api/supabaseClient";
 
 const DEFAULT_USERNAME = "wholesome-raspberry-stilt";
 const SCROLL_PX = 600;
-const SCROLLS_PER_TAB_OFFSET = 80; // ~48,000px per tab, roughly 1/3 of a 500-note list
+const MAX_JUMPS_PER_TAB = 10; // Safety valve to prevent infinite loops
+
+// --- Scroll coverage tracking ---
+// Note IDs serve as position markers — higher = newer = earlier in the list (lower scroll position)
+interface CoveredRegion {
+  newest: bigint;  // highest note ID (top of region)
+  oldest: bigint;  // lowest note ID (bottom of region)
+}
+
+// Shared state across all tabs (JS is single-threaded, no races)
+const tabRegions = new Map<number, CoveredRegion[]>();
+const assignedGaps = new Map<number, { above: bigint; below: bigint }>();
+
+// Jump estimation accuracy tracking
+interface JumpEstimation {
+  tabId: number;
+  targetNoteId: bigint;
+  targetFraction: number;
+  estimatedScrolls: number;
+  actualFirstNoteId: bigint | null;
+  actualFraction: number | null;
+}
+const jumpEstimations: JumpEstimation[] = [];
+
+/** Get the overall note ID range across all tabs */
+function getOverallRange(): { newest: bigint; oldest: bigint } | null {
+  let newest: bigint | null = null;
+  let oldest: bigint | null = null;
+  for (const regions of tabRegions.values()) {
+    for (const r of regions) {
+      if (newest === null || r.newest > newest) newest = r.newest;
+      if (oldest === null || r.oldest < oldest) oldest = r.oldest;
+    }
+  }
+  if (newest === null || oldest === null) return null;
+  return { newest, oldest };
+}
+
+/** Merge all tabs' covered regions into a sorted, non-overlapping list */
+function getMergedRegions(): CoveredRegion[] {
+  const all: CoveredRegion[] = [];
+  for (const regions of tabRegions.values()) {
+    all.push(...regions);
+  }
+  if (all.length === 0) return [];
+
+  // Sort by newest descending (higher note ID = earlier in list)
+  all.sort((a, b) => (b.newest > a.newest ? 1 : b.newest < a.newest ? -1 : 0));
+
+  const merged: CoveredRegion[] = [{ ...all[0]! }];
+  for (let i = 1; i < all.length; i++) {
+    const current = all[i]!;
+    const last = merged[merged.length - 1]!;
+    // Overlapping or adjacent: current's newest falls within or touches last's range
+    if (current.newest >= last.oldest) {
+      // Extend last's oldest if current goes further
+      if (current.oldest < last.oldest) {
+        last.oldest = current.oldest;
+      }
+    } else {
+      merged.push({ ...current });
+    }
+  }
+  return merged;
+}
+
+/** Find the closest unassigned gap to a given tab's current position */
+function getClosestUnassignedGap(tabId: number): { above: bigint; below: bigint } | null {
+  const merged = getMergedRegions();
+  if (merged.length <= 1) return null; // No gaps possible with 0 or 1 region
+
+  // Collect gaps between consecutive merged regions
+  const gaps: { above: bigint; below: bigint }[] = [];
+  for (let i = 0; i < merged.length - 1; i++) {
+    const gapAbove = merged[i]!.oldest;    // bottom of upper region
+    const gapBelow = merged[i + 1]!.newest; // top of lower region
+    if (gapAbove > gapBelow) {
+      gaps.push({ above: gapAbove, below: gapBelow });
+    }
+  }
+
+  if (gaps.length === 0) return null;
+
+  // Filter out gaps already assigned to other tabs
+  const assignedSet = new Set<string>();
+  for (const [tid, gap] of assignedGaps) {
+    if (tid !== tabId) {
+      assignedSet.add(`${gap.above}:${gap.below}`);
+    }
+  }
+  const available = gaps.filter(g => !assignedSet.has(`${g.above}:${g.below}`));
+  if (available.length === 0) return null;
+
+  // Find closest gap to this tab's current position
+  const tabRegs = tabRegions.get(tabId);
+  const currentPos = tabRegs && tabRegs.length > 0
+    ? tabRegs[tabRegs.length - 1]!.oldest  // tab's most recent position (oldest note found)
+    : BigInt(0);
+
+  let closest = available[0]!;
+  let closestDist = abs(gapMidpoint(closest) - currentPos);
+  for (let i = 1; i < available.length; i++) {
+    const dist = abs(gapMidpoint(available[i]!) - currentPos);
+    if (dist < closestDist) {
+      closest = available[i]!;
+      closestDist = dist;
+    }
+  }
+  return closest;
+}
+
+function gapMidpoint(gap: { above: bigint; below: bigint }): bigint {
+  return (gap.above + gap.below) / 2n;
+}
+
+function abs(n: bigint): bigint {
+  return n < 0n ? -n : n;
+}
+
+/** Check if a note ID falls within any other tab's covered region */
+function isInOtherTabRegion(noteId: bigint, excludeTabId: number): boolean {
+  for (const [tid, regions] of tabRegions) {
+    if (tid === excludeTabId) continue;
+    for (const r of regions) {
+      if (noteId <= r.newest && noteId >= r.oldest) return true;
+    }
+  }
+  return false;
+}
+
+/** Update a tab's current region with a newly found note ID */
+function updateTabRegion(tabId: number, noteId: bigint): void {
+  if (!tabRegions.has(tabId)) {
+    tabRegions.set(tabId, [{ newest: noteId, oldest: noteId }]);
+    return;
+  }
+  const regions = tabRegions.get(tabId)!;
+  const current = regions[regions.length - 1]!;
+  if (noteId > current.newest) current.newest = noteId;
+  if (noteId < current.oldest) current.oldest = noteId;
+}
+
+/** Start a new region for a tab (after a jump) */
+function startNewRegion(tabId: number): void {
+  if (!tabRegions.has(tabId)) {
+    tabRegions.set(tabId, []);
+  }
+  // New region will be created by first updateTabRegion call after jump
+}
+
+/**
+ * Estimate how many quickScrolls to reach a target note ID.
+ * Uses fraction-based estimate: if target is X% through the note ID range,
+ * scroll roughly X% of the estimated total scrolls.
+ * Returns the number of quickScroll steps from the top.
+ */
+function estimateScrollsForNoteId(
+  targetNoteId: bigint,
+  newestNoteId: bigint,
+  oldestNoteId: bigint,
+  totalEstimatedScrolls: number,
+): { scrollCount: number; fraction: number } {
+  const range = newestNoteId - oldestNoteId;
+  if (range <= 0n) return { scrollCount: 0, fraction: 0 };
+  const distFromTop = newestNoteId - targetNoteId;
+  const fraction = Number(distFromTop) / Number(range);
+  const scrollCount = Math.round(fraction * totalEstimatedScrolls);
+  return { scrollCount, fraction };
+}
+
+/** Print scroll estimation summary at end of run */
+function printEstimationSummary(): void {
+  if (jumpEstimations.length === 0) {
+    console.log("\n📐 No jumps with estimation data to summarize.");
+    return;
+  }
+
+  const withData = jumpEstimations.filter(e => e.actualFirstNoteId !== null && e.actualFraction !== null);
+  if (withData.length === 0) {
+    console.log("\n📐 No jumps landed on identifiable positions.");
+    return;
+  }
+
+  console.log(`\n📐 Scroll estimation summary (${jumpEstimations.length} jumps, ${withData.length} with landing data):`);
+  const errors: number[] = [];
+  for (const e of withData) {
+    const error = Math.abs(e.targetFraction - e.actualFraction!);
+    errors.push(error);
+  }
+  const meanError = errors.reduce((a, b) => a + b, 0) / errors.length;
+  const worstIdx = errors.indexOf(Math.max(...errors));
+  const worst = withData[worstIdx]!;
+  console.log(`   Mean fraction error:  ${(meanError * 100).toFixed(1)}%`);
+  console.log(`   Worst fraction error: ${(errors[worstIdx]! * 100).toFixed(1)}% (Tab ${worst.tabId})`);
+  console.log(`   Target fractions: [${jumpEstimations.map(e => (e.targetFraction * 100).toFixed(0) + '%').join(', ')}]`);
+  console.log(`   Actual fractions: [${jumpEstimations.map(e => e.actualFraction !== null ? (e.actualFraction * 100).toFixed(0) + '%' : '?').join(', ')}]`);
+}
 
 function randomDelay(minMs: number, maxMs: number): Promise<void> {
   const delay = minMs + Math.random() * (maxMs - minMs);
@@ -50,19 +246,232 @@ interface ScrapedNote {
 }
 
 /** Fast-scroll a page without clicking, to reach a starting position for scraping. */
-async function quickScroll(page: Page, scrollCount: number, tabId: number): Promise<void> {
-  console.log(`   [Tab ${tabId}] Quick-scrolling ${scrollCount} times to reach starting position...`);
-  for (let i = 0; i < scrollCount; i++) {
-    await page.evaluate((px) => {
+/**
+ * Scroll to a target position, sampling notes along the way.
+ * Replaces the old quickScroll: waits for the virtualizer at bottom,
+ * and periodically clicks "View details" to read note IDs so we know
+ * exactly where we are. Sampled notes get fully saved to DB.
+ *
+ * @param targetNoteId Stop when we find a note with ID <= this value (null = use scrollCount)
+ * @param maxScrolls Safety limit on number of scrolls
+ */
+async function scrollToPosition(
+  page: Page,
+  tabId: number,
+  collectedNotes: Map<string, ScrapedNote>,
+  targetNoteId: bigint | null,
+  maxScrolls: number,
+): Promise<void> {
+  const prefix = `[Tab ${tabId}]`;
+  const SAMPLE_EVERY = 15;
+  console.log(`   ${prefix} Scrolling to position${targetNoteId ? ` (target note <= ${targetNoteId})` : ` (${maxScrolls} scrolls)`}...`);
+
+  let scrollsDone = 0;
+  let consecutiveStalls = 0;
+  let lastSampledNoteId: bigint | null = null;
+  const sampledCells = new Set<string>();
+
+  while (scrollsDone < maxScrolls) {
+    scrollsDone++;
+
+    // Same 600px incremental scroll as normal scraping — virtualizer responds to this
+    const result = await page.evaluate((px) => {
       const html = document.documentElement;
-      html.scrollTop += px;
+      const before = html.scrollTop;
+      const maxScroll = html.scrollHeight - html.clientHeight;
+      html.scrollTop = Math.min(before + px, maxScroll);
       html.dispatchEvent(new Event('scroll', { bubbles: true }));
       window.dispatchEvent(new Event('scroll', { bubbles: true }));
+      return {
+        scrollTop: html.scrollTop,
+        scrollHeight: html.scrollHeight,
+        atBottom: html.scrollTop >= maxScroll - 10,
+      };
     }, SCROLL_PX);
-    await new Promise(r => setTimeout(r, 200));
+
+    // When at bottom, wait longer for virtualizer to extend the page with new cells.
+    // Normal scraping naturally waits 2-10s per cell (click, modal, extract) which
+    // gives the virtualizer time. During positioning we need explicit waits instead.
+    if (result.atBottom) {
+      await new Promise(r => setTimeout(r, 800));
+    } else {
+      await new Promise(r => setTimeout(r, 150));
+    }
+
+    // Sample a note periodically to check position (uses safe element.click, not coordinates)
+    if (targetNoteId && scrollsDone % SAMPLE_EVERY === 0) {
+      const noteId = await sampleOneNote(page, tabId, collectedNotes, sampledCells);
+      if (noteId !== null) {
+        updateTabRegion(tabId, noteId);
+        if (noteId <= targetNoteId) {
+          console.log(`   ${prefix} ✅ Reached target position at scroll ${scrollsDone}`);
+          return;
+        }
+        // Stall detection: if note IDs aren't decreasing, we're stuck
+        if (lastSampledNoteId !== null && noteId >= lastSampledNoteId) {
+          consecutiveStalls++;
+          if (consecutiveStalls >= 3) {
+            console.log(`   ${prefix} ⚠️ Progress stalled after ${scrollsDone} scrolls — stopping`);
+            return;
+          }
+        } else {
+          consecutiveStalls = 0;
+        }
+        lastSampledNoteId = noteId;
+        console.log(`   ${prefix} 📍 Position check: note ${noteId} at scroll ${scrollsDone} (scrollY=${result.scrollTop})`);
+      }
+    }
+
+    // Log progress every 100 scrolls (when not sampling)
+    if (!targetNoteId && scrollsDone % 100 === 0) {
+      console.log(`   ${prefix} ... ${scrollsDone}/${maxScrolls} scrolls (scrollY=${result.scrollTop}, height=${result.scrollHeight})`);
+    }
   }
+
   const pos = await page.evaluate(() => document.documentElement.scrollTop);
-  console.log(`   [Tab ${tabId}] Reached scrollTop=${pos}`);
+  console.log(`   ${prefix} Reached scrollTop=${pos} after ${scrollsDone} scrolls`);
+}
+
+/**
+ * Sample a single note from the current view during positioning.
+ * Clicks "View details" on the first available cell, extracts note data
+ * from the modal, saves to DB, and returns the note ID.
+ */
+async function sampleOneNote(
+  page: Page,
+  tabId: number,
+  collectedNotes: Map<string, ScrapedNote>,
+  processedCells: Set<string>,
+): Promise<bigint | null> {
+  const prefix = `[Tab ${tabId}]`;
+  try {
+    const cells = await page.$$('[data-testid="cellInnerDiv"]');
+    for (const cell of cells) {
+      // Fingerprint to avoid re-sampling the same cell
+      const fp = await cell.evaluate(el => {
+        const link = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
+        return link ? link.href : (el as HTMLElement).innerText.slice(0, 100);
+      });
+      if (processedCells.has(fp)) continue;
+      processedCells.add(fp);
+
+      // Check that cell has "View details" before investing more work
+      const hasViewDetails = await cell.evaluate(el => {
+        const buttons = el.querySelectorAll('button, [role="button"]');
+        for (const btn of buttons) {
+          if (btn.textContent?.includes('View details')) return true;
+        }
+        return false;
+      });
+      if (!hasViewDetails) continue;
+
+      // Extract tweet ID from cell
+      const tweetId = await cell.evaluate(el => {
+        const link = el.querySelector('a[href*="/status/"]') as HTMLAnchorElement;
+        return link ? (link.href.match(/status\/(\d+)/)?.[1] || null) : null;
+      });
+
+      // Extract note text from cell
+      const noteText = await cell.evaluate(el => {
+        const paragraphs = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
+        let best = '';
+        paragraphs.forEach(p => {
+          const t = (p as HTMLElement).innerText.trim();
+          if (t.length > 50 && !t.includes('experimental AI') && !t.includes('Needs more ratings') && !t.includes('Currently rated') && t.length > best.length) {
+            best = t;
+          }
+        });
+        return best;
+      });
+
+      // Scroll into view, then click the button directly via JS (not coordinates)
+      // Using element.click() instead of page.mouse.click(x,y) prevents stale coordinates
+      // from landing on a link and accidentally navigating away from the page.
+      await cell.evaluate(el => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+      await new Promise(r => setTimeout(r, 200));
+
+      const clicked = await cell.evaluate(el => {
+        // Block any <a> navigation during the click (safety net)
+        const blocker = (e: Event) => {
+          if ((e.target as HTMLElement).closest?.('a')) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        };
+        document.addEventListener('click', blocker, true);
+        try {
+          const buttons = el.querySelectorAll('button, [role="button"]');
+          for (const btn of buttons) {
+            if (btn.textContent?.includes('View details')) {
+              (btn as HTMLElement).click();
+              return true;
+            }
+          }
+          return false;
+        } finally {
+          document.removeEventListener('click', blocker, true);
+        }
+      });
+      if (!clicked) continue;
+
+      // Wait for modal
+      for (let waitMs = 0; waitMs < 2500; waitMs += 150) {
+        const hasModal = await page.evaluate(() => document.body.innerText.includes('Note ID'));
+        if (hasModal) break;
+        await new Promise(r => setTimeout(r, 150));
+      }
+
+      // Extract note ID and status from modal
+      const modalData = await page.evaluate(() => {
+        const bodyText = document.body.innerText;
+        const noteIdMatch = bodyText.match(/Note ID[:\s]*(\d{18,20})/i);
+        if (!noteIdMatch) return null;
+
+        let status = 'UNKNOWN';
+        if (bodyText.includes('Currently not rated helpful')) status = 'CURRENTLY_RATED_NOT_HELPFUL';
+        else if (bodyText.includes('Currently rated helpful')) status = 'CURRENTLY_RATED_HELPFUL';
+        else if (bodyText.includes('Needs more ratings')) status = 'NEEDS_MORE_RATINGS';
+        else if (/Shown on X/i.test(bodyText) && !bodyText.includes('Not shown on X')) status = 'SHOWN_ON_X';
+        else if (bodyText.includes('Not shown on X')) status = 'NOT_SHOWN_ON_X';
+
+        const dateMatch = bodyText.match(/Note submitted[:\s]*([\d:]+\s*(?:AM|PM)?)\s*[·•]\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})/i);
+        const submittedDate = dateMatch ? (dateMatch[2] ?? '') : '';
+        return { noteId: noteIdMatch[1], status, submittedDate };
+      });
+
+      // Close modal
+      await page.keyboard.press('Escape');
+      await new Promise(r => setTimeout(r, 200));
+
+      if (!modalData?.noteId) continue;
+
+      const noteIdBigInt = BigInt(modalData.noteId);
+
+      // Save note if not already collected
+      if (!collectedNotes.has(modalData.noteId)) {
+        const note: ScrapedNote = {
+          note_id: modalData.noteId,
+          tweet_id: tweetId || `unavailable_${modalData.noteId}`,
+          note_text: noteText,
+          cn_status: modalData.status,
+          created_at: modalData.submittedDate,
+        };
+        collectedNotes.set(modalData.noteId, note);
+        await saveNoteIncrementally(note);
+        console.log(`   ${prefix} 📍 Sampled: ${modalData.noteId} (${modalData.status})`);
+      }
+
+      return noteIdBigInt;
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    // Rethrow frame detach errors — these need recovery at a higher level
+    if (msg.toLowerCase().includes('detached frame') || msg.includes('Target closed') || msg.includes('Session closed')) {
+      throw e;
+    }
+    console.log(`   ${prefix} ⚠️ Sample failed: ${msg.slice(0, 80)}`);
+  }
+  return null;
 }
 
 /** Wait for notewriter content to appear on a page. */
@@ -142,25 +551,46 @@ async function saveNoteIncrementally(note: ScrapedNote): Promise<void> {
  * sharing a collectedNotes map for deduplication.
  */
 async function scrapeTab(
-  page: Page,
+  browser: Browser,
+  initialPage: Page,
   collectedNotes: Map<string, ScrapedNote>,
   tabId: number,
   maxNotes: number,
+  notewriterUrl: string,
+  totalEstimatedScrolls: number,
 ): Promise<void> {
   const prefix = `[Tab ${tabId}]`;
-  const processedCells = new Set<string>();
+
+  // Diagnostic: log page dimensions to help debug virtualizer issues
+  const dims = await initialPage.evaluate(() => ({
+    innerWidth: window.innerWidth,
+    innerHeight: window.innerHeight,
+    scrollHeight: document.documentElement.scrollHeight,
+    clientHeight: document.documentElement.clientHeight,
+    bodyScrollHeight: document.body.scrollHeight,
+    cells: document.querySelectorAll('[data-testid="cellInnerDiv"]').length,
+  }));
+  console.log(`${prefix} 📐 Page dimensions: ${dims.innerWidth}x${dims.innerHeight} viewport, ${dims.scrollHeight}px scroll height, ${dims.cells} cells visible`);
+
+  let processedCells = new Set<string>();
   let scrollCount = 0;
   let stuckCount = 0;
   const stuckBeforePause = 10;
-  const maxRetries = 5;
+  // Escalating wait times before each jiggle retry: quick, 30s, 30s, 60s, 60s, 60s, 180s, 180s, 180s, 180s
+  const jiggleWaits = [0, 0, 30000, 30000, 60000, 60000, 60000, 180000, 180000, 180000];
+  const maxRetries = jiggleWaits.length;
   let retryCount = 0;
-  let consecutiveOverlaps = 0;
-  const overlapJumpThreshold = 15;
   let jumpCount = 0;
-  const maxJumps = 3;
+  let currentPage = initialPage;
+  let frameRecoveries = 0;
+  const MAX_FRAME_RECOVERIES = 3;
+  let lastNoteDate = ''; // Track date of last scraped note for stuck messages
 
-  try {
-  while (collectedNotes.size < maxNotes && retryCount <= maxRetries) {
+  recoveryLoop:
+  while (frameRecoveries <= MAX_FRAME_RECOVERIES) {
+    const page = currentPage; // Shadow for inner code — updated on recovery
+    try {
+      while (collectedNotes.size < maxNotes && retryCount <= maxRetries) {
     scrollCount++;
 
     // Get all visible cells
@@ -218,7 +648,6 @@ async function scrapeTab(
 
       // Skip if we already have this tweet (another tab got it)
       if (tweetData.tweetId && [...collectedNotes.values()].some(n => n.tweet_id === tweetData.tweetId)) {
-        consecutiveOverlaps++;
         continue;
       }
 
@@ -263,73 +692,66 @@ async function scrapeTab(
       });
       await randomDelay(100, 200);
 
-      // Find and click the "View details" element
-      const clickResult = await cell.evaluate(el => {
-        const noteLink = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
-        if (noteLink) {
-          const rect = noteLink.getBoundingClientRect();
-          return {
-            found: true,
-            x: rect.x + rect.width / 2,
-            y: rect.y + rect.height / 2,
-            tag: 'A (direct link)',
-            href: noteLink.href,
-          };
-        }
-
+      // Check if cell has a clickable "View details" button
+      const hasViewDetails = await cell.evaluate(el => {
+        const noteLink = el.querySelector('a[href*="/communitynotes/t/"]');
+        if (noteLink) return 'A';
         const buttons = el.querySelectorAll('button, [role="button"]');
         for (const btn of buttons) {
-          if (btn.textContent?.includes('View details')) {
-            const rect = btn.getBoundingClientRect();
-            return {
-              found: true,
-              x: rect.x + rect.width / 2,
-              y: rect.y + rect.height / 2,
-              tag: btn.tagName,
-              href: '',
-            };
-          }
+          if (btn.textContent?.includes('View details')) return btn.tagName;
         }
-
-        const spans = el.querySelectorAll('span');
-        for (const span of spans) {
-          if (span.textContent === 'View details') {
-            const rect = span.getBoundingClientRect();
-            return {
-              found: true,
-              x: rect.x + rect.width / 2,
-              y: rect.y + rect.height / 2,
-              tag: 'SPAN (exact match)',
-              href: '',
-            };
-          }
-        }
-
-        return { found: false, x: 0, y: 0, tag: '', href: '' };
+        return null;
       });
 
-      if (!clickResult.found) continue;
-      if (clickResult.x === 0 && clickResult.y === 0) continue;
-      if (clickResult.y < 0 || clickResult.y > 2000) {
-        console.log(`   ${prefix} ⚠️ View details off-screen (y=${clickResult.y}) for tweet ${tweetData.tweetId}`);
-        continue;
-      }
+      if (!hasViewDetails) continue;
 
-      console.log(`   ${prefix} 🖱️ Clicking View details at (${clickResult.x.toFixed(0)}, ${clickResult.y.toFixed(0)}) [${clickResult.tag}]`);
+      console.log(`   ${prefix} 🖱️ Clicking View details [${hasViewDetails}]`);
 
-      // Retry click + modal extraction up to 2 times
+      // Retry click + modal extraction up to 3 times per cell.
+      // Uses element.click() instead of page.mouse.click() to avoid CDP frame detach.
       let modalData: { noteId: string | null; status: string; submittedDate: string; usedFallback?: boolean } | null = null;
-      for (let clickAttempt = 0; clickAttempt < 2; clickAttempt++) {
+      for (let clickAttempt = 0; clickAttempt < 3; clickAttempt++) {
         if (clickAttempt > 0) {
           console.log(`   ${prefix} 🔄 Retry ${clickAttempt} for click...`);
           await randomDelay(500, 1000);
         }
 
+        // Click via element.click() inside the page context — avoids CDP Input.dispatchMouseEvent
+        // which can cause "Session closed" / "detached Frame" errors
         try {
-          await Promise.race([
-            page.mouse.click(clickResult.x, clickResult.y),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Click timeout')), 10000))
-          ]);
+          const clicked = await cell.evaluate(el => {
+            // Block any <a> navigation during the click (safety net)
+            const blocker = (e: Event) => {
+              if ((e.target as HTMLElement).closest?.('a')) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            };
+            document.addEventListener('click', blocker, true);
+            try {
+              // Try direct note link first
+              const noteLink = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
+              if (noteLink) {
+                noteLink.click();
+                return true;
+              }
+              // Try buttons with "View details"
+              const buttons = el.querySelectorAll('button, [role="button"]');
+              for (const btn of buttons) {
+                if (btn.textContent?.includes('View details')) {
+                  (btn as HTMLElement).click();
+                  return true;
+                }
+              }
+              return false;
+            } finally {
+              document.removeEventListener('click', blocker, true);
+            }
+          });
+          if (!clicked) {
+            console.log(`   ${prefix} ⚠️ Button not found in cell`);
+            continue;
+          }
         } catch (clickErr) {
           console.log(`   ${prefix} ⚠️ Click error: ${clickErr}`);
           continue;
@@ -442,9 +864,56 @@ async function scrapeTab(
 
       // Skip if another tab already got this note
       if (collectedNotes.has(modalData.noteId)) {
-        consecutiveOverlaps++;
         await page.keyboard.press('Escape');
         await randomDelay(100, 200);
+        continue;
+      }
+
+      const noteIdBigInt = BigInt(modalData.noteId);
+
+      // Check if this note falls within another tab's covered region → overlap detected
+      if (isInOtherTabRegion(noteIdBigInt, tabId)) {
+        console.log(`   ${prefix} 🔀 Note ${modalData.noteId} is in another tab's covered region — jumping`);
+        await page.keyboard.press('Escape');
+        await randomDelay(100, 200);
+
+        // Find closest unassigned gap and jump to it
+        const gap = getClosestUnassignedGap(tabId);
+        if (!gap) {
+          console.log(`   ${prefix} ✅ No uncovered gaps remain — tab done (full scroll coverage)`);
+          break;
+        }
+        if (jumpCount >= MAX_JUMPS_PER_TAB) {
+          console.log(`   ${prefix} 🛑 Hit safety limit of ${MAX_JUMPS_PER_TAB} jumps — tab done`);
+          break;
+        }
+
+        jumpCount++;
+        assignedGaps.set(tabId, gap);
+        const targetNoteId = gapMidpoint(gap);
+        const range = getOverallRange();
+        const est = range
+          ? estimateScrollsForNoteId(targetNoteId, range.newest, range.oldest, totalEstimatedScrolls)
+          : { scrollCount: totalEstimatedScrolls / 2, fraction: 0.5 };
+
+        console.log(`   ${prefix} 🎯 Jump ${jumpCount}: targeting gap [${gap.above} → ${gap.below}], midpoint=${targetNoteId}`);
+        console.log(`   ${prefix}    Estimated fraction: ${(est.fraction * 100).toFixed(1)}%, scrolls: ${est.scrollCount}`);
+
+        const estimation: JumpEstimation = {
+          tabId, targetNoteId, targetFraction: est.fraction,
+          estimatedScrolls: est.scrollCount,
+          actualFirstNoteId: null, actualFraction: null,
+        };
+        jumpEstimations.push(estimation);
+
+        // Reload page and scroll to estimated position
+        startNewRegion(tabId);
+        processedCells.clear();
+        stuckCount = 0;
+        retryCount = 0;
+        await page.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+        await waitForContent(page, tabId);
+        await scrollToPosition(page, tabId, collectedNotes, targetNoteId, est.scrollCount > 0 ? est.scrollCount * 2 : 3000);
         continue;
       }
 
@@ -463,7 +932,24 @@ async function scrapeTab(
 
       collectedNotes.set(modalData.noteId, note);
       foundNewNote = true;
-      consecutiveOverlaps = 0; // Reset overlap counter on new find
+      if (modalData.submittedDate) lastNoteDate = modalData.submittedDate;
+
+      // Update coverage tracking
+      updateTabRegion(tabId, noteIdBigInt);
+
+      // Record first note found after a jump for estimation accuracy
+      if (jumpEstimations.length > 0) {
+        const lastEst = jumpEstimations[jumpEstimations.length - 1]!;
+        if (lastEst.tabId === tabId && lastEst.actualFirstNoteId === null) {
+          lastEst.actualFirstNoteId = noteIdBigInt;
+          const range = getOverallRange();
+          if (range && range.newest > range.oldest) {
+            lastEst.actualFraction = Number(range.newest - noteIdBigInt) / Number(range.newest - range.oldest);
+            console.log(`   ${prefix} 📐 Jump landed at fraction ${(lastEst.actualFraction * 100).toFixed(1)}% (target was ${(lastEst.targetFraction * 100).toFixed(1)}%)`);
+          }
+        }
+      }
+
       console.log(`   ${prefix} ✓ Total ${collectedNotes.size}: ${modalData.noteId} (${modalData.status})`);
 
       // Save to DB immediately so data isn't lost if process is killed
@@ -510,11 +996,53 @@ async function scrapeTab(
       if (stuckCount >= stuckBeforePause) {
         retryCount++;
         if (retryCount > maxRetries) {
-          console.log(`\n   ${prefix} 🛑 Exhausted ${maxRetries} retries. Tab stopping.`);
-          break;
+          // Instead of stopping, try to jump to an uncovered gap
+          console.log(`\n   ${prefix} 🔄 Scroll stuck${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}. Exhausted ${maxRetries} jiggle retries, looking for uncovered gaps...`);
+          const gap = getClosestUnassignedGap(tabId);
+          if (!gap) {
+            console.log(`   ${prefix} ✅ No uncovered gaps remain — tab done (full scroll coverage)`);
+            break;
+          }
+          if (jumpCount >= MAX_JUMPS_PER_TAB) {
+            console.log(`   ${prefix} 🛑 Hit safety limit of ${MAX_JUMPS_PER_TAB} jumps — tab done`);
+            break;
+          }
+
+          jumpCount++;
+          assignedGaps.set(tabId, gap);
+          const targetNoteId = gapMidpoint(gap);
+          const range = getOverallRange();
+          const est = range
+            ? estimateScrollsForNoteId(targetNoteId, range.newest, range.oldest, totalEstimatedScrolls)
+            : { scrollCount: totalEstimatedScrolls / 2, fraction: 0.5 };
+
+          console.log(`   ${prefix} 🎯 Jump ${jumpCount}: targeting gap [${gap.above} → ${gap.below}], midpoint=${targetNoteId}`);
+          console.log(`   ${prefix}    Estimated fraction: ${(est.fraction * 100).toFixed(1)}%, scrolls: ${est.scrollCount}`);
+
+          const estimation: JumpEstimation = {
+            tabId, targetNoteId, targetFraction: est.fraction,
+            estimatedScrolls: est.scrollCount,
+            actualFirstNoteId: null, actualFraction: null,
+          };
+          jumpEstimations.push(estimation);
+
+          // Reload page and scroll to estimated position
+          startNewRegion(tabId);
+          processedCells.clear();
+          stuckCount = 0;
+          retryCount = 0;
+          await page.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+          await waitForContent(page, tabId);
+          await scrollToPosition(page, tabId, collectedNotes, targetNoteId, est.scrollCount > 0 ? est.scrollCount * 2 : 3000);
+          continue;
         }
-        // Unstick the virtualizer: scroll up a big chunk, wait, then scroll back down
-        console.log(`\n   ${prefix} 🔄 Stuck after ${stuckCount} scrolls. Jiggling scroll to unstick virtualizer (retry ${retryCount}/${maxRetries})...`);
+        // Unstick the virtualizer: escalating wait, then scroll up a big chunk, wait, scroll back down
+        const waitMs = jiggleWaits[retryCount - 1] || 0;
+        if (waitMs > 0) {
+          console.log(`\n   ${prefix} ⏳ Scroll stuck${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}. Waiting ${waitMs / 1000}s before jiggle ${retryCount}/${maxRetries}...`);
+          await new Promise(r => setTimeout(r, waitMs));
+        }
+        console.log(`\n   ${prefix} 🔄 Jiggling virtualizer (retry ${retryCount}/${maxRetries})...`);
         const jiggleDistance = 3000 + (retryCount * 2000); // Scroll up further each retry
         await page.evaluate((dist) => {
           const html = document.documentElement;
@@ -540,21 +1068,6 @@ async function scrapeTab(
       retryCount = 0;
     }
 
-    // Check if we're in another tab's territory — jump far ahead to find uncovered ground
-    if (consecutiveOverlaps >= overlapJumpThreshold) {
-      jumpCount++;
-      if (jumpCount > maxJumps) {
-        console.log(`\n   ${prefix} 🏁 Hit overlap ${maxJumps} times, no more uncovered territory. Tab done.`);
-        break;
-      }
-      const jumpScrolls = SCROLLS_PER_TAB_OFFSET; // Jump same distance as initial tab spacing
-      console.log(`\n   ${prefix} 🔀 Overlapping with another tab (${consecutiveOverlaps} dupes). Jumping ahead ${jumpScrolls} scrolls (jump ${jumpCount}/${maxJumps})...`);
-      consecutiveOverlaps = 0;
-      processedCells.clear(); // Clear fingerprints since we're in new territory
-      await quickScroll(page, jumpScrolls, tabId);
-      continue; // Skip the normal scroll, go straight to processing
-    }
-
     // Scroll down
     try {
       const scrollResult = await page.evaluate((px) => {
@@ -573,7 +1086,9 @@ async function scrapeTab(
       }, SCROLL_PX);
 
       if (scrollResult.atBottom) {
-        console.log(`   ${prefix} 📍 At bottom of page (${scrollResult.scrollTop}/${scrollResult.maxScroll})`);
+        console.log(`   ${prefix} 📍 At bottom${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}`);
+        // Wait longer at bottom — the virtualizer needs time to extend the page
+        await new Promise(r => setTimeout(r, 2000));
       }
     } catch (scrollErr: unknown) {
       const errMsg = scrollErr instanceof Error ? scrollErr.message : String(scrollErr);
@@ -581,16 +1096,117 @@ async function scrapeTab(
     }
 
     await randomDelay(300, 500);
-  }
-  } catch (loopErr: unknown) {
-    const errMsg = loopErr instanceof Error ? loopErr.message : String(loopErr);
-    console.log(`\n${prefix} ⚠️ Scraping interrupted: ${errMsg.slice(0, 100)}`);
-    console.log(`   ${prefix} Collected ${collectedNotes.size} notes so far across all tabs`);
-  }
+      }
+      // Normal completion — exit recovery loop
+      break recoveryLoop;
+    } catch (loopErr: unknown) {
+      const errMsg = loopErr instanceof Error ? loopErr.message : String(loopErr);
+
+      // Recoverable frame detach — open new tab and scroll back
+      if (errMsg.toLowerCase().includes('detached frame') || errMsg.includes('Execution context') || errMsg.includes('Target closed') || errMsg.includes('Session closed') || errMsg.includes('Connection closed')) {
+        frameRecoveries++;
+        if (frameRecoveries > MAX_FRAME_RECOVERIES) {
+          console.log(`\n${prefix} 💀 Frame detach recovery limit reached (${MAX_FRAME_RECOVERIES}). Tab stopping.`);
+          break recoveryLoop;
+        }
+
+        console.log(`\n${prefix} 🔄 Frame detached! Recovering (${frameRecoveries}/${MAX_FRAME_RECOVERIES})...`);
+
+        try {
+          // Try opening a new page; if the browser connection died, reconnect first
+          let recoveredBrowser = browser;
+          try {
+            currentPage = await recoveredBrowser.newPage();
+          } catch (newPageErr) {
+            const npMsg = newPageErr instanceof Error ? newPageErr.message : String(newPageErr);
+            if (npMsg.includes('Connection closed') || npMsg.includes('closed')) {
+              console.log(`   ${prefix} 🔌 Browser connection lost — reconnecting...`);
+              await new Promise(r => setTimeout(r, 2000));
+              recoveredBrowser = await puppeteer.connect({
+                browserURL: "http://127.0.0.1:9222",
+                protocolTimeout: 120000,
+                defaultViewport: null,
+              });
+              // Update the outer browser reference via closure
+              browser = recoveredBrowser;
+              currentPage = await recoveredBrowser.newPage();
+            } else {
+              throw newPageErr;
+            }
+          }
+
+          await currentPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+          await waitForContent(currentPage, tabId);
+
+          // Scroll back to approximate position using coverage tracking
+          const tabRegs = tabRegions.get(tabId);
+          const lastOldest = tabRegs && tabRegs.length > 0 ? tabRegs[tabRegs.length - 1]!.oldest : null;
+          if (lastOldest) {
+            console.log(`   ${prefix} Scrolling back to note ${lastOldest}...`);
+            await scrollToPosition(currentPage, tabId, collectedNotes, lastOldest, totalEstimatedScrolls);
+          }
+
+          processedCells = new Set<string>();
+          stuckCount = 0;
+          retryCount = 0;
+          scrollCount = 0;
+
+          continue recoveryLoop;
+        } catch (recoveryErr) {
+          console.log(`\n${prefix} 💀 Recovery failed: ${recoveryErr}`);
+          break recoveryLoop;
+        }
+      }
+
+      // Non-recoverable error
+      console.log(`\n${prefix} ⚠️ Scraping interrupted: ${errMsg.slice(0, 100)}`);
+      console.log(`   ${prefix} Collected ${collectedNotes.size} notes so far`);
+      break recoveryLoop;
+    }
+  } // end recoveryLoop
 
   console.log(`\n${prefix} ✅ Tab finished. Total notes across all tabs: ${collectedNotes.size}`);
 }
 
+
+/**
+ * Query DB for note IDs at specific percentile positions.
+ * Returns a map from fraction (e.g. 0.33) to the note ID at that position.
+ * Uses paginated query to avoid the 1000-row limit.
+ */
+async function getPercentileNoteIds(fractions: number[]): Promise<Map<number, bigint>> {
+  const client = getSupabaseClient();
+  const allNotes: { note_id: string }[] = [];
+  let offset = 0;
+  const pageSize = 1000;
+  while (true) {
+    const { data, error } = await client
+      .from('scraped_notewriter_notes')
+      .select('note_id')
+      .not('note_id', 'like', 'tweet_%')
+      .order('note_id', { ascending: false })
+      .range(offset, offset + pageSize - 1);
+    if (error) { console.error('   DB percentile query error:', error); break; }
+    if (!data || data.length === 0) break;
+    allNotes.push(...data);
+    if (data.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  if (allNotes.length === 0) return new Map();
+
+  // Already sorted descending (newest first) from the query
+  const result = new Map<number, bigint>();
+  for (const frac of fractions) {
+    const idx = Math.floor(allNotes.length * frac);
+    result.set(frac, BigInt(allNotes[idx]!.note_id));
+  }
+  console.log(`📊 DB has ${allNotes.length} notes with real IDs`);
+  for (const [frac, noteId] of result) {
+    console.log(`   ${(frac * 100).toFixed(0)}th percentile: ${noteId}`);
+  }
+  return result;
+}
 
 async function main() {
   // Parse args
@@ -603,11 +1219,21 @@ async function main() {
     ? Math.min(Math.max(parseInt(args[tabsFlagIdx + 1]!, 10) || 1, 1), 5)
     : 1;
 
+  // Parse --start-from <noteId> to resume from a previous run's last position
+  const startFromIdx = args.indexOf('--start-from');
+  const startFromNoteId = startFromIdx !== -1 && args[startFromIdx + 1]
+    ? BigInt(args[startFromIdx + 1]!)
+    : null;
+
   // Filter out flag args AND their values (e.g. --tabs 3 removes both)
   const flagValueIndices = new Set<number>();
   if (tabsFlagIdx !== -1) {
     flagValueIndices.add(tabsFlagIdx);
     flagValueIndices.add(tabsFlagIdx + 1);
+  }
+  if (startFromIdx !== -1) {
+    flagValueIndices.add(startFromIdx);
+    flagValueIndices.add(startFromIdx + 1);
   }
   const nonFlagArgs = args.filter((a, i) => !a.startsWith('--') && !flagValueIndices.has(i));
 
@@ -629,6 +1255,7 @@ async function main() {
     browser = await puppeteer.connect({
       browserURL: "http://127.0.0.1:9222",
       protocolTimeout: 120000,
+      defaultViewport: null, // Use browser's actual window size, not Puppeteer's 800x600 default
     });
   } catch (err) {
     console.error("❌ Failed to connect to Chrome.");
@@ -647,26 +1274,54 @@ async function main() {
     let tabPage: Page | undefined;
 
     if (i === 0) {
-      // First tab: reuse existing notewriter tab if present
-      const existingPages = await browser.pages();
-      tabPage = existingPages.find((p) => p.url().includes("communitynotes"));
-
-      if (!tabPage) {
-        console.log(`📄 [Tab 0] Opening new tab: ${notewriterUrl}`);
-        tabPage = await browser.newPage();
-        await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+      if (freshStart) {
+        // Fresh start: always open a new tab (avoids stale virtualizer state
+        // and viewport emulation from previous runs)
+        for (let attempt = 0; attempt < 3; attempt++) {
+          try {
+            console.log(`📄 [Tab 0] Opening fresh tab: ${notewriterUrl}${attempt > 0 ? ` (retry ${attempt})` : ''}`);
+            tabPage = await browser.newPage();
+            await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+            break;
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            console.log(`   [Tab 0] ⚠️ Tab creation failed: ${msg.slice(0, 80)}`);
+            if (attempt === 2) throw e;
+            await new Promise(r => setTimeout(r, 2000));
+          }
+        }
       } else {
-        console.log(`📄 [Tab 0] Found existing notewriter tab: ${tabPage.url()}`);
-        if (freshStart || !tabPage.url().includes(username)) {
-          console.log(`   [Tab 0] ${freshStart ? '🔄 Fresh start - reloading' : 'Navigating to'} ${notewriterUrl}`);
+        // Reuse existing notewriter tab if present
+        const existingPages = await browser.pages();
+        tabPage = existingPages.find((p) => p.url().includes("communitynotes"));
+
+        if (!tabPage) {
+          console.log(`📄 [Tab 0] Opening new tab: ${notewriterUrl}`);
+          tabPage = await browser.newPage();
           await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+        } else {
+          console.log(`📄 [Tab 0] Found existing notewriter tab: ${tabPage.url()}`);
+          if (!tabPage.url().includes(username)) {
+            console.log(`   [Tab 0] Navigating to ${notewriterUrl}`);
+            await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+          }
         }
       }
     } else {
-      // Additional tabs: always open fresh
-      console.log(`📄 [Tab ${i}] Opening new tab: ${notewriterUrl}`);
-      tabPage = await browser.newPage();
-      await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+      // Additional tabs: always open fresh (with retry for flaky frame detach)
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          console.log(`📄 [Tab ${i}] Opening new tab: ${notewriterUrl}${attempt > 0 ? ` (retry ${attempt})` : ''}`);
+          tabPage = await browser.newPage();
+          await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+          break;
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          console.log(`   [Tab ${i}] ⚠️ Tab creation failed: ${msg.slice(0, 80)}`);
+          if (attempt === 2) throw e;
+          await new Promise(r => setTimeout(r, 2000));
+        }
+      }
     }
 
     // If fresh start, scroll to top
@@ -685,27 +1340,71 @@ async function main() {
   // Wait for content on all tabs
   await Promise.all(tabPages.map((p, i) => waitForContent(p, i)));
 
-  // Position tabs: tab i scrolls past (i * SCROLLS_PER_TAB_OFFSET) positions
-  if (numTabs > 1) {
-    console.log(`\n📍 Positioning ${numTabs} tabs across the notewriter list...\n`);
-    // Position tabs 1-N (tab 0 starts from current position)
-    await Promise.all(
-      tabPages.slice(1).map((p, idx) =>
-        quickScroll(p, (idx + 1) * SCROLLS_PER_TAB_OFFSET, idx + 1)
-      )
-    );
-  }
+  // Safety limit on scrolls (list is roughly 200-250 scrolls of 600px each)
+  const totalEstimatedScrolls = 240;
 
-  console.log(`\n${"=".repeat(60)}`);
-  console.log(`🏁 All ${numTabs} tabs ready. Starting parallel scrape...\n`);
-
-  // Shared map — JS is single-threaded so no race conditions
+  // Shared map — create before positioning so scrollToPosition can save sampled notes
   const collectedNotes = new Map<string, ScrapedNote>();
 
-  // Run all tabs in parallel
-  await Promise.all(
-    tabPages.map((p, i) => scrapeTab(p, collectedNotes, i, maxNotes))
-  );
+  // If resuming from a previous run, scroll to the start position first
+  if (startFromNoteId) {
+    console.log(`\n📍 Resuming from note ${startFromNoteId} — scrolling to position...`);
+    await scrollToPosition(tabPages[0]!, 0, collectedNotes, startFromNoteId, 3000);
+  }
+
+  // Start tab 0 scraping immediately — don't make it wait for other tabs to position
+  // (idle tabs get throttled/detached by Chrome, which is why tab 0 often failed to start)
+  console.log(`\n${"=".repeat(60)}`);
+  console.log(`🏁 Starting Tab 0 scraping immediately${numTabs > 1 ? ' while positioning other tabs...' : '...'}\n`);
+
+  const tab0Promise = scrapeTab(browser, tabPages[0]!, collectedNotes, 0, maxNotes, notewriterUrl, totalEstimatedScrolls);
+
+  // Position and start remaining tabs
+  if (numTabs > 1) {
+    const fractions = Array.from({ length: numTabs - 1 }, (_, i) => (i + 1) / numTabs);
+    console.log(`📍 Querying DB for positioning targets (${fractions.map(f => (f * 100).toFixed(0) + '%').join(', ')})...`);
+    const percentiles = await getPercentileNoteIds(fractions);
+
+    // Position each tab then start it scraping immediately (don't wait for all to position)
+    const otherTabPromises: Promise<void>[] = [];
+    for (let idx = 0; idx < tabPages.length - 1; idx++) {
+      const tabIdx = idx + 1;
+      const fraction = tabIdx / numTabs;
+      const scrollCount = Math.round(fraction * totalEstimatedScrolls);
+      const targetNoteId = percentiles.get(fraction) ?? null;
+
+      console.log(`   [Tab ${tabIdx}] Scrolling to ${(fraction * 100).toFixed(0)}% (${scrollCount} scrolls${targetNoteId ? `, target note <= ${targetNoteId}` : ''})...`);
+
+      jumpEstimations.push({
+        tabId: tabIdx,
+        targetNoteId: targetNoteId ?? 0n,
+        targetFraction: fraction,
+        estimatedScrolls: scrollCount,
+        actualFirstNoteId: null,
+        actualFraction: null,
+      });
+
+      try {
+        // Use DB percentile note ID as target — samples every 10 scrolls to verify position
+        // maxScrolls is generous; stall detection stops early if stuck
+        await scrollToPosition(tabPages[tabIdx]!, tabIdx, collectedNotes, targetNoteId, targetNoteId ? 3000 : scrollCount);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.log(`   [Tab ${tabIdx}] ⚠️ Positioning failed: ${msg.slice(0, 80)} — will start from current position`);
+      }
+
+      // Start this tab scraping as soon as it's positioned
+      console.log(`   [Tab ${tabIdx}] ▶️ Starting scrape from current position`);
+      otherTabPromises.push(
+        scrapeTab(browser, tabPages[tabIdx]!, collectedNotes, tabIdx, maxNotes, notewriterUrl, totalEstimatedScrolls)
+      );
+    }
+
+    // Wait for all tabs to finish
+    await Promise.all([tab0Promise, ...otherTabPromises]);
+  } else {
+    await tab0Promise;
+  }
 
   console.log(`\n✅ All tabs finished! Collected ${collectedNotes.size} notes total\n`);
 
@@ -794,6 +1493,35 @@ async function main() {
     if (anomalies.noteTextChanges.length > 10) {
       console.log(`     ... and ${anomalies.noteTextChanges.length - 10} more`);
     }
+  }
+
+  // Print scroll estimation accuracy summary
+  printEstimationSummary();
+
+  // Print coverage regions
+  const merged = getMergedRegions();
+  if (merged.length > 0) {
+    console.log(`\n📊 Scroll coverage: ${merged.length} region${merged.length > 1 ? 's' : ''}`);
+    for (let i = 0; i < merged.length; i++) {
+      console.log(`   Region ${i + 1}: ${merged[i]!.newest} → ${merged[i]!.oldest}`);
+    }
+    if (merged.length > 1) {
+      console.log(`   ⚠️ ${merged.length - 1} gap${merged.length - 1 > 1 ? 's' : ''} in coverage:`);
+      for (let i = 0; i < merged.length - 1; i++) {
+        const gapAbove = merged[i]!.oldest;
+        const gapBelow = merged[i + 1]!.newest;
+        console.log(`     Gap ${i + 1}: ${gapAbove} → ${gapBelow}`);
+      }
+    } else {
+      console.log(`   ✅ Full contiguous scroll coverage!`);
+    }
+  }
+
+  // Print resume command if scraping didn't reach the bottom of the list
+  if (merged.length > 0) {
+    const oldestReached = merged[merged.length - 1]!.oldest;
+    console.log(`\n📌 To resume from where this run stopped:`);
+    console.log(`   bun run src/scripts/scrapeNotewriterClickThrough.ts ${maxNotes} --fresh --start-from ${oldestReached}`);
   }
 
   console.log("\n💡 Chrome browser left open. Close it manually when done.");
