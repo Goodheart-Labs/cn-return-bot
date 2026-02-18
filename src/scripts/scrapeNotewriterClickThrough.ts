@@ -293,9 +293,9 @@ async function scrollToPosition(
     // Normal scraping naturally waits 2-10s per cell (click, modal, extract) which
     // gives the virtualizer time. During positioning we need explicit waits instead.
     if (result.atBottom) {
-      await new Promise(r => setTimeout(r, 800));
+      await new Promise(r => setTimeout(r, 400 + Math.random() * 10));
     } else {
-      await new Promise(r => setTimeout(r, 150));
+      await new Promise(r => setTimeout(r, 100 + Math.random() * 10));
     }
 
     // Sample a note periodically to check position (uses safe element.click, not coordinates)
@@ -365,23 +365,46 @@ async function sampleOneNote(
       });
       if (!hasViewDetails) continue;
 
-      // Extract tweet ID from cell
-      const tweetId = await cell.evaluate(el => {
-        const link = el.querySelector('a[href*="/status/"]') as HTMLAnchorElement;
-        return link ? (link.href.match(/status\/(\d+)/)?.[1] || null) : null;
-      });
+      // Extract tweet ID from cell — skip links inside note text
+      const sampleCellData = await cell.evaluate(el => {
+        const text = (el as HTMLElement).innerText;
 
-      // Extract note text from cell
-      const noteText = await cell.evaluate(el => {
-        const paragraphs = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
-        let best = '';
-        paragraphs.forEach(p => {
+        // Tweet ID: only grab /status/ links outside note text containers
+        const allStatusLinks = [...el.querySelectorAll('a[href*="/status/"]')] as HTMLAnchorElement[];
+        const noteTextContainers = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
+        const noteTextEls = new Set<Node>();
+        noteTextContainers.forEach(container => {
+          if ((container as HTMLElement).innerText.trim().length > 50) noteTextEls.add(container);
+        });
+        let tweetId: string | null = null;
+        for (const link of allStatusLinks) {
+          let insideNoteText = false;
+          for (const container of noteTextEls) {
+            if (container.contains(link)) { insideNoteText = true; break; }
+          }
+          if (insideNoteText) continue;
+          const match = link.href.match(/status\/(\d+)/);
+          if (match) { tweetId = match[1]!; break; }
+        }
+
+        // Note text
+        let noteText = '';
+        noteTextContainers.forEach(p => {
           const t = (p as HTMLElement).innerText.trim();
-          if (t.length > 50 && !t.includes('experimental AI') && !t.includes('Needs more ratings') && !t.includes('Currently rated') && t.length > best.length) {
-            best = t;
+          if (t.length > 50 && !t.includes('experimental AI') && !t.includes('Needs more ratings') && !t.includes('Currently rated') && t.length > noteText.length) {
+            noteText = t;
           }
         });
-        return best;
+
+        // Cell status
+        let cellStatus: string | null = null;
+        if (/\bCurrently not rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
+        else if (/\bCurrently rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_HELPFUL';
+        else if (/\bNeeds more ratings\b/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
+
+        const postUnavailable = /\bPost unavailable\b/i.test(text);
+
+        return { tweetId, noteText, cellStatus, postUnavailable };
       });
 
       // Scroll into view, then click the button directly via JS (not coordinates)
@@ -414,10 +437,16 @@ async function sampleOneNote(
       });
       if (!clicked) continue;
 
-      // Wait for modal
+      // Wait for modal with status text
       for (let waitMs = 0; waitMs < 2500; waitMs += 150) {
-        const hasModal = await page.evaluate(() => document.body.innerText.includes('Note ID'));
-        if (hasModal) break;
+        const state = await page.evaluate(() => {
+          const text = document.body.innerText;
+          const hasNoteId = /Note ID[\s:]*\d{18,20}/i.test(text);
+          const hasStatus = /\bCurrently (not )?rated helpful\b/i.test(text) || /\bNeeds more ratings\b/i.test(text);
+          return { hasNoteId, hasStatus };
+        });
+        if (state.hasNoteId && state.hasStatus) break;
+        if (state.hasNoteId && waitMs >= 1500) break;
         await new Promise(r => setTimeout(r, 150));
       }
 
@@ -428,11 +457,9 @@ async function sampleOneNote(
         if (!noteIdMatch) return null;
 
         let status = 'UNKNOWN';
-        if (bodyText.includes('Currently not rated helpful')) status = 'CURRENTLY_RATED_NOT_HELPFUL';
-        else if (bodyText.includes('Currently rated helpful')) status = 'CURRENTLY_RATED_HELPFUL';
-        else if (bodyText.includes('Needs more ratings')) status = 'NEEDS_MORE_RATINGS';
-        else if (/Shown on X/i.test(bodyText) && !bodyText.includes('Not shown on X')) status = 'SHOWN_ON_X';
-        else if (bodyText.includes('Not shown on X')) status = 'NOT_SHOWN_ON_X';
+        if (/\bCurrently not rated helpful\b/i.test(bodyText)) status = 'CURRENTLY_RATED_NOT_HELPFUL';
+        else if (/\bCurrently rated helpful\b/i.test(bodyText)) status = 'CURRENTLY_RATED_HELPFUL';
+        else if (/\bNeeds more ratings\b/i.test(bodyText)) status = 'NEEDS_MORE_RATINGS';
 
         const dateMatch = bodyText.match(/Note submitted[:\s]*([\d:]+\s*(?:AM|PM)?)\s*[·•]\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})/i);
         const submittedDate = dateMatch ? (dateMatch[2] ?? '') : '';
@@ -449,16 +476,20 @@ async function sampleOneNote(
 
       // Save note if not already collected
       if (!collectedNotes.has(modalData.noteId)) {
+        const finalStatus = modalData.status !== 'UNKNOWN' ? modalData.status
+          : (sampleCellData.cellStatus || 'UNKNOWN');
+        const finalTweetId = sampleCellData.tweetId
+          || (sampleCellData.postUnavailable ? 'post_unavailable' : `unavailable_${modalData.noteId}`);
         const note: ScrapedNote = {
           note_id: modalData.noteId,
-          tweet_id: tweetId || `unavailable_${modalData.noteId}`,
-          note_text: noteText,
-          cn_status: modalData.status,
+          tweet_id: finalTweetId,
+          note_text: sampleCellData.noteText,
+          cn_status: finalStatus,
           created_at: modalData.submittedDate,
         };
         collectedNotes.set(modalData.noteId, note);
         await saveNoteIncrementally(note);
-        console.log(`   ${prefix} 📍 Sampled: ${modalData.noteId} (${modalData.status})`);
+        console.log(`   ${prefix} 📍 Sampled: ${modalData.noteId} (${finalStatus})`);
       }
 
       return noteIdBigInt;
@@ -538,6 +569,8 @@ async function saveNoteIncrementally(note: ScrapedNote): Promise<void> {
     await supabase.insertScrapedNotewriterSnapshot({
       note_id: note.note_id,
       cn_status: note.cn_status,
+      tweet_id: note.tweet_id,
+      note_text: note.note_text,
     });
     snapshotsCreated++;
   } catch (err) {
@@ -577,7 +610,7 @@ async function scrapeTab(
   let stuckCount = 0;
   const stuckBeforePause = 10;
   // Escalating wait times before each jiggle retry: quick, 30s, 30s, 60s, 60s, 60s, 180s, 180s, 180s, 180s
-  const jiggleWaits = [0, 0, 30000, 30000, 60000, 60000, 60000, 180000, 180000, 180000];
+  const jiggleWaits = [1000, 2000, 4000, 8000, 15000, 30000, 60000, 120000];
   const maxRetries = jiggleWaits.length;
   let retryCount = 0;
   let jumpCount = 0;
@@ -626,23 +659,35 @@ async function scrapeTab(
       }
       processedCells.add(cellFingerprint);
 
-      // Try to find tweet ID from the cell
+      // Try to find tweet ID from the cell — only grab links outside the note text area
       const tweetData = await cell.evaluate(el => {
-        const tweetLink = el.querySelector('a[href*="/status/"]') as HTMLAnchorElement;
-        if (tweetLink) {
-          const match = tweetLink.href.match(/status\/(\d+)/);
-          return { tweetId: match?.[1] || null, tweetUrl: tweetLink.href };
-        }
+        // Find all /status/ links in the cell
+        const allStatusLinks = [...el.querySelectorAll('a[href*="/status/"]')] as HTMLAnchorElement[];
 
-        const allElements = [...el.querySelectorAll('*')];
-        for (const elem of allElements) {
-          for (const attr of elem.attributes) {
-            const match = attr.value?.match(/(\d{18,20})/);
-            if (match) {
-              return { tweetId: match[1], tweetUrl: `https://x.com/i/web/status/${match[1]}` };
-            }
+        // Filter out links that are inside the note text (div[dir="ltr"] containers with long text)
+        // The parent tweet link is typically at the top of the cell, not inside the note body
+        const noteTextContainers = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
+        const noteTextEls = new Set<Node>();
+        noteTextContainers.forEach(container => {
+          if ((container as HTMLElement).innerText.trim().length > 50) {
+            noteTextEls.add(container);
+          }
+        });
+
+        for (const link of allStatusLinks) {
+          // Skip links that are inside a note text container
+          let insideNoteText = false;
+          for (const container of noteTextEls) {
+            if (container.contains(link)) { insideNoteText = true; break; }
+          }
+          if (insideNoteText) continue;
+
+          const match = link.href.match(/status\/(\d+)/);
+          if (match) {
+            return { tweetId: match[1], tweetUrl: link.href };
           }
         }
+
         return { tweetId: null, tweetUrl: null };
       });
 
@@ -683,7 +728,16 @@ async function scrapeTab(
           viewCount = Math.round(num);
         }
 
-        return { noteText, sourceUrl: sourceLinks[0] || null, viewCount };
+        // Extract status from cell text as fallback for modal
+        let cellStatus: string | null = null;
+        if (/\bCurrently not rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
+        else if (/\bCurrently rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_HELPFUL';
+        else if (/\bNeeds more ratings\b/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
+
+        // Detect "Post unavailable"
+        const postUnavailable = /\bPost unavailable\b/i.test(text);
+
+        return { noteText, sourceUrl: sourceLinks[0] || null, viewCount, cellStatus, postUnavailable };
       });
 
       // Scroll cell into view
@@ -757,17 +811,21 @@ async function scrapeTab(
           continue;
         }
 
-        // Wait for modal — poll instead of fixed sleep
+        // Wait for modal with status text — poll for Note ID first, then give status text time to render
+        let modalReady = false;
         for (let waitMs = 0; waitMs < 3000; waitMs += 150) {
-          const hasModal = await page.evaluate(() => {
+          const state = await page.evaluate(() => {
             const modal = document.querySelector('[data-testid="sheetDialog"]') ||
                           document.querySelector('[role="dialog"]') ||
                           document.querySelector('[aria-modal="true"]') ||
                           document.querySelector('[data-testid="Drawer"]');
-            if (modal && (modal as HTMLElement).innerText.includes('Note ID')) return true;
-            return document.body.innerText.includes('Note Details');
+            const text = modal ? (modal as HTMLElement).innerText : document.body.innerText;
+            const hasNoteId = /Note ID[\s:]*\d{18,20}/i.test(text);
+            const hasStatus = /\bCurrently (not )?rated helpful\b/i.test(text) || /\bNeeds more ratings\b/i.test(text);
+            return { hasNoteId, hasStatus };
           });
-          if (hasModal) break;
+          if (state.hasNoteId && state.hasStatus) { modalReady = true; break; }
+          if (state.hasNoteId && waitMs >= 1500) { modalReady = true; break; } // Give up waiting for status after 1.5s
           await new Promise(r => setTimeout(r, 150));
         }
 
@@ -817,29 +875,21 @@ async function scrapeTab(
           const noteIdPos = modalText.indexOf('Note ID');
           if (noteIdPos !== -1) {
             const textAfterNoteId = modalText.substring(noteIdPos, noteIdPos + 500);
-            if (textAfterNoteId.includes('Currently not rated helpful')) {
+            if (/\bCurrently not rated helpful\b/i.test(textAfterNoteId)) {
               status = 'CURRENTLY_RATED_NOT_HELPFUL';
-            } else if (textAfterNoteId.includes('Currently rated helpful')) {
+            } else if (/\bCurrently rated helpful\b/i.test(textAfterNoteId)) {
               status = 'CURRENTLY_RATED_HELPFUL';
-            } else if (textAfterNoteId.includes('Needs more ratings')) {
+            } else if (/\bNeeds more ratings\b/i.test(textAfterNoteId)) {
               status = 'NEEDS_MORE_RATINGS';
-            } else if (textAfterNoteId.match(/Shown on X/i) && !textAfterNoteId.includes('Not shown on X')) {
-              status = 'SHOWN_ON_X';
-            } else if (textAfterNoteId.includes('Not shown on X')) {
-              status = 'NOT_SHOWN_ON_X';
             }
           }
         } else {
-          if (modalText.includes('Currently not rated helpful')) {
+          if (/\bCurrently not rated helpful\b/i.test(modalText)) {
             status = 'CURRENTLY_RATED_NOT_HELPFUL';
-          } else if (modalText.includes('Currently rated helpful')) {
+          } else if (/\bCurrently rated helpful\b/i.test(modalText)) {
             status = 'CURRENTLY_RATED_HELPFUL';
-          } else if (modalText.includes('Needs more ratings')) {
+          } else if (/\bNeeds more ratings\b/i.test(modalText)) {
             status = 'NEEDS_MORE_RATINGS';
-          } else if (modalText.match(/Shown on X/i) && !modalText.includes('Not shown on X')) {
-            status = 'SHOWN_ON_X';
-          } else if (modalText.includes('Not shown on X')) {
-            status = 'NOT_SHOWN_ON_X';
           }
         }
 
@@ -917,14 +967,24 @@ async function scrapeTab(
         continue;
       }
 
+      // Use cell status as fallback when modal gives UNKNOWN
+      const finalStatus = modalData.status !== 'UNKNOWN' ? modalData.status
+        : (cellData.cellStatus || 'UNKNOWN');
+
+      // Determine tweet_id: real link > post_unavailable > unavailable_noteId
+      const finalTweetId = tweetData.tweetId
+        || (cellData.postUnavailable ? 'post_unavailable' : `unavailable_${modalData.noteId}`);
+
       const viewInfo = cellData.viewCount ? ` [${cellData.viewCount.toLocaleString()} views]` : '';
-      console.log(`   ${prefix} ✓ Found Note ID: ${modalData.noteId} (${modalData.status})${viewInfo}${!tweetData.tweetId ? ' [Post unavailable]' : ''}`);
+      const tweetInfo = tweetData.tweetId ? ` tweet:${tweetData.tweetId}` : (cellData.postUnavailable ? ' [Post unavailable]' : ' [No tweet link]');
+      const textPreview = cellData.noteText ? ` "${cellData.noteText.slice(0, 80)}${cellData.noteText.length > 80 ? '...' : ''}"` : '';
+      console.log(`   ${prefix} ✓ Found Note ID: ${modalData.noteId} (${finalStatus})${viewInfo}${tweetInfo}${textPreview}`);
 
       const note: ScrapedNote = {
         note_id: modalData.noteId,
-        tweet_id: tweetData.tweetId || `unavailable_${modalData.noteId}`,
+        tweet_id: finalTweetId,
         note_text: cellData.noteText,
-        cn_status: modalData.status,
+        cn_status: finalStatus,
         created_at: modalData.submittedDate,
         source_url: cellData.sourceUrl || undefined,
         view_count: cellData.viewCount || undefined,
@@ -1463,36 +1523,16 @@ async function main() {
     }
   }
 
-  // Derive canonical tweet_ids from snapshot majority vote
-  console.log("\n🔗 Deriving tweet_ids from snapshot majority vote...");
-  const deriveResult = await supabase.deriveTweetIds();
-  console.log(`   • Total notes:  ${deriveResult.total}`);
-  console.log(`   • Updated:      ${deriveResult.updated}`);
-  console.log(`   • Flagged:      ${deriveResult.flagged}`);
-  console.log(`   • No votes yet: ${deriveResult.noVotes}`);
-
-  // Detect snapshot anomalies
-  console.log("\n🔍 Detecting snapshot anomalies...");
-  const anomalies = await supabase.detectSnapshotAnomalies();
-  console.log(`   • View count decreases: ${anomalies.viewCountDecreases.length}`);
-  console.log(`   • Note text changes:    ${anomalies.noteTextChanges.length}`);
-  if (anomalies.viewCountDecreases.length > 0) {
-    console.log("\n   View count decreases (likely virtualizer corruption):");
-    for (const a of anomalies.viewCountDecreases.slice(0, 10)) {
-      console.log(`     ${a.note_id}: ${a.from} → ${a.to} (${a.fromDate} → ${a.toDate})`);
-    }
-    if (anomalies.viewCountDecreases.length > 10) {
-      console.log(`     ... and ${anomalies.viewCountDecreases.length - 10} more`);
-    }
-  }
-  if (anomalies.noteTextChanges.length > 0) {
-    console.log("\n   Note text changes (likely virtualizer corruption):");
-    for (const a of anomalies.noteTextChanges.slice(0, 10)) {
-      console.log(`     ${a.note_id}: ${a.texts.length} different texts across ${a.dates.length} snapshots`);
-    }
-    if (anomalies.noteTextChanges.length > 10) {
-      console.log(`     ... and ${anomalies.noteTextChanges.length - 10} more`);
-    }
+  // Run snapshot reconciliation (tier classification, collision resolution, canonical data)
+  console.log("\n🔄 Running snapshot reconciliation...");
+  try {
+    const { reconcile } = await import("./reconcileSnapshots.js");
+    const result = await reconcile();
+    console.log(`   • Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk}`);
+    console.log(`   • Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`);
+    console.log(`   • Notes written: ${result.notesWritten}`);
+  } catch (err) {
+    console.error("   ⚠️ Reconciliation failed (non-fatal):", err);
   }
 
   // Print scroll estimation accuracy summary

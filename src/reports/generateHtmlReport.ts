@@ -14,9 +14,12 @@ const pipelineRuns = await supabase.getPipelineRunsRaw();
 // Fetch pipeline outcomes (rejected/failed) per bot
 const pipelineOutcomes = await supabase.getPipelineOutcomesByBot();
 
+// Fetch scraped note summary (non-junk reconciled data) for global stats
+const scrapedSummary = await supabase.getScrapedNoteSummary();
+
 // Define active vs legacy bots
-const activeBots = ["opus-main", "opus-concise"];
-const legacyBots = ["opus-scored", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek"];
+const activeBots = ["opus-main-v2", "opus-4.6", "sonar-pro", "kimi-k2", "opus-research"];
+const legacyBots = ["opus-main", "opus-scored", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "opus-concise"];
 
 // Check for notes from unknown bots
 const knownBots = new Set([...activeBots, ...legacyBots]);
@@ -298,6 +301,7 @@ const html = `<!DOCTYPE html>
     const pipelineByBot = ${JSON.stringify(pipelineData)};
     const pipelineOutcomesData = ${JSON.stringify(pipelineOutcomes)};
     const rawPipelineRuns = ${JSON.stringify(pipelineRuns)};
+    const scrapedSummary = ${JSON.stringify(scrapedSummary)};
 
     // Charts
     let notesChart, rateChart, activeStatusChart, legacyStatusChart, pipelineOutcomesChart, dailyNotesChart;
@@ -367,8 +371,8 @@ const html = `<!DOCTYPE html>
       const activeStats = computeStats(notes, activeBots);
       const legacyStats = computeStats(notes, legacyBots);
 
-      // Compute totals
-      let totalNotes = 0, totalHelpful = 0, totalNotHelpful = 0, totalNeedsMore = 0, totalViews = 0;
+      // Compute totals from filtered notes (for helpful rate)
+      let totalNotes = 0, totalHelpful = 0, totalNotHelpful = 0, totalNeedsMore = 0;
       for (const bot of [...activeBots, ...legacyBots]) {
         const s = activeStats[bot] || legacyStats[bot];
         if (s) {
@@ -376,17 +380,16 @@ const html = `<!DOCTYPE html>
           totalHelpful += s.helpful;
           totalNotHelpful += s.notHelpful;
           totalNeedsMore += s.needsMore;
-          totalViews += s.views;
         }
       }
       const knownTotal = totalHelpful + totalNotHelpful + totalNeedsMore;
       const helpfulRate = knownTotal > 0 ? ((totalHelpful / knownTotal) * 100).toFixed(1) : "N/A";
 
-      // Update cards
+      // Update cards — views and awaiting from scraped table (all non-junk notes), rest from filtered notes
       document.getElementById('total-notes').textContent = totalNotes;
       document.getElementById('helpful-rate').textContent = helpfulRate + '%';
-      document.getElementById('total-views').textContent = formatViews(totalViews);
-      document.getElementById('awaiting-ratings').textContent = totalNeedsMore;
+      document.getElementById('total-views').textContent = formatViews(scrapedSummary.totalViews);
+      document.getElementById('awaiting-ratings').textContent = scrapedSummary.totalNeedsMore;
 
       // Sort active bots by total
       const sortedActive = [...activeBots].sort((a, b) => (activeStats[b]?.total || 0) - (activeStats[a]?.total || 0));

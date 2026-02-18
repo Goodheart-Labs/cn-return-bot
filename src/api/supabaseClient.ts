@@ -647,11 +647,18 @@ export class SupabaseLogger {
       return [];
     }
 
-    // Get all snapshots ordered by scraped_at DESC (paginated to avoid 1000-row default limit)
-    const snapshots = await this.fetchAllRows<{ note_id: string; cn_status: string; view_count: number; scraped_at: string }>(
-      (client) => client.from("scraped_notewriter_snapshots")
-        .select("note_id, cn_status, view_count, scraped_at")
-        .order("scraped_at", { ascending: false })
+    // Get reconciled canonical data (tier-classified, collision-resolved)
+    // Only use non-junk tiers for enrichment
+    const reconciledNotes = await this.fetchAllRows<{
+      note_id: string;
+      cn_status: string | null;
+      view_count: number | null;
+      data_tier: string | null;
+      last_reconciled_at: string | null;
+    }>(
+      (client) => client.from("scraped_notewriter_notes")
+        .select("note_id, cn_status, view_count, data_tier, last_reconciled_at")
+        .neq("data_tier", "junk")
     );
 
     // Get video info from pipeline_runs
@@ -692,28 +699,26 @@ export class SupabaseLogger {
       }
     }
 
-    // Build latest snapshot per note_id
-    const latestSnapshot: Record<
+    // Build reconciled data lookup per note_id
+    const reconciledByNote: Record<
       string,
-      { cn_status?: string; view_count?: number; scraped_at: string }
+      { cn_status?: string; view_count?: number; reconciled_at?: string }
     > = {};
-    for (const snap of snapshots || []) {
-      if (!latestSnapshot[snap.note_id]) {
-        latestSnapshot[snap.note_id] = {
-          cn_status: snap.cn_status,
-          view_count: snap.view_count,
-          scraped_at: snap.scraped_at,
-        };
-      }
+    for (const rec of reconciledNotes || []) {
+      reconciledByNote[rec.note_id] = {
+        cn_status: rec.cn_status ?? undefined,
+        view_count: rec.view_count ?? undefined,
+        reconciled_at: rec.last_reconciled_at ?? undefined,
+      };
     }
 
-    // Enrich notes with snapshot data
+    // Enrich notes with reconciled snapshot data
     return notes.map((note) => {
-      const snap = latestSnapshot[note.note_id];
+      const rec = reconciledByNote[note.note_id];
 
-      // Status: prefer public data, fallback to snapshot
+      // Status: prefer public data, fallback to reconciled snapshot (junk excluded)
       const publicDataStatus = note.cn_status;
-      const snapshotStatus = snap?.cn_status;
+      const snapshotStatus = rec?.cn_status;
       const effectiveStatus = publicDataStatus || snapshotStatus || "unknown";
 
       // Determine source
@@ -736,14 +741,14 @@ export class SupabaseLogger {
 
         // Computed values
         effective_status: effectiveStatus,
-        view_count: snap?.view_count || 0,
+        view_count: rec?.view_count || 0,
         status_source: statusSource,
 
         // Raw values
         public_data_status: publicDataStatus,
         snapshot_status: snapshotStatus,
-        snapshot_views: snap?.view_count,
-        snapshot_scraped_at: snap?.scraped_at,
+        snapshot_views: rec?.view_count,
+        snapshot_scraped_at: rec?.reconciled_at,
 
         // Timestamps
         first_helpful_at: note.first_helpful_at,
@@ -1053,33 +1058,31 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get summary stats across ALL scraped notewriter notes (latest snapshot per note).
-   * This includes notes that predate bot tracking.
+   * Get summary stats across ALL scraped notewriter notes using reconciled data.
+   * Excludes junk-tier notes. Includes notes that predate bot tracking.
    */
   async getScrapedNoteSummary(): Promise<{ totalNotes: number; totalViews: number; totalHelpful: number; totalNotHelpful: number; totalNeedsMore: number }> {
-    const snapshots = await this.fetchAllRows<{ note_id: string; view_count: number; cn_status: string; scraped_at: string }>(
-      (client) => client.from("scraped_notewriter_snapshots")
-        .select("note_id, view_count, cn_status, scraped_at")
-        .order("scraped_at", { ascending: false })
+    const notes = await this.fetchAllRows<{
+      note_id: string;
+      view_count: number | null;
+      cn_status: string | null;
+      data_tier: string | null;
+    }>(
+      (client) => client.from("scraped_notewriter_notes")
+        .select("note_id, view_count, cn_status, data_tier")
+        .neq("data_tier", "junk")
     );
 
-    const latestByNote = new Map<string, { views: number; status: string }>();
-    for (const snap of snapshots) {
-      if (!latestByNote.has(snap.note_id)) {
-        latestByNote.set(snap.note_id, { views: snap.view_count || 0, status: snap.cn_status || "" });
-      }
-    }
-
     let totalViews = 0, totalHelpful = 0, totalNotHelpful = 0, totalNeedsMore = 0;
-    for (const { views, status } of latestByNote.values()) {
-      totalViews += views;
-      const s = status.toUpperCase().replace(/\s+/g, "_");
-      if (s === "CURRENTLY_RATED_HELPFUL" || s === "SHOWN_ON_X") totalHelpful++;
-      else if (s === "CURRENTLY_RATED_NOT_HELPFUL" || s === "NOT_SHOWN_ON_X") totalNotHelpful++;
+    for (const note of notes) {
+      totalViews += note.view_count || 0;
+      const s = (note.cn_status || "").toUpperCase().replace(/\s+/g, "_");
+      if (s === "CURRENTLY_RATED_HELPFUL") totalHelpful++;
+      else if (s === "CURRENTLY_RATED_NOT_HELPFUL") totalNotHelpful++;
       else if (s === "NEEDS_MORE_RATINGS") totalNeedsMore++;
     }
 
-    return { totalNotes: latestByNote.size, totalViews, totalHelpful, totalNotHelpful, totalNeedsMore };
+    return { totalNotes: notes.length, totalViews, totalHelpful, totalNotHelpful, totalNeedsMore };
   }
 
   /**
