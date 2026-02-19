@@ -471,6 +471,7 @@ export class SupabaseLogger {
     note_text?: string;
     cn_status?: string;
     view_count?: number;
+    shown_on_x?: boolean | null;
     helpful_count?: number;
     somewhat_helpful_count?: number;
     not_helpful_count?: number;
@@ -483,6 +484,7 @@ export class SupabaseLogger {
         note_text: data.note_text,
         cn_status: data.cn_status,
         view_count: data.view_count,
+        shown_on_x: data.shown_on_x,
         helpful_count: data.helpful_count,
         somewhat_helpful_count: data.somewhat_helpful_count,
         not_helpful_count: data.not_helpful_count,

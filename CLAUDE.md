@@ -4,20 +4,24 @@ Project context for Claude Code sessions.
 
 ## What this is
 
-A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 30 minutes.
+A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 30 minutes. Posts using X note writing API. There are several bots that are writing and then predicting the outcome of their writing.
+
+## Aim
+
+To deliver a billion impressions of community notes, or equivalent by then end of 2026. 
 
 ## Tech stack
 
 - TypeScript, Bun
-- OpenRouter for LLM calls (uses `anthropic/claude-opus-4.5` format, NOT Anthropic API format)
+- OpenRouter for LLM calls (uses Openrouter `anthropic/claude-opus-4.6` format, NOT Anthropic API format)
 - Supabase for data storage
-- Playwright for browser automation
+- Playwright for browser automation for scraping to get feedback on notes
 
 ## Key directories
 
 - `src/bots/` - Bot configurations (opus-main, multi-search)
 - `src/pipeline/` - Core logic: search, note writing, checking
-- `src/scripts/` - One-off scripts (createNotesRoutine.ts is the main entry)
+- `src/scripts/` - 
 - `migrations/` - Supabase SQL migrations
 - `scripts/` - Browser console scripts (see below)
 
@@ -34,7 +38,7 @@ A bot that automatically writes Community Notes for X/Twitter posts. Runs on Git
 
 ## Notewriter scraper
 
-The main scraper is `src/scripts/scrapeNotewriterClickThrough.ts`. It connects to a local Chrome via Puppeteer CDP (port 9222), scrolls through the notewriter page, clicks "View details" on each note to extract the real note ID and status from the modal, then imports to Supabase.
+The main scraper is `src/scripts/scrapeNotewriterClickThrough.ts`. It connects to a local Chrome via Puppeteer CDP (port 9222), scrolls through the notewriter page, clicks "View details" on each note to extract the real note ID and status from the modal, then imports to Supabase. When it breaks, we can rejoin from the same position. 
 
 - **Notewriter account**: `wholesome-raspberry-stilt` (the only active one)
 - **Primary purpose**: Full coverage audit — ensure every note we've written is tracked in the DB
@@ -52,11 +56,16 @@ bun run src/scripts/scrapeNotewriterClickThrough.ts 50
 bun run src/scripts/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page first
 ```
 
+## Standing permissions
+
+- **Scraper**: Claude can start the scraper at any time without asking. Use `~/.bun/bin/bun run src/scripts/scrapeNotewriterClickThrough.ts` with appropriate flags. Ask before stopping it. 
+
 ## Gotchas
 
 - OpenRouter model IDs use dots: `anthropic/claude-opus-4.5` not `claude-opus-4-5-20251101`
 - GitHub Actions uses bun, not npm
 - The notewriter page virtualizes its list - can't Ctrl+F, need the scraper
+- After compacting, ask Nathan what to do next. 
 
 ## Running locally
 
