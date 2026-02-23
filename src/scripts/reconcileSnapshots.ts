@@ -30,6 +30,8 @@ interface Snapshot {
   note_text: string | null;
   cn_status: string | null;
   view_count: number | null;
+  shown_on_x: boolean | null;
+  excluded: boolean | null;
   scraped_at: string;
 }
 
@@ -38,9 +40,9 @@ interface GroundTruthNote {
   tweet_id: string;
 }
 
-type Tier = "platinum" | "gold" | "silver" | "junk";
+export type Tier = "platinum" | "gold" | "silver" | "junk" | "impossible";
 
-interface ClassifiedSnapshot extends Snapshot {
+export interface ClassifiedSnapshot extends Snapshot {
   tier: Tier;
 }
 
@@ -89,7 +91,7 @@ function isRealNoteId(noteId: string): boolean {
 // Step 1: Quality Tier Classification
 // ---------------------------------------------------------------------------
 
-function classifySnapshot(
+export function classifySnapshot(
   snap: Snapshot,
   groundTruth: Map<string, string> // note_id -> tweet_id from notes table
 ): Tier {
@@ -106,9 +108,10 @@ function classifySnapshot(
     (snap.tweet_id !== null && snap.tweet_id.startsWith("unavailable_")) ||
     snap.tweet_id === null;
 
-  // Special rule: CRH without view_count → junk
-  if (isCRH && !hasViewCount) {
-    return "junk";
+  // Impossible: data actively contradicts itself
+  // CRH notes are shown on X — if shown_on_x is explicitly false, something is wrong
+  if (isCRH && snap.shown_on_x === false) {
+    return "impossible";
   }
 
   // Check ground truth
@@ -124,19 +127,22 @@ function classifySnapshot(
     return "junk";
   }
 
-  // Platinum: pair matches ground truth, real status, has text, CRH rule passed
+  // Platinum: pair matches ground truth, real status, has text
+  // CRH notes must also have view_count to be platinum
   if (
     gtTweetId &&
     hasRealTweetId &&
     snap.tweet_id === gtTweetId &&
     hasRealStatus &&
-    hasNoteText
+    hasNoteText &&
+    (!isCRH || hasViewCount)
   ) {
     return "platinum";
   }
 
   // Gold: real pair, neither ID in ground truth, complete
-  if (hasRealNoteId && hasRealTweetId && hasRealStatus && hasNoteText) {
+  // CRH notes must also have view_count to be gold
+  if (hasRealNoteId && hasRealTweetId && hasRealStatus && hasNoteText && (!isCRH || hasViewCount)) {
     // If note_id IS in ground truth but tweet_id doesn't match, it was already
     // caught as junk above. If it matches, it was caught as platinum.
     // So if we're here with a real pair, it's either not in GT at all,
@@ -161,6 +167,10 @@ function classifySnapshot(
   }
   // Case 3: has real pair + real status but note_text is missing
   if (hasRealNoteId && hasRealTweetId && hasRealStatus && !hasNoteText) {
+    return "silver";
+  }
+  // Case 4: CRH with real pair + note_text but no view_count (view count didn't load)
+  if (isCRH && !hasViewCount && hasRealNoteId && hasNoteText) {
     return "silver";
   }
 
@@ -188,7 +198,7 @@ function detectCollisions(
 } {
   // Only consider non-junk snapshots with real tweet_ids for collision detection
   const eligible = snapshots.filter(
-    (s) => s.tier !== "junk" && isRealTweetId(s.tweet_id)
+    (s) => s.tier !== "junk" && s.tier !== "impossible" && isRealTweetId(s.tweet_id)
   );
 
   // Group by note_id → set of tweet_ids
@@ -291,7 +301,80 @@ function resolveCollision(
 }
 
 // ---------------------------------------------------------------------------
-// Step 4: Derive Canonical Data
+// Step 4: Coherence Scoring
+// ---------------------------------------------------------------------------
+
+/**
+ * Measures how consistent the non-junk snapshots for a note are.
+ * Starts at 1.0, applies penalties for contradictions.
+ *
+ * Penalties:
+ * - Text differs between snapshots:     -0.4 (notes can't be edited, so this = scraper bug)
+ * - View count decreases over time:     -0.3 per occurrence (views are monotonically increasing)
+ * - Status flips (helpful ↔ not helpful): -0.2 per flip (rare but possible)
+ * - Status regresses (rated → needs more): -0.1 per occurrence
+ *
+ * Returns 1.0 if there's only one snapshot (nothing to contradict).
+ */
+export function scoreCoherence(snapshots: ClassifiedSnapshot[]): number {
+  const nonJunk = snapshots.filter((s) => s.tier !== "junk" && s.tier !== "impossible");
+  if (nonJunk.length <= 1) return 1.0;
+
+  let score = 1.0;
+
+  // Sort chronologically for time-series checks
+  const chronological = [...nonJunk].sort(
+    (a, b) => new Date(a.scraped_at).getTime() - new Date(b.scraped_at).getTime()
+  );
+
+  // --- Text consistency ---
+  // Normalize and deduplicate texts
+  const texts = new Set(
+    nonJunk
+      .filter((s) => s.note_text && s.note_text.trim().length > 0)
+      .map((s) => s.note_text!.trim())
+  );
+  if (texts.size > 1) {
+    // Multiple distinct texts = scraper grabbed wrong modal
+    score -= 0.4;
+  }
+
+  // --- View count monotonicity ---
+  const withViews = chronological.filter(
+    (s) => s.view_count !== null && s.view_count !== undefined
+  );
+  for (let i = 1; i < withViews.length; i++) {
+    if (withViews[i].view_count! < withViews[i - 1].view_count!) {
+      score -= 0.3;
+    }
+  }
+
+  // --- Status transition sensibility ---
+  const RATED = new Set(["CURRENTLY_RATED_HELPFUL", "CURRENTLY_RATED_NOT_HELPFUL"]);
+  const withStatus = chronological.filter(
+    (s) => s.cn_status !== null && RECOGNIZED_STATUSES.has(s.cn_status)
+  );
+  for (let i = 1; i < withStatus.length; i++) {
+    const prev = withStatus[i - 1].cn_status!;
+    const curr = withStatus[i].cn_status!;
+    if (prev === curr) continue;
+
+    // Flip: helpful ↔ not helpful
+    if (RATED.has(prev) && RATED.has(curr)) {
+      score -= 0.2;
+    }
+    // Regression: rated → needs more ratings
+    else if (RATED.has(prev) && curr === "NEEDS_MORE_RATINGS") {
+      score -= 0.1;
+    }
+    // Normal progression: needs more → rated — no penalty
+  }
+
+  return Math.max(0, Math.round(score * 100) / 100);
+}
+
+// ---------------------------------------------------------------------------
+// Step 5: Derive Canonical Data
 // ---------------------------------------------------------------------------
 
 interface CanonicalNote {
@@ -302,13 +385,15 @@ interface CanonicalNote {
   view_count: number | null;
   source_url: string | null;
   data_tier: Tier;
+  coherence_score: number;
 }
 
 const TIER_RANK: Record<Tier, number> = {
-  platinum: 3,
-  gold: 2,
-  silver: 1,
-  junk: 0,
+  platinum: 4,
+  gold: 3,
+  silver: 2,
+  junk: 1,
+  impossible: 0,
 };
 
 function deriveCanonicalData(
@@ -320,7 +405,7 @@ function deriveCanonicalData(
 
   for (const [noteId, snaps] of snapshotsByNote) {
     // Filter out junk for selecting best snapshot
-    const nonJunk = snaps.filter((s) => s.tier !== "junk");
+    const nonJunk = snaps.filter((s) => s.tier !== "junk" && s.tier !== "impossible");
 
     if (nonJunk.length === 0) {
       // All junk — note exists but we don't trust any data
@@ -332,6 +417,7 @@ function deriveCanonicalData(
         view_count: null,
         source_url: null,
         data_tier: "junk",
+        coherence_score: scoreCoherence(snaps),
       });
       continue;
     }
@@ -367,6 +453,7 @@ function deriveCanonicalData(
       view_count: best.view_count,
       source_url: null, // snapshots don't have source_url; keep existing
       data_tier: best.tier,
+      coherence_score: scoreCoherence(snaps),
     });
   }
 
@@ -391,15 +478,19 @@ export async function reconcile(): Promise<{
     fetchAll<Snapshot>(() =>
       supabase
         .from("scraped_notewriter_snapshots")
-        .select("id, note_id, tweet_id, note_text, cn_status, view_count, scraped_at")
+        .select("id, note_id, tweet_id, note_text, cn_status, view_count, shown_on_x, excluded, scraped_at")
     ),
     fetchAll<GroundTruthNote>(() =>
       supabase.from("notes").select("note_id, tweet_id")
     ),
   ]);
 
+  // Filter out manually excluded snapshots
+  const excludedCount = snapshots.filter((s) => s.excluded).length;
+  const activeSnapshots = snapshots.filter((s) => !s.excluded);
+
   console.log(
-    `[reconcile] Loaded ${snapshots.length} snapshots, ${groundTruthNotes.length} ground truth notes`
+    `[reconcile] Loaded ${snapshots.length} snapshots (${excludedCount} excluded), ${groundTruthNotes.length} ground truth notes`
   );
 
   // Build ground truth maps
@@ -413,7 +504,7 @@ export async function reconcile(): Promise<{
   }
 
   // 2. Classify each snapshot
-  const classified: ClassifiedSnapshot[] = snapshots.map((snap) => ({
+  const classified: ClassifiedSnapshot[] = activeSnapshots.map((snap) => ({
     ...snap,
     tier: classifySnapshot(snap, groundTruth),
   }));
@@ -423,10 +514,11 @@ export async function reconcile(): Promise<{
     gold: 0,
     silver: 0,
     junk: 0,
+    impossible: 0,
   };
   for (const s of classified) tierCounts[s.tier]++;
   console.log(
-    `[reconcile] Tiers — platinum: ${tierCounts.platinum}, gold: ${tierCounts.gold}, silver: ${tierCounts.silver}, junk: ${tierCounts.junk}`
+    `[reconcile] Tiers — platinum: ${tierCounts.platinum}, gold: ${tierCounts.gold}, silver: ${tierCounts.silver}, junk: ${tierCounts.junk}, impossible: ${tierCounts.impossible}`
   );
 
   // 3. Detect collisions
@@ -493,6 +585,7 @@ export async function reconcile(): Promise<{
       note_text: c.note_text,
       view_count: c.view_count,
       data_tier: c.data_tier,
+      coherence_score: c.coherence_score,
       last_reconciled_at: now,
     }));
 
@@ -513,7 +606,7 @@ export async function reconcile(): Promise<{
   console.log(`[reconcile] Done. Wrote ${written} canonical notes.`);
 
   return {
-    totalSnapshots: snapshots.length,
+    totalSnapshots: activeSnapshots.length,
     tierCounts,
     collisions: {
       note: noteCollisions.size,
@@ -534,7 +627,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.log("\n=== Reconciliation Summary ===");
       console.log(`Total snapshots: ${result.totalSnapshots}`);
       console.log(
-        `Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk}`
+        `Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk} impossible=${result.tierCounts.impossible}`
       );
       console.log(
         `Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`

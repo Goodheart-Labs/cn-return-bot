@@ -22,36 +22,33 @@ scraped_notewriter_notes (canonical, one row per note)
 
 ## Step 1: Quality Tiers
 
-Each snapshot is classified independently into one of four tiers.
+Each snapshot is classified independently into one of five tiers.
 
 ### Platinum — cross-validated, complete
 - note_id/tweet_id pair matches `notes` table ground truth (the bot records both at submission time)
 - cn_status is a recognized status (not UNKNOWN)
 - note_text is present and non-empty
-- If cn_status is CURRENTLY_RATED_HELPFUL, view_count must be present
 
 ### Gold — complete, unverifiable
 - Has a real note_id/tweet_id pair
 - Neither the note_id nor tweet_id appears in the `notes` table (can't cross-check)
 - cn_status is a recognized status (not UNKNOWN)
 - note_text is present and non-empty
-- If cn_status is CURRENTLY_RATED_HELPFUL, view_count must be present
 
 ### Silver — mostly complete, one thing missing
 - Has note_id, cn_status is real, note_text is present
 - tweet_id is `post_unavailable` (tweet was deleted — detected explicitly) or null/`unavailable_*`
 - OR: has the pair but cn_status is UNKNOWN
 - OR: has the pair but note_text is missing
-- If cn_status is CURRENTLY_RATED_HELPFUL, view_count must be present
+- OR: CRH but view_count is missing (view count element may not have loaded)
 
 ### Junk — don't use for canonical data
 - note_id/tweet_id pair contradicts `notes` table ground truth
-- cn_status is CURRENTLY_RATED_HELPFUL but no view_count (inconsistent)
 - cn_status is UNKNOWN AND note_text is missing (got basically nothing)
 - Multiple fields missing
 
-### Special rule: CURRENTLY_RATED_HELPFUL requires view_count
-Helpful notes are shown on X and accumulate views. If a snapshot says "currently rated helpful" but has no view count, the status was likely misread. Downgrade to junk regardless of other fields.
+### Impossible — data actively contradicts itself
+- cn_status is CURRENTLY_RATED_HELPFUL but shown_on_x is explicitly false (CRH notes are by definition shown on X)
 
 ## Step 2: Collision Detection
 
@@ -77,6 +74,20 @@ For each collision:
 
 Nothing is permanently discarded from non-junk tiers. Only the current consensus changes.
 
+## Coherence Scoring
+
+Each canonical note gets a `coherence_score` (0.0–1.0) measuring how consistent its underlying snapshots are. Starts at 1.0, with penalties:
+
+| Signal | Penalty | Rationale |
+|---|---|---|
+| Note text differs across snapshots | -0.4 | Notes can't be edited on X — different text = scraper grabbed wrong modal |
+| View count decreases over time | -0.3 each | Views are monotonically increasing — decrease = data corruption |
+| Status flips (helpful ↔ not helpful) | -0.2 each | Rare but possible; surprising enough to flag |
+| Status regresses (rated → needs more) | -0.1 each | Unusual but less alarming |
+| Needs more → rated | 0 | Normal progression |
+
+Single-snapshot notes get 1.0 (nothing to contradict). Score floors at 0.0.
+
 ## Deriving Canonical Data
 
 For each unique note_id, select the best available snapshot:
@@ -95,6 +106,7 @@ For each unique note_id, select the best available snapshot:
 - `view_count` — from the selected snapshot (new column)
 - `source_url` — from the selected snapshot (if available)
 - `data_tier` — platinum/gold/silver/junk (new column)
+- `coherence_score` — 0.0–1.0 consistency measure across snapshots (new column)
 - `last_reconciled_at` — timestamp of last reconciliation run (new column)
 
 ### Migration: `scraped_notewriter_notes`
