@@ -1,9 +1,10 @@
 /**
- * Click-Through Notewriter Scraper (Parallel Tabs)
+ * Click-Through Notewriter Scraper
  *
- * Opens multiple browser tabs to scrape the notewriter page in parallel.
- * Each tab scrolls to a different starting position, then clicks "View details"
- * for each note to get accurate note IDs and statuses from the detail modal.
+ * Connects to a local Chrome via CDP, scrolls through the notewriter page,
+ * and clicks "View details" on each note to extract note IDs, statuses, and
+ * view counts. If an existing notewriter tab is open, reuses it at its
+ * current scroll position. Otherwise opens a new tab.
  *
  * USAGE:
  * 1. Start Chrome with remote debugging:
@@ -12,18 +13,10 @@
  * 2. Navigate to your notewriter page and log in
  *
  * 3. Run this script:
- *    bun run src/scripts/scrapeNotewriterClickThrough.ts [maxNotes] [--fresh] [--tabs N]
+ *    bun run src/scripts/scrapeNotewriterClickThrough.ts [maxNotes] [--fresh] [--start-from <noteId>]
  *
- *    --fresh: Refresh page and start from top (otherwise continues from current scroll position)
- *    --tabs N: Number of parallel tabs (default 1, max 5). Each tab scrapes a different
- *              section of the list simultaneously.
- *
- * SECURITY WARNING:
- * The remote debugging port (9222) gives FULL control over the browser to any process
- * that can connect to it. This includes access to all logged-in sessions and cookies.
- * - Only run this on a trusted machine
- * - Use --remote-debugging-address=127.0.0.1 to restrict to localhost only
- * - Close Chrome when done scraping
+ *    --fresh: Open a new tab and start from top (otherwise reuses existing tab)
+ *    --start-from <noteId>: Scroll to this note ID before scraping
  */
 
 import "dotenv/config";
@@ -32,7 +25,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 
 const DEFAULT_USERNAME = "wholesome-raspberry-stilt";
 const SCROLL_PX = 600;
-const SCROLLS_PER_TAB_OFFSET = 80; // ~48,000px per tab, roughly 1/3 of a 500-note list
+const BOTTOM_NOTE_ID = 1976702059752911225n; // Oldest known note — reaching this = full coverage
 
 function randomDelay(minMs: number, maxMs: number): Promise<void> {
   const delay = minMs + Math.random() * (maxMs - minMs);
@@ -47,49 +40,240 @@ interface ScrapedNote {
   created_at?: string;
   source_url?: string;
   view_count?: number;
+  shown_on_x?: boolean | null;
+  rater_tags?: string[];
+  tweet_handle?: string;
+  tweet_text?: string;
+  tweet_time?: string;
 }
 
 /** Fast-scroll a page without clicking, to reach a starting position for scraping. */
-async function quickScroll(page: Page, scrollCount: number, tabId: number): Promise<void> {
-  console.log(`   [Tab ${tabId}] Quick-scrolling ${scrollCount} times to reach starting position...`);
-  for (let i = 0; i < scrollCount; i++) {
-    await page.evaluate((px) => {
-      const html = document.documentElement;
-      html.scrollTop += px;
-      html.dispatchEvent(new Event('scroll', { bubbles: true }));
-      window.dispatchEvent(new Event('scroll', { bubbles: true }));
-    }, SCROLL_PX);
-    await new Promise(r => setTimeout(r, 200));
+/**
+ * Scroll to a target position, sampling notes along the way.
+ * Replaces the old quickScroll: waits for the virtualizer at bottom,
+ * and periodically clicks "View details" to read note IDs so we know
+ * exactly where we are. Sampled notes get fully saved to DB.
+ *
+ * @param targetNoteId Stop when we find a note with ID <= this value (null = use scrollCount)
+ * @param maxScrolls Safety limit on number of scrolls
+ */
+// Track the CDP target ID of the active tab so reconnectToTab finds the right one
+let activeTargetId: string | null = null;
+
+/** Disconnect from Chrome, reconnect, and find the existing notewriter tab. */
+async function reconnectToTab(
+  oldBrowser: Browser,
+  notewriterUrl: string,
+  prefix: string,
+): Promise<{ browser: Browser; page: Page }> {
+  console.log(`   ${prefix} 🔌 Reconnecting to Chrome for fresh page references...`);
+  try { oldBrowser.disconnect(); } catch { /* may already be disconnected */ }
+  await new Promise(r => setTimeout(r, 800));
+
+  const freshBrowser = await puppeteer.connect({
+    browserURL: "http://127.0.0.1:9222",
+    protocolTimeout: 120000,
+    defaultViewport: null,
+  });
+
+  const allPages = await freshBrowser.pages();
+
+  // First try to find the specific tab we were using (by CDP target ID)
+  let recoveredPage: Page | undefined;
+  if (activeTargetId) {
+    recoveredPage = allPages.find(p => {
+      const target = p.target();
+      return target && (target as any)._targetId === activeTargetId;
+    });
+    if (!recoveredPage) {
+      // Fallback: find by URL, preferring the LAST match (most recently opened)
+      const notewriterPages = allPages.filter(p => p.url().includes("communitynotes"));
+      recoveredPage = notewriterPages[notewriterPages.length - 1];
+    }
+  } else {
+    // No target ID tracked — use last notewriter tab
+    const notewriterPages = allPages.filter(p => p.url().includes("communitynotes"));
+    recoveredPage = notewriterPages[notewriterPages.length - 1];
   }
-  const pos = await page.evaluate(() => document.documentElement.scrollTop);
-  console.log(`   [Tab ${tabId}] Reached scrollTop=${pos}`);
+
+  if (recoveredPage) {
+    // Update target ID in case we fell back to a different tab
+    activeTargetId = (recoveredPage.target() as any)?._targetId ?? activeTargetId;
+    const scrollPos = await recoveredPage.evaluate(() => document.documentElement.scrollTop).catch(() => -1);
+    console.log(`   ${prefix} ✅ Reattached to existing tab (scrollY=${scrollPos})`);
+    return { browser: freshBrowser, page: recoveredPage };
+  }
+
+  // Tab gone — open a new one
+  console.log(`   ${prefix} ⚠️ Existing tab not found — opening fresh tab...`);
+  const newPage = await freshBrowser.newPage();
+  activeTargetId = (newPage.target() as any)?._targetId ?? null;
+  await newPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+  await waitForContent(newPage);
+  return { browser: freshBrowser, page: newPage };
+}
+
+async function scrollToPosition(
+  page: Page,
+  browser: Browser,
+  notewriterUrl: string,
+  collectedNotes: Map<string, ScrapedNote>,
+  targetNoteId: bigint | null,
+  maxScrolls: number,
+): Promise<{ page: Page; browser: Browser }> {
+  const prefix = `[scraper]`;
+  const BATCH_SIZE = 50;
+  const BATCH_DELAY_MS = 1200;
+  const MAX_RECONNECTS = 10;
+  let reconnects = 0;
+  let currentPage = page;
+  let currentBrowser = browser;
+  console.log(`   ${prefix} Scrolling to position${targetNoteId ? ` (target <= ${targetNoteId})` : ` (${maxScrolls} scrolls)`}...`);
+
+  let totalScrollsDone = 0;
+  let lastMinTweetId: bigint | null = null;
+  let consecutiveIdStalls = 0;
+
+  while (totalScrollsDone < maxScrolls) {
+    const scrollsThisBatch = Math.min(BATCH_SIZE, maxScrolls - totalScrollsDone);
+
+    let batchResult: { scrollTop: number; scrollHeight: number; tweetIds: string[]; stuckCount: number };
+    try {
+      batchResult = await currentPage.evaluate(async (px: number, count: number) => {
+        const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+        const html = document.documentElement;
+        let lastTop = html.scrollTop;
+        let stuckCount = 0;
+
+        for (let i = 0; i < count; i++) {
+          const maxScroll = html.scrollHeight - html.clientHeight;
+          html.scrollTop = Math.min(html.scrollTop + px, maxScroll);
+          html.dispatchEvent(new Event('scroll', { bubbles: true }));
+          window.dispatchEvent(new Event('scroll', { bubbles: true }));
+
+          if (html.scrollTop >= maxScroll - 10 && html.scrollTop === lastTop) {
+            stuckCount++;
+            if (stuckCount % 5 === 0) {
+              html.scrollTop = Math.max(0, html.scrollTop - 2000);
+              html.dispatchEvent(new Event('scroll', { bubbles: true }));
+              await delay(500);
+              html.scrollTop = html.scrollHeight - html.clientHeight;
+              html.dispatchEvent(new Event('scroll', { bubbles: true }));
+              await delay(500);
+            }
+          } else {
+            stuckCount = 0;
+          }
+          lastTop = html.scrollTop;
+
+          await delay(60 + Math.random() * 20);
+        }
+
+        const tweetIds: string[] = [];
+        const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
+        for (const cell of cells) {
+          const links = cell.querySelectorAll('a[href*="/status/"]') as NodeListOf<HTMLAnchorElement>;
+          for (const link of links) {
+            const match = link.href.match(/\/status\/(\d+)/);
+            if (match) tweetIds.push(match[1]!);
+          }
+        }
+
+        return {
+          scrollTop: html.scrollTop,
+          scrollHeight: html.scrollHeight,
+          tweetIds,
+          stuckCount,
+        };
+      }, SCROLL_PX, scrollsThisBatch);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.toLowerCase().includes('detached') || msg.includes('Target closed') || msg.includes('Session closed') || msg.includes('Connection closed') || msg.includes('Execution context') || msg.includes('timed out')) {
+        reconnects++;
+        if (reconnects > MAX_RECONNECTS) {
+          console.log(`   ${prefix} 💀 Too many reconnects during positioning (${MAX_RECONNECTS})`);
+          return { page: currentPage, browser: currentBrowser };
+        }
+        console.log(`   ${prefix} 🔄 Frame detached during scroll (${reconnects}/${MAX_RECONNECTS}) — reconnecting...`);
+        const recovered = await reconnectToTab(currentBrowser, notewriterUrl, prefix);
+        currentBrowser = recovered.browser;
+        currentPage = recovered.page;
+        // Don't increment totalScrollsDone — retry this batch
+        continue;
+      }
+      throw err;
+    }
+
+    totalScrollsDone += scrollsThisBatch;
+
+    if (targetNoteId && batchResult.tweetIds.length > 0) {
+      const minTweetId = batchResult.tweetIds.reduce((min, id) => {
+        const n = BigInt(id);
+        return n < min ? n : min;
+      }, BigInt(batchResult.tweetIds[0]!));
+
+      console.log(`   ${prefix} 📍 tweet ${minTweetId} at scroll ${totalScrollsDone} (scrollY=${batchResult.scrollTop}/${batchResult.scrollHeight})`);
+
+      if (minTweetId <= targetNoteId) {
+        console.log(`   ${prefix} ✅ Reached target at scroll ${totalScrollsDone}`);
+        return { page: currentPage, browser: currentBrowser };
+      }
+
+      if (lastMinTweetId !== null && minTweetId >= lastMinTweetId) {
+        consecutiveIdStalls++;
+        if (consecutiveIdStalls >= 10) {
+          console.log(`   ${prefix} ⚠️ IDs stalled for ${consecutiveIdStalls} batches — stopping`);
+          return { page: currentPage, browser: currentBrowser };
+        }
+      } else {
+        consecutiveIdStalls = 0;
+      }
+      lastMinTweetId = minTweetId;
+    } else if (targetNoteId) {
+      console.log(`   ${prefix} 📍 No tweet links at scroll ${totalScrollsDone} (scrollY=${batchResult.scrollTop})`);
+    } else if (totalScrollsDone % 200 === 0) {
+      console.log(`   ${prefix} ... ${totalScrollsDone}/${maxScrolls} scrolls (scrollY=${batchResult.scrollTop}/${batchResult.scrollHeight})`);
+    }
+
+    if (batchResult.stuckCount >= 40) {
+      console.log(`   ${prefix} ⚠️ Stuck for most of batch at scrollY=${batchResult.scrollTop}`);
+    }
+
+    await new Promise(r => setTimeout(r, BATCH_DELAY_MS + Math.random() * 800));
+  }
+
+  const pos = await currentPage.evaluate(() => document.documentElement.scrollTop).catch(() => -1);
+  console.log(`   ${prefix} Reached scrollTop=${pos} after ${totalScrollsDone} scrolls`);
+  return { page: currentPage, browser: currentBrowser };
 }
 
 /** Wait for notewriter content to appear on a page. */
-async function waitForContent(page: Page, tabId: number): Promise<void> {
-  console.log(`   [Tab ${tabId}] Waiting for page to load...`);
+async function waitForContent(page: Page): Promise<void> {
+  console.log(`   [scraper] Waiting for page to load...`);
   for (let i = 0; i < 30; i++) {
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 800));
     const hasContent = await page.evaluate(() =>
       document.body.innerText.includes('Needs more ratings') ||
       document.body.innerText.includes('Currently rated helpful') ||
       document.body.innerText.includes('Writing Impact')
     );
     if (hasContent) {
-      console.log(`   [Tab ${tabId}] Content detected after ${i + 1} seconds`);
+      console.log(`   [scraper] Content detected after ${i + 1} seconds`);
       return;
     }
   }
-  console.log(`   [Tab ${tabId}] Warning: content not detected after 30s, proceeding anyway`);
+  console.log(`   [scraper] Warning: content not detected after 30s, proceeding anyway`);
 }
 
-// Shared incremental saving state (module-level so all tabs + main() can access)
+// Incremental saving state
 const supabase = new SupabaseLogger();
 let newNotes = 0;
 let updatedIds = 0;
 let existingNotes = 0;
 let snapshotsCreated = 0;
 let errorCount = 0;
+let qualityRetryCount = 0;
+
 
 async function saveNoteIncrementally(note: ScrapedNote): Promise<void> {
   try {
@@ -129,6 +313,14 @@ async function saveNoteIncrementally(note: ScrapedNote): Promise<void> {
     await supabase.insertScrapedNotewriterSnapshot({
       note_id: note.note_id,
       cn_status: note.cn_status,
+      tweet_id: note.tweet_id,
+      note_text: note.note_text,
+      view_count: note.view_count,
+      shown_on_x: note.shown_on_x,
+      rater_tags: note.rater_tags,
+      tweet_handle: note.tweet_handle,
+      tweet_text: note.tweet_text,
+      tweet_time: note.tweet_time,
     });
     snapshotsCreated++;
   } catch (err) {
@@ -138,29 +330,46 @@ async function saveNoteIncrementally(note: ScrapedNote): Promise<void> {
 }
 
 /**
- * Scrape notes from a single tab. Multiple instances run in parallel,
- * sharing a collectedNotes map for deduplication.
+ * Scrape notes by scrolling and clicking "View details" on each note.
  */
 async function scrapeTab(
-  page: Page,
+  browser: Browser,
+  initialPage: Page,
   collectedNotes: Map<string, ScrapedNote>,
-  tabId: number,
   maxNotes: number,
+  notewriterUrl: string,
 ): Promise<void> {
-  const prefix = `[Tab ${tabId}]`;
-  const processedCells = new Set<string>();
+  const prefix = `[scraper]`;
+
+  // Diagnostic: log page dimensions to help debug virtualizer issues
+  const dims = await initialPage.evaluate(() => ({
+    innerWidth: window.innerWidth,
+    innerHeight: window.innerHeight,
+    scrollHeight: document.documentElement.scrollHeight,
+    clientHeight: document.documentElement.clientHeight,
+    bodyScrollHeight: document.body.scrollHeight,
+    cells: document.querySelectorAll('[data-testid="cellInnerDiv"]').length,
+  }));
+  console.log(`${prefix} 📐 Page dimensions: ${dims.innerWidth}x${dims.innerHeight} viewport, ${dims.scrollHeight}px scroll height, ${dims.cells} cells visible`);
+
+  let processedCells = new Set<string>();
   let scrollCount = 0;
   let stuckCount = 0;
   const stuckBeforePause = 10;
-  const maxRetries = 5;
+  // Escalating wait times before each jiggle retry: quick, 30s, 30s, 60s, 60s, 60s, 180s, 180s, 180s, 180s
+  const jiggleWaits = [800, 1600, 3200, 6400, 12000, 24000, 48000, 96000];
+  const maxRetries = jiggleWaits.length;
   let retryCount = 0;
-  let consecutiveOverlaps = 0;
-  const overlapJumpThreshold = 15;
-  let jumpCount = 0;
-  const maxJumps = 3;
+  let currentPage = initialPage;
+  let frameRecoveries = 0;
+  const MAX_FRAME_RECOVERIES = 15;
+  let lastNoteDate = ''; // Track date of last scraped note for stuck messages
 
-  try {
-  while (collectedNotes.size < maxNotes && retryCount <= maxRetries) {
+  recoveryLoop:
+  while (frameRecoveries <= MAX_FRAME_RECOVERIES) {
+    const page = currentPage; // Shadow for inner code — updated on recovery
+    try {
+      while (collectedNotes.size < maxNotes && retryCount <= maxRetries) {
     scrollCount++;
 
     // Get all visible cells
@@ -196,274 +405,511 @@ async function scrapeTab(
       }
       processedCells.add(cellFingerprint);
 
-      // Try to find tweet ID from the cell
-      const tweetData = await cell.evaluate(el => {
-        const tweetLink = el.querySelector('a[href*="/status/"]') as HTMLAnchorElement;
-        if (tweetLink) {
-          const match = tweetLink.href.match(/status\/(\d+)/);
-          return { tweetId: match?.[1] || null, tweetUrl: tweetLink.href };
-        }
+      // --- Helper: extract tweet/note IDs from cell ---
+      async function readCellTweetData() {
+        return cell.evaluate(el => {
+          let tweetId: string | null = null;
+          let tweetUrl: string | null = null;
+          let noteIdFromUrl: string | null = null;
 
-        const allElements = [...el.querySelectorAll('*')];
-        for (const elem of allElements) {
-          for (const attr of elem.attributes) {
-            const match = attr.value?.match(/(\d{18,20})/);
-            if (match) {
-              return { tweetId: match[1], tweetUrl: `https://x.com/i/web/status/${match[1]}` };
+          // Primary: read tweet URL from React fiber tree (role="link" div's parent has link.pathname)
+          const roleLink = el.querySelector('[role="link"]') as any;
+          if (roleLink) {
+            const fiberKey = Object.keys(roleLink).find(k => k.startsWith('__reactFiber'));
+            if (fiberKey) {
+              const fiber = roleLink[fiberKey];
+              const parentProps = fiber?.return?.memoizedProps;
+              const linkPathname = parentProps?.link?.pathname;
+              if (typeof linkPathname === 'string') {
+                const match = linkPathname.match(/status\/(\d+)/);
+                if (match) {
+                  tweetId = match[1]!;
+                  tweetUrl = linkPathname;
+                }
+              }
             }
           }
-        }
-        return { tweetId: null, tweetUrl: null };
-      });
 
-      // Skip if we already have this tweet (another tab got it)
-      if (tweetData.tweetId && [...collectedNotes.values()].some(n => n.tweet_id === tweetData.tweetId)) {
-        consecutiveOverlaps++;
-        continue;
-      }
+          // Fallback: look for /status/ links in the cell (rare — only when tweet text contains status links)
+          if (!tweetId) {
+            const allStatusLinks = [...el.querySelectorAll('a[href*="/status/"]')] as HTMLAnchorElement[];
+            const noteTextContainers = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
+            const noteTextEls = new Set<Node>();
+            noteTextContainers.forEach(container => {
+              if ((container as HTMLElement).innerText.trim().length > 50) {
+                noteTextEls.add(container);
+              }
+            });
 
-      // Extract note text and source URL from cell
-      const cellData = await cell.evaluate(el => {
-        const text = (el as HTMLElement).innerText;
+            for (const link of allStatusLinks) {
+              let insideNoteText = false;
+              for (const container of noteTextEls) {
+                if (container.contains(link)) { insideNoteText = true; break; }
+              }
+              if (insideNoteText) continue;
 
-        const paragraphs = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
-        let noteText = '';
-        paragraphs.forEach(p => {
-          const t = (p as HTMLElement).innerText.trim();
-          if (t.length > 50 &&
-              !t.includes('experimental AI contributor') &&
-              !t.includes('Needs more ratings') &&
-              !t.includes('Currently rated') &&
-              t.length > noteText.length) {
-            noteText = t;
+              const match = link.href.match(/status\/(\d+)/);
+              if (match) {
+                tweetId = match[1]!;
+                tweetUrl = link.href;
+                break;
+              }
+            }
           }
+
+          return { tweetId, tweetUrl, noteIdFromUrl };
         });
-
-        const sourceLinks = [...el.querySelectorAll('a[href^="http"]')]
-          .map((a) => (a as HTMLAnchorElement).href)
-          .filter((h) => !h.includes('x.com') && !h.includes('twitter.com'));
-
-        let viewCount: number | null = null;
-        const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i);
-        if (viewMatch) {
-          let num = parseFloat(viewMatch[1]!.replace(/,/g, ''));
-          const suffix = (viewMatch[2] || '').toUpperCase();
-          if (suffix === 'K') num *= 1000;
-          else if (suffix === 'M') num *= 1000000;
-          else if (suffix === 'B') num *= 1000000000;
-          viewCount = Math.round(num);
-        }
-
-        return { noteText, sourceUrl: sourceLinks[0] || null, viewCount };
-      });
-
-      // Scroll cell into view
-      await cell.evaluate(el => {
-        el.scrollIntoView({ behavior: 'instant', block: 'center' });
-      });
-      await randomDelay(100, 200);
-
-      // Find and click the "View details" element
-      const clickResult = await cell.evaluate(el => {
-        const noteLink = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
-        if (noteLink) {
-          const rect = noteLink.getBoundingClientRect();
-          return {
-            found: true,
-            x: rect.x + rect.width / 2,
-            y: rect.y + rect.height / 2,
-            tag: 'A (direct link)',
-            href: noteLink.href,
-          };
-        }
-
-        const buttons = el.querySelectorAll('button, [role="button"]');
-        for (const btn of buttons) {
-          if (btn.textContent?.includes('View details')) {
-            const rect = btn.getBoundingClientRect();
-            return {
-              found: true,
-              x: rect.x + rect.width / 2,
-              y: rect.y + rect.height / 2,
-              tag: btn.tagName,
-              href: '',
-            };
-          }
-        }
-
-        const spans = el.querySelectorAll('span');
-        for (const span of spans) {
-          if (span.textContent === 'View details') {
-            const rect = span.getBoundingClientRect();
-            return {
-              found: true,
-              x: rect.x + rect.width / 2,
-              y: rect.y + rect.height / 2,
-              tag: 'SPAN (exact match)',
-              href: '',
-            };
-          }
-        }
-
-        return { found: false, x: 0, y: 0, tag: '', href: '' };
-      });
-
-      if (!clickResult.found) continue;
-      if (clickResult.x === 0 && clickResult.y === 0) continue;
-      if (clickResult.y < 0 || clickResult.y > 2000) {
-        console.log(`   ${prefix} ⚠️ View details off-screen (y=${clickResult.y}) for tweet ${tweetData.tweetId}`);
-        continue;
       }
 
-      console.log(`   ${prefix} 🖱️ Clicking View details at (${clickResult.x.toFixed(0)}, ${clickResult.y.toFixed(0)}) [${clickResult.tag}]`);
+      // --- Helper: extract note text, views, status, and tweet info from cell ---
+      async function readCellData() {
+        return cell.evaluate(el => {
+          const text = (el as HTMLElement).innerText;
 
-      // Retry click + modal extraction up to 2 times
-      let modalData: { noteId: string | null; status: string; submittedDate: string; usedFallback?: boolean } | null = null;
-      for (let clickAttempt = 0; clickAttempt < 2; clickAttempt++) {
-        if (clickAttempt > 0) {
-          console.log(`   ${prefix} 🔄 Retry ${clickAttempt} for click...`);
-          await randomDelay(500, 1000);
-        }
+          const paragraphs = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
+          let noteText = '';
+          paragraphs.forEach(p => {
+            const t = (p as HTMLElement).innerText.trim();
+            if (t.length > 50 &&
+                !t.includes('experimental AI contributor') &&
+                !t.includes('Needs more ratings') &&
+                !t.includes('Currently rated') &&
+                t.length > noteText.length) {
+              noteText = t;
+            }
+          });
 
+          const sourceLinks = [...el.querySelectorAll('a[href^="http"]')]
+            .map((a) => (a as HTMLAnchorElement).href)
+            .filter((h) => !h.includes('x.com') && !h.includes('twitter.com'));
+
+          let viewCount: number | null = null;
+          let shownOnX: boolean | null = null;
+          if (/\bNot shown on X\b/i.test(text)) {
+            shownOnX = false;
+          } else if (/\bShown on X\b/i.test(text)) {
+            shownOnX = true;
+            const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i);
+            if (viewMatch) {
+              let num = parseFloat(viewMatch[1]!.replace(/,/g, ''));
+              const suffix = (viewMatch[2] || '').toUpperCase();
+              if (suffix === 'K') num *= 1000;
+              else if (suffix === 'M') num *= 1000000;
+              else if (suffix === 'B') num *= 1000000000;
+              viewCount = Math.round(num);
+            }
+          }
+
+          let cellStatus: string | null = null;
+          if (/\bCurrently not rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
+          else if (/\bCurrently rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_HELPFUL';
+          else if (/\bNeeds more ratings\b/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
+
+          const postUnavailable = /\bPost unavailable\b/i.test(text);
+
+          // --- Extract original tweet info from the cell ---
+          let tweetHandle: string | null = null;
+          let tweetText: string | null = null;
+          let tweetTime: string | null = null;
+
+          // Tweet handle: extract from UserAvatar-Container data-testid attribute
+          const avatarEl = el.querySelector('[data-testid^="UserAvatar-Container-"]');
+          if (avatarEl) {
+            const testId = avatarEl.getAttribute('data-testid') || '';
+            const handle = testId.replace('UserAvatar-Container-', '');
+            if (handle && handle.length > 0) {
+              tweetHandle = handle;
+            }
+          }
+
+          // Tweet time: look for <time> elements (X uses these for timestamps)
+          const timeEl = el.querySelector('time');
+          if (timeEl) {
+            // Prefer the datetime attribute (ISO format) over display text
+            tweetTime = timeEl.getAttribute('datetime') || timeEl.textContent?.trim() || null;
+          }
+
+          // Tweet text: use data-testid="tweetText" element (X's own tweet text container)
+          const tweetTextEl = el.querySelector('[data-testid="tweetText"]');
+          if (tweetTextEl) {
+            const t = (tweetTextEl as HTMLElement).innerText.trim();
+            if (t.length > 0) {
+              tweetText = t;
+            }
+          }
+
+          return { noteText, sourceUrl: sourceLinks[0] || null, viewCount, shownOnX, cellStatus, postUnavailable, tweetHandle, tweetText, tweetTime };
+        });
+      }
+
+      // --- Helper: click the cell's View details button/link ---
+      async function clickViewDetails(): Promise<boolean> {
         try {
-          await Promise.race([
-            page.mouse.click(clickResult.x, clickResult.y),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Click timeout')), 10000))
-          ]);
+          return await cell.evaluate(el => {
+            const blocker = (e: Event) => {
+              if ((e.target as HTMLElement).closest?.('a')) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            };
+            document.addEventListener('click', blocker, true);
+            try {
+              const noteLink = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
+              if (noteLink) { noteLink.click(); return true; }
+              const buttons = el.querySelectorAll('button, [role="button"]');
+              for (const btn of buttons) {
+                if (btn.textContent?.includes('View details')) {
+                  (btn as HTMLElement).click();
+                  return true;
+                }
+              }
+              return false;
+            } finally {
+              document.removeEventListener('click', blocker, true);
+            }
+          });
         } catch (clickErr) {
           console.log(`   ${prefix} ⚠️ Click error: ${clickErr}`);
-          continue;
+          return false;
         }
+      }
 
-        // Wait for modal — poll instead of fixed sleep
-        for (let waitMs = 0; waitMs < 3000; waitMs += 150) {
-          const hasModal = await page.evaluate(() => {
+      // --- Helper: wait for modal to render, then extract data ---
+      type ModalData = { noteId: string | null; status: string; submittedDate: string; usedFallback?: boolean; raterTags?: string[] | null };
+      async function waitAndExtractModal(maxWaitMs: number): Promise<ModalData | null> {
+        for (let waitMs = 0; waitMs < maxWaitMs; waitMs += 150) {
+          const state = await page.evaluate(() => {
             const modal = document.querySelector('[data-testid="sheetDialog"]') ||
                           document.querySelector('[role="dialog"]') ||
                           document.querySelector('[aria-modal="true"]') ||
                           document.querySelector('[data-testid="Drawer"]');
-            if (modal && (modal as HTMLElement).innerText.includes('Note ID')) return true;
-            return document.body.innerText.includes('Note Details');
+            const text = modal ? (modal as HTMLElement).innerText : document.body.innerText;
+            const hasNoteId = /Note ID[\s:]*\d{18,20}/i.test(text);
+            const hasStatus = /\bCurrently (not )?rated helpful\b/i.test(text) || /\bNeeds more ratings\b/i.test(text);
+            return { hasNoteId, hasStatus };
           });
-          if (hasModal) break;
-          await new Promise(r => setTimeout(r, 150));
+          if (state.hasNoteId && state.hasStatus) break;
+          if (state.hasNoteId && waitMs >= maxWaitMs * 0.5) break;
+          await new Promise(r => setTimeout(r, 120));
         }
 
-      // Extract data from modal
-      modalData = await page.evaluate(() => {
-        const modal = document.querySelector('[data-testid="sheetDialog"]') ||
-                      document.querySelector('[role="dialog"]') ||
-                      document.querySelector('[aria-modal="true"]') ||
-                      document.querySelector('[data-testid="Drawer"]');
+        return await page.evaluate(() => {
+          const modal = document.querySelector('[data-testid="sheetDialog"]') ||
+                        document.querySelector('[role="dialog"]') ||
+                        document.querySelector('[aria-modal="true"]') ||
+                        document.querySelector('[data-testid="Drawer"]');
 
-        let modalText = '';
-        let usedFallback = false;
-        if (modal) {
-          modalText = (modal as HTMLElement).innerText;
-        } else {
-          const candidates: { el: HTMLElement; len: number }[] = [];
-          const allElements = document.querySelectorAll('div, section, aside');
-          for (const el of allElements) {
-            const text = (el as HTMLElement).innerText;
-            if (text.includes('Note Details') || text.includes('Note ID')) {
-              if (text.length > 100 && text.length < 10000) {
-                candidates.push({ el: el as HTMLElement, len: text.length });
+          let modalText = '';
+          let usedFallback = false;
+          if (modal) {
+            modalText = (modal as HTMLElement).innerText;
+          } else {
+            const candidates: { el: HTMLElement; len: number }[] = [];
+            const allElements = document.querySelectorAll('div, section, aside');
+            for (const el of allElements) {
+              const text = (el as HTMLElement).innerText;
+              if (text.includes('Note Details') || text.includes('Note ID')) {
+                if (text.length > 100 && text.length < 10000) {
+                  candidates.push({ el: el as HTMLElement, len: text.length });
+                }
               }
             }
-          }
-          if (candidates.length > 0) {
-            candidates.sort((a, b) => a.len - b.len);
-            modalText = candidates[0]!.el.innerText;
-          }
-        }
-
-        if (!modalText) {
-          const bodyText = document.body.innerText;
-          if (!bodyText.includes('Note Details') && !bodyText.includes('Note ID')) {
-            return null;
-          }
-          modalText = bodyText;
-          usedFallback = true;
-        }
-
-        const noteIdMatch = modalText.match(/Note ID[:\s]*(\d{18,20})/i);
-        const noteId = noteIdMatch ? (noteIdMatch[1] ?? null) : null;
-
-        let status = 'UNKNOWN';
-
-        if (usedFallback && noteId) {
-          const noteIdPos = modalText.indexOf('Note ID');
-          if (noteIdPos !== -1) {
-            const textAfterNoteId = modalText.substring(noteIdPos, noteIdPos + 500);
-            if (textAfterNoteId.includes('Currently not rated helpful')) {
-              status = 'CURRENTLY_RATED_NOT_HELPFUL';
-            } else if (textAfterNoteId.includes('Currently rated helpful')) {
-              status = 'CURRENTLY_RATED_HELPFUL';
-            } else if (textAfterNoteId.includes('Needs more ratings')) {
-              status = 'NEEDS_MORE_RATINGS';
-            } else if (textAfterNoteId.match(/Shown on X/i) && !textAfterNoteId.includes('Not shown on X')) {
-              status = 'SHOWN_ON_X';
-            } else if (textAfterNoteId.includes('Not shown on X')) {
-              status = 'NOT_SHOWN_ON_X';
+            if (candidates.length > 0) {
+              candidates.sort((a, b) => a.len - b.len);
+              modalText = candidates[0]!.el.innerText;
             }
           }
-        } else {
-          if (modalText.includes('Currently not rated helpful')) {
-            status = 'CURRENTLY_RATED_NOT_HELPFUL';
-          } else if (modalText.includes('Currently rated helpful')) {
-            status = 'CURRENTLY_RATED_HELPFUL';
-          } else if (modalText.includes('Needs more ratings')) {
-            status = 'NEEDS_MORE_RATINGS';
-          } else if (modalText.match(/Shown on X/i) && !modalText.includes('Not shown on X')) {
-            status = 'SHOWN_ON_X';
-          } else if (modalText.includes('Not shown on X')) {
-            status = 'NOT_SHOWN_ON_X';
+
+          if (!modalText) {
+            const bodyText = document.body.innerText;
+            if (!bodyText.includes('Note Details') && !bodyText.includes('Note ID')) {
+              return null;
+            }
+            modalText = bodyText;
+            usedFallback = true;
+          }
+
+          const noteIdMatch = modalText.match(/Note ID[:\s]*(\d{18,20})/i);
+          const noteId = noteIdMatch ? (noteIdMatch[1] ?? null) : null;
+
+          let status = 'UNKNOWN';
+          if (usedFallback && noteId) {
+            const noteIdPos = modalText.indexOf('Note ID');
+            if (noteIdPos !== -1) {
+              const textAfterNoteId = modalText.substring(noteIdPos, noteIdPos + 500);
+              if (/\bCurrently not rated helpful\b/i.test(textAfterNoteId)) {
+                status = 'CURRENTLY_RATED_NOT_HELPFUL';
+              } else if (/\bCurrently rated helpful\b/i.test(textAfterNoteId)) {
+                status = 'CURRENTLY_RATED_HELPFUL';
+              } else if (/\bNeeds more ratings\b/i.test(textAfterNoteId)) {
+                status = 'NEEDS_MORE_RATINGS';
+              }
+            }
+          } else {
+            if (/\bCurrently not rated helpful\b/i.test(modalText)) {
+              status = 'CURRENTLY_RATED_NOT_HELPFUL';
+            } else if (/\bCurrently rated helpful\b/i.test(modalText)) {
+              status = 'CURRENTLY_RATED_HELPFUL';
+            } else if (/\bNeeds more ratings\b/i.test(modalText)) {
+              status = 'NEEDS_MORE_RATINGS';
+            }
+          }
+
+          const dateMatch = modalText.match(/Note submitted[:\s]*([\d:]+\s*(?:AM|PM)?)\s*[·•]\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})/i);
+          const submittedDate = dateMatch ? (dateMatch[2] ?? '') : '';
+
+          const raterTags: string[] = [];
+          const tagsMatch = modalText.match(/Top tags selected by raters\s*\n([\s\S]*?)(?:\n\s*\n|Note ID|Note submitted|$)/i);
+          if (tagsMatch) {
+            const tagLines = tagsMatch[1]!.split('\n').map(l => l.trim()).filter(l => l.length > 0 && l.length < 80);
+            for (const line of tagLines) {
+              if (/^(note|rating|status|currently|needs|shown)/i.test(line)) break;
+              raterTags.push(line);
+            }
+          }
+
+          return { noteId, status, submittedDate, usedFallback, raterTags: raterTags.length > 0 ? raterTags : null };
+        });
+      }
+
+      // ============================================================
+      // OUTER CONFLICT RETRY LOOP: cell scrape → modal → conflict check
+      // Retries everything up to 2 more times if cross-source data conflicts
+      // ============================================================
+      let tweetData: Awaited<ReturnType<typeof readCellTweetData>> = { tweetId: null, tweetUrl: null, noteIdFromUrl: null };
+      let cellData: Awaited<ReturnType<typeof readCellData>> = { noteText: '', sourceUrl: null, viewCount: null, shownOnX: null, cellStatus: null, postUnavailable: false, tweetHandle: null, tweetText: null, tweetTime: null };
+      let modalData: ModalData | null = null;
+
+      conflictLoop:
+      for (let conflictRetry = 0; conflictRetry < 3; conflictRetry++) {
+        if (conflictRetry > 0) {
+          console.log(`   ${prefix} 🔄 Conflict retry ${conflictRetry}/2 — re-reading cell and modal`);
+          await page.keyboard.press('Escape');
+          await new Promise(r => setTimeout(r, 1600));
+        }
+
+        // --- CELL SCRAPE with retries (up to 6 attempts) ---
+        // If any tweet info is present (handle, text, time), the tweet exists —
+        // keep retrying until all tweet fields are populated
+        for (let cellAttempt = 0; cellAttempt < 6; cellAttempt++) {
+          tweetData = await readCellTweetData();
+          cellData = await readCellData();
+          const cellMissing: string[] = [];
+          if (!tweetData.tweetId) cellMissing.push('tweet_id');
+          if (!cellData.noteText) cellMissing.push('note_text');
+          if (!cellData.cellStatus) cellMissing.push('status');
+          // If we see ANY tweet info, the tweet is present — retry for all tweet fields
+          const hasSomeTweetInfo = cellData.tweetHandle || cellData.tweetText || cellData.tweetTime;
+          if (hasSomeTweetInfo) {
+            if (!cellData.tweetHandle) cellMissing.push('tweet_handle');
+            if (!cellData.tweetText) cellMissing.push('tweet_text');
+            if (!cellData.tweetTime) cellMissing.push('tweet_time');
+          }
+          if (cellMissing.length === 0) break;
+          if (cellAttempt < 5) {
+            console.log(`   ${prefix} 🔄 Cell retry ${cellAttempt + 1}/6: missing ${cellMissing.join(', ')}`);
+            await randomDelay(400, 800);
           }
         }
 
-        const dateMatch = modalText.match(/Note submitted[:\s]*([\d:]+\s*(?:AM|PM)?)\s*[·•]\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})/i);
-        const submittedDate = dateMatch ? (dateMatch[2] ?? '') : '';
+        // Skip if we already have this tweet
+        if (tweetData.tweetId && [...collectedNotes.values()].some(n => n.tweet_id === tweetData.tweetId)) {
+          break conflictLoop;
+        }
 
-        return { noteId, status, submittedDate, usedFallback };
-      });
+        // Scroll cell into view
+        await cell.evaluate(el => {
+          el.scrollIntoView({ behavior: 'instant', block: 'center' });
+        });
+        await randomDelay(80, 160);
 
-        if (modalData?.noteId) break;
+        // Check if cell has a clickable "View details" button
+        const hasViewDetails = await cell.evaluate(el => {
+          const noteLink = el.querySelector('a[href*="/communitynotes/t/"]');
+          if (noteLink) return 'A';
+          const buttons = el.querySelectorAll('button, [role="button"]');
+          for (const btn of buttons) {
+            if (btn.textContent?.includes('View details')) return btn.tagName;
+          }
+          return null;
+        });
 
-        await page.keyboard.press('Escape');
-        await randomDelay(200, 400);
-      } // end retry loop
+        if (!hasViewDetails) break conflictLoop;
+
+        if (conflictRetry === 0) {
+          console.log(`   ${prefix} 🖱️ Clicking View details [${hasViewDetails}]`);
+        }
+
+        // --- MODAL EXTRACTION with quality retries (up to 6 attempts) ---
+        const maxQualityRetries = 5;
+        const modalWaits = [3000, 5000, 8000, 10000, 10000, 10000];
+
+        let accNoteId: string | null = null;
+        let accStatus: string = 'UNKNOWN';
+        let accSubmittedDate: string = '';
+        let accRaterTags: string[] | null = null;
+        let finalModalData: ModalData | null = null;
+
+        // Only check fields the modal can provide (status, submittedDate, raterTags).
+        // Cell-only fields (tweet_id, note_text, view_count) can't be fixed by modal retries.
+        function checkModalMissingFields(): string[] {
+          const missing: string[] = [];
+          if (accStatus === 'UNKNOWN') missing.push('status');
+          if (!accSubmittedDate) missing.push('submitted_date');
+          const isRated = accStatus === 'CURRENTLY_RATED_HELPFUL' || accStatus === 'CURRENTLY_RATED_NOT_HELPFUL';
+          if (isRated && !accRaterTags) missing.push('rater_tags');
+          return missing;
+        }
+
+        for (let qualityAttempt = 0; qualityAttempt <= maxQualityRetries; qualityAttempt++) {
+          let clicked = false;
+          for (let clickRetry = 0; clickRetry < 3; clickRetry++) {
+            if (clickRetry > 0) {
+              console.log(`   ${prefix} 🔄 Click retry ${clickRetry}...`);
+              await randomDelay(400, 800);
+            }
+            clicked = await clickViewDetails();
+            if (clicked) break;
+          }
+          if (!clicked) {
+            console.log(`   ${prefix} ⚠️ Could not click View details`);
+            break;
+          }
+
+          const waitMs = modalWaits[qualityAttempt] || 3000;
+          const md = await waitAndExtractModal(waitMs);
+
+          if (!md?.noteId) {
+            await page.keyboard.press('Escape');
+            await randomDelay(160, 320);
+            if (qualityAttempt < maxQualityRetries) {
+              console.log(`   ${prefix} 🔄 No note ID in modal — quality retry ${qualityAttempt + 1}/${maxQualityRetries}`);
+              qualityRetryCount++;
+            }
+            continue;
+          }
+
+          // Accumulate modal data (use latest if modal-vs-modal conflicts)
+          if (accNoteId && md.noteId && accNoteId !== md.noteId) {
+            // Different note loaded — use latest
+            accNoteId = md.noteId;
+            accStatus = md.status !== 'UNKNOWN' ? md.status : 'UNKNOWN';
+            accSubmittedDate = md.submittedDate;
+            accRaterTags = md.raterTags || null;
+          } else {
+            if (!accNoteId && md.noteId) accNoteId = md.noteId;
+            const newStatus = md.status !== 'UNKNOWN' ? md.status : null;
+            if (accStatus === 'UNKNOWN' && newStatus) accStatus = newStatus;
+            if (!accSubmittedDate && md.submittedDate) accSubmittedDate = md.submittedDate;
+            if (!accRaterTags && md.raterTags) accRaterTags = md.raterTags;
+          }
+
+          finalModalData = md;
+
+          const missingFields = checkModalMissingFields();
+          if (missingFields.length === 0) break;
+
+          await page.keyboard.press('Escape');
+
+          if (qualityAttempt < maxQualityRetries) {
+            const retryWait = [800, 1600, 2400, 3200, 4000][qualityAttempt] || 1600;
+            console.log(`   ${prefix} 🔄 Quality retry ${qualityAttempt + 1}/${maxQualityRetries}: missing=[${missingFields.join(', ')}]`);
+            qualityRetryCount++;
+            await new Promise(r => setTimeout(r, retryWait));
+          }
+        } // end quality retry loop
+
+        // Build modalData from accumulated
+        modalData = finalModalData;
+        if (accNoteId && modalData) {
+          modalData.noteId = accNoteId;
+          if (accStatus !== 'UNKNOWN') modalData.status = accStatus;
+          if (accSubmittedDate) modalData.submittedDate = accSubmittedDate;
+          if (accRaterTags) modalData.raterTags = accRaterTags;
+        }
+
+        if (!modalData?.noteId) break conflictLoop; // No modal data — nothing to conflict-check
+
+        // --- CROSS-SOURCE CONFLICT CHECK ---
+        const crossConflicts: string[] = [];
+        if (tweetData.noteIdFromUrl && modalData.noteId && tweetData.noteIdFromUrl !== modalData.noteId) {
+          crossConflicts.push(`note_id: URL=${tweetData.noteIdFromUrl} modal=${modalData.noteId}`);
+        }
+        if (cellData.cellStatus && modalData.status !== 'UNKNOWN' && cellData.cellStatus !== modalData.status) {
+          crossConflicts.push(`status: cell=${cellData.cellStatus} modal=${modalData.status}`);
+        }
+
+        if (crossConflicts.length === 0) break conflictLoop; // All good
+
+        console.log(`   ${prefix} ⚠️ CROSS-SOURCE CONFLICT: ${crossConflicts.join(', ')}`);
+        if (conflictRetry >= 2) {
+          console.log(`   ${prefix} ⚠️ Conflict persists after 3 attempts — skipping note`);
+          modalData = null;
+          break conflictLoop;
+        }
+        qualityRetryCount++;
+      } // end conflict retry loop
 
       if (!modalData || !modalData.noteId) {
-        console.log(`   ${prefix} ⚠️ Modal didn't open or couldn't extract Note ID for tweet ${tweetData.tweetId || 'unavailable'}`);
+        console.log(`   ${prefix} ⚠️ Could not extract valid data for this cell`);
         await page.keyboard.press('Escape');
-        await randomDelay(200, 400);
+        await randomDelay(160, 320);
         continue;
       }
 
       // Skip if another tab already got this note
       if (collectedNotes.has(modalData.noteId)) {
-        consecutiveOverlaps++;
         await page.keyboard.press('Escape');
-        await randomDelay(100, 200);
+        await randomDelay(80, 160);
         continue;
       }
 
+      const noteIdBigInt = BigInt(modalData.noteId);
+
+      // Use cell status as fallback when modal gives UNKNOWN
+      const finalStatus = modalData.status !== 'UNKNOWN' ? modalData.status
+        : (cellData.cellStatus || 'UNKNOWN');
+
+      // Determine tweet_id: real link > post_unavailable > unavailable_noteId
+      const finalTweetId = tweetData.tweetId
+        || (cellData.postUnavailable ? 'post_unavailable' : `unavailable_${modalData.noteId}`);
+
+      const shownInfo = cellData.shownOnX === true ? ' [Shown on X]' : cellData.shownOnX === false ? ' [Not shown on X]' : '';
       const viewInfo = cellData.viewCount ? ` [${cellData.viewCount.toLocaleString()} views]` : '';
-      console.log(`   ${prefix} ✓ Found Note ID: ${modalData.noteId} (${modalData.status})${viewInfo}${!tweetData.tweetId ? ' [Post unavailable]' : ''}`);
+      const tweetInfo = tweetData.tweetId ? ` tweet:${tweetData.tweetId}` : (cellData.postUnavailable ? ' [Post unavailable]' : ' [No tweet link]');
+      const textPreview = cellData.noteText ? ` "${cellData.noteText.slice(0, 80)}${cellData.noteText.length > 80 ? '...' : ''}"` : '';
+      console.log(`   ${prefix} ✓ Found Note ID: ${modalData.noteId} (${finalStatus})${shownInfo}${viewInfo}${tweetInfo}${textPreview}`);
+
+      const tweetMetaInfo = cellData.tweetHandle ? ` [@${cellData.tweetHandle}${cellData.tweetTime ? ` · ${cellData.tweetTime}` : ''}]` : '';
+      if (tweetMetaInfo) console.log(`   ${prefix}   ${tweetMetaInfo}${cellData.tweetText ? ` "${cellData.tweetText.slice(0, 60)}${cellData.tweetText.length > 60 ? '...' : ''}"` : ''}`);
+      const tagInfo = modalData.raterTags ? ` [tags: ${modalData.raterTags.join(', ')}]` : '';
+      if (tagInfo) console.log(`   ${prefix}   ${tagInfo}`);
 
       const note: ScrapedNote = {
         note_id: modalData.noteId,
-        tweet_id: tweetData.tweetId || `unavailable_${modalData.noteId}`,
+        tweet_id: finalTweetId,
         note_text: cellData.noteText,
-        cn_status: modalData.status,
+        cn_status: finalStatus,
         created_at: modalData.submittedDate,
         source_url: cellData.sourceUrl || undefined,
         view_count: cellData.viewCount || undefined,
+        shown_on_x: cellData.shownOnX,
+        rater_tags: modalData.raterTags || undefined,
+        tweet_handle: cellData.tweetHandle || undefined,
+        tweet_text: cellData.tweetText || undefined,
+        tweet_time: cellData.tweetTime || undefined,
       };
 
       collectedNotes.set(modalData.noteId, note);
       foundNewNote = true;
-      consecutiveOverlaps = 0; // Reset overlap counter on new find
+      if (modalData.submittedDate) lastNoteDate = modalData.submittedDate;
+
+      // Early exit if we've reached the very bottom of the list
+      if (noteIdBigInt <= BOTTOM_NOTE_ID) {
+        console.log(`\n   ${prefix} 🎉 Reached the bottom note (${modalData.noteId})! Scrape complete.`);
+        break recoveryLoop;
+      }
+
       console.log(`   ${prefix} ✓ Total ${collectedNotes.size}: ${modalData.noteId} (${modalData.status})`);
 
       // Save to DB immediately so data isn't lost if process is killed
@@ -502,7 +948,8 @@ async function scrapeTab(
         await page.keyboard.press('Escape');
       }
 
-      await randomDelay(100, 250);
+      // Cooldown after modal close — reduces burst failures on next click
+      await randomDelay(160, 320);
     }
 
     if (!foundNewNote) {
@@ -510,11 +957,16 @@ async function scrapeTab(
       if (stuckCount >= stuckBeforePause) {
         retryCount++;
         if (retryCount > maxRetries) {
-          console.log(`\n   ${prefix} 🛑 Exhausted ${maxRetries} retries. Tab stopping.`);
+          console.log(`\n   ${prefix} 🛑 Scroll stuck${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}. Exhausted ${maxRetries} jiggle retries — done.`);
           break;
         }
-        // Unstick the virtualizer: scroll up a big chunk, wait, then scroll back down
-        console.log(`\n   ${prefix} 🔄 Stuck after ${stuckCount} scrolls. Jiggling scroll to unstick virtualizer (retry ${retryCount}/${maxRetries})...`);
+        // Unstick the virtualizer: escalating wait, then scroll up a big chunk, wait, scroll back down
+        const waitMs = jiggleWaits[retryCount - 1] || 0;
+        if (waitMs > 0) {
+          console.log(`\n   ${prefix} ⏳ Scroll stuck${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}. Waiting ${waitMs / 1000}s before jiggle ${retryCount}/${maxRetries}...`);
+          await new Promise(r => setTimeout(r, waitMs));
+        }
+        console.log(`\n   ${prefix} 🔄 Jiggling virtualizer (retry ${retryCount}/${maxRetries})...`);
         const jiggleDistance = 3000 + (retryCount * 2000); // Scroll up further each retry
         await page.evaluate((dist) => {
           const html = document.documentElement;
@@ -522,7 +974,7 @@ async function scrapeTab(
           html.dispatchEvent(new Event('scroll', { bubbles: true }));
           window.dispatchEvent(new Event('scroll', { bubbles: true }));
         }, jiggleDistance);
-        await new Promise(r => setTimeout(r, 2000)); // Let virtualizer re-render
+        await new Promise(r => setTimeout(r, 1600)); // Let virtualizer re-render
         // Scroll back down past where we were
         await page.evaluate((dist) => {
           const html = document.documentElement;
@@ -530,7 +982,7 @@ async function scrapeTab(
           html.dispatchEvent(new Event('scroll', { bubbles: true }));
           window.dispatchEvent(new Event('scroll', { bubbles: true }));
         }, jiggleDistance);
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 800));
         stuckCount = 0;
         processedCells.clear(); // Clear fingerprints since we're in shifted territory
         console.log(`   ${prefix} ▶️  Resuming after jiggle...`);
@@ -538,21 +990,6 @@ async function scrapeTab(
     } else {
       stuckCount = 0;
       retryCount = 0;
-    }
-
-    // Check if we're in another tab's territory — jump far ahead to find uncovered ground
-    if (consecutiveOverlaps >= overlapJumpThreshold) {
-      jumpCount++;
-      if (jumpCount > maxJumps) {
-        console.log(`\n   ${prefix} 🏁 Hit overlap ${maxJumps} times, no more uncovered territory. Tab done.`);
-        break;
-      }
-      const jumpScrolls = SCROLLS_PER_TAB_OFFSET; // Jump same distance as initial tab spacing
-      console.log(`\n   ${prefix} 🔀 Overlapping with another tab (${consecutiveOverlaps} dupes). Jumping ahead ${jumpScrolls} scrolls (jump ${jumpCount}/${maxJumps})...`);
-      consecutiveOverlaps = 0;
-      processedCells.clear(); // Clear fingerprints since we're in new territory
-      await quickScroll(page, jumpScrolls, tabId);
-      continue; // Skip the normal scroll, go straight to processing
     }
 
     // Scroll down
@@ -573,41 +1010,81 @@ async function scrapeTab(
       }, SCROLL_PX);
 
       if (scrollResult.atBottom) {
-        console.log(`   ${prefix} 📍 At bottom of page (${scrollResult.scrollTop}/${scrollResult.maxScroll})`);
+        console.log(`   ${prefix} 📍 At bottom${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}`);
+        // Wait longer at bottom — the virtualizer needs time to extend the page
+        await new Promise(r => setTimeout(r, 1600));
       }
     } catch (scrollErr: unknown) {
       const errMsg = scrollErr instanceof Error ? scrollErr.message : String(scrollErr);
       console.log(`   ${prefix} ⚠️ Scroll error: ${errMsg.slice(0, 60)}`);
     }
 
-    await randomDelay(300, 500);
-  }
-  } catch (loopErr: unknown) {
-    const errMsg = loopErr instanceof Error ? loopErr.message : String(loopErr);
-    console.log(`\n${prefix} ⚠️ Scraping interrupted: ${errMsg.slice(0, 100)}`);
-    console.log(`   ${prefix} Collected ${collectedNotes.size} notes so far across all tabs`);
-  }
+    await randomDelay(240, 400);
+      }
+      // Normal completion — exit recovery loop
+      break recoveryLoop;
+    } catch (loopErr: unknown) {
+      const errMsg = loopErr instanceof Error ? loopErr.message : String(loopErr);
+
+      // Recoverable frame detach — open new tab and scroll back
+      if (errMsg.toLowerCase().includes('detached frame') || errMsg.includes('Execution context') || errMsg.includes('Target closed') || errMsg.includes('Session closed') || errMsg.includes('Connection closed')) {
+        frameRecoveries++;
+        if (frameRecoveries > MAX_FRAME_RECOVERIES) {
+          console.log(`\n${prefix} 💀 Frame detach recovery limit reached (${MAX_FRAME_RECOVERIES}). Tab stopping.`);
+          break recoveryLoop;
+        }
+
+        console.log(`\n${prefix} 🔄 Frame detached! Recovering (${frameRecoveries}/${MAX_FRAME_RECOVERIES})...`);
+
+        try {
+          const recovered = await reconnectToTab(browser, notewriterUrl, prefix);
+          browser = recovered.browser;
+          currentPage = recovered.page;
+
+          processedCells = new Set<string>();
+          stuckCount = 0;
+          retryCount = 0;
+          scrollCount = 0;
+
+          continue recoveryLoop;
+        } catch (recoveryErr) {
+          console.log(`\n${prefix} 💀 Recovery failed: ${recoveryErr}`);
+          break recoveryLoop;
+        }
+      }
+
+      // Non-recoverable error
+      console.log(`\n${prefix} ⚠️ Scraping interrupted: ${errMsg.slice(0, 100)}`);
+      console.log(`   ${prefix} Collected ${collectedNotes.size} notes so far`);
+      break recoveryLoop;
+    }
+  } // end recoveryLoop
 
   console.log(`\n${prefix} ✅ Tab finished. Total notes across all tabs: ${collectedNotes.size}`);
 }
 
 
+/**
+ * Query DB for note IDs at specific percentile positions.
+ * Returns a map from fraction (e.g. 0.33) to the note ID at that position.
+ * Uses paginated query to avoid the 1000-row limit.
+ */
 async function main() {
   // Parse args
   const args = process.argv.slice(2);
   const freshStart = args.includes('--fresh');
 
-  // Parse --tabs N (and note which arg indices are consumed by flags)
-  const tabsFlagIdx = args.indexOf('--tabs');
-  const numTabs = tabsFlagIdx !== -1 && args[tabsFlagIdx + 1]
-    ? Math.min(Math.max(parseInt(args[tabsFlagIdx + 1]!, 10) || 1, 1), 5)
-    : 1;
+  // Parse --start-from <noteId> to resume from a previous run's last position
+  const startFromIdx = args.indexOf('--start-from');
+  const startFromNoteId = startFromIdx !== -1 && args[startFromIdx + 1]
+    ? BigInt(args[startFromIdx + 1]!)
+    : null;
 
-  // Filter out flag args AND their values (e.g. --tabs 3 removes both)
+  // Filter out flag args and their values
   const flagValueIndices = new Set<number>();
-  if (tabsFlagIdx !== -1) {
-    flagValueIndices.add(tabsFlagIdx);
-    flagValueIndices.add(tabsFlagIdx + 1);
+  if (startFromIdx !== -1) {
+    flagValueIndices.add(startFromIdx);
+    flagValueIndices.add(startFromIdx + 1);
   }
   const nonFlagArgs = args.filter((a, i) => !a.startsWith('--') && !flagValueIndices.has(i));
 
@@ -629,6 +1106,7 @@ async function main() {
     browser = await puppeteer.connect({
       browserURL: "http://127.0.0.1:9222",
       protocolTimeout: 120000,
+      defaultViewport: null, // Use browser's actual window size, not Puppeteer's 800x600 default
     });
   } catch (err) {
     console.error("❌ Failed to connect to Chrome.");
@@ -638,84 +1116,165 @@ async function main() {
   }
 
   console.log("✅ Connected to Chrome\n");
-  console.log(`🚀 Starting scrape with ${numTabs} tab${numTabs > 1 ? 's' : ''} (max ${maxNotes} notes)...\n`);
+  console.log(`🚀 Starting scrape (max ${maxNotes} notes)...\n`);
 
-  // Open tabs
-  const tabPages: Page[] = [];
+  // Find or create the notewriter tab
+  let page: Page;
+  const existingPages = await browser.pages();
+  const existingNotewriterTabs = existingPages.filter(p => p.url().includes("communitynotes"));
 
-  for (let i = 0; i < numTabs; i++) {
-    let tabPage: Page | undefined;
-
-    if (i === 0) {
-      // First tab: reuse existing notewriter tab if present
-      const existingPages = await browser.pages();
-      tabPage = existingPages.find((p) => p.url().includes("communitynotes"));
-
-      if (!tabPage) {
-        console.log(`📄 [Tab 0] Opening new tab: ${notewriterUrl}`);
-        tabPage = await browser.newPage();
-        await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
-      } else {
-        console.log(`📄 [Tab 0] Found existing notewriter tab: ${tabPage.url()}`);
-        if (freshStart || !tabPage.url().includes(username)) {
-          console.log(`   [Tab 0] ${freshStart ? '🔄 Fresh start - reloading' : 'Navigating to'} ${notewriterUrl}`);
-          await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
-        }
+  if (freshStart) {
+    // Fresh start: open a new tab (avoids stale virtualizer state)
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        console.log(`📄 Opening fresh tab: ${notewriterUrl}${attempt > 0 ? ` (retry ${attempt})` : ''}`);
+        page = await browser.newPage();
+        activeTargetId = (page.target() as any)?._targetId ?? null;
+        await page.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+        break;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.log(`   ⚠️ Tab creation failed: ${msg.slice(0, 80)}`);
+        if (attempt === 2) throw e;
+        await new Promise(r => setTimeout(r, 1600));
       }
-    } else {
-      // Additional tabs: always open fresh
-      console.log(`📄 [Tab ${i}] Opening new tab: ${notewriterUrl}`);
-      tabPage = await browser.newPage();
-      await tabPage.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
     }
-
-    // If fresh start, scroll to top
-    if (freshStart) {
-      await tabPage.evaluate(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-      });
-      await new Promise(r => setTimeout(r, 500));
+    page = page!;
+  } else if (existingNotewriterTabs.length > 0) {
+    // Pick the tab scrolled furthest down (highest scrollTop = most progress)
+    let bestTab = existingNotewriterTabs[0]!;
+    let bestScroll = await bestTab.evaluate(() => document.documentElement.scrollTop).catch(() => -1);
+    for (let i = 1; i < existingNotewriterTabs.length; i++) {
+      const scrollPos = await existingNotewriterTabs[i]!.evaluate(() => document.documentElement.scrollTop).catch(() => -1);
+      if (scrollPos > bestScroll) {
+        bestScroll = scrollPos;
+        bestTab = existingNotewriterTabs[i]!;
+      }
     }
-
-    tabPages.push(tabPage);
+    page = bestTab;
+    activeTargetId = (page.target() as any)?._targetId ?? null;
+    console.log(`📄 Reusing furthest-scrolled tab (scrollY=${bestScroll}, ${existingNotewriterTabs.length} tab${existingNotewriterTabs.length > 1 ? "s" : ""} found): ${page.url().slice(0, 80)}`);
+  } else {
+    // No existing tabs — open a new one
+    console.log(`📄 Opening new tab: ${notewriterUrl}`);
+    page = await browser.newPage();
+    activeTargetId = (page.target() as any)?._targetId ?? null;
+    await page.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
   }
 
-  // Wait for content on all tabs
-  await Promise.all(tabPages.map((p, i) => waitForContent(p, i)));
-
-  // Position tabs: tab i scrolls past (i * SCROLLS_PER_TAB_OFFSET) positions
-  if (numTabs > 1) {
-    console.log(`\n📍 Positioning ${numTabs} tabs across the notewriter list...\n`);
-    // Position tabs 1-N (tab 0 starts from current position)
-    await Promise.all(
-      tabPages.slice(1).map((p, idx) =>
-        quickScroll(p, (idx + 1) * SCROLLS_PER_TAB_OFFSET, idx + 1)
-      )
-    );
+  // If fresh start, scroll to top
+  if (freshStart) {
+    await page.evaluate(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+    await new Promise(r => setTimeout(r, 400));
   }
 
-  console.log(`\n${"=".repeat(60)}`);
-  console.log(`🏁 All ${numTabs} tabs ready. Starting parallel scrape...\n`);
+  await waitForContent(page);
 
-  // Shared map — JS is single-threaded so no race conditions
+  // Shared map — create before positioning so scrollToPosition can save sampled notes
   const collectedNotes = new Map<string, ScrapedNote>();
 
-  // Run all tabs in parallel
-  await Promise.all(
-    tabPages.map((p, i) => scrapeTab(p, collectedNotes, i, maxNotes))
-  );
+  // The oldest known note — reaching this means we've covered the full list (also used in scrapeTab)
+  // BOTTOM_NOTE_ID is defined at module scope
+  const OCT_23_NOTE_ID = 1985806966241812487n; // Must reach at least this far to justify restarting
+  const MAX_AUTO_RESTARTS = 20;
+  let autoRestartCount = 0;
+  let currentStartFrom = startFromNoteId;
 
-  console.log(`\n✅ All tabs finished! Collected ${collectedNotes.size} notes total\n`);
+  // Auto-restart loop: if scraping stops before reaching the bottom,
+  // automatically open a fresh tab and resume from the last position
+  autoRestartLoop:
+  while (autoRestartCount <= MAX_AUTO_RESTARTS) {
+    if (autoRestartCount > 0) {
+      console.log(`\n${"=".repeat(60)}`);
+      console.log(`🔄 Auto-restart ${autoRestartCount}/${MAX_AUTO_RESTARTS} — reconnecting and opening fresh tab...`);
+      try {
+        try { browser.disconnect(); } catch { /* may already be disconnected */ }
+        await new Promise(r => setTimeout(r, 800));
+        browser = await puppeteer.connect({
+          browserURL: "http://127.0.0.1:9222",
+          protocolTimeout: 120000,
+          defaultViewport: null,
+        });
+        page = await browser.newPage();
+        activeTargetId = (page.target() as any)?._targetId ?? null;
+        await page.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
+        await waitForContent(page);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.log(`   💀 Restart failed: ${msg.slice(0, 80)}`);
+        break autoRestartLoop;
+      }
+    }
 
-  // Close extra tabs (keep tab 0)
-  for (let i = 1; i < tabPages.length; i++) {
-    try {
-      await tabPages[i]!.close();
-      console.log(`   Closed tab ${i}`);
-    } catch { /* tab may already be closed */ }
+    // Scroll to start position if resuming
+    if (currentStartFrom) {
+      console.log(`\n📍 ${autoRestartCount > 0 ? 'Resuming' : 'Starting'} from note ${currentStartFrom} — scrolling to position...`);
+      try {
+        const posResult = await scrollToPosition(page, browser, notewriterUrl, collectedNotes, currentStartFrom, 3000);
+        page = posResult.page;
+        browser = posResult.browser;
+      } catch (scrollErr) {
+        const msg = scrollErr instanceof Error ? scrollErr.message : String(scrollErr);
+        console.log(`   ⚠️ Scroll-to-position failed: ${msg.slice(0, 100)}`);
+        try {
+          const recovered = await reconnectToTab(browser, notewriterUrl, "[scraper]");
+          page = recovered.page;
+          browser = recovered.browser;
+        } catch { /* will fail at scrapeTab start if still broken */ }
+        console.log(`   📍 Starting from current scroll position instead`);
+      }
+    }
+
+    // Start scraping
+    console.log(`\n${"=".repeat(60)}`);
+    console.log(`🏁 ${autoRestartCount > 0 ? `Restart ${autoRestartCount}: scraping` : 'Starting scrape'}...\n`);
+
+    await scrapeTab(browser, page, collectedNotes, maxNotes, notewriterUrl);
+
+    // Check if we reached the bottom
+    const scrapedNoteIds = [...collectedNotes.keys()]
+      .filter(id => /^\d+$/.test(id))
+      .map(id => BigInt(id));
+    const oldestScraped = scrapedNoteIds.length > 0
+      ? scrapedNoteIds.reduce((a, b) => a < b ? a : b)
+      : null;
+
+    if (oldestScraped !== null && oldestScraped <= BOTTOM_NOTE_ID) {
+      console.log(`\n🎉 Reached the bottom! Oldest scraped: ${oldestScraped}`);
+      break autoRestartLoop;
+    }
+
+    if (collectedNotes.size >= maxNotes) {
+      console.log(`\n📊 Hit max notes limit (${maxNotes}) — stopping.`);
+      break autoRestartLoop;
+    }
+
+    // Don't restart if we haven't even reached Oct 23 — something is fundamentally broken
+    if (oldestScraped !== null && oldestScraped > OCT_23_NOTE_ID) {
+      console.log(`\n⚠️ Didn't reach Oct 23 (oldest scraped: ${oldestScraped}). Not restarting.`);
+      break autoRestartLoop;
+    }
+
+    // Not at bottom yet — auto-restart from where we stopped
+    if (oldestScraped !== null) {
+      currentStartFrom = oldestScraped;
+      autoRestartCount++;
+      console.log(`\n⏩ Haven't reached bottom yet (oldest: ${oldestScraped}). Auto-restarting...`);
+    } else {
+      console.log(`\n⚠️ No notes scraped in this run — stopping.`);
+      break autoRestartLoop;
+    }
+  } // end autoRestartLoop
+
+  if (autoRestartCount > MAX_AUTO_RESTARTS) {
+    console.log(`\n⚠️ Hit auto-restart limit (${MAX_AUTO_RESTARTS}). Stopping.`);
   }
+
+  console.log(`\n✅ Scrape finished! Collected ${collectedNotes.size} notes total (${qualityRetryCount} quality retries)\n`);
 
   if (collectedNotes.size === 0) {
     console.log("No notes collected.");
@@ -764,36 +1323,26 @@ async function main() {
     }
   }
 
-  // Derive canonical tweet_ids from snapshot majority vote
-  console.log("\n🔗 Deriving tweet_ids from snapshot majority vote...");
-  const deriveResult = await supabase.deriveTweetIds();
-  console.log(`   • Total notes:  ${deriveResult.total}`);
-  console.log(`   • Updated:      ${deriveResult.updated}`);
-  console.log(`   • Flagged:      ${deriveResult.flagged}`);
-  console.log(`   • No votes yet: ${deriveResult.noVotes}`);
-
-  // Detect snapshot anomalies
-  console.log("\n🔍 Detecting snapshot anomalies...");
-  const anomalies = await supabase.detectSnapshotAnomalies();
-  console.log(`   • View count decreases: ${anomalies.viewCountDecreases.length}`);
-  console.log(`   • Note text changes:    ${anomalies.noteTextChanges.length}`);
-  if (anomalies.viewCountDecreases.length > 0) {
-    console.log("\n   View count decreases (likely virtualizer corruption):");
-    for (const a of anomalies.viewCountDecreases.slice(0, 10)) {
-      console.log(`     ${a.note_id}: ${a.from} → ${a.to} (${a.fromDate} → ${a.toDate})`);
-    }
-    if (anomalies.viewCountDecreases.length > 10) {
-      console.log(`     ... and ${anomalies.viewCountDecreases.length - 10} more`);
-    }
+  // Run snapshot reconciliation (tier classification, collision resolution, canonical data)
+  console.log("\n🔄 Running snapshot reconciliation...");
+  try {
+    const { reconcile } = await import("./reconcileSnapshots.js");
+    const result = await reconcile();
+    console.log(`   • Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk}`);
+    console.log(`   • Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`);
+    console.log(`   • Notes written: ${result.notesWritten}`);
+  } catch (err) {
+    console.error("   ⚠️ Reconciliation failed (non-fatal):", err);
   }
-  if (anomalies.noteTextChanges.length > 0) {
-    console.log("\n   Note text changes (likely virtualizer corruption):");
-    for (const a of anomalies.noteTextChanges.slice(0, 10)) {
-      console.log(`     ${a.note_id}: ${a.texts.length} different texts across ${a.dates.length} snapshots`);
-    }
-    if (anomalies.noteTextChanges.length > 10) {
-      console.log(`     ... and ${anomalies.noteTextChanges.length - 10} more`);
-    }
+
+  // Print resume command based on oldest note scraped
+  const scrapedNoteIds = [...collectedNotes.keys()]
+    .filter(id => /^\d+$/.test(id))
+    .map(id => BigInt(id));
+  if (scrapedNoteIds.length > 0) {
+    const oldestReached = scrapedNoteIds.reduce((a, b) => a < b ? a : b);
+    console.log(`\n📌 To resume from where this run stopped:`);
+    console.log(`   bun run src/scripts/scrapeNotewriterClickThrough.ts ${maxNotes} --fresh --start-from ${oldestReached}`);
   }
 
   console.log("\n💡 Chrome browser left open. Close it manually when done.");
