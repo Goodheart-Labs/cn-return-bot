@@ -5,7 +5,7 @@ async function investigate() {
 
   // Get scraped notes that DON'T have placeholder IDs
   const { data: scraped } = await supabase["client"]
-    .from("scraped_notewriter_notes")
+    .from("canonical_note_information")
     .select("note_id, tweet_id")
     .not("note_id", "like", "tweet_%")
     .order("note_id", { ascending: false })

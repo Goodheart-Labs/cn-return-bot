@@ -34,12 +34,12 @@ async function main() {
   const testId = "2012678261562576959";
   console.log(`\nTest: ID ${testId} -> ${getDateFromSnowflakeId(testId).toISOString()}`);
 
-  // Also get notes directly from scraped_notewriter_notes with view_count
+  // Also get notes directly from canonical_note_information with view_count
   const { data: notesWithViews } = await client
-    .from("scraped_notewriter_notes")
+    .from("canonical_note_information")
     .select("note_id, view_count")
     .not("view_count", "is", null);
-  console.log("\nscraped_notewriter_notes with views:", notesWithViews?.length);
+  console.log("\ncanonical_note_information with views:", notesWithViews?.length);
 
   // Add these to latestViews if not already present
   for (const n of notesWithViews || []) {

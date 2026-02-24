@@ -2,7 +2,7 @@
 
 ## Overview
 
-We scrape the X notewriter page repeatedly, producing `scraped_notewriter_snapshots` rows. Each snapshot captures a point-in-time observation of a note: its note_id, tweet_id, cn_status, note_text, view_count, etc. Scraping is imperfect — modals may not render fully, the scraper may grab the wrong tweet link, tweets get deleted. This system classifies snapshots by quality and resolves conflicts to produce reliable canonical data in `scraped_notewriter_notes`.
+We scrape the X notewriter page repeatedly, producing `scraped_notewriter_snapshots` rows. Each snapshot captures a point-in-time observation of a note: its note_id, tweet_id, cn_status, note_text, view_count, etc. Scraping is imperfect — modals may not render fully, the scraper may grab the wrong tweet link, tweets get deleted. This system classifies snapshots by quality and resolves conflicts to produce reliable canonical data in `canonical_note_information`.
 
 ## Data Flow
 
@@ -17,7 +17,7 @@ scraped_notewriter_snapshots (raw time-series)
         ↓
   [3] Majority Vote Resolution
         ↓
-scraped_notewriter_notes (canonical, one row per note)
+canonical_note_information (canonical, one row per note)
 ```
 
 ## Step 1: Quality Tiers
@@ -96,7 +96,7 @@ For each unique note_id, select the best available snapshot:
 2. Take the highest-tier non-junk snapshot (platinum > gold > silver)
 3. Within the same tier, prefer the newest snapshot (most recent scrape)
 4. For colliding pairs, only use the current majority-vote winner's pairing. If no majority (tie), set tweet_id to null
-5. Write the result to `scraped_notewriter_notes`
+5. Write the result to `canonical_note_information`
 
 ### Fields derived
 - `note_id` — from snapshot
@@ -109,7 +109,7 @@ For each unique note_id, select the best available snapshot:
 - `coherence_score` — 0.0–1.0 consistency measure across snapshots (new column)
 - `last_reconciled_at` — timestamp of last reconciliation run (new column)
 
-### Migration: `scraped_notewriter_notes`
+### Migration: `canonical_note_information`
 Add columns: `cn_status`, `view_count`, `data_tier`, `last_reconciled_at`. Drop `tweet_id_flag` (replaced by tier system).
 
 ### When to run

@@ -1,38 +1,41 @@
 /**
- * Sonar Pro Bot
+ * Opus Direct + Grok Bot
  *
- * Same pipeline as opus-main but uses Perplexity's Sonar Pro for search,
- * which provides deeper, more thorough search results.
+ * Same as opus-direct (punchy, fact-first writing style) but with Grok X search
+ * running in parallel with Perplexity. Grok provides real-time X/Twitter context
+ * (thread, quoted tweets, replies) which helps identify primary sources.
  */
 
 import { Bot, PipelineResult } from "./types";
-import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteFn as writeNote } from "../pipeline/writeNote";
+import { enrichedSearch } from "../pipeline/enrichedSearch";
+import { writeNoteDirectFn as writeNote } from "../pipeline/writeNoteDirect";
 import { check as checkNote } from "../pipeline/check";
 
 const MODELS = {
   search: "perplexity/sonar-pro",
-  noteWriting: "anthropic/claude-opus-4.5",
-  checking: "anthropic/claude-sonnet-4",
+  grokSearch: "grok-4-fast",
+  noteWriting: "anthropic/claude-opus-4.6",
+  checking: "anthropic/claude-opus-4.6",
 };
 
-export const sonarPro: Bot = {
-  id: "sonar-pro",
-  name: "Opus 4.5 + Sonar Pro",
-  description: "Opus 4.5 with Perplexity Sonar Pro for deeper search results",
-  weight: 0,
+export const opusDirectGrok: Bot = {
+  id: "opus-direct-grok",
+  name: "Opus 4.6 Direct + Grok",
+  description: "Direct style bot with Grok X search for tweet context",
+  weight: 7,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {
-      const searchResult = await perplexitySearch(
+      const searchResult = await enrichedSearch(
         {
           text: content.text,
           media: content.media,
           searchResults: "",
           retweetContext: content.retweetContext,
         },
-        { model: MODELS.search }
+        { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
+        post.id
       );
       lastStage = "search";
 

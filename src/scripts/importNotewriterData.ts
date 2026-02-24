@@ -2,7 +2,7 @@
  * Import Scraped Notewriter Data
  *
  * Imports data scraped from x.com/i/communitynotes/u/[username]
- * Uses separate tables (scraped_notewriter_notes + scraped_notewriter_snapshots)
+ * Uses separate tables (canonical_note_information + scraped_notewriter_snapshots)
  * to avoid mixing with verified data.
  *
  * Each import creates new snapshot rows for time-series tracking.

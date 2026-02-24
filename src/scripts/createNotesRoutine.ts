@@ -6,15 +6,11 @@ import PQueue from "p-queue";
 import {
   selectRandomBot,
   getBotProbabilities,
-  getEnabledBots,
-  Bot,
-  PipelineResult,
 } from "../bots";
 
 const maxPosts = 10; // Maximum posts to process per run
 const concurrencyLimit = 3; // Process 3 posts at a time to avoid rate limiting
 const MAX_RUNTIME_MS = 5 * 60 * 1000; // 5 minutes maximum runtime
-const MAX_BOT_RETRIES = 3; // Maximum retries with different bots
 
 // Global timeout to prevent hanging
 const globalTimeout = setTimeout(async () => {
@@ -62,7 +58,8 @@ async function main() {
       try {
         skipPostIds = await supabaseLogger.getProcessedTweetIds();
         allProcessedIds = await supabaseLogger.getAllProcessedTweetIds();
-        console.log(`[main] Permanently skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed`);
+        const backlogSize = allProcessedIds.size - skipPostIds.size;
+        console.log(`[main] Permanently skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed, ${backlogSize} in retry backlog`);
       } catch (err) {
         console.warn("[main] Failed to get processed tweet IDs:", err);
       }
@@ -70,20 +67,44 @@ async function main() {
       console.log("[main] No Supabase logger - not skipping any posts");
     }
 
-    // Fetch eligible posts, only excluding permanently-skipped tweets
-    const allEligible = await fetchEligiblePosts(maxPosts * 2, skipPostIds, 3);
+    // Fetch eligible posts (up to 200) to measure true backlog, only excluding permanently-skipped tweets
+    const BACKLOG_LIMIT = 200;
+    const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 10);
 
     // Separate into new tweets and retries
     const newPosts = allEligible.filter((p) => !allProcessedIds.has(p.id));
     const retryPosts = allEligible.filter((p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id));
 
-    // New tweets first, then fill remaining slots with retries
+    // Log backlog size (full eligible pool from API)
+    const backlogNew = newPosts.length;
+    const backlogRetry = retryPosts.length;
+    const backlogTotal = allEligible.length;
+    const backlogHitLimit = backlogTotal >= BACKLOG_LIMIT;
+    console.log(`[main] Backlog: ${backlogTotal} eligible tweets (${backlogNew} new, ${backlogRetry} retries)${backlogHitLimit ? " — hit limit, true backlog may be larger" : ""}`);
+
+    // New tweets first, then fill remaining slots with retries — only process maxPosts
     const posts = [
       ...newPosts.slice(0, maxPosts),
       ...retryPosts.slice(0, Math.max(0, maxPosts - newPosts.length)),
     ].slice(0, maxPosts);
 
-    console.log(`[main] ${newPosts.length} new, ${retryPosts.length} retryable → processing ${posts.length} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`);
+    console.log(`[main] Processing ${posts.length} of ${backlogTotal} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`);
+
+    // Persist backlog snapshot for trend tracking
+    if (supabaseLogger) {
+      try {
+        await supabaseLogger.logRunSnapshot({
+          backlog_total: backlogTotal,
+          backlog_new: backlogNew,
+          backlog_retry: backlogRetry,
+          backlog_hit_limit: backlogHitLimit,
+          posts_processed: posts.length,
+          commit_sha: commit,
+        });
+      } catch (err) {
+        console.warn("[main] Failed to log run snapshot:", err);
+      }
+    }
 
     if (!posts.length) {
       console.log("No eligible posts found (new or retryable).");
@@ -154,57 +175,24 @@ async function main() {
           }
         }
 
-        // Try bots until one succeeds or we run out of retries
-        let result: PipelineResult | null = null;
-        let selectedBot: Bot | null = null;
-        const triedBots = new Set<string>();
-        const enabledBots = getEnabledBots();
+        // Select a random bot and run it (LLM layer handles retries for transient errors)
+        const selectedBot = selectRandomBot();
+        console.log(
+          `[main] Tweet ${post.id} with bot: ${selectedBot.id}`
+        );
+        botUsage[selectedBot.id] = (botUsage[selectedBot.id] || 0) + 1;
 
-        for (
-          let attempt = 0;
-          attempt < MAX_BOT_RETRIES && attempt < enabledBots.length;
-          attempt++
-        ) {
-          // Select a random bot, excluding already tried ones
-          let bot = selectRandomBot();
-          let retryCount = 0;
-          while (triedBots.has(bot.id) && retryCount < 10) {
-            bot = selectRandomBot();
-            retryCount++;
-          }
+        const result = await selectedBot.runPipeline(post, content);
 
-          if (triedBots.has(bot.id)) {
-            // All bots tried, find one we haven't tried
-            const untried = enabledBots.find((b) => !triedBots.has(b.id));
-            if (!untried) break;
-            bot = untried;
-          }
-
-          triedBots.add(bot.id);
-          selectedBot = bot;
-          console.log(
-            `[main] Tweet ${post.id} attempt ${attempt + 1} with bot: ${bot.id}`
-          );
-          botUsage[bot.id] = (botUsage[bot.id] || 0) + 1;
-
-          // Run the bot's pipeline
-          result = await bot.runPipeline(post, content);
-          if (result) break; // Success, exit retry loop
-
-          console.log(
-            `[main] Bot ${bot.id} failed for post ${post.id}, trying another bot...`
-          );
-        }
-
-        // Handle pipeline failure (no result from any bot)
-        if (!result || !selectedBot) {
+        // Handle pipeline failure (bot returned null)
+        if (!result) {
           if (supabaseLogger && pipelineRunId) {
             try {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: "failed",
-                outcome_reason: "all_bots_failed",
+                outcome_reason: "bot_returned_null",
                 final_stage: "started",
-                bot_id: selectedBot?.id,
+                bot_id: selectedBot.id,
               });
             } catch (err) {
               console.warn(`[main] Failed to complete pipeline run:`, err);
@@ -291,6 +279,20 @@ async function main() {
                 outcome: "rejected",
                 outcome_reason: "scoring_filters_failed",
                 final_stage: "scoring",
+                bot_id: selectedBot.id,
+              });
+            } catch (err) {
+              console.warn(`[main] Failed to complete pipeline run:`, err);
+            }
+          }
+        } else if (result.noteResult.status === "SOURCE_TRUST_FAILED") {
+          // Source trustworthiness gate rejected the note
+          if (supabaseLogger && pipelineRunId) {
+            try {
+              await supabaseLogger.completePipelineRun(pipelineRunId, {
+                outcome: "rejected",
+                outcome_reason: "source_trust_failed",
+                final_stage: "source_trust",
                 bot_id: selectedBot.id,
               });
             } catch (err) {

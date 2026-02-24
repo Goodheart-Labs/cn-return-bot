@@ -28,9 +28,9 @@ async function main() {
     }
   }
 
-  // Get tweet_ids and note_text from scraped_notewriter_notes
+  // Get tweet_ids and note_text from canonical_note_information
   const noteIds = [...noteData.keys()];
-  const { data: scrapedNotes } = await s.from("scraped_notewriter_notes")
+  const { data: scrapedNotes } = await s.from("canonical_note_information")
     .select("note_id, tweet_id, note_text")
     .in("note_id", noteIds);
 

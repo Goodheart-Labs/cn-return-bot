@@ -1,9 +1,8 @@
 /**
- * Opus Main Bot (LEGACY - disabled)
+ * Opus Main Bot
  *
- * Original primary bot using the legacy note writer (raw character counting,
- * no URL-aware length, no CRITICAL LENGTH CONSTRAINT in prompt).
- * Kept for historical data tracking.
+ * Primary bot using the original note writer prompt (raw character counting).
+ * Uses Perplexity Sonar for search, Opus 4.5 for writing, Sonnet 4 for checking.
  */
 
 import { Bot, PipelineResult } from "../types";
@@ -19,9 +18,9 @@ const MODELS = {
 
 export const opusMainLegacy: Bot = {
   id: "opus-main",
-  name: "Opus 4.5 (Main Legacy)",
-  description: "Original primary bot using legacy note writer (raw char counting)",
-  weight: 0,
+  name: "Opus 4.5 (Main)",
+  description: "Primary bot using Opus 4.5 with original note writer prompt",
+  weight: 40,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

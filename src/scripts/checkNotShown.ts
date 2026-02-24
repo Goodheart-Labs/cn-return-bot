@@ -32,7 +32,7 @@ async function main() {
 
   // Get the scraped note text for NOT_SHOWN notes
   const { data: scrapedNotes } = await client
-    .from("scraped_notewriter_notes")
+    .from("canonical_note_information")
     .select("note_id, note_text")
     .in("note_id", noteIds);
 

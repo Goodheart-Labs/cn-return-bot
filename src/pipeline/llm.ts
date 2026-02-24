@@ -1,26 +1,80 @@
 import OpenAI from "openai";
 
-let _llm: OpenAI.Chat.Completions | undefined;
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF_MS = 1000;
 
-export function getLlm(): OpenAI.Chat.Completions {
-  if (!_llm) {
+let _client: OpenAI | undefined;
+
+function getClient(): OpenAI {
+  if (!_client) {
     if (!process.env.OPENROUTER_API_KEY) {
       throw new Error(
         "OPENROUTER_API_KEY environment variable is required but not set"
       );
     }
-    _llm = new OpenAI({
+    _client = new OpenAI({
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: process.env.OPENROUTER_API_KEY,
-    }).chat.completions;
+      maxRetries: 2, // SDK built-in retries for 429, 500, 502, 503
+    });
   }
-  return _llm;
+  return _client;
 }
 
-// Backwards-compatible: existing code uses `llm.create(...)` directly
-// This proxy defers the env var check until first actual LLM call
+function isRetryableError(err: any): boolean {
+  const status = err?.status ?? err?.response?.status;
+  // OpenRouter wraps provider failures as 400 "Provider returned error"
+  if (status === 400 && String(err?.message ?? "").includes("Provider returned error")) return true;
+  // Standard retryable codes (in case SDK retries are exhausted)
+  if (status === 429 || status === 502 || status === 503) return true;
+  // Network errors
+  if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT") return true;
+  return false;
+}
+
+async function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Wrap an LLM create call with retry + exponential backoff.
+ * Retries on OpenRouter "400 Provider returned error", 429, 502, 503, and network errors.
+ */
+async function callWithRetry(
+  params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
+): Promise<OpenAI.Chat.Completions.ChatCompletion> {
+  let lastError: any;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await getClient().chat.completions.create(params);
+    } catch (err: any) {
+      lastError = err;
+      if (attempt < MAX_RETRIES && isRetryableError(err)) {
+        const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
+        console.warn(
+          `[llm] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}): ${err?.status ?? "?"} ${String(err?.message ?? "").slice(0, 100)}. Retrying in ${backoff}ms...`
+        );
+        await sleep(backoff);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastError;
+}
+
+export function getLlm(): OpenAI.Chat.Completions {
+  return getClient().chat.completions;
+}
+
+// Backwards-compatible: existing code uses `llm.create(...)` directly.
+// The proxy intercepts `create` calls and wraps them with retry logic,
+// so all 17 existing call sites get automatic retry for free.
 export const llm = new Proxy({} as OpenAI.Chat.Completions, {
   get(_target, prop) {
+    if (prop === "create") {
+      return callWithRetry;
+    }
     return (getLlm() as any)[prop];
   },
 });

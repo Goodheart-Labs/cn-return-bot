@@ -445,7 +445,7 @@ export class SupabaseLogger {
     source_url?: string;
   }): Promise<void> {
     const { error } = await this.client
-      .from("scraped_notewriter_notes")
+      .from("canonical_note_information")
       .upsert(
         {
           note_id: data.note_id,
@@ -475,6 +475,10 @@ export class SupabaseLogger {
     helpful_count?: number;
     somewhat_helpful_count?: number;
     not_helpful_count?: number;
+    rater_tags?: string[];
+    tweet_handle?: string;
+    tweet_text?: string;
+    tweet_time?: string;
   }): Promise<void> {
     const { error } = await this.client
       .from("scraped_notewriter_snapshots")
@@ -488,6 +492,10 @@ export class SupabaseLogger {
         helpful_count: data.helpful_count,
         somewhat_helpful_count: data.somewhat_helpful_count,
         not_helpful_count: data.not_helpful_count,
+        rater_tags: data.rater_tags,
+        tweet_handle: data.tweet_handle,
+        tweet_text: data.tweet_text,
+        tweet_time: data.tweet_time,
       });
 
     if (error) {
@@ -498,7 +506,7 @@ export class SupabaseLogger {
 
   async scrapedNotewriterNoteExists(noteId: string): Promise<boolean> {
     const { data, error } = await this.client
-      .from("scraped_notewriter_notes")
+      .from("canonical_note_information")
       .select("note_id")
       .eq("note_id", noteId)
       .single();
@@ -516,7 +524,7 @@ export class SupabaseLogger {
    */
   async findScrapedNoteByTweetId(tweetId: string): Promise<string | null> {
     const { data, error } = await this.client
-      .from("scraped_notewriter_notes")
+      .from("canonical_note_information")
       .select("note_id")
       .eq("tweet_id", tweetId)
       .single();
@@ -547,7 +555,7 @@ export class SupabaseLogger {
 
     // Update the note itself
     const { error: noteError } = await this.client
-      .from("scraped_notewriter_notes")
+      .from("canonical_note_information")
       .update({ note_id: newNoteId })
       .eq("note_id", oldNoteId);
 
@@ -614,7 +622,7 @@ export class SupabaseLogger {
    */
   async getScrapedNoteIdsInRange(minId: string, maxId: string): Promise<string[]> {
     const { data, error } = await this.client
-      .from("scraped_notewriter_notes")
+      .from("canonical_note_information")
       .select("note_id")
       .gte("note_id", minId)
       .lte("note_id", maxId)
@@ -658,7 +666,7 @@ export class SupabaseLogger {
       data_tier: string | null;
       last_reconciled_at: string | null;
     }>(
-      (client) => client.from("scraped_notewriter_notes")
+      (client) => client.from("canonical_note_information")
         .select("note_id, cn_status, view_count, data_tier, last_reconciled_at")
         .neq("data_tier", "junk")
     );
@@ -1070,7 +1078,7 @@ export class SupabaseLogger {
       cn_status: string | null;
       data_tier: string | null;
     }>(
-      (client) => client.from("scraped_notewriter_notes")
+      (client) => client.from("canonical_note_information")
         .select("note_id, view_count, cn_status, data_tier")
         .neq("data_tier", "junk")
     );
@@ -1090,11 +1098,11 @@ export class SupabaseLogger {
   /**
    * Derive canonical tweet_ids for scraped notes using snapshot majority vote.
    *
-   * For each note_id in scraped_notewriter_notes:
+   * For each note_id in canonical_note_information:
    * - Collect all non-null tweet_ids from its snapshots
    * - If the top tweet_id has >= 2/3 of votes AND matches the `notes` table (if entry exists), clear the flag
    * - Otherwise, set tweet_id_flag with the reason
-   * - Update scraped_notewriter_notes.tweet_id to the majority winner (if there is one)
+   * - Update canonical_note_information.tweet_id to the majority winner (if there is one)
    *
    * Returns summary stats.
    */
@@ -1107,7 +1115,7 @@ export class SupabaseLogger {
 
     // 2. Get all scraped notes
     const scrapedNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
-      (client) => client.from("scraped_notewriter_notes")
+      (client) => client.from("canonical_note_information")
         .select("note_id, tweet_id")
     );
 
@@ -1167,7 +1175,7 @@ export class SupabaseLogger {
           updateData.tweet_id = winnerTweetId;
         }
         const { error } = await this.client
-          .from("scraped_notewriter_notes")
+          .from("canonical_note_information")
           .update(updateData)
           .eq("note_id", note.note_id);
         if (error) {
@@ -1268,6 +1276,22 @@ export class SupabaseLogger {
     if (error) {
       // Re-throw to let caller handle
       throw error;
+    }
+  }
+
+  async logRunSnapshot(data: {
+    backlog_total: number;
+    backlog_new: number;
+    backlog_retry: number;
+    backlog_hit_limit: boolean;
+    posts_processed: number;
+    commit_sha?: string;
+  }): Promise<void> {
+    const { error } = await this.client
+      .from("run_snapshots")
+      .insert(data);
+    if (error) {
+      console.warn("[SupabaseLogger] Failed to log run snapshot:", error.message);
     }
   }
 }

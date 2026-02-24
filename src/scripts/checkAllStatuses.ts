@@ -33,9 +33,9 @@ async function main() {
     console.log(`  "${status}"`);
   }
 
-  // Check scraped_notewriter_notes too
+  // Check canonical_note_information too
   const { data: scrapedNotes } = await client
-    .from("scraped_notewriter_notes")
+    .from("canonical_note_information")
     .select("cn_status");
 
   const scrapedStatuses = new Set<string>();
@@ -43,7 +43,7 @@ async function main() {
     if (n.cn_status) scrapedStatuses.add(n.cn_status);
   }
 
-  console.log("\nAll unique statuses in scraped_notewriter_notes:");
+  console.log("\nAll unique statuses in canonical_note_information:");
   for (const status of [...scrapedStatuses].sort()) {
     console.log(`  "${status}"`);
   }

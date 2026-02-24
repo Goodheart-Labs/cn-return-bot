@@ -1,70 +1,245 @@
+/**
+ * Main report generator — see docs/main-report.md for documentation.
+ */
 import "dotenv/config";
-import { SupabaseLogger } from "../api/supabaseClient";
-import { writeFileSync } from "fs";
+import { getSupabaseClient } from "../api/supabaseClient";
+import { writeFileSync, mkdirSync, existsSync } from "fs";
+import { execSync } from "child_process";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-const supabase = new SupabaseLogger();
-const notes = await supabase.getNotesWithLatestSnapshots();
+const client = getSupabaseClient();
 
-// Fetch pipeline run data per bot (attempts, outcomes) - aggregated for backward compat
-const pipelineData = await supabase.getPipelineRunsByBot();
+// Paginated fetch to avoid Supabase 1000-row default limit
+async function fetchAll<T>(buildQuery: (client: SupabaseClient) => any): Promise<T[]> {
+  const PAGE_SIZE = 1000;
+  const rows: T[] = [];
+  let offset = 0;
+  while (true) {
+    const { data, error } = await (buildQuery(client) as any).range(offset, offset + PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    rows.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+  return rows;
+}
 
-// Fetch raw pipeline runs with timestamps for client-side filtering
-const pipelineRuns = await supabase.getPipelineRunsRaw();
+// Extract creation date from Twitter Snowflake ID
+function snowflakeToDate(id: string): Date {
+  const TWITTER_EPOCH = 1288834974657n;
+  return new Date(Number((BigInt(id) >> 22n) + TWITTER_EPOCH));
+}
 
-// Fetch pipeline outcomes (rejected/failed) per bot
-const pipelineOutcomes = await supabase.getPipelineOutcomesByBot();
+console.log("Fetching data...");
 
-// Fetch scraped note summary (non-junk reconciled data) for global stats
-const scrapedSummary = await supabase.getScrapedNoteSummary();
+// 1. All scraped notes from canonical (primary data source, public data enriched)
+const scrapedNotes = await fetchAll<{
+  note_id: string;
+  tweet_id: string;
+  cn_status: string | null;
+  view_count: number | null;
+  data_tier: string | null;
+  first_seen_at: string;
+  rating_count: number | null;
+  helpful_count: number | null;
+  not_helpful_count: number | null;
+  current_decided_by: string | null;
+}>(
+  (c) => c.from("canonical_note_information")
+    .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, rating_count, helpful_count, not_helpful_count, current_decided_by")
+    .neq("data_tier", "junk")
+);
+console.log(`  ${scrapedNotes.length} scraped notes (non-junk)`);
+
+// 2. Bot name + submitted_at from notes table (for enrichment only)
+const botNotes = await fetchAll<{
+  note_id: string;
+  bot_name: string | null;
+  submitted_at: string;
+}>(
+  (c) => c.from("notes").select("note_id, bot_name, submitted_at")
+);
+console.log(`  ${botNotes.length} bot notes (for bot_name mapping)`);
+
+// 3. Pipeline runs (single query with all needed fields)
+const rawPipelineRunsFull = await fetchAll<{
+  bot_id: string;
+  outcome: string;
+  outcome_reason: string | null;
+  created_at: string;
+  tweet_id: string;
+}>(
+  (c) => c.from("pipeline_runs").select("bot_id, outcome, outcome_reason, created_at, tweet_id")
+);
+console.log(`  ${rawPipelineRunsFull.length} pipeline runs`);
+
+// Compute is_retry: for each tweet_id, the earliest created_at is first try, rest are retries
+const firstSeenByTweet = new Map<string, string>();
+for (const r of rawPipelineRunsFull) {
+  const prev = firstSeenByTweet.get(r.tweet_id);
+  if (!prev || r.created_at < prev) firstSeenByTweet.set(r.tweet_id, r.created_at);
+}
+const pipelineRuns = rawPipelineRunsFull.map(r => ({
+  bot_id: r.bot_id,
+  outcome: r.outcome,
+  outcome_reason: r.outcome_reason,
+  created_at: r.created_at,
+  is_retry: r.created_at !== firstSeenByTweet.get(r.tweet_id),
+}));
+
+// Compute backlog: tweets in pipeline_runs NOT permanently resolved
+// Permanently resolved = submitted OR 2+ no_correction_needed rejections
+const submittedTweets = new Set(rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id));
+const noCorrectionCounts = new Map<string, number>();
+for (const r of rawPipelineRunsFull) {
+  if (r.outcome === "rejected" && r.outcome_reason === "no_correction_needed") {
+    noCorrectionCounts.set(r.tweet_id, (noCorrectionCounts.get(r.tweet_id) || 0) + 1);
+  }
+}
+const allPipelineTweets = new Set(rawPipelineRunsFull.map(r => r.tweet_id));
+const backlogTweets = [...allPipelineTweets].filter(tid => {
+  if (submittedTweets.has(tid)) return false;
+  if ((noCorrectionCounts.get(tid) || 0) >= 2) return false;
+  return true;
+});
+const backlogSize = backlogTweets.length;
+console.log(`  Backlog: ${backlogSize} tweets not permanently resolved (of ${allPipelineTweets.size} unique tweets)`);
+
+// 4b. Run snapshots (backlog trend)
+const runSnapshots = await fetchAll<{
+  created_at: string;
+  backlog_total: number;
+  backlog_new: number;
+  backlog_retry: number;
+  backlog_hit_limit: boolean;
+  posts_processed: number;
+}>(
+  (c) => c.from("run_snapshots").select("created_at, backlog_total, backlog_new, backlog_retry, backlog_hit_limit, posts_processed").order("created_at", { ascending: true })
+);
+console.log(`  ${runSnapshots.length} run snapshots`);
+
+// 5. Video info from pipeline_runs (submitted tweets only)
+const videoRuns = await fetchAll<{
+  tweet_id: string;
+  has_video: boolean | null;
+}>(
+  (c) => c.from("pipeline_runs").select("tweet_id, has_video").eq("outcome", "submitted")
+);
+const videoByTweet = new Map<string, boolean>();
+for (const r of videoRuns) {
+  if (r.tweet_id && r.has_video !== null) videoByTweet.set(r.tweet_id, r.has_video);
+}
+console.log(`  ${videoRuns.length} pipeline runs with video info`);
+
+// 6. Competing notes summary
+const competingData = await fetchAll<{
+  tweet_id: string;
+  note_id: string;
+  our_note_id: string;
+  current_status: string | null;
+}>(
+  (c) => c.from("competing_notes").select("tweet_id, note_id, our_note_id, current_status")
+);
+const totalCompeting = competingData.length;
+const helpfulCompeting = competingData.filter(c => c.current_status === "CURRENTLY_RATED_HELPFUL").length;
+console.log(`  ${totalCompeting} competing notes (${helpfulCompeting} helpful)`);
+
+// Build bot_name lookup from notes table
+const botInfoMap = new Map<string, { bot_name: string; submitted_at: string }>();
+for (const n of botNotes) {
+  if (n.note_id) {
+    botInfoMap.set(n.note_id, {
+      bot_name: n.bot_name || "unknown",
+      submitted_at: n.submitted_at,
+    });
+  }
+}
+
+// Enrich scraped notes with bot_name and date
+const notes = scrapedNotes.map((n) => {
+  const info = botInfoMap.get(n.note_id);
+  // Use submitted_at from notes table, or derive from Snowflake ID
+  let noteDate: string;
+  if (info?.submitted_at) {
+    noteDate = info.submitted_at;
+  } else {
+    try {
+      noteDate = snowflakeToDate(n.note_id).toISOString();
+    } catch {
+      noteDate = n.first_seen_at;
+    }
+  }
+  return {
+    note_id: n.note_id,
+    cn_status: n.cn_status || "UNKNOWN",
+    view_count: n.view_count || 0,
+    bot_name: info?.bot_name || "pre-tracking",
+    submitted_at: noteDate,
+    has_video: videoByTweet.get(n.tweet_id) ?? false,
+  };
+});
 
 // Define active vs legacy bots
-const activeBots = ["opus-main-v2", "opus-4.6", "sonar-pro", "kimi-k2", "opus-research"];
-const legacyBots = ["opus-main", "opus-scored", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "opus-concise"];
+const activeBots = ["opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok", "opus-main-v2-grok"];
+const legacyBots = ["opus-4.6", "sonar-pro", "kimi-k2", "opus-research", "opus-verified", "opus-concise", "opus-scored", "opus-strict", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking"];
 
 // Check for notes from unknown bots
 const knownBots = new Set([...activeBots, ...legacyBots]);
-const unknownBotNotes = notes.filter(n => n.bot_name && !knownBots.has(n.bot_name));
+const unknownBotNotes = notes.filter((n) => !knownBots.has(n.bot_name));
 if (unknownBotNotes.length > 0) {
-  const unknownBots = [...new Set(unknownBotNotes.map(n => n.bot_name))];
-  throw new Error(`Found ${unknownBotNotes.length} notes from unknown bots: ${unknownBots.join(", ")}. Add them to activeBots or legacyBots in generateHtmlReport.ts`);
+  const unknownBots = [...new Set(unknownBotNotes.map((n) => n.bot_name))];
+  throw new Error(
+    `Found ${unknownBotNotes.length} notes from unknown bots: ${unknownBots.join(", ")}. Add them to activeBots or legacyBots in generateMainReport.ts`
+  );
 }
 
-// Compute notes per day by bot for daily chart
-const dailyByDayBot: Record<string, Record<string, number>> = {};
-for (const note of notes) {
-  const day = note.submitted_at.slice(0, 10);
-  const bot = note.bot_name || "unknown";
-  if (!dailyByDayBot[day]) dailyByDayBot[day] = {};
-  dailyByDayBot[day][bot] = (dailyByDayBot[day][bot] || 0) + 1;
+// Aggregate pipeline outcomes by bot
+const pipelineOutcomesByBot: Record<string, { note_not_needed: number; failed_to_write: number }> = {};
+for (const row of pipelineRuns) {
+  const bot = row.bot_id || "unknown";
+  if (!pipelineOutcomesByBot[bot]) pipelineOutcomesByBot[bot] = { note_not_needed: 0, failed_to_write: 0 };
+  if (row.outcome === "rejected") pipelineOutcomesByBot[bot].note_not_needed++;
+  if (row.outcome === "failed") pipelineOutcomesByBot[bot].failed_to_write++;
 }
-const dailyDays = Object.keys(dailyByDayBot).sort();
-const dailyBots = [...new Set(notes.map(n => n.bot_name || "unknown"))].sort();
-const dailyBotColors: Record<string, string> = {
-  "opus-main": "rgba(59, 130, 246, 0.8)",
-  "opus-concise": "rgba(34, 197, 94, 0.8)",
-  "gemini-flash": "rgba(245, 158, 11, 0.8)",
-  "opus-scored": "rgba(168, 85, 247, 0.8)",
-  "multi-search": "rgba(20, 184, 166, 0.8)",
-  "gemini-3-flash": "rgba(236, 72, 153, 0.8)",
-  "deepseek": "rgba(239, 68, 68, 0.8)",
-  "unknown": "rgba(156, 163, 175, 0.8)",
-};
-const dailyDatasets = dailyBots.map(bot => ({
-  label: bot,
-  data: dailyDays.map(d => dailyByDayBot[d]?.[bot] || 0),
-  backgroundColor: dailyBotColors[bot] || "rgba(107, 114, 128, 0.8)",
-}));
+
+// Total views across ALL scraped notes (global, not filtered)
+const globalTotalViews = scrapedNotes.reduce((sum, n) => sum + (n.view_count || 0), 0);
 
 // Format notes data for client-side rendering
-const notesData = notes.map((note) => ({
-  bot_name: note.bot_name || "unknown",
-  submitted_at: note.submitted_at,
-  effective_status: note.effective_status,
-  view_count: note.view_count || 0,
-  has_video: note.has_video ?? null,
+const notesData = notes.map((n) => ({
+  bot_name: n.bot_name,
+  submitted_at: n.submitted_at,
+  cn_status: n.cn_status,
+  view_count: n.view_count,
+  has_video: n.has_video,
 }));
 
-const colors = [
+// Bot color palette
+const botColors: Record<string, string> = {
+  // Active bots (solid)
+  "opus-main": "rgba(59, 130, 246, 0.8)",
+  "opus-main-v2": "rgba(99, 102, 241, 0.8)",
+  "opus-direct": "rgba(234, 88, 12, 0.8)",
+  "opus-direct-grok": "rgba(220, 38, 38, 0.8)",
+  "opus-main-v2-grok": "rgba(20, 184, 166, 0.8)",
+  // Legacy bots (faded)
+  "opus-4.6": "rgba(99, 102, 241, 0.5)",
+  "sonar-pro": "rgba(20, 184, 166, 0.5)",
+  "kimi-k2": "rgba(245, 158, 11, 0.5)",
+  "opus-research": "rgba(236, 72, 153, 0.5)",
+  "opus-verified": "rgba(139, 92, 246, 0.5)",
+  "opus-concise": "rgba(34, 197, 94, 0.5)",
+  "opus-scored": "rgba(168, 85, 247, 0.5)",
+  "opus-strict": "rgba(107, 114, 128, 0.5)",
+  "gemini-flash": "rgba(245, 158, 11, 0.5)",
+  "multi-search": "rgba(20, 184, 166, 0.5)",
+  "gemini-3-flash": "rgba(236, 72, 153, 0.5)",
+  "deepseek": "rgba(239, 68, 68, 0.5)",
+  "pre-tracking": "rgba(156, 163, 175, 0.5)",
+};
+
+const chartColors = [
   "rgba(59, 130, 246, 0.8)",
   "rgba(34, 197, 94, 0.8)",
   "rgba(168, 85, 247, 0.8)",
@@ -75,11 +250,14 @@ const colors = [
   "rgba(236, 72, 153, 0.8)",
 ];
 
+console.log(`Building report with ${notes.length} notes, ${globalTotalViews.toLocaleString()} total views...`);
+
 const html = `<!DOCTYPE html>
 <html>
 <head>
   <title>Community Notes Bot Performance</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-sankey"></script>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -109,23 +287,11 @@ const html = `<!DOCTYPE html>
       font-size: 0.9em;
       transition: all 0.2s;
     }
-    .filter-group button:hover {
-      background: #f0f0f0;
-    }
+    .filter-group button:hover { background: #f0f0f0; }
     .filter-group button.active {
       background: #3b82f6;
       color: white;
       border-color: #3b82f6;
-    }
-    .filters-row {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    .filter-label {
-      color: #666;
-      font-size: 0.85em;
-      margin-right: 8px;
     }
     .summary-cards {
       display: grid;
@@ -140,6 +306,7 @@ const html = `<!DOCTYPE html>
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .card-label { color: #666; font-size: 0.85em; }
+    .card-sub { color: #999; font-size: 0.75em; margin-top: 2px; }
     .card-value { font-size: 1.8em; font-weight: bold; margin: 5px 0; }
     .card-value.green { color: #22c55e; }
     .card-value.blue { color: #3b82f6; }
@@ -184,16 +351,30 @@ const html = `<!DOCTYPE html>
     .pct { color: #999; font-size: 0.9em; }
     .legacy { color: #9ca3af; font-weight: normal; font-size: 0.85em; }
     .legacy-row { opacity: 0.7; }
-    .generated { color: #666; margin-top: 20px; font-size: 0.9em; }
+    .data-source { color: #999; font-size: 0.8em; margin-top: 20px; text-align: right; }
   </style>
 </head>
 <body>
   <h1>Community Notes Bot Performance</h1>
+
+  <div class="summary" style="margin-bottom: 20px; padding: 12px 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <strong style="color: #333;">Current Bot Weights</strong>
+      <div style="display: flex; gap: 16px; font-size: 0.9em;">
+        <span><strong>opus-main</strong> 40%</span>
+        <span><strong>opus-main-v2</strong> 40%</span>
+        <span><strong>opus-direct</strong> 7%</span>
+        <span><strong>opus-direct-grok</strong> 7%</span>
+        <span><strong>opus-main-v2-grok</strong> 6%</span>
+      </div>
+    </div>
+  </div>
+
   <div class="header-row">
-    <p class="subtitle">Status breakdown for each bot</p>
-    <div class="filters-row">
+    <p class="subtitle">Data from canonical_note_information + public data</p>
+    <div style="display: flex; gap: 16px; align-items: center;">
       <div>
-        <span class="filter-label">Time:</span>
+        <span style="color: #666; font-size: 0.85em; margin-right: 8px;">Time:</span>
         <span class="filter-group">
           <button onclick="setTimeFilter('all')" id="btn-all" class="active">All</button>
           <button onclick="setTimeFilter('month')" id="btn-month">30d</button>
@@ -201,25 +382,25 @@ const html = `<!DOCTYPE html>
         </span>
       </div>
       <div>
-        <span class="filter-label">Media:</span>
+        <span style="color: #666; font-size: 0.85em; margin-right: 8px;">Video:</span>
         <span class="filter-group">
-          <button onclick="setMediaFilter('all')" id="btn-media-all" class="active">All</button>
-          <button onclick="setMediaFilter('video')" id="btn-media-video">Video</button>
-          <button onclick="setMediaFilter('no-video')" id="btn-media-no-video">No Video</button>
+          <button onclick="setVideoFilter('all')" id="btn-vid-all" class="active">All</button>
+          <button onclick="setVideoFilter('no-video')" id="btn-vid-no">No Video</button>
+          <button onclick="setVideoFilter('video')" id="btn-vid-yes">Video Only</button>
         </span>
       </div>
       <div>
-        <span class="filter-label">Attempt:</span>
+        <span style="color: #666; font-size: 0.85em; margin-right: 8px;">Attempts:</span>
         <span class="filter-group">
-          <button onclick="setAttemptFilter('all')" id="btn-attempt-all" class="active">All</button>
-          <button onclick="setAttemptFilter('first')" id="btn-attempt-first">First Try</button>
-          <button onclick="setAttemptFilter('retry')" id="btn-attempt-retry">Retry</button>
+          <button onclick="setRetryFilter('all')" id="btn-retry-all" class="active">All</button>
+          <button onclick="setRetryFilter('first')" id="btn-retry-first">First Try</button>
+          <button onclick="setRetryFilter('retry')" id="btn-retry-retry">Retries</button>
         </span>
       </div>
     </div>
   </div>
 
-  <div class="summary-cards">
+  <div class="summary-cards" style="grid-template-columns: repeat(6, 1fr);">
     <div class="card">
       <div class="card-label">Total Notes</div>
       <div class="card-value blue" id="total-notes">-</div>
@@ -227,38 +408,51 @@ const html = `<!DOCTYPE html>
     <div class="card">
       <div class="card-label">Helpful Rate</div>
       <div class="card-value green" id="helpful-rate">-</div>
+      <div class="card-sub" id="helpful-sub"></div>
     </div>
     <div class="card">
       <div class="card-label">Total Views</div>
       <div class="card-value purple" id="total-views">-</div>
+      <div class="card-sub" id="views-sub">across filtered notes</div>
     </div>
     <div class="card">
       <div class="card-label">Awaiting Ratings</div>
       <div class="card-value yellow" id="awaiting-ratings">-</div>
     </div>
-  </div>
-
-  <div class="chart-row">
-    <div class="chart-container">
-      <div class="chart-title">Notes by Bot (Active)</div>
-      <canvas id="notesChart"></canvas>
+    <div class="card">
+      <div class="card-label">Competing Notes</div>
+      <div class="card-value" style="color: #ef4444;" id="competing-count">-</div>
+      <div class="card-sub" id="competing-sub"></div>
     </div>
-    <div class="chart-container">
-      <div class="chart-title">Status Breakdown % (Active Bots)</div>
-      <canvas id="rateChart"></canvas>
+    <div class="card">
+      <div class="card-label">Unresolved Tweets</div>
+      <div class="card-value" style="color: #f59e0b;" id="backlog-count">${backlogSize}</div>
+      <div class="card-sub">seen but not submitted/skipped</div>
     </div>
   </div>
 
   <div class="section-title">Active Bots</div>
-  <div class="chart-container">
-    <div class="chart-title">Status by Bot (counts)</div>
-    <canvas id="activeStatusChart"></canvas>
+  <div class="chart-row">
+    <div class="chart-container">
+      <div class="chart-title">Status by Bot (counts)</div>
+      <canvas id="activeStatusChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Status Breakdown %</div>
+      <canvas id="rateChart"></canvas>
+    </div>
   </div>
 
   <div class="section-title">Legacy Bots</div>
-  <div class="chart-container">
-    <div class="chart-title">Status by Bot (counts)</div>
-    <canvas id="legacyStatusChart"></canvas>
+  <div class="chart-row">
+    <div class="chart-container">
+      <div class="chart-title">Status by Bot (counts)</div>
+      <canvas id="legacyStatusChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Status Breakdown %</div>
+      <canvas id="legacyRateChart"></canvas>
+    </div>
   </div>
 
   <div class="section-title">All Outcomes by Bot</div>
@@ -267,11 +461,20 @@ const html = `<!DOCTYPE html>
     <canvas id="pipelineOutcomesChart"></canvas>
   </div>
 
-  <div class="section-title">Notes Per Day</div>
+  <div class="section-title">Weekly Helpful vs Not Helpful</div>
   <div class="chart-container">
-    <div class="chart-title">Notes Submitted Per Day (Stacked by Bot)</div>
-    <canvas id="dailyNotesChart"></canvas>
+    <div class="chart-title">Count of Helpful / Not Helpful notes per week (line = net helpful)</div>
+    <canvas id="weeklyRateChart"></canvas>
   </div>
+
+  <div class="section-title">Notes Per Week</div>
+  <div class="chart-container">
+    <div class="chart-title">Notes Created Per Week (Stacked by Bot)</div>
+    <canvas id="weeklyNotesChart"></canvas>
+  </div>
+
+  <div class="section-title">Pipeline Flow by Bot</div>
+  <div id="sankey-container"></div>
 
   <div class="summary">
     <h2>Pipeline Attempts</h2>
@@ -285,6 +488,7 @@ const html = `<!DOCTYPE html>
           <th class="not-helpful">Failed</th>
           <th class="not-helpful">Rejected</th>
           <th>Submit Rate</th>
+          <th>Top Rejection Reason</th>
         </tr>
       </thead>
       <tbody id="pipeline-table-body">
@@ -292,21 +496,24 @@ const html = `<!DOCTYPE html>
     </table>
   </div>
 
+  <p class="data-source">Generated ${new Date().toISOString().slice(0, 16)} UTC</p>
+
   <script>
-    // Data
     const allNotes = ${JSON.stringify(notesData)};
     const activeBots = ${JSON.stringify(activeBots)};
     const legacyBots = ${JSON.stringify(legacyBots)};
-    const colors = ${JSON.stringify(colors)};
-    const pipelineByBot = ${JSON.stringify(pipelineData)};
-    const pipelineOutcomesData = ${JSON.stringify(pipelineOutcomes)};
-    const rawPipelineRuns = ${JSON.stringify(pipelineRuns)};
-    const scrapedSummary = ${JSON.stringify(scrapedSummary)};
+    const chartColors = ${JSON.stringify(chartColors)};
+    const botColors = ${JSON.stringify(botColors)};
+    const pipelineRuns = ${JSON.stringify(pipelineRuns)};
+    const pipelineOutcomesByBot = ${JSON.stringify(pipelineOutcomesByBot)};
+    const globalTotalViews = ${globalTotalViews};
+    const totalCompeting = ${totalCompeting};
+    const helpfulCompeting = ${helpfulCompeting};
 
-    // Charts
-    let notesChart, rateChart, activeStatusChart, legacyStatusChart, pipelineOutcomesChart, dailyNotesChart;
-    const dailyDays = ${JSON.stringify(dailyDays)};
-    const dailyDatasets = ${JSON.stringify(dailyDatasets)};
+    let rateChart, activeStatusChart, legacyStatusChart, legacyRateChart, pipelineOutcomesChart, weeklyRateChart, weeklyNotesChart;
+    let currentTimeFilter = 'all';
+    let currentVideoFilter = 'all';
+    let currentRetryFilter = 'all';
 
     function formatViews(n) {
       if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
@@ -315,9 +522,9 @@ const html = `<!DOCTYPE html>
     }
 
     function getStatus(status) {
-      const s = status.toUpperCase().replace(/\\s+/g, "_");
-      if (s === "CURRENTLY_RATED_HELPFUL" || s === "SHOWN_ON_X") return "helpful";
-      if (s === "CURRENTLY_RATED_NOT_HELPFUL" || s === "NOT_SHOWN_ON_X") return "notHelpful";
+      const s = (status || "").toUpperCase().replace(/\\s+/g, "_");
+      if (s === "CURRENTLY_RATED_HELPFUL") return "helpful";
+      if (s === "CURRENTLY_RATED_NOT_HELPFUL") return "notHelpful";
       if (s === "NEEDS_MORE_RATINGS") return "needsMore";
       return "unknown";
     }
@@ -331,48 +538,76 @@ const html = `<!DOCTYPE html>
         if (!stats[note.bot_name]) continue;
         stats[note.bot_name].total++;
         stats[note.bot_name].views += note.view_count || 0;
-        stats[note.bot_name][getStatus(note.effective_status)]++;
+        stats[note.bot_name][getStatus(note.cn_status)]++;
       }
       return stats;
     }
 
-    function filterNotes(timeFilter, mediaFilter, attemptFilter) {
-      let notes = allNotes;
-
-      // Time filter
+    function filterNotes(timeFilter, videoFilter) {
+      let filtered = allNotes;
       const now = new Date();
       if (timeFilter === 'week') {
         const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        notes = notes.filter(n => new Date(n.submitted_at) >= cutoff);
+        filtered = filtered.filter(n => new Date(n.submitted_at) >= cutoff);
       } else if (timeFilter === 'month') {
         const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        notes = notes.filter(n => new Date(n.submitted_at) >= cutoff);
+        filtered = filtered.filter(n => new Date(n.submitted_at) >= cutoff);
       }
-
-      // Media filter
-      if (mediaFilter === 'video') {
-        notes = notes.filter(n => n.has_video === true);
-      } else if (mediaFilter === 'no-video') {
-        notes = notes.filter(n => n.has_video === false);
+      if (videoFilter === 'video') {
+        filtered = filtered.filter(n => n.has_video);
+      } else if (videoFilter === 'no-video') {
+        filtered = filtered.filter(n => !n.has_video);
       }
+      return filtered;
+    }
 
-      // Attempt filter
-      if (attemptFilter === 'first') {
-        notes = notes.filter(n => !n.is_retry);
-      } else if (attemptFilter === 'retry') {
-        notes = notes.filter(n => n.is_retry === true);
+    function setTimeFilter(filter) {
+      currentTimeFilter = filter;
+      document.querySelectorAll('#btn-all, #btn-month, #btn-week').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-' + filter).classList.add('active');
+      updateCharts();
+    }
+
+    function setVideoFilter(filter) {
+      currentVideoFilter = filter;
+      document.querySelectorAll('#btn-vid-all, #btn-vid-no, #btn-vid-yes').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-vid-' + (filter === 'all' ? 'all' : filter === 'no-video' ? 'no' : 'yes')).classList.add('active');
+      updateCharts();
+    }
+
+    function setRetryFilter(filter) {
+      currentRetryFilter = filter;
+      document.querySelectorAll('#btn-retry-all, #btn-retry-first, #btn-retry-retry').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-retry-' + filter).classList.add('active');
+      renderPipelineTable();
+      renderSankeys();
+    }
+
+    function filterPipelineRuns() {
+      let runs = pipelineRuns;
+      const now = new Date();
+      if (currentTimeFilter === 'week') {
+        const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        runs = runs.filter(r => new Date(r.created_at) >= cutoff);
+      } else if (currentTimeFilter === 'month') {
+        const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        runs = runs.filter(r => new Date(r.created_at) >= cutoff);
       }
-
-      return notes;
+      if (currentRetryFilter === 'first') {
+        runs = runs.filter(r => !r.is_retry);
+      } else if (currentRetryFilter === 'retry') {
+        runs = runs.filter(r => r.is_retry);
+      }
+      return runs;
     }
 
     function updateCharts() {
-      const notes = filterNotes(currentTimeFilter, currentMediaFilter, currentAttemptFilter);
-      const activeStats = computeStats(notes, activeBots);
-      const legacyStats = computeStats(notes, legacyBots);
+      const filtered = filterNotes(currentTimeFilter, currentVideoFilter);
+      const activeStats = computeStats(filtered, activeBots);
+      const legacyStats = computeStats(filtered, legacyBots);
 
-      // Compute totals from filtered notes (for helpful rate)
-      let totalNotes = 0, totalHelpful = 0, totalNotHelpful = 0, totalNeedsMore = 0;
+      // Compute totals
+      let totalNotes = 0, totalHelpful = 0, totalNotHelpful = 0, totalNeedsMore = 0, totalViews = 0;
       for (const bot of [...activeBots, ...legacyBots]) {
         const s = activeStats[bot] || legacyStats[bot];
         if (s) {
@@ -380,39 +615,24 @@ const html = `<!DOCTYPE html>
           totalHelpful += s.helpful;
           totalNotHelpful += s.notHelpful;
           totalNeedsMore += s.needsMore;
+          totalViews += s.views;
         }
       }
       const knownTotal = totalHelpful + totalNotHelpful + totalNeedsMore;
       const helpfulRate = knownTotal > 0 ? ((totalHelpful / knownTotal) * 100).toFixed(1) : "N/A";
 
-      // Update cards — views and awaiting from scraped table (all non-junk notes), rest from filtered notes
+      // Update cards
       document.getElementById('total-notes').textContent = totalNotes;
       document.getElementById('helpful-rate').textContent = helpfulRate + '%';
-      document.getElementById('total-views').textContent = formatViews(scrapedSummary.totalViews);
-      document.getElementById('awaiting-ratings').textContent = scrapedSummary.totalNeedsMore;
+      document.getElementById('helpful-sub').textContent = totalHelpful + ' of ' + knownTotal + ' rated';
+      document.getElementById('total-views').textContent = formatViews(totalViews);
+      document.getElementById('awaiting-ratings').textContent = totalNeedsMore;
+      document.getElementById('competing-count').textContent = totalCompeting;
+      document.getElementById('competing-sub').textContent = helpfulCompeting + ' helpful';
 
-      // Sort active bots by total
+      // Sort bots by total
       const sortedActive = [...activeBots].sort((a, b) => (activeStats[b]?.total || 0) - (activeStats[a]?.total || 0));
       const sortedLegacy = [...legacyBots].sort((a, b) => (legacyStats[b]?.total || 0) - (legacyStats[a]?.total || 0));
-
-      // Notes by Bot (doughnut) - active only
-      const activeTotals = sortedActive.map(b => activeStats[b]?.total || 0);
-      if (notesChart) notesChart.destroy();
-      notesChart = new Chart(document.getElementById('notesChart'), {
-        type: 'doughnut',
-        data: {
-          labels: sortedActive,
-          datasets: [{
-            data: activeTotals,
-            backgroundColor: colors.slice(0, sortedActive.length),
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { position: 'right' } }
-        }
-      });
 
       // Status Breakdown % (active only)
       const activeKnown = sortedActive.map(b => {
@@ -425,30 +645,15 @@ const html = `<!DOCTYPE html>
         data: {
           labels: sortedActive,
           datasets: [
-            {
-              label: 'Helpful',
-              data: sortedActive.map((b, i) => activeKnown[i] > 0 ? ((activeStats[b]?.helpful || 0) / activeKnown[i] * 100).toFixed(1) : 0),
-              backgroundColor: 'rgba(34, 197, 94, 0.8)'
-            },
-            {
-              label: 'Not Helpful',
-              data: sortedActive.map((b, i) => activeKnown[i] > 0 ? ((activeStats[b]?.notHelpful || 0) / activeKnown[i] * 100).toFixed(1) : 0),
-              backgroundColor: 'rgba(239, 68, 68, 0.8)'
-            },
-            {
-              label: 'Needs More',
-              data: sortedActive.map((b, i) => activeKnown[i] > 0 ? ((activeStats[b]?.needsMore || 0) / activeKnown[i] * 100).toFixed(1) : 0),
-              backgroundColor: 'rgba(245, 158, 11, 0.8)'
-            }
+            { label: 'Helpful', data: sortedActive.map((b, i) => activeKnown[i] > 0 ? ((activeStats[b]?.helpful || 0) / activeKnown[i] * 100).toFixed(1) : 0), backgroundColor: 'rgba(34, 197, 94, 0.8)' },
+            { label: 'Not Helpful', data: sortedActive.map((b, i) => activeKnown[i] > 0 ? ((activeStats[b]?.notHelpful || 0) / activeKnown[i] * 100).toFixed(1) : 0), backgroundColor: 'rgba(239, 68, 68, 0.8)' },
+            { label: 'Needs More', data: sortedActive.map((b, i) => activeKnown[i] > 0 ? ((activeStats[b]?.needsMore || 0) / activeKnown[i] * 100).toFixed(1) : 0), backgroundColor: 'rgba(245, 158, 11, 0.8)' }
           ]
         },
         options: {
           responsive: true,
           plugins: { legend: { position: 'bottom' } },
-          scales: {
-            x: { stacked: true },
-            y: { stacked: true, beginAtZero: true, max: 100, title: { display: true, text: '%' } }
-          }
+          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, max: 100, title: { display: true, text: '%' } } }
         }
       });
 
@@ -492,28 +697,44 @@ const html = `<!DOCTYPE html>
         }
       });
 
-      // Pipeline outcomes chart (rejected/failed + submitted note statuses)
-      if (pipelineOutcomesChart) pipelineOutcomesChart.destroy();
-      const outcomesByBot = {};
-      for (const item of pipelineOutcomesData) {
-        outcomesByBot[item.bot_id] = item;
-      }
+      // Legacy bots status breakdown %
+      const legacyKnown = sortedLegacy.map(b => {
+        const s = legacyStats[b];
+        return s ? s.helpful + s.notHelpful + s.needsMore : 0;
+      });
+      if (legacyRateChart) legacyRateChart.destroy();
+      legacyRateChart = new Chart(document.getElementById('legacyRateChart'), {
+        type: 'bar',
+        data: {
+          labels: sortedLegacy,
+          datasets: [
+            { label: 'Helpful', data: sortedLegacy.map((b, i) => legacyKnown[i] > 0 ? ((legacyStats[b]?.helpful || 0) / legacyKnown[i] * 100).toFixed(1) : 0), backgroundColor: 'rgba(34, 197, 94, 0.8)' },
+            { label: 'Not Helpful', data: sortedLegacy.map((b, i) => legacyKnown[i] > 0 ? ((legacyStats[b]?.notHelpful || 0) / legacyKnown[i] * 100).toFixed(1) : 0), backgroundColor: 'rgba(239, 68, 68, 0.8)' },
+            { label: 'Needs More', data: sortedLegacy.map((b, i) => legacyKnown[i] > 0 ? ((legacyStats[b]?.needsMore || 0) / legacyKnown[i] * 100).toFixed(1) : 0), backgroundColor: 'rgba(245, 158, 11, 0.8)' }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom' } },
+          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, max: 100, title: { display: true, text: '%' } } }
+        }
+      });
 
-      // Combine active and legacy stats with pipeline outcomes
-      const allBotsForOutcomes = [...activeBots, ...legacyBots];
+      // Pipeline outcomes chart
+      if (pipelineOutcomesChart) pipelineOutcomesChart.destroy();
+      const allBotsForOutcomes = [...activeBots, ...legacyBots].filter(b => b !== 'pre-tracking');
       const combinedStats = {};
       for (const bot of allBotsForOutcomes) {
         const noteStats = activeStats[bot] || legacyStats[bot] || { helpful: 0, notHelpful: 0, needsMore: 0 };
-        const pipelineOutcomes = outcomesByBot[bot] || { note_not_needed: 0, failed_to_write: 0 };
+        const po = pipelineOutcomesByBot[bot] || { note_not_needed: 0, failed_to_write: 0 };
         combinedStats[bot] = {
           helpful: noteStats.helpful || 0,
           notHelpful: noteStats.notHelpful || 0,
           needsMore: noteStats.needsMore || 0,
-          noteNotNeeded: pipelineOutcomes.note_not_needed || 0,
-          failedToWrite: pipelineOutcomes.failed_to_write || 0
+          noteNotNeeded: po.note_not_needed || 0,
+          failedToWrite: po.failed_to_write || 0,
         };
       }
-
       pipelineOutcomesChart = new Chart(document.getElementById('pipelineOutcomesChart'), {
         type: 'bar',
         data: {
@@ -533,120 +754,117 @@ const html = `<!DOCTYPE html>
         }
       });
 
-      // Daily notes chart (uses filtered notes)
-      if (dailyNotesChart) dailyNotesChart.destroy();
-      const filteredByDay = {};
-      const filteredBots = new Set();
-      for (const note of notes) {
-        const day = note.submitted_at.slice(0, 10);
-        const bot = note.bot_name || 'unknown';
-        filteredBots.add(bot);
-        if (!filteredByDay[day]) filteredByDay[day] = {};
-        filteredByDay[day][bot] = (filteredByDay[day][bot] || 0) + 1;
+      // Weekly helpful vs not helpful chart (counts + net helpful line)
+      if (weeklyRateChart) weeklyRateChart.destroy();
+      const byWeek = {};
+      function getWeekLabel(dateStr) {
+        const d = new Date(dateStr);
+        const day = d.getDay();
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - ((day + 6) % 7));
+        return monday.toISOString().slice(0, 10);
       }
-      const filteredDays = Object.keys(filteredByDay).sort();
-      const botColorMap = {};
-      for (const ds of dailyDatasets) botColorMap[ds.label] = ds.backgroundColor;
-      const filteredDatasets = [...filteredBots].sort().map(bot => ({
-        label: bot,
-        data: filteredDays.map(d => filteredByDay[d]?.[bot] || 0),
-        backgroundColor: botColorMap[bot] || 'rgba(107, 114, 128, 0.8)',
-      }));
-      dailyNotesChart = new Chart(document.getElementById('dailyNotesChart'), {
+      for (const note of filtered) {
+        const week = getWeekLabel(note.submitted_at);
+        if (!byWeek[week]) byWeek[week] = { helpful: 0, notHelpful: 0, needsMore: 0, total: 0 };
+        byWeek[week].total++;
+        const s = getStatus(note.cn_status);
+        if (s === 'helpful') byWeek[week].helpful++;
+        else if (s === 'notHelpful') byWeek[week].notHelpful++;
+        else if (s === 'needsMore') byWeek[week].needsMore++;
+      }
+      const weeks = Object.keys(byWeek).sort();
+      weeklyRateChart = new Chart(document.getElementById('weeklyRateChart'), {
         type: 'bar',
-        data: { labels: filteredDays, datasets: filteredDatasets },
+        data: {
+          labels: weeks,
+          datasets: [
+            {
+              label: 'Helpful',
+              data: weeks.map(w => byWeek[w].helpful),
+              backgroundColor: 'rgba(34, 197, 94, 0.8)',
+              order: 2,
+            },
+            {
+              label: 'Not Helpful',
+              data: weeks.map(w => -byWeek[w].notHelpful),
+              backgroundColor: 'rgba(239, 68, 68, 0.8)',
+              order: 2,
+            },
+            {
+              label: 'Net Helpful',
+              data: weeks.map(w => byWeek[w].helpful - byWeek[w].notHelpful),
+              type: 'line',
+              borderColor: 'rgba(59, 130, 246, 1)',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderWidth: 2,
+              pointRadius: 3,
+              fill: false,
+              order: 1,
+            }
+          ]
+        },
         options: {
           responsive: true,
-          plugins: { legend: { position: 'bottom' } },
-          scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Notes' } } }
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                afterLabel: function(ctx) {
+                  const w = weeks[ctx.dataIndex];
+                  const b = byWeek[w];
+                  return b.helpful + ' helpful, ' + b.notHelpful + ' not helpful, ' + b.needsMore + ' pending (' + b.total + ' total)';
+                }
+              }
+            }
+          },
+          scales: {
+            x: { stacked: true, ticks: { maxRotation: 45 } },
+            y: { stacked: true, title: { display: true, text: 'Notes (negative = not helpful)' } }
+          }
         }
       });
 
-      // Update pipeline table with same filters
+      // Weekly notes chart (stacked by bot, same week bucketing as helpful chart)
+      if (weeklyNotesChart) weeklyNotesChart.destroy();
+      const byWeekBot = {};
+      const weeklyBotSet = new Set();
+      for (const note of filtered) {
+        const week = getWeekLabel(note.submitted_at);
+        const bot = note.bot_name;
+        weeklyBotSet.add(bot);
+        if (!byWeekBot[week]) byWeekBot[week] = {};
+        byWeekBot[week][bot] = (byWeekBot[week][bot] || 0) + 1;
+      }
+      const noteWeeks = Object.keys(byWeekBot).sort();
+      const weeklyBotList = [...weeklyBotSet].sort();
+      weeklyNotesChart = new Chart(document.getElementById('weeklyNotesChart'), {
+        type: 'bar',
+        data: {
+          labels: noteWeeks,
+          datasets: weeklyBotList.map(bot => ({
+            label: bot,
+            data: noteWeeks.map(w => byWeekBot[w]?.[bot] || 0),
+            backgroundColor: botColors[bot] || 'rgba(107, 114, 128, 0.8)',
+          }))
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom' } },
+          scales: { x: { stacked: true, ticks: { maxRotation: 45 } }, y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Notes' } } }
+        }
+      });
+
+      // Update pipeline table
       renderPipelineTable();
-
-      // Update table
-      const tbody = document.getElementById('summary-table-body');
-      tbody.innerHTML = '';
-
-      // Active bots first
-      for (const bot of sortedActive) {
-        const s = activeStats[bot];
-        if (!s || s.total === 0) continue;
-        tbody.innerHTML += \`<tr>
-          <td><strong>\${bot}</strong></td>
-          <td>\${s.total}</td>
-          <td class="helpful">\${s.helpful} <span class="pct">(\${Math.round(s.helpful / s.total * 100)}%)</span></td>
-          <td class="not-helpful">\${s.notHelpful} <span class="pct">(\${Math.round(s.notHelpful / s.total * 100)}%)</span></td>
-          <td class="needs-more">\${s.needsMore} <span class="pct">(\${Math.round(s.needsMore / s.total * 100)}%)</span></td>
-        </tr>\`;
-      }
-
-      // Legacy bots
-      for (const bot of sortedLegacy) {
-        const s = legacyStats[bot];
-        if (!s || s.total === 0) continue;
-        tbody.innerHTML += \`<tr class="legacy-row">
-          <td><strong>\${bot} <span class="legacy">(legacy)</span></strong></td>
-          <td>\${s.total}</td>
-          <td class="helpful">\${s.helpful} <span class="pct">(\${Math.round(s.helpful / s.total * 100)}%)</span></td>
-          <td class="not-helpful">\${s.notHelpful} <span class="pct">(\${Math.round(s.notHelpful / s.total * 100)}%)</span></td>
-          <td class="needs-more">\${s.needsMore} <span class="pct">(\${Math.round(s.needsMore / s.total * 100)}%)</span></td>
-        </tr>\`;
-      }
-
-      // Total row
-      tbody.innerHTML += \`<tr style="font-weight: bold; border-top: 2px solid #333;">
-        <td>Total</td>
-        <td>\${totalNotes}</td>
-        <td class="helpful">\${totalHelpful} <span class="pct">(\${knownTotal > 0 ? Math.round(totalHelpful / knownTotal * 100) : 0}%)</span></td>
-        <td class="not-helpful">\${totalNotHelpful} <span class="pct">(\${knownTotal > 0 ? Math.round(totalNotHelpful / knownTotal * 100) : 0}%)</span></td>
-        <td class="needs-more">\${totalNeedsMore} <span class="pct">(\${knownTotal > 0 ? Math.round(totalNeedsMore / knownTotal * 100) : 0}%)</span></td>
-      </tr>\`;
     }
 
-    let currentTimeFilter = 'all';
-    let currentMediaFilter = 'all';
-    let currentAttemptFilter = 'all';
-
-    function setTimeFilter(filter) {
-      currentTimeFilter = filter;
-      document.querySelectorAll('#btn-all, #btn-month, #btn-week').forEach(b => b.classList.remove('active'));
-      document.getElementById('btn-' + filter).classList.add('active');
-      updateCharts();
-    }
-
-    function setMediaFilter(filter) {
-      currentMediaFilter = filter;
-      document.querySelectorAll('#btn-media-all, #btn-media-video, #btn-media-no-video').forEach(b => b.classList.remove('active'));
-      document.getElementById('btn-media-' + filter).classList.add('active');
-      updateCharts();
-    }
-
-    function setAttemptFilter(filter) {
-      currentAttemptFilter = filter;
-      document.querySelectorAll('#btn-attempt-all, #btn-attempt-first, #btn-attempt-retry').forEach(b => b.classList.remove('active'));
-      document.getElementById('btn-attempt-' + filter).classList.add('active');
-      updateCharts();
-    }
-
-    // Populate pipeline table (respects time filter)
     function renderPipelineTable() {
       const tbody = document.getElementById('pipeline-table-body');
       tbody.innerHTML = '';
 
-      // Filter raw pipeline runs by current time filter
-      let runs = rawPipelineRuns;
-      const now = new Date();
-      if (currentTimeFilter === 'week') {
-        const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        runs = runs.filter(r => new Date(r.created_at) >= cutoff);
-      } else if (currentTimeFilter === 'month') {
-        const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        runs = runs.filter(r => new Date(r.created_at) >= cutoff);
-      }
+      const runs = filterPipelineRuns();
 
-      // Aggregate filtered runs by bot
       const byBot = {};
       for (const r of runs) {
         if (!byBot[r.bot_id]) byBot[r.bot_id] = { total: 0, submitted: 0, filtered: 0, failed: 0, rejected: 0 };
@@ -654,7 +872,25 @@ const html = `<!DOCTYPE html>
         if (r.outcome in byBot[r.bot_id]) byBot[r.bot_id][r.outcome]++;
       }
 
-      const allBotIds = [...activeBots, ...legacyBots];
+      // Build top rejection reason per bot from filtered runs
+      const reasonsByBot = {};
+      for (const r of runs) {
+        if (r.outcome !== 'rejected' && r.outcome !== 'failed') continue;
+        const reason = r.outcome_reason || r.outcome;
+        if (!reasonsByBot[r.bot_id]) reasonsByBot[r.bot_id] = {};
+        reasonsByBot[r.bot_id][reason] = (reasonsByBot[r.bot_id][reason] || 0) + 1;
+      }
+      function getTopReason(botId) {
+        const reasons = reasonsByBot[botId];
+        if (!reasons) return '-';
+        const sorted = Object.entries(reasons).sort((a, b) => b[1] - a[1]);
+        if (sorted.length === 0) return '-';
+        const [reason, count] = sorted[0];
+        const label = reason.replace(/_/g, ' ');
+        return label + ' (' + count + ')';
+      }
+
+      const allBotIds = [...activeBots, ...legacyBots].filter(b => b !== 'pre-tracking');
       let grandTotal = 0, grandSubmitted = 0, grandFiltered = 0, grandFailed = 0, grandRejected = 0;
 
       for (const bot of allBotIds) {
@@ -676,6 +912,7 @@ const html = `<!DOCTYPE html>
           <td class="not-helpful">\${p.failed}</td>
           <td class="not-helpful">\${p.rejected}</td>
           <td>\${submitRate}%</td>
+          <td style="font-size: 0.85em; color: #888;">\${getTopReason(bot)}</td>
         </tr>\`;
       }
 
@@ -688,15 +925,146 @@ const html = `<!DOCTYPE html>
         <td class="not-helpful">\${grandFailed}</td>
         <td class="not-helpful">\${grandRejected}</td>
         <td>\${grandSubmitRate}%</td>
+        <td></td>
       </tr>\`;
     }
-    renderPipelineTable();
+
+    // Sankey diagrams per active bot
+    const sankeyCharts = [];
+    const sankeyColors = {
+      'Attempts': 'rgba(107, 114, 128, 0.7)',
+      'submitted': 'rgba(34, 197, 94, 0.7)',
+      'rejected': 'rgba(239, 68, 68, 0.7)',
+      'failed': 'rgba(245, 158, 11, 0.7)',
+      'filtered': 'rgba(156, 163, 175, 0.7)',
+      'no_correction_needed': 'rgba(59, 130, 246, 0.5)',
+      'check_failed': 'rgba(220, 38, 38, 0.5)',
+      'low_evaluation_score': 'rgba(168, 85, 247, 0.5)',
+      'scoring_filters_failed': 'rgba(236, 72, 153, 0.5)',
+      'source_trust_failed': 'rgba(234, 88, 12, 0.5)',
+      'bot_error': 'rgba(245, 158, 11, 0.5)',
+      'all_bots_failed': 'rgba(202, 138, 4, 0.5)',
+      'submission_error': 'rgba(239, 68, 68, 0.5)',
+      'video_cap_exceeded': 'rgba(107, 114, 128, 0.5)',
+    };
+
+    function renderSankeys() {
+      const container = document.getElementById('sankey-container');
+      container.innerHTML = '';
+
+      // Destroy old sankey charts
+      for (const c of sankeyCharts) c.destroy();
+      sankeyCharts.length = 0;
+
+      const allFilteredRuns = filterPipelineRuns();
+
+      for (const botId of activeBots) {
+        const botRuns = allFilteredRuns.filter(r => r.bot_id === botId);
+        if (botRuns.length === 0) continue;
+
+        // Count flows: attempts → outcome → reason
+        const outcomeCounts = {};
+        const reasonCounts = {};
+        for (const r of botRuns) {
+          outcomeCounts[r.outcome] = (outcomeCounts[r.outcome] || 0) + 1;
+          const reason = r.outcome_reason || '(none)';
+          const key = r.outcome + '→' + reason;
+          reasonCounts[key] = (reasonCounts[key] || 0) + 1;
+        }
+
+        const flows = [];
+        // Level 1: Attempts → outcome
+        for (const [outcome, count] of Object.entries(outcomeCounts)) {
+          flows.push({ from: 'Attempts', to: outcome, flow: count });
+        }
+        // Level 2: outcome → reason (skip if reason is null/none and there's only one reason)
+        for (const [key, count] of Object.entries(reasonCounts)) {
+          const [outcome, reason] = key.split('→');
+          if (reason && reason !== '(none)') {
+            flows.push({ from: outcome, to: reason, flow: count });
+          }
+        }
+
+        // Create card
+        const card = document.createElement('div');
+        card.className = 'chart-container';
+        card.style.marginBottom = '20px';
+        card.innerHTML = '<div class="chart-title">' + botId + ' (' + botRuns.length + ' attempts)</div>';
+        const canvas = document.createElement('canvas');
+        canvas.style.maxHeight = '200px';
+        card.appendChild(canvas);
+        container.appendChild(card);
+
+        const chart = new Chart(canvas, {
+          type: 'sankey',
+          data: {
+            datasets: [{
+              data: flows,
+              colorFrom: (c) => {
+                const label = c.dataset.data[c.dataIndex].from;
+                return sankeyColors[label] || 'rgba(107, 114, 128, 0.5)';
+              },
+              colorTo: (c) => {
+                const label = c.dataset.data[c.dataIndex].to;
+                return sankeyColors[label] || 'rgba(107, 114, 128, 0.5)';
+              },
+              colorMode: 'gradient',
+              labels: {
+                'Attempts': 'Attempts',
+                'submitted': 'Submitted',
+                'rejected': 'Rejected',
+                'failed': 'Failed',
+                'filtered': 'Filtered',
+                'no_correction_needed': 'No correction needed',
+                'check_failed': 'Check failed',
+                'low_evaluation_score': 'Low eval score',
+                'scoring_filters_failed': 'Scoring filters',
+                'source_trust_failed': 'Source trust',
+                'bot_error': 'Bot error',
+                'all_bots_failed': 'All bots failed',
+                'submission_error': 'Submit error',
+                'video_cap_exceeded': 'Video filtered',
+              },
+              size: 'max',
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function(ctx) {
+                    const item = ctx.dataset.data[ctx.dataIndex];
+                    return item.from + ' → ' + item.to + ': ' + item.flow;
+                  }
+                }
+              }
+            }
+          }
+        });
+        sankeyCharts.push(chart);
+      }
+    }
 
     // Initial render
+    renderSankeys();
     updateCharts();
   </script>
+
+  <p class="data-source">Generated ${new Date().toISOString().slice(0, 16)} UTC &mdash; <a href="https://github.com/user/cn-return-bot/blob/main/docs/main-report.md">Report docs</a></p>
 </body>
 </html>`;
 
+// Ensure output directory exists
+if (!existsSync("tmp/reports")) {
+  mkdirSync("tmp/reports", { recursive: true });
+}
+
 writeFileSync("tmp/reports/full-bot-report.html", html);
 console.log("Report generated: tmp/reports/full-bot-report.html");
+
+// Open in browser
+try {
+  execSync("open tmp/reports/full-bot-report.html");
+} catch {}

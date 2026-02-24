@@ -14,7 +14,7 @@ const client = getSupabaseClient();
 
 // Check if there are placeholders for recent tweets that might have these notes
 const { data: recentPlaceholders } = await client
-  .from("scraped_notewriter_notes")
+  .from("canonical_note_information")
   .select("note_id, tweet_id, first_seen_at")
   .like("note_id", "tweet_%")
   .order("first_seen_at", { ascending: false })
@@ -40,7 +40,7 @@ console.log("Checking failing notes from bcc6d9a run:\n");
 for (const noteId of failingNoteIds) {
   // Check if note exists
   const { data: note } = await client
-    .from("scraped_notewriter_notes")
+    .from("canonical_note_information")
     .select("note_id, tweet_id")
     .eq("note_id", noteId);
 
@@ -62,7 +62,7 @@ for (const noteId of failingNoteIds) {
 
 // Also check how many placeholders we have vs how many got updated
 const { data: allNotes } = await client
-  .from("scraped_notewriter_notes")
+  .from("canonical_note_information")
   .select("note_id");
 
 const placeholders = allNotes?.filter(n => n.note_id.startsWith('tweet_')) || [];

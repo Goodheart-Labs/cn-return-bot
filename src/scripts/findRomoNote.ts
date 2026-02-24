@@ -3,12 +3,12 @@ import { getSupabaseClient } from "../api/supabaseClient";
 async function main() {
   const client = getSupabaseClient();
 
-  // Search for Tony Romo note in scraped_notewriter_notes
+  // Search for Tony Romo note in canonical_note_information
   const { data: scrapedNotes } = await client
-    .from("scraped_notewriter_notes")
+    .from("canonical_note_information")
     .select("*")
     .ilike("note_text", "%Tony Romo%");
-  console.log("Tony Romo in scraped_notewriter_notes:", scrapedNotes?.length || 0);
+  console.log("Tony Romo in canonical_note_information:", scrapedNotes?.length || 0);
   if (scrapedNotes?.length) console.log(scrapedNotes);
 
   // Search in notes table
@@ -21,10 +21,10 @@ async function main() {
 
   // Search for "Bills victory" in case text is slightly different
   const { data: billsNotes } = await client
-    .from("scraped_notewriter_notes")
+    .from("canonical_note_information")
     .select("*")
     .ilike("note_text", "%Bills victory%");
-  console.log("\nBills victory in scraped_notewriter_notes:", billsNotes?.length || 0);
+  console.log("\nBills victory in canonical_note_information:", billsNotes?.length || 0);
   if (billsNotes?.length) console.log(billsNotes);
 
   // Also search notes table
