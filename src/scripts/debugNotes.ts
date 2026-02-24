@@ -3,9 +3,9 @@ import { SupabaseLogger } from "../api/supabaseClient";
 
 const supabase = new SupabaseLogger();
 
-// Check scraped_notewriter_notes table
+// Check canonical_note_information table
 const { data: notes, error: notesError } = await (supabase as any).client
-  .from("scraped_notewriter_notes")
+  .from("canonical_note_information")
   .select("note_id, tweet_id")
   .order("created_at", { ascending: false })
   .limit(20);
@@ -13,7 +13,7 @@ const { data: notes, error: notesError } = await (supabase as any).client
 if (notesError) {
   console.error("Error fetching notes:", notesError);
 } else {
-  console.log("Recent scraped_notewriter_notes:");
+  console.log("Recent canonical_note_information:");
   notes?.forEach((d: any) => console.log("  ", d.note_id, "→", d.tweet_id));
   console.log("Total shown:", notes?.length);
 }

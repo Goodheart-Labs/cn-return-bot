@@ -16,7 +16,7 @@ async function main() {
 
   // Get all scraped notewriter notes
   const { data: scrapedNotes } = await supabase
-    .from("scraped_notewriter_notes")
+    .from("canonical_note_information")
     .select("note_id, tweet_id, note_text, source_url, created_at");
 
   // Find untracked ones (not in notes table)

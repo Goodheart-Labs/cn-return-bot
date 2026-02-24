@@ -1,0 +1,214 @@
+/**
+ * Opus Verified Bot
+ *
+ * High-quality bot that trades volume for accuracy. Uses every quality signal
+ * available before submitting:
+ *
+ * 1. Sonar Pro search (deeper than standard Sonar)
+ * 2. Deep fact verification (claims analysis → targeted follow-ups → model validation)
+ * 3. Write note with enriched context from verification
+ * 4. Check note against source
+ * 5. Source trustworthiness gate (reject low-trust sources)
+ * 6. Scoring filters gate (all 3 must pass)
+ */
+
+import { Bot, PipelineResult } from "./types";
+import { versionOneFn as search } from "../pipeline/searchContextGoal";
+import { deepFactVerification } from "../pipeline/deepFactVerification";
+import { writeNoteFn as writeNote } from "../pipeline/writeNote";
+import { check as checkNote } from "../pipeline/check";
+import { scoreSourceTrustworthiness } from "../pipeline/sourceTrustworthiness";
+import {
+  runScoringFilters,
+  checkAllThresholds,
+  type AllFilterScores,
+} from "../pipeline/scoringFilters";
+
+const MODELS = {
+  search: "perplexity/sonar-pro",
+  deepVerification: "anthropic/claude-opus-4.6",
+  noteWriting: "anthropic/claude-opus-4.6",
+  checking: "anthropic/claude-opus-4.6",
+  scoring: "anthropic/claude-sonnet-4",
+};
+
+export const opusVerified: Bot = {
+  id: "opus-verified",
+  name: "Opus 4.6 Verified",
+  description:
+    "High-quality bot: deep fact verification + source trust gate + scoring filters",
+  weight: 0,
+
+  async runPipeline(post, content): Promise<PipelineResult | null> {
+    let lastStage = "started";
+    let scoringResults: AllFilterScores | undefined;
+
+    try {
+      // 1. Sonar Pro search
+      console.log(`[${this.id}] Searching with Sonar Pro...`);
+      const searchResult = await search(
+        {
+          text: content.text,
+          media: content.media,
+          searchResults: "",
+          retweetContext: content.retweetContext,
+        },
+        { model: MODELS.search }
+      );
+      lastStage = "search";
+
+      // 2. Deep fact verification — enriches context before note writing
+      console.log(`[${this.id}] Running deep fact verification...`);
+      const verification = await deepFactVerification(
+        {
+          text: content.text,
+          media: content.media,
+          initialSearchResults: searchResult.searchResults,
+          initialCitations: searchResult.citations || [],
+        },
+        {
+          analysisModel: MODELS.deepVerification,
+          maxFollowUpQueries: 2,
+          validateModel: true,
+        }
+      );
+      lastStage = "deep_verification";
+      console.log(
+        `[${this.id}] Verification complete: ${verification.claimAnalysis.keyClaims.length} claims, ${verification.allCitations.length} total citations`
+      );
+
+      // 3. Write note with enriched context
+      console.log(`[${this.id}] Writing note with enriched context...`);
+      const noteResult = await writeNote(
+        {
+          text: content.text,
+          searchResults: verification.combinedContext,
+          citations: verification.allCitations,
+          retweetContext: content.retweetContext,
+        },
+        { model: MODELS.noteWriting }
+      );
+      lastStage = "note_writing";
+
+      // Early return if no correction needed
+      if (noteResult.status !== "CORRECTION WITH TRUSTWORTHY CITATION") {
+        console.log(
+          `[${this.id}] No correction needed (status: ${noteResult.status})`
+        );
+        return {
+          post,
+          botId: this.id,
+          lastStage,
+          searchContextResult: {
+            text: content.text,
+            searchResults: verification.combinedContext,
+            citations: verification.allCitations,
+            retweetContext: content.retweetContext,
+          },
+          noteResult,
+          checkResult: "",
+        };
+      }
+
+      // 4. Check note against source
+      console.log(`[${this.id}] Checking note against source...`);
+      const checkResult = await checkNote(
+        { note: noteResult.note, url: noteResult.url, status: noteResult.status },
+        { model: MODELS.checking }
+      );
+      lastStage = "check";
+
+      // 5. Source trustworthiness gate (free — pure logic, no LLM call)
+      const trustScore = scoreSourceTrustworthiness(noteResult.url);
+      console.log(
+        `[${this.id}] Source trust: ${trustScore.domain} = ${trustScore.score} (${trustScore.tier})`
+      );
+      if (trustScore.score < 0.5) {
+        console.log(
+          `[${this.id}] Source trust too low (${trustScore.score} < 0.5) — rejecting`
+        );
+        return {
+          post,
+          botId: this.id,
+          lastStage: "source_trust",
+          searchContextResult: {
+            text: content.text,
+            searchResults: verification.combinedContext,
+            citations: verification.allCitations,
+            retweetContext: content.retweetContext,
+          },
+          noteResult: { ...noteResult, status: "SOURCE_TRUST_FAILED" },
+          checkResult,
+        };
+      }
+      lastStage = "source_trust";
+
+      // 6. Scoring filters gate (3 parallel LLM calls)
+      console.log(`[${this.id}] Running scoring filters...`);
+      scoringResults = await runScoringFilters(
+        noteResult.note,
+        content.text,
+        verification.combinedContext,
+        noteResult.url,
+        MODELS.scoring
+      );
+      lastStage = "scoring";
+
+      const allPassed = checkAllThresholds(scoringResults);
+      if (!allPassed) {
+        console.log(`[${this.id}] Scoring filters failed — rejecting`);
+        const result: PipelineResult = {
+          post,
+          botId: this.id,
+          lastStage,
+          searchContextResult: {
+            text: content.text,
+            searchResults: verification.combinedContext,
+            citations: verification.allCitations,
+            retweetContext: content.retweetContext,
+          },
+          noteResult: { ...noteResult, status: "SCORING_FILTERS_FAILED" },
+          checkResult,
+        };
+        (result as any).scoringResults = scoringResults;
+        return result;
+      }
+
+      console.log(`[${this.id}] All gates passed — note ready for submission`);
+      const result: PipelineResult = {
+        post,
+        botId: this.id,
+        lastStage,
+        searchContextResult: {
+          text: content.text,
+          searchResults: verification.combinedContext,
+          citations: verification.allCitations,
+          retweetContext: content.retweetContext,
+        },
+        noteResult,
+        checkResult,
+      };
+      (result as any).scoringResults = scoringResults;
+      return result;
+    } catch (err: any) {
+      console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
+      const result: PipelineResult = {
+        post,
+        botId: this.id,
+        lastStage,
+        searchContextResult: {
+          text: content.text,
+          searchResults: "",
+          citations: [],
+        },
+        noteResult: { note: "", url: "", status: "ERROR" },
+        checkResult: "",
+        error: err?.message || String(err),
+      };
+      if (scoringResults) {
+        (result as any).scoringResults = scoringResults;
+      }
+      return result;
+    }
+  },
+};

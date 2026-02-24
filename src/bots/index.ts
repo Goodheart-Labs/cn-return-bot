@@ -5,13 +5,18 @@
  */
 
 import { Bot } from "./types";
+import { opusMainLegacy } from "./legacy/opus-main";
 import { opusMain } from "./opus-main";
+import { opusDirect } from "./opus-direct";
+import { opusDirectGrok } from "./opus-direct-grok";
+import { opusMainV2Grok } from "./opus-main-v2-grok";
+
+// Legacy bots (weight=0, kept for historical data)
 import { opusResearch } from "./opus-research";
 import { kimiK2 } from "./kimi-k2";
 import { opus46 } from "./opus-4.6";
 import { sonarPro } from "./sonar-pro";
-
-// Legacy bots (weight=0, kept for historical data)
+import { opusVerified } from "./opus-verified";
 import { opusConcise } from "./opus-concise";
 import { geminiFlash } from "./legacy/gemini-flash";
 import { multiSearch } from "./legacy/multi-search";
@@ -19,17 +24,21 @@ import { gemini3Flash } from "./legacy/gemini-3-flash";
 import { deepseek } from "./legacy/deepseek";
 import { opusScored } from "./legacy/opus-scored";
 import { opusStrict } from "./legacy/opus-strict";
-import { opusMainLegacy } from "./legacy/opus-main";
 
 // Register all bots here
 export const bots: Bot[] = [
   // Active bots
-  opus46,         // 35%
-  opusMain,       // 35%
-  opusResearch,   // 10%
-  kimiK2,         // 10%
-  sonarPro,       // 10%
+  opusMainLegacy,  // 40% — opus-main (original writeNote prompt)
+  opusMain,        // 40% — opus-main-v2 (URL-aware char counting)
+  opusDirect,      //  7% — direct style (leads with facts, punchy)
+  opusDirectGrok,  //  7% — direct style + Grok X search
+  opusMainV2Grok,  //  6% — opus-main-v2 + Grok X search
   // Legacy bots (disabled)
+  opusResearch,
+  kimiK2,
+  opus46,
+  sonarPro,
+  opusVerified,
   opusConcise,
   geminiFlash,
   multiSearch,
@@ -37,7 +46,6 @@ export const bots: Bot[] = [
   deepseek,
   opusScored,
   opusStrict,
-  opusMainLegacy,
 ];
 
 /**

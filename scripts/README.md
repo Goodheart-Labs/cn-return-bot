@@ -43,7 +43,7 @@ Save the JSON output to a file, then run:
 npx tsx src/scripts/importNotewriterData.ts ./scraped-notes.json
 ```
 
-This upserts to `scraped_notewriter_notes` and inserts a snapshot to `scraped_notewriter_snapshots`.
+This upserts to `canonical_note_information` and inserts a snapshot to `scraped_notewriter_snapshots`.
 
 ## Database
 

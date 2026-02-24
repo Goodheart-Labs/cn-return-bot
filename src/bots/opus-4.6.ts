@@ -19,7 +19,7 @@ export const opus46: Bot = {
   id: "opus-4.6",
   name: "Opus 4.6",
   description: "Claude Opus 4.6 for note writing and checking",
-  weight: 35,
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

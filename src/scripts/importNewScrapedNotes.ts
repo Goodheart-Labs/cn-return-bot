@@ -1,5 +1,5 @@
 /**
- * Import new scraped notes from markdown file into scraped_notewriter_notes table
+ * Import new scraped notes from markdown file into canonical_note_information table
  * Run with: bun run src/scripts/importNewScrapedNotes.ts
  */
 
@@ -300,7 +300,7 @@ const notes: NoteData[] = [
 ];
 
 async function main() {
-  console.log(`Importing ${notes.length} notes into scraped_notewriter_notes...`);
+  console.log(`Importing ${notes.length} notes into canonical_note_information...`);
 
   const client = getSupabaseClient();
 
@@ -311,7 +311,7 @@ async function main() {
   for (const note of notes) {
     // Check if note already exists
     const { data: existing } = await client
-      .from("scraped_notewriter_notes")
+      .from("canonical_note_information")
       .select("note_id")
       .eq("note_id", note.note_id)
       .single();
@@ -322,9 +322,9 @@ async function main() {
       continue;
     }
 
-    // Insert into scraped_notewriter_notes
+    // Insert into canonical_note_information
     const { error: noteError } = await client
-      .from("scraped_notewriter_notes")
+      .from("canonical_note_information")
       .insert({
         note_id: note.note_id,
         tweet_id: note.tweet_id,

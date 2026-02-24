@@ -1,26 +1,28 @@
 /**
- * Sonar Pro Bot
+ * Opus Direct Bot
  *
- * Same pipeline as opus-main but uses Perplexity's Sonar Pro for search,
- * which provides deeper, more thorough search results.
+ * Bot designed from analysis of 302 "lost cases" where competing notes won.
+ * Uses a direct, punchy writing style that leads with facts rather than
+ * explaining what the post got wrong. Uses Opus 4.6 with Sonar Pro for
+ * better search results.
  */
 
 import { Bot, PipelineResult } from "./types";
 import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteFn as writeNote } from "../pipeline/writeNote";
+import { writeNoteDirectFn as writeNote } from "../pipeline/writeNoteDirect";
 import { check as checkNote } from "../pipeline/check";
 
 const MODELS = {
   search: "perplexity/sonar-pro",
-  noteWriting: "anthropic/claude-opus-4.5",
-  checking: "anthropic/claude-sonnet-4",
+  noteWriting: "anthropic/claude-opus-4.6",
+  checking: "anthropic/claude-opus-4.6",
 };
 
-export const sonarPro: Bot = {
-  id: "sonar-pro",
-  name: "Opus 4.5 + Sonar Pro",
-  description: "Opus 4.5 with Perplexity Sonar Pro for deeper search results",
-  weight: 0,
+export const opusDirect: Bot = {
+  id: "opus-direct",
+  name: "Opus 4.6 Direct",
+  description: "Direct style bot: leads with facts, punchy corrections, primary sources",
+  weight: 7,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

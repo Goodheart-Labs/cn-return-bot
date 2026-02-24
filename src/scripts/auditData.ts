@@ -31,7 +31,7 @@ for (const [tid, count] of dupes.slice(0, 10)) {
 }
 
 // 4. Test scraped entries
-const { data: testScraped } = await supabase.from("scraped_notewriter_notes").select("note_id, tweet_id, note_text").like("note_id", "test_%");
+const { data: testScraped } = await supabase.from("canonical_note_information").select("note_id, tweet_id, note_text").like("note_id", "test_%");
 console.log("\n=== TEST ENTRIES IN SCRAPED NOTES ===");
 console.log(testScraped?.length, "found");
 if (testScraped?.length) {
@@ -41,7 +41,7 @@ if (testScraped?.length) {
 }
 
 // 5. Notes not found in scraped data
-const { data: scraped } = await supabase.from("scraped_notewriter_notes").select("note_id");
+const { data: scraped } = await supabase.from("canonical_note_information").select("note_id");
 const scrapedIds = new Set((scraped || []).map(s => s.note_id));
 const unscraped = (allNotes || []).filter(n => !scrapedIds.has(n.note_id));
 console.log("\n=== NOTES NOT FOUND IN SCRAPED DATA ===");
@@ -53,7 +53,7 @@ if (unscraped.length) {
 }
 
 // 6. Placeholder note IDs
-const { data: placeholders } = await supabase.from("scraped_notewriter_notes").select("note_id, tweet_id").like("note_id", "tweet_%");
+const { data: placeholders } = await supabase.from("canonical_note_information").select("note_id, tweet_id").like("note_id", "tweet_%");
 console.log("\n=== PLACEHOLDER NOTE IDS (tweet_XXX) ===");
 console.log(placeholders?.length, "found");
 

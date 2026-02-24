@@ -28,7 +28,7 @@ To deliver a billion impressions of community notes, or equivalent by then end o
 ## Database tables (Supabase)
 
 - `notes` - Bot-submitted notes with tracking (since Jan 7, 2026)
-- `scraped_notewriter_notes` - Bot-written notes scraped back from the notewriter page for tracking (back to Aug 2025). Older entries have placeholder note_ids like `tweet_XXXXX`
+- `canonical_note_information` - Bot-written notes scraped back from the notewriter page for tracking (back to Aug 2025). Older entries have placeholder note_ids like `tweet_XXXXX`
 - `scraped_notewriter_snapshots` - Point-in-time status/view counts for our bot-written notes (from scraping)
 - `pipeline_runs` - Every tweet processed, with outcome (submitted/filtered/failed/rejected)
 - `pipeline_scores` - Scores attached to pipeline runs
@@ -42,7 +42,7 @@ The main scraper is `src/scripts/scrapeNotewriterClickThrough.ts`. It connects t
 
 - **Notewriter account**: `wholesome-raspberry-stilt` (the only active one)
 - **Primary purpose**: Full coverage audit — ensure every note we've written is tracked in the DB
-- **Data destination**: `scraped_notewriter_notes` + `scraped_notewriter_snapshots` tables
+- **Data destination**: `canonical_note_information` + `scraped_notewriter_snapshots` tables
 - **Key technical detail**: X's notewriter page scrolls on `document.documentElement` (the `<html>` element), NOT window or body. The virtualizer only renders ~5-10 cells at a time.
 - **One scraper**: Only `scrapeNotewriterClickThrough.ts` exists. Legacy scrapers were deleted Feb 2026.
 
@@ -66,6 +66,8 @@ bun run src/scripts/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page fi
 - GitHub Actions uses bun, not npm
 - The notewriter page virtualizes its list - can't Ctrl+F, need the scraper
 - After compacting, ask Nathan what to do next. 
+- Do not delete database enries without confirming. 
+- Common error for supabase to only display the first 1000. Make sure you are getting them all.
 
 ## Running locally
 

@@ -3,7 +3,7 @@
  *
  * Classifies scraped_notewriter_snapshots by quality tier, detects pairing
  * collisions, resolves them by majority vote, and writes canonical data to
- * scraped_notewriter_notes.
+ * canonical_note_information.
  *
  * See docs/snapshot-reconciliation.md for the full design.
  *
@@ -571,7 +571,7 @@ export async function reconcile(): Promise<{
 
   console.log(`[reconcile] Writing ${canonical.length} canonical notes...`);
 
-  // 7. Write to scraped_notewriter_notes via upsert
+  // 7. Write to canonical_note_information via upsert
   const now = new Date().toISOString();
   let written = 0;
   const BATCH_SIZE = 100;
@@ -590,7 +590,7 @@ export async function reconcile(): Promise<{
     }));
 
     const { error } = await supabase
-      .from("scraped_notewriter_notes")
+      .from("canonical_note_information")
       .upsert(rows, { onConflict: "note_id" });
 
     if (error) {

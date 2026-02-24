@@ -21,7 +21,7 @@ async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
 
 // 1. Scraped notes with "unavailable" tweet IDs
 const { data: unavailable } = await supabase
-  .from("scraped_notewriter_notes")
+  .from("canonical_note_information")
   .select("note_id, tweet_id, note_text, created_at")
   .like("tweet_id", "unavailable_%")
   .order("created_at", { ascending: false });
@@ -34,7 +34,7 @@ for (const n of unavailable || []) {
 
 // 2. Placeholder note IDs still in DB (tweet_XXX format)
 const { data: placeholders } = await supabase
-  .from("scraped_notewriter_notes")
+  .from("canonical_note_information")
   .select("note_id, tweet_id, note_text, created_at")
   .like("note_id", "tweet_%")
   .order("created_at", { ascending: false });
@@ -45,12 +45,12 @@ for (const n of (placeholders || []).slice(0, 15)) {
   console.log(`  note_id: ${n.note_id}  tweet_id: ${n.tweet_id}  created: ${n.created_at?.slice(0, 10)}  text: ${(n.note_text || "").slice(0, 80)}`);
 }
 
-// 3. Snapshots referencing note_ids that don't exist in scraped_notewriter_notes
+// 3. Snapshots referencing note_ids that don't exist in canonical_note_information
 const allSnapshots = await fetchAll<{ note_id: string; cn_status: string; scraped_at: string }>(
   () => supabase.from("scraped_notewriter_snapshots").select("note_id, cn_status, scraped_at")
 );
 const allScrapedNotes = await fetchAll<{ note_id: string }>(
-  () => supabase.from("scraped_notewriter_notes").select("note_id")
+  () => supabase.from("canonical_note_information").select("note_id")
 );
 
 const scrapedNoteIds = new Set(allScrapedNotes.map(n => n.note_id));
@@ -60,7 +60,7 @@ for (const s of orphanSnapshots) {
   orphanByNote.set(s.note_id, (orphanByNote.get(s.note_id) || 0) + 1);
 }
 
-console.log(`\n=== ORPHAN SNAPSHOTS (note_id not in scraped_notewriter_notes) ===`);
+console.log(`\n=== ORPHAN SNAPSHOTS (note_id not in canonical_note_information) ===`);
 console.log(`${orphanSnapshots.length} snapshots for ${orphanByNote.size} unique note_ids`);
 for (const [noteId, count] of [...orphanByNote.entries()].slice(0, 15)) {
   console.log(`  note_id: ${noteId}  snapshots: ${count}`);
@@ -68,7 +68,7 @@ for (const [noteId, count] of [...orphanByNote.entries()].slice(0, 15)) {
 
 // 4. Scraped notes with missing/empty note_text
 const { data: emptyText } = await supabase
-  .from("scraped_notewriter_notes")
+  .from("canonical_note_information")
   .select("note_id, tweet_id, note_text, created_at")
   .or("note_text.is.null,note_text.eq.");
 
