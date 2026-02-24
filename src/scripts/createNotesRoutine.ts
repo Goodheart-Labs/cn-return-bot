@@ -220,9 +220,9 @@ async function main() {
         }
 
         // Check if the source verification passed
-        const checkYes =
-          result.checkResult &&
-          result.checkResult.trim().toUpperCase() === "YES";
+        const checkRaw = result.checkResult?.trim().toUpperCase() ?? "";
+        const checkYes = checkRaw === "YES";
+        const checkError = checkRaw.startsWith("ERROR");
 
         // Log check score
         if (supabaseLogger && pipelineRunId) {
@@ -314,12 +314,12 @@ async function main() {
             }
           }
         } else if (!checkYes) {
-          // Check failed
+          // Check failed or errored
           if (supabaseLogger && pipelineRunId) {
             try {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
-                outcome: "rejected",
-                outcome_reason: "check_failed",
+                outcome: checkError ? "failed" : "rejected",
+                outcome_reason: checkError ? "check_error" : "check_failed",
                 final_stage: "check",
                 bot_id: selectedBot.id,
               });
@@ -390,13 +390,18 @@ async function main() {
               submitted++;
 
               // Log successful submission to pipeline tracking
+              const noteId = response?.data?.id;
+              if (!noteId) {
+                console.error(`[main] WARNING: submitNote returned success but no note ID for tweet ${result.post.id}. Response:`, JSON.stringify(response?.data));
+              }
               if (supabaseLogger && pipelineRunId) {
                 try {
                   await supabaseLogger.completePipelineRun(pipelineRunId, {
-                    outcome: "submitted",
+                    outcome: noteId ? "submitted" : "failed",
+                    outcome_reason: noteId ? undefined : "no_note_id_in_response",
                     final_stage: "submission",
                     bot_id: selectedBot.id,
-                    note_id: response?.data?.id,
+                    note_id: noteId,
                   });
                 } catch (err) {
                   console.warn(`[main] Failed to complete pipeline run:`, err);
@@ -404,7 +409,7 @@ async function main() {
               }
 
               // Also log to notes table if enabled
-              if (supabaseLogger && response?.data?.id) {
+              if (supabaseLogger && noteId) {
                 try {
                   const botConfig =
                     await supabaseLogger.getOrCreateBotConfig(selectedBot.id);

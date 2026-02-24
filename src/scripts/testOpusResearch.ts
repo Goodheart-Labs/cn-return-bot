@@ -7,8 +7,8 @@ import { xai } from "../pipeline/xai";
 import { generateText } from "ai";
 import * as fs from "fs";
 
-// Set the OpenRouter key
-process.env.OPENROUTER_API_KEY = "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";
+// Requires OPENROUTER_API_KEY in environment
+import "dotenv/config";
 
 const supabase = getSupabaseClient();
 

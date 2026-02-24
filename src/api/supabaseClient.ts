@@ -262,48 +262,16 @@ export class SupabaseLogger {
   }
 
   /**
-   * Log status history for tracking changes over time
-   */
-  async logStatusHistory(
-    noteId: string,
-    status: string,
-    counts?: {
-      helpful_count?: number;
-      somewhat_helpful_count?: number;
-      not_helpful_count?: number;
-      view_count?: number;
-    }
-  ): Promise<void> {
-    const { error } = await this.client.from("note_status_history").insert({
-      note_id: noteId,
-      status,
-      ...counts,
-    });
-
-    if (error) {
-      console.error("[SupabaseLogger] Error logging status history:", error);
-      throw error;
-    }
-  }
-
-  /**
    * Get notes that need feedback updates (no status or stale)
    */
   async getNotesNeedingFeedback(staleDays: number = 1): Promise<Note[]> {
     const staleDate = new Date();
     staleDate.setDate(staleDate.getDate() - staleDays);
 
-    const { data, error } = await this.client
-      .from("notes")
-      .select()
-      .or(`last_checked_at.is.null,last_checked_at.lt.${staleDate.toISOString()}`);
-
-    if (error) {
-      console.error("[SupabaseLogger] Error fetching notes needing feedback:", error);
-      throw error;
-    }
-
-    return data || [];
+    return this.fetchAllRows<Note>(
+      (client) => client.from("notes").select()
+        .or(`last_checked_at.is.null,last_checked_at.lt.${staleDate.toISOString()}`)
+    );
   }
 
   /**
@@ -601,20 +569,19 @@ export class SupabaseLogger {
    * Get raw pipeline runs with timestamps for client-side filtering
    */
   async getPipelineRunsRaw(): Promise<Array<{ bot_id: string; outcome: string; created_at: string }>> {
-    const { data, error } = await this.client
-      .from("pipeline_runs")
-      .select("bot_id, outcome, created_at");
-
-    if (error) {
+    try {
+      const data = await this.fetchAllRows<{ bot_id: string; outcome: string; created_at: string }>(
+        (client) => client.from("pipeline_runs").select("bot_id, outcome, created_at")
+      );
+      return data.map(r => ({
+        bot_id: r.bot_id || "unknown",
+        outcome: r.outcome,
+        created_at: r.created_at,
+      }));
+    } catch (error) {
       console.error("[SupabaseLogger] Error fetching raw pipeline runs:", error);
       return [];
     }
-
-    return (data || []).map(r => ({
-      bot_id: r.bot_id || "unknown",
-      outcome: r.outcome,
-      created_at: r.created_at,
-    }));
   }
 
   /**
@@ -684,12 +651,12 @@ export class SupabaseLogger {
 
     // Get submitted/failed pipeline_runs to determine retry status (count actual attempts per tweet_id)
     // Excludes filtered/rejected runs since those aren't real submission attempts
-    const { data: allRuns, error: allRunsError } = await this.client
-      .from("pipeline_runs")
-      .select("tweet_id")
-      .in("outcome", ["submitted", "failed"]);
-
-    if (allRunsError) {
+    let allRuns: Array<{ tweet_id: string }> = [];
+    try {
+      allRuns = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("pipeline_runs").select("tweet_id").in("outcome", ["submitted", "failed"])
+      );
+    } catch (allRunsError) {
       console.error("[SupabaseLogger] Error fetching all pipeline runs:", allRunsError);
     }
 
@@ -883,20 +850,16 @@ export class SupabaseLogger {
     note_not_needed: number;
     failed_to_write: number;
   }[]> {
-    const { data, error } = await this.client
-      .from("pipeline_runs")
-      .select("bot_id, outcome, outcome_reason")
-      .in("outcome", ["rejected", "failed"]);
-
-    if (error) {
-      console.error("[SupabaseLogger] Error fetching pipeline outcomes:", error);
-      throw error;
-    }
+    const data = await this.fetchAllRows<{ bot_id: string; outcome: string; outcome_reason: string }>(
+      (client) => client.from("pipeline_runs")
+        .select("bot_id, outcome, outcome_reason")
+        .in("outcome", ["rejected", "failed"])
+    );
 
     // Group by bot_id
     const byBot: Record<string, { note_not_needed: number; failed_to_write: number }> = {};
 
-    for (const row of data || []) {
+    for (const row of data) {
       const botId = row.bot_id || "unknown";
       if (!byBot[botId]) {
         byBot[botId] = { note_not_needed: 0, failed_to_write: 0 };
@@ -960,18 +923,13 @@ export class SupabaseLogger {
     const tweetIds = new Set<string>();
 
     try {
-      // Get submitted notes - always skip these
-      const { data: notesData, error: notesError } = await this.client
-        .from("notes")
-        .select("tweet_id");
-
-      if (notesError) {
-        console.error("[SupabaseLogger] Error fetching notes:", notesError);
-      } else if (notesData) {
-        notesData.forEach((row) => {
-          if (row.tweet_id) tweetIds.add(row.tweet_id);
-        });
-      }
+      // Get submitted notes - always skip these (paginated to avoid 1000-row limit)
+      const notesData = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("notes").select("tweet_id")
+      );
+      notesData.forEach((row) => {
+        if (row.tweet_id) tweetIds.add(row.tweet_id);
+      });
 
       // Get tweets with 2+ "no_correction_needed" rejections (paginated)
       try {
