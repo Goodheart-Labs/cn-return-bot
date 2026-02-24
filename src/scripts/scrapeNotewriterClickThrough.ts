@@ -948,6 +948,19 @@ async function scrapeTab(
         await page.keyboard.press('Escape');
       }
 
+      // Wait for modal to actually leave the DOM before continuing
+      try {
+        await page.waitForFunction(() => {
+          return !document.querySelector('[role="dialog"]') &&
+                 !document.querySelector('[aria-modal="true"]') &&
+                 !document.querySelector('[data-testid="sheetDialog"]');
+        }, { timeout: 3000 });
+      } catch {
+        // Timeout is non-fatal — press Escape again and continue
+        await page.keyboard.press('Escape');
+        await randomDelay(300, 500);
+      }
+
       // Cooldown after modal close — reduces burst failures on next click
       await randomDelay(160, 320);
     }

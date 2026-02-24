@@ -222,7 +222,16 @@ export async function writeNoteFn(
       });
 
       const content = result.choices?.[0]?.message?.content ?? "";
-      const parsed = parseStatusNoteUrl(content);
+      let parsed: ReturnType<typeof parseStatusNoteUrl>;
+      try {
+        parsed = parseStatusNoteUrl(content);
+      } catch (parseErr) {
+        console.warn(`[writeNote] Failed to parse LLM response (attempt ${attempt}/${maxRetries}):`, (parseErr as Error).message, `| Raw content: "${content.slice(0, 200)}"`);
+        if (attempt >= maxRetries) {
+          return { status: "PARSE_ERROR", note: "", url: "" };
+        }
+        continue;
+      }
 
       const effectiveLength = countNoteLength(parsed.note);
       if (effectiveLength <= 275) {

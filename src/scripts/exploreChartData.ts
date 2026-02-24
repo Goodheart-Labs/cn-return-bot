@@ -52,15 +52,7 @@ async function main() {
   console.log("\n=== Recent snapshots (all fields) ===");
   console.log(JSON.stringify(allSnapshots, null, 2));
 
-  // Get note_status_history
-  const { data: statusHistory } = await client
-    .from("note_status_history")
-    .select("*")
-    .order("recorded_at", { ascending: false })
-    .limit(10);
-
-  console.log("\n=== note_status_history sample ===");
-  console.log(JSON.stringify(statusHistory, null, 2));
+  // note_status_history was dropped in migration 004 — replaced by scraped_notewriter_snapshots
 }
 
 main().catch(console.error);
