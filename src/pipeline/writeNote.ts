@@ -233,6 +233,13 @@ export async function writeNoteFn(
         continue;
       }
 
+      // Only enforce character limit on corrections — non-correction statuses
+      // (NO MISSING CONTEXT, TWEET NOT SIGNIFICANTLY INCORRECT, etc.) are
+      // rejected downstream and never submitted, so length doesn't matter.
+      if (parsed.status !== "CORRECTION WITH TRUSTWORTHY CITATION") {
+        return parsed;
+      }
+
       const effectiveLength = countNoteLength(parsed.note);
       if (effectiveLength <= 275) {
         return parsed;

@@ -202,6 +202,12 @@ export async function writeNoteDirectFn(
       const content = result.choices?.[0]?.message?.content ?? "";
       const parsed = parseStatusNoteUrl(content);
 
+      // Only enforce character limit on corrections — non-correction statuses
+      // are rejected downstream and never submitted.
+      if (parsed.status !== "CORRECTION WITH TRUSTWORTHY CITATION") {
+        return parsed;
+      }
+
       const effectiveLength = countNoteLength(parsed.note);
       if (effectiveLength <= 275) {
         return parsed;
@@ -210,7 +216,7 @@ export async function writeNoteDirectFn(
       previousParsed = parsed;
 
       if (attempt >= maxRetries) {
-        const errorMsg = `Note exceeds 275 character limit after ${maxRetries} attempts: ${effectiveLength} effective characters (${parsed.note.length} raw)`;
+        const errorMsg = `Note exceeds 275 char limit after ${maxRetries} attempts (${effectiveLength} effective, ${parsed.note.length} raw). Note: "${parsed.note}" URL: ${parsed.url || "(none)"}`;
         console.error(errorMsg);
         throw new Error(errorMsg);
       }
