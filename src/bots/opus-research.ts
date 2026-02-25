@@ -10,7 +10,7 @@
  */
 
 import { Bot, PipelineResult } from "./types";
-import { check as checkNote } from "../pipeline/check";
+import { verifySource } from "../pipeline/sourceVerification";
 import {
   searchXWithGrok,
   extractGrokQuotedTweet,
@@ -126,7 +126,7 @@ export const opusResearch: Bot = {
       lastStage = "note_writing";
 
       // 6. Check the note
-      const checkResult = await checkNote(
+      const checkResult = await verifySource(
         {
           note: noteResult.note,
           url: noteResult.url,

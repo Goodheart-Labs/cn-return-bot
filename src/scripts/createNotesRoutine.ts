@@ -227,17 +227,19 @@ async function main() {
           return;
         }
 
-        // Check if the source verification passed
+        // Check if the source verification passed (undefined = bot skipped it)
+        const checkSkipped = result.checkResult == null;
         const checkRaw = result.checkResult?.trim().toUpperCase() ?? "";
-        const checkYes = checkRaw === "YES";
+        const checkYes = checkSkipped || checkRaw === "YES";
         const checkError = checkRaw.startsWith("ERROR");
 
-        // Log check score
-        if (supabaseLogger && pipelineRunId) {
+        // Log source verification score
+        if (supabaseLogger && pipelineRunId && !checkSkipped) {
           try {
             await supabaseLogger.addPipelineScore(pipelineRunId, {
-              score_type: "check",
-              score_label: result.checkResult?.trim().toUpperCase(),
+              score_type: "source_verification",
+              score_value: checkRaw === "YES" ? 1 : 0,
+              score_label: checkRaw,
             });
           } catch (err) {
             console.warn(`[main] Failed to log check score:`, err);

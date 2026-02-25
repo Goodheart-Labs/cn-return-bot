@@ -51,7 +51,7 @@ async function fetchAndSimplifyContent(url: string): Promise<string> {
   }
 }
 
-export async function check(
+export async function verifySource(
   { url, note }: z.infer<typeof writeNoteOutput>,
   config?: { model?: string }
 ) {
@@ -92,6 +92,6 @@ export const checkSource = createGoal({
 });
 
 const c = checkSource.register({ name: "check" });
-c.define(check);
+c.define(verifySource);
 
 checkSource.testFrom(writeNote);

@@ -2,7 +2,7 @@ import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
 import type { Post } from "../api/fetchEligiblePosts";
 import { versionOneFn as searchV1 } from "../pipeline/searchContextGoal";
 import { writeNoteFn as writeV1 } from "../pipeline/writeNote";
-import { check as checkV1 } from "../pipeline/check";
+import { verifySource as checkV1 } from "../pipeline/sourceVerification";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import fs from "fs";
 import path from "path";

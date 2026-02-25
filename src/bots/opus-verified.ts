@@ -16,7 +16,7 @@ import { Bot, PipelineResult } from "./types";
 import { versionOneFn as search } from "../pipeline/searchContextGoal";
 import { deepFactVerification } from "../pipeline/deepFactVerification";
 import { writeNoteFn as writeNote } from "../pipeline/writeNote";
-import { check as checkNote } from "../pipeline/check";
+import { verifySource } from "../pipeline/sourceVerification";
 import { scoreSourceTrustworthiness } from "../pipeline/sourceTrustworthiness";
 import {
   runScoringFilters,
@@ -112,7 +112,7 @@ export const opusVerified: Bot = {
 
       // 4. Check note against source
       console.log(`[${this.id}] Checking note against source...`);
-      const checkResult = await checkNote(
+      const checkResult = await verifySource(
         { note: noteResult.note, url: noteResult.url, status: noteResult.status },
         { model: MODELS.checking }
       );

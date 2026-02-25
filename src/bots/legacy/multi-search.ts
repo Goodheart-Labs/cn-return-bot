@@ -13,7 +13,7 @@
 import { Bot, PipelineResult, PostContent } from "../types";
 import { multiSourceSearch } from "../../pipeline/multiSourceSearch";
 import { writeNoteFn as writeNote } from "../../pipeline/writeNote";
-import { check as checkNote } from "../../pipeline/check";
+import { verifySource } from "../../pipeline/sourceVerification";
 
 // Bot model configuration - easy to tweak per-bot
 const MODELS = {
@@ -51,7 +51,7 @@ export const multiSearch: Bot = {
       lastStage = "note_writing";
 
       // 3. Check the note
-      const checkResult = await checkNote(
+      const checkResult = await verifySource(
         {
           note: noteResult.note,
           url: noteResult.url,
