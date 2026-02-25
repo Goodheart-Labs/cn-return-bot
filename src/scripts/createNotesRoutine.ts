@@ -8,9 +8,9 @@ import {
   getBotProbabilities,
 } from "../bots";
 
-const maxPosts = 10; // Maximum posts to process per run
-const concurrencyLimit = 3; // Process 3 posts at a time to avoid rate limiting
-const MAX_RUNTIME_MS = 5 * 60 * 1000; // 5 minutes maximum runtime
+const maxPosts = 20; // Maximum posts to process per run
+const concurrencyLimit = 5; // Process 5 posts at a time
+const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes maximum runtime (GitHub Actions timeout is 20min)
 
 // Global timeout to prevent hanging
 const globalTimeout = setTimeout(async () => {
@@ -51,7 +51,7 @@ async function main() {
     // Track bot usage for summary
     const botUsage: Record<string, number> = {};
 
-    // Get tweet IDs to permanently skip (submitted + 2x no-correction-needed)
+    // Get tweet IDs to skip (submitted + no_correction_needed on cooldown/permanent)
     let skipPostIds = new Set<string>();
     let allProcessedIds = new Set<string>();
     if (supabaseLogger) {
@@ -59,7 +59,7 @@ async function main() {
         skipPostIds = await supabaseLogger.getProcessedTweetIds();
         allProcessedIds = await supabaseLogger.getAllProcessedTweetIds();
         const backlogSize = allProcessedIds.size - skipPostIds.size;
-        console.log(`[main] Permanently skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed, ${backlogSize} in retry backlog`);
+        console.log(`[main] Skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed, ${backlogSize} in retry backlog`);
       } catch (err) {
         console.warn("[main] Failed to get processed tweet IDs:", err);
       }
@@ -208,7 +208,7 @@ async function main() {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: "failed",
                 outcome_reason: "bot_error",
-                error_message: result.error.slice(0, 500),
+                error_message: result.error.slice(0, 2000),
                 final_stage: result.lastStage,
                 bot_id: selectedBot.id,
               });

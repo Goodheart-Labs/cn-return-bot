@@ -32,6 +32,24 @@ function isRetryableError(err: any): boolean {
   return false;
 }
 
+/** Extract useful details from an OpenRouter error for logging.
+ * The OpenAI SDK throws APIError with .error (parsed JSON body), .status, .headers.
+ * OpenRouter 400s include { error: { code, message }, metadata: { provider_name, raw } }
+ */
+function formatErrorDetail(err: any): string {
+  const status = err?.status ?? err?.response?.status ?? "?";
+  const message = String(err?.message ?? "unknown");
+  // Dump the full error body from OpenRouter (the most useful diagnostic)
+  const errorBody = err?.error;
+  let bodyStr = "";
+  if (errorBody && typeof errorBody === "object") {
+    try {
+      bodyStr = ` | body: ${JSON.stringify(errorBody).slice(0, 500)}`;
+    } catch { /* ignore stringify failures */ }
+  }
+  return `${status} ${message}${bodyStr}`;
+}
+
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -52,10 +70,14 @@ async function callWithRetry(
       if (attempt < MAX_RETRIES && isRetryableError(err)) {
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
-          `[llm] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}): ${err?.status ?? "?"} ${String(err?.message ?? "").slice(0, 100)}. Retrying in ${backoff}ms...`
+          `[llm] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}): ${formatErrorDetail(err)}. Retrying in ${backoff}ms...`
         );
         await sleep(backoff);
         continue;
+      }
+      // Enrich the error message with full details before re-throwing
+      if (err instanceof Error) {
+        err.message = `[model: ${params.model}] ${formatErrorDetail(err)}`;
       }
       throw err;
     }

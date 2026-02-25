@@ -88,23 +88,40 @@ const pipelineRuns = rawPipelineRunsFull.map(r => ({
   is_retry: r.created_at !== firstSeenByTweet.get(r.tweet_id),
 }));
 
-// Compute backlog: tweets in pipeline_runs NOT permanently resolved
-// Permanently resolved = submitted OR 2+ no_correction_needed rejections
+// Compute backlog: tweets not currently skipped
+// Skipped = submitted OR no_correction_needed (cooldown: 1hr after 1st, 24hr after 2nd, permanent after 3rd)
 const submittedTweets = new Set(rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id));
-const noCorrectionCounts = new Map<string, number>();
+const rejectionInfo = new Map<string, { count: number; latestAt: string }>();
 for (const r of rawPipelineRunsFull) {
   if (r.outcome === "rejected" && r.outcome_reason === "no_correction_needed") {
-    noCorrectionCounts.set(r.tweet_id, (noCorrectionCounts.get(r.tweet_id) || 0) + 1);
+    const existing = rejectionInfo.get(r.tweet_id);
+    if (!existing) {
+      rejectionInfo.set(r.tweet_id, { count: 1, latestAt: r.created_at });
+    } else {
+      existing.count++;
+      if (r.created_at > existing.latestAt) existing.latestAt = r.created_at;
+    }
+  }
+}
+const now = new Date();
+const skippedByNoCorrection = new Set<string>();
+for (const [tid, info] of rejectionInfo) {
+  if (info.count >= 3) {
+    skippedByNoCorrection.add(tid);
+  } else {
+    const hoursSince = (now.getTime() - new Date(info.latestAt).getTime()) / (1000 * 60 * 60);
+    const cooldownHours = info.count === 1 ? 1 : 24;
+    if (hoursSince < cooldownHours) skippedByNoCorrection.add(tid);
   }
 }
 const allPipelineTweets = new Set(rawPipelineRunsFull.map(r => r.tweet_id));
 const backlogTweets = [...allPipelineTweets].filter(tid => {
   if (submittedTweets.has(tid)) return false;
-  if ((noCorrectionCounts.get(tid) || 0) >= 2) return false;
+  if (skippedByNoCorrection.has(tid)) return false;
   return true;
 });
 const backlogSize = backlogTweets.length;
-console.log(`  Backlog: ${backlogSize} tweets not permanently resolved (of ${allPipelineTweets.size} unique tweets)`);
+console.log(`  Backlog: ${backlogSize} tweets eligible for retry (${skippedByNoCorrection.size} no-correction skipped, ${submittedTweets.size} submitted, of ${allPipelineTweets.size} unique)`);
 
 // 4b. Run snapshots (backlog trend)
 const runSnapshots = await fetchAll<{
