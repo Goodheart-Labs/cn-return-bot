@@ -71,6 +71,13 @@ async function main() {
     const BACKLOG_LIMIT = 200;
     const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 10);
 
+    // Sort by tweet ID descending (newest first) - tweet IDs are snowflake IDs, higher = newer
+    allEligible.sort((a, b) => {
+      const idA = BigInt(a.id);
+      const idB = BigInt(b.id);
+      return idA > idB ? -1 : idA < idB ? 1 : 0;
+    });
+
     // Separate into new tweets and retries
     const newPosts = allEligible.filter((p) => !allProcessedIds.has(p.id));
     const retryPosts = allEligible.filter((p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id));
