@@ -23,6 +23,8 @@ export interface PipelineResult {
   checkResult: string;
   /** If the bot failed, this contains error info */
   error?: string;
+  /** Non-fatal warnings (e.g. media analysis failed but pipeline continued) */
+  warnings?: string[];
 }
 
 export interface MediaItem {

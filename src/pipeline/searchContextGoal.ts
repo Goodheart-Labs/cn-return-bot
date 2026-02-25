@@ -65,12 +65,17 @@ export async function versionOneFn(
     model: OpenAIChatModelId;
   }
 ) {
-  const images: ChatCompletionContentPartImage[] = input.media.map((url) => ({
-    type: "image_url",
-    image_url: { url },
-  }));
+  // Only include image_url parts for models that support vision.
+  // Perplexity sonar models reject image inputs with "Failed to load image".
+  const isPerplexity = config.model.startsWith("perplexity/");
+  const images: ChatCompletionContentPartImage[] = isPerplexity
+    ? []
+    : input.media.map((url) => ({
+        type: "image_url",
+        image_url: { url },
+      }));
 
-  let systemPrompt = `You are a context and factchecking tool. Search the web for information that DIRECTLY addresses or contradicts the specific claims made in the following post. 
+  let systemPrompt = `You are a context and factchecking tool. Search the web for information that DIRECTLY addresses or contradicts the specific claims made in the following post.
 
 IMPORTANT: Only provide sources that:
 1. Directly support or contradict the exact claims made in the post
@@ -78,7 +83,7 @@ IMPORTANT: Only provide sources that:
 3. Address the specific people, events, or facts mentioned (not general background)
 
 Always include specific URLs for your sources directly in the text.`;
-  
+
   if (input.retweetContext) {
     systemPrompt += ` ${input.retweetContext}`;
   }

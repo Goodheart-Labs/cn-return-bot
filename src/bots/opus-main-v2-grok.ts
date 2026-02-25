@@ -27,8 +27,9 @@ export const opusMainV2Grok: Bot = {
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
+    const warnings: string[] = [];
     try {
-      // Media analysis (non-fatal)
+      // Media analysis (non-fatal — continues without it but records warning)
       let mediaContext = "";
       if (content.mediaItems?.length) {
         try {
@@ -39,7 +40,14 @@ export const opusMainV2Grok: Bot = {
           lastStage = "media_analysis";
           console.log(`[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`);
         } catch (err: any) {
-          console.error(`[${this.id}] Media analysis failed (continuing):`, err.message);
+          const msg = `Media analysis failed: ${err.message}`;
+          // If tweet is media-only (no meaningful text), media analysis is essential
+          const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
+          if (strippedText.length < 20) {
+            throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
+          }
+          console.warn(`[${this.id}] ${msg} (continuing without media context)`);
+          warnings.push(msg);
         }
       }
 
@@ -82,6 +90,7 @@ export const opusMainV2Grok: Bot = {
         searchContextResult: searchResult,
         noteResult,
         checkResult,
+        warnings: warnings.length > 0 ? warnings : undefined,
       };
     } catch (err: any) {
       console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
@@ -93,6 +102,7 @@ export const opusMainV2Grok: Bot = {
         noteResult: { note: "", url: "", status: "ERROR" },
         checkResult: "",
         error: err?.message || String(err),
+        warnings: warnings.length > 0 ? warnings : undefined,
       };
     }
   },
