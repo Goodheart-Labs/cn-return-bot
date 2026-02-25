@@ -8,7 +8,7 @@
 import { Bot, PipelineResult } from "./types";
 import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
 import { writeNoteFn as writeNote } from "../pipeline/writeNote";
-import { check as checkNote } from "../pipeline/check";
+import { verifySource } from "../pipeline/sourceVerification";
 
 const MODELS = {
   search: "perplexity/sonar-pro",
@@ -46,7 +46,7 @@ export const sonarPro: Bot = {
       );
       lastStage = "note_writing";
 
-      const checkResult = await checkNote(
+      const checkResult = await verifySource(
         {
           note: noteResult.note,
           url: noteResult.url,

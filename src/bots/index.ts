@@ -7,6 +7,7 @@
 import { Bot } from "./types";
 import { opusMainLegacy } from "./legacy/opus-main";
 import { opusMain } from "./opus-main";
+import { opusMainNoSourceCheck } from "./opus-main-no-source-check";
 import { opusDirect } from "./opus-direct";
 import { opusDirectGrok } from "./opus-direct-grok";
 import { opusMainV2Grok } from "./opus-main-v2-grok";
@@ -28,9 +29,10 @@ import { opusStrict } from "./legacy/opus-strict";
 // Register all bots here
 export const bots: Bot[] = [
   // Active bots
-  opusMainLegacy,  // 40% — opus-main (original writeNote prompt)
-  opusMain,        // 40% — opus-main-v2 (URL-aware char counting)
-  opusDirect,      //  7% — direct style (leads with facts, punchy)
+  opusMainLegacy,         // 40% — opus-main (original writeNote prompt)
+  opusMain,               // 20% — opus-main-v2 (URL-aware char counting)
+  opusMainNoSourceCheck,  // 20% — opus-main-v2 without source verification (A/B test)
+  opusDirect,             //  7% — direct style (leads with facts, punchy)
   opusDirectGrok,  //  7% — direct style + Grok X search
   opusMainV2Grok,  //  6% — opus-main-v2 + Grok X search
   // Legacy bots (disabled)

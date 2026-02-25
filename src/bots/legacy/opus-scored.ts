@@ -8,7 +8,7 @@
 import { Bot, PipelineResult, PostContent } from "../types";
 import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
 import { writeNoteFn as writeNote } from "../../pipeline/writeNote";
-import { check as checkNote } from "../../pipeline/check";
+import { verifySource } from "../../pipeline/sourceVerification";
 import {
   runScoringFilters,
   checkAllThresholds,
@@ -60,7 +60,7 @@ export const opusScored: Bot = {
       lastStage = "note_writing";
 
       // 3. Check the note
-      const checkResult = await checkNote(
+      const checkResult = await verifySource(
         {
           note: noteResult.note,
           url: noteResult.url,

@@ -243,6 +243,8 @@ export async function writeNoteFn(
       if (attempt >= maxRetries) {
         const errorMsg = `Note exceeds 275 character limit after ${maxRetries} attempts: ${effectiveLength} effective characters (${parsed.note.length} raw)`;
         console.error(errorMsg);
+        console.error(`[writeNote] Too-long note text: "${parsed.note}"`);
+        console.error(`[writeNote] Too-long note URL: ${parsed.url || "(none)"}`);
         throw new Error(errorMsg);
       }
     }

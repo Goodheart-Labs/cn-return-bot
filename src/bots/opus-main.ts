@@ -8,7 +8,7 @@
 import { Bot, PipelineResult } from "./types";
 import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
 import { writeNoteFn as writeNote } from "../pipeline/writeNote";
-import { check as checkNote } from "../pipeline/check";
+import { verifySource } from "../pipeline/sourceVerification";
 import { analyzeMedia } from "../pipeline/mediaAnalysis";
 
 const MODELS = {
@@ -22,7 +22,7 @@ export const opusMain: Bot = {
   id: "opus-main-v2",
   name: "Opus 4.5 (Main v2)",
   description: "Primary bot using Claude Opus 4.5 with unified note writer",
-  weight: 40,
+  weight: 20,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
@@ -74,7 +74,7 @@ export const opusMain: Bot = {
       );
       lastStage = "note_writing";
 
-      const checkResult = await checkNote(
+      const checkResult = await verifySource(
         {
           note: noteResult.note,
           url: noteResult.url,
@@ -101,7 +101,6 @@ export const opusMain: Bot = {
         lastStage,
         searchContextResult: { text: content.text, searchResults: "", citations: [] },
         noteResult: { note: "", url: "", status: "ERROR" },
-        checkResult: "",
         error: err?.message || String(err),
         warnings: warnings.length > 0 ? warnings : undefined,
       };

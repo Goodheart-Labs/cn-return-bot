@@ -9,7 +9,7 @@
 import { Bot, PipelineResult } from "./types";
 import { enrichedSearch } from "../pipeline/enrichedSearch";
 import { writeNoteDirectFn as writeNote } from "../pipeline/writeNoteDirect";
-import { check as checkNote } from "../pipeline/check";
+import { verifySource } from "../pipeline/sourceVerification";
 
 const MODELS = {
   search: "perplexity/sonar-pro",
@@ -49,7 +49,7 @@ export const opusDirectGrok: Bot = {
       );
       lastStage = "note_writing";
 
-      const checkResult = await checkNote(
+      const checkResult = await verifySource(
         {
           note: noteResult.note,
           url: noteResult.url,

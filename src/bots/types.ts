@@ -20,7 +20,7 @@ export interface PipelineResult {
     url: string;
     status: string;
   };
-  checkResult: string;
+  checkResult?: string;
   /** If the bot failed, this contains error info */
   error?: string;
   /** Non-fatal warnings (e.g. media analysis failed but pipeline continued) */
