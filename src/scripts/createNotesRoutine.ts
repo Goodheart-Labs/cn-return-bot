@@ -184,6 +184,14 @@ async function main() {
 
         const result = await selectedBot.runPipeline(post, content);
 
+        // Build warning text for pipeline_runs.error_message (non-fatal issues)
+        const warningText = result?.warnings?.length
+          ? `[WARNINGS] ${result.warnings.join("; ")}`
+          : undefined;
+        if (warningText) {
+          console.warn(`[main] Tweet ${post.id}: ${warningText}`);
+        }
+
         // Handle pipeline failure (bot returned null)
         if (!result) {
           if (supabaseLogger && pipelineRunId) {
@@ -208,7 +216,7 @@ async function main() {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: "failed",
                 outcome_reason: "bot_error",
-                error_message: result.error.slice(0, 2000),
+                error_message: [warningText, result.error].filter(Boolean).join(" | ").slice(0, 2000),
                 final_stage: result.lastStage,
                 bot_id: selectedBot.id,
               });
@@ -278,6 +286,7 @@ async function main() {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: "rejected",
                 outcome_reason: "scoring_filters_failed",
+                error_message: warningText,
                 final_stage: "scoring",
                 bot_id: selectedBot.id,
               });
@@ -292,6 +301,7 @@ async function main() {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: "rejected",
                 outcome_reason: "source_trust_failed",
+                error_message: warningText,
                 final_stage: "source_trust",
                 bot_id: selectedBot.id,
               });
@@ -306,6 +316,7 @@ async function main() {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: "rejected",
                 outcome_reason: "no_correction_needed",
+                error_message: warningText,
                 final_stage: "note_writing",
                 bot_id: selectedBot.id,
               });
@@ -320,6 +331,7 @@ async function main() {
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: checkError ? "failed" : "rejected",
                 outcome_reason: checkError ? "check_error" : "check_failed",
+                error_message: warningText,
                 final_stage: "check",
                 bot_id: selectedBot.id,
               });
@@ -366,6 +378,7 @@ async function main() {
                   await supabaseLogger.completePipelineRun(pipelineRunId, {
                     outcome: "rejected",
                     outcome_reason: "low_evaluation_score",
+                    error_message: warningText,
                     final_stage: "evaluation",
                     bot_id: selectedBot.id,
                   });
@@ -399,6 +412,7 @@ async function main() {
                   await supabaseLogger.completePipelineRun(pipelineRunId, {
                     outcome: noteId ? "submitted" : "failed",
                     outcome_reason: noteId ? undefined : "no_note_id_in_response",
+                    error_message: warningText,
                     final_stage: "submission",
                     bot_id: selectedBot.id,
                     note_id: noteId,
@@ -466,7 +480,7 @@ async function main() {
                 await supabaseLogger.completePipelineRun(pipelineRunId, {
                   outcome: "failed",
                   outcome_reason: "submission_error",
-                  error_message: errorText,
+                  error_message: [warningText, errorText].filter(Boolean).join(" | ").slice(0, 2000),
                   final_stage: "submission",
                   bot_id: selectedBot.id,
                 });

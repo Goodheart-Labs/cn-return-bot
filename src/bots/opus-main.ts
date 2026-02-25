@@ -26,8 +26,9 @@ export const opusMain: Bot = {
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
+    const warnings: string[] = [];
     try {
-      // Media analysis (non-fatal — continues without it on failure)
+      // Media analysis (non-fatal — continues without it but records warning)
       let mediaContext = "";
       if (content.mediaItems?.length) {
         try {
@@ -38,7 +39,9 @@ export const opusMain: Bot = {
           lastStage = "media_analysis";
           console.log(`[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`);
         } catch (err: any) {
-          console.error(`[${this.id}] Media analysis failed (continuing):`, err.message);
+          const msg = `Media analysis failed: ${err.message}`;
+          console.warn(`[${this.id}] ${msg} (continuing without media context)`);
+          warnings.push(msg);
         }
       }
 
@@ -80,6 +83,7 @@ export const opusMain: Bot = {
         searchContextResult: searchResult,
         noteResult,
         checkResult,
+        warnings: warnings.length > 0 ? warnings : undefined,
       };
     } catch (err: any) {
       console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
@@ -91,6 +95,7 @@ export const opusMain: Bot = {
         noteResult: { note: "", url: "", status: "ERROR" },
         checkResult: "",
         error: err?.message || String(err),
+        warnings: warnings.length > 0 ? warnings : undefined,
       };
     }
   },
