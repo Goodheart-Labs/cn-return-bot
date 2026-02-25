@@ -41,6 +41,11 @@ export const opusMainV2Grok: Bot = {
           console.log(`[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`);
         } catch (err: any) {
           const msg = `Media analysis failed: ${err.message}`;
+          // If tweet is media-only (no meaningful text), media analysis is essential
+          const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
+          if (strippedText.length < 20) {
+            throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
+          }
           console.warn(`[${this.id}] ${msg} (continuing without media context)`);
           warnings.push(msg);
         }
