@@ -49,6 +49,8 @@ export interface MediaAnalysisResult {
   images: ImageAnalysisResult[];
   contextForSearch: string;
   totalAnalysisTimeMs: number;
+  /** Non-fatal issues encountered during analysis */
+  warnings: string[];
 }
 
 /**
@@ -452,6 +454,7 @@ export async function analyzeMedia(
 
   const videos: VideoAnalysisResult[] = [];
   const images: ImageAnalysisResult[] = [];
+  const warnings: string[] = [];
 
   // Separate videos and images
   const videoItems = media.filter((m) => m.type === "video" || m.type === "animated_gif");
@@ -459,7 +462,9 @@ export async function analyzeMedia(
 
   // Analyze videos (sequentially to avoid overwhelming FFmpeg)
   if (videoItems.length > 0 && !(await checkFfmpeg())) {
-    console.log("[mediaAnalysis] FFmpeg not available, skipping video analysis");
+    const msg = `FFmpeg not available, skipping ${videoItems.length} video(s)`;
+    console.warn(`[mediaAnalysis] ${msg}`);
+    warnings.push(msg);
   }
   for (const video of ffmpegAvailable ? videoItems : []) {
     const videoUrl = getBestUrl(video);
@@ -472,6 +477,9 @@ export async function analyzeMedia(
       transcribeAudio,
       visionModel,
     });
+    if (result.error) {
+      warnings.push(`Video analysis failed: ${result.error}`);
+    }
     videos.push(result);
   }
 
@@ -481,6 +489,11 @@ export async function analyzeMedia(
     .filter((url): url is string => !!url)
     .map((url) => describeImage(url, visionModel));
   const imageResults = await Promise.all(imagePromises);
+  for (const img of imageResults) {
+    if (img.error) {
+      warnings.push(`Image analysis failed: ${img.error}`);
+    }
+  }
   images.push(...imageResults);
 
   // Build summary
@@ -517,5 +530,6 @@ export async function analyzeMedia(
     images,
     contextForSearch,
     totalAnalysisTimeMs: totalTime,
+    warnings,
   };
 }
