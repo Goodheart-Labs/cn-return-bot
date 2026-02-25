@@ -26,6 +26,7 @@ export const opusConcise: Bot = {
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {
+      lastStage = "search";
       const searchResult = await perplexitySearch(
         {
           text: content.text,
@@ -35,8 +36,8 @@ export const opusConcise: Bot = {
         },
         { model: MODELS.search }
       );
-      lastStage = "search";
 
+      lastStage = "note_writing";
       const noteResult = await writeNote(
         {
           text: searchResult.text,
@@ -45,8 +46,8 @@ export const opusConcise: Bot = {
         },
         { model: MODELS.noteWriting }
       );
-      lastStage = "note_writing";
 
+      lastStage = "check";
       const checkResult = await verifySource(
         {
           note: noteResult.note,
@@ -55,7 +56,6 @@ export const opusConcise: Bot = {
         },
         { model: MODELS.checking }
       );
-      lastStage = "check";
 
       return {
         post,

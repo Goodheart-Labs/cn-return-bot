@@ -46,6 +46,7 @@ export const opusVerified: Bot = {
     try {
       // 1. Sonar Pro search
       console.log(`[${this.id}] Searching with Sonar Pro...`);
+      lastStage = "search";
       const searchResult = await search(
         {
           text: content.text,
@@ -55,10 +56,10 @@ export const opusVerified: Bot = {
         },
         { model: MODELS.search }
       );
-      lastStage = "search";
 
       // 2. Deep fact verification — enriches context before note writing
       console.log(`[${this.id}] Running deep fact verification...`);
+      lastStage = "deep_verification";
       const verification = await deepFactVerification(
         {
           text: content.text,
@@ -72,13 +73,13 @@ export const opusVerified: Bot = {
           validateModel: true,
         }
       );
-      lastStage = "deep_verification";
       console.log(
         `[${this.id}] Verification complete: ${verification.claimAnalysis.keyClaims.length} claims, ${verification.allCitations.length} total citations`
       );
 
       // 3. Write note with enriched context
       console.log(`[${this.id}] Writing note with enriched context...`);
+      lastStage = "note_writing";
       const noteResult = await writeNote(
         {
           text: content.text,
@@ -88,7 +89,6 @@ export const opusVerified: Bot = {
         },
         { model: MODELS.noteWriting }
       );
-      lastStage = "note_writing";
 
       // Early return if no correction needed
       if (noteResult.status !== "CORRECTION WITH TRUSTWORTHY CITATION") {
@@ -112,13 +112,14 @@ export const opusVerified: Bot = {
 
       // 4. Check note against source
       console.log(`[${this.id}] Checking note against source...`);
+      lastStage = "check";
       const checkResult = await verifySource(
         { note: noteResult.note, url: noteResult.url, status: noteResult.status },
         { model: MODELS.checking }
       );
-      lastStage = "check";
 
       // 5. Source trustworthiness gate (free — pure logic, no LLM call)
+      lastStage = "source_trust";
       const trustScore = scoreSourceTrustworthiness(noteResult.url);
       console.log(
         `[${this.id}] Source trust: ${trustScore.domain} = ${trustScore.score} (${trustScore.tier})`
@@ -141,10 +142,10 @@ export const opusVerified: Bot = {
           checkResult,
         };
       }
-      lastStage = "source_trust";
 
       // 6. Scoring filters gate (3 parallel LLM calls)
       console.log(`[${this.id}] Running scoring filters...`);
+      lastStage = "scoring";
       scoringResults = await runScoringFilters(
         noteResult.note,
         content.text,
@@ -152,7 +153,6 @@ export const opusVerified: Bot = {
         noteResult.url,
         MODELS.scoring
       );
-      lastStage = "scoring";
 
       const allPassed = checkAllThresholds(scoringResults);
       if (!allPassed) {

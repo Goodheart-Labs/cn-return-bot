@@ -27,6 +27,7 @@ export const opusDirectGrok: Bot = {
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {
+      lastStage = "search";
       const searchResult = await enrichedSearch(
         {
           text: content.text,
@@ -37,8 +38,8 @@ export const opusDirectGrok: Bot = {
         { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
         post.id
       );
-      lastStage = "search";
 
+      lastStage = "note_writing";
       const noteResult = await writeNote(
         {
           text: searchResult.text,
@@ -47,8 +48,8 @@ export const opusDirectGrok: Bot = {
         },
         { model: MODELS.noteWriting }
       );
-      lastStage = "note_writing";
 
+      lastStage = "check";
       const checkResult = await verifySource(
         {
           note: noteResult.note,
@@ -57,7 +58,6 @@ export const opusDirectGrok: Bot = {
         },
         { model: MODELS.checking }
       );
-      lastStage = "check";
 
       return {
         post,
