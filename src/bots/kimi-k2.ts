@@ -26,6 +26,7 @@ export const kimiK2: Bot = {
     let lastStage = "started";
     try {
       // 1. Search with Perplexity
+      lastStage = "search";
       const searchResult = await perplexitySearch(
         {
           text: content.text,
@@ -35,9 +36,9 @@ export const kimiK2: Bot = {
         },
         { model: MODELS.search }
       );
-      lastStage = "search";
 
       // 2. Write note with Kimi K2.5
+      lastStage = "note_writing";
       const noteResult = await writeNote(
         {
           text: searchResult.text,
@@ -46,9 +47,9 @@ export const kimiK2: Bot = {
         },
         { model: MODELS.noteWriting }
       );
-      lastStage = "note_writing";
 
       // 3. Check the note with Kimi K2.5
+      lastStage = "check";
       const checkResult = await verifySource(
         {
           note: noteResult.note,
@@ -57,7 +58,6 @@ export const kimiK2: Bot = {
         },
         { model: MODELS.checking }
       );
-      lastStage = "check";
 
       return {
         post,

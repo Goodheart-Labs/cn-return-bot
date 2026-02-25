@@ -54,6 +54,7 @@ export const opusMainV2Grok: Bot = {
         }
       }
 
+      lastStage = "search";
       const searchResult = await enrichedSearch(
         {
           text: content.text,
@@ -64,8 +65,8 @@ export const opusMainV2Grok: Bot = {
         { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
         post.id
       );
-      lastStage = "search";
 
+      lastStage = "note_writing";
       const noteResult = await writeNote(
         {
           text: searchResult.text,
@@ -74,8 +75,8 @@ export const opusMainV2Grok: Bot = {
         },
         { model: MODELS.noteWriting }
       );
-      lastStage = "note_writing";
 
+      lastStage = "check";
       const checkResult = await verifySource(
         {
           note: noteResult.note,
@@ -84,7 +85,6 @@ export const opusMainV2Grok: Bot = {
         },
         { model: MODELS.checking }
       );
-      lastStage = "check";
 
       return {
         post,

@@ -43,6 +43,7 @@ export const opusResearch: Bot = {
       // 1. Run Grok X search and Claude first search IN PARALLEL
       // Grok failure is non-fatal; Claude failure aborts the pipeline
       console.log(`[${this.id}] Starting parallel searches (Grok + Claude)...`);
+      lastStage = "parallel_search";
       const [grokSettled, claudeFirstResult] = await Promise.all([
         searchXWithGrok(post.id, content.text, { model: MODELS.grokSearch })
           .catch((err) => {
@@ -51,7 +52,6 @@ export const opusResearch: Bot = {
           }),
         claudeFirstSearch(content.text, { model: MODELS.research }, content.retweetContext),
       ]);
-      lastStage = "parallel_search";
       const grokResult = grokSettled;
       if (grokResult) {
         allResearch.push(`--- Grok X Search ---\n${grokResult}`);
@@ -71,6 +71,7 @@ export const opusResearch: Bot = {
 
       // 3. First follow-up research - analyze and extract URLs
       console.log(`[${this.id}] Claude follow-up research (round 1)...`);
+      lastStage = "follow_up_1";
       const followUp1 = await followUpResearch(
         content.text,
         allResearch.join("\n\n"),
@@ -79,7 +80,6 @@ export const opusResearch: Bot = {
         content.retweetContext,
         grokResult ?? undefined
       );
-      lastStage = "follow_up_1";
       allResearch.push(`--- Claude Follow-up 1 ---\n${followUp1.content}`);
       collectedUrls.push(...followUp1.urls);
       console.log(`[${this.id}] URLs found: ${followUp1.urls.length}`);
@@ -88,6 +88,7 @@ export const opusResearch: Bot = {
       if (followUp1.hasGaps) {
         console.log(`[${this.id}] More research needed: ${followUp1.researchRequest}`);
 
+        lastStage = "follow_up_2";
         const followUp2 = await followUpResearch(
           content.text,
           allResearch.join("\n\n"),
@@ -96,7 +97,6 @@ export const opusResearch: Bot = {
           content.retweetContext,
           grokResult ?? undefined
         );
-        lastStage = "follow_up_2";
         allResearch.push(`--- Claude Follow-up 2 ---\n${followUp2.content}`);
         collectedUrls.push(...followUp2.urls);
 
@@ -114,6 +114,7 @@ export const opusResearch: Bot = {
       const combinedResearch = allResearch
         .map((r, i) => `--- Research Round ${i + 1} ---\n${r}`)
         .join("\n\n");
+      lastStage = "note_writing";
       const noteResult = await writeNote(
         {
           text: content.text,
@@ -123,9 +124,9 @@ export const opusResearch: Bot = {
         },
         { model: MODELS.noteWriting }
       );
-      lastStage = "note_writing";
 
       // 6. Check the note
+      lastStage = "check";
       const checkResult = await verifySource(
         {
           note: noteResult.note,
@@ -134,7 +135,6 @@ export const opusResearch: Bot = {
         },
         { model: MODELS.checking }
       );
-      lastStage = "check";
 
       return {
         post,

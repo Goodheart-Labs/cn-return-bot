@@ -51,6 +51,7 @@ export const opusMainNoSourceCheck: Bot = {
         }
       }
 
+      lastStage = "search";
       const searchResult = await perplexitySearch(
         {
           text: content.text,
@@ -60,8 +61,8 @@ export const opusMainNoSourceCheck: Bot = {
         },
         { model: MODELS.search }
       );
-      lastStage = "search";
 
+      lastStage = "note_writing";
       const noteResult = await writeNote(
         {
           text: searchResult.text,
@@ -70,7 +71,6 @@ export const opusMainNoSourceCheck: Bot = {
         },
         { model: MODELS.noteWriting }
       );
-      lastStage = "note_writing";
 
       return {
         post,
