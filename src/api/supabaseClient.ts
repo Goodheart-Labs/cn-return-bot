@@ -917,7 +917,10 @@ export class SupabaseLogger {
   /**
    * Get tweet IDs that should be permanently skipped:
    * - Tweets that were submitted (have a note)
-   * - Tweets with 2+ "no_correction_needed" rejections
+   * - Tweets with "no_correction_needed" rejections on cooldown:
+   *   1 rejection + <1hr ago → skip (retry after 1 hour)
+   *   2 rejections + <24hr ago → skip (retry after 24 hours)
+   *   3+ rejections → permanent skip
    */
   async getProcessedTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
@@ -927,33 +930,54 @@ export class SupabaseLogger {
       const notesData = await this.fetchAllRows<{ tweet_id: string }>(
         (client) => client.from("notes").select("tweet_id")
       );
+      const submittedCount = notesData.length;
       notesData.forEach((row) => {
         if (row.tweet_id) tweetIds.add(row.tweet_id);
       });
 
-      // Get tweets with 2+ "no_correction_needed" rejections (paginated)
+      // Get no_correction_needed rejections with timestamps for cooldown logic
+      let cooldownCount = 0;
+      let permanentCount = 0;
       try {
-        const pipelineData = await this.fetchAllRows<{ tweet_id: string }>(
-          (client) => client.from("pipeline_runs").select("tweet_id")
+        const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>(
+          (client) => client.from("pipeline_runs").select("tweet_id, created_at")
             .eq("outcome", "rejected")
             .eq("outcome_reason", "no_correction_needed")
         );
-        const rejectionCounts = new Map<string, number>();
-        pipelineData.forEach((row) => {
-          if (row.tweet_id) {
-            rejectionCounts.set(row.tweet_id, (rejectionCounts.get(row.tweet_id) || 0) + 1);
+        const rejectionInfo = new Map<string, { count: number; latestAt: Date }>();
+        for (const row of pipelineData) {
+          if (!row.tweet_id) continue;
+          const ts = new Date(row.created_at);
+          const existing = rejectionInfo.get(row.tweet_id);
+          if (!existing) {
+            rejectionInfo.set(row.tweet_id, { count: 1, latestAt: ts });
+          } else {
+            existing.count++;
+            if (ts > existing.latestAt) existing.latestAt = ts;
           }
-        });
-        for (const [tweetId, count] of rejectionCounts) {
-          if (count >= 2) {
+        }
+
+        const now = new Date();
+        for (const [tweetId, info] of rejectionInfo) {
+          if (info.count >= 3) {
+            // 3+ rejections: permanent skip
             tweetIds.add(tweetId);
+            permanentCount++;
+          } else {
+            const hoursSinceLatest = (now.getTime() - info.latestAt.getTime()) / (1000 * 60 * 60);
+            const cooldownHours = info.count === 1 ? 1 : 24;
+            if (hoursSinceLatest < cooldownHours) {
+              tweetIds.add(tweetId);
+              cooldownCount++;
+            }
+            // Otherwise cooldown elapsed — tweet is eligible for retry
           }
         }
       } catch (pipelineError) {
         console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       }
 
-      console.log(`[SupabaseLogger] Found ${tweetIds.size} permanently-skipped tweet IDs`);
+      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);
