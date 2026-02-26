@@ -14,7 +14,7 @@ const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes maximum runtime (GitHub Act
 
 // Global timeout to prevent hanging
 const globalTimeout = setTimeout(async () => {
-  console.log("[main] Maximum runtime reached (5 minutes), forcing exit");
+  console.log("[main] Maximum runtime reached (15 minutes), forcing exit");
   await closeBrowser();
   process.exit(0);
 }, MAX_RUNTIME_MS);
@@ -67,9 +67,9 @@ async function main() {
       console.log("[main] No Supabase logger - not skipping any posts");
     }
 
-    // Fetch eligible posts (up to 200) to measure true backlog, only excluding permanently-skipped tweets
-    const BACKLOG_LIMIT = 200;
-    const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 10);
+    // Fetch eligible posts (up to 1000) to measure true backlog, only excluding permanently-skipped tweets
+    const BACKLOG_LIMIT = 1000;
+    const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50);
 
     // Sort by tweet ID descending (newest first) - tweet IDs are snowflake IDs, higher = newer
     allEligible.sort((a, b) => {

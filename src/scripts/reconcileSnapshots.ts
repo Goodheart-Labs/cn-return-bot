@@ -470,6 +470,9 @@ export async function reconcile(): Promise<{
   collisions: { note: number; tweet: number };
   quarantined: number;
   notesWritten: number;
+  fullWrites: number;
+  viewOnlyWrites: number;
+  viewSkippedMismatch: number;
 }> {
   console.log("[reconcile] Starting snapshot reconciliation...");
 
@@ -569,15 +572,46 @@ export async function reconcile(): Promise<{
     quarantinedSnapIds
   );
 
+  // 7. Fetch public data status to determine write authority
+  //    Notes with public_data_updated_at set are owned by public data for
+  //    status/text/tweet_id — reconciliation can only update view_count
+  //    (and only if the scraper's status matches the canonical status).
+  const publicDataNotes = await fetchAll<{
+    note_id: string;
+    cn_status: string | null;
+  }>(() =>
+    supabase
+      .from("canonical_note_information")
+      .select("note_id, cn_status")
+      .not("public_data_updated_at", "is", null)
+  );
+  const publicDataStatus = new Map<string, string | null>(
+    publicDataNotes.map((n) => [n.note_id, n.cn_status])
+  );
+  console.log(
+    `[reconcile] ${publicDataStatus.size} notes have public data (view_count-only updates)`
+  );
+
   console.log(`[reconcile] Writing ${canonical.length} canonical notes...`);
 
-  // 7. Write to canonical_note_information via upsert
+  // 8. Write to canonical_note_information, respecting public data authority
   const now = new Date().toISOString();
-  let written = 0;
+  let fullWrites = 0;
+  let viewOnlyWrites = 0;
+  let viewSkippedMismatch = 0;
   const BATCH_SIZE = 100;
 
-  for (let i = 0; i < canonical.length; i += BATCH_SIZE) {
-    const batch = canonical.slice(i, i + BATCH_SIZE);
+  // Split canonical notes into two groups
+  const fullUpdateNotes = canonical.filter(
+    (c) => !publicDataStatus.has(c.note_id)
+  );
+  const viewOnlyNotes = canonical.filter((c) =>
+    publicDataStatus.has(c.note_id)
+  );
+
+  // Case B: Notes NOT in public data — full write (existing behavior)
+  for (let i = 0; i < fullUpdateNotes.length; i += BATCH_SIZE) {
+    const batch = fullUpdateNotes.slice(i, i + BATCH_SIZE);
     const rows = batch.map((c) => ({
       note_id: c.note_id,
       tweet_id: c.tweet_id ?? `unavailable_${c.note_id}`,
@@ -595,15 +629,50 @@ export async function reconcile(): Promise<{
 
     if (error) {
       console.error(
-        `[reconcile] Error writing batch at offset ${i}:`,
+        `[reconcile] Error writing full batch at offset ${i}:`,
         error
       );
     } else {
-      written += batch.length;
+      fullWrites += batch.length;
     }
   }
 
-  console.log(`[reconcile] Done. Wrote ${written} canonical notes.`);
+  // Case A: Notes IN public data — only update view_count + reconciliation metadata
+  for (const c of viewOnlyNotes) {
+    const canonicalStatus = publicDataStatus.get(c.note_id);
+    const statusMatches =
+      c.cn_status !== null && c.cn_status === canonicalStatus;
+
+    const row: Record<string, any> = {
+      data_tier: c.data_tier,
+      coherence_score: c.coherence_score,
+      last_reconciled_at: now,
+    };
+
+    if (statusMatches && c.view_count !== null) {
+      row.view_count = c.view_count;
+    } else if (!statusMatches && c.view_count !== null) {
+      viewSkippedMismatch++;
+    }
+
+    const { error } = await supabase
+      .from("canonical_note_information")
+      .update(row)
+      .eq("note_id", c.note_id);
+
+    if (error) {
+      console.error(
+        `[reconcile] Error updating view-only note ${c.note_id}:`,
+        error
+      );
+    } else {
+      viewOnlyWrites++;
+    }
+  }
+
+  console.log(
+    `[reconcile] Done. Full writes: ${fullWrites}, view-only updates: ${viewOnlyWrites}, view_count skipped (status mismatch): ${viewSkippedMismatch}`
+  );
 
   return {
     totalSnapshots: activeSnapshots.length,
@@ -613,7 +682,10 @@ export async function reconcile(): Promise<{
       tweet: tweetCollisions.size,
     },
     quarantined: quarantinedSnapIds.size,
-    notesWritten: written,
+    notesWritten: fullWrites + viewOnlyWrites,
+    fullWrites,
+    viewOnlyWrites,
+    viewSkippedMismatch,
   };
 }
 
@@ -633,7 +705,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         `Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`
       );
       console.log(`Quarantined: ${result.quarantined}`);
-      console.log(`Notes written: ${result.notesWritten}`);
+      console.log(`Notes written: ${result.notesWritten} (full: ${result.fullWrites}, view-only: ${result.viewOnlyWrites})`);
+      console.log(`View updates skipped (status mismatch): ${result.viewSkippedMismatch}`);
     })
     .catch((err) => {
       console.error("Reconciliation failed:", err);
