@@ -13,10 +13,11 @@
  * 2. Navigate to your notewriter page and log in
  *
  * 3. Run this script:
- *    bun run src/scripts/scrapeNotewriterClickThrough.ts [maxNotes] [--fresh] [--start-from <noteId>]
+ *    bun run src/scripts/scrapeNotewriterClickThrough.ts [maxNotes] [--fresh] [--start-from <noteId>] [--stop-at <noteId>]
  *
  *    --fresh: Open a new tab and start from top (otherwise reuses existing tab)
  *    --start-from <noteId>: Scroll to this note ID before scraping
+ *    --stop-at <noteId>: Stop scraping when reaching this note ID (instead of BOTTOM_NOTE_ID)
  */
 
 import "dotenv/config";
@@ -338,6 +339,7 @@ async function scrapeTab(
   collectedNotes: Map<string, ScrapedNote>,
   maxNotes: number,
   notewriterUrl: string,
+  stopAtNoteId: bigint | null = null,
 ): Promise<void> {
   const prefix = `[scraper]`;
 
@@ -904,9 +906,11 @@ async function scrapeTab(
       foundNewNote = true;
       if (modalData.submittedDate) lastNoteDate = modalData.submittedDate;
 
-      // Early exit if we've reached the very bottom of the list
-      if (noteIdBigInt <= BOTTOM_NOTE_ID) {
-        console.log(`\n   ${prefix} 🎉 Reached the bottom note (${modalData.noteId})! Scrape complete.`);
+      // Early exit if we've reached the stop point or the very bottom of the list
+      const effectiveBottom = stopAtNoteId ?? BOTTOM_NOTE_ID;
+      if (noteIdBigInt <= effectiveBottom) {
+        const label = stopAtNoteId ? 'stop-at target' : 'bottom note';
+        console.log(`\n   ${prefix} 🎉 Reached the ${label} (${modalData.noteId})! Scrape complete.`);
         break recoveryLoop;
       }
 
@@ -1093,11 +1097,21 @@ async function main() {
     ? BigInt(args[startFromIdx + 1]!)
     : null;
 
+  // Parse --stop-at <noteId> to stop scraping at a specific note instead of BOTTOM_NOTE_ID
+  const stopAtIdx = args.indexOf('--stop-at');
+  const stopAtNoteId = stopAtIdx !== -1 && args[stopAtIdx + 1]
+    ? BigInt(args[stopAtIdx + 1]!)
+    : null;
+
   // Filter out flag args and their values
   const flagValueIndices = new Set<number>();
   if (startFromIdx !== -1) {
     flagValueIndices.add(startFromIdx);
     flagValueIndices.add(startFromIdx + 1);
+  }
+  if (stopAtIdx !== -1) {
+    flagValueIndices.add(stopAtIdx);
+    flagValueIndices.add(stopAtIdx + 1);
   }
   const nonFlagArgs = args.filter((a, i) => !a.startsWith('--') && !flagValueIndices.has(i));
 
@@ -1129,7 +1143,11 @@ async function main() {
   }
 
   console.log("✅ Connected to Chrome\n");
-  console.log(`🚀 Starting scrape (max ${maxNotes} notes)...\n`);
+  console.log(`🚀 Starting scrape (max ${maxNotes} notes)...`);
+  if (stopAtNoteId) {
+    console.log(`   🛑 Will stop at note ${stopAtNoteId}`);
+  }
+  console.log();
 
   // Find or create the notewriter tab
   let page: Page;
@@ -1246,7 +1264,7 @@ async function main() {
     console.log(`\n${"=".repeat(60)}`);
     console.log(`🏁 ${autoRestartCount > 0 ? `Restart ${autoRestartCount}: scraping` : 'Starting scrape'}...\n`);
 
-    await scrapeTab(browser, page, collectedNotes, maxNotes, notewriterUrl);
+    await scrapeTab(browser, page, collectedNotes, maxNotes, notewriterUrl, stopAtNoteId);
 
     // Check if we reached the bottom
     const scrapedNoteIds = [...collectedNotes.keys()]
@@ -1256,8 +1274,10 @@ async function main() {
       ? scrapedNoteIds.reduce((a, b) => a < b ? a : b)
       : null;
 
-    if (oldestScraped !== null && oldestScraped <= BOTTOM_NOTE_ID) {
-      console.log(`\n🎉 Reached the bottom! Oldest scraped: ${oldestScraped}`);
+    const effectiveBottom = stopAtNoteId ?? BOTTOM_NOTE_ID;
+    if (oldestScraped !== null && oldestScraped <= effectiveBottom) {
+      const label = stopAtNoteId ? 'stop-at target' : 'bottom';
+      console.log(`\n🎉 Reached the ${label}! Oldest scraped: ${oldestScraped}`);
       break autoRestartLoop;
     }
 

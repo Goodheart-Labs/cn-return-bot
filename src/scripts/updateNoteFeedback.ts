@@ -261,6 +261,8 @@ async function main() {
   for (const [noteId, noteData] of ourNotes) {
     const status = statusMap.get(noteId);
 
+    // Note: we don't write view_count here — public data dumps don't include it yet
+    // (Nathan has requested it). Scraper/reconciliation owns view_count for now.
     const row: Record<string, any> = {
       note_id: noteId,
       tweet_id: noteData.tweetId,

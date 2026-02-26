@@ -140,12 +140,15 @@ console.log(`  ${runSnapshots.length} run snapshots`);
 const videoRuns = await fetchAll<{
   tweet_id: string;
   has_video: boolean | null;
+  video_duration_ms: number | null;
 }>(
-  (c) => c.from("pipeline_runs").select("tweet_id, has_video").eq("outcome", "submitted")
+  (c) => c.from("pipeline_runs").select("tweet_id, has_video, video_duration_ms").eq("outcome", "submitted")
 );
-const videoByTweet = new Map<string, boolean>();
+const videoByTweet = new Map<string, { has_video: boolean; video_duration_ms: number | null }>();
 for (const r of videoRuns) {
-  if (r.tweet_id && r.has_video !== null) videoByTweet.set(r.tweet_id, r.has_video);
+  if (r.tweet_id && r.has_video !== null) {
+    videoByTweet.set(r.tweet_id, { has_video: r.has_video, video_duration_ms: r.video_duration_ms });
+  }
 }
 console.log(`  ${videoRuns.length} pipeline runs with video info`);
 
@@ -193,12 +196,13 @@ const notes = scrapedNotes.map((n) => {
     view_count: n.view_count || 0,
     bot_name: info?.bot_name || "pre-tracking",
     submitted_at: noteDate,
-    has_video: videoByTweet.get(n.tweet_id) ?? false,
+    has_video: videoByTweet.get(n.tweet_id)?.has_video ?? false,
+    video_duration_ms: videoByTweet.get(n.tweet_id)?.video_duration_ms ?? null,
   };
 });
 
 // Define active vs legacy bots
-const activeBots = ["opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok", "opus-main-v2-grok"];
+const activeBots = ["opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok", "opus-main-v2-grok", "opus-main-no-source-check"];
 const legacyBots = ["opus-4.6", "sonar-pro", "kimi-k2", "opus-research", "opus-verified", "opus-concise", "opus-scored", "opus-strict", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking"];
 
 // Check for notes from unknown bots
@@ -230,6 +234,7 @@ const notesData = notes.map((n) => ({
   cn_status: n.cn_status,
   view_count: n.view_count,
   has_video: n.has_video,
+  video_duration_ms: n.video_duration_ms,
 }));
 
 // Bot color palette
@@ -403,7 +408,8 @@ const html = `<!DOCTYPE html>
         <span class="filter-group">
           <button onclick="setVideoFilter('all')" id="btn-vid-all" class="active">All</button>
           <button onclick="setVideoFilter('no-video')" id="btn-vid-no">No Video</button>
-          <button onclick="setVideoFilter('video')" id="btn-vid-yes">Video Only</button>
+          <button onclick="setVideoFilter('video')" id="btn-vid-yes">Video</button>
+          <button onclick="setVideoFilter('tiktok')" id="btn-vid-tiktok">TikTok Style</button>
         </span>
       </div>
       <div>
@@ -513,6 +519,24 @@ const html = `<!DOCTYPE html>
     </table>
   </div>
 
+  <div class="summary">
+    <h2>Backlog Trend</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Time (UTC)</th>
+          <th>Total</th>
+          <th>New</th>
+          <th>Retry</th>
+          <th>Processed</th>
+          <th>Hit Limit</th>
+        </tr>
+      </thead>
+      <tbody id="backlog-table-body">
+      </tbody>
+    </table>
+  </div>
+
   <p class="data-source">Generated ${new Date().toISOString().slice(0, 16)} UTC</p>
 
   <script>
@@ -523,6 +547,7 @@ const html = `<!DOCTYPE html>
     const botColors = ${JSON.stringify(botColors)};
     const pipelineRuns = ${JSON.stringify(pipelineRuns)};
     const pipelineOutcomesByBot = ${JSON.stringify(pipelineOutcomesByBot)};
+    const runSnapshots = ${JSON.stringify(runSnapshots)};
     const globalTotalViews = ${globalTotalViews};
     const totalCompeting = ${totalCompeting};
     const helpfulCompeting = ${helpfulCompeting};
@@ -574,6 +599,8 @@ const html = `<!DOCTYPE html>
         filtered = filtered.filter(n => n.has_video);
       } else if (videoFilter === 'no-video') {
         filtered = filtered.filter(n => !n.has_video);
+      } else if (videoFilter === 'tiktok') {
+        filtered = filtered.filter(n => n.has_video && n.video_duration_ms && n.video_duration_ms >= 10000 && n.video_duration_ms <= 120000);
       }
       return filtered;
     }
@@ -587,8 +614,9 @@ const html = `<!DOCTYPE html>
 
     function setVideoFilter(filter) {
       currentVideoFilter = filter;
-      document.querySelectorAll('#btn-vid-all, #btn-vid-no, #btn-vid-yes').forEach(b => b.classList.remove('active'));
-      document.getElementById('btn-vid-' + (filter === 'all' ? 'all' : filter === 'no-video' ? 'no' : 'yes')).classList.add('active');
+      document.querySelectorAll('#btn-vid-all, #btn-vid-no, #btn-vid-yes, #btn-vid-tiktok').forEach(b => b.classList.remove('active'));
+      const btnId = filter === 'all' ? 'btn-vid-all' : filter === 'no-video' ? 'btn-vid-no' : filter === 'tiktok' ? 'btn-vid-tiktok' : 'btn-vid-yes';
+      document.getElementById(btnId).classList.add('active');
       updateCharts();
     }
 
@@ -872,8 +900,9 @@ const html = `<!DOCTYPE html>
         }
       });
 
-      // Update pipeline table
+      // Update pipeline table + sankeys
       renderPipelineTable();
+      renderSankeys();
     }
 
     function renderPipelineTable() {
@@ -1061,6 +1090,24 @@ const html = `<!DOCTYPE html>
           }
         });
         sankeyCharts.push(chart);
+      }
+    }
+
+    // Render backlog trend table (last 20 runs, newest first)
+    {
+      const tbody = document.getElementById('backlog-table-body');
+      const recent = runSnapshots.slice(-20).reverse();
+      for (const snap of recent) {
+        const t = new Date(snap.created_at);
+        const timeStr = t.toISOString().slice(5, 16).replace('T', ' ');
+        tbody.innerHTML += \`<tr>
+          <td>\${timeStr}</td>
+          <td><strong>\${snap.backlog_total}</strong></td>
+          <td>\${snap.backlog_new}</td>
+          <td>\${snap.backlog_retry}</td>
+          <td>\${snap.posts_processed}</td>
+          <td>\${snap.backlog_hit_limit ? '⚠️ Yes' : 'No'}</td>
+        </tr>\`;
       }
     }
 
