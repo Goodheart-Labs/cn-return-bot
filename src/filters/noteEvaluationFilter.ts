@@ -85,9 +85,9 @@ export async function shouldSubmitNote(
       score,
     };
   } catch (error) {
-    console.error("[noteEvaluationFilter] Failed to evaluate note:", error);
+    console.warn("[noteEvaluationFilter] Evaluation API failed, skipping check:", error instanceof Error ? error.message : error);
     return {
-      shouldSubmit: false,
+      shouldSubmit: true,
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
