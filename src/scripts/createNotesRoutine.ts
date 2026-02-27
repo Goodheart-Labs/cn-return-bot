@@ -140,6 +140,7 @@ async function main() {
 
     const queue = new PQueue({ concurrency: concurrencyLimit });
     let submitted = 0;
+    let dailyLimitHit = false;
 
     // Add progress logging
     queue.on("active", () => {
@@ -149,6 +150,8 @@ async function main() {
     // Add all tasks to the queue
     for (const [idx, post] of posts.entries()) {
       queue.add(async () => {
+        if (dailyLimitHit) return;
+
         // Get the original tweet content (handling retweets)
         const content = getOriginalTweetContent(post);
 
@@ -482,16 +485,27 @@ async function main() {
               }
             }
           } catch (err: any) {
-            console.error(
-              `[main] Failed to submit note for post ${result.post.id}:`,
-              err.response?.data || err
-            );
+            const errorData = err.response?.data;
+            const errorText = errorData
+              ? JSON.stringify(errorData).slice(0, 500)
+              : (err.message || String(err)).slice(0, 500);
+
+            // Detect daily write limit and stop processing further submissions
+            const isDailyLimit = errorText.includes("daily limit");
+            if (isDailyLimit) {
+              console.log(`[main] Daily note limit reached — skipping remaining ${queue.size} queued tasks`);
+              dailyLimitHit = true;
+              queue.clear();
+            } else {
+              console.error(
+                `[main] Failed to submit note for post ${result.post.id}:`,
+                errorData || err
+              );
+            }
+
             // Log submission failure
             if (supabaseLogger && pipelineRunId) {
               try {
-                const errorText = err.response?.data
-                  ? JSON.stringify(err.response.data).slice(0, 500)
-                  : (err.message || String(err)).slice(0, 500);
                 await supabaseLogger.completePipelineRun(pipelineRunId, {
                   outcome: "failed",
                   outcome_reason: "submission_error",
