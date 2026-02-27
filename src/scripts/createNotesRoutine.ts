@@ -337,10 +337,11 @@ async function main() {
           // Check failed or errored
           if (supabaseLogger && pipelineRunId) {
             try {
+              const checkReasonText = checkRaw ? `check: ${checkRaw}` : undefined;
               await supabaseLogger.completePipelineRun(pipelineRunId, {
                 outcome: checkError ? "failed" : "rejected",
                 outcome_reason: checkError ? "check_error" : "check_failed",
-                error_message: warningText,
+                error_message: [warningText, checkReasonText].filter(Boolean).join(" | ").slice(0, 2000) || undefined,
                 final_stage: "check",
                 bot_id: selectedBot.id,
               });
@@ -384,10 +385,15 @@ async function main() {
               );
               if (supabaseLogger && pipelineRunId) {
                 try {
+                  const evalErrorText = evaluationResult.error
+                    ? `eval: ${evaluationResult.error}`
+                    : evaluationResult.score !== undefined
+                      ? `score ${evaluationResult.score} below threshold`
+                      : undefined;
                   await supabaseLogger.completePipelineRun(pipelineRunId, {
                     outcome: "rejected",
                     outcome_reason: "low_evaluation_score",
-                    error_message: warningText,
+                    error_message: [warningText, evalErrorText].filter(Boolean).join(" | ").slice(0, 2000) || undefined,
                     final_stage: "evaluation",
                     bot_id: selectedBot.id,
                   });

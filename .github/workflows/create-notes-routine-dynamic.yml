@@ -1,4 +1,4 @@
-name: Create Notes Routine (Dynamic Branch Discovery)
+name: Create Notes Routine
 
 on:
   schedule:
@@ -6,37 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  discover-branches:
-    runs-on: ubuntu-latest
-    outputs:
-      branches: ${{ steps.branch-list.outputs.branches }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get all branches
-        id: branch-list
-        run: |
-          # Get all remote branches
-          git branch -r | grep -E "(origin/main|origin/staging/)" | sed 's/origin\///' > branches.txt
-
-          # Convert to JSON array format for matrix
-          echo "branches=$(cat branches.txt | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-
-          # Debug output
-          echo "Found branches:"
-          cat branches.txt
-          echo "JSON output: ${{ steps.branch-list.outputs.branches }}"
-
   fetch-and-submit:
-    needs: discover-branches
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    strategy:
-      matrix:
-        branch: ${{ fromJson(needs.discover-branches.outputs.branches) }}
     env:
       # X API OAuth 1.0a credentials
       X_API_KEY: ${{ secrets.X_API_KEY }}
@@ -51,10 +23,8 @@ jobs:
       # Groq API key for Whisper audio transcription (video analysis)
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
     steps:
-      - name: Checkout specific branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ matrix.branch }}
 
       - uses: oven-sh/setup-bun@v1
         with:
