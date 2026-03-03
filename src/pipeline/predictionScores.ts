@@ -25,6 +25,12 @@ interface PredictionContext {
   searchResults: string;
   postId: string;
   supabaseLogger: SupabaseLogger;
+  /** Pre-computed scores from earlier pipeline stages (suppressor, eval check) — skip re-computing these */
+  preComputed?: {
+    sourceTrust?: number;
+    llmHelpfulness?: number;
+    claimOpinionScore?: number;
+  };
 }
 
 async function runSinglePredictor(
@@ -63,12 +69,14 @@ export async function runPredictionScores(ctx: PredictionContext): Promise<void>
   await Promise.all([
     // Free: source domain trustworthiness (0-1)
     runSinglePredictor("pred_source_trust", async () => {
+      if (ctx.preComputed?.sourceTrust !== undefined) return ctx.preComputed.sourceTrust;
       if (!ctx.sourceUrl) return undefined;
       return scoreSourceTrustworthiness(ctx.sourceUrl).score;
     }, ctx),
 
     // LLM: helpfulness prediction (0-1)
     runSinglePredictor("pred_llm_helpfulness", async () => {
+      if (ctx.preComputed?.llmHelpfulness !== undefined) return ctx.preComputed.llmHelpfulness;
       const result = await predictHelpfulness(
         ctx.noteText,
         ctx.tweetText,
@@ -92,6 +100,7 @@ export async function runPredictionScores(ctx: PredictionContext): Promise<void>
 
     // X API: claim opinion score (unbounded decimal)
     runSinglePredictor("pred_x_claim_opinion", async () => {
+      if (ctx.preComputed?.claimOpinionScore !== undefined) return ctx.preComputed.claimOpinionScore;
       const result = await evaluateNote(ctx.postId, ctx.noteText);
       if (result.data && typeof result.data.claim_opinion_score === "number") {
         return result.data.claim_opinion_score;

@@ -5,10 +5,10 @@
  * Uses Perplexity Sonar for search, Opus 4.5 for writing, Sonnet 4 for checking.
  */
 
-import { Bot, PipelineResult } from "../types";
-import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGoal";
-import { writeNoteWithSearchFn as writeNote } from "../../pipeline/legacy/writeNoteLegacy";
-import { verifySource } from "../../pipeline/sourceVerification";
+import { Bot, PipelineResult } from "./types";
+import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
+import { writeNoteWithSearchFn as writeNote } from "../pipeline/legacy/writeNoteLegacy";
+import { verifySource } from "../pipeline/sourceVerification";
 
 const MODELS = {
   search: "perplexity/sonar",

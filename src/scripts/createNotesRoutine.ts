@@ -405,6 +405,72 @@ async function main() {
                 }
               }
             } else {
+              // High bar submission filter: when enabled, apply stricter filters before submission
+              // Track scores for reuse by prediction module
+              let preComputedScores: { sourceTrust?: number; llmHelpfulness?: number; claimOpinionScore?: number } = {};
+              if (evaluationResult.score !== undefined) {
+                preComputedScores.claimOpinionScore = evaluationResult.score;
+              }
+
+              const { isHighBarFilterEnabled, runHighBarFilter } = await import(
+                "../filters/highBarSubmissionFilter"
+              );
+              if (isHighBarFilterEnabled()) {
+                const filterResult = await runHighBarFilter(
+                  evaluationResult.score,
+                  result.noteResult.url,
+                  noteText,
+                  content.text,
+                  result.searchContextResult.searchResults
+                );
+
+                // Log high bar filter scores
+                if (supabaseLogger && pipelineRunId) {
+                  try {
+                    await supabaseLogger.addPipelineScore(pipelineRunId, {
+                      score_type: "high_bar_filter",
+                      score_value: filterResult.passed ? 1 : 0,
+                      score_metadata: {
+                        ...filterResult.scores,
+                        reason: filterResult.reason,
+                      },
+                    });
+                  } catch (err) {
+                    console.warn(`[main] Failed to log high bar filter score:`, err);
+                  }
+                }
+
+                if (!filterResult.passed) {
+                  console.log(
+                    `[main] High bar filter rejected post ${result.post.id}: ${filterResult.reason}`
+                  );
+                  if (supabaseLogger && pipelineRunId) {
+                    try {
+                      await supabaseLogger.completePipelineRun(pipelineRunId, {
+                        outcome: "rejected",
+                        outcome_reason: "high_bar_filtered",
+                        error_message: [warningText, `high_bar: ${filterResult.reason}`].filter(Boolean).join(" | ").slice(0, 2000),
+                        final_stage: "high_bar_filter",
+                        bot_id: selectedBot.id,
+                      });
+                    } catch (err) {
+                      console.warn(`[main] Failed to complete pipeline run:`, err);
+                    }
+                  }
+                  return;
+                }
+                console.log(
+                  `[main] High bar filter passed for post ${result.post.id} (scores: eval=${filterResult.scores.evalScore?.toFixed(3)}, trust=${filterResult.scores.sourceTrust?.toFixed(2)}, llm=${filterResult.scores.llmHelpfulness?.toFixed(2)})`
+                );
+                // Carry forward filter scores to avoid duplicate API calls
+                if (filterResult.scores.sourceTrust !== undefined) {
+                  preComputedScores.sourceTrust = filterResult.scores.sourceTrust;
+                }
+                if (filterResult.scores.llmHelpfulness !== undefined) {
+                  preComputedScores.llmHelpfulness = filterResult.scores.llmHelpfulness;
+                }
+              }
+
               // Submit the note
               const { submitNote } = await import("../api/submitNote");
               const info = {
@@ -479,6 +545,7 @@ async function main() {
                   searchResults: result.searchContextResult.searchResults,
                   postId: result.post.id,
                   supabaseLogger,
+                  preComputed: preComputedScores,
                 }).catch((err) =>
                   console.warn("[main] Prediction scores failed (non-fatal):", err)
                 );
