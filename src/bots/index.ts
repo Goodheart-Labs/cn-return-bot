@@ -28,10 +28,10 @@ import { opusStrict } from "./legacy/opus-strict";
 
 // Register all bots here
 export const bots: Bot[] = [
-  // Active bots (total weight: 120)
+  // Active bots (total weight: 100)
   opusMainLegacy,         // w40 — opus-main (original writeNote prompt)
   opusMain,               // w20 — opus-main-v2 (URL-aware char counting)
-  opusMainNoSourceCheck,  // w40 — opus-main-v2 without source verification
+  opusMainNoSourceCheck,  // w20 — opus-main-v2 without source verification
   opusDirect,             //  w7 — direct style
   opusDirectGrok,         //  w7 — direct style + Grok X search
   opusMainV2Grok,         //  w6 — opus-main-v2 + Grok X search
