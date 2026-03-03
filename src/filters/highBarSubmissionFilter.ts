@@ -1,7 +1,7 @@
 /**
- * Quality Suppressor
+ * High Bar Submission Filter
  *
- * When enabled (QUALITY_SUPPRESSOR=true), raises the submission bar significantly.
+ * When enabled (HIGH_BAR_SUBMISSION_FILTER=true), raises the submission bar significantly.
  * Use this when the NH_5 safety valve is tripped (3+ of last 5 rated notes = Not Helpful)
  * and every submission slot matters.
  *
@@ -11,13 +11,12 @@
  * 3. LLM helpfulness prediction must be >= 0.6
  *
  * Any check that fails = note is rejected. This is intentionally aggressive.
- * Better to submit 3 great notes than 5 mediocre ones when we're trapped.
  */
 
 import { scoreSourceTrustworthiness } from "../pipeline/sourceTrustworthiness";
 import { predictHelpfulness } from "../pipeline/scoringFilters";
 
-export interface SuppressorResult {
+export interface HighBarFilterResult {
   passed: boolean;
   reason?: string;
   scores: {
@@ -28,35 +27,26 @@ export interface SuppressorResult {
 }
 
 // Thresholds — tuned from correlation analysis (Mar 2026)
-// eval: median helpful=0.719, median NH=0.357 → 0.5 splits well
-// source_trust: avg helpful=0.825, avg NH=0.500 → 0.4 is conservative
-// llm_helpfulness: avg helpful=0.850, avg NH=0.533 → 0.6 is conservative
 const EVAL_THRESHOLD = 0.5;
 const SOURCE_TRUST_THRESHOLD = 0.4;
 const LLM_HELPFULNESS_THRESHOLD = 0.6;
 
-export function isSuppressorEnabled(): boolean {
-  return process.env.QUALITY_SUPPRESSOR === "true";
+export function isHighBarFilterEnabled(): boolean {
+  return process.env.HIGH_BAR_SUBMISSION_FILTER === "true";
 }
 
 /**
- * Run the quality suppressor checks on a note that has already passed
+ * Run the high bar filter checks on a note that has already passed
  * the normal eval filter. Returns whether the note should still be submitted.
- *
- * @param evalScore - The X API claim_opinion_score (already available from the eval filter)
- * @param sourceUrl - The source URL cited in the note
- * @param noteText - The note text
- * @param tweetText - The original tweet text
- * @param searchResults - Search results used to write the note
  */
-export async function runSuppressor(
+export async function runHighBarFilter(
   evalScore: number | undefined,
   sourceUrl: string,
   noteText: string,
   tweetText: string,
   searchResults: string
-): Promise<SuppressorResult> {
-  const scores: SuppressorResult["scores"] = {};
+): Promise<HighBarFilterResult> {
+  const scores: HighBarFilterResult["scores"] = {};
 
   // 1. X eval score check (free — we already have it)
   if (evalScore !== undefined) {
@@ -96,7 +86,7 @@ export async function runSuppressor(
     }
   } catch (err: any) {
     // If LLM fails, let it through — don't block on prediction failures
-    console.warn(`[qualitySuppressor] LLM helpfulness check failed, allowing through:`, err?.message);
+    console.warn(`[highBarFilter] LLM helpfulness check failed, allowing through:`, err?.message);
   }
 
   return { passed: true, scores };

@@ -405,18 +405,18 @@ async function main() {
                 }
               }
             } else {
-              // Quality suppressor: when enabled, apply stricter filters before submission
+              // High bar submission filter: when enabled, apply stricter filters before submission
               // Track scores for reuse by prediction module
               let preComputedScores: { sourceTrust?: number; llmHelpfulness?: number; claimOpinionScore?: number } = {};
               if (evaluationResult.score !== undefined) {
                 preComputedScores.claimOpinionScore = evaluationResult.score;
               }
 
-              const { isSuppressorEnabled, runSuppressor } = await import(
-                "../filters/qualitySuppressor"
+              const { isHighBarFilterEnabled, runHighBarFilter } = await import(
+                "../filters/highBarSubmissionFilter"
               );
-              if (isSuppressorEnabled()) {
-                const suppressorResult = await runSuppressor(
+              if (isHighBarFilterEnabled()) {
+                const filterResult = await runHighBarFilter(
                   evaluationResult.score,
                   result.noteResult.url,
                   noteText,
@@ -424,33 +424,33 @@ async function main() {
                   result.searchContextResult.searchResults
                 );
 
-                // Log suppressor scores
+                // Log high bar filter scores
                 if (supabaseLogger && pipelineRunId) {
                   try {
                     await supabaseLogger.addPipelineScore(pipelineRunId, {
-                      score_type: "suppressor",
-                      score_value: suppressorResult.passed ? 1 : 0,
+                      score_type: "high_bar_filter",
+                      score_value: filterResult.passed ? 1 : 0,
                       score_metadata: {
-                        ...suppressorResult.scores,
-                        reason: suppressorResult.reason,
+                        ...filterResult.scores,
+                        reason: filterResult.reason,
                       },
                     });
                   } catch (err) {
-                    console.warn(`[main] Failed to log suppressor score:`, err);
+                    console.warn(`[main] Failed to log high bar filter score:`, err);
                   }
                 }
 
-                if (!suppressorResult.passed) {
+                if (!filterResult.passed) {
                   console.log(
-                    `[main] Quality suppressor rejected post ${result.post.id}: ${suppressorResult.reason}`
+                    `[main] High bar filter rejected post ${result.post.id}: ${filterResult.reason}`
                   );
                   if (supabaseLogger && pipelineRunId) {
                     try {
                       await supabaseLogger.completePipelineRun(pipelineRunId, {
                         outcome: "rejected",
-                        outcome_reason: "quality_suppressed",
-                        error_message: [warningText, `suppressor: ${suppressorResult.reason}`].filter(Boolean).join(" | ").slice(0, 2000),
-                        final_stage: "suppressor",
+                        outcome_reason: "high_bar_filtered",
+                        error_message: [warningText, `high_bar: ${filterResult.reason}`].filter(Boolean).join(" | ").slice(0, 2000),
+                        final_stage: "high_bar_filter",
                         bot_id: selectedBot.id,
                       });
                     } catch (err) {
@@ -460,14 +460,14 @@ async function main() {
                   return;
                 }
                 console.log(
-                  `[main] Quality suppressor passed for post ${result.post.id} (scores: eval=${suppressorResult.scores.evalScore?.toFixed(3)}, trust=${suppressorResult.scores.sourceTrust?.toFixed(2)}, llm=${suppressorResult.scores.llmHelpfulness?.toFixed(2)})`
+                  `[main] High bar filter passed for post ${result.post.id} (scores: eval=${filterResult.scores.evalScore?.toFixed(3)}, trust=${filterResult.scores.sourceTrust?.toFixed(2)}, llm=${filterResult.scores.llmHelpfulness?.toFixed(2)})`
                 );
-                // Carry forward suppressor scores to avoid duplicate API calls
-                if (suppressorResult.scores.sourceTrust !== undefined) {
-                  preComputedScores.sourceTrust = suppressorResult.scores.sourceTrust;
+                // Carry forward filter scores to avoid duplicate API calls
+                if (filterResult.scores.sourceTrust !== undefined) {
+                  preComputedScores.sourceTrust = filterResult.scores.sourceTrust;
                 }
-                if (suppressorResult.scores.llmHelpfulness !== undefined) {
-                  preComputedScores.llmHelpfulness = suppressorResult.scores.llmHelpfulness;
+                if (filterResult.scores.llmHelpfulness !== undefined) {
+                  preComputedScores.llmHelpfulness = filterResult.scores.llmHelpfulness;
                 }
               }
 
