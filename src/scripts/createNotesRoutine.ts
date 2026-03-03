@@ -405,6 +405,72 @@ async function main() {
                 }
               }
             } else {
+              // Quality suppressor: when enabled, apply stricter filters before submission
+              // Track scores for reuse by prediction module
+              let preComputedScores: { sourceTrust?: number; llmHelpfulness?: number; claimOpinionScore?: number } = {};
+              if (evaluationResult.score !== undefined) {
+                preComputedScores.claimOpinionScore = evaluationResult.score;
+              }
+
+              const { isSuppressorEnabled, runSuppressor } = await import(
+                "../filters/qualitySuppressor"
+              );
+              if (isSuppressorEnabled()) {
+                const suppressorResult = await runSuppressor(
+                  evaluationResult.score,
+                  result.noteResult.url,
+                  noteText,
+                  content.text,
+                  result.searchContextResult.searchResults
+                );
+
+                // Log suppressor scores
+                if (supabaseLogger && pipelineRunId) {
+                  try {
+                    await supabaseLogger.addPipelineScore(pipelineRunId, {
+                      score_type: "suppressor",
+                      score_value: suppressorResult.passed ? 1 : 0,
+                      score_metadata: {
+                        ...suppressorResult.scores,
+                        reason: suppressorResult.reason,
+                      },
+                    });
+                  } catch (err) {
+                    console.warn(`[main] Failed to log suppressor score:`, err);
+                  }
+                }
+
+                if (!suppressorResult.passed) {
+                  console.log(
+                    `[main] Quality suppressor rejected post ${result.post.id}: ${suppressorResult.reason}`
+                  );
+                  if (supabaseLogger && pipelineRunId) {
+                    try {
+                      await supabaseLogger.completePipelineRun(pipelineRunId, {
+                        outcome: "rejected",
+                        outcome_reason: "quality_suppressed",
+                        error_message: [warningText, `suppressor: ${suppressorResult.reason}`].filter(Boolean).join(" | ").slice(0, 2000),
+                        final_stage: "suppressor",
+                        bot_id: selectedBot.id,
+                      });
+                    } catch (err) {
+                      console.warn(`[main] Failed to complete pipeline run:`, err);
+                    }
+                  }
+                  return;
+                }
+                console.log(
+                  `[main] Quality suppressor passed for post ${result.post.id} (scores: eval=${suppressorResult.scores.evalScore?.toFixed(3)}, trust=${suppressorResult.scores.sourceTrust?.toFixed(2)}, llm=${suppressorResult.scores.llmHelpfulness?.toFixed(2)})`
+                );
+                // Carry forward suppressor scores to avoid duplicate API calls
+                if (suppressorResult.scores.sourceTrust !== undefined) {
+                  preComputedScores.sourceTrust = suppressorResult.scores.sourceTrust;
+                }
+                if (suppressorResult.scores.llmHelpfulness !== undefined) {
+                  preComputedScores.llmHelpfulness = suppressorResult.scores.llmHelpfulness;
+                }
+              }
+
               // Submit the note
               const { submitNote } = await import("../api/submitNote");
               const info = {
@@ -479,6 +545,7 @@ async function main() {
                   searchResults: result.searchContextResult.searchResults,
                   postId: result.post.id,
                   supabaseLogger,
+                  preComputed: preComputedScores,
                 }).catch((err) =>
                   console.warn("[main] Prediction scores failed (non-fatal):", err)
                 );

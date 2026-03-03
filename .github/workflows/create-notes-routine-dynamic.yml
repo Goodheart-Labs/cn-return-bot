@@ -22,6 +22,8 @@ jobs:
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       # Groq API key for Whisper audio transcription (video analysis)
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      # Quality suppressor: set to "true" to raise submission bar (use when NH_5 trapped)
+      QUALITY_SUPPRESSOR: ${{ vars.QUALITY_SUPPRESSOR || 'false' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
