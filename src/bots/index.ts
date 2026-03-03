@@ -29,12 +29,12 @@ import { opusStrict } from "./legacy/opus-strict";
 // Register all bots here
 export const bots: Bot[] = [
   // Active bots (total weight: 120)
-  opusMainLegacy,         // w40 (33%) — opus-main (original writeNote prompt) — best performer: WI +67, 18.9% HR
-  opusMain,               // w20 (17%) — opus-main-v2 (URL-aware char counting)
-  opusMainNoSourceCheck,  // w40 (33%) — opus-main-v2 without source verification (A/B test)
-  opusDirect,             //  w7  (6%) — direct style (leads with facts, punchy) — 0 submissions
-  opusDirectGrok,         //  w7  (6%) — direct style + Grok X search — 0 submissions
-  opusMainV2Grok,         //  w6  (5%) — opus-main-v2 + Grok X search — 0 submissions
+  opusMainLegacy,         // w40 — opus-main (original writeNote prompt)
+  opusMain,               // w20 — opus-main-v2 (URL-aware char counting)
+  opusMainNoSourceCheck,  // w40 — opus-main-v2 without source verification
+  opusDirect,             //  w7 — direct style
+  opusDirectGrok,         //  w7 — direct style + Grok X search
+  opusMainV2Grok,         //  w6 — opus-main-v2 + Grok X search
   // Legacy bots (disabled)
   opusResearch,
   kimiK2,
