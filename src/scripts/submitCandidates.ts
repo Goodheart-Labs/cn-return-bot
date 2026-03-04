@@ -175,19 +175,17 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
 
       console.error(`[submit] Failed to submit note for tweet ${candidate.tweetId}:`, errorData || err);
 
-      // Transient errors (5xx, timeouts): leave as candidate for retry next run
-      // Permanent errors (4xx except daily limit): mark as expired
+      // Only expire on 404 (tweet deleted) — everything else is retryable
       const statusCode = err.response?.status;
-      const isTransient = !statusCode || statusCode >= 500 || err.code === "ECONNABORTED";
-
-      if (isTransient) {
-        console.log(`[submit] Transient error for ${candidate.tweetId} — will retry next run`);
-      } else {
+      if (statusCode === 404) {
+        console.log(`[submit] Tweet ${candidate.tweetId} deleted — expiring candidate`);
         try {
-          await supabaseLogger.markCandidateExpired(candidate.pipelineRunId, "submission_error: " + errorText.slice(0, 200));
+          await supabaseLogger.markCandidateExpired(candidate.pipelineRunId, "tweet_deleted");
         } catch (logErr) {
           console.warn("[submit] Failed to mark candidate as expired:", logErr);
         }
+      } else {
+        console.log(`[submit] Error submitting ${candidate.tweetId} (${statusCode ?? "no status"}) — will retry next run`);
       }
     }
   }
