@@ -7,17 +7,17 @@
  * explore lower-ranked candidates to gather data.
  */
 
-// Composite score weights (based on correlation data, Mar 2026)
-// eval: r=0.304 (n=119), source_trust: r=0.684 (n=9), llm_helpfulness: r=0.534 (n=7)
-const WEIGHT_EVAL = 0.3;
-const WEIGHT_SOURCE_TRUST = 0.4;
-const WEIGHT_LLM_HELPFULNESS = 0.3;
+// Composite score weights
+// eval has most data (n=119); trust/llm have high correlation but tiny samples (n=9, n=7)
+const WEIGHT_EVAL = 0.6;
+const WEIGHT_SOURCE_TRUST = 0.2;
+const WEIGHT_LLM_HELPFULNESS = 0.2;
 
 // Freshness: score penalty per hour of age
 const FRESHNESS_DECAY_PER_HOUR = 0.02;
 
 // Softmax temperature: lower = more greedy, higher = more exploratory
-const TEMPERATURE = 0.5;
+const TEMPERATURE = 0.3;
 
 export interface CandidateForRanking {
   pipelineRunId: string;
@@ -56,10 +56,12 @@ function computeCompositeScore(candidate: CandidateForRanking): number {
   let score = 0;
   let totalWeight = 0;
 
-  if (candidate.scores.evaluation !== undefined) {
-    score += WEIGHT_EVAL * sigmoid(candidate.scores.evaluation);
-    totalWeight += WEIGHT_EVAL;
-  }
+  // Missing eval defaults to sigmoid(-1) ≈ 0.27 — "unknown, assume below average"
+  const evalNormalized = candidate.scores.evaluation !== undefined
+    ? sigmoid(candidate.scores.evaluation)
+    : sigmoid(-1);
+  score += WEIGHT_EVAL * evalNormalized;
+  totalWeight += WEIGHT_EVAL;
 
   if (candidate.scores.sourceTrust !== undefined) {
     score += WEIGHT_SOURCE_TRUST * candidate.scores.sourceTrust;
