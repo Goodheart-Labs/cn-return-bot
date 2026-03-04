@@ -14,6 +14,15 @@ export type ReferencedTweetData = {
   media?: any[];
 };
 
+export type TweetPublicMetrics = {
+  impression_count?: number;
+  like_count?: number;
+  retweet_count?: number;
+  reply_count?: number;
+  quote_count?: number;
+  bookmark_count?: number;
+};
+
 export type Post = {
   id: string;
   author_id: string;
@@ -22,6 +31,8 @@ export type Post = {
   media: any[];
   referenced_tweets?: ReferencedTweet[];
   referenced_tweet_data?: ReferencedTweetData;
+  public_metrics?: TweetPublicMetrics;
+  author_followers?: number;
 };
 
 export async function fetchEligiblePosts(
@@ -44,10 +55,11 @@ export async function fetchEligiblePosts(
     const url = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
     const params = new URLSearchParams({
       max_results: fetchLimit.toString(),
-      "tweet.fields": "created_at,author_id,referenced_tweets",
+      "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics",
       "media.fields":
         "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
-      expansions: "attachments.media_keys,referenced_tweets.id",
+      "user.fields": "public_metrics",
+      expansions: "attachments.media_keys,referenced_tweets.id,author_id",
       test_mode: "false",
     });
 
@@ -109,6 +121,7 @@ function parsePostsResponse(data: any): Post[] {
   const posts: Post[] = [];
   const mediaMap = new Map<string, any>();
   const referencedTweetsMap = new Map<string, any>();
+  const userMap = new Map<string, any>();
 
   if (data.includes?.media) {
     for (const media of data.includes.media) {
@@ -119,6 +132,12 @@ function parsePostsResponse(data: any): Post[] {
   if (data.includes?.tweets) {
     for (const tweet of data.includes.tweets) {
       referencedTweetsMap.set(tweet.id, tweet);
+    }
+  }
+
+  if (data.includes?.users) {
+    for (const user of data.includes.users) {
+      userMap.set(user.id, user);
     }
   }
 
@@ -183,6 +202,10 @@ function parsePostsResponse(data: any): Post[] {
         }
       }
 
+      // Extract author follower count from user expansion
+      const authorData = userMap.get(tweet.author_id);
+      const authorFollowers = authorData?.public_metrics?.followers_count;
+
       posts.push({
         id: tweet.id,
         author_id: tweet.author_id,
@@ -191,6 +214,8 @@ function parsePostsResponse(data: any): Post[] {
         media,
         referenced_tweets: tweet.referenced_tweets || undefined,
         referenced_tweet_data: referencedTweetData,
+        public_metrics: tweet.public_metrics,
+        author_followers: authorFollowers,
       });
     }
   }
