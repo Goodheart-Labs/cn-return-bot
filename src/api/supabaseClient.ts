@@ -757,6 +757,13 @@ export class SupabaseLogger {
     video_duration_ms?: number;
     bot_id?: string;
     commit_sha?: string;
+    tweet_impressions?: number;
+    tweet_likes?: number;
+    tweet_retweets?: number;
+    tweet_replies?: number;
+    tweet_quotes?: number;
+    tweet_bookmarks?: number;
+    author_followers?: number;
   }): Promise<string> {
     const { data: result, error } = await this.client
       .from("pipeline_runs")
@@ -770,6 +777,13 @@ export class SupabaseLogger {
         video_duration_ms: data.video_duration_ms,
         bot_id: data.bot_id,
         commit_sha: data.commit_sha,
+        tweet_impressions: data.tweet_impressions,
+        tweet_likes: data.tweet_likes,
+        tweet_retweets: data.tweet_retweets,
+        tweet_replies: data.tweet_replies,
+        tweet_quotes: data.tweet_quotes,
+        tweet_bookmarks: data.tweet_bookmarks,
+        author_followers: data.author_followers,
         outcome: "in_progress", // Will be updated when pipeline completes
         final_stage: "started",
       })
@@ -790,12 +804,17 @@ export class SupabaseLogger {
   async completePipelineRun(
     runId: string,
     data: {
-      outcome: "submitted" | "filtered" | "failed" | "rejected";
+      outcome: "submitted" | "filtered" | "failed" | "rejected" | "candidate";
       outcome_reason?: string;
       error_message?: string;
       final_stage: string;
       note_id?: string;
       bot_id?: string;
+      note_text?: string;
+      source_url?: string;
+      note_status?: string;
+      search_results?: string;
+      check_reasoning?: string;
     }
   ): Promise<void> {
     const { error } = await this.client
@@ -807,6 +826,11 @@ export class SupabaseLogger {
         final_stage: data.final_stage,
         note_id: data.note_id,
         bot_id: data.bot_id,
+        note_text: data.note_text,
+        source_url: data.source_url,
+        note_status: data.note_status,
+        search_results: data.search_results,
+        check_reasoning: data.check_reasoning,
       })
       .eq("id", runId);
 
@@ -838,6 +862,108 @@ export class SupabaseLogger {
 
     if (error) {
       console.error("[SupabaseLogger] Error adding pipeline score:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch all unsubmitted candidates with their scores for ranking.
+   */
+  async fetchCandidates(): Promise<
+    {
+      id: string;
+      tweet_id: string;
+      note_text: string;
+      source_url: string;
+      bot_id: string;
+      created_at: string;
+      search_results: string;
+      tweet_text: string;
+      scores: { score_type: string; score_value: number | null }[];
+    }[]
+  > {
+    const runs = await this.fetchAllRows<{
+      id: string;
+      tweet_id: string;
+      note_text: string;
+      source_url: string;
+      bot_id: string;
+      created_at: string;
+      search_results: string;
+      tweet_text: string;
+    }>(
+      (client) =>
+        client
+          .from("pipeline_runs")
+          .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text")
+          .eq("outcome", "candidate")
+          .order("created_at", { ascending: false })
+    );
+
+    if (runs.length === 0) return [];
+
+    // Fetch scores for all candidates
+    const runIds = runs.map((r) => r.id);
+    const scores = await this.fetchAllRows<{
+      pipeline_run_id: string;
+      score_type: string;
+      score_value: number | null;
+    }>(
+      (client) =>
+        client
+          .from("pipeline_scores")
+          .select("pipeline_run_id, score_type, score_value")
+          .in("pipeline_run_id", runIds)
+    );
+
+    // Group scores by run ID
+    const scoresByRun = new Map<string, { score_type: string; score_value: number | null }[]>();
+    for (const s of scores) {
+      const arr = scoresByRun.get(s.pipeline_run_id) ?? [];
+      arr.push({ score_type: s.score_type, score_value: s.score_value });
+      scoresByRun.set(s.pipeline_run_id, arr);
+    }
+
+    return runs.map((r) => ({
+      ...r,
+      scores: scoresByRun.get(r.id) ?? [],
+    }));
+  }
+
+  /**
+   * Mark a candidate as submitted after successful note submission.
+   */
+  async markCandidateSubmitted(runId: string, noteId: string): Promise<void> {
+    const { error } = await this.client
+      .from("pipeline_runs")
+      .update({
+        outcome: "submitted",
+        final_stage: "submission",
+        note_id: noteId,
+      })
+      .eq("id", runId);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error marking candidate submitted:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Mark a candidate as expired (too old or failed permanently).
+   */
+  async markCandidateExpired(runId: string, reason: string): Promise<void> {
+    const { error } = await this.client
+      .from("pipeline_runs")
+      .update({
+        outcome: "rejected",
+        outcome_reason: reason,
+        final_stage: "submission",
+      })
+      .eq("id", runId);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error marking candidate expired:", error);
       throw error;
     }
   }
@@ -977,7 +1103,24 @@ export class SupabaseLogger {
         console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       }
 
-      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
+      // Also skip tweets that already have a candidate note waiting for submission
+      let candidateCount = 0;
+      try {
+        const candidateData = await this.fetchAllRows<{ tweet_id: string }>(
+          (client) => client.from("pipeline_runs").select("tweet_id")
+            .eq("outcome", "candidate")
+        );
+        for (const row of candidateData) {
+          if (row.tweet_id) {
+            tweetIds.add(row.tweet_id);
+            candidateCount++;
+          }
+        }
+      } catch (candidateError) {
+        console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
+      }
+
+      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${candidateCount} candidates, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);

@@ -53,5 +53,5 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Run create notes routine script
-        run: bun run src/scripts/createNotesRoutine.ts
+      - name: Run pipeline (generate + submit candidates)
+        run: bun run src/scripts/runPipeline.ts
