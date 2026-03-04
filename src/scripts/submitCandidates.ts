@@ -175,11 +175,19 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
 
       console.error(`[submit] Failed to submit note for tweet ${candidate.tweetId}:`, errorData || err);
 
-      // Mark candidate as failed (non-retryable submission error)
-      try {
-        await supabaseLogger.markCandidateExpired(candidate.pipelineRunId, "submission_error: " + errorText.slice(0, 200));
-      } catch (logErr) {
-        console.warn("[submit] Failed to mark candidate as expired:", logErr);
+      // Transient errors (5xx, timeouts): leave as candidate for retry next run
+      // Permanent errors (4xx except daily limit): mark as expired
+      const statusCode = err.response?.status;
+      const isTransient = !statusCode || statusCode >= 500 || err.code === "ECONNABORTED";
+
+      if (isTransient) {
+        console.log(`[submit] Transient error for ${candidate.tweetId} — will retry next run`);
+      } else {
+        try {
+          await supabaseLogger.markCandidateExpired(candidate.pipelineRunId, "submission_error: " + errorText.slice(0, 200));
+        } catch (logErr) {
+          console.warn("[submit] Failed to mark candidate as expired:", logErr);
+        }
       }
     }
   }
