@@ -41,6 +41,7 @@ TODO.md
 
 # Downloaded CN public data
 cn-data/
+cn-data-inspect/
 
 # Elo rating web app compiled files
 src/elo-rating-web/dist/
