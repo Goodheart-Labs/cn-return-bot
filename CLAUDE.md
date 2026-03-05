@@ -4,11 +4,32 @@ Project context for Claude Code sessions.
 
 ## What this is
 
-A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 30 minutes. Posts using X note writing API. There are several bots that are writing and then predicting the outcome of their writing.
+A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 15 minutes. Posts using X note writing API. There are several bots that are writing and then predicting the outcome of their writing.
 
-## Aim
+## Strategic context
 
-To deliver a billion impressions of community notes, or equivalent by then end of 2026. 
+There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory covering counterfactual impact, scoring calibration, cap constraints, platform diversity, and whether to build beyond X.
+
+## Goals
+### Primary metrics
+
+1. **Views of AI-written community notes**
+   - Currently: ~13M views
+   - Context: X displays ~10B views of community notes annually
+   - Also aim for 10B views on TikTok/Meta
+
+2. **Estimated misleading views suppressed**
+   - Currently: ~1M views suppressed (suppression rate ~13%, likely higher if notes display earlier)
+   - Context: Misleading views on X are perhaps ~100B/year
+   - Aim: 1B reduced misleading views from this project
+
+3. **Platform diversity**
+   - Currently: AI-written community notes exist solely on X
+   - Aim: Another comparable platform, or 10B non-X views/year
+
+4. **Massive X success (notewriter views)**
+   - Currently: ~1M views from our notewriter account
+   - Aim: 1B views from our notewriters
 
 ## Tech stack
 

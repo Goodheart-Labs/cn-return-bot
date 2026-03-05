@@ -2,13 +2,12 @@
  * Submit Candidates
  *
  * Phase 2 of the two-phase pipeline. Fetches stored candidates from the DB,
- * ranks them using composite scoring with softmax sampling, applies the
- * high bar filter floor, and submits the best ones until the daily limit.
+ * ranks them using composite scoring with softmax sampling, and submits
+ * the best ones until the daily limit.
  */
 
 import { SupabaseLogger } from "../api/supabaseClient";
 import { rankCandidates, type CandidateForRanking } from "../pipeline/candidateRanker";
-import { isHighBarFilterEnabled, runHighBarFilter } from "../filters/highBarSubmissionFilter";
 
 export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
   if (!supabaseLogger) {
@@ -57,43 +56,8 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
 
   // Submit in ranked order until daily limit
   let submitted = 0;
-  const highBarEnabled = isHighBarFilterEnabled();
 
   for (const candidate of ranked) {
-    // High bar filter as quality floor
-    if (highBarEnabled) {
-      const filterResult = await runHighBarFilter(
-        candidate.scores.evaluation,
-        candidate.sourceUrl,
-        candidate.noteText,
-        candidate.tweetText,
-        candidate.searchResults
-      );
-
-      // Log the filter result
-      try {
-        await supabaseLogger.addPipelineScore(candidate.pipelineRunId, {
-          score_type: "high_bar_filter",
-          score_value: filterResult.passed ? 1 : 0,
-          score_metadata: {
-            ...filterResult.scores,
-            reason: filterResult.reason,
-            phase: "submission",
-          },
-        });
-      } catch (err) {
-        console.warn(`[submit] Failed to log high bar filter score:`, err);
-      }
-
-      if (!filterResult.passed) {
-        console.log(
-          `[submit] Candidate ${candidate.pipelineRunId.slice(0, 8)} below quality floor: ${filterResult.reason}`
-        );
-        continue;
-      }
-    }
-
-    // Try to submit
     try {
       const { submitNote } = await import("../api/submitNote");
       const info = {
