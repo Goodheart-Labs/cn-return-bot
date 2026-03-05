@@ -8,7 +8,7 @@ A bot that automatically writes Community Notes for X/Twitter posts. Runs on Git
 
 ## Strategic context
 
-There are 12 ranked strategic cruxes (Mar 2026) in Claude's auto-memory covering counterfactual impact, scoring calibration, cap constraints, platform diversity, and whether to build beyond X.
+There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory covering counterfactual impact, scoring calibration, cap constraints, platform diversity, and whether to build beyond X.
 
 ## Goals
 ### Primary metrics
