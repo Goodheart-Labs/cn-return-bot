@@ -6,8 +6,11 @@ Project context for Claude Code sessions.
 
 A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 15 minutes. Posts using X note writing API. There are several bots that are writing and then predicting the outcome of their writing.
 
-## Goals
+## Strategic context
 
+There are 12 ranked strategic cruxes (Mar 2026) in Claude's auto-memory covering counterfactual impact, scoring calibration, cap constraints, platform diversity, and whether to build beyond X.
+
+## Goals
 ### Primary metrics
 
 1. **Views of AI-written community notes**
