@@ -173,23 +173,18 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
     if (idx >= 0) remaining.splice(idx, 1);
   }
 
-  // Append below-floor exploration picks proportional to above-floor count.
-  // Only fires when there are enough above-floor candidates to justify spending cap on calibration.
-  const explorationCount = Math.floor(aboveFloor.length * EXPLORATION_RATE);
-  if (explorationCount > 0) {
+  // Append at most 1 below-floor exploration pick for calibration, but only
+  // when there are enough above-floor candidates (≥10) to justify the cap slot.
+  if (aboveFloor.length >= Math.round(1 / EXPLORATION_RATE)) {
     const belowFloorCandidates = scored.filter((c) => c.compositeScore < MIN_COMPOSITE_SCORE);
-    const belowFloorRemaining = [...belowFloorCandidates];
-    let explored = 0;
-    while (explored < explorationCount && belowFloorRemaining.length > 0) {
-      const explorePick = softmaxSample(belowFloorRemaining);
-      if (!explorePick) break;
-      ranked.push(explorePick);
-      const idx = belowFloorRemaining.findIndex((c) => c.pipelineRunId === explorePick.pipelineRunId);
-      if (idx >= 0) belowFloorRemaining.splice(idx, 1);
-      explored++;
-      console.log(
-        `[candidateRanker] Exploration pick ${explored}/${explorationCount}: ${explorePick.pipelineRunId.slice(0, 8)} | composite=${explorePick.compositeScore.toFixed(3)} (below floor)`
-      );
+    if (belowFloorCandidates.length > 0) {
+      const explorePick = softmaxSample(belowFloorCandidates);
+      if (explorePick) {
+        ranked.push(explorePick);
+        console.log(
+          `[candidateRanker] Exploration pick: ${explorePick.pipelineRunId.slice(0, 8)} | composite=${explorePick.compositeScore.toFixed(3)} (below floor)`
+        );
+      }
     }
   }
 
