@@ -7,11 +7,13 @@
  * explore lower-ranked candidates to gather data.
  */
 
-// Composite score weights
-// eval has most data (n=119); trust/llm have high correlation but tiny samples (n=9, n=7)
-const WEIGHT_EVAL = 0.6;
-const WEIGHT_SOURCE_TRUST = 0.2;
-const WEIGHT_LLM_HELPFULNESS = 0.2;
+// Composite score weights — calibrated on 200 public CN notes (100 H, 100 NH)
+// Weights proportional to outcome correlation: bridging r=0.558, sourceCount r=0.335,
+// saysWrong r=0.312, eval r=0.304. Normalized to sum to 1.
+const WEIGHT_BRIDGING = 0.37;
+const WEIGHT_SOURCE_COUNT = 0.22;
+const WEIGHT_SAYS_WRONG = 0.21;
+const WEIGHT_EVAL = 0.20;
 
 // Freshness: score penalty per hour of age
 const FRESHNESS_DECAY_PER_HOUR = 0.02;
@@ -30,9 +32,9 @@ export interface CandidateForRanking {
   tweetText: string;
   scores: {
     evaluation?: number;
-    sourceTrust?: number;
-    llmHelpfulness?: number;
-    sourceVerification?: number;
+    bridging?: number;
+    saysWrong?: number;
+    sourceCount?: number;
   };
 }
 
@@ -56,22 +58,29 @@ function computeCompositeScore(candidate: CandidateForRanking): number {
   let score = 0;
   let totalWeight = 0;
 
+  if (candidate.scores.bridging !== undefined) {
+    score += WEIGHT_BRIDGING * candidate.scores.bridging;
+    totalWeight += WEIGHT_BRIDGING;
+  }
+
+  if (candidate.scores.sourceCount !== undefined) {
+    // Normalize: 0 sources → 0, 1 → 0.5, 2+ → ~0.8-1.0
+    const normalized = 1 - 1 / (1 + candidate.scores.sourceCount);
+    score += WEIGHT_SOURCE_COUNT * normalized;
+    totalWeight += WEIGHT_SOURCE_COUNT;
+  }
+
+  if (candidate.scores.saysWrong !== undefined) {
+    score += WEIGHT_SAYS_WRONG * candidate.scores.saysWrong;
+    totalWeight += WEIGHT_SAYS_WRONG;
+  }
+
   // Missing eval defaults to sigmoid(-1) ≈ 0.27 — "unknown, assume below average"
   const evalNormalized = candidate.scores.evaluation !== undefined
     ? sigmoid(candidate.scores.evaluation)
     : sigmoid(-1);
   score += WEIGHT_EVAL * evalNormalized;
   totalWeight += WEIGHT_EVAL;
-
-  if (candidate.scores.sourceTrust !== undefined) {
-    score += WEIGHT_SOURCE_TRUST * candidate.scores.sourceTrust;
-    totalWeight += WEIGHT_SOURCE_TRUST;
-  }
-
-  if (candidate.scores.llmHelpfulness !== undefined) {
-    score += WEIGHT_LLM_HELPFULNESS * candidate.scores.llmHelpfulness;
-    totalWeight += WEIGHT_LLM_HELPFULNESS;
-  }
 
   // Normalize by total weight so missing scores don't penalize
   return totalWeight > 0 ? score / totalWeight : 0;
@@ -133,7 +142,7 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
   for (const c of sorted.slice(0, 10)) {
     const ageHours = ((Date.now() - c.createdAt.getTime()) / (1000 * 60 * 60)).toFixed(1);
     console.log(
-      `  ${c.pipelineRunId.slice(0, 8)} | composite=${c.compositeScore.toFixed(3)} | adjusted=${c.freshnessAdjustedScore.toFixed(3)} | age=${ageHours}h | eval=${c.scores.evaluation?.toFixed(2) ?? "?"} trust=${c.scores.sourceTrust?.toFixed(2) ?? "?"} llm=${c.scores.llmHelpfulness?.toFixed(2) ?? "?"}`
+      `  ${c.pipelineRunId.slice(0, 8)} | composite=${c.compositeScore.toFixed(3)} | adjusted=${c.freshnessAdjustedScore.toFixed(3)} | age=${ageHours}h | eval=${c.scores.evaluation?.toFixed(2) ?? "?"} bridging=${c.scores.bridging?.toFixed(2) ?? "?"} wrong=${c.scores.saysWrong?.toFixed(2) ?? "?"} srcs=${c.scores.sourceCount ?? "?"}`
     );
   }
   if (sorted.length > 10) {

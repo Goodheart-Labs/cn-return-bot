@@ -373,39 +373,45 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
         console.warn(`[generate] Eval API failed for ${post.id}, storing candidate without eval score:`, err?.message);
       }
 
-      // Run source trust + LLM helpfulness for ranking data
-      let sourceTrustScore: number | undefined;
-      let llmHelpfulnessScore: number | undefined;
+      // Run ranking signals: bridging, saysWrong (LLM), sourceCount (free)
+      let bridgingScore: number | undefined;
+      let saysWrongScore: number | undefined;
+      let sourceCountScore: number | undefined;
       try {
-        const { scoreSourceTrustworthiness } = await import("../pipeline/sourceTrustworthiness");
-        sourceTrustScore = scoreSourceTrustworthiness(result.noteResult.url).score;
+        const { countSources } = await import("../pipeline/scoringFilters");
+        sourceCountScore = countSources(noteText);
         if (supabaseLogger && pipelineRunId) {
           await supabaseLogger.addPipelineScore(pipelineRunId, {
-            score_type: "pred_source_trust",
-            score_value: sourceTrustScore,
+            score_type: "pred_source_count",
+            score_value: sourceCountScore,
           });
         }
       } catch (err: any) {
-        console.warn(`[generate] Source trust failed:`, err?.message);
+        console.warn(`[generate] Source count failed:`, err?.message);
       }
 
       try {
-        const { predictHelpfulness } = await import("../pipeline/scoringFilters");
-        const helpfulness = await predictHelpfulness(
-          noteText,
-          content.text,
-          result.searchContextResult.searchResults,
-          result.noteResult.url
-        );
-        llmHelpfulnessScore = helpfulness.score;
+        const { scoreBridging, scoreSaysWrong } = await import("../pipeline/scoringFilters");
+        const [bridging, saysWrong] = await Promise.all([
+          scoreBridging(noteText),
+          scoreSaysWrong(noteText),
+        ]);
+        bridgingScore = bridging.score;
+        saysWrongScore = saysWrong.score;
         if (supabaseLogger && pipelineRunId) {
-          await supabaseLogger.addPipelineScore(pipelineRunId, {
-            score_type: "pred_llm_helpfulness",
-            score_value: llmHelpfulnessScore,
-          });
+          await Promise.all([
+            supabaseLogger.addPipelineScore(pipelineRunId, {
+              score_type: "pred_bridging",
+              score_value: bridgingScore,
+            }),
+            supabaseLogger.addPipelineScore(pipelineRunId, {
+              score_type: "pred_says_wrong",
+              score_value: saysWrongScore,
+            }),
+          ]);
         }
       } catch (err: any) {
-        console.warn(`[generate] LLM helpfulness failed:`, err?.message);
+        console.warn(`[generate] LLM ranking scores failed:`, err?.message);
       }
 
       // Store as candidate
@@ -420,7 +426,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
           });
           candidateCount++;
           console.log(
-            `[generate] Stored candidate for tweet ${post.id} (eval=${evaluationScore?.toFixed(2) ?? "?"}, trust=${sourceTrustScore?.toFixed(2) ?? "?"}, llm=${llmHelpfulnessScore?.toFixed(2) ?? "?"})`
+            `[generate] Stored candidate for tweet ${post.id} (eval=${evaluationScore?.toFixed(2) ?? "?"}, bridging=${bridgingScore?.toFixed(2) ?? "?"}, wrong=${saysWrongScore?.toFixed(2) ?? "?"}, srcs=${sourceCountScore ?? "?"})`
           );
         } catch (err) {
           console.warn(`[generate] Failed to store candidate:`, err);
