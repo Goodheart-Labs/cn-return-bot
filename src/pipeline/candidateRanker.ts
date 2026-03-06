@@ -25,6 +25,10 @@ const TEMPERATURE = 0.3;
 // Calibrated on 200 public CN notes: breakeven at ~0.55 composite.
 const MIN_COMPOSITE_SCORE = 0.55;
 
+// Exploration: fraction of above-floor candidates to mirror with below-floor picks.
+// E.g. 0.10 = 1 exploration pick per 10 above-floor candidates.
+const EXPLORATION_RATE = 0.10;
+
 export interface CandidateForRanking {
   pipelineRunId: string;
   tweetId: string;
@@ -169,14 +173,22 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
     if (idx >= 0) remaining.splice(idx, 1);
   }
 
-  // Append one below-floor candidate for calibration data (~1/day exploration)
-  const belowFloorCandidates = scored.filter((c) => c.compositeScore < MIN_COMPOSITE_SCORE);
-  if (belowFloorCandidates.length > 0) {
-    const explorePick = softmaxSample(belowFloorCandidates);
-    if (explorePick) {
+  // Append below-floor exploration picks proportional to above-floor count.
+  // Only fires when there are enough above-floor candidates to justify spending cap on calibration.
+  const explorationCount = Math.floor(aboveFloor.length * EXPLORATION_RATE);
+  if (explorationCount > 0) {
+    const belowFloorCandidates = scored.filter((c) => c.compositeScore < MIN_COMPOSITE_SCORE);
+    const belowFloorRemaining = [...belowFloorCandidates];
+    let explored = 0;
+    while (explored < explorationCount && belowFloorRemaining.length > 0) {
+      const explorePick = softmaxSample(belowFloorRemaining);
+      if (!explorePick) break;
       ranked.push(explorePick);
+      const idx = belowFloorRemaining.findIndex((c) => c.pipelineRunId === explorePick.pipelineRunId);
+      if (idx >= 0) belowFloorRemaining.splice(idx, 1);
+      explored++;
       console.log(
-        `[candidateRanker] Exploration pick: ${explorePick.pipelineRunId.slice(0, 8)} | composite=${explorePick.compositeScore.toFixed(3)} (below floor)`
+        `[candidateRanker] Exploration pick ${explored}/${explorationCount}: ${explorePick.pipelineRunId.slice(0, 8)} | composite=${explorePick.compositeScore.toFixed(3)} (below floor)`
       );
     }
   }
