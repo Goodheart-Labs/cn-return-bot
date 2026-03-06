@@ -248,6 +248,117 @@ IMPORTANT: Return ONLY a JSON object with:
 }
 
 /**
+ * Bridging score — does this note present information in a way that people
+ * across the political spectrum would find helpful? (r=0.558 with H outcome)
+ */
+export async function scoreBridging(
+  noteText: string,
+  model: string = DEFAULT_SCORING_MODEL
+): Promise<FilterScore> {
+  const prompt = `Rate how well this Community Note bridges partisan divides. A high-bridging note presents factual information that people across the political spectrum would find helpful, rather than seeming to take sides.
+
+Community Note:
+"${noteText}"
+
+Scoring:
+- 0.0-0.2: Clearly partisan or one-sided framing
+- 0.3-0.4: Leans toward one perspective
+- 0.5-0.6: Somewhat neutral but could be seen as partisan
+- 0.7-0.8: Balanced, factual, broadly acceptable
+- 0.9-1.0: Excellent bridging — pure facts that all sides would accept
+
+IMPORTANT: Return ONLY a JSON object with:
+- score: a number between 0 and 1
+- reasoning: a single string (one sentence)`;
+
+  try {
+    const result = await llm.create({
+      model,
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const content = result.choices?.[0]?.message?.content || "{}";
+    let parsed: { score?: number; reasoning?: string };
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      return { name: "Bridging score", score: 0.5, passed: true, reasoning: "Failed to parse" };
+    }
+    return {
+      name: "Bridging score",
+      score: parsed.score ?? 0.5,
+      passed: (parsed.score ?? 0.5) > 0.5,
+      reasoning: parsed.reasoning ?? "Could not parse reasoning",
+    };
+  } catch (error) {
+    console.error("[scoringFilters] Error in bridging score:", error);
+    return { name: "Bridging score", score: 0.5, passed: true, reasoning: "Error, defaulting to 0.5" };
+  }
+}
+
+/**
+ * Says-wrong score — does this note explicitly say the tweet's claim is wrong
+ * or false? Notes that directly address wrongness are more helpful. (r=0.312 with H outcome)
+ */
+export async function scoreSaysWrong(
+  noteText: string,
+  model: string = DEFAULT_SCORING_MODEL
+): Promise<FilterScore> {
+  const prompt = `Rate how directly this Community Note addresses whether the original post's claim is wrong or false. Notes that clearly state what is incorrect tend to be rated more helpful.
+
+Community Note:
+"${noteText}"
+
+Scoring:
+- 0.0-0.2: Just adds context without addressing correctness
+- 0.3-0.4: Implies something might be inaccurate
+- 0.5-0.6: Somewhat addresses correctness but indirectly
+- 0.7-0.8: Clearly states what is wrong or misleading
+- 0.9-1.0: Directly and specifically identifies the false claim
+
+IMPORTANT: Return ONLY a JSON object with:
+- score: a number between 0 and 1
+- reasoning: a single string (one sentence)`;
+
+  try {
+    const result = await llm.create({
+      model,
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const content = result.choices?.[0]?.message?.content || "{}";
+    let parsed: { score?: number; reasoning?: string };
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      return { name: "Says-wrong score", score: 0.5, passed: true, reasoning: "Failed to parse" };
+    }
+    return {
+      name: "Says-wrong score",
+      score: parsed.score ?? 0.5,
+      passed: (parsed.score ?? 0.5) > 0.5,
+      reasoning: parsed.reasoning ?? "Could not parse reasoning",
+    };
+  } catch (error) {
+    console.error("[scoringFilters] Error in says-wrong score:", error);
+    return { name: "Says-wrong score", score: 0.5, passed: true, reasoning: "Error, defaulting to 0.5" };
+  }
+}
+
+/**
+ * Count URLs/sources in a note. (r=0.335 with H outcome)
+ */
+export function countSources(noteText: string): number {
+  const urlPattern = /https?:\/\/[^\s)]+/g;
+  const matches = noteText.match(urlPattern);
+  return matches ? matches.length : 0;
+}
+
+/**
  * Run all scoring filters in parallel
  */
 export async function runScoringFilters(

@@ -9,11 +9,13 @@
  */
 
 import { SupabaseLogger } from "../api/supabaseClient";
-import { scoreSourceTrustworthiness } from "./sourceTrustworthiness";
 import {
   predictHelpfulness,
   checkPositiveClaims,
   checkSubstantiveDisagreement,
+  scoreBridging,
+  scoreSaysWrong,
+  countSources,
 } from "./scoringFilters";
 import { evaluateNote } from "../filters/noteEvaluationFilter";
 
@@ -27,8 +29,9 @@ interface PredictionContext {
   supabaseLogger: SupabaseLogger;
   /** Pre-computed scores from earlier pipeline stages (suppressor, eval check) — skip re-computing these */
   preComputed?: {
-    sourceTrust?: number;
-    llmHelpfulness?: number;
+    bridging?: number;
+    saysWrong?: number;
+    sourceCount?: number;
     claimOpinionScore?: number;
   };
 }
@@ -67,23 +70,24 @@ export async function runPredictionScores(ctx: PredictionContext): Promise<void>
   console.log(`[predictionScores] Running predictions for pipeline run ${ctx.pipelineRunId}...`);
 
   await Promise.all([
-    // Free: source domain trustworthiness (0-1)
-    runSinglePredictor("pred_source_trust", async () => {
-      if (ctx.preComputed?.sourceTrust !== undefined) return ctx.preComputed.sourceTrust;
-      if (!ctx.sourceUrl) return undefined;
-      return scoreSourceTrustworthiness(ctx.sourceUrl).score;
+    // LLM: bridging score (0-1) — r=0.558 with outcome
+    runSinglePredictor("pred_bridging", async () => {
+      if (ctx.preComputed?.bridging !== undefined) return ctx.preComputed.bridging;
+      const result = await scoreBridging(ctx.noteText);
+      return result.score;
     }, ctx),
 
-    // LLM: helpfulness prediction (0-1)
-    runSinglePredictor("pred_llm_helpfulness", async () => {
-      if (ctx.preComputed?.llmHelpfulness !== undefined) return ctx.preComputed.llmHelpfulness;
-      const result = await predictHelpfulness(
-        ctx.noteText,
-        ctx.tweetText,
-        ctx.searchResults,
-        ctx.sourceUrl
-      );
+    // LLM: says-wrong score (0-1) — r=0.312 with outcome
+    runSinglePredictor("pred_says_wrong", async () => {
+      if (ctx.preComputed?.saysWrong !== undefined) return ctx.preComputed.saysWrong;
+      const result = await scoreSaysWrong(ctx.noteText);
       return result.score;
+    }, ctx),
+
+    // Free: source/URL count — r=0.335 with outcome
+    runSinglePredictor("pred_source_count", async () => {
+      if (ctx.preComputed?.sourceCount !== undefined) return ctx.preComputed.sourceCount;
+      return countSources(ctx.noteText);
     }, ctx),
 
     // LLM: positive claims check (0-1)

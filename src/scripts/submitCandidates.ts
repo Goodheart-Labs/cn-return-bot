@@ -44,9 +44,9 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
       tweetText: c.tweet_text ?? "",
       scores: {
         evaluation: scoreMap["evaluation"],
-        sourceTrust: scoreMap["pred_source_trust"],
-        llmHelpfulness: scoreMap["pred_llm_helpfulness"],
-        sourceVerification: scoreMap["source_verification"],
+        bridging: scoreMap["pred_bridging"],
+        saysWrong: scoreMap["pred_says_wrong"],
+        sourceCount: scoreMap["pred_source_count"],
       },
     };
   });
@@ -115,8 +115,9 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
           postId: candidate.tweetId,
           supabaseLogger,
           preComputed: {
-            sourceTrust: candidate.scores.sourceTrust,
-            llmHelpfulness: candidate.scores.llmHelpfulness,
+            bridging: candidate.scores.bridging,
+            saysWrong: candidate.scores.saysWrong,
+            sourceCount: candidate.scores.sourceCount,
             claimOpinionScore: candidate.scores.evaluation,
           },
         }).catch((err) =>
