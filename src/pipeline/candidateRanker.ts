@@ -21,6 +21,10 @@ const FRESHNESS_DECAY_PER_HOUR = 0.02;
 // Softmax temperature: lower = more greedy, higher = more exploratory
 const TEMPERATURE = 0.3;
 
+// Minimum composite score to submit. Below this, P(H) < 0.5 so EV is negative.
+// Calibrated on 200 public CN notes: breakeven at ~0.55 composite.
+const MIN_COMPOSITE_SCORE = 0.55;
+
 export interface CandidateForRanking {
   pipelineRunId: string;
   tweetId: string;
@@ -136,9 +140,13 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
     return { ...c, compositeScore, freshnessAdjustedScore };
   });
 
+  // Filter out candidates below the quality floor
+  const aboveFloor = scored.filter((c) => c.compositeScore >= MIN_COMPOSITE_SCORE);
+  const belowFloor = scored.length - aboveFloor.length;
+
   // Log scores for visibility
-  const sorted = [...scored].sort((a, b) => b.freshnessAdjustedScore - a.freshnessAdjustedScore);
-  console.log(`[candidateRanker] ${sorted.length} candidates:`);
+  const sorted = [...aboveFloor].sort((a, b) => b.freshnessAdjustedScore - a.freshnessAdjustedScore);
+  console.log(`[candidateRanker] ${scored.length} candidates (${belowFloor} below ${MIN_COMPOSITE_SCORE} floor, ${aboveFloor.length} eligible):`);
   for (const c of sorted.slice(0, 10)) {
     const ageHours = ((Date.now() - c.createdAt.getTime()) / (1000 * 60 * 60)).toFixed(1);
     console.log(
@@ -151,7 +159,7 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
 
   // Softmax sample without replacement to build ranked order
   const ranked: RankedCandidate[] = [];
-  const remaining = [...scored];
+  const remaining = [...aboveFloor];
 
   while (remaining.length > 0) {
     const pick = softmaxSample(remaining);
