@@ -169,5 +169,17 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
     if (idx >= 0) remaining.splice(idx, 1);
   }
 
+  // Append one below-floor candidate for calibration data (~1/day exploration)
+  const belowFloorCandidates = scored.filter((c) => c.compositeScore < MIN_COMPOSITE_SCORE);
+  if (belowFloorCandidates.length > 0) {
+    const explorePick = softmaxSample(belowFloorCandidates);
+    if (explorePick) {
+      ranked.push(explorePick);
+      console.log(
+        `[candidateRanker] Exploration pick: ${explorePick.pipelineRunId.slice(0, 8)} | composite=${explorePick.compositeScore.toFixed(3)} (below floor)`
+      );
+    }
+  }
+
   return ranked;
 }
