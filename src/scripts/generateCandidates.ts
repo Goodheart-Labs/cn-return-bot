@@ -414,8 +414,24 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
         console.warn(`[generate] LLM ranking scores failed:`, err?.message);
       }
 
-      // Store as candidate
+      // Expire any existing candidates for this tweet (re-roll replaces old candidate)
       if (supabaseLogger && pipelineRunId) {
+        try {
+          const existing = await supabaseLogger.fetchAllRows<{ id: string }>(
+            (client) => client.from("pipeline_runs").select("id")
+              .eq("tweet_id", post.id)
+              .eq("outcome", "candidate")
+              .neq("id", pipelineRunId)
+          );
+          for (const old of existing) {
+            await supabaseLogger.markCandidateExpired(old.id, "rerolled");
+            console.log(`[generate] Expired old candidate ${old.id.slice(0, 8)} for tweet ${post.id} (re-roll)`);
+          }
+        } catch (err) {
+          console.warn(`[generate] Failed to expire old candidates:`, err);
+        }
+
+        // Store as candidate
         try {
           await supabaseLogger.completePipelineRun(pipelineRunId, {
             ...completionBase,

@@ -5,12 +5,14 @@
  */
 
 import { Bot } from "./types";
-import { opusMainLegacy } from "./opus-main-legacy";
 import { opusMain } from "./opus-main";
+import { opusMainV2 } from "./opus-main-v2";
 import { opusMainNoSourceCheck } from "./opus-main-no-source-check";
 import { opusDirect } from "./opus-direct";
 import { opusDirectGrok } from "./opus-direct-grok";
 import { opusMainV2Grok } from "./opus-main-v2-grok";
+import { opusMultiSource } from "./opus-multi-source";
+import { opusBridging } from "./opus-bridging";
 
 // Legacy bots (weight=0, kept for historical data)
 import { opusResearch } from "./opus-research";
@@ -29,12 +31,14 @@ import { opusStrict } from "./legacy/opus-strict";
 // Register all bots here
 export const bots: Bot[] = [
   // Active bots
-  opusMainLegacy,
   opusMain,
+  opusMainV2,
   opusMainNoSourceCheck,
   opusDirect,
   opusDirectGrok,
   opusMainV2Grok,
+  opusMultiSource,
+  opusBridging,
   // Legacy bots (disabled)
   opusResearch,
   kimiK2,

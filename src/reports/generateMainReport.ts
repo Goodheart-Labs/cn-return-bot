@@ -48,7 +48,7 @@ const scrapedNotes = await fetchAll<{
 }>(
   (c) => c.from("canonical_note_information")
     .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, rating_count, helpful_count, not_helpful_count, current_decided_by")
-    .neq("data_tier", "junk")
+    .or("data_tier.neq.junk,data_tier.is.null")
 );
 console.log(`  ${scrapedNotes.length} scraped notes (non-junk)`);
 
@@ -202,7 +202,7 @@ const notes = scrapedNotes.map((n) => {
 });
 
 // Define active vs legacy bots
-const activeBots = ["opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok", "opus-main-v2-grok", "opus-main-no-source-check"];
+const activeBots = ["opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok", "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source", "opus-bridging"];
 const legacyBots = ["opus-4.6", "sonar-pro", "kimi-k2", "opus-research", "opus-verified", "opus-concise", "opus-scored", "opus-strict", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking"];
 
 // Check for notes from unknown bots
