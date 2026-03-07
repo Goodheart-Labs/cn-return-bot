@@ -20,7 +20,7 @@ export const opusMainNoSourceCheck: Bot = {
   id: "opus-main-no-source-check",
   name: "Opus 4.5 (No Source Check)",
   description: "Same as opus-main-v2 but skips source verification — A/B test",
-  weight: 20,
+  weight: 10,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
@@ -57,7 +57,7 @@ export const opusMainNoSourceCheck: Bot = {
           text: content.text,
           media: content.media,
           searchResults: mediaContext,
-          retweetContext: content.retweetContext,
+          quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.search }
       );

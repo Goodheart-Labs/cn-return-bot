@@ -32,7 +32,7 @@ export const deepseek: Bot = {
           text: content.text,
           media: content.media,
           searchResults: "",
-          retweetContext: content.retweetContext,
+          quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.search }
       );

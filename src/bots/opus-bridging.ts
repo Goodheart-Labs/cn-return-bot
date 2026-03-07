@@ -1,43 +1,66 @@
 /**
- * Kimi K2.5 Bot
+ * Opus Bridging Bot
  *
- * Experimental bot using Moonshot's Kimi K2.5 for note writing and checking.
- * Uses Perplexity for search (same as opus-main).
+ * Same pipeline as opus-main-v2 but uses writeNoteBridging which
+ * emphasizes neutral, bridging language. Bridging is the strongest
+ * predictor of helpfulness (r=0.558, d=1.34 from calibration).
  */
 
 import { Bot, PipelineResult } from "./types";
 import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
-import { writeNoteFn as writeNote } from "../pipeline/writeNote";
+import { writeNoteBridgingFn as writeNote } from "../pipeline/writeNoteBridging";
 import { verifySource } from "../pipeline/sourceVerification";
+import { analyzeMedia } from "../pipeline/mediaAnalysis";
 
 const MODELS = {
   search: "perplexity/sonar",
-  noteWriting: "moonshotai/kimi-k2.5",
-  checking: "moonshotai/kimi-k2.5",
+  noteWriting: "anthropic/claude-opus-4.5",
+  checking: "anthropic/claude-sonnet-4",
+  vision: "anthropic/claude-sonnet-4",
 };
 
-export const kimiK2: Bot = {
-  id: "kimi-k2",
-  name: "Kimi K2.5",
-  description: "Experimental bot using Moonshot Kimi K2.5 for note writing",
-  weight: 0,
+export const opusBridging: Bot = {
+  id: "opus-bridging",
+  name: "Opus 4.5 Bridging",
+  description: "Optimized for neutral, bridging tone that appeals across political spectrum",
+  weight: 7,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
+    const warnings: string[] = [];
     try {
-      // 1. Search with Perplexity
+      let mediaContext = "";
+      if (content.mediaItems?.length) {
+        try {
+          const mediaResult = await analyzeMedia(content.mediaItems, {
+            visionModel: MODELS.vision,
+          });
+          mediaContext = mediaResult.contextForSearch;
+          lastStage = "media_analysis";
+          if (mediaResult.warnings.length > 0) {
+            warnings.push(...mediaResult.warnings);
+          }
+        } catch (err: any) {
+          const msg = `Media analysis failed: ${err.message}`;
+          const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
+          if (strippedText.length < 20) {
+            throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
+          }
+          warnings.push(msg);
+        }
+      }
+
       lastStage = "search";
       const searchResult = await perplexitySearch(
         {
           text: content.text,
           media: content.media,
-          searchResults: "",
+          searchResults: mediaContext,
           quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.search }
       );
 
-      // 2. Write note with Kimi K2.5
       lastStage = "note_writing";
       const noteResult = await writeNote(
         {
@@ -48,7 +71,6 @@ export const kimiK2: Bot = {
         { model: MODELS.noteWriting }
       );
 
-      // 3. Check the note with Kimi K2.5
       lastStage = "check";
       const checkResult = await verifySource(
         {
@@ -66,6 +88,7 @@ export const kimiK2: Bot = {
         searchContextResult: searchResult,
         noteResult,
         checkResult,
+        warnings: warnings.length > 0 ? warnings : undefined,
       };
     } catch (err: any) {
       console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
@@ -75,8 +98,8 @@ export const kimiK2: Bot = {
         lastStage,
         searchContextResult: { text: content.text, searchResults: "", citations: [] },
         noteResult: { note: "", url: "", status: "ERROR" },
-        checkResult: "",
         error: err?.message || String(err),
+        warnings: warnings.length > 0 ? warnings : undefined,
       };
     }
   },

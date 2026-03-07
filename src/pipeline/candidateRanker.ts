@@ -23,7 +23,7 @@ const TEMPERATURE = 0.3;
 
 // Minimum composite score to submit. Below this, P(H) < 0.5 so EV is negative.
 // Calibrated on 200 public CN notes: breakeven at ~0.55 composite.
-const MIN_COMPOSITE_SCORE = 0.55;
+export const MIN_COMPOSITE_SCORE = 0.55;
 
 // Exploration: fraction of above-floor candidates to mirror with below-floor picks.
 // E.g. 0.10 = 1 exploration pick per 10 above-floor candidates.
@@ -62,7 +62,7 @@ function sigmoid(x: number): number {
 /**
  * Compute composite score for a single candidate.
  */
-function computeCompositeScore(candidate: CandidateForRanking): number {
+export function computeCompositeScore(candidate: CandidateForRanking): number {
   let score = 0;
   let totalWeight = 0;
 
@@ -173,18 +173,21 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
     if (idx >= 0) remaining.splice(idx, 1);
   }
 
-  // Append at most 1 below-floor exploration pick for calibration, but only
-  // when there are enough above-floor candidates (≥10) to justify the cap slot.
-  if (aboveFloor.length >= Math.round(1 / EXPLORATION_RATE)) {
-    const belowFloorCandidates = scored.filter((c) => c.compositeScore < MIN_COMPOSITE_SCORE);
-    if (belowFloorCandidates.length > 0) {
-      const explorePick = softmaxSample(belowFloorCandidates);
-      if (explorePick) {
-        ranked.push(explorePick);
-        console.log(
-          `[candidateRanker] Exploration pick: ${explorePick.pipelineRunId.slice(0, 8)} | composite=${explorePick.compositeScore.toFixed(3)} (below floor)`
-        );
-      }
+  // Exploration: each above-floor pick has EXPLORATION_RATE chance of being
+  // followed by a below-floor pick (for calibration data).
+  const belowFloorCandidates = scored.filter((c) => c.compositeScore < MIN_COMPOSITE_SCORE);
+  if (belowFloorCandidates.length > 0) {
+    const explorationCount = ranked.filter(() => Math.random() < EXPLORATION_RATE).length;
+    const belowRemaining = [...belowFloorCandidates];
+    for (let i = 0; i < explorationCount && belowRemaining.length > 0; i++) {
+      const explorePick = softmaxSample(belowRemaining);
+      if (!explorePick) break;
+      ranked.push(explorePick);
+      const idx = belowRemaining.findIndex((c) => c.pipelineRunId === explorePick.pipelineRunId);
+      if (idx >= 0) belowRemaining.splice(idx, 1);
+      console.log(
+        `[candidateRanker] Exploration pick: ${explorePick.pipelineRunId.slice(0, 8)} | composite=${explorePick.compositeScore.toFixed(3)} (below floor)`
+      );
     }
   }
 

@@ -14,7 +14,7 @@ export interface MultiSearchResult {
   text: string;
   searchResults: string;
   citations: string[];
-  retweetContext?: string;
+  quotedPostContext?: string;
   searchSources: {
     perplexity: boolean;
     google: boolean;
@@ -61,7 +61,7 @@ Return ONLY the search query, nothing else.`,
 async function searchPerplexity(
   text: string,
   media: string[],
-  retweetContext?: string
+  quotedPostContext?: string
 ): Promise<SearchSourceResult> {
   try {
     const images: ChatCompletionContentPartImage[] = media.map((url) => ({
@@ -78,8 +78,8 @@ IMPORTANT: Only provide sources that:
 
 Always include specific URLs for your sources directly in the text.`;
 
-    if (retweetContext) {
-      systemPrompt += ` ${retweetContext}`;
+    if (quotedPostContext) {
+      systemPrompt += ` ${quotedPostContext}`;
     }
 
     const result = await llm.create({
@@ -249,7 +249,7 @@ async function searchExa(topic: string): Promise<SearchSourceResult> {
 export async function multiSourceSearch(input: {
   text: string;
   media: string[];
-  retweetContext?: string;
+  quotedPostContext?: string;
 }): Promise<MultiSearchResult> {
   console.log("[multiSourceSearch] Extracting topic...");
   const topic = await extractTopic(input.text);
@@ -258,7 +258,7 @@ export async function multiSourceSearch(input: {
   // Run all searches in parallel
   console.log("[multiSourceSearch] Running parallel searches...");
   const [perplexityResult, googleResult, exaResult] = await Promise.all([
-    searchPerplexity(input.text, input.media, input.retweetContext),
+    searchPerplexity(input.text, input.media, input.quotedPostContext),
     searchGoogle(topic),
     searchExa(topic),
   ]);
@@ -302,7 +302,7 @@ export async function multiSourceSearch(input: {
     text: input.text,
     searchResults: combinedResults.join("\n\n") || "No search results found",
     citations: uniqueCitations,
-    retweetContext: input.retweetContext,
+    quotedPostContext: input.quotedPostContext,
     searchSources: {
       perplexity: perplexityResult.success,
       google: googleResult.success,

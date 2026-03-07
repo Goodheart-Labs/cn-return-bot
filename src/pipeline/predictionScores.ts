@@ -10,7 +10,6 @@
 
 import { SupabaseLogger } from "../api/supabaseClient";
 import {
-  predictHelpfulness,
   checkPositiveClaims,
   checkSubstantiveDisagreement,
   scoreBridging,
@@ -71,24 +70,28 @@ export async function runPredictionScores(ctx: PredictionContext): Promise<void>
 
   await Promise.all([
     // LLM: bridging score (0-1) — r=0.558 with outcome
-    runSinglePredictor("pred_bridging", async () => {
-      if (ctx.preComputed?.bridging !== undefined) return ctx.preComputed.bridging;
-      const result = await scoreBridging(ctx.noteText);
-      return result.score;
-    }, ctx),
+    // Skip if preComputed — already stored by generateCandidates
+    ctx.preComputed?.bridging === undefined
+      ? runSinglePredictor("pred_bridging", async () => {
+          const result = await scoreBridging(ctx.noteText);
+          return result.score;
+        }, ctx)
+      : Promise.resolve(),
 
     // LLM: says-wrong score (0-1) — r=0.312 with outcome
-    runSinglePredictor("pred_says_wrong", async () => {
-      if (ctx.preComputed?.saysWrong !== undefined) return ctx.preComputed.saysWrong;
-      const result = await scoreSaysWrong(ctx.noteText);
-      return result.score;
-    }, ctx),
+    ctx.preComputed?.saysWrong === undefined
+      ? runSinglePredictor("pred_says_wrong", async () => {
+          const result = await scoreSaysWrong(ctx.noteText);
+          return result.score;
+        }, ctx)
+      : Promise.resolve(),
 
     // Free: source/URL count — r=0.335 with outcome
-    runSinglePredictor("pred_source_count", async () => {
-      if (ctx.preComputed?.sourceCount !== undefined) return ctx.preComputed.sourceCount;
-      return countSources(ctx.noteText);
-    }, ctx),
+    ctx.preComputed?.sourceCount === undefined
+      ? runSinglePredictor("pred_source_count", async () => {
+          return countSources(ctx.noteText);
+        }, ctx)
+      : Promise.resolve(),
 
     // LLM: positive claims check (0-1)
     runSinglePredictor("pred_llm_positive_claims", async () => {
@@ -103,14 +106,15 @@ export async function runPredictionScores(ctx: PredictionContext): Promise<void>
     }, ctx),
 
     // X API: claim opinion score (unbounded decimal)
-    runSinglePredictor("pred_x_claim_opinion", async () => {
-      if (ctx.preComputed?.claimOpinionScore !== undefined) return ctx.preComputed.claimOpinionScore;
-      const result = await evaluateNote(ctx.postId, ctx.noteText);
-      if (result.data && typeof result.data.claim_opinion_score === "number") {
-        return result.data.claim_opinion_score;
-      }
-      return undefined;
-    }, ctx),
+    ctx.preComputed?.claimOpinionScore === undefined
+      ? runSinglePredictor("pred_x_claim_opinion", async () => {
+          const result = await evaluateNote(ctx.postId, ctx.noteText);
+          if (result.data && typeof result.data.claim_opinion_score === "number") {
+            return result.data.claim_opinion_score;
+          }
+          return undefined;
+        }, ctx)
+      : Promise.resolve(),
   ]);
 
   console.log(`[predictionScores] All predictions complete for pipeline run ${ctx.pipelineRunId}`);

@@ -26,13 +26,13 @@ const promptTemplate = ({
   text,
   searchResults,
   citations,
-  retweetContext,
+  quotedPostContext,
   currentDate,
 }: {
   text: string;
   searchResults: string;
   citations: string[];
-  retweetContext?: string;
+  quotedPostContext?: string;
   currentDate?: string;
 }) => `TASK: Analyze this X post and determine if it contains factual errors that require correction.${
   currentDate
@@ -41,10 +41,10 @@ const promptTemplate = ({
 Today's date is ${currentDate}.`
     : ""
 }${
-  retweetContext
+  quotedPostContext
     ? `
 
-${retweetContext}`
+${quotedPostContext}`
     : ""
 }
 
@@ -87,7 +87,7 @@ const retryPromptTemplate = ({
   text,
   searchResults,
   citations,
-  retweetContext,
+  quotedPostContext,
   currentDate,
   previousNote,
   characterCount,
@@ -95,7 +95,7 @@ const retryPromptTemplate = ({
   text: string;
   searchResults: string;
   citations: string[];
-  retweetContext?: string;
+  quotedPostContext?: string;
   currentDate?: string;
   previousNote: string;
   characterCount: number;
@@ -106,10 +106,10 @@ const retryPromptTemplate = ({
 Today's date is ${currentDate}.`
     : ""
 }${
-  retweetContext
+  quotedPostContext
     ? `
 
-${retweetContext}`
+${quotedPostContext}`
     : ""
 }
 
@@ -171,7 +171,7 @@ export async function writeNoteFn(
     text,
     searchResults,
     citations,
-    retweetContext,
+    quotedPostContext,
   }: z.infer<typeof textAndSearchResults>,
   config: {
     model: string;
@@ -192,7 +192,7 @@ export async function writeNoteFn(
           text,
           searchResults,
           citations,
-          retweetContext,
+          quotedPostContext,
           currentDate: config.currentDate,
         });
       } else {
@@ -204,7 +204,7 @@ export async function writeNoteFn(
           text,
           searchResults,
           citations,
-          retweetContext,
+          quotedPostContext,
           currentDate: config.currentDate,
           previousNote: previousParsed.note,
           characterCount: countNoteLength(previousParsed.note),

@@ -50,7 +50,7 @@ export const opusResearch: Bot = {
             console.warn(`[${this.id}] Grok search failed (continuing without it):`, err?.message || err);
             return null;
           }),
-        claudeFirstSearch(content.text, { model: MODELS.research }, content.retweetContext),
+        claudeFirstSearch(content.text, { model: MODELS.research }, content.quotedPostContext),
       ]);
       const grokResult = grokSettled;
       if (grokResult) {
@@ -59,10 +59,10 @@ export const opusResearch: Bot = {
       allResearch.push(`--- Claude Initial Research ---\n${claudeFirstResult}`);
       console.log(`[${this.id}] Parallel searches complete (Grok: ${grokResult ? "ok" : "failed"})`);
 
-      // 2. Compare Grok's quoted tweet with our retweetContext (warning only)
+      // 2. Compare Grok's quoted tweet with our quotedPostContext (warning only)
       if (grokResult) {
         const grokQuotedTweet = extractGrokQuotedTweet(grokResult);
-        const quoteMismatch = compareQuotedTweets(grokQuotedTweet, content.retweetContext);
+        const quoteMismatch = compareQuotedTweets(grokQuotedTweet, content.quotedPostContext);
         if (quoteMismatch) {
           console.warn(`[${this.id}] Quote tweet mismatch (continuing): ${quoteMismatch}`);
           allResearch.push(`--- Quote Tweet Mismatch Warning ---\n${quoteMismatch}`);
@@ -77,7 +77,7 @@ export const opusResearch: Bot = {
         allResearch.join("\n\n"),
         1,
         { model: MODELS.analysis },
-        content.retweetContext,
+        content.quotedPostContext,
         grokResult ?? undefined
       );
       allResearch.push(`--- Claude Follow-up 1 ---\n${followUp1.content}`);
@@ -94,7 +94,7 @@ export const opusResearch: Bot = {
           allResearch.join("\n\n"),
           2,
           { model: MODELS.analysis },
-          content.retweetContext,
+          content.quotedPostContext,
           grokResult ?? undefined
         );
         allResearch.push(`--- Claude Follow-up 2 ---\n${followUp2.content}`);
@@ -120,7 +120,7 @@ export const opusResearch: Bot = {
           text: content.text,
           searchResults: combinedResearch,
           citations: collectedUrls,
-          retweetContext: content.retweetContext,
+          quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.noteWriting }
       );

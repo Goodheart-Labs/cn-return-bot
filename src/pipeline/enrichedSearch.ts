@@ -12,7 +12,7 @@ import { versionOneFn as perplexitySearch } from "./searchContextGoal";
 import { searchXWithGrok } from "./grokSearch";
 
 export async function enrichedSearch(
-  input: { text: string; media: string[]; searchResults: string; retweetContext?: string },
+  input: { text: string; media: string[]; searchResults: string; quotedPostContext?: string },
   config: { perplexityModel: string; grokModel: string },
   tweetId: string
 ) {

@@ -162,7 +162,7 @@ async function main() {
 
         console.log(
           `[main] Processing post #${idx + 1} (ID: ${post.id}) - ${
-            content.isRetweet ? "retweet" : "original"
+            content.isQuoteTweet ? "quote tweet" : "original"
           }${hasVideo ? " [VIDEO]" : ""}`
         );
 

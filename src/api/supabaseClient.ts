@@ -138,7 +138,7 @@ export class SupabaseLogger {
   /**
    * Fetch all rows from a query, paginating past Supabase's 1000-row default limit.
    */
-  private async fetchAllRows<T>(
+  async fetchAllRows<T>(
     buildQuery: (from: SupabaseClient) => any
   ): Promise<T[]> {
     const PAGE_SIZE = 1000;
@@ -1103,24 +1103,70 @@ export class SupabaseLogger {
         console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       }
 
-      // Also skip tweets that already have a candidate note waiting for submission
-      let candidateCount = 0;
+      // Skip tweets that have an above-floor candidate waiting for submission.
+      // Below-floor candidates are left eligible for re-roll by a different bot.
+      let candidateSkipCount = 0;
+      let candidateRerollCount = 0;
       try {
-        const candidateData = await this.fetchAllRows<{ tweet_id: string }>(
-          (client) => client.from("pipeline_runs").select("tweet_id")
+        const candidateData = await this.fetchAllRows<{ id: string; tweet_id: string }>(
+          (client) => client.from("pipeline_runs").select("id, tweet_id")
             .eq("outcome", "candidate")
         );
-        for (const row of candidateData) {
-          if (row.tweet_id) {
-            tweetIds.add(row.tweet_id);
-            candidateCount++;
+        if (candidateData.length > 0) {
+          // Fetch scores for all candidates to compute composite
+          const candidateIds = candidateData.map((c) => c.id);
+          const scores = await this.fetchAllRows<{
+            pipeline_run_id: string;
+            score_type: string;
+            score_value: number | null;
+          }>(
+            (client) => client.from("pipeline_scores")
+              .select("pipeline_run_id, score_type, score_value")
+              .in("pipeline_run_id", candidateIds)
+          );
+
+          // Group scores by run
+          const scoresByRun = new Map<string, Record<string, number>>();
+          for (const s of scores) {
+            if (s.score_value === null) continue;
+            if (!scoresByRun.has(s.pipeline_run_id)) scoresByRun.set(s.pipeline_run_id, {});
+            scoresByRun.get(s.pipeline_run_id)![s.score_type] = s.score_value;
+          }
+
+          const { computeCompositeScore, MIN_COMPOSITE_SCORE } = await import("../pipeline/candidateRanker");
+
+          for (const row of candidateData) {
+            const s = scoresByRun.get(row.id) ?? {};
+            const composite = computeCompositeScore({
+              pipelineRunId: row.id,
+              tweetId: row.tweet_id,
+              noteText: "",
+              sourceUrl: "",
+              botId: "",
+              createdAt: new Date(),
+              searchResults: "",
+              tweetText: "",
+              scores: {
+                bridging: s["pred_bridging"],
+                saysWrong: s["pred_says_wrong"],
+                sourceCount: s["pred_source_count"],
+                evaluation: s["evaluation"],
+              },
+            });
+
+            if (composite >= MIN_COMPOSITE_SCORE) {
+              tweetIds.add(row.tweet_id);
+              candidateSkipCount++;
+            } else {
+              candidateRerollCount++;
+            }
           }
         }
       } catch (candidateError) {
         console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
       }
 
-      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${candidateCount} candidates, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
+      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${candidateSkipCount} above-floor candidates, ${candidateRerollCount} below-floor candidates eligible for re-roll, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);

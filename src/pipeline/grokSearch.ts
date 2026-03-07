@@ -78,27 +78,27 @@ export function extractGrokQuotedTweet(grokOutput: string): string | null {
 }
 
 /**
- * Compare Grok's quoted tweet with our retweetContext.
+ * Compare Grok's quoted tweet with our quotedPostContext.
  * Returns error message if there's a mismatch, null if OK.
  */
 export function compareQuotedTweets(
   grokQuotedTweet: string | null,
-  retweetContext: string | undefined
+  quotedPostContext: string | undefined
 ): string | null {
   const hasGrokQt = grokQuotedTweet !== null;
-  const hasOurQt = retweetContext !== undefined && retweetContext.trim() !== "";
+  const hasOurQt = quotedPostContext !== undefined && quotedPostContext.trim() !== "";
 
   if (hasGrokQt && hasOurQt) {
     console.log(`[grokSearch] Quote tweet comparison:`);
     console.log(`  Grok found: ${grokQuotedTweet!.substring(0, 100)}...`);
-    console.log(`  Our context: ${retweetContext!.substring(0, 100)}...`);
+    console.log(`  Our context: ${quotedPostContext!.substring(0, 100)}...`);
     return null;
   } else if (hasGrokQt && !hasOurQt) {
-    const msg = `Quote tweet mismatch: Grok found a quoted tweet but we don't have retweetContext. Grok found: ${grokQuotedTweet}`;
+    const msg = `Quote tweet mismatch: Grok found a quoted tweet but we don't have quotedPostContext. Grok found: ${grokQuotedTweet}`;
     console.error(`[grokSearch] ⚠️ ${msg}`);
     return msg;
   } else if (!hasGrokQt && hasOurQt) {
-    const msg = `Quote tweet mismatch: We have retweetContext but Grok didn't find a quoted tweet. Our context: ${retweetContext}`;
+    const msg = `Quote tweet mismatch: We have quotedPostContext but Grok didn't find a quoted tweet. Our context: ${quotedPostContext}`;
     console.error(`[grokSearch] ⚠️ ${msg}`);
     return msg;
   }

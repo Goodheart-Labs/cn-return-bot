@@ -52,7 +52,7 @@ export const opusVerified: Bot = {
           text: content.text,
           media: content.media,
           searchResults: "",
-          retweetContext: content.retweetContext,
+          quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.search }
       );
@@ -85,7 +85,7 @@ export const opusVerified: Bot = {
           text: content.text,
           searchResults: verification.combinedContext,
           citations: verification.allCitations,
-          retweetContext: content.retweetContext,
+          quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.noteWriting }
       );
@@ -103,7 +103,7 @@ export const opusVerified: Bot = {
             text: content.text,
             searchResults: verification.combinedContext,
             citations: verification.allCitations,
-            retweetContext: content.retweetContext,
+            quotedPostContext: content.quotedPostContext,
           },
           noteResult,
           checkResult: "",
@@ -136,7 +136,7 @@ export const opusVerified: Bot = {
             text: content.text,
             searchResults: verification.combinedContext,
             citations: verification.allCitations,
-            retweetContext: content.retweetContext,
+            quotedPostContext: content.quotedPostContext,
           },
           noteResult: { ...noteResult, status: "SOURCE_TRUST_FAILED" },
           checkResult,
@@ -165,7 +165,7 @@ export const opusVerified: Bot = {
             text: content.text,
             searchResults: verification.combinedContext,
             citations: verification.allCitations,
-            retweetContext: content.retweetContext,
+            quotedPostContext: content.quotedPostContext,
           },
           noteResult: { ...noteResult, status: "SCORING_FILTERS_FAILED" },
           checkResult,
@@ -183,7 +183,7 @@ export const opusVerified: Bot = {
           text: content.text,
           searchResults: verification.combinedContext,
           citations: verification.allCitations,
-          retweetContext: content.retweetContext,
+          quotedPostContext: content.quotedPostContext,
         },
         noteResult,
         checkResult,

@@ -22,13 +22,13 @@ const promptTemplate = ({
   text,
   searchResults,
   citations,
-  retweetContext,
+  quotedPostContext,
   currentDate,
 }: {
   text: string;
   searchResults: string;
   citations: string[];
-  retweetContext?: string;
+  quotedPostContext?: string;
   currentDate?: string;
 }) => `TASK: Write a Community Note correction for this X post — if it contains a clear factual error.${
   currentDate
@@ -37,10 +37,10 @@ const promptTemplate = ({
 Today's date is ${currentDate}.`
     : ""
 }${
-  retweetContext
+  quotedPostContext
     ? `
 
-${retweetContext}`
+${quotedPostContext}`
     : ""
 }
 
@@ -82,7 +82,7 @@ const retryPromptTemplate = ({
   text,
   searchResults,
   citations,
-  retweetContext,
+  quotedPostContext,
   currentDate,
   previousNote,
   characterCount,
@@ -90,7 +90,7 @@ const retryPromptTemplate = ({
   text: string;
   searchResults: string;
   citations: string[];
-  retweetContext?: string;
+  quotedPostContext?: string;
   currentDate?: string;
   previousNote: string;
   characterCount: number;
@@ -101,10 +101,10 @@ const retryPromptTemplate = ({
 Today's date is ${currentDate}.`
     : ""
 }${
-  retweetContext
+  quotedPostContext
     ? `
 
-${retweetContext}`
+${quotedPostContext}`
     : ""
 }
 
@@ -149,7 +149,7 @@ export async function writeNoteDirectFn(
     text,
     searchResults,
     citations,
-    retweetContext,
+    quotedPostContext,
   }: z.infer<typeof textAndSearchResults>,
   config: {
     model: string;
@@ -170,7 +170,7 @@ export async function writeNoteDirectFn(
           text,
           searchResults,
           citations,
-          retweetContext,
+          quotedPostContext,
           currentDate: config.currentDate,
         });
       } else {
@@ -182,7 +182,7 @@ export async function writeNoteDirectFn(
           text,
           searchResults,
           citations,
-          retweetContext,
+          quotedPostContext,
           currentDate: config.currentDate,
           previousNote: previousParsed.note,
           characterCount: countNoteLength(previousParsed.note),

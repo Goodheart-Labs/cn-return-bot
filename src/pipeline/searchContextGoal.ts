@@ -29,7 +29,7 @@ export const searchContextGoal = createGoal({
     media: z.array(z.string()),
     imagesSummary: z.string().optional(),
     searchResults: z.string(),
-    retweetContext: z.string().optional(),
+    quotedPostContext: z.string().optional(),
   }),
   output: textAndSearchResults,
 });
@@ -59,7 +59,7 @@ export async function versionOneFn(
     media: string[];
     imagesSummary?: string;
     searchResults: string;
-    retweetContext?: string;
+    quotedPostContext?: string;
   },
   config: {
     model: OpenAIChatModelId;
@@ -84,8 +84,8 @@ IMPORTANT: Only provide sources that:
 
 Always include specific URLs for your sources directly in the text.`;
 
-  if (input.retweetContext) {
-    systemPrompt += ` ${input.retweetContext}`;
+  if (input.quotedPostContext) {
+    systemPrompt += ` ${input.quotedPostContext}`;
   }
 
   const result = await llm.create({
@@ -112,7 +112,7 @@ Always include specific URLs for your sources directly in the text.`;
     text: input.text,
     searchResults: result.choices?.[0]?.message?.content ?? "Error",
     citations: (result as any).citations,
-    retweetContext: input.retweetContext,
+    quotedPostContext: input.quotedPostContext,
   };
 }
 

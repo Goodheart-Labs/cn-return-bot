@@ -16,8 +16,10 @@ export function parseStatusNoteUrl(content: string): {
   if (lines.length === 0) {
     throw new Error("Empty content");
   }
-  // Status is the first non-empty line
-  const status: string = lines[0] ?? "";
+  // Status is the first non-empty line, stripped of [Status: ...] wrapper if present
+  let status: string = lines[0] ?? "";
+  const bracketMatch = status.match(/^\[(?:Status:\s*)?(.+)\]$/);
+  if (bracketMatch) status = bracketMatch[1];
   // Find a URL in any line
   let url = "";
   let urlLineIdx = -1;
