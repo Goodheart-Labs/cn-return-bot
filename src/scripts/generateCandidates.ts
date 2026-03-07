@@ -118,7 +118,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
       const videoMedia = post.media?.find((m) => m.type === "video");
 
       console.log(
-        `[generate] Processing post #${idx + 1} (ID: ${post.id}) - ${content.isRetweet ? "retweet" : "original"}${hasVideo ? " [VIDEO]" : ""}`
+        `[generate] Processing post #${idx + 1} (ID: ${post.id}) - ${content.isQuoteTweet ? "quote tweet" : "original"}${hasVideo ? " [VIDEO]" : ""}`
       );
 
       // Create pipeline run with tweet engagement metrics

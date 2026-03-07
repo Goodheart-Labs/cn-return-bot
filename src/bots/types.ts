@@ -42,7 +42,7 @@ export interface PostContent {
   /** Full media objects with type, variants, etc. for media analysis */
   mediaItems?: MediaItem[];
   quotedPostContext?: string;
-  isRetweet: boolean;
+  isQuoteTweet: boolean;
 }
 
 export interface Bot {

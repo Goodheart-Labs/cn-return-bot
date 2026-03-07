@@ -16,7 +16,7 @@ async function runPipeline(post: Post, idx: number) {
     // Get the original tweet content (handling retweets)
     const originalContent = getOriginalTweetContent(post);
     
-    console.log(`[runPipeline] Processing ${originalContent.isRetweet ? 'retweet' : 'original tweet'} for post #${idx + 1}`);
+    console.log(`[runPipeline] Processing ${originalContent.isQuoteTweet ? 'quote tweet' : 'original tweet'} for post #${idx + 1}`);
     
     const searchContextResult = await searchV1(
       {

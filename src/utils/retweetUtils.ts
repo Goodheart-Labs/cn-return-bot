@@ -6,7 +6,7 @@ export function getOriginalTweetContent(post: Post): {
   text: string;
   media: string[];
   mediaItems?: MediaItem[];
-  isRetweet: boolean;
+  isQuoteTweet: boolean;
   quotedPostContext?: string;
 } {
   // Check if this post has a referenced tweet of type 'retweeted'
@@ -27,11 +27,11 @@ export function getOriginalTweetContent(post: Post): {
         variants: m.variants,
         duration_ms: m.duration_ms,
       })),
-      isRetweet: true,
+      isQuoteTweet: false,
       quotedPostContext: `This community note is about a post that was retweeted. The original tweet content is: "${post.referenced_tweet_data.text}"`
     };
   }
-  
+
   if (quotedRef && post.referenced_tweet_data) {
     // This is a quoted tweet, combine both the quote and the original content
     const combinedText = `${post.text}\n\nQuoted tweet: "${post.referenced_tweet_data.text}"`;
@@ -49,7 +49,7 @@ export function getOriginalTweetContent(post: Post): {
         variants: m.variants,
         duration_ms: m.duration_ms,
       })),
-      isRetweet: false, // This is not a retweet, it's a quote tweet
+      isQuoteTweet: true,
       quotedPostContext: `This community note is about a quoted tweet. The user's comment is: "${post.text}" and they are quoting: "${post.referenced_tweet_data.text}"`
     };
   }
@@ -69,7 +69,7 @@ export function getOriginalTweetContent(post: Post): {
           variants: m.variants,
           duration_ms: m.duration_ms,
         })) || [],
-        isRetweet: true,
+        isQuoteTweet: false,
         quotedPostContext: `This community note is about a post that was retweeted. The original tweet content is: "${originalText}"`
       };
     }
@@ -86,6 +86,6 @@ export function getOriginalTweetContent(post: Post): {
       variants: m.variants,
       duration_ms: m.duration_ms,
     })) || [],
-    isRetweet: false
+    isQuoteTweet: false
   };
 }
