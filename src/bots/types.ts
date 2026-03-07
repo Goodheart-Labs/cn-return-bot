@@ -13,7 +13,7 @@ export interface PipelineResult {
     text: string;
     searchResults: string;
     citations?: string[];
-    retweetContext?: string;
+    quotedPostContext?: string;
   };
   noteResult: {
     note: string;
@@ -41,7 +41,7 @@ export interface PostContent {
   media: string[];
   /** Full media objects with type, variants, etc. for media analysis */
   mediaItems?: MediaItem[];
-  retweetContext?: string;
+  quotedPostContext?: string;
   isRetweet: boolean;
 }
 

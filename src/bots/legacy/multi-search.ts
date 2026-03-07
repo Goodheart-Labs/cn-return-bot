@@ -35,7 +35,7 @@ export const multiSearch: Bot = {
       const searchResult = await multiSourceSearch({
         text: content.text,
         media: content.media,
-        retweetContext: content.retweetContext,
+        quotedPostContext: content.quotedPostContext,
       });
       lastStage = "search";
 

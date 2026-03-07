@@ -33,7 +33,7 @@ export const opusDirectGrok: Bot = {
           text: content.text,
           media: content.media,
           searchResults: "",
-          retweetContext: content.retweetContext,
+          quotedPostContext: content.quotedPostContext,
         },
         { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
         post.id

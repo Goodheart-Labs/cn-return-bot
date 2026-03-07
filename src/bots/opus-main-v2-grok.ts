@@ -60,7 +60,7 @@ export const opusMainV2Grok: Bot = {
           text: content.text,
           media: content.media,
           searchResults: mediaContext,
-          retweetContext: content.retweetContext,
+          quotedPostContext: content.quotedPostContext,
         },
         { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
         post.id

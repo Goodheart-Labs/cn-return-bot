@@ -56,10 +56,10 @@ RESEARCH_REQUEST: [If YES, what to search for next. If NO, write "None"]`,
 export async function claudeFirstSearch(
   tweetText: string,
   config: { model: string },
-  retweetContext?: string
+  quotedPostContext?: string
 ): Promise<string> {
-  const quoteContext = retweetContext
-    ? `\n\nQUOTED TWEET:\n${retweetContext}`
+  const quoteContext = quotedPostContext
+    ? `\n\nQUOTED TWEET:\n${quotedPostContext}`
     : "";
   const prompt = PROMPTS.firstSearch(tweetText, quoteContext);
 
@@ -87,11 +87,11 @@ export async function followUpResearch(
   currentResearch: string,
   iteration: number,
   config: { model: string },
-  retweetContext?: string,
+  quotedPostContext?: string,
   grokContext?: string
 ): Promise<FollowUpResult> {
-  const quoteContext = retweetContext
-    ? `\n\nQUOTED TWEET:\n${retweetContext}`
+  const quoteContext = quotedPostContext
+    ? `\n\nQUOTED TWEET:\n${quotedPostContext}`
     : "";
   const prompt = PROMPTS.analyzeGaps(
     tweetText,
