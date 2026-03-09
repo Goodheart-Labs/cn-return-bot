@@ -2,7 +2,7 @@
  * Submit Candidates
  *
  * Phase 2 of the two-phase pipeline. Fetches stored candidates from the DB,
- * ranks them using composite scoring with softmax sampling, and submits
+ * ranks them by X API eval score + freshness, and submits
  * the best ones until the daily limit.
  */
 
@@ -44,9 +44,6 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
       tweetText: c.tweet_text ?? "",
       scores: {
         evaluation: scoreMap["evaluation"],
-        bridging: scoreMap["pred_bridging"],
-        saysWrong: scoreMap["pred_says_wrong"],
-        sourceCount: scoreMap["pred_source_count"],
       },
     };
   });
@@ -78,7 +75,7 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
       }
 
       console.log(
-        `[submit] Submitted note for tweet ${candidate.tweetId} (bot: ${candidate.botId}, rank: ${submitted + 1}, score: ${candidate.freshnessAdjustedScore.toFixed(3)})`
+        `[submit] Submitted note for tweet ${candidate.tweetId} (bot: ${candidate.botId}, rank: ${submitted + 1}, score: ${candidate.rankScore.toFixed(3)})`
       );
       submitted++;
 
@@ -103,29 +100,6 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
         console.error("[submit] Failed to log to Supabase:", logErr);
       }
 
-      // Fire-and-forget: run prediction scores
-      try {
-        const { runPredictionScores } = await import("../pipeline/predictionScores");
-        runPredictionScores({
-          pipelineRunId: candidate.pipelineRunId,
-          noteText: candidate.noteText,
-          sourceUrl: candidate.sourceUrl,
-          tweetText: candidate.tweetText,
-          searchResults: candidate.searchResults,
-          postId: candidate.tweetId,
-          supabaseLogger,
-          preComputed: {
-            bridging: candidate.scores.bridging,
-            saysWrong: candidate.scores.saysWrong,
-            sourceCount: candidate.scores.sourceCount,
-            claimOpinionScore: candidate.scores.evaluation,
-          },
-        }).catch((err) =>
-          console.warn("[submit] Prediction scores failed (non-fatal):", err)
-        );
-      } catch (err) {
-        console.warn("[submit] Failed to start prediction scores:", err);
-      }
     } catch (err: any) {
       const errorData = err.response?.data;
       const errorText = errorData

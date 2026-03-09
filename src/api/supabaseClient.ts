@@ -1104,7 +1104,7 @@ export class SupabaseLogger {
       }
 
       // Skip tweets that have an above-floor candidate waiting for submission.
-      // Below-floor candidates are left eligible for re-roll by a different bot.
+      // Below-floor candidates (eval < 0) are left eligible for re-roll by a different bot.
       let candidateSkipCount = 0;
       let candidateRerollCount = 0;
       try {
@@ -1113,7 +1113,6 @@ export class SupabaseLogger {
             .eq("outcome", "candidate")
         );
         if (candidateData.length > 0) {
-          // Fetch scores for all candidates to compute composite
           const candidateIds = candidateData.map((c) => c.id);
           const scores = await this.fetchAllRows<{
             pipeline_run_id: string;
@@ -1125,36 +1124,17 @@ export class SupabaseLogger {
               .in("pipeline_run_id", candidateIds)
           );
 
-          // Group scores by run
-          const scoresByRun = new Map<string, Record<string, number>>();
+          // Map eval scores by run
+          const evalByRun = new Map<string, number>();
           for (const s of scores) {
-            if (s.score_value === null) continue;
-            if (!scoresByRun.has(s.pipeline_run_id)) scoresByRun.set(s.pipeline_run_id, {});
-            scoresByRun.get(s.pipeline_run_id)![s.score_type] = s.score_value;
+            if (s.score_type === "evaluation" && s.score_value !== null) {
+              evalByRun.set(s.pipeline_run_id, s.score_value);
+            }
           }
 
-          const { computeCompositeScore, MIN_COMPOSITE_SCORE } = await import("../pipeline/candidateRanker");
-
           for (const row of candidateData) {
-            const s = scoresByRun.get(row.id) ?? {};
-            const composite = computeCompositeScore({
-              pipelineRunId: row.id,
-              tweetId: row.tweet_id,
-              noteText: "",
-              sourceUrl: "",
-              botId: "",
-              createdAt: new Date(),
-              searchResults: "",
-              tweetText: "",
-              scores: {
-                bridging: s["pred_bridging"],
-                saysWrong: s["pred_says_wrong"],
-                sourceCount: s["pred_source_count"],
-                evaluation: s["evaluation"],
-              },
-            });
-
-            if (composite >= MIN_COMPOSITE_SCORE) {
+            const evalScore = evalByRun.get(row.id);
+            if (evalScore !== undefined && evalScore >= 0) {
               tweetIds.add(row.tweet_id);
               candidateSkipCount++;
             } else {
@@ -1166,7 +1146,7 @@ export class SupabaseLogger {
         console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
       }
 
-      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${candidateSkipCount} above-floor candidates, ${candidateRerollCount} below-floor candidates eligible for re-roll, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
+      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${candidateSkipCount} above-floor candidates, ${candidateRerollCount} below-floor eligible for re-roll, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);

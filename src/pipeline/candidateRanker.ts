@@ -1,33 +1,16 @@
 /**
  * Candidate Ranker
  *
- * Scores and selects the best candidate notes for submission.
- * Uses a weighted composite of prediction scores with freshness decay,
- * then softmax sampling so we mostly pick the best but occasionally
- * explore lower-ranked candidates to gather data.
+ * Ranks candidates by X API evaluation score with freshness decay.
+ * When capped, submits the highest-scoring recent candidates first.
+ *
+ * Previously used a composite of LLM-scored bridging/saysWrong/sourceCount,
+ * but analysis of 334 resolved notes showed those signals have zero correlation
+ * with H/NH outcome on our own notes (r < 0.08 for all). Removed Mar 2026.
  */
-
-// Composite score weights — calibrated on 200 public CN notes (100 H, 100 NH)
-// Weights proportional to outcome correlation: bridging r=0.558, sourceCount r=0.335,
-// saysWrong r=0.312, eval r=0.304. Normalized to sum to 1.
-const WEIGHT_BRIDGING = 0.37;
-const WEIGHT_SOURCE_COUNT = 0.22;
-const WEIGHT_SAYS_WRONG = 0.21;
-const WEIGHT_EVAL = 0.20;
 
 // Freshness: score penalty per hour of age
 const FRESHNESS_DECAY_PER_HOUR = 0.02;
-
-// Softmax temperature: lower = more greedy, higher = more exploratory
-const TEMPERATURE = 0.3;
-
-// Minimum composite score to submit. Below this, P(H) < 0.5 so EV is negative.
-// Calibrated on 200 public CN notes: breakeven at ~0.55 composite.
-export const MIN_COMPOSITE_SCORE = 0.55;
-
-// Exploration: fraction of above-floor candidates to mirror with below-floor picks.
-// E.g. 0.10 = 1 exploration pick per 10 above-floor candidates.
-const EXPLORATION_RATE = 0.10;
 
 export interface CandidateForRanking {
   pipelineRunId: string;
@@ -40,15 +23,11 @@ export interface CandidateForRanking {
   tweetText: string;
   scores: {
     evaluation?: number;
-    bridging?: number;
-    saysWrong?: number;
-    sourceCount?: number;
   };
 }
 
 export interface RankedCandidate extends CandidateForRanking {
-  compositeScore: number;
-  freshnessAdjustedScore: number;
+  rankScore: number;
 }
 
 /**
@@ -60,136 +39,37 @@ function sigmoid(x: number): number {
 }
 
 /**
- * Compute composite score for a single candidate.
- */
-export function computeCompositeScore(candidate: CandidateForRanking): number {
-  let score = 0;
-  let totalWeight = 0;
-
-  if (candidate.scores.bridging !== undefined) {
-    score += WEIGHT_BRIDGING * candidate.scores.bridging;
-    totalWeight += WEIGHT_BRIDGING;
-  }
-
-  if (candidate.scores.sourceCount !== undefined) {
-    // Normalize: 0 sources → 0, 1 → 0.5, 2+ → ~0.8-1.0
-    const normalized = 1 - 1 / (1 + candidate.scores.sourceCount);
-    score += WEIGHT_SOURCE_COUNT * normalized;
-    totalWeight += WEIGHT_SOURCE_COUNT;
-  }
-
-  if (candidate.scores.saysWrong !== undefined) {
-    score += WEIGHT_SAYS_WRONG * candidate.scores.saysWrong;
-    totalWeight += WEIGHT_SAYS_WRONG;
-  }
-
-  // Missing eval defaults to sigmoid(-1) ≈ 0.27 — "unknown, assume below average"
-  const evalNormalized = candidate.scores.evaluation !== undefined
-    ? sigmoid(candidate.scores.evaluation)
-    : sigmoid(-1);
-  score += WEIGHT_EVAL * evalNormalized;
-  totalWeight += WEIGHT_EVAL;
-
-  // Normalize by total weight so missing scores don't penalize
-  return totalWeight > 0 ? score / totalWeight : 0;
-}
-
-/**
- * Apply freshness decay based on candidate age.
- */
-function applyFreshnessDecay(compositeScore: number, createdAt: Date): number {
-  const ageHours = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60);
-  return compositeScore - FRESHNESS_DECAY_PER_HOUR * ageHours;
-}
-
-/**
- * Softmax sampling: pick one candidate probabilistically,
- * weighted by their scores. Temperature controls greediness.
- */
-function softmaxSample(candidates: RankedCandidate[]): RankedCandidate | null {
-  if (candidates.length === 0) return null;
-  if (candidates.length === 1) return candidates[0]!;
-
-  // Compute softmax probabilities
-  const maxScore = Math.max(...candidates.map((c) => c.freshnessAdjustedScore));
-  const exps = candidates.map((c) =>
-    Math.exp((c.freshnessAdjustedScore - maxScore) / TEMPERATURE)
-  );
-  const sumExp = exps.reduce((a, b) => a + b, 0);
-  const probs = exps.map((e) => e / sumExp);
-
-  // Sample
-  const r = Math.random();
-  let cumulative = 0;
-  for (let i = 0; i < candidates.length; i++) {
-    cumulative += probs[i]!;
-    if (r <= cumulative) return candidates[i]!;
-  }
-
-  return candidates[candidates.length - 1]!;
-}
-
-/**
- * Rank all candidates and return them in submission order.
- * Uses softmax sampling to pick each successive candidate
- * (sampling without replacement).
+ * Rank all candidates by eval score + freshness decay.
+ * Candidates without eval scores go last (sorted by freshness among themselves).
  */
 export function rankCandidates(candidates: CandidateForRanking[]): RankedCandidate[] {
   if (candidates.length === 0) return [];
 
-  // Score all candidates
+  const now = Date.now();
+
   const scored: RankedCandidate[] = candidates.map((c) => {
-    const compositeScore = computeCompositeScore(c);
-    const freshnessAdjustedScore = applyFreshnessDecay(compositeScore, c.createdAt);
-    return { ...c, compositeScore, freshnessAdjustedScore };
+    const ageHours = (now - c.createdAt.getTime()) / (1000 * 60 * 60);
+    const evalScore = c.scores.evaluation !== undefined
+      ? sigmoid(c.scores.evaluation)
+      : sigmoid(-1); // ~0.27, "unknown, assume below average"
+    const rankScore = evalScore - FRESHNESS_DECAY_PER_HOUR * ageHours;
+    return { ...c, rankScore };
   });
 
-  // Filter out candidates below the quality floor
-  const aboveFloor = scored.filter((c) => c.compositeScore >= MIN_COMPOSITE_SCORE);
-  const belowFloor = scored.length - aboveFloor.length;
+  // Sort descending by rank score
+  scored.sort((a, b) => b.rankScore - a.rankScore);
 
-  // Log scores for visibility
-  const sorted = [...aboveFloor].sort((a, b) => b.freshnessAdjustedScore - a.freshnessAdjustedScore);
-  console.log(`[candidateRanker] ${scored.length} candidates (${belowFloor} below ${MIN_COMPOSITE_SCORE} floor, ${aboveFloor.length} eligible):`);
-  for (const c of sorted.slice(0, 10)) {
-    const ageHours = ((Date.now() - c.createdAt.getTime()) / (1000 * 60 * 60)).toFixed(1);
+  // Log for visibility
+  console.log(`[candidateRanker] ${scored.length} candidates:`);
+  for (const c of scored.slice(0, 10)) {
+    const ageHours = ((now - c.createdAt.getTime()) / (1000 * 60 * 60)).toFixed(1);
     console.log(
-      `  ${c.pipelineRunId.slice(0, 8)} | composite=${c.compositeScore.toFixed(3)} | adjusted=${c.freshnessAdjustedScore.toFixed(3)} | age=${ageHours}h | eval=${c.scores.evaluation?.toFixed(2) ?? "?"} bridging=${c.scores.bridging?.toFixed(2) ?? "?"} wrong=${c.scores.saysWrong?.toFixed(2) ?? "?"} srcs=${c.scores.sourceCount ?? "?"}`
+      `  ${c.pipelineRunId.slice(0, 8)} | score=${c.rankScore.toFixed(3)} | age=${ageHours}h | eval=${c.scores.evaluation?.toFixed(2) ?? "?"}`
     );
   }
-  if (sorted.length > 10) {
-    console.log(`  ... and ${sorted.length - 10} more`);
+  if (scored.length > 10) {
+    console.log(`  ... and ${scored.length - 10} more`);
   }
 
-  // Softmax sample without replacement to build ranked order
-  const ranked: RankedCandidate[] = [];
-  const remaining = [...aboveFloor];
-
-  while (remaining.length > 0) {
-    const pick = softmaxSample(remaining);
-    if (!pick) break;
-    ranked.push(pick);
-    const idx = remaining.findIndex((c) => c.pipelineRunId === pick.pipelineRunId);
-    if (idx >= 0) remaining.splice(idx, 1);
-  }
-
-  // Exploration: each above-floor pick has EXPLORATION_RATE chance of being
-  // followed by a below-floor pick (for calibration data).
-  const belowFloorCandidates = scored.filter((c) => c.compositeScore < MIN_COMPOSITE_SCORE);
-  if (belowFloorCandidates.length > 0) {
-    const explorationCount = ranked.filter(() => Math.random() < EXPLORATION_RATE).length;
-    const belowRemaining = [...belowFloorCandidates];
-    for (let i = 0; i < explorationCount && belowRemaining.length > 0; i++) {
-      const explorePick = softmaxSample(belowRemaining);
-      if (!explorePick) break;
-      ranked.push(explorePick);
-      const idx = belowRemaining.findIndex((c) => c.pipelineRunId === explorePick.pipelineRunId);
-      if (idx >= 0) belowRemaining.splice(idx, 1);
-      console.log(
-        `[candidateRanker] Exploration pick: ${explorePick.pipelineRunId.slice(0, 8)} | composite=${explorePick.compositeScore.toFixed(3)} (below floor)`
-      );
-    }
-  }
-
-  return ranked;
+  return scored;
 }

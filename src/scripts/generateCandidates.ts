@@ -373,9 +373,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
         console.warn(`[generate] Eval API failed for ${post.id}, storing candidate without eval score:`, err?.message);
       }
 
-      // Run ranking signals: bridging, saysWrong (LLM), sourceCount (free)
-      let bridgingScore: number | undefined;
-      let saysWrongScore: number | undefined;
+      // Source count (free, no LLM)
       let sourceCountScore: number | undefined;
       try {
         const { countSources } = await import("../pipeline/scoringFilters");
@@ -388,30 +386,6 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
         }
       } catch (err: any) {
         console.warn(`[generate] Source count failed:`, err?.message);
-      }
-
-      try {
-        const { scoreBridging, scoreSaysWrong } = await import("../pipeline/scoringFilters");
-        const [bridging, saysWrong] = await Promise.all([
-          scoreBridging(noteText),
-          scoreSaysWrong(noteText),
-        ]);
-        bridgingScore = bridging.score;
-        saysWrongScore = saysWrong.score;
-        if (supabaseLogger && pipelineRunId) {
-          await Promise.all([
-            supabaseLogger.addPipelineScore(pipelineRunId, {
-              score_type: "pred_bridging",
-              score_value: bridgingScore,
-            }),
-            supabaseLogger.addPipelineScore(pipelineRunId, {
-              score_type: "pred_says_wrong",
-              score_value: saysWrongScore,
-            }),
-          ]);
-        }
-      } catch (err: any) {
-        console.warn(`[generate] LLM ranking scores failed:`, err?.message);
       }
 
       // Expire any existing candidates for this tweet (re-roll replaces old candidate)
@@ -442,7 +416,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
           });
           candidateCount++;
           console.log(
-            `[generate] Stored candidate for tweet ${post.id} (eval=${evaluationScore?.toFixed(2) ?? "?"}, bridging=${bridgingScore?.toFixed(2) ?? "?"}, wrong=${saysWrongScore?.toFixed(2) ?? "?"}, srcs=${sourceCountScore ?? "?"})`
+            `[generate] Stored candidate for tweet ${post.id} (eval=${evaluationScore?.toFixed(2) ?? "?"}, srcs=${sourceCountScore ?? "?"})`
           );
         } catch (err) {
           console.warn(`[generate] Failed to store candidate:`, err);
