@@ -29,38 +29,6 @@ describe("rankCandidates", () => {
     expect(ranked[1].tweetId).toBe("b");
   });
 
-  test("higher impressions rank higher when eval is equal", () => {
-    const viral = makeCandidate({
-      tweetId: "viral",
-      scores: { evaluation: 1.0 },
-      tweetImpressions: 10_000_000,
-    });
-    const quiet = makeCandidate({
-      tweetId: "quiet",
-      scores: { evaluation: 1.0 },
-      tweetImpressions: 100_000,
-    });
-    const ranked = rankCandidates([quiet, viral]);
-    expect(ranked[0].tweetId).toBe("viral");
-    expect(ranked[1].tweetId).toBe("quiet");
-  });
-
-  test("impressions bonus is meaningful but doesn't dominate eval", () => {
-    // A great eval on a small tweet should still beat a bad eval on a viral tweet
-    const goodEvalSmall = makeCandidate({
-      tweetId: "good-small",
-      scores: { evaluation: 2.5 },
-      tweetImpressions: 50_000,
-    });
-    const badEvalViral = makeCandidate({
-      tweetId: "bad-viral",
-      scores: { evaluation: -1.0 },
-      tweetImpressions: 50_000_000,
-    });
-    const ranked = rankCandidates([badEvalViral, goodEvalSmall]);
-    expect(ranked[0].tweetId).toBe("good-small");
-  });
-
   test("older candidates are penalized", () => {
     const fresh = makeCandidate({
       tweetId: "fresh",
@@ -85,18 +53,6 @@ describe("rankCandidates", () => {
     });
     const ranked = rankCandidates([noEval, withEval]);
     expect(ranked[0].tweetId).toBe("with-eval");
-  });
-
-  test("candidates without impressions get zero bonus", () => {
-    const withImpressions = makeCandidate({
-      tweetId: "with-imp",
-      tweetImpressions: 5_000_000,
-    });
-    const noImpressions = makeCandidate({
-      tweetId: "no-imp",
-    });
-    const ranked = rankCandidates([noImpressions, withImpressions]);
-    expect(ranked[0].tweetId).toBe("with-imp");
   });
 
   test("all candidates get a rankScore property", () => {

@@ -879,7 +879,6 @@ export class SupabaseLogger {
       created_at: string;
       search_results: string;
       tweet_text: string;
-      tweet_impressions: number | null;
       scores: { score_type: string; score_value: number | null }[];
     }[]
   > {
@@ -892,12 +891,11 @@ export class SupabaseLogger {
       created_at: string;
       search_results: string;
       tweet_text: string;
-      tweet_impressions: number | null;
     }>(
       (client) =>
         client
           .from("pipeline_runs")
-          .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text, tweet_impressions")
+          .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text")
           .eq("outcome", "candidate")
           .order("created_at", { ascending: false })
     );
