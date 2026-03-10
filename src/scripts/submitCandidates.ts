@@ -42,6 +42,7 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
       createdAt: new Date(c.created_at),
       searchResults: c.search_results ?? "",
       tweetText: c.tweet_text ?? "",
+      tweetImpressions: c.tweet_impressions ?? undefined,
       scores: {
         evaluation: scoreMap["evaluation"],
       },

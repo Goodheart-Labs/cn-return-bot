@@ -11,6 +11,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import { closeBrowser } from "../pipeline/browserManager";
 import { selectRandomBot, getBotProbabilities } from "../bots";
+import { sortByEngagement, tweetEngagementScore } from "../pipeline/tweetEngagementScore";
 import PQueue from "p-queue";
 
 const maxPosts = 20;
@@ -46,12 +47,8 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
   const BACKLOG_LIMIT = 1000;
   const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50);
 
-  // Sort newest first
-  allEligible.sort((a, b) => {
-    const idA = BigInt(a.id);
-    const idB = BigInt(b.id);
-    return idA > idB ? -1 : idA < idB ? 1 : 0;
-  });
+  // Sort by engagement score (most viral first), with recency as tiebreaker
+  sortByEngagement(allEligible);
 
   // Separate new vs retries
   const newPosts = allEligible.filter((p) => !allProcessedIds.has(p.id));
@@ -74,6 +71,15 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
   console.log(
     `[generate] Processing ${posts.length} of ${backlogTotal} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`
   );
+
+  // Log engagement scores for selected posts
+  for (const p of posts.slice(0, 5)) {
+    const score = tweetEngagementScore(p.public_metrics, p.author_followers);
+    const impressions = p.public_metrics?.impression_count ?? 0;
+    console.log(
+      `[generate] Top pick: ${p.id} | engagement=${score.toFixed(2)} | impressions=${impressions.toLocaleString()} | likes=${p.public_metrics?.like_count ?? 0}`
+    );
+  }
 
   // Log run snapshot
   if (supabaseLogger) {
