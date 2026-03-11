@@ -6,8 +6,8 @@ Tracked cleanup items. Add entries here; remove when done.
 
 | File | Reason | Added |
 |------|--------|-------|
-| `src/bots/legacy/opus-scored.ts` | weight 0, never runs | Mar 2026 |
-| `src/bots/legacy/opus-strict.ts` | weight 0, never runs | Mar 2026 |
+| `src/bots/legacy/opus-scored.ts` | weight 0, never runs; last original state at `80841a5` | Mar 2026 |
+| `src/bots/legacy/opus-strict.ts` | weight 0, never runs; last original state at `80841a5` | Mar 2026 |
 | `src/pipeline/predictionScores.ts` | not called from active pipeline | Mar 2026 |
 
 After deleting the legacy bots, check if `src/bots/legacy/` is empty and remove the directory too.
