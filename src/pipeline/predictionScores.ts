@@ -10,12 +10,10 @@
 
 import { SupabaseLogger } from "../api/supabaseClient";
 import {
-  checkPositiveClaims,
+  checkPositiveEvidence,
   checkSubstantiveDisagreement,
-  scoreBridging,
-  scoreSaysWrong,
   countSources,
-} from "./scoringFilters";
+} from "./noteScores";
 import { evaluateNote } from "../filters/noteEvaluationFilter";
 
 interface PredictionContext {
@@ -28,8 +26,6 @@ interface PredictionContext {
   supabaseLogger: SupabaseLogger;
   /** Pre-computed scores from earlier pipeline stages (suppressor, eval check) — skip re-computing these */
   preComputed?: {
-    bridging?: number;
-    saysWrong?: number;
     sourceCount?: number;
     claimOpinionScore?: number;
   };
@@ -69,23 +65,6 @@ export async function runPredictionScores(ctx: PredictionContext): Promise<void>
   console.log(`[predictionScores] Running predictions for pipeline run ${ctx.pipelineRunId}...`);
 
   await Promise.all([
-    // LLM: bridging score (0-1) — r=0.558 with outcome
-    // Skip if preComputed — already stored by generateCandidates
-    ctx.preComputed?.bridging === undefined
-      ? runSinglePredictor("pred_bridging", async () => {
-          const result = await scoreBridging(ctx.noteText);
-          return result.score;
-        }, ctx)
-      : Promise.resolve(),
-
-    // LLM: says-wrong score (0-1) — r=0.312 with outcome
-    ctx.preComputed?.saysWrong === undefined
-      ? runSinglePredictor("pred_says_wrong", async () => {
-          const result = await scoreSaysWrong(ctx.noteText);
-          return result.score;
-        }, ctx)
-      : Promise.resolve(),
-
     // Free: source/URL count — r=0.335 with outcome
     ctx.preComputed?.sourceCount === undefined
       ? runSinglePredictor("pred_source_count", async () => {
@@ -93,9 +72,9 @@ export async function runPredictionScores(ctx: PredictionContext): Promise<void>
         }, ctx)
       : Promise.resolve(),
 
-    // LLM: positive claims check (0-1)
-    runSinglePredictor("pred_llm_positive_claims", async () => {
-      const result = await checkPositiveClaims(ctx.noteText);
+    // LLM: positive evidence check (0-1)
+    runSinglePredictor("pred_llm_positive_evidence", async () => {
+      const result = await checkPositiveEvidence(ctx.noteText);
       return result.score;
     }, ctx),
 

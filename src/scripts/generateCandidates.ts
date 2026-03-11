@@ -11,6 +11,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import { closeBrowser } from "../pipeline/browserManager";
 import { selectRandomBot, getBotProbabilities } from "../bots";
+import { runNoteScores } from "../pipeline/noteScores";
 import PQueue from "p-queue";
 
 const maxPosts = 20;
@@ -376,7 +377,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
       // Source count (free, no LLM)
       let sourceCountScore: number | undefined;
       try {
-        const { countSources } = await import("../pipeline/scoringFilters");
+        const { countSources } = await import("../pipeline/noteScores");
         sourceCountScore = countSources(noteText);
         if (supabaseLogger && pipelineRunId) {
           await supabaseLogger.addPipelineScore(pipelineRunId, {
@@ -386,6 +387,33 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
         }
       } catch (err: any) {
         console.warn(`[generate] Source count failed:`, err?.message);
+      }
+
+      // Run all note scores (observational — not used for rejection yet)
+      try {
+        const noteScores = await runNoteScores(
+          noteText,
+          post.text,
+          result.searchContextResult.searchResults ?? "",
+          result.noteResult.url ?? ""
+        );
+        if (supabaseLogger && pipelineRunId) {
+          const scoreEntries: Array<{ score_type: string; score_value: number; score_metadata?: Record<string, unknown> }> = [
+            { score_type: "positive_evidence", score_value: noteScores.positiveEvidence.score, score_metadata: { reasoning: noteScores.positiveEvidence.reasoning } },
+            { score_type: "disagreement", score_value: noteScores.disagreement.score, score_metadata: { reasoning: noteScores.disagreement.reasoning } },
+            { score_type: "helpfulness", score_value: noteScores.helpfulness.score, score_metadata: { reasoning: noteScores.helpfulness.reasoning } },
+            { score_type: "source_quality", score_value: noteScores.sourceQuality.score, score_metadata: { reasoning: noteScores.sourceQuality.reasoning } },
+            { score_type: "breaking_news_risk", score_value: noteScores.breakingNewsRisk.score, score_metadata: { reasoning: noteScores.breakingNewsRisk.reasoning } },
+            { score_type: "pedantry", score_value: noteScores.pedantry.score, score_metadata: { reasoning: noteScores.pedantry.reasoning } },
+            { score_type: "note_not_needed", score_value: noteScores.noteNotNeeded.score, score_metadata: { reasoning: noteScores.noteNotNeeded.reasoning } },
+            { score_type: "tangential_correction", score_value: noteScores.tangentialCorrection.score, score_metadata: { reasoning: noteScores.tangentialCorrection.reasoning } },
+            { score_type: "rater_verifiability", score_value: noteScores.raterVerifiability.score, score_metadata: { reasoning: noteScores.raterVerifiability.reasoning } },
+            { score_type: "overconfidence", score_value: noteScores.overconfidence.score, score_metadata: { reasoning: noteScores.overconfidence.reasoning } },
+          ];
+          await Promise.all(scoreEntries.map((entry) => supabaseLogger!.addPipelineScore(pipelineRunId!, entry)));
+        }
+      } catch (err: any) {
+        console.warn(`[generate] Note scores failed for ${post.id}:`, err?.message);
       }
 
       // Expire any existing candidates for this tweet (re-roll replaces old candidate)

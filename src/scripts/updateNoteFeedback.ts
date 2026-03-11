@@ -255,6 +255,12 @@ async function main() {
   console.log(`[updateFeedback] ${existing.length} existing canonical entries`);
 
   // ===== 5. Upsert our notes into canonical_note_information =====
+  // Fetch submitted_at and bot_name from notes table to keep canonical in sync
+  const notesEnrichment = await fetchAll<{ note_id: string; submitted_at: string | null; bot_name: string | null }>(
+    () => client.from("notes").select("note_id, submitted_at, bot_name")
+  );
+  const enrichmentMap = new Map(notesEnrichment.map(n => [n.note_id, n]));
+
   const now = new Date().toISOString();
   let updated = 0, inserted = 0, errors = 0, newlyHelpful = 0;
 
@@ -266,7 +272,7 @@ async function main() {
     const row: Record<string, any> = {
       note_id: noteId,
       tweet_id: noteData.tweetId,
-      cn_status: status?.currentStatus || null,
+      cn_status: status?.currentStatus || "NEEDS_MORE_RATINGS",
       note_text: noteData.summary || null,
       classification: noteData.classification || null,
       current_core_status: status?.currentCoreStatus || null,
@@ -281,6 +287,10 @@ async function main() {
       first_non_nmr_at: status?.firstNonNmrAt || null,
       status_locked_at: status?.statusLockedAt || null,
       public_data_updated_at: now,
+      submitted_at: noteData.createdAtMillis
+        ? new Date(parseInt(noteData.createdAtMillis)).toISOString()
+        : enrichmentMap.get(noteId)?.submitted_at || null,
+      bot_name: enrichmentMap.get(noteId)?.bot_name || null,
     };
 
     // Track newly helpful
@@ -367,7 +377,7 @@ async function main() {
         .upsert({
           note_id: noteId,
           tweet_id: noteData.tweetId,
-          current_status: status?.currentStatus || "",
+          current_status: status?.currentStatus || "NEEDS_MORE_RATINGS",
           is_ours: true,
           snapshot_date: snapshotDate,
           created_at_millis: noteData.createdAtMillis ? parseInt(noteData.createdAtMillis) : undefined,
@@ -413,12 +423,12 @@ async function main() {
   for (const [noteId, _] of ourNotes) {
     if (!notesTableIdSet.has(noteId)) continue;
     const status = statusMap.get(noteId);
-    if (!status?.currentStatus) continue;
+    const resolvedStatus = status?.currentStatus || "NEEDS_MORE_RATINGS";
 
     const { error } = await client
       .from("notes")
       .update({
-        cn_status: status.currentStatus,
+        cn_status: resolvedStatus,
         last_checked_at: now,
       })
       .eq("note_id", noteId);
