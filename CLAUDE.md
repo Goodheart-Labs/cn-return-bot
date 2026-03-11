@@ -90,11 +90,6 @@ bun run src/scripts/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page fi
 - Do not delete database enries without confirming. 
 - Common error for supabase to only display the first 1000. Make sure you are getting them all.
 
-## Pending cleanup
-
-- **Delete legacy bots**: `src/bots/legacy/opus-scored.ts` and `src/bots/legacy/opus-strict.ts` — weight 0, never run. Check if `src/bots/legacy/` becomes empty after.
-- **Delete dead code**: `src/pipeline/predictionScores.ts` — no longer called from anywhere in the active pipeline.
-
 ## Running locally
 
 ```bash
