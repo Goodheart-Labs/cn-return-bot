@@ -74,7 +74,7 @@ export async function checkPositiveEvidence(
 ): Promise<NoteScore> {
   return scoreWithLLM("Positive evidence", `A Community Note is being evaluated. Does it make its correction using positive counter-evidence (specific facts, named sources, documented events) or does it rely on negative framing or absence of evidence?
 
-Negative framing examples: "no evidence exists", "no reports confirm", "no official confirmation", "they never said", "this didn't happen", "I found no sources that..."
+Negative framing examples: "there is no evidence that", "no reports confirm", "no official confirmation", "they never said", "this didn't happen", "I found no sources that..."
 Positive evidence examples: "The actual figure is X per source Y", "Reuters reported on [date] that...", "The official statement confirmed...", "X actually happened — source Z shows..."
 
 Community Note: "${noteText}"
