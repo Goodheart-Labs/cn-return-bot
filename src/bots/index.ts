@@ -21,12 +21,22 @@ import { opus46 } from "./opus-4.6";
 import { sonarPro } from "./sonar-pro";
 import { opusVerified } from "./opus-verified";
 import { opusConcise } from "./opus-concise";
-import { geminiFlash } from "./legacy/gemini-flash";
-import { multiSearch } from "./legacy/multi-search";
-import { gemini3Flash } from "./legacy/gemini-3-flash";
-import { deepseek } from "./legacy/deepseek";
-import { opusScored } from "./legacy/opus-scored";
-import { opusStrict } from "./legacy/opus-strict";
+
+// =============================================================================
+// RETIRED BOTS — deleted from codebase, last original state at commit 80841a5
+// To recover a file: git show 80841a5:src/bots/legacy/<filename>
+//
+//   opus-scored    (opus-scored.ts)     — LLM-scored variant, superseded
+//   opus-strict    (opus-strict.ts)     — strict-threshold variant, superseded
+//   gemini-flash   (gemini-flash.ts)    — Gemini 1.5 Flash
+//   gemini-3-flash (gemini-3-flash.ts)  — Gemini 2.0 Flash
+//   multi-search   (multi-search.ts)    — multi-source search variant
+//   deepseek       (deepseek.ts)        — DeepSeek model variant
+//
+// ORPHANED PIPELINE COMPONENTS (only used by retired bots, safe to delete):
+//   src/pipeline/multiSourceSearch.ts   — only used by multi-search
+//   src/pipeline/predictionScores.ts    — post-submit predictor, no longer called
+// =============================================================================
 
 // Register all bots here
 export const bots: Bot[] = [
@@ -46,12 +56,6 @@ export const bots: Bot[] = [
   sonarPro,
   opusVerified,
   opusConcise,
-  geminiFlash,
-  multiSearch,
-  gemini3Flash,
-  deepseek,
-  opusScored,
-  opusStrict,
 ];
 
 /**
