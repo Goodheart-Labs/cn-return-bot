@@ -68,3 +68,6 @@ cn-bot-playground/
 
 # Dynamic workflow (not checked in)
 create-notes-routine-dynamic.yml
+
+# Claude Code local settings (machine-specific permissions)
+.claude/settings.local.json
