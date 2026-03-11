@@ -23,15 +23,16 @@ import { opusVerified } from "./opus-verified";
 import { opusConcise } from "./opus-concise";
 
 // =============================================================================
-// RETIRED BOTS — deleted from codebase, last original state at commit 80841a5
-// To recover a file: git show 80841a5:src/bots/legacy/<filename>
+// RETIRED BOTS
+// To recover: git show <commit>:src/bots/legacy/<filename>.ts
 //
-//   opus-scored    (opus-scored.ts)     — LLM-scored variant, superseded
-//   opus-strict    (opus-strict.ts)     — strict-threshold variant, superseded
-//   gemini-flash   (gemini-flash.ts)    — Gemini 1.5 Flash
-//   gemini-3-flash (gemini-3-flash.ts)  — Gemini 2.0 Flash
-//   multi-search   (multi-search.ts)    — multi-source search variant
-//   deepseek       (deepseek.ts)        — DeepSeek model variant
+//   bot-id         file                 last commit  notes
+//   opus-scored    opus-scored.ts       0289eae      LLM-scored variant, superseded
+//   opus-strict    opus-strict.ts       0289eae      strict-threshold variant, superseded
+//   gemini-flash   gemini-flash.ts      80841a5      Gemini 1.5 Flash
+//   gemini-3-flash gemini-3-flash.ts    80841a5      Gemini 2.0 Flash
+//   multi-search   multi-search.ts      80841a5      multi-source search variant
+//   deepseek       deepseek.ts          80841a5      DeepSeek model variant
 //
 // ORPHANED PIPELINE COMPONENTS (only used by retired bots, safe to delete):
 //   src/pipeline/multiSourceSearch.ts   — only used by multi-search
