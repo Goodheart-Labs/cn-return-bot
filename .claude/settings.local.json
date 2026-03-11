@@ -38,7 +38,13 @@
       "Bash(python3:*)",
       "Bash(export PATH=\"$HOME/.bun/bin:$PATH\")",
       "Bash(wc:*)",
-      "Bash(~/.bun/bin/bun:*)"
+      "Bash(~/.bun/bin/bun:*)",
+      "Bash(sleep:*)",
+      "Bash(tail:*)",
+      "Bash(source:*)",
+      "Bash(gh run view:*)",
+      "Bash(/Users/natha/Documents/Source/cn-return-bot/tmp/notes-last-day.ts << 'SCRIPT'\nimport \"dotenv/config\";\nimport { getSupabaseClient } from \"../src/api/supabaseClient\";\nconst client = getSupabaseClient\\(\\);\n\nconst cutoff = new Date\\(Date.now\\(\\) - 24 * 60 * 60 * 1000\\).toISOString\\(\\);\n\nconst PAGE_SIZE = 1000;\nlet all: any[] = [];\nlet offset = 0;\nwhile \\(true\\) {\n  const { data, error } = await client.from\\(\"notes\"\\)\n    .select\\(\"note_id, tweet_id, bot_name, submitted_at, cn_status\"\\)\n    .gte\\(\"submitted_at\", cutoff\\)\n    .order\\(\"submitted_at\", { ascending: false }\\)\n    .range\\(offset, offset + PAGE_SIZE - 1\\);\n  if \\(error\\) { console.error\\(error\\); break; }\n  if \\(!data || data.length === 0\\) break;\n  all.push\\(...data\\);\n  if \\(data.length < PAGE_SIZE\\) break;\n  offset += PAGE_SIZE;\n}\n\nconsole.log\\(`Notes submitted in last 24h: ${all.length}\\\\n`\\);\n\nconst byBot: Record<string, any[]> = {};\nfor \\(const n of all\\) {\n  const bot = n.bot_name || \"unknown\";\n  if \\(!byBot[bot]\\) byBot[bot] = [];\n  byBot[bot].push\\(n\\);\n}\n\nfor \\(const [bot, notes] of Object.entries\\(byBot\\).sort\\(\\(a, b\\) => b[1].length - a[1].length\\)\\) {\n  console.log\\(`=== ${bot} \\(${notes.length} notes\\) ===`\\);\n  for \\(const n of notes\\) {\n    const status = \\(n.cn_status || \"-\"\\).padEnd\\(30\\);\n    const time = n.submitted_at?.slice\\(0, 16\\) || \"\";\n    console.log\\(`  ${time}  ${status}  https://x.com/i/status/${n.tweet_id}`\\);\n  }\n  console.log\\(\\);\n}\nSCRIPT)",
+      "Bash(gh pr list:*)"
     ],
     "deny": [],
     "ask": []

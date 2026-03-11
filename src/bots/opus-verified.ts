@@ -19,10 +19,10 @@ import { writeNoteFn as writeNote } from "../pipeline/writeNote";
 import { verifySource } from "../pipeline/sourceVerification";
 import { scoreSourceTrustworthiness } from "../pipeline/sourceTrustworthiness";
 import {
-  runScoringFilters,
+  runNoteScores,
   checkAllThresholds,
-  type AllFilterScores,
-} from "../pipeline/scoringFilters";
+  type AllNoteScores,
+} from "../pipeline/noteScores";
 
 const MODELS = {
   search: "perplexity/sonar-pro",
@@ -41,7 +41,7 @@ export const opusVerified: Bot = {
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
-    let scoringResults: AllFilterScores | undefined;
+    let scoringResults: AllNoteScores | undefined;
 
     try {
       // 1. Sonar Pro search
@@ -146,7 +146,7 @@ export const opusVerified: Bot = {
       // 6. Scoring filters gate (3 parallel LLM calls)
       console.log(`[${this.id}] Running scoring filters...`);
       lastStage = "scoring";
-      scoringResults = await runScoringFilters(
+      scoringResults = await runNoteScores(
         noteResult.note,
         content.text,
         verification.combinedContext,

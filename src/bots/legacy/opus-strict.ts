@@ -15,9 +15,9 @@ import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGo
 import { writeNoteFn as writeNote } from "../../pipeline/writeNote";
 import { verifySource } from "../../pipeline/sourceVerification";
 import {
-  runScoringFilters,
-  AllFilterScores,
-} from "../../pipeline/scoringFilters";
+  runNoteScores,
+  AllNoteScores,
+} from "../../pipeline/noteScores";
 
 // Bot model configuration
 const MODELS = {
@@ -29,7 +29,7 @@ const MODELS = {
 
 // Stricter thresholds based on analysis
 const THRESHOLDS = {
-  positive: 0.7, // Higher than default 0.5
+  positiveEvidence: 0.7, // Higher than default 0.5
   disagreement: 0.7,
   helpfulness: 0.7,
   minNoteLength: 200, // Helpful notes avg 308 chars
@@ -44,7 +44,7 @@ export const opusStrict: Bot = {
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
-    let scoringResults: AllFilterScores | undefined;
+    let scoringResults: AllNoteScores | undefined;
     let allScoresPassed = false;
 
     try {
@@ -96,7 +96,7 @@ export const opusStrict: Bot = {
           noteResult.status = "NOTE_TOO_SHORT";
         } else {
           console.log(`[${this.id}] Running scoring filters with strict thresholds...`);
-          scoringResults = await runScoringFilters(
+          scoringResults = await runNoteScores(
             noteResult.note,
             content.text,
             searchResult.searchResults,
@@ -107,15 +107,15 @@ export const opusStrict: Bot = {
 
           // Use stricter thresholds
           allScoresPassed =
-            scoringResults.positive.score > THRESHOLDS.positive &&
+            scoringResults.positiveEvidence.score > THRESHOLDS.positiveEvidence &&
             scoringResults.disagreement.score > THRESHOLDS.disagreement &&
             scoringResults.helpfulness.score > THRESHOLDS.helpfulness;
 
-          console.log(`[${this.id}] Strict thresholds (>${THRESHOLDS.positive}): ${allScoresPassed ? "PASS" : "FAIL"}`);
+          console.log(`[${this.id}] Strict thresholds (>${THRESHOLDS.positiveEvidence}): ${allScoresPassed ? "PASS" : "FAIL"}`);
 
           // Log detailed scores
           console.log(
-            `[${this.id}] Scores - Positive: ${scoringResults.positive.score.toFixed(2)} (need >${THRESHOLDS.positive}), ` +
+            `[${this.id}] Scores - Positive: ${scoringResults.positiveEvidence.score.toFixed(2)} (need >${THRESHOLDS.positiveEvidence}), ` +
               `Disagreement: ${scoringResults.disagreement.score.toFixed(2)} (need >${THRESHOLDS.disagreement}), ` +
               `Helpfulness: ${scoringResults.helpfulness.score.toFixed(2)} (need >${THRESHOLDS.helpfulness})`
           );

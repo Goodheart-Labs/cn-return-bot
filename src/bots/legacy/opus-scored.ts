@@ -10,10 +10,10 @@ import { versionOneFn as perplexitySearch } from "../../pipeline/searchContextGo
 import { writeNoteFn as writeNote } from "../../pipeline/writeNote";
 import { verifySource } from "../../pipeline/sourceVerification";
 import {
-  runScoringFilters,
+  runNoteScores,
   checkAllThresholds,
-  AllFilterScores,
-} from "../../pipeline/scoringFilters";
+  AllNoteScores,
+} from "../../pipeline/noteScores";
 
 // Bot model configuration - easy to tweak per-bot
 const MODELS = {
@@ -32,7 +32,7 @@ export const opusScored: Bot = {
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
-    let scoringResults: AllFilterScores | undefined;
+    let scoringResults: AllNoteScores | undefined;
     let allScoresPassed = false;
 
     try {
@@ -77,7 +77,7 @@ export const opusScored: Bot = {
         noteResult.url
       ) {
         console.log(`[${this.id}] Running scoring filters...`);
-        scoringResults = await runScoringFilters(
+        scoringResults = await runNoteScores(
           noteResult.note,
           content.text,
           searchResult.searchResults,
@@ -91,7 +91,7 @@ export const opusScored: Bot = {
 
         // Log detailed scores
         console.log(
-          `[${this.id}] Scores - Positive: ${scoringResults.positive.score.toFixed(2)}, ` +
+          `[${this.id}] Scores - Positive: ${scoringResults.positiveEvidence.score.toFixed(2)}, ` +
             `Disagreement: ${scoringResults.disagreement.score.toFixed(2)}, ` +
             `Helpfulness: ${scoringResults.helpfulness.score.toFixed(2)}`
         );
