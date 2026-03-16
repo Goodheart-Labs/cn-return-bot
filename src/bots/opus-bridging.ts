@@ -67,6 +67,7 @@ export const opusBridging: Bot = {
           text: searchResult.text,
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
+          mediaContext,
         },
         { model: MODELS.noteWriting }
       );

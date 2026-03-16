@@ -28,12 +28,14 @@ const promptTemplate = ({
   citations,
   quotedPostContext,
   currentDate,
+  mediaContext,
 }: {
   text: string;
   searchResults: string;
   citations: string[];
   quotedPostContext?: string;
   currentDate?: string;
+  mediaContext?: string;
 }) => `TASK: Analyze this X post and determine if it contains factual errors that require correction.${
   currentDate
     ? `
@@ -72,7 +74,16 @@ Format:
 Post perhaps in need of community note:
 \`\`\`
 ${text}
+\`\`\`${
+  mediaContext
+    ? `
+
+Media context (video/image analysis):
 \`\`\`
+${mediaContext}
+\`\`\``
+    : ""
+}
 
 Research context:
 \`\`\`
@@ -89,6 +100,7 @@ const retryPromptTemplate = ({
   citations,
   quotedPostContext,
   currentDate,
+  mediaContext,
   previousNote,
   characterCount,
 }: {
@@ -97,6 +109,7 @@ const retryPromptTemplate = ({
   citations: string[];
   quotedPostContext?: string;
   currentDate?: string;
+  mediaContext?: string;
   previousNote: string;
   characterCount: number;
 }) => `TASK: Analyze this X post and determine if it contains factual errors that require correction.${
@@ -150,7 +163,16 @@ Previous note: "${previousNote}"
 Post perhaps in need of community note:
 \`\`\`
 ${text}
+\`\`\`${
+  mediaContext
+    ? `
+
+Media context (video/image analysis):
 \`\`\`
+${mediaContext}
+\`\`\``
+    : ""
+}
 
 Research context:
 \`\`\`
@@ -172,6 +194,7 @@ export async function writeNoteFn(
     searchResults,
     citations,
     quotedPostContext,
+    mediaContext,
   }: z.infer<typeof textAndSearchResults>,
   config: {
     model: string;
@@ -194,6 +217,7 @@ export async function writeNoteFn(
           citations,
           quotedPostContext,
           currentDate: config.currentDate,
+          mediaContext,
         });
       } else {
         if (!previousParsed) {
@@ -206,6 +230,7 @@ export async function writeNoteFn(
           citations,
           quotedPostContext,
           currentDate: config.currentDate,
+          mediaContext,
           previousNote: previousParsed.note,
           characterCount: countNoteLength(previousParsed.note),
         });
