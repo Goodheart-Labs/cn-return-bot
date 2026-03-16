@@ -1,7 +1,7 @@
 import { createGoal } from "@tonerow/agent-framework";
 import { z } from "zod";
 import posts from "./posts.json";
-import { llm } from "./llm";
+import { extractCitations, llm } from "./llm";
 import type { OpenAIChatModelId } from "@ai-sdk/openai/internal";
 import type { ChatCompletionContentPartImage } from "openai/resources";
 import { textAndSearchResults } from "./schemas";
@@ -109,11 +109,11 @@ Always include specific URLs for your sources directly in the text.`;
     ],
   });
 
-  const citations: string[] = (result as any).citations ?? [];
+  const citations = extractCitations(result);
   if (citations.length > 0) {
     console.log(`[searchContext] Citations:\n${citations.map((c, i) => `  [${i + 1}] ${c}`).join("\n")}`);
   } else {
-    console.log("[searchContext] No citations returned from search API");
+    console.log("[searchContext] No citations found in response annotations");
   }
 
   return {
