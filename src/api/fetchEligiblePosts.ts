@@ -117,7 +117,7 @@ export async function fetchEligiblePosts(
   return allEligiblePosts.slice(0, maxResults);
 }
 
-function parsePostsResponse(data: any): Post[] {
+export function parsePostsResponse(data: any): Post[] {
   const posts: Post[] = [];
   const mediaMap = new Map<string, any>();
   const referencedTweetsMap = new Map<string, any>();

@@ -36,8 +36,8 @@ export async function evaluateNote(
       timeout: 30000, // 30 second timeout
     });
     return response.data;
-  } catch (error) {
-    console.error("[noteEvaluationFilter] Error evaluating note:", error);
+  } catch (error: any) {
+    console.error("[noteEvaluationFilter] Error evaluating note:", error?.message ?? error);
     throw error;
   }
 }
