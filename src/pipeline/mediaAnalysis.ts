@@ -287,7 +287,9 @@ async function analyzeVideo(
 
   console.log(`[mediaAnalysis] Analyzing video: ${videoUrl.substring(0, 50)}...`);
 
-  if (!validateUrl(videoUrl)) {
+  const isLocalFile = videoUrl.startsWith("/");
+
+  if (!isLocalFile && !validateUrl(videoUrl)) {
     console.error("[mediaAnalysis] Invalid video URL:", videoUrl);
     return { url: videoUrl, keyFrameDescriptions: [], hasAudio: false, error: "Invalid URL" };
   }
@@ -297,13 +299,19 @@ async function analyzeVideo(
   try {
     await mkdir(tmpDir, { recursive: true });
 
-    // Download video once
-    const videoPath = join(tmpDir, "video.mp4");
-    const response = await fetch(videoUrl, { redirect: "follow" });
-    if (!response.ok) {
-      throw new Error(`Failed to download video: ${response.status}`);
+    let videoPath: string;
+    if (isLocalFile) {
+      // Use local file directly — no download needed
+      videoPath = videoUrl;
+    } else {
+      // Download video once
+      videoPath = join(tmpDir, "video.mp4");
+      const response = await fetch(videoUrl, { redirect: "follow" });
+      if (!response.ok) {
+        throw new Error(`Failed to download video: ${response.status}`);
+      }
+      await writeFile(videoPath, Buffer.from(await response.arrayBuffer()));
     }
-    await writeFile(videoPath, Buffer.from(await response.arrayBuffer()));
 
     // Extract frames from local file
     const frames: Buffer[] = [];
@@ -329,6 +337,10 @@ async function analyzeVideo(
 
     // Describe frames
     const frameDescriptions = await describeVideoFrames(frames, visionModel);
+
+    if (frameDescriptions.length > 0) {
+      console.log(`[mediaAnalysis] Frame descriptions:\n${frameDescriptions.map((d, i) => `  Frame ${i + 1}: ${d}`).join("\n")}`);
+    }
 
     // Extract audio and transcribe from local file
     let transcription = "";
@@ -378,6 +390,10 @@ async function analyzeVideo(
       }
     }
 
+    if (transcription) {
+      console.log(`[mediaAnalysis] Audio transcript:\n${transcription}`);
+    }
+
     return {
       url: videoUrl,
       transcription: transcription || undefined,
@@ -395,7 +411,7 @@ async function analyzeVideo(
   } finally {
     try {
       await rm(tmpDir, { recursive: true, force: true });
-    } catch {}
+    } catch { }
   }
 }
 
