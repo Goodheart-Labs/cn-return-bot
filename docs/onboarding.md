@@ -165,8 +165,12 @@ bun run src/scripts/submitCandidates.ts
 # Check how notes are performing
 bun run src/scripts/analyzePerformance.ts
 
-# Debug a specific note
+# Debug a specific note (DB lookup)
 bun run src/scripts/debugNote.ts <note-id>
+
+# Run pipeline on videos from any platform (uses yt-dlp)
+bun run src/scripts/runOnVideos.ts input.csv
+bun run src/scripts/runOnVideos.ts --bot opus-main https://x.com/... https://youtube.com/...
 
 # Check posting stats (daily limit, etc.)
 bun run src/scripts/checkPostingStats.ts
