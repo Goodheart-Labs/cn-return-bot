@@ -27,8 +27,7 @@ export const searchContextGoal = createGoal({
   input: z.object({
     text: z.string(),
     media: z.array(z.string()),
-    imagesSummary: z.string().optional(),
-    searchResults: z.string(),
+    mediaContext: z.string().optional(),
     quotedPostContext: z.string().optional(),
   }),
   output: textAndSearchResults,
@@ -37,8 +36,6 @@ export const searchContextGoal = createGoal({
 sanitizedPosts.map((post, index) =>
   searchContextGoal.test(`Post ${index}`, {
     ...post,
-    imagesSummary: "No images",
-    searchResults: "<search results here>",
   })
 );
 
@@ -57,8 +54,7 @@ export async function versionOneFn(
   input: {
     text: string;
     media: string[];
-    imagesSummary?: string;
-    searchResults: string;
+    mediaContext?: string;
     quotedPostContext?: string;
   },
   config: {
@@ -88,6 +84,11 @@ Always include specific URLs for your sources directly in the text.`;
     systemPrompt += ` ${input.quotedPostContext}`;
   }
 
+  let userText = input.text;
+  if (input.mediaContext) {
+    userText += `\n\n[Media context]\n${input.mediaContext}`;
+  }
+
   const result = await llm.create({
     model: config.model,
     messages: [
@@ -100,7 +101,7 @@ Always include specific URLs for your sources directly in the text.`;
         content: [
           {
             type: "text",
-            text: input.text,
+            text: userText,
           },
           ...images,
         ],

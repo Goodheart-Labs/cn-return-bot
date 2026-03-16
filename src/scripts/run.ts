@@ -22,7 +22,7 @@ async function runPipeline(post: Post, idx: number) {
       {
         text: originalContent.text,
         media: originalContent.media,
-        searchResults: "",
+        mediaContext: "",
         quotedPostContext: originalContent.quotedPostContext,
       },
       { model: "perplexity/sonar" }

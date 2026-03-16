@@ -55,7 +55,7 @@ export const opusBridging: Bot = {
         {
           text: content.text,
           media: content.media,
-          searchResults: mediaContext,
+          mediaContext,
           quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.search }
@@ -67,6 +67,7 @@ export const opusBridging: Bot = {
           text: searchResult.text,
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
+          mediaContext,
         },
         { model: MODELS.noteWriting }
       );

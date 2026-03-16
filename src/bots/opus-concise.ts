@@ -31,7 +31,7 @@ export const opusConcise: Bot = {
         {
           text: content.text,
           media: content.media,
-          searchResults: "",
+          mediaContext: "",
           quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.search }
