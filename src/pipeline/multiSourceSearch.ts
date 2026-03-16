@@ -7,7 +7,7 @@
  * - Exa
  */
 
-import { llm } from "./llm";
+import { extractCitations, llm } from "./llm";
 import type { ChatCompletionContentPartImage } from "openai/resources";
 
 export interface MultiSearchResult {
@@ -105,7 +105,7 @@ Always include specific URLs for your sources directly in the text.`;
     return {
       source: "perplexity",
       results: result.choices?.[0]?.message?.content ?? "",
-      citations: (result as any).citations || [],
+      citations: extractCitations(result),
       success: true,
     };
   } catch (err: any) {

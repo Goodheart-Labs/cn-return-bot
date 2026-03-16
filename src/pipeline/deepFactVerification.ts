@@ -5,7 +5,7 @@
  * and run targeted follow-up searches to verify specific claims.
  */
 
-import { llm } from "./llm";
+import { extractCitations, llm } from "./llm";
 
 export interface ClaimAnalysis {
   keyClaims: Array<{
@@ -124,7 +124,7 @@ Include specific URLs for all sources. Focus on finding authoritative, primary s
     });
 
     const searchResults = result.choices?.[0]?.message?.content || "";
-    const citations = (result as any).citations || [];
+    const citations = extractCitations(result);
 
     return { results: searchResults, citations };
   } catch (err: any) {

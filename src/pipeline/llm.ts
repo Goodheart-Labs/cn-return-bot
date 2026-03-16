@@ -85,6 +85,17 @@ async function callWithRetry(
   throw lastError;
 }
 
+export function extractCitations(
+  result: OpenAI.Chat.Completions.ChatCompletion
+): string[] {
+  const annotations = result.choices?.[0]?.message?.annotations;
+  if (!annotations) return [];
+  return annotations
+    .filter((a) => a.type === "url_citation")
+    .map((a) => a.url_citation.url)
+    .filter((url, i, arr) => arr.indexOf(url) === i);
+}
+
 export function getLlm(): OpenAI.Chat.Completions {
   return getClient().chat.completions;
 }
