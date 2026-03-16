@@ -29,7 +29,7 @@ export const opus46: Bot = {
         {
           text: content.text,
           media: content.media,
-          searchResults: "",
+          mediaContext: "",
           quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.search }

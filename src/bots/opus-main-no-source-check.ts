@@ -56,7 +56,7 @@ export const opusMainNoSourceCheck: Bot = {
         {
           text: content.text,
           media: content.media,
-          searchResults: mediaContext,
+          mediaContext,
           quotedPostContext: content.quotedPostContext,
         },
         { model: MODELS.search }
