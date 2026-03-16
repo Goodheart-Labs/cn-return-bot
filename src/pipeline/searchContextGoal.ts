@@ -14,8 +14,8 @@ const sanitizedPosts = posts.map(({ text, media }) => {
         "url" in m
           ? m.url
           : "preview_image_url" in m
-          ? m.preview_image_url
-          : null
+            ? m.preview_image_url
+            : null
       )
       .filter((m): m is string => Boolean(m)),
   };
@@ -71,9 +71,9 @@ export async function versionOneFn(
   const images: ChatCompletionContentPartImage[] = isPerplexity
     ? []
     : input.media.map((url) => ({
-        type: "image_url",
-        image_url: { url },
-      }));
+      type: "image_url",
+      image_url: { url },
+    }));
 
   let systemPrompt = `You are a context and factchecking tool. Search the web for information that DIRECTLY addresses or contradicts the specific claims made in the following post.
 
@@ -108,10 +108,17 @@ Always include specific URLs for your sources directly in the text.`;
     ],
   });
 
+  const citations: string[] = (result as any).citations ?? [];
+  if (citations.length > 0) {
+    console.log(`[searchContext] Citations:\n${citations.map((c, i) => `  [${i + 1}] ${c}`).join("\n")}`);
+  } else {
+    console.log("[searchContext] No citations returned from search API");
+  }
+
   return {
     text: input.text,
     searchResults: result.choices?.[0]?.message?.content ?? "Error",
-    citations: (result as any).citations,
+    citations,
     quotedPostContext: input.quotedPostContext,
   };
 }
