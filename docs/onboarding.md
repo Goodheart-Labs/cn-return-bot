@@ -172,6 +172,10 @@ bun run src/scripts/debugNote.ts <note-id>
 bun run src/scripts/runOnVideos.ts input.csv
 bun run src/scripts/runOnVideos.ts --bot opus-main https://x.com/... https://youtube.com/...
 
+# Tryout pipeline on specific tweets (no submission)
+bun run src/scripts/tryoutNotes.ts <tweet-id> [<tweet-id> ...]
+bun run src/scripts/tryoutNotes.ts --skip-existing <tweet-id>
+
 # Check posting stats (daily limit, etc.)
 bun run src/scripts/checkPostingStats.ts
 
