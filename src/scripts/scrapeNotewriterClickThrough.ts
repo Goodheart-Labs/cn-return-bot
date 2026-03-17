@@ -86,18 +86,18 @@ async function reconnectToTab(
   // First try to find the specific tab we were using (by CDP target ID)
   let recoveredPage: Page | undefined;
   if (activeTargetId) {
-    recoveredPage = allPages.find((p) => {
+    recoveredPage = allPages.find((p: Page) => {
       const target = p.target();
       return target && (target as any)._targetId === activeTargetId;
     });
     if (!recoveredPage) {
       // Fallback: find by URL, preferring the LAST match (most recently opened)
-      const notewriterPages = allPages.filter((p) => p.url().includes("communitynotes"));
+      const notewriterPages = allPages.filter((p: Page) => p.url().includes("communitynotes"));
       recoveredPage = notewriterPages[notewriterPages.length - 1];
     }
   } else {
     // No target ID tracked — use last notewriter tab
-    const notewriterPages = allPages.filter((p) => p.url().includes("communitynotes"));
+    const notewriterPages = allPages.filter((p: Page) => p.url().includes("communitynotes"));
     recoveredPage = notewriterPages[notewriterPages.length - 1];
   }
 
@@ -122,7 +122,7 @@ async function scrollToPosition(
   page: Page,
   browser: Browser,
   notewriterUrl: string,
-  collectedNotes: Map<string, ScrapedNote>,
+  _collectedNotes: Map<string, ScrapedNote>,
   targetNoteId: bigint | null,
   maxScrolls: number,
 ): Promise<{ page: Page; browser: Browser }> {
@@ -179,9 +179,9 @@ async function scrollToPosition(
 
           const tweetIds: string[] = [];
           const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
-          for (const cell of cells) {
+          for (const cell of Array.from(cells)) {
             const links = cell.querySelectorAll('a[href*="/status/"]') as NodeListOf<HTMLAnchorElement>;
-            for (const link of links) {
+            for (const link of Array.from(links)) {
               const match = link.href.match(/\/status\/(\d+)/);
               if (match) tweetIds.push(match[1]!);
             }
@@ -403,7 +403,9 @@ async function scrapeTab(
         const debugInfo = await page.evaluate(() => {
           const scrollY = window.scrollY;
           const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
-          const fingerprints = [...cells].map((c) => (c as HTMLElement).innerText.slice(0, 50).replace(/\n/g, " "));
+          const fingerprints = Array.from(cells).map((c) =>
+            (c as HTMLElement).innerText.slice(0, 50).replace(/\n/g, " "),
+          );
           return { scrollY, fingerprints };
         });
         console.log(`\n${prefix} 📜 Scroll ${scrollCount}: ${cells.length} cells at scrollY=${debugInfo.scrollY}`);
@@ -415,7 +417,7 @@ async function scrapeTab(
           if (collectedNotes.size >= maxNotes) break;
 
           // Generate a fingerprint for this cell to avoid reprocessing
-          const cellFingerprint = await cell.evaluate((el) => {
+          const cellFingerprint = await cell.evaluate((el: Element) => {
             const text = (el as HTMLElement).innerText.slice(0, 100);
             const detailsLink = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
             if (detailsLink) {
@@ -431,7 +433,7 @@ async function scrapeTab(
 
           // --- Helper: extract tweet/note IDs from cell ---
           async function readCellTweetData() {
-            return cell.evaluate((el) => {
+            return cell.evaluate((el: Element) => {
               let tweetId: string | null = null;
               let tweetUrl: string | null = null;
               let noteIdFromUrl: string | null = null;
@@ -456,7 +458,7 @@ async function scrapeTab(
 
               // Fallback: look for /status/ links in the cell (rare — only when tweet text contains status links)
               if (!tweetId) {
-                const allStatusLinks = [...el.querySelectorAll('a[href*="/status/"]')] as HTMLAnchorElement[];
+                const allStatusLinks = Array.from(el.querySelectorAll('a[href*="/status/"]')) as HTMLAnchorElement[];
                 const noteTextContainers = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
                 const noteTextEls = new Set<Node>();
                 noteTextContainers.forEach((container) => {
@@ -490,7 +492,7 @@ async function scrapeTab(
 
           // --- Helper: extract note text, views, status, and tweet info from cell ---
           async function readCellData() {
-            return cell.evaluate((el) => {
+            return cell.evaluate((el: Element) => {
               const text = (el as HTMLElement).innerText;
 
               const paragraphs = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
@@ -508,7 +510,7 @@ async function scrapeTab(
                 }
               });
 
-              const sourceLinks = [...el.querySelectorAll('a[href^="http"]')]
+              const sourceLinks = Array.from(el.querySelectorAll('a[href^="http"]'))
                 .map((a) => (a as HTMLAnchorElement).href)
                 .filter((h) => !h.includes("x.com") && !h.includes("twitter.com"));
 
@@ -584,7 +586,7 @@ async function scrapeTab(
           // --- Helper: click the cell's View details button/link ---
           async function clickViewDetails(): Promise<boolean> {
             try {
-              return await cell.evaluate((el) => {
+              return await cell.evaluate((el: Element) => {
                 const blocker = (e: Event) => {
                   if ((e.target as HTMLElement).closest?.("a")) {
                     e.preventDefault();
@@ -599,7 +601,7 @@ async function scrapeTab(
                     return true;
                   }
                   const buttons = el.querySelectorAll('button, [role="button"]');
-                  for (const btn of buttons) {
+                  for (const btn of Array.from(buttons)) {
                     if (btn.textContent?.includes("View details")) {
                       (btn as HTMLElement).click();
                       return true;
@@ -657,7 +659,7 @@ async function scrapeTab(
               } else {
                 const candidates: { el: HTMLElement; len: number }[] = [];
                 const allElements = document.querySelectorAll("div, section, aside");
-                for (const el of allElements) {
+                for (const el of Array.from(allElements)) {
                   const text = (el as HTMLElement).innerText;
                   if (text.includes("Note Details") || text.includes("Note ID")) {
                     if (text.length > 100 && text.length < 10000) {
@@ -795,17 +797,17 @@ async function scrapeTab(
             }
 
             // Scroll cell into view
-            await cell.evaluate((el) => {
+            await cell.evaluate((el: Element) => {
               el.scrollIntoView({ behavior: "instant", block: "center" });
             });
             await randomDelay(80, 160);
 
             // Check if cell has a clickable "View details" button
-            const hasViewDetails = await cell.evaluate((el) => {
+            const hasViewDetails = await cell.evaluate((el: Element) => {
               const noteLink = el.querySelector('a[href*="/communitynotes/t/"]');
               if (noteLink) return "A";
               const buttons = el.querySelectorAll('button, [role="button"]');
-              for (const btn of buttons) {
+              for (const btn of Array.from(buttons)) {
                 if (btn.textContent?.includes("View details")) return btn.tagName;
               }
               return null;
@@ -1026,7 +1028,7 @@ async function scrapeTab(
               }
             }
             const buttons = document.querySelectorAll("button");
-            for (const btn of buttons) {
+            for (const btn of Array.from(buttons)) {
               const rect = btn.getBoundingClientRect();
               if (rect.width < 50 && rect.height < 50) {
                 const text = btn.textContent?.trim() || "";
@@ -1086,7 +1088,7 @@ async function scrapeTab(
             }
             console.log(`\n   ${prefix} 🔄 Jiggling virtualizer (retry ${retryCount}/${maxRetries})...`);
             const jiggleDistance = 3000 + retryCount * 2000; // Scroll up further each retry
-            await page.evaluate((dist) => {
+            await page.evaluate((dist: number) => {
               const html = document.documentElement;
               html.scrollTop = Math.max(0, html.scrollTop - dist);
               html.dispatchEvent(new Event("scroll", { bubbles: true }));
@@ -1094,7 +1096,7 @@ async function scrapeTab(
             }, jiggleDistance);
             await new Promise((r) => setTimeout(r, 1600)); // Let virtualizer re-render
             // Scroll back down past where we were
-            await page.evaluate((dist) => {
+            await page.evaluate((dist: number) => {
               const html = document.documentElement;
               html.scrollTop += dist + 600; // Go slightly past original position
               html.dispatchEvent(new Event("scroll", { bubbles: true }));
@@ -1112,7 +1114,7 @@ async function scrapeTab(
 
         // Scroll down
         try {
-          const scrollResult = await page.evaluate((px) => {
+          const scrollResult = await page.evaluate((px: number) => {
             const html = document.documentElement;
             const before = html.scrollTop;
             const maxScroll = html.scrollHeight - html.clientHeight;
@@ -1256,7 +1258,7 @@ async function main() {
   // Find or create the notewriter tab
   let page: Page;
   const existingPages = await browser.pages();
-  const existingNotewriterTabs = existingPages.filter((p) => p.url().includes("communitynotes"));
+  const existingNotewriterTabs = existingPages.filter((p: Page) => p.url().includes("communitynotes"));
 
   if (freshStart) {
     // Fresh start: open a new tab (avoids stale virtualizer state)

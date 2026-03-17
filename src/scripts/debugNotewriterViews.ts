@@ -1,10 +1,10 @@
 import "dotenv/config";
-import puppeteer from "puppeteer-core";
+import puppeteer, { type Page } from "puppeteer-core";
 
 async function main() {
   const browser = await puppeteer.connect({ browserURL: "http://127.0.0.1:9222" });
   const pages = await browser.pages();
-  const page = pages.find((p) => p.url().includes("communitynotes"));
+  const page = pages.find((p: Page) => p.url().includes("communitynotes"));
 
   if (!page) {
     console.log("No notewriter tab found");
@@ -23,7 +23,7 @@ async function main() {
   // Get the text of all cells and look for 'Shown on X' or view counts
   const cellTexts = await page.evaluate(() => {
     const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
-    return [...cells].map((c) => (c as HTMLElement).innerText);
+    return Array.from(cells).map((c) => (c as HTMLElement).innerText);
   });
 
   console.log(`\nFound ${cellTexts.length} cells\n`);

@@ -5,7 +5,7 @@
  * Example: bun run src/scripts/scrollAndScrape.ts 50 200  # Start from 50% down, scrape 200 notes
  */
 import "dotenv/config";
-import puppeteer from "puppeteer-core";
+import puppeteer, { type Page } from "puppeteer-core";
 import { spawn } from "child_process";
 
 async function main() {
@@ -14,7 +14,7 @@ async function main() {
 
   const browser = await puppeteer.connect({ browserURL: "http://127.0.0.1:9222" });
   const pages = await browser.pages();
-  const page = pages.find((p) => p.url().includes("communitynotes"));
+  const page = pages.find((p: Page) => p.url().includes("communitynotes"));
 
   if (!page) {
     console.log("No notewriter tab found");
@@ -46,7 +46,7 @@ async function main() {
   const targetScroll = Math.floor((totalHeight * scrollPercent) / 100);
 
   console.log(`Page height: ${totalHeight}, scrolling to ${scrollPercent}% = ${targetScroll}px`);
-  await page.evaluate((y) => window.scrollTo(0, y), targetScroll);
+  await page.evaluate((y: number) => window.scrollTo(0, y), targetScroll);
   await new Promise((r) => setTimeout(r, 2000));
 
   const finalPos = await page.evaluate(() => window.scrollY);

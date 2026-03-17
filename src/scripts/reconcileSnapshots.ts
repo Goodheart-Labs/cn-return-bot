@@ -177,7 +177,7 @@ interface CollisionGroup {
 
 function detectCollisions(
   snapshots: ClassifiedSnapshot[],
-  groundTruth: Map<string, string>,
+  _groundTruth: Map<string, string>,
 ): {
   // Collisions keyed by the conflicting dimension
   noteCollisions: Map<string, CollisionGroup>; // note_id -> collision
@@ -254,35 +254,35 @@ function resolveCollision(
   groundTruthReverse: Map<string, string>, // tweet_id -> note_id
 ): VoteResult {
   // Check if ground truth resolves this
-  for (const [pairingKey, snaps] of collision.pairings) {
+  for (const [pairingKey, _snaps] of collision.pairings) {
     const [noteId, tweetId] = pairingKey.split(":");
     // If notes table says this note_id goes with this tweet_id, that wins
-    if (groundTruth.get(noteId) === tweetId) {
-      return { winnerTweetId: tweetId, winnerNoteId: noteId };
+    if (groundTruth.get(noteId!) === tweetId) {
+      return { winnerTweetId: tweetId!, winnerNoteId: noteId! };
     }
     // If notes table says this tweet_id goes with this note_id, that wins
-    if (groundTruthReverse.get(tweetId) === noteId) {
-      return { winnerTweetId: tweetId, winnerNoteId: noteId };
+    if (groundTruthReverse.get(tweetId!) === noteId) {
+      return { winnerTweetId: tweetId!, winnerNoteId: noteId! };
     }
   }
 
   // Count votes per pairing
   const votes = new Map<string, number>(); // "noteId:tweetId" -> count
-  for (const [pairingKey, snaps] of collision.pairings) {
-    votes.set(pairingKey, snaps.length);
+  for (const [pairingKey, pairingSnaps] of collision.pairings) {
+    votes.set(pairingKey, pairingSnaps.length);
   }
 
   const sorted = [...votes.entries()].sort((a, b) => b[1] - a[1]);
   if (sorted.length === 0) return { winnerTweetId: null, winnerNoteId: null };
 
   // Check for tie
-  if (sorted.length >= 2 && sorted[0][1] === sorted[1][1]) {
+  if (sorted.length >= 2 && sorted[0]![1] === sorted[1]![1]) {
     return { winnerTweetId: null, winnerNoteId: null };
   }
 
-  const [winnerKey] = sorted[0];
+  const [winnerKey] = sorted[0]!;
   const [winnerNoteId, winnerTweetId] = winnerKey.split(":");
-  return { winnerTweetId, winnerNoteId };
+  return { winnerTweetId: winnerTweetId!, winnerNoteId: winnerNoteId! };
 }
 
 // ---------------------------------------------------------------------------
@@ -325,7 +325,7 @@ export function scoreCoherence(snapshots: ClassifiedSnapshot[]): number {
   // --- View count monotonicity ---
   const withViews = chronological.filter((s) => s.view_count !== null && s.view_count !== undefined);
   for (let i = 1; i < withViews.length; i++) {
-    if (withViews[i].view_count! < withViews[i - 1].view_count!) {
+    if (withViews[i]!.view_count! < withViews[i - 1]!.view_count!) {
       score -= 0.3;
     }
   }
@@ -334,8 +334,8 @@ export function scoreCoherence(snapshots: ClassifiedSnapshot[]): number {
   const RATED = new Set(["CURRENTLY_RATED_HELPFUL", "CURRENTLY_RATED_NOT_HELPFUL"]);
   const withStatus = chronological.filter((s) => s.cn_status !== null && RECOGNIZED_STATUSES.has(s.cn_status));
   for (let i = 1; i < withStatus.length; i++) {
-    const prev = withStatus[i - 1].cn_status!;
-    const curr = withStatus[i].cn_status!;
+    const prev = withStatus[i - 1]!.cn_status!;
+    const curr = withStatus[i]!.cn_status!;
     if (prev === curr) continue;
 
     // Flip: helpful ↔ not helpful
@@ -378,7 +378,7 @@ const TIER_RANK: Record<Tier, number> = {
 function deriveCanonicalData(
   snapshotsByNote: Map<string, ClassifiedSnapshot[]>,
   winningPairings: Map<string, string | null>, // note_id -> winning tweet_id (null = tie)
-  quarantinedSnapIds: Set<string>,
+  _quarantinedSnapIds: Set<string>,
 ): CanonicalNote[] {
   const results: CanonicalNote[] = [];
 
@@ -408,7 +408,7 @@ function deriveCanonicalData(
       return new Date(b.scraped_at).getTime() - new Date(a.scraped_at).getTime();
     });
 
-    const best = sorted[0];
+    const best = sorted[0]!;
 
     // Determine tweet_id
     let tweetId: string | null = best.tweet_id;
@@ -515,7 +515,7 @@ export async function reconcile(): Promise<{
     winningPairings.set(noteId, result.winnerTweetId);
   }
 
-  for (const [tweetId, collision] of tweetCollisions) {
+  for (const [_tweetId, collision] of tweetCollisions) {
     const result = resolveCollision(collision, groundTruth, groundTruthReverse);
     if (result.winnerNoteId) {
       // Only set if not already set by a note-level collision

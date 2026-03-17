@@ -281,7 +281,6 @@ async function main() {
         }
 
         // Initialize evaluation score
-        let evaluationScore: number | undefined = undefined;
 
         // Check if note writing produced a valid correction
         if (result.noteResult.status === "SCORING_FILTERS_FAILED") {
@@ -351,9 +350,6 @@ async function main() {
             const { shouldSubmitNote } = await import("../filters/noteEvaluationFilter");
             const noteText = result.noteResult.note + " " + result.noteResult.url;
             const evaluationResult = await shouldSubmitNote(result.post.id, noteText, 0);
-
-            // Capture the score for logging
-            evaluationScore = evaluationResult.score;
 
             // Log evaluation score
             if (supabaseLogger && pipelineRunId) {
