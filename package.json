@@ -25,15 +25,31 @@
   "private": true,
   "devDependencies": {
     "@types/bun": "^1.2.23",
+    "@types/puppeteer-core": "^7.0.4",
+    "husky": "^9.1.7",
+    "knip": "^5.87.0",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
     "typescript": "5.9.3"
   },
   "scripts": {
     "typecheck": "bunx --bun typescript@5.9.3 --noEmit",
+    "check": "bun run typecheck && prettier --check src/ && knip",
+    "fix": "prettier --write src/",
+    "prepare": "husky",
     "routine": "bun run src/scripts/createNotesRoutine.ts",
     "update-feedback": "bun run src/scripts/updateNoteFeedback.ts",
     "test": "bun run src/scripts/run.ts",
     "build-elo": "cd src/elo-rating-web && bun build ./app.ts ./airtableClient.ts ./eloCalculator.ts ./types.ts ./cacheManager.ts --outdir ./dist --target browser",
     "serve-elo": "bun run src/elo-rating-web/server.ts",
     "elo": "bun run build-elo && bun run serve-elo"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "*.{json,css,html}": [
+      "prettier --write"
+    ]
   }
 }
