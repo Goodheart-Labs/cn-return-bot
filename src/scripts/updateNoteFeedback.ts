@@ -56,7 +56,7 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
 }
 
 async function downloadCNFile(
-  fileType: "noteStatusHistory" | "notes",
+  fileType: "noteStatusHistory" | "notes"
 ): Promise<{ path: string; dateStr: string } | null> {
   const zipFileName = `${fileType}-00000.zip`;
   const tsvFileName = `${fileType}-00000.tsv`;
@@ -118,15 +118,12 @@ async function main() {
   };
 
   // First pass: find our notes and their tweet IDs
-  const ourNotes = new Map<
-    string,
-    {
-      tweetId: string;
-      createdAtMillis: string;
-      classification: string;
-      summary: string;
-    }
-  >();
+  const ourNotes = new Map<string, {
+    tweetId: string;
+    createdAtMillis: string;
+    classification: string;
+    summary: string;
+  }>();
 
   for (let i = 1; i < notesLines.length; i++) {
     const line = notesLines[i]!;
@@ -142,7 +139,7 @@ async function main() {
   }
   console.log(`[updateFeedback] Found ${ourNotes.size} of our notes in public data`);
 
-  const ourTweetIds = new Set([...ourNotes.values()].map((n) => n.tweetId));
+  const ourTweetIds = new Set([...ourNotes.values()].map(n => n.tweetId));
   const ourNoteIds = new Set(ourNotes.keys());
 
   // Second pass: find competing notes (other notes on same tweets)
@@ -202,26 +199,23 @@ async function main() {
   };
 
   // Build sets of note IDs we care about
-  const competingNoteIds = new Set(competingNotes.map((n) => n.noteId));
+  const competingNoteIds = new Set(competingNotes.map(n => n.noteId));
   const allRelevantIds = new Set([...ourNoteIds, ...competingNoteIds]);
 
-  const statusMap = new Map<
-    string,
-    {
-      currentStatus: string;
-      currentCoreStatus: string;
-      currentExpansionStatus: string;
-      currentGroupStatus: string;
-      currentDecidedBy: string;
-      currentModelingGroup: string;
-      firstNonNMRStatus: string;
-      mostRecentNonNMRStatus: string;
-      lockedStatus: string;
-      statusUpdatedAt: string | null;
-      firstNonNmrAt: string | null;
-      statusLockedAt: string | null;
-    }
-  >();
+  const statusMap = new Map<string, {
+    currentStatus: string;
+    currentCoreStatus: string;
+    currentExpansionStatus: string;
+    currentGroupStatus: string;
+    currentDecidedBy: string;
+    currentModelingGroup: string;
+    firstNonNMRStatus: string;
+    mostRecentNonNMRStatus: string;
+    lockedStatus: string;
+    statusUpdatedAt: string | null;
+    firstNonNmrAt: string | null;
+    statusLockedAt: string | null;
+  }>();
 
   for (let i = 1; i < statusLines.length; i++) {
     const line = statusLines[i]!;
@@ -242,39 +236,33 @@ async function main() {
       mostRecentNonNMRStatus: vals[sIdx.mostRecentNonNMRStatus] || "",
       lockedStatus: vals[sIdx.lockedStatus] || "",
       statusUpdatedAt: vals[sIdx.timestampMillisOfCurrentStatus]
-        ? new Date(parseInt(vals[sIdx.timestampMillisOfCurrentStatus]!)).toISOString()
-        : null,
+        ? new Date(parseInt(vals[sIdx.timestampMillisOfCurrentStatus]!)).toISOString() : null,
       firstNonNmrAt: vals[sIdx.timestampMillisOfFirstNonNMRStatus]
-        ? new Date(parseInt(vals[sIdx.timestampMillisOfFirstNonNMRStatus]!)).toISOString()
-        : null,
+        ? new Date(parseInt(vals[sIdx.timestampMillisOfFirstNonNMRStatus]!)).toISOString() : null,
       statusLockedAt: vals[sIdx.timestampMillisOfStatusLock]
-        ? new Date(parseInt(vals[sIdx.timestampMillisOfStatusLock]!)).toISOString()
-        : null,
+        ? new Date(parseInt(vals[sIdx.timestampMillisOfStatusLock]!)).toISOString() : null,
     });
   }
   console.log(`[updateFeedback] Found ${statusMap.size} status records for relevant notes`);
 
   // ===== 4. Get existing canonical data =====
   console.log("[updateFeedback] Fetching existing canonical data...");
-  const existing = await fetchAll<{ note_id: string; cn_status: string | null }>(() =>
-    client.from("canonical_note_information").select("note_id, cn_status"),
+  const existing = await fetchAll<{ note_id: string; cn_status: string | null }>(
+    () => client.from("canonical_note_information").select("note_id, cn_status")
   );
-  const existingIds = new Set(existing.map((n) => n.note_id));
-  const existingStatusMap = new Map(existing.map((n) => [n.note_id, n.cn_status]));
+  const existingIds = new Set(existing.map(n => n.note_id));
+  const existingStatusMap = new Map(existing.map(n => [n.note_id, n.cn_status]));
   console.log(`[updateFeedback] ${existing.length} existing canonical entries`);
 
   // ===== 5. Upsert our notes into canonical_note_information =====
   // Fetch submitted_at and bot_name from notes table to keep canonical in sync
   const notesEnrichment = await fetchAll<{ note_id: string; submitted_at: string | null; bot_name: string | null }>(
-    () => client.from("notes").select("note_id, submitted_at, bot_name"),
+    () => client.from("notes").select("note_id, submitted_at, bot_name")
   );
-  const enrichmentMap = new Map(notesEnrichment.map((n) => [n.note_id, n]));
+  const enrichmentMap = new Map(notesEnrichment.map(n => [n.note_id, n]));
 
   const now = new Date().toISOString();
-  let updated = 0,
-    inserted = 0,
-    errors = 0,
-    newlyHelpful = 0;
+  let updated = 0, inserted = 0, errors = 0, newlyHelpful = 0;
 
   for (const [noteId, noteData] of ourNotes) {
     const status = statusMap.get(noteId);
@@ -311,7 +299,10 @@ async function main() {
     if (isNowHelpful && !wasHelpful) newlyHelpful++;
 
     if (existingIds.has(noteId)) {
-      const { error } = await client.from("canonical_note_information").update(row).eq("note_id", noteId);
+      const { error } = await client
+        .from("canonical_note_information")
+        .update(row)
+        .eq("note_id", noteId);
       if (error) {
         console.error(`[updateFeedback] Error updating ${noteId}: ${error.message}`);
         errors++;
@@ -319,7 +310,9 @@ async function main() {
         updated++;
       }
     } else {
-      const { error } = await client.from("canonical_note_information").insert({ ...row, first_seen_at: now });
+      const { error } = await client
+        .from("canonical_note_information")
+        .insert({ ...row, first_seen_at: now });
       if (error) {
         console.error(`[updateFeedback] Error inserting ${noteId}: ${error.message}`);
         errors++;
@@ -336,8 +329,7 @@ async function main() {
 
   // ===== 6. Upsert competing notes =====
   console.log("[updateFeedback] Upserting competing notes...");
-  let competingUpserted = 0,
-    competingErrors = 0;
+  let competingUpserted = 0, competingErrors = 0;
 
   for (const cn of competingNotes) {
     const status = statusMap.get(cn.noteId);
@@ -356,7 +348,9 @@ async function main() {
       last_updated_at: now,
     };
 
-    const { error } = await client.from("competing_notes").upsert(row, { onConflict: "note_id,our_note_id" });
+    const { error } = await client
+      .from("competing_notes")
+      .upsert(row, { onConflict: "note_id,our_note_id" });
 
     if (error) {
       // Log but don't fail — some competing notes may reference note_ids not in our canonical table
@@ -378,17 +372,16 @@ async function main() {
   for (const [noteId, noteData] of ourNotes) {
     const status = statusMap.get(noteId);
     try {
-      const { error } = await client.from("public_data_snapshots").upsert(
-        {
+      const { error } = await client
+        .from("public_data_snapshots")
+        .upsert({
           note_id: noteId,
           tweet_id: noteData.tweetId,
           current_status: status?.currentStatus || "NEEDS_MORE_RATINGS",
           is_ours: true,
           snapshot_date: snapshotDate,
           created_at_millis: noteData.createdAtMillis ? parseInt(noteData.createdAtMillis) : undefined,
-        },
-        { onConflict: "note_id,snapshot_date", ignoreDuplicates: false },
-      );
+        }, { onConflict: "note_id,snapshot_date", ignoreDuplicates: false });
       if (!error) snapshotCount++;
     } catch {
       // Ignore duplicates
@@ -400,8 +393,9 @@ async function main() {
     const status = statusMap.get(cn.noteId);
     if (status?.currentStatus !== "CURRENTLY_RATED_HELPFUL") continue;
     try {
-      const { error } = await client.from("public_data_snapshots").upsert(
-        {
+      const { error } = await client
+        .from("public_data_snapshots")
+        .upsert({
           note_id: cn.noteId,
           tweet_id: cn.tweetId,
           current_status: status.currentStatus,
@@ -409,9 +403,7 @@ async function main() {
           snapshot_date: snapshotDate,
           created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : undefined,
           note_text: cn.summary || null,
-        },
-        { onConflict: "note_id,snapshot_date", ignoreDuplicates: false },
-      );
+        }, { onConflict: "note_id,snapshot_date", ignoreDuplicates: false });
       if (!error) snapshotCount++;
     } catch {
       // Ignore duplicates
@@ -422,8 +414,10 @@ async function main() {
 
   // ===== 8. Also update the `notes` table for notes that exist there =====
   // (Keeps backwards compat with any code still reading from `notes.cn_status`)
-  const notesTableIds = await fetchAll<{ note_id: string }>(() => client.from("notes").select("note_id"));
-  const notesTableIdSet = new Set(notesTableIds.map((n) => n.note_id));
+  const notesTableIds = await fetchAll<{ note_id: string }>(
+    () => client.from("notes").select("note_id")
+  );
+  const notesTableIdSet = new Set(notesTableIds.map(n => n.note_id));
   let notesTableUpdated = 0;
 
   for (const [noteId, _] of ourNotes) {
@@ -455,7 +449,7 @@ async function main() {
 
   // ===== Summary =====
   const helpfulCompeting = competingNotes.filter(
-    (cn) => statusMap.get(cn.noteId)?.currentStatus === "CURRENTLY_RATED_HELPFUL",
+    cn => statusMap.get(cn.noteId)?.currentStatus === "CURRENTLY_RATED_HELPFUL"
   );
   if (helpfulCompeting.length > 0) {
     console.log(`[updateFeedback] ${helpfulCompeting.length} competing notes are HELPFUL`);

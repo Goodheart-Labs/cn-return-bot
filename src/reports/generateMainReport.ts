@@ -45,13 +45,10 @@ const scrapedNotes = await fetchAll<{
   helpful_count: number | null;
   not_helpful_count: number | null;
   current_decided_by: string | null;
-}>((c) =>
-  c
-    .from("canonical_note_information")
-    .select(
-      "note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, rating_count, helpful_count, not_helpful_count, current_decided_by",
-    )
-    .or("data_tier.neq.junk,data_tier.is.null"),
+}>(
+  (c) => c.from("canonical_note_information")
+    .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, rating_count, helpful_count, not_helpful_count, current_decided_by")
+    .or("data_tier.neq.junk,data_tier.is.null")
 );
 console.log(`  ${scrapedNotes.length} scraped notes (non-junk)`);
 
@@ -60,7 +57,9 @@ const botNotes = await fetchAll<{
   note_id: string;
   bot_name: string | null;
   submitted_at: string;
-}>((c) => c.from("notes").select("note_id, bot_name, submitted_at"));
+}>(
+  (c) => c.from("notes").select("note_id, bot_name, submitted_at")
+);
 console.log(`  ${botNotes.length} bot notes (for bot_name mapping)`);
 
 // 3. Pipeline runs (single query with all needed fields)
@@ -70,7 +69,9 @@ const rawPipelineRunsFull = await fetchAll<{
   outcome_reason: string | null;
   created_at: string;
   tweet_id: string;
-}>((c) => c.from("pipeline_runs").select("bot_id, outcome, outcome_reason, created_at, tweet_id"));
+}>(
+  (c) => c.from("pipeline_runs").select("bot_id, outcome, outcome_reason, created_at, tweet_id")
+);
 console.log(`  ${rawPipelineRunsFull.length} pipeline runs`);
 
 // Compute is_retry: for each tweet_id, the earliest created_at is first try, rest are retries
@@ -79,7 +80,7 @@ for (const r of rawPipelineRunsFull) {
   const prev = firstSeenByTweet.get(r.tweet_id);
   if (!prev || r.created_at < prev) firstSeenByTweet.set(r.tweet_id, r.created_at);
 }
-const pipelineRuns = rawPipelineRunsFull.map((r) => ({
+const pipelineRuns = rawPipelineRunsFull.map(r => ({
   bot_id: r.bot_id,
   outcome: r.outcome,
   outcome_reason: r.outcome_reason,
@@ -89,7 +90,7 @@ const pipelineRuns = rawPipelineRunsFull.map((r) => ({
 
 // Compute backlog: tweets not currently skipped
 // Skipped = submitted OR no_correction_needed (cooldown: 1hr after 1st, 24hr after 2nd, permanent after 3rd)
-const submittedTweets = new Set(rawPipelineRunsFull.filter((r) => r.outcome === "submitted").map((r) => r.tweet_id));
+const submittedTweets = new Set(rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id));
 const rejectionInfo = new Map<string, { count: number; latestAt: string }>();
 for (const r of rawPipelineRunsFull) {
   if (r.outcome === "rejected" && r.outcome_reason === "no_correction_needed") {
@@ -113,16 +114,14 @@ for (const [tid, info] of rejectionInfo) {
     if (hoursSince < cooldownHours) skippedByNoCorrection.add(tid);
   }
 }
-const allPipelineTweets = new Set(rawPipelineRunsFull.map((r) => r.tweet_id));
-const backlogTweets = [...allPipelineTweets].filter((tid) => {
+const allPipelineTweets = new Set(rawPipelineRunsFull.map(r => r.tweet_id));
+const backlogTweets = [...allPipelineTweets].filter(tid => {
   if (submittedTweets.has(tid)) return false;
   if (skippedByNoCorrection.has(tid)) return false;
   return true;
 });
 const backlogSize = backlogTweets.length;
-console.log(
-  `  Backlog: ${backlogSize} tweets eligible for retry (${skippedByNoCorrection.size} no-correction skipped, ${submittedTweets.size} submitted, of ${allPipelineTweets.size} unique)`,
-);
+console.log(`  Backlog: ${backlogSize} tweets eligible for retry (${skippedByNoCorrection.size} no-correction skipped, ${submittedTweets.size} submitted, of ${allPipelineTweets.size} unique)`);
 
 // 4b. Run snapshots (backlog trend)
 const runSnapshots = await fetchAll<{
@@ -132,11 +131,8 @@ const runSnapshots = await fetchAll<{
   backlog_retry: number;
   backlog_hit_limit: boolean;
   posts_processed: number;
-}>((c) =>
-  c
-    .from("run_snapshots")
-    .select("created_at, backlog_total, backlog_new, backlog_retry, backlog_hit_limit, posts_processed")
-    .order("created_at", { ascending: true }),
+}>(
+  (c) => c.from("run_snapshots").select("created_at, backlog_total, backlog_new, backlog_retry, backlog_hit_limit, posts_processed").order("created_at", { ascending: true })
 );
 console.log(`  ${runSnapshots.length} run snapshots`);
 
@@ -145,7 +141,9 @@ const videoRuns = await fetchAll<{
   tweet_id: string;
   has_video: boolean | null;
   video_duration_ms: number | null;
-}>((c) => c.from("pipeline_runs").select("tweet_id, has_video, video_duration_ms").eq("outcome", "submitted"));
+}>(
+  (c) => c.from("pipeline_runs").select("tweet_id, has_video, video_duration_ms").eq("outcome", "submitted")
+);
 const videoByTweet = new Map<string, { has_video: boolean; video_duration_ms: number | null }>();
 for (const r of videoRuns) {
   if (r.tweet_id && r.has_video !== null) {
@@ -160,9 +158,11 @@ const competingData = await fetchAll<{
   note_id: string;
   our_note_id: string;
   current_status: string | null;
-}>((c) => c.from("competing_notes").select("tweet_id, note_id, our_note_id, current_status"));
+}>(
+  (c) => c.from("competing_notes").select("tweet_id, note_id, our_note_id, current_status")
+);
 const totalCompeting = competingData.length;
-const helpfulCompeting = competingData.filter((c) => c.current_status === "CURRENTLY_RATED_HELPFUL").length;
+const helpfulCompeting = competingData.filter(c => c.current_status === "CURRENTLY_RATED_HELPFUL").length;
 console.log(`  ${totalCompeting} competing notes (${helpfulCompeting} helpful)`);
 
 // Build bot_name lookup from notes table
@@ -202,31 +202,8 @@ const notes = scrapedNotes.map((n) => {
 });
 
 // Define active vs legacy bots
-const activeBots = [
-  "opus-main",
-  "opus-main-v2",
-  "opus-direct",
-  "opus-direct-grok",
-  "opus-main-v2-grok",
-  "opus-main-no-source-check",
-  "opus-multi-source",
-  "opus-bridging",
-];
-const legacyBots = [
-  "opus-4.6",
-  "sonar-pro",
-  "kimi-k2",
-  "opus-research",
-  "opus-verified",
-  "opus-concise",
-  "opus-scored",
-  "opus-strict",
-  "gemini-flash",
-  "multi-search",
-  "gemini-3-flash",
-  "deepseek",
-  "pre-tracking",
-];
+const activeBots = ["opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok", "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source", "opus-bridging"];
+const legacyBots = ["opus-4.6", "sonar-pro", "kimi-k2", "opus-research", "opus-verified", "opus-concise", "opus-scored", "opus-strict", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking"];
 
 // Check for notes from unknown bots
 const knownBots = new Set([...activeBots, ...legacyBots]);
@@ -234,7 +211,7 @@ const unknownBotNotes = notes.filter((n) => !knownBots.has(n.bot_name));
 if (unknownBotNotes.length > 0) {
   const unknownBots = [...new Set(unknownBotNotes.map((n) => n.bot_name))];
   throw new Error(
-    `Found ${unknownBotNotes.length} notes from unknown bots: ${unknownBots.join(", ")}. Add them to activeBots or legacyBots in generateMainReport.ts`,
+    `Found ${unknownBotNotes.length} notes from unknown bots: ${unknownBots.join(", ")}. Add them to activeBots or legacyBots in generateMainReport.ts`
   );
 }
 
@@ -280,7 +257,7 @@ const botColors: Record<string, string> = {
   "gemini-flash": "rgba(245, 158, 11, 0.5)",
   "multi-search": "rgba(20, 184, 166, 0.5)",
   "gemini-3-flash": "rgba(236, 72, 153, 0.5)",
-  deepseek: "rgba(239, 68, 68, 0.5)",
+  "deepseek": "rgba(239, 68, 68, 0.5)",
   "pre-tracking": "rgba(156, 163, 175, 0.5)",
 };
 

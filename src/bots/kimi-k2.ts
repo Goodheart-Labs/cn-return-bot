@@ -34,7 +34,7 @@ export const kimiK2: Bot = {
           mediaContext: "",
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.search },
+        { model: MODELS.search }
       );
 
       // 2. Write note with Kimi K2.5
@@ -45,7 +45,7 @@ export const kimiK2: Bot = {
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: MODELS.noteWriting },
+        { model: MODELS.noteWriting }
       );
 
       // 3. Check the note with Kimi K2.5
@@ -56,7 +56,7 @@ export const kimiK2: Bot = {
           url: noteResult.url,
           status: noteResult.status,
         },
-        { model: MODELS.checking },
+        { model: MODELS.checking }
       );
 
       return {

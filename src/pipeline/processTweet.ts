@@ -81,18 +81,23 @@ function extractTweetMetadata(post: Post): TweetMetadata {
   };
 }
 
-export async function runBotPipeline(post: Post, bot: Bot): Promise<BotPipelineOutput> {
+export async function runBotPipeline(
+  post: Post,
+  bot: Bot
+): Promise<BotPipelineOutput> {
   const content = getOriginalTweetContent(post);
   const metadata = extractTweetMetadata(post);
 
   console.log(
-    `[processTweet] Processing tweet ${post.id} - ${content.isQuoteTweet ? "quote tweet" : "original"}${metadata.hasVideo ? " [VIDEO]" : ""}`,
+    `[processTweet] Processing tweet ${post.id} - ${content.isQuoteTweet ? "quote tweet" : "original"}${metadata.hasVideo ? " [VIDEO]" : ""}`
   );
   console.log(`[processTweet] Tweet ${post.id} with bot: ${bot.id}`);
 
   const result = await bot.runPipeline(post, content);
 
-  const warnings = result?.warnings?.length ? result.warnings.map((w) => `[WARNING] ${w}`) : undefined;
+  const warnings = result?.warnings?.length
+    ? result.warnings.map((w) => `[WARNING] ${w}`)
+    : undefined;
   if (warnings) {
     warnings.forEach((w) => console.warn(`[processTweet] Tweet ${post.id}: ${w}`));
   }
@@ -148,7 +153,7 @@ function extractBotScoringFilterScores(result: PipelineResult): ScoreEntry[] {
 
 async function computeEvaluationScore(
   postId: string,
-  noteText: string,
+  noteText: string
 ): Promise<{ score?: number; shouldSubmit?: boolean; error?: string }> {
   try {
     const result = await shouldSubmitNote(postId, noteText, 0);
@@ -167,7 +172,7 @@ async function computeNoteQualityScores(
   noteText: string,
   tweetText: string,
   searchResults: string,
-  sourceUrl: string,
+  sourceUrl: string
 ): Promise<ScoreEntry[]> {
   const noteScores = await runNoteScores(noteText, tweetText, searchResults, sourceUrl);
 
@@ -191,7 +196,10 @@ async function computeNoteQualityScores(
   }));
 }
 
-export async function scorePipelineResult(result: PipelineResult, post: Post): Promise<ScoringOutput> {
+export async function scorePipelineResult(
+  result: PipelineResult,
+  post: Post
+): Promise<ScoringOutput> {
   const scores: ScoreEntry[] = [];
   const noteText = result.noteResult.note + " " + result.noteResult.url;
 
@@ -231,7 +239,7 @@ export async function scorePipelineResult(result: PipelineResult, post: Post): P
       noteText,
       post.text,
       result.searchContextResult.searchResults ?? "",
-      result.noteResult.url ?? "",
+      result.noteResult.url ?? ""
     );
     scores.push(...qualityScores);
   } catch (err: any) {
@@ -255,7 +263,7 @@ const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 export function determineOutcome(
   result: PipelineResult | null,
   scores: ScoreEntry[],
-  evalShouldSubmit?: boolean,
+  evalShouldSubmit?: boolean
 ): Outcome {
   // Bot returned nothing
   if (!result) {
@@ -312,17 +320,19 @@ export function determineOutcome(
 // DB helpers
 // ---------------------------------------------------------------------------
 
-async function logScoresToDb(logger: SupabaseLogger | null, runId: string | null, scores: ScoreEntry[]): Promise<void> {
+async function logScoresToDb(
+  logger: SupabaseLogger | null,
+  runId: string | null,
+  scores: ScoreEntry[]
+): Promise<void> {
   if (!logger || !runId) return;
   const promises = scores.map((s) =>
-    logger
-      .addPipelineScore(runId, {
-        score_type: s.type,
-        score_value: s.value,
-        score_label: s.label,
-        score_metadata: s.metadata,
-      })
-      .catch((err) => console.warn(`[processTweet] Failed to log score ${s.type}:`, err)),
+    logger.addPipelineScore(runId, {
+      score_type: s.type,
+      score_value: s.value,
+      score_label: s.label,
+      score_metadata: s.metadata,
+    }).catch((err) => console.warn(`[processTweet] Failed to log score ${s.type}:`, err))
   );
   await Promise.all(promises);
 }
@@ -331,7 +341,7 @@ async function initPipelineRun(
   logger: SupabaseLogger,
   post: Post,
   metadata: TweetMetadata,
-  commitSha?: string,
+  commitSha?: string
 ): Promise<string | null> {
   try {
     return await logger.createPipelineRun({
@@ -361,7 +371,7 @@ function buildCompletionData(
   result: PipelineResult | null,
   botId: string,
   outcome: Outcome,
-  warnings?: string[],
+  warnings?: string[]
 ): Parameters<SupabaseLogger["completePipelineRun"]>[1] {
   const warningText = warnings?.join("; ");
   const errorParts = [warningText, outcome.errorMessage].filter(Boolean);
@@ -384,7 +394,9 @@ function buildCompletionData(
 // Orchestrator
 // ---------------------------------------------------------------------------
 
-export async function processSingleTweet(options: ProcessTweetOptions): Promise<ProcessTweetResult> {
+export async function processSingleTweet(
+  options: ProcessTweetOptions
+): Promise<ProcessTweetResult> {
   const { post, bot, logger, commitSha } = options;
 
   // 1. Run bot pipeline

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Smart scroll script for virtualized lists (like X's notewriter page)
  *
@@ -26,9 +27,7 @@ async function main() {
   } catch (err) {
     console.error("❌ Failed to connect to Chrome.");
     console.error("Make sure Chrome is running with remote debugging:");
-    console.error(
-      "  /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile",
-    );
+    console.error('  /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile');
     process.exit(1);
   }
 
@@ -62,9 +61,7 @@ async function main() {
       };
     });
 
-    process.stdout.write(
-      `\rScroll ${scrollCount} | scrollY: ${scrollInfo.scrollY} | height: ${scrollInfo.scrollHeight} | stuck: ${stuckCount}`,
-    );
+    process.stdout.write(`\rScroll ${scrollCount} | scrollY: ${scrollInfo.scrollY} | height: ${scrollInfo.scrollHeight} | stuck: ${stuckCount}`);
 
     // Check if we got new content
     if (scrollInfo.scrollHeight === lastScrollHeight) {
@@ -75,7 +72,7 @@ async function main() {
     }
 
     // Wait for content to load
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 800));
   }
 
   console.log("\n");

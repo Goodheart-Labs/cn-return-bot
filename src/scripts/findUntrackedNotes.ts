@@ -1,10 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_KEY!
+);
 
 async function main() {
   // Get all note_ids from notes table
-  const { data: trackedNotes } = await supabase.from("notes").select("note_id, tweet_id");
+  const { data: trackedNotes } = await supabase
+    .from("notes")
+    .select("note_id, tweet_id");
 
   const trackedNoteIds = new Set(trackedNotes?.map((n) => n.note_id) || []);
   const trackedTweetIds = new Set(trackedNotes?.map((n) => n.tweet_id) || []);
@@ -27,10 +32,12 @@ async function main() {
   // Get latest snapshots for untracked notes
   const { data: snapshots } = await supabase
     .from("scraped_notewriter_snapshots")
-    .select("note_id, cn_status, view_count, helpful_count, somewhat_helpful_count, not_helpful_count, scraped_at")
+    .select(
+      "note_id, cn_status, view_count, helpful_count, somewhat_helpful_count, not_helpful_count, scraped_at"
+    )
     .in(
       "note_id",
-      untracked.map((n) => n.note_id),
+      untracked.map((n) => n.note_id)
     )
     .order("scraped_at", { ascending: false });
 
@@ -57,7 +64,7 @@ async function main() {
     console.log(`${i + 1}. tweet: ${n.tweet_id}`);
     console.log(`   note_id: ${n.note_id}`);
     console.log(
-      `   status: ${s.cn_status || "unknown"} | views: ${s.view_count || "?"} | helpful: ${s.helpful_count || 0}/${s.somewhat_helpful_count || 0}/${s.not_helpful_count || 0}`,
+      `   status: ${s.cn_status || "unknown"} | views: ${s.view_count || "?"} | helpful: ${s.helpful_count || 0}/${s.somewhat_helpful_count || 0}/${s.not_helpful_count || 0}`
     );
     const text = (n.note_text || "").substring(0, 100);
     console.log(`   text: ${text}...`);
@@ -72,11 +79,9 @@ async function main() {
   });
 
   console.log("\n=== BY STATUS ===");
-  Object.entries(byStatus)
-    .sort((a, b) => b[1] - a[1])
-    .forEach(([status, count]) => {
-      console.log(`${status}: ${count}`);
-    });
+  Object.entries(byStatus).sort((a, b) => b[1] - a[1]).forEach(([status, count]) => {
+    console.log(`${status}: ${count}`);
+  });
 }
 
 main().catch(console.error);

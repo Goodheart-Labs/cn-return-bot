@@ -189,7 +189,9 @@ function isHttps(url: string): boolean {
 /**
  * Determine domain type category
  */
-function getDomainType(domain: string): TrustworthinessScore["factors"]["domainType"] {
+function getDomainType(
+  domain: string
+): TrustworthinessScore["factors"]["domainType"] {
   if (domain.endsWith(".gov") || domain.includes(".gov.")) return "gov";
   if (domain.endsWith(".edu") || domain.includes(".ac.") || domain.includes(".edu.")) return "edu";
   if (domain.endsWith(".org")) return "org";
@@ -250,7 +252,8 @@ export function scoreSourceTrustworthiness(url: string): TrustworthinessScore {
 
   // Check medium trust
   const isMediumTrust =
-    MEDIUM_TRUST_DOMAINS.has(domain) || MEDIUM_TRUST_DOMAINS.has(domain.split(".").slice(-2).join("."));
+    MEDIUM_TRUST_DOMAINS.has(domain) ||
+    MEDIUM_TRUST_DOMAINS.has(domain.split(".").slice(-2).join("."));
 
   // Check low trust
   const isLowTrust = LOW_TRUST_PATTERNS.some((p) => p.test(domain));

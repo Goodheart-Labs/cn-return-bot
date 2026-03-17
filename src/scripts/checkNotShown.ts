@@ -12,11 +12,14 @@ async function main() {
   console.log("Notes with NOT_SHOWN_ON_X status:", notShownSnapshots?.length);
 
   // Get the note_ids
-  const noteIds = [...new Set(notShownSnapshots?.map((s) => s.note_id) || [])];
+  const noteIds = [...new Set(notShownSnapshots?.map(s => s.note_id) || [])];
   console.log("Unique note_ids:", noteIds.length);
 
   // Check if any are bot-submitted
-  const { data: botNotes } = await client.from("notes").select("note_id, bot_name").in("note_id", noteIds);
+  const { data: botNotes } = await client
+    .from("notes")
+    .select("note_id, bot_name")
+    .in("note_id", noteIds);
 
   console.log("\nBot-submitted notes with NOT_SHOWN_ON_X:");
   if (botNotes && botNotes.length > 0) {

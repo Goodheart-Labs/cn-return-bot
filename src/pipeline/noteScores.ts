@@ -34,7 +34,12 @@ const DEFAULT_SCORING_MODEL = "anthropic/claude-sonnet-4";
 /**
  * Helper to call LLM and parse a scored response.
  */
-async function scoreWithLLM(name: string, prompt: string, model: string, defaultOnError = 0.5): Promise<NoteScore> {
+async function scoreWithLLM(
+  name: string,
+  prompt: string,
+  model: string,
+  defaultOnError = 0.5
+): Promise<NoteScore> {
   try {
     const result = await llm.create({
       model,
@@ -65,11 +70,9 @@ async function scoreWithLLM(name: string, prompt: string, model: string, default
  */
 export async function checkPositiveEvidence(
   noteText: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Positive evidence",
-    `A Community Note is being evaluated. Does it make its correction using positive counter-evidence (specific facts, named sources, documented events) or does it rely on negative framing or absence of evidence?
+  return scoreWithLLM("Positive evidence", `A Community Note is being evaluated. Does it make its correction using positive counter-evidence (specific facts, named sources, documented events) or does it rely on negative framing or absence of evidence?
 
 Negative framing examples: "there is no evidence that", "no reports confirm", "no official confirmation", "they never said", "this didn't happen", "I found no sources that..."
 Positive evidence examples: "The actual figure is X per source Y", "Reuters reported on [date] that...", "The official statement confirmed...", "X actually happened — source Z shows..."
@@ -85,9 +88,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single sentence`,
-    model,
-  );
+- reasoning: a single sentence`, model);
 }
 
 /**
@@ -96,11 +97,9 @@ IMPORTANT: Return ONLY a JSON object with:
 export async function checkSubstantiveDisagreement(
   noteText: string,
   postText: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Substantive disagreement",
-    `Evaluate if the Community Note substantively disagrees with the original post.
+  return scoreWithLLM("Substantive disagreement", `Evaluate if the Community Note substantively disagrees with the original post.
 
 Original post: "${postText}"
 Community Note: "${noteText}"
@@ -119,9 +118,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single string (one sentence)`,
-    model,
-  );
+- reasoning: a single string (one sentence)`, model);
 }
 
 /**
@@ -132,11 +129,9 @@ export async function predictHelpfulness(
   tweetText: string,
   searchResults: string,
   url: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Helpfulness prediction",
-    `Predict whether this Community Note will be rated as "Currently Rated Helpful" on X/Twitter.
+  return scoreWithLLM("Helpfulness prediction", `Predict whether this Community Note will be rated as "Currently Rated Helpful" on X/Twitter.
 
 Tweet being corrected:
 "${tweetText}"
@@ -166,9 +161,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a brief explanation (one sentence)`,
-    model,
-  );
+- reasoning: a brief explanation (one sentence)`, model);
 }
 
 /**
@@ -178,11 +171,9 @@ IMPORTANT: Return ONLY a JSON object with:
 export async function checkSourceQuality(
   noteText: string,
   url: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Source quality",
-    `A Community Note is being evaluated. Given the note's claim and the URL of its source, assess whether the source is credible and appropriate for the specific factual claim being made.
+  return scoreWithLLM("Source quality", `A Community Note is being evaluated. Given the note's claim and the URL of its source, assess whether the source is credible and appropriate for the specific factual claim being made.
 
 Community Note: "${noteText}"
 Source URL: "${url}"
@@ -202,9 +193,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single sentence`,
-    model,
-  );
+- reasoning: a single sentence`, model);
 }
 
 /**
@@ -214,11 +203,9 @@ IMPORTANT: Return ONLY a JSON object with:
 export async function checkBreakingNewsRisk(
   noteText: string,
   tweetText: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Breaking news risk",
-    `A Community Note is being evaluated. Does it make a present-tense negative claim (e.g. "X has NOT happened", "X is NOT confirmed", "X is NOT dead") about what appears to be a breaking or rapidly developing situation? These notes are risky because by the time they are rated, the situation may have resolved and the note's claim become false.
+  return scoreWithLLM("Breaking news risk", `A Community Note is being evaluated. Does it make a present-tense negative claim (e.g. "X has NOT happened", "X is NOT confirmed", "X is NOT dead") about what appears to be a breaking or rapidly developing situation? These notes are risky because by the time they are rated, the situation may have resolved and the note's claim become false.
 
 Tweet: "${tweetText}"
 Community Note: "${noteText}"
@@ -232,9 +219,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single sentence`,
-    model,
-  );
+- reasoning: a single sentence`, model);
 }
 
 /**
@@ -244,11 +229,9 @@ IMPORTANT: Return ONLY a JSON object with:
 export async function checkPedantry(
   noteText: string,
   tweetText: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Pedantry",
-    `A Community Note is being evaluated. Is the correction it makes trivially minor — a small numerical discrepancy, a pedantic label, or a secondary detail that doesn't materially change the main message or impact of the tweet?
+  return scoreWithLLM("Pedantry", `A Community Note is being evaluated. Is the correction it makes trivially minor — a small numerical discrepancy, a pedantic label, or a secondary detail that doesn't materially change the main message or impact of the tweet?
 
 Tweet: "${tweetText}"
 Community Note: "${noteText}"
@@ -262,9 +245,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single sentence`,
-    model,
-  );
+- reasoning: a single sentence`, model);
 }
 
 /**
@@ -273,11 +254,9 @@ IMPORTANT: Return ONLY a JSON object with:
 export async function checkNoteNotNeeded(
   noteText: string,
   tweetText: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Note not needed",
-    `A Community Note is being evaluated. Does the original tweet actually make a verifiable factual claim that warrants correction, or is it opinion, satire, humor, or rhetorical — meaning a Community Note isn't really needed?
+  return scoreWithLLM("Note not needed", `A Community Note is being evaluated. Does the original tweet actually make a verifiable factual claim that warrants correction, or is it opinion, satire, humor, or rhetorical — meaning a Community Note isn't really needed?
 
 Tweet: "${tweetText}"
 Community Note: "${noteText}"
@@ -291,9 +270,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single sentence`,
-    model,
-  );
+- reasoning: a single sentence`, model);
 }
 
 /**
@@ -303,11 +280,9 @@ IMPORTANT: Return ONLY a JSON object with:
 export async function checkTangentialCorrection(
   noteText: string,
   tweetText: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Tangential correction",
-    `A Community Note is being evaluated. Does it correct a tangential or secondary detail of the tweet, while the main misleading claim goes unaddressed? Or does it directly address what is actually misleading about the tweet?
+  return scoreWithLLM("Tangential correction", `A Community Note is being evaluated. Does it correct a tangential or secondary detail of the tweet, while the main misleading claim goes unaddressed? Or does it directly address what is actually misleading about the tweet?
 
 Tweet: "${tweetText}"
 Community Note: "${noteText}"
@@ -321,9 +296,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single sentence`,
-    model,
-  );
+- reasoning: a single sentence`, model);
 }
 
 /**
@@ -334,11 +307,9 @@ IMPORTANT: Return ONLY a JSON object with:
 export async function checkRaterVerifiability(
   noteText: string,
   tweetText: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Rater verifiability",
-    `A Community Note is being evaluated. Can a typical person (non-expert) verify the note's factual claim themselves in a few minutes using a basic web search?
+  return scoreWithLLM("Rater verifiability", `A Community Note is being evaluated. Can a typical person (non-expert) verify the note's factual claim themselves in a few minutes using a basic web search?
 
 Tweet: "${tweetText}"
 Community Note: "${noteText}"
@@ -357,19 +328,18 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single sentence`,
-    model,
-  );
+- reasoning: a single sentence`, model);
 }
 
 /**
  * Overconfidence — does the note state its claim with more certainty than
  * the evidence warrants?
  */
-export async function checkOverconfidence(noteText: string, model: string = DEFAULT_SCORING_MODEL): Promise<NoteScore> {
-  return scoreWithLLM(
-    "Overconfidence",
-    `A Community Note is being evaluated. Does it state its claim with appropriate confidence, or does it assert things more definitively than the evidence warrants?
+export async function checkOverconfidence(
+  noteText: string,
+  model: string = DEFAULT_SCORING_MODEL
+): Promise<NoteScore> {
+  return scoreWithLLM("Overconfidence", `A Community Note is being evaluated. Does it state its claim with appropriate confidence, or does it assert things more definitively than the evidence warrants?
 
 Community Note: "${noteText}"
 
@@ -388,9 +358,7 @@ Scoring:
 
 IMPORTANT: Return ONLY a JSON object with:
 - score: a number between 0 and 1
-- reasoning: a single sentence`,
-    model,
-  );
+- reasoning: a single sentence`, model);
 }
 
 /**
@@ -410,7 +378,7 @@ export async function runNoteScores(
   postText: string,
   searchResults: string,
   url: string,
-  model: string = DEFAULT_SCORING_MODEL,
+  model: string = DEFAULT_SCORING_MODEL
 ): Promise<AllNoteScores> {
   console.log("[noteScores] Running note scores...");
 
@@ -438,34 +406,12 @@ export async function runNoteScores(
     checkOverconfidence(noteText, model),
   ]);
 
-  const all = [
-    positiveEvidence,
-    disagreement,
-    helpfulness,
-    sourceQuality,
-    breakingNewsRisk,
-    pedantry,
-    noteNotNeeded,
-    tangentialCorrection,
-    raterVerifiability,
-    overconfidence,
-  ];
+  const all = [positiveEvidence, disagreement, helpfulness, sourceQuality, breakingNewsRisk, pedantry, noteNotNeeded, tangentialCorrection, raterVerifiability, overconfidence];
   for (const f of all) {
     console.log(`[noteScores] ${f.name}: ${f.score.toFixed(2)} — ${f.reasoning}`);
   }
 
-  return {
-    positiveEvidence,
-    disagreement,
-    helpfulness,
-    sourceQuality,
-    breakingNewsRisk,
-    pedantry,
-    noteNotNeeded,
-    tangentialCorrection,
-    raterVerifiability,
-    overconfidence,
-  };
+  return { positiveEvidence, disagreement, helpfulness, sourceQuality, breakingNewsRisk, pedantry, noteNotNeeded, tangentialCorrection, raterVerifiability, overconfidence };
 }
 
 /**
@@ -473,7 +419,7 @@ export async function runNoteScores(
  */
 export function checkAllThresholds(
   scores: AllNoteScores,
-  thresholds = { positiveEvidence: 0.5, disagreement: 0.5, helpfulness: 0.5 },
+  thresholds = { positiveEvidence: 0.5, disagreement: 0.5, helpfulness: 0.5 }
 ): boolean {
   return (
     scores.positiveEvidence.score > thresholds.positiveEvidence &&

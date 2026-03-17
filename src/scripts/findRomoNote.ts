@@ -12,7 +12,10 @@ async function main() {
   if (scrapedNotes?.length) console.log(scrapedNotes);
 
   // Search in notes table
-  const { data: botNotes } = await client.from("notes").select("*").ilike("note_text", "%Tony Romo%");
+  const { data: botNotes } = await client
+    .from("notes")
+    .select("*")
+    .ilike("note_text", "%Tony Romo%");
   console.log("\nTony Romo in notes table:", botNotes?.length || 0);
   if (botNotes?.length) console.log(botNotes);
 
@@ -25,7 +28,10 @@ async function main() {
   if (billsNotes?.length) console.log(billsNotes);
 
   // Also search notes table
-  const { data: billsBotNotes } = await client.from("notes").select("*").ilike("note_text", "%Bills victory%");
+  const { data: billsBotNotes } = await client
+    .from("notes")
+    .select("*")
+    .ilike("note_text", "%Bills victory%");
   console.log("\nBills victory in notes table:", billsBotNotes?.length || 0);
   if (billsBotNotes?.length) console.log(billsBotNotes);
 }

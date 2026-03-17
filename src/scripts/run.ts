@@ -9,15 +9,15 @@ import path from "path";
 import open from "open";
 
 async function runPipeline(post: Post, idx: number) {
-  console.log(`[runPipeline] Starting pipeline for post #${idx + 1} (ID: ${post.id})`);
+  console.log(
+    `[runPipeline] Starting pipeline for post #${idx + 1} (ID: ${post.id})`
+  );
   try {
     // Get the original tweet content (handling retweets)
     const originalContent = getOriginalTweetContent(post);
-
-    console.log(
-      `[runPipeline] Processing ${originalContent.isQuoteTweet ? "quote tweet" : "original tweet"} for post #${idx + 1}`,
-    );
-
+    
+    console.log(`[runPipeline] Processing ${originalContent.isQuoteTweet ? 'quote tweet' : 'original tweet'} for post #${idx + 1}`);
+    
     const searchContextResult = await searchV1(
       {
         text: originalContent.text,
@@ -25,9 +25,13 @@ async function runPipeline(post: Post, idx: number) {
         mediaContext: "",
         quotedPostContext: originalContent.quotedPostContext,
       },
-      { model: "perplexity/sonar" },
+      { model: "perplexity/sonar" }
     );
-    console.log(`[runPipeline] Search context complete for post #${idx + 1} (ID: ${post.id})`);
+    console.log(
+      `[runPipeline] Search context complete for post #${idx + 1} (ID: ${
+        post.id
+      })`
+    );
 
     const noteResult = await writeV1(
       {
@@ -35,16 +39,20 @@ async function runPipeline(post: Post, idx: number) {
         searchResults: searchContextResult.searchResults,
         citations: searchContextResult.citations || [],
       },
-      { model: "anthropic/claude-sonnet-4" },
+      { model: "anthropic/claude-sonnet-4" }
     );
-    console.log(`[runPipeline] Note generated for post #${idx + 1} (ID: ${post.id})`);
+    console.log(
+      `[runPipeline] Note generated for post #${idx + 1} (ID: ${post.id})`
+    );
 
     const checkResult = await checkV1({
       note: noteResult.note,
       url: noteResult.url,
       status: noteResult.status,
     });
-    console.log(`[runPipeline] Check complete for post #${idx + 1} (ID: ${post.id})`);
+    console.log(
+      `[runPipeline] Check complete for post #${idx + 1} (ID: ${post.id})`
+    );
 
     return {
       post,
@@ -53,7 +61,10 @@ async function runPipeline(post: Post, idx: number) {
       checkResult,
     };
   } catch (err) {
-    console.error(`[runPipeline] Error in pipeline for post #${idx + 1} (ID: ${post.id}):`, err);
+    console.error(
+      `[runPipeline] Error in pipeline for post #${idx + 1} (ID: ${post.id}):`,
+      err
+    );
     return null;
   }
 }
@@ -107,19 +118,25 @@ function renderHtml(results: any[]) {
   <main>
     ${results
       .map((r, i) => {
-        if (!r) return `<div class="run"><b>Pipeline failed for post #${i + 1}</b></div>`;
-        const checkYes = r.checkResult && r.checkResult.trim().toUpperCase() === "YES";
+        if (!r)
+          return `<div class="run"><b>Pipeline failed for post #${
+            i + 1
+          }</b></div>`;
+        const checkYes =
+          r.checkResult && r.checkResult.trim().toUpperCase() === "YES";
         return `<div class="run">
           <div class="tweet-header">
             <span class="tweet-label">Tweet #${i + 1}</span>
-            <a class="tweet-link" href="https://twitter.com/i/status/${r.post.id}" target="_blank">View on Twitter</a>
+            <a class="tweet-link" href="https://twitter.com/i/status/${
+              r.post.id
+            }" target="_blank">View on Twitter</a>
           </div>
           <div class="tweet">${escapeHtml(r.post.text)}</div>
           <div class="status-row">
             <span class="status-label">Check Result:</span>
             <span class="status ${checkYes ? "check-yes" : "check-no"}">${
-              r.checkResult ? r.checkResult : "NO CHECK"
-            }</span>
+          r.checkResult ? r.checkResult : "NO CHECK"
+        }</span>
           </div>
           <div class="status-row">
             <span class="status-label">Note Status:</span>
@@ -129,11 +146,14 @@ function renderHtml(results: any[]) {
           <div class="note-block">${escapeHtml(r.noteResult.note)}</div>
           <div class="url">${
             r.noteResult.url
-              ? `<a href="${escapeHtml(r.noteResult.url)}" target="_blank">${escapeHtml(r.noteResult.url)}</a>`
+              ? `<a href="${escapeHtml(
+                  r.noteResult.url
+                )}" target="_blank">${escapeHtml(r.noteResult.url)}</a>`
               : ""
           }</div>
           <div class="citations"><span class="label">Citations:</span> ${
-            r.searchContextResult.citations && r.searchContextResult.citations.length
+            r.searchContextResult.citations &&
+            r.searchContextResult.citations.length
               ? r.searchContextResult.citations.map(escapeHtml).join(", ")
               : "None"
           }</div>
@@ -151,7 +171,7 @@ async function main() {
     let posts: Post[] = await fetchEligiblePosts(5);
     console.log(
       `[main] Fetched ${posts.length} posts:`,
-      posts.map((p) => p.id),
+      posts.map((p) => p.id)
     );
     if (!posts.length) {
       console.log("No eligible posts found.");
@@ -160,8 +180,12 @@ async function main() {
 
     // Run all pipelines in parallel
     console.log(`[main] Starting pipelines for ${posts.length} posts...`);
-    const results = await Promise.all(posts.map((post, idx) => runPipeline(post, idx)));
-    console.log(`[main] All pipelines complete. Results count: ${results.length}`);
+    const results = await Promise.all(
+      posts.map((post, idx) => runPipeline(post, idx))
+    );
+    console.log(
+      `[main] All pipelines complete. Results count: ${results.length}`
+    );
 
     // Write HTML output
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");

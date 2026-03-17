@@ -1,7 +1,7 @@
-import { AirtableClient } from "./airtableClient";
-import { EloCalculator } from "./eloCalculator";
-import { CacheManager } from "./cacheManager";
-import { Tweet, ComparisonPair, Comparison } from "./types";
+import { AirtableClient } from './airtableClient';
+import { EloCalculator } from './eloCalculator';
+import { CacheManager } from './cacheManager';
+import { Tweet, ComparisonPair, Comparison } from './types';
 
 class CommunityNotesComparison {
   private airtableClient: AirtableClient | null = null;
@@ -17,7 +17,7 @@ class CommunityNotesComparison {
     this.cacheManager = new CacheManager();
     this.initializeEventListeners();
     this.checkForCredentials();
-
+    
     // Auto-fetch data on load if credentials are available
     setTimeout(() => {
       if (this.airtableClient) {
@@ -31,19 +31,19 @@ class CommunityNotesComparison {
     const config = (window as any).AIRTABLE_CONFIG;
     if (config && config.apiKey && config.baseId && config.tableName) {
       this.airtableClient = new AirtableClient(config.apiKey, config.baseId, config.tableName);
-      this.showInterface("loadingState");
+      this.showInterface('loadingState');
       return;
     }
-
+    
     // Fallback to URL params (for easy sharing)
     const urlParams = new URLSearchParams(window.location.search);
-    const apiKey = urlParams.get("apiKey");
-    const baseId = urlParams.get("baseId");
-    const tableName = urlParams.get("tableName");
+    const apiKey = urlParams.get('apiKey');
+    const baseId = urlParams.get('baseId');
+    const tableName = urlParams.get('tableName');
 
     if (apiKey && baseId && tableName) {
       this.airtableClient = new AirtableClient(apiKey, baseId, tableName);
-      this.showInterface("loadingState");
+      this.showInterface('loadingState');
     } else {
       // Show instructions for adding credentials
       this.showCredentialsPrompt();
@@ -51,7 +51,7 @@ class CommunityNotesComparison {
   }
 
   private showCredentialsPrompt(): void {
-    const loadingState = document.getElementById("loadingState")!;
+    const loadingState = document.getElementById('loadingState')!;
     loadingState.innerHTML = `
       <div class="max-w-2xl mx-auto">
         <i class="fas fa-key text-4xl text-gray-400 mb-4"></i>
@@ -71,7 +71,7 @@ class CommunityNotesComparison {
 
   private initializeEventListeners(): void {
     // Fetch data button - hold shift to force refresh
-    document.getElementById("fetchData")?.addEventListener("click", (e) => {
+    document.getElementById('fetchData')?.addEventListener('click', (e) => {
       const forceRefresh = e.shiftKey;
       if (forceRefresh) {
         this.cacheManager.clearCache();
@@ -80,46 +80,46 @@ class CommunityNotesComparison {
     });
 
     // Comparison buttons
-    document.getElementById("leftBetter")?.addEventListener("click", () => this.handleComparison("left"));
-    document.getElementById("rightBetter")?.addEventListener("click", () => this.handleComparison("right"));
-    document.getElementById("equal")?.addEventListener("click", () => this.handleComparison("draw"));
-    document.getElementById("skip")?.addEventListener("click", () => this.handleComparison("skip"));
+    document.getElementById('leftBetter')?.addEventListener('click', () => this.handleComparison('left'));
+    document.getElementById('rightBetter')?.addEventListener('click', () => this.handleComparison('right'));
+    document.getElementById('equal')?.addEventListener('click', () => this.handleComparison('draw'));
+    document.getElementById('skip')?.addEventListener('click', () => this.handleComparison('skip'));
 
     // Export button
-    document.getElementById("exportResults")?.addEventListener("click", () => this.exportResults());
+    document.getElementById('exportResults')?.addEventListener('click', () => this.exportResults());
 
     // Clear cache button
-    document.getElementById("clearCache")?.addEventListener("click", () => {
+    document.getElementById('clearCache')?.addEventListener('click', () => {
       this.cacheManager.clearCache();
-      alert("Cache cleared! Next fetch will load fresh data from Airtable.");
+      alert('Cache cleared! Next fetch will load fresh data from Airtable.');
     });
 
     // Clear cache when date range changes
-    document.getElementById("dateRange")?.addEventListener("change", () => {
+    document.getElementById('dateRange')?.addEventListener('change', () => {
       this.cacheManager.clearCache();
     });
 
     // Keyboard shortcuts
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener('keydown', (e) => {
       if (!this.comparisonPairs.length || this.currentPairIndex >= this.comparisonPairs.length) return;
-
-      switch (e.key.toLowerCase()) {
-        case "a":
-        case "arrowleft":
-          this.handleComparison("left");
+      
+      switch(e.key.toLowerCase()) {
+        case 'a':
+        case 'arrowleft':
+          this.handleComparison('left');
           break;
-        case "d":
-        case "arrowright":
-          this.handleComparison("right");
+        case 'd':
+        case 'arrowright':
+          this.handleComparison('right');
           break;
-        case "s":
-        case "arrowdown":
-          this.handleComparison("draw");
+        case 's':
+        case 'arrowdown':
+          this.handleComparison('draw');
           break;
-        case " ":
-        case "arrowup":
+        case ' ':
+        case 'arrowup':
           e.preventDefault();
-          this.handleComparison("skip");
+          this.handleComparison('skip');
           break;
       }
     });
@@ -128,8 +128,8 @@ class CommunityNotesComparison {
   private async fetchData(forceRefresh: boolean = false): Promise<void> {
     if (!this.airtableClient) return;
 
-    const button = document.getElementById("fetchData") as HTMLButtonElement;
-    const loadingState = document.getElementById("loadingState")!;
+    const button = document.getElementById('fetchData') as HTMLButtonElement;
+    const loadingState = document.getElementById('loadingState')!;
     button.disabled = true;
     button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Fetching...';
 
@@ -145,60 +145,60 @@ class CommunityNotesComparison {
     };
 
     try {
-      const daysBack = parseInt((document.getElementById("dateRange") as HTMLSelectElement).value);
-
+      const daysBack = parseInt((document.getElementById('dateRange') as HTMLSelectElement).value);
+      
       // Check cache first (unless force refresh)
       const cachedTweets = forceRefresh ? null : this.cacheManager.getFromCache(daysBack);
       if (cachedTweets) {
         const cacheInfo = this.cacheManager.getCacheInfo();
         showProgress(`Loading from cache (${cacheInfo?.ageMinutes} minutes old)...`);
         this.tweets = cachedTweets;
-
+        
         // Add a small delay to show the cache message
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 500));
       } else {
-        showProgress("Connecting to Airtable...");
-
+        showProgress('Connecting to Airtable...');
+        
         // Add progress callback to airtableClient
         this.airtableClient.onProgress = (message: string) => showProgress(message);
-
+        
         this.tweets = await this.airtableClient.fetchRecords(daysBack);
-
+        
         // Save to cache
         this.cacheManager.saveToCache(this.tweets, daysBack);
       }
-
+      
       // Generate all possible comparison pairs
-      showProgress("Generating comparison pairs...");
+      showProgress('Generating comparison pairs...');
       this.generateComparisonPairs();
-
+      
       // Reset state
       this.currentPairIndex = 0;
       this.comparisons = [];
       this.eloCalculator.reset();
-
+      
       // Update UI
-      showProgress("Preparing interface...");
+      showProgress('Preparing interface...');
       this.updateProgress();
       this.updateLeaderboard();
-
+      
       if (this.comparisonPairs.length > 0) {
-        this.showInterface("comparisonInterface");
+        this.showInterface('comparisonInterface');
         this.displayCurrentComparison();
-        document.getElementById("exportResults")!.removeAttribute("disabled");
+        document.getElementById('exportResults')!.removeAttribute('disabled');
       } else {
-        this.showInterface("loadingState");
-        const loadingState = document.getElementById("loadingState")!;
+        this.showInterface('loadingState');
+        const loadingState = document.getElementById('loadingState')!;
         loadingState.innerHTML = `
           <i class="fas fa-info-circle text-4xl text-gray-400 mb-4"></i>
           <p class="text-gray-600">No tweets found with multiple branch attempts in the selected time period.</p>
         `;
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-
-      const loadingState = document.getElementById("loadingState")!;
+      console.error('Error fetching data:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      const loadingState = document.getElementById('loadingState')!;
       loadingState.innerHTML = `
         <div class="max-w-2xl mx-auto">
           <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
@@ -207,7 +207,7 @@ class CommunityNotesComparison {
           <p class="text-gray-500 text-sm">Check the browser console for more details.</p>
         </div>
       `;
-      this.showInterface("loadingState");
+      this.showInterface('loadingState');
     } finally {
       button.disabled = false;
       button.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Fetch Data';
@@ -216,14 +216,14 @@ class CommunityNotesComparison {
 
   private generateComparisonPairs(): void {
     this.comparisonPairs = [];
-
+    
     for (const tweet of this.tweets) {
       // Generate all unique pairs of notes for this tweet
       for (let i = 0; i < tweet.notes.length; i++) {
         for (let j = i + 1; j < tweet.notes.length; j++) {
           // Skip if same bot
           if (tweet.notes[i].botName === tweet.notes[j].botName) continue;
-
+          
           // Randomly assign left/right
           if (Math.random() < 0.5) {
             this.comparisonPairs.push({
@@ -231,7 +231,7 @@ class CommunityNotesComparison {
               leftNote: tweet.notes[i],
               rightNote: tweet.notes[j],
               leftIndex: i,
-              rightIndex: j,
+              rightIndex: j
             });
           } else {
             this.comparisonPairs.push({
@@ -239,43 +239,43 @@ class CommunityNotesComparison {
               leftNote: tweet.notes[j],
               rightNote: tweet.notes[i],
               leftIndex: j,
-              rightIndex: i,
+              rightIndex: i
             });
           }
         }
       }
     }
-
+    
     // Shuffle pairs
     this.comparisonPairs.sort(() => Math.random() - 0.5);
   }
 
   private displayCurrentComparison(): void {
     if (this.currentPairIndex >= this.comparisonPairs.length) {
-      this.showInterface("noMoreComparisons");
+      this.showInterface('noMoreComparisons');
       return;
     }
 
     const pair = this.comparisonPairs[this.currentPairIndex];
-
+    
     // Display tweet
-    const tweetContent = document.getElementById("tweetContent")!;
+    const tweetContent = document.getElementById('tweetContent')!;
     const tweetData = this.parseTweetData(pair.tweet.text);
-
+    
     // Build tweet display with media if available
     let tweetHtml = `<div class="space-y-3">`;
     tweetHtml += `<p>${this.escapeHtml(tweetData.text)}</p>`;
-
+    
     if (tweetData.media && tweetData.media.length > 0) {
       tweetHtml += `<div class="grid grid-cols-2 gap-2">`;
       for (const media of tweetData.media) {
-        if (media.type === "photo") {
+        if (media.type === 'photo') {
           tweetHtml += `<img src="${media.url}" alt="Tweet media" class="rounded-lg max-h-48 object-cover">`;
         }
       }
       tweetHtml += `</div>`;
     }
-
+    
     if (tweetData.quotedTweet) {
       tweetHtml += `
         <div class="border rounded-lg p-3 bg-gray-50">
@@ -284,30 +284,28 @@ class CommunityNotesComparison {
         </div>
       `;
     }
-
+    
     tweetHtml += `</div>`;
     tweetContent.innerHTML = tweetHtml;
-
+    
     // Display URL
-    const tweetUrl = document.getElementById("tweetUrl")!;
+    const tweetUrl = document.getElementById('tweetUrl')!;
     tweetUrl.innerHTML = `<a href="${pair.tweet.url}" target="_blank">${pair.tweet.url}</a>`;
-
+    
     // Display notes with clickable links and character count
-    this.displayNoteWithLinks("leftNote", pair.leftNote.text, pair.leftNote.status);
-    this.displayNoteWithLinks("rightNote", pair.rightNote.text, pair.rightNote.status);
+    this.displayNoteWithLinks('leftNote', pair.leftNote.text, pair.leftNote.status);
+    this.displayNoteWithLinks('rightNote', pair.rightNote.text, pair.rightNote.status);
   }
 
   private parseTweetData(tweetJson: string): any {
     try {
       const data = JSON.parse(tweetJson);
       return {
-        text: data.text || data.full_text || "",
+        text: data.text || data.full_text || '',
         media: data.extended_entities?.media || data.entities?.media || [],
-        quotedTweet: data.quoted_status
-          ? {
-              text: data.quoted_status.text || data.quoted_status.full_text || "",
-            }
-          : null,
+        quotedTweet: data.quoted_status ? {
+          text: data.quoted_status.text || data.quoted_status.full_text || ''
+        } : null
       };
     } catch (e) {
       return { text: tweetJson, media: [], quotedTweet: null };
@@ -315,7 +313,7 @@ class CommunityNotesComparison {
   }
 
   private escapeHtml(text: string): string {
-    const div = document.createElement("div");
+    const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
   }
@@ -325,7 +323,7 @@ class CommunityNotesComparison {
     const urlRegex = /https?:\/\/[^\s]+/g;
     let charCount = 0;
     let lastIndex = 0;
-
+    
     const matches = text.matchAll(urlRegex);
     for (const match of matches) {
       // Add the text before the URL
@@ -334,35 +332,35 @@ class CommunityNotesComparison {
       charCount += 1;
       lastIndex = match.index! + match[0].length;
     }
-
+    
     // Add any remaining text after the last URL
     charCount += text.length - lastIndex;
-
+    
     return charCount;
   }
 
   private displayNoteWithLinks(elementId: string, noteText: string, status: string): void {
     const element = document.getElementById(elementId)!;
-
+    
     // Calculate Community Notes character count
     const charCount = this.calculateCommunityNoteLength(noteText);
-
+    
     // Convert URLs to clickable links
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const htmlText = this.escapeHtml(noteText).replace(urlRegex, (url) => {
       return `<a href="${url}" target="_blank" class="text-blue-500 hover:underline">${url}</a>`;
     });
-
+    
     // Determine status color
-    let statusColor = "text-gray-600";
-    if (status.includes("CORRECTION WITH TRUSTWORTHY CITATION")) {
-      statusColor = "text-green-600";
-    } else if (status.includes("NOT MISLEADING")) {
-      statusColor = "text-blue-600";
-    } else if (status.includes("OPINION") || status.includes("SATIRE")) {
-      statusColor = "text-orange-600";
+    let statusColor = 'text-gray-600';
+    if (status.includes('CORRECTION WITH TRUSTWORTHY CITATION')) {
+      statusColor = 'text-green-600';
+    } else if (status.includes('NOT MISLEADING')) {
+      statusColor = 'text-blue-600';
+    } else if (status.includes('OPINION') || status.includes('SATIRE')) {
+      statusColor = 'text-orange-600';
     }
-
+    
     // Display note with character count and status
     element.innerHTML = `
       <div>
@@ -370,7 +368,7 @@ class CommunityNotesComparison {
         <div class="text-sm text-gray-500 space-y-1">
           <div>
             <i class="fas fa-text-width mr-1"></i>${charCount} characters
-            ${charCount > 280 ? '<span class="text-red-500 ml-1">(exceeds limit)</span>' : ""}
+            ${charCount > 280 ? '<span class="text-red-500 ml-1">(exceeds limit)</span>' : ''}
             <span class="text-xs text-gray-400 ml-2">(URLs = 1 char)</span>
           </div>
           <div class="${statusColor}">
@@ -381,26 +379,26 @@ class CommunityNotesComparison {
     `;
   }
 
-  private handleComparison(result: "left" | "right" | "draw" | "skip"): void {
+  private handleComparison(result: 'left' | 'right' | 'draw' | 'skip'): void {
     if (this.currentPairIndex >= this.comparisonPairs.length) return;
 
     const pair = this.comparisonPairs[this.currentPairIndex];
-
-    if (result !== "skip") {
+    
+    if (result !== 'skip') {
       // Record comparison
       const comparison: Comparison = {
         tweetId: pair.tweet.id,
         leftBot: pair.leftNote.botName,
         rightBot: pair.rightNote.botName,
-        winner: result === "draw" ? null : result === "left" ? pair.leftNote.botName : pair.rightNote.botName,
-        timestamp: new Date(),
+        winner: result === 'draw' ? null : (result === 'left' ? pair.leftNote.botName : pair.rightNote.botName),
+        timestamp: new Date()
       };
       this.comparisons.push(comparison);
 
       // Update Elo ratings
-      if (result === "draw") {
+      if (result === 'draw') {
         this.eloCalculator.processComparison(pair.leftNote.botName, pair.rightNote.botName, true);
-      } else if (result === "left") {
+      } else if (result === 'left') {
         this.eloCalculator.processComparison(pair.leftNote.botName, pair.rightNote.botName, false);
       } else {
         this.eloCalculator.processComparison(pair.rightNote.botName, pair.leftNote.botName, false);
@@ -420,13 +418,13 @@ class CommunityNotesComparison {
     const total = this.comparisonPairs.length;
     const percent = total > 0 ? (current / total) * 100 : 0;
 
-    document.getElementById("progressText")!.textContent = `${current} / ${total}`;
-    document.getElementById("progressPercent")!.textContent = `${Math.round(percent)}%`;
-    document.getElementById("progressBar")!.style.width = `${percent}%`;
+    document.getElementById('progressText')!.textContent = `${current} / ${total}`;
+    document.getElementById('progressPercent')!.textContent = `${Math.round(percent)}%`;
+    document.getElementById('progressBar')!.style.width = `${percent}%`;
   }
 
   private updateLeaderboard(): void {
-    const leaderboard = document.getElementById("leaderboard")!;
+    const leaderboard = document.getElementById('leaderboard')!;
     const ratings = this.eloCalculator.getRatings();
 
     if (ratings.length === 0) {
@@ -434,13 +432,13 @@ class CommunityNotesComparison {
       return;
     }
 
-    leaderboard.innerHTML = ratings
-      .map((branch, index) => {
-        const winRate =
-          branch.totalGames > 0 ? (((branch.wins + branch.draws * 0.5) / branch.totalGames) * 100).toFixed(1) : "0.0";
-
-        return `
-        <div class="border rounded-lg p-3 ${index === 0 ? "bg-yellow-50 border-yellow-300" : "bg-white"}">
+    leaderboard.innerHTML = ratings.map((branch, index) => {
+      const winRate = branch.totalGames > 0 
+        ? ((branch.wins + branch.draws * 0.5) / branch.totalGames * 100).toFixed(1)
+        : '0.0';
+      
+      return `
+        <div class="border rounded-lg p-3 ${index === 0 ? 'bg-yellow-50 border-yellow-300' : 'bg-white'}">
           <div class="flex justify-between items-start">
             <div>
               <div class="font-semibold">${index + 1}. ${branch.name}</div>
@@ -452,27 +450,26 @@ class CommunityNotesComparison {
           </div>
         </div>
       `;
-      })
-      .join("");
+    }).join('');
   }
 
   private showInterface(interfaceId: string): void {
-    const interfaces = ["loadingState", "comparisonInterface", "noMoreComparisons"];
-    interfaces.forEach((id) => {
+    const interfaces = ['loadingState', 'comparisonInterface', 'noMoreComparisons'];
+    interfaces.forEach(id => {
       const element = document.getElementById(id);
       if (element) {
-        element.classList.toggle("hidden", id !== interfaceId);
+        element.classList.toggle('hidden', id !== interfaceId);
       }
     });
   }
 
   private exportResults(): void {
     const csv = this.eloCalculator.exportData();
-    const blob = new Blob([csv], { type: "text/csv" });
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = `community-notes-elo-ratings-${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `community-notes-elo-ratings-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -481,6 +478,6 @@ class CommunityNotesComparison {
 }
 
 // Initialize app when DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   new CommunityNotesComparison();
 });

@@ -14,7 +14,10 @@ export type NoteEvaluationResponse = {
  * @param noteText The text content of the note
  * @returns The evaluation response containing the claim_opinion_score
  */
-export async function evaluateNote(postId: string, noteText: string): Promise<NoteEvaluationResponse> {
+export async function evaluateNote(
+  postId: string,
+  noteText: string
+): Promise<NoteEvaluationResponse> {
   const url = "https://api.x.com/2/evaluate_note";
   const data = {
     post_id: postId,
@@ -49,7 +52,7 @@ export async function evaluateNote(postId: string, noteText: string): Promise<No
 export async function shouldSubmitNote(
   postId: string,
   noteText: string,
-  minScore: number = -1.5,
+  minScore: number = -1.5
 ): Promise<{ shouldSubmit: boolean; score?: number; error?: string }> {
   try {
     const evaluation = await evaluateNote(postId, noteText);
@@ -62,7 +65,7 @@ export async function shouldSubmitNote(
       };
     }
 
-    if (!evaluation.data || typeof evaluation.data.claim_opinion_score !== "number") {
+    if (!evaluation.data || typeof evaluation.data.claim_opinion_score !== 'number') {
       console.error("[noteEvaluationFilter] Invalid response format:", evaluation);
       return {
         shouldSubmit: false,
@@ -74,7 +77,7 @@ export async function shouldSubmitNote(
     const shouldSubmit = score >= minScore;
 
     console.log(
-      `[noteEvaluationFilter] Note evaluation - Score: ${score}, Threshold: ${minScore}, Submit: ${shouldSubmit}`,
+      `[noteEvaluationFilter] Note evaluation - Score: ${score}, Threshold: ${minScore}, Submit: ${shouldSubmit}`
     );
 
     return {
@@ -82,10 +85,7 @@ export async function shouldSubmitNote(
       score,
     };
   } catch (error) {
-    console.warn(
-      "[noteEvaluationFilter] Evaluation API failed, skipping check:",
-      error instanceof Error ? error.message : error,
-    );
+    console.warn("[noteEvaluationFilter] Evaluation API failed, skipping check:", error instanceof Error ? error.message : error);
     return {
       shouldSubmit: true,
       error: error instanceof Error ? error.message : "Unknown error",

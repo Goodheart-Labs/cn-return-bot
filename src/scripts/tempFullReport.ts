@@ -67,7 +67,9 @@ const grandTotal = {
   sources: { public_data: 0, snapshot: 0, unknown: 0 },
 };
 
-for (const [bot, stats] of Object.entries(botStats).sort((a, b) => b[1].total - a[1].total)) {
+for (const [bot, stats] of Object.entries(botStats).sort(
+  (a, b) => b[1].total - a[1].total
+)) {
   const helpfulRate =
     stats.helpful + stats.notHelpful > 0
       ? ((stats.helpful / (stats.helpful + stats.notHelpful)) * 100).toFixed(1) + "%"
@@ -87,7 +89,7 @@ for (const [bot, stats] of Object.entries(botStats).sort((a, b) => b[1].total - 
       ", snapshot=" +
       stats.statusSources.snapshot +
       ", unknown=" +
-      stats.statusSources.unknown,
+      stats.statusSources.unknown
   );
   console.log("");
 

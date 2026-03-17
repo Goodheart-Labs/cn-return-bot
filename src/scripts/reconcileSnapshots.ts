@@ -15,7 +15,10 @@ import dotenv from "dotenv";
 dotenv.config();
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_KEY!
+);
 
 // ---------------------------------------------------------------------------
 // Types
@@ -44,7 +47,11 @@ export interface ClassifiedSnapshot extends Snapshot {
   tier: Tier;
 }
 
-const RECOGNIZED_STATUSES = new Set(["CURRENTLY_RATED_HELPFUL", "CURRENTLY_RATED_NOT_HELPFUL", "NEEDS_MORE_RATINGS"]);
+const RECOGNIZED_STATUSES = new Set([
+  "CURRENTLY_RATED_HELPFUL",
+  "CURRENTLY_RATED_NOT_HELPFUL",
+  "NEEDS_MORE_RATINGS",
+]);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -55,7 +62,10 @@ async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
   const all: T[] = [];
   let offset = 0;
   while (true) {
-    const { data, error } = await buildQuery().range(offset, offset + PAGE_SIZE - 1);
+    const { data, error } = await buildQuery().range(
+      offset,
+      offset + PAGE_SIZE - 1
+    );
     if (error) throw error;
     if (!data || data.length === 0) break;
     all.push(...data);
@@ -84,13 +94,15 @@ function isRealNoteId(noteId: string): boolean {
 
 export function classifySnapshot(
   snap: Snapshot,
-  groundTruth: Map<string, string>, // note_id -> tweet_id from notes table
+  groundTruth: Map<string, string> // note_id -> tweet_id from notes table
 ): Tier {
   const hasRealNoteId = isRealNoteId(snap.note_id);
   const hasRealTweetId = isRealTweetId(snap.tweet_id);
-  const hasRealStatus = snap.cn_status !== null && RECOGNIZED_STATUSES.has(snap.cn_status);
+  const hasRealStatus =
+    snap.cn_status !== null && RECOGNIZED_STATUSES.has(snap.cn_status);
   const hasNoteText = !!snap.note_text && snap.note_text.trim().length > 0;
-  const hasViewCount = snap.view_count !== null && snap.view_count !== undefined;
+  const hasViewCount =
+    snap.view_count !== null && snap.view_count !== undefined;
   const isCRH = snap.cn_status === "CURRENTLY_RATED_HELPFUL";
   const tweetUnavailable =
     snap.tweet_id === "post_unavailable" ||
@@ -178,7 +190,7 @@ interface CollisionGroup {
 
 function detectCollisions(
   snapshots: ClassifiedSnapshot[],
-  groundTruth: Map<string, string>,
+  groundTruth: Map<string, string>
 ): {
   // Collisions keyed by the conflicting dimension
   noteCollisions: Map<string, CollisionGroup>; // note_id -> collision
@@ -186,7 +198,9 @@ function detectCollisions(
   quarantinedSnapIds: Set<string>;
 } {
   // Only consider non-junk snapshots with real tweet_ids for collision detection
-  const eligible = snapshots.filter((s) => s.tier !== "junk" && s.tier !== "impossible" && isRealTweetId(s.tweet_id));
+  const eligible = snapshots.filter(
+    (s) => s.tier !== "junk" && s.tier !== "impossible" && isRealTweetId(s.tweet_id)
+  );
 
   // Group by note_id → set of tweet_ids
   const tweetsByNote = new Map<string, Map<string, ClassifiedSnapshot[]>>();
@@ -197,7 +211,8 @@ function detectCollisions(
     const key = snap.tweet_id!;
 
     // note → tweets
-    if (!tweetsByNote.has(snap.note_id)) tweetsByNote.set(snap.note_id, new Map());
+    if (!tweetsByNote.has(snap.note_id))
+      tweetsByNote.set(snap.note_id, new Map());
     const tweetMap = tweetsByNote.get(snap.note_id)!;
     if (!tweetMap.has(key)) tweetMap.set(key, []);
     tweetMap.get(key)!.push(snap);
@@ -252,7 +267,7 @@ interface VoteResult {
 function resolveCollision(
   collision: CollisionGroup,
   groundTruth: Map<string, string>,
-  groundTruthReverse: Map<string, string>, // tweet_id -> note_id
+  groundTruthReverse: Map<string, string> // tweet_id -> note_id
 ): VoteResult {
   // Check if ground truth resolves this
   for (const [pairingKey, snaps] of collision.pairings) {
@@ -310,13 +325,15 @@ export function scoreCoherence(snapshots: ClassifiedSnapshot[]): number {
 
   // Sort chronologically for time-series checks
   const chronological = [...nonJunk].sort(
-    (a, b) => new Date(a.scraped_at).getTime() - new Date(b.scraped_at).getTime(),
+    (a, b) => new Date(a.scraped_at).getTime() - new Date(b.scraped_at).getTime()
   );
 
   // --- Text consistency ---
   // Normalize and deduplicate texts
   const texts = new Set(
-    nonJunk.filter((s) => s.note_text && s.note_text.trim().length > 0).map((s) => s.note_text!.trim()),
+    nonJunk
+      .filter((s) => s.note_text && s.note_text.trim().length > 0)
+      .map((s) => s.note_text!.trim())
   );
   if (texts.size > 1) {
     // Multiple distinct texts = scraper grabbed wrong modal
@@ -324,7 +341,9 @@ export function scoreCoherence(snapshots: ClassifiedSnapshot[]): number {
   }
 
   // --- View count monotonicity ---
-  const withViews = chronological.filter((s) => s.view_count !== null && s.view_count !== undefined);
+  const withViews = chronological.filter(
+    (s) => s.view_count !== null && s.view_count !== undefined
+  );
   for (let i = 1; i < withViews.length; i++) {
     if (withViews[i].view_count! < withViews[i - 1].view_count!) {
       score -= 0.3;
@@ -333,7 +352,9 @@ export function scoreCoherence(snapshots: ClassifiedSnapshot[]): number {
 
   // --- Status transition sensibility ---
   const RATED = new Set(["CURRENTLY_RATED_HELPFUL", "CURRENTLY_RATED_NOT_HELPFUL"]);
-  const withStatus = chronological.filter((s) => s.cn_status !== null && RECOGNIZED_STATUSES.has(s.cn_status));
+  const withStatus = chronological.filter(
+    (s) => s.cn_status !== null && RECOGNIZED_STATUSES.has(s.cn_status)
+  );
   for (let i = 1; i < withStatus.length; i++) {
     const prev = withStatus[i - 1].cn_status!;
     const curr = withStatus[i].cn_status!;
@@ -379,7 +400,7 @@ const TIER_RANK: Record<Tier, number> = {
 function deriveCanonicalData(
   snapshotsByNote: Map<string, ClassifiedSnapshot[]>,
   winningPairings: Map<string, string | null>, // note_id -> winning tweet_id (null = tie)
-  quarantinedSnapIds: Set<string>,
+  quarantinedSnapIds: Set<string>
 ): CanonicalNote[] {
   const results: CanonicalNote[] = [];
 
@@ -461,9 +482,11 @@ export async function reconcile(): Promise<{
     fetchAll<Snapshot>(() =>
       supabase
         .from("scraped_notewriter_snapshots")
-        .select("id, note_id, tweet_id, note_text, cn_status, view_count, shown_on_x, excluded, scraped_at"),
+        .select("id, note_id, tweet_id, note_text, cn_status, view_count, shown_on_x, excluded, scraped_at")
     ),
-    fetchAll<GroundTruthNote>(() => supabase.from("notes").select("note_id, tweet_id")),
+    fetchAll<GroundTruthNote>(() =>
+      supabase.from("notes").select("note_id, tweet_id")
+    ),
   ]);
 
   // Filter out manually excluded snapshots
@@ -471,7 +494,7 @@ export async function reconcile(): Promise<{
   const activeSnapshots = snapshots.filter((s) => !s.excluded);
 
   console.log(
-    `[reconcile] Loaded ${snapshots.length} snapshots (${excludedCount} excluded), ${groundTruthNotes.length} ground truth notes`,
+    `[reconcile] Loaded ${snapshots.length} snapshots (${excludedCount} excluded), ${groundTruthNotes.length} ground truth notes`
   );
 
   // Build ground truth maps
@@ -499,25 +522,34 @@ export async function reconcile(): Promise<{
   };
   for (const s of classified) tierCounts[s.tier]++;
   console.log(
-    `[reconcile] Tiers — platinum: ${tierCounts.platinum}, gold: ${tierCounts.gold}, silver: ${tierCounts.silver}, junk: ${tierCounts.junk}, impossible: ${tierCounts.impossible}`,
+    `[reconcile] Tiers — platinum: ${tierCounts.platinum}, gold: ${tierCounts.gold}, silver: ${tierCounts.silver}, junk: ${tierCounts.junk}, impossible: ${tierCounts.impossible}`
   );
 
   // 3. Detect collisions
-  const { noteCollisions, tweetCollisions, quarantinedSnapIds } = detectCollisions(classified, groundTruth);
+  const { noteCollisions, tweetCollisions, quarantinedSnapIds } =
+    detectCollisions(classified, groundTruth);
   console.log(
-    `[reconcile] Collisions — ${noteCollisions.size} note-level, ${tweetCollisions.size} tweet-level, ${quarantinedSnapIds.size} quarantined snapshots`,
+    `[reconcile] Collisions — ${noteCollisions.size} note-level, ${tweetCollisions.size} tweet-level, ${quarantinedSnapIds.size} quarantined snapshots`
   );
 
   // 4. Resolve collisions
   const winningPairings = new Map<string, string | null>(); // note_id -> winning tweet_id
 
   for (const [noteId, collision] of noteCollisions) {
-    const result = resolveCollision(collision, groundTruth, groundTruthReverse);
+    const result = resolveCollision(
+      collision,
+      groundTruth,
+      groundTruthReverse
+    );
     winningPairings.set(noteId, result.winnerTweetId);
   }
 
   for (const [tweetId, collision] of tweetCollisions) {
-    const result = resolveCollision(collision, groundTruth, groundTruthReverse);
+    const result = resolveCollision(
+      collision,
+      groundTruth,
+      groundTruthReverse
+    );
     if (result.winnerNoteId) {
       // Only set if not already set by a note-level collision
       if (!winningPairings.has(result.winnerNoteId)) {
@@ -529,12 +561,17 @@ export async function reconcile(): Promise<{
   // 5. Group snapshots by note_id
   const snapshotsByNote = new Map<string, ClassifiedSnapshot[]>();
   for (const snap of classified) {
-    if (!snapshotsByNote.has(snap.note_id)) snapshotsByNote.set(snap.note_id, []);
+    if (!snapshotsByNote.has(snap.note_id))
+      snapshotsByNote.set(snap.note_id, []);
     snapshotsByNote.get(snap.note_id)!.push(snap);
   }
 
   // 6. Derive canonical data
-  const canonical = deriveCanonicalData(snapshotsByNote, winningPairings, quarantinedSnapIds);
+  const canonical = deriveCanonicalData(
+    snapshotsByNote,
+    winningPairings,
+    quarantinedSnapIds
+  );
 
   // 7. Fetch public data status to determine write authority
   //    Notes with public_data_updated_at set are owned by public data for
@@ -544,10 +581,17 @@ export async function reconcile(): Promise<{
     note_id: string;
     cn_status: string | null;
   }>(() =>
-    supabase.from("canonical_note_information").select("note_id, cn_status").not("public_data_updated_at", "is", null),
+    supabase
+      .from("canonical_note_information")
+      .select("note_id, cn_status")
+      .not("public_data_updated_at", "is", null)
   );
-  const publicDataStatus = new Map<string, string | null>(publicDataNotes.map((n) => [n.note_id, n.cn_status]));
-  console.log(`[reconcile] ${publicDataStatus.size} notes have public data (view_count-only updates)`);
+  const publicDataStatus = new Map<string, string | null>(
+    publicDataNotes.map((n) => [n.note_id, n.cn_status])
+  );
+  console.log(
+    `[reconcile] ${publicDataStatus.size} notes have public data (view_count-only updates)`
+  );
 
   console.log(`[reconcile] Writing ${canonical.length} canonical notes...`);
 
@@ -559,8 +603,12 @@ export async function reconcile(): Promise<{
   const BATCH_SIZE = 100;
 
   // Split canonical notes into two groups
-  const fullUpdateNotes = canonical.filter((c) => !publicDataStatus.has(c.note_id));
-  const viewOnlyNotes = canonical.filter((c) => publicDataStatus.has(c.note_id));
+  const fullUpdateNotes = canonical.filter(
+    (c) => !publicDataStatus.has(c.note_id)
+  );
+  const viewOnlyNotes = canonical.filter((c) =>
+    publicDataStatus.has(c.note_id)
+  );
 
   // Case B: Notes NOT in public data — full write (existing behavior)
   for (let i = 0; i < fullUpdateNotes.length; i += BATCH_SIZE) {
@@ -576,10 +624,15 @@ export async function reconcile(): Promise<{
       last_reconciled_at: now,
     }));
 
-    const { error } = await supabase.from("canonical_note_information").upsert(rows, { onConflict: "note_id" });
+    const { error } = await supabase
+      .from("canonical_note_information")
+      .upsert(rows, { onConflict: "note_id" });
 
     if (error) {
-      console.error(`[reconcile] Error writing full batch at offset ${i}:`, error);
+      console.error(
+        `[reconcile] Error writing full batch at offset ${i}:`,
+        error
+      );
     } else {
       fullWrites += batch.length;
     }
@@ -588,7 +641,8 @@ export async function reconcile(): Promise<{
   // Case A: Notes IN public data — only update view_count + reconciliation metadata
   for (const c of viewOnlyNotes) {
     const canonicalStatus = publicDataStatus.get(c.note_id);
-    const statusMatches = c.cn_status !== null && c.cn_status === canonicalStatus;
+    const statusMatches =
+      c.cn_status !== null && c.cn_status === canonicalStatus;
 
     const row: Record<string, any> = {
       data_tier: c.data_tier,
@@ -602,17 +656,23 @@ export async function reconcile(): Promise<{
       viewSkippedMismatch++;
     }
 
-    const { error } = await supabase.from("canonical_note_information").update(row).eq("note_id", c.note_id);
+    const { error } = await supabase
+      .from("canonical_note_information")
+      .update(row)
+      .eq("note_id", c.note_id);
 
     if (error) {
-      console.error(`[reconcile] Error updating view-only note ${c.note_id}:`, error);
+      console.error(
+        `[reconcile] Error updating view-only note ${c.note_id}:`,
+        error
+      );
     } else {
       viewOnlyWrites++;
     }
   }
 
   console.log(
-    `[reconcile] Done. Full writes: ${fullWrites}, view-only updates: ${viewOnlyWrites}, view_count skipped (status mismatch): ${viewSkippedMismatch}`,
+    `[reconcile] Done. Full writes: ${fullWrites}, view-only updates: ${viewOnlyWrites}, view_count skipped (status mismatch): ${viewSkippedMismatch}`
   );
 
   return {
@@ -640,13 +700,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.log("\n=== Reconciliation Summary ===");
       console.log(`Total snapshots: ${result.totalSnapshots}`);
       console.log(
-        `Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk} impossible=${result.tierCounts.impossible}`,
+        `Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk} impossible=${result.tierCounts.impossible}`
       );
-      console.log(`Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`);
-      console.log(`Quarantined: ${result.quarantined}`);
       console.log(
-        `Notes written: ${result.notesWritten} (full: ${result.fullWrites}, view-only: ${result.viewOnlyWrites})`,
+        `Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`
       );
+      console.log(`Quarantined: ${result.quarantined}`);
+      console.log(`Notes written: ${result.notesWritten} (full: ${result.fullWrites}, view-only: ${result.viewOnlyWrites})`);
       console.log(`View updates skipped (status mismatch): ${result.viewSkippedMismatch}`);
     })
     .catch((err) => {

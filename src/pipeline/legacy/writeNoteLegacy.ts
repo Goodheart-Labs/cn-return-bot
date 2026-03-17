@@ -3,13 +3,13 @@ import { z } from "zod";
 import { llm } from "../llm";
 import { searchVersionOne } from "../searchContextGoal";
 import { textAndSearchResults, writeNoteOutput } from "../schemas";
-
 import { parseStatusNoteUrl } from "../parseStatusNoteUrl";
 
 // Define the goal schema, similar to searchContext.ts
 export const writeNoteWithSearchGoal = createGoal({
   name: "write note with search",
-  description: "Write a Community Note for a post on X using search results for context.",
+  description:
+    "Write a Community Note for a post on X using search results for context.",
   input: textAndSearchResults,
   output: writeNoteOutput,
 });
@@ -157,11 +157,16 @@ export const writeNoteWithSearch = writeNoteWithSearchGoal.register({
 });
 
 export async function writeNoteWithSearchFn(
-  { text, searchResults, citations, quotedPostContext }: z.infer<typeof textAndSearchResults>,
+  {
+    text,
+    searchResults,
+    citations,
+    quotedPostContext,
+  }: z.infer<typeof textAndSearchResults>,
   config: {
     model: string;
     currentDate?: string;
-  },
+  }
 ) {
   const maxRetries = 3;
   let attempt = 0;

@@ -35,19 +35,14 @@ export const opusMainNoSourceCheck: Bot = {
           });
           mediaContext = mediaResult.contextForSearch;
           lastStage = "media_analysis";
-          console.log(
-            `[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`,
-          );
+          console.log(`[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`);
           if (mediaResult.warnings.length > 0) {
             warnings.push(...mediaResult.warnings);
           }
         } catch (err: any) {
           const msg = `Media analysis failed: ${err.message}`;
           // If tweet is media-only (no meaningful text), media analysis is essential
-          const strippedText = content.text
-            .replace(/@\w+/g, "")
-            .replace(/https?:\/\/\S+/g, "")
-            .trim();
+          const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
           if (strippedText.length < 20) {
             throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
           }
@@ -64,7 +59,7 @@ export const opusMainNoSourceCheck: Bot = {
           mediaContext,
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.search },
+        { model: MODELS.search }
       );
 
       lastStage = "note_writing";
@@ -75,7 +70,7 @@ export const opusMainNoSourceCheck: Bot = {
           citations: searchResult.citations || [],
           mediaContext,
         },
-        { model: MODELS.noteWriting },
+        { model: MODELS.noteWriting }
       );
 
       return {

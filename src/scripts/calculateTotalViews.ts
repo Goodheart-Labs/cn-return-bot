@@ -44,7 +44,10 @@ async function calculateTotalViews() {
   const { data: notes } = await supabase["client"]
     .from("notes")
     .select("note_id, bot_name")
-    .in("note_id", Array.from(latestViews.keys()));
+    .in(
+      "note_id",
+      Array.from(latestViews.keys())
+    );
 
   const viewsByBot = new Map<string, number>();
   for (const note of notes || []) {

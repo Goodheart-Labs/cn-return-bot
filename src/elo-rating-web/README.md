@@ -8,7 +8,7 @@ A web-based tool for comparing Community Notes from different bot branches using
 - **Blind Comparison**: Notes are presented side-by-side without revealing which branch wrote them
 - **Elo Rating System**: Uses standard Elo algorithm (K=15) to rank branches based on pairwise comparisons
 - **Real-time Leaderboard**: Shows current rankings, win/loss records, and win rates
-- **Keyboard Shortcuts**:
+- **Keyboard Shortcuts**: 
   - A/← : Left note is better
   - D/→ : Right note is better
   - S/↓ : Notes are equal
@@ -18,7 +18,6 @@ A web-based tool for comparing Community Notes from different bot branches using
 ## Setup
 
 1. Make sure your `.env` file contains Airtable credentials:
-
    ```
    AIRTABLE_API_KEY=your_api_key
    AIRTABLE_BASE_ID=your_base_id
@@ -26,13 +25,11 @@ A web-based tool for comparing Community Notes from different bot branches using
    ```
 
 2. Run the application:
-
    ```bash
    bun run elo
    ```
 
 3. Open in browser:
-
    ```
    http://localhost:8000
    ```
@@ -53,7 +50,6 @@ A web-based tool for comparing Community Notes from different bot branches using
 ## How It Works
 
 The system:
-
 1. Fetches all tweets from Airtable where multiple bots have written notes
 2. Generates all possible pairwise comparisons between different branches for the same tweet
 3. Presents comparisons in random order with randomized left/right placement
@@ -63,7 +59,6 @@ The system:
 ## Security Note
 
 Currently, the API key is passed via URL parameters. For production use, consider:
-
 - Setting up a proxy server to keep the API key secure
 - Using environment variables
 - Implementing proper authentication

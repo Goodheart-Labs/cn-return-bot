@@ -6,8 +6,7 @@ const s = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_K
 
 async function main() {
   // Get all snapshots with helpful status
-  const { data: snaps } = await s
-    .from("scraped_notewriter_snapshots")
+  const { data: snaps } = await s.from("scraped_notewriter_snapshots")
     .select("note_id, cn_status, view_count, scraped_at")
     .in("cn_status", ["CURRENTLY_RATED_HELPFUL", "SHOWN_ON_X", "Currently rated helpful"])
     .order("scraped_at", { ascending: false });
@@ -19,20 +18,19 @@ async function main() {
     if (!existing) {
       noteData.set(snap.note_id, {
         cn_status: snap.cn_status,
-        view_count: snap.view_count || 0,
+        view_count: snap.view_count || 0
       });
     } else if ((snap.view_count || 0) > existing.view_count) {
       noteData.set(snap.note_id, {
         cn_status: snap.cn_status,
-        view_count: snap.view_count || 0,
+        view_count: snap.view_count || 0
       });
     }
   }
 
   // Get tweet_ids and note_text from canonical_note_information
   const noteIds = [...noteData.keys()];
-  const { data: scrapedNotes } = await s
-    .from("canonical_note_information")
+  const { data: scrapedNotes } = await s.from("canonical_note_information")
     .select("note_id, tweet_id, note_text")
     .in("note_id", noteIds);
 
@@ -58,7 +56,7 @@ async function main() {
         tweet_id: info.tweet_id,
         note_text: info.note_text,
         status: data.cn_status,
-        views: data.view_count,
+        views: data.view_count
       });
     }
   }
@@ -158,26 +156,31 @@ async function main() {
     <strong>${helpful.length}</strong> helpful notes with <strong>${totalViews.toLocaleString()}</strong> total views
   </div>
 
-  ${helpful
-    .map((n, i) => {
-      const tweetUrl = n.tweet_id.startsWith("unavailable_") ? null : `https://x.com/i/status/${n.tweet_id}`;
-      const noteUrl = n.note_id.startsWith("tweet_") ? null : `https://x.com/i/birdwatch/n/${n.note_id}`;
-      const escapedText = n.note_text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  ${helpful.map((n, i) => {
+    const tweetUrl = n.tweet_id.startsWith("unavailable_")
+      ? null
+      : `https://x.com/i/status/${n.tweet_id}`;
+    const noteUrl = n.note_id.startsWith("tweet_")
+      ? null
+      : `https://x.com/i/birdwatch/n/${n.note_id}`;
+    const escapedText = n.note_text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
 
-      return `
+    return `
   <div class="note-card">
     <div class="note-header">
       <span><span class="rank">#${i + 1}</span> <span class="views">${n.views.toLocaleString()} views</span></span>
       <span class="status">${n.status}</span>
     </div>
-    <div class="note-text">${escapedText || "<em>No note text available</em>"}</div>
+    <div class="note-text">${escapedText || '<em>No note text available</em>'}</div>
     <div class="note-links">
       ${tweetUrl ? `<a href="${tweetUrl}" target="_blank">View Tweet</a>` : '<span class="unavailable">Tweet unavailable</span>'}
-      ${noteUrl ? `<a href="${noteUrl}" target="_blank">View Note</a>` : ""}
+      ${noteUrl ? `<a href="${noteUrl}" target="_blank">View Note</a>` : ''}
     </div>
   </div>`;
-    })
-    .join("\n")}
+  }).join('\n')}
 </body>
 </html>`;
 

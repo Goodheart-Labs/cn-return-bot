@@ -25,7 +25,7 @@ ${quotedTweet}
     quotedTweet: string,
     grokContext: string,
     iteration: number,
-    currentResearch: string,
+    currentResearch: string
   ) =>
     `You are analyzing research about a tweet to figure out what is going on with it and if it is misleading.
 
@@ -56,9 +56,11 @@ RESEARCH_REQUEST: [If YES, what to search for next. If NO, write "None"]`,
 export async function claudeFirstSearch(
   tweetText: string,
   config: { model: string },
-  quotedPostContext?: string,
+  quotedPostContext?: string
 ): Promise<string> {
-  const quoteContext = quotedPostContext ? `\n\nQUOTED TWEET:\n${quotedPostContext}` : "";
+  const quoteContext = quotedPostContext
+    ? `\n\nQUOTED TWEET:\n${quotedPostContext}`
+    : "";
   const prompt = PROMPTS.firstSearch(tweetText, quoteContext);
 
   const result = await llm.create({
@@ -86,10 +88,18 @@ export async function followUpResearch(
   iteration: number,
   config: { model: string },
   quotedPostContext?: string,
-  grokContext?: string,
+  grokContext?: string
 ): Promise<FollowUpResult> {
-  const quoteContext = quotedPostContext ? `\n\nQUOTED TWEET:\n${quotedPostContext}` : "";
-  const prompt = PROMPTS.analyzeGaps(tweetText, quoteContext, grokContext || "None", iteration, currentResearch);
+  const quoteContext = quotedPostContext
+    ? `\n\nQUOTED TWEET:\n${quotedPostContext}`
+    : "";
+  const prompt = PROMPTS.analyzeGaps(
+    tweetText,
+    quoteContext,
+    grokContext || "None",
+    iteration,
+    currentResearch
+  );
 
   const result = await llm.create({
     model: config.model,
@@ -104,7 +114,8 @@ export async function followUpResearch(
   const urlMatches = content.match(/https?:\/\/[^\s\])"'>]+/g) || [];
   const urls = [...new Set(urlMatches.map((u) => u.replace(/[.,;:!?)]+$/, "")))];
 
-  const hasGaps = researchRequest.toLowerCase() !== "none" && researchRequest !== "";
+  const hasGaps =
+    researchRequest.toLowerCase() !== "none" && researchRequest !== "";
 
   return { content, hasGaps, researchRequest, urls };
 }

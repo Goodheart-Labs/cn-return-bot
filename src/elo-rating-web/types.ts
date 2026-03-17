@@ -7,7 +7,7 @@ export interface AirtableRecord {
     "Full Result": string;
     "Final note": string;
     "Would be posted": number;
-    Created: string;
+    "Created": string;
   };
 }
 

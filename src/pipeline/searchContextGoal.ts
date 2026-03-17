@@ -10,7 +10,13 @@ const sanitizedPosts = posts.map(({ text, media }) => {
   return {
     text,
     media: media
-      .map((m) => ("url" in m ? m.url : "preview_image_url" in m ? m.preview_image_url : null))
+      .map((m) =>
+        "url" in m
+          ? m.url
+          : "preview_image_url" in m
+            ? m.preview_image_url
+            : null
+      )
       .filter((m): m is string => Boolean(m)),
   };
 });
@@ -30,7 +36,7 @@ export const searchContextGoal = createGoal({
 sanitizedPosts.map((post, index) =>
   searchContextGoal.test(`Post ${index}`, {
     ...post,
-  }),
+  })
 );
 
 export const searchVersionOne = searchContextGoal.register<{
@@ -53,7 +59,7 @@ export async function versionOneFn(
   },
   config: {
     model: OpenAIChatModelId;
-  },
+  }
 ) {
   // Only include image_url parts for models that support vision.
   // Perplexity sonar models reject image inputs with "Failed to load image".
@@ -61,9 +67,9 @@ export async function versionOneFn(
   const images: ChatCompletionContentPartImage[] = isPerplexity
     ? []
     : input.media.map((url) => ({
-        type: "image_url",
-        image_url: { url },
-      }));
+      type: "image_url",
+      image_url: { url },
+    }));
 
   let systemPrompt = `You are a context and factchecking tool. Search the web for information that DIRECTLY addresses or contradicts the specific claims made in the following post.
 

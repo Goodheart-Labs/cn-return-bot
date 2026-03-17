@@ -4,7 +4,9 @@ async function main() {
   const client = getSupabaseClient();
 
   // Get all unique statuses from snapshots
-  const { data: snapshots } = await client.from("scraped_notewriter_snapshots").select("cn_status");
+  const { data: snapshots } = await client
+    .from("scraped_notewriter_snapshots")
+    .select("cn_status");
 
   const allStatuses = new Set<string>();
   for (const s of snapshots || []) {
@@ -17,7 +19,9 @@ async function main() {
   }
 
   // Also check the notes table
-  const { data: notes } = await client.from("notes").select("cn_status");
+  const { data: notes } = await client
+    .from("notes")
+    .select("cn_status");
 
   const noteStatuses = new Set<string>();
   for (const n of notes || []) {
@@ -30,7 +34,9 @@ async function main() {
   }
 
   // Check canonical_note_information too
-  const { data: scrapedNotes } = await client.from("canonical_note_information").select("cn_status");
+  const { data: scrapedNotes } = await client
+    .from("canonical_note_information")
+    .select("cn_status");
 
   const scrapedStatuses = new Set<string>();
   for (const n of scrapedNotes || []) {

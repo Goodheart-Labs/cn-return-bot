@@ -24,8 +24,8 @@ console.log(`Total unique tweets that failed: ${sorted.length}\n`);
 
 for (const [tweetId, runs] of sorted.slice(0, 30)) {
   const url = `https://x.com/i/status/${tweetId}`;
-  const dates = runs.map((r) => r.created_at?.slice(0, 16)).join(", ");
-  const bots = [...new Set(runs.map((r) => r.bot_id))].join(", ");
+  const dates = runs.map(r => r.created_at?.slice(0, 16)).join(", ");
+  const bots = [...new Set(runs.map(r => r.bot_id))].join(", ");
   const reason = runs[0]!.outcome_reason || "";
   const err = (runs[0]!.error_message || "").slice(0, 120);
   console.log(`Tweet: ${url}`);

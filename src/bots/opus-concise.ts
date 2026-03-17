@@ -19,7 +19,8 @@ const MODELS = {
 export const opusConcise: Bot = {
   id: "opus-concise",
   name: "Opus 4.5 (Concise)",
-  description: "Opus 4.5 variant focused on staying within 275 char limit using URL-aware counting",
+  description:
+    "Opus 4.5 variant focused on staying within 275 char limit using URL-aware counting",
   weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
@@ -33,7 +34,7 @@ export const opusConcise: Bot = {
           mediaContext: "",
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.search },
+        { model: MODELS.search }
       );
 
       lastStage = "note_writing";
@@ -43,7 +44,7 @@ export const opusConcise: Bot = {
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: MODELS.noteWriting },
+        { model: MODELS.noteWriting }
       );
 
       lastStage = "check";
@@ -53,7 +54,7 @@ export const opusConcise: Bot = {
           url: noteResult.url,
           status: noteResult.status,
         },
-        { model: MODELS.checking },
+        { model: MODELS.checking }
       );
 
       return {

@@ -9,10 +9,7 @@ import { generateText } from "ai";
 import { xai } from "./xai";
 
 const PROMPTS = {
-  search: (
-    tweetUrl: string,
-    tweetText: string,
-  ) => `Search X/Twitter for tweets surrounding this specific tweet. Is it replying to any specific tweets, quoting any tweets, or are there notable replies?
+  search: (tweetUrl: string, tweetText: string) => `Search X/Twitter for tweets surrounding this specific tweet. Is it replying to any specific tweets, quoting any tweets, or are there notable replies?
 
 Do not talk in general, nor offer commentary. Give the text of the preceding 0-3 tweets, the quoted tweet if any, and 0-3 relevant replies. Otherwise respond with nothing.
 
@@ -42,7 +39,11 @@ Output format:
 /**
  * Use Grok to search X for context around a tweet
  */
-export async function searchXWithGrok(tweetId: string, tweetText: string, config: { model: string }): Promise<string> {
+export async function searchXWithGrok(
+  tweetId: string,
+  tweetText: string,
+  config: { model: string }
+): Promise<string> {
   if (!process.env.XAI_API_KEY) {
     throw new Error("XAI_API_KEY not set - cannot use Grok X search");
   }
@@ -82,7 +83,7 @@ export function extractGrokQuotedTweet(grokOutput: string): string | null {
  */
 export function compareQuotedTweets(
   grokQuotedTweet: string | null,
-  quotedPostContext: string | undefined,
+  quotedPostContext: string | undefined
 ): string | null {
   const hasGrokQt = grokQuotedTweet !== null;
   const hasOurQt = quotedPostContext !== undefined && quotedPostContext.trim() !== "";

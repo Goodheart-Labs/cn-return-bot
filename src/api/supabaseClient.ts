@@ -102,10 +102,7 @@ export interface NoteWithSnapshot {
   is_retry?: boolean;
 }
 
-export type NoteInsert = Omit<
-  Note,
-  "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"
-> & {
+export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
   submitted_at?: string;
   view_count?: number;
   views_last_updated_at?: string;
@@ -122,7 +119,9 @@ export function getSupabaseClient(): SupabaseClient {
   const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Missing required environment variables: SUPABASE_URL, SUPABASE_SERVICE_KEY");
+    throw new Error(
+      "Missing required environment variables: SUPABASE_URL, SUPABASE_SERVICE_KEY"
+    );
   }
 
   supabaseInstance = createClient(supabaseUrl, supabaseKey);
@@ -139,7 +138,9 @@ export class SupabaseLogger {
   /**
    * Fetch all rows from a query, paginating past Supabase's 1000-row default limit.
    */
-  async fetchAllRows<T>(buildQuery: (from: SupabaseClient) => any): Promise<T[]> {
+  async fetchAllRows<T>(
+    buildQuery: (from: SupabaseClient) => any
+  ): Promise<T[]> {
     const PAGE_SIZE = 1000;
     const allRows: T[] = [];
     let offset = 0;
@@ -158,7 +159,11 @@ export class SupabaseLogger {
    * Insert a new note record after successful submission
    */
   async logNoteSubmission(note: NoteInsert): Promise<Note | null> {
-    const { data, error } = await this.client.from("notes").insert(note).select().single();
+    const { data, error } = await this.client
+      .from("notes")
+      .insert(note)
+      .select()
+      .single();
 
     if (error) {
       console.error("[SupabaseLogger] Error logging note:", error);
@@ -174,7 +179,11 @@ export class SupabaseLogger {
    */
   async getOrCreateNotewriter(handle: string, displayName?: string): Promise<Notewriter> {
     // Try to find existing
-    const { data: existing } = await this.client.from("notewriters").select().eq("handle", handle).single();
+    const { data: existing } = await this.client
+      .from("notewriters")
+      .select()
+      .eq("handle", handle)
+      .single();
 
     if (existing) {
       return existing;
@@ -200,14 +209,22 @@ export class SupabaseLogger {
    */
   async getOrCreateBotConfig(name: string, description?: string): Promise<BotConfig> {
     // Try to find existing
-    const { data: existing } = await this.client.from("bot_configs").select().eq("name", name).single();
+    const { data: existing } = await this.client
+      .from("bot_configs")
+      .select()
+      .eq("name", name)
+      .single();
 
     if (existing) {
       return existing;
     }
 
     // Create new
-    const { data, error } = await this.client.from("bot_configs").insert({ name, description }).select().single();
+    const { data, error } = await this.client
+      .from("bot_configs")
+      .insert({ name, description })
+      .select()
+      .single();
 
     if (error) {
       console.error("[SupabaseLogger] Error creating bot config:", error);
@@ -228,7 +245,7 @@ export class SupabaseLogger {
       somewhat_helpful_count?: number;
       not_helpful_count?: number;
       first_helpful_at?: string;
-    },
+    }
   ): Promise<void> {
     const { error } = await this.client
       .from("notes")
@@ -251,8 +268,9 @@ export class SupabaseLogger {
     const staleDate = new Date();
     staleDate.setDate(staleDate.getDate() - staleDays);
 
-    return this.fetchAllRows<Note>((client) =>
-      client.from("notes").select().or(`last_checked_at.is.null,last_checked_at.lt.${staleDate.toISOString()}`),
+    return this.fetchAllRows<Note>(
+      (client) => client.from("notes").select()
+        .or(`last_checked_at.is.null,last_checked_at.lt.${staleDate.toISOString()}`)
     );
   }
 
@@ -278,7 +296,11 @@ export class SupabaseLogger {
    * Get note by note_id
    */
   async getNoteByNoteId(noteId: string): Promise<Note | null> {
-    const { data, error } = await this.client.from("notes").select().eq("note_id", noteId).single();
+    const { data, error } = await this.client
+      .from("notes")
+      .select()
+      .eq("note_id", noteId)
+      .single();
 
     if (error) {
       if (error.code === "PGRST116") {
@@ -296,13 +318,17 @@ export class SupabaseLogger {
    * Update an existing note with manual scraped data
    * Throws error if note doesn't exist - use logUnmatchedScrapedNote() for unmatched notes
    */
-  async updateScrapedNote(data: { note_id: string; cn_status?: string; view_count?: number }): Promise<Note> {
+  async updateScrapedNote(data: {
+    note_id: string;
+    cn_status?: string;
+    view_count?: number;
+  }): Promise<Note> {
     // Check if note exists
     const existing = await this.getNoteByNoteId(data.note_id);
 
     if (!existing) {
       throw new Error(
-        `Note ${data.note_id} not found in database. Use logUnmatchedScrapedNote() to record unmatched notes.`,
+        `Note ${data.note_id} not found in database. Use logUnmatchedScrapedNote() to record unmatched notes.`
       );
     }
 
@@ -362,9 +388,11 @@ export class SupabaseLogger {
       upsertData.views_last_updated_at = now;
     }
 
-    const { error } = await this.client.from("unmatched_scraped_notes").upsert(upsertData, {
-      onConflict: "note_id",
-    });
+    const { error } = await this.client
+      .from("unmatched_scraped_notes")
+      .upsert(upsertData, {
+        onConflict: "note_id",
+      });
 
     if (error) {
       console.error("[SupabaseLogger] Error upserting unmatched note:", error);
@@ -384,18 +412,20 @@ export class SupabaseLogger {
     note_text?: string;
     source_url?: string;
   }): Promise<void> {
-    const { error } = await this.client.from("canonical_note_information").upsert(
-      {
-        note_id: data.note_id,
-        tweet_id: data.tweet_id,
-        note_text: data.note_text,
-        source_url: data.source_url,
-      },
-      {
-        onConflict: "note_id",
-        ignoreDuplicates: true,
-      },
-    );
+    const { error } = await this.client
+      .from("canonical_note_information")
+      .upsert(
+        {
+          note_id: data.note_id,
+          tweet_id: data.tweet_id,
+          note_text: data.note_text,
+          source_url: data.source_url,
+        },
+        {
+          onConflict: "note_id",
+          ignoreDuplicates: true,
+        }
+      );
 
     if (error) {
       console.error("[SupabaseLogger] Error upserting scraped notewriter note:", error);
@@ -418,21 +448,23 @@ export class SupabaseLogger {
     tweet_text?: string;
     tweet_time?: string;
   }): Promise<void> {
-    const { error } = await this.client.from("scraped_notewriter_snapshots").insert({
-      note_id: data.note_id,
-      tweet_id: data.tweet_id,
-      note_text: data.note_text,
-      cn_status: data.cn_status,
-      view_count: data.view_count,
-      shown_on_x: data.shown_on_x,
-      helpful_count: data.helpful_count,
-      somewhat_helpful_count: data.somewhat_helpful_count,
-      not_helpful_count: data.not_helpful_count,
-      rater_tags: data.rater_tags,
-      tweet_handle: data.tweet_handle,
-      tweet_text: data.tweet_text,
-      tweet_time: data.tweet_time,
-    });
+    const { error } = await this.client
+      .from("scraped_notewriter_snapshots")
+      .insert({
+        note_id: data.note_id,
+        tweet_id: data.tweet_id,
+        note_text: data.note_text,
+        cn_status: data.cn_status,
+        view_count: data.view_count,
+        shown_on_x: data.shown_on_x,
+        helpful_count: data.helpful_count,
+        somewhat_helpful_count: data.somewhat_helpful_count,
+        not_helpful_count: data.not_helpful_count,
+        rater_tags: data.rater_tags,
+        tweet_handle: data.tweet_handle,
+        tweet_text: data.tweet_text,
+        tweet_time: data.tweet_time,
+      });
 
     if (error) {
       console.error("[SupabaseLogger] Error inserting scraped notewriter snapshot:", error);
@@ -504,36 +536,12 @@ export class SupabaseLogger {
   /**
    * Get pipeline run outcomes grouped by bot
    */
-  async getPipelineRunsByBot(): Promise<
-    Record<
-      string,
-      {
-        total: number;
-        submitted: number;
-        filtered: number;
-        failed: number;
-        rejected: number;
-        created_at_min?: string;
-        created_at_max?: string;
-      }
-    >
-  > {
-    const data = await this.fetchAllRows<{ bot_id: string; outcome: string; created_at: string }>((client) =>
-      client.from("pipeline_runs").select("bot_id, outcome, created_at"),
+  async getPipelineRunsByBot(): Promise<Record<string, { total: number; submitted: number; filtered: number; failed: number; rejected: number; created_at_min?: string; created_at_max?: string }>> {
+    const data = await this.fetchAllRows<{ bot_id: string; outcome: string; created_at: string }>(
+      (client) => client.from("pipeline_runs").select("bot_id, outcome, created_at")
     );
 
-    const result: Record<
-      string,
-      {
-        total: number;
-        submitted: number;
-        filtered: number;
-        failed: number;
-        rejected: number;
-        created_at_min?: string;
-        created_at_max?: string;
-      }
-    > = {};
+    const result: Record<string, { total: number; submitted: number; filtered: number; failed: number; rejected: number; created_at_min?: string; created_at_max?: string }> = {};
 
     for (const row of data) {
       const bot = row.bot_id || "unknown";
@@ -562,10 +570,10 @@ export class SupabaseLogger {
    */
   async getPipelineRunsRaw(): Promise<Array<{ bot_id: string; outcome: string; created_at: string }>> {
     try {
-      const data = await this.fetchAllRows<{ bot_id: string; outcome: string; created_at: string }>((client) =>
-        client.from("pipeline_runs").select("bot_id, outcome, created_at"),
+      const data = await this.fetchAllRows<{ bot_id: string; outcome: string; created_at: string }>(
+        (client) => client.from("pipeline_runs").select("bot_id, outcome, created_at")
       );
-      return data.map((r) => ({
+      return data.map(r => ({
         bot_id: r.bot_id || "unknown",
         outcome: r.outcome,
         created_at: r.created_at,
@@ -608,7 +616,9 @@ export class SupabaseLogger {
    */
   async getNotesWithLatestSnapshots(): Promise<NoteWithSnapshot[]> {
     // Get all notes (paginated to avoid 1000-row default limit)
-    const notes = await this.fetchAllRows<any>((client) => client.from("notes").select("*"));
+    const notes = await this.fetchAllRows<any>(
+      (client) => client.from("notes").select("*")
+    );
 
     if (notes.length === 0) {
       return [];
@@ -622,18 +632,17 @@ export class SupabaseLogger {
       view_count: number | null;
       data_tier: string | null;
       last_reconciled_at: string | null;
-    }>((client) =>
-      client
-        .from("canonical_note_information")
+    }>(
+      (client) => client.from("canonical_note_information")
         .select("note_id, cn_status, view_count, data_tier, last_reconciled_at")
-        .neq("data_tier", "junk"),
+        .neq("data_tier", "junk")
     );
 
     // Get video info from pipeline_runs
     let pipelineRuns: Array<{ tweet_id: string; has_video: boolean }> = [];
     try {
-      pipelineRuns = await this.fetchAllRows<{ tweet_id: string; has_video: boolean }>((client) =>
-        client.from("pipeline_runs").select("tweet_id, has_video").eq("outcome", "submitted"),
+      pipelineRuns = await this.fetchAllRows<{ tweet_id: string; has_video: boolean }>(
+        (client) => client.from("pipeline_runs").select("tweet_id, has_video").eq("outcome", "submitted")
       );
     } catch (pipelineError) {
       console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
@@ -644,8 +653,8 @@ export class SupabaseLogger {
     // Excludes filtered/rejected runs since those aren't real submission attempts
     let allRuns: Array<{ tweet_id: string }> = [];
     try {
-      allRuns = await this.fetchAllRows<{ tweet_id: string }>((client) =>
-        client.from("pipeline_runs").select("tweet_id").in("outcome", ["submitted", "failed"]),
+      allRuns = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("pipeline_runs").select("tweet_id").in("outcome", ["submitted", "failed"])
       );
     } catch (allRunsError) {
       console.error("[SupabaseLogger] Error fetching all pipeline runs:", allRunsError);
@@ -668,7 +677,10 @@ export class SupabaseLogger {
     }
 
     // Build reconciled data lookup per note_id
-    const reconciledByNote: Record<string, { cn_status?: string; view_count?: number; reconciled_at?: string }> = {};
+    const reconciledByNote: Record<
+      string,
+      { cn_status?: string; view_count?: number; reconciled_at?: string }
+    > = {};
     for (const rec of reconciledNotes || []) {
       reconciledByNote[rec.note_id] = {
         cn_status: rec.cn_status ?? undefined,
@@ -803,7 +815,7 @@ export class SupabaseLogger {
       note_status?: string;
       search_results?: string;
       check_reasoning?: string;
-    },
+    }
   ): Promise<void> {
     const { error } = await this.client
       .from("pipeline_runs")
@@ -838,7 +850,7 @@ export class SupabaseLogger {
       score_value?: number;
       score_label?: string;
       score_metadata?: Record<string, unknown>;
-    },
+    }
   ): Promise<void> {
     const { error } = await this.client.from("pipeline_scores").insert({
       pipeline_run_id: runId,
@@ -879,12 +891,13 @@ export class SupabaseLogger {
       created_at: string;
       search_results: string;
       tweet_text: string;
-    }>((client) =>
-      client
-        .from("pipeline_runs")
-        .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text")
-        .eq("outcome", "candidate")
-        .order("created_at", { ascending: false }),
+    }>(
+      (client) =>
+        client
+          .from("pipeline_runs")
+          .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text")
+          .eq("outcome", "candidate")
+          .order("created_at", { ascending: false })
     );
 
     if (runs.length === 0) return [];
@@ -895,8 +908,12 @@ export class SupabaseLogger {
       pipeline_run_id: string;
       score_type: string;
       score_value: number | null;
-    }>((client) =>
-      client.from("pipeline_scores").select("pipeline_run_id, score_type, score_value").in("pipeline_run_id", runIds),
+    }>(
+      (client) =>
+        client
+          .from("pipeline_scores")
+          .select("pipeline_run_id, score_type, score_value")
+          .in("pipeline_run_id", runIds)
     );
 
     // Group scores by run ID
@@ -954,15 +971,15 @@ export class SupabaseLogger {
   /**
    * Get pipeline outcomes grouped by bot for reporting
    */
-  async getPipelineOutcomesByBot(): Promise<
-    {
-      bot_id: string;
-      note_not_needed: number;
-      failed_to_write: number;
-    }[]
-  > {
-    const data = await this.fetchAllRows<{ bot_id: string; outcome: string; outcome_reason: string }>((client) =>
-      client.from("pipeline_runs").select("bot_id, outcome, outcome_reason").in("outcome", ["rejected", "failed"]),
+  async getPipelineOutcomesByBot(): Promise<{
+    bot_id: string;
+    note_not_needed: number;
+    failed_to_write: number;
+  }[]> {
+    const data = await this.fetchAllRows<{ bot_id: string; outcome: string; outcome_reason: string }>(
+      (client) => client.from("pipeline_runs")
+        .select("bot_id, outcome, outcome_reason")
+        .in("outcome", ["rejected", "failed"])
     );
 
     // Group by bot_id
@@ -1036,8 +1053,8 @@ export class SupabaseLogger {
 
     try {
       // Get submitted notes - always skip these (paginated to avoid 1000-row limit)
-      const notesData = await this.fetchAllRows<{ tweet_id: string }>((client) =>
-        client.from("notes").select("tweet_id"),
+      const notesData = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("notes").select("tweet_id")
       );
       const submittedCount = notesData.length;
       notesData.forEach((row) => {
@@ -1048,12 +1065,10 @@ export class SupabaseLogger {
       let cooldownCount = 0;
       let permanentCount = 0;
       try {
-        const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>((client) =>
-          client
-            .from("pipeline_runs")
-            .select("tweet_id, created_at")
+        const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>(
+          (client) => client.from("pipeline_runs").select("tweet_id, created_at")
             .eq("outcome", "rejected")
-            .eq("outcome_reason", "no_correction_needed"),
+            .eq("outcome_reason", "no_correction_needed")
         );
         const rejectionInfo = new Map<string, { count: number; latestAt: Date }>();
         for (const row of pipelineData) {
@@ -1093,8 +1108,9 @@ export class SupabaseLogger {
       let candidateSkipCount = 0;
       let candidateRerollCount = 0;
       try {
-        const candidateData = await this.fetchAllRows<{ id: string; tweet_id: string }>((client) =>
-          client.from("pipeline_runs").select("id, tweet_id").eq("outcome", "candidate"),
+        const candidateData = await this.fetchAllRows<{ id: string; tweet_id: string }>(
+          (client) => client.from("pipeline_runs").select("id, tweet_id")
+            .eq("outcome", "candidate")
         );
         if (candidateData.length > 0) {
           const candidateIds = candidateData.map((c) => c.id);
@@ -1102,11 +1118,10 @@ export class SupabaseLogger {
             pipeline_run_id: string;
             score_type: string;
             score_value: number | null;
-          }>((client) =>
-            client
-              .from("pipeline_scores")
+          }>(
+            (client) => client.from("pipeline_scores")
               .select("pipeline_run_id, score_type, score_value")
-              .in("pipeline_run_id", candidateIds),
+              .in("pipeline_run_id", candidateIds)
           );
 
           // Map eval scores by run
@@ -1131,9 +1146,7 @@ export class SupabaseLogger {
         console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
       }
 
-      console.log(
-        `[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${candidateSkipCount} above-floor candidates, ${candidateRerollCount} below-floor eligible for re-roll, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`,
-      );
+      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${candidateSkipCount} above-floor candidates, ${candidateRerollCount} below-floor eligible for re-roll, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);
@@ -1148,15 +1161,15 @@ export class SupabaseLogger {
   async getAllProcessedTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
     try {
-      const pipelineRows = await this.fetchAllRows<{ tweet_id: string }>((client) =>
-        client.from("pipeline_runs").select("tweet_id"),
+      const pipelineRows = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("pipeline_runs").select("tweet_id")
       );
       pipelineRows.forEach((row) => {
         if (row.tweet_id) tweetIds.add(row.tweet_id);
       });
 
-      const notesRows = await this.fetchAllRows<{ tweet_id: string }>((client) =>
-        client.from("notes").select("tweet_id"),
+      const notesRows = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("notes").select("tweet_id")
       );
       notesRows.forEach((row) => {
         if (row.tweet_id) tweetIds.add(row.tweet_id);
@@ -1179,11 +1192,13 @@ export class SupabaseLogger {
     video_count: number;
   }> {
     const sinceIso = since?.toISOString();
-    const data = await this.fetchAllRows<{ outcome: string; final_stage: string; has_video: boolean }>((client) => {
-      let q = client.from("pipeline_runs").select("outcome, final_stage, has_video");
-      if (sinceIso) q = q.gte("created_at", sinceIso);
-      return q;
-    });
+    const data = await this.fetchAllRows<{ outcome: string; final_stage: string; has_video: boolean }>(
+      (client) => {
+        let q = client.from("pipeline_runs").select("outcome, final_stage, has_video");
+        if (sinceIso) q = q.gte("created_at", sinceIso);
+        return q;
+      }
+    );
 
     const by_outcome: Record<string, number> = {};
     const by_stage: Record<string, number> = {};
@@ -1207,29 +1222,19 @@ export class SupabaseLogger {
    * Get summary stats across ALL scraped notewriter notes using reconciled data.
    * Excludes junk-tier notes. Includes notes that predate bot tracking.
    */
-  async getScrapedNoteSummary(): Promise<{
-    totalNotes: number;
-    totalViews: number;
-    totalHelpful: number;
-    totalNotHelpful: number;
-    totalNeedsMore: number;
-  }> {
+  async getScrapedNoteSummary(): Promise<{ totalNotes: number; totalViews: number; totalHelpful: number; totalNotHelpful: number; totalNeedsMore: number }> {
     const notes = await this.fetchAllRows<{
       note_id: string;
       view_count: number | null;
       cn_status: string | null;
       data_tier: string | null;
-    }>((client) =>
-      client
-        .from("canonical_note_information")
+    }>(
+      (client) => client.from("canonical_note_information")
         .select("note_id, view_count, cn_status, data_tier")
-        .neq("data_tier", "junk"),
+        .neq("data_tier", "junk")
     );
 
-    let totalViews = 0,
-      totalHelpful = 0,
-      totalNotHelpful = 0,
-      totalNeedsMore = 0;
+    let totalViews = 0, totalHelpful = 0, totalNotHelpful = 0, totalNeedsMore = 0;
     for (const note of notes) {
       totalViews += note.view_count || 0;
       const s = (note.cn_status || "").toUpperCase().replace(/\s+/g, "_");
@@ -1254,18 +1259,21 @@ export class SupabaseLogger {
    */
   async deriveTweetIds(): Promise<{ total: number; updated: number; flagged: number; noVotes: number }> {
     // 1. Get all snapshots with tweet_id
-    const snapshots = await this.fetchAllRows<{ note_id: string; tweet_id: string | null }>((client) =>
-      client.from("scraped_notewriter_snapshots").select("note_id, tweet_id"),
+    const snapshots = await this.fetchAllRows<{ note_id: string; tweet_id: string | null }>(
+      (client) => client.from("scraped_notewriter_snapshots")
+        .select("note_id, tweet_id")
     );
 
     // 2. Get all scraped notes
-    const scrapedNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>((client) =>
-      client.from("canonical_note_information").select("note_id, tweet_id"),
+    const scrapedNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
+      (client) => client.from("canonical_note_information")
+        .select("note_id, tweet_id")
     );
 
     // 3. Get bot-submitted notes (source of truth for tweet_id)
-    const botNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>((client) =>
-      client.from("notes").select("note_id, tweet_id"),
+    const botNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
+      (client) => client.from("notes")
+        .select("note_id, tweet_id")
     );
     const botTweetIds = new Map<string, string>();
     for (const n of botNotes) {
@@ -1282,9 +1290,7 @@ export class SupabaseLogger {
     }
 
     // 5. For each scraped note, compute majority and flag
-    let updated = 0,
-      flagged = 0,
-      noVotes = 0;
+    let updated = 0, flagged = 0, noVotes = 0;
 
     for (const note of scrapedNotes) {
       const tally = votesPerNote.get(note.note_id);
@@ -1356,11 +1362,10 @@ export class SupabaseLogger {
       note_text: string | null;
       cn_status: string | null;
       scraped_at: string;
-    }>((client) =>
-      client
-        .from("scraped_notewriter_snapshots")
+    }>(
+      (client) => client.from("scraped_notewriter_snapshots")
         .select("note_id, view_count, note_text, cn_status, scraped_at")
-        .order("scraped_at", { ascending: true }),
+        .order("scraped_at", { ascending: true })
     );
 
     // Group by note_id
@@ -1370,8 +1375,7 @@ export class SupabaseLogger {
       byNote.get(snap.note_id)!.push(snap);
     }
 
-    const viewCountDecreases: Array<{ note_id: string; from: number; to: number; fromDate: string; toDate: string }> =
-      [];
+    const viewCountDecreases: Array<{ note_id: string; from: number; to: number; fromDate: string; toDate: string }> = [];
     const noteTextChanges: Array<{ note_id: string; texts: string[]; dates: string[] }> = [];
 
     for (const [noteId, noteSnaps] of byNote) {
@@ -1384,7 +1388,7 @@ export class SupabaseLogger {
             note_id: noteId,
             from: maxViewsSeen,
             to: views,
-            fromDate: noteSnaps.find((s) => (s.view_count || 0) === maxViewsSeen)?.scraped_at.slice(0, 10) || "?",
+            fromDate: noteSnaps.find(s => (s.view_count || 0) === maxViewsSeen)?.scraped_at.slice(0, 10) || "?",
             toDate: snap.scraped_at.slice(0, 10),
           });
         }
@@ -1392,14 +1396,14 @@ export class SupabaseLogger {
       }
 
       // 2. Check for note text changes (only among snapshots that have note_text)
-      const withText = noteSnaps.filter((s) => s.note_text && s.note_text.length > 10);
+      const withText = noteSnaps.filter(s => s.note_text && s.note_text.length > 10);
       if (withText.length >= 2) {
-        const uniqueTexts = new Set(withText.map((s) => s.note_text!));
+        const uniqueTexts = new Set(withText.map(s => s.note_text!));
         if (uniqueTexts.size > 1) {
           noteTextChanges.push({
             note_id: noteId,
-            texts: [...uniqueTexts].map((t) => t.slice(0, 100)),
-            dates: withText.map((s) => s.scraped_at.slice(0, 10)),
+            texts: [...uniqueTexts].map(t => t.slice(0, 100)),
+            dates: withText.map(s => s.scraped_at.slice(0, 10)),
           });
         }
       }
@@ -1413,10 +1417,12 @@ export class SupabaseLogger {
    */
   async insertPublicDataSnapshot(snapshot: Omit<PublicDataSnapshot, "id" | "created_at">): Promise<void> {
     // Use upsert to update note_text if it was previously null
-    const { error } = await this.client.from("public_data_snapshots").upsert(snapshot, {
-      onConflict: "note_id,snapshot_date",
-      ignoreDuplicates: false,
-    });
+    const { error } = await this.client
+      .from("public_data_snapshots")
+      .upsert(snapshot, {
+        onConflict: "note_id,snapshot_date",
+        ignoreDuplicates: false,
+      });
 
     if (error) {
       // Re-throw to let caller handle
@@ -1432,7 +1438,9 @@ export class SupabaseLogger {
     posts_processed: number;
     commit_sha?: string;
   }): Promise<void> {
-    const { error } = await this.client.from("run_snapshots").insert(data);
+    const { error } = await this.client
+      .from("run_snapshots")
+      .insert(data);
     if (error) {
       console.warn("[SupabaseLogger] Failed to log run snapshot:", error.message);
     }

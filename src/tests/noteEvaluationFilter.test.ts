@@ -4,15 +4,15 @@ import { shouldSubmitNote, evaluateNote } from "../filters/noteEvaluationFilter"
 // Mock the getOAuth1Headers function to avoid needing real credentials in tests
 mock.module("../api/getOAuthToken", () => ({
   getOAuth1Headers: mock(() => ({
-    Authorization: 'OAuth oauth_consumer_key="test", oauth_token="test"',
-  })),
+    Authorization: "OAuth oauth_consumer_key=\"test\", oauth_token=\"test\""
+  }))
 }));
 
 // Mock axios
 mock.module("axios", () => ({
   default: {
-    post: mock(),
-  },
+    post: mock()
+  }
 }));
 
 import axios from "axios";
@@ -29,9 +29,9 @@ describe("Note Evaluation Filter", () => {
       mockedAxios.post.mockResolvedValue({
         data: {
           data: {
-            claim_opinion_score: 2.5,
-          },
-        },
+            claim_opinion_score: 2.5
+          }
+        }
       });
 
       const result = await shouldSubmitNote("1234567890", "This is a test note with sources: https://example.com");
@@ -46,9 +46,9 @@ describe("Note Evaluation Filter", () => {
       mockedAxios.post.mockResolvedValue({
         data: {
           data: {
-            claim_opinion_score: -2.0,
-          },
-        },
+            claim_opinion_score: -2.0
+          }
+        }
       });
 
       const result = await shouldSubmitNote("1234567890", "This is a test note with sources: https://example.com");
@@ -73,8 +73,8 @@ describe("Note Evaluation Filter", () => {
       // Mock API response with errors
       mockedAxios.post.mockResolvedValue({
         data: {
-          errors: [{ message: "Invalid request" }],
-        },
+          errors: [{ message: "Invalid request" }]
+        }
       });
 
       const result = await shouldSubmitNote("1234567890", "This is a test note with sources: https://example.com");
@@ -89,9 +89,9 @@ describe("Note Evaluation Filter", () => {
       mockedAxios.post.mockResolvedValue({
         data: {
           data: {
-            claim_opinion_score: 0,
-          },
-        },
+            claim_opinion_score: 0
+          }
+        }
       });
 
       const result = await shouldSubmitNote("1234567890", "This is a test note", 1.0);
@@ -107,9 +107,9 @@ describe("Note Evaluation Filter", () => {
       mockedAxios.post.mockResolvedValue({
         data: {
           data: {
-            claim_opinion_score: 1.5,
-          },
-        },
+            claim_opinion_score: 1.5
+          }
+        }
       });
 
       await evaluateNote("1234567890", "Test note content");
@@ -118,15 +118,15 @@ describe("Note Evaluation Filter", () => {
         "https://api.x.com/2/evaluate_note",
         {
           post_id: "1234567890",
-          note_text: "Test note content",
+          note_text: "Test note content"
         },
         {
           headers: {
-            Authorization: 'OAuth oauth_consumer_key="test", oauth_token="test"',
-            "Content-Type": "application/json",
+            Authorization: "OAuth oauth_consumer_key=\"test\", oauth_token=\"test\"",
+            "Content-Type": "application/json"
           },
-          timeout: 30000,
-        },
+          timeout: 30000
+        }
       );
     });
   });

@@ -5,7 +5,11 @@ import { writeNoteOutput } from "./schemas";
 import { writeNote } from "./writeNote";
 import { getBrowser } from "./browserManager";
 
-const prompt = (missingContext: string, sourceUrl: string, sourceContent: string) => `
+const prompt = (
+  missingContext: string,
+  sourceUrl: string,
+  sourceContent: string
+) => `
 Given this source content and a community note, determine if the source DIRECTLY supports the specific factual correction made in the note.
 Community note to check:
 \`\`\`
@@ -36,7 +40,9 @@ async function fetchAndSimplifyContent(url: string): Promise<string> {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });
     // Get the main text content (body text)
     const content = await page.evaluate(() => {
-      document.querySelectorAll("script, style, noscript").forEach((el: Element) => (el as any).remove());
+      document
+        .querySelectorAll("script, style, noscript")
+        .forEach((el: Element) => (el as any).remove());
       return document.body.innerText || document.body.textContent || "";
     });
     return content;
@@ -45,7 +51,10 @@ async function fetchAndSimplifyContent(url: string): Promise<string> {
   }
 }
 
-export async function verifySource({ url, note }: z.infer<typeof writeNoteOutput>, config?: { model?: string }) {
+export async function verifySource(
+  { url, note }: z.infer<typeof writeNoteOutput>,
+  config?: { model?: string }
+) {
   const model = config?.model ?? "anthropic/claude-sonnet-4";
 
   try {
@@ -76,7 +85,8 @@ export async function verifySource({ url, note }: z.infer<typeof writeNoteOutput
 
 export const checkSource = createGoal({
   name: "check source",
-  description: "Check if a source contains information that addresses the missing context",
+  description:
+    "Check if a source contains information that addresses the missing context",
   input: writeNoteOutput,
   output: z.string(),
 });

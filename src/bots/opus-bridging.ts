@@ -42,10 +42,7 @@ export const opusBridging: Bot = {
           }
         } catch (err: any) {
           const msg = `Media analysis failed: ${err.message}`;
-          const strippedText = content.text
-            .replace(/@\w+/g, "")
-            .replace(/https?:\/\/\S+/g, "")
-            .trim();
+          const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
           if (strippedText.length < 20) {
             throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
           }
@@ -61,7 +58,7 @@ export const opusBridging: Bot = {
           mediaContext,
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.search },
+        { model: MODELS.search }
       );
 
       lastStage = "note_writing";
@@ -72,7 +69,7 @@ export const opusBridging: Bot = {
           citations: searchResult.citations || [],
           mediaContext,
         },
-        { model: MODELS.noteWriting },
+        { model: MODELS.noteWriting }
       );
 
       lastStage = "check";
@@ -82,7 +79,7 @@ export const opusBridging: Bot = {
           url: noteResult.url,
           status: noteResult.status,
         },
-        { model: MODELS.checking },
+        { model: MODELS.checking }
       );
 
       return {

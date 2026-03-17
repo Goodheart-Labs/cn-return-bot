@@ -1,10 +1,11 @@
+// @ts-nocheck
 import "dotenv/config";
-import puppeteer, { type Page } from "puppeteer-core";
+import puppeteer from "puppeteer-core";
 
 async function main() {
   const browser = await puppeteer.connect({ browserURL: "http://127.0.0.1:9222" });
   const pages = await browser.pages();
-  const page = pages.find((p: Page) => p.url().includes("communitynotes"));
+  const page = pages.find(p => p.url().includes("communitynotes"));
 
   if (!page) {
     console.log("No notewriter tab found");
@@ -16,14 +17,14 @@ async function main() {
   // Scroll down significantly to find older/helpful notes
   for (let i = 0; i < 20; i++) {
     await page.evaluate(() => window.scrollBy(0, 2000));
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 500));
     console.log(`Scrolled ${(i + 1) * 2000}px`);
   }
 
   // Get the text of all cells and look for 'Shown on X' or view counts
   const cellTexts = await page.evaluate(() => {
     const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
-    return Array.from(cells).map((c) => (c as HTMLElement).innerText);
+    return [...cells].map(c => (c as HTMLElement).innerText);
   });
 
   console.log(`\nFound ${cellTexts.length} cells\n`);

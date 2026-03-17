@@ -33,7 +33,7 @@ export const opusMain: Bot = {
           mediaContext: "",
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.search },
+        { model: MODELS.search }
       );
 
       lastStage = "note_writing";
@@ -43,7 +43,7 @@ export const opusMain: Bot = {
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: MODELS.noteWriting },
+        { model: MODELS.noteWriting }
       );
 
       lastStage = "check";
@@ -53,7 +53,7 @@ export const opusMain: Bot = {
           url: noteResult.url,
           status: noteResult.status,
         },
-        { model: MODELS.checking },
+        { model: MODELS.checking }
       );
 
       return {

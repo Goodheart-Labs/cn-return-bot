@@ -61,7 +61,7 @@ Return ONLY the search query, nothing else.`,
 async function searchPerplexity(
   text: string,
   media: string[],
-  quotedPostContext?: string,
+  quotedPostContext?: string
 ): Promise<SearchSourceResult> {
   try {
     const images: ChatCompletionContentPartImage[] = media.map((url) => ({
@@ -156,7 +156,10 @@ async function searchGoogle(topic: string): Promise<SearchSourceResult> {
     const organic = data.organic || [];
 
     const results = organic
-      .map((r: any, i: number) => `${i + 1}. ${r.title}\n   ${r.snippet}\n   URL: ${r.link}`)
+      .map(
+        (r: any, i: number) =>
+          `${i + 1}. ${r.title}\n   ${r.snippet}\n   URL: ${r.link}`
+      )
       .join("\n\n");
 
     const citations = organic.map((r: any) => r.link);
@@ -216,7 +219,8 @@ async function searchExa(topic: string): Promise<SearchSourceResult> {
     const data = (await response.json()) as any;
     const results = (data.results || [])
       .map(
-        (r: any, i: number) => `${i + 1}. ${r.title}\n   ${r.snippet || r.text?.slice(0, 200) || ""}\n   URL: ${r.url}`,
+        (r: any, i: number) =>
+          `${i + 1}. ${r.title}\n   ${r.snippet || r.text?.slice(0, 200) || ""}\n   URL: ${r.url}`
       )
       .join("\n\n");
 
@@ -261,13 +265,13 @@ export async function multiSourceSearch(input: {
 
   // Log results
   console.log(
-    `[multiSourceSearch] perplexity: ${perplexityResult.success ? `${perplexityResult.citations.length} citations found` : `failed - ${perplexityResult.error}`}`,
+    `[multiSourceSearch] perplexity: ${perplexityResult.success ? `${perplexityResult.citations.length} citations found` : `failed - ${perplexityResult.error}`}`
   );
   console.log(
-    `[multiSourceSearch] google: ${googleResult.success ? `${googleResult.citations.length} results found` : `failed - ${googleResult.error}`}`,
+    `[multiSourceSearch] google: ${googleResult.success ? `${googleResult.citations.length} results found` : `failed - ${googleResult.error}`}`
   );
   console.log(
-    `[multiSourceSearch] exa: ${exaResult.success ? `${exaResult.citations.length} results found` : `failed - ${exaResult.error}`}`,
+    `[multiSourceSearch] exa: ${exaResult.success ? `${exaResult.citations.length} results found` : `failed - ${exaResult.error}`}`
   );
 
   // Combine results
@@ -275,7 +279,9 @@ export async function multiSourceSearch(input: {
   const allCitations: string[] = [];
 
   if (perplexityResult.success && perplexityResult.results) {
-    combinedResults.push(`=== PERPLEXITY SEARCH ===\n${perplexityResult.results}`);
+    combinedResults.push(
+      `=== PERPLEXITY SEARCH ===\n${perplexityResult.results}`
+    );
     allCitations.push(...perplexityResult.citations);
   }
 

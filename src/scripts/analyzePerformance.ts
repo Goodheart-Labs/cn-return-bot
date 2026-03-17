@@ -5,10 +5,7 @@ const supabase = new SupabaseLogger();
 const notes = await supabase.getNotesWithLatestSnapshots();
 
 // Analyze by bot
-const analysis: Record<
-  string,
-  { helpful: number; notHelpful: number; needsMore: number; unknown: number; total: number }
-> = {};
+const analysis: Record<string, { helpful: number; notHelpful: number; needsMore: number; unknown: number; total: number }> = {};
 for (const note of notes) {
   const bot = note.bot_name || "unknown";
   if (!analysis[bot]) {
@@ -45,7 +42,7 @@ for (const [bot, stats] of Object.entries(analysis)) {
   const known = stats.helpful + stats.notHelpful + stats.needsMore;
   const helpfulRate = known > 0 ? ((stats.helpful / known) * 100).toFixed(1) : "N/A";
   const notHelpfulRate = known > 0 ? ((stats.notHelpful / known) * 100).toFixed(1) : "N/A";
-  const deltaNum = known > 0 ? ((stats.helpful - stats.notHelpful) / known) * 100 : 0;
+  const deltaNum = known > 0 ? (stats.helpful - stats.notHelpful) / known * 100 : 0;
   const delta = known > 0 ? deltaNum.toFixed(1) : "N/A";
 
   results.push({

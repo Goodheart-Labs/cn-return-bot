@@ -135,11 +135,16 @@ ${citations.join("\n")}
 \`\`\``;
 
 export async function writeNoteBridgingFn(
-  { text, searchResults, citations, quotedPostContext }: z.infer<typeof textAndSearchResults>,
+  {
+    text,
+    searchResults,
+    citations,
+    quotedPostContext,
+  }: z.infer<typeof textAndSearchResults>,
   config: {
     model: string;
     currentDate?: string;
-  },
+  }
 ) {
   const maxRetries = 3;
   let attempt = 0;
@@ -189,10 +194,7 @@ export async function writeNoteBridgingFn(
       try {
         parsed = parseStatusNoteUrl(content);
       } catch (parseErr) {
-        console.warn(
-          `[writeNoteBridging] Failed to parse (attempt ${attempt}/${maxRetries}):`,
-          (parseErr as Error).message,
-        );
+        console.warn(`[writeNoteBridging] Failed to parse (attempt ${attempt}/${maxRetries}):`, (parseErr as Error).message);
         if (attempt >= maxRetries) {
           return { status: "PARSE_ERROR", note: "", url: "" };
         }

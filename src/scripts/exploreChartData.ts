@@ -6,19 +6,14 @@ async function main() {
   // Get all notes with status info
   const { data: notes } = await client
     .from("notes")
-    .select(
-      "note_id, bot_name, cn_status, helpful_count, somewhat_helpful_count, not_helpful_count, view_count, submitted_at",
-    )
+    .select("note_id, bot_name, cn_status, helpful_count, somewhat_helpful_count, not_helpful_count, view_count, submitted_at")
     .order("submitted_at", { ascending: true });
 
   console.log("=== All notes with bot_name and status ===");
   console.log("Total notes:", notes?.length);
 
   // Group by bot_name
-  const byBot: Record<
-    string,
-    { total: number; helpful: number; somewhat: number; not_helpful: number; no_status: number; views: number }
-  > = {};
+  const byBot: Record<string, { total: number; helpful: number; somewhat: number; not_helpful: number; no_status: number; views: number }> = {};
   for (const note of notes || []) {
     const bot = note.bot_name || "unknown";
     if (!byBot[bot]) byBot[bot] = { total: 0, helpful: 0, somewhat: 0, not_helpful: 0, no_status: 0, views: 0 };
