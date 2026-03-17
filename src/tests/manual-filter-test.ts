@@ -5,7 +5,8 @@ async function testNoteEvaluationFilter() {
 
   // Test with a sample post ID and note text
   const testPostId = "1234567890123456789"; // Sample tweet ID
-  const testNoteText = "This claim needs additional context. According to multiple sources, the information presented is misleading. Sources: https://example.com/fact-check";
+  const testNoteText =
+    "This claim needs additional context. According to multiple sources, the information presented is misleading. Sources: https://example.com/fact-check";
 
   try {
     console.log("\n--- Test 1: Normal evaluation ---");
@@ -23,7 +24,6 @@ async function testNoteEvaluationFilter() {
     const resultCustom = await shouldSubmitNote(testPostId, testNoteText, 0.5);
 
     console.log("Result with 0.5 threshold:", resultCustom);
-
   } catch (error) {
     console.error("Test failed with error:", error);
   }

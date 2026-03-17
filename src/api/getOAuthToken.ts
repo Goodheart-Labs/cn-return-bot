@@ -9,7 +9,7 @@ function getRequiredEnv(name: string): string {
   if (!value) {
     throw new Error(
       `Missing required environment variable: ${name}\n` +
-      `Set this in your .env.local file or GitHub Actions secrets.`
+        `Set this in your .env.local file or GitHub Actions secrets.`,
     );
   }
   return value;
@@ -22,11 +22,7 @@ const access_token = getRequiredEnv("X_ACCESS_TOKEN");
 const access_token_secret = getRequiredEnv("X_ACCESS_TOKEN_SECRET");
 
 // === OAuth1 Helper Function ===
-export function getOAuth1Headers(
-  url: string,
-  method: string = "GET",
-  body?: string
-) {
+export function getOAuth1Headers(url: string, method: string = "GET", body?: string) {
   const oauth = new OAuth({
     consumer: {
       key: consumer_key,
@@ -34,10 +30,7 @@ export function getOAuth1Headers(
     },
     signature_method: "HMAC-SHA1",
     hash_function(base_string, key) {
-      return crypto
-        .createHmac("sha1", key)
-        .update(base_string)
-        .digest("base64");
+      return crypto.createHmac("sha1", key).update(base_string).digest("base64");
     },
   });
 

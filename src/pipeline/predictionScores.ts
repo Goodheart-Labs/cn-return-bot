@@ -9,11 +9,7 @@
  */
 
 import { SupabaseLogger } from "../api/supabaseClient";
-import {
-  checkPositiveEvidence,
-  checkSubstantiveDisagreement,
-  countSources,
-} from "./noteScores";
+import { checkPositiveEvidence, checkSubstantiveDisagreement, countSources } from "./noteScores";
 import { evaluateNote } from "../filters/noteEvaluationFilter";
 
 interface PredictionContext {
@@ -34,7 +30,7 @@ interface PredictionContext {
 async function runSinglePredictor(
   name: string,
   fn: () => Promise<number | undefined>,
-  ctx: PredictionContext
+  ctx: PredictionContext,
 ): Promise<void> {
   try {
     const value = await fn();
@@ -67,32 +63,48 @@ export async function runPredictionScores(ctx: PredictionContext): Promise<void>
   await Promise.all([
     // Free: source/URL count — r=0.335 with outcome
     ctx.preComputed?.sourceCount === undefined
-      ? runSinglePredictor("pred_source_count", async () => {
-          return countSources(ctx.noteText);
-        }, ctx)
+      ? runSinglePredictor(
+          "pred_source_count",
+          async () => {
+            return countSources(ctx.noteText);
+          },
+          ctx,
+        )
       : Promise.resolve(),
 
     // LLM: positive evidence check (0-1)
-    runSinglePredictor("pred_llm_positive_evidence", async () => {
-      const result = await checkPositiveEvidence(ctx.noteText);
-      return result.score;
-    }, ctx),
+    runSinglePredictor(
+      "pred_llm_positive_evidence",
+      async () => {
+        const result = await checkPositiveEvidence(ctx.noteText);
+        return result.score;
+      },
+      ctx,
+    ),
 
     // LLM: substantive disagreement (0-1)
-    runSinglePredictor("pred_llm_disagreement", async () => {
-      const result = await checkSubstantiveDisagreement(ctx.noteText, ctx.tweetText);
-      return result.score;
-    }, ctx),
+    runSinglePredictor(
+      "pred_llm_disagreement",
+      async () => {
+        const result = await checkSubstantiveDisagreement(ctx.noteText, ctx.tweetText);
+        return result.score;
+      },
+      ctx,
+    ),
 
     // X API: claim opinion score (unbounded decimal)
     ctx.preComputed?.claimOpinionScore === undefined
-      ? runSinglePredictor("pred_x_claim_opinion", async () => {
-          const result = await evaluateNote(ctx.postId, ctx.noteText);
-          if (result.data && typeof result.data.claim_opinion_score === "number") {
-            return result.data.claim_opinion_score;
-          }
-          return undefined;
-        }, ctx)
+      ? runSinglePredictor(
+          "pred_x_claim_opinion",
+          async () => {
+            const result = await evaluateNote(ctx.postId, ctx.noteText);
+            if (result.data && typeof result.data.claim_opinion_score === "number") {
+              return result.data.claim_opinion_score;
+            }
+            return undefined;
+          },
+          ctx,
+        )
       : Promise.resolve(),
   ]);
 

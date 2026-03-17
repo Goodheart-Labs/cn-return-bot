@@ -8,9 +8,7 @@ let _client: OpenAI | undefined;
 function getClient(): OpenAI {
   if (!_client) {
     if (!process.env.OPENROUTER_API_KEY) {
-      throw new Error(
-        "OPENROUTER_API_KEY environment variable is required but not set"
-      );
+      throw new Error("OPENROUTER_API_KEY environment variable is required but not set");
     }
     _client = new OpenAI({
       baseURL: "https://openrouter.ai/api/v1",
@@ -45,13 +43,15 @@ function formatErrorDetail(err: any): string {
   if (errorBody && typeof errorBody === "object") {
     try {
       bodyStr = ` | body: ${JSON.stringify(errorBody).slice(0, 500)}`;
-    } catch { /* ignore stringify failures */ }
+    } catch {
+      /* ignore stringify failures */
+    }
   }
   return `${status} ${message}${bodyStr}`;
 }
 
 async function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -59,7 +59,7 @@ async function sleep(ms: number) {
  * Retries on OpenRouter "400 Provider returned error", 429, 502, 503, and network errors.
  */
 async function callWithRetry(
-  params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
+  params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming,
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
   let lastError: any;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
@@ -70,7 +70,7 @@ async function callWithRetry(
       if (attempt < MAX_RETRIES && isRetryableError(err)) {
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
-          `[llm] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}): ${formatErrorDetail(err)}. Retrying in ${backoff}ms...`
+          `[llm] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}): ${formatErrorDetail(err)}. Retrying in ${backoff}ms...`,
         );
         await sleep(backoff);
         continue;
@@ -85,9 +85,7 @@ async function callWithRetry(
   throw lastError;
 }
 
-export function extractCitations(
-  result: OpenAI.Chat.Completions.ChatCompletion
-): string[] {
+export function extractCitations(result: OpenAI.Chat.Completions.ChatCompletion): string[] {
   const annotations = result.choices?.[0]?.message?.annotations;
   if (!annotations) return [];
   return annotations

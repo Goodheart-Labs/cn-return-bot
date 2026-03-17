@@ -36,7 +36,7 @@ export const opusDirectGrok: Bot = {
           quotedPostContext: content.quotedPostContext,
         },
         { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
-        post.id
+        post.id,
       );
 
       lastStage = "note_writing";
@@ -46,7 +46,7 @@ export const opusDirectGrok: Bot = {
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: MODELS.noteWriting }
+        { model: MODELS.noteWriting },
       );
 
       lastStage = "check";
@@ -56,7 +56,7 @@ export const opusDirectGrok: Bot = {
           url: noteResult.url,
           status: noteResult.status,
         },
-        { model: MODELS.checking }
+        { model: MODELS.checking },
       );
 
       return {

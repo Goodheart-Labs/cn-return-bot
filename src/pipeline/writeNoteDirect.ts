@@ -145,16 +145,11 @@ ${citations.join("\n")}
 \`\`\``;
 
 export async function writeNoteDirectFn(
-  {
-    text,
-    searchResults,
-    citations,
-    quotedPostContext,
-  }: z.infer<typeof textAndSearchResults>,
+  { text, searchResults, citations, quotedPostContext }: z.infer<typeof textAndSearchResults>,
   config: {
     model: string;
     currentDate?: string;
-  }
+  },
 ) {
   const maxRetries = 3;
   let attempt = 0;

@@ -34,7 +34,7 @@ async function investigate() {
       .select("note_id, bot_name")
       .in(
         "note_id",
-        scraped.map((n) => n.note_id)
+        scraped.map((n) => n.note_id),
       );
 
     console.log("Matches found:");

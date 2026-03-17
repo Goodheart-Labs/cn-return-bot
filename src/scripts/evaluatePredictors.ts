@@ -11,15 +11,10 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 
-const client = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+const client = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 
 /** Paginate past Supabase's 1000-row default limit */
-async function fetchAll<T>(
-  buildQuery: () => any
-): Promise<T[]> {
+async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
   const PAGE_SIZE = 1000;
   const all: T[] = [];
   let offset = 0;
@@ -48,7 +43,9 @@ function pearsonCorrelation(x: number[], y: number[]): number {
   if (n < 3) return NaN;
   const meanX = x.reduce((a, b) => a + b, 0) / n;
   const meanY = y.reduce((a, b) => a + b, 0) / n;
-  let num = 0, denX = 0, denY = 0;
+  let num = 0,
+    denX = 0,
+    denY = 0;
   for (let i = 0; i < n; i++) {
     const dx = x[i]! - meanX;
     const dy = y[i]! - meanY;
@@ -62,22 +59,27 @@ function pearsonCorrelation(x: number[], y: number[]): number {
 
 async function main() {
   // 1. Get all submitted pipeline runs with note_ids (paginated)
-  const runs = await fetchAll<{ id: string; note_id: string; created_at: string }>(
-    () => client
+  const runs = await fetchAll<{ id: string; note_id: string; created_at: string }>(() =>
+    client
       .from("pipeline_runs")
       .select("id, note_id, created_at")
       .eq("outcome", "submitted")
-      .not("note_id", "is", null)
+      .not("note_id", "is", null),
   );
 
   // 2. Get latest public_data_snapshot per note_id (for coreNoteIntercept, paginated)
-  const snapshots = await fetchAll<{ note_id: string; core_note_intercept: string; current_status: string; snapshot_date: string }>(
-    () => client
+  const snapshots = await fetchAll<{
+    note_id: string;
+    core_note_intercept: string;
+    current_status: string;
+    snapshot_date: string;
+  }>(() =>
+    client
       .from("public_data_snapshots")
       .select("note_id, core_note_intercept, current_status, snapshot_date")
       .eq("is_ours", true)
       .not("core_note_intercept", "is", null)
-      .order("snapshot_date", { ascending: false })
+      .order("snapshot_date", { ascending: false }),
   );
 
   // Latest intercept per note
@@ -188,16 +190,11 @@ async function main() {
     const helpfulPreds = paired.filter((p) => p.helpful).map((p) => p.pred);
     const notHelpfulPreds = paired.filter((p) => p.notHelpful).map((p) => p.pred);
 
-    const helpfulMean = helpfulPreds.length > 0
-      ? helpfulPreds.reduce((a, b) => a + b, 0) / helpfulPreds.length
-      : NaN;
-    const notHelpfulMean = notHelpfulPreds.length > 0
-      ? notHelpfulPreds.reduce((a, b) => a + b, 0) / notHelpfulPreds.length
-      : NaN;
+    const helpfulMean = helpfulPreds.length > 0 ? helpfulPreds.reduce((a, b) => a + b, 0) / helpfulPreds.length : NaN;
+    const notHelpfulMean =
+      notHelpfulPreds.length > 0 ? notHelpfulPreds.reduce((a, b) => a + b, 0) / notHelpfulPreds.length : NaN;
 
-    const separation = !isNaN(helpfulMean) && !isNaN(notHelpfulMean)
-      ? helpfulMean - notHelpfulMean
-      : NaN;
+    const separation = !isNaN(helpfulMean) && !isNaN(notHelpfulMean) ? helpfulMean - notHelpfulMean : NaN;
 
     results.push({
       scoreType,
@@ -219,11 +216,11 @@ async function main() {
   console.log("LEADERBOARD (sorted by correlation with coreNoteIntercept):\n");
   console.log(
     "Predictor".padEnd(28) +
-    "N".padStart(5) +
-    "Corr".padStart(8) +
-    "Help avg".padStart(10) +
-    "NH avg".padStart(10) +
-    "Sep".padStart(8)
+      "N".padStart(5) +
+      "Corr".padStart(8) +
+      "Help avg".padStart(10) +
+      "NH avg".padStart(10) +
+      "Sep".padStart(8),
   );
   console.log("─".repeat(69));
 
@@ -235,11 +232,11 @@ async function main() {
 
     console.log(
       r.scoreType.padEnd(28) +
-      String(r.n).padStart(5) +
-      String(corr).padStart(8) +
-      String(hm).padStart(10) +
-      String(nhm).padStart(10) +
-      String(sep).padStart(8)
+        String(r.n).padStart(5) +
+        String(corr).padStart(8) +
+        String(hm).padStart(10) +
+        String(nhm).padStart(10) +
+        String(sep).padStart(8),
     );
   }
 
@@ -269,7 +266,9 @@ async function main() {
 
     // Rolling window stats
     const WINDOW = 5;
-    console.log("Date".padEnd(22) + "Pred".padStart(8) + "Actual".padStart(8) + "Error".padStart(8) + `  Roll${WINDOW} MAE`);
+    console.log(
+      "Date".padEnd(22) + "Pred".padStart(8) + "Actual".padStart(8) + "Error".padStart(8) + `  Roll${WINDOW} MAE`,
+    );
     console.log("─".repeat(55));
 
     for (let i = 0; i < sorted.length; i++) {
@@ -281,10 +280,10 @@ async function main() {
       const dateStr = s.date ? new Date(s.date).toISOString().slice(0, 16) : "unknown";
       console.log(
         dateStr.padEnd(22) +
-        s.predicted.toFixed(3).padStart(8) +
-        s.actual.toFixed(3).padStart(8) +
-        s.error.toFixed(3).padStart(8) +
-        `  ${rollingMAE.toFixed(3)}`
+          s.predicted.toFixed(3).padStart(8) +
+          s.actual.toFixed(3).padStart(8) +
+          s.error.toFixed(3).padStart(8) +
+          `  ${rollingMAE.toFixed(3)}`,
       );
     }
 

@@ -1,4 +1,4 @@
-import { BranchRating, Comparison } from './types';
+import { BranchRating, Comparison } from "./types";
 
 export class EloCalculator {
   private k: number;
@@ -27,7 +27,7 @@ export class EloCalculator {
         wins: 0,
         losses: 0,
         draws: 0,
-        totalGames: 0
+        totalGames: 0,
       });
     }
   }
@@ -65,8 +65,7 @@ export class EloCalculator {
   }
 
   getRatings(): BranchRating[] {
-    return Array.from(this.ratings.values())
-      .sort((a, b) => b.rating - a.rating);
+    return Array.from(this.ratings.values()).sort((a, b) => b.rating - a.rating);
   }
 
   getRating(branchName: string): number {
@@ -79,13 +78,14 @@ export class EloCalculator {
 
   exportData(): string {
     const data = this.getRatings();
-    const headers = ['Branch', 'Rating', 'Wins', 'Losses', 'Draws', 'Total Games', 'Win Rate'];
-    
-    const rows = data.map(branch => {
-      const winRate = branch.totalGames > 0 
-        ? ((branch.wins + branch.draws * 0.5) / branch.totalGames * 100).toFixed(1) + '%'
-        : 'N/A';
-      
+    const headers = ["Branch", "Rating", "Wins", "Losses", "Draws", "Total Games", "Win Rate"];
+
+    const rows = data.map((branch) => {
+      const winRate =
+        branch.totalGames > 0
+          ? (((branch.wins + branch.draws * 0.5) / branch.totalGames) * 100).toFixed(1) + "%"
+          : "N/A";
+
       return [
         branch.name,
         Math.round(branch.rating),
@@ -93,10 +93,10 @@ export class EloCalculator {
         branch.losses,
         branch.draws,
         branch.totalGames,
-        winRate
-      ].join(',');
+        winRate,
+      ].join(",");
     });
 
-    return [headers.join(','), ...rows].join('\n');
+    return [headers.join(","), ...rows].join("\n");
   }
 }

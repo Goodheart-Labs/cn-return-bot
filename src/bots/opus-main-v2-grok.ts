@@ -38,14 +38,19 @@ export const opusMainV2Grok: Bot = {
           });
           mediaContext = mediaResult.contextForSearch;
           lastStage = "media_analysis";
-          console.log(`[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`);
+          console.log(
+            `[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`,
+          );
           if (mediaResult.warnings.length > 0) {
             warnings.push(...mediaResult.warnings);
           }
         } catch (err: any) {
           const msg = `Media analysis failed: ${err.message}`;
           // If tweet is media-only (no meaningful text), media analysis is essential
-          const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
+          const strippedText = content.text
+            .replace(/@\w+/g, "")
+            .replace(/https?:\/\/\S+/g, "")
+            .trim();
           if (strippedText.length < 20) {
             throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
           }
@@ -63,7 +68,7 @@ export const opusMainV2Grok: Bot = {
           quotedPostContext: content.quotedPostContext,
         },
         { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
-        post.id
+        post.id,
       );
 
       lastStage = "note_writing";
@@ -73,7 +78,7 @@ export const opusMainV2Grok: Bot = {
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: MODELS.noteWriting }
+        { model: MODELS.noteWriting },
       );
 
       lastStage = "check";
@@ -83,7 +88,7 @@ export const opusMainV2Grok: Bot = {
           url: noteResult.url,
           status: noteResult.status,
         },
-        { model: MODELS.checking }
+        { model: MODELS.checking },
       );
 
       return {

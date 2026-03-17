@@ -3,6 +3,7 @@
 ## 🔴 Critical Issues to Address
 
 ### 1. **API Key Security**
+
 - **Issue**: Airtable API key is exposed in client-side JavaScript
 - **Risk**: Anyone can view source and steal your API key
 - **Solutions**:
@@ -12,6 +13,7 @@
   - Add CORS restrictions on Airtable
 
 ### 2. **Date Filtering Not Working**
+
 - **Issue**: Getting 5000+ records even for "Last 24 hours"
 - **Possible Causes**:
   - `Created` field might not exist or be named differently
@@ -25,6 +27,7 @@
 ## 🟡 Important Considerations
 
 ### 3. **Data Validation**
+
 - **Missing Checks**:
   - No validation if `Full Result` field exists
   - Status extraction could fail silently
@@ -35,6 +38,7 @@
   - Validate data structure before processing
 
 ### 4. **Performance Issues**
+
 - **Current Problems**:
   - Loading ALL records before filtering for multi-bot tweets
   - No pagination in UI (could have thousands of comparisons)
@@ -45,6 +49,7 @@
   - Implement smarter cache invalidation
 
 ### 5. **User Experience**
+
 - **Issues**:
   - No way to go back to previous comparison
   - Can't see which bots are being compared (after voting)
@@ -59,24 +64,29 @@
 ## 🟢 Code Quality Checks
 
 ### 6. **TypeScript Issues**
+
 ```bash
 # Run these checks:
 bun run typecheck
 ```
 
 **Potential Type Issues Found**:
+
 - `any` type used for window.AIRTABLE_CONFIG
 - `any` type in parseTweetData
 - Missing null checks in several places
 
 ### 7. **Error Handling**
+
 **Missing Error Handling**:
+
 - Network failures during fetch
 - Invalid JSON in tweet data
 - Missing required fields
 - Airtable rate limits (5 requests/second)
 
 ### 8. **Browser Compatibility**
+
 - Uses modern JavaScript features:
   - `matchAll()` - not supported in older browsers
   - Optional chaining (`?.`)
@@ -122,6 +132,7 @@ bun run typecheck
 ## 🚀 Deployment Considerations
 
 1. **Environment Variables**:
+
    ```env
    AIRTABLE_API_KEY=xxx
    AIRTABLE_BASE_ID=xxx
@@ -129,6 +140,7 @@ bun run typecheck
    ```
 
 2. **Build Process**:
+
    ```bash
    bun run build-elo
    ```
@@ -163,17 +175,17 @@ bun run typecheck
 
 ```typescript
 // Add to airtableClient.ts
-const DEFAULT_CREATED_FIELD = 'Created';
-const FALLBACK_CREATED_FIELD = 'createdTime';
+const DEFAULT_CREATED_FIELD = "Created";
+const FALLBACK_CREATED_FIELD = "createdTime";
 
 // Add retry logic for rate limits
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Add to app.ts
-window.addEventListener('beforeunload', (e) => {
+window.addEventListener("beforeunload", (e) => {
   if (this.comparisons.length > 0) {
     e.preventDefault();
-    e.returnValue = 'You have unsaved comparisons. Are you sure you want to leave?';
+    e.returnValue = "You have unsaved comparisons. Are you sure you want to leave?";
   }
 });
 ```
@@ -188,16 +200,19 @@ window.addEventListener('beforeunload', (e) => {
 ## Summary
 
 **Must Fix Before Production**:
+
 1. API key security
 2. Date filtering issue
 3. Basic error handling
 
 **Should Fix Soon**:
+
 1. Progress persistence
 2. Better status parsing
 3. Performance optimization
 
 **Nice to Have**:
+
 1. Comparison history
 2. Advanced analytics
 3. Multi-user support

@@ -3,10 +3,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import { closeBrowser } from "../pipeline/browserManager";
 import PQueue from "p-queue";
-import {
-  selectRandomBot,
-  getBotProbabilities,
-} from "../bots";
+import { selectRandomBot, getBotProbabilities } from "../bots";
 
 const maxPosts = 20; // Maximum posts to process per run
 const concurrencyLimit = 5; // Process 5 posts at a time
@@ -59,7 +56,9 @@ async function main() {
         skipPostIds = await supabaseLogger.getProcessedTweetIds();
         allProcessedIds = await supabaseLogger.getAllProcessedTweetIds();
         const backlogSize = allProcessedIds.size - skipPostIds.size;
-        console.log(`[main] Skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed, ${backlogSize} in retry backlog`);
+        console.log(
+          `[main] Skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed, ${backlogSize} in retry backlog`,
+        );
       } catch (err) {
         console.warn("[main] Failed to get processed tweet IDs:", err);
       }
@@ -87,7 +86,9 @@ async function main() {
     const backlogRetry = retryPosts.length;
     const backlogTotal = allEligible.length;
     const backlogHitLimit = backlogTotal >= BACKLOG_LIMIT;
-    console.log(`[main] Backlog: ${backlogTotal} eligible tweets (${backlogNew} new, ${backlogRetry} retries)${backlogHitLimit ? " — hit limit, true backlog may be larger" : ""}`);
+    console.log(
+      `[main] Backlog: ${backlogTotal} eligible tweets (${backlogNew} new, ${backlogRetry} retries)${backlogHitLimit ? " — hit limit, true backlog may be larger" : ""}`,
+    );
 
     // New tweets first, then fill remaining slots with retries — only process maxPosts
     const posts = [
@@ -95,7 +96,9 @@ async function main() {
       ...retryPosts.slice(0, Math.max(0, maxPosts - newPosts.length)),
     ].slice(0, maxPosts);
 
-    console.log(`[main] Processing ${posts.length} of ${backlogTotal} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`);
+    console.log(
+      `[main] Processing ${posts.length} of ${backlogTotal} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`,
+    );
 
     // Persist backlog snapshot for trend tracking
     if (supabaseLogger) {
@@ -121,19 +124,13 @@ async function main() {
     }
 
     // Log media breakdown for tracking
-    const videoCount = posts.filter((p) =>
-      p.media?.some((m) => m.type === "video")
-    ).length;
+    const videoCount = posts.filter((p) => p.media?.some((m) => m.type === "video")).length;
     const photoCount = posts.filter(
-      (p) =>
-        p.media?.some((m) => m.type === "photo") &&
-        !p.media?.some((m) => m.type === "video")
+      (p) => p.media?.some((m) => m.type === "photo") && !p.media?.some((m) => m.type === "video"),
     ).length;
-    const textOnlyCount = posts.filter(
-      (p) => !p.media || p.media.length === 0
-    ).length;
+    const textOnlyCount = posts.filter((p) => !p.media || p.media.length === 0).length;
     console.log(
-      `[main] Media breakdown: ${videoCount} video (${((videoCount / posts.length) * 100).toFixed(0)}%), ${photoCount} photo-only, ${textOnlyCount} text-only`
+      `[main] Media breakdown: ${videoCount} video (${((videoCount / posts.length) * 100).toFixed(0)}%), ${photoCount} photo-only, ${textOnlyCount} text-only`,
     );
 
     console.log(`[main] Starting pipelines for ${posts.length} posts...`);
@@ -163,7 +160,7 @@ async function main() {
         console.log(
           `[main] Processing post #${idx + 1} (ID: ${post.id}) - ${
             content.isQuoteTweet ? "quote tweet" : "original"
-          }${hasVideo ? " [VIDEO]" : ""}`
+          }${hasVideo ? " [VIDEO]" : ""}`,
         );
 
         // Create pipeline run for tracking
@@ -187,17 +184,13 @@ async function main() {
 
         // Select a random bot and run it (LLM layer handles retries for transient errors)
         const selectedBot = selectRandomBot();
-        console.log(
-          `[main] Tweet ${post.id} with bot: ${selectedBot.id}`
-        );
+        console.log(`[main] Tweet ${post.id} with bot: ${selectedBot.id}`);
         botUsage[selectedBot.id] = (botUsage[selectedBot.id] || 0) + 1;
 
         const result = await selectedBot.runPipeline(post, content);
 
         // Build warning text for pipeline_runs.error_message (non-fatal issues)
-        const warningText = result?.warnings?.length
-          ? `[WARNINGS] ${result.warnings.join("; ")}`
-          : undefined;
+        const warningText = result?.warnings?.length ? `[WARNINGS] ${result.warnings.join("; ")}` : undefined;
         if (warningText) {
           console.warn(`[main] Tweet ${post.id}: ${warningText}`);
         }
@@ -355,16 +348,9 @@ async function main() {
         } else if (shouldSubmitNotes) {
           try {
             // Evaluate note quality before submission
-            const { shouldSubmitNote } = await import(
-              "../filters/noteEvaluationFilter"
-            );
-            const noteText =
-              result.noteResult.note + " " + result.noteResult.url;
-            const evaluationResult = await shouldSubmitNote(
-              result.post.id,
-              noteText,
-              0
-            );
+            const { shouldSubmitNote } = await import("../filters/noteEvaluationFilter");
+            const noteText = result.noteResult.note + " " + result.noteResult.url;
+            const evaluationResult = await shouldSubmitNote(result.post.id, noteText, 0);
 
             // Capture the score for logging
             evaluationScore = evaluationResult.score;
@@ -384,7 +370,7 @@ async function main() {
 
             if (!evaluationResult.shouldSubmit) {
               console.log(
-                `[main] Skipping post ${result.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`
+                `[main] Skipping post ${result.post.id} due to low evaluation score (score: ${evaluationResult.score}, error: ${evaluationResult.error})`,
               );
               if (supabaseLogger && pipelineRunId) {
                 try {
@@ -422,14 +408,17 @@ async function main() {
               const response = await submitNote(result.post.id, info);
               console.log(
                 `[main] Submitted note for post ${result.post.id} (bot: ${selectedBot.id}, score: ${evaluationResult.score}):`,
-                response
+                response,
               );
               submitted++;
 
               // Log successful submission to pipeline tracking
               const noteId = response?.data?.id;
               if (!noteId) {
-                console.error(`[main] WARNING: submitNote returned success but no note ID for tweet ${result.post.id}. Response:`, JSON.stringify(response?.data));
+                console.error(
+                  `[main] WARNING: submitNote returned success but no note ID for tweet ${result.post.id}. Response:`,
+                  JSON.stringify(response?.data),
+                );
               }
               if (supabaseLogger && pipelineRunId) {
                 try {
@@ -449,8 +438,7 @@ async function main() {
               // Also log to notes table if enabled
               if (supabaseLogger && noteId) {
                 try {
-                  const botConfig =
-                    await supabaseLogger.getOrCreateBotConfig(selectedBot.id);
+                  const botConfig = await supabaseLogger.getOrCreateBotConfig(selectedBot.id);
                   await supabaseLogger.logNoteSubmission({
                     note_id: response.data.id,
                     tweet_id: result.post.id,
@@ -461,22 +449,15 @@ async function main() {
                     evaluation_score: evaluationResult.score,
                     commit_sha: commit,
                   });
-                  console.log(
-                    `[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`
-                  );
+                  console.log(`[main] Logged note ${response.data.id} to Supabase (bot: ${selectedBot.id})`);
                 } catch (supabaseErr) {
-                  console.error(
-                    "[main] Failed to log to Supabase:",
-                    supabaseErr
-                  );
+                  console.error("[main] Failed to log to Supabase:", supabaseErr);
                 }
               }
 
               // Fire-and-forget: run prediction scores for later evaluation
               if (supabaseLogger && pipelineRunId) {
-                const { runPredictionScores } = await import(
-                  "../pipeline/predictionScores"
-                );
+                const { runPredictionScores } = await import("../pipeline/predictionScores");
                 runPredictionScores({
                   pipelineRunId,
                   noteText,
@@ -486,9 +467,7 @@ async function main() {
                   postId: result.post.id,
                   supabaseLogger,
                   preComputed: preComputedScores,
-                }).catch((err) =>
-                  console.warn("[main] Prediction scores failed (non-fatal):", err)
-                );
+                }).catch((err) => console.warn("[main] Prediction scores failed (non-fatal):", err));
               }
             }
           } catch (err: any) {
@@ -504,10 +483,7 @@ async function main() {
               dailyLimitHit = true;
               queue.clear();
             } else {
-              console.error(
-                `[main] Failed to submit note for post ${result.post.id}:`,
-                errorData || err
-              );
+              console.error(`[main] Failed to submit note for post ${result.post.id}:`, errorData || err);
             }
 
             // Log submission failure
@@ -526,14 +502,11 @@ async function main() {
             }
           }
         }
-
       });
     }
 
     await queue.onIdle();
-    console.log(
-      `[main] All ${posts.length} posts processed with concurrency limit of ${concurrencyLimit}`
-    );
+    console.log(`[main] All ${posts.length} posts processed with concurrency limit of ${concurrencyLimit}`);
 
     // Log bot usage summary
     console.log(`[main] Bot usage summary:`);
@@ -541,9 +514,7 @@ async function main() {
       console.log(`  - ${botId}: ${count} tweets`);
     });
 
-    console.log(
-      `[main] Successfully processed ${posts.length} posts, submitted ${submitted} notes`
-    );
+    console.log(`[main] Successfully processed ${posts.length} posts, submitted ${submitted} notes`);
 
     // Clear the global timeout and exit successfully
     clearTimeout(globalTimeout);
@@ -551,10 +522,7 @@ async function main() {
     console.log("[main] Process completed successfully, exiting");
     process.exit(0);
   } catch (error: any) {
-    console.error(
-      "Error in create notes routine script:",
-      error.response?.data || error
-    );
+    console.error("Error in create notes routine script:", error.response?.data || error);
     clearTimeout(globalTimeout);
     await closeBrowser();
     process.exit(1);

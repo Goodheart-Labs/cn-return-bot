@@ -27,17 +27,17 @@ const botColors: Record<string, string> = {
   "opus-scored": "rgba(168, 85, 247, 0.8)",
   "multi-search": "rgba(20, 184, 166, 0.8)",
   "gemini-3-flash": "rgba(236, 72, 153, 0.8)",
-  "deepseek": "rgba(239, 68, 68, 0.8)",
-  "unknown": "rgba(156, 163, 175, 0.8)",
+  deepseek: "rgba(239, 68, 68, 0.8)",
+  unknown: "rgba(156, 163, 175, 0.8)",
 };
 
-const datasets = bots.map(bot => ({
+const datasets = bots.map((bot) => ({
   label: bot,
-  data: days.map(d => byDayBot[d]?.[bot] || 0),
+  data: days.map((d) => byDayBot[d]?.[bot] || 0),
   backgroundColor: botColors[bot] || "rgba(107, 114, 128, 0.8)",
 }));
 
-const totalByDay = days.map(d => Object.values(byDayBot[d] || {}).reduce((a, b) => a + b, 0));
+const totalByDay = days.map((d) => Object.values(byDayBot[d] || {}).reduce((a, b) => a + b, 0));
 const avg = (totalByDay.reduce((a, b) => a + b, 0) / totalByDay.length).toFixed(1);
 
 const html = `<!DOCTYPE html>
@@ -112,19 +112,21 @@ const html = `<!DOCTYPE html>
       <thead>
         <tr>
           <th>Date</th>
-          ${bots.map(b => `<th>${b}</th>`).join("\n          ")}
+          ${bots.map((b) => `<th>${b}</th>`).join("\n          ")}
           <th class="total">Total</th>
         </tr>
       </thead>
       <tbody>
-        ${days.map(d => {
-          const total = Object.values(byDayBot[d] || {}).reduce((a: number, b: number) => a + b, 0);
-          return `<tr>
+        ${days
+          .map((d) => {
+            const total = Object.values(byDayBot[d] || {}).reduce((a: number, b: number) => a + b, 0);
+            return `<tr>
           <td>${d}</td>
-          ${bots.map(b => `<td>${byDayBot[d]?.[b] || 0}</td>`).join("\n          ")}
+          ${bots.map((b) => `<td>${byDayBot[d]?.[b] || 0}</td>`).join("\n          ")}
           <td class="total">${total}</td>
         </tr>`;
-        }).join("\n        ")}
+          })
+          .join("\n        ")}
       </tbody>
     </table>
     <p class="generated">Generated: ${new Date().toISOString().split("T")[0]}</p>

@@ -171,17 +171,15 @@ function downloadWithYtDlp(url: string, outputDir: string): DownloadResult {
   try {
     // yt-dlp prints JSON to stdout; download happens as side effect.
     // --print after_move:filepath gives the final file path on a separate line.
-    const output = execSync(
-      `yt-dlp -J -o "${videoOutput}" "${url}"`,
-      { timeout: 120_000, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }
-    );
+    const output = execSync(`yt-dlp -J -o "${videoOutput}" "${url}"`, {
+      timeout: 120_000,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
     const meta: YtDlpMetadata = JSON.parse(output);
 
     // Now download separately (--dump-json doesn't always download reliably)
-    execSync(
-      `yt-dlp -o "${videoOutput}" "${url}"`,
-      { timeout: 120_000, stdio: ["pipe", "pipe", "pipe"] }
-    );
+    execSync(`yt-dlp -o "${videoOutput}" "${url}"`, { timeout: 120_000, stdio: ["pipe", "pipe", "pipe"] });
 
     // Use filename from metadata, or search the output directory
     const expectedPath = meta.filename ?? meta._filename ?? path.join(outputDir, `${meta.id}.${meta.ext ?? "mp4"}`);
@@ -248,11 +246,7 @@ function escapeCsvField(value: string): string {
   return value;
 }
 
-function resultToCsvRow(
-  input: InputRow,
-  botId: string,
-  result: ProcessTweetResult
-): string {
+function resultToCsvRow(input: InputRow, botId: string, result: ProcessTweetResult): string {
   const pr = result.pipelineResult;
   const svScore = result.scores.find((s) => s.type === "source_verification");
   const citations = pr?.searchContextResult?.citations?.join("; ") ?? "";
@@ -277,11 +271,16 @@ function resultToCsvRow(
 function errorToCsvRow(input: InputRow, errorMsg: string): string {
   return OUTPUT_HEADERS.map((h) =>
     escapeCsvField(
-      h === "url" ? input.url :
-        h === "needs_note" ? (input.needsNote ?? "") :
-          h === "ground_truth_note" ? (input.groundTruthNote ?? "") :
-            h === "outcome" ? `error: ${errorMsg}` : ""
-    )
+      h === "url"
+        ? input.url
+        : h === "needs_note"
+          ? (input.needsNote ?? "")
+          : h === "ground_truth_note"
+            ? (input.groundTruthNote ?? "")
+            : h === "outcome"
+              ? `error: ${errorMsg}`
+              : "",
+    ),
   ).join(",");
 }
 
@@ -306,7 +305,12 @@ async function main() {
   if (args.length === 0) {
     console.error("Usage: bun run src/scripts/runOnVideos.ts [--bot <bot-id>] <input.csv>");
     console.error("       bun run src/scripts/runOnVideos.ts [--bot <bot-id>] <url1> <url2> ...");
-    console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
+    console.error(
+      "\nAvailable bots:",
+      getEnabledBots()
+        .map((b) => b.id)
+        .join(", "),
+    );
     process.exit(1);
   }
 
@@ -321,7 +325,12 @@ async function main() {
     }
     if (!getBotById(forcedBotId)) {
       console.error(`Unknown bot: ${forcedBotId}`);
-      console.error("Available bots:", getEnabledBots().map((b) => b.id).join(", "));
+      console.error(
+        "Available bots:",
+        getEnabledBots()
+          .map((b) => b.id)
+          .join(", "),
+      );
       process.exit(1);
     }
     args.splice(botFlagIdx, 2);
@@ -400,11 +409,11 @@ async function main() {
   try {
     fs.rmSync(downloadDir, { recursive: true, force: true });
     console.log(`[runOnVideos] Cleaned up temp directory`);
-  } catch { }
+  } catch {}
 
   try {
     await closeBrowser();
-  } catch { }
+  } catch {}
 }
 
 main().catch((err) => {

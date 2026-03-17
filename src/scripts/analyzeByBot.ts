@@ -29,9 +29,7 @@ async function main() {
   console.log(statusCounts);
 
   // Get notes table with bot info
-  const { data: notes } = await client
-    .from("notes")
-    .select("note_id, bot_name, cn_status, view_count");
+  const { data: notes } = await client.from("notes").select("note_id, bot_name, cn_status, view_count");
 
   console.log("\nNotes in 'notes' table:", notes?.length);
 
@@ -42,7 +40,10 @@ async function main() {
   }
 
   // Count by bot and status
-  const botStats: Record<string, { helpful: number; needs_more: number; not_helpful: number; not_shown: number; total: number }> = {};
+  const botStats: Record<
+    string,
+    { helpful: number; needs_more: number; not_helpful: number; not_shown: number; total: number }
+  > = {};
 
   for (const [noteId, status] of Object.entries(latestStatus)) {
     const bot = noteToBotMap[noteId] || "not-bot-submitted";
@@ -68,7 +69,9 @@ async function main() {
 
   console.log("\nBy bot (including not_shown):");
   for (const [bot, stats] of Object.entries(botStats).sort((a, b) => b[1].total - a[1].total)) {
-    console.log(`  ${bot}: ${stats.total} total | ${stats.helpful} helpful | ${stats.needs_more} needs more | ${stats.not_helpful} not helpful | ${stats.not_shown} not shown`);
+    console.log(
+      `  ${bot}: ${stats.total} total | ${stats.helpful} helpful | ${stats.needs_more} needs more | ${stats.not_helpful} not helpful | ${stats.not_shown} not shown`,
+    );
   }
 
   // Also show just the bot-submitted notes
@@ -76,14 +79,18 @@ async function main() {
   const botOnlyStats = Object.entries(botStats).filter(([bot]) => bot !== "not-bot-submitted");
   let totals = { helpful: 0, needs_more: 0, not_helpful: 0, not_shown: 0, total: 0 };
   for (const [bot, stats] of botOnlyStats.sort((a, b) => b[1].total - a[1].total)) {
-    console.log(`  ${bot}: ${stats.total} total | ${stats.helpful} helpful | ${stats.needs_more} needs more | ${stats.not_helpful} not helpful | ${stats.not_shown} not shown`);
+    console.log(
+      `  ${bot}: ${stats.total} total | ${stats.helpful} helpful | ${stats.needs_more} needs more | ${stats.not_helpful} not helpful | ${stats.not_shown} not shown`,
+    );
     totals.helpful += stats.helpful;
     totals.needs_more += stats.needs_more;
     totals.not_helpful += stats.not_helpful;
     totals.not_shown += stats.not_shown;
     totals.total += stats.total;
   }
-  console.log(`  TOTAL: ${totals.total} total | ${totals.helpful} helpful | ${totals.needs_more} needs more | ${totals.not_helpful} not helpful | ${totals.not_shown} not shown`);
+  console.log(
+    `  TOTAL: ${totals.total} total | ${totals.helpful} helpful | ${totals.needs_more} needs more | ${totals.not_helpful} not helpful | ${totals.not_shown} not shown`,
+  );
 
   // Check notes table directly
   console.log("\n=== FROM 'notes' TABLE DIRECTLY ===");

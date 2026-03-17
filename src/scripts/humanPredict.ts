@@ -15,15 +15,10 @@ import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import { createInterface } from "readline";
 
-const client = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+const client = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 
 /** Paginate past Supabase's 1000-row default limit */
-async function fetchAll<T>(
-  buildQuery: () => any
-): Promise<T[]> {
+async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
   const PAGE_SIZE = 1000;
   const all: T[] = [];
   let offset = 0;
@@ -51,13 +46,20 @@ function ask(question: string): Promise<string> {
 
 async function main() {
   // Get submitted pipeline runs that don't yet have a pred_human score (paginated)
-  const runs = await fetchAll<{ id: string; tweet_id: string; tweet_text: string; bot_id: string; note_id: string; created_at: string }>(
-    () => client
+  const runs = await fetchAll<{
+    id: string;
+    tweet_id: string;
+    tweet_text: string;
+    bot_id: string;
+    note_id: string;
+    created_at: string;
+  }>(() =>
+    client
       .from("pipeline_runs")
       .select("id, tweet_id, tweet_text, bot_id, note_id, created_at")
       .eq("outcome", "submitted")
       .not("note_id", "is", null)
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false }),
   );
 
   if (runs.length === 0) {
@@ -79,25 +81,18 @@ async function main() {
     if (data) allExistingScores.push(...data);
   }
 
-  const alreadyPredicted = new Set(
-    allExistingScores.map((s) => s.pipeline_run_id)
-  );
+  const alreadyPredicted = new Set(allExistingScores.map((s) => s.pipeline_run_id));
 
   // Get note texts from notes table (batched)
   const noteIds = runs.map((r) => r.note_id).filter(Boolean);
   const allNotes: Array<{ note_id: string; note_text: string; source_url: string }> = [];
   for (let i = 0; i < noteIds.length; i += BATCH_SIZE) {
     const batch = noteIds.slice(i, i + BATCH_SIZE);
-    const { data } = await client
-      .from("notes")
-      .select("note_id, note_text, source_url")
-      .in("note_id", batch);
+    const { data } = await client.from("notes").select("note_id, note_text, source_url").in("note_id", batch);
     if (data) allNotes.push(...data);
   }
 
-  const noteMap = new Map(
-    allNotes.map((n) => [n.note_id, n])
-  );
+  const noteMap = new Map(allNotes.map((n) => [n.note_id, n]));
 
   // Filter to unpredicted notes
   const unpredicted = runs.filter((r) => !alreadyPredicted.has(r.id));

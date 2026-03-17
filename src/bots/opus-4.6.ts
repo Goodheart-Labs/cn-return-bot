@@ -32,7 +32,7 @@ export const opus46: Bot = {
           mediaContext: "",
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.search }
+        { model: MODELS.search },
       );
 
       lastStage = "note_writing";
@@ -42,7 +42,7 @@ export const opus46: Bot = {
           searchResults: searchResult.searchResults,
           citations: searchResult.citations || [],
         },
-        { model: MODELS.noteWriting }
+        { model: MODELS.noteWriting },
       );
 
       lastStage = "check";
@@ -52,7 +52,7 @@ export const opus46: Bot = {
           url: noteResult.url,
           status: noteResult.status,
         },
-        { model: MODELS.checking }
+        { model: MODELS.checking },
       );
 
       return {

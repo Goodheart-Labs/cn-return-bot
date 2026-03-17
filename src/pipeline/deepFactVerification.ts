@@ -31,7 +31,7 @@ export interface DeepVerificationResult {
 export async function analyzeClaimsWithOpus(
   tweetText: string,
   initialSearchResults: string,
-  model: string = "anthropic/claude-opus-4.5"
+  model: string = "anthropic/claude-opus-4.5",
 ): Promise<ClaimAnalysis> {
   console.log("[deepFactVerification] Analyzing claims with Opus...");
 
@@ -83,7 +83,9 @@ IMPORTANT:
     const content = result.choices?.[0]?.message?.content || "{}";
     const parsed = JSON.parse(content);
 
-    console.log(`[deepFactVerification] Found ${parsed.keyClaims?.length || 0} claims, ${parsed.targetedQueries?.length || 0} follow-up queries`);
+    console.log(
+      `[deepFactVerification] Found ${parsed.keyClaims?.length || 0} claims, ${parsed.targetedQueries?.length || 0} follow-up queries`,
+    );
 
     return {
       keyClaims: parsed.keyClaims || [],
@@ -105,7 +107,7 @@ IMPORTANT:
  */
 async function runFollowUpSearch(
   query: string,
-  model: string = "perplexity/sonar"
+  model: string = "perplexity/sonar",
 ): Promise<{ results: string; citations: string[] }> {
   try {
     const result = await llm.create({
@@ -138,7 +140,7 @@ Include specific URLs for all sources. Focus on finding authoritative, primary s
  */
 export async function runFollowUpSearches(
   queries: string[],
-  maxQueries: number = 2
+  maxQueries: number = 2,
 ): Promise<{ results: string; citations: string[] }> {
   if (queries.length === 0) {
     return { results: "", citations: [] };
@@ -175,7 +177,7 @@ export async function runFollowUpSearches(
 export async function validateModelOfEvents(
   modelOfEvents: string,
   searchResults: string,
-  model: string = "anthropic/claude-opus-4.5"
+  model: string = "anthropic/claude-opus-4.5",
 ): Promise<{
   isAccurate: boolean;
   confidence: "high" | "medium" | "low";
@@ -238,7 +240,9 @@ Respond in JSON:
       };
     }
 
-    console.log(`[deepFactVerification] Model validation: ${isAccurate ? "ACCURATE" : "ISSUES FOUND"} (${parsed.confidence} confidence)`);
+    console.log(
+      `[deepFactVerification] Model validation: ${isAccurate ? "ACCURATE" : "ISSUES FOUND"} (${parsed.confidence} confidence)`,
+    );
 
     return {
       isAccurate,
@@ -273,7 +277,7 @@ export async function deepFactVerification(
     searchModel?: string;
     maxFollowUpQueries?: number;
     validateModel?: boolean;
-  }
+  },
 ): Promise<DeepVerificationResult> {
   const analysisModel = config?.analysisModel || "anthropic/claude-opus-4.5";
   const maxQueries = config?.maxFollowUpQueries ?? 2;
@@ -282,17 +286,10 @@ export async function deepFactVerification(
   console.log("[deepFactVerification] Starting deep fact verification pipeline...");
 
   // 1. Analyze claims
-  const claimAnalysis = await analyzeClaimsWithOpus(
-    input.text,
-    input.initialSearchResults,
-    analysisModel
-  );
+  const claimAnalysis = await analyzeClaimsWithOpus(input.text, input.initialSearchResults, analysisModel);
 
   // 2. Run follow-up searches if needed
-  const followUp = await runFollowUpSearches(
-    claimAnalysis.targetedQueries,
-    maxQueries
-  );
+  const followUp = await runFollowUpSearches(claimAnalysis.targetedQueries, maxQueries);
 
   // 3. Combine all context
   let combinedContext = input.initialSearchResults;
@@ -302,11 +299,7 @@ export async function deepFactVerification(
 
   // 4. Optionally validate the model of events
   if (shouldValidate && claimAnalysis.modelOfEvents) {
-    const validation = await validateModelOfEvents(
-      claimAnalysis.modelOfEvents,
-      combinedContext,
-      analysisModel
-    );
+    const validation = await validateModelOfEvents(claimAnalysis.modelOfEvents, combinedContext, analysisModel);
 
     if (!validation.isAccurate && validation.issues.length > 0) {
       combinedContext += "\n\n--- MODEL OF EVENTS VALIDATION ---\n";
@@ -317,9 +310,7 @@ export async function deepFactVerification(
   }
 
   // Combine citations
-  const allCitations = [
-    ...new Set([...input.initialCitations, ...followUp.citations]),
-  ];
+  const allCitations = [...new Set([...input.initialCitations, ...followUp.citations])];
 
   console.log(`[deepFactVerification] Complete. Total citations: ${allCitations.length}`);
 

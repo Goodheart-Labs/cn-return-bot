@@ -11,11 +11,7 @@
 
 import { Bot, PipelineResult } from "./types";
 import { verifySource } from "../pipeline/sourceVerification";
-import {
-  searchXWithGrok,
-  extractGrokQuotedTweet,
-  compareQuotedTweets,
-} from "../pipeline/grokSearch";
+import { searchXWithGrok, extractGrokQuotedTweet, compareQuotedTweets } from "../pipeline/grokSearch";
 import { claudeFirstSearch, followUpResearch } from "../pipeline/researchLoop";
 import { writeNoteFn as writeNote } from "../pipeline/writeNote";
 
@@ -30,8 +26,7 @@ const MODELS = {
 export const opusResearch: Bot = {
   id: "opus-research",
   name: "Opus 4.6 + Grok X Search",
-  description:
-    "Research bot: Grok for initial X search, Claude Opus 4.6 for analysis and note writing",
+  description: "Research bot: Grok for initial X search, Claude Opus 4.6 for analysis and note writing",
   weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
@@ -45,11 +40,10 @@ export const opusResearch: Bot = {
       console.log(`[${this.id}] Starting parallel searches (Grok + Claude)...`);
       lastStage = "parallel_search";
       const [grokSettled, claudeFirstResult] = await Promise.all([
-        searchXWithGrok(post.id, content.text, { model: MODELS.grokSearch })
-          .catch((err) => {
-            console.warn(`[${this.id}] Grok search failed (continuing without it):`, err?.message || err);
-            return null;
-          }),
+        searchXWithGrok(post.id, content.text, { model: MODELS.grokSearch }).catch((err) => {
+          console.warn(`[${this.id}] Grok search failed (continuing without it):`, err?.message || err);
+          return null;
+        }),
         claudeFirstSearch(content.text, { model: MODELS.research }, content.quotedPostContext),
       ]);
       const grokResult = grokSettled;
@@ -78,7 +72,7 @@ export const opusResearch: Bot = {
         1,
         { model: MODELS.analysis },
         content.quotedPostContext,
-        grokResult ?? undefined
+        grokResult ?? undefined,
       );
       allResearch.push(`--- Claude Follow-up 1 ---\n${followUp1.content}`);
       collectedUrls.push(...followUp1.urls);
@@ -95,7 +89,7 @@ export const opusResearch: Bot = {
           2,
           { model: MODELS.analysis },
           content.quotedPostContext,
-          grokResult ?? undefined
+          grokResult ?? undefined,
         );
         allResearch.push(`--- Claude Follow-up 2 ---\n${followUp2.content}`);
         collectedUrls.push(...followUp2.urls);
@@ -111,9 +105,7 @@ export const opusResearch: Bot = {
 
       // 5. Write note with all accumulated research
       console.log(`[${this.id}] Writing note with ${allResearch.length} research rounds...`);
-      const combinedResearch = allResearch
-        .map((r, i) => `--- Research Round ${i + 1} ---\n${r}`)
-        .join("\n\n");
+      const combinedResearch = allResearch.map((r, i) => `--- Research Round ${i + 1} ---\n${r}`).join("\n\n");
       lastStage = "note_writing";
       const noteResult = await writeNote(
         {
@@ -122,7 +114,7 @@ export const opusResearch: Bot = {
           citations: collectedUrls,
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.noteWriting }
+        { model: MODELS.noteWriting },
       );
 
       // 6. Check the note
@@ -133,7 +125,7 @@ export const opusResearch: Bot = {
           url: noteResult.url,
           status: noteResult.status,
         },
-        { model: MODELS.checking }
+        { model: MODELS.checking },
       );
 
       return {

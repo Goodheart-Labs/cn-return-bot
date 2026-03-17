@@ -69,13 +69,13 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
       if (!noteId) {
         console.error(
           `[submit] submitNote returned success but no note ID for tweet ${candidate.tweetId}. Response:`,
-          JSON.stringify(response?.data)
+          JSON.stringify(response?.data),
         );
         continue;
       }
 
       console.log(
-        `[submit] Submitted note for tweet ${candidate.tweetId} (bot: ${candidate.botId}, rank: ${submitted + 1}, score: ${candidate.rankScore.toFixed(3)})`
+        `[submit] Submitted note for tweet ${candidate.tweetId} (bot: ${candidate.botId}, rank: ${submitted + 1}, score: ${candidate.rankScore.toFixed(3)})`,
       );
       submitted++;
 
@@ -99,7 +99,6 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
       } catch (logErr) {
         console.error("[submit] Failed to log to Supabase:", logErr);
       }
-
     } catch (err: any) {
       const errorData = err.response?.data;
       const errorText = errorData
@@ -124,7 +123,9 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
           console.warn("[submit] Failed to mark candidate as expired:", logErr);
         }
       } else {
-        console.log(`[submit] Error submitting ${candidate.tweetId} (${statusCode ?? "no status"}) — will retry next run`);
+        console.log(
+          `[submit] Error submitting ${candidate.tweetId} (${statusCode ?? "no status"}) — will retry next run`,
+        );
       }
     }
   }

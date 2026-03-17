@@ -5,7 +5,8 @@ const s = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_K
 
 async function main() {
   // Get all snapshots with helpful status
-  const { data: snaps } = await s.from("scraped_notewriter_snapshots")
+  const { data: snaps } = await s
+    .from("scraped_notewriter_snapshots")
     .select("note_id, cn_status, view_count, scraped_at")
     .in("cn_status", ["CURRENTLY_RATED_HELPFUL", "SHOWN_ON_X", "Currently rated helpful"])
     .order("scraped_at", { ascending: false });
@@ -17,19 +18,20 @@ async function main() {
     if (!existing) {
       noteData.set(snap.note_id, {
         cn_status: snap.cn_status,
-        view_count: snap.view_count || 0
+        view_count: snap.view_count || 0,
       });
     } else if ((snap.view_count || 0) > existing.view_count) {
       noteData.set(snap.note_id, {
         cn_status: snap.cn_status,
-        view_count: snap.view_count || 0
+        view_count: snap.view_count || 0,
       });
     }
   }
 
   // Get tweet_ids from canonical_note_information
   const noteIds = [...noteData.keys()];
-  const { data: scrapedNotes } = await s.from("canonical_note_information")
+  const { data: scrapedNotes } = await s
+    .from("canonical_note_information")
     .select("note_id, tweet_id")
     .in("note_id", noteIds);
 
@@ -53,7 +55,7 @@ async function main() {
         note_id: noteId,
         tweet_id: tweetId,
         status: data.cn_status,
-        views: data.view_count
+        views: data.view_count,
       });
     }
   }
@@ -70,9 +72,7 @@ async function main() {
   console.log("");
 
   for (const n of helpful) {
-    const url = n.tweet_id.startsWith("unavailable_")
-      ? `[tweet unavailable]`
-      : `https://x.com/i/status/${n.tweet_id}`;
+    const url = n.tweet_id.startsWith("unavailable_") ? `[tweet unavailable]` : `https://x.com/i/status/${n.tweet_id}`;
     const views = n.views.toLocaleString().padStart(10);
     console.log(`${views} views | ${n.status.padEnd(25)} | ${url}`);
   }

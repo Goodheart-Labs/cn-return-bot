@@ -65,11 +65,15 @@ for (const note of notHelpful) {
 }
 
 console.log("\nHelpful note domains:");
-for (const [domain, count] of Object.entries(helpfulDomains).sort((a, b) => b[1] - a[1]).slice(0, 10)) {
+for (const [domain, count] of Object.entries(helpfulDomains)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 10)) {
   console.log(`  ${domain}: ${count}`);
 }
 
 console.log("\nNot helpful note domains:");
-for (const [domain, count] of Object.entries(notHelpfulDomains).sort((a, b) => b[1] - a[1]).slice(0, 10)) {
+for (const [domain, count] of Object.entries(notHelpfulDomains)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 10)) {
   console.log(`  ${domain}: ${count}`);
 }

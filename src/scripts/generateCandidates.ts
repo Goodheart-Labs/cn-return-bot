@@ -21,9 +21,7 @@ const BACKLOG_LIMIT = 1000;
 // Post fetching & selection (production-specific)
 // ---------------------------------------------------------------------------
 
-async function fetchAndSelectPosts(
-  supabaseLogger: SupabaseLogger | null
-): Promise<Post[]> {
+async function fetchAndSelectPosts(supabaseLogger: SupabaseLogger | null): Promise<Post[]> {
   let skipPostIds = new Set<string>();
   let allProcessedIds = new Set<string>();
 
@@ -33,7 +31,7 @@ async function fetchAndSelectPosts(
       allProcessedIds = await supabaseLogger.getAllProcessedTweetIds();
       const backlogSize = allProcessedIds.size - skipPostIds.size;
       console.log(
-        `[generate] Skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed, ${backlogSize} in retry backlog`
+        `[generate] Skipping ${skipPostIds.size} posts, ${allProcessedIds.size} total ever processed, ${backlogSize} in retry backlog`,
       );
     } catch (err) {
       console.warn("[generate] Failed to get processed tweet IDs:", err);
@@ -50,14 +48,12 @@ async function fetchAndSelectPosts(
   });
 
   const newPosts = allEligible.filter((p) => !allProcessedIds.has(p.id));
-  const retryPosts = allEligible.filter(
-    (p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id)
-  );
+  const retryPosts = allEligible.filter((p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id));
 
   const backlogTotal = allEligible.length;
   const backlogHitLimit = backlogTotal >= BACKLOG_LIMIT;
   console.log(
-    `[generate] Backlog: ${backlogTotal} eligible tweets (${newPosts.length} new, ${retryPosts.length} retries)${backlogHitLimit ? " — hit limit, true backlog may be larger" : ""}`
+    `[generate] Backlog: ${backlogTotal} eligible tweets (${newPosts.length} new, ${retryPosts.length} retries)${backlogHitLimit ? " — hit limit, true backlog may be larger" : ""}`,
   );
 
   // New tweets first, then fill remaining slots with retries
@@ -67,7 +63,7 @@ async function fetchAndSelectPosts(
   ].slice(0, MAX_POSTS);
 
   console.log(
-    `[generate] Processing ${posts.length} of ${backlogTotal} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`
+    `[generate] Processing ${posts.length} of ${backlogTotal} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`,
   );
 
   // Log run snapshot
@@ -92,12 +88,10 @@ async function fetchAndSelectPosts(
 function logMediaBreakdown(posts: Post[]): void {
   const videoCount = posts.filter((p) => p.media?.some((m) => m.type === "video")).length;
   const photoCount = posts.filter(
-    (p) => p.media?.some((m) => m.type === "photo") && !p.media?.some((m) => m.type === "video")
+    (p) => p.media?.some((m) => m.type === "photo") && !p.media?.some((m) => m.type === "video"),
   ).length;
   const textOnlyCount = posts.filter((p) => !p.media || p.media.length === 0).length;
-  console.log(
-    `[generate] Media breakdown: ${videoCount} video, ${photoCount} photo-only, ${textOnlyCount} text-only`
-  );
+  console.log(`[generate] Media breakdown: ${videoCount} video, ${photoCount} photo-only, ${textOnlyCount} text-only`);
 }
 
 // ---------------------------------------------------------------------------
@@ -111,15 +105,17 @@ async function storeCandidateResult(
   botId: string,
   noteText: string,
   pipelineResult: any,
-  warningText?: string
+  warningText?: string,
 ): Promise<void> {
   // Expire old candidates for this tweet
   try {
-    const existing = await supabaseLogger.fetchAllRows<{ id: string }>(
-      (client) => client.from("pipeline_runs").select("id")
+    const existing = await supabaseLogger.fetchAllRows<{ id: string }>((client) =>
+      client
+        .from("pipeline_runs")
+        .select("id")
         .eq("tweet_id", post.id)
         .eq("outcome", "candidate")
-        .neq("id", pipelineRunId)
+        .neq("id", pipelineRunId),
     );
     for (const old of existing) {
       await supabaseLogger.markCandidateExpired(old.id, "rerolled");
@@ -203,11 +199,11 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
           selectedBot.id,
           tweetResult.noteText ?? "",
           tweetResult.pipelineResult,
-          tweetResult.warnings?.join("; ")
+          tweetResult.warnings?.join("; "),
         );
         candidateCount++;
         console.log(
-          `[generate] Stored candidate for tweet ${post.id} (eval=${tweetResult.evaluationScore?.toFixed(2) ?? "?"}, srcs=${tweetResult.sourceCountScore ?? "?"})`
+          `[generate] Stored candidate for tweet ${post.id} (eval=${tweetResult.evaluationScore?.toFixed(2) ?? "?"}, srcs=${tweetResult.sourceCountScore ?? "?"})`,
         );
       }
     });

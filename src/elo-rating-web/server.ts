@@ -12,11 +12,11 @@ serve({
   port: PORT,
   async fetch(req) {
     const url = new URL(req.url);
-    
+
     // Serve the main HTML with injected credentials
     if (url.pathname === "/" || url.pathname === "/index.html") {
       let html = readFileSync(join(import.meta.dir, "index.html"), "utf-8");
-      
+
       // Inject credentials as a script tag
       const credentialsScript = `
         <script>
@@ -27,18 +27,18 @@ serve({
           };
         </script>
       `;
-      
+
       // Insert before the closing body tag
       html = html.replace("</body>", credentialsScript + "</body>");
-      
+
       return new Response(html, {
-        headers: { "Content-Type": "text/html" }
+        headers: { "Content-Type": "text/html" },
       });
     }
-    
+
     // Serve static files (including dist directory)
     let filePath = join(import.meta.dir, url.pathname);
-    
+
     // Handle root files and dist files
     try {
       const file = Bun.file(filePath);
@@ -49,9 +49,9 @@ serve({
     } catch (e) {
       // File not found, continue
     }
-    
+
     return new Response("Not found", { status: 404 });
-  }
+  },
 });
 
 console.log(`Server running at http://localhost:${PORT}`);

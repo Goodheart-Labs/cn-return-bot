@@ -14,8 +14,7 @@ export function countNoteLength(note: string): number {
 // Define the goal schema, similar to searchContext.ts
 export const writeNoteGoal = createGoal({
   name: "write note with search",
-  description:
-    "Write a Community Note for a post on X using search results for context.",
+  description: "Write a Community Note for a post on X using search results for context.",
   input: textAndSearchResults,
   output: writeNoteOutput,
 });
@@ -189,17 +188,11 @@ export const writeNote = writeNoteGoal.register({
 });
 
 export async function writeNoteFn(
-  {
-    text,
-    searchResults,
-    citations,
-    quotedPostContext,
-    mediaContext,
-  }: z.infer<typeof textAndSearchResults>,
+  { text, searchResults, citations, quotedPostContext, mediaContext }: z.infer<typeof textAndSearchResults>,
   config: {
     model: string;
     currentDate?: string;
-  }
+  },
 ) {
   const maxRetries = 3;
   let attempt = 0;
@@ -251,7 +244,11 @@ export async function writeNoteFn(
       try {
         parsed = parseStatusNoteUrl(content);
       } catch (parseErr) {
-        console.warn(`[writeNote] Failed to parse LLM response (attempt ${attempt}/${maxRetries}):`, (parseErr as Error).message, `| Raw content: "${content.slice(0, 200)}"`);
+        console.warn(
+          `[writeNote] Failed to parse LLM response (attempt ${attempt}/${maxRetries}):`,
+          (parseErr as Error).message,
+          `| Raw content: "${content.slice(0, 200)}"`,
+        );
         if (attempt >= maxRetries) {
           return { status: "PARSE_ERROR", note: "", url: "" };
         }

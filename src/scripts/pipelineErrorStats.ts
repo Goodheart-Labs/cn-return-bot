@@ -40,10 +40,7 @@ async function main() {
     .limit(50);
 
   // Get errors by bot
-  const { data: errorsByBot } = await supabase
-    .from("pipeline_runs")
-    .select("bot_id")
-    .eq("outcome", "failed");
+  const { data: errorsByBot } = await supabase.from("pipeline_runs").select("bot_id").eq("outcome", "failed");
 
   const botErrorCounts: Record<string, number> = {};
   for (const row of errorsByBot || []) {
@@ -52,10 +49,7 @@ async function main() {
   }
 
   // Get errors by stage
-  const { data: errorsByStage } = await supabase
-    .from("pipeline_runs")
-    .select("final_stage")
-    .eq("outcome", "failed");
+  const { data: errorsByStage } = await supabase.from("pipeline_runs").select("final_stage").eq("outcome", "failed");
 
   const stageErrorCounts: Record<string, number> = {};
   for (const row of errorsByStage || []) {
@@ -142,7 +136,9 @@ async function main() {
       <tr><th>Bot</th><th>Error Count</th><th>% of Errors</th></tr>
       ${Object.entries(botErrorCounts)
         .sort((a, b) => b[1] - a[1])
-        .map(([bot, count]) => `<tr><td>${bot}</td><td>${count}</td><td>${((count / failed) * 100).toFixed(1)}%</td></tr>`)
+        .map(
+          ([bot, count]) => `<tr><td>${bot}</td><td>${count}</td><td>${((count / failed) * 100).toFixed(1)}%</td></tr>`,
+        )
         .join("\n      ")}
     </table>
   </div>
@@ -153,7 +149,10 @@ async function main() {
       <tr><th>Stage</th><th>Error Count</th><th>% of Errors</th></tr>
       ${Object.entries(stageErrorCounts)
         .sort((a, b) => b[1] - a[1])
-        .map(([stage, count]) => `<tr><td>${stage}</td><td>${count}</td><td>${((count / failed) * 100).toFixed(1)}%</td></tr>`)
+        .map(
+          ([stage, count]) =>
+            `<tr><td>${stage}</td><td>${count}</td><td>${((count / failed) * 100).toFixed(1)}%</td></tr>`,
+        )
         .join("\n      ")}
     </table>
   </div>
@@ -171,7 +170,7 @@ async function main() {
         ${new Date(e.created_at).toLocaleString()}
       </div>
       <div class="message">${e.error_message || "No error message"}</div>
-    </div>`
+    </div>`,
       )
       .join("")}
   </div>

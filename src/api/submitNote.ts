@@ -20,10 +20,7 @@ export type NoteInfo = {
  * @param testMode Whether to use test mode (default true)
  * @returns The API response
  */
-export async function submitNote(
-  postId: string,
-  info: NoteInfo
-): Promise<SubmitNoteResponse> {
+export async function submitNote(postId: string, info: NoteInfo): Promise<SubmitNoteResponse> {
   const url = "https://api.x.com/2/notes";
   const data = {
     info,

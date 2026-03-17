@@ -1,10 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import "dotenv/config";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 
 // Get pipeline_runs which has bot_id and join with latest snapshot status
 // First get all pipeline runs that resulted in submitted notes
@@ -20,7 +17,7 @@ if (pipelineError) {
 }
 
 // Get latest snapshot for each note
-const noteIds = pipelineData.map(p => p.note_id).filter(Boolean);
+const noteIds = pipelineData.map((p) => p.note_id).filter(Boolean);
 const { data: snapshots, error: snapshotError } = await supabase
   .from("scraped_notewriter_snapshots")
   .select("note_id, cn_status, scraped_at")

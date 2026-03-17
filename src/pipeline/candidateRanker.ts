@@ -49,9 +49,7 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
 
   const scored: RankedCandidate[] = candidates.map((c) => {
     const ageHours = (now - c.createdAt.getTime()) / (1000 * 60 * 60);
-    const evalScore = c.scores.evaluation !== undefined
-      ? sigmoid(c.scores.evaluation)
-      : sigmoid(-1); // ~0.27, "unknown, assume below average"
+    const evalScore = c.scores.evaluation !== undefined ? sigmoid(c.scores.evaluation) : sigmoid(-1); // ~0.27, "unknown, assume below average"
     const rankScore = evalScore - FRESHNESS_DECAY_PER_HOUR * ageHours;
     return { ...c, rankScore };
   });
@@ -64,7 +62,7 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
   for (const c of scored.slice(0, 10)) {
     const ageHours = ((now - c.createdAt.getTime()) / (1000 * 60 * 60)).toFixed(1);
     console.log(
-      `  ${c.pipelineRunId.slice(0, 8)} | score=${c.rankScore.toFixed(3)} | age=${ageHours}h | eval=${c.scores.evaluation?.toFixed(2) ?? "?"}`
+      `  ${c.pipelineRunId.slice(0, 8)} | score=${c.rankScore.toFixed(3)} | age=${ageHours}h | eval=${c.scores.evaluation?.toFixed(2) ?? "?"}`,
     );
   }
   if (scored.length > 10) {

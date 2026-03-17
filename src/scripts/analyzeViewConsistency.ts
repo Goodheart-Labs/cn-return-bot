@@ -110,12 +110,14 @@ async function analyzeViewConsistency() {
   // Calculate total views for notes with 2+ scrapes (using latest)
   const totalViewsMultipleScrapes = notesWithMultipleScrapes.reduce(
     (sum, { scrapes }) => sum + scrapes[scrapes.length - 1]!.view_count,
-    0
+    0,
   );
 
   console.log(`\nTotal views (notes with 2+ scrapes only): ${totalViewsMultipleScrapes.toLocaleString()}`);
   console.log(`Notes counted: ${notesWithMultipleScrapes.length}`);
-  console.log(`Average: ${Math.round(totalViewsMultipleScrapes / notesWithMultipleScrapes.length).toLocaleString()} views/note`);
+  console.log(
+    `Average: ${Math.round(totalViewsMultipleScrapes / notesWithMultipleScrapes.length).toLocaleString()} views/note`,
+  );
 }
 
 analyzeViewConsistency().catch(console.error);

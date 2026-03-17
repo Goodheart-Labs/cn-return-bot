@@ -147,7 +147,7 @@ async function transcribeWithOpenRouter(audioBuffer: Buffer): Promise<string> {
  */
 export async function describeImage(
   imageUrl: string,
-  model: string = "anthropic/claude-sonnet-4"
+  model: string = "anthropic/claude-sonnet-4",
 ): Promise<ImageAnalysisResult> {
   console.log(`[mediaAnalysis] Describing image...`);
 
@@ -197,18 +197,13 @@ Be specific and factual. If you see text, quote it exactly.`,
 /**
  * Describe video frames using vision model
  */
-async function describeVideoFrames(
-  frames: Buffer[],
-  model: string = "anthropic/claude-sonnet-4"
-): Promise<string[]> {
+async function describeVideoFrames(frames: Buffer[], model: string = "anthropic/claude-sonnet-4"): Promise<string[]> {
   if (frames.length === 0) return [];
 
   console.log(`[mediaAnalysis] Describing ${frames.length} video frames...`);
 
   // Convert frames to base64 data URLs
-  const frameDataUrls = frames.map(
-    (frame) => `data:image/jpeg;base64,${frame.toString("base64")}`
-  );
+  const frameDataUrls = frames.map((frame) => `data:image/jpeg;base64,${frame.toString("base64")}`);
 
   // Describe all frames in one call for efficiency
   try {
@@ -279,7 +274,7 @@ async function analyzeVideo(
     maxFrames?: number;
     transcribeAudio?: boolean;
     visionModel?: string;
-  }
+  },
 ): Promise<VideoAnalysisResult> {
   const maxFrames = config.maxFrames ?? 4;
   const shouldTranscribe = config.transcribeAudio ?? true;
@@ -317,7 +312,7 @@ async function analyzeVideo(
     const frames: Buffer[] = [];
     await execAsync(
       `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v ${maxFrames} "${tmpDir}/frame%03d.jpg" -y 2>&1`,
-      { timeout: 60000 }
+      { timeout: 60000 },
     ).catch((err) => {
       console.error("[mediaAnalysis] FFmpeg frame extraction error:", err.message);
     });
@@ -339,7 +334,9 @@ async function analyzeVideo(
     const frameDescriptions = await describeVideoFrames(frames, visionModel);
 
     if (frameDescriptions.length > 0) {
-      console.log(`[mediaAnalysis] Frame descriptions:\n${frameDescriptions.map((d, i) => `  Frame ${i + 1}: ${d}`).join("\n")}`);
+      console.log(
+        `[mediaAnalysis] Frame descriptions:\n${frameDescriptions.map((d, i) => `  Frame ${i + 1}: ${d}`).join("\n")}`,
+      );
     }
 
     // Extract audio and transcribe from local file
@@ -351,10 +348,9 @@ async function analyzeVideo(
       if (groqApiKey || openRouterKey) {
         try {
           const audioPath = join(tmpDir, "audio.mp3");
-          await execAsync(
-            `ffmpeg -i "${videoPath}" -vn -acodec libmp3lame -ar 16000 -ac 1 "${audioPath}" -y 2>&1`,
-            { timeout: 60000 }
-          );
+          await execAsync(`ffmpeg -i "${videoPath}" -vn -acodec libmp3lame -ar 16000 -ac 1 "${audioPath}" -y 2>&1`, {
+            timeout: 60000,
+          });
 
           const audioStat = await stat(audioPath);
           if (audioStat.size >= 1000) {
@@ -411,7 +407,7 @@ async function analyzeVideo(
   } finally {
     try {
       await rm(tmpDir, { recursive: true, force: true });
-    } catch { }
+    } catch {}
   }
 }
 
@@ -459,7 +455,7 @@ export async function analyzeMedia(
     maxVideoFrames?: number;
     transcribeAudio?: boolean;
     visionModel?: string;
-  }
+  },
 ): Promise<MediaAnalysisResult> {
   const startTime = Date.now();
   const maxVideoFrames = config?.maxVideoFrames ?? 4;
@@ -533,9 +529,7 @@ export async function analyzeMedia(
   const summary = summaryParts.join("\n\n---\n\n");
 
   // Format context for search
-  const contextForSearch = summary
-    ? `\n\n=== MEDIA ANALYSIS ===\n${summary}`
-    : "";
+  const contextForSearch = summary ? `\n\n=== MEDIA ANALYSIS ===\n${summary}` : "";
 
   const totalTime = Date.now() - startTime;
   console.log(`[mediaAnalysis] Complete in ${totalTime}ms. Videos: ${videos.length}, Images: ${images.length}`);

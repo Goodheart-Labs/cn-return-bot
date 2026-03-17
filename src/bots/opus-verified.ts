@@ -18,11 +18,7 @@ import { deepFactVerification } from "../pipeline/deepFactVerification";
 import { writeNoteFn as writeNote } from "../pipeline/writeNote";
 import { verifySource } from "../pipeline/sourceVerification";
 import { scoreSourceTrustworthiness } from "../pipeline/sourceTrustworthiness";
-import {
-  runNoteScores,
-  checkAllThresholds,
-  type AllNoteScores,
-} from "../pipeline/noteScores";
+import { runNoteScores, checkAllThresholds, type AllNoteScores } from "../pipeline/noteScores";
 
 const MODELS = {
   search: "perplexity/sonar-pro",
@@ -35,8 +31,7 @@ const MODELS = {
 export const opusVerified: Bot = {
   id: "opus-verified",
   name: "Opus 4.6 Verified",
-  description:
-    "High-quality bot: deep fact verification + source trust gate + scoring filters",
+  description: "High-quality bot: deep fact verification + source trust gate + scoring filters",
   weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
@@ -54,7 +49,7 @@ export const opusVerified: Bot = {
           mediaContext: "",
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.search }
+        { model: MODELS.search },
       );
 
       // 2. Deep fact verification — enriches context before note writing
@@ -71,10 +66,10 @@ export const opusVerified: Bot = {
           analysisModel: MODELS.deepVerification,
           maxFollowUpQueries: 2,
           validateModel: true,
-        }
+        },
       );
       console.log(
-        `[${this.id}] Verification complete: ${verification.claimAnalysis.keyClaims.length} claims, ${verification.allCitations.length} total citations`
+        `[${this.id}] Verification complete: ${verification.claimAnalysis.keyClaims.length} claims, ${verification.allCitations.length} total citations`,
       );
 
       // 3. Write note with enriched context
@@ -87,14 +82,12 @@ export const opusVerified: Bot = {
           citations: verification.allCitations,
           quotedPostContext: content.quotedPostContext,
         },
-        { model: MODELS.noteWriting }
+        { model: MODELS.noteWriting },
       );
 
       // Early return if no correction needed
       if (noteResult.status !== "CORRECTION WITH TRUSTWORTHY CITATION") {
-        console.log(
-          `[${this.id}] No correction needed (status: ${noteResult.status})`
-        );
+        console.log(`[${this.id}] No correction needed (status: ${noteResult.status})`);
         return {
           post,
           botId: this.id,
@@ -115,19 +108,15 @@ export const opusVerified: Bot = {
       lastStage = "check";
       const checkResult = await verifySource(
         { note: noteResult.note, url: noteResult.url, status: noteResult.status },
-        { model: MODELS.checking }
+        { model: MODELS.checking },
       );
 
       // 5. Source trustworthiness gate (free — pure logic, no LLM call)
       lastStage = "source_trust";
       const trustScore = scoreSourceTrustworthiness(noteResult.url);
-      console.log(
-        `[${this.id}] Source trust: ${trustScore.domain} = ${trustScore.score} (${trustScore.tier})`
-      );
+      console.log(`[${this.id}] Source trust: ${trustScore.domain} = ${trustScore.score} (${trustScore.tier})`);
       if (trustScore.score < 0.5) {
-        console.log(
-          `[${this.id}] Source trust too low (${trustScore.score} < 0.5) — rejecting`
-        );
+        console.log(`[${this.id}] Source trust too low (${trustScore.score} < 0.5) — rejecting`);
         return {
           post,
           botId: this.id,
@@ -151,7 +140,7 @@ export const opusVerified: Bot = {
         content.text,
         verification.combinedContext,
         noteResult.url,
-        MODELS.scoring
+        MODELS.scoring,
       );
 
       const allPassed = checkAllThresholds(scoringResults);

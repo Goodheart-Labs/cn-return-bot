@@ -14,7 +14,7 @@ async function main() {
 
   const browser = await puppeteer.connect({ browserURL: "http://127.0.0.1:9222" });
   const pages = await browser.pages();
-  const page = pages.find(p => p.url().includes("communitynotes"));
+  const page = pages.find((p) => p.url().includes("communitynotes"));
 
   if (!page) {
     console.log("No notewriter tab found");
@@ -24,7 +24,7 @@ async function main() {
   // Scroll to top first
   console.log("Scrolling to top...");
   await page.evaluate(() => window.scrollTo(0, 0));
-  await new Promise(r => setTimeout(r, 2000));
+  await new Promise((r) => setTimeout(r, 2000));
 
   // Load more content by scrolling to bottom first
   console.log("Loading full page content...");
@@ -32,10 +32,13 @@ async function main() {
   let stuck = 0;
   while (stuck < 5) {
     await page.evaluate(() => window.scrollBy(0, 5000));
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 500));
     const height = await page.evaluate(() => document.body.scrollHeight);
     if (height === lastHeight) stuck++;
-    else { stuck = 0; lastHeight = height; }
+    else {
+      stuck = 0;
+      lastHeight = height;
+    }
   }
 
   // Now scroll to the target percentage
@@ -44,7 +47,7 @@ async function main() {
 
   console.log(`Page height: ${totalHeight}, scrolling to ${scrollPercent}% = ${targetScroll}px`);
   await page.evaluate((y) => window.scrollTo(0, y), targetScroll);
-  await new Promise(r => setTimeout(r, 2000));
+  await new Promise((r) => setTimeout(r, 2000));
 
   const finalPos = await page.evaluate(() => window.scrollY);
   console.log(`Final scroll position: ${finalPos}px`);
@@ -58,7 +61,7 @@ async function main() {
   const scraper = spawn("bun", ["run", "src/scripts/scrapeNotewriterClickThrough.ts", maxNotes], {
     stdio: "inherit",
     shell: true,
-    env: { ...process.env, PATH: process.env.PATH + ":/Users/natha/.bun/bin" }
+    env: { ...process.env, PATH: process.env.PATH + ":/Users/natha/.bun/bin" },
   });
 
   scraper.on("close", (code) => {

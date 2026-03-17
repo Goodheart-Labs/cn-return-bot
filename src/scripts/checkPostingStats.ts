@@ -1,9 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 
 async function fetchAllRows(table: string, select: string) {
   const allRows: any[] = [];
@@ -32,7 +29,7 @@ async function checkPostingStats() {
   // Get ALL pipeline runs
   const runs = await fetchAllRows(
     "pipeline_runs",
-    "outcome, outcome_reason, final_stage, note_id, tweet_id, created_at, error_message"
+    "outcome, outcome_reason, final_stage, note_id, tweet_id, created_at, error_message",
   );
 
   console.log("=== PIPELINE RUN STATS ===");
@@ -67,9 +64,7 @@ async function checkPostingStats() {
     .forEach(([k, v]) => console.log(`  ${k}: ${v}`));
 
   // Check for submitted runs that don't have a note_id
-  const submittedNoNote = runs.filter(
-    (r) => r.outcome === "submitted" && !r.note_id
-  );
+  const submittedNoNote = runs.filter((r) => r.outcome === "submitted" && !r.note_id);
   console.log("\n=== POTENTIAL ISSUES ===");
   console.log("Submitted runs without note_id:", submittedNoNote.length);
   if (submittedNoNote.length > 0) {
@@ -106,9 +101,7 @@ async function checkPostingStats() {
 
   // Check if note counts match
   if (submittedRuns.length !== notes.length) {
-    console.log(
-      `⚠️  MISMATCH: submitted runs (${submittedRuns.length}) != notes (${notes.length})`
-    );
+    console.log(`⚠️  MISMATCH: submitted runs (${submittedRuns.length}) != notes (${notes.length})`);
 
     // Find notes that don't have a corresponding pipeline run
     const submittedTweetIds = new Set(submittedRuns.map((r) => r.tweet_id));
@@ -121,9 +114,7 @@ async function checkPostingStats() {
   }
 
   // Check for failed submissions (outcome=failed at submission stage)
-  const failedSubmissions = runs.filter(
-    (r) => r.outcome === "failed" && r.final_stage === "submission"
-  );
+  const failedSubmissions = runs.filter((r) => r.outcome === "failed" && r.final_stage === "submission");
   console.log("\n=== FAILED SUBMISSIONS ===");
   console.log("Failed at submission stage:", failedSubmissions.length);
   if (failedSubmissions.length > 0) {
@@ -147,23 +138,21 @@ async function checkPostingStats() {
   });
   if (uniqueErrors.size > 0) {
     console.log("  Unique error patterns:");
-    Array.from(uniqueErrors).slice(0, 10).forEach((e) => console.log(`    - ${e}`));
+    Array.from(uniqueErrors)
+      .slice(0, 10)
+      .forEach((e) => console.log(`    - ${e}`));
   }
 
   // Summary
   console.log("\n=== SUMMARY ===");
-  const successRate = runs.length > 0
-    ? ((submittedRuns.length / runs.length) * 100).toFixed(1)
-    : 0;
+  const successRate = runs.length > 0 ? ((submittedRuns.length / runs.length) * 100).toFixed(1) : 0;
   console.log(`Submission success rate: ${successRate}% (${submittedRuns.length}/${runs.length})`);
 
   // Analyze retryability
   console.log("\n=== RETRY ANALYSIS ===");
 
   // 1. Character limit failures - these are deterministic, won't change on retry
-  const charLimitErrors = botErrors.filter((r) =>
-    r.error_message?.includes("275 character limit")
-  );
+  const charLimitErrors = botErrors.filter((r) => r.error_message?.includes("275 character limit"));
   console.log(`Character limit failures: ${charLimitErrors.length} (NOT retryable - deterministic)`);
 
   // 2. Check failures - might succeed with different search/framing
@@ -183,9 +172,7 @@ async function checkPostingStats() {
   console.log(`No correction needed: ${noCorrection.length} (NOT retryable - bot judged post accurate)`);
 
   // 6. Search failures that aren't char limit
-  const searchFailuresOther = botErrors.filter((r) =>
-    !r.error_message?.includes("275 character limit")
-  );
+  const searchFailuresOther = botErrors.filter((r) => !r.error_message?.includes("275 character limit"));
   console.log(`Other bot errors: ${searchFailuresOther.length}`);
   if (searchFailuresOther.length > 0) {
     const otherErrors = new Map<string, number>();

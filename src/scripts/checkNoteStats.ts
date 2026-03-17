@@ -16,12 +16,10 @@ console.log("Total canonical_note_information:", notesCount);
 console.log("Total scraped_notewriter_snapshots:", snapshotsCount);
 
 // Count real vs placeholder IDs
-const { data: allNotes } = await client
-  .from("canonical_note_information")
-  .select("note_id");
+const { data: allNotes } = await client.from("canonical_note_information").select("note_id");
 
-const realIds = allNotes?.filter(n => !n.note_id.startsWith('tweet_')).length || 0;
-const placeholderIds = allNotes?.filter(n => n.note_id.startsWith('tweet_')).length || 0;
+const realIds = allNotes?.filter((n) => !n.note_id.startsWith("tweet_")).length || 0;
+const placeholderIds = allNotes?.filter((n) => n.note_id.startsWith("tweet_")).length || 0;
 console.log("\nReal note IDs:", realIds);
 console.log("Placeholder IDs (tweet_XXX):", placeholderIds);
 
@@ -34,7 +32,7 @@ const { data: oldest } = await client
   .limit(3);
 
 console.log("\nOldest notes (by note_id):");
-oldest?.forEach(n => console.log(`  ${n.note_id} → ${n.tweet_id}`));
+oldest?.forEach((n) => console.log(`  ${n.note_id} → ${n.tweet_id}`));
 
 const { data: newest } = await client
   .from("canonical_note_information")
@@ -44,4 +42,4 @@ const { data: newest } = await client
   .limit(3);
 
 console.log("\nNewest notes (by note_id):");
-newest?.forEach(n => console.log(`  ${n.note_id} → ${n.tweet_id}`))
+newest?.forEach((n) => console.log(`  ${n.note_id} → ${n.tweet_id}`));

@@ -38,7 +38,7 @@ export type Post = {
 export async function fetchEligiblePosts(
   maxResults: number = 10,
   skipPostIds: Set<string> = new Set(),
-  maxPages: number = 3
+  maxPages: number = 3,
 ): Promise<Post[]> {
   const allEligiblePosts: Post[] = [];
   const seenPostIds = new Set<string>(skipPostIds); // Track all seen post IDs to prevent duplicates
@@ -56,8 +56,7 @@ export async function fetchEligiblePosts(
     const params = new URLSearchParams({
       max_results: fetchLimit.toString(),
       "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics",
-      "media.fields":
-        "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
+      "media.fields": "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
       "user.fields": "public_metrics",
       expansions: "attachments.media_keys,referenced_tweets.id,author_id",
       test_mode: "false",
@@ -83,9 +82,7 @@ export async function fetchEligiblePosts(
     // Filter out posts that have already been processed or seen
     const newPosts = allPosts.filter((post) => {
       if (seenPostIds.has(post.id)) {
-        console.log(
-          `[fetchEligiblePosts] Skipping duplicate post ID: ${post.id}`
-        );
+        console.log(`[fetchEligiblePosts] Skipping duplicate post ID: ${post.id}`);
         return false;
       }
       seenPostIds.add(post.id);
@@ -99,7 +96,7 @@ export async function fetchEligiblePosts(
     nextToken = response.data.meta?.next_token;
 
     console.log(
-      `[fetchEligiblePosts] Page ${pageCount}: found ${allPosts.length} total posts, ${newPosts.length} new eligible posts`
+      `[fetchEligiblePosts] Page ${pageCount}: found ${allPosts.length} total posts, ${newPosts.length} new eligible posts`,
     );
 
     // If no more pages, break
@@ -109,9 +106,7 @@ export async function fetchEligiblePosts(
     }
   }
 
-  console.log(
-    `[fetchEligiblePosts] Total: ${allEligiblePosts.length} eligible posts found across ${pageCount} pages`
-  );
+  console.log(`[fetchEligiblePosts] Total: ${allEligiblePosts.length} eligible posts found across ${pageCount} pages`);
 
   // Return only the requested number of posts
   return allEligiblePosts.slice(0, maxResults);
@@ -166,7 +161,7 @@ export function parsePostsResponse(data: any): Post[] {
       let referencedTweetData: ReferencedTweetData | undefined;
       if (tweet.referenced_tweets?.length > 0) {
         const referencedTweet = tweet.referenced_tweets.find(
-          (rt: any) => rt.type === "retweeted" || rt.type === "quoted"
+          (rt: any) => rt.type === "retweeted" || rt.type === "quoted",
         );
         if (referencedTweet) {
           const referencedData = referencedTweetsMap.get(referencedTweet.id);

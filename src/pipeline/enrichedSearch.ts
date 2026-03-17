@@ -14,15 +14,14 @@ import { searchXWithGrok } from "./grokSearch";
 export async function enrichedSearch(
   input: { text: string; media: string[]; searchResults: string; quotedPostContext?: string },
   config: { perplexityModel: string; grokModel: string },
-  tweetId: string
+  tweetId: string,
 ) {
   const [perplexityResult, grokResult] = await Promise.all([
     perplexitySearch(input, { model: config.perplexityModel }),
-    searchXWithGrok(tweetId, input.text, { model: config.grokModel })
-      .catch((err) => {
-        console.warn(`[enrichedSearch] Grok search failed (continuing without it):`, err?.message);
-        return null;
-      }),
+    searchXWithGrok(tweetId, input.text, { model: config.grokModel }).catch((err) => {
+      console.warn(`[enrichedSearch] Grok search failed (continuing without it):`, err?.message);
+      return null;
+    }),
   ]);
 
   const combinedSearch = grokResult
