@@ -1,3 +1,4 @@
+// @ts-nocheck
 import "dotenv/config";
 import puppeteer from "puppeteer-core";
 

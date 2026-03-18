@@ -145,7 +145,7 @@ async function transcribeWithOpenRouter(audioBuffer: Buffer): Promise<string> {
 /**
  * Describe an image using vision model
  */
-export async function describeImage(
+async function describeImage(
   imageUrl: string,
   model: string = "anthropic/claude-sonnet-4"
 ): Promise<ImageAnalysisResult> {

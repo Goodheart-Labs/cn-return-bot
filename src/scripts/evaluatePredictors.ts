@@ -113,7 +113,6 @@ async function main() {
 
   // 4. Build scored notes
   const scoredNotes: ScoredNote[] = [];
-  const runMap = new Map(runs.map((r) => [r.id, r]));
 
   // Group scores by pipeline_run_id
   const scoresByRun = new Map<string, Map<string, { value: number; createdAt: string }>>();

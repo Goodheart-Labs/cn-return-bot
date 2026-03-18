@@ -1,4 +1,3 @@
-import { createServer } from "http";
 import crypto from "crypto";
 import OAuth from "oauth-1.0a";
 
@@ -25,7 +24,7 @@ const access_token_secret = getRequiredEnv("X_ACCESS_TOKEN_SECRET");
 export function getOAuth1Headers(
   url: string,
   method: string = "GET",
-  body?: string
+  _body?: string
 ) {
   const oauth = new OAuth({
     consumer: {
@@ -58,11 +57,9 @@ export function getOAuth1Headers(
 }
 
 // === OAuth1 Token Validation ===
-// Note: Env vars are validated at module load, so this function
-// focuses on testing that the tokens actually work with the API.
-export async function validateOAuth1Tokens() {
+// Run directly: bun run src/api/getOAuthToken.ts
+async function validateOAuth1Tokens() {
   try {
-    // Test the tokens by making a simple API call
     const headers = getOAuth1Headers("https://api.twitter.com/2/users/me");
 
     const response = await fetch("https://api.twitter.com/2/users/me", {
@@ -91,25 +88,6 @@ export async function validateOAuth1Tokens() {
   }
 }
 
-// === OAuth1 Token Setup Helper ===
-export function printOAuth1SetupInstructions() {
-  console.log("\n=== OAuth1 Setup Instructions ===");
-  console.log("\n1. Go to https://developer.twitter.com/en/portal/dashboard");
-  console.log("2. Create a new app or use an existing one");
-  console.log("3. In your app settings, note down:");
-  console.log("   - API Key (Consumer Key)");
-  console.log("   - API Key Secret (Consumer Secret)");
-  console.log("4. Generate Access Token and Secret:");
-  console.log("   - Go to 'Keys and tokens' tab");
-  console.log("   - Generate 'Access Token and Secret'");
-  console.log("   - Note down both the Access Token and Access Token Secret");
-  console.log("\n5. Add these to your .env.local file:");
-  console.log("   X_API_KEY=your_api_key_here");
-  console.log("   X_API_KEY_SECRET=your_api_key_secret_here");
-  console.log("   X_ACCESS_TOKEN=your_access_token_here");
-  console.log("   X_ACCESS_TOKEN_SECRET=your_access_token_secret_here");
-  console.log("\n6. Run this script to validate your tokens");
+if (import.meta.main) {
+  validateOAuth1Tokens();
 }
-
-// === Main Execution ===
-// Removed module check for ES modules compatibility

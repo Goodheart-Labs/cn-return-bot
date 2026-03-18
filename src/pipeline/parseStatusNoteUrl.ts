@@ -19,7 +19,7 @@ export function parseStatusNoteUrl(content: string): {
   // Status is the first non-empty line, stripped of [Status: ...] wrapper if present
   let status: string = lines[0] ?? "";
   const bracketMatch = status.match(/^\[(?:Status:\s*)?(.+)\]$/);
-  if (bracketMatch) status = bracketMatch[1];
+  if (bracketMatch) status = bracketMatch[1] ?? "";
   // Find a URL in any line
   let url = "";
   let urlLineIdx = -1;

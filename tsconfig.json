@@ -20,12 +20,9 @@
     "noUncheckedIndexedAccess": true,
 
     // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noPropertyAccessFromIndexSignature": false
   },
-  "exclude": [
-    "src/elo-rating-web/**/*",
-    "node_modules"
-  ]
+  "exclude": ["src/elo-rating-web/**/*", "node_modules"]
 }
