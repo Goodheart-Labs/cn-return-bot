@@ -124,7 +124,7 @@ IMPORTANT: Return ONLY a JSON object with:
 /**
  * Helpfulness prediction — will this note be rated helpful?
  */
-export async function predictHelpfulness(
+async function predictHelpfulness(
   noteText: string,
   tweetText: string,
   searchResults: string,
@@ -168,7 +168,7 @@ IMPORTANT: Return ONLY a JSON object with:
  * Source quality — LLM assessment of whether the linked source is credible
  * and appropriate for the specific claim being made. Replaces domain allowlists.
  */
-export async function checkSourceQuality(
+async function checkSourceQuality(
   noteText: string,
   url: string,
   model: string = DEFAULT_SCORING_MODEL
@@ -200,7 +200,7 @@ IMPORTANT: Return ONLY a JSON object with:
  * Breaking news risk — does the note make a present-tense negative claim
  * about a developing situation where facts could change within hours?
  */
-export async function checkBreakingNewsRisk(
+async function checkBreakingNewsRisk(
   noteText: string,
   tweetText: string,
   model: string = DEFAULT_SCORING_MODEL
@@ -226,7 +226,7 @@ IMPORTANT: Return ONLY a JSON object with:
  * Pedantry — is the correction so minor it doesn't materially change
  * the main message of the tweet?
  */
-export async function checkPedantry(
+async function checkPedantry(
   noteText: string,
   tweetText: string,
   model: string = DEFAULT_SCORING_MODEL
@@ -251,7 +251,7 @@ IMPORTANT: Return ONLY a JSON object with:
 /**
  * Note not needed — is the tweet opinion/satire rather than a checkable claim?
  */
-export async function checkNoteNotNeeded(
+async function checkNoteNotNeeded(
   noteText: string,
   tweetText: string,
   model: string = DEFAULT_SCORING_MODEL
@@ -277,7 +277,7 @@ IMPORTANT: Return ONLY a JSON object with:
  * Tangential correction — does the note correct a secondary detail while
  * the main misleading claim goes unaddressed?
  */
-export async function checkTangentialCorrection(
+async function checkTangentialCorrection(
   noteText: string,
   tweetText: string,
   model: string = DEFAULT_SCORING_MODEL
@@ -304,7 +304,7 @@ IMPORTANT: Return ONLY a JSON object with:
  * in a few minutes? Claims requiring specialist knowledge may get NH because
  * raters can't verify them.
  */
-export async function checkRaterVerifiability(
+async function checkRaterVerifiability(
   noteText: string,
   tweetText: string,
   model: string = DEFAULT_SCORING_MODEL
@@ -335,7 +335,7 @@ IMPORTANT: Return ONLY a JSON object with:
  * Overconfidence — does the note state its claim with more certainty than
  * the evidence warrants?
  */
-export async function checkOverconfidence(
+async function checkOverconfidence(
   noteText: string,
   model: string = DEFAULT_SCORING_MODEL
 ): Promise<NoteScore> {

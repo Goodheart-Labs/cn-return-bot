@@ -59,7 +59,7 @@ export function getOAuth1Headers(
 // === OAuth1 Token Validation ===
 // Note: Env vars are validated at module load, so this function
 // focuses on testing that the tokens actually work with the API.
-export async function validateOAuth1Tokens() {
+async function validateOAuth1Tokens() {
   try {
     // Test the tokens by making a simple API call
     const headers = getOAuth1Headers("https://api.twitter.com/2/users/me");
@@ -91,7 +91,7 @@ export async function validateOAuth1Tokens() {
 }
 
 // === OAuth1 Token Setup Helper ===
-export function printOAuth1SetupInstructions() {
+function printOAuth1SetupInstructions() {
   console.log("\n=== OAuth1 Setup Instructions ===");
   console.log("\n1. Go to https://developer.twitter.com/en/portal/dashboard");
   console.log("2. Create a new app or use an existing one");

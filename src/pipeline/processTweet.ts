@@ -81,7 +81,7 @@ function extractTweetMetadata(post: Post): TweetMetadata {
   };
 }
 
-export async function runBotPipeline(
+async function runBotPipeline(
   post: Post,
   bot: Bot
 ): Promise<BotPipelineOutput> {
@@ -196,7 +196,7 @@ async function computeNoteQualityScores(
   }));
 }
 
-export async function scorePipelineResult(
+async function scorePipelineResult(
   result: PipelineResult,
   post: Post
 ): Promise<ScoringOutput> {
@@ -260,7 +260,7 @@ const STATUS_REJECTION_MAP: Record<string, { reason: string; stage: string }> = 
 
 const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 
-export function determineOutcome(
+function determineOutcome(
   result: PipelineResult | null,
   scores: ScoreEntry[],
   evalShouldSubmit?: boolean

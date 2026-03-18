@@ -1,6 +1,6 @@
 {
-  "entry": ["src/scripts/*.ts"],
+  "entry": ["src/scripts/*.ts", "src/tests/*.ts", "src/reports/*.ts", "src/**/*.test.ts"],
   "project": ["src/**/*.ts"],
   "ignore": ["src/elo-rating-web/**"],
-  "ignoreDependencies": ["@types/p-queue"]
+  "ignoreDependencies": []
 }
