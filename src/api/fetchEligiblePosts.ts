@@ -99,13 +99,8 @@ export async function fetchEligiblePosts(
     // Get next token for pagination
     nextToken = response.data.meta?.next_token;
 
-    console.log(
-      `[fetchEligiblePosts] Page ${pageCount}: found ${allPosts.length} total posts, ${newPosts.length} new eligible posts`
-    );
-
     // If no more pages, break
     if (!nextToken) {
-      console.log(`[fetchEligiblePosts] No more pages available`);
       break;
     }
   }
