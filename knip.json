@@ -2,5 +2,7 @@
   "entry": ["src/scripts/*.ts", "src/tests/*.ts", "src/reports/*.ts", "src/**/*.test.ts"],
   "project": ["src/**/*.ts"],
   "ignore": ["src/elo-rating-web/**"],
-  "ignoreDependencies": []
+  "ignoreDependencies": ["@types/p-queue"],
+  "ignoreExportsUsedInFile": true,
+  "exclude": ["types"]
 }
