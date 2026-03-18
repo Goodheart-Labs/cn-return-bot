@@ -5,6 +5,7 @@ import { extractCitations, llm } from "./llm";
 import type { OpenAIChatModelId } from "@ai-sdk/openai/internal";
 import type { ChatCompletionContentPartImage } from "openai/resources";
 import { textAndSearchResults } from "./schemas";
+import { getTweetLog } from "./tweetLog";
 
 const sanitizedPosts = posts.map(({ text, media }) => {
   return {
@@ -110,15 +111,16 @@ Always include specific URLs for your sources directly in the text.`;
   });
 
   const citations = extractCitations(result);
-  if (citations.length > 0) {
-    console.log(`[searchContext] Citations:\n${citations.map((c, i) => `  [${i + 1}] ${c}`).join("\n")}`);
-  } else {
-    console.log("[searchContext] No citations found in response annotations");
-  }
+  const searchResults = result.choices?.[0]?.message?.content ?? "Error";
+
+  const log = getTweetLog();
+  log?.set("search.results", searchResults);
+  log?.set("search.citations", citations);
+  log?.set("search.model", config.model);
 
   return {
     text: input.text,
-    searchResults: result.choices?.[0]?.message?.content ?? "Error",
+    searchResults,
     citations,
     quotedPostContext: input.quotedPostContext,
   };

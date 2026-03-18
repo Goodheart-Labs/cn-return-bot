@@ -44,6 +44,7 @@ export async function fetchEligiblePosts(
   const seenPostIds = new Set<string>(skipPostIds); // Track all seen post IDs to prevent duplicates
   let nextToken: string | undefined;
   let pageCount = 0;
+  let totalDuplicatesSkipped = 0;
 
   while (pageCount < maxPages && allEligiblePosts.length < maxResults) {
     pageCount++;
@@ -81,16 +82,16 @@ export async function fetchEligiblePosts(
     const allPosts = parsePostsResponse(response.data);
 
     // Filter out posts that have already been processed or seen
+    let pageDuplicates = 0;
     const newPosts = allPosts.filter((post) => {
       if (seenPostIds.has(post.id)) {
-        console.log(
-          `[fetchEligiblePosts] Skipping duplicate post ID: ${post.id}`
-        );
+        pageDuplicates++;
         return false;
       }
       seenPostIds.add(post.id);
       return true;
     });
+    totalDuplicatesSkipped += pageDuplicates;
 
     // Add new eligible posts to our collection
     allEligiblePosts.push(...newPosts);
@@ -110,7 +111,7 @@ export async function fetchEligiblePosts(
   }
 
   console.log(
-    `[fetchEligiblePosts] Total: ${allEligiblePosts.length} eligible posts found across ${pageCount} pages`
+    `[generate] Fetched ${allEligiblePosts.length} eligible posts across ${pageCount} pages (${totalDuplicatesSkipped} duplicates skipped)`
   );
 
   // Return only the requested number of posts

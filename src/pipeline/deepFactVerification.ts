@@ -6,6 +6,7 @@
  */
 
 import { extractCitations, llm } from "./llm";
+import { getTweetLog } from "./tweetLog";
 
 export interface ClaimAnalysis {
   keyClaims: Array<{
@@ -33,8 +34,6 @@ export async function analyzeClaimsWithOpus(
   initialSearchResults: string,
   model: string = "anthropic/claude-opus-4.5"
 ): Promise<ClaimAnalysis> {
-  console.log("[deepFactVerification] Analyzing claims with Opus...");
-
   const prompt = `You are analyzing a tweet and search results to identify claims that need fact-checking.
 
 TWEET:
@@ -82,8 +81,6 @@ IMPORTANT:
 
     const content = result.choices?.[0]?.message?.content || "{}";
     const parsed = JSON.parse(content);
-
-    console.log(`[deepFactVerification] Found ${parsed.keyClaims?.length || 0} claims, ${parsed.targetedQueries?.length || 0} follow-up queries`);
 
     return {
       keyClaims: parsed.keyClaims || [],
@@ -145,7 +142,6 @@ export async function runFollowUpSearches(
   }
 
   const queriesToRun = queries.slice(0, maxQueries);
-  console.log(`[deepFactVerification] Running ${queriesToRun.length} follow-up searches...`);
 
   // Run searches in parallel
   const searchPromises = queriesToRun.map((query) => runFollowUpSearch(query));
@@ -190,8 +186,6 @@ export async function validateModelOfEvents(
       reasoning: "No model of events to validate",
     };
   }
-
-  console.log("[deepFactVerification] Validating model of events...");
 
   const prompt = `Compare this "model of events" (what the tweet claims happened) against the search results.
 
@@ -238,8 +232,6 @@ Respond in JSON:
       };
     }
 
-    console.log(`[deepFactVerification] Model validation: ${isAccurate ? "ACCURATE" : "ISSUES FOUND"} (${parsed.confidence} confidence)`);
-
     return {
       isAccurate,
       confidence: parsed.confidence || "low",
@@ -278,8 +270,6 @@ export async function deepFactVerification(
   const analysisModel = config?.analysisModel || "anthropic/claude-opus-4.5";
   const maxQueries = config?.maxFollowUpQueries ?? 2;
   const shouldValidate = config?.validateModel ?? true;
-
-  console.log("[deepFactVerification] Starting deep fact verification pipeline...");
 
   // 1. Analyze claims
   const claimAnalysis = await analyzeClaimsWithOpus(
@@ -321,7 +311,14 @@ export async function deepFactVerification(
     ...new Set([...input.initialCitations, ...followUp.citations]),
   ];
 
-  console.log(`[deepFactVerification] Complete. Total citations: ${allCitations.length}`);
+  // Write to tweet log
+  const log = getTweetLog();
+  log?.set("deepVerification.claims", claimAnalysis.keyClaims);
+  log?.set("deepVerification.modelOfEvents", claimAnalysis.modelOfEvents);
+  log?.set("deepVerification.queries", claimAnalysis.targetedQueries);
+  log?.set("deepVerification.followUpResults", followUp.results);
+  log?.set("deepVerification.followUpCitations", followUp.citations);
+  log?.set("deepVerification.totalCitations", allCitations.length);
 
   return {
     originalSearchResults: input.initialSearchResults,

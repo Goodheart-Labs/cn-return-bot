@@ -8,6 +8,7 @@
  */
 
 import { extractCitations, llm } from "./llm";
+import { getTweetLog } from "./tweetLog";
 import type { ChatCompletionContentPartImage } from "openai/resources";
 
 export interface MultiSearchResult {
@@ -251,28 +252,33 @@ export async function multiSourceSearch(input: {
   media: string[];
   quotedPostContext?: string;
 }): Promise<MultiSearchResult> {
-  console.log("[multiSourceSearch] Extracting topic...");
   const topic = await extractTopic(input.text);
-  console.log(`[multiSourceSearch] Topic: ${topic}`);
 
   // Run all searches in parallel
-  console.log("[multiSourceSearch] Running parallel searches...");
   const [perplexityResult, googleResult, exaResult] = await Promise.all([
     searchPerplexity(input.text, input.media, input.quotedPostContext),
     searchGoogle(topic),
     searchExa(topic),
   ]);
 
-  // Log results
-  console.log(
-    `[multiSourceSearch] perplexity: ${perplexityResult.success ? `${perplexityResult.citations.length} citations found` : `failed - ${perplexityResult.error}`}`
-  );
-  console.log(
-    `[multiSourceSearch] google: ${googleResult.success ? `${googleResult.citations.length} results found` : `failed - ${googleResult.error}`}`
-  );
-  console.log(
-    `[multiSourceSearch] exa: ${exaResult.success ? `${exaResult.citations.length} results found` : `failed - ${exaResult.error}`}`
-  );
+  // Write to tweet log
+  const log = getTweetLog();
+  log?.set("multiSearch.topic", topic);
+  log?.set("multiSearch.perplexity", {
+    success: perplexityResult.success,
+    citationCount: perplexityResult.citations.length,
+    error: perplexityResult.error,
+  });
+  log?.set("multiSearch.google", {
+    success: googleResult.success,
+    citationCount: googleResult.citations.length,
+    error: googleResult.error,
+  });
+  log?.set("multiSearch.exa", {
+    success: exaResult.success,
+    citationCount: exaResult.citations.length,
+    error: exaResult.error,
+  });
 
   // Combine results
   const combinedResults: string[] = [];

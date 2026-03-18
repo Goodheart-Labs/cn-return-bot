@@ -12,6 +12,7 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { llm } from "./llm";
+import { getTweetLog } from "./tweetLog";
 
 const execAsync = promisify(exec);
 
@@ -149,8 +150,6 @@ export async function describeImage(
   imageUrl: string,
   model: string = "anthropic/claude-sonnet-4"
 ): Promise<ImageAnalysisResult> {
-  console.log(`[mediaAnalysis] Describing image...`);
-
   try {
     const result = await llm.create({
       model,
@@ -202,8 +201,6 @@ async function describeVideoFrames(
   model: string = "anthropic/claude-sonnet-4"
 ): Promise<string[]> {
   if (frames.length === 0) return [];
-
-  console.log(`[mediaAnalysis] Describing ${frames.length} video frames...`);
 
   // Convert frames to base64 data URLs
   const frameDataUrls = frames.map(
@@ -285,8 +282,6 @@ async function analyzeVideo(
   const shouldTranscribe = config.transcribeAudio ?? true;
   const visionModel = config.visionModel || "anthropic/claude-sonnet-4";
 
-  console.log(`[mediaAnalysis] Analyzing video: ${videoUrl.substring(0, 50)}...`);
-
   const isLocalFile = videoUrl.startsWith("/");
 
   if (!isLocalFile && !validateUrl(videoUrl)) {
@@ -333,14 +328,8 @@ async function analyzeVideo(
         break;
       }
     }
-    console.log(`[mediaAnalysis] Extracted ${frames.length} frames from video`);
-
     // Describe frames
     const frameDescriptions = await describeVideoFrames(frames, visionModel);
-
-    if (frameDescriptions.length > 0) {
-      console.log(`[mediaAnalysis] Frame descriptions:\n${frameDescriptions.map((d, i) => `  Frame ${i + 1}: ${d}`).join("\n")}`);
-    }
 
     // Extract audio and transcribe from local file
     let transcription = "";
@@ -362,9 +351,7 @@ async function analyzeVideo(
 
             if (groqApiKey) {
               try {
-                console.log("[mediaAnalysis] Transcribing with Groq Whisper...");
                 transcription = await transcribeWithGroq(audioBuffer);
-                console.log(`[mediaAnalysis] Groq transcribed ${transcription.length} characters`);
               } catch (err: any) {
                 console.error("[mediaAnalysis] Groq transcription failed:", err.message);
               }
@@ -372,26 +359,16 @@ async function analyzeVideo(
 
             if (!transcription && openRouterKey) {
               try {
-                console.log("[mediaAnalysis] Falling back to OpenRouter audio transcription...");
                 transcription = await transcribeWithOpenRouter(audioBuffer);
-                console.log(`[mediaAnalysis] OpenRouter transcribed ${transcription.length} characters`);
               } catch (err: any) {
                 console.error("[mediaAnalysis] OpenRouter transcription failed:", err.message);
               }
             }
-          } else {
-            console.log("[mediaAnalysis] Audio file too small, video may have no audio");
           }
         } catch (err: any) {
           console.error("[mediaAnalysis] Audio extraction failed:", err.message);
         }
-      } else {
-        console.log("[mediaAnalysis] No transcription API key set, skipping transcription");
       }
-    }
-
-    if (transcription) {
-      console.log(`[mediaAnalysis] Audio transcript:\n${transcription}`);
     }
 
     return {
@@ -466,8 +443,6 @@ export async function analyzeMedia(
   const transcribeAudio = config?.transcribeAudio ?? true;
   const visionModel = config?.visionModel || "anthropic/claude-sonnet-4";
 
-  console.log(`[mediaAnalysis] Analyzing ${media.length} media items...`);
-
   const videos: VideoAnalysisResult[] = [];
   const images: ImageAnalysisResult[] = [];
   const warnings: string[] = [];
@@ -484,10 +459,7 @@ export async function analyzeMedia(
   }
   for (const video of ffmpegAvailable ? videoItems : []) {
     const videoUrl = getBestUrl(video);
-    if (!videoUrl) {
-      console.log("[mediaAnalysis] Skipping video: no downloadable URL found");
-      continue;
-    }
+    if (!videoUrl) continue;
     const result = await analyzeVideo(videoUrl, {
       maxFrames: maxVideoFrames,
       transcribeAudio,
@@ -538,7 +510,26 @@ export async function analyzeMedia(
     : "";
 
   const totalTime = Date.now() - startTime;
-  console.log(`[mediaAnalysis] Complete in ${totalTime}ms. Videos: ${videos.length}, Images: ${images.length}`);
+
+  // Write media analysis results to tweet log
+  const log = getTweetLog();
+  log?.set("media.videos", videos.map((v) => ({
+    url: v.url,
+    keyFrameDescriptions: v.keyFrameDescriptions,
+    transcription: v.transcription,
+    durationMs: v.durationMs,
+    hasAudio: v.hasAudio,
+    error: v.error,
+  })));
+  log?.set("media.images", images.map((img) => ({
+    url: img.url,
+    description: img.description,
+    textContent: img.textContent,
+    error: img.error,
+  })));
+  log?.set("media.summary", summary);
+  log?.set("media.timeMs", totalTime);
+  if (warnings.length > 0) log?.set("media.warnings", warnings);
 
   return {
     summary,

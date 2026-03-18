@@ -28,6 +28,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotById, getEnabledBots } from "../bots";
 import { processSingleTweet, type ProcessTweetResult } from "../pipeline/processTweet";
 import { closeBrowser } from "../pipeline/browserManager";
+import { createTweetLog, withTweetLog, formatTweetLog, formatTweetLogFull } from "../pipeline/tweetLog";
 import type { Post } from "../api/fetchEligiblePosts";
 import { execSync } from "child_process";
 import * as fs from "fs";
@@ -373,18 +374,23 @@ async function main() {
 
     try {
       // Download video and extract metadata with yt-dlp
-      console.log(`[runOnVideos] Downloading and extracting metadata...`);
       const { meta, videoPath } = downloadWithYtDlp(input.url, downloadDir);
       console.log(`[runOnVideos] Title: ${meta.title?.slice(0, 100)}`);
-      if (videoPath) console.log(`[runOnVideos] Downloaded video: ${videoPath}`);
 
       // Build Post object with local video path
       const post = buildPostFromDownload(meta, videoPath, input.url);
-      console.log(`[runOnVideos] Built post: ${post.media.length} media item(s)`);
 
       // Run pipeline
       const bot = forcedBotId ? getBotById(forcedBotId)! : selectRandomBot();
-      const result = await processSingleTweet({ post, bot, logger });
+      const log = createTweetLog();
+      log.set("tweet.index", idx + 1);
+      log.set("tweet.total", inputs.length);
+      const result = await withTweetLog(log, () =>
+        processSingleTweet({ post, bot, logger })
+      );
+
+      console.log(formatTweetLog(log));
+      console.log(formatTweetLogFull(log));
 
       csvRows.push(resultToCsvRow(input, bot.id, result));
     } catch (err: any) {

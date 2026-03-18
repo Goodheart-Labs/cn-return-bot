@@ -24,6 +24,7 @@ import { fetchTweetById } from "../api/fetchTweetById";
 import { selectRandomBot } from "../bots";
 import { processSingleTweet, type ProcessTweetResult } from "../pipeline/processTweet";
 import { closeBrowser } from "../pipeline/browserManager";
+import { createTweetLog, withTweetLog, formatTweetLog, formatTweetLogFull } from "../pipeline/tweetLog";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -180,15 +181,18 @@ async function main() {
     try {
       // Fetch tweet
       const post = await fetchTweetById(tweetId);
-      console.log(`[tryout] Tweet text: ${post.text.slice(0, 100)}...`);
 
       // Select bot and run pipeline
       const bot = selectRandomBot();
-      const result = await processSingleTweet({
-        post,
-        bot,
-        logger,
-      });
+      const log = createTweetLog();
+      log.set("tweet.index", idx + 1);
+      log.set("tweet.total", idsToProcess.length);
+      const result = await withTweetLog(log, () =>
+        processSingleTweet({ post, bot, logger })
+      );
+
+      console.log(formatTweetLog(log));
+      console.log(formatTweetLogFull(log));
 
       csvRows.push(resultToCsvRow(tweetId, bot.id, result));
     } catch (err: any) {

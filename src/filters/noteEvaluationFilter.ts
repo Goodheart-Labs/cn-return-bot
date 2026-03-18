@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getOAuth1Headers } from "../api/getOAuthToken";
+import { getTweetLog } from "../pipeline/tweetLog";
 
 export type NoteEvaluationResponse = {
   data?: {
@@ -76,9 +77,9 @@ export async function shouldSubmitNote(
     const score = evaluation.data.claim_opinion_score;
     const shouldSubmit = score >= minScore;
 
-    console.log(
-      `[noteEvaluationFilter] Note evaluation - Score: ${score}, Threshold: ${minScore}, Submit: ${shouldSubmit}`
-    );
+    const log = getTweetLog();
+    log?.set("eval.score", score);
+    log?.set("eval.shouldSubmit", shouldSubmit);
 
     return {
       shouldSubmit,

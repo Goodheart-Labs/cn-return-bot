@@ -7,6 +7,7 @@
  */
 
 import { llm } from "./llm";
+import { getTweetLog } from "./tweetLog";
 
 export interface NoteScore {
   name: string;
@@ -380,8 +381,6 @@ export async function runNoteScores(
   url: string,
   model: string = DEFAULT_SCORING_MODEL
 ): Promise<AllNoteScores> {
-  console.log("[noteScores] Running note scores...");
-
   const [
     positiveEvidence,
     disagreement,
@@ -406,12 +405,15 @@ export async function runNoteScores(
     checkOverconfidence(noteText, model),
   ]);
 
-  const all = [positiveEvidence, disagreement, helpfulness, sourceQuality, breakingNewsRisk, pedantry, noteNotNeeded, tangentialCorrection, raterVerifiability, overconfidence];
-  for (const f of all) {
-    console.log(`[noteScores] ${f.name}: ${f.score.toFixed(2)} — ${f.reasoning}`);
+  const all = { positiveEvidence, disagreement, helpfulness, sourceQuality, breakingNewsRisk, pedantry, noteNotNeeded, tangentialCorrection, raterVerifiability, overconfidence };
+
+  // Write scores to tweet log
+  const log = getTweetLog();
+  for (const [key, score] of Object.entries(all)) {
+    log?.set(`scores.${key}`, { score: score.score, reasoning: score.reasoning });
   }
 
-  return { positiveEvidence, disagreement, helpfulness, sourceQuality, breakingNewsRisk, pedantry, noteNotNeeded, tangentialCorrection, raterVerifiability, overconfidence };
+  return all;
 }
 
 /**
