@@ -10,6 +10,7 @@ import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../bots";
 import { processSingleTweet } from "../pipeline/processTweet";
+import { createTweetLog, withTweetLog, formatTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../pipeline/tweetLog";
 import type { Post } from "../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
@@ -155,12 +156,10 @@ async function storeCandidateResult(
 export async function generateCandidates(supabaseLogger: SupabaseLogger | null) {
   const commit = process.env.GITHUB_SHA;
 
-  // Log bot probabilities
+  // Log bot probabilities (compact single line)
   const botProbs = getBotProbabilities();
-  console.log(`[generate] Bot selection probabilities:`);
-  botProbs.forEach((b) => {
-    console.log(`  - ${b.id}: ${b.probability.toFixed(1)}%`);
-  });
+  const activeBots = botProbs.filter((b) => b.probability > 0);
+  console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
   // Fetch and select posts
   const posts = await fetchAndSelectPosts(supabaseLogger);
@@ -172,22 +171,29 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
 
   // Process posts concurrently
   const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
-  const botUsage: Record<string, number> = {};
+  const allLogs: TweetLogMap[] = [];
   let candidateCount = 0;
 
   for (const [idx, post] of posts.entries()) {
     queue.add(async () => {
       const selectedBot = selectRandomBot();
-      botUsage[selectedBot.id] = (botUsage[selectedBot.id] || 0) + 1;
 
-      console.log(`[generate] Processing post #${idx + 1} (ID: ${post.id})`);
+      const log = createTweetLog();
+      log.set("tweet.index", idx + 1);
+      log.set("tweet.total", posts.length);
 
-      const tweetResult = await processSingleTweet({
-        post,
-        bot: selectedBot,
-        logger: supabaseLogger,
-        commitSha: commit,
-      });
+      const tweetResult = await withTweetLog(log, () =>
+        processSingleTweet({
+          post,
+          bot: selectedBot,
+          logger: supabaseLogger,
+          commitSha: commit,
+        })
+      );
+
+      console.log(formatTweetLog(log));
+      console.log(formatTweetLogFull(log));
+      allLogs.push(log);
 
       // If it passed all checks, store as candidate (overwriting the completion from processSingleTweet)
       if (
@@ -206,9 +212,6 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
           tweetResult.warnings?.join("; ")
         );
         candidateCount++;
-        console.log(
-          `[generate] Stored candidate for tweet ${post.id} (eval=${tweetResult.evaluationScore?.toFixed(2) ?? "?"}, srcs=${tweetResult.sourceCountScore ?? "?"})`
-        );
       }
     });
   }
@@ -216,9 +219,6 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
   await queue.onIdle();
 
   // Summary
-  console.log(`[generate] Bot usage summary:`);
-  Object.entries(botUsage).forEach(([botId, count]) => {
-    console.log(`  - ${botId}: ${count} tweets`);
-  });
-  console.log(`[generate] Processed ${posts.length} posts, stored ${candidateCount} candidates`);
+  console.log(formatRunSummary(allLogs));
+  console.log(`[generate] Stored ${candidateCount} candidates`);
 }

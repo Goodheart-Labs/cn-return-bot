@@ -37,7 +37,6 @@ export const opusMainV2: Bot = {
           });
           mediaContext = mediaResult.contextForSearch;
           lastStage = "media_analysis";
-          console.log(`[${this.id}] Media analysis: ${mediaResult.videos.length} videos, ${mediaResult.images.length} images`);
           if (mediaResult.warnings.length > 0) {
             warnings.push(...mediaResult.warnings);
           }

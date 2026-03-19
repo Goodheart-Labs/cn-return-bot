@@ -16,6 +16,7 @@ import type { Bot, PipelineResult, PostContent } from "../bots/types";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import { runNoteScores, countSources } from "./noteScores";
 import { shouldSubmitNote } from "../filters/noteEvaluationFilter";
+import { getTweetLog } from "./tweetLog";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -88,10 +89,13 @@ async function runBotPipeline(
   const content = getOriginalTweetContent(post);
   const metadata = extractTweetMetadata(post);
 
-  console.log(
-    `[processTweet] Processing tweet ${post.id} - ${content.isQuoteTweet ? "quote tweet" : "original"}${metadata.hasVideo ? " [VIDEO]" : ""}`
-  );
-  console.log(`[processTweet] Tweet ${post.id} with bot: ${bot.id}`);
+  const tweetType = `${content.isQuoteTweet ? "quote tweet" : "original"}${metadata.hasVideo ? " [VIDEO]" : ""}`;
+
+  const log = getTweetLog();
+  log?.set("tweet.id", post.id);
+  log?.set("tweet.text", post.text);
+  log?.set("tweet.type", tweetType);
+  log?.set("bot.id", bot.id);
 
   const result = await bot.runPipeline(post, content);
 
@@ -99,7 +103,7 @@ async function runBotPipeline(
     ? result.warnings.map((w) => `[WARNING] ${w}`)
     : undefined;
   if (warnings) {
-    warnings.forEach((w) => console.warn(`[processTweet] Tweet ${post.id}: ${w}`));
+    log?.set("warnings", warnings);
   }
 
   return { result, content, metadata, warnings };
@@ -436,7 +440,22 @@ export async function processSingleTweet(
     }
   }
 
-  // 6. Return
+  // 6. Write to tweet log
+  const log = getTweetLog();
+  log?.set("outcome", outcome.outcome);
+  log?.set("outcomeReason", outcome.outcomeReason ?? "");
+  log?.set("finalStage", outcome.finalStage);
+  if (result) {
+    log?.set("note.status", result.noteResult.status);
+    log?.set("note.text", result.noteResult.note + " " + result.noteResult.url);
+    log?.set("note.url", result.noteResult.url);
+    log?.set("note.charCount", (result.noteResult.note + " " + result.noteResult.url).length);
+    if (result.checkResult != null) {
+      log?.set("check.result", result.checkResult.trim().toUpperCase());
+    }
+  }
+
+  // 7. Return
   const noteText = result ? result.noteResult.note + " " + result.noteResult.url : undefined;
   return {
     pipelineResult: result,

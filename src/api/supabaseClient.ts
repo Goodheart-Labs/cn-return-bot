@@ -1056,14 +1056,11 @@ export class SupabaseLogger {
       const notesData = await this.fetchAllRows<{ tweet_id: string }>(
         (client) => client.from("notes").select("tweet_id")
       );
-      const submittedCount = notesData.length;
       notesData.forEach((row) => {
         if (row.tweet_id) tweetIds.add(row.tweet_id);
       });
 
       // Get no_correction_needed rejections with timestamps for cooldown logic
-      let cooldownCount = 0;
-      let permanentCount = 0;
       try {
         const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>(
           (client) => client.from("pipeline_runs").select("tweet_id, created_at")
@@ -1088,13 +1085,11 @@ export class SupabaseLogger {
           if (info.count >= 3) {
             // 3+ rejections: permanent skip
             tweetIds.add(tweetId);
-            permanentCount++;
           } else {
             const hoursSinceLatest = (now.getTime() - info.latestAt.getTime()) / (1000 * 60 * 60);
             const cooldownHours = info.count === 1 ? 1 : 24;
             if (hoursSinceLatest < cooldownHours) {
               tweetIds.add(tweetId);
-              cooldownCount++;
             }
             // Otherwise cooldown elapsed — tweet is eligible for retry
           }
@@ -1105,8 +1100,6 @@ export class SupabaseLogger {
 
       // Skip tweets that have an above-floor candidate waiting for submission.
       // Below-floor candidates (eval < 0) are left eligible for re-roll by a different bot.
-      let candidateSkipCount = 0;
-      let candidateRerollCount = 0;
       try {
         const candidateData = await this.fetchAllRows<{ id: string; tweet_id: string }>(
           (client) => client.from("pipeline_runs").select("id, tweet_id")
@@ -1136,9 +1129,7 @@ export class SupabaseLogger {
             const evalScore = evalByRun.get(row.id);
             if (evalScore !== undefined && evalScore >= 0) {
               tweetIds.add(row.tweet_id);
-              candidateSkipCount++;
             } else {
-              candidateRerollCount++;
             }
           }
         }
@@ -1146,7 +1137,6 @@ export class SupabaseLogger {
         console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
       }
 
-      console.log(`[SupabaseLogger] Skipping ${tweetIds.size} tweets (${submittedCount} submitted, ${candidateSkipCount} above-floor candidates, ${candidateRerollCount} below-floor eligible for re-roll, ${permanentCount} permanent no-correction, ${cooldownCount} on cooldown)`);
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);

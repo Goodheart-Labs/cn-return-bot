@@ -89,9 +89,6 @@ export function compareQuotedTweets(
   const hasOurQt = quotedPostContext !== undefined && quotedPostContext.trim() !== "";
 
   if (hasGrokQt && hasOurQt) {
-    console.log(`[grokSearch] Quote tweet comparison:`);
-    console.log(`  Grok found: ${grokQuotedTweet!.substring(0, 100)}...`);
-    console.log(`  Our context: ${quotedPostContext!.substring(0, 100)}...`);
     return null;
   } else if (hasGrokQt && !hasOurQt) {
     const msg = `Quote tweet mismatch: Grok found a quoted tweet but we don't have quotedPostContext. Grok found: ${grokQuotedTweet}`;
