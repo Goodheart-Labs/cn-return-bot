@@ -96,7 +96,7 @@ export function extractCitations(
     .filter((url, i, arr) => arr.indexOf(url) === i);
 }
 
-export function getLlm(): OpenAI.Chat.Completions {
+function getLlm(): OpenAI.Chat.Completions {
   return getClient().chat.completions;
 }
 

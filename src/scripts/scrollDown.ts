@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Smart scroll script for virtualized lists (like X's notewriter page)
  *

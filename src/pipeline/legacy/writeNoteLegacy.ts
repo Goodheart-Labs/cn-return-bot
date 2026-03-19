@@ -3,11 +3,10 @@ import { z } from "zod";
 import { llm } from "../llm";
 import { searchVersionOne } from "../searchContextGoal";
 import { textAndSearchResults, writeNoteOutput } from "../schemas";
-import { zodResponseFormat } from "openai/helpers/zod.mjs";
 import { parseStatusNoteUrl } from "../parseStatusNoteUrl";
 
 // Define the goal schema, similar to searchContext.ts
-export const writeNoteWithSearchGoal = createGoal({
+const writeNoteWithSearchGoal = createGoal({
   name: "write note with search",
   description:
     "Write a Community Note for a post on X using search results for context.",
@@ -152,7 +151,7 @@ Citations:
 ${citations.join("\n")}
 \`\`\``;
 
-export const writeNoteWithSearch = writeNoteWithSearchGoal.register({
+const writeNoteWithSearch = writeNoteWithSearchGoal.register({
   name: "write note with search v1",
   config: [{ model: "anthropic/claude-sonnet-4" }],
 });

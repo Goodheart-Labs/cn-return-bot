@@ -12,7 +12,7 @@ export function countNoteLength(note: string): number {
 }
 
 // Define the goal schema, similar to searchContext.ts
-export const writeNoteGoal = createGoal({
+const writeNoteGoal = createGoal({
   name: "write note with search",
   description:
     "Write a Community Note for a post on X using search results for context.",

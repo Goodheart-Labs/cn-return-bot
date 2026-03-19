@@ -22,7 +22,7 @@ const sanitizedPosts = posts.map(({ text, media }) => {
   };
 });
 
-export const searchContextGoal = createGoal({
+const searchContextGoal = createGoal({
   name: "search context",
   description: `Given a post and search results, identify the most important missing factual context that would help readers understand the full picture.`,
   input: z.object({

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Click-Through Notewriter Scraper
  *

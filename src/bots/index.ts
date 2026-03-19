@@ -40,7 +40,7 @@ import { opusConcise } from "./opus-concise";
 // =============================================================================
 
 // Register all bots here
-export const bots: Bot[] = [
+const bots: Bot[] = [
   // Active bots
   opusMain,
   opusMainV2,

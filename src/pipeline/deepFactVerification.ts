@@ -29,7 +29,7 @@ export interface DeepVerificationResult {
 /**
  * Analyze claims in tweet using Opus to identify what needs verification
  */
-export async function analyzeClaimsWithOpus(
+async function analyzeClaimsWithOpus(
   tweetText: string,
   initialSearchResults: string,
   model: string = "anthropic/claude-opus-4.5"
@@ -133,7 +133,7 @@ Include specific URLs for all sources. Focus on finding authoritative, primary s
 /**
  * Run targeted follow-up searches based on claim analysis
  */
-export async function runFollowUpSearches(
+async function runFollowUpSearches(
   queries: string[],
   maxQueries: number = 2
 ): Promise<{ results: string; citations: string[] }> {
@@ -168,7 +168,7 @@ export async function runFollowUpSearches(
 /**
  * Validate the model of events against search results
  */
-export async function validateModelOfEvents(
+async function validateModelOfEvents(
   modelOfEvents: string,
   searchResults: string,
   model: string = "anthropic/claude-opus-4.5"

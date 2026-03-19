@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Scrolls to a specific position on the notewriter page, then runs the scraper
  * Usage: bun run src/scripts/scrollAndScrape.ts [scrollPercent] [maxNotes]

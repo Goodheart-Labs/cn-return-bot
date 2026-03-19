@@ -83,7 +83,7 @@ export async function verifySource(
   }
 }
 
-export const checkSource = createGoal({
+const checkSource = createGoal({
   name: "check source",
   description:
     "Check if a source contains information that addresses the missing context",
