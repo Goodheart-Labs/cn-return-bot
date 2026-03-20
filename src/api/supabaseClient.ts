@@ -1427,6 +1427,7 @@ export class SupabaseLogger {
     backlog_hit_limit: boolean;
     posts_processed: number;
     commit_sha?: string;
+    feed_size?: string;
   }): Promise<void> {
     const { error } = await this.client
       .from("run_snapshots")
@@ -1434,5 +1435,42 @@ export class SupabaseLogger {
     if (error) {
       console.warn("[SupabaseLogger] Failed to log run snapshot:", error.message);
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Pipeline state (key-value store for persistent state across runs)
+  // ---------------------------------------------------------------------------
+
+  async getPipelineState(key: string): Promise<string | null> {
+    const { data, error } = await this.client
+      .from("pipeline_state")
+      .select("value")
+      .eq("key", key)
+      .single();
+    if (error || !data) return null;
+    return data.value;
+  }
+
+  async setPipelineState(key: string, value: string): Promise<void> {
+    const { error } = await this.client
+      .from("pipeline_state")
+      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (error) {
+      console.warn(`[SupabaseLogger] Failed to set pipeline state ${key}:`, error.message);
+    }
+  }
+
+  /** Count notes submitted in the last N hours (rolling window) */
+  async countRecentSubmissions(hours: number): Promise<number> {
+    const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+    const { count, error } = await this.client
+      .from("notes")
+      .select("*", { count: "exact", head: true })
+      .gte("submitted_at", since);
+    if (error) {
+      console.warn("[SupabaseLogger] Failed to count recent submissions:", error.message);
+      return 0;
+    }
+    return count ?? 0;
   }
 }

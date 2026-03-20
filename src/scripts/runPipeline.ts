@@ -6,7 +6,22 @@
  * 2. Submit candidates — rank stored candidates, submit the best ones
  *
  * Runs on GitHub Actions every 15 minutes.
+ * Use --local to route Supabase to a local instance via LOCAL_SUPABASE_URL/KEY.
  */
+
+const isLocal = process.argv.includes("--local");
+if (isLocal) {
+  const localUrl = process.env.LOCAL_SUPABASE_URL;
+  const localKey = process.env.LOCAL_SUPABASE_SERVICE_KEY;
+  if (localUrl && localKey) {
+    process.env.SUPABASE_URL = localUrl;
+    process.env.SUPABASE_SERVICE_KEY = localKey;
+    console.log(`[pipeline] Using local Supabase at ${localUrl}`);
+  } else {
+    console.error("[pipeline] --local requires LOCAL_SUPABASE_URL and LOCAL_SUPABASE_SERVICE_KEY in env");
+    process.exit(1);
+  }
+}
 
 import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/browserManager";

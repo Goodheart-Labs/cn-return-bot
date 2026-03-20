@@ -42,6 +42,20 @@ function get(log: TweetLogMap, key: string): unknown {
   return log.get(key);
 }
 
+function fmtCount(n: number): string {
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+}
+
+function median(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid]! : ((sorted[mid - 1] ?? 0) + (sorted[mid] ?? 0)) / 2;
+}
+
 function formatScoresLine(log: TweetLogMap): string | null {
   const scoreKeys = [...log.keys()].filter((k) => k.startsWith("scores."));
   if (scoreKeys.length === 0) return null;
@@ -95,6 +109,23 @@ export function formatTweetLog(log: TweetLogMap): string {
   // Type
   const tweetType = get(log, "tweet.type") as string | undefined;
   if (tweetType) lines.push(`  type: ${tweetType}`);
+
+  // Engagement + recency
+  const impressions = get(log, "tweet.impressions") as number | undefined;
+  const likes = get(log, "tweet.likes") as number | undefined;
+  const retweets = get(log, "tweet.retweets") as number | undefined;
+  const replies = get(log, "tweet.replies") as number | undefined;
+  const recencyHours = get(log, "tweet.recencyHours") as number | undefined;
+  if (impressions != null) {
+    const parts = [
+      `${fmtCount(impressions)} imp`,
+      `${fmtCount(likes ?? 0)} likes`,
+      `${fmtCount(retweets ?? 0)} RT`,
+      `${fmtCount(replies ?? 0)} replies`,
+    ];
+    if (recencyHours != null) parts.push(`${recencyHours.toFixed(1)}h ago`);
+    lines.push(`  ${parts.join(" | ")}`);
+  }
 
   // Media
   const mediaLine = formatMediaLine(log);
@@ -161,10 +192,12 @@ export function formatTweetLogFull(log: TweetLogMap): string {
 // ---------------------------------------------------------------------------
 
 /** Summary of all tweets processed in this run */
-export function formatRunSummary(logs: TweetLogMap[]): string {
+export function formatRunSummary(logs: TweetLogMap[], feedSize?: string): string {
   const outcomes: Record<string, number> = {};
   const rejectionReasons: Record<string, number> = {};
   const botUsage: Record<string, number> = {};
+  const impressions: number[] = [];
+  const recencies: number[] = [];
 
   for (const log of logs) {
     const outcome = get(log, "outcome") as string | undefined ?? "unknown";
@@ -177,6 +210,12 @@ export function formatRunSummary(logs: TweetLogMap[]): string {
 
     const botId = get(log, "bot.id") as string | undefined ?? "unknown";
     botUsage[botId] = (botUsage[botId] ?? 0) + 1;
+
+    const imp = get(log, "tweet.impressions") as number | undefined;
+    if (imp != null) impressions.push(imp);
+
+    const recency = get(log, "tweet.recencyHours") as number | undefined;
+    if (recency != null) recencies.push(recency);
   }
 
   const lines: string[] = [];
@@ -195,6 +234,25 @@ export function formatRunSummary(logs: TweetLogMap[]): string {
       .map(([k, v]) => `${v} ${k}`)
       .join(", ");
     lines.push(`  Rejections: ${rejParts}`);
+  }
+
+  // Impression stats
+  if (impressions.length > 0) {
+    const total = impressions.reduce((a, b) => a + b, 0);
+    const max = Math.max(...impressions);
+    lines.push(`  Impressions: median ${fmtCount(median(impressions))}, max ${fmtCount(max)}, total ${fmtCount(total)}`);
+  }
+
+  // Recency stats
+  if (recencies.length > 0) {
+    const min = Math.min(...recencies);
+    const max = Math.max(...recencies);
+    lines.push(`  Recency: median ${median(recencies).toFixed(1)}h, min ${min.toFixed(1)}h, max ${max.toFixed(1)}h`);
+  }
+
+  // Feed size
+  if (feedSize) {
+    lines.push(`  Feed size: ${feedSize}`);
   }
 
   // Bot usage

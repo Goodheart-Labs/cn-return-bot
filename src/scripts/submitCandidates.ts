@@ -109,6 +109,21 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
       // Detect daily limit
       if (errorText.includes("daily limit")) {
         console.log(`[submit] Daily note limit reached after ${submitted} submissions`);
+
+        // Record limit hit for feed size strategy
+        // Bottlenecked = ≤5 notes submitted in last 24h (rolling window)
+        try {
+          await supabaseLogger.setPipelineState("limit_hit_today", "true");
+          const recentCount = await supabaseLogger.countRecentSubmissions(24);
+          await supabaseLogger.setPipelineState(
+            "bottlenecked",
+            recentCount <= 5 ? "true" : "false"
+          );
+          console.log(`[submit] ${recentCount} notes submitted in last 24h → ${recentCount <= 5 ? "bottlenecked" : "not bottlenecked"}`);
+        } catch (stateErr) {
+          console.warn("[submit] Failed to record limit hit state:", stateErr);
+        }
+
         break;
       }
 
