@@ -7,8 +7,8 @@
 
 import type { Post } from "../api/fetchEligiblePosts";
 
-const RECENCY_WEIGHT = 0.9;
-const IMPRESSION_WEIGHT = 0.1;
+const RECENCY_WEIGHT = 0.8;
+const IMPRESSION_WEIGHT = 0.2;
 const MAX_AGE_HOURS = 48;
 
 export function ageInHours(post: Post): number {
