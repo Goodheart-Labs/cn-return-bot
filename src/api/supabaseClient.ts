@@ -1459,4 +1459,18 @@ export class SupabaseLogger {
       console.warn(`[SupabaseLogger] Failed to set pipeline state ${key}:`, error.message);
     }
   }
+
+  /** Count notes submitted in the last N hours (rolling window) */
+  async countRecentSubmissions(hours: number): Promise<number> {
+    const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+    const { count, error } = await this.client
+      .from("notes")
+      .select("*", { count: "exact", head: true })
+      .gte("submitted_at", since);
+    if (error) {
+      console.warn("[SupabaseLogger] Failed to count recent submissions:", error.message);
+      return 0;
+    }
+    return count ?? 0;
+  }
 }
