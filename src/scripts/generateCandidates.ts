@@ -11,6 +11,8 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../bots";
 import { processSingleTweet } from "../pipeline/processTweet";
 import { createTweetLog, withTweetLog, formatTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../pipeline/tweetLog";
+import { determineFeedSize, buildPostSelection } from "../pipeline/feedSizeStrategy";
+import { ageInHours, formatCount, sortByRecencyAndImpressions, getTweetScore } from "../pipeline/tweetSorting";
 import type { Post } from "../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
@@ -24,7 +26,7 @@ const BACKLOG_LIMIT = 1000;
 
 async function fetchAndSelectPosts(
   supabaseLogger: SupabaseLogger | null
-): Promise<Post[]> {
+): Promise<{ posts: Post[]; feedSize: string }> {
   let skipPostIds = new Set<string>();
   let allProcessedIds = new Set<string>();
 
@@ -41,22 +43,34 @@ async function fetchAndSelectPosts(
     }
   }
 
-  const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50);
+  // Determine feed size
+  let feedSize = "small";
+  if (supabaseLogger) {
+    try {
+      const result = await determineFeedSize(supabaseLogger);
+      feedSize = result.feedSize;
+      console.log(`[generate] Feed: ${feedSize} (${result.reason})`);
+    } catch (err) {
+      console.warn("[generate] Failed to determine feed size, defaulting to small:", err);
+    }
+  }
 
-  // Sort newest first
-  allEligible.sort((a, b) => {
-    const idA = BigInt(a.id);
-    const idB = BigInt(b.id);
-    return idA > idB ? -1 : idA < idB ? 1 : 0;
-  });
+  const postSelection = buildPostSelection(feedSize as "small" | "large" | "xl");
+  const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
-  const newPosts = allEligible.filter((p) => !allProcessedIds.has(p.id));
-  const retryPosts = allEligible.filter(
+  // Filter stale tweets and sort by recency (0.9) + impressions (0.1)
+  const { sorted, staleCount } = sortByRecencyAndImpressions(allEligible);
+  if (staleCount > 0) {
+    console.log(`[generate] Filtered ${staleCount} tweets older than 48h`);
+  }
+
+  const newPosts = sorted.filter((p) => !allProcessedIds.has(p.id));
+  const retryPosts = sorted.filter(
     (p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id)
   );
 
-  const backlogTotal = allEligible.length;
-  const backlogHitLimit = backlogTotal >= BACKLOG_LIMIT;
+  const backlogTotal = sorted.length;
+  const backlogHitLimit = allEligible.length >= BACKLOG_LIMIT;
   console.log(
     `[generate] Backlog: ${backlogTotal} eligible tweets (${newPosts.length} new, ${retryPosts.length} retries)${backlogHitLimit ? " — hit limit, true backlog may be larger" : ""}`
   );
@@ -71,6 +85,16 @@ async function fetchAndSelectPosts(
     `[generate] Processing ${posts.length} of ${backlogTotal} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`
   );
 
+  // Log top 5 selected tweets
+  for (const [i, p] of posts.slice(0, 5).entries()) {
+    const imp = p.public_metrics?.impression_count ?? 0;
+    const age = ageInHours(p);
+    const score = getTweetScore(p, sorted);
+    console.log(
+      `[generate] #${i + 1}: ${p.id} | score=${score.toFixed(2)} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago`
+    );
+  }
+
   // Log run snapshot
   if (supabaseLogger) {
     try {
@@ -81,13 +105,14 @@ async function fetchAndSelectPosts(
         backlog_hit_limit: backlogHitLimit,
         posts_processed: posts.length,
         commit_sha: process.env.GITHUB_SHA,
+        feed_size: feedSize,
       });
     } catch (err) {
       console.warn("[generate] Failed to log run snapshot:", err);
     }
   }
 
-  return posts;
+  return { posts, feedSize };
 }
 
 function logMediaBreakdown(posts: Post[]): void {
@@ -162,7 +187,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
   // Fetch and select posts
-  const posts = await fetchAndSelectPosts(supabaseLogger);
+  const { posts, feedSize } = await fetchAndSelectPosts(supabaseLogger);
   if (!posts.length) {
     console.log("[generate] No eligible posts found.");
     return;
@@ -219,6 +244,6 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
   await queue.onIdle();
 
   // Summary
-  console.log(formatRunSummary(allLogs));
+  console.log(formatRunSummary(allLogs, feedSize));
   console.log(`[generate] Stored ${candidateCount} candidates`);
 }

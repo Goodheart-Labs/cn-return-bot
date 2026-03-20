@@ -35,10 +35,38 @@ export type Post = {
   author_followers?: number;
 };
 
+const API_URL = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
+const BASE_FIELDS = {
+  "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics",
+  "media.fields": "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
+  "user.fields": "public_metrics",
+  expansions: "attachments.media_keys,referenced_tweets.id,author_id",
+  test_mode: "false",
+};
+
+async function fetchPage(
+  maxResults: number,
+  postSelection: string | undefined,
+  paginationToken: string | undefined
+) {
+  const params = new URLSearchParams({ ...BASE_FIELDS, max_results: String(maxResults) });
+  if (postSelection) params.append("post_selection", postSelection);
+  if (paginationToken) params.append("pagination_token", paginationToken);
+
+  // OAuth1 requires %20 for spaces; URLSearchParams uses +
+  const fullUrl = `${API_URL}?${params.toString().replace(/\+/g, "%20")}`;
+
+  return axios.get(fullUrl, {
+    headers: { ...getOAuth1Headers(fullUrl, "GET"), "Content-Type": "application/json" },
+    timeout: 30_000,
+  });
+}
+
 export async function fetchEligiblePosts(
   maxResults: number = 10,
   skipPostIds: Set<string> = new Set(),
-  maxPages: number = 3
+  maxPages: number = 3,
+  postSelection?: string
 ): Promise<Post[]> {
   const allEligiblePosts: Post[] = [];
   const seenPostIds = new Set<string>(skipPostIds); // Track all seen post IDs to prevent duplicates
@@ -53,31 +81,7 @@ export async function fetchEligiblePosts(
     const fetchMultiplier = skipPostIds.size > 0 ? 3 : 1;
     const fetchLimit = Math.min(maxResults * fetchMultiplier, 100);
 
-    const url = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
-    const params = new URLSearchParams({
-      max_results: fetchLimit.toString(),
-      "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics",
-      "media.fields":
-        "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
-      "user.fields": "public_metrics",
-      expansions: "attachments.media_keys,referenced_tweets.id,author_id",
-      test_mode: "false",
-    });
-
-    // Add pagination token if we have one
-    if (nextToken) {
-      params.append("pagination_token", nextToken);
-    }
-
-    const fullUrl = `${url}?${params.toString()}`;
-
-    const response = await axios.get(fullUrl, {
-      headers: {
-        ...getOAuth1Headers(fullUrl, "GET"),
-        "Content-Type": "application/json",
-      },
-      timeout: 30000, // 30 second timeout to prevent hanging
-    });
+    const response = await fetchPage(fetchLimit, postSelection, nextToken);
 
     const allPosts = parsePostsResponse(response.data);
 

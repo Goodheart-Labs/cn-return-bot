@@ -8,6 +8,26 @@
  * Runs on GitHub Actions every 15 minutes.
  */
 
+import dotenv from "dotenv";
+import { existsSync } from "fs";
+import { resolve } from "path";
+
+// Load .env.local first (local overrides), then .env (defaults)
+const envLocalPath = resolve(process.cwd(), ".env.local");
+if (existsSync(envLocalPath)) {
+  dotenv.config({ path: envLocalPath });
+}
+dotenv.config(); // won't overwrite vars already set by .env.local
+
+// Route Supabase to local instance (must happen before any Supabase imports)
+const localUrl = process.env.LOCAL_SUPABASE_URL;
+const localKey = process.env.LOCAL_SUPABASE_SERVICE_KEY;
+if (localUrl && localKey) {
+  process.env.SUPABASE_URL = localUrl;
+  process.env.SUPABASE_SERVICE_KEY = localKey;
+  console.log(`[pipeline] Using local Supabase at ${localUrl}`);
+}
+
 import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/browserManager";
 import { generateCandidates } from "./generateCandidates";

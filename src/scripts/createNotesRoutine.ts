@@ -2,6 +2,8 @@ import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import { closeBrowser } from "../pipeline/browserManager";
+import { determineFeedSize, buildPostSelection } from "../pipeline/feedSizeStrategy";
+import { sortByRecencyAndImpressions } from "../pipeline/tweetSorting";
 import PQueue from "p-queue";
 import {
   selectRandomBot,
@@ -67,26 +69,38 @@ async function main() {
       console.log("[main] No Supabase logger - not skipping any posts");
     }
 
+    // Determine feed size
+    let feedSize = "small";
+    if (supabaseLogger) {
+      try {
+        const result = await determineFeedSize(supabaseLogger);
+        feedSize = result.feedSize;
+        console.log(`[main] Feed: ${feedSize} (${result.reason})`);
+      } catch (err) {
+        console.warn("[main] Failed to determine feed size, defaulting to small:", err);
+      }
+    }
+
     // Fetch eligible posts (up to 1000) to measure true backlog, only excluding permanently-skipped tweets
     const BACKLOG_LIMIT = 1000;
-    const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50);
+    const postSelection = buildPostSelection(feedSize as "small" | "large" | "xl");
+    const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
-    // Sort by tweet ID descending (newest first) - tweet IDs are snowflake IDs, higher = newer
-    allEligible.sort((a, b) => {
-      const idA = BigInt(a.id);
-      const idB = BigInt(b.id);
-      return idA > idB ? -1 : idA < idB ? 1 : 0;
-    });
+    // Filter stale tweets and sort by recency (0.9) + impressions (0.1)
+    const { sorted, staleCount } = sortByRecencyAndImpressions(allEligible);
+    if (staleCount > 0) {
+      console.log(`[main] Filtered ${staleCount} tweets older than 48h`);
+    }
 
     // Separate into new tweets and retries
-    const newPosts = allEligible.filter((p) => !allProcessedIds.has(p.id));
-    const retryPosts = allEligible.filter((p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id));
+    const newPosts = sorted.filter((p) => !allProcessedIds.has(p.id));
+    const retryPosts = sorted.filter((p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id));
 
     // Log backlog size (full eligible pool from API)
     const backlogNew = newPosts.length;
     const backlogRetry = retryPosts.length;
-    const backlogTotal = allEligible.length;
-    const backlogHitLimit = backlogTotal >= BACKLOG_LIMIT;
+    const backlogTotal = sorted.length;
+    const backlogHitLimit = allEligible.length >= BACKLOG_LIMIT;
     console.log(`[main] Backlog: ${backlogTotal} eligible tweets (${backlogNew} new, ${backlogRetry} retries)${backlogHitLimit ? " — hit limit, true backlog may be larger" : ""}`);
 
     // New tweets first, then fill remaining slots with retries — only process maxPosts
@@ -107,6 +121,7 @@ async function main() {
           backlog_hit_limit: backlogHitLimit,
           posts_processed: posts.length,
           commit_sha: commit,
+          feed_size: feedSize,
         });
       } catch (err) {
         console.warn("[main] Failed to log run snapshot:", err);

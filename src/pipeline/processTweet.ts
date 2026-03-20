@@ -97,6 +97,19 @@ async function runBotPipeline(
   log?.set("tweet.type", tweetType);
   log?.set("bot.id", bot.id);
 
+  // Engagement metrics
+  if (post.public_metrics) {
+    log?.set("tweet.impressions", post.public_metrics.impression_count ?? 0);
+    log?.set("tweet.likes", post.public_metrics.like_count ?? 0);
+    log?.set("tweet.retweets", post.public_metrics.retweet_count ?? 0);
+    log?.set("tweet.replies", post.public_metrics.reply_count ?? 0);
+  }
+  if (post.created_at) {
+    log?.set("tweet.createdAt", post.created_at);
+    const ageMs = Date.now() - new Date(post.created_at).getTime();
+    log?.set("tweet.recencyHours", Math.max(0, ageMs / (1000 * 60 * 60)));
+  }
+
   const result = await bot.runPipeline(post, content);
 
   const warnings = result?.warnings?.length

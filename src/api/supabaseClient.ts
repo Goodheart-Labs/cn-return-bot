@@ -1427,12 +1427,36 @@ export class SupabaseLogger {
     backlog_hit_limit: boolean;
     posts_processed: number;
     commit_sha?: string;
+    feed_size?: string;
   }): Promise<void> {
     const { error } = await this.client
       .from("run_snapshots")
       .insert(data);
     if (error) {
       console.warn("[SupabaseLogger] Failed to log run snapshot:", error.message);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Pipeline state (key-value store for persistent state across runs)
+  // ---------------------------------------------------------------------------
+
+  async getPipelineState(key: string): Promise<string | null> {
+    const { data, error } = await this.client
+      .from("pipeline_state")
+      .select("value")
+      .eq("key", key)
+      .single();
+    if (error || !data) return null;
+    return data.value;
+  }
+
+  async setPipelineState(key: string, value: string): Promise<void> {
+    const { error } = await this.client
+      .from("pipeline_state")
+      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (error) {
+      console.warn(`[SupabaseLogger] Failed to set pipeline state ${key}:`, error.message);
     }
   }
 }
