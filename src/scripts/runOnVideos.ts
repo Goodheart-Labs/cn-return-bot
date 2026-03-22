@@ -253,6 +253,7 @@ const OUTPUT_HEADERS = [
   "evaluation_score",
   "search_results",
   "citations",
+  "logs",
 ] as const;
 
 function escapeCsvField(value: string): string {
@@ -265,7 +266,8 @@ function escapeCsvField(value: string): string {
 function resultToCsvRow(
   input: InputRow,
   botId: string,
-  result: ProcessTweetResult
+  result: ProcessTweetResult,
+  log?: Map<string, unknown>
 ): string {
   const pr = result.pipelineResult;
   const svScore = result.scores.find((s) => s.type === "source_verification");
@@ -284,6 +286,7 @@ function resultToCsvRow(
     evaluation_score: result.evaluationScore?.toFixed(2) ?? "",
     search_results: pr?.searchContextResult?.searchResults ?? "",
     citations,
+    logs: log ? JSON.stringify(Object.fromEntries(log)) : "",
   };
 
   return OUTPUT_HEADERS.map((h) => escapeCsvField(fields[h])).join(",");
@@ -300,16 +303,19 @@ function errorToCsvRow(input: InputRow, errorMsg: string): string {
   ).join(",");
 }
 
-function writeCsv(rows: string[]): string {
+function initCsvFile(): { filePath: string; appendRow: (row: string) => void } {
   const outDir = path.join(process.cwd(), "tryout-results");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "").replace("T", "-").slice(0, 15);
-  const outFile = path.join(outDir, `videos-${timestamp}.csv`);
+  const filePath = path.join(outDir, `videos-${timestamp}.csv`);
 
-  const content = [OUTPUT_HEADERS.join(","), ...rows].join("\n");
-  fs.writeFileSync(outFile, content, "utf8");
-  return outFile;
+  fs.writeFileSync(filePath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
+
+  return {
+    filePath,
+    appendRow: (row: string) => fs.appendFileSync(filePath, row + "\n", "utf8"),
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -432,7 +438,8 @@ async function main() {
   const downloadDir = path.join(tmpdir(), `cn-runOnVideos-${Date.now()}`);
   fs.mkdirSync(downloadDir, { recursive: true });
 
-  const csvRows: string[] = new Array(inputs.length);
+  const csv = initCsvFile();
+  console.log(`[runOnVideos] CSV: ${csv.filePath}`);
   const results: CompletedResult[] = [];
 
   const queue = new PQueue({ concurrency: concurrencyLimit });
@@ -465,10 +472,10 @@ async function main() {
         completed.outcome = result.outcome;
         completed.outcomeReason = result.outcomeReason;
         completed.noteText = result.noteText;
-        csvRows[idx] = resultToCsvRow(input, bot.id, result);
+        csv.appendRow(resultToCsvRow(input, bot.id, result, log));
       } catch (err: any) {
         console.error(`[runOnVideos] ERROR ${input.url}: ${err?.message}`);
-        csvRows[idx] = errorToCsvRow(input, err?.message ?? "unknown");
+        csv.appendRow(errorToCsvRow(input, err?.message ?? "unknown"));
       }
 
       results.push(completed);
@@ -494,8 +501,7 @@ async function main() {
     console.log(formatResult(r));
   }
 
-  const csvFile = writeCsv(csvRows);
-  console.log(`\nResults written to ${csvFile}`);
+  console.log(`\nResults written to ${csv.filePath}`);
 
   // Cleanup downloaded videos
   try {
