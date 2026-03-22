@@ -815,6 +815,7 @@ export class SupabaseLogger {
       note_status?: string;
       search_results?: string;
       check_reasoning?: string;
+      logs?: Record<string, unknown>;
     }
   ): Promise<void> {
     const { error } = await this.client
@@ -831,6 +832,7 @@ export class SupabaseLogger {
         note_status: data.note_status,
         search_results: data.search_results,
         check_reasoning: data.check_reasoning,
+        logs: data.logs,
       })
       .eq("id", runId);
 

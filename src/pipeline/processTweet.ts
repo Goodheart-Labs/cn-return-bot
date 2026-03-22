@@ -389,7 +389,8 @@ function buildCompletionData(
   result: PipelineResult | null,
   botId: string,
   outcome: Outcome,
-  warnings?: string[]
+  warnings?: string[],
+  logs?: Record<string, unknown>
 ): Parameters<SupabaseLogger["completePipelineRun"]>[1] {
   const warningText = warnings?.join("; ");
   const errorParts = [warningText, outcome.errorMessage].filter(Boolean);
@@ -405,6 +406,7 @@ function buildCompletionData(
     note_status: result?.noteResult?.status,
     search_results: result?.searchContextResult?.searchResults?.slice(0, 10000),
     check_reasoning: result?.checkResult,
+    logs,
   };
 }
 
@@ -444,17 +446,7 @@ export async function processSingleTweet(
   // 4. Determine outcome
   const outcome = determineOutcome(result, scores, evalShouldSubmit);
 
-  // 5. Complete DB run
-  if (logger && pipelineRunId) {
-    const completionData = buildCompletionData(result, bot.id, outcome, warnings);
-    try {
-      await logger.completePipelineRun(pipelineRunId, completionData);
-    } catch (err) {
-      console.warn(`[processTweet] Failed to complete pipeline run:`, err);
-    }
-  }
-
-  // 6. Write to tweet log
+  // 5. Write to tweet log
   const log = getTweetLog();
   log?.set("outcome", outcome.outcome);
   log?.set("outcomeReason", outcome.outcomeReason ?? "");
@@ -466,6 +458,17 @@ export async function processSingleTweet(
     log?.set("note.charCount", (result.noteResult.note + " " + result.noteResult.url).length);
     if (result.checkResult != null) {
       log?.set("check.result", result.checkResult.trim().toUpperCase());
+    }
+  }
+
+  // 6. Complete DB run (with logs)
+  if (logger && pipelineRunId) {
+    const logs = log ? Object.fromEntries(log) : undefined;
+    const completionData = buildCompletionData(result, bot.id, outcome, warnings, logs);
+    try {
+      await logger.completePipelineRun(pipelineRunId, completionData);
+    } catch (err) {
+      console.warn(`[processTweet] Failed to complete pipeline run:`, err);
     }
   }
 
