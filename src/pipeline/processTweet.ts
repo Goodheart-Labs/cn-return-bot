@@ -61,6 +61,7 @@ export interface ProcessTweetResult {
   outcome: "candidate" | "rejected" | "failed";
   outcomeReason?: string;
   finalStage: string;
+  noteStatus?: string;
   evaluationScore?: number;
   sourceCountScore?: number;
   noteText?: string;
@@ -475,6 +476,7 @@ export async function processSingleTweet(
     outcome: outcome.outcome,
     outcomeReason: outcome.outcomeReason,
     finalStage: outcome.finalStage,
+    noteStatus: result?.noteResult?.status,
     evaluationScore,
     sourceCountScore,
     noteText,
