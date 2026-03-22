@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2032170940298379704",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet takes Valkyrae's lighthearted joking comments about being a new aunt out of context to farm engagement. Valkyrae herself responded clarifying the context."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032176688621142170",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is AI-generated with garbled speech and is not from Deion Sanders. Travis Hunter and Leanna Lenee remain married with no divorce or $200k monthly alimony."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032146630569271392",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet headline misleadingly omits crucial context. Hayward did say the game was 'not a legitimate game' but also praised Kobe's last 3 minutes as 'legendary.' The full comments were more nuanced."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032178252190491005",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "This is political commentary/opinion about Trump's litigation behavior rather than a factual claim that needs correction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032226282881110451",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The translation 'return of the Messiah' editorializes Netanyahu's actual words, which more accurately translate to 'messianic era' — a subtle but meaningful distinction in Jewish theology."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032228615589339554",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet's subtitles ('We will reach the Kingdom') do not match Netanyahu's actual speech. The editorial claim about destroying the Dome of the Rock and Al-Aqsa is the tweeter's own inflammatory inference — Netanyahu made no such statement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032230902286155896",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the KC-135 was 'hit by MISSILE.' CENTCOM officially confirmed the crash 'was not due to hostile fire or friendly fire.' The missile claim comes from unverified militia propaganda."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032173190404063428",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple misleading elements: the video is from 2022 not a 'MAJOR UPDATE'; Sarah Ransome admitted in 2019 to fabricating claims about sex tapes; the quote 'it all started with Donald Trump' appears fabricated."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032120464902889872",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet says Awuzie signed a '$5 deal' when the actual contract was $5 million. The original reporting tweet accidentally omitted 'million.'"
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032182137420427388",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is falsely attributed to Dearborn, Michigan. According to the RAIR Foundation's own founder, it is an old clip from a Toronto mosque. Geographic misattribution for inflammatory purposes."
+  }
+]

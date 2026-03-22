@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2013984621478740385",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Trump claims China doesn't use windmills themselves. This is definitively false — China has the highest installed wind energy capacity in the world (640 GW by end of 2025), nearly equal to the rest of the world combined, and has ranked first globally for 15 consecutive years."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013867334092349487",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the skating video is from Eklutna Lake in Alaska, but multiple community notes and Ilaria Dentella's own Instagram confirm it was filmed at Lago di Braies (Pragser Wildsee) in the Italian Dolomites. The location is clearly misidentified."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013886755569836327",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet frames Meloni as defiantly responding to Trump about NATO. Fact-checkers (Facta, NewsGuard) confirm Meloni was actually sarcastically mocking domestic critics who suggested Italy should distance itself from the US — the exact opposite of what the tweet implies. The viral framing originated from an Indian content farm."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013639359791042892",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video combines footage from a 2024 Cape Air Cessna 402 emergency landing with audio from a separate 2018 incident involving 17-year-old Maggie Taraska's Piper PA-28 solo flight. The video and audio are from two entirely different events years apart."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013853147576381861",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet calls Himalayan salt 'Pakistan's greatest marketing trick.' The Khewra Salt Mine is in Pakistan's Salt Range, which is geologically connected to the Himalayan foothills. Whether calling it 'Himalayan' is misleading marketing or a reasonable geographic label is genuinely debatable — both sides of the community notes have valid points."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013285740377944417",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet caption quotes the officer as saying 'comments you made online about Israel,' but the community note points out the officer actually said 'comments made online about the Jewish community.' This is a subtle but meaningful misquote that changes the framing of the incident."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013787281425858817",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claims that states had 100% or over 100% voter turnout in 2020 are false — the highest state turnout was Minnesota at 80%. The Maricopa County 74,243 mail ballot claim has been debunked by county election officials and fact-checkers as a misinterpretation of early voting data files."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013418606399193378",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that 'Israelis have completely burned down Chile' is false. The 2026 Biobío wildfires were caused by extreme heat, drought, and human negligence/arson by a local suspect. There is no credible evidence of Israeli involvement; such claims echo antisemitic conspiracy theories debunked in similar contexts."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013808049471844557",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet states Northam made these comments 'in 2024 when Democrats first tried to legalize abortion through birth.' The comments were actually from January 2019 during a WTOP radio interview. The bill in question failed and was never enacted. The date is wrong by five years and the characterization is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013917076134805981",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that the US is establishing military bases in Tehran is false. While there is an active 2026 US-Iran conflict, US military bases in the region are located in allied Gulf states (Qatar, Bahrain, Kuwait, etc.), not inside Iranian territory. No credible source reports US bases being established in Tehran."
+  }
+]

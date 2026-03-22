@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028991315497959844",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The Joe Rogan clip promotes the widely debunked conspiracy theory that Rumsfeld announced $2.3 trillion 'missing' from the Pentagon the day before 9/11. Multiple fact-checkers (PolitiFact, Lead Stories, Metabunk) confirm the figure referred to unsupported accounting adjustments reported in a 2000 audit, not newly discovered missing funds. The community note correctly contextualizes the claim with Reuters fact-check and DoD audit sources."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029021727338979371",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The community note claims the people in the 'Vote No' early voting video are AI-generated fabrications, but I could not find any independent reporting or fact-checks about this specific video. AI-generated election content is a documented problem in 2026 midterms, but without being able to view the video or find corroborating reports, the claim cannot be confirmed or denied."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028896187210690747",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet reports on Reza Pahlavi and Trump's outreach to Kurdish leaders, which is confirmed by Axios, WSJ, Washington Post, and CNN reporting. The community notes classify this as 'NOT_MISLEADING' and merely add context that the 'new competition' framing is opinion. The underlying factual claims are accurate and the tweet is an interview segment, not misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029018883923836964",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet uncritically relays Iran's claim that its attacks caused 'over 100 American troop casualties.' At the time of posting (~March 3-4, 2026), CENTCOM confirmed 6 US service members killed and 18 seriously wounded. Even by March 16, total wounded reached ~200 but deaths were 13. Iran's claim was significantly inflated propaganda, and the tweet presents it as news without context. A community note correcting this is warranted."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028940437273079938",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show video from the Epstein files as evidence of pedophilia. Multiple fact-checkers (Lead Stories, DW, Euronews) have documented a wave of AI-generated fake videos falsely attributed to Epstein files in early 2026. The community note correctly flags this as not from official Epstein files and likely AI-generated, with links to DOJ's actual Epstein files page and DW's fact-check."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029004351096635580",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Same issue as tweet 4: this tweet uncritically relays Iran Armed Forces' claim of '160 US army casualties' from Iranian attacks on US bases. CENTCOM's confirmed figures were far lower (6 killed, ~18 seriously wounded at that time). The community note appropriately provides CENTCOM's actual figures as a corrective to Iranian propaganda claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029027548626133457",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet includes a video purporting to show missile strike footage alongside political commentary about Trump and Iran. Multiple community notes and PolitiFact/Poynter reporting confirm that AI-generated and recycled old videos were widely shared as fake Iran strike footage in early March 2026. The notes identify specific AI artifacts (distorted water, solar panels). This is documented misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028846382589640818",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents a video about service dogs under the ADA alongside factual text about service dog protections. The community note claims the video is AI-generated. While I could not find fact-checks of this specific video, AI-generated dog videos are a well-documented and widespread phenomenon in 2026, with Lead Stories and other outlets reporting on viral AI dog content. The text content about ADA protections is accurate, but an AI-generated video presented as real footage is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028878066630709455",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet promotes Pocket (heypocket), a Y Combinator-backed notetaker device. One community note alleges fraud (linking only to another tweet), another raises a legitimate privacy concern about Google Play listing 'no data collected' while the privacy policy describes collecting recordings, transcripts, and device IDs. The privacy discrepancy claim appears plausible based on search results, but the fraud allegation lacks substantiation. The third note is spam. The privacy concern may be noteworthy but the evidence is mixed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029051488190779784",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show drone attack footage hitting Riyadh's Embassies District, but both community notes identify the video as unrelated -- one note identifies it as 2022 Saudi thunderstorm/flood footage with Arabic text translating to 'Ahmed's car drowned in the rain.' While the Riyadh embassy drone attack did occur on March 3, 2026 (confirmed by Al Jazeera, CNN, Washington Post), the attached video is misattributed old footage, making this clear misinformation."
+  }
+]

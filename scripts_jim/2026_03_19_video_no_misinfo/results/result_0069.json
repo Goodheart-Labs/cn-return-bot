@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028492264230502569",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Joe Biden was 'wearing a mask' at what was actually Jim Carrey's appearance at the César Awards on February 26, 2026. The César Awards organizers, Carrey's publicist, and multiple news outlets (Variety, Snopes, CNN) confirmed it was genuinely Jim Carrey, who attended with family and had prepared his French speech for months. The conspiracy is debunked."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028498472572215325",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet fabricates a quote, attributing 'France is ready to participate in defending the free world against the Iranian regime' to FM Barrot. His actual statement was about defending specific Gulf allies (Saudi Arabia, UAE, Qatar, Jordan, etc.) against Iranian attacks per existing agreements and collective self-defense under international law, not a broad declaration about 'the free world.' Reuters, France24, and Le Monde confirm the actual quote."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028503481108005330",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The note claims the person is reposting old tweets for engagement farming and links to an older tweet as evidence. Without being able to verify the video content or confirm the repost claim through independent sources, the misleading nature is plausible but not strongly substantiated by public reporting."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028515450150138340",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims The Simpsons predicted Trump's death on March 14, 2026. Multiple fact-checkers (Snopes, PolitiFact, Republic World) confirm no such episode exists. The viral clips are AI-generated or fan-edited manipulations overlaying dates/text on unrelated scenes. This is a recurring hoax debunked as far back as 2017."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028517352480940254",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet uses video purportedly showing soldiers killed in the Iran war being returned. A Lead Stories/Yahoo fact-check confirms the video actually shows the December 17, 2025 dignified transfer of three Americans killed in Syria (two National Guard members and an interpreter), not Iran war casualties. The clip was lifted from PBS News footage and repurposed to misrepresent a different event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028517432780808359",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The notes claim the grieving Iranian woman is an actress used for IRIB state propaganda, citing X posts as evidence. While Iran's IRIB is known to use staged media (Iran International has reported on this), the specific claim that this particular woman is a known actress rests on social media posts rather than verified independent reporting. The claim is plausible given IRIB's documented practices but not conclusively proven."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028660969434747247",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show the US Embassy in Saudi Arabia being attacked by Iranian drones, but the video is misattributed. A Quint fact-check and multiple community notes identify the footage as showing either an unrelated fuel tanker explosion or an Israeli airstrike on Yemen's Hodeidah port from 2024. While a real drone attack on the embassy did occur (confirmed by Reuters, CNN, PBS), the video shown is not from that event; the actual attack caused only limited fire and minor damage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028695016139620557",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet makes specific false claims: that China supplied exactly 300 SF-200 drones to Iran and all were intercepted by Patriots. While China did send some loitering munitions to Iran (per Middle East Eye), Iran's Gulf attacks primarily used its own Shahed-series drones. No verified reports confirm 300 SF-200 drones were supplied or that all were intercepted. Al Jazeera and CSIS analysis confirm Iran used Shahed-family variants, not Chinese SF-200 models, in the Gulf strikes."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028651041471021402",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet fabricates direct quotes attributed to Rubio, including 'The only reason we're at war with Iran is because Israel forced our hand' and calling Israel 'blood-thirsty parasitic terrorists.' Rubio's actual words were that the US knew Israel was planning action, knew it would precipitate attacks on Americans, and acted preemptively to avoid casualties. Multiple outlets (Al Jazeera, Axios, Daily Mail) confirm the tweet's quotes are fabricated and misattributed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028542255925965272",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Ted Lieu said 'the full Epstein files contain information that Donald Trump RAPED minors.' Lead Stories and Snopes fact-checks confirm Lieu referenced 'highly disturbing allegations' from the files at a February 2026 news conference -- he did not claim to have seen evidence of rapes in unreleased files. The tweet exaggerates Lieu's statement from citing unsubstantiated allegations to presenting them as confirmed information."
+  }
+]

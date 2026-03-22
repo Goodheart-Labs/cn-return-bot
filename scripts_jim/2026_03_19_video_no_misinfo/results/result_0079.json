@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028218356529090673",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video claiming to show an Iranian missile hitting a US Navy ship is confirmed fake footage from the video game Arma 3. Multiple fact-checkers (Full Fact, PolitiFact, Euronews) have debunked this, and CENTCOM confirmed no Iranian missiles hit the USS Abraham Lincoln."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028149011828347022",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "Trump did make the 'left instructions' comment, but it was from February 2025, not recently. The tweet says 'earlier' which is technically true but misleading in the context of the March 2026 Iran strikes, as it implies a current statement. The recirculation during active conflict is deceptive framing."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2027984807414649227",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is confirmed to be from a July 2025 American Airlines emergency evacuation at Denver International Airport, not from an Israeli airport after an Iranian missile strike. Multiple fact-checkers (Full Fact, BOOM, Newschecker) verified this."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028229648589390016",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet uncritically amplifies Iran's IRGC propaganda claims (560 US troops killed, base decommissioned, carrier hit). CENTCOM confirmed 3 killed and 5 wounded initially (later revised to 6 killed). The 560 figure is massively inflated Iranian state media claims contradicted by US military and independent reporting."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028233576265785731",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet uses unconfirmed reports and what appears to be old video footage (reportedly from 2009) of coffins to claim US servicemen are returning home in coffins. While CENTCOM confirmed 3 deaths (later 6), there was no evidence of remains being returned at the time of posting, and the video is not from the 2026 conflict."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028227328048800155",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple community notes with sources confirm the video is from January 2026 protests in Karaj, not from March 1, 2026. Reuters reported celebrations in Karaj on March 1 after Khamenei's death, but no confirmed clashes with plainclothes agents that night. The video is recycled from earlier protests."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028155968501035125",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Iran's IRGC claimed to have struck the USS Abraham Lincoln, but CENTCOM explicitly denied this, stating the carrier was not hit and missiles did not come close. The US later shared photos of the carrier operational at sea. PolitiFact and other fact-checkers confirmed videos purporting to show the strike were fake."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028219028884341096",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While Mia Khalifa did make these statements, the video is from October 22, 2024, not the current March 2026 conflict. Posting it without date context during the Iran strikes implies it is a current reaction, which is misleading recirculation of old content."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028206968343503254",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is confirmed to be from a false alarm panic at Tel Aviv's Habima Square on Memorial Day (April 29, 2025), not from an Iranian missile strike on an Israeli airport. Multiple fact-checkers (AFP, Factly, Misbar) verified the video's true origin."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028130734234354096",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The core claim that Obama sent $1.7 billion in cash to Iran is factually accurate (confirmed by CBS News, Brookings). However, the tweet omits critical context: it was a legal settlement of a decades-old arms deal claim from the 1970s Shah era, not taxpayer-funded support for the regime. Calling it 'treason' and 'funding the evil regime' is misleading framing of a legal financial settlement."
+  }
+]

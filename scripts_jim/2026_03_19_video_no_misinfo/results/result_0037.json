@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2030709439947546783",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that Bahrain's King Hamad fled the country and the regime was overthrown is entirely false. On March 8, 2026, the King delivered a televised address from Bahrain condemning Iranian attacks. Multiple credible sources confirm he remained in the country performing official duties."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030734510783107294",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet claims India confessed to asking the Taliban to hide terrorists in Kabul's Green Zone. The community note flags the video as potentially AI-generated. No credible sources corroborate this claim, but without being able to view the video or find the original source, the evidence is insufficient for a definitive judgment."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030719678935429554",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet accurately states that Leavitt did not rule out a draft, then expresses personal political outrage. The factual premise is correct -- Leavitt said the draft is 'not part of the current plan' but Trump 'keeps his options on the table.' The rest is clearly opinion."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030717291130663297",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "While the word 'children' is editorialized, the core claim that Leavitt did not take a draft off the table is accurate. The tweet includes the actual quote providing context. The framing is somewhat inflammatory but the substance is not misleading given the included direct quote."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030609981205004291",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While the Eon Systems fruit fly brain emulation is a real achievement from March 2026, the claims of 'no training data, no machine learning' are misleading. The connectome was reconstructed using machine learning, and motor output controllers were trained on real fly walking data. The dramatic framing of it 'waking up' significantly overstates what happened."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030714032391340036",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet places 'Trump might institute a DRAFT' in quotation marks as if directly quoting Leavitt. She never said those words. Her actual statement was that a draft is 'not part of the current plan right now, but the president wisely keeps his options on the table.' The fabricated direct quote is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030227167645508043",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet's factual content -- Chalamet's family connection to NYC Ballet -- is confirmed true. His mother and sister trained at the School of American Ballet. While the footage is old and recirculating after his controversial ballet comments, the tweet itself does not make false claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030447313702031849",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet misrepresents the footage as a current live NBC broadcast when it is from February 28, 2026. The claimed quote 'Iron Dome does NOT WORK' from the host cannot be verified in the actual NBC coverage. The combination of misleading recency framing and a fabricated quote makes this clearly note-worthy."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030694538432372759",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims a foreigner voted in 'the last FIVE Presidential elections' over '20 YEARS.' Denis Bouchard only pleaded guilty to voting illegally in the 2022 and 2024 elections. While voter records show he voted in nine elections from 2004-2024, he was charged and convicted for only two. The tweet significantly overstates the proven illegal activity."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030524551755391101",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet incorrectly claims Scorsese 'did the same thing' as Tarantino by 'writing himself in' to Taxi Driver. Paul Schrader wrote the screenplay, not Scorsese, and Scorsese's cameo was a last-minute replacement for injured actor George Memmoli. Scorsese did not write himself into the film."
+  }
+]

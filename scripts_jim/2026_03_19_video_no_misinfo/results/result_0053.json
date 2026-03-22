@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029430554576220619",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet references a video about Pam Bondi and an alleged 'cover up' with strong emotional framing. The community note claims many images in the video are AI-generated or digitally altered. Multiple fact-checkers (Snopes, Lead Stories) have confirmed AI-generated images related to Pam Bondi circulating in early 2026. Without being able to view the video directly, the note's claim about AI-generated content is plausible and consistent with documented misinformation campaigns, making this note-worthy."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029493486588686687",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Saudi Arabia arrested two Israeli Mossad agents planting bombs. Al Arabiya sources dismissed this claim as baseless and untrue. Qatar's Foreign Ministry confirmed no such Mossad cells were found. The claim originated from Tucker Carlson without evidence and was amplified by anti-Israel accounts. Multiple credible outlets (Al Arabiya, Jerusalem Post, Middle East Eye) report the claim is unverified and denied by the governments supposedly involved."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029625492370780616",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet jokes that a ball rising underwater represents lung expansion while holding breath. The physics is oversimplified but not dangerously misleading. In normal breath-hold freediving from the surface, lungs compress on descent and re-expand to their original volume on ascent -- there is no net overexpansion. The risk applies to scuba divers breathing compressed air at depth. The existing notes conflict with each other, and the tweet is humorous rather than making a serious factual claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029561538911031429",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 2 million Ukrainian soldiers are dead, missing, or permanently disabled, and accuses Zelensky of betraying Ukraine to 'NATO and the neo-Nazis.' CSIS estimates total Ukrainian casualties at 500,000-600,000 (killed, wounded, missing combined); the ~2 million figure refers to COMBINED Russian and Ukrainian casualties. The 'neo-Nazi' framing misrepresents the Azov Brigade situation. Multiple claims are demonstrably false or highly misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029598066853171225",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies the video shows current destruction in Tel Aviv as a 'ghost town.' Multiple community notes with sources confirm the footage is from a June 2025 Iranian missile strike in Ramat Gan, not current March 2026 footage. RFE/RL has documented recycled videos fueling propaganda in the Iran-Israel conflict. The video is being presented out of its original temporal context to mislead about current conditions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029417869499314392",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Rogan's claim that trans shooters killed more people than ICE in 2026 is demonstrably false. As of early March 2026, at least 13 people had died in ICE detention plus 2 fatal ICE-related shootings. Meanwhile, fact-checkers confirm trans people account for less than 0.1% of mass shootings since 2013, and there were no confirmed trans shooter incidents in early 2026. The claim is objectively incorrect based on available data."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029525843295224049",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet shows a video claiming baby monkey Punch was underwater with his plush toy. The community note questions whether the video is actually of Punch at Ichikawa City Zoo, noting the zoo has no hot-spring pool. While Punch is a real viral monkey at Ichikawa, without being able to view the video or find specific reporting on this incident, it is unclear whether the clip is misidentified or genuine. The claim is relatively low-stakes."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029532401018536258",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies an Indian YouTuber was denied entry to an Israeli bar due to his support for Israel, suggesting anti-Indian discrimination. Multiple fact-checks (NDTV, DFRAC, TrueScoopNews) and the Israeli Embassy confirmed the video was cropped and misleading. The YouTuber Nomad Shubham was denied entry because bars were full on a busy night, not due to nationality. He clarified this himself and entered another venue without issue."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029559462667718850",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents a video as showing current destruction in Tel Aviv with 'Good morning Tel Aviv.' Multiple community notes with credible sources (Reuters, Times of Israel, Al Jazeera, Wikipedia) confirm this is recycled footage from a June 2025 Iranian missile strike in Ramat Gan, not a current event from March 2026. Presenting old destruction footage as current is clearly misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029580241681727502",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Starmer 'confirmed Britain is now entering the war.' Multiple credible sources (Gov.uk official statements, Bloomberg, Reuters, BBC, Sky News) confirm Starmer explicitly stated the UK would NOT join US-Israeli offensive strikes on Iran. He authorized only defensive actions -- intercepting Iranian drones/missiles targeting allies. The tweet fundamentally mischaracterizes Starmer's stated position, which was the opposite of 'entering the war.'"
+  }
+]

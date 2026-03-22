@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2032957445627154535",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims killing Khamenei 'unified the people of Iran against America and Israel.' Multiple credible sources (CNN, NBC, PBS, Euronews) document widespread celebrations across Iranian cities after his death, directly contradicting the claim of unification against America/Israel."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032488143568425368",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies IRGC leaders are bravely among the people, but Iran International and other sources report IRGC commanders were holding meetings in hospitals and schools as a deterrence/human shield tactic, not out of solidarity. The framing omits critical context about the strategic motivation for appearing among civilians."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032949047472894268",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims journalist Aditya Raj Kaul was arrested by Israeli police. Multiple fact-checks (LatestLY, Fact Crescendo, IBTimes India) confirm this is entirely false. The posting account is self-described as satire/parody, and Kaul himself dismissed the claim as fake news while continuing to post from Israel."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032556682434265570",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet does not explicitly claim the man is Jeffrey Epstein -- it says 'the internet is FREAKING OUT after this man was spotted.' The man has been identified as 'Palm Beach Pete,' a Florida resident who publicly confirmed his identity. The tweet is engagement bait but does not make a verifiably false factual claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032729017158193649",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The community note claims the video is from Ascot, not Cheltenham. A real brawl did occur at Cheltenham 2026 (widely reported by GBNews, Racing Post, etc.), but brawls also occurred at Ascot. Without viewing the specific video attached to the tweet, I cannot independently confirm whether this particular footage is mislabeled."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032518095601021329",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet spreads unverified rumors that Netanyahu is in a coma at Sheba Medical Center, even offering $10,000 for information. Netanyahu has been confirmed alive through multiple press conferences, proof-of-life videos, and official Israeli government communications. PolitiFact, NBC, and others have debunked the death/injury rumors."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032534098527551591",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "Like the similar tweet about the same video, this does not claim the man is Epstein -- it asks 'WHO DOES THAT LOOK LIKE TO YOU?' This is engagement bait/rhetorical question, not a factual claim. The man is a known Florida resident who has publicly identified himself."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032536606461321235",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet shows Trump claiming he predicted bin Laden's 9/11 attacks in a book written a year before. This has been conclusively debunked by CNN, AP, Washington Post, and others since 2015. Trump's 2000 book mentions bin Laden only once in passing, acknowledging he had already been targeted by the Clinton administration -- it contains no prediction or warning."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032857972322246959",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "Community notes indicate Laura Loomer's face was digitally altered/distorted in the video for mockery purposes. The original unedited footage from the India Today Conclave exists on YouTube. Distributing manipulated media to mock someone's appearance, even of a controversial figure, warrants a note identifying the manipulation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032722525101457414",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show 'EXCLUSIVE FOOTAGE OF THE ISRAELI PRIME MINISTER COVERED IN A WHITE SHEET BEING PUT IN THE BACK OF AN AMBULANCE.' Fact-checks confirm the video is actually from Beirut, Lebanon, after Israeli strikes -- Arabic writing and Lebanese Civil Defense emblems are visible. Netanyahu is confirmed alive through multiple proof-of-life appearances."
+  }
+]

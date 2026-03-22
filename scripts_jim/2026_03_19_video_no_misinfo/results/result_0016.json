@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2032158441817411972",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The video likely contains fabricated names/ages and false claims about charges/lawsuits. Toledo police confirmed no reports were filed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032178904148885672",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "Multiple reliable sources confirm Netanyahu DID reference the messianic era in his March 12 press conference. The community notes claiming he made 'no such reference' appear factually incorrect."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032166042785501582",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "If the video is clearly satirical where the presenter breaks character, it may not need a note. But AI-generated fake destruction footage of Tel Aviv has been widely shared as real."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032180057738002566",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Confirmed deepfake by India's PIB Fact Check Unit. Modi's actual NXT Summit speech was about energy security, not Iran/Pakistan/Israel."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032244810380189777",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Same confirmed deepfake with additional false framing that 'India tacitly declared total war with Pakistan.'"
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032238034729701426",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Confirmed AI deepfake by multiple fact-checkers. The underlying claim about an Indian arrested in Bahrain for Mossad espionage is also false per Bahrain's interior ministry."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032109412874117532",
+    "rating": "note_worthy",
+    "confidence": "low",
+    "reasoning": "The community note claims the video is recycled from a December 2025 TikTok. Presenting old footage as a current event is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030936630018572613",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While Israel did spray glyphosate over South Lebanon in Feb 2026, this video appears to be recycled old footage. The 'UNKNOWN SUBSTANCE' framing is misleading since the substance was identified."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031847963509584254",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The blanket 'NO TAX' framing is misleading. These are income tax deductions with caps and phaseouts. Payroll taxes still apply. The social security provision is a limited senior deduction, not full elimination."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032192656776814922",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "A senator promoting legislation. The community note's objection is largely a policy disagreement, not a factual correction."
+  }
+]

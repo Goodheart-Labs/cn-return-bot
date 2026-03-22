@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2013796079829970949",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is from the Syrian civil war (2014), not Hamas in Gaza. Multiple fact-checkers (Misbar, AFP, Mirror) confirm the footage shows Syrian opposition fighters near children, not Hamas using human shields. The tweet fundamentally misattributes the video's origin and subjects."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014045456213373087",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet omits key context: the deal includes a 99-year lease preserving the US-UK military base on Diego Garcia, Trump himself initially supported the deal in April 2025 before reversing his position, and the process was started under Conservative governments. The claim Starmer acted out of guilt is editorializing, but the missing lease context is material."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013519731718832180",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The user claims this motion design as their own work and solicits clients, but the video was created by Flatonica Studio for the Kraster Wallet project, published on Behance in October 2025. This is plagiarism/false attribution of another designer's work."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014057262260580516",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet is a video clip of Chris Cuomo saying 'Be better' regarding the term 'illegal aliens.' The only note points out Cuomo previously used the same term, which is a hypocrisy callout rather than a factual correction of a misleading claim. The tweet itself is opinion/commentary, not a factual claim requiring correction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013675861510139971",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'America is a Christian nation' and frames choosing a state constitution for swearing-in as evil. There is no legal requirement to use a Bible; the US Constitution explicitly states no religious test for office (Article VI, Clause 3). While Sherrill did choose the Constitution, the framing is misleading about legal requirements."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013965034083274804",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 78% of Greenlanders want to join the US. The January 2025 Verian poll actually found 85% of Greenlanders oppose joining the US, with only 6% in favor. The claimed statistic is fabricated and the reality is the exact opposite of what is stated."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014062745205850206",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Biden-era spending is 'officially OVER' and replaced by 'Trump-era spending levels.' However, appropriations only cover ~25% of the federal budget (discretionary spending), and FY2026 proposed levels (~$1.598-1.613T) are comparable to FY2023-2025 levels, not a dramatic departure. The claim overstates the change."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013965208121663971",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet says NVIDIA is 'manufacturing' $500B of AI systems in the US, but NVIDIA does not manufacture chips itself. The $500B refers to NVIDIA and its partners (TSMC, Foxconn, etc.) building AI infrastructure in the US supply chain. The distinction between NVIDIA manufacturing vs. coordinating a supply chain ecosystem matters for accuracy."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014033568637587513",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet frames Stubb as contradicting himself within 11 minutes. Notes disagree: some say the quote is spliced/misleadingly combined, while others say the full video supports the characterization. Without viewing the full Davos video, it is unclear whether the editing is deceptive or fairly represents Stubb's contradictory statements."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013722880031240645",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet's claim that the SAVE Act requires names to 'MATCH their birth certificates' is an oversimplification. The Act accepts multiple forms of ID (passport, naturalization papers, Real ID). However, voting rights experts do warn the vague name-discrepancy provisions could create barriers for married women, so the concern has legitimate basis even if overstated."
+  }
+]

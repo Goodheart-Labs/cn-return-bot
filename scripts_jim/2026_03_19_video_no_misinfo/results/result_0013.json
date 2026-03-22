@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2032828189240909883",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims the man was arrested 'just for refusing to sell halal food.' He was actually arrested on suspicion of carrying a prohibited bladed weapon (a kirpan). While the broader dispute involved his non-halal policy, the arrest was for a weapons offense, not for his food choices."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032283819923886276",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "'Bring back bullying' is a well-known internet meme/opinion statement, not a factual claim that can be fact-checked. Community notes are designed to address misinformation and missing context, not to police opinions or enforce platform rules."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032506722107990293",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While Israel did close Al-Aqsa during Ramadan 2026, the tweet's framing implies selective targeting of a Muslim holy site. In reality, Israel restricted all large public gatherings including at the Western Wall due to active Iranian ballistic missile attacks on Jerusalem."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031927304637579582",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "Community notes claim the location is Gracie Mansion rather than City Hall and that the video is selectively edited to show only Muslim participants. The location misidentification alone is a factual error."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031934843383148975",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet makes an extraordinary unsubstantiated claim ('Donald Trump rapes children') and appears to pair it with a fire video. Old and misattributed fire footage has been rampant during the 2026 Iran war."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031935568393773298",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Netanyahu 'immediately denied responsibility before anyone even asked.' This is false. Netanyahu first addressed conspiracy theories on September 11 when specifically asked by Newsmax host Greta Van Susteren, and his proactive video denial came 8 days after the assassination."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032302165616742636",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is confirmed by multiple fact-checkers to be from a June 2025 tanker collision in the Gulf of Oman caused by navigational error, not a recent attack in the Strait of Hormuz."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031937965522403782",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet completely fabricates the context. The video shows an Argentine congressman being headbutted during flood relief operations in Tucuman due to a local political dispute. It had nothing to do with Zionism, Israel, or 'traitors who serve Israel.'"
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031964526363529380",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet says China 'condemns Iran's attacks on Gulf states.' China's actual position is more nuanced: China does NOT name or condemn Iran specifically. China also criticizes US/Israel strikes on Iran and abstained on a UN resolution condemning Iran."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032714726082564204",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that the audio shows Erika Kirk has been debunked by Snopes. The voice is Haley Robson, an identified Epstein associate per a 2005 Palm Beach Police affidavit, not Kirk."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2021872161204400631",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "Farage's claim 'I can't be bought' is a subjective political statement about his principles and integrity. While he does earn money from Cameo and has declared earnings as an MP, the notes attempt to rebut a rhetorical/opinion claim with literal interpretations. Community notes work best for factual misinformation, not political rhetoric."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021666579092844942",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that McDonald's US fries have 15 ingredients is exaggerated. McDonald's own website lists fewer distinct ingredients. The bread mold claim is also unsubstantiated anecdotal evidence presented as fact. The existing note correctly identifies the ingredient count exaggeration."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021751859539849692",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet describes a real and common banking scenario — large cash withdrawals typically require advance notice because branches keep limited cash on hand. The video appears to explain standard banking procedure. While the framing may be slightly sensational, the underlying content is not misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021717877141778577",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that US Air Force pilots were arrested for refusing to aid Israel is false. Multiple fact-checks confirm the video shows Army veterans being arrested for disrupting a Senate hearing, not active-duty pilots refusing orders. The tweet also uses the antisemitic dog whistle 'Small Hats.' The existing community note correctly debunks this."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021809768546095275",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims the principal was 'FIRED' for letting students protest ICE. No evidence supports that the principal was fired; school officials stated the walkout was not sanctioned or organized by the school. The 'fired' claim appears to be unverified or fabricated, making this misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021893271312633919",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'at least 10 people' were murdered, but the confirmed death toll was 8 victims. The framing attributes the shooting to 'demon possession' and blames 'the left' and the shooter's trans identity, which is editorializing without evidence. However, factual inaccuracies in the death toll and the inflammatory framing warrant a note."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021639407984656769",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet includes a digitally edited image of a bound and gagged child falsely associated with the Epstein case. Lead Stories confirmed the image was edited from an unrelated photo circulating since 2006. While Bondi did reference stock market gains during Epstein testimony, the fake image makes this tweet misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021615559616442854",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet promotes the chemtrail conspiracy theory, claiming a 'whistleblower pilot' confirms covert geoengineering spraying operations. The scientific consensus from NASA, EPA, and major atmospheric science institutions confirms these are ordinary contrails formed by ice crystal condensation, not evidence of secret spraying programs."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021582290166464935",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims 'Indians' vandalized a restaurant in England over beef. Fact-checks confirm the 2024-2025 incident at Abaseen Diner in Sheffield involved British Pakistanis in a dispute over being served beef instead of lamb — not Indians reacting to the presence of beef. The video is old and has been reposted with a misleading narrative."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021564449476284501",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Yona Beach Club banned Indian tourists entirely due to 'past incidents.' The club denied implementing a nationality-based ban, stating entry restrictions relate to crowd management (male-to-female ratios) during peak times. While discrimination allegations exist, the tweet's framing of an outright nationality ban is not confirmed by the club or Thai authorities."
+  }
+]

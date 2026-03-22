@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029648352175120703",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet lists several claims about Trump's actions presented as betrayals. The 'no wall' claim is verifiably inaccurate -- over 25-30 miles have been built since Jan 2025 with contracts for 587 miles awarded and 250 miles targeted by Sept 2026. The trans surgery claim is misleading -- Trump posted then deleted a statement implying parental consent would suffice, but the overall administration policy opposes it. Several other claims (tariff refunds, autopen investigation dropped) have factual basis but are presented without context. The community note correctly addresses the wall claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029702104399397274",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet expresses a political opinion about women's rights in Iran and criticizes Democrats. While the claim that women could 'freely' work/go to school before the revolution is an oversimplification, the core point that the 1979 Islamic Revolution significantly restricted women's rights in dress, marriage law, and employment is historically supported. The tweet is primarily political opinion and rhetoric rather than a specific factual claim requiring correction. The existing notes are split and largely argue about whether it qualifies as opinion."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029632408853639205",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet from a State Department official accuses CNN of 'pro-Iran regime propaganda' because 'someone gave this guy a coffee.' The CNN reporter (Frederik Pleitgen) responded that he bought the coffee himself. The specific factual claim that 'someone gave this guy a coffee' is contradicted by the reporter's own statement. A note correcting this misrepresentation is warranted, and the existing note citing Pleitgen's response is appropriate."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029768884199276677",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show 'Israelis get smoked by Iranian missile during a live overnight broadcast.' Fact-checkers have confirmed the video actually shows explosions at a gas station in Crevedia, Romania from August 26, 2023, not an Iranian missile strike on Israel. This is a clear case of old footage being falsely attributed to an ongoing conflict."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029263972071854546",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet quotes Holocaust denier David Irving mischaracterizing a 1943 memo by Victor Cavendish-Bentinck. The actual memo expressed skepticism about specific reports of gassing Poles and compared them to WWI propaganda, but acknowledged Germans were destroying Jews. Irving's paraphrase falsely frames it as a British official calling gas chambers a 'lie' -- which is a significant distortion used to promote Holocaust denial. The existing community notes accurately correct this misrepresentation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029408156397248865",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims 'The US has bombed DECOY Fighter Jets in Iran, and this is a huge embarrassment.' According to Snopes and Newsweek fact-checks, the specific video circulating was from June 2025 Israeli strikes, not March 2026 US strikes. While Iran did reportedly use some decoy tactics, the claim that the US only bombed decoys is unconfirmed and disputed. The note providing this context is warranted."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029445940470309302",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'CONFIRMED IRAN SHOOT DOWN AMERICAN F-15 FIGHTER JET.' CENTCOM explicitly denied this, calling it 'baseless and NOT TRUE.' The confirmed F-15 losses were from a friendly fire incident over Kuwait, not from Iranian action. This is verifiable disinformation directly contradicted by official military statements."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029711542464188799",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet labels video footage as being from Tel Aviv when multiple news sources (Al Jazeera, BBC, CNN) confirm the explosions shown are from airstrikes on Tehran, Iran -- not Tel Aviv, Israel. This is a straightforward geographic misidentification (or deliberate misattribution) of conflict footage, and the community notes correctly identify this."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029741548791853331",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet shares a White House-produced war meme video using movie clips. While the copyright/fair use issues and Ben Stiller's objection are real and notable, the tweet itself is sharing a meme expressing a political opinion ('JUSTICE THE AMERICAN WAY'). It does not make a specific factual claim that is misleading. The existing notes are mostly arguing about fair use law and whether war propaganda is appropriate -- these are opinion debates, not factual corrections suited for community notes."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029653884554326380",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet labels a video as 'Breaking' news, implying it is a new statement by Saudi Arabia's foreign minister against Israel. Both community notes correctly identify that the video is from a June 1, 2025 press conference in Amman, not a new March 2026 statement. Presenting old footage as breaking news during an active conflict is misleading and warrants correction."
+  }
+]

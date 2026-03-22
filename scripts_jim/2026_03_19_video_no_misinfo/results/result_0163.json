@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2018071360468095471",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims this happened in May 2024 when it actually happened in May 2022. It also frames the issue as Dominion machines being inherently flawed, when the root cause was a human programming error at the state level after a candidate withdrew. The community note correctly identifies both the wrong date and the actual cause."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018021147594395758",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet calls the Somali daycare fraud story 'completely bullshit,' but investigations have confirmed over $1 billion in fraud across Minnesota social programs. However, specific daycare sites visited in the viral video were not found to be fraudulent by state investigators. Both the tweet and the community note contain partial truths, making this a contested framing issue rather than clear misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017607995065028753",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The incident is real and confirmed by multiple news sources. The legal question of whether the entry was constitutional is genuinely debated: immigration attorneys say a judicial warrant was needed for the private business, while ICE policy memos claim administrative warrants suffice. The tweet's use of 'illegally' is contested but not clearly false. The competing notes reflect this genuine legal ambiguity."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017432807291732430",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The video is real and from Robert E Fuller, a wildlife artist who builds owl habitats. The minor distinction between 'infertile' (the owl) vs 'inviable' (the eggs) is a nitpick. The video is widely shared and the core claim is accurate. Lack of credit to the original creator is a minor issue, and a watermark is apparently present."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017609459476890010",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The video is a political attack ad against Pierre Poilievre that contains edited clips. The community notes indicate the podcast clip is edited to misrepresent his comments, and the 'far right extremist group' claim about his presence at a carbon tax protest is disputed. Edited political content that misrepresents context warrants a note."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017994791372349500",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "This is largely an opinion/complaint about snow cleanup in NYC. While the note about property owner responsibility is factually accurate context, the tweet is expressing frustration about street conditions rather than making a verifiable false claim. This is more commentary than misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018041858450981009",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet promotes the conspiracy theory that NASA is manipulating weather. The video actually shows an RS-25 rocket engine test at Stennis Space Center, which produces water vapor as a byproduct of burning liquid hydrogen and oxygen. Multiple fact-checkers (Reuters, AFP) have debunked this claim. This is clear misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017728493078089896",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet appears to be satirical/humorous content about hotel tips. One community note calls it 'obviously satirical.' Satirical content that is clearly not meant to be taken seriously does not typically warrant a community note."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017879537111961604",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet uses video from a January gas cylinder blast in Kishtwar and presents it as a militant attack on Indian forces. While a real encounter did occur in Kishtwar (1 soldier killed, 8 injured), the video shown is unrelated footage being used as Pakistani propaganda. The claim of 'more than 10 Indian soldiers' killed is not supported by actual reports."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017592342992044178",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims protesters are paid 'communist dollars' based on video of people packing up after an event. Multiple fact-checkers (PBS, PolitiFact, CBS) have rated the 'paid protesters' claim as false, finding no evidence of payment. People leaving after a protest ends is not evidence of being paid."
+  }
+]

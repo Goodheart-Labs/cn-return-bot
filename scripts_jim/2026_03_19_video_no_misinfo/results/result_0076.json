@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028382039309697471",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet says 'two separate F-15 jets may have crashed' but CENTCOM confirmed three F-15Es were shot down by Kuwaiti friendly fire, not two. The note correctly updates the count to three and provides the authoritative CENTCOM source."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028401616928276599",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that US aircraft were 'fleeing Dubai' is misleading. Fact-checkers (PesaCheck) found the video does not show the US fleeing the Emirates. No evacuation orders were issued for US military personnel in the UAE, and aircraft movements were consistent with operational repositioning."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028324964722688071",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims to show an Israeli official admitting to a planned 'false flag in 2026' but the video is sourced from RT/Russia Today and pro-Palestinian outlets. No credible evidence supports the specific claim of an admitted false flag. However, the note itself was rated 'not helpful' and used a Grok link as a source, which is weak."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028334011706159291",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is a well-documented fictional EAS simulation from 2022, previously debunked by Reuters and Full Fact. No Emergency Broadcast System activation occurred in the listed US cities. The tweet is classic engagement-bait using recycled fictional content."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028321339170242844",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Alexis Stone impersonated Jim Carrey at the Cesar Awards, but Jim Carrey's publicist, TMZ, Variety, Rolling Stone, and Snopes all confirmed it was really Jim Carrey. Stone's 'proof' photo appears AI-generated. The tweet spreads a debunked conspiracy theory as fact."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028304805765018064",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video actually shows the 2015 Tianjin chemical warehouse explosion in China, not an Iranian missile strike on Tel Aviv. Multiple fact-checkers (Reuters, Full Fact, BOOM) have debunked this exact video being misattributed to Iran-Israel conflict. The claim of 7-10 generals killed is fabricated with no credible source."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028126488072257700",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While Iran did shoot down MQ-9 Reapers during the March 2026 conflict (US officials confirmed 11+ losses), the specific initial claim on March 1 was unverified at the time. One note identifies the footage as showing an Israeli Hermes 900, not an MQ-9 Reaper. The tweet presents an unverified Iranian state claim as confirmed fact."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028130698729837002",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet oversimplifies Big Cass's WWE firing. While going off-script with the big boot was a contributing factor, Sports Illustrated and multiple wrestling outlets report his June 2018 release was due to accumulated personal conduct issues including drinking on tour and other backstage incidents, not solely the big boot segment."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028134998411260224",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet's claim of 3,400+ flight cancellations across 7 Middle East airports is broadly consistent with confirmed reports. Flightradar24 and Cirium documented massive cancellations (14,500+ departures canceled Feb 28-Mar 6). The notes only quibble about Flightradar24 attribution, which the tweet already provides."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028185207669416146",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is confirmed to be from the 2017 Balakliya ammunition depot explosion in Ukraine, not a Shahed strike on a US base. Reuters fact-checked this exact video. Additionally, one note identifies the second image as AI-generated (SynthID watermarked). The tweet uses recycled and fabricated media to make its argument."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2033617732147810782",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "NVIDIA officially announced DLSS 5 at GTC 2026 on March 16. The tweet is from NVIDIA's own account accurately describing its product. While the community reception is negative and some call it 'AI slop,' the tweet's claims about the product are factually accurate marketing language, not misinformation. Community notes expressing opinion about quality are not appropriate corrections."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033590251180995005",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet frames Trump's quote as being about 'his war against Iran,' but per CNN's analysis and the referenced rebuttal posts, Trump was responding to a question about U.S. patrols securing the Strait of Hormuz for oil shipments and allies, not about the initial strikes on Iran. The video edits out the question, making the framing misleading through decontextualization."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033606481543585818",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims 90-95% of accounts reposting Dave Smith's post are 'foreign or radical Islamist accounts,' but community notes point out that X's own Premium+ analytics show the majority of engagement is from the USA. The 'analysis' lacks published methodology, and Smith himself identified only ~20 suspicious accounts among 79K likes. The characterization of Smith 'justifying Islamist attacks' also misrepresents his blowback argument."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2022864458503070196",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'the FDA admitted Covid jabs killed more children than they saved,' which is false. The FDA memo referenced unverified VAERS reports of up to 10 possible pediatric deaths with no proven causation, while COVID itself caused ~1,673 U.S. child deaths. The memo did not compare deaths to lives saved, and previous FDA staff reviews had concluded the deaths were not vaccine-caused. Multiple fact-checkers and former FDA officials disputed the memo's claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033628806309712008",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet blames Democrats exclusively for airport delays and TSA pay issues. However, the situation is more nuanced: Senate Republicans have blocked DHS funding bills at least 9 times, including standalone TSA funding measures. Both parties share responsibility for the impasse — Democrats tied DHS funding to ICE reform conditions, while Republicans refused to pass piecemeal funding bills. The framing omits that Republicans repeatedly blocked TSA-specific funding."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033608365939859792",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Similar to the other Trump/Iran tweet, this post frames Trump's 'out of habit' and 'good allies' comments as being about 'attacking Iran.' Multiple sources indicate Trump was answering a question about U.S. oil shipment patrols and the Strait of Hormuz, not the initial military strikes. The framing misleadingly conflates patrol/protection operations with the attack itself."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033245631939006498",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The community notes claim the video shows India Love (India Westbrooks), not Ms. Williams (Teacher Bae). The tweet pairs a claim about Teacher Bae being a former stripper with a video that may show an entirely different person. If the video indeed shows India Love rather than Teacher Bae, this is misleading misidentification attached to a reputation-damaging claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033540537907806434",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents old Operation Metro Surge footage (which began December 2025) as a breaking new event in March 2026. The operation peaked in January-February 2026 with ~4,000 arrests before scaling back. Additionally, a federal court blocked Somali TPS termination on March 13, 2026. Framing recycled footage as a new 'surge' is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033545623648063949",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet labels the video as 'Homeless Hare (1950),' a Bugs Bunny Looney Tunes cartoon. However, the actual video is from 'Dreaming a Whole Life,' a 2010 Spanish animated short film by Javier Ara about a man with a facial deformity. These are completely different works — the content is misidentified."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033551361384518052",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The factual claim is accurate: USCIRF did recommend targeted sanctions on RSS in its 2026 annual report (released March 4, 2026). However, the tweet's editorializing ('Time to ban in India too!') is opinion, and the existing community notes focus on defending RSS rather than correcting factual errors. USCIRF is an advisory body whose recommendations are not binding policy — this context could be useful but the core claim is accurate."
+  }
+]

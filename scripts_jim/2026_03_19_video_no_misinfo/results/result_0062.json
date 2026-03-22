@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028874171753599186",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet features a woman claiming to be in Tehran and supporting US strikes on Iran. One community note claims she lives in the US and is lying; the other note says the full video shows her reading a DM from someone in Tehran. Without being able to verify the full original TikTok video from @mythlore_, the competing note claims make the truth difficult to determine, though the misrepresentation claim is plausible and context about the video being shortened/edited is important."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028859299686907982",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet expresses solidarity with Mothin Ali. The community note providing context that Ali posted a TikTok on October 7, 2023 where he stated Palestinians have 'a right to fight back against occupiers' is factually supported by multiple sources including The Jewish Chronicle, Campaign Against Antisemitism, and LBC. This is relevant context for a public figure receiving solidarity, though the characterization of his comments as 'celebrating' vs 'justifying' is contested."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029137212047278319",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Iran shot down an American fighter jet over Tehran, citing PressTV. Multiple authoritative sources (Newsweek, Times of Israel, JPost, The Aviationist, Defense News) confirm the video actually shows an Israeli F-35I shooting down an Iranian Yak-130 over Tehran on March 4, 2026. Iranian state media initially misidentified their own downed jet as an American aircraft. The tweet's claim is the reverse of what happened."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029125092597203278",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims an Israeli fighter jet was shot down over Lavasan, Iran. Multiple credible sources confirm the jet seen crashing over the Tehran area was an Iranian Yak-130 shot down by an Israeli F-35I, not an Israeli jet shot down by Iran. The IDF confirmed this and released targeting video. Iranian state media itself initially misidentified the incident before being corrected."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029107216389947886",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims missiles hitting Dubai came from the direction of Israel, not Iran. Multiple authoritative sources including Wikipedia, Al Jazeera, UAE's Ministry of Foreign Affairs, TIME, and Human Rights Watch confirm the strikes on Dubai were Iranian retaliatory attacks following US-Israeli strikes on Iran. There is no credible evidence that missiles came from Israel's direction toward Dubai."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029076744330785258",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims over 650 American troops have been killed or injured. Official CENTCOM and Pentagon figures from early March 2026 report 6 US service members killed and 18 seriously wounded in the first days of the conflict. Even by mid-March, official figures were approximately 13 killed and ~200 wounded (most minor). The 650 figure vastly exceeds all official counts and appears to stem from unsubstantiated Iranian IRGC claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029128213301989450",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims an Israeli/American fighter jet was shot down near Tehran. Multiple credible sources (Times of Israel, Newsweek, JPost, The Aviationist, Defense News) confirm the aircraft downed near Tehran was an Iranian Yak-130, shot down by an Israeli F-35I. No Israeli or American jet was reported downed over Tehran. The community note correctly identifies this reversal of the actual event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029078949872189718",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet attributes a quote about 'newly developed weapons' being 'introduced gradually' to Iran's Ministry of Defense. The community note claims this does not appear in official Iranian sources (IRNA, PressTV) and the video shows signs of AI generation. Web searches found no corroboration of this specific statement from official Iranian defense sources, but the claim about AI-generated media is difficult to verify without examining the video directly."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029036665721729314",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims a woman lied about living in Tehran and called for bombing of Iran. The community note counters that the audio is of a US-based Iranian TikToker (@mythlore_) reading a direct message she received from someone in Tehran, not claiming to be there herself. This context about the video being a reading of a received message, not a personal claim, is an important correction if accurate, and is consistent with the counter-note on the related viral tweet."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028915975941439490",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Trump 'confirms' the UK has courts enforcing Sharia Law and calls for banning Muslim immigration. UK Parliament research, government reviews, and legal analysis confirm that Sharia councils in the UK (~30 exist) have no legal jurisdiction, are not courts, and their decisions are not legally binding. British law always takes precedence. Characterizing advisory Sharia councils as 'courts enforcing Sharia Law' is misleading."
+  }
+]

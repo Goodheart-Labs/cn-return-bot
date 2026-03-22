@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2021452549564531102",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet frames the assault as purely motivated by religious identity (skullcap and beard). Multiple news sources confirm the incident occurred but report conflicting accounts — some indicate the man was traveling without a valid ticket in the AC coach, and other eyewitness accounts allege sexual harassment of a minor. The tweet omits these competing narratives, presenting a one-sided framing that may be misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021575858964558276",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet claims Iranians burned a Baal statue in Tehran's Enghelab Square. Real Baal statue burnings did occur at state-organized rallies in February 2026, but Snopes could not independently verify the specific videos due to Iran's internet blackout. Community notes claim the video is AI-generated, but evidence for that claim (smoke inconsistencies, visual artifacts) is subjective. The event itself appears real; whether this specific video is authentic remains unverified."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021706057824055406",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents a USB data recovery video as a dramatic last-ditch effort to recover a $4M bitcoin seed phrase. The community note claims the video is a generic 2023 chip-off data recovery demo with overlaid text about bitcoin added later. While I could not independently verify the original source video, the claim of a specific $4M wallet recovery is unsubstantiated, and repurposing technical demo videos with sensational crypto narratives is a common engagement-farming tactic."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021670873829368313",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely implies PM Carney ordered transgender flags flown at half-mast. Multiple news sources confirm Carney ordered Canadian flags on federal buildings at half-mast for 7 days to honor Tumbler Ridge shooting victims. The video shows a local pride flag at the school where the shooting occurred, not a federal directive about trans flags. This is a clear misrepresentation of the PM's statement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021646852257616336",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims an 'apparent fatality' from the St. Paul ICE pursuit crash. Multiple credible sources (CBS, FOX9, KARE11, Star Tribune, St. Paul Mayor's office) confirm there was no fatality. The pursued driver, Alexander Romero-Avila, sustained non-life-threatening injuries. The tweet's fatality claim and framing about 'Rabid Responders colliding with ICE' are factually incorrect."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021670669365522622",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video of RFK Jr. doing a Jar Jar Binks impression is a confirmed satirical deepfake. The poster's bio says 'Mostly satire,' the video itself says it is fake at the end, and fact-checker Bill McCarthy of PolitiFact confirmed it is fake. No such impression occurred at any HHS press conference. The tweet's 'Unreal' framing could lead viewers to think it is genuine footage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021402185335255132",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet makes political claims about the SAVE America Act that are partially substantiated but contain hyperbole. The act does impose stricter ID requirements that critics (including the Brennan Center) say could affect married women who changed names, students (student IDs no longer accepted), and some voters. However, the bill does accept military IDs, so the claim about 'troops' is contested. This is more political opinion/framing than clear misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021660589269959067",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet describes the Tumbler Ridge shooter as 'a woman.' RCMP identified the shooter as Jesse Van Rootselaar, an 18-year-old biological male who identified as transgender. Multiple sources (PBS, CNN, CBC, Wikipedia) confirm this. Describing the shooter simply as a woman without noting they were a trans woman born male is misleading given the public interest in accurate reporting of this mass shooting."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021685311810527449",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Bad Bunny's halftime was a 'flop' and the 135M figure is 'total BS.' Nielsen confirmed 128.2 million viewers, making it the 4th most-watched halftime show ever. While it was not the most-watched (the tweet's notes correctly note the claim was overstated), calling it a 'flop' and dismissing the viewership as fabricated is itself misleading. The Samba TV household drop is typical at halftime transitions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021554816837652920",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video revives a thoroughly debunked antisemitic hoax. The 'Rabbi Abe Finkelstein' interview was fabricated around 2004-2006 by white supremacist James Wickstrom. No such rabbi exists (the photo is of lawyer Kenneth Feinberg). Claims about human meat in McDonald's have been debunked by AP, Snopes, Reuters, PolitiFact, and Myth Detector. This is longstanding antisemitic disinformation."
+  }
+]

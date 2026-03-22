@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2015257376891564147",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents a specific insurance fraud story about a 'Gujarati Hindu from Irving, TX' with inflammatory hashtags like #DeportThemAll. No credible court records or news reports confirm this case exists. Multiple community notes flag it as fabricated or AI-generated content designed as rage bait targeting ethnic groups."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015350761169756508",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies EVs are secretly charged by diesel generators as standard practice. The video actually shows a one-time 2019 incident where a diesel generator was used to deliver an electric bus from Hyderabad to Pune because no charging stations existed on that route. Buses in regular service use grid electricity. The tweet strips all context to mislead about EV infrastructure."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015193643284377733",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet states Prince Charles went 'from the streets of Lagos' to Louis Vuitton. Multiple sources confirm he was discovered in Port Harcourt, not Lagos. This is a factual error about the city, though the broader inspirational story is true."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015130051168104743",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet contains multiple errors: (1) Khaby Lame was detained by ICE and allowed to leave voluntarily, not 'deported'; (2) the $975M figure is the valuation of a stock deal for his company, not his personal net worth — he owns 49% in stock, not cash; (3) calling him 'almost a billionaire' based on a stock valuation is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015004213676507191",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video purporting to show a frozen peacock being rescued is AI-generated. Fact-checkers including CyberPeace confirmed via AI detection tools (Hive Moderation showing 99%+ AI likelihood) that the video is fabricated. Peacocks are tropical birds and cannot survive being frozen in ice as depicted."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014858936902426991",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet says Nekima Levy Armstrong and Chauntyll Allen 'were just released' which is true, but framing it as 'great news' without noting they still face federal charges of conspiracy against rights (18 U.S.C. 241) and must appear in court omits important context. The release was from pretrial detention only."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015175488272998573",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet quotes the phrase 'He would be alive if he complied' sarcastically/critically with video commentary. It does not itself make a false factual claim — it is presenting commentary/opinion about the Alex Pretti shooting. The existing note adds useful context but the tweet itself is not misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015194225332125805",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet states 'Don't pull a gun on the cops' implying Alex Pretti drew his weapon. Multiple sources including CNN, AP, Reuters, and video evidence confirm Pretti never drew or brandished his firearm. An agent removed it from his waist after restraining him. He approached holding a phone, not a gun."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015253816116216058",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet pairs a headline about Iran's preemptive strikes on Israel with video footage, but the video depicts missiles from a 2025 Iran-Israel exchange, not current events. Additionally, the headline exaggerates — Channel 12 reported Israel preparing for a possible Iranian attack, not that 'Trump already ordered bombing Tehran.' The actual US-Israel strikes on Iran occurred about a month later in late February 2026."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014720834481619238",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet shows a video about farmers affected by ICE, which aligns with real reporting about agricultural labor shortages from deportation fears. However, a community note claims the video shows winter wheat, not carrots, and that carrot harvesting in January in Kansas is unrealistic. Without being able to verify the specific video content, the agricultural misidentification claim is plausible but uncertain."
+  }
+]

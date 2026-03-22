@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029195164221087947",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video of a toddler reuniting with his father at a military event is AI-generated. Poynter and PolitiFact confirmed multiple versions of these synthetic military-family reunion clips are circulating, created with AI tools for emotional engagement. None of the returned service members had toddler-aged children matching the video."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029350980165230738",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Emiru 'backtracked on the SA allegations,' but court filings show she did not retract anything. Her legal team's 'emotional truth' argument is a standard defamation defense strategy (arguing protected speech), not an admission that her claims were false. The lawsuit is ongoing and Emiru maintains her statements."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029358974282195179",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet frames Emiru's legal defense as proof she is 'evil' and retracted her claims, but this misrepresents the court filing. Emiru's motion to dismiss argues her statements are protected speech; she did not retract her allegations. The case law cited for her defense is being conflated with admitting wrongdoing."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029200614245257381",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is from a well-documented 2012 incident where Illinois state Rep. Mike Bost ranted about pension reform, not about Israel/Gaza/Palestine. The quote attributed to Bost about supporting Palestine is fabricated. Bost is a staunch supporter of Israel, having publicly stated he would 'never apologize for supporting Israel's right to exist.'"
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029230439383118132",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is from January 2019 and shows a Palestinian Islamic Jihad (PIJ/Saraya al-Quds) sniper shooting an Israeli soldier's helmet, not Al-Qassam Brigades (Hamas). The soldier survived -- the bullet struck the helmet. Multiple outlets (Times of Israel, YNet) confirmed PIJ claimed responsibility, not Hamas. The tweet misattributes both the group and implies a fatal shot."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029252382048071900",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet's framing that press 'is not allowed into the Pentagon' omits important context. Journalists voluntarily surrendered their hard press passes rather than agree to new Pentagon reporting rules requiring them to pledge not to gather information without DoD authorization. A federal judge ruled these restrictions unconstitutional on March 20, 2026. The community note claiming journalists simply 'gave up' their passes also somewhat oversimplifies the coercive nature of the policy."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029400352592937003",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video purporting to show Chinese military equipment arriving in Tehran is from the 2022 Airpower airshow at Zeltweg, Austria, where a Y-20 made its European debut. China has denied providing military support to Iran. While reports of Y-20 flights to Iran exist, this specific footage is recycled airshow content showing tanks and helicopters at a public event, not a military delivery."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029365301305901130",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video claiming to show a 'new wave' of Iranian missiles hitting Tel Aviv is recycled footage from the October 1, 2024 Iranian missile strike on Israel. Reuters fact-checked this exact footage being misused to represent different events. While Iran did launch missiles at Israel in March 2026, this specific video is old and misrepresented as breaking news."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029305274620653984",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet misrepresents Bessent's April 9, 2025 speech at the American Bankers Association as 'BREAKING' news and exaggerates the claim. Bessent said Treasury would 'take a close look at regulatory impediments to blockchain, stablecoins, and new payment systems' -- not specifically 'remove all regulatory barriers for Bitcoin.' The clip is nearly a year old, not breaking news."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029307842017022318",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The footage claiming to show Iranian missiles launching from underground missile cities is AI-generated. Times Now News fact-checked this specific viral video and confirmed it is synthetic. CNN has separately investigated real Iranian underground missile facilities using satellite imagery, but the footage in this tweet is fabricated AI content, part of a broader wave of AI-generated Iran war misinformation."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2013361624929779961",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents an AI-generated fictional video as if it were real footage of a man saving a fox. AI-generated animal rescue content is a well-documented genre of misleading viral content. The community note correctly identifies the creator's YouTube channel as stating all content is AI fiction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013717695858938112",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet's core claim (ICE detained a US citizen at gunpoint without a warrant in Minnesota) is confirmed by multiple major outlets including PBS, Washington Post, and ABC News. DHS says the operation targeted convicted sex offenders living there, but the family disputes DHS's account. Both the 'misleading' and 'not misleading' notes have issues: one cites only an X post as evidence, the other has grammatical errors. The tweet itself is largely accurate based on reporting, making the existing notes marginal in value."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013625300962157008",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet appears to reference H.R. 8445 providing full veteran benefits to Americans serving in the IDF. The community notes correctly clarify that the bill only extends limited USERRA employment protections and SCRA civil relief (not VA healthcare or retirement benefits), and that the bill was never enacted. Snopes and Congress.gov confirm this distinction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013472754738040837",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Greenlanders support Trump, but multiple credible sources (ArcticToday, Politico, The Hill, Daily Beast) confirm the event was staged. Trump Jr.'s 'supporters' were homeless people offered free hats and lunch by his staff. A Greenland lawmaker called the entire visit 'all staged.'"
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013628349256507837",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple community notes independently identify the video as originating from January 2023 in Russia, not from current Kurdish border crossings to Rojava. Additionally, the tweet falsely equates HTS leader al-Julani with ISIS, when HTS is actually a rival of ISIS. Both the misattributed footage and the factual error about HTS/ISIS warrant correction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013663004114477186",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet expresses a political opinion that Iranian people (not the Mullahs or Shah family) have the right to self-determination. This is an opinion statement, not a factual claim. The competing notes are themselves highly opinionated and partisan, debating whether Iranians want Pahlavi or not, which is a contested political question rather than a clear factual correction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013678819316482259",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet mislabels Athika Ahmed as a 'Health Ambassador in Wales' when she is actually a volunteer member of the Cardiff and Vale Health Board's youth panel. While the distinction is somewhat minor, the framing appears designed to mock her as an official government health representative, and BBC/Welsh government sources confirm her actual role is a youth committee volunteer and medical student."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013434535875162381",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "This tweet compares anime quality between Crunchyroll simulcast and another version. The community notes debate whether the 'RAW' label refers to the original broadcast or a later polished release. This is a niche technical anime discussion about distribution versions, not misleading content that would benefit from a community note."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013423888902791612",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that 16 Chinese military cargo planes landed in Iran is debunked by multiple sources. NewsGuard flagged it as false, US officials denied it, and flight-tracking data from Flightradar24 shows no evidence of such aircraft movements. The flights appear to be regular civilian Mahan Air routes, not military transfers."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013644295295639974",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet's claim is substantially accurate: Danish MEP Anders Vistisen did tell Trump to 'fuck off' in the European Parliament over Greenland. The community note's correction that Trump was not physically present is trivially obvious from context (MEPs address absent leaders routinely). The tweet never claims Trump was present; it says the MEP said it 'inside European Parliament,' which is correct."
+  }
+]

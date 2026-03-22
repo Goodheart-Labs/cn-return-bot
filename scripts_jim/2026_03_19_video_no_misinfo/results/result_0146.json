@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2019377541086343649",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims a Black American invented 'The Helicopter.' Paul E. Williams patented a rotor component (U.S. patent #3,065,933) for the Lockheed XH-51 in 1962, but did not invent the helicopter itself. Igor Sikorsky flew the first practical helicopter (VS-300) in 1939. The community note correctly identifies this misleading attribution."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020099268569362756",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet shares a paraphrased but substantially accurate Elon Musk quote from JRE #2281. This is clearly opinion/commentary about legacy media vs social media, not a factual claim requiring correction. The community notes themselves classify it as NOT_MISLEADING."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019772397981778341",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet credits DJ Kool Herc, a Jamaican immigrant, with starting hip hop in the Bronx 53 years ago. This is the mainstream historical consensus supported by Britannica, Rolling Stone, NPR, and others. The community note's claim that this 'erases Black American culture' reflects an ongoing cultural debate, not a factual error in the tweet."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020391847278018909",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet attributes the quote 'We brought you into this world and we can take you out' to Netanyahu. Verified reporting confirms Netanyahu said 'If the Maccabees had failed, there would be no United States' at a December 2025 Hanukkah ceremony, but the threatening 'we can take you out' quote is fabricated and does not appear in any record of the speech."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020178049652969643",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims an RMG poll shows a 25-point jump in Americans saying they are better off. No search results confirm a 25-point jump from RMG polling. Other major polls (Gallup, Marist, Ipsos) show more modest changes. The specific statistic appears unverifiable or exaggerated."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020252265567711266",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet frames RFK Jr.'s action as newly removing mercury from 'all vaccines.' In reality, thimerosal was already removed from nearly all U.S. vaccines (including all childhood vaccines) by 2001. RFK Jr.'s 2025 action only applied to remaining multi-dose flu vaccines. The tweet's framing is significantly misleading about the scope and novelty of this change."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020355318471909650",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet shows a viral video of Cardi B falling after dancing on a robot at a Super Bowl party in San Francisco. The description is substantially accurate per TMZ and other reports. The quibble about whether the robot 'launched' at her vs. simply tipped over is trivial and does not constitute misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020150016782786623",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet claims insufficient humanitarian aid access in Gaza despite the ceasefire. UN reports confirm significant improvements post-ceasefire (283,000+ pallets offloaded, famine pushed back), but also confirm ongoing severe food insecurity with 77% in crisis-level hunger. Both the tweet and note capture partial truths of a complex situation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020157597228093711",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Erika Kirk is entitled to Charlie Kirk's will money because 'the kids aren't Charlie Kirk's kids.' Multiple fact-checkers (Snopes, Jubileecast) confirm these paternity and will rumors originated from a satire TikTok account and are entirely unsubstantiated."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020151823760237003",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet calls the SAVE Act 'dangerous' and claims its primary purpose is voter disenfranchisement. This is a political opinion about legislation. The bill does require documentary proof of citizenship for voter registration, which studies show 9% of eligible voters lack. Whether this constitutes disenfranchisement vs. election security is a matter of political perspective, not clear-cut misinformation."
+  }
+]

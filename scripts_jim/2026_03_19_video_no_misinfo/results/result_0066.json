@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028892846636359859",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video shows industrial storage tanks for Saudi Aramco's Amiral petrochemical project in Saudi Arabia, not an Iranian missile. Grok on X confirmed these are mounded bullet tanks for the Amiral project built by Sinopec, with company labels visible. No Iranian weapon called 'deadly hand missile' exists in any known arsenal inventory."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028887114914402553",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Trump's characterization of 'plane loads of cash' as a gift from Obama is misleading. The $1.7 billion was a settlement of a 1979 US debt ($400M principal + $1.3B interest) for military equipment Iran paid for but never received after the revolution. While $400M was delivered in cash due to sanctions on banking channels, the framing as Obama 'giving them everything' omits the legal debt context confirmed by Brookings, FactCheck.org, and AP."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028885697612902749",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Merz 'supports U.S. embargoing Spain,' but reporting from Brussels Signal, Bloomberg, and others indicates Merz's position was more nuanced. He said they were trying to 'convince' Spain to increase NATO spending, and privately told Trump that Spain is part of the EU and cannot be singled out for trade discrimination. The tweet overstates Merz's position as outright support for an embargo."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028877856541962497",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While the tweet accurately quotes Trump's words, the underlying claim that Iran was about to attack first is disputed. Reuters reported Trump's Iranian missile claim was unsupported by U.S. intelligence, and CNN reported Pentagon briefers told Congress they lacked intelligence showing Iran was planning a preemptive strike. Additionally, Rubio's earlier remarks suggested Israel forced the US hand, contradicting Trump's statement. Context noting these intelligence disputes would be valuable."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028523055216005261",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple fact-checkers (Lead Stories, Euronews, Poynter, CNN) confirmed the video purporting to show Tel Aviv being bombed is AI-generated. AI detection tools scored it at 98%+ probability of being AI-made (likely by Sora). Visual artifacts include unnatural smoke, warped building edges, duplicated rooftops, and inconsistent shadows. This is confirmed fabricated content."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028810594963325251",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet says 'CNN journalist' implying CNN International, but the arrested journalists were from CNN Turk (CNN's Turkish affiliate), not CNN's main international operation. Israeli police stated they were filming near IDF headquarters with expired press credentials. While CNN Turk is licensed by CNN, the framing as 'CNN correspondent' is misleading. The editorialized claim that 'Israel is terrified of you finding out how bad they're being pummelled' is unsupported opinion."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028814320772010028",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet contains multiple misleading claims. The video is from Iran's 2021 Great Prophet 17 military drill, not current war footage. The claim that Iranian hypersonic missiles 'cannot be intercepted' is false -- ballistic missiles (most of which are hypersonic) have been intercepted by Patriot PAC-3, Arrow, and Aegis systems. While Iran's Fattah-2 poses challenges, the blanket claim of uninterceptability is contradicted by documented interceptions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028670814825165014",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "This tweet is primarily political opinion/commentary. While it frames Trump's behavior negatively, the underlying facts are real: Trump did discuss ballroom curtains at a Medal of Honor ceremony while US soldiers had died in Iran. The community note pointing out the ballroom remarks were approximately 90 seconds of a 28-minute ceremony adds useful context, but the tweet itself is more editorial framing than factual misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028874579850989874",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show the ending scene of 101 Dalmatians (1961), but the clip is actually from '101 Dalmatians: The Series,' a 1997-1998 animated TV series. These are distinct productions with different animation styles, characters, and storylines. This is a straightforward factual misattribution confirmed by IMDB and Disney Wiki."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028879154025009401",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet accurately describes McDonald's CEO Chris Kempczinski using terms like 'beef notes' and 'tempered cheese' in a product review video. The video is real and the quotes are accurate. While one community note says the video is from 2024 rather than being recent, the tweet never claims it is new. The tweet is opinion/commentary mocking the CEO's language, not factual misinformation."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2032619101860790340",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims a banana peel mixture is a 'traditional Japanese remedy' for teeth whitening. Multiple fact-checkers (Africa Check, Colgate, Dubawa) confirm banana peel has no proven whitening effect and the acidic mixture can erode enamel. Traditional Japanese dental practice was actually teeth blackening (ohaguro), the opposite of what's claimed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032585462049632369",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While Iran did launch missiles at Israel in March 2026, the community note's claim that the video doesn't match that date based on moon phase analysis (waning crescent vs. bright round objects visible) is a specific and verifiable debunking of the video's authenticity. The tweet uses misleading video to illustrate a real event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032586404698497283",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet misidentifies who gave Trump the cowboy hat. Multiple sources (Fox News, Yahoo Sports, Resistol, TMZ) confirm the video shows the 2025 PRCA/WPRA rodeo world champions presenting Trump a custom Resistol 1776 hat at the White House, not the 1980 Miracle on Ice hockey team."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032986372919771204",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet frames Vance's quote as a suspicious admission, but multiple news sources (The Hill, AP, Raw Story) confirm Vance explicitly said he wouldn't share what was discussed in the 'classified room' because disclosing classified information can result in prison time. The note correctly provides context that this was about classified information protocols, not a personal confession."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032597972815622190",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet shows a Gaza video and expresses an opinion against the Iran war. One note claims the account impersonates a Gaza photojournalist from Nigeria, which is a noteworthy claim if true, but I could not independently verify this specific impersonation claim. The other notes are opinion-based and unsuitable as community notes."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032976216798671291",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the video is 'from the Epstein files.' The DOJ released ~2,000 videos from Epstein's properties, but reporting indicates these were seized from properties, not plane interiors. The note clarifying the video is not from the DOJ-released Epstein files provides important factual context. Separately, John Phelan was confirmed on Epstein's flight logs per CNN/WaPo, but the video's provenance claim is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033129078396481576",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The Labour government's claim of cutting £150 off energy bills is technically about policy changes from April 2026, but bills rose from £1,568 when Labour took office to ~£1,758 by early 2026 — an increase of ~£190. The community note providing this broader context is valid, though the £300 figure cited in the note may be slightly overstated."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032815259195449849",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "Multiple conflicting community notes dispute whether the video compilation is AI-generated or real. Some clips (like the hat return) appear to be real CNN-aired footage. Other clips may be AI-generated. Without definitive analysis of each clip in the compilation, the AI-generation claim remains contested. The note about Trump's reported comments about disabled veterans cites credible sources (NYPost, Guardian) but is tangential context."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032660758622880190",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The community note claims the video doesn't match authentic IRGC underground drone footage released by Fars News Agency, which features Iranian flags and portraits of Khamenei. CNN and other outlets covered the authentic Fars News footage, and discrepancies between the tweet's video and verified footage suggest the video may be fabricated or from a different source."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033093461541339321",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims 2,000 Chinese ships 'surrounded Taiwan' for an invasion. Reporting shows ~2,000 civilian fishing boats were spotted ~400km away in the East China Sea as gray-zone activity, not military ships surrounding Taiwan. Taiwan's defense ministry reported only 7 Chinese naval vessels. US intelligence also assesses China is not planning a 2027 invasion. The 'Iran war as cover' framing is fabricated sensationalism."
+  }
+]

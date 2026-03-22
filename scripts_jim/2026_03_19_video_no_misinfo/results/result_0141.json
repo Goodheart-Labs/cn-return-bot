@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2021226839465754722",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video shows actors in costume and prosthetic makeup promoting the 2023 sci-fi film 'The Creator,' not a real AI humanoid robot. Disney confirmed to Reuters that all 'robots' in the campaign were human performers. The tweet falsely presents this as evidence that AI humanoid robots are walking the streets."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020992368749731934",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "Padre Guilherme is indeed a real Portuguese Catholic priest and DJ who blends sacred music with techno. The tweet's core claim is accurate. The minor nuance that the song is ERA's Ameno rather than authentic Gregorian chant does not make the tweet misleading in any meaningful way."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020909476556177586",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies Americans chose the TPUSA show over Bad Bunny, but Bad Bunny's official halftime drew ~128 million TV viewers while TPUSA's online stream peaked at 6.1 million concurrent viewers. Framing them as 'competing halftime shows' where Americans 'sent a message' is misleading given the massive viewership disparity."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021108093120282808",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims the cop killed himself 'over economic crisis,' but reporting indicates the officer was being extorted by a criminal network operating from prison. While poor police wages were a real issue fueling protests, attributing the suicide solely to economic crisis misrepresents the specific circumstances of this case."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020979287340531992",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims satellite footage 'reveals that Earth is a living creature' with a literal heartbeat. In reality, the visualization shows seasonal photosynthesis patterns (gross primary productivity) tracked by satellites. The 'heartbeat' is a scientific metaphor, not evidence Earth is literally alive."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021123019981082914",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet is clearly a lighthearted joke about a dog on a ski slope, saying it is 'practicing for the Winter Olympics.' While it was actually a World Cup Super-G race in Bormio 2022, the tweet is not making a serious factual claim — it is humorous framing that no reasonable person would take literally."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021042224474304553",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that Zelenskyy is listed as a child trafficker in the Epstein files is fabricated. Multiple fact-checkers (Ukrinform, EUvsDisinfo, Veridica) confirm the document shown is not from the actual Epstein files. Zelenskyy's name appears in the files only in news headlines emailed to FBI staff, with zero references to trafficking."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020814794052256239",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "This is a complex and politically charged topic. The tweet frames the GB News segment as Islamophobic; the community note counters that court convictions support the claims made in the segment. The underlying facts about grooming gang convictions are documented, but the framing on both sides is contested. Determining whether the tweet itself is misleading requires nuanced judgment about editorial framing."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020605197769404653",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet shows a man cleaning John Witherspoon's tombstone. The only note flags a gambling ad in the post, which is a platform policy violation rather than a factual inaccuracy in the tweet's claim. Community notes are meant to address misleading content, not ad policy enforcement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020960946295013802",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents the incident as a real spontaneous fight at a watch party, but multiple sources indicate it is a staged skit by content creator FunnyMike / Betches Sports. Presenting scripted entertainment as a genuine violent altercation is misleading."
+  }
+]

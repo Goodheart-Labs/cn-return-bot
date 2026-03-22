@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2030289297551601803",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Bahrain confirmed allowing US PrSM missile strikes on Iran from its territory. While HIMARS launchers were indeed geolocated in Bahrain and NYT verified missile launches from Bahrain toward Iran, the tweet presents this as a confirmed bilateral agreement ('Bahrain is allowing') when the situation involves US military operations from a pre-existing base. The community note correctly distinguishes between HIMARS being spotted and the unverified claim of confirmed Bahraini authorization of strikes. The distinction between military presence and authorized offensive launches matters."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030020179929813153",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet attributes a video of people in distress to 'Muslim inbreeding' with a sweeping religious generalization. The community note claims the video shows patients at a psychiatric hospital in Pakistan, not inbreeding victims, meaning the footage is misrepresented. While I could not independently verify the exact source of the video, presenting psychiatric patients as evidence of genetic inbreeding tied to a religion is a clear misrepresentation of context regardless of the video's origin."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030219409684312557",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Iran launched Khorramshahr 4, Kheibar, and Fattah missiles in wave 22 and 'not a single country could stop them.' While Iran did launch a 22nd wave with those missile types (confirmed by multiple sources), the claim that the smoke trails in the video show unstoppable Iranian missiles is disputed. The community note says the trails are from Tamir Iron Dome interceptors, not incoming Iranian ballistic missiles. The 'not a single country could stop them' claim is an exaggeration given Israel's active air defense engagement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030051395294941427",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "This is the White House 'Touchdown' video mixing NFL highlights with Iran war strike footage set to AC/DC's Thunderstruck. The community notes debating whether the word 'Touchdown' is misleading because no literal football touchdown occurs are pedantic and miss the point of the post. The video is a known, widely-reported White House propaganda piece. A note about 'no actual touchdown' does not add meaningful context; a note about the controversial nature of mixing war footage with sports might, but the existing notes are not useful."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030023792336969977",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the video shows new footage from March 2026 conflict ('you can see from the clothing that this is new not from June war'). The community note correctly identifies it as footage from the June 14, 2025 Iranian missile strike on Rishon Lezion, Israel, as reported by CNN's Clarissa Ward. Multiple credible sources (CNN, BBC, Al Jazeera) covered that specific June 2025 strike. Presenting old footage as new to heighten the narrative of censorship is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030035621977198943",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet says 'Still don't understand why we allowed this in TEXAS' with a video. The only community note calls the author 'the most racist person on X' which is an ad hominem attack rather than factual correction. Without being able to view the video content and with no substantive note providing factual context, the existing note is unhelpful. The tweet itself is vague opinion and the note does not address any factual claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029963295114023282",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet claims to show 'US bombs struck a school in Iran' and calls it a war crime. The Minab girls school attack is a real, heavily documented event. Multiple investigations (NYT, NPR, CBC) point to a US Tomahawk cruise missile. However, the community note claims the video shows boys running, while the actual Minab attack was on a girls' school, suggesting the video may not actually depict the Minab strike. Without being able to view the video, I cannot confirm whether it genuinely shows the Minab attack or a different incident being misattributed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030206632609607825",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies the attacker was a migrant stranger ('another poor Iryna' references, 'nobody is safe' framing) in Naples. Multiple Italian news sources confirm the attacker was Antonio Meglio, a 39-year-old Italian man from Pianura with known psychiatric problems who was already under psychiatric treatment. The community note correctly identifies him as Italian and mentally ill, countering the tweet's implicit framing of the attack as a migrant crime."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029846870332162169",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents a video of a purported American soldier laughing about sex trafficking a 15-year-old Iraqi girl as factual. The community note correctly states this is an unverified video clip circulating since at least 2015 with no credible source confirming it as a real incident. No major fact-checking organization has verified its authenticity. Presenting unverified content as established fact without context is misleading, especially given its inflammatory nature."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029873814062960953",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "Orban's tweet frames Zelenskyy as threatening Hungary to install a 'pro-Ukraine government,' positioning himself as a defender. The community note provides relevant context: Hungary's election financing law prohibits external entity influence on parties, and TISZA (the opposition party) only accepts individual crowdfunding donations. This contextualizes Orban's claim as political framing rather than a factual description of Zelenskyy's actions, though Zelenskyy did make controversial remarks about giving Orban's 'address to the Armed Forces.'"
+  }
+]

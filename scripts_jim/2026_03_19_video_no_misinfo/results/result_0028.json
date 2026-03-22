@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2031264778539118621",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Netanyahu's 1995 book referenced the 1993 WTC bombing and predicted a nuclear bomb, not planes. The video is from 2006 (post-9/11), not a pre-attack prophecy."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031468702768525694",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Uses Rasmussen poll to validate false claim that COVID vaccines caused mass deaths. A 28-million-person JAMA study found no increased mortality from vaccination."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031244485427167272",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "AI-generated/digitally altered video. Pakistan's official position is the opposite: the Ministry of Foreign Affairs 'strongly condemned' the strikes on Iran."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031448383882408356",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Implies 150 US deaths but the figure refers to wounded/injured. Actual deaths were 9-13 with ~140-200 wounded. Misleading framing with 'BREAKING.'"
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031352789209600452",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "Core claim is true — disabling hardware acceleration in Chrome does allow Netflix screen recording. Has been known for years but the technical info is accurate."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031166580793512274",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "Political opinion about Trump's characterization of Iran. Selectively positive view but fundamentally opinion/editorial, not a factual claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031222809851212144",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Claim that 10,000 illegal aliens voted in Arizona is thoroughly debunked by AZCIR, AFP, Gigafact. The number came from misrepresented SSA verification requests."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031266291575640307",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "Community note identifies similar clip credited to AI video tools. AI-generated 'rescue' videos going viral is a well-documented trend. Manipulated media."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031384833641914656",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "1899 footage shows coins (sapèques) being thrown at a pagoda in Hanoi, not 'grains to starving children.' Multiple fact-checks confirm the misidentification."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031104974709731413",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Poster later admitted this is 'AI concept Art Trailer,' not official. Real Spider-Man trailer released March 18 has different content. Misleading to 530K+ viewers."
+  }
+]

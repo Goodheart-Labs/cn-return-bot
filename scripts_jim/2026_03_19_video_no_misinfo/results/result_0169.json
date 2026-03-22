@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2017006132586565938",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims '60 million Christians were killed' in a 'Holocaust' from 1917-1946 and implicitly blames Jews via the comparison. The 60 million figure is unsupported by historical evidence and likely greatly exaggerated; scholarly estimates for Soviet persecution of Christians are around 20 million across a longer period. The framing also invokes the antisemitic 'Judeo-Bolshevism' conspiracy theory. This is misleading on multiple factual counts."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016939501998744019",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents a Google Maps satellite imagery stitching artifact as a mysterious 'strange place raising questions,' implying it is a real, unexplained feature. The symmetrical face is a well-documented image processing artifact from mirroring terrain data in remote Patagonia, not a genuine geographic formation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016791211898544280",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims a 'Hindu Indian man' set the Grand Blanc church ablaze. The attacker was Thomas Jacob Sanford, a 40-year-old white American Iraq War veteran from Burton, Michigan, who targeted an LDS (Mormon) church, not a generic Christian church. His identity and motive (anti-Mormon hatred) are well-documented by NPR, CNN, NBC, and Wikipedia."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016800346475999576",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents video as footage of South and North Korean forces 'clashing' at the DMZ. The video is actually from November 2018 and shows the two Koreas peacefully reconnecting a road across the border for the first time in 14 years, as confirmed by Washington Post, Reuters, and VOA reporting at the time."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016974445697548733",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet's title 'Look at this adorable, real thing that happened to me (not AI)' reads as sarcasm/humor. While the content may be AI-generated, the parenthetical '(not AI)' appears tongue-in-cheek. The existing notes are split on whether this is a joke. Without being able to view the video or comments, the sarcastic framing makes this borderline."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016941284489826453",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims the video shows Greg Bovino giving orders to ICE agents in Minnesota. Multiple sources confirm the video was recorded on June 7, 2025 in Los Angeles, showing Border Patrol (not ICE) agents. The visual evidence (palm trees, green foliage, no snow) is also inconsistent with Minnesota in winter."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016959063699906740",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet is clearly a joke, presenting Clair Obscur: Expedition 33 gameplay as an AI-generated video game. The game won Game of the Year 2025 and is widely known. The humor is self-evident and multiple existing notes correctly identify it as a joke."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016920614867546187",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet (from BC Premier David Eby) characterizes Alberta separatists' contact with US officials as 'treason.' Legal experts and Section 46 of Canada's Criminal Code confirm that political advocacy for separatism does not meet the legal definition of treason, which requires violence or military/security betrayal. The claim is legally inaccurate, though it involves political opinion."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016942130132877703",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet's framing contains inflammatory claims ('convicted sexual predator,' 'Ecuador should be kicked out') but the core incident is real: ICE did attempt to apprehend someone at the Ecuadorian consulate in Minneapolis in January 2026 and was blocked. However, the tweet omits that consulates are protected under the Vienna Convention, and the suspect's actual conviction was for DWI, not sexual predation (he had arrests but not convictions for sexual assault)."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016869182772486199",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies sunflowers facing away from the sun is unusual or evidence of something mysterious. This is normal, well-documented plant biology: mature sunflowers stop tracking the sun and permanently face east, as confirmed by UC Davis research and widely reported by NPR, Snopes, and PolitiFact."
+  }
+]

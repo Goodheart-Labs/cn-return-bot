@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2032684418754920452",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents drone tunnel footage as authentic Iranian military content. Multiple fact-checkers (CNN, Misbar, Wired) confirm AI-generated Iran war videos are rampant on X, and the community note correctly identifies the flying POV as inconsistent with the original static Fars News Agency footage. Iran did release real underground drone facility footage on March 1, 2026, but this video appears to be an AI-fabricated version."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033070017546527051",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims Netanyahu may have died in an Iranian strike and uses unrelated video of Italian Carabinieri inspecting building damage from an October 2025 explosion near Verona, Italy. Netanyahu's office dismissed death rumors as fake news, he appeared publicly multiple times in March 2026, and the attached video is from a completely different country and event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032910534505541752",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims fuel pumped at day vs night differs due to physics (thermal expansion). This is a well-debunked myth: gasoline is stored in underground tanks where temperature fluctuates less than 1 degree C daily, and Consumer Reports found a 15-degree F rise only changes volume by 1%. The community notes correctly identify the demonstration as comparing diesel vs gasoline density, not a temperature effect."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033031557850796279",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims journalist Aditya Raj Kaul was arrested as an IRGC agent. Multiple fact-checkers (LatestLY, Fact Crescendo, IBTimes India) confirm he was never arrested, remains active on social media, and the rumor originated from Pakistani propaganda networks. Kaul himself dismissed the claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032870965827280901",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Iran confirmed video of Netanyahu's body on a stretcher. This is categorically false: Netanyahu is alive, held a press conference on March 12 and posted multiple proof-of-life videos. Snopes, Al Jazeera, and numerous outlets debunked death rumors. No official Iranian sources confirmed any such video."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033011972959068406",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents what appears to be an AI-generated satirical video as a real Netanyahu address. Multiple sources (Snopes, PolitiFact, NBC News) confirm Netanyahu is alive and the wave of AI-generated content around the Iran war is unprecedented. The community note correctly identifies this as AI-generated satire."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032632945840726379",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "Iran did use cluster munitions against civilian areas in Israel in March 2026, confirmed by CNN, Haaretz, and military analysts. The core claim about cluster bombs striking civilian locations appears factually accurate. The community note about Israel not signing the Convention on Cluster Munitions is true but does not address whether the tweet itself is misleading. Without verifying the specific video attached, it is unclear if the footage matches the claimed event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032784090651570349",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies current military mobilization related to the Iran war, but a community note identifies the footage as from June 2025 showing Fort Cavazos vehicles being transported to Washington D.C. for the Army's 250th birthday parade. DVIDSHUB confirms this event. Reusing old military footage to imply current wartime mobilization is misleading, though without seeing the video directly, confidence is medium."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032931908468826174",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents a staged comedy skit by Jibrizy as a real incident of a man in a wig entering a women's bathroom. PolitiFact, Lead Stories, and Full Fact all confirm Jibrizy creates staged anti-LGBTQ skits presented as real scenarios. The full original video contains a disclaimer revealing it is fictional."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032972945023287597",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Iranians are currently rising up against the regime (posted March 15, 2026), but the community note identifies the video as being from the January 2026 protests. While the January 2026 uprising was massive and well-documented by Amnesty International and Britannica, presenting old protest footage as a current event during the Iran war is misleading."
+  }
+]

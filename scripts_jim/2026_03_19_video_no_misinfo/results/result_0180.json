@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2015692108615541107",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the passport was issued in 1932 by the U.S. Consulate in Jerusalem, 'the capital of Palestine.' However, 1932 is the holder's birth year, not the issue date. Eric Wendelin, whose name appears on the stamp, served as Consul General from 1960-1962, confirming the passport was issued roughly 12 years after Israel's founding in 1948. The core claim is factually wrong."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015810047410868662",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies Japanese supermarkets sell watermelon rinds because whole watermelons are unaffordable, which is misleading. Regular watermelons cost roughly $6-$20 in Japan and are affordable; rinds are sold because pickling watermelon rind (suika no tsukemono) is a traditional Japanese culinary practice, not a sign of economic hardship."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015708379075797502",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet contains multiple misleading claims: (1) NATO countries voluntarily applied for membership; NATO did not forcibly expand. (2) No legally binding 'not an inch to the East' agreement ever existed. (3) 'Moscow never sought escalation with Europe' is false given Russia's 2014 invasion of Ukraine and 2022 full-scale war. Harvard Law School and NATO's own records confirm no binding promise was made."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015761278443167890",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims 'ICE shot another protester, blowing off a piece of her hand.' According to Snopes, the cause of the hand injury is unclear from the video. Some evidence suggests the protester may have picked up a flashbang that detonated, rather than being directly shot by ICE. The framing as ICE shooting the protester is unverified and potentially misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015772963404910667",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims hospital staff are paying tribute to Alex Pretti after his death. Snopes and CBS Minnesota confirmed the video is from December 2024 and actually shows Alex Pretti himself leading a 'Final Salute' honor walk for deceased veteran Terrance Lee Randolph at the Minneapolis VA hospital."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015785216070111452",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'ICE in Minnesota Attack Streamer for exposing them.' Multiple sources confirm the video shows Kick streamer Waxiest being attacked by masked Antifa militants during an anti-ICE protest, not by ICE agents. The attackers were rival streamers and protesters, not federal agents."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015775636976030031",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims hospital staff are paying tribute to Alex Pretti after he was killed by ICE. The video is from December 2024 and shows Pretti himself honoring a deceased veteran patient, as confirmed by CBS Minnesota, Newsweek, TMZ, and the veteran's family. The video predates Pretti's death."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015737262395298113",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims hospital staff saluted Alex Pretti before parading him past co-workers. Community notes disagree on the exact source video, but the consensus is clear: the video does not show a tribute to Pretti. It either shows Pretti himself saluting a deceased veteran in 2024 (per CBS, TMZ, Snopes) or a 2021 veteran procession at a Texas hospital. Either way, the tweet's claim is false."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015463832206930166",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video depicts a completely fictional AI-generated scenario. Multiple fact-checkers (Boatos, ScamTok, Creative Learning Guild) confirm there are no records of a 'Jason Miller' saving a falling baby and facing a $500,000 lawsuit. The images are AI-generated and the narrative was fabricated for engagement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015748938737819980",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims co-workers are paying tribute to Alex Pretti at his hospital. Community notes identify the video as either showing Pretti himself saluting a deceased veteran in 2024 or staff at Dignity Health St. Bernardine Medical Center in San Bernardino, CA honoring Air Force veteran Johnnie Franklin who died of COVID-19 in 2020. ABC7 confirmed the 2020 event. Either way, the video does not depict what the tweet claims."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2018834624852509105",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims you will 'NEVER be arrested for missing jury duty' with 'NO warrant.' This is misleading. In Texas and many other states, judges can issue bench warrants for failure to appear for jury duty, and fines or even jail time are possible penalties. The sheriff's original video was about jury duty scam calls, not a blanket statement that missing jury duty has no consequences."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018454120055902494",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The community note claims the video does not contain Dezz saying anything negative about Kai. The tweet attributes direct quotes ('Kai been fake asf', 'Time to go back to the hood') that may be fabricated or exaggerated. While the Kai/Dezz/Gigi drama is real, if the specific quotes are not in the video, the tweet is misleadingly embellishing the content."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018789261051572718",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims a 'joint Democratic House-Senate panel has declared the ICE shootings UNJUSTIFIED.' In reality, Blumenthal and Garcia held informal Democratic forums to receive testimony, not an official joint panel with declaration authority. The framing as an official declaration is misleading; these were partisan forums, not formal congressional committee findings."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018745299087614078",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies the people in the video are real individuals who later experienced tragedy ('RIP to family'). The community note states this is behind-the-scenes footage from the Netflix show Outer Banks, meaning these are actors, not real people the poster knew. The framing is misleading if it presents fictional characters as real."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018896008894136567",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "Travis Kelce did break a chair and did joke 'Taylor is gonna kill me' on his podcast. The $10K price claim appears in multiple entertainment outlets. While the exact price may be unverified, the core story is real and this is lighthearted celebrity content with no meaningful misinformation risk."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018761421384032622",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet just says 'Wow. Listen to this' with a video. The community note claims the audio is AI-generated/manipulated and links to Grok analyses. Without being able to verify the video content or the Grok analysis links, it is unclear what the claim is or whether the AI-generation allegation is substantiated."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018640526120272344",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims students 'attacked a teacher' during an anti-ICE protest. Multiple news sources confirm the man involved (Chad Michael Watts) was NOT a teacher or school employee. Furthermore, police determined Watts was the primary aggressor who threw a girl to the ground and struck her repeatedly, and he was charged with two counts of assault. The tweet inverts the aggressor/victim framing."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018889423455211631",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "Ted Cruz did say the words quoted, but presenting them without context is misleading. Multiple fact-checkers and Cruz's own staff confirmed it was a verbal gaffe during a rapid rhetorical list. The full context shows he was listing crimes to oppose, not defending pedophiles. However, the video does contain what he actually said, so this is a borderline case of selective framing."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018686094804467772",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Reform UK has been 'silent' on Epstein and implies they are 'hiding' something. This is factually false. Reform UK reported Peter Mandelson to Metropolitan Police over the Epstein files, and Nigel Farage publicly criticized Mandelson's Epstein ties. Reform was actively engaged on this issue, not silent."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018796404005872064",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'every single mention of Trump' in the Epstein files has a cropped-out line saying the complainant was 'deemed not credible.' This is misleading. The 'deemed not credible' language applies to one specific allegation, not to all Trump mentions in the files. Multiple other allegations and references to Trump exist in the documents without that conclusion."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2030761779241074936",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show 'Tel Aviv right now' but multiple fact-checkers confirm the video is recycled old footage -- either from Iran's January 2026 anti-government protests or the 2015 Tianjin explosions in China. This is a clear case of misattributed video to inflame tensions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030832528811008431",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Tucker Carlson said Trump 'seeks unconditional surrender so troops can rape women and girls.' In full context, Carlson was making a historical argument against demanding unconditional surrender from Iran, not attributing that goal to Trump. The tweet strips critical rhetorical context, though the underlying clip is real."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030849703756116122",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents Homan's statements as 'BREAKING' news but the clip dates to early February 2026, not March when it was posted. Additionally, Minnesota sheriffs disputed Homan's cooperation claims, saying their policies had not changed. The tweet misrepresents timing and omits significant context."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030360148485587334",
+    "rating": "note_worthy",
+    "confidence": "low",
+    "reasoning": "Community notes claim the ad uses AI-generated images of Sikh people without disclosure to influence the Virginia redistricting referendum. I could not independently verify the AI-generation claim through news sources, but if true, presenting synthetic people as real endorsers is misleading. The referendum itself is real."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030627828006527225",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple fact-checkers (Alt News, India TV, The Quint, BOOM) confirm this photo is misleading. President Murmu stood only momentarily to confer the Bharat Ratna award on LK Advani and was seated before and after. The photo deliberately captures a single moment out of context to falsely suggest disrespect by the PM."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030792799810125960",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While Cuba is experiencing real protests in March 2026 over blackouts, the community note identifies the video as showing COVID-19 mask-wearing protesters consistent with the 2021 Cuban protests, not 2026. The tweet falsely claims the footage is happening 'live' when it appears to be recycled old footage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030778849248542838",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple fact-checkers (Snopes, Full Fact, DW) confirm this is a compilation of old footage from prior conflicts misrepresented as showing March 2026 Iranian missile strikes near Ben Gurion Airport. Some clips are from 2025 attacks and one was geolocated to Haifa, not Tel Aviv."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030690257033630059",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Lead Stories and RumorGuard confirm this is an AI-generated video, not real footage. Multiple nearly identical versions exist from the same AI prompt, and the video contains telltale AI artifacts like nonsensical architecture and physically impossible details. It is presented without any AI disclosure."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030755986877686198",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies Mamdani refused to call the bombers terrorists, but his official statement called their acts 'a heinous act of terrorism' and said they should be 'held fully accountable.' The tweet also uses the wrong name (Ibrahim Nick vs Ibrahim Kayumi). Jake Lang's characterization as a white supremacist is supported by documented Nazi salutes and antisemitic actions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030745553047363858",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "India's Press Information Bureau officially confirmed this is an AI-generated deepfake. The original footage was from the Raisina Dialogue 2026 discussing Operation Sindoor against Pakistan, not anything about sharing Iranian ship locations with Israel. AI detection tools showed >99% probability of manipulation."
+  }
+]

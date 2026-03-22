@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028801049188856038",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet claims BBB26 Cowboy fans are mocking BTS ARMYs, shown via a video of comments. The community notes dispute whether the commenters are actually Cowboy fans, noting the bomb emoji (bombinha) identifies anti-Ana Paula Renault accounts, not necessarily Cowboy fans. This is a Brazilian reality TV fandom dispute where attribution of commenters to a specific fandom is debatable and subjective. The claim is not clearly verifiable misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028843121958609270",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet by Masih Alinejad claims Iran is relocating military equipment into schools to use students as human shields. Multiple opposition media and rights monitors reported equipment relocations to schools, but Iran's MFA held a press conference at a bombed school to highlight US/Israel targeting of educational facilities. The community note provides relevant missing context about that press conference, but the underlying claim about military relocations into schools has some supporting reports. Both sides of this wartime propaganda battle have legitimate concerns, making a definitive rating difficult."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028668921793192342",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims Iran warned the US might launch a nuclear strike based on earthquakes near Area 52. While earthquakes near Tonopah Test Range did occur, there is no evidence Iran issued such a warning. The video uses old nuclear test footage, not current events. The community notes correctly identify these misleading elements. The tweet fabricates a causal connection between real seismic events and a nonexistent Iranian warning."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028787114364600713",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show the funeral procession for 168 schoolgirls killed in Minab, but the community note identifies the video as footage from the 2020 funeral of Iranian General Qasem Soleimani. Multiple fact-checking organizations have confirmed this same video has been repeatedly misattributed. While the Minab school attack did happen and real funerals were held, the specific video attached is from an entirely different 2020 event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028808977534824799",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet alarmingly claims 'NUKES ARE BEING MOVED FOR TRANSPORT.' Community notes correctly identify the video as either showing routine Minuteman III ICBM maintenance convoys at Malmstrom AFB (which happen multiple times per month) or the Pentagon's mobile nuclear reactor transport. One note identifies the video as being from 2017. The tweet is misleading in implying unusual or alarming nuclear weapons movement when these are well-documented routine operations."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028836753688113659",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet accurately reports the IDF struck a meeting related to selecting Iran's new Supreme Leader, which is confirmed by multiple credible sources (Bloomberg, NYT, Times of Israel, Axios). However, the community note correctly points out the attached video shows Fox News reporting from an Iranian missile impact site in Israel, not footage of the strike in Iran. The misleading element is the video mismatch, not the core claim about the strike itself."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028755804363366554",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents a heartstring courtroom story as real. Fact-checkers at Lead Stories and IBTimes confirmed this is an AI-generated video depicting a fictional scenario. Key tells include the boy's age switching between 14 and 16, visual AI glitches, multiple different courtroom settings, and the legal premise being flawed (US child labor law holds employers responsible, not minors). No matching real court case exists."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028332080485306660",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet shows a sped-up clip of Oda doing a quick sketch/autograph and jokes 'Oda doesn't care anymore.' This reads as typical fan humor about a manga creator's casual drawing style, not a serious claim of declining quality. Oda is actively producing One Piece weekly chapters and recently made major announcements. The community note treating this as misleading seems like an overreaction to an obvious joke."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028599187059732751",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Tucker Carlson claimed Mossad agents were arrested in Qatar and Saudi Arabia for planning bombings. Qatar's foreign ministry explicitly denied the claim, and Saudi state-owned Al Arabiya reported the claims are 'baseless and untrue.' Carlson provided no source. The community note correctly identifies the denial, though its editorializing ('Tucker was making this up') could be more neutral."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028619546202927286",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies solar panels covering Guizhou mountains are environmentally destructive ('nothing green about this'). The community notes correctly provide missing context: these mountains suffer from rocky desertification with thin soil unsuitable for agriculture. The panels have actually improved local microclimates, allowing plant growth underneath and enabling sheep grazing. The framing as environmental destruction omits that the land was already barren and the panels have had net positive ecological effects."
+  }
+]

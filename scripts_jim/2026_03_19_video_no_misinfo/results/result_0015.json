@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2032504733638824424",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet misleadingly connects a June 2025 TikTok video of a soldier's steak and lobster meal to the September 2025 $22M Pentagon spending controversy. These are unrelated events."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032563259434234032",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is from the January 2023 Juniper Oak US-Israel joint exercise, not a recent sighting. Presenting old footage as current alongside the Iran flag emoji is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032488354617692659",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The community note claims the video shows a wedding convoy celebration, not a protest chanting 'globalize the intifada.' The wedding convoy explanation is plausible given documented Yemeni wedding procession traditions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032491317771596122",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Senator Padilla omitted the clause 'and subject to the jurisdiction thereof' from the 14th Amendment, then said 'Full stop' as if birth on American soil is the sole requirement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032505602182623698",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims the man was 'instructed to stop filming,' but community notes indicate the officer asked him to move back for safety, not to stop recording. Mischaracterizes a safety instruction as censorship."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032357593868283904",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The clip is confirmed AI-generated content, not from any real Simpsons episode. Multiple fact-checkers (Snopes, UNILAD, Zee News) have debunked this."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032482072284004427",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "No US Marines have been officially deployed INTO Iran. They are in the Persian Gulf region. The tweet also uses a SpongeBob meme, not actual military footage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032004735168102620",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims the Adani Group was the contractor. Multiple sources confirm the contractor was IRB Infrastructure through its subsidiary Palsit-Dankuni Tollway Pvt Ltd."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032411360638976186",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet attributes the magazine ban (SB 1446) to Gavin Newsom when it was signed by Governor Jerry Brown in 2016. It also misleadingly frames the issue as citizen-vs-noncitizen when the exemption applies to ALL sworn officers."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032372152922415132",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The community note claims the video is from Isfahan, not Tehran. Quds Day 2026 rallies occurred in both cities with similar activities. Cannot verify specific location without viewing the video."
+  }
+]

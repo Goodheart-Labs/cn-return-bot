@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2033195651652067443",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet says 'most neighborhoods of Tel Aviv' were damaged, which is an exaggeration. Iranian missile strikes on Feb 28 and March 2026 caused localized damage at specific sites in Bat Yam, Holon, and surrounding areas, but most Tel Aviv neighborhoods sustained no damage. The note correctly contextualizes this as shrapnel damage in a suburb, not widespread destruction across Tel Aviv."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032935721070170194",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "This is an obvious joke using the meme format 'RIP [person], you would've hated [same person].' Gwen Stefani is alive and active in 2026 with concerts and new music. No reasonable reader would interpret this as a genuine death claim. The community note is unnecessary."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033064560526082075",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the NBC footage is from 'last night' but the NBC video of a missile slipping through Israeli defenses and striking Tel Aviv was recorded on February 28, 2026, not the night before the tweet was posted (around March 18-19). The footage is being misattributed to a more recent date."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033187533484667068",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "Multiple fact-checkers (Reuters, AFP, Poynter, PolitiFact) have documented widespread use of old and AI-generated videos being falsely presented as current 2026 Iran-Israel conflict footage. The notes citing Reuters and AFP fact-checks that this footage is from June 2025, not 2026, appear credible given the well-documented pattern of recycled conflict footage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032936998349218026",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The note claims the post was 'stolen and reuploaded without permission,' which is a content attribution issue rather than misinformation. Community Notes are designed to address misleading claims, not content theft disputes. The tweet itself makes no factual claims that need correction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033216079003083213",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet promotes the conspiracy theory that Netanyahu's coffee shop video is AI-generated. Multiple fact-checks confirm the video is authentic: the cafe (The Sataf in Jerusalem) posted corroborating photos, journalists verified it, and the 'coffee not spilling' claim is easily explained by surface tension and camera angle. The speculation is unfounded."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033195328178966664",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet is a direct clip of a real CBS Face the Nation interview from March 15, 2026. The interview content is factually accurate. The existing notes add useful context about Iran's internet shutdown but the tweet itself is a straightforward news clip without misleading framing. Whether it needs a note depends on whether the clip is selectively edited."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033208517390168181",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet amplifies the 'Coffeegate' conspiracy theory suggesting Netanyahu's video may be AI-generated because of coffee cup behavior. The video has been verified as authentic by multiple sources including the cafe itself. A note debunking the AI claims is warranted given 1.7M impressions spreading this speculation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033055844024332418",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims 'your tax money' funds the expressway, but the Amritsar-Jamnagar Expressway is significantly funded through tolls and the National Investment and Infrastructure Fund, not purely general taxation. The community note pointing out toll funding is a valid correction, though the distinction between toll revenue and tax revenue is somewhat nuanced since NHAI also receives government budgetary support."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2033185196527555029",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet accurately reports that Azad Essa (a Middle East Eye journalist, not Al Jazeera as the tweet implies) had his X account blocked in India, which is confirmed by multiple sources. The existing community notes attack the journalist's credibility and Al Jazeera's parent country rather than correcting factual errors in the tweet. The core claim about account blocking is true."
+  }
+]

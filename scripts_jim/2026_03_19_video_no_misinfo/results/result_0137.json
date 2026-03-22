@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2021463890370941257",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims ICE arrested a 'U.S citizen' but the man, Junior De Jesus Herrera Berrios, was an 18-year-old non-U.S. citizen charged with felony drug possession (over 50 lbs methamphetamine). Multiple news sources (Fox 9, CBS Minnesota, Star Tribune) confirm the arrest details. The citizenship claim in the tweet is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021635755991617917",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet shares a viral edited clip of Bad Bunny's Super Bowl halftime show with the backing track removed. Multiple sources confirm this was indeed an edited version of his actual 2026 Super Bowl performance, not a 2023 concert as one community note claimed. The tweet accurately describes it as a clip without backing track that went viral. The community note claiming it was from a 2023 concert was rated 'not helpful'."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021657504334119258",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims tariffs were imposed 'without congressional authority' and are 'illegal.' While the Supreme Court did rule some IEEPA-based tariffs illegal, Congress has delegated tariff authority to the president through multiple statutes (Section 232, Section 301, Section 122). The blanket claim of 'no congressional authority' is an oversimplification, though the legality of specific tariffs has been contested in courts."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021535864317460612",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the video is from the 'Epstein Files' DOJ release. The DOJ itself warned that released materials may include fake or falsely submitted content. The community note states the video features fabricated overlays claiming DOJ origin. Given the well-documented wave of fake Epstein content circulating in early 2026, this is a clear case of misleading attribution."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021494839435731268",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents a video as being from the DOJ Epstein files release, but multiple community notes with BBC and Al Arabiya sources confirm it actually shows abuse at an Egyptian orphanage in 2014 by manager Osama Othman, who was arrested and sentenced to 3 years. The video is being fraudulently attributed to the Epstein files."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021520067993755702",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet sarcastically labels a video as a 'beauty pageant in Syria' but fact-checkers (SochFactCheck) and original Instagram posts confirm it is a Quran memorization graduation ceremony from northern Syria in August 2024. The sashes worn by women identify them as Quran memorizers. The tweet deliberately misrepresents the event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021489223854063986",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet factually states people gathered for Iran's 47th Islamic Revolution anniversary, which did happen. The community note adds context that rallies are state-organized with incentivized attendance. While this context is valuable, the tweet's core factual claim is accurate; the note adds political context rather than correcting misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021588925823750534",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet reports from Iran's revolution anniversary rallies and frames them as genuine public support. Iran International and other sources report these rallies are state-organized with coerced attendance. The framing as organic 'support' is misleading, but this is a matter of contested political interpretation rather than a clear factual error."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021281906932801707",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents Austrian President Van der Bellen's statement as if it were recent, but it is from 2017. Additionally, Van der Bellen later clarified it was a communication mistake meant to emphasize women's freedom of dress. The missing date context and omission of his clarification make the tweet misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021310907028996279",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet describes a video as a 'demonstration' of a teacher dealing with bullying. A community note claims it is an acting class skit, but provides no source beyond a Wikipedia link to sketch comedy. Without stronger evidence either way, the claim that this is staged content remains unverified."
+  }
+]

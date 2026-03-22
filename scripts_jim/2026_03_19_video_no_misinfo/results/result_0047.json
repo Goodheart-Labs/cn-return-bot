@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029882740884045957",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet contains multiple factual errors. Brian McGinnis is a Marine Corps veteran, not an active-duty serviceman. Only one person was arrested, not two. Additionally, the tweet may be conflating a September 2025 incident (Army veterans removed from a Senate hearing protesting Gaza) with a March 2026 incident (McGinnis protesting the Iran war). The claim that servicemen were arrested for protesting 'Israel's war with Iran' mischaracterizes the event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029982827379372539",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The CCTV footage of a strike near a boys' school in Qazvin appears to be authentic (confirmed by Al Jazeera and Iran's government). However, the community notes debate whether schools were in session. Iran did close schools for in-person learning due to the military situation, but the date on the video (2-28-2026) is the first day of strikes, before closures were announced. The framing of 'near a boys' school' is broadly supported, though the exact context around school attendance at the time is contested."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030012198857183606",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is from the Jesolo Air Show in Italy, not British fighter jets over Cyprus. Multiple fact checks have confirmed this same video has been misidentified previously (also falsely linked to the Indian Air Force at the Dubai Airshow). The Jesolo Air Show features Italian military aircraft. The tweet misattributes both the nationality and location."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030020065362370864",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Biden's remark 'I am a hell of a lot smarter than most of you' is presented without context. CBS News full remarks show Biden was recounting his childhood stutter and making the point that people with speech impediments are wrongly assumed to be unintelligent. He followed with 'But all kidding aside, it makes you feel really small.' The tweet strips the remark of this context, making it appear as a straightforward insult to the audience."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029981435696669014",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet accurately quotes Brandon Herrera's joke from the Unsubscribe podcast about putting a gun in his mouth and being 'an honorary veteran.' While the community note adds context that Herrera was among veteran friends who use dark humor, the tweet itself does not misrepresent what was said. The quote is real and was widely reported, including by SA Current and other outlets."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029877916729798720",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The community note correctly identifies that the video shows figure skating, not 'Baile dance.' Baile folklorico is a traditional Mexican folk dance genre entirely unrelated to figure skating. The tweet misleadingly labels the content and makes unsubstantiated health claims about memory improvement and immunity boosting, which appear to be engagement bait."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029561058168361029",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet directly attributes a quote to Naz Shah that she never said. Full Fact confirms she did not say 'raped and tortured young girls need to shut up.' In 2017, she briefly retweeted (then quickly deleted) a satirical tweet from a parody account. She called it a 'genuine accident.' The tweet fabricates a direct quote and presents it as her own words."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2030009341395231150",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim 'The United States did not start this conflict' is contradicted by widely reported facts. The 2026 Iran war began on February 28, 2026 when the US and Israel launched surprise airstrikes on Iran. Reuters, Wikipedia, Britannica, Al Jazeera, and CNN all report the US and Israel initiated the military action. The tweet's central premise is factually incorrect."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029984809242529912",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet itself states Herrera was 'joking' about Hitler being his hero, which provides the comedic context. While the full video shows he said 'all jokes aside' afterward confirming it was humor, the tweet already labels it as a joke. Herrera has faced documented scrutiny over Nazi-adjacent content including owning Mein Kampf and goose-stepping to Nazi songs, so the video is part of a broader pattern that is legitimately newsworthy."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029708354852171883",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet attributes a statement to a 'Spanish assembly member' condemning the US and Israel for killing 160 kids, but search results only confirm Spain's Prime Minister Sanchez publicly condemned the strikes. The specific assembly member and exact quote could not be independently verified. The death toll of 160+ children at the Minab school is supported by Al Jazeera and Amnesty International, but Snopes noted the question of responsibility was still being investigated at the time, with evidence pointing to US involvement."
+  }
+]

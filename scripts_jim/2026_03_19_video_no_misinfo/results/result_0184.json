@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2015237470556729613",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims legacy media 'will never show you this video' and that Pretti was 'reaching for his loaded handgun.' Multiple video analyses (CNN, NYT, ABC) show the video was widely aired by major outlets, and that a federal agent removed Pretti's gun from his holster before the shooting. Pretti was holding a phone, not reaching for a weapon."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015151325865001240",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet labels footage as being from 'reshoots in London,' but principal photography ran August-December 2025 and reshoots were scheduled for February 2026. The footage appears to be from the original October/November 2025 principal photography, not reshoots. A minor factual error but still misleading about the production timeline."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015181670576775302",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Pretti 'reached for his holster' at the 0:27 mark. Multiple video analyses from CNN, NYT, and others show a federal agent removed Pretti's gun from the holster before shots were fired. The claim that Pretti actively reached for his weapon is contradicted by extensive video evidence reviewed by major news organizations."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015163085997461840",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims protests erupted in '70+ U.S. cities.' While protests did occur in many cities across the US (CNN and Wikipedia list dozens), the specific claim of 70+ cities is unverified. Additionally, one note indicates the video shown is from January 23, before the shooting on January 24, meaning it misrepresents the timing."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015197852004241459",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet features Sec. Noem claiming Pretti 'came with a weapon and attacked' agents. Video analysis by CNN, NYT, and ABC shows Pretti was holding a phone when approached, was taken to the ground, and had his gun removed by an agent before being shot. The government's initial narrative about the shooting has been widely contradicted by video evidence."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015049938481111170",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims to show 'children of Khamenei's regime' living lavishly in Monaco. The person shown is Sasha Sobhani, son of former Iranian ambassador Ahmad Sobhani -- part of Iran's elite ('Aghazadeh') but not Khamenei's children specifically. The broader point about regime elite hypocrisy has merit, but the specific claim about Khamenei's children is inaccurate."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014814899940065392",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet shows a video of a bodyguard protecting Trump's daughter. The person was confirmed as a Secret Service agent (not a private bodyguard), and the incident occurred in May 2025. The tweet makes no explicit claim about timing, and the distinction between 'bodyguard' and 'Secret Service agent' is minor. Notes suggesting it is misleading were rated not helpful."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015133950763544780",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies Pretti pointed a gun at a federal agent. Multiple video analyses from CNN, NYT, Lead Stories, and others show that a federal agent removed the gun from Pretti's holster before the shooting, and Pretti was holding a phone, not a gun. The 'life hack' framing spreads a false narrative about the incident."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015122141185032234",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet describes Pretti as 'an armed illegal alien.' Alex Pretti was a 37-year-old US citizen, a VA intensive care nurse from Minneapolis, and a licensed gun owner. Calling him an 'illegal alien' is factually false, as confirmed by police, Forbes, Wikipedia, and multiple major news outlets."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2015140778876567742",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet amplifies Border Commander Bovino's claim that Pretti 'wanted to MASSACRE LAW ENFORCEMENT' and 'approached agents with a 9mm handgun.' Video analysis from CNN, NYT, and ABC shows Pretti was holding a phone when approached, was taken to the ground by agents, and had his firearm removed by an agent before being shot. The government's initial narrative has been widely contradicted by video evidence."
+  }
+]

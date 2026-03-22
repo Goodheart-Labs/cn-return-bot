@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2020324940537557264",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Italians welcomed the Israeli Olympic team with protests. Multiple news sources (CNN, NBC, Fox News, Al Jazeera) confirm the footage is from anti-Olympics protests in Milan organized by the 'Unsustainable Olympics Committee' over environmental/economic concerns, not related to Israel. The video is being misattributed to create a false anti-Israel narrative."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019760322106577185",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show 'Lacasa Mall, Gaza' as evidence of luxury in Gaza. Multiple sources including Lacasa Mall's own website (lacasamall.ps) and its Facebook page confirm it is located in Dahyet Al Rehaan, Ramallah in the West Bank, not Gaza. The mall is a 65,000 sqm complex in Ramallah being misrepresented as being in Gaza."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020276411509219418",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet exaggerates Cathie Wood's statements. While Wood did discuss gold preceding bitcoin moves historically, she also warned gold is in a bubble. The tweet frames her historical observation as a definitive prediction of an imminent parabolic surge to $1M, which misrepresents her nuanced position. The sensationalized framing is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020062706649461050",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is an edited/manipulated clip combining footage of ex-AAP MLA Rakhi Birla speaking in the Delhi Legislative Assembly with separate Parliament footage of Amit Shah and Modi, falsely implying a single confrontation. Multiple fact-checks and X posts confirm the video stitches together unrelated clips from different legislative bodies."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020221253114819022",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet frames ICE agents as threatening a citizen for exercising First Amendment rights. Fox News and CBS News reporting confirms the agents were warning against following and impeding during an arrest of a convicted child sex offender, not merely for filming. The tweet omits critical context about what the agents were actually doing and who was being arrested."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020271605675348259",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet puts 'ally' in quotes attributed to Carney, but Carney did not call China an 'ally.' He said the relationship with China has become 'more predictable' while emphasizing that the US relationship is 'much deeper and broader.' The post distorts his nuanced diplomatic statement into a stronger pro-China stance than he expressed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020165826590998921",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The core claims are accurate: Andrea Bocelli's mother was advised to abort him due to risk of disability, she refused, and he performed at the 2026 Milan Winter Olympics opening ceremony singing Nessun Dorma. Multiple credible sources confirm this story. The framing is subjective but the factual claims check out."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2020117981963972747",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video purporting to show Iran launching missiles from beneath the sea is actually 2018 footage of Russian submarine Yuri Dolgoruky test-firing Bulava ICBMs from the White Sea. Multiple fact-checkers (Full Fact, Misbar, Dismislab) confirm Iranian banners were added to Russian military footage. Iran has not demonstrated submarine-launched ballistic missile capability."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019887352395538881",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that Epstein is alive and discovered through Fortnite is false. Epic Games confirmed the 'littlestjeff1' account was a name change by an unrelated user, not Epstein. Snopes, Kotaku, and multiple fact-checkers debunked this. Epstein's death was ruled suicide in 2019, confirmed by DOJ review."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019944957008867533",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that Maricopa officials 'broke into sealed election machines' and deleted 2020 results is false. Fact-checkers (Check Your Fact, PolitiFact) found the video shows routine pre-election memory card work from October 2022, not deletion of 2020 results. No evidence supports the claim of illegal tampering."
+  }
+]

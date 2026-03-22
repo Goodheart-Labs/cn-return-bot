@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2018673868336984270",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to identify the man on Epstein's plane as Nathi Mthethwa. News24 conducted a fact check examining the footage, audio, and Epstein records, and found the identification unverified. Community notes point out physical differences (e.g., gap in teeth) and no reliable source confirms the claim. This is a serious, unsubstantiated accusation about a deceased person."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018658810210943335",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet says the incident was in Kyle, TX when it actually occurred in Buda, TX (7 miles away). While technically inaccurate, the core claim — an adult attacked protesting students — is confirmed by multiple news sources. The man (Chad Watts, 45) was arrested and charged with two counts of assault. The location error is minor and the existing notes flagging it were rated not helpful."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018490096895324422",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet fabricates a sexual harassment lawsuit around real 2020 Cincinnati footage of Criss Allen saving a woman from an oncoming car. Fact checks from Yahoo News and ThatsNonsense confirm no lawsuit or charges were ever filed; the woman thanked him and they parted ways. The names 'Daniel Reed' and 'Jessica Moore' are invented. This is pure misinformation designed to generate outrage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018602982670008825",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet references a video of Matt Goodwin. Labour posted a selectively edited clip making it appear Goodwin was insulting Manchester, when he was actually criticizing the Conservative Party conference held there. Goodwin denied the statement as presented. However, without seeing the specific video in this tweet, it is unclear whether it is the same misleading Labour clip or different content."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018259282953654350",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents a scene from the 2022 Netflix film 'All Quiet on the Western Front' as if it were real historical footage of German soldiers seeing tanks for the first time. The scene is fictional cinema, not documentary footage, and the framing is misleading even if some viewers may recognize it."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018456514982515039",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet and KTLA story frame the event as ICE agents raiding a church during a food giveaway. DHS stated the individual was being pursued in a foot chase that began at a nearby intersection and ran onto church grounds — the church was not the target. Multiple sources confirm the man had a prior deportation. The framing meaningfully misrepresents how the arrest occurred."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018528762095341882",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet labels the image as 'Ukrainian resilience,' but the community note (rated not helpful) claims it shows an apartment building in Belgorod, Russia damaged in a May 2024 strike. If the image is indeed from Belgorod, presenting Russian war damage as Ukrainian resilience is misleading. The ABC News source cited in the note confirms the Belgorod building collapse."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018325454784999556",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet shows someone playing YMCA near protesters and claims they are doing the 'Trump Dance.' The existing notes argue no Trump Dance is visible and express second-hand embarrassment. This is low-stakes opinion/entertainment content; the factual discrepancy (whether a specific dance is performed) is trivial and not meaningfully misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018565111900995855",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet calls a BGM-71 TOW missile launcher a 'tank' in a Battlefield 6 video game clip. This is a minor weapon classification error in a gaming context with no real-world consequence. Not worth a community note."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018514781641298403",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet jokes 'This isn't AI, this is just a normal day at Walmart' over what appears to be AI-generated or parody content from 'Pleasant Mart,' a satirical social media account. The tweet's tone is clearly humorous and not making a serious factual claim. Whether the content is AI or a skit from a parody account, the misleading potential is low."
+  }
+]

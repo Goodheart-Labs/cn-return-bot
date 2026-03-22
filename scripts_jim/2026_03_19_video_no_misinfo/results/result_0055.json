@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029473846563344807",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims an Arleigh Burke destroyer is 'burning' with video evidence, but the video shows an aircraft carrier (not a destroyer), no US Navy confirmation of damage exists, and the notes correctly identify the vessel misidentification and lack of corroborating evidence. The IRGC claimed a strike but satellite imagery is low-resolution and unverified. Additionally, a note flags the video as AI-generated with specific visual artifacts."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029409681328812483",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The quote 'The Zionist entity will be erased when the time comes' appears fabricated. Coverage of the October 2025 Hwasong-20 parade from Al Jazeera, PBS, NBC, and others confirms Kim Jong Un said forces should 'destroy all threats' without naming any country. No credible source contains this Israel-specific quote. The video is recycled footage from the October 2025 parade, not a recent event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029380331632009324",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "While Iranian missile attacks on Tel Aviv did occur in March 2026, Snopes confirmed the specific video in the tweet is from the June 2025 Iran-Israel conflict, not a March 2026 event. The note correctly identifies the footage as older and misattributed to a current event, a documented pattern of video reuse during the 2026 Iran war."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029217165275242598",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The Waterfall of the Bride (Catarata Velo de la Novia) is a real waterfall near Cajamarca, Peru, but the note correctly identifies the video as AI-generated. The real waterfall looks distinctly different from the video depiction. Fact-checkers have previously documented AI-generated or manipulated viral videos of this waterfall with artificial elements like static figures and looping water."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029474164940149047",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet frames the IRIS Dena sinking as an 'Indian betrayal,' implying India tipped off the US. While the sinking itself is well-documented (USS Charlotte torpedoed IRIS Dena near Sri Lanka on March 4, 2026), multiple sources confirm the ship left Indian port days before the war started and was sunk in international waters near Sri Lanka. No evidence supports the claim India tipped off the US, and the conspiracy framing is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029204495297626207",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet celebrates the sinking of an Iranian warship as a combat victory. The notes add important context that IRIS Dena was returning from a peacetime naval exercise (MILAN 2026) in India and was in international waters roughly 2500 nautical miles from any combat zone when torpedoed. This context about the circumstances of the sinking is noteworthy for readers to evaluate the event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029395135113642428",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video purports to be real footage from a camera attached to a baby shark. The notes correctly identify it as AI-generated: a third-person view showing the shark itself is physically impossible for an attached camera, and real shark-mounted cameras (like National Geographic's Crittercam) only produce first-person POV footage. The video misleads viewers into thinking it is authentic wildlife footage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029381613155451027",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet inverts the real 2018 Hacienda HealthCare case in Arizona, where a male nurse (Nathan Sutherland) sexually assaulted a female patient in a vegetative state, resulting in pregnancy. The tweet's framing (male patient in coma impregnating a nurse) reverses the victim/perpetrator dynamic. The note correctly provides the factual record of what actually happened."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029369934619263362",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The Lebanese presidential office itself issued a warning against AI-generated videos falsely depicting President Joseph Aoun. The note identifies this specific video as AI-generated and fake, with no such speech, uniform change, or military confrontation declaration having occurred. The official presidential website and LBC Group confirmed the warning."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029351862705553789",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims V32 is 'active right now' but the notes correctly identify that the video was originally posted by @neetintel on March 4, not live at the time of the tweet. While V32 is a real Farsi numbers station on 7910 kHz that has been active since February 28, 2026, the tweet misrepresents recycled footage as a live transmission and does not credit the original source."
+  }
+]

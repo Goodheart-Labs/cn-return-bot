@@ -1,0 +1,8 @@
+[
+  {
+    "tweet_link": "...",
+    "rating": "note_worthy|not_note_worthy|uncertain",
+    "confidence": "high|medium|low",
+    "reasoning": "1-3 sentences"
+  }
+]

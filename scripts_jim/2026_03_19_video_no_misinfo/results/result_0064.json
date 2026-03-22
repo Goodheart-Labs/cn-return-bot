@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028869817172738402",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely implies a soldier's death was caused by 'Operation Epstein Fury.' The operation is officially named 'Operation Epic Fury' (confirmed by White House and CENTCOM), and Kamden Taylor's obituary confirms he died January 3, 2026 -- nearly two months before the operation began on February 28, 2026. The community notes correctly identify both the wrong operation name and the false causal link."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028965116880863701",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The community note claims the video is from 2021 and the quote about 'fasting and tahajjud' was fabricated or mistranslated. While I could not independently verify the exact original video date, the note cites a specific YouTube source video. The tweet presents the quote as current ('JUST IN') during the Iran conflict, which is misleading if the video is years old. The claim warrants a note for temporal misattribution."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029003063852228823",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet uncritically presents the IRGC's claim that 650+ US military personnel were killed or wounded. Multiple credible sources (Jerusalem Post, Stars and Stripes, Xinhua) confirm the IRGC claim was disputed and debunked: US Central Command reported 6 service members killed and 18 wounded. The IRGC figure is unverified Iranian propaganda that vastly exaggerates actual casualties."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028939785436578049",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies all Iranians support the regime by showing selective protest footage of 'Death to America' chants. Extensive polling data (GAMAAN surveys 2021-2025) shows 70-80% of Iranians would not vote for the Islamic Republic, and only 11% support the Supreme Leader as of 2024. The community note correctly identifies the video as unrepresentative, though the note's specific claim of '80-90%' opposition is on the high end of survey ranges."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028970025139487049",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'no air defense system is defending Israel tonight.' Multiple sources confirm Israel's multi-layered air defenses (Iron Dome, David's Sling, Arrow) were active and intercepting Iranian missiles during March 2-3, 2026. Community notes also identify the video clip as recycled from a prior incident (June 2025), not current footage. The claim is demonstrably false."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028972597648425038",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet makes three claims: Trump's name appears in the files, the DOJ is 'breaking the law,' and 3 hours was insufficient. Trump's name does appear in released Epstein documents (confirmed by DOJ releases and media). The DOJ-breaking-law claim is debatable -- senators and lawmakers have accused the DOJ of non-compliance with the Epstein Files Transparency Act, but this is contested legal interpretation, not established fact. The community note's flat assertion that 'the DOJ has not broken any laws' is also an oversimplification of a genuinely disputed matter."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028961093587017973",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet (from NH Rep. Pappas, a Marine veteran) implies the State Department failed to warn Americans before hostilities. The community note correctly identifies that the State Department issued a Level 4 'Do Not Travel' advisory for Iran on December 5, 2025, urging all US citizens to leave immediately -- nearly 3 months before the February 28 start of Operation Epic Fury. However, the tweet also raises the legitimate point that Americans are currently stranded with closed airspace, which is a real situation confirmed by multiple news sources."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028969513899704404",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show Tel Aviv 'right now' but one community note identifies the footage as the 2015 Tianjin chemical warehouse explosions in China. This has been confirmed by multiple fact-checkers (Full Fact, Misbar, Poynter, AFP) who verified the recycled Chinese explosion footage was being falsely shared as footage of Iranian strikes on Tel Aviv."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028885902827925900",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet posts 'URGENT WARNING: Evacuate Tel-Aviv immediately' with a video. One community note identifies the video as Iranian ballistic missile test footage, not a live attack. While the IRGC did issue evacuation warnings for areas near Tel Aviv, no Israeli authorities or Home Front Command ordered a city-wide evacuation. The tweet's alarmist framing combined with misrepresented video footage is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028911292602277994",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims to show grieving Iranians in Arak chanting in support of 'the leader.' The community note identifies the video as actually being from a symbolic funeral for Imam Musa al-Kadhim at the Kadhimiya Shrine in Baghdad, Iraq on January 15, 2026 -- not from Arak, Iran on March 3. The note cites an AFP fact-check and Reuters Connect link. While I could not independently verify the specific AFP article, the misidentification pattern is consistent with documented misinformation trends during the conflict."
+  }
+]

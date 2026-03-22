@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2021010974686261451",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'Europe to ban ALL Teslas' which is false. Only the Cybertruck is effectively banned in the EU due to safety regulations (pedestrian protection, sharp edges, weight). All other Tesla models (Model 3, Model Y, Model S, Model X) remain legal and continue to be sold throughout Europe. The community notes correctly identify this overstatement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021222291548348565",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet falsely connects a video to Epstein files and implies a child abduction. The community note claims the video was uploaded in 2012 by the boy's father wearing the wig, and the child was not abducted. While I could not independently verify the specific Reddit/Facebook sources cited, the tweet's framing of an unrelated video as Epstein-file evidence of missing children is a common pattern of misinformation around the Epstein files, which the DOJ has warned contain 'untrue and sensationalist' claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021001162745577837",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "RFK Jr.'s claim that pediatricians get 'giant bonuses' for vaccinating 80-85% of children is misleading. PBS fact-checking found that pediatric practices make little profit and sometimes lose money on vaccines. A Sermo physician survey found only 5% reported 'huge bonuses' while 73% described payments as minimal or nonexistent. Some modest incentive programs exist, but characterizing them as 'giant bonuses' that drive vaccination recommendations is unsupported."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021252784465564096",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The core factual claims are verified: an illegal immigrant did cause a crash killing 3 people in California in October 2025, and the driver had been released after crossing the border under the Biden administration. One note flags the incident as old (Oct 2025), which could be misleading if presented as recent, but the tweet does not explicitly claim recency. The facts are accurate but the framing may be misleading depending on context."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021062041973424317",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies Russia is banned from the Olympics because their athletes are too strong, which is misleading. Russia is banned as a national delegation from the 2026 Milan-Cortina Olympics due to the invasion of Ukraine and doping history per IOC sanctions. Some Russian athletes (about 20) do compete as Individual Neutral Athletes. The real reason for the ban is geopolitical, not athletic dominance."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021124490466557995",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet labels Argentina a 'Failed State' and claims the 'Milei Regime Lost Control of Rosario,' which is misleading. The protests were by Santa Fe provincial police demanding pay raises and better mental health support from Governor Pullaro (a provincial, not federal figure). The protests were localized to Santa Fe province, not nationwide, and were resolved within days after Pullaro granted salary increases. Attributing this to Milei's federal government is inaccurate."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021317533534392696",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The Hennepin County Attorney's characterization of local jails as purely 'pre-trial facilities' is incomplete. According to Hennepin County's own website, the Adult Corrections Facility holds people serving sentences of 12 months or less, and the jail also holds some sentenced inmates. The omission is relevant because it overstates the proportion of unconvicted individuals affected by ICE detainers."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021321825939038597",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet contains two inaccuracies: (1) Brashad Johnson is a Department of Defense contractor who conducts background checks for multiple federal agencies including ICE, not an ICE employee as implied; (2) no public reporting connects his security clearance to the Trump administration specifically. He was arrested in a prostitution sting, not specifically an 'underage sex trafficking' operation as the tweet implies. Multiple news sources (KSTP, FOX 9, KARE 11) confirm his role as a DoD contractor."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021329949442048472",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Rep. Johnson implies a passport is required to register to vote under the SAVE Act, which is misleading. The SAVE Act accepts multiple forms of documentary proof of citizenship including birth certificates, naturalization certificates, military records showing U.S. birth, and certain REAL IDs indicating citizenship -- not just passports. The framing that tens of millions would be disenfranchised by a passport requirement misrepresents the bill's actual provisions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021277166659399927",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "This is Nigel Farage promoting a TV appearance to discuss his opinion on working from home. The proposed notes either point out hypocrisy (his wife worked from home on taxpayer money) or cite productivity studies -- neither corrects a factual claim in the tweet itself, which is simply an invitation to a debate. The tweet is opinion/self-promotion, not a factual claim requiring correction."
+  }
+]

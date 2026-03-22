@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2019506229559648650",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet mixes claims of varying accuracy. The '80% on welfare' stat has some basis in CIS data (about household-level welfare receipt), but the framing of '80% of Somali immigrants' is misleading. The claim that Somali crime rates 'far exceed' Americans is not supported by available data — FBI does not track crime by national origin. The English claim lacks clear sourcing. The community note citing labor participation and incarceration data provides useful context."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019231303514927329",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is confirmed by Reuters, AFP, Euronews, and Snopes to be from October 2019 showing Danish PM Mette Frederiksen laughing about purchasing retired circus elephants. It has nothing to do with Trump or Greenland. This is a clear misattribution debunked by multiple fact-checkers."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019586807139299550",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is confirmed to be from a consensual BDSM production 'Drea Stakeout Under Glass' by Lew Rubens featuring performer Drea Morgan, not Jeffrey Epstein. Multiple fact-checks from IBTimes, Primetimer, and Factually have debunked this. The man in the video merely resembles Epstein."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019533698035773654",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Same debunked video as the previous tweet — it is from the BDSM production 'Stakeout Under Glass' featuring Lew Rubens and Drea Morgan, not Epstein. The tweet's claim that this was 'confirmed in the documents' is false. Multiple fact-checkers have verified the video's true origin."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019360475553886439",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The video frames fishermen as heroes for releasing a hammerhead shark, but evidence indicates hammerheads are a prohibited species in Florida that cannot legally be landed. Dragging them ashore causes severe stress with high post-release mortality rates. The 'rescue' framing is misleading — the fishermen likely hooked the shark themselves."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019522390922084437",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show Jake Lang's arrest, but the video only shows him vandalizing the sculpture. However, news sources (MPR News, Star Tribune, Fox 9) confirm he was indeed later charged with felony damage to property, and the $6,000+ damage figure is confirmed. The note correctly points out the video does not show an arrest, though the charges were eventually confirmed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019431360159789236",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The 1899 Gabriel Veyre film shows the wife and daughter of Governor-General Paul Doumer throwing coins (sapèques), not grains, to Vietnamese children. The tweet incorrectly identifies the women as 'French women' and claims the children were 'starving' — there was no famine in Vietnam in 1899-1900. The community notes provide accurate historical context."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019445942722654331",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Trump signed Executive Order 14224 designating English as the official language on March 1, 2025, not 'today.' The tweet presents old news as breaking, using engagement-bait formatting. The White House, NPR, CBS, and AP all confirm the signing date was March 1, 2025."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2018808215203705053",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The claim that Islam 'didn't come to the United States on the Mayflower' and was 'imported relatively recently' is historically inaccurate. Muslims were present in the Americas from 1528 (Estevanico), and an estimated 20% of enslaved Africans brought to America were Muslim. The Smithsonian's National Museum of African American History documents this extensive pre-colonial Muslim presence."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2019476647024685462",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet labels the video as 'BREAKING' but the clip is from Michael Saylor's January 16, 2025 interview with Tai Lopez (episode #680), not a recent statement. The 'BREAKING' framing is misleading engagement bait presenting year-old content as new."
+  }
+]

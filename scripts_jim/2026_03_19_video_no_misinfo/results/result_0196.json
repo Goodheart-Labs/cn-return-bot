@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2013848858560725274",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Grok 'revealed' specific throttling percentages for accounts. Multiple sources confirm Grok does not have access to internal X moderation data; these outputs are AI hallucinations produced by prompt manipulation. The community notes correctly identify this as a known exploit where Grok fabricates fictional data reports."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013618584325382604",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies the CVMA veterans video is a current event. The community note identifies it as footage from the 2023 CVMA national convention in Colorado Springs, which is confirmed by the archived convention website. Presenting old footage without date context as if current is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013760131964584426",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims aircraft trails are toxic geoengineering ('chemtrails'). The EPA, FAA, and broad scientific consensus confirm these are contrails — ice crystals formed from water vapor in jet exhaust condensing at high altitudes. No peer-reviewed evidence supports a secret large-scale spraying program."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013348628929094094",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims measles fatality rate 'should be near zero' with modern care. During the 2025 US outbreak, 3 people died among ~2,285 cases despite full access to modern medical care. The CDC reports a fatality rate of 1-3 per 1,000 infections, and up to 1 in 5 cases require hospitalization. The claim dangerously downplays measles severity."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013778578320527631",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet shows a video captioned 'LET ME BACKK INNNNN' with a note claiming it is AI-generated. Without being able to view the video or find corroborating sources about this specific clip, I cannot confirm whether it is AI-generated or real footage. The note's claim is plausible given the proliferation of AI video but unverifiable from available information."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013728293283905746",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet shows a MN doctor (Matt Klein, a state senator and Mayo Clinic physician) recounting claims about Renee Good having a pulse after being shot by ICE and a physician being denied ability to help. Multiple news sources (APM Reports, KARE11, The Hill) confirm these facts: Good did still have a pulse when firefighters arrived, and video shows a physician was denied access. The existing notes are either tangential or argue no note is needed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013740876422369392",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet says 'That's Adam Sadler' (misspelled) about someone in a video. Two conflicting notes exist: one says it IS Adam Sandler from a 2018 Montreal wedding photobomb, the other says it is NOT Sandler but a wedding guest who resembles him. Without viewing the video, the correct identification is unclear. The Adam Sandler Montreal photobomb is a confirmed real event from 2018."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013290980129255496",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'dwarf men easily crushed' the tall women. According to the YouTube video and multiple sources, the competition was closely contested — the women won the Jeep pull, barbell tug of war, and rope tug of war, with the men winning the tiebreaker fireman carry for a narrow 4-3 victory. 'Easily crushed' is factually inaccurate."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013738199617581315",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The headline 'ICE drags US citizen from his home' is somewhat misleading. Multiple news sources (PBS, ABC, NBC Chicago) report ChongLy Thao was 'led out in handcuffs' not physically dragged. DHS stated the operation targeted convicted sex offenders in the home, though the family disputes this. The note adds important context about the operation's stated purpose and the manner of removal."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2013650155585573077",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet frames Athika Ahmed dismissively as a 'Health Ambassador' with implied mockery. Ahmed is a 23-year-old medical student and long-time volunteer on Cardiff and Vale Health Board's youth panel who helped develop women's health resources. The community notes correctly provide context about her actual role, though the tweet's framing rather than factual claims is the main issue."
+  }
+]

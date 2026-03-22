@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2017368823410614272",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet promotes Pierre Poilievre as 'all spin and slogans' with an attached video. The community note claims the video asserts unemployment has fallen sharply under Carney, which is misleading. Canada's unemployment rate was 6.7% in Feb 2026 and rose from the previous month, though Carney's office notes it is lower than the 7.0% when he took office. The claim about unemployment falling 'sharply' appears exaggerated and context-dependent, making a corrective note warranted."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017398079381770440",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet calls for removing the president, presumably based on Epstein file revelations. The DOJ's January 2026 release of 3 million pages mentioned Trump over 1,000 times but contained unverified FBI tip line allegations. The DOJ itself stated the abuse allegations against Trump in the files were 'unfounded and false.' A note providing this context is warranted to prevent misleading inferences."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017239050978029995",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet shows an emotional animal video with the caption 'They remember. They miss. They love.' Community notes claim it is AI-generated. Without being able to view the video directly, I cannot independently verify whether it is AI-generated or real footage. If AI-generated, a note would be warranted as it emotionally manipulates viewers with fabricated content."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016778955718869285",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims a Nipah virus outbreak has 'much of the world on high alert with fears of another pandemic' and that travellers are being screened at 'all major Asian airports.' The WHO explicitly assessed the risk as low at the national, regional, and global levels, and moderate only at the sub-national level in West Bengal. The tweet significantly overstates the threat, making a corrective note warranted."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017359352026337402",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Senator Blackburn claims she 'fought for years to expose' Epstein associates, but Senate records confirm she voted on September 10, 2025 to block an amendment that would have mandated release of Epstein files. This is a directly verifiable contradiction between her stated position and her voting record, making a factual correction highly warranted."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017294773447758330",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies Steph Curry visited Costco specifically for the Nike SB Dunk release. However, Curry's well-documented Costco visit was in October 2024 (for bourbon promotion/shopping), predating the January 2026 Nike SB Dunk drop by over a year. The video appears to be recycled old footage presented in a misleading new context."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017418927618363849",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "This is a Roblox safety update post. The community note criticizes Roblox's AI moderation for false bans, which is a documented issue, but the original tweet is just announcing safety initiatives. The note adds relevant context about moderation failures but the tweet itself is not clearly misleading — it is a corporate announcement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016934739152957528",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the attack occurred in Pakistan. Multiple sources (BBC, Fox News, Rappler, France 24) confirm the RPG attack was on Mayor Akmad Ampatuan in the Philippines, not Pakistan. This is a clear factual error about the country where the event took place."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017392190016917723",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the man at WEF was Clinton's pilot and that his company 'sprays our skies with chemicals.' The community note correctly identifies that Kennedy Ricci is the SON of Clinton's pilot (not the pilot himself), and 4AIR primarily uses Sustainable Aviation Fuel for decarbonization, not chemical spraying. The tweet contains multiple factual inaccuracies."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017208257509552138",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet appears to make claims about Alex Pretti. The community note provides factual corrections: Pretti had a valid gun permit (contradicting implications he didn't), he didn't quit his ICU nurse job, and his parents knew he attended protests. These are verifiable corrections supported by PBS, Snopes, and other sources."
+  }
+]

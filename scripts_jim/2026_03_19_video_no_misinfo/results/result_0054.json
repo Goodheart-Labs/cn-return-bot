@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029532550842990972",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "This is a political opinion tweet where a Virginia official endorses the redistricting amendment. While the underlying policy is contentious and involves partisan redistricting, the tweet itself is clearly an expression of political opinion and endorsement, not a factual claim that can be fact-checked. Community notes on political opinions are generally inappropriate."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029531533481013634",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "CNN's tweet already includes the disclosure that it is 'operating in Iran only with government permission.' While critics argue this understates the severity of Iranian media restrictions and government minders, the tweet is transparent about the key limitation. The proposed notes add context about the extent of restrictions, but CNN already flagged the core issue. A note restating what the tweet already says is redundant."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029261657063436564",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The video appears to show a turtle egg hatching quickly, which is biologically impossible without weeks of incubation. However, the tweet is sharing a feel-good video with visible jump cuts and no factual claims about biology. The existing community notes correctly identify this as entertainment content with obvious editing. A community note is not warranted for entertainment clips that make no misleading factual claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029421844894273978",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The video purportedly shows a woman jumping from a moving car. Notes claim it is AI-generated, citing physics-defying movement and visual glitches. Without being able to verify the specific Instagram source or view the video directly, the AI-generation claim is plausible given the 2026 trend of AI car stunt videos, but I cannot confirm with high confidence. If AI-generated, a note would be warranted given 1.4M impressions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029446675719217660",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Trump offered 'no presidential salute to our fallen soldiers' using video from a December 2025 dignified transfer, not the March 2026 Iran conflict. Fact-checkers at Lead Stories and Yahoo confirmed the video is misattributed. Trump did attend and salute at the December 2025 transfer. The tweet uses old footage to make a false claim about current events."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029565095282413642",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show a 'man in Iran' exposing media manipulation. Multiple sources including CBC, CTV News, and Wikipedia confirm the video is from an Iranian diaspora solidarity protest in Canada (Toronto or Ottawa), not from inside Iran. The tweet fundamentally misrepresents the location and context of the protest footage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029542802615341068",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Obama's tweet frames Virginia's redistricting amendment as defending 'free and fair elections' against Republican gerrymandering. However, the amendment would bypass Virginia's bipartisan redistricting commission (approved by voters in 2020) and allow the Democrat-controlled legislature to draw maps projected to yield a 10-1 partisan split. Obama himself admitted partisan gerrymandering is not his 'preference.' With 5.8M impressions, context about what the amendment actually does is warranted."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029381682483122333",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show the 19th wave of IRGC's Operation True Promise 4 being launched, but community notes and linked posts indicate the video is recycled footage from a previous Iranian attack (June 2025), not current operations. Presenting old military footage as breaking news is misleading, especially with 1M impressions during an active conflict."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029151626553180178",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the hepatitis B vaccine triples the chance of autism in babies. This is based on a retracted 2010 study with serious methodological flaws. The CDC, WHO, and numerous large-scale studies have found no link between any vaccine (including Hep B) and autism. This is dangerous health misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029415894783242438",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet calls the sinking a 'WAR CRIME' and describes the IRIS Dena as 'an unsuspecting Iranian ship.' Multiple sources confirm it was a Moudge-class guided-missile frigate (warship), not a civilian vessel. While the legality is debated, calling it definitively a 'war crime' is unsupported -- legal analyses are mixed. The tweet also omits that it was a military vessel, framing it misleadingly as an unprovoked massacre of a civilian crew."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2021640912133136675",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Ratcliffe claims UK population was 58 million in 2020, but ONS data shows it was ~67 million. The 58 million figure corresponds to around 2000, not 2020. The population increase since 2020 is ~2.7 million, not 12 million. The quote contains a significant factual error that greatly exaggerates immigration-driven population growth."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021743781352264022",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet makes a broad editorial claim that US sanctions on Iran backfired and reinforced national solidarity. The community note alleges the poster is paid by the IRGC but provides only another tweet as evidence, not an authoritative source. The underlying geopolitical claim is debatable opinion rather than clear-cut misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021626975119675821",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Rahul Gandhi 'sold farmers' rights' at the 2013 WTO Bali meeting. In reality, the Bali deal secured a 'peace clause' that protected India's food subsidy programs from WTO challenges, and the BJP government later extended it. The tweet's characterization is misleading about what the deal actually achieved."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021673105161175091",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies the rental truck video shows human trafficking. Gwinnett County Police confirmed the truck contained two families (8 people including 2 children) moving from Alabama to Maryland. No human trafficking was involved; the driver received only a seatbelt citation. Multiple news outlets (USA Today, Fox 5 Atlanta, WSFA) confirmed the debunk."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021675402658558115",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet makes claims about the SAVE Act that mix valid concerns with exaggerations. The bill requires documentary proof of citizenship for voter registration (not at the ballot box), and while ~69 million women lack birth certificates matching their current name, the bill does not outright prevent them from voting -- it adds documentation hurdles. The note correctly clarifies the bill's scope."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021770894792634662",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video attached to the tweet purporting to show a balloon hitting a biblical firmament is actually an inverted clip of a real 2021 Utah hot air balloon crash into a pond, flipped upside-down to appear as if the balloon hit a barrier in the sky. This is clearly manipulated content used to support a false flat-earth claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021396259215638854",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Pfizer documents list 'thousands of side effects.' Multiple fact-checkers (FactCheck.org, PolitiFact, Full Fact) confirm these were adverse events of special interest that Pfizer was monitoring for, not proven side effects caused by the vaccine. The list does not establish a causal relationship between vaccination and the listed conditions."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021680640043692072",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims ICE arrested 'over 12,000' illegal immigrants in Minnesota. Official DHS figures cite ~3,000 to 4,000+ arrests during Operation Metro Surge, and the Star Tribune reported that even the government's claimed 10,000 figure could not be independently verified. The 12,000 number appears unsubstantiated and inflated beyond even official government claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021796046725398786",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet shares a photo purporting to show Jesse Van Rootselaar, the Tumbler Ridge school shooter. Snopes and multiple outlets confirmed that photos circulated on social media falsely claimed to depict the shooter, including images of misidentified individuals. There are conflicting community notes about whether this specific image is the shooter, but widespread misidentification was documented."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2021611307842052269",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet describes the event as 'Iranian protesters' burning a Baal statue, but the 2025-2026 Iranian protests were anti-regime demonstrations. A pro-regime rally with anti-Israel symbolism would be a government-organized counter-rally, not part of the genuine protest movement. Labeling this as 'protesters' is misleading about who is depicted."
+  }
+]

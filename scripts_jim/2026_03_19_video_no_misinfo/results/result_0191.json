@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2014458768239821257",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents an American traveling solo in Iran during the 2025-2026 protests/blackout as a personal adventure, potentially downplaying a crisis where tens of thousands were killed. Notes correctly flag that the creator used a Lebanese passport (not US), had local assistance, and that independent verification is impossible due to the blackout. The framing risks normalizing conditions under a regime actively massacring protesters."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014242976638116028",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims you can diagnose a car through the cigarette lighter port, which is factually false. The OBD-II diagnostic port and the 12V accessory/cigarette lighter port are completely separate systems. The cigarette lighter port has no access to diagnostic data. This is clear misinformation that could lead people to waste time or fall for scam apps."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014399945323729224",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Jack Smith's case 'COLLAPSED' and was 'all political.' Smith testified to Congress in January 2026 defending his evidence. The federal cases were dismissed due to DOJ policy against prosecuting a sitting president and court rulings on the special counsel's appointment authority, not because the evidence collapsed. The framing is misleading about the reasons for dismissal."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014160276958949716",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The video of Zohran Mamdani being booed at a Staten Island restaurant is a real, verified event from August 2025. The tweet does not make false claims about the event. The existing note arguing it is 'not misleading' aligns with the evidence. The tweet is political opinion/commentary on a real incident."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014365980714053866",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet promotes a weather conspiracy theory suggesting NYC snowstorms in years ending in 6 are artificially timed. Major NYC snowstorms have occurred in many other years (1888, 1947, 2010). The Northeast Regional Climate Center confirmed there is no causation. Weather modification technology cannot create large-scale blizzards. This is a clear conspiracy theory contradicted by meteorological science and historical data."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014382558364991867",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show men in Iran converting to Christianity, but notes identify the video as being from T.B. Joshua's 2017 Christian crusade in the Dominican Republic with Spanish-language audio, not Persian. The tropical setting with palm trees is inconsistent with Iran. This is a misattributed video used to make a false claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014445613497065776",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet frames the incident as ICE detaining a kindergarten-aged girl 'without a warrant' to force the mother out. NBC News and other sources report conflicting accounts: the family says ICE held the girl as leverage, while DHS says the father abandoned the child while fleeing. The tweet's framing omits significant context about the father fleeing and the charges against him, and misidentifies the parent ICE was targeting."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014435981999460849",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet says ICE 'detained' a 5-year-old boy in Minnesota, but the situation is heavily disputed. DHS says the father Adrian Conejo Arias fled and abandoned the child, while school officials and the father dispute this. A judge later ordered the boy and father released. The framing lacks important context about the conflicting accounts of what happened."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014317787729023369",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents Trump's Greenland 'total access' claim as a major new achievement, but CNN and multiple outlets note that the US already had military access to Greenland under a 1951 defense agreement. Denmark and Greenland also stated sovereignty is non-negotiable, and no formal deal was signed. The note correctly flags that the existing 1951 treaty already grants base-building rights."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014389922724008189",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet says 'ICE detained a five year old boy' without context. Multiple sources confirm conflicting accounts: DHS says the father fled and abandoned the child, while the father and school officials dispute this. The boy and father were held in a Texas detention center for 10 days before a judge ordered release. The tweet's framing omits the disputed circumstances and the father's involvement."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029863339036398019",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims MTG is using fake videos/photos from other conflicts to misrepresent Iran. However, a community note points out a specific photo was geolocated to Minab, Iran (not Indonesia as some claimed), meaning the tweet itself contains misinformation by calling the content fake. Snopes confirmed the graves photo is from an actual cemetery in Minab, Iran, contradicting the tweet's claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029843413533667765",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show devastation from an Iranian missile strike 'last night' in Bat Yam, Tel Aviv. Snopes and multiple fact-checkers confirmed this video is from the June 2025 Iranian missile strike on Bat Yam during the Twelve-Day War, not from March 2026. The March 2026 Iranian strikes hit different areas, not Bat Yam. This is a clear case of old footage being recycled with a false timestamp."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029979936727932957",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies Gen Z is being drafted for the Iran war. No military draft is active in the US as of March 2026; service remains all-volunteer. While the White House has not ruled out a draft, Congress has not authorized one. Multiple sources (Poynter, Fox, NewsNation) confirm no draft exists. The accompanying video appears to be AI-generated satire, not real footage."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029828627236606163",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims China 'secretly supplied' 50 CM-302 missiles to Iran that were launched and failed. Reuters reported Iran was nearing a deal to buy CM-302s, but China officially denied any finalized deal or delivery. While some outlets report possible transfers, independent verification is lacking and China's Foreign Ministry explicitly denied it. The claim that missiles were launched and all failed is unverified by credible sources."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029979028636016762",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims 'HEAVY BATTLES' between Iraqis and US forces. While there have been clashes between US forces and Iran-backed Iraqi militias, and US airstrikes on militia targets, these are not 'heavy battles between Iraqis and US forces' in the conventional sense. The fighting involves militia groups, not the Iraqi military proper, and the scale described is exaggerated compared to Reuters and other reporting on the actual incidents."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029826000620519740",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet shows a video claiming to depict Iranian cluster missiles. Multiple fact-checkers (Poynter, Lead Stories, Haaretz, CNN) confirmed that AI-generated videos of Iranian missile strikes on Tel Aviv have gone viral with millions of views. The video's cartoonish imagery, music overlay, and fireworks-like effects are hallmarks of AI generation. Hive AI detection tool gave 99% probability of being digitally created."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029832490085392584",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet describes the verified friendly-fire incident where a Kuwaiti F/A-18 Hornet shot down three USAF F-15Es on March 2, 2026. This is confirmed by CENTCOM, WSJ, The War Zone, and Air & Space Forces Magazine. The tweet's factual claims about the incident, weapons used, and squadrons are largely consistent with reporting. The tweet does not explicitly claim it was intentional, so the core facts are accurate."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029839767488143498",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet frames this as a recent event ('People are so fed up') implying it happened in the context of the 2026 Iran war. The video actually shows Polish far-right MP Grzegorz Braun using a fire extinguisher on Hanukkah candles in the Sejm on December 12, 2023 -- over two years ago. The ceremony was held by Poland's Jewish community, not 'Israelis' as the tweet claims. Both the date and the participants are misrepresented."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029870802682745258",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet claims the US/Israel targeted Shahid Hamedani elementary school in Tehran. Iran's Foreign Ministry made this claim and multiple outlets (Al Jazeera, NPR, CNN) reported a Pentagon probe pointed to likely US responsibility for a school strike. However, Iran's schools were closed until end of March 2026 due to the conflict, and there are reports of IRGC using schools as bases. The community notes raising these counterpoints add important context, but the underlying strike claim has some corroboration."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029878324009345035",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims a Muslim man is proposing to a 7-year-old girl for marriage. Fact-checkers (Alt News, Annie Lab) verified this is a video from Russia showing a Romani Christian uncle with his 5-year-old niece at a wedding where the uncle married a different woman. The video has been repeatedly debunked as misattributed anti-Muslim disinformation."
+  }
+]

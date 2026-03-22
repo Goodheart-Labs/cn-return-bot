@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2017475036756758649",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies the show was cancelled because of a specific episode's content. Variety, Deadline, and other sources confirm Disjointed was cancelled in February 2018 due to poor reviews (23% on Rotten Tomatoes) and low viewership, not because of any particular episode. The community note correctly addresses this misleading implication."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017658209088016437",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet attributes a specific AI warning to Robert Herjavec about 'Clawdbot' and 'Moltbot.' Web searches found no evidence of Herjavec making these specific statements. While Moltbot/Clawdbot/OpenClaw are real AI projects with documented security concerns, the attribution to Herjavec appears fabricated. The note's claim about Moltbook being a human-controlled experiment uses slightly different terminology than actual sources."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017509015404876137",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims ICE agents arrested and assaulted someone. The Orange County Register and ABC7 confirm this was Anaheim Police (not ICE) conducting an arrest, with viral videos mistakenly claiming ICE involvement. Multiple news sources documented that the officers' vests were clearly marked as local police/sheriff, not federal agents."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017260683868381269",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet frames a video at Farnham Road Hospital as showing 'undocumented migrants' receiving 'priority NHS healthcare.' NHS and CQC records confirm Farnham Road Hospital is a specialist mental health inpatient facility, not a general hospital. The tweet misrepresents the nature of the facility to push an anti-immigration narrative."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017686772818591990",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet features FBI Director Kash Patel citing enforcement statistics. The 490% NVE arrest increase and 6,000+ child victims located are figures Patel himself posted on X. The community note criticizes the tweet by referencing Epstein allegations against the President and Patel's credibility, which is more editorial commentary than a factual correction of the claims in the tweet itself."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017599525129466338",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims $19 billion in frozen assets. Multiple credible sources (SCMP, The Standard HK, Caproasia) report the Jieworui platform's frozen/unpaid amount was approximately 10-13.4 billion yuan (~$1.4-1.9 billion USD), roughly 10-13x less than the claimed $19 billion. The dollar figure is significantly inflated."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017459377155047792",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims an Epstein eyewitness confirmed politicians engaged in cannibalism, corroborated by Gabriela Rico Jimenez. Fact-checkers (Boatos.org, Factually.co, MEAWW) confirm Jimenez's 2009 incident was a documented mental health crisis, she has no connection to Epstein files, and no credible evidence of cannibalism exists in the DOJ releases. This is unsubstantiated conspiracy content."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017302677089067272",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims '3,000,000 files' and '17,000 videos' were released. The DOJ's own press release states 3.5 million responsive pages (not files) and 'more than 2,000 videos' plus ~180,000 images. The '17,000 videos' figure is roughly 8.5x the actual number, and 'files' conflates with 'pages.'"
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2017596529616302577",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims the person in the video is 37 years old with Angelman Syndrome described as 'perpetual adolescence.' TikTok account @ashluv08 shows Makayla is a teenager (going into 11th grade, ~17 years old), not 37. Mayo Clinic describes Angelman syndrome as causing severe developmental delays and intellectual disability, not 'perpetual adolescence.' Both the age and the characterization of the condition are wrong."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2016962113215029327",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims an Iranian Navy helicopter conducted a reconnaissance flight over a US Navy vessel in the Persian Gulf. The community note identifies the ship as USS Essex (LHD-2) based on the hull number '2' visible on the island. USS Essex is homeported in San Diego. While the ship's exact location at time of filming cannot be fully confirmed, the identification of the vessel and skepticism about Iranian helicopter proximity is reasonable."
+  }
+]

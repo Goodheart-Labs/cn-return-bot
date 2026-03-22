@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029690917163041016",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet says 'Gone, but not forgotten' about Kristi Noem. While Noem was fired as DHS Secretary on March 5, 2026, the phrasing could be interpreted as implying she died. However, the tweet is clearly a joke/commentary about her political career ending. Existing notes were rated NOT_HELPFUL or NEEDS_MORE_RATINGS, and the NOT_MISLEADING note correctly identifies it as humor. A note is unnecessary for obvious political commentary."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029557105468817741",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The tweet presents what appears to be an AI-generated video as '3D street art.' One note claims the post already carries X's AI label, which would reduce the need for a community note. If the AI label is present, a note is less necessary; if absent, calling AI content '3D street art' is misleading. Without being able to view the post directly to confirm the AI label, this is uncertain."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029638482339958977",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Benny Gantz declared he 'won't rule out American boots on the ground in Iran' and frames it as proof of who is 'calling the shots' for the US military. Multiple sources confirm Gantz spoke about ISRAELI boots on the ground, not American. The tweet fabricates the 'American' framing. Additionally, Gantz is not currently in government, making the 'calling the shots' implication doubly misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029850992850698257",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show current protests against Netanyahu's government, but multiple sources confirm the footage is from the February 15, 2026 Bnei Brak incident where ultra-Orthodox protesters chased IDF soldiers over conscription tensions. The video is miscontextualized -- it shows a specific anti-draft religious riot, not anti-government political protests."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029772571760283835",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show a Muslim man proposing to a 7-year-old girl. Multiple fact-checks confirm this is a 2016 Brazilian wedding video where groom Diogo Bolant gives a promise ring to his fiancee's 6-year-old daughter, asking to be her stepfather. The video has been repeatedly debunked by AFP, Annie Lab, and others. This is deliberate miscontextualization to promote anti-Muslim hatred."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029858559807070479",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Iranian ballistic missiles hit the USS Abraham Lincoln. US Central Command explicitly denied this, saying missiles 'didn't even come close.' PolitiFact confirmed the video actually shows the 2020 USS Bonhomme Richard fire in San Diego (or Arma 3 game footage). The carrier remained fully operational. This is verifiably false war disinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029789987299021179",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show Tel Aviv being destroyed by Iranian missiles with 'no air defense, no light.' Multiple fact-checkers (Snopes, Euronews, Poynter, Haaretz) have documented a massive wave of fake/recycled/AI-generated videos falsely claiming to show strikes on Tel Aviv. One community note identifies the video as actually from Tehran with Farsi being spoken, not Hebrew. This is war disinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029678262146785625",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The AI-generated 'Then and Now Baywatch' video reportedly claims David Hasselhoff died in 2024 and states Jason Momoa is 68 years old. Hasselhoff is alive at age 73 and Momoa is 46. These are verifiably false factual claims presented in a format that appears informational, misleading the 2.3M viewers."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029803286984089747",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show 'Israel on fire tonight' from Iranian strikes. One note says the video is actually from Dubai, and a Lead Stories fact-check confirms a similar video showing a 2024 Tel Aviv apartment fire being misattributed to 2026 strikes. Dubai authorities have warned against sharing old fire videos misattributed to the conflict. This is miscontextualized footage used as war disinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029658904347414698",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet quotes Netanyahu as saying he will 'continue to expand Israel in the Middle East.' Official transcripts and the Israeli PM's own social media show Netanyahu's actual Palmachim Airbase remarks were about striking Iran and military operations, with no mention of 'expanding Israel.' The quote appears to be fabricated. The video's own subtitles reportedly do not contain this statement."
+  }
+]

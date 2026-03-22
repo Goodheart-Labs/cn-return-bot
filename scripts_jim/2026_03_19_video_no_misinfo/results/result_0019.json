@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2032028684258066482",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that Naim Qassem was killed is false -- he was alive and giving public speeches as late as March 18, 2026."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032037435425624529",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple credible sources confirm the IRGC attacked the tanker Safesea Vishnu in the Persian Gulf, killing one Indian crew member. The tweet's core claims are accurate."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031882868973322681",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The compilation includes clips from years before COVID vaccines existed (2006, 2012), falsely implying they were caused by mRNA vaccines. Also incorrectly labels mRNA vaccines as 'gene therapy.'"
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032095011454546290",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet blames Democrats exclusively but Republicans also blocked multiple standalone bills to fund TSA specifically. Both parties bear responsibility."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031895801064985021",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "Official White House account posting political messaging that mixes AI-generated imagery with real footage. Controversial but not misinformation per se."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031961009892782149",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Shakur Stevenson confirmed a $60M deal. He actually said 'Not that I know of, but if they're offering $60 million, call my phone.' Directly misrepresents his statement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031848507036815528",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet accurately quotes Trump's insult of Massie. While Trump makes false claims in the video about his uncle's MIT tenure, the tweet is reporting/sharing Trump's remarks, not independently asserting those claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031866177991872618",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "Low-stakes entertainment clickbait with a misleading description of video content. Not public interest misinformation that warrants a community note."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2031913215790084334",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple false claims about China's social credit system. It does not punish government criticism, cause homelessness, or prevent food purchases. Authoritative sources confirm it primarily involves blacklists for unpaid court debts."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2032047926529097837",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is recycled footage from June 2025 Iranian missile strikes on Ramat Gan, not from March 2026. Fact-checkers have documented widespread use of old footage falsely presented as current."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028288127438037099",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is confirmed by multiple fact-checkers (The Quint, BOOM, Alt News, Gulf News) to be from the 2020 Beirut port explosion, not a 2026 Iranian missile strike in Dubai. The woman in the video, Edlyn Candido Lacse, publicly confirmed it was filmed in Lebanon in 2020."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028261279844966900",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that 10+ IDF generals were killed in a hypersonic missile strike on a security cabinet meeting is unverified by any credible source. Misbar flagged similar videos as AI-generated. No major outlet reported senior Israeli military leadership killed in such an attack."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028272327058698589",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely labels the Cincinnati Riverfront Live shooting as a 'terrorist attack' and claims 13 people were shot. Local police and news outlets (Fox19, WVXU) confirmed 9 people were injured, two suspects were arrested for felonious assault after a fight, and the incident was not classified as terrorism."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028277105776087072",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that Israel's nuclear reactor was destroyed with radioactive material leaking is false. The video is identified as footage from the 2020 Beirut explosion. No credible source reported destruction of the Dimona reactor or any radiation leak from Iranian strikes."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028238482846687618",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Iranian air defense shot down a fighter jet over Tehran. Community notes identify the video as showing debris from an intercepted Iranian missile near Doha, Qatar, not a jet over Tehran. No credible reports confirm a fighter jet was shot down over Tehran on that date."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028255195684110712",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies Iran could attack the US homeland. Iran does not possess ICBMs capable of reaching the continental United States. Its longest-range operational missiles reach approximately 2,000-2,500 km, far short of the ~10,000 km needed. NBC News noted a 2025 intelligence report estimated Iran is a decade away from such capability."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028187911623946361",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims an 'Israeli shooter' attacked an Austin bar and makes antisemitic claims. The suspect was identified by AP, CNN, and police as Ndiaga Diagne, a 53-year-old naturalized US citizen from Senegal, who wore 'Property of Allah' clothing with Iranian flag imagery. He was not Israeli or Jewish."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028194536443277317",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet shows video claiming to depict Iranians protesting after Khamenei's assassination. Some notes claim it is 2020 Soleimani funeral footage; others dispute this, noting the protesters hold Khamenei pictures, not Soleimani. Misbar confirmed some reused Soleimani funeral footage circulated, but this specific clip's provenance is contested among the community notes themselves."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028207284002623515",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Iran shot down an Israeli/US aircraft near Damavand. The community note citing Hindustan Times debunks claims of a B-2 bomber being shot down. No credible source confirmed a manned aircraft was downed near Damavand; the footage likely shows something else entirely."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028236929540501578",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet repeats Iranian state media claims of a US base in Kuwait 'entirely decommissioned,' the USS Abraham Lincoln hit by 4 missiles, and 560+ US troops killed. CENTCOM confirmed the Lincoln was not hit. Actual US casualties were 6 killed in Kuwait and ~13 total by mid-March. These claims are vastly exaggerated Iranian propaganda."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028279814893777317",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that an Iranian hypersonic missile struck an Israeli security cabinet meeting and killed 7 generals is not corroborated by any major news outlet. While Iran did strike Israel in March 2026, no credible source reports this specific incident. The note correctly identifies this as false."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028426226885402995",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Iran's IRGC claimed to target Netanyahu's office, but Netanyahu's office called it 'fake news,' Jerusalem residents reported no impact, and police/rescue services confirmed no hits or damage in that area. The tweet presents Iran's unverified claim as fact. Multiple sources including Times of Israel, Xinhua, and The Week's fact check confirm the claim was dismissed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028236119704260799",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The underlying event is real -- Iranian students at Shahid Beheshti University refused to walk on US/Israeli flags in January 2020. However, the video is from 2020, not recent, and posting it during the March 2026 Iran conflict strongly implies it is current. A note adding temporal context is warranted, though the tweet does not explicitly claim a date."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028394438423126384",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that Iran shot down three US fighter jets is false. US Central Command confirmed the three F-15E Strike Eagles were shot down by Kuwaiti air defenses in a friendly fire incident, not by Iran. All six crew members ejected safely. CNN did not attribute the incident to Iran. Multiple authoritative sources (CENTCOM, Military Times, CBS, CNN) confirm this."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2026768448857022494",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The tweet claims panelists were 'laughing at American soldiers dying,' but one panelist (Elica Le Bon) disputes this, saying they laughed at Cenk's claims, not at soldiers. Without being able to verify the full video context, the framing may be misleading but the underlying opinion content ('diplomacy first') is not a factual claim requiring correction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028285740363510002",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "This is primarily an opinion/commentary tweet about Disney World pricing being expensive compared to a European ski vacation. The factual claims are subjective comparisons of personal travel costs. The existing notes disagree on whether it is misleading, and the core content is personal anecdote and opinion, not verifiable misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028364395638833229",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The viral video was debunked by IBTimes UK and BOOM as footage from the 2020 Beirut port explosion in Lebanon, not from a Dubai apartment during an Iranian missile strike. While Iran did strike the UAE in March 2026, this specific video is recycled misinformation from a completely different event."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028340274636947880",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "While US F-15s were indeed shot down over Kuwait, the tweet's framing with Iranian flag emoji implies Iran was responsible. CENTCOM confirmed it was a friendly fire incident by Kuwaiti air defenses. Additionally, the note points out one image incorrectly shows an F-22, not an F-15. The implicit attribution to Iran is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028387011137089598",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The core claims are substantiated: Arshad Khatana was indeed suspended by Labour over 'abhorrent views,' and Reeves has been photographed with him multiple times. The tweet's characterization of Khatana as a 'fanatic' is opinion, but the factual basis (long association, suspension) is confirmed by Yorkshire Post, Jewish News, and Labour's own response. The existing notes add context (Farage also met him) but the tweet itself is not clearly misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028305172955545844",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video purportedly showing Israeli strikes on Iranian nuclear sites is actually footage of the August 2020 Beirut port explosion in Lebanon. This has been repeatedly debunked by fact-checkers. Recycling Beirut explosion footage as current conflict footage is a well-documented pattern of misinformation."
+  }
+]

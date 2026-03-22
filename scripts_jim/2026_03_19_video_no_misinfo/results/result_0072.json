@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028592573564994026",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet quotes IRGC spokesperson claiming 650 US soldiers killed or wounded. US Central Command confirmed only 6 service members killed and 5-18 seriously wounded. While the tweet frames it as an IRGC claim rather than fact, the community note providing accurate US casualty figures adds essential context to a wildly inflated propaganda claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028580855187226858",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Secretary Rubio claims there was 'absolutely an imminent threat' from Iran. Multiple credible outlets (Reuters, Newsweek, CNN) reported that Pentagon officials told Congress in a closed-door briefing there was no intelligence showing Iran planned to attack US forces first. This directly contradicts the claim and is well-documented across mainstream sources."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2027842317764395119",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet presents Maryam Rajavi as 'president-elect' of a legitimate Iranian opposition. The MEK/NCRI has a well-documented history as a designated terrorist organization (delisted in 2012) and polling shows minimal support among Iranians. Context about MEK's controversial history and lack of domestic legitimacy is relevant, though the tweet itself is not factually false about what was discussed."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028310772560904644",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims Israel's Security Cabinet was 'wiped out' and 'several top generals dead' from an Iranian hypersonic missile. No credible source confirms the Security Cabinet was struck or wiped out. While Iranian Fattah-2 missiles did hit some military targets and there are unverified reports of officer casualties, the specific claim about the Security Cabinet being wiped out is unsubstantiated and highly misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028016867592306942",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "This is a quote from comedian Deon Cole's monologue at the 2026 NAACP Image Awards, referencing the BAFTAs Tourette's incident. The tweet accurately quotes the joke. While some found it offensive, community notes are not well-suited for policing comedy opinions, and the existing notes were rated 'not helpful.' No factual claim needs correction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028567564935176531",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims a 104-year-old has 'lived through 26 presidents.' A person born around 1922 has lived through approximately 18 presidencies (Harding through Trump), not 26. This is a clear factual error, though relatively minor and likely a simple mistake rather than deliberate misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028171930642321918",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims US and Israel 'targeted an Indian asset in Iran' at Chabahar port. Multiple sources confirm that while military installations near Chabahar were struck, India's Shahid Beheshti terminal (the actual Indian investment) was not hit. The tweet conflates military strikes near the port with targeting Indian infrastructure, which is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028535384876216605",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "While Iran did launch missiles at Israel on March 2, 2026, the video shown is from 2014 depicting Ukrainian BM-21 Grad rocket launches in the Donbas conflict. Multiple fact-checkers (Reuters, Full Fact, Poynter) have confirmed this is recycled footage falsely presented as current events."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028424786133819632",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies Americans are fleeing Dubai during the Iran conflict. Multiple fact-checkers confirmed the video was posted on Instagram on January 17, 2026, showing UAE Day of Solidarity celebrations — a military flypast event that predates the conflict by over a month. The video has nothing to do with Americans leaving."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028325705566617626",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet captions a video 'Final Fantasy' when it apparently contains Kingdom Hearts footage. While Kingdom Hearts is technically a separate franchise, it was created by Square Enix and features Final Fantasy characters/crossovers. This is a trivial gaming distinction, not misinformation that causes real-world harm."
+  }
+]

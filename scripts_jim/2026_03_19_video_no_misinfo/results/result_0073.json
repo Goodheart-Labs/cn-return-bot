@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2028538299825172685",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Iran announced 'ground forces' are preparing to punish US bases, but Iran's actual retaliation consisted of missile and drone strikes against US bases in the region (Operation True Promise 4), not ground force mobilizations. The community notes correctly flag that the framing of 'ground forces' is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028301748134379686",
+    "rating": "not_note_worthy",
+    "confidence": "high",
+    "reasoning": "This is an Australian Greens senator expressing a political opinion ('You cannot bomb your way to peace') and calling on Labor to withdraw support for the Iran war. The existing notes attempt to fact-check an opinion/slogan with WWII analogies, which is not what community notes are for. The tweet itself is political commentary, not a factual claim requiring correction."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028196062528246146",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet implies the video shows Iranian women experiencing freedom for the first time, but the community note identifies it as footage from a solidarity demonstration in France by French activists in January 2026. If confirmed, this misrepresents the location and context of the video, though the claim would benefit from stronger sourcing."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028525269137633329",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet is Roblox's CEO making a policy statement about zero tolerance for real-world tragic event re-enactments. While the LA County lawsuit does allege moderation failures, the CEO's statement about having a policy is not itself misinformation -- the notes essentially add context about enforcement gaps but don't rebut a false factual claim."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028529755272704143",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims the video shows a brawl at Birmingham City Council over eating during Ramadan. Multiple sources including Full Fact confirm the video actually shows a fight during the Lahore High Court Bar Association election in Pakistan on March 2, 2026. The poster later admitted it was not from Birmingham. This is clear geographic misattribution designed to inflame anti-Muslim sentiment."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028530844999225806",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims to show a destroyed IRGC drone facility in Jannat Abad from US airstrikes. While US strikes did target the Jannat Abad area in Tehran, the community note claims the footage actually shows a commercial market fire, not a military facility strike. The misidentification of the footage makes a note warranted, though the broader claim of strikes in that area has some basis."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028550637718278418",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims to show a ballistic missile zooming past a commercial plane, but the video is actually footage of a SpaceX Falcon Heavy rocket launch from April 2023 captured from a commercial flight window. This is a clear misidentification, confirmed by multiple sources including NDTV and YouTube originals."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028540180139802767",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet promotes makeup artist Alexis Stone's claim that he impersonated Jim Carrey at the César Awards in Paris. This claim has been debunked by Carrey's publicist, the César Awards organizers (who confirmed 8 months of planning with Carrey), a prosthetics expert, and reporting from TMZ and Variety. The real Jim Carrey attended and accepted his Honorary César."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028474444315005097",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet uses recycled 2020 footage of Kim Jong Un crying during a speech and falsely presents it as a reaction to Khamenei's death. The original video is from October 10, 2020, when Kim apologized for regime failings. While the poster claims satire, the framing is presented as breaking news and many viewers took it literally."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028531580025897464",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet misleadingly implies Mark Carney directed $100 billion of Canadian pension funds into India. In reality, the PM cannot direct CPP investments (they are legally independent), and the $100B figure represents cumulative investment built up over many years since 2010, not a new allocation ordered by Carney. The framing of 'funnelled under the advice of Mark Carney' is factually misleading."
+  }
+]

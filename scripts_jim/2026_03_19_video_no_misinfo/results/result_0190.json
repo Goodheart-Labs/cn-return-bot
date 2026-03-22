@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2014565819141718425",
+    "rating": "uncertain",
+    "confidence": "medium",
+    "reasoning": "The CBS News video of ICE taking 5-year-old Liam Ramos is real and well-documented. The tweet's claim that 'the child was used as bait' comes from a school official's statement. However, DHS disputes this narrative, saying the father abandoned the child while fleeing. The core video is genuine but the framing is contested by both sides, making it a genuinely disputed factual situation rather than clear misinformation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014002075407892568",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Multiple fact-checks confirm this is fabricated. Kaithal Police officially stated no such incident occurred. The viral video combined unrelated clips: a police officer speaking at an educational seminar and unrelated footage of a girl with a baby, deceptively edited together to create a false narrative."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014428246159351809",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet incorrectly states the defamation lawsuit was filed by Nina. Multiple sources confirm it was filed by Mizkif (Matthew Rinaudo) in November 2025 against Asmongold, Emiru, and OTK. This is a straightforward factual error in the tweet text."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014057464476410023",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims reparations conversations exist only in America, not in Brazil or the Caribbean. This is factually false. CARICOM established a formal Reparations Commission in 2013 with a 10-point plan for reparatory justice, and Brazil has active reparations movements and government-level debates about slavery's legacy."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014165880272199809",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims donation boxes function as one-way ATMs where only priests take money out. This is misleading. Major Hindu temple donations are managed by government-appointed boards and trusts (like HR&CE departments), not individual priests. Funds are used for temple maintenance, free meals, healthcare, and education programs."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014428026402922997",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Community notes consistently identify this as an AI-generated video depicting a fictional courtroom sentencing. No real case of a woman receiving 568 years in prison exists. AI-generated fake courtroom videos are a well-documented social media trend designed for engagement."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014511378837446696",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet implies chlorine dioxide eliminates spike protein as a health treatment. The 99.99% figure comes from in-vitro lab studies where ClO2 gas (essentially bleach) was applied directly to proteins. The FDA explicitly warns against ingesting chlorine dioxide, which has caused severe adverse effects and deaths. Sellers of such products have been criminally prosecuted."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014054898501820706",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet claims no one knew about under-the-wall free kicks until Coutinho. This is false. Rivaldo scored one against AC Milan in 2000, and Ronaldinho performed the technique in 2006 against Wolfsburg/Werder Bremen, both well before Coutinho popularized it."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014279286757183931",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet claims Afghanistan 'invented' bacha bazi due to gender segregation. Scholars trace its origins to ancient practices, possibly Hellenistic Greco-Bactrian influences, predating modern Afghanistan. While gender segregation is a contributing factor, the practice has complex multifactorial origins and was not simply 'invented' as described."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2014446104289407185",
+    "rating": "note_worthy",
+    "confidence": "medium",
+    "reasoning": "Vance's statement about imprisoning those who 'storm a church or assault a federal officer' is noteworthy given the context that Trump pardoned January 6 rioters who assaulted federal officers, including DJ Rodriguez who tased an officer causing a heart attack. The hypocrisy between this statement and the administration's actions on J6 pardons is a relevant factual context."
+  }
+]

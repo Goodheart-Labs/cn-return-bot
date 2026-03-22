@@ -1,0 +1,62 @@
+[
+  {
+    "tweet_link": "https://x.com/i/web/status/2029207753407779061",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet deceptively edits James Talarico's quote, cutting it mid-sentence at 'there should be a giant welcome mat out front' while omitting the critical second half: 'AND A LOCK ON THE DOOR.' Multiple sources including Yahoo News confirm this was a deliberate truncation to make it appear Talarico supports open borders, when his full statement explicitly called for border security alongside welcoming legal immigrants."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029241318778552543",
+    "rating": "not_note_worthy",
+    "confidence": "medium",
+    "reasoning": "The tweet accurately reports a real UK Ministry of Defence statement that the Shahed-like drone targeting RAF Akrotiri 'was not launched from Iran.' This is a direct quote from the MoD spokesperson. While subsequent reporting attributed the drone to Hezbollah in Lebanon, the tweet itself is an accurate breaking news report of an official government statement and does not make any false claims."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2028998338486649047",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet misattributes a statement from Qatar's Foreign Ministry to Israel's Foreign Ministry. Euronews and other sources confirm Qatar's foreign ministry said Iran's attacks 'cannot be left without retaliation' -- referring to Iranian strikes on Qatar, not on Israel. The tweet also makes an unverified claim about Iran firing '10 extra missiles at Tel Aviv' minutes after the statement. Multiple factual errors make this clearly misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029225684527399024",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The video is definitively not from Tehran in 2026. It shows the well-documented August 4, 2020 Beirut port explosion in Lebanon, which killed over 218 people when 2,750 tonnes of ammonium nitrate detonated. The same footage has been verified by BBC, YouTube uploads from 2020, and multiple fact-checkers (Alt News, Misbar) who documented this exact video being recycled as footage from Iran/Dubai during the 2026 conflict."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029233887214539116",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The claim that Fox News confirmed 650+ US soldiers killed is definitively false. The Jerusalem Post and multiple fact-checkers proved the 650 figure was an unverified IRGC propaganda claim. US Central Command confirmed only 6 service members killed. The community notes correctly identify that the posted Fox News video clip itself reports 'nobody was injured' in one strike, directly contradicting the tweet's caption."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029245883628282051",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Full Fact and Misbar confirmed the B-2 Spirit bomber flyby video is digitally created CGI, not real footage. The original creator explicitly stated 'This video was created digitally' and described their content as 'mixed reality digital aviation videos.' Higher quality versions reveal obvious flaws including low-quality textures and unnaturally behaving people. No such carrier flyby was reported by any military source."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029148006331674628",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "Every claim in this tweet is false. Japan has not banned Islam, halal food, mosques, calls to prayer, or burkas. Article 20 of Japan's constitution guarantees freedom of religion. Reuters, AFP, Snopes, PolitiFact, Japan's own Fact Check Center, and numerous other organizations have repeatedly debunked this claim. Over 110 mosques operate in Japan serving 230,000-350,000 Muslims. The video shown is reportedly of a parliament dissolution ceremony, not anti-Islam legislation."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029229920786821256",
+    "rating": "uncertain",
+    "confidence": "low",
+    "reasoning": "The situation is genuinely contested. Multiple major news outlets (Middle East Eye, Khaama Press, News9Live, Athens Times) report the Vovan and Lexus prank call with Reza Pahlavi as real, consistent with these pranksters' documented history of targeting world leaders. However, some X community notes claim the video is fabricated using archival footage and AI. The tweet's framing as 'saddest video' editorializes, but the core factual question of the video's authenticity remains unresolved."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029217143737168285",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet presents old footage as if it is breaking news from the current conflict. One community note identifies it as over six years old, linking to a 2020 Times of Israel report about Iran firing ballistic missiles from underground during a drill. Times Now also found the video was AI-generated. While Iran does possess underground missile bases, the tweet's framing as 'BREAKING' with 'GAME CHANGER' implies this is current footage from the 2026 conflict, which is misleading."
+  },
+  {
+    "tweet_link": "https://x.com/i/web/status/2029047517971939813",
+    "rating": "note_worthy",
+    "confidence": "high",
+    "reasoning": "The tweet falsely claims the video shows a missile striking Haifa port. NBC News footage and fact-checkers confirm the video actually shows a missile strike on Tel Aviv, not Haifa. Adani Ports confirmed Haifa port infrastructure remained 'fully secure and operational.' The tweet also uses inflammatory language ('Zionist air defense fails like cowards') while misidentifying the location of the strike."
+  }
+]
