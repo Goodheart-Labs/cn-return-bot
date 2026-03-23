@@ -28,12 +28,15 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotById, getEnabledBots } from "../bots";
 import { processSingleTweet, type ProcessTweetResult } from "../pipeline/processTweet";
 import { closeBrowser } from "../pipeline/browserManager";
-import { createTweetLog, withTweetLog, formatTweetLog, formatTweetLogFull } from "../pipeline/tweetLog";
+import { createTweetLog, withTweetLog } from "../pipeline/tweetLog";
 import type { Post } from "../api/fetchEligiblePosts";
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
+import PQueue from "p-queue";
+
+const concurrencyLimit = 5;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -76,14 +79,14 @@ interface YtDlpMetadata {
 
 function parseInputCsv(filePath: string): InputRow[] {
   const content = fs.readFileSync(filePath, "utf8").trim();
-  const lines = content.split("\n");
+  const records = parseCsvRecords(content);
 
-  if (lines.length < 2) {
+  if (records.length < 2) {
     console.error("CSV must have a header row and at least one data row");
     process.exit(1);
   }
 
-  const header = parseCsvLine(lines[0]!).map((h) => h.trim().toLowerCase());
+  const header = records[0]!.map((h) => h.trim().toLowerCase());
   const urlIdx = header.indexOf("url");
   if (urlIdx === -1) {
     console.error('CSV must have a "url" column');
@@ -94,11 +97,8 @@ function parseInputCsv(filePath: string): InputRow[] {
   const groundTruthIdx = header.indexOf("ground_truth_note");
 
   const rows: InputRow[] = [];
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i]!.trim();
-    if (!line) continue;
-
-    const fields = parseCsvLine(line);
+  for (let i = 1; i < records.length; i++) {
+    const fields = records[i]!;
     const url = fields[urlIdx]?.trim();
     if (!url) continue;
 
@@ -112,15 +112,17 @@ function parseInputCsv(filePath: string): InputRow[] {
   return rows;
 }
 
-function parseCsvLine(line: string): string[] {
-  const fields: string[] = [];
+/** Parse CSV content handling multiline quoted fields. */
+function parseCsvRecords(content: string): string[][] {
+  const records: string[][] = [];
+  let fields: string[] = [];
   let current = "";
   let inQuotes = false;
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i]!;
+  for (let i = 0; i < content.length; i++) {
+    const char = content[i]!;
     if (inQuotes) {
-      if (char === '"' && line[i + 1] === '"') {
+      if (char === '"' && content[i + 1] === '"') {
         current += '"';
         i++;
       } else if (char === '"') {
@@ -133,12 +135,22 @@ function parseCsvLine(line: string): string[] {
     } else if (char === ",") {
       fields.push(current);
       current = "";
+    } else if (char === "\n" || (char === "\r" && content[i + 1] === "\n")) {
+      if (char === "\r") i++;
+      fields.push(current);
+      current = "";
+      records.push(fields);
+      fields = [];
     } else {
       current += char;
     }
   }
+  // Last record (no trailing newline)
   fields.push(current);
-  return fields;
+  if (fields.some((f) => f.length > 0)) {
+    records.push(fields);
+  }
+  return records;
 }
 
 // ---------------------------------------------------------------------------
@@ -234,12 +246,14 @@ const OUTPUT_HEADERS = [
   "needs_note",
   "ground_truth_note",
   "bot_id",
+  "note_status",
   "outcome",
   "note_text",
   "source_verification",
   "evaluation_score",
   "search_results",
   "citations",
+  "logs",
 ] as const;
 
 function escapeCsvField(value: string): string {
@@ -252,7 +266,8 @@ function escapeCsvField(value: string): string {
 function resultToCsvRow(
   input: InputRow,
   botId: string,
-  result: ProcessTweetResult
+  result: ProcessTweetResult,
+  log?: Map<string, unknown>
 ): string {
   const pr = result.pipelineResult;
   const svScore = result.scores.find((s) => s.type === "source_verification");
@@ -264,12 +279,14 @@ function resultToCsvRow(
     needs_note: input.needsNote ?? "",
     ground_truth_note: input.groundTruthNote ?? "",
     bot_id: botId,
+    note_status: result.noteStatus ?? "",
     outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
     note_text: result.noteText ?? "",
     source_verification: svScore?.label ?? (svScore ? String(svScore.value) : "skipped"),
     evaluation_score: result.evaluationScore?.toFixed(2) ?? "",
     search_results: pr?.searchContextResult?.searchResults ?? "",
     citations,
+    logs: log ? JSON.stringify(Object.fromEntries(log)) : "",
   };
 
   return OUTPUT_HEADERS.map((h) => escapeCsvField(fields[h])).join(",");
@@ -286,16 +303,73 @@ function errorToCsvRow(input: InputRow, errorMsg: string): string {
   ).join(",");
 }
 
-function writeCsv(rows: string[]): string {
+function initCsvFile(): { filePath: string; appendRow: (row: string) => void } {
   const outDir = path.join(process.cwd(), "tryout-results");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "").replace("T", "-").slice(0, 15);
-  const outFile = path.join(outDir, `videos-${timestamp}.csv`);
+  const filePath = path.join(outDir, `videos-${timestamp}.csv`);
 
-  const content = [OUTPUT_HEADERS.join(","), ...rows].join("\n");
-  fs.writeFileSync(outFile, content, "utf8");
-  return outFile;
+  fs.writeFileSync(filePath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
+
+  return {
+    filePath,
+    appendRow: (row: string) => fs.appendFileSync(filePath, row + "\n", "utf8"),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Progress tracking
+// ---------------------------------------------------------------------------
+
+const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
+
+interface CompletedResult {
+  idx: number;
+  url: string;
+  title: string;
+  groundTruth: string;
+  noteStatus: string;
+  outcome: string;
+  outcomeReason?: string;
+  noteText?: string;
+}
+
+function isCorrect(r: CompletedResult): boolean | null {
+  if (!r.groundTruth) return null;
+  const wantNote = r.groundTruth.toLowerCase() === "yes";
+  const predictedNote = r.noteStatus === CORRECTION_STATUS;
+  return wantNote === predictedNote;
+}
+
+function formatResult(r: CompletedResult): string {
+  const mark = isCorrect(r) === true ? "✅" : isCorrect(r) === false ? "❌" : "⚪";
+  const requiresNote = r.noteStatus === CORRECTION_STATUS;
+  const reason = r.outcomeReason ? ` (${r.outcomeReason})` : "";
+  const lines = [
+    `${mark} ${requiresNote ? "requires_note" : "no_note"} | truth=${r.groundTruth || "?"} | ${r.outcome}${reason}`,
+    `  ${r.url}`,
+    `  ${r.title}`,
+  ];
+  if (r.noteStatus && r.noteStatus !== CORRECTION_STATUS) {
+    lines.push(`  note_status: ${r.noteStatus}`);
+  }
+  if (r.noteText) {
+    lines.push(`  note: ${r.noteText.slice(0, 120)}`);
+  }
+  return lines.join("\n");
+}
+
+function fmtAccuracy(subset: CompletedResult[]): string {
+  const correct = subset.filter((r) => isCorrect(r) === true).length;
+  const scored = subset.filter((r) => isCorrect(r) !== null).length;
+  return scored > 0 ? `${correct}/${scored} (${((correct / scored) * 100).toFixed(0)}%)` : "—";
+}
+
+function printProgress(results: CompletedResult[], total: number) {
+  const last = results[results.length - 1]!;
+  console.log(`\n--- ${results.length}/${total} (accuracy: ${fmtAccuracy(results)}) ---`);
+  console.log(formatResult(last));
 }
 
 // ---------------------------------------------------------------------------
@@ -364,43 +438,65 @@ async function main() {
   const downloadDir = path.join(tmpdir(), `cn-runOnVideos-${Date.now()}`);
   fs.mkdirSync(downloadDir, { recursive: true });
 
-  const csvRows: string[] = [];
+  const csv = initCsvFile();
+  console.log(`[runOnVideos] CSV: ${csv.filePath}`);
+  const results: CompletedResult[] = [];
+
+  const queue = new PQueue({ concurrency: concurrencyLimit });
 
   for (const [idx, input] of inputs.entries()) {
-    console.log(`\n${"=".repeat(60)}`);
-    console.log(`[runOnVideos] ${idx + 1}/${inputs.length}: ${input.url}`);
-    if (input.needsNote) console.log(`[runOnVideos] Ground truth: needs_note=${input.needsNote}`);
-    console.log("=".repeat(60));
+    queue.add(async () => {
+      const completed: CompletedResult = {
+        idx,
+        url: input.url,
+        title: "",
+        groundTruth: input.needsNote ?? "",
+        noteStatus: "",
+        outcome: "error",
+      };
 
-    try {
-      // Download video and extract metadata with yt-dlp
-      const { meta, videoPath } = downloadWithYtDlp(input.url, downloadDir);
-      console.log(`[runOnVideos] Title: ${meta.title?.slice(0, 100)}`);
+      try {
+        const { meta, videoPath } = downloadWithYtDlp(input.url, downloadDir);
+        completed.title = meta.title?.slice(0, 80) ?? "";
 
-      // Build Post object with local video path
-      const post = buildPostFromDownload(meta, videoPath, input.url);
+        const post = buildPostFromDownload(meta, videoPath, input.url);
+        const bot = forcedBotId ? getBotById(forcedBotId)! : selectRandomBot();
+        const log = createTweetLog();
+        log.set("tweet.index", idx + 1);
+        log.set("tweet.total", inputs.length);
+        const result = await withTweetLog(log, () =>
+          processSingleTweet({ post, bot, logger })
+        );
 
-      // Run pipeline
-      const bot = forcedBotId ? getBotById(forcedBotId)! : selectRandomBot();
-      const log = createTweetLog();
-      log.set("tweet.index", idx + 1);
-      log.set("tweet.total", inputs.length);
-      const result = await withTweetLog(log, () =>
-        processSingleTweet({ post, bot, logger })
-      );
+        completed.noteStatus = result.noteStatus ?? "";
+        completed.outcome = result.outcome;
+        completed.outcomeReason = result.outcomeReason;
+        completed.noteText = result.noteText;
+        csv.appendRow(resultToCsvRow(input, bot.id, result, log));
+      } catch (err: any) {
+        console.error(`[runOnVideos] ERROR ${input.url}: ${err?.message}`);
+        csv.appendRow(errorToCsvRow(input, err?.message ?? "unknown"));
+      }
 
-      console.log(formatTweetLog(log));
-      console.log(formatTweetLogFull(log));
-
-      csvRows.push(resultToCsvRow(input, bot.id, result));
-    } catch (err: any) {
-      console.error(`[runOnVideos] Failed:`, err?.message);
-      csvRows.push(errorToCsvRow(input, err?.message ?? "unknown"));
-    }
+      results.push(completed);
+      printProgress(results, inputs.length);
+    });
   }
 
-  const csvFile = writeCsv(csvRows);
-  console.log(`\n[runOnVideos] Results written to ${csvFile}`);
+  await queue.onIdle();
+
+  // Final summary
+  const needsNote = results.filter((r) => r.groundTruth.toLowerCase() === "yes");
+  const noNote = results.filter((r) => r.groundTruth.toLowerCase() === "no");
+  const errors = results.filter((r) => r.outcome === "error").length;
+
+  console.log(`\n${"=".repeat(60)}`);
+  console.log(`SUMMARY: ${results.length} processed, ${errors} errors`);
+  console.log(`  overall:        ${fmtAccuracy(results)}`);
+  console.log(`  needs_note:     ${fmtAccuracy(needsNote)}`);
+  console.log(`  no_note_needed: ${fmtAccuracy(noNote)}`);
+  console.log(`\nResults: ${csv.filePath}`);
+  console.log("=".repeat(60));
 
   // Cleanup downloaded videos
   try {

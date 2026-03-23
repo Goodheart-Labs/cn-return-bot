@@ -1,0 +1,94 @@
+[
+  {
+    "file": "impeachment_claim_2014876147952029785.mp4",
+    "label": "non_ai",
+    "model": "google/gemini-3.1-pro-preview",
+    "analysis": {
+      "description": "The video consists of a single, static image resembling an internet meme, featuring a photograph of Donald Trump gesturing with his hand. Above the photograph, a large block of text makes a false claim about the U.S. Constitution, presidential impeachment, and term limits. The visual remains completely still for the duration of the video while an audio track plays in the background.",
+      "ai_signals_found": [],
+      "ai_signals_absent": [
+        "No morphing artifacts, unnatural movement, or physics errors, as the video is completely static.",
+        "No shifting backgrounds or temporal inconsistencies.",
+        "No AI generation watermarks (e.g., Sora, Runway, Kling)."
+      ],
+      "verdict": "NO",
+      "confidence": "HIGH",
+      "reasoning": "The video contains no motion and is simply a still image combined with text and an audio track, showing no signs of AI video generation techniques.",
+      "ocr_text": [
+        "Want to blow a snowflakes mind?",
+        "Remind them if Trump is impeached in the house & not senate, he can run 2 more times.",
+        "The U.S. Constitution states that if a president is impeached by the House but not convicted by the Senate, that person's first term is nullified and they are eligible to run for office two more times.",
+        "onepissedoffrepublican1"
+      ]
+    },
+    "usage": {
+      "prompt_tokens": 2941,
+      "completion_tokens": 1690,
+      "estimated_cost_usd": 0.026161999999999998
+    },
+    "error": null
+  },
+  {
+    "file": "impeachment_claim_2014876147952029785.mp4",
+    "label": "non_ai",
+    "model": "google/gemini-3-flash-preview",
+    "analysis": {
+      "description": "The video shows a static meme image featuring Donald Trump gesturing with his hand and an overlay of text about the US Constitution's rules on impeachment and presidential term limits. The only movement in the video is a small TikTok watermark that bounces and drifts over the image.",
+      "ai_signals_found": [
+        "No dynamic movement in the primary content, but the text and image are constant throughout"
+      ],
+      "ai_signals_absent": [
+        "No physics errors",
+        "No morphing artifacts",
+        "No unnatural textures",
+        "No inconsistent backgrounds"
+      ],
+      "verdict": "NO",
+      "confidence": "HIGH",
+      "reasoning": "The video is a stationary meme image with a simple digital watermark moving over it. There is no AI-generated video content present.",
+      "ocr_text": [
+        "Want to blow a snowflakes mind?",
+        "Remind them if Trump is impeached in the house & not senate, he can run 2 more times.",
+        "The U.S. Constitution states that if a president is impeached",
+        "by the House but not convicted by the Senate, that person's first term is nullified and they are eligible to run for office two more times.",
+        "@onepissedoffrepublican1",
+        "TikTok"
+      ]
+    },
+    "usage": {
+      "prompt_tokens": 2969,
+      "completion_tokens": 301,
+      "estimated_cost_usd": 0.0023875
+    },
+    "error": null
+  },
+  {
+    "file": "impeachment_claim_2014876147952029785.mp4",
+    "label": "non_ai",
+    "model": "google/gemini-3.1-flash-lite-preview",
+    "analysis": {
+      "description": "This video features a static image of Donald Trump with a text overlay presenting a theory about US Constitutional Law. The background audio plays a repetitive electronic track throughout the duration of the clip.",
+      "ai_signals_found": [],
+      "ai_signals_absent": [
+        "The image is a static photograph with a simple text overlay, which is a common format on social media platforms, showing no signs of generative AI video artifacts such as morphing or unnatural movement."
+      ],
+      "verdict": "NO",
+      "confidence": "HIGH",
+      "reasoning": "The video is simply a static photograph with a text overlay, as opposed to a generated animation.",
+      "ocr_text": [
+        "Want to blow a snowflakes mind?",
+        "Remind them if Trump is impeached in the house & not senate, he can run 2 more times.",
+        "The U.S. Constitution states that if a president is impeached by the House but not convicted by the Senate, that person's first term is nullified and they are eligible to run for office two more times.",
+        "@onepissedoffrepublican1",
+        "TikTok",
+        "@onepissedoffrepublican1"
+      ]
+    },
+    "usage": {
+      "prompt_tokens": 3003,
+      "completion_tokens": 273,
+      "estimated_cost_usd": 0.00116025
+    },
+    "error": null
+  }
+]
