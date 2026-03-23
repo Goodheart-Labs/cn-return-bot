@@ -495,13 +495,8 @@ async function main() {
   console.log(`  overall:        ${fmtAccuracy(results)}`);
   console.log(`  needs_note:     ${fmtAccuracy(needsNote)}`);
   console.log(`  no_note_needed: ${fmtAccuracy(noNote)}`);
+  console.log(`\nResults: ${csv.filePath}`);
   console.log("=".repeat(60));
-
-  for (const r of results.sort((a, b) => a.idx - b.idx)) {
-    console.log(formatResult(r));
-  }
-
-  console.log(`\nResults written to ${csv.filePath}`);
 
   // Cleanup downloaded videos
   try {
