@@ -81,3 +81,5 @@ scripts_jim/**/*.mp4
 scripts_jim/**/plots/
 scripts_jim/**/correct.json
 scripts_jim/**/incorrect.json
+scripts_jim/**/batches/
+scripts_jim/**/results/
