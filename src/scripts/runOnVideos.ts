@@ -35,6 +35,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
 import PQueue from "p-queue";
+import { parseCsvRecords, escapeCsvField } from "../utils/csv";
+import { evaluateResults } from "./evaluateResults";
 
 const concurrencyLimit = 5;
 
@@ -112,46 +114,6 @@ function parseInputCsv(filePath: string): InputRow[] {
   return rows;
 }
 
-/** Parse CSV content handling multiline quoted fields. */
-function parseCsvRecords(content: string): string[][] {
-  const records: string[][] = [];
-  let fields: string[] = [];
-  let current = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < content.length; i++) {
-    const char = content[i]!;
-    if (inQuotes) {
-      if (char === '"' && content[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else if (char === '"') {
-        inQuotes = false;
-      } else {
-        current += char;
-      }
-    } else if (char === '"') {
-      inQuotes = true;
-    } else if (char === ",") {
-      fields.push(current);
-      current = "";
-    } else if (char === "\n" || (char === "\r" && content[i + 1] === "\n")) {
-      if (char === "\r") i++;
-      fields.push(current);
-      current = "";
-      records.push(fields);
-      fields = [];
-    } else {
-      current += char;
-    }
-  }
-  // Last record (no trailing newline)
-  fields.push(current);
-  if (fields.some((f) => f.length > 0)) {
-    records.push(fields);
-  }
-  return records;
-}
 
 // ---------------------------------------------------------------------------
 // yt-dlp metadata extraction
@@ -251,17 +213,9 @@ const OUTPUT_HEADERS = [
   "note_text",
   "source_verification",
   "evaluation_score",
-  "search_results",
-  "citations",
   "logs",
 ] as const;
 
-function escapeCsvField(value: string): string {
-  if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
 
 function resultToCsvRow(
   input: InputRow,
@@ -271,7 +225,6 @@ function resultToCsvRow(
 ): string {
   const pr = result.pipelineResult;
   const svScore = result.scores.find((s) => s.type === "source_verification");
-  const citations = pr?.searchContextResult?.citations?.join("; ") ?? "";
 
   const fields: Record<(typeof OUTPUT_HEADERS)[number], string> = {
     url: input.url,
@@ -284,8 +237,6 @@ function resultToCsvRow(
     note_text: result.noteText ?? "",
     source_verification: svScore?.label ?? (svScore ? String(svScore.value) : "skipped"),
     evaluation_score: result.evaluationScore?.toFixed(2) ?? "",
-    search_results: pr?.searchContextResult?.searchResults ?? "",
-    citations,
     logs: log ? JSON.stringify(Object.fromEntries(log)) : "",
   };
 
@@ -303,18 +254,19 @@ function errorToCsvRow(input: InputRow, errorMsg: string): string {
   ).join(",");
 }
 
-function initCsvFile(): { filePath: string; appendRow: (row: string) => void } {
-  const outDir = path.join(process.cwd(), "tryout-results");
-  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-
+function initOutputFolder(): { folderPath: string; csvPath: string; appendRow: (row: string) => void } {
+  const baseDir = path.join(process.cwd(), "tryout-results");
   const timestamp = new Date().toISOString().replace(/[:.]/g, "").replace("T", "-").slice(0, 15);
-  const filePath = path.join(outDir, `videos-${timestamp}.csv`);
+  const folderPath = path.join(baseDir, `videos-${timestamp}`);
+  fs.mkdirSync(folderPath, { recursive: true });
 
-  fs.writeFileSync(filePath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
+  const csvPath = path.join(folderPath, "results.csv");
+  fs.writeFileSync(csvPath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
 
   return {
-    filePath,
-    appendRow: (row: string) => fs.appendFileSync(filePath, row + "\n", "utf8"),
+    folderPath,
+    csvPath,
+    appendRow: (row: string) => fs.appendFileSync(csvPath, row + "\n", "utf8"),
   };
 }
 
@@ -438,8 +390,8 @@ async function main() {
   const downloadDir = path.join(tmpdir(), `cn-runOnVideos-${Date.now()}`);
   fs.mkdirSync(downloadDir, { recursive: true });
 
-  const csv = initCsvFile();
-  console.log(`[runOnVideos] CSV: ${csv.filePath}`);
+  const output = initOutputFolder();
+  console.log(`[runOnVideos] Output folder: ${output.folderPath}`);
   const results: CompletedResult[] = [];
 
   const queue = new PQueue({ concurrency: concurrencyLimit });
@@ -472,10 +424,10 @@ async function main() {
         completed.outcome = result.outcome;
         completed.outcomeReason = result.outcomeReason;
         completed.noteText = result.noteText;
-        csv.appendRow(resultToCsvRow(input, bot.id, result, log));
+        output.appendRow(resultToCsvRow(input, bot.id, result, log));
       } catch (err: any) {
         console.error(`[runOnVideos] ERROR ${input.url}: ${err?.message}`);
-        csv.appendRow(errorToCsvRow(input, err?.message ?? "unknown"));
+        output.appendRow(errorToCsvRow(input, err?.message ?? "unknown"));
       }
 
       results.push(completed);
@@ -495,8 +447,15 @@ async function main() {
   console.log(`  overall:        ${fmtAccuracy(results)}`);
   console.log(`  needs_note:     ${fmtAccuracy(needsNote)}`);
   console.log(`  no_note_needed: ${fmtAccuracy(noNote)}`);
-  console.log(`\nResults: ${csv.filePath}`);
+  console.log(`\nResults: ${output.folderPath}`);
   console.log("=".repeat(60));
+
+  // Run AI judge evaluation and write categorized JSONs
+  try {
+    await evaluateResults(output.csvPath, output.folderPath);
+  } catch (err: any) {
+    console.error(`[runOnVideos] Evaluation failed: ${err?.message}`);
+  }
 
   // Cleanup downloaded videos
   try {
