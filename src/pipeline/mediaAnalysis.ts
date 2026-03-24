@@ -221,6 +221,7 @@ async function describeVideoFrames(
 
 For each frame, briefly describe:
 - What's happening
+- Any visible text or graphics
 - Key people or objects
 - Any claims being made
 
