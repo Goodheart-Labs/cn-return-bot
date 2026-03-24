@@ -2,7 +2,7 @@
  * Tweet Sorting
  *
  * Sorts eligible tweets by a weighted combination of recency (dominant)
- * and impressions (secondary). Filters out stale tweets beyond MAX_AGE_HOURS.
+ * and impressions (secondary). Recency score is 0 for tweets >= MAX_AGE_HOURS old.
  */
 
 import type { Post } from "../api/fetchEligiblePosts";
@@ -33,21 +33,16 @@ function combinedScore(post: Post, maxLogImp: number): number {
 }
 
 /**
- * Filter tweets older than 48h, then sort by weighted recency + impressions.
- * Returns the filtered+sorted array and the count of stale tweets removed.
+ * Sort tweets by weighted recency + impressions.
+ * Tweets older than 48h get a recency score of 0 but are still included.
  */
-export function sortByRecencyAndImpressions(posts: Post[]): { sorted: Post[]; staleCount: number } {
-  const filtered = posts.filter((p) => ageInHours(p) <= MAX_AGE_HOURS);
-  const staleCount = posts.length - filtered.length;
-
-  const maxLogImp = filtered.reduce((max, p) => {
+export function sortByRecencyAndImpressions(posts: Post[]): Post[] {
+  const maxLogImp = posts.reduce((max, p) => {
     const val = Math.log10((p.public_metrics?.impression_count ?? 0) + 1);
     return val > max ? val : max;
   }, 0);
 
-  filtered.sort((a, b) => combinedScore(b, maxLogImp) - combinedScore(a, maxLogImp));
-
-  return { sorted: filtered, staleCount };
+  return [...posts].sort((a, b) => combinedScore(b, maxLogImp) - combinedScore(a, maxLogImp));
 }
 
 /** Get the combined score for a post (for logging) */

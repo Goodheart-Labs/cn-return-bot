@@ -58,11 +58,7 @@ async function fetchAndSelectPosts(
   const postSelection = buildPostSelection(feedSize as "small" | "large" | "xl");
   const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
-  // Filter stale tweets and sort by recency (0.9) + impressions (0.1)
-  const { sorted, staleCount } = sortByRecencyAndImpressions(allEligible);
-  if (staleCount > 0) {
-    console.log(`[generate] Filtered ${staleCount} tweets older than 48h`);
-  }
+  const sorted = sortByRecencyAndImpressions(allEligible);
 
   const newPosts = sorted.filter((p) => !allProcessedIds.has(p.id));
   const retryPosts = sorted.filter(
