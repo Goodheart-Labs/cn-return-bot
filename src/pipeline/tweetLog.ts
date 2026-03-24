@@ -73,6 +73,7 @@ function formatMediaLine(log: TweetLogMap): string | null {
     description?: string;
     textContent?: string;
     transcription?: string;
+    durationMs?: number;
   }> | undefined;
   const images = get(log, "media.images") as Array<unknown> | undefined;
 
@@ -83,6 +84,7 @@ function formatMediaLine(log: TweetLogMap): string | null {
       if (v.description) details.push(`${v.description.length} char description`);
       if (v.textContent) details.push(`${v.textContent.length} char OCR`);
       if (v.transcription) details.push(`${v.transcription.length} char transcript`);
+      if (v.durationMs) details.push(`${v.durationMs}ms`);
       parts.push(`video${details.length ? ` (${details.join(", ")})` : ""}`);
     }
   }

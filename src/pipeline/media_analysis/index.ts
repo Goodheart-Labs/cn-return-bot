@@ -18,6 +18,7 @@ export interface VideoAnalysisResult {
   description: string;
   textContent?: string;
   transcription?: string;
+  durationMs?: number;
   hasAudio: boolean;
   error?: string;
 }
@@ -80,6 +81,7 @@ export async function analyzeMedia(
     url?: string;
     preview_image_url?: string;
     variants?: Array<{ bit_rate?: number; content_type: string; url: string }>;
+    duration_ms?: number;
   }>,
   config?: {
     visionModel?: string;
@@ -100,6 +102,7 @@ export async function analyzeMedia(
     const videoUrl = getBestUrl(video);
     if (!videoUrl) continue;
     const result = await analyzeVideo(videoUrl, visionModel);
+    result.durationMs = video.duration_ms;
     if (result.error) {
       warnings.push(`Video analysis failed: ${result.error}`);
     }
@@ -155,6 +158,7 @@ export async function analyzeMedia(
     description: v.description,
     textContent: v.textContent,
     transcription: v.transcription,
+    durationMs: v.durationMs,
     hasAudio: v.hasAudio,
     error: v.error,
   })));

@@ -51,21 +51,6 @@ async function downloadVideoAsBase64(videoUrl: string): Promise<string> {
   }
 }
 
-function parseResponse(content: string): {
-  description: string;
-  textContent: string;
-} {
-  const descriptionMatch = content.match(
-    /DESCRIPTION:\s*\n([\s\S]*?)(?=\n\s*TEXT CONTENT|$)/i
-  );
-  const textMatch = content.match(/TEXT CONTENT.*?:\s*\n([\s\S]*?)$/i);
-
-  return {
-    description: descriptionMatch?.[1]?.trim() || content.trim(),
-    textContent: textMatch?.[1]?.trim() || "",
-  };
-}
-
 /**
  * Analyze a video's visual content and extract on-screen text.
  * Sends the full video to Gemini — no frame extraction needed.
@@ -92,25 +77,11 @@ export async function describeVideo(
           content: [
             {
               type: "text",
-              text: `Analyze this video for fact-checking purposes. Provide two sections:
+              text: `Analyze this video for fact-checking purposes.
 
-DESCRIPTION:
-Describe the visual content of the video in detail. Include:
-- What's happening in each scene
-- Key people or objects
-- Any claims being made visually
-- Context clues (location, time period, event type)
-
-Be specific and factual.
-
-TEXT CONTENT (OCR):
-List ALL text visible in the video, including:
-- Subtitles or captions
-- On-screen text, titles, chyrons
-- Signs, labels, watermarks
-- Any other readable text
-
-Quote all text exactly as it appears. If no text is visible, write "No text detected."`,
+Respond as JSON with two fields:
+- "text_content": ALL text visible on screen (subtitles, captions, titles, chyrons, signs, labels, watermarks). Quote exactly as shown. If none, use "No text detected."
+- "description": What happens visually — scenes, key people/objects, claims being made, context clues (location, time period, event type). Do NOT repeat text content here.`,
             },
             {
               type: "video_url" as any,
@@ -119,14 +90,15 @@ Quote all text exactly as it appears. If no text is visible, write "No text dete
           ],
         },
       ],
+      response_format: { type: "json_object" },
     });
 
     const content = (result.choices?.[0]?.message?.content || "") as string;
-    const { description, textContent } = parseResponse(content);
+    const parsed = JSON.parse(content);
 
     return {
-      description,
-      textContent: textContent || undefined,
+      description: parsed.description || "",
+      textContent: parsed.text_content || undefined,
     };
   } catch (err: any) {
     console.error("[videoDescription] Video analysis failed:", err.message);
