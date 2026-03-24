@@ -19,7 +19,7 @@ export function ageInHours(post: Post): number {
 }
 
 function recencyScore(post: Post): number {
-  return Math.max(0, 1 - ageInHours(post) / MAX_AGE_HOURS);
+  return 1 - ageInHours(post) / MAX_AGE_HOURS;
 }
 
 function impressionScore(post: Post, maxLogImp: number): number {
