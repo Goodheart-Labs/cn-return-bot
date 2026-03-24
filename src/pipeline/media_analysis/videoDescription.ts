@@ -10,8 +10,6 @@ import { join } from "path";
 import { readFile, writeFile, rm, mkdir } from "fs/promises";
 import { llm } from "../llm";
 
-const GEMINI_VIDEO_MODEL = "google/gemini-3-flash-preview";
-
 export interface VideoDescriptionResult {
   description: string;
   textContent?: string;
@@ -74,7 +72,7 @@ function parseResponse(content: string): {
  */
 export async function describeVideo(
   videoUrl: string,
-  model: string = GEMINI_VIDEO_MODEL
+  model: string
 ): Promise<VideoDescriptionResult> {
   const isLocalFile = videoUrl.startsWith("/");
 
@@ -99,7 +97,6 @@ export async function describeVideo(
 DESCRIPTION:
 Describe the visual content of the video in detail. Include:
 - What's happening in each scene
-- Any visible text or graphics
 - Key people or objects
 - Any claims being made visually
 - Context clues (location, time period, event type)

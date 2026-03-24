@@ -10,7 +10,7 @@ import { Bot, PipelineResult } from "./types";
 import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
 import { writeNoteMultiSourceFn as writeNote } from "../pipeline/writeNoteMultiSource";
 import { verifySource } from "../pipeline/sourceVerification";
-import { analyzeMedia } from "../pipeline/mediaAnalysis";
+import { analyzeMedia } from "../pipeline/media_analysis";
 
 const MODELS = {
   search: "perplexity/sonar",

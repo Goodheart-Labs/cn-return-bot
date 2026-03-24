@@ -8,7 +8,7 @@
 import { Bot, PipelineResult } from "./types";
 import { versionOneFn as perplexitySearch } from "../pipeline/searchContextGoal";
 import { writeNoteFn as writeNote } from "../pipeline/writeNote";
-import { analyzeMedia } from "../pipeline/mediaAnalysis";
+import { analyzeMedia } from "../pipeline/media_analysis";
 
 const MODELS = {
   search: "perplexity/sonar",

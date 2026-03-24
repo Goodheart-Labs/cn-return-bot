@@ -9,7 +9,7 @@ import { Bot, PipelineResult } from "./types";
 import { enrichedSearch } from "../pipeline/enrichedSearch";
 import { writeNoteFn as writeNote } from "../pipeline/writeNote";
 import { verifySource } from "../pipeline/sourceVerification";
-import { analyzeMedia } from "../pipeline/mediaAnalysis";
+import { analyzeMedia } from "../pipeline/media_analysis";
 
 const MODELS = {
   search: "perplexity/sonar",
