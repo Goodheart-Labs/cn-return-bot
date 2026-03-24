@@ -167,7 +167,6 @@ export function writeResultJsons(results: CategorizedRow[], outputDir: string): 
     const outPath = path.join(outputDir, `${category}.json`);
     fs.writeFileSync(outPath, JSON.stringify(data, null, 2) + "\n", "utf8");
     counts[category as Category] = data.length;
-    console.log(`[evaluate] ${category}: ${data.length} rows -> ${outPath}`);
   }
 
   return counts;
