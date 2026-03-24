@@ -70,9 +70,8 @@ function formatScoresLine(log: TweetLogMap): string | null {
 
 function formatMediaLine(log: TweetLogMap): string | null {
   const videos = get(log, "media.videos") as Array<{
-    keyFrameDescriptions?: string[];
-    transcription?: string;
-    durationMs?: number;
+    description?: string;
+    textContent?: string;
   }> | undefined;
   const images = get(log, "media.images") as Array<unknown> | undefined;
 
@@ -80,9 +79,8 @@ function formatMediaLine(log: TweetLogMap): string | null {
   if (videos?.length) {
     for (const v of videos) {
       const details: string[] = [];
-      if (v.keyFrameDescriptions?.length) details.push(`${v.keyFrameDescriptions.length} frames`);
-      if (v.transcription) details.push(`${v.transcription.length} char transcript`);
-      if (v.durationMs) details.push(`${v.durationMs}ms`);
+      if (v.description) details.push(`${v.description.length} char description`);
+      if (v.textContent) details.push(`${v.textContent.length} char OCR`);
       parts.push(`video${details.length ? ` (${details.join(", ")})` : ""}`);
     }
   }

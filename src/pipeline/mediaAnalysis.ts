@@ -2,38 +2,22 @@
  * Media Analysis
  *
  * Extracts meaningful content from media in tweets:
- * - Videos: Extract key frames, transcribe audio
+ * - Videos: Send full video to Gemini for description + OCR
  * - Images: Describe with vision model, extract text
  */
 
-import { exec } from "child_process";
-import { promisify } from "util";
 import { tmpdir } from "os";
 import { join } from "path";
-import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
+import { readFile, writeFile, rm, mkdir } from "fs/promises";
 import { llm } from "./llm";
 import { getTweetLog } from "./tweetLog";
 
-const execAsync = promisify(exec);
-
-let ffmpegAvailable: boolean | null = null;
-async function checkFfmpeg(): Promise<boolean> {
-  if (ffmpegAvailable !== null) return ffmpegAvailable;
-  try {
-    await execAsync("ffmpeg -version", { timeout: 5000 });
-    ffmpegAvailable = true;
-  } catch {
-    ffmpegAvailable = false;
-  }
-  return ffmpegAvailable;
-}
+const GEMINI_VIDEO_MODEL = "google/gemini-2.5-flash";
 
 export interface VideoAnalysisResult {
   url: string;
-  transcription?: string;
-  keyFrameDescriptions: string[];
-  durationMs?: number;
-  hasAudio: boolean;
+  description: string;
+  textContent?: string;
   error?: string;
 }
 
@@ -60,7 +44,6 @@ export interface MediaAnalysisResult {
 function validateUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    // Only allow http/https protocols
     return parsed.protocol === "http:" || parsed.protocol === "https:";
   } catch {
     return false;
@@ -68,79 +51,118 @@ function validateUrl(url: string): boolean {
 }
 
 /**
- * Transcribe audio using Groq Whisper API (preferred, fast & free)
+ * Download a video and return its base64-encoded data URL
  */
-async function transcribeWithGroq(audioBuffer: Buffer): Promise<string> {
-  const groqApiKey = process.env.GROQ_API_KEY;
-  if (!groqApiKey) return "";
+async function downloadVideoAsBase64(videoUrl: string): Promise<string> {
+  const isLocalFile = videoUrl.startsWith("/");
 
-  const formData = new FormData();
-  formData.append("file", new Blob([new Uint8Array(audioBuffer)], { type: "audio/mp3" }), "audio.mp3");
-  formData.append("model", "whisper-large-v3");
-  formData.append("response_format", "text");
-
-  const response = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${groqApiKey}`,
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Groq API error: ${response.status} ${errorText}`);
+  if (isLocalFile) {
+    const buffer = await readFile(videoUrl);
+    return `data:video/mp4;base64,${buffer.toString("base64")}`;
   }
 
-  return (await response.text()).trim();
+  const tmpDir = join(tmpdir(), `cn-video-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  try {
+    await mkdir(tmpDir, { recursive: true });
+    const videoPath = join(tmpDir, "video.mp4");
+    const response = await fetch(videoUrl, { redirect: "follow" });
+    if (!response.ok) {
+      throw new Error(`Failed to download video: ${response.status}`);
+    }
+    const buffer = Buffer.from(await response.arrayBuffer());
+    await writeFile(videoPath, buffer);
+    return `data:video/mp4;base64,${buffer.toString("base64")}`;
+  } finally {
+    try {
+      await rm(tmpDir, { recursive: true, force: true });
+    } catch {}
+  }
 }
 
 /**
- * Transcribe audio using OpenRouter's audio-capable models (fallback)
- * Uses GPT-4o-audio or similar model that supports input_audio
+ * Analyze a single video by sending it to Gemini for description + OCR
  */
-async function transcribeWithOpenRouter(audioBuffer: Buffer): Promise<string> {
-  const openRouterKey = process.env.OPENROUTER_API_KEY;
-  if (!openRouterKey) return "";
+async function analyzeVideo(videoUrl: string): Promise<VideoAnalysisResult> {
+  const isLocalFile = videoUrl.startsWith("/");
 
-  const base64Audio = audioBuffer.toString("base64");
+  if (!isLocalFile && !validateUrl(videoUrl)) {
+    console.error("[mediaAnalysis] Invalid video URL:", videoUrl);
+    return { url: videoUrl, description: "", error: "Invalid URL" };
+  }
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${openRouterKey}`,
-    },
-    body: JSON.stringify({
-      model: "openai/gpt-4o-audio-preview",
+  try {
+    const base64Video = await downloadVideoAsBase64(videoUrl);
+
+    const result = await llm.create({
+      model: GEMINI_VIDEO_MODEL,
       messages: [
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: "Transcribe this audio exactly as spoken. Output ONLY the transcription, nothing else.",
+              text: `Analyze this video for fact-checking purposes. Provide two sections:
+
+DESCRIPTION:
+Describe what happens in the video in detail. Include:
+- What the video shows (people, objects, events, settings)
+- Key claims or assertions being made (spoken or visual)
+- Context clues (location, time period, event type)
+- Audio content: summarize or transcribe what is said
+
+TEXT CONTENT (OCR):
+List ALL text visible in the video, including:
+- Subtitles or captions
+- On-screen text, titles, chyrons
+- Signs, labels, watermarks
+- Any other readable text
+
+Quote all text exactly as it appears. If no text is visible, write "No text detected."`,
             },
             {
-              type: "input_audio",
-              input_audio: {
-                data: base64Audio,
-                format: "mp3",
-              },
+              type: "video_url" as any,
+              video_url: { url: base64Video },
             },
           ],
         },
       ],
-    }),
-  });
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`OpenRouter audio API error: ${response.status} ${errorText}`);
+    const content = (result.choices?.[0]?.message?.content || "") as string;
+
+    const { description, textContent } = parseVideoAnalysisResponse(content);
+
+    return {
+      url: videoUrl,
+      description,
+      textContent: textContent || undefined,
+    };
+  } catch (err: any) {
+    console.error("[mediaAnalysis] Video analysis failed:", err.message);
+    return {
+      url: videoUrl,
+      description: "",
+      error: err.message,
+    };
   }
+}
 
-  const result = await response.json();
-  return (result.choices?.[0]?.message?.content || "").trim();
+/**
+ * Parse the structured response from Gemini into description and text content sections
+ */
+function parseVideoAnalysisResponse(content: string): {
+  description: string;
+  textContent: string;
+} {
+  const descriptionMatch = content.match(
+    /DESCRIPTION:\s*\n([\s\S]*?)(?=\n\s*TEXT CONTENT|$)/i
+  );
+  const textMatch = content.match(/TEXT CONTENT.*?:\s*\n([\s\S]*?)$/i);
+
+  return {
+    description: descriptionMatch?.[1]?.trim() || content.trim(),
+    textContent: textMatch?.[1]?.trim() || "",
+  };
 }
 
 /**
@@ -181,7 +203,7 @@ Be specific and factual. If you see text, quote it exactly.`,
 
     return {
       url: imageUrl,
-      description,
+      description: description as string,
     };
   } catch (err: any) {
     console.error("[mediaAnalysis] Image description failed:", err.message);
@@ -190,205 +212,6 @@ Be specific and factual. If you see text, quote it exactly.`,
       description: "",
       error: err.message,
     };
-  }
-}
-
-/**
- * Describe video frames using vision model
- */
-async function describeVideoFrames(
-  frames: Buffer[],
-  model: string = "anthropic/claude-sonnet-4"
-): Promise<string[]> {
-  if (frames.length === 0) return [];
-
-  // Convert frames to base64 data URLs
-  const frameDataUrls = frames.map(
-    (frame) => `data:image/jpeg;base64,${frame.toString("base64")}`
-  );
-
-  // Describe all frames in one call for efficiency
-  try {
-    const result = await llm.create({
-      model,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `These are ${frames.length} frames extracted from a video, for fact-checking purposes.
-
-For each frame, briefly describe:
-- What's happening
-- Any visible text or graphics
-- Key people or objects
-- Any claims being made
-
-Format as:
-Frame 1: [description]
-Frame 2: [description]
-...`,
-            },
-            ...frameDataUrls.map((url) => ({
-              type: "image_url" as const,
-              image_url: { url },
-            })),
-          ],
-        },
-      ],
-    });
-
-    const content = result.choices?.[0]?.message?.content || "";
-
-    // Parse frame descriptions
-    const descriptions: string[] = [];
-    const lines = content.split("\n");
-
-    for (const line of lines) {
-      const match = line.match(/^Frame \d+:\s*(.+)/i);
-      if (match && match[1]) {
-        descriptions.push(match[1].trim());
-      }
-    }
-
-    // If parsing failed, return the whole content as one description
-    if (descriptions.length === 0 && content) {
-      descriptions.push(content);
-    }
-
-    return descriptions;
-  } catch (err: any) {
-    console.error("[mediaAnalysis] Frame description failed:", err.message);
-    return [];
-  }
-}
-
-/**
- * Analyze a single video
- *
- * Downloads the video once and reuses the local file for both
- * frame extraction and audio transcription.
- */
-async function analyzeVideo(
-  videoUrl: string,
-  config: {
-    maxFrames?: number;
-    transcribeAudio?: boolean;
-    visionModel?: string;
-  }
-): Promise<VideoAnalysisResult> {
-  const maxFrames = config.maxFrames ?? 4;
-  const shouldTranscribe = config.transcribeAudio ?? true;
-  const visionModel = config.visionModel || "anthropic/claude-sonnet-4";
-
-  const isLocalFile = videoUrl.startsWith("/");
-
-  if (!isLocalFile && !validateUrl(videoUrl)) {
-    console.error("[mediaAnalysis] Invalid video URL:", videoUrl);
-    return { url: videoUrl, keyFrameDescriptions: [], hasAudio: false, error: "Invalid URL" };
-  }
-
-  const tmpDir = join(tmpdir(), `cn-video-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-
-  try {
-    await mkdir(tmpDir, { recursive: true });
-
-    let videoPath: string;
-    if (isLocalFile) {
-      // Use local file directly — no download needed
-      videoPath = videoUrl;
-    } else {
-      // Download video once
-      videoPath = join(tmpDir, "video.mp4");
-      const response = await fetch(videoUrl, { redirect: "follow" });
-      if (!response.ok) {
-        throw new Error(`Failed to download video: ${response.status}`);
-      }
-      await writeFile(videoPath, Buffer.from(await response.arrayBuffer()));
-    }
-
-    // Extract frames from local file
-    const frames: Buffer[] = [];
-    await execAsync(
-      `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v ${maxFrames} "${tmpDir}/frame%03d.jpg" -y 2>&1`,
-      { timeout: 60000 }
-    ).catch((err) => {
-      console.error("[mediaAnalysis] FFmpeg frame extraction error:", err.message);
-    });
-
-    for (let i = 1; i <= maxFrames; i++) {
-      const framePath = join(tmpDir, `frame${String(i).padStart(3, "0")}.jpg`);
-      try {
-        const frameStat = await stat(framePath);
-        if (frameStat.size > 0) {
-          frames.push(await readFile(framePath));
-        }
-      } catch {
-        break;
-      }
-    }
-    // Describe frames
-    const frameDescriptions = await describeVideoFrames(frames, visionModel);
-
-    // Extract audio and transcribe from local file
-    let transcription = "";
-    if (shouldTranscribe) {
-      const groqApiKey = process.env.GROQ_API_KEY;
-      const openRouterKey = process.env.OPENROUTER_API_KEY;
-
-      if (groqApiKey || openRouterKey) {
-        try {
-          const audioPath = join(tmpDir, "audio.mp3");
-          await execAsync(
-            `ffmpeg -i "${videoPath}" -vn -acodec libmp3lame -ar 16000 -ac 1 "${audioPath}" -y 2>&1`,
-            { timeout: 60000 }
-          );
-
-          const audioStat = await stat(audioPath);
-          if (audioStat.size >= 1000) {
-            const audioBuffer = await readFile(audioPath);
-
-            if (groqApiKey) {
-              try {
-                transcription = await transcribeWithGroq(audioBuffer);
-              } catch (err: any) {
-                console.error("[mediaAnalysis] Groq transcription failed:", err.message);
-              }
-            }
-
-            if (!transcription && openRouterKey) {
-              try {
-                transcription = await transcribeWithOpenRouter(audioBuffer);
-              } catch (err: any) {
-                console.error("[mediaAnalysis] OpenRouter transcription failed:", err.message);
-              }
-            }
-          }
-        } catch (err: any) {
-          console.error("[mediaAnalysis] Audio extraction failed:", err.message);
-        }
-      }
-    }
-
-    return {
-      url: videoUrl,
-      transcription: transcription || undefined,
-      keyFrameDescriptions: frameDescriptions,
-      hasAudio: transcription.length > 0,
-    };
-  } catch (err: any) {
-    console.error("[mediaAnalysis] Video analysis failed:", err.message);
-    return {
-      url: videoUrl,
-      keyFrameDescriptions: [],
-      hasAudio: false,
-      error: err.message,
-    };
-  } finally {
-    try {
-      await rm(tmpDir, { recursive: true, force: true });
-    } catch { }
   }
 }
 
@@ -433,14 +256,10 @@ export async function analyzeMedia(
     variants?: Array<{ bit_rate?: number; content_type: string; url: string }>;
   }>,
   config?: {
-    maxVideoFrames?: number;
-    transcribeAudio?: boolean;
     visionModel?: string;
   }
 ): Promise<MediaAnalysisResult> {
   const startTime = Date.now();
-  const maxVideoFrames = config?.maxVideoFrames ?? 4;
-  const transcribeAudio = config?.transcribeAudio ?? true;
   const visionModel = config?.visionModel || "anthropic/claude-sonnet-4";
 
   const videos: VideoAnalysisResult[] = [];
@@ -451,20 +270,11 @@ export async function analyzeMedia(
   const videoItems = media.filter((m) => m.type === "video" || m.type === "animated_gif");
   const imageItems = media.filter((m) => m.type === "photo");
 
-  // Analyze videos (sequentially to avoid overwhelming FFmpeg)
-  if (videoItems.length > 0 && !(await checkFfmpeg())) {
-    const msg = `FFmpeg not available, skipping ${videoItems.length} video(s)`;
-    console.warn(`[mediaAnalysis] ${msg}`);
-    warnings.push(msg);
-  }
-  for (const video of ffmpegAvailable ? videoItems : []) {
+  // Analyze videos (sequentially to avoid large concurrent uploads)
+  for (const video of videoItems) {
     const videoUrl = getBestUrl(video);
     if (!videoUrl) continue;
-    const result = await analyzeVideo(videoUrl, {
-      maxFrames: maxVideoFrames,
-      transcribeAudio,
-      visionModel,
-    });
+    const result = await analyzeVideo(videoUrl);
     if (result.error) {
       warnings.push(`Video analysis failed: ${result.error}`);
     }
@@ -488,11 +298,11 @@ export async function analyzeMedia(
   const summaryParts: string[] = [];
 
   for (const video of videos) {
-    if (video.transcription) {
-      summaryParts.push(`VIDEO AUDIO TRANSCRIPT:\n${video.transcription}`);
+    if (video.description) {
+      summaryParts.push(`VIDEO DESCRIPTION:\n${video.description}`);
     }
-    if (video.keyFrameDescriptions.length > 0) {
-      summaryParts.push(`VIDEO VISUAL CONTENT:\n${video.keyFrameDescriptions.join("\n")}`);
+    if (video.textContent) {
+      summaryParts.push(`VIDEO TEXT CONTENT (OCR):\n${video.textContent}`);
     }
   }
 
@@ -515,10 +325,8 @@ export async function analyzeMedia(
   const log = getTweetLog();
   log?.set("media.videos", videos.map((v) => ({
     url: v.url,
-    keyFrameDescriptions: v.keyFrameDescriptions,
-    transcription: v.transcription,
-    durationMs: v.durationMs,
-    hasAudio: v.hasAudio,
+    description: v.description,
+    textContent: v.textContent,
     error: v.error,
   })));
   log?.set("media.images", images.map((img) => ({
