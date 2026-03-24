@@ -13,7 +13,7 @@ import { analyzeMedia } from "../pipeline/mediaAnalysis";
 const MODELS = {
   search: "perplexity/sonar",
   noteWriting: "anthropic/claude-opus-4.5",
-  vision: "anthropic/claude-sonnet-4",
+  vision: "google/gemini-3-flash-preview",
 };
 
 export const opusMainNoSourceCheck: Bot = {

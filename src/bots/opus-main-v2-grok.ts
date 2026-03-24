@@ -16,7 +16,7 @@ const MODELS = {
   grokSearch: "grok-4-fast",
   noteWriting: "anthropic/claude-opus-4.5",
   checking: "anthropic/claude-sonnet-4",
-  vision: "anthropic/claude-sonnet-4",
+  vision: "google/gemini-3-flash-preview",
 };
 
 export const opusMainV2Grok: Bot = {
