@@ -35,6 +35,15 @@ import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
 import PQueue from "p-queue";
+import { parseCsvRecords, escapeCsvField } from "../utils/csv";
+import {
+  categorizeRow,
+  writeResultJsons,
+  type CsvRow,
+  type CategorizedRow,
+  type Category,
+  type BucketCounts,
+} from "./evaluateResults";
 
 const concurrencyLimit = 5;
 
@@ -112,46 +121,6 @@ function parseInputCsv(filePath: string): InputRow[] {
   return rows;
 }
 
-/** Parse CSV content handling multiline quoted fields. */
-function parseCsvRecords(content: string): string[][] {
-  const records: string[][] = [];
-  let fields: string[] = [];
-  let current = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < content.length; i++) {
-    const char = content[i]!;
-    if (inQuotes) {
-      if (char === '"' && content[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else if (char === '"') {
-        inQuotes = false;
-      } else {
-        current += char;
-      }
-    } else if (char === '"') {
-      inQuotes = true;
-    } else if (char === ",") {
-      fields.push(current);
-      current = "";
-    } else if (char === "\n" || (char === "\r" && content[i + 1] === "\n")) {
-      if (char === "\r") i++;
-      fields.push(current);
-      current = "";
-      records.push(fields);
-      fields = [];
-    } else {
-      current += char;
-    }
-  }
-  // Last record (no trailing newline)
-  fields.push(current);
-  if (fields.some((f) => f.length > 0)) {
-    records.push(fields);
-  }
-  return records;
-}
 
 // ---------------------------------------------------------------------------
 // yt-dlp metadata extraction
@@ -251,17 +220,9 @@ const OUTPUT_HEADERS = [
   "note_text",
   "source_verification",
   "evaluation_score",
-  "search_results",
-  "citations",
   "logs",
 ] as const;
 
-function escapeCsvField(value: string): string {
-  if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
 
 function resultToCsvRow(
   input: InputRow,
@@ -271,7 +232,6 @@ function resultToCsvRow(
 ): string {
   const pr = result.pipelineResult;
   const svScore = result.scores.find((s) => s.type === "source_verification");
-  const citations = pr?.searchContextResult?.citations?.join("; ") ?? "";
 
   const fields: Record<(typeof OUTPUT_HEADERS)[number], string> = {
     url: input.url,
@@ -284,8 +244,6 @@ function resultToCsvRow(
     note_text: result.noteText ?? "",
     source_verification: svScore?.label ?? (svScore ? String(svScore.value) : "skipped"),
     evaluation_score: result.evaluationScore?.toFixed(2) ?? "",
-    search_results: pr?.searchContextResult?.searchResults ?? "",
-    citations,
     logs: log ? JSON.stringify(Object.fromEntries(log)) : "",
   };
 
@@ -303,18 +261,19 @@ function errorToCsvRow(input: InputRow, errorMsg: string): string {
   ).join(",");
 }
 
-function initCsvFile(): { filePath: string; appendRow: (row: string) => void } {
-  const outDir = path.join(process.cwd(), "tryout-results");
-  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-
+function initOutputFolder(): { folderPath: string; csvPath: string; appendRow: (row: string) => void } {
+  const baseDir = path.join(process.cwd(), "tryout-results");
   const timestamp = new Date().toISOString().replace(/[:.]/g, "").replace("T", "-").slice(0, 15);
-  const filePath = path.join(outDir, `videos-${timestamp}.csv`);
+  const folderPath = path.join(baseDir, `videos-${timestamp}`);
+  fs.mkdirSync(folderPath, { recursive: true });
 
-  fs.writeFileSync(filePath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
+  const csvPath = path.join(folderPath, "results.csv");
+  fs.writeFileSync(csvPath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
 
   return {
-    filePath,
-    appendRow: (row: string) => fs.appendFileSync(filePath, row + "\n", "utf8"),
+    folderPath,
+    csvPath,
+    appendRow: (row: string) => fs.appendFileSync(csvPath, row + "\n", "utf8"),
   };
 }
 
@@ -322,54 +281,81 @@ function initCsvFile(): { filePath: string; appendRow: (row: string) => void } {
 // Progress tracking
 // ---------------------------------------------------------------------------
 
-const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
+const CATEGORY_LABELS: Record<Category, { emoji: string; label: string }> = {
+  note_worthy_correct: { emoji: "✅", label: "correct" },
+  note_worthy_incorrect: { emoji: "❌", label: "incorrect" },
+  note_worthy_not_proposed: { emoji: "❌", label: "missed" },
+  non_note_worthy_correct: { emoji: "✅", label: "correct" },
+  non_note_worthy_incorrect: { emoji: "❌", label: "false positive" },
+};
 
 interface CompletedResult {
   idx: number;
   url: string;
   title: string;
-  groundTruth: string;
-  noteStatus: string;
   outcome: string;
   outcomeReason?: string;
   noteText?: string;
+  categorized?: CategorizedRow | null;
 }
 
-function isCorrect(r: CompletedResult): boolean | null {
-  if (!r.groundTruth) return null;
-  const wantNote = r.groundTruth.toLowerCase() === "yes";
-  const predictedNote = r.noteStatus === CORRECTION_STATUS;
-  return wantNote === predictedNote;
-}
-
-function formatResult(r: CompletedResult): string {
-  const mark = isCorrect(r) === true ? "✅" : isCorrect(r) === false ? "❌" : "⚪";
-  const requiresNote = r.noteStatus === CORRECTION_STATUS;
+function formatResult(r: CompletedResult, count: number, total: number): string {
   const reason = r.outcomeReason ? ` (${r.outcomeReason})` : "";
-  const lines = [
-    `${mark} ${requiresNote ? "requires_note" : "no_note"} | truth=${r.groundTruth || "?"} | ${r.outcome}${reason}`,
-    `  ${r.url}`,
-    `  ${r.title}`,
-  ];
-  if (r.noteStatus && r.noteStatus !== CORRECTION_STATUS) {
-    lines.push(`  note_status: ${r.noteStatus}`);
+  const lines: string[] = [];
+
+  if (r.categorized) {
+    const { emoji, label } = CATEGORY_LABELS[r.categorized.category];
+    lines.push(`--- ${count}/${total} ---`);
+    lines.push(`${emoji} (${label}) | ${r.outcome}${reason}`);
+  } else {
+    lines.push(`--- ${count}/${total} ---`);
+    lines.push(`${r.outcome}${reason}`);
   }
+
+  lines.push(`  ${r.url}`);
+  lines.push(`  ${r.title}`);
   if (r.noteText) {
     lines.push(`  note: ${r.noteText.slice(0, 120)}`);
   }
   return lines.join("\n");
 }
 
-function fmtAccuracy(subset: CompletedResult[]): string {
-  const correct = subset.filter((r) => isCorrect(r) === true).length;
-  const scored = subset.filter((r) => isCorrect(r) !== null).length;
-  return scored > 0 ? `${correct}/${scored} (${((correct / scored) * 100).toFixed(0)}%)` : "—";
+function fmtRate(count: number, total: number): string {
+  if (total === 0) return "—";
+  return `${count}/${total} (${((count / total) * 100).toFixed(0)}%)`;
 }
 
-function printProgress(results: CompletedResult[], total: number) {
-  const last = results[results.length - 1]!;
-  console.log(`\n--- ${results.length}/${total} (accuracy: ${fmtAccuracy(results)}) ---`);
-  console.log(formatResult(last));
+function printSummary(counts: BucketCounts, totalProcessed: number, errors: number, outputPath: string) {
+  const nwTotal = counts.note_worthy_correct + counts.note_worthy_incorrect + counts.note_worthy_not_proposed;
+  const nnwTotal = counts.non_note_worthy_correct + counts.non_note_worthy_incorrect;
+  const scoredTotal = nwTotal + nnwTotal;
+  const overallCorrect = counts.note_worthy_correct + counts.non_note_worthy_correct;
+  const skipped = totalProcessed - scoredTotal - errors;
+
+  console.log(`\n${"=".repeat(60)}`);
+  console.log(`RESULTS: ${totalProcessed} processed, ${errors} errors`);
+  console.log(`Output: ${outputPath}`);
+
+  if (nwTotal > 0) {
+    console.log(`\n  NOTEWORTHY (ground truth = yes): ${nwTotal} tweets`);
+    console.log(`    correct:      ${fmtRate(counts.note_worthy_correct, nwTotal).padEnd(16)} AI judge confirmed note is good`);
+    console.log(`    incorrect:    ${fmtRate(counts.note_worthy_incorrect, nwTotal).padEnd(16)} note proposed but wrong`);
+    console.log(`    not proposed: ${fmtRate(counts.note_worthy_not_proposed, nwTotal).padEnd(16)} missed entirely`);
+  }
+
+  if (nnwTotal > 0) {
+    console.log(`\n  NON-NOTEWORTHY (ground truth = no): ${nnwTotal} tweets`);
+    console.log(`    correct:      ${fmtRate(counts.non_note_worthy_correct, nnwTotal).padEnd(16)} correctly no note`);
+    console.log(`    incorrect:    ${fmtRate(counts.non_note_worthy_incorrect, nnwTotal).padEnd(16)} false positive`);
+  }
+
+  if (scoredTotal > 0) {
+    console.log(`\n  OVERALL: ${fmtRate(overallCorrect, scoredTotal)}`);
+  }
+  if (skipped > 0) {
+    console.log(`  NO GROUND TRUTH: ${skipped} skipped`);
+  }
+  console.log("=".repeat(60));
 }
 
 // ---------------------------------------------------------------------------
@@ -438,9 +424,12 @@ async function main() {
   const downloadDir = path.join(tmpdir(), `cn-runOnVideos-${Date.now()}`);
   fs.mkdirSync(downloadDir, { recursive: true });
 
-  const csv = initCsvFile();
-  console.log(`[runOnVideos] CSV: ${csv.filePath}`);
+  const output = initOutputFolder();
+  console.log(`[runOnVideos] Output folder: ${output.folderPath}`);
   const results: CompletedResult[] = [];
+  const categorizedRows: CategorizedRow[] = [];
+  let completedCount = 0;
+  let errorCount = 0;
 
   const queue = new PQueue({ concurrency: concurrencyLimit });
 
@@ -450,10 +439,10 @@ async function main() {
         idx,
         url: input.url,
         title: "",
-        groundTruth: input.needsNote ?? "",
-        noteStatus: "",
         outcome: "error",
       };
+
+      let csvRowData: CsvRow | null = null;
 
       try {
         const { meta, videoPath } = downloadWithYtDlp(input.url, downloadDir);
@@ -468,35 +457,52 @@ async function main() {
           processSingleTweet({ post, bot, logger })
         );
 
-        completed.noteStatus = result.noteStatus ?? "";
         completed.outcome = result.outcome;
         completed.outcomeReason = result.outcomeReason;
         completed.noteText = result.noteText;
-        csv.appendRow(resultToCsvRow(input, bot.id, result, log));
+        const csvRow = resultToCsvRow(input, bot.id, result, log);
+        output.appendRow(csvRow);
+
+        // Build CsvRow for evaluation
+        csvRowData = {
+          url: input.url,
+          text: result.pipelineResult?.post?.text ?? "",
+          needs_note: input.needsNote ?? "",
+          ground_truth_note: input.groundTruthNote ?? "",
+          bot_id: bot.id,
+          note_status: result.noteStatus ?? "",
+          outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
+          note_text: result.noteText ?? "",
+          logs: log ? JSON.stringify(Object.fromEntries(log)) : "",
+        };
       } catch (err: any) {
         console.error(`[runOnVideos] ERROR ${input.url}: ${err?.message}`);
-        csv.appendRow(errorToCsvRow(input, err?.message ?? "unknown"));
+        output.appendRow(errorToCsvRow(input, err?.message ?? "unknown"));
+        errorCount++;
       }
 
+      // Categorize via AI judge (if applicable)
+      if (csvRowData) {
+        try {
+          const categorized = await categorizeRow(csvRowData);
+          completed.categorized = categorized;
+          if (categorized) categorizedRows.push(categorized);
+        } catch (err: any) {
+          console.error(`[runOnVideos] Judge failed for ${input.url}: ${err?.message}`);
+        }
+      }
+
+      completedCount++;
       results.push(completed);
-      printProgress(results, inputs.length);
+      console.log(`\n${formatResult(completed, completedCount, inputs.length)}`);
     });
   }
 
   await queue.onIdle();
 
-  // Final summary
-  const needsNote = results.filter((r) => r.groundTruth.toLowerCase() === "yes");
-  const noNote = results.filter((r) => r.groundTruth.toLowerCase() === "no");
-  const errors = results.filter((r) => r.outcome === "error").length;
-
-  console.log(`\n${"=".repeat(60)}`);
-  console.log(`SUMMARY: ${results.length} processed, ${errors} errors`);
-  console.log(`  overall:        ${fmtAccuracy(results)}`);
-  console.log(`  needs_note:     ${fmtAccuracy(needsNote)}`);
-  console.log(`  no_note_needed: ${fmtAccuracy(noNote)}`);
-  console.log(`\nResults: ${csv.filePath}`);
-  console.log("=".repeat(60));
+  // Write categorized JSONs and print summary
+  const counts = writeResultJsons(categorizedRows, output.folderPath);
+  printSummary(counts, inputs.length, errorCount, output.folderPath);
 
   // Cleanup downloaded videos
   try {
