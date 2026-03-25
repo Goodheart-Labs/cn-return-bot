@@ -14,18 +14,17 @@ function getRequiredEnv(name: string): string {
   return value;
 }
 
-// These will throw immediately at module load if not set
-const consumer_key = getRequiredEnv("X_API_KEY");
-const consumer_secret = getRequiredEnv("X_API_KEY_SECRET");
-const access_token = getRequiredEnv("X_ACCESS_TOKEN");
-const access_token_secret = getRequiredEnv("X_ACCESS_TOKEN_SECRET");
-
 // === OAuth1 Helper Function ===
 export function getOAuth1Headers(
   url: string,
   method: string = "GET",
   _body?: string
 ) {
+  const consumer_key = getRequiredEnv("X_API_KEY");
+  const consumer_secret = getRequiredEnv("X_API_KEY_SECRET");
+  const access_token = getRequiredEnv("X_ACCESS_TOKEN");
+  const access_token_secret = getRequiredEnv("X_ACCESS_TOKEN_SECRET");
+
   const oauth = new OAuth({
     consumer: {
       key: consumer_key,
