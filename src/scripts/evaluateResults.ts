@@ -26,7 +26,7 @@ export interface CsvRow {
   [key: string]: string;
 }
 
-interface ParsedRow {
+export interface ParsedRow {
   [key: string]: unknown;
 }
 
@@ -64,7 +64,7 @@ export function isNoteworthy(row: CsvRow): boolean | null {
   return null;
 }
 
-function parseRowForJson(row: CsvRow): ParsedRow {
+export function parseRowForJson(row: CsvRow): ParsedRow {
   const out: ParsedRow = {};
   for (const [k, v] of Object.entries(row)) {
     if (DROP_COLUMNS.has(k)) continue;
@@ -147,7 +147,11 @@ export async function categorizeRow(row: CsvRow): Promise<CategorizedRow | null>
 // Write JSONs from accumulated results
 // ---------------------------------------------------------------------------
 
-export function writeResultJsons(results: CategorizedRow[], outputDir: string): BucketCounts {
+export function writeResultJsons(
+  results: CategorizedRow[],
+  outputDir: string,
+  uncategorized?: ParsedRow[],
+): BucketCounts {
   const buckets: Record<Category, ParsedRow[]> = {
     note_worthy_correct: [],
     note_worthy_incorrect: [],
@@ -167,6 +171,11 @@ export function writeResultJsons(results: CategorizedRow[], outputDir: string): 
     const outPath = path.join(outputDir, `${category}.json`);
     fs.writeFileSync(outPath, JSON.stringify(data, null, 2) + "\n", "utf8");
     counts[category as Category] = data.length;
+  }
+
+  if (uncategorized && uncategorized.length > 0) {
+    const outPath = path.join(outputDir, "uncategorized.json");
+    fs.writeFileSync(outPath, JSON.stringify(uncategorized, null, 2) + "\n", "utf8");
   }
 
   return counts;
@@ -198,21 +207,21 @@ export async function evaluateResults(csvPath: string, outputDir: string): Promi
   console.log(`[evaluate] Loaded ${rows.length} rows from ${csvPath}`);
 
   const results: CategorizedRow[] = [];
-  let skipped = 0;
+  const uncategorized: ParsedRow[] = [];
 
   for (const row of rows) {
     const result = await categorizeRow(row);
     if (result) {
       results.push(result);
     } else {
-      skipped++;
+      uncategorized.push(parseRowForJson(row));
     }
   }
 
-  const counts = writeResultJsons(results, outputDir);
+  const counts = writeResultJsons(results, outputDir, uncategorized);
 
-  if (skipped > 0) {
-    console.log(`[evaluate] Skipped ${skipped} rows with no ground truth`);
+  if (uncategorized.length > 0) {
+    console.log(`[evaluate] ${uncategorized.length} rows with no ground truth → uncategorized.json`);
   }
 
   return counts;

@@ -17,9 +17,11 @@ import PQueue from "p-queue";
 import { parseCsvRecords, escapeCsvField } from "../utils/csv";
 import {
   categorizeRow,
+  parseRowForJson,
   writeResultJsons,
   type CsvRow,
   type CategorizedRow,
+  type ParsedRow,
   type Category,
   type BucketCounts,
 } from "./evaluateResults";
@@ -92,7 +94,7 @@ export function parseInputCsv(filePath: string): InputRow[] {
 export function parseCliArgs(
   scriptName: string,
   opts?: { transformArg?: (arg: string) => string }
-): { inputs: InputRow[]; forcedBotId?: string } {
+): { inputs: InputRow[]; forcedBotId?: string; sourceFile?: string } {
   const args = process.argv.slice(2);
   if (args.length === 0) {
     console.error(`Usage: bun run src/scripts/${scriptName}.ts [--bot <bot-id>] <input.csv>`);
@@ -127,6 +129,8 @@ export function parseCliArgs(
     inputs = transformed.map((url) => ({ url }));
   } else if (transformed.length === 1 && fs.existsSync(transformed[0]!)) {
     inputs = parseInputCsv(transformed[0]!);
+    const ext = path.extname(transformed[0]!);
+    return { inputs, forcedBotId, sourceFile: path.basename(transformed[0]!, ext) };
   } else {
     console.error(`File not found or invalid args: ${transformed[0]}`);
     process.exit(1);
@@ -190,10 +194,11 @@ function errorToCsvRow(input: InputRow, errorMsg: string): string {
   ).join(",");
 }
 
-function initOutputFolder(prefix: string): { folderPath: string; csvPath: string; appendRow: (row: string) => void } {
-  const baseDir = path.join(process.cwd(), "tryout-results");
+function initOutputFolder(prefix: string, datasetName?: string): { folderPath: string; csvPath: string; appendRow: (row: string) => void } {
+  const baseDir = path.join(process.cwd(), "dataset_runs");
   const timestamp = new Date().toISOString().replace(/[:.]/g, "").replace("T", "-").slice(0, 15);
-  const folderPath = path.join(baseDir, `${prefix}-${timestamp}`);
+  const suffix = datasetName ? `-${datasetName}` : "";
+  const folderPath = path.join(baseDir, `${prefix}-${timestamp}${suffix}`);
   fs.mkdirSync(folderPath, { recursive: true });
 
   const csvPath = path.join(folderPath, "results.csv");
@@ -204,6 +209,55 @@ function initOutputFolder(prefix: string): { folderPath: string; csvPath: string
     csvPath,
     appendRow: (row: string) => fs.appendFileSync(csvPath, row + "\n", "utf8"),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Resume from previous run
+// ---------------------------------------------------------------------------
+
+function findLatestRun(
+  prefix: string,
+  inputs: InputRow[],
+  datasetName?: string,
+): { folderPath: string; csvPath: string; processedUrls: Set<string> } | null {
+  const baseDir = path.join(process.cwd(), "dataset_runs");
+  if (!fs.existsSync(baseDir)) return null;
+
+  const folders = fs
+    .readdirSync(baseDir)
+    .filter((f) => {
+      if (!f.startsWith(`${prefix}-`)) return false;
+      if (datasetName && !f.endsWith(`-${datasetName}`)) return false;
+      return fs.statSync(path.join(baseDir, f)).isDirectory();
+    })
+    .sort();
+  if (folders.length === 0) return null;
+
+  const latestFolder = path.join(baseDir, folders.at(-1)!);
+  const csvPath = path.join(latestFolder, "results.csv");
+  if (!fs.existsSync(csvPath)) return null;
+
+  const content = fs.readFileSync(csvPath, "utf8").trim();
+  const records = parseCsvRecords(content);
+  if (records.length <= 1) return null;
+
+  const processedUrls = new Set<string>();
+  for (let i = 1; i < records.length; i++) {
+    const url = records[i]?.[0]?.trim();
+    if (url) processedUrls.add(url);
+  }
+
+  const inputUrls = new Set(inputs.map((i) => i.url));
+
+  // Already complete — start fresh
+  if (processedUrls.size >= inputUrls.size) return null;
+
+  // Only resume if processed URLs are from the same input set
+  for (const u of processedUrls) {
+    if (!inputUrls.has(u)) return null;
+  }
+
+  return { folderPath: latestFolder, csvPath, processedUrls };
 }
 
 // ---------------------------------------------------------------------------
@@ -287,6 +341,7 @@ export interface RunPipelineOptions {
   inputs: InputRow[];
   fetchPost: PostFetcher;
   forcedBotId?: string;
+  datasetName?: string;
   concurrency?: number;
   cleanup?: () => Promise<void>;
 }
@@ -298,6 +353,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     inputs,
     fetchPost,
     forcedBotId,
+    datasetName,
     concurrency = 5,
     cleanup,
   } = options;
@@ -310,19 +366,38 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     console.log(`[${scriptName}] No Supabase configured — running without DB logging`);
   }
 
-  console.log(`[${scriptName}] Processing ${inputs.length} item(s)`);
+  // Check for a resumable previous run
+  const previousRun = findLatestRun(folderPrefix, inputs, datasetName);
+  const processedUrls = previousRun?.processedUrls ?? new Set<string>();
+  let output: { folderPath: string; csvPath: string; appendRow: (row: string) => void };
 
-  const output = initOutputFolder(folderPrefix);
+  if (previousRun) {
+    console.log(
+      `[${scriptName}] Resuming from ${path.basename(previousRun.folderPath)} (${processedUrls.size}/${inputs.length} already done)`
+    );
+    output = {
+      folderPath: previousRun.folderPath,
+      csvPath: previousRun.csvPath,
+      appendRow: (row: string) => fs.appendFileSync(previousRun.csvPath, row + "\n", "utf8"),
+    };
+  } else {
+    output = initOutputFolder(folderPrefix, datasetName);
+  }
+
+  const remaining = inputs.length - processedUrls.size;
+  console.log(`[${scriptName}] Processing ${remaining} remaining item(s)`);
   console.log(`[${scriptName}] Output folder: ${output.folderPath}`);
 
   const results: CompletedResult[] = [];
   const categorizedRows: CategorizedRow[] = [];
-  let completedCount = 0;
+  const uncategorizedRows: ParsedRow[] = [];
+  let completedCount = processedUrls.size;
   let errorCount = 0;
 
   const queue = new PQueue({ concurrency });
 
   for (const [idx, input] of inputs.entries()) {
+    if (processedUrls.has(input.url)) continue;
     queue.add(async () => {
       const completed: CompletedResult = {
         idx,
@@ -372,6 +447,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
           const categorized = await categorizeRow(csvRowData);
           completed.categorized = categorized;
           if (categorized) categorizedRows.push(categorized);
+          else uncategorizedRows.push(parseRowForJson(csvRowData));
         } catch (err: any) {
           console.error(`[${scriptName}] Judge failed for ${input.url}: ${err?.message}`);
         }
@@ -385,8 +461,48 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   await queue.onIdle();
 
-  const counts = writeResultJsons(categorizedRows, output.folderPath);
-  printSummary(counts, inputs.length, errorCount, output.folderPath);
+  let allCategorized: CategorizedRow[];
+  let allUncategorized: ParsedRow[];
+  let totalProcessed: number;
+  let totalErrors: number;
+
+  if (processedUrls.size > 0) {
+    // Resumed run — re-categorize from complete CSV for full summary
+    console.log(`\n[${scriptName}] Building full summary from all ${inputs.length} items...`);
+    const fullContent = fs.readFileSync(output.csvPath, "utf8").trim();
+    const fullRecords = parseCsvRecords(fullContent);
+    allCategorized = [];
+    allUncategorized = [];
+    totalErrors = 0;
+
+    if (fullRecords.length > 1) {
+      const headers = fullRecords[0]!.map((h) => h.trim());
+      for (let i = 1; i < fullRecords.length; i++) {
+        const row: CsvRow = {};
+        for (let j = 0; j < headers.length; j++) {
+          row[headers[j]!] = fullRecords[i]?.[j] ?? "";
+        }
+        if (row.outcome?.startsWith("error")) {
+          totalErrors++;
+          continue;
+        }
+        try {
+          const cat = await categorizeRow(row);
+          if (cat) allCategorized.push(cat);
+          else allUncategorized.push(parseRowForJson(row));
+        } catch {}
+      }
+    }
+    totalProcessed = fullRecords.length - 1;
+  } else {
+    allCategorized = categorizedRows;
+    allUncategorized = uncategorizedRows;
+    totalProcessed = remaining;
+    totalErrors = errorCount;
+  }
+
+  const counts = writeResultJsons(allCategorized, output.folderPath, allUncategorized);
+  printSummary(counts, totalProcessed, totalErrors, output.folderPath);
 
   if (cleanup) {
     try { await cleanup(); } catch {}

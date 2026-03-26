@@ -143,7 +143,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { inputs, forcedBotId } = parseCliArgs("runOnVideos");
+  const { inputs, forcedBotId, sourceFile } = parseCliArgs("runOnVideos");
 
   const downloadDir = path.join(tmpdir(), `cn-runOnVideos-${Date.now()}`);
   fs.mkdirSync(downloadDir, { recursive: true });
@@ -160,6 +160,7 @@ async function main() {
     inputs,
     fetchPost,
     forcedBotId,
+    datasetName: sourceFile,
     cleanup: async () => {
       fs.rmSync(downloadDir, { recursive: true, force: true });
       console.log(`[runOnVideos] Cleaned up temp directory`);
@@ -167,7 +168,9 @@ async function main() {
   });
 }
 
-main().catch((err) => {
-  console.error("[runOnVideos] Fatal error:", err);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error("[runOnVideos] Fatal error:", err);
+    process.exit(1);
+  });

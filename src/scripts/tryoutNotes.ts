@@ -53,7 +53,7 @@ const fetchPost: PostFetcher = async (input) => {
 };
 
 async function main() {
-  const { inputs, forcedBotId } = parseCliArgs("tryoutNotes", {
+  const { inputs, forcedBotId, sourceFile } = parseCliArgs("tryoutNotes", {
     transformArg: tweetIdToUrl,
   });
 
@@ -63,10 +63,13 @@ async function main() {
     inputs,
     fetchPost,
     forcedBotId,
+    datasetName: sourceFile,
   });
 }
 
-main().catch((err) => {
-  console.error("[tryoutNotes] Fatal error:", err);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error("[tryoutNotes] Fatal error:", err);
+    process.exit(1);
+  });
