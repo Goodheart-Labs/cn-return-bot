@@ -147,6 +147,14 @@ export async function categorizeRow(row: CsvRow): Promise<CategorizedRow | null>
 // Write JSONs from accumulated results
 // ---------------------------------------------------------------------------
 
+export const CATEGORY_RESULT_LABEL: Record<Category, string> = {
+  note_worthy_correct: "correct",
+  note_worthy_incorrect: "incorrect",
+  note_worthy_not_proposed: "missed",
+  non_note_worthy_correct: "correct",
+  non_note_worthy_incorrect: "false positive",
+};
+
 export function writeResultJsons(
   results: CategorizedRow[],
   outputDir: string,

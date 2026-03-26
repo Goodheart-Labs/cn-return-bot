@@ -51,7 +51,7 @@ async function downloadVideoAsBase64(videoUrl: string): Promise<string> {
   }
 }
 
-const VIDEO_ANALYSIS_TIMEOUT_MS = 120_000;
+const VIDEO_ANALYSIS_TIMEOUT_MS = 180_000;
 
 function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -106,7 +106,7 @@ Respond as JSON with two fields:
         response_format: { type: "json_object" },
       }),
       VIDEO_ANALYSIS_TIMEOUT_MS,
-      "Video analysis timed out after 120s",
+      "Video analysis timed out after 180s",
     );
 
     const content = (result.choices?.[0]?.message?.content || "") as string;
