@@ -97,6 +97,7 @@ export async function determineFeedSize(
   return { feedSize: currentSize, reason: parts.join(", ") };
 }
 
-export function buildPostSelection(feedSize: FeedSize): string {
-  return `feed_size: ${feedSize}, feed_lang: en`;
+export function buildPostSelection(_feedSize: FeedSize): string {
+  // Hardcoded to small — we lost access to "large" feed (403) as of 2026-03-25
+  return `feed_size: small, feed_lang: en`;
 }
