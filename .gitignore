@@ -7,7 +7,7 @@ dist
 *.tgz
 
 test-runs/
-tryout-results/
+dataset_runs/
 
 # code coverage
 coverage

@@ -90,9 +90,21 @@ bun run src/scripts/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page fi
 - Do not delete database enries without confirming. 
 - Common error for supabase to only display the first 1000. Make sure you are getting them all.
 
+## Setup
+
+```bash
+bun install          # installs deps + sets up husky pre-commit hook
+```
+
+Pre-commit runs `bun run check` (typecheck + knip). To run manually:
+```bash
+bun run check
+```
+
+Requires: [Bun](https://bun.sh), FFmpeg (`brew install ffmpeg`), yt-dlp (`brew install yt-dlp`, for video pipeline only)
+
 ## Running locally
 
 ```bash
-bun install
 bun run src/scripts/createNotesRoutine.ts
 ```
