@@ -6,10 +6,13 @@
  * - Images: Vision model description
  */
 
-import { describeVideo, type VideoDescriptionResult } from "./videoDescription";
+import { describeVideo } from "./videoDescription";
+import { describeVideoByFrames } from "./videoFrameSampler";
 import { transcribeVideoAudio } from "./audioTranscription";
 import { describeImage, type ImageAnalysisResult } from "./imageDescription";
 import { getTweetLog } from "../tweetLog";
+
+const LONG_VIDEO_THRESHOLD_MS = 3.5 * 60 * 1000;
 
 export type { ImageAnalysisResult };
 
@@ -57,11 +60,16 @@ function getBestUrl(item: {
 
 async function analyzeVideo(
   videoUrl: string,
-  visionModel: string
+  visionModel: string,
+  durationMs?: number,
 ): Promise<VideoAnalysisResult> {
+  const isLong = durationMs != null && durationMs > LONG_VIDEO_THRESHOLD_MS;
+
   // Run visual description and audio transcription in parallel
   const [descResult, transcription] = await Promise.all([
-    describeVideo(videoUrl, visionModel),
+    isLong
+      ? describeVideoByFrames(videoUrl, durationMs / 1000, visionModel)
+      : describeVideo(videoUrl, visionModel),
     transcribeVideoAudio(videoUrl),
   ]);
 
@@ -101,7 +109,7 @@ export async function analyzeMedia(
   for (const video of videoItems) {
     const videoUrl = getBestUrl(video);
     if (!videoUrl) continue;
-    const result = await analyzeVideo(videoUrl, visionModel);
+    const result = await analyzeVideo(videoUrl, visionModel, video.duration_ms);
     result.durationMs = video.duration_ms;
     if (result.error) {
       warnings.push(`Video analysis failed: ${result.error}`);
