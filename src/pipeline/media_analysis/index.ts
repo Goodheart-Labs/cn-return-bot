@@ -12,7 +12,7 @@ import { transcribeVideoAudio } from "./audioTranscription";
 import { describeImage, type ImageAnalysisResult } from "./imageDescription";
 import { getTweetLog } from "../tweetLog";
 
-const LONG_VIDEO_THRESHOLD_MS = 3.5 * 60 * 1000;
+const LONG_VIDEO_THRESHOLD_MS = 90 * 1000;
 
 export type { ImageAnalysisResult };
 

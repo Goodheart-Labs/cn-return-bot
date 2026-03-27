@@ -18,7 +18,6 @@ const execAsync = promisify(exec);
 
 const MAX_FRAMES = 4;
 const FRAME_WIDTH_PX = 640;
-const LLM_TIMEOUT_MS = 60_000;
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -75,32 +74,27 @@ export async function describeVideoByFrames(
 
     console.log(`[videoFrameSampler] ${frames.length} frames from ${formatDuration(durationSec)} video`);
 
-    const result = await Promise.race([
-      llm.create({
-        model,
-        messages: [{
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `These are ${frames.length} evenly-spaced frames from a ${formatDuration(durationSec)} video, for fact-checking.
+    const result = await llm.create({
+      model,
+      messages: [{
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `These are ${frames.length} evenly-spaced frames from a ${formatDuration(durationSec)} video, for fact-checking.
 
 Respond as JSON:
 - "text_content": ALL on-screen text across all frames (subtitles, chyrons, signs, watermarks). Quote exactly. "No text detected." if none.
 - "description": For each frame, describe what's happening, visible text/graphics, key people/objects, and any claims being made. Label as Frame 1, Frame 2, etc.`,
-            },
-            ...frames.map((f) => ({
-              type: "image_url" as const,
-              image_url: { url: `data:image/jpeg;base64,${f.toString("base64")}` },
-            })),
-          ],
-        }],
-        response_format: { type: "json_object" },
-      }),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Frame analysis timed out")), LLM_TIMEOUT_MS),
-      ),
-    ]);
+          },
+          ...frames.map((f) => ({
+            type: "image_url" as const,
+            image_url: { url: `data:image/jpeg;base64,${f.toString("base64")}` },
+          })),
+        ],
+      }],
+      response_format: { type: "json_object" },
+    });
 
     const raw = (result.choices?.[0]?.message?.content || "") as string;
     const parsed = JSON.parse(raw);
