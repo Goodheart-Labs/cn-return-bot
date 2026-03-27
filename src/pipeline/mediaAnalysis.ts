@@ -12,7 +12,7 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { llm } from "./llm";
-import { getTweetLog } from "./tweetLog";
+import { getTweetLog, logLlmCall } from "./tweetLog";
 
 const execAsync = promisify(exec);
 
@@ -151,15 +151,13 @@ async function describeImage(
   model: string = "anthropic/claude-sonnet-4"
 ): Promise<ImageAnalysisResult> {
   try {
-    const result = await llm.create({
-      model,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Describe this image in detail for fact-checking purposes. Include:
+    const messages = [
+      {
+        role: "user" as const,
+        content: [
+          {
+            type: "text" as const,
+            text: `Describe this image in detail for fact-checking purposes. Include:
 1. What the image shows (people, objects, text, setting)
 2. Any visible text, numbers, or captions
 3. Any claims or assertions the image appears to make
@@ -167,17 +165,19 @@ async function describeImage(
 5. Anything that could be verified or fact-checked
 
 Be specific and factual. If you see text, quote it exactly.`,
-            },
-            {
-              type: "image_url",
-              image_url: { url: imageUrl },
-            },
-          ],
-        },
-      ],
-    });
+          },
+          {
+            type: "image_url" as const,
+            image_url: { url: imageUrl },
+          },
+        ],
+      },
+    ];
+    const startMs = Date.now();
+    const result = await llm.create({ model, messages });
 
     const description = result.choices?.[0]?.message?.content || "";
+    logLlmCall("media.image", messages, description, Date.now() - startMs);
 
     return {
       url: imageUrl,
@@ -209,15 +209,13 @@ async function describeVideoFrames(
 
   // Describe all frames in one call for efficiency
   try {
-    const result = await llm.create({
-      model,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `These are ${frames.length} frames extracted from a video, for fact-checking purposes.
+    const messages = [
+      {
+        role: "user" as const,
+        content: [
+          {
+            type: "text" as const,
+            text: `These are ${frames.length} frames extracted from a video, for fact-checking purposes.
 
 For each frame, briefly describe:
 - What's happening
@@ -229,17 +227,19 @@ Format as:
 Frame 1: [description]
 Frame 2: [description]
 ...`,
-            },
-            ...frameDataUrls.map((url) => ({
-              type: "image_url" as const,
-              image_url: { url },
-            })),
-          ],
-        },
-      ],
-    });
+          },
+          ...frameDataUrls.map((url) => ({
+            type: "image_url" as const,
+            image_url: { url },
+          })),
+        ],
+      },
+    ];
+    const startMs = Date.now();
+    const result = await llm.create({ model, messages });
 
     const content = result.choices?.[0]?.message?.content || "";
+    logLlmCall("media.videoFrames", messages, content, Date.now() - startMs);
 
     // Parse frame descriptions
     const descriptions: string[] = [];

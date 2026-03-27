@@ -6,7 +6,7 @@
  */
 
 import { extractCitations, llm } from "./llm";
-import { getTweetLog } from "./tweetLog";
+import { getTweetLog, logLlmCall } from "./tweetLog";
 
 export interface ClaimAnalysis {
   keyClaims: Array<{
@@ -72,14 +72,17 @@ IMPORTANT:
 - If the initial search already thoroughly addresses all claims, return empty targetedQueries array`;
 
   try {
+    const messages = [{ role: "user" as const, content: prompt }];
+    const startMs = Date.now();
     const result = await llm.create({
       model,
       temperature: 0.2,
       response_format: { type: "json_object" },
-      messages: [{ role: "user", content: prompt }],
+      messages,
     });
 
     const content = result.choices?.[0]?.message?.content || "{}";
+    logLlmCall("deepVerify.claimAnalysis", messages, content, Date.now() - startMs);
     const parsed = JSON.parse(content);
 
     return {
@@ -105,22 +108,19 @@ async function runFollowUpSearch(
   model: string = "perplexity/sonar"
 ): Promise<{ results: string; citations: string[] }> {
   try {
-    const result = await llm.create({
-      model,
-      messages: [
-        {
-          role: "system",
-          content: `You are a fact-checking research assistant. Search for specific evidence about the query.
+    const messages = [
+      {
+        role: "system" as const,
+        content: `You are a fact-checking research assistant. Search for specific evidence about the query.
 Include specific URLs for all sources. Focus on finding authoritative, primary sources.`,
-        },
-        {
-          role: "user",
-          content: query,
-        },
-      ],
-    });
+      },
+      { role: "user" as const, content: query },
+    ];
+    const startMs = Date.now();
+    const result = await llm.create({ model, messages });
 
     const searchResults = result.choices?.[0]?.message?.content || "";
+    logLlmCall(`deepVerify.followUp`, messages, searchResults, Date.now() - startMs);
     const citations = extractCitations(result);
 
     return { results: searchResults, citations };
@@ -209,14 +209,17 @@ Respond in JSON:
 }`;
 
   try {
+    const messages = [{ role: "user" as const, content: prompt }];
+    const startMs = Date.now();
     const result = await llm.create({
       model,
       temperature: 0.2,
       response_format: { type: "json_object" },
-      messages: [{ role: "user", content: prompt }],
+      messages,
     });
 
     const content = result.choices?.[0]?.message?.content || "{}";
+    logLlmCall("deepVerify.validate", messages, content, Date.now() - startMs);
     const parsed = JSON.parse(content);
 
     // Require explicit isAccurate field - don't default to true

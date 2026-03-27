@@ -4,6 +4,7 @@ import { llm } from "./llm";
 import { searchVersionOne } from "./searchContextGoal";
 import { textAndSearchResults, writeNoteOutput } from "./schemas";
 import { parseStatusNoteUrl } from "./parseStatusNoteUrl";
+import { logLlmCall } from "./tweetLog";
 /**
  * Count note length treating URLs as 1 character each (X shortens URLs via t.co)
  */
@@ -236,17 +237,16 @@ export async function writeNoteFn(
         });
       }
 
+      const messages = [{ role: "user" as const, content: prompt }];
+      const startMs = Date.now();
       const result = await llm.create({
         model: config.model,
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
+        messages,
       });
 
       const content = result.choices?.[0]?.message?.content ?? "";
+      const label = attempt === 1 ? "noteWriter" : `noteWriter.retry${attempt - 1}`;
+      logLlmCall(label, messages, content, Date.now() - startMs);
       let parsed: ReturnType<typeof parseStatusNoteUrl>;
       try {
         parsed = parseStatusNoteUrl(content);

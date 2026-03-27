@@ -4,6 +4,7 @@ import { z } from "zod";
 import { writeNoteOutput } from "./schemas";
 import { writeNote } from "./writeNote";
 import { getBrowser } from "./browserManager";
+import { logLlmCall } from "./tweetLog";
 
 const prompt = (
   missingContext: string,
@@ -65,18 +66,17 @@ export async function verifySource(
     // Fetch and simplify the source content
     const sourceContent = await fetchAndSimplifyContent(url);
 
+    const messages = [{ role: "user" as const, content: prompt(note, url, sourceContent) }];
+    const startMs = Date.now();
     const result = await llm.create({
       model,
       temperature: 0,
-      messages: [
-        {
-          role: "user",
-          content: prompt(note, url, sourceContent),
-        },
-      ],
+      messages,
     });
 
-    return result.choices?.[0]?.message?.content ?? "";
+    const response = result.choices?.[0]?.message?.content ?? "";
+    logLlmCall("sourceCheck", messages, response, Date.now() - startMs);
+    return response;
   } catch (error) {
     console.error("Error in check function:", error);
     return `ERROR: ${error instanceof Error ? error.message : String(error)}`;
