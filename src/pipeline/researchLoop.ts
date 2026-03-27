@@ -10,6 +10,7 @@
  */
 
 import { llm } from "./llm";
+import { logLlmCall } from "./tweetLog";
 
 const PROMPTS = {
   firstSearch: (tweetText: string, quotedTweet: string) =>
@@ -63,12 +64,12 @@ export async function claudeFirstSearch(
     : "";
   const prompt = PROMPTS.firstSearch(tweetText, quoteContext);
 
-  const result = await llm.create({
-    model: config.model,
-    messages: [{ role: "user", content: prompt }],
-  });
-
-  return result.choices?.[0]?.message?.content ?? "";
+  const messages = [{ role: "user" as const, content: prompt }];
+  const startMs = Date.now();
+  const result = await llm.create({ model: config.model, messages });
+  const response = result.choices?.[0]?.message?.content ?? "";
+  logLlmCall("research.initial", messages, response, Date.now() - startMs);
+  return response;
 }
 
 export interface FollowUpResult {
@@ -101,12 +102,11 @@ export async function followUpResearch(
     currentResearch
   );
 
-  const result = await llm.create({
-    model: config.model,
-    messages: [{ role: "user", content: prompt }],
-  });
-
+  const messages = [{ role: "user" as const, content: prompt }];
+  const startMs = Date.now();
+  const result = await llm.create({ model: config.model, messages });
   const content = result.choices?.[0]?.message?.content ?? "";
+  logLlmCall(`research.followUp${iteration}`, messages, content, Date.now() - startMs);
 
   const requestMatch = content.match(/RESEARCH_REQUEST:\s*(.+?)$/is);
   const researchRequest = requestMatch?.[1]?.trim() || "None";

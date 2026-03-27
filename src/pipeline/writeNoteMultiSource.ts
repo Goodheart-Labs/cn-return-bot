@@ -12,6 +12,7 @@ import { llm } from "./llm";
 import { textAndSearchResults } from "./schemas";
 import { parseStatusNoteUrl } from "./parseStatusNoteUrl";
 import { countNoteLength } from "./writeNote";
+import { logLlmCall } from "./tweetLog";
 
 const promptTemplate = ({
   text,
@@ -176,17 +177,13 @@ export async function writeNoteMultiSourceFn(
         });
       }
 
-      const result = await llm.create({
-        model: config.model,
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
+      const messages = [{ role: "user" as const, content: prompt }];
+      const startMs = Date.now();
+      const result = await llm.create({ model: config.model, messages });
 
       const content = result.choices?.[0]?.message?.content ?? "";
+      const label = attempt === 1 ? "noteWriter" : `noteWriter.retry${attempt - 1}`;
+      logLlmCall(label, messages, content, Date.now() - startMs);
       let parsed: ReturnType<typeof parseStatusNoteUrl>;
       try {
         parsed = parseStatusNoteUrl(content);

@@ -35,6 +35,78 @@ export function withTweetLog<T>(log: TweetLogMap, fn: () => T): T {
 }
 
 // ---------------------------------------------------------------------------
+// LLM call logging helper
+// ---------------------------------------------------------------------------
+
+/** Flatten an OpenAI messages array into a single readable string. */
+export function formatLlmMessages(messages: any[]): string {
+  return messages
+    .map((msg: any) => {
+      const role = msg.role as string;
+      let content: string;
+      if (typeof msg.content === "string") {
+        content = msg.content;
+      } else if (Array.isArray(msg.content)) {
+        content = msg.content
+          .map((part: any) => {
+            if (part.type === "text") return part.text;
+            if (part.type === "image_url") return "[image]";
+            return "";
+          })
+          .filter(Boolean)
+          .join("\n");
+      } else {
+        content = String(msg.content ?? "");
+      }
+      return `[${role}]\n${content}`;
+    })
+    .join("\n\n");
+}
+
+/**
+ * Log an LLM call under a named label.
+ * Writes `<label>.context`, `<label>.response`, `<label>.durationMs`.
+ */
+export function logLlmCall(
+  label: string,
+  messages: any[],
+  response: string,
+  durationMs: number
+) {
+  const log = getTweetLog();
+  if (!log) return;
+  log.set(`${label}.context`, formatLlmMessages(messages));
+  log.set(`${label}.response`, response);
+  log.set(`${label}.durationMs`, durationMs);
+}
+
+// ---------------------------------------------------------------------------
+// Dot-key nesting (flat map → nested object for serialization)
+// ---------------------------------------------------------------------------
+
+/**
+ * Convert a flat dot-notation map into a nested object.
+ * e.g. {"search.context": "...", "search.model": "sonar"} → {search: {context: "...", model: "sonar"}}
+ * Values that are already objects/arrays stay as-is — only the KEY dots drive nesting.
+ */
+export function nestDotKeys(flat: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(flat)) {
+    const parts = key.split(".");
+    let target = result;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const p = parts[i]!;
+      if (!target[p] || typeof target[p] !== "object" || Array.isArray(target[p])) {
+        target[p] = {};
+      }
+      target = target[p] as Record<string, unknown>;
+    }
+    target[parts[parts.length - 1]!] = value;
+  }
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Compact summary formatter
 // ---------------------------------------------------------------------------
 
@@ -56,134 +128,14 @@ function median(values: number[]): number {
   return sorted.length % 2 ? sorted[mid]! : ((sorted[mid - 1] ?? 0) + (sorted[mid] ?? 0)) / 2;
 }
 
-function formatScoresLine(log: TweetLogMap): string | null {
-  const scoreKeys = [...log.keys()].filter((k) => k.startsWith("scores."));
-  if (scoreKeys.length === 0) return null;
-
-  const parts = scoreKeys.map((k) => {
-    const name = k.replace("scores.", "");
-    const val = log.get(k) as { score?: number } | undefined;
-    return `${name}=${val?.score?.toFixed(2) ?? "?"}`;
-  });
-  return `  scores: ${parts.join(" ")}`;
-}
-
-function formatMediaLine(log: TweetLogMap): string | null {
-  const videos = get(log, "media.videos") as Array<{
-    keyFrameDescriptions?: string[];
-    transcription?: string;
-    durationMs?: number;
-  }> | undefined;
-  const images = get(log, "media.images") as Array<unknown> | undefined;
-
-  const parts: string[] = [];
-  if (videos?.length) {
-    for (const v of videos) {
-      const details: string[] = [];
-      if (v.keyFrameDescriptions?.length) details.push(`${v.keyFrameDescriptions.length} frames`);
-      if (v.transcription) details.push(`${v.transcription.length} char transcript`);
-      if (v.durationMs) details.push(`${v.durationMs}ms`);
-      parts.push(`video${details.length ? ` (${details.join(", ")})` : ""}`);
-    }
-  }
-  if (images?.length) {
-    parts.push(`${images.length} image${images.length > 1 ? "s" : ""}`);
-  }
-
-  if (parts.length === 0) return null;
-  return `  media: ${parts.join(", ")}`;
-}
-
-/** Compact multi-line summary for a single tweet — printed atomically */
-export function formatTweetLog(log: TweetLogMap): string {
-  const index = get(log, "tweet.index") as number | undefined;
-  const total = get(log, "tweet.total") as number | undefined;
-  const tweetId = get(log, "tweet.id") as string | undefined;
-  const botId = get(log, "bot.id") as string | undefined;
-
-  const lines: string[] = [];
-
-  // Header
-  lines.push(`--- Tweet ${index ?? "?"}/${total ?? "?"} [${tweetId ?? "?"}] ${botId ?? "?"} ---`);
-
-  // Type
-  const tweetType = get(log, "tweet.type") as string | undefined;
-  if (tweetType) lines.push(`  type: ${tweetType}`);
-
-  // Engagement + recency
-  const impressions = get(log, "tweet.impressions") as number | undefined;
-  const likes = get(log, "tweet.likes") as number | undefined;
-  const retweets = get(log, "tweet.retweets") as number | undefined;
-  const replies = get(log, "tweet.replies") as number | undefined;
-  const recencyHours = get(log, "tweet.recencyHours") as number | undefined;
-  if (impressions != null) {
-    const parts = [
-      `${fmtCount(impressions)} imp`,
-      `${fmtCount(likes ?? 0)} likes`,
-      `${fmtCount(retweets ?? 0)} RT`,
-      `${fmtCount(replies ?? 0)} replies`,
-    ];
-    if (recencyHours != null) parts.push(`${recencyHours.toFixed(1)}h ago`);
-    lines.push(`  ${parts.join(" | ")}`);
-  }
-
-  // Media
-  const mediaLine = formatMediaLine(log);
-  if (mediaLine) lines.push(mediaLine);
-
-  // Search
-  const citations = get(log, "search.citations") as string[] | undefined;
-  if (citations) lines.push(`  search: ${citations.length} citations`);
-
-  // Note
-  const noteStatus = get(log, "note.status") as string | undefined;
-  const noteCharCount = get(log, "note.charCount") as number | undefined;
-  if (noteStatus) {
-    const charPart = noteCharCount != null ? ` (${noteCharCount} chars)` : "";
-    lines.push(`  note: "${noteStatus}"${charPart}`);
-  }
-
-  // Source check
-  const checkResult = get(log, "check.result") as string | undefined;
-  if (checkResult) lines.push(`  source check: ${checkResult}`);
-
-  // Evaluation
-  const evalScore = get(log, "eval.score") as number | undefined;
-  const evalSubmit = get(log, "eval.shouldSubmit") as boolean | undefined;
-  if (evalScore != null) {
-    const submitPart = evalSubmit != null ? ` (submit=${evalSubmit})` : "";
-    lines.push(`  eval: ${evalScore.toFixed(2)}${submitPart}`);
-  }
-
-  // Scores
-  const scoresLine = formatScoresLine(log);
-  if (scoresLine) lines.push(scoresLine);
-
-  // Outcome
-  const outcome = get(log, "outcome") as string | undefined;
-  const reason = get(log, "outcomeReason") as string | undefined;
-  const reasonPart = reason ? ` (${reason})` : "";
-  lines.push(`  => ${outcome ?? "unknown"}${reasonPart}`);
-
-  // Warnings
-  const warnings = get(log, "warnings") as string[] | undefined;
-  if (warnings?.length) {
-    for (const w of warnings) {
-      lines.push(`  ⚠ ${w}`);
-    }
-  }
-
-  return lines.join("\n");
-}
-
 // ---------------------------------------------------------------------------
 // Full JSON dump in GitHub Actions collapsible group
 // ---------------------------------------------------------------------------
 
-/** Full log as a ::group:: collapsible section for GitHub Actions */
+/** Full log as nested JSON in a ::group:: collapsible section for GitHub Actions */
 export function formatTweetLogFull(log: TweetLogMap): string {
   const tweetId = get(log, "tweet.id") as string | undefined;
-  const json = JSON.stringify(Object.fromEntries(log), null, 2);
+  const json = JSON.stringify(nestDotKeys(Object.fromEntries(log)), null, 2);
   return `::group::Full log: Tweet ${tweetId ?? "?"}\n${json}\n::endgroup::`;
 }
 
@@ -200,11 +152,11 @@ export function formatRunSummary(logs: TweetLogMap[], feedSize?: string): string
   const recencies: number[] = [];
 
   for (const log of logs) {
-    const outcome = get(log, "outcome") as string | undefined ?? "unknown";
+    const outcome = get(log, "outcome.result") as string | undefined ?? "unknown";
     outcomes[outcome] = (outcomes[outcome] ?? 0) + 1;
 
     if (outcome === "rejected") {
-      const reason = get(log, "outcomeReason") as string | undefined ?? "unknown";
+      const reason = get(log, "outcome.reason") as string | undefined ?? "unknown";
       rejectionReasons[reason] = (rejectionReasons[reason] ?? 0) + 1;
     }
 

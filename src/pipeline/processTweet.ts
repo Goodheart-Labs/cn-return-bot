@@ -16,7 +16,7 @@ import type { Bot, PipelineResult, PostContent } from "../bots/types";
 import { getOriginalTweetContent } from "../utils/retweetUtils";
 import { runNoteScores, countSources } from "./noteScores";
 import { shouldSubmitNote } from "../filters/noteEvaluationFilter";
-import { getTweetLog } from "./tweetLog";
+import { getTweetLog, nestDotKeys } from "./tweetLog";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -97,6 +97,26 @@ async function runBotPipeline(
   log?.set("tweet.text", post.text);
   log?.set("tweet.type", tweetType);
   log?.set("bot.id", bot.id);
+
+  // Full post content including quoted/referenced tweet context
+  if (content.quotedPostContext) {
+    log?.set("tweet.quotedPostContext", content.quotedPostContext);
+  }
+  if (content.isQuoteTweet) {
+    log?.set("tweet.contentText", content.text); // Combined text sent to pipeline
+  }
+  if (post.referenced_tweets?.length) {
+    log?.set("tweet.referencedTweets", post.referenced_tweets);
+  }
+  if (post.referenced_tweet_data) {
+    log?.set("tweet.referencedTweetData", {
+      text: post.referenced_tweet_data.text,
+      media: post.referenced_tweet_data.media?.map(m => ({
+        type: m.type,
+        url: m.url || m.preview_image_url,
+      })),
+    });
+  }
 
   // Engagement metrics
   if (post.public_metrics) {
@@ -448,22 +468,22 @@ export async function processSingleTweet(
 
   // 5. Write to tweet log
   const log = getTweetLog();
-  log?.set("outcome", outcome.outcome);
-  log?.set("outcomeReason", outcome.outcomeReason ?? "");
-  log?.set("finalStage", outcome.finalStage);
+  log?.set("outcome.result", outcome.outcome);
+  log?.set("outcome.reason", outcome.outcomeReason ?? "");
+  log?.set("outcome.finalStage", outcome.finalStage);
   if (result) {
     log?.set("note.status", result.noteResult.status);
     log?.set("note.text", result.noteResult.note + " " + result.noteResult.url);
     log?.set("note.url", result.noteResult.url);
     log?.set("note.charCount", (result.noteResult.note + " " + result.noteResult.url).length);
     if (result.checkResult != null) {
-      log?.set("check.result", result.checkResult.trim().toUpperCase());
+      log?.set("sourceCheck.result", result.checkResult.trim().toUpperCase());
     }
   }
 
   // 6. Complete DB run (with logs)
   if (logger && pipelineRunId) {
-    const logs = log ? Object.fromEntries(log) : undefined;
+    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
     const completionData = buildCompletionData(result, bot.id, outcome, warnings, logs);
     try {
       await logger.completePipelineRun(pipelineRunId, completionData);

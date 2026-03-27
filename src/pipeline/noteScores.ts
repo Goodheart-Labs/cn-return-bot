@@ -7,13 +7,16 @@
  */
 
 import { llm } from "./llm";
-import { getTweetLog } from "./tweetLog";
+import { getTweetLog, formatLlmMessages } from "./tweetLog";
 
 export interface NoteScore {
   name: string;
   score: number; // 0-1 decimal
   passed: boolean; // score > 0.5
   reasoning: string;
+  llmContext?: string;
+  llmResponse?: string;
+  llmDurationMs?: number;
 }
 
 export interface AllNoteScores {
@@ -42,22 +45,27 @@ async function scoreWithLLM(
   defaultOnError = 0.5
 ): Promise<NoteScore> {
   try {
+    const messages = [{ role: "user" as const, content: prompt }];
+    const startMs = Date.now();
     const result = await llm.create({
       model,
       temperature: 0.2,
       response_format: { type: "json_object" },
-      messages: [{ role: "user", content: prompt }],
+      messages,
     });
     const content = result.choices?.[0]?.message?.content || "{}";
+    const durationMs = Date.now() - startMs;
     let parsed: { score?: number; reasoning?: string };
     try {
       parsed = JSON.parse(content);
     } catch {
       console.error(`[noteScores] JSON parse error in ${name}`);
-      return { name, score: defaultOnError, passed: defaultOnError > 0.5, reasoning: "Failed to parse" };
+      return { name, score: defaultOnError, passed: defaultOnError > 0.5, reasoning: "Failed to parse",
+        llmContext: formatLlmMessages(messages), llmResponse: content, llmDurationMs: durationMs };
     }
     const score = parsed.score ?? defaultOnError;
-    return { name, score, passed: score > 0.5, reasoning: parsed.reasoning ?? "Could not parse reasoning" };
+    return { name, score, passed: score > 0.5, reasoning: parsed.reasoning ?? "Could not parse reasoning",
+      llmContext: formatLlmMessages(messages), llmResponse: content, llmDurationMs: durationMs };
   } catch (error) {
     console.error(`[noteScores] Error in ${name}:`, error);
     return { name, score: defaultOnError, passed: defaultOnError > 0.5, reasoning: "Error, defaulting" };
@@ -407,10 +415,13 @@ export async function runNoteScores(
 
   const all = { positiveEvidence, disagreement, helpfulness, sourceQuality, breakingNewsRisk, pedantry, noteNotNeeded, tangentialCorrection, raterVerifiability, overconfidence };
 
-  // Write scores to tweet log
+  // Write scores to tweet log (includes LLM context/response/duration)
   const log = getTweetLog();
-  for (const [key, score] of Object.entries(all)) {
-    log?.set(`scores.${key}`, { score: score.score, reasoning: score.reasoning });
+  for (const [key, s] of Object.entries(all)) {
+    log?.set(`scores.${key}`, {
+      score: s.score, reasoning: s.reasoning,
+      context: s.llmContext, response: s.llmResponse, durationMs: s.llmDurationMs,
+    });
   }
 
   return all;
