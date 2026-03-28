@@ -10,13 +10,13 @@ import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../bots";
 import { processSingleTweet } from "../pipeline/processTweet";
-import { createTweetLog, withTweetLog, formatTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../pipeline/tweetLog";
+import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../pipeline/tweetLog";
 import { determineFeedSize, buildPostSelection } from "../pipeline/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions, getTweetScore } from "../pipeline/tweetSorting";
 import type { Post } from "../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
-const MAX_POSTS = 20;
+let MAX_POSTS = 20;
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
 
@@ -174,7 +174,8 @@ async function storeCandidateResult(
 // Main
 // ---------------------------------------------------------------------------
 
-export async function generateCandidates(supabaseLogger: SupabaseLogger | null) {
+export async function generateCandidates(supabaseLogger: SupabaseLogger | null, options?: { maxPosts?: number }) {
+  if (options?.maxPosts) MAX_POSTS = options.maxPosts;
   const commit = process.env.GITHUB_SHA;
 
   // Log bot probabilities (compact single line)
@@ -212,7 +213,6 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null) 
         })
       );
 
-      console.log(formatTweetLog(log));
       console.log(formatTweetLogFull(log));
       allLogs.push(log);
 

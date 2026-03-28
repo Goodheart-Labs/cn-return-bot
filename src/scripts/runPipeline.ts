@@ -53,7 +53,7 @@ async function main() {
 
     // Phase 1: Generate candidates
     console.log("[pipeline] === Phase 1: Generate Candidates ===");
-    await generateCandidates(supabaseLogger);
+    await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5 } : undefined);
 
     // Phase 2: Submit best candidates
     console.log("[pipeline] === Phase 2: Submit Candidates ===");

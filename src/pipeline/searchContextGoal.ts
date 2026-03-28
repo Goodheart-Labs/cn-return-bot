@@ -5,7 +5,7 @@ import { extractCitations, llm } from "./llm";
 import type { OpenAIChatModelId } from "@ai-sdk/openai/internal";
 import type { ChatCompletionContentPartImage } from "openai/resources";
 import { textAndSearchResults } from "./schemas";
-import { getTweetLog } from "./tweetLog";
+import { getTweetLog, logLlmCall } from "./tweetLog";
 
 const sanitizedPosts = posts.map(({ text, media }) => {
   return {
@@ -90,33 +90,36 @@ Always include specific URLs for your sources directly in the text.`;
     userText += `\n\n[Media context]\n${input.mediaContext}`;
   }
 
+  const messages = [
+    {
+      role: "system" as const,
+      content: systemPrompt,
+    },
+    {
+      role: "user" as const,
+      content: [
+        {
+          type: "text" as const,
+          text: userText,
+        },
+        ...images,
+      ],
+    },
+  ];
+
+  const startMs = Date.now();
   const result = await llm.create({
     model: config.model,
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: userText,
-          },
-          ...images,
-        ],
-      },
-    ],
+    messages,
   });
 
   const citations = extractCitations(result);
   const searchResults = result.choices?.[0]?.message?.content ?? "Error";
 
   const log = getTweetLog();
-  log?.set("search.results", searchResults);
   log?.set("search.citations", citations);
   log?.set("search.model", config.model);
+  logLlmCall("search", messages, searchResults, Date.now() - startMs);
 
   return {
     text: input.text,
