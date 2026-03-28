@@ -1,21 +1,12 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-declare const __SUPABASE_URL__: string;
-declare const __SUPABASE_KEY__: string;
-
-// In production server mode, credentials are injected into window
-const url =
-  typeof __SUPABASE_URL__ !== "undefined"
-    ? __SUPABASE_URL__
-    : (window as any).__SUPABASE_CONFIG__?.url;
-
-const key =
-  typeof __SUPABASE_KEY__ !== "undefined"
-    ? __SUPABASE_KEY__
-    : (window as any).__SUPABASE_CONFIG__?.key;
+// Runtime injection from server.ts takes priority over vite build-time values
+const config = (window as any).__SUPABASE_CONFIG__;
+const url = config?.url;
+const key = config?.key;
 
 if (!url || !key) {
-  throw new Error("Missing Supabase credentials");
+  throw new Error("Missing Supabase credentials — must be served via server.ts");
 }
 
 export const supabase: SupabaseClient = createClient(url, key);
