@@ -49,6 +49,14 @@ export interface CategorizedRow {
 
 export type BucketCounts = Record<Category, number>;
 
+export const CATEGORY_RESULT_LABEL: Record<Category, string> = {
+  note_worthy_correct: "correct",
+  note_worthy_incorrect: "incorrect",
+  note_worthy_not_proposed: "missed",
+  non_note_worthy_correct: "correct",
+  non_note_worthy_incorrect: "false positive",
+};
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

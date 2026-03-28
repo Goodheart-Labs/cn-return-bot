@@ -18,6 +18,7 @@ import { parseCsvRecords, escapeCsvField } from "../utils/csv";
 import {
   categorizeRow,
   writeResultJsons,
+  CATEGORY_RESULT_LABEL,
   type CsvRow,
   type CategorizedRow,
   type Category,
@@ -150,6 +151,7 @@ const OUTPUT_HEADERS = [
   "bot_id",
   "note_status",
   "outcome",
+  "result",
   "note_text",
   "source_verification",
   "evaluation_score",
@@ -160,7 +162,8 @@ function resultToCsvRow(
   input: InputRow,
   botId: string,
   result: ProcessTweetResult,
-  log?: Map<string, unknown>
+  resultLabel: string,
+  log?: Map<string, unknown>,
 ): string {
   const pr = result.pipelineResult;
   const svScore = result.scores.find((s) => s.type === "source_verification");
@@ -173,6 +176,7 @@ function resultToCsvRow(
     bot_id: botId,
     note_status: result.noteStatus ?? "",
     outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
+    result: resultLabel,
     note_text: result.noteText ?? "",
     source_verification: svScore?.label ?? (svScore ? String(svScore.value) : "skipped"),
     evaluation_score: result.evaluationScore?.toFixed(2) ?? "",
@@ -188,7 +192,8 @@ function errorToCsvRow(input: InputRow, errorMsg: string): string {
       h === "url" ? input.url :
         h === "needs_note" ? (input.needsNote ?? "") :
           h === "ground_truth_note" ? (input.groundTruthNote ?? "") :
-            h === "outcome" ? `error: ${errorMsg}` : ""
+            h === "outcome" ? `error: ${errorMsg}` :
+              h === "result" ? "error" : ""
     )
   ).join(",");
 }
@@ -358,7 +363,6 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         completed.outcome = result.outcome;
         completed.outcomeReason = result.outcomeReason;
         completed.noteText = result.noteText;
-        output.appendRow(resultToCsvRow(input, bot.id, result, log));
 
         csvRowData = {
           url: input.url,
@@ -371,20 +375,25 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
           note_text: result.noteText ?? "",
           logs: log ? JSON.stringify(Object.fromEntries(log)) : "",
         };
+
+        // Categorize before writing CSV so we have the result label
+        let resultLabel = "";
+        try {
+          const categorized = await categorizeRow(csvRowData);
+          completed.categorized = categorized;
+          if (categorized) {
+            categorizedRows.push(categorized);
+            resultLabel = CATEGORY_RESULT_LABEL[categorized.category];
+          }
+        } catch (err: any) {
+          console.error(`[${scriptName}] Judge failed for ${input.url}: ${err?.message}`);
+        }
+
+        output.appendRow(resultToCsvRow(input, bot.id, result, resultLabel, log));
       } catch (err: any) {
         console.error(`[${scriptName}] ERROR ${input.url}: ${err?.message}`);
         output.appendRow(errorToCsvRow(input, err?.message ?? "unknown"));
         errorCount++;
-      }
-
-      if (csvRowData) {
-        try {
-          const categorized = await categorizeRow(csvRowData);
-          completed.categorized = categorized;
-          if (categorized) categorizedRows.push(categorized);
-        } catch (err: any) {
-          console.error(`[${scriptName}] Judge failed for ${input.url}: ${err?.message}`);
-        }
       }
 
       completedCount++;

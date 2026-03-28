@@ -88,31 +88,17 @@ export const FAILURE_TYPE_CONFIG: Record<
   uncategorized: { label: "Uncategorized", defaultOn: false, production: true, datasetRun: true, color: "bg-gray-100 text-gray-500" },
 };
 
-// Derive failure type from the fields actually present in pipeline CSV output
-export function deriveFailureType(row: {
-  outcome?: string | null;
-  needsNote?: string | null;
-  noteStatus?: string | null;
-}): FailureType {
-  const outcome = row.outcome ?? "";
-  const needsNote = (row.needsNote ?? "").trim().toLowerCase();
-  const proposed = row.noteStatus === "CORRECTION WITH TRUSTWORTHY CITATION";
-
-  if (outcome.startsWith("error")) return "uncategorized";
-
-  if (needsNote === "yes") {
-    if (!proposed && !outcome.startsWith("candidate")) return "missed_opportunity";
-    // Note was proposed for a noteworthy tweet — assume correct unless marked otherwise
-    return "rated_helpful";
+// Map the `result` column from the AI judge to dashboard failure types
+export function resultToFailureType(result: string | undefined | null): FailureType {
+  switch (result) {
+    case "correct": return "rated_helpful";
+    case "incorrect": return "rated_unhelpful";
+    case "missed": return "missed_opportunity";
+    case "false positive": return "false_positive";
+    case "correct_rejection": return "correct_rejection";
+    case "error": return "uncategorized";
+    default: return "uncategorized";
   }
-
-  if (needsNote === "no") {
-    if (proposed || outcome.startsWith("candidate")) return "false_positive";
-    return "correct_rejection";
-  }
-
-  // No ground truth
-  return "uncategorized";
 }
 
 export interface DatasetOption {
