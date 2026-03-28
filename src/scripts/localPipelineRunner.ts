@@ -92,7 +92,7 @@ export function parseInputCsv(filePath: string): InputRow[] {
 export function parseCliArgs(
   scriptName: string,
   opts?: { transformArg?: (arg: string) => string }
-): { inputs: InputRow[]; forcedBotId?: string } {
+): { inputs: InputRow[]; forcedBotId?: string; datasetName: string } {
   const args = process.argv.slice(2);
   if (args.length === 0) {
     console.error(`Usage: bun run src/scripts/${scriptName}.ts [--bot <bot-id>] <input.csv>`);
@@ -122,17 +122,20 @@ export function parseCliArgs(
 
   const isUrls = transformed.every((a) => a.startsWith("http://") || a.startsWith("https://"));
   let inputs: InputRow[];
+  let datasetName: string;
 
   if (isUrls) {
     inputs = transformed.map((url) => ({ url }));
+    datasetName = "urls";
   } else if (transformed.length === 1 && fs.existsSync(transformed[0]!)) {
     inputs = parseInputCsv(transformed[0]!);
+    datasetName = path.basename(transformed[0]!, path.extname(transformed[0]!));
   } else {
     console.error(`File not found or invalid args: ${transformed[0]}`);
     process.exit(1);
   }
 
-  return { inputs, forcedBotId };
+  return { inputs, forcedBotId, datasetName };
 }
 
 // ---------------------------------------------------------------------------
@@ -190,13 +193,18 @@ function errorToCsvRow(input: InputRow, errorMsg: string): string {
   ).join(",");
 }
 
-function initOutputFolder(prefix: string): { folderPath: string; csvPath: string; appendRow: (row: string) => void } {
-  const baseDir = path.join(process.cwd(), "tryout-results");
+function initOutputFolder(prefix: string, datasetName?: string, botName?: string): { folderPath: string; csvPath: string; appendRow: (row: string) => void } {
+  const baseDir = path.join(process.cwd(), "dataset_runs");
   const timestamp = new Date().toISOString().replace(/[:.]/g, "").replace("T", "-").slice(0, 15);
   const folderPath = path.join(baseDir, `${prefix}-${timestamp}`);
   fs.mkdirSync(folderPath, { recursive: true });
 
-  const csvPath = path.join(folderPath, "results.csv");
+  const csvName = [
+    "results",
+    datasetName,
+    botName ?? "random",
+  ].join("_") + ".csv";
+  const csvPath = path.join(folderPath, csvName);
   fs.writeFileSync(csvPath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
 
   return {
@@ -287,6 +295,7 @@ export interface RunPipelineOptions {
   inputs: InputRow[];
   fetchPost: PostFetcher;
   forcedBotId?: string;
+  datasetName?: string;
   concurrency?: number;
   cleanup?: () => Promise<void>;
 }
@@ -298,6 +307,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     inputs,
     fetchPost,
     forcedBotId,
+    datasetName,
     concurrency = 5,
     cleanup,
   } = options;
@@ -312,7 +322,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   console.log(`[${scriptName}] Processing ${inputs.length} item(s)`);
 
-  const output = initOutputFolder(folderPrefix);
+  const output = initOutputFolder(folderPrefix, datasetName, forcedBotId);
   console.log(`[${scriptName}] Output folder: ${output.folderPath}`);
 
   const results: CompletedResult[] = [];

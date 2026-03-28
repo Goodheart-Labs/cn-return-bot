@@ -1,0 +1,450 @@
+import { supabase } from "./supabase";
+import type {
+  ReviewItem,
+  ComparisonNote,
+  Annotation,
+  FailureType,
+  UploadInfo,
+} from "./types";
+import { resultToFailureType } from "./types";
+
+// ─── Production data ─────────────────────────────────────────────────────────
+
+function coreStatusToFailureType(
+  coreStatus: string | null,
+  hasHelpfulCompetitor: boolean,
+): FailureType {
+  if (coreStatus === "CURRENTLY_RATED_HELPFUL") return "rated_helpful";
+  if (coreStatus === "CURRENTLY_RATED_NOT_HELPFUL") return "rated_unhelpful";
+  if (hasHelpfulCompetitor) return "lost_to_competitor";
+  if (coreStatus === "NEEDS_MORE_RATINGS") return "needs_more_ratings";
+  return "uncategorized";
+}
+
+async function fetchAllRows<T>(query: any, label?: string): Promise<T[]> {
+  const all: T[] = [];
+  let offset = 0;
+  const PAGE = 1000;
+  while (true) {
+    const { data, error } = await query.range(offset, offset + PAGE - 1);
+    if (error) {
+      console.error(`[data] fetchAllRows failed${label ? ` (${label})` : ""}:`, error);
+      throw error;
+    }
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE) break;
+    offset += PAGE;
+  }
+  if (label) console.log(`[data] ${label}: ${all.length} rows`);
+  return all;
+}
+
+// Supabase .in() generates a URL query param — too many IDs makes the URL too long.
+// Batch into chunks of 200.
+async function fetchInBatches<T>(
+  table: string,
+  select: string,
+  filterCol: string,
+  ids: string[],
+  extraFilters?: (q: any) => any,
+  label?: string,
+): Promise<T[]> {
+  if (ids.length === 0) return [];
+  const CHUNK = 200;
+  const results: T[] = [];
+  for (let i = 0; i < ids.length; i += CHUNK) {
+    const batch = ids.slice(i, i + CHUNK);
+    let q = supabase.from(table).select(select).in(filterCol, batch);
+    if (extraFilters) q = extraFilters(q);
+    const { data, error } = await q;
+    if (error) {
+      console.error(`[data] fetchInBatches failed${label ? ` (${label})` : ""}:`, error);
+      throw error;
+    }
+    if (data) results.push(...data);
+  }
+  if (label) console.log(`[data] ${label}: ${results.length} rows`);
+  return results;
+}
+
+export async function fetchProductionItems(): Promise<ReviewItem[]> {
+  // Fetch all our notes, most recent first
+  console.log("[data] Loading production items...");
+  const notes = await fetchAllRows<any>(
+    supabase
+      .from("canonical_note_information")
+      .select("*")
+      .order("created_at", { ascending: false }),
+    "canonical_note_information"
+  );
+
+  if (notes.length === 0) return [];
+
+  const tweetIds = notes.map((n: any) => n.tweet_id);
+  const noteIds = notes.map((n: any) => n.note_id);
+
+  // Fetch competing notes, pipeline runs, and annotations in parallel (batched to avoid URL length limits)
+  const [competing, pipelines, annotations] = await Promise.all([
+    fetchInBatches<any>("competing_notes", "*", "our_note_id", noteIds, undefined, "competing_notes"),
+    fetchInBatches<any>("pipeline_runs", "tweet_id, outcome, outcome_reason, logs", "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
+    fetchInBatches<any>("review_dashboard_annotations", "*", "target_id", noteIds, (q) => q.eq("source", "production"), "annotations").catch(() => [] as any[]),
+  ]);
+
+  // Build lookup maps
+  const competingByNote = new Map<string, ComparisonNote[]>();
+  const helpfulCompetitorNoteIds = new Set<string>();
+  for (const cn of competing) {
+    const key = cn.our_note_id;
+    if (!competingByNote.has(key)) competingByNote.set(key, []);
+    competingByNote.get(key)!.push({
+      noteId: cn.note_id,
+      noteText: cn.note_text,
+      status: cn.current_status,
+      coreStatus: cn.current_core_status,
+      helpfulCount: cn.helpful_count,
+      notHelpfulCount: cn.not_helpful_count,
+      authorId: cn.author_participant_id,
+    });
+    if (cn.current_core_status === "CURRENTLY_RATED_HELPFUL") {
+      helpfulCompetitorNoteIds.add(key);
+    }
+  }
+
+  const pipelineByTweet = new Map<string, any>();
+  for (const pr of pipelines) {
+    pipelineByTweet.set(pr.tweet_id, pr);
+  }
+
+  const annotationByTarget = new Map<string, Annotation>();
+  for (const a of annotations) {
+    annotationByTarget.set(a.target_id, {
+      id: a.id,
+      seen: a.seen,
+      failureModes: a.failure_modes ?? [],
+      comment: a.comment,
+    });
+  }
+
+  const items: ReviewItem[] = notes.map((note: any) => {
+    const pipeline = pipelineByTweet.get(note.tweet_id);
+    const hasHelpfulCompetitor = helpfulCompetitorNoteIds.has(note.note_id);
+    return {
+      id: note.note_id,
+      source: "production" as const,
+      tweetId: note.tweet_id,
+      tweetText: note.tweet_text,
+      tweetHandle: note.tweet_handle,
+      noteId: note.note_id,
+      noteText: note.note_text,
+      sourceUrl: note.source_url,
+      createdAt: note.submitted_at ?? note.created_at,
+      status: note.cn_status,
+      coreStatus: note.current_core_status,
+      viewCount: note.view_count,
+      ratingCount: note.rating_count,
+      helpfulCount: note.helpful_count,
+      notHelpfulCount: note.not_helpful_count,
+      outcome: pipeline?.outcome,
+      outcomeReason: pipeline?.outcome_reason,
+      logs: pipeline?.logs,
+      comparisonNotes: competingByNote.get(note.note_id) ?? [],
+      annotation: annotationByTarget.get(note.note_id),
+      failureType: coreStatusToFailureType(note.current_core_status, hasHelpfulCompetitor),
+    };
+  });
+
+  // Fetch and append missed opportunities (non-fatal — column may not exist on prod yet)
+  let missed: any[] = [];
+  try {
+    missed = await fetchAllRows<any>(
+      supabase
+        .from("competing_notes")
+        .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs)")
+        .not("pipeline_run_id", "is", null)
+        .eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
+      "missed_opportunities"
+    );
+  } catch (e) {
+    console.warn("Missed opportunities query failed (migration may not be applied yet):", e);
+  }
+
+  for (const cn of missed) {
+    const pr = cn.pipeline_runs;
+    if (!pr) continue;
+    items.push({
+      id: `missed:${cn.note_id}`,
+      source: "production",
+      tweetId: cn.tweet_id,
+      tweetText: pr.tweet_text,
+      noteText: undefined,
+      outcome: pr.outcome,
+      outcomeReason: pr.outcome_reason,
+      logs: pr.logs,
+      comparisonNotes: [{
+        noteId: cn.note_id,
+        noteText: cn.note_text,
+        status: cn.current_status,
+        coreStatus: cn.current_core_status,
+        helpfulCount: cn.helpful_count,
+        notHelpfulCount: cn.not_helpful_count,
+        authorId: cn.author_participant_id,
+      }],
+      failureType: "missed_opportunity",
+    });
+  }
+
+  return items;
+}
+
+// ─── Production counts ───────────────────────────────────────────────────────
+
+export async function fetchProductionCounts(): Promise<Record<FailureType, number>> {
+  const counts: Record<FailureType, number> = {
+    rated_helpful: 0,
+    rated_unhelpful: 0,
+    lost_to_competitor: 0,
+    missed_opportunity: 0,
+    false_positive: 0,
+    correct_rejection: 0,
+    needs_more_ratings: 0,
+    uncategorized: 0,
+  };
+
+  const [helpfulRes, unhelpfulRes, nmrRes, missedRes] = await Promise.all([
+    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
+    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("current_core_status", "CURRENTLY_RATED_NOT_HELPFUL"),
+    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("current_core_status", "NEEDS_MORE_RATINGS"),
+    supabase.from("competing_notes").select("note_id", { count: "exact", head: true }).not("pipeline_run_id", "is", null).eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
+  ]);
+
+  counts.rated_helpful = helpfulRes.count ?? 0;
+  counts.rated_unhelpful = unhelpfulRes.count ?? 0;
+  counts.needs_more_ratings = nmrRes.count ?? 0;
+  counts.missed_opportunity = missedRes.count ?? 0;
+
+  // Lost to competitor count: notes where a competing note is helpful and ours is not
+  const { data: lostData } = await supabase
+    .from("competing_notes")
+    .select("our_note_id")
+    .eq("current_core_status", "CURRENTLY_RATED_HELPFUL")
+    .not("our_note_id", "is", null);
+
+  if (lostData) {
+    const lostNoteIds = [...new Set(lostData.map((d: any) => d.our_note_id))];
+    if (lostNoteIds.length > 0) {
+      const { count } = await supabase
+        .from("canonical_note_information")
+        .select("note_id", { count: "exact", head: true })
+        .in("note_id", lostNoteIds)
+        .neq("current_core_status", "CURRENTLY_RATED_HELPFUL");
+      counts.lost_to_competitor = count ?? 0;
+    }
+  }
+
+  return counts;
+}
+
+// ─── Dataset run data ────────────────────────────────────────────────────────
+
+export async function fetchUploads(): Promise<UploadInfo[]> {
+  const { data, error } = await supabase
+    .from("review_dashboard_uploads")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map((d: any) => ({
+    id: d.id,
+    name: d.name,
+    itemCount: d.item_count,
+    createdAt: d.created_at,
+  }));
+}
+
+export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem[]> {
+  const data = await fetchAllRows<any>(
+    supabase
+      .from("review_dashboard_items")
+      .select("*")
+      .eq("upload_id", uploadId)
+      .order("created_at", { ascending: true })
+  );
+
+  if (data.length === 0) return [];
+
+  const itemIds = data.map((d: any) => d.id);
+  let annotations: any[] = [];
+  try {
+    annotations = await fetchInBatches<any>("review_dashboard_annotations", "*", "target_id", itemIds, (q) => q.eq("source", "dataset_run"), "dataset_run_annotations");
+  } catch {
+    // Table may not exist yet
+  }
+
+  const annotationMap = new Map<string, Annotation>();
+  for (const a of annotations) {
+    annotationMap.set(a.target_id, {
+      id: a.id,
+      seen: a.seen,
+      failureModes: a.failure_modes ?? [],
+      comment: a.comment,
+    });
+  }
+
+  return data.map((row: any) => ({
+    id: row.id,
+    source: "dataset_run" as const,
+    tweetId: row.url?.match(/status\/(\d+)/)?.[1] ?? "",
+    tweetText: row.tweet_text,
+    noteText: row.note_text,
+    createdAt: row.created_at,
+    outcome: row.outcome,
+    result: row.result,
+    needsNote: row.needs_note,
+    groundTruthNote: row.ground_truth_note,
+    evaluationScore: row.evaluation_score ? Number(row.evaluation_score) : undefined,
+    logs: row.logs,
+    comparisonNotes: row.ground_truth_note
+      ? [{ noteId: "ground_truth", noteText: row.ground_truth_note, status: "Ground Truth" }]
+      : [],
+    annotation: annotationMap.get(row.id),
+    failureType: resultToFailureType(row.result),
+  }));
+}
+
+export async function fetchDatasetRunCounts(uploadId: string): Promise<Record<FailureType, number>> {
+  const counts: Record<FailureType, number> = {
+    rated_helpful: 0,
+    rated_unhelpful: 0,
+    lost_to_competitor: 0,
+    missed_opportunity: 0,
+    false_positive: 0,
+    correct_rejection: 0,
+    needs_more_ratings: 0,
+    uncategorized: 0,
+  };
+
+  const { data } = await supabase
+    .from("review_dashboard_items")
+    .select("result")
+    .eq("upload_id", uploadId);
+
+  for (const row of data ?? []) {
+    const ft = resultToFailureType(row.result);
+    counts[ft]++;
+  }
+
+  return counts;
+}
+
+// ─── Annotations ─────────────────────────────────────────────────────────────
+
+export async function upsertAnnotation(
+  source: "production" | "dataset_run",
+  targetId: string,
+  update: Partial<{ seen: boolean; failureModes: string[]; comment: string }>,
+): Promise<void> {
+  // Try update first (preserves fields not being changed)
+  const { data: existing } = await supabase
+    .from("review_dashboard_annotations")
+    .select("id")
+    .eq("source", source)
+    .eq("target_id", targetId)
+    .single();
+
+  if (existing) {
+    const changes: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (update.seen !== undefined) changes.seen = update.seen;
+    if (update.failureModes !== undefined) changes.failure_modes = update.failureModes;
+    if (update.comment !== undefined) changes.comment = update.comment;
+
+    const { error } = await supabase
+      .from("review_dashboard_annotations")
+      .update(changes)
+      .eq("id", existing.id);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase
+      .from("review_dashboard_annotations")
+      .insert({
+        source,
+        target_id: targetId,
+        seen: update.seen ?? false,
+        failure_modes: update.failureModes ?? [],
+        comment: update.comment ?? null,
+        updated_at: new Date().toISOString(),
+      });
+    if (error) throw error;
+  }
+}
+
+// ─── Failure modes catalog ───────────────────────────────────────────────────
+
+export async function fetchFailureModes(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("review_dashboard_failure_modes")
+    .select("name")
+    .order("name");
+
+  if (error) throw error;
+  return (data ?? []).map((d: any) => d.name);
+}
+
+export async function createFailureMode(name: string): Promise<void> {
+  const normalized = name.trim().toLowerCase();
+  if (!normalized) return;
+
+  const { error } = await supabase
+    .from("review_dashboard_failure_modes")
+    .upsert({ name: normalized }, { onConflict: "name" });
+
+  if (error) throw error;
+}
+
+// ─── Upload ──────────────────────────────────────────────────────────────────
+
+export async function uploadDatasetRun(
+  name: string,
+  rows: Record<string, any>[],
+): Promise<string> {
+  const { data: upload, error: uploadError } = await supabase
+    .from("review_dashboard_uploads")
+    .insert({ name, item_count: rows.length })
+    .select("id")
+    .single();
+
+  if (uploadError) throw uploadError;
+
+  // Batch insert items in chunks of 50
+  const CHUNK = 50;
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const chunk = rows.slice(i, i + CHUNK).map((r) => ({
+      upload_id: upload.id,
+      url: r.url ?? "",
+      tweet_text: r.text ?? null,
+      needs_note: r.needs_note ?? null,
+      ground_truth_note: r.ground_truth_note ?? null,
+      bot_id: r.bot_id ?? null,
+      note_status: r.note_status ?? null,
+      outcome: r.outcome ?? null,
+      result: r.result ?? null,
+      note_text: r.note_text ?? null,
+      source_verification: r.source_verification ?? null,
+      evaluation_score: r.evaluation_score ? Number(r.evaluation_score) : null,
+      logs: r.logs ? (typeof r.logs === "string" ? JSON.parse(r.logs) : r.logs) : null,
+    }));
+
+    const { error } = await supabase.from("review_dashboard_items").insert(chunk);
+    if (error) throw error;
+  }
+
+  return upload.id;
+}
+
+export async function deleteUpload(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("review_dashboard_uploads")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+}

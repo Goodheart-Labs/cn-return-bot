@@ -143,7 +143,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { inputs, forcedBotId } = parseCliArgs("runOnVideos");
+  const { inputs, forcedBotId, datasetName } = parseCliArgs("runOnVideos");
 
   const downloadDir = path.join(tmpdir(), `cn-runOnVideos-${Date.now()}`);
   fs.mkdirSync(downloadDir, { recursive: true });
@@ -160,6 +160,7 @@ async function main() {
     inputs,
     fetchPost,
     forcedBotId,
+    datasetName,
     cleanup: async () => {
       fs.rmSync(downloadDir, { recursive: true, force: true });
       console.log(`[runOnVideos] Cleaned up temp directory`);

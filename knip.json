@@ -2,7 +2,8 @@
   "entry": ["src/scripts/*.ts", "src/tests/*.ts", "src/reports/*.ts", "src/**/*.test.ts"],
   "project": ["src/**/*.ts"],
   "ignore": ["src/elo-rating-web/**"],
-  "ignoreDependencies": ["@types/p-queue"],
+  "ignoreDependencies": ["@types/p-queue", "papaparse", "@types/papaparse", "react-dom", "@types/react-dom", "react-json-view-lite", "@vitejs/plugin-react"],
   "ignoreExportsUsedInFile": true,
-  "exclude": ["types"]
+  "exclude": ["types"],
+  "ignoreWorkspaces": ["src/review-dashboard"]
 }
