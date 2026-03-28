@@ -6,7 +6,7 @@ import type {
   FailureType,
   UploadInfo,
 } from "./types";
-import { resultToFailureType } from "./types";
+import { deriveFailureType } from "./types";
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
@@ -308,7 +308,11 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
       ? [{ noteId: "ground_truth", noteText: row.ground_truth_note, status: "Ground Truth" }]
       : [],
     annotation: annotationMap.get(row.id),
-    failureType: resultToFailureType(row.result),
+    failureType: deriveFailureType({
+      outcome: row.outcome,
+      needsNote: row.needs_note,
+      noteStatus: row.note_status,
+    }),
   }));
 }
 
@@ -326,11 +330,15 @@ export async function fetchDatasetRunCounts(uploadId: string): Promise<Record<Fa
 
   const { data } = await supabase
     .from("review_dashboard_items")
-    .select("result")
+    .select("outcome, needs_note, note_status")
     .eq("upload_id", uploadId);
 
   for (const row of data ?? []) {
-    const ft = resultToFailureType(row.result);
+    const ft = deriveFailureType({
+      outcome: row.outcome,
+      needsNote: row.needs_note,
+      noteStatus: row.note_status,
+    });
     counts[ft]++;
   }
 
