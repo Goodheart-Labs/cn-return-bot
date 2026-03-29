@@ -10,6 +10,7 @@ interface NoteCardProps {
   onSeenToggle: (id: string, seen: boolean) => void;
   onFailureModesChange: (id: string, modes: string[]) => void;
   onCreateFailureMode: (name: string) => void;
+  onCommentChange: (id: string, comment: string | null) => void;
 }
 
 function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: string }) {
@@ -45,20 +46,32 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   );
 }
 
+function buildLogsFallback(item: ReviewItem): Record<string, unknown> | undefined {
+  const obj: Record<string, unknown> = {};
+  if (item.botId) obj.bot_id = item.botId;
+  if (item.searchResults) obj.search_results = item.searchResults;
+  if (item.checkReasoning) obj.check_reasoning = item.checkReasoning;
+  return Object.keys(obj).length > 0 ? obj : undefined;
+}
+
 export function NoteCard({
   item,
   failureModeCatalog,
   onSeenToggle,
   onFailureModesChange,
   onCreateFailureMode,
+  onCommentChange,
 }: NoteCardProps) {
   const [logsOpen, setLogsOpen] = useState(false);
   const [comparisonOpen, setComparisonOpen] = useState(false);
+  const [commentEditing, setCommentEditing] = useState(false);
+  const [commentDraft, setCommentDraft] = useState("");
 
   const tweetUrl = `https://x.com/i/status/${item.tweetId}`;
   const ftConfig = FAILURE_TYPE_CONFIG[item.failureType];
   const seen = item.annotation?.seen ?? false;
   const failureModes = item.annotation?.failureModes ?? [];
+  const comment = item.annotation?.comment ?? null;
 
   return (
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${seen ? "opacity-60" : ""}`}>
@@ -176,6 +189,69 @@ export function NoteCard({
         </div>
       )}
 
+      {/* Comment / note */}
+      <div className="mb-3">
+        {comment && !commentEditing ? (
+          <div className="bg-amber-50 rounded p-3 border border-amber-200">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-amber-700 font-medium">Note</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setCommentDraft(comment); setCommentEditing(true); }}
+                  className="text-xs text-amber-600 hover:text-amber-800"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => onCommentChange(item.id, null)}
+                  className="text-xs text-red-500 hover:text-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+            <p className="text-sm text-gray-800 whitespace-pre-wrap">{comment}</p>
+          </div>
+        ) : commentEditing ? (
+          <div className="bg-amber-50 rounded p-3 border border-amber-200">
+            <textarea
+              value={commentDraft}
+              onChange={(e) => setCommentDraft(e.target.value)}
+              className="w-full text-sm border border-amber-300 rounded p-2 bg-white resize-y"
+              rows={2}
+              placeholder="Add a note..."
+              autoFocus
+            />
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={() => {
+                  const trimmed = commentDraft.trim();
+                  onCommentChange(item.id, trimmed || null);
+                  setCommentEditing(false);
+                  setCommentDraft("");
+                }}
+                className="text-xs bg-amber-600 text-white px-2 py-1 rounded hover:bg-amber-700"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => { setCommentEditing(false); setCommentDraft(""); }}
+                className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => { setCommentDraft(""); setCommentEditing(true); }}
+            className="text-xs text-amber-600 hover:text-amber-800"
+          >
+            + Add note
+          </button>
+        )}
+      </div>
+
       {/* Pipeline logs */}
       <div>
         <button
@@ -187,7 +263,7 @@ export function NoteCard({
         </button>
         {logsOpen && (
           <div className="mt-2">
-            <JsonViewer data={item.logs} />
+            <JsonViewer data={item.logs ?? buildLogsFallback(item)} />
           </div>
         )}
       </div>

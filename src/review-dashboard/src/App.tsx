@@ -128,6 +128,22 @@ export function App() {
     }
   };
 
+  const handleCommentChange = async (id: string, comment: string | null) => {
+    const source = dataset.type === "production" ? "production" : "dataset_run";
+    try {
+      await upsertAnnotation(source as "production" | "dataset_run", id, { comment: comment ?? "" });
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, annotation: { ...item.annotation, seen: item.annotation?.seen ?? false, failureModes: item.annotation?.failureModes ?? [], comment: comment ?? undefined } }
+            : item,
+        ),
+      );
+    } catch (err: any) {
+      console.error("Failed to update comment:", err);
+    }
+  };
+
   const handleCreateFailureMode = async (name: string) => {
     try {
       await createFailureMode(name);
@@ -232,6 +248,7 @@ export function App() {
             onSeenToggle={handleSeenToggle}
             onFailureModesChange={handleFailureModesChange}
             onCreateFailureMode={handleCreateFailureMode}
+            onCommentChange={handleCommentChange}
           />
         ))}
       </div>

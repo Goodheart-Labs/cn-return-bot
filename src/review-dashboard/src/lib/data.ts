@@ -86,7 +86,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
   // Fetch competing notes, pipeline runs, and annotations in parallel (batched to avoid URL length limits)
   const [competing, pipelines, annotations] = await Promise.all([
     fetchInBatches<any>("competing_notes", "*", "our_note_id", noteIds, undefined, "competing_notes"),
-    fetchInBatches<any>("pipeline_runs", "tweet_id, outcome, outcome_reason, logs", "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
+    fetchInBatches<any>("pipeline_runs", "tweet_id, outcome, outcome_reason, logs, search_results, check_reasoning, bot_id", "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
     fetchInBatches<any>("review_dashboard_annotations", "*", "target_id", noteIds, (q) => q.eq("source", "production"), "annotations").catch(() => [] as any[]),
   ]);
 
@@ -147,6 +147,9 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       outcome: pipeline?.outcome,
       outcomeReason: pipeline?.outcome_reason,
       logs: pipeline?.logs,
+      searchResults: pipeline?.search_results,
+      checkReasoning: pipeline?.check_reasoning,
+      botId: pipeline?.bot_id,
       comparisonNotes: competingByNote.get(note.note_id) ?? [],
       annotation: annotationByTarget.get(note.note_id),
       failureType: cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor),
