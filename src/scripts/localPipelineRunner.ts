@@ -9,7 +9,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotById, getEnabledBots } from "../bots";
 import { processSingleTweet, type ProcessTweetResult } from "../pipeline/processTweet";
 import { closeBrowser } from "../pipeline/browserManager";
-import { createTweetLog, withTweetLog } from "../pipeline/tweetLog";
+import { createTweetLog, nestDotKeys, withTweetLog } from "../pipeline/tweetLog";
 import type { Post } from "../api/fetchEligiblePosts";
 import * as fs from "fs";
 import * as path from "path";
@@ -180,7 +180,7 @@ function resultToCsvRow(
     note_text: result.noteText ?? "",
     source_verification: svScore?.label ?? (svScore ? String(svScore.value) : "skipped"),
     evaluation_score: result.evaluationScore?.toFixed(2) ?? "",
-    logs: log ? JSON.stringify(Object.fromEntries(log)) : "",
+    logs: log ? JSON.stringify(nestDotKeys(Object.fromEntries(log))) : "",
   };
 
   return OUTPUT_HEADERS.map((h) => escapeCsvField(fields[h])).join(",");
@@ -373,7 +373,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
           note_status: result.noteStatus ?? "",
           outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
           note_text: result.noteText ?? "",
-          logs: log ? JSON.stringify(Object.fromEntries(log)) : "",
+          logs: log ? JSON.stringify(nestDotKeys(Object.fromEntries(log))) : "",
         };
 
         // Categorize before writing CSV so we have the result label
