@@ -17,6 +17,7 @@ import {
   upsertAnnotation,
   createFailureMode,
   deleteUpload,
+  pruneUnusedFailureModes,
 } from "./lib/data";
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
@@ -121,6 +122,7 @@ export function App() {
             : item,
         ),
       );
+      pruneUnusedFailureModes().then(setFailureModeCatalog).catch(() => {});
     } catch (err: any) {
       console.error("Failed to update failure modes:", err);
     }
@@ -148,6 +150,7 @@ export function App() {
       if (dataset.type === "dataset_run" && dataset.id === id) {
         setDataset({ type: "production", name: "Production" });
       }
+      pruneUnusedFailureModes().then(setFailureModeCatalog).catch(() => {});
     } catch (err: any) {
       console.error("Failed to delete upload:", err);
     }

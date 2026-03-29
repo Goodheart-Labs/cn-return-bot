@@ -10,7 +10,7 @@ export function JsonViewer({ data }: { data: unknown }) {
     <div className="overflow-x-auto font-mono text-xs max-h-[600px] overflow-y-auto rounded bg-gray-900 p-3">
       <JsonView
         data={data}
-        shouldExpandNode={(level) => level < 2}
+        shouldExpandNode={(level) => level < 1}
         style={darkStyles}
       />
     </div>
