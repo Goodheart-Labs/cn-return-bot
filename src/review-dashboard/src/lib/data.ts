@@ -160,7 +160,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
     missed = await fetchAllRows<any>(
       supabase
         .from("competing_notes")
-        .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs)")
+        .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs, created_at)")
         .not("pipeline_run_id", "is", null)
         .eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
       "missed_opportunities"
@@ -178,6 +178,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       tweetId: cn.tweet_id,
       tweetText: pr.tweet_text,
       noteText: undefined,
+      createdAt: pr.created_at,
       outcome: pr.outcome,
       outcomeReason: pr.outcome_reason,
       logs: pr.logs,
