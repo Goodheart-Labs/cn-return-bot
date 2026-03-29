@@ -129,12 +129,13 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
 
       console.error(`[submit] Failed to submit note for tweet ${candidate.tweetId}:`, errorData || err);
 
-      // Only expire on 404 (tweet deleted) — everything else is retryable
       const statusCode = err.response?.status;
-      if (statusCode === 404) {
-        console.log(`[submit] Tweet ${candidate.tweetId} deleted — expiring candidate`);
+      const isIneligible = errorText.includes("ineligible");
+      if (statusCode === 404 || isIneligible) {
+        const reason = statusCode === 404 ? "tweet_deleted" : "ineligible";
+        console.log(`[submit] Tweet ${candidate.tweetId} ${reason} — expiring candidate`);
         try {
-          await supabaseLogger.markCandidateExpired(candidate.pipelineRunId, "tweet_deleted");
+          await supabaseLogger.markCandidateExpired(candidate.pipelineRunId, reason);
         } catch (logErr) {
           console.warn("[submit] Failed to mark candidate as expired:", logErr);
         }
