@@ -74,8 +74,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
   const notes = await fetchAllRows<any>(
     supabase
       .from("canonical_note_information")
-      .select("*")
-      .order("created_at", { ascending: false }),
+      .select("*"),
     "canonical_note_information"
   );
 
@@ -194,6 +193,12 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       failureType: "missed_opportunity",
     });
   }
+
+  items.sort((a, b) => {
+    const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return db - da;
+  });
 
   return items;
 }
