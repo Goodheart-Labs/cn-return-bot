@@ -414,12 +414,9 @@ async function main() {
 
   // ===== 6. Upsert competing notes =====
   console.log("[updateFeedback] Upserting competing notes...");
-  let competingUpserted = 0, competingErrors = 0;
-
-  for (const cn of competingNotes) {
+  const competingRows = competingNotes.map(cn => {
     const status = statusMap.get(cn.noteId);
-
-    const row = {
+    return {
       tweet_id: cn.tweetId,
       note_id: cn.noteId,
       our_note_id: cn.ourNoteId,
@@ -432,70 +429,62 @@ async function main() {
       created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : null,
       last_updated_at: now,
     };
+  });
 
+  let competingUpserted = 0, competingErrors = 0;
+  for (let i = 0; i < competingRows.length; i += PAGE_SIZE) {
+    const batch = competingRows.slice(i, i + PAGE_SIZE);
     const { error } = await client
       .from("competing_notes")
-      .upsert(row, { onConflict: "note_id,our_note_id" });
-
+      .upsert(batch, { onConflict: "note_id,our_note_id" });
     if (error) {
-      // Log but don't fail — some competing notes may reference note_ids not in our canonical table
-      if (!error.message?.includes("violates foreign key")) {
-        console.error(`[updateFeedback] Error upserting competing note ${cn.noteId}: ${error.message}`);
-      }
-      competingErrors++;
+      console.error(`[updateFeedback] Error upserting competing batch: ${error.message}`);
+      competingErrors += batch.length;
     } else {
-      competingUpserted++;
+      competingUpserted += batch.length;
     }
   }
-
   console.log(`[updateFeedback] Competing: ${competingUpserted} upserted, ${competingErrors} errors`);
 
-  // ===== 6.5. Upsert missed opportunity notes into competing_notes =====
-  console.log("[updateFeedback] Upserting missed opportunity notes...");
-  let missedUpserted = 0, missedHelpful = 0;
+  // ===== 6.5. Replace missed opportunity competing notes (helpful only) =====
+  console.log("[updateFeedback] Replacing missed opportunity competing notes...");
+  const missedRows = missedOpportunityNotes
+    .filter(mn => {
+      const status = statusMap.get(mn.noteId);
+      return status?.currentCoreStatus === "CURRENTLY_RATED_HELPFUL";
+    })
+    .map(mn => {
+      const status = statusMap.get(mn.noteId)!;
+      return {
+        tweet_id: mn.tweetId,
+        note_id: mn.noteId,
+        our_note_id: null,
+        pipeline_run_id: mn.pipelineRunId,
+        author_participant_id: mn.authorId || null,
+        note_text: mn.summary || null,
+        classification: mn.classification || null,
+        current_status: status.currentStatus || null,
+        current_core_status: status.currentCoreStatus || null,
+        current_decided_by: status.currentDecidedBy || null,
+        created_at_millis: mn.createdAtMillis ? parseInt(mn.createdAtMillis) : null,
+        last_updated_at: now,
+      };
+    });
 
-  for (const mn of missedOpportunityNotes) {
-    const status = statusMap.get(mn.noteId);
-    if (!status) continue;
-
-    // Only store notes that are helpful — these are the real missed opportunities
-    const isHelpful = status.currentCoreStatus === "CURRENTLY_RATED_HELPFUL";
-    if (isHelpful) missedHelpful++;
-
-    const row = {
-      tweet_id: mn.tweetId,
-      note_id: mn.noteId,
-      our_note_id: null,
-      pipeline_run_id: mn.pipelineRunId,
-      author_participant_id: mn.authorId || null,
-      note_text: mn.summary || null,
-      classification: mn.classification || null,
-      current_status: status.currentStatus || null,
-      current_core_status: status.currentCoreStatus || null,
-      current_decided_by: status.currentDecidedBy || null,
-      created_at_millis: mn.createdAtMillis ? parseInt(mn.createdAtMillis) : null,
-      last_updated_at: now,
-    };
-
-    // Use the partial unique index (note_id WHERE our_note_id IS NULL)
+  await client.from("competing_notes").delete().is("our_note_id", null);
+  let missedInserted = 0;
+  for (let i = 0; i < missedRows.length; i += PAGE_SIZE) {
+    const batch = missedRows.slice(i, i + PAGE_SIZE);
     const { error } = await client
       .from("competing_notes")
-      .upsert(row, { onConflict: "note_id" })
-      .is("our_note_id", null);
-
+      .insert(batch);
     if (error) {
-      // Fallback: try insert, ignore if exists
-      const { error: insertErr } = await client
-        .from("competing_notes")
-        .insert(row);
-      if (!insertErr) missedUpserted++;
-      // Ignore duplicate errors
+      console.error(`[updateFeedback] Error inserting missed opportunity competing notes: ${error.message}`);
     } else {
-      missedUpserted++;
+      missedInserted += batch.length;
     }
   }
-
-  console.log(`[updateFeedback] Missed opportunities: ${missedUpserted} upserted (${missedHelpful} are HELPFUL)`);
+  console.log(`[updateFeedback] Missed opportunity competing notes: ${missedInserted} inserted (helpful only)`);
 
   // ===== 7. Create public_data_snapshots for historical tracking =====
   console.log("[updateFeedback] Creating public data snapshots...");
@@ -591,7 +580,7 @@ async function main() {
   console.log(`\n=== DONE ===`);
   console.log(`Our notes: ${ourNotes.size} found, ${updated} updated, ${inserted} inserted`);
   console.log(`Competing notes: ${competingNotes.length} found, ${competingUpserted} upserted`);
-  console.log(`Missed opportunities: ${missedUpserted} upserted (${missedHelpful} helpful)`);
+  console.log(`Missed opportunity competing notes: ${missedInserted} inserted`);
   console.log(`Snapshots: ${snapshotCount}`);
   console.log(`Notes table: ${notesTableUpdated} synced`);
 
