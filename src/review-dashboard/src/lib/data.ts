@@ -10,14 +10,14 @@ import { resultToFailureType } from "./types";
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
-function coreStatusToFailureType(
-  coreStatus: string | null,
+function cnStatusToFailureType(
+  cnStatus: string | null,
   hasHelpfulCompetitor: boolean,
 ): FailureType {
-  if (coreStatus === "CURRENTLY_RATED_HELPFUL") return "rated_helpful";
-  if (coreStatus === "CURRENTLY_RATED_NOT_HELPFUL") return "rated_unhelpful";
+  if (cnStatus === "CURRENTLY_RATED_HELPFUL") return "rated_helpful";
+  if (cnStatus === "CURRENTLY_RATED_NOT_HELPFUL") return "rated_unhelpful";
   if (hasHelpfulCompetitor) return "lost_to_competitor";
-  if (coreStatus === "NEEDS_MORE_RATINGS") return "needs_more_ratings";
+  if (cnStatus === "NEEDS_MORE_RATINGS") return "needs_more_ratings";
   return "uncategorized";
 }
 
@@ -150,7 +150,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       logs: pipeline?.logs,
       comparisonNotes: competingByNote.get(note.note_id) ?? [],
       annotation: annotationByTarget.get(note.note_id),
-      failureType: coreStatusToFailureType(note.current_core_status, hasHelpfulCompetitor),
+      failureType: cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor),
     };
   });
 
@@ -212,9 +212,9 @@ export async function fetchProductionCounts(): Promise<Record<FailureType, numbe
   };
 
   const [helpfulRes, unhelpfulRes, nmrRes, missedRes] = await Promise.all([
-    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
-    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("current_core_status", "CURRENTLY_RATED_NOT_HELPFUL"),
-    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("current_core_status", "NEEDS_MORE_RATINGS"),
+    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("cn_status", "CURRENTLY_RATED_HELPFUL"),
+    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("cn_status", "CURRENTLY_RATED_NOT_HELPFUL"),
+    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("cn_status", "NEEDS_MORE_RATINGS"),
     supabase.from("competing_notes").select("note_id", { count: "exact", head: true }).not("pipeline_run_id", "is", null).eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
   ]);
 
@@ -237,7 +237,7 @@ export async function fetchProductionCounts(): Promise<Record<FailureType, numbe
         .from("canonical_note_information")
         .select("note_id", { count: "exact", head: true })
         .in("note_id", lostNoteIds)
-        .neq("current_core_status", "CURRENTLY_RATED_HELPFUL");
+        .neq("cn_status", "CURRENTLY_RATED_HELPFUL");
       counts.lost_to_competitor = count ?? 0;
     }
   }
@@ -399,6 +399,32 @@ export async function createFailureMode(name: string): Promise<void> {
     .upsert({ name: normalized }, { onConflict: "name" });
 
   if (error) throw error;
+}
+
+/** Delete catalog entries not referenced by any annotation. Returns surviving names. */
+export async function pruneUnusedFailureModes(): Promise<string[]> {
+  const { data: annotations, error: annErr } = await supabase
+    .from("review_dashboard_annotations")
+    .select("failure_modes");
+  if (annErr) throw annErr;
+
+  const used = new Set((annotations ?? []).flatMap((a: any) => a.failure_modes ?? []));
+
+  const { data: catalog, error: catErr } = await supabase
+    .from("review_dashboard_failure_modes")
+    .select("name");
+  if (catErr) throw catErr;
+
+  const unused = (catalog ?? []).map((d: any) => d.name).filter((n: string) => !used.has(n));
+  if (unused.length > 0) {
+    const { error } = await supabase
+      .from("review_dashboard_failure_modes")
+      .delete()
+      .in("name", unused);
+    if (error) throw error;
+  }
+
+  return [...used].sort();
 }
 
 // ─── Upload ──────────────────────────────────────────────────────────────────
