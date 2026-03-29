@@ -893,42 +893,26 @@ export class SupabaseLogger {
       created_at: string;
       search_results: string;
       tweet_text: string;
+      pipeline_scores: { score_type: string; score_value: number | null }[];
     }>(
       (client) =>
         client
           .from("pipeline_runs")
-          .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text")
+          .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text, pipeline_scores(score_type, score_value)")
           .eq("outcome", "candidate")
           .order("created_at", { ascending: false })
     );
 
-    if (runs.length === 0) return [];
-
-    // Fetch scores for all candidates
-    const runIds = runs.map((r) => r.id);
-    const scores = await this.fetchAllRows<{
-      pipeline_run_id: string;
-      score_type: string;
-      score_value: number | null;
-    }>(
-      (client) =>
-        client
-          .from("pipeline_scores")
-          .select("pipeline_run_id, score_type, score_value")
-          .in("pipeline_run_id", runIds)
-    );
-
-    // Group scores by run ID
-    const scoresByRun = new Map<string, { score_type: string; score_value: number | null }[]>();
-    for (const s of scores) {
-      const arr = scoresByRun.get(s.pipeline_run_id) ?? [];
-      arr.push({ score_type: s.score_type, score_value: s.score_value });
-      scoresByRun.set(s.pipeline_run_id, arr);
-    }
-
     return runs.map((r) => ({
-      ...r,
-      scores: scoresByRun.get(r.id) ?? [],
+      id: r.id,
+      tweet_id: r.tweet_id,
+      note_text: r.note_text,
+      source_url: r.source_url,
+      bot_id: r.bot_id,
+      created_at: r.created_at,
+      search_results: r.search_results,
+      tweet_text: r.tweet_text,
+      scores: r.pipeline_scores,
     }));
   }
 
