@@ -39,7 +39,8 @@ export type Category =
   | "note_worthy_incorrect"
   | "note_worthy_not_proposed"
   | "non_note_worthy_correct"
-  | "non_note_worthy_incorrect";
+  | "non_note_worthy_incorrect"
+  | "uncategorized";
 
 export interface CategorizedRow {
   category: Category;
@@ -55,6 +56,7 @@ export const CATEGORY_RESULT_LABEL: Record<Category, string> = {
   note_worthy_not_proposed: "missed",
   non_note_worthy_correct: "correct",
   non_note_worthy_incorrect: "false positive",
+  uncategorized: "",
 };
 
 // ---------------------------------------------------------------------------
@@ -126,12 +128,12 @@ Proposed note: ${row.note_text}`;
 // Categorize a single row (calls judge if needed)
 // ---------------------------------------------------------------------------
 
-export async function categorizeRow(row: CsvRow): Promise<CategorizedRow | null> {
+export async function categorizeRow(row: CsvRow): Promise<CategorizedRow> {
   const noteworthy = isNoteworthy(row);
   const proposed = noteWasProposed(row);
   const parsed = parseRowForJson(row);
 
-  if (noteworthy === null) return null;
+  if (noteworthy === null) return { category: "uncategorized", parsed };
 
   if (noteworthy) {
     if (!proposed) {
@@ -162,6 +164,7 @@ export function writeResultJsons(results: CategorizedRow[], outputDir: string): 
     note_worthy_not_proposed: [],
     non_note_worthy_correct: [],
     non_note_worthy_incorrect: [],
+    uncategorized: [],
   };
 
   for (const r of results) {
@@ -189,7 +192,7 @@ export async function evaluateResults(csvPath: string, outputDir: string): Promi
   const records = parseCsvRecords(content);
   if (records.length < 2) {
     console.log("[evaluate] No rows to evaluate");
-    return { note_worthy_correct: 0, note_worthy_incorrect: 0, note_worthy_not_proposed: 0, non_note_worthy_correct: 0, non_note_worthy_incorrect: 0 };
+    return { note_worthy_correct: 0, note_worthy_incorrect: 0, note_worthy_not_proposed: 0, non_note_worthy_correct: 0, non_note_worthy_incorrect: 0, uncategorized: 0 };
   }
 
   const headers = records[0]!.map((h) => h.trim());
@@ -206,24 +209,12 @@ export async function evaluateResults(csvPath: string, outputDir: string): Promi
   console.log(`[evaluate] Loaded ${rows.length} rows from ${csvPath}`);
 
   const results: CategorizedRow[] = [];
-  let skipped = 0;
 
   for (const row of rows) {
-    const result = await categorizeRow(row);
-    if (result) {
-      results.push(result);
-    } else {
-      skipped++;
-    }
+    results.push(await categorizeRow(row));
   }
 
-  const counts = writeResultJsons(results, outputDir);
-
-  if (skipped > 0) {
-    console.log(`[evaluate] Skipped ${skipped} rows with no ground truth`);
-  }
-
-  return counts;
+  return writeResultJsons(results, outputDir);
 }
 
 // ---------------------------------------------------------------------------

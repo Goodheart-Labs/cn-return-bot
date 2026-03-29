@@ -44,7 +44,7 @@ interface CompletedResult {
   outcome: string;
   outcomeReason?: string;
   noteText?: string;
-  categorized?: CategorizedRow | null;
+  categorized?: CategorizedRow;
 }
 
 // ---------------------------------------------------------------------------
@@ -229,6 +229,7 @@ const CATEGORY_LABELS: Record<Category, { emoji: string; label: string }> = {
   note_worthy_not_proposed: { emoji: "❌", label: "missed" },
   non_note_worthy_correct: { emoji: "✅", label: "correct" },
   non_note_worthy_incorrect: { emoji: "❌", label: "false positive" },
+  uncategorized: { emoji: "❓", label: "uncategorized" },
 };
 
 function formatResult(r: CompletedResult, count: number, total: number): string {
@@ -262,7 +263,6 @@ function printSummary(counts: BucketCounts, totalProcessed: number, errors: numb
   const nnwTotal = counts.non_note_worthy_correct + counts.non_note_worthy_incorrect;
   const scoredTotal = nwTotal + nnwTotal;
   const overallCorrect = counts.note_worthy_correct + counts.non_note_worthy_correct;
-  const skipped = totalProcessed - scoredTotal - errors;
 
   console.log(`\n${"=".repeat(60)}`);
   console.log(`RESULTS: ${totalProcessed} processed, ${errors} errors`);
@@ -284,8 +284,8 @@ function printSummary(counts: BucketCounts, totalProcessed: number, errors: numb
   if (scoredTotal > 0) {
     console.log(`\n  OVERALL: ${fmtRate(overallCorrect, scoredTotal)}`);
   }
-  if (skipped > 0) {
-    console.log(`  NO GROUND TRUTH: ${skipped} skipped`);
+  if (counts.uncategorized > 0) {
+    console.log(`  NO GROUND TRUTH: ${counts.uncategorized} uncategorized`);
   }
   console.log("=".repeat(60));
 }
@@ -381,10 +381,8 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         try {
           const categorized = await categorizeRow(csvRowData);
           completed.categorized = categorized;
-          if (categorized) {
-            categorizedRows.push(categorized);
-            resultLabel = CATEGORY_RESULT_LABEL[categorized.category];
-          }
+          categorizedRows.push(categorized);
+          resultLabel = CATEGORY_RESULT_LABEL[categorized.category];
         } catch (err: any) {
           console.error(`[${scriptName}] Judge failed for ${input.url}: ${err?.message}`);
         }
