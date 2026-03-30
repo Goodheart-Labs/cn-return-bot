@@ -42,9 +42,20 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 
 - `src/bots/` - Bot configurations (opus-main, multi-search)
 - `src/pipeline/` - Core logic: search, note writing, checking
-- `src/scripts/` - 
+- `src/scripts/` -
+- `src/review-dashboard/` - React dashboard for reviewing note failures
 - `migrations/` - Supabase SQL migrations
 - `scripts/` - Browser console scripts (see below)
+
+## Review dashboard
+
+```bash
+# Production Supabase
+bun run build-review && bun run serve-review
+
+# Local Supabase
+cd src/review-dashboard && bunx vite build && cd ../.. && bun run src/review-dashboard/server.ts --local
+```
 
 ## Database tables (Supabase)
 
