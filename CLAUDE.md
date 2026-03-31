@@ -46,16 +46,11 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 - `migrations/` - Supabase SQL migrations
 - `scripts/` - Browser console scripts (see below)
 
-## Database tables (Supabase)
+## Database
 
-- `notes` - Bot-submitted notes (since Jan 7, 2026). Has submission metadata: `submitted_at`, `bot_name`, `evaluation_score`, `notewriter_id`. Use for submission-specific queries, but incomplete history (~732 notes).
-- `canonical_note_information` - All bot-written notes scraped + enriched from public data (back to Aug 2025, ~1,693 notes). Has richer status data: `view_count`, rating breakdowns, `current_decided_by`, `classification`, tweet context. **Default to this table for analysis** (views, status breakdowns, performance stats, pitch numbers). Join to `notes` on `note_id` when you need `submitted_at` or `bot_name`.
-- `scraped_notewriter_snapshots` - Point-in-time status/view counts for our bot-written notes (from scraping)
-- `pipeline_runs` - Every tweet processed, with outcome (submitted/filtered/failed/rejected)
-- `pipeline_scores` - Scores attached to pipeline runs
-- `notewriters` - Notewriter accounts
-- `bot_configs` - Bot configurations
-- `public_data_snapshots` - Daily snapshots from X's public CN data dumps (our notes + competing notes)
+See [DATABASE.md](DATABASE.md) for full schema, column descriptions, enum values, and data flow.
+
+Quick guide: use `canonical_note_information` for performance analysis, `notes` for submission metadata, `pipeline_runs` + `pipeline_scores` for debugging.
 
 ## Notewriter scraper
 
