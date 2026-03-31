@@ -22,7 +22,7 @@ export const opusDirectGrok: Bot = {
   id: "opus-direct-grok",
   name: "Opus 4.6 Direct + Grok",
   description: "Direct style bot with Grok X search for tweet context",
-  weight: 7,
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
