@@ -19,6 +19,12 @@ const DATA_DIR = "./cn-data";
 const OUR_AUTHOR = "813EB394B10809EBA8D09BCFA8E2E1C25A2DA0085186867F9E9C00696951C447";
 const PAGE_SIZE = 1000;
 
+const useLocal = process.argv.includes("--local");
+if (useLocal) {
+  console.log("[updateFeedback] Using LOCAL Supabase");
+  process.env.SUPABASE_URL = process.env.LOCAL_SUPABASE_URL;
+  process.env.SUPABASE_SERVICE_KEY = process.env.LOCAL_SUPABASE_SERVICE_KEY;
+}
 const client = getSupabaseClient();
 
 async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
@@ -55,26 +61,52 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
   writeFileSync(outputPath, Buffer.from(buffer));
 }
 
+const PARTITIONS: Record<string, string[]> = {
+  notes: ["00000", "00001"],
+  noteStatusHistory: ["00000"],
+};
+
 async function downloadCNFile(
   fileType: "noteStatusHistory" | "notes"
-): Promise<{ path: string; dateStr: string } | null> {
-  const zipFileName = `${fileType}-00000.zip`;
-  const tsvFileName = `${fileType}-00000.tsv`;
-  const zipPath = `${DATA_DIR}/${zipFileName}`;
-  const tsvPath = `${DATA_DIR}/${tsvFileName}`;
-
+): Promise<{ paths: string[]; dateStr: string } | null> {
+  // Try recent dates until we find one that has data
   for (let daysBack = 0; daysBack < 7; daysBack++) {
     const date = new Date();
     date.setUTCDate(date.getUTCDate() - daysBack);
     const dateStr = formatDateForUrl(date);
-    const url = `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${zipFileName}`;
+
+    // Try to download the first partition to determine the date
+    const testUrl = `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${fileType}-00000.zip`;
+    const testZip = `${DATA_DIR}/${fileType}-00000.zip`;
+    const testTsv = `${DATA_DIR}/${fileType}-00000.tsv`;
 
     try {
-      await downloadFile(url, zipPath);
-      execSync(`unzip -o "${zipPath}" -d "${DATA_DIR}"`, { stdio: "pipe" });
-      unlinkSync(zipPath);
-      console.log(`[updateFeedback] Got ${fileType} from ${dateStr}`);
-      return { path: tsvPath, dateStr };
+      await downloadFile(testUrl, testZip);
+      execSync(`unzip -o "${testZip}" -d "${DATA_DIR}"`, { stdio: "pipe" });
+      unlinkSync(testZip);
+
+      const paths = [testTsv];
+
+      // Download remaining partitions (best effort)
+      for (const partition of (PARTITIONS[fileType] ?? []).slice(1)) {
+        const zipName = `${fileType}-${partition}.zip`;
+        const tsvName = `${fileType}-${partition}.tsv`;
+        const zipPath = `${DATA_DIR}/${zipName}`;
+        const tsvPath = `${DATA_DIR}/${tsvName}`;
+        const url = `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${zipName}`;
+
+        try {
+          await downloadFile(url, zipPath);
+          execSync(`unzip -o "${zipPath}" -d "${DATA_DIR}"`, { stdio: "pipe" });
+          unlinkSync(zipPath);
+          paths.push(tsvPath);
+        } catch {
+          console.log(`[updateFeedback] Partition ${partition} not available for ${fileType}`);
+        }
+      }
+
+      console.log(`[updateFeedback] Got ${fileType} from ${dateStr} (${paths.length} partition(s))`);
+      return { paths, dateStr };
     } catch {
       if (daysBack < 6) {
         console.log(`[updateFeedback] No ${fileType} for ${dateStr}, trying earlier...`);
@@ -84,6 +116,21 @@ async function downloadCNFile(
 
   console.error(`[updateFeedback] Could not find ${fileType} data`);
   return null;
+}
+
+function readTsvLines(paths: string[]): { header: string; lines: string[] } {
+  let header = "";
+  const lines: string[] = [];
+  for (const p of paths) {
+    const content = readFileSync(p, "utf-8");
+    const fileLines = content.split("\n");
+    if (!header && fileLines[0]) header = fileLines[0];
+    // Skip header for all files, add data lines
+    for (let i = 1; i < fileLines.length; i++) {
+      if (fileLines[i]) lines.push(fileLines[i]!);
+    }
+  }
+  return { header, lines };
 }
 
 async function main() {
@@ -105,9 +152,8 @@ async function main() {
 
   // ===== 2. Parse notes file — find our notes + competing notes =====
   console.log("[updateFeedback] Parsing notes file...");
-  const notesContent = readFileSync(notesResult.path, "utf-8");
-  const notesLines = notesContent.split("\n");
-  const nh = notesLines[0]!.split("\t");
+  const { header: notesHeader, lines: noteDataLines } = readTsvLines(notesResult.paths);
+  const nh = notesHeader.split("\t");
   const nIdx = {
     noteId: nh.indexOf("noteId"),
     author: nh.indexOf("noteAuthorParticipantId"),
@@ -125,9 +171,7 @@ async function main() {
     summary: string;
   }>();
 
-  for (let i = 1; i < notesLines.length; i++) {
-    const line = notesLines[i]!;
-    if (!line) continue;
+  for (const line of noteDataLines) {
     const vals = line.split("\t");
     if (vals[nIdx.author] !== OUR_AUTHOR) continue;
     ourNotes.set(vals[nIdx.noteId]!, {
@@ -153,9 +197,7 @@ async function main() {
     createdAtMillis: string;
   }> = [];
 
-  for (let i = 1; i < notesLines.length; i++) {
-    const line = notesLines[i]!;
-    if (!line) continue;
+  for (const line of noteDataLines) {
     const vals = line.split("\t");
     const tweetId = vals[nIdx.tweetId]!;
     if (!ourTweetIds.has(tweetId)) continue;
@@ -177,11 +219,55 @@ async function main() {
   }
   console.log(`[updateFeedback] Found ${competingNotes.length} competing notes`);
 
+  // ===== 2.5. Third pass: find notes on rejected tweet_ids (missed opportunities) =====
+  console.log("[updateFeedback] Checking for missed opportunities...");
+  const rejectedRuns = await fetchAll<{ id: string; tweet_id: string; outcome_reason: string | null }>(
+    () => client.from("pipeline_runs").select("id, tweet_id, outcome_reason").eq("outcome", "rejected")
+  );
+  const rejectedTweetIds = new Map<string, { runId: string; outcomeReason: string | null }>();
+  for (const run of rejectedRuns) {
+    // Keep the latest run per tweet (overwrite is fine, they're fetched in insertion order)
+    rejectedTweetIds.set(run.tweet_id, { runId: run.id, outcomeReason: run.outcome_reason });
+  }
+  // Exclude tweets where we also submitted a note
+  for (const n of ourNotes.values()) {
+    rejectedTweetIds.delete(n.tweetId);
+  }
+  console.log(`[updateFeedback] ${rejectedTweetIds.size} tweets with rejected pipeline runs (no submission)`);
+
+  const missedOpportunityNotes: Array<{
+    noteId: string;
+    tweetId: string;
+    pipelineRunId: string;
+    authorId: string;
+    summary: string;
+    classification: string;
+    createdAtMillis: string;
+  }> = [];
+
+  for (const line of noteDataLines) {
+    const vals = line.split("\t");
+    const tweetId = vals[nIdx.tweetId]!;
+    if (!rejectedTweetIds.has(tweetId)) continue;
+    if (vals[nIdx.author] === OUR_AUTHOR) continue;
+
+    const run = rejectedTweetIds.get(tweetId)!;
+    missedOpportunityNotes.push({
+      noteId: vals[nIdx.noteId]!,
+      tweetId,
+      pipelineRunId: run.runId,
+      authorId: vals[nIdx.author] || "",
+      summary: vals[nIdx.summary] || "",
+      classification: vals[nIdx.classification] || "",
+      createdAtMillis: vals[nIdx.createdAtMillis] || "",
+    });
+  }
+  console.log(`[updateFeedback] Found ${missedOpportunityNotes.length} notes on rejected tweets`);
+
   // ===== 3. Parse noteStatusHistory =====
   console.log("[updateFeedback] Parsing noteStatusHistory...");
-  const statusContent = readFileSync(statusResult.path, "utf-8");
-  const statusLines = statusContent.split("\n");
-  const sh = statusLines[0]!.split("\t");
+  const { header: statusHeader, lines: statusDataLines } = readTsvLines(statusResult.paths);
+  const sh = statusHeader.split("\t");
   const sIdx = {
     noteId: sh.indexOf("noteId"),
     currentStatus: sh.indexOf("currentStatus"),
@@ -200,7 +286,8 @@ async function main() {
 
   // Build sets of note IDs we care about
   const competingNoteIds = new Set(competingNotes.map(n => n.noteId));
-  const allRelevantIds = new Set([...ourNoteIds, ...competingNoteIds]);
+  const missedNoteIds = new Set(missedOpportunityNotes.map(n => n.noteId));
+  const allRelevantIds = new Set([...ourNoteIds, ...competingNoteIds, ...missedNoteIds]);
 
   const statusMap = new Map<string, {
     currentStatus: string;
@@ -217,9 +304,7 @@ async function main() {
     statusLockedAt: string | null;
   }>();
 
-  for (let i = 1; i < statusLines.length; i++) {
-    const line = statusLines[i]!;
-    if (!line) continue;
+  for (const line of statusDataLines) {
     const firstTab = line.indexOf("\t");
     const noteId = line.slice(0, firstTab);
     if (!allRelevantIds.has(noteId)) continue;
@@ -262,10 +347,16 @@ async function main() {
   const enrichmentMap = new Map(notesEnrichment.map(n => [n.note_id, n]));
 
   const now = new Date().toISOString();
-  let updated = 0, inserted = 0, errors = 0, newlyHelpful = 0;
+  let newlyHelpful = 0;
 
+  const canonicalRows: Record<string, any>[] = [];
   for (const [noteId, noteData] of ourNotes) {
     const status = statusMap.get(noteId);
+
+    // Track newly helpful
+    const wasHelpful = existingStatusMap.get(noteId) === "CURRENTLY_RATED_HELPFUL";
+    const isNowHelpful = status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
+    if (isNowHelpful && !wasHelpful) newlyHelpful++;
 
     // Note: we don't write view_count here — public data dumps don't include it yet
     // (Nathan has requested it). Scraper/reconciliation owns view_count for now.
@@ -293,48 +384,37 @@ async function main() {
       bot_name: enrichmentMap.get(noteId)?.bot_name || null,
     };
 
-    // Track newly helpful
-    const wasHelpful = existingStatusMap.get(noteId) === "CURRENTLY_RATED_HELPFUL";
-    const isNowHelpful = status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
-    if (isNowHelpful && !wasHelpful) newlyHelpful++;
+    if (!existingIds.has(noteId)) {
+      row.first_seen_at = now;
+    }
 
-    if (existingIds.has(noteId)) {
-      const { error } = await client
-        .from("canonical_note_information")
-        .update(row)
-        .eq("note_id", noteId);
-      if (error) {
-        console.error(`[updateFeedback] Error updating ${noteId}: ${error.message}`);
-        errors++;
-      } else {
-        updated++;
-      }
+    canonicalRows.push(row);
+  }
+
+  let upserted = 0, upsertErrors = 0;
+  for (let i = 0; i < canonicalRows.length; i += PAGE_SIZE) {
+    const batch = canonicalRows.slice(i, i + PAGE_SIZE);
+    const { error } = await client
+      .from("canonical_note_information")
+      .upsert(batch, { onConflict: "note_id" });
+    if (error) {
+      console.error(`[updateFeedback] Error upserting canonical batch: ${error.message}`);
+      upsertErrors += batch.length;
     } else {
-      const { error } = await client
-        .from("canonical_note_information")
-        .insert({ ...row, first_seen_at: now });
-      if (error) {
-        console.error(`[updateFeedback] Error inserting ${noteId}: ${error.message}`);
-        errors++;
-      } else {
-        inserted++;
-      }
+      upserted += batch.length;
     }
   }
 
-  console.log(`[updateFeedback] Canonical: ${updated} updated, ${inserted} inserted, ${errors} errors`);
+  console.log(`[updateFeedback] Canonical: ${upserted} upserted, ${upsertErrors} errors`);
   if (newlyHelpful > 0) {
     console.log(`[updateFeedback] ${newlyHelpful} notes newly rated HELPFUL!`);
   }
 
   // ===== 6. Upsert competing notes =====
   console.log("[updateFeedback] Upserting competing notes...");
-  let competingUpserted = 0, competingErrors = 0;
-
-  for (const cn of competingNotes) {
+  const competingRows = competingNotes.map(cn => {
     const status = statusMap.get(cn.noteId);
-
-    const row = {
+    return {
       tweet_id: cn.tweetId,
       note_id: cn.noteId,
       our_note_id: cn.ourNoteId,
@@ -347,23 +427,62 @@ async function main() {
       created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : null,
       last_updated_at: now,
     };
+  });
 
+  let competingUpserted = 0, competingErrors = 0;
+  for (let i = 0; i < competingRows.length; i += PAGE_SIZE) {
+    const batch = competingRows.slice(i, i + PAGE_SIZE);
     const { error } = await client
       .from("competing_notes")
-      .upsert(row, { onConflict: "note_id,our_note_id" });
-
+      .upsert(batch, { onConflict: "note_id,our_note_id" });
     if (error) {
-      // Log but don't fail — some competing notes may reference note_ids not in our canonical table
-      if (!error.message?.includes("violates foreign key")) {
-        console.error(`[updateFeedback] Error upserting competing note ${cn.noteId}: ${error.message}`);
-      }
-      competingErrors++;
+      console.error(`[updateFeedback] Error upserting competing batch: ${error.message}`);
+      competingErrors += batch.length;
     } else {
-      competingUpserted++;
+      competingUpserted += batch.length;
     }
   }
-
   console.log(`[updateFeedback] Competing: ${competingUpserted} upserted, ${competingErrors} errors`);
+
+  // ===== 6.5. Replace missed opportunity competing notes (helpful only) =====
+  console.log("[updateFeedback] Replacing missed opportunity competing notes...");
+  const missedRows = missedOpportunityNotes
+    .filter(mn => {
+      const status = statusMap.get(mn.noteId);
+      return status?.currentCoreStatus === "CURRENTLY_RATED_HELPFUL";
+    })
+    .map(mn => {
+      const status = statusMap.get(mn.noteId)!;
+      return {
+        tweet_id: mn.tweetId,
+        note_id: mn.noteId,
+        our_note_id: null,
+        pipeline_run_id: mn.pipelineRunId,
+        author_participant_id: mn.authorId || null,
+        note_text: mn.summary || null,
+        classification: mn.classification || null,
+        current_status: status.currentStatus || null,
+        current_core_status: status.currentCoreStatus || null,
+        current_decided_by: status.currentDecidedBy || null,
+        created_at_millis: mn.createdAtMillis ? parseInt(mn.createdAtMillis) : null,
+        last_updated_at: now,
+      };
+    });
+
+  await client.from("competing_notes").delete().is("our_note_id", null);
+  let missedInserted = 0;
+  for (let i = 0; i < missedRows.length; i += PAGE_SIZE) {
+    const batch = missedRows.slice(i, i + PAGE_SIZE);
+    const { error } = await client
+      .from("competing_notes")
+      .insert(batch);
+    if (error) {
+      console.error(`[updateFeedback] Error inserting missed opportunity competing notes: ${error.message}`);
+    } else {
+      missedInserted += batch.length;
+    }
+  }
+  console.log(`[updateFeedback] Missed opportunity competing notes: ${missedInserted} inserted (helpful only)`);
 
   // ===== 7. Create public_data_snapshots for historical tracking =====
   console.log("[updateFeedback] Creating public data snapshots...");
@@ -440,8 +559,9 @@ async function main() {
 
   // ===== 9. Clean up downloaded files =====
   try {
-    if (existsSync(notesResult.path)) unlinkSync(notesResult.path);
-    if (existsSync(statusResult.path)) unlinkSync(statusResult.path);
+    for (const p of [...notesResult.paths, ...statusResult.paths]) {
+      if (existsSync(p)) unlinkSync(p);
+    }
     console.log("[updateFeedback] Cleaned up data files");
   } catch {
     console.log("[updateFeedback] Note: could not clean up some data files");
@@ -456,8 +576,9 @@ async function main() {
   }
 
   console.log(`\n=== DONE ===`);
-  console.log(`Our notes: ${ourNotes.size} found, ${updated} updated, ${inserted} inserted`);
+  console.log(`Our notes: ${ourNotes.size} found, ${upserted} upserted, ${upsertErrors} errors`);
   console.log(`Competing notes: ${competingNotes.length} found, ${competingUpserted} upserted`);
+  console.log(`Missed opportunity competing notes: ${missedInserted} inserted`);
   console.log(`Snapshots: ${snapshotCount}`);
   console.log(`Notes table: ${notesTableUpdated} synced`);
 

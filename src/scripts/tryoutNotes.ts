@@ -53,7 +53,7 @@ const fetchPost: PostFetcher = async (input) => {
 };
 
 async function main() {
-  const { inputs, forcedBotId } = parseCliArgs("tryoutNotes", {
+  const { inputs, forcedBotId, datasetName } = parseCliArgs("tryoutNotes", {
     transformArg: tweetIdToUrl,
   });
 
@@ -63,6 +63,7 @@ async function main() {
     inputs,
     fetchPost,
     forcedBotId,
+    datasetName,
   });
 }
 

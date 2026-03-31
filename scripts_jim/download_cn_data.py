@@ -11,11 +11,10 @@ CN_DATA_BASE_URL = "https://ton.twimg.com/birdwatch-public-data"
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "cn_data")
 MAX_DAYS_BACK = 7
 
-FILE_TYPES = ["notes", "noteStatusHistory", "noteRatings"]
 PARTITIONS = {
-    "notes": ["notes-00000.tsv", "notes-00001.tsv"],
+    # "notes": ["notes-00000.tsv", "notes-00001.tsv"],
     "noteStatusHistory": ["noteStatusHistory-00000.tsv"],
-    "noteRatings": [f"ratings-{i:05d}.tsv" for i in range(8)],
+    # "noteRatings": [f"ratings-{i:05d}.tsv" for i in range(8)],
 }
 
 
@@ -41,7 +40,7 @@ def download_and_extract(file_type: str, partition: str, date_str: str) -> bool:
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    for file_type in FILE_TYPES:
+    for file_type in PARTITIONS:
         print(f"\nDownloading {file_type}...")
         downloaded = False
 

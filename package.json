@@ -12,7 +12,11 @@
     "open": "^10.2.0",
     "openai": "^5.10.1",
     "p-queue": "^8.1.0",
+    "papaparse": "^5.5.3",
     "playwright": "^1.54.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-json-view-lite": "^2.5.0",
     "zod": "^4.0.5"
   },
   "name": "community-notes-writer",
@@ -21,10 +25,15 @@
   "private": true,
   "devDependencies": {
     "@types/bun": "^1.2.23",
+    "@types/papaparse": "^5.5.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
     "husky": "^9.1.7",
-    "puppeteer-core": "^24.39.1",
     "knip": "^5.87.0",
-    "typescript": "5.9.3"
+    "puppeteer-core": "^24.39.1",
+    "typescript": "5.9.3",
+    "vite": "^8.0.3"
   },
   "scripts": {
     "typecheck": "bunx --bun typescript@5.9.3 --noEmit 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
@@ -35,6 +44,10 @@
     "test": "bun run src/scripts/run.ts",
     "build-elo": "cd src/elo-rating-web && bun build ./app.ts ./airtableClient.ts ./eloCalculator.ts ./types.ts ./cacheManager.ts --outdir ./dist --target browser",
     "serve-elo": "bun run src/elo-rating-web/server.ts",
-    "elo": "bun run build-elo && bun run serve-elo"
+    "elo": "bun run build-elo && bun run serve-elo",
+    "dev-review": "cd src/review-dashboard && bunx vite --port 8001",
+    "build-review": "cd src/review-dashboard && bunx vite build",
+    "serve-review": "bun run src/review-dashboard/server.ts",
+    "review": "bun run build-review && bun run serve-review"
   }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert the latest tryout-results CSV into pretty JSON files split by correctness."""
+"""Convert the latest dataset_runs CSV into pretty JSON files split by correctness."""
 
 import csv
 import json
@@ -8,14 +8,14 @@ from pathlib import Path
 
 CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION"
 DROP_COLUMNS = {"search_results", "citations"}
-RESULTS_DIR = Path(__file__).resolve().parents[2] / "tryout-results"
+RESULTS_DIR = Path(__file__).resolve().parents[2] / "dataset_runs"
 OUTPUT_DIR = Path(__file__).parent
 
 
 def find_latest_csv() -> Path:
     csvs = sorted(RESULTS_DIR.glob("videos-*.csv"))
     if not csvs:
-        sys.exit("No CSV files found in tryout-results/")
+        sys.exit("No CSV files found in dataset_runs/")
     return csvs[-1]
 
 
