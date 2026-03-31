@@ -9,7 +9,7 @@ import type {
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import {
   fetchProductionItems,
-  fetchProductionCounts,
+  countsFromItems,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
   fetchUploads,
@@ -62,10 +62,9 @@ export function App() {
           : await fetchDatasetRunItems(dataset.id!);
       setItems(loaded);
 
-      // Compute counts from loaded items
       const newCounts =
         dataset.type === "production"
-          ? await fetchProductionCounts()
+          ? countsFromItems(loaded)
           : await fetchDatasetRunCounts(dataset.id!);
       setCounts(newCounts);
     } catch (err: any) {

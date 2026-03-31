@@ -62,7 +62,7 @@ async function fetchInBatches<T>(
       console.error(`[data] fetchInBatches failed${label ? ` (${label})` : ""}:`, error);
       throw error;
     }
-    if (data) results.push(...data);
+    if (data) results.push(...(data as T[]));
   }
   if (label) console.log(`[data] ${label}: ${results.length} rows`);
   return results;
@@ -208,7 +208,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
 
 // ─── Production counts ───────────────────────────────────────────────────────
 
-export async function fetchProductionCounts(): Promise<Record<FailureType, number>> {
+export function countsFromItems(items: ReviewItem[]): Record<FailureType, number> {
   const counts: Record<FailureType, number> = {
     rated_helpful: 0,
     rated_unhelpful: 0,
@@ -219,38 +219,9 @@ export async function fetchProductionCounts(): Promise<Record<FailureType, numbe
     needs_more_ratings: 0,
     uncategorized: 0,
   };
-
-  const [helpfulRes, unhelpfulRes, nmrRes, missedRes] = await Promise.all([
-    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("cn_status", "CURRENTLY_RATED_HELPFUL"),
-    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("cn_status", "CURRENTLY_RATED_NOT_HELPFUL"),
-    supabase.from("canonical_note_information").select("note_id", { count: "exact", head: true }).eq("cn_status", "NEEDS_MORE_RATINGS"),
-    supabase.from("competing_notes").select("note_id", { count: "exact", head: true }).not("pipeline_run_id", "is", null).eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
-  ]);
-
-  counts.rated_helpful = helpfulRes.count ?? 0;
-  counts.rated_unhelpful = unhelpfulRes.count ?? 0;
-  counts.needs_more_ratings = nmrRes.count ?? 0;
-  counts.missed_opportunity = missedRes.count ?? 0;
-
-  // Lost to competitor count: notes where a competing note is helpful and ours is not
-  const { data: lostData } = await supabase
-    .from("competing_notes")
-    .select("our_note_id")
-    .eq("current_core_status", "CURRENTLY_RATED_HELPFUL")
-    .not("our_note_id", "is", null);
-
-  if (lostData) {
-    const lostNoteIds = [...new Set(lostData.map((d: any) => d.our_note_id))];
-    if (lostNoteIds.length > 0) {
-      const { count } = await supabase
-        .from("canonical_note_information")
-        .select("note_id", { count: "exact", head: true })
-        .in("note_id", lostNoteIds)
-        .neq("cn_status", "CURRENTLY_RATED_HELPFUL");
-      counts.lost_to_competitor = count ?? 0;
-    }
+  for (const item of items) {
+    if (item.failureType) counts[item.failureType]++;
   }
-
   return counts;
 }
 

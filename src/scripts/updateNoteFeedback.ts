@@ -347,10 +347,16 @@ async function main() {
   const enrichmentMap = new Map(notesEnrichment.map(n => [n.note_id, n]));
 
   const now = new Date().toISOString();
-  let updated = 0, inserted = 0, errors = 0, newlyHelpful = 0;
+  let newlyHelpful = 0;
 
+  const canonicalRows: Record<string, any>[] = [];
   for (const [noteId, noteData] of ourNotes) {
     const status = statusMap.get(noteId);
+
+    // Track newly helpful
+    const wasHelpful = existingStatusMap.get(noteId) === "CURRENTLY_RATED_HELPFUL";
+    const isNowHelpful = status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
+    if (isNowHelpful && !wasHelpful) newlyHelpful++;
 
     // Note: we don't write view_count here — public data dumps don't include it yet
     // (Nathan has requested it). Scraper/reconciliation owns view_count for now.
@@ -378,36 +384,28 @@ async function main() {
       bot_name: enrichmentMap.get(noteId)?.bot_name || null,
     };
 
-    // Track newly helpful
-    const wasHelpful = existingStatusMap.get(noteId) === "CURRENTLY_RATED_HELPFUL";
-    const isNowHelpful = status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
-    if (isNowHelpful && !wasHelpful) newlyHelpful++;
+    if (!existingIds.has(noteId)) {
+      row.first_seen_at = now;
+    }
 
-    if (existingIds.has(noteId)) {
-      const { error } = await client
-        .from("canonical_note_information")
-        .update(row)
-        .eq("note_id", noteId);
-      if (error) {
-        console.error(`[updateFeedback] Error updating ${noteId}: ${error.message}`);
-        errors++;
-      } else {
-        updated++;
-      }
+    canonicalRows.push(row);
+  }
+
+  let upserted = 0, upsertErrors = 0;
+  for (let i = 0; i < canonicalRows.length; i += PAGE_SIZE) {
+    const batch = canonicalRows.slice(i, i + PAGE_SIZE);
+    const { error } = await client
+      .from("canonical_note_information")
+      .upsert(batch, { onConflict: "note_id" });
+    if (error) {
+      console.error(`[updateFeedback] Error upserting canonical batch: ${error.message}`);
+      upsertErrors += batch.length;
     } else {
-      const { error } = await client
-        .from("canonical_note_information")
-        .insert({ ...row, first_seen_at: now });
-      if (error) {
-        console.error(`[updateFeedback] Error inserting ${noteId}: ${error.message}`);
-        errors++;
-      } else {
-        inserted++;
-      }
+      upserted += batch.length;
     }
   }
 
-  console.log(`[updateFeedback] Canonical: ${updated} updated, ${inserted} inserted, ${errors} errors`);
+  console.log(`[updateFeedback] Canonical: ${upserted} upserted, ${upsertErrors} errors`);
   if (newlyHelpful > 0) {
     console.log(`[updateFeedback] ${newlyHelpful} notes newly rated HELPFUL!`);
   }
@@ -578,7 +576,7 @@ async function main() {
   }
 
   console.log(`\n=== DONE ===`);
-  console.log(`Our notes: ${ourNotes.size} found, ${updated} updated, ${inserted} inserted`);
+  console.log(`Our notes: ${ourNotes.size} found, ${upserted} upserted, ${upsertErrors} errors`);
   console.log(`Competing notes: ${competingNotes.length} found, ${competingUpserted} upserted`);
   console.log(`Missed opportunity competing notes: ${missedInserted} inserted`);
   console.log(`Snapshots: ${snapshotCount}`);

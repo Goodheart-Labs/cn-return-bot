@@ -11,6 +11,8 @@ const supabaseKey = useLocal ? process.env.LOCAL_SUPABASE_SERVICE_KEY : process.
 
 const PORT = 8001;
 
+// WARNING: This injects the Supabase service role key (full DB access) into the page.
+// This server must only run on localhost. Never expose it to the network or deploy it.
 function injectCredentials(html: string): string {
   const script = `
     <script>
