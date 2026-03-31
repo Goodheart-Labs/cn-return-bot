@@ -23,7 +23,7 @@ export const opusMainV2Grok: Bot = {
   id: "opus-main-v2-grok",
   name: "Opus 4.5 (Main v2 + Grok)",
   description: "Opus Main v2 with Grok X search for tweet context",
-  weight: 6,
+  weight: 15,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
