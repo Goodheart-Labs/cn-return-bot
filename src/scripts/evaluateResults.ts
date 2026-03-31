@@ -64,7 +64,9 @@ export const CATEGORY_RESULT_LABEL: Record<Category, string> = {
 // ---------------------------------------------------------------------------
 
 export function noteWasProposed(row: CsvRow): boolean {
-  return row.note_status === CORRECTION_STATUS;
+  if (row.note_status !== CORRECTION_STATUS) return false;
+  const outcome = row.outcome ?? "";
+  return !outcome.includes("check_failed") && !outcome.includes("check_error");
 }
 
 export function isNoteworthy(row: CsvRow): boolean | null {
