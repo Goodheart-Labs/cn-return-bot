@@ -1,0 +1,77 @@
+[
+  {
+    "url": "https://x.com/i/status/2013036045726593211",
+    "text": "TP - I never knew u had to throw rice out after 24 hours\n\nI never knew u had to throw rice out after 24 hours https://t.co/87QHpJOgQW",
+    "needs_note": "yes",
+    "ground_truth_note": "The claim that cooked rice must be thrown out after 24 hours is inaccurate. According to the USDA and food safety experts, cooked rice is safe to eat for 3 to 4 days if it is refrigerated promptly and stored properly. http://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety",
+    "bot_id": "opus-main",
+    "note_status": "CORRECTION WITH TRUSTWORTHY CITATION",
+    "outcome": "candidate",
+    "note_text": "Cooked rice lasts 3-4 days refrigerated, not 24 hours. The 24-hour rule applies to room-temperature rice, which is unsafe after 2 hours due to bacterial growth. https://www.healthline.com/nutrition/does-rice-go-bad",
+    "logs": {
+      "tweet.index": 2,
+      "tweet.total": 3,
+      "tweet.id": "2013036045726593211",
+      "tweet.text": "TP - I never knew u had to throw rice out after 24 hours\n\nI never knew u had to throw rice out after 24 hours https://t.co/87QHpJOgQW",
+      "tweet.type": "original [VIDEO]",
+      "bot.id": "opus-main",
+      "tweet.createdAt": "2026-03-24T18:56:13.051Z",
+      "tweet.recencyHours": 2.7777777777777776e-7,
+      "search.results": "**No, you do not have to throw out rice after 24 hours.** Cooked rice safely lasts **3-6 days** in the refrigerator when stored properly in an airtight container and cooled quickly after cooking, according to food safety guidelines from multiple sources[1][2][3].\n\n**Supporting details from sources contradicting the 24-hour claim:**\n- Healthline states cooked rice keeps for **3-4 days** (some sources say up to a week) in the fridge or **8 months** frozen, with risks only from improper storage allowing bacterial growth like Bacillus cereus[2] (https://www.healthline.com/nutrition/does-rice-go-bad).\n- Chicoricerice.com specifies cooked brown rice lasts **4-6 days** refrigerated or **6 months** frozen, emphasizing quick cooling and airtight storage to prevent bacteria[1] (https://www.chicorice.com/blogs/all-about-rice/how-to-store-brown-rice).\n- Mill.com aligns with USDA recommendations of **3-4 days** in the fridge for cooked rice (or **8 months** frozen), noting refrigeration slows but doesn't stop bacterial growth—discard if it smells off, feels gooey, or shows mold[3] (https://www.mill.com/blog/does-rice-expire).\n\nNo credible sources support discarding rice after exactly 24 hours; the claim likely stems from confusion with room-temperature rice (unsafe after 2 hours due to bacterial risks) or overly cautious advice. Always reheat to 165°F/74°C.",
+      "search.citations": [
+        "https://www.chicorice.com/blogs/all-about-rice/how-to-store-brown-rice",
+        "https://www.healthline.com/nutrition/does-rice-go-bad",
+        "https://www.mill.com/blog/does-rice-expire"
+      ],
+      "search.model": "perplexity/sonar",
+      "scores.positiveEvidence": {
+        "score": 1,
+        "reasoning": "The note provides entirely positive counter-evidence by stating specific facts (3-4 days refrigerated, 2 hours at room temperature) and citing a named source (Healthline) to correct the misinformation."
+      },
+      "scores.disagreement": {
+        "score": 0.7,
+        "reasoning": "The Community Note clearly disagrees with the original post's implication that all rice must be thrown out after 24 hours, explaining that refrigerated rice lasts 3-4 days and the 24-hour rule only applies to room-temperature rice."
+      },
+      "scores.helpfulness": {
+        "score": 0.85,
+        "reasoning": "This note provides a clear, factual correction with credible sources that directly addresses the tweet's claim, uses neutral tone, and offers helpful context about both refrigerated and room-temperature rice safety."
+      },
+      "scores.sourceQuality": {
+        "score": 0.7,
+        "reasoning": "Healthline is a reputable health and nutrition website that regularly publishes medically-reviewed content about food safety, making it an appropriate and credible source for claims about rice storage and safety guidelines."
+      },
+      "scores.breakingNewsRisk": {
+        "score": 1,
+        "reasoning": "The Community Note corrects food safety information about rice storage, which involves settled scientific facts with no time-sensitive or breaking news elements."
+      },
+      "scores.pedantry": {
+        "score": 1,
+        "reasoning": "The Community Note directly corrects the core claim about rice safety timing, providing crucial food safety information that completely changes the practical takeaway from dangerous misinformation to accurate guidance."
+      },
+      "scores.noteNotNeeded": {
+        "score": 0.7,
+        "reasoning": "The tweet makes a clear factual claim about rice needing to be thrown out after 24 hours, which could mislead readers about food safety practices even though it's presented as a personal discovery."
+      },
+      "scores.tangentialCorrection": {
+        "score": 1,
+        "reasoning": "The Community Note directly addresses the core misleading claim about rice needing to be thrown out after 24 hours by clarifying that cooked rice lasts 3-4 days when refrigerated and explaining that the 24-hour rule only applies to room-temperature rice."
+      },
+      "scores.raterVerifiability": {
+        "score": 1,
+        "reasoning": "The Community Note provides a direct link to Healthline that immediately confirms the claim about rice storage times, making it trivially verifiable by clicking the source or doing a basic Google search for 'how long does cooked rice last'."
+      },
+      "scores.overconfidence": {
+        "score": 0.7,
+        "reasoning": "The note makes definitive statements about food safety timelines that are well-established by food safety authorities, appropriately matching strong confidence to well-supported evidence about bacterial growth and refrigeration guidelines."
+      },
+      "outcome": "candidate",
+      "outcomeReason": "",
+      "finalStage": "candidate",
+      "note.status": "CORRECTION WITH TRUSTWORTHY CITATION",
+      "note.text": "Cooked rice lasts 3-4 days refrigerated, not 24 hours. The 24-hour rule applies to room-temperature rice, which is unsafe after 2 hours due to bacterial growth. https://www.healthline.com/nutrition/does-rice-go-bad",
+      "note.url": "https://www.healthline.com/nutrition/does-rice-go-bad",
+      "note.charCount": 214,
+      "check.result": "YES"
+    }
+  }
+]

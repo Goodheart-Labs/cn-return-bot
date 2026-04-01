@@ -1,0 +1,22 @@
+url,text,needs_note,ground_truth_note,bot_id,outcome,note_text,source_verification,evaluation_score,search_results,citations
+https://x.com/i/status/2014876147952029785,"Santa Trump.. 🇺🇸🇺🇸🇺🇸 - Bring it on!
+
+Bring it on! https://t.co/XQMILealdd",,,opus-main,rejected (no_correction_needed),"This post does not contain a factual claim that can be verified or falsified. It appears to be an opinion/expression of support featuring ""Santa Trump"" imagery with patriotic emojis and the phrase ""Bring it on!"" This is political enthusiasm/commentary rather than a factual assertion requiring correction. ",NO,,"**No credible sources directly support or contradict specific claims in the post about ""Santa Trump.. 🇺🇸🇺🇸🇺🇸 - Bring it on!"" with the linked content (https://t.co/XQMILealdd), as the provided search result [1] (https://www.youtube.com/watch?v=XhTaEw8e0cw) does not reference ""Santa Trump,"" patriotic emojis, or the ""Bring it on!"" phrase.**
+
+The YouTube video discusses a hypothetical 2025 US-Iran military conflict under a second Trump term (post-2024 election), including:
+- Assassination of Iran's Supreme Leader Ayatollah Ali Khamenei and appointment of his son Mojtaba[1].
+- Trump's alleged shift from ""no new wars"" campaign promise to direct conflict, rising oil prices, and fracturing US public opinion[1].
+- Trump's stated objectives: destroying Iran's missile capabilities, targeting its navy, and disrupting Iran-backed groups[1].
+- References to Trump's 2024 ""trifecta win"" (control of White House, House, Senate)[1].
+
+These details mismatch the post's apparent enthusiastic, festive tone (""Santa Trump""), with no overlap in events, people, or rhetoric to verify or refute. The video appears speculative or satirical, set in an early 2025 context, but lacks direct relevance to the post's claims. No other sources provided address the post.",
+https://x.com/i/status/2013036045726593211,"TP - I never knew u had to throw rice out after 24 hours
+
+I never knew u had to throw rice out after 24 hours https://t.co/87QHpJOgQW",,,opus-direct-grok,candidate,"Properly stored cooked rice lasts 3–6 days in the refrigerator, not 24 hours. The key safety rule is to refrigerate it within 2 hours of cooking to prevent bacterial growth like Bacillus cereus. [URL] https://www.healthline.com/nutrition/does-rice-go-bad",YES,,"**The claim that cooked rice must be thrown out after 24 hours is incorrect.** Food safety guidelines and expert sources recommend refrigerating cooked rice within 2 hours of cooking and storing it in an airtight container in the fridge for **3–6 days**, depending on the type of rice and storage conditions[1][2][3][4].
+
+### Key Supporting Facts from Sources
+- Refrigerate cooked rice within **2 hours** to prevent bacterial growth like *Bacillus cereus*, but it remains safe for much longer than 24 hours when properly stored[1][4]. (https://www.riceland.com/the-riceland-blog/the-ultimate-guide-to-storing-and-reheating-rice-tips-tricks-from-riceland-foods)
+- Cooked rice (white or brown) lasts **4–6 days** in the fridge in an airtight container[1][2]. (https://www.riceland.com/the-riceland-blog/the-ultimate-guide-to-storing-and-reheating-rice-tips-tricks-from-riceland-foods, https://www.chicorice.com/blogs/all-about-rice/how-to-store-brown-rice)
+- General consensus: **3–5 days** at 40°F (4°C) or below[3], or **3–4 days** (up to a week per some sources) before quality or safety declines[4]. (https://reencle.co/blogs/news/blogs-news-blog-safe-rice-storage-and-spoilage-guide, https://www.healthline.com/nutrition/does-rice-go-bad)
+
+No sources support discarding after exactly 24 hours; the 24-hour idea likely confuses the ""danger zone"" rule (food out >2 hours) with total fridge shelf life. Freezing extends usability to 6–8 months[1][2][4]. Check for spoilage signs like off smells, mold, or sliminess before eating[4].",

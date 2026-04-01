@@ -1,0 +1,79 @@
+[
+  {
+    "url": "https://x.com/i/status/2014876147952029785",
+    "text": "Santa Trump.. 🇺🇸🇺🇸🇺🇸 - Bring it on!\n\nBring it on! https://t.co/XQMILealdd",
+    "needs_note": "yes",
+    "ground_truth_note": "The claim that House impeachment without Senate conviction nullifies a president's prior term, allowing two more terms, is false; the 22nd Amendment limits presidents to two elected terms regardless of impeachment. https://www.snopes.com/fact-check/failed-impeachment-nullify-term https://constitution.congress.gov/constitution/amendment-22/",
+    "bot_id": "opus-main",
+    "note_status": "TWEET NOT SIGNIFICANTLY INCORRECT",
+    "outcome": "rejected (no_correction_needed)",
+    "note_text": "This post does not contain a factual claim that can be verified or corrected. It appears to be an opinion/expression of support featuring \"Santa Trump\" imagery with patriotic emojis and the phrase \"Bring it on!\" This is political commentary/enthusiasm rather than a factual assertion requiring fact-checking. ",
+    "logs": {
+      "tweet.index": 1,
+      "tweet.total": 3,
+      "tweet.id": "2014876147952029785",
+      "tweet.text": "Santa Trump.. 🇺🇸🇺🇸🇺🇸 - Bring it on!\n\nBring it on! https://t.co/XQMILealdd",
+      "tweet.type": "original [VIDEO]",
+      "bot.id": "opus-main",
+      "tweet.createdAt": "2026-03-24T18:10:16.094Z",
+      "tweet.recencyHours": 2.7777777777777776e-7,
+      "search.results": "I don't have enough information to fact-check this query. The message \"Santa Trump.. 🇺🇸🇺🇸🇺🇸 - Bring it on!\" appears to be a social media post with an emoji and link, but it doesn't contain specific factual claims that can be verified or contradicted.\n\nTo provide a fact-check, I would need:\n- A clear claim or statement about a specific event, policy, or fact\n- Context about what \"Santa Trump\" refers to\n- Information about what the linked content contains\n\nIf you have a specific claim from this post or related content that you'd like me to verify, please share the exact statement you'd like fact-checked, and I can search for relevant sources to support or contradict it.",
+      "search.citations": [
+        "https://en.wikipedia.org/wiki/Donald_Trump_2024_presidential_campaign",
+        "https://en.wikipedia.org/wiki/2024_United_States_presidential_election",
+        "https://www.fec.gov/data/candidate/P80001571/",
+        "https://www.whitehouse.gov/administration/donald-j-trump/",
+        "https://www.opensecrets.org/2024-presidential-race/donald-trump/candidate?id=N00023864"
+      ],
+      "search.model": "perplexity/sonar",
+      "scores.positiveEvidence": {
+        "score": 0,
+        "reasoning": "The note relies entirely on negative framing by stating what the post 'does not contain' and what it is 'not' (factual claims requiring correction), without providing any positive counter-evidence or specific sources."
+      },
+      "scores.disagreement": {
+        "score": 0,
+        "reasoning": "The Community Note does not disagree with the original post but rather explains that it contains no factual claims to verify, making it purely descriptive context rather than a contradiction."
+      },
+      "scores.helpfulness": {
+        "score": 0.1,
+        "reasoning": "This note fails to meet Community Notes criteria because it doesn't correct any factual claim - instead it correctly identifies that the tweet contains no verifiable facts to correct, making the note unnecessary and off-topic for the platform's fact-checking purpose."
+      },
+      "scores.sourceQuality": {
+        "score": 0,
+        "reasoning": "No source URL was provided to evaluate against the Community Note's claim about the post being opinion/commentary rather than factual content."
+      },
+      "scores.breakingNewsRisk": {
+        "score": 1,
+        "reasoning": "The Community Note addresses the nature of a political opinion post rather than making any negative claims about breaking news or rapidly developing situations."
+      },
+      "scores.pedantry": {
+        "score": 0,
+        "reasoning": "The Community Note is addressing a tweet that contains no factual claims to correct, making this an extremely pedantic application of fact-checking to what is clearly just political opinion and imagery."
+      },
+      "scores.noteNotNeeded": {
+        "score": 0,
+        "reasoning": "The tweet contains only political imagery, patriotic emojis, and an enthusiastic phrase without making any verifiable factual claims that could mislead readers."
+      },
+      "scores.tangentialCorrection": {
+        "score": 1,
+        "reasoning": "The Community Note directly addresses the core issue by correctly identifying that the tweet contains no factual claims to verify or correct, making it inappropriate for fact-checking since it's purely political commentary and expression of support."
+      },
+      "scores.raterVerifiability": {
+        "score": 1,
+        "reasoning": "The Community Note's claim that the tweet contains no factual assertions but rather opinion/political commentary can be instantly verified by anyone simply reading the original tweet, which clearly shows only 'Santa Trump' imagery, patriotic emojis, and the phrase 'Bring it on!' without any factual claims."
+      },
+      "scores.overconfidence": {
+        "score": 0.7,
+        "reasoning": "The note appropriately identifies that the post contains opinion/commentary rather than factual claims, and uses measured language like 'appears to be' and 'does not contain' rather than making overly definitive statements."
+      },
+      "outcome": "rejected",
+      "outcomeReason": "no_correction_needed",
+      "finalStage": "note_writing",
+      "note.status": "TWEET NOT SIGNIFICANTLY INCORRECT",
+      "note.text": "This post does not contain a factual claim that can be verified or corrected. It appears to be an opinion/expression of support featuring \"Santa Trump\" imagery with patriotic emojis and the phrase \"Bring it on!\" This is political commentary/enthusiasm rather than a factual assertion requiring fact-checking. ",
+      "note.url": "",
+      "note.charCount": 309,
+      "check.result": "NO"
+    }
+  }
+]
