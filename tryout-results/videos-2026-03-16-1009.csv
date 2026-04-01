@@ -1,0 +1,29 @@
+url,text,needs_note,ground_truth_note,bot_id,outcome,note_text,source_verification,evaluation_score,search_results,citations
+https://www.youtube.com/shorts/89j4teNqqT0,"Welchen Reis essen?  #gesundheit #ernährung #gesundeernährung (kein medizinischer Rat)
+
+Welchen Reis essen? 
+ #gesundheit #ernährung #gesundeernährung (kein medizinischer Rat)
+
+
+Gesundheitswerbung:
+
+Wir kaufen unsere Nahrungsergänzungsmittel bei Nature-Heart
+- Rein natürliche hochwertige Vitalstoffe und Vitamine
+- ausschließlich produziert in Deutschland
+- mit den höchsten Qualitätsstandards (HACCP zertifiziert)
+
+Mit dem Rabatt-Code „rabatt“ sparst Du 10% bei Deinem Einkauf bei Nature-Heart (Link in der Bio) und unterstützt gleichzeitig meine Arbeit.",,,opus-main-v2,rejected (no_correction_needed),"The post asks ""Welchen Reis essen?"" (Which rice to eat?) and includes a promotional code for supplements. It does not make specific factual claims about rice that can be verified as true or false. The research context provides general nutritional information about rice varieties but doesn't contradict any specific assertion made in the post, as the post itself doesn't make concrete factual claims - it appears to be a question/discussion prompt with an advertisement. ",NO,,"**Gesunde Reisalternativen zu weißem Reis sind Vollkorn-, Natur- oder brauner Reis, schwarzer Reis, roter Reis, Wildreis und Vollkorn-Basmati-Reis, da sie mehr Vitamine, Mineralstoffe, Ballaststoffe und Antioxidantien enthalten.**[1][2][3][4]
+
+Diese Sorten behalten die nährstoffreiche Schale (Silberhaut), im Gegensatz zu weißem Reis, der poliert wird und dadurch Nährstoffe wie Eisen, Magnesium, Kalium, B-Vitamine und Ballaststoffe verliert – weißer Reis hat z. B. nur 1 g Ballaststoffe pro 100 g gegenüber 2 g bei braunem Reis.[2][4][6] Schwarzer Reis gilt als nährstoffreichste Sorte mit hohem Eisen- und Anthocyan-Gehalt für Kreislauf und Antioxidantien.[1][3] Roter und Vollkorn-Basmati-Reis bieten zusätzlich gute Fette, Aminosäuren und ein entwässerndes Kalium.[1][2][3]
+
+**Vorsicht bei Arsen:** Ungeschälte Sorten wie Naturreis oder Vollkornreis haben höhere Arsenwerte; Reis gründlich waschen und variieren, weißer Reis ist hier belastungsärmer.[3][5][6] Bio-Reis kann ebenfalls belastet sein, nur wenige Marken schneiden top ab.[8] GABA-Reis (gekeimter Naturreis) ist eine nährstoffreiche Spezialvariante mit extra Vitalstoffen.[7]
+
+| Reissorte | Vorteile | Quelle |
+|-----------|----------|--------|
+| **Schwarzer Reis** | Höchste Mineralstoffe (Eisen), Antioxidantien | [1][3] |
+| **Brauner/Naturreis** | Mehr B-Vitamine, Ballaststoffe, sättigt länger | [2][4][7] |
+| **Roter Reis** | Vitamine, Mineralstoffe, gute Fette | [1][2] |
+| **Vollkorn-Basmati** | Ballaststoffe, Aminosäuren, Kalium | [1][3] |
+| **Wildreis** | Viele Nährstoffe als Alternative | [1][2] |
+
+Diese Empfehlungen basieren auf Ernährungsfakten; individuelle Bedürfnisse variieren – kein medizinischer Rat.",

@@ -9,7 +9,6 @@
     "axios": "^1.10.0",
     "dotenv": "^17.2.1",
     "oauth-1.0a": "^2.2.6",
-    "open": "^10.2.0",
     "openai": "^5.10.1",
     "p-queue": "^8.1.0",
     "papaparse": "^5.5.3",
@@ -20,7 +19,6 @@
     "zod": "^4.0.5"
   },
   "name": "community-notes-writer",
-  "module": "index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
@@ -37,11 +35,9 @@
   },
   "scripts": {
     "typecheck": "bunx --bun typescript@5.9.3 --noEmit 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
-    "check": "bun run typecheck && knip",
+    "check": "bun run typecheck && bunx knip",
     "prepare": "husky",
-    "routine": "bun run src/scripts/createNotesRoutine.ts",
-    "update-feedback": "bun run src/scripts/updateNoteFeedback.ts",
-    "test": "bun run src/scripts/run.ts",
+    "update-feedback": "bun run src/production/updateNoteFeedback.ts",
     "build-elo": "cd src/elo-rating-web && bun build ./app.ts ./airtableClient.ts ./eloCalculator.ts ./types.ts ./cacheManager.ts --outdir ./dist --target browser",
     "serve-elo": "bun run src/elo-rating-web/server.ts",
     "elo": "bun run build-elo && bun run serve-elo",

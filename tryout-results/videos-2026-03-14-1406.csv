@@ -1,0 +1,10 @@
+url,text,needs_note,ground_truth_note,bot_id,outcome,note_text,source_verification,evaluation_score,search_results,citations
+https://x.com/i/status/2013036045726593211,"TP - I never knew u had to throw rice out after 24 hours
+
+I never knew u had to throw rice out after 24 hours https://t.co/87QHpJOgQW",,,opus-main-v2,candidate,"Cooked rice stored properly in the refrigerator lasts 3-6 days, not 24 hours. The 2-hour rule applies to rice left at room temperature, not refrigerated rice. https://www.healthline.com/nutrition/does-rice-go-bad",YES,,"**The claim that cooked rice must be thrown out after 24 hours is incorrect.** Reliable food safety sources state that cooked rice, when stored properly in an airtight container in the refrigerator (at 40°F/4°C or below), remains safe and good for **3–6 days**, not just 24 hours.[1][2][3]
+
+- Riceland Foods specifies up to **4–6 days** in the fridge and warns against leaving it at room temperature for more than **2 hours** to prevent bacteria like Bacillus cereus.[1] (https://www.riceland.com/the-riceland-blog/the-ultimate-guide-to-storing-and-reheating-rice-tips-tricks-from-riceland-foods)
+- Reencle states **3–5 days** under proper refrigeration.[2] (https://reencle.co/blogs/news/blogs-news-blog-safe-rice-storage-and-spoilage-guide)
+- Healthline confirms **3–4 days** (up to a week per some sources) in the fridge, with freezing extending it to 8 months; it emphasizes refrigeration immediately after cooking.[3] (https://www.healthline.com/nutrition/does-rice-go-bad)
+
+The 24-hour limit likely confuses room-temperature safety rules (discard after 2 hours) with refrigerated storage; no source supports throwing out properly refrigerated rice after 24 hours. Always check for off smells, mold, or sliminess before consuming.",

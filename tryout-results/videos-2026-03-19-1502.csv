@@ -1,0 +1,18 @@
+url,text,needs_note,ground_truth_note,bot_id,outcome,note_text,source_verification,evaluation_score,search_results,citations
+https://x.com/TukiFromKL/status/2030609981205004291,"Tuki - 🚨Nobody wants to hear this but it needs to be said.  &gt; Scientists ...
+
+🚨Nobody wants to hear this but it needs to be said.  &gt; Scientists just copied a fruit fly's brain into a computer. Neuron by neuron. No training data. No machine learning.  &gt; It woke up and started walking. No one taught it to walk. No one trained it. No gradient descent. It https://t.co/3M5Rv1ISjO",,,opus-main-v2,rejected (no_correction_needed),"The post's core claims are largely accurate. Scientists did recreate a fruit fly's brain neuron-by-neuron using connectome data rather than traditional machine learning training, and the simulated brain did exhibit walking behavior without being explicitly programmed to walk. While there are nuances (an AI tool was used to reconnect synapses, and ""woke up"" is anthropomorphizing), the fundamental claims about the methodology and outcome are correct. The distinction between connectome-based simulation versus reinforcement learning training is scientifically meaningful and accurately represented. ",NO,,"This post's core claims are largely accurate but require important clarification about what ""no training data"" and ""no machine learning"" actually mean in this context.
+
+**What is accurate:**
+
+Scientists at Eon Systems did recreate a fruit fly's brain in computer simulation using a complete connectome (neuron-by-neuron mapping) rather than training an AI system through reinforcement learning[2][4]. The simulated brain was connected to a virtual body with physics-based modeling, and the resulting system exhibited behaviors like walking and grooming without those specific behaviors being directly programmed[1][2].
+
+**What needs clarification:**
+
+The claim about ""no machine learning"" is misleading. While the simulation didn't use reinforcement learning (the training approach DeepMind used for similar work), the researchers did use ""an AI tool to reconnect its 50 million synapses"" after the brain scan[4]. Additionally, the simulation relied on a pre-existing computational framework called NeuroMechFly v2 and required researchers to make assumptions about which neurons are excitatory versus inhibitory[2][3]. These elements involved machine learning or AI-assisted processes.
+
+The simulation represents a ""closed-loop"" system where sensory inputs flow into the digital brain and control signals flow out to move the virtual body[2], but this is fundamentally different from the brain ""waking up"" or becoming conscious. It's a functional circuit simulation, not an awakening.
+
+**The genuine significance:**
+
+What makes this work genuinely novel is that it demonstrates behavior emerging from biological architecture rather than being trained into an AI model—a distinction that is scientifically meaningful and different from previous approaches[2].",https://www.youtube.com/watch?v=cvL5NlpYauk; https://www.biotecnika.org/2026/03/fly-brain-simulation-digital-life-breakthrough/; https://news.berkeley.edu/2024/10/02/researchers-simulate-an-entire-fly-brain-on-a-laptop-is-a-human-brain-next/; https://www.theregister.com/2026/03/16/digital_fruit_fly_brain_model/; https://futurism.com/health-medicine/simulate-human-brain-supercomputer; https://cybernews.com/ai-news/digital-fruit-fly-brain-simulation/; https://www.mindstudio.ai/blog/what-is-brain-emulation-fruit-fly-eon-systems/

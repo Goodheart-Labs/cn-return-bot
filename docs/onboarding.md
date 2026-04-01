@@ -10,9 +10,9 @@ The bot runs on GitHub Actions every 15 minutes. It finds tweets that need fact-
 
 ## How the pipeline works
 
-The bot runs a **two-phase pipeline**:
+The bot runs a **two-phase pipeline** orchestrated by `src/production/runPipeline.ts`:
 
-### Phase 1: Generate Candidates (`src/scripts/generateCandidates.ts`)
+### Phase 1: Generate Candidates
 1. Fetch eligible tweets from X's Community Notes "needs notes" feed
 2. Skip tweets we've already processed
 3. For each tweet, randomly select a **bot** (weighted by config)
@@ -20,14 +20,11 @@ The bot runs a **two-phase pipeline**:
 5. Run X's evaluation API to score the draft note
 6. Store passing notes as "candidates" in the `pipeline_runs` table
 
-### Phase 2: Submit Candidates (`src/scripts/submitCandidates.ts`)
+### Phase 2: Submit Candidates
 1. Fetch all stored candidates from the DB
 2. Rank by eval score + freshness (newer tweets preferred)
 3. Submit top candidates via X's note-writing API until the daily limit
 4. Log submissions to the `notes` table
-5. Run prediction scores (non-blocking) to forecast note outcomes
-
-Entry point: `src/scripts/runPipeline.ts` orchestrates both phases.
 
 ### What a "bot" is
 
@@ -37,48 +34,47 @@ A bot is a configuration that wires together pipeline stages with specific model
 
 Active bots are registered in `src/bots/index.ts`. Bots with `weight: 0` are legacy/disabled. To add a new bot, create a file in `src/bots/`, wire up pipeline stages, and register it in the index.
 
-Example: `src/bots/opus-main.ts` uses Perplexity Sonar for search, Opus 4.5 for writing, Sonnet 4 for source verification.
-
 ## Project structure
 
 ```
 src/
-├── api/             # External API clients
+├── api/               # External API clients
 │   ├── fetchEligiblePosts.ts   # Gets tweets needing notes from X
 │   ├── submitNote.ts           # Submits notes via X CN API
 │   ├── supabaseClient.ts       # DB client + SupabaseLogger helper
 │   └── getOAuthToken.ts        # X OAuth
-├── bots/            # Bot configurations (each is a pipeline wiring)
+├── bots/              # Bot configurations (each is a pipeline wiring)
 │   ├── types.ts                # Bot/PipelineResult/PostContent interfaces
 │   ├── index.ts                # Bot registry + selection
-│   ├── opus-main.ts            # Primary bot
-│   ├── opus-multi-source.ts    # Multi-source search variant
-│   └── ...                     # More bot variants
-├── pipeline/        # Core pipeline stages
-│   ├── searchContextGoal.ts    # Perplexity/Sonar search
-│   ├── multiSourceSearch.ts    # Multi-engine search (Google, Exa, etc.)
-│   ├── writeNote.ts            # Note writing prompt
-│   ├── sourceVerification.ts   # Source URL verification
-│   ├── candidateRanker.ts      # Ranks candidates by eval + freshness
-│   ├── scoringFilters.ts       # Quality filters (positive claims, etc.)
-│   ├── predictionScores.ts     # Post-submission outcome predictions
-│   ├── mediaAnalysis.ts        # Video/image analysis
-│   └── llm.ts                  # OpenRouter LLM client
-├── filters/
-│   └── noteEvaluationFilter.ts # X's evaluation API gate
-├── scripts/         # Runnable scripts
-│   ├── runPipeline.ts          # Main entry point (GH Actions runs this)
-│   ├── generateCandidates.ts   # Phase 1
-│   ├── submitCandidates.ts     # Phase 2
-│   ├── updateNoteFeedback.ts   # Daily public data dump import
-│   ├── scrapeNotewriterClickThrough.ts  # Scraper for tracking our notes
-│   ├── analyzePerformance.ts   # Performance analysis
-│   └── ...                     # Many analysis/debug scripts
-├── utils/
-│   └── retweetUtils.ts         # Quote tweet handling
-migrations/          # Supabase SQL migrations (applied manually)
-docs/                # You are here
-.github/workflows/   # GH Actions cron configs
+│   └── opus-main.ts            # Primary bot (+ more variants)
+├── pipeline/          # Core pipeline stages (organized into subfolders)
+│   ├── search/                 # Context search (Perplexity, Grok)
+│   ├── write/                  # Note generation variants
+│   ├── verify/                 # Source URL verification
+│   ├── score/                  # Note scoring + evaluation filter
+│   ├── llm/                    # OpenRouter LLM client + xAI + schemas
+│   ├── media/                  # Video/image analysis
+│   ├── orchestration/          # processTweet, generateCandidates, submitCandidates
+│   └── utils/                  # tweetLog, browserManager, parseStatusNoteUrl
+├── production/        # GitHub Actions entry points
+│   ├── runPipeline.ts          # Main entry (runs both phases)
+│   └── updateNoteFeedback.ts   # Daily public data dump import
+├── local/             # Local testing tools
+│   ├── tryoutNotes.ts          # Test pipeline on tweets without submitting
+│   ├── runOnVideos.ts          # Test on videos from any platform
+│   ├── localPipelineRunner.ts  # Shared orchestration for above
+│   └── evaluateResults.ts      # AI judge for evaluation
+├── scraper/           # Notewriter page scraper
+│   ├── scrapeNotewriterClickThrough.ts  # Main scraper
+│   └── reconcileSnapshots.ts            # Data quality reconciliation
+├── review-dashboard/  # React dashboard for reviewing note failures
+├── utils/             # Shared utilities (csv, retweetUtils)
+├── reports/           # Report generation
+├── scripts_jim/       # Jim's investigation journal (Python, by date)
+└── scripts_nathan/    # Nathan's investigation scripts (by date)
+migrations/            # Supabase SQL migrations (applied manually)
+docs/                  # You are here
+.github/workflows/     # GH Actions cron configs
 ```
 
 ## Database (Supabase)
@@ -109,9 +105,9 @@ The bot has **three ways** of learning how its notes are doing:
 
 1. **The pipeline itself** writes to `pipeline_runs`, `pipeline_scores`, `notes`, `run_snapshots` every 15 minutes.
 
-2. **X's public data dumps** (`src/scripts/updateNoteFeedback.ts`) — X publishes TSV files daily at `https://ton.twimg.com/birdwatch-public-data/YYYY/MM/DD/`. This script runs daily via GH Actions (`update-note-feedback.yml` at 6 AM UTC). It downloads `notes-00000.tsv` and `noteStatusHistory-00000.tsv`, finds our notes by author participant ID, extracts statuses, and upserts into `canonical_note_information`, `competing_notes`, and `public_data_snapshots`. This is the most reliable source for note status (Helpful/Not Helpful/Needs More Ratings).
+2. **X's public data dumps** (`src/production/updateNoteFeedback.ts`) — X publishes TSV files daily at `https://ton.twimg.com/birdwatch-public-data/YYYY/MM/DD/`. This script runs daily via GH Actions (`update-note-feedback.yml` at 6 AM UTC). It downloads `notes-00000.tsv` and `noteStatusHistory-00000.tsv`, finds our notes by author participant ID, extracts statuses, and upserts into `canonical_note_information`, `competing_notes`, and `public_data_snapshots`. This is the most reliable source for note status (Helpful/Not Helpful/Needs More Ratings).
 
-3. **The notewriter page scraper** (`src/scripts/scrapeNotewriterClickThrough.ts`) — Connects to local Chrome, scrolls through the notewriter page, clicks each note to extract note ID, status, and view count. Writes to `scraped_notewriter_snapshots`. This is the **only source for view counts** (public data dumps don't include them). See `docs/snapshot-reconciliation.md` for how raw snapshots are reconciled into canonical data.
+3. **The notewriter page scraper** (`src/scraper/scrapeNotewriterClickThrough.ts`) — Connects to local Chrome, scrolls through the notewriter page, clicks each note to extract note ID, status, and view count. Writes to `scraped_notewriter_snapshots`. This is the **only source for view counts** (public data dumps don't include them). See `docs/snapshot-reconciliation.md` for how raw snapshots are reconciled into canonical data.
 
 ### Note statuses (from X)
 - `CURRENTLY_RATED_HELPFUL` (CRH) — Displayed on the tweet. This is the goal.
@@ -153,40 +149,27 @@ cp .env.example .env
 ### Run locally
 ```bash
 # Run the full pipeline (same as what GH Actions does)
-bun run src/scripts/runPipeline.ts
+bun run src/production/runPipeline.ts
 
-# Or run phases separately
-bun run src/scripts/generateCandidates.ts
-bun run src/scripts/submitCandidates.ts
-```
+# Run in local mode
+bun run src/production/runPipeline.ts --local
 
-### Common tasks
-```bash
-# Check how notes are performing
-bun run src/scripts/analyzePerformance.ts
+# Test pipeline on tweets without submitting
+bun run src/local/tryoutNotes.ts <tweet-id> [<tweet-id> ...]
+bun run src/local/tryoutNotes.ts --skip-existing <tweet-id>
 
-# Debug a specific note (DB lookup)
-bun run src/scripts/debugNote.ts <note-id>
+# Test pipeline on videos from any platform (uses yt-dlp)
+bun run src/local/runOnVideos.ts input.csv
+bun run src/local/runOnVideos.ts --bot opus-main https://x.com/... https://youtube.com/...
 
-# Run pipeline on videos from any platform (uses yt-dlp)
-bun run src/scripts/runOnVideos.ts input.csv
-bun run src/scripts/runOnVideos.ts --bot opus-main https://x.com/... https://youtube.com/...
-
-# Tryout pipeline on specific tweets (no submission)
-bun run src/scripts/tryoutNotes.ts <tweet-id> [<tweet-id> ...]
-bun run src/scripts/tryoutNotes.ts --skip-existing <tweet-id>
-
-# Check posting stats (daily limit, etc.)
-bun run src/scripts/checkPostingStats.ts
-
-# Manually trigger daily feedback update
-bun run src/scripts/updateNoteFeedback.ts
+# Review dashboard (categorize note failures)
+bun run build-review && bun run serve-review
 ```
 
 ## Gotchas
 
 - **Bun, not npm** — everywhere, including CI
-- **OpenRouter model IDs** use slashes and dots: `anthropic/claude-opus-4.5`, not `claude-opus-4-5-20251101`
+- **OpenRouter model IDs** use slashes and dots: `anthropic/claude-opus-4.6`, not `claude-opus-4-6-20251101`
 - **Supabase 1000-row limit** — JS client silently truncates at 1000 rows. Use `SupabaseLogger.fetchAllRows()` to paginate
 - **Supabase `.neq()` excludes NULL** — `.neq("col", "val")` drops rows where col IS NULL. Use `.or("col.neq.val,col.is.null")` instead
 - **Env var naming** — `.env` uses `SUPABASE_SERVICE_KEY` (not the Supabase default `SUPABASE_SERVICE_ROLE_KEY`)

@@ -1,0 +1,26 @@
+url,text,needs_note,ground_truth_note,bot_id,outcome,note_text,source_verification,evaluation_score,search_results,citations
+https://www.youtube.com/shorts/89j4teNqqT0,"Welchen Reis essen?  #gesundheit #ernährung #gesundeernährung (kein medizinischer Rat)
+
+Welchen Reis essen? 
+ #gesundheit #ernährung #gesundeernährung (kein medizinischer Rat)
+
+
+Gesundheitswerbung:
+
+Wir kaufen unsere Nahrungsergänzungsmittel bei Nature-Heart
+- Rein natürliche hochwertige Vitalstoffe und Vitamine
+- ausschließlich produziert in Deutschland
+- mit den höchsten Qualitätsstandards (HACCP zertifiziert)
+
+Mit dem Rabatt-Code „rabatt“ sparst Du 10% bei Deinem Einkauf bei Nature-Heart (Link in der Bio) und unterstützt gleichzeitig meine Arbeit.",,,opus-main-v2,rejected (check_failed),"Brauner Reis enthält mehr Nährstoffe, Ballaststoffe und hat einen niedrigeren glykämischen Index als weißer Reis. Die Arsenbelastung ist real, aber bei moderatem Konsum unbedenklich. Ernährungswissenschaftlich gilt Vollkornreis als gesünder. https://www.verbraucherzentrale.de/wissen/lebensmittel/gesund-ernaehren/reis-so-vielfaeltig-so-gesund-61766",NO,,"**Brauner Reis ist ernährungsphysiologisch meist gesünder als weißer Reis, da er mehr Vitamine, Mineralstoffe, Ballaststoffe und Antioxidantien enthält, was zu besserer Sättigung, stabilerem Blutzuckerspiegel und geringerem Diabetesrisiko führt.**[1][2][3][4] Weißer Reis ist schneller verdaulich und eignet sich für schnelle Energie (z. B. bei Sportlern), hat aber weniger Nährstoffe, da beim Polieren die nährstoffreiche Silberhaut entfernt wird.[1][3][5][6]
+
+### Faktencheck der Video-Claims:
+Das Video behauptet: **""Weißer Reis ist deutlich gesünder als brauner Reis, weil brauner Reis mehr Giftstoffe, Arsen und Schwermetalle enthält und schlechter verdaulich ist.""**
+
+- **Falsch:** Brauner Reis hat generell **mehr Nährstoffe** (z. B. doppelt so viel Magnesium, mehr Kalium, B-Vitamine, Selen, Phosphor, Mangan), Ballaststoffe und einen niedrigeren glykämischen Index für stabileren Blutzucker.[1][2][3][4][5] Er sättigt länger und vorbeugt Heißhunger.[1][3]
+- **Teilweise richtig, aber übertrieben:** Brauner Reis kann mehr **Arsen** und **Phytinsäure** (erschwert Eisen-/Zinkaufnahme) enthalten, da diese in der Schale lagern – doch in moderaten Mengen (z. B. 2–3 Portionen/Woche) ist das unbedenklich, wenn man einweicht oder variiert.[2][3] Weißer Reis hat weniger Arsen, ist aber nährstoffärmer.[2]
+- **Falsch zur Verdaulichkeit:** Weißer Reis ist bekömmlicher (schnelle Kohlenhydrate), brauner Reis ballaststoffreicher und darmfreundlicher langfristig.[1][2][3][6]
+
+**Kartoffeln vs. Reis:** Kartoffeln haben niedrigeren glykämischen Index, mehr resistente Stärke und sind oft regional – eine gute Alternative, aber nicht ""deutlich weniger Kalorien"" (gekochter Reis: ~130 kcal/100 g, Kartoffeln ähnlich je nach Sorte).[3] Regionalität ist kein ""originales Bio-Siegel"".[1]
+
+**Empfehlung:** Wähle **Vollkornreis (braun)** in Maßen, weiche ihn ein, um Arsen zu reduzieren, und variiere mit regionalen Alternativen wie Kartoffeln. Kein medizinischer Rat – passe an persönliche Bedürfnisse an.[2]",
