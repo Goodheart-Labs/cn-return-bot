@@ -43,13 +43,13 @@ export interface GeminiMediaResult {
 // --- Prompts ---
 
 const IMAGE_PROMPT = `Analyze this image and return JSON:
-{"description": "A description of what the image shows", "ocr_text": "All visible text in the image, quoted exactly. Empty string if no text."}`;
+{"description": "A factual description of what the image shows", "ocr_text": "All visible text in the image, quoted exactly. Empty string if no text."}`;
 
 const VIDEO_PROMPT = `Analyze this video and return JSON:
-{"description": "A description of what happens in the video", "ocr_text": "All visible text in the video, quoted exactly. Empty string if no text."}`;
+{"description": "A factual description of what happens in the video", "ocr_text": "All visible text in the video, quoted exactly. Empty string if no text."}`;
 
 const FRAME_PROMPT = `These are frames extracted from a video. Return JSON:
-{"description": "A description of what happens in the video", "ocr_text": "All visible text across the frames, quoted exactly. Empty string if no text."}`;
+{"description": "A factual description of what happens in the video", "ocr_text": "All visible text across the frames, quoted exactly. Empty string if no text."}`;
 
 // --- Helpers ---
 
@@ -281,12 +281,19 @@ async function analyzeVideo(
 
     // Audio transcription
     let transcription: string | undefined;
-    if (await checkFfmpeg()) {
+    if (!(await checkFfmpeg())) {
+      transcription = "(ffmpeg unavailable)";
+    } else {
       try {
         const text = await extractAudio(videoPath, tmpDir);
-        if (text) transcription = text;
+        if (text) {
+          transcription = text;
+        } else {
+          transcription = "(no audio track)";
+        }
       } catch (err: any) {
         console.error("[mediaAnalysisGemini] Audio extraction failed:", err.message);
+        transcription = `(transcription failed: ${err.message?.slice(0, 100)})`;
       }
     }
 

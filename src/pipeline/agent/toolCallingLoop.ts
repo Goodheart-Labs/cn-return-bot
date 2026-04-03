@@ -2,7 +2,8 @@
  * Tool-Calling Loop
  *
  * Runs Claude 4.6 Opus with tool access in a loop until a terminal tool
- * (submit_note or no_correction_needed) is called, or iterations exhaust.
+ * (propose_notes or no_correction_needed) is called, or iterations exhaust.
+ * When propose_notes is called, evaluates each candidate and picks the best.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -11,6 +12,7 @@ import type { GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "./agentAuthorHistory";
 import type { AgentConfig } from "./agentConfig";
 import { llm } from "../llm/llm";
+import { evaluateNote } from "../score/noteEvaluationFilter";
 import { getTweetLog } from "../utils/tweetLog";
 import { buildToolList, executeToolCall } from "./agentTools";
 import { SYSTEM_PROMPT, buildUserMessage } from "./agentPrompt";
@@ -18,11 +20,15 @@ import { SYSTEM_PROMPT, buildUserMessage } from "./agentPrompt";
 const MAX_ITERATIONS = 50;
 const MODEL = "anthropic/claude-opus-4.6";
 
+interface ProposedNote {
+  noteText: string;
+  sources: string[];
+  allUrls: string;
+}
+
 interface TerminalResult {
   type: "submit" | "no_correction";
-  noteText?: string;
-  sources?: Array<{ url: string; supporting_snippet: string }>;
-  primaryUrl?: string;
+  proposedNotes?: ProposedNote[];
   reason?: string;
 }
 
@@ -69,8 +75,8 @@ export async function runToolCallingLoop(
 
   // Log initial state
   log?.set("agent.config", config);
-  log?.set("agent.systemPrompt", SYSTEM_PROMPT);
-  log?.set("agent.userMessage", userMessage);
+  log?.set("agent.messages.0.systemPrompt", SYSTEM_PROMPT);
+  log?.set("agent.messages.0.userMessage", userMessage);
   log?.set("agent.author", {
     name: post.author_name,
     description: post.author_description,
@@ -101,7 +107,13 @@ export async function runToolCallingLoop(
     }
 
     // Log LLM response
-    log?.set(`agent.messages.${iteration}.llm_response`, message.content ?? "");
+    log?.set(`agent.messages.${iteration}.content`, message.content ?? "");
+
+    // Log reasoning/thinking if present (OpenRouter extended thinking)
+    const reasoning = (message as any).reasoning;
+    if (reasoning) {
+      log?.set(`agent.messages.${iteration}.reasoning`, reasoning);
+    }
 
     // No tool calls — model is done without using a terminal tool
     if (!message.tool_calls?.length) {
@@ -129,10 +141,14 @@ export async function runToolCallingLoop(
           args = { raw: toolCall.function.arguments };
         }
       } else {
-        // Custom tool (web_search, web_fetch, code_execution) — handled by OpenRouter
-        // Just skip local execution; OpenRouter returns results in the next response
-        name = (toolCall as any).custom?.name ?? "unknown_custom";
-        continue;
+        // Built-in tool reported as custom type — parse and execute normally
+        const custom = (toolCall as any).custom;
+        name = custom?.name ?? (toolCall as any).type ?? "unknown_builtin";
+        try {
+          args = custom?.input ? JSON.parse(custom.input) : {};
+        } catch {
+          args = { raw: custom?.input };
+        }
       }
 
       const toolStartMs = Date.now();
@@ -160,13 +176,14 @@ export async function runToolCallingLoop(
       }
 
       // Check for terminal tools
-      if (name === "submit_note" && result.output?.success) {
-        terminalResult = {
-          type: "submit",
-          noteText: args.note_text,
-          sources: args.sources,
-          primaryUrl: args.sources?.[0]?.url ?? "",
-        };
+      if (name === "propose_notes" && result.output?.success) {
+        const proposedNotes: ProposedNote[] = (args.notes ?? []).map(
+          (n: { note_text: string; sources: string[] }) => {
+            const sources = (n.sources ?? []).filter(Boolean);
+            return { noteText: n.note_text, sources, allUrls: sources.join(" ") };
+          },
+        );
+        terminalResult = { type: "submit", proposedNotes };
         break;
       }
       if (name === "no_correction_needed") {
@@ -186,7 +203,38 @@ export async function runToolCallingLoop(
   // Map to PipelineResult
   const searchResults = allSearchOutputs.join("\n\n");
 
-  if (terminalResult?.type === "submit" && terminalResult.noteText) {
+  if (terminalResult?.type === "submit" && terminalResult.proposedNotes?.length) {
+    // Evaluate each proposed note in parallel and pick the best
+    const evalResults = await Promise.all(
+      terminalResult.proposedNotes.map(async (proposed) => {
+        const fullText = proposed.noteText + " " + proposed.allUrls;
+        try {
+          const evalResponse = await evaluateNote(post.id, fullText);
+          return { proposed, score: evalResponse.data?.claim_opinion_score };
+        } catch (err: any) {
+          return { proposed, score: undefined, error: err?.message };
+        }
+      }),
+    );
+
+    // Enrich the existing propose_notes tool call log with eval scores
+    const existingLog = log?.get(`agent.messages.${iteration}.propose_notes`) as any;
+    if (existingLog) {
+      existingLog.eval_scores = evalResults.map((r) => ({
+        score: r.score,
+        error: (r as any).error,
+      }));
+      log?.set(`agent.messages.${iteration}.propose_notes`, existingLog);
+    }
+
+    // Pick highest-scoring note (fall back to first if all evals fail)
+    const scored = evalResults.filter((r) => r.score != null);
+    const best = scored.length > 0
+      ? scored.reduce((a, b) => (b.score! > a.score! ? b : a))
+      : evalResults[0]!;
+
+    log?.set("note.eval_score", best.score);
+
     return {
       post,
       botId,
@@ -194,14 +242,14 @@ export async function runToolCallingLoop(
       searchContextResult: {
         text: content.text,
         searchResults,
-        citations: extractCitationsFromSources(terminalResult.sources),
+        citations: best.proposed.sources,
       },
       noteResult: {
-        note: terminalResult.noteText,
-        url: terminalResult.primaryUrl ?? "",
+        note: best.proposed.noteText,
+        url: best.proposed.allUrls,
         status: "CORRECTION WITH TRUSTWORTHY CITATION",
       },
-      checkResult: "YES", // Agent self-verified via web_fetch
+      checkResult: "YES",
     };
   }
 
@@ -236,11 +284,4 @@ export async function runToolCallingLoop(
     noteResult: { note: "", url: "", status: "ERROR" },
     error: `Tool-calling loop exhausted after ${MAX_ITERATIONS} iterations`,
   };
-}
-
-function extractCitationsFromSources(
-  sources?: Array<{ url: string; supporting_snippet: string }>,
-): string[] {
-  if (!sources) return [];
-  return sources.map((s) => s.url).filter(Boolean);
 }

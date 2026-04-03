@@ -44,36 +44,37 @@ const PERPLEXITY_SEARCH_TOOL = {
   },
 };
 
-const SUBMIT_NOTE_TOOL = {
+const PROPOSE_NOTES_TOOL = {
   type: "function" as const,
   function: {
-    name: "submit_note",
+    name: "propose_notes",
     description:
-      "Submit a community note correction. Only call this when you are highly confident that the correction is accurate, well-sourced, and will be rated helpful by a broad audience. You must have verified every source URL with web_fetch first.",
+      "Propose 3-4 community note variants. The system evaluates each and picks the best. Only call when highly confident that a correction is warranted. You must have verified every source URL with web_fetch first.",
     parameters: {
       type: "object" as const,
       properties: {
-        note_text: {
-          type: "string" as const,
-          description: "The community note text. Target 240-260 non-URL characters. Hard max 275.",
-        },
-        sources: {
+        notes: {
           type: "array" as const,
           items: {
             type: "object" as const,
             properties: {
-              url: { type: "string" as const },
-              supporting_snippet: {
+              note_text: {
                 type: "string" as const,
-                description: "A direct quote or paraphrase from this source that supports the correction.",
+                description: "The community note text. Target 240-260 non-URL characters. Hard max 275.",
+              },
+              sources: {
+                type: "array" as const,
+                items: { type: "string" as const, description: "A verified source URL." },
+                description: "Source URLs for this note variant.",
               },
             },
-            required: ["url", "supporting_snippet"],
+            required: ["note_text", "sources"],
           },
-          description: "Sources. First is the primary URL. Don't add redundant sources.",
+          description: "3-4 note variants with different phrasings or source combinations.",
+          minItems: 1,
         },
       },
-      required: ["note_text", "sources"],
+      required: ["notes"],
     },
   },
 };
@@ -106,7 +107,7 @@ export function buildToolList(config: AgentConfig, _tweetId: string): any[] {
     GROK_SEARCH_TOOL,
     WEB_FETCH_TOOL,
     CODE_EXECUTION_TOOL,
-    SUBMIT_NOTE_TOOL,
+    PROPOSE_NOTES_TOOL,
     NO_CORRECTION_TOOL,
   ];
 
@@ -136,12 +137,17 @@ export async function executeToolCall(
       return handleGrokSearch(args.query, tweetId);
     case "perplexity_search":
       return handlePerplexitySearch(args.query);
-    case "submit_note":
-      return handleSubmitNote(args.note_text, args.sources);
+    case "propose_notes":
+      return handleProposeNotes(args.notes);
     case "no_correction_needed":
       return { output: { acknowledged: true }, isTerminal: true };
+    case "web_fetch":
+      return handleWebFetch(args.url);
+    case "web_search":
+      return { output: "Use grok_search or perplexity_search instead.", isTerminal: false };
+    case "code_execution":
+      return { output: "Code execution not available.", isTerminal: false };
     default:
-      // Built-in tools (web_search, web_fetch, code_execution) are handled by OpenRouter
       return { output: { error: `Unknown tool: ${toolName}` }, isTerminal: false };
   }
 }
@@ -183,19 +189,49 @@ async function handlePerplexitySearch(query: string): Promise<ToolResult> {
   return { output: { results: content, citations }, isTerminal: false };
 }
 
-function handleSubmitNote(
-  noteText: string,
-  _sources: Array<{ url: string; supporting_snippet: string }>,
-): ToolResult {
-  const charCount = countNoteLength(noteText);
+async function handleWebFetch(url: string): Promise<ToolResult> {
+  try {
+    const response = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; CommunityNotesBot/1.0)" },
+      redirect: "follow",
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) {
+      return { output: `Fetch failed: HTTP ${response.status}`, isTerminal: false };
+    }
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.includes("text/") && !contentType.includes("json")) {
+      return { output: `Non-text content: ${contentType}`, isTerminal: false };
+    }
+    const text = await response.text();
+    // Strip HTML tags for a rough plaintext extraction, cap at 15k chars
+    const plain = text.replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(/<style[\s\S]*?<\/style>/gi, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 15000);
+    return { output: plain, isTerminal: false };
+  } catch (err: any) {
+    return { output: `Fetch error: ${err?.message?.slice(0, 200)}`, isTerminal: false };
+  }
+}
 
-  if (charCount > 275) {
+function handleProposeNotes(
+  notes: Array<{ note_text: string; sources: string[] }>,
+): ToolResult {
+  const results = notes.map((n, i) => {
+    const charCount = countNoteLength(n.note_text);
+    return { index: i, charCount, tooLong: charCount > 275 };
+  });
+
+  const tooLong = results.filter((r) => r.tooLong);
+  if (tooLong.length > 0) {
+    const errors = tooLong.map(
+      (r) => `Note ${r.index + 1}: ${r.charCount} chars (max 275)`,
+    );
     return {
-      output: {
-        success: false,
-        error: `Note is ${charCount} non-URL characters, exceeds 275 limit. Shorten it.`,
-        effective_char_count: charCount,
-      },
+      output: { success: false, error: errors.join(". ") + ". Shorten them." },
       isTerminal: false,
     };
   }
@@ -203,7 +239,8 @@ function handleSubmitNote(
   return {
     output: {
       success: true,
-      effective_char_count: charCount,
+      note_count: notes.length,
+      char_counts: results.map((r) => r.charCount),
     },
     isTerminal: true,
   };

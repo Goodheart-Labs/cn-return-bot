@@ -11,10 +11,9 @@ import { getSupabaseClient } from "../../api/supabaseClient";
 export interface AuthorNoteHistory {
   helpfulNotes: Array<{ tweetText: string; noteText: string }>;
   totalHelpful: number;
-  totalNotHelpful: number;
 }
 
-const EMPTY: AuthorNoteHistory = { helpfulNotes: [], totalHelpful: 0, totalNotHelpful: 0 };
+const EMPTY: AuthorNoteHistory = { helpfulNotes: [], totalHelpful: 0 };
 
 export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNoteHistory> {
   const supabase = getSupabaseClient();
@@ -86,13 +85,10 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
     })),
   ];
 
-  const totalHelpful = allNotes.filter((n) => n.status === "CURRENTLY_RATED_HELPFUL").length;
-  const totalNotHelpful = allNotes.filter((n) => n.status === "CURRENTLY_RATED_NOT_HELPFUL").length;
+  const helpful = allNotes.filter((n) => n.status === "CURRENTLY_RATED_HELPFUL" && n.tweetText && n.noteText);
 
-  const helpfulNotes = allNotes
-    .filter((n) => n.status === "CURRENTLY_RATED_HELPFUL" && n.tweetText && n.noteText)
-    .slice(0, 5)
-    .map((n) => ({ tweetText: n.tweetText, noteText: n.noteText }));
-
-  return { helpfulNotes, totalHelpful, totalNotHelpful };
+  return {
+    helpfulNotes: helpful.slice(0, 5).map((n) => ({ tweetText: n.tweetText, noteText: n.noteText })),
+    totalHelpful: helpful.length,
+  };
 }
