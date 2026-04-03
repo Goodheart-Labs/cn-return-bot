@@ -13,6 +13,7 @@ import { opusDirectGrok } from "./opus-direct-grok";
 import { opusMainV2Grok } from "./opus-main-v2-grok";
 import { opusMultiSource } from "./opus-multi-source";
 import { opusBridging } from "./opus-bridging";
+import { agentBot } from "./agent";
 
 // Legacy bots (weight=0, kept for historical data)
 import { opusResearch } from "./opus-research";
@@ -50,6 +51,7 @@ const bots: Bot[] = [
   opusMainV2Grok,
   opusMultiSource,
   opusBridging,
+  agentBot,
   // Legacy bots (disabled)
   opusResearch,
   kimiK2,

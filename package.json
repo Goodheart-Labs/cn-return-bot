@@ -5,7 +5,7 @@
     "@supabase/supabase-js": "^2.47.0",
     "@tonerow/agent-framework": "0.1.0",
     "@types/p-queue": "^3.2.1",
-    "ai": "^4",
+    "ai": "^6.0.143",
     "axios": "^1.10.0",
     "dotenv": "^17.2.1",
     "oauth-1.0a": "^2.2.6",
