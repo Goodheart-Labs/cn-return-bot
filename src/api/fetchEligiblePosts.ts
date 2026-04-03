@@ -33,13 +33,16 @@ export type Post = {
   referenced_tweet_data?: ReferencedTweetData;
   public_metrics?: TweetPublicMetrics;
   author_followers?: number;
+  author_name?: string;
+  author_description?: string;
+  author_tweet_count?: number;
 };
 
 const API_URL = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
 const BASE_FIELDS = {
   "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics",
   "media.fields": "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
-  "user.fields": "public_metrics",
+  "user.fields": "public_metrics,name,description",
   expansions: "attachments.media_keys,referenced_tweets.id,author_id",
   test_mode: "false",
 };
@@ -205,6 +208,9 @@ export function parsePostsResponse(data: any): Post[] {
       // Extract author follower count from user expansion
       const authorData = userMap.get(tweet.author_id);
       const authorFollowers = authorData?.public_metrics?.followers_count;
+      const authorName = authorData?.name;
+      const authorDescription = authorData?.description;
+      const authorTweetCount = authorData?.public_metrics?.tweet_count;
 
       posts.push({
         id: tweet.id,
@@ -216,6 +222,9 @@ export function parsePostsResponse(data: any): Post[] {
         referenced_tweet_data: referencedTweetData,
         public_metrics: tweet.public_metrics,
         author_followers: authorFollowers,
+        author_name: authorName,
+        author_description: authorDescription,
+        author_tweet_count: authorTweetCount,
       });
     }
   }
