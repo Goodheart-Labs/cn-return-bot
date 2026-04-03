@@ -15,6 +15,8 @@ import { determineFeedSize, buildPostSelection } from "./utils/feedSizeStrategy"
 import { ageInHours, formatCount, sortByRecencyAndImpressions, getTweetScore } from "./utils/tweetSorting";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
+import { initOutputFolder, resultToCsvRow, type OutputFolder } from "../../local/outputWriter";
+import { writeResultJsons, type CategorizedRow } from "../../local/evaluateResults";
 
 let MAX_POSTS = 20;
 const CONCURRENCY_LIMIT = 5;
@@ -174,9 +176,14 @@ async function storeCandidateResult(
 // Main
 // ---------------------------------------------------------------------------
 
-export async function generateCandidates(supabaseLogger: SupabaseLogger | null, options?: { maxPosts?: number }) {
+export async function generateCandidates(supabaseLogger: SupabaseLogger | null, options?: { maxPosts?: number; localOutput?: boolean }) {
   if (options?.maxPosts) MAX_POSTS = options.maxPosts;
   const commit = process.env.GITHUB_SHA;
+
+  const output: OutputFolder | null = options?.localOutput
+    ? initOutputFolder("pipeline")
+    : null;
+  if (output) console.log(`[generate] Output folder: ${output.folderPath}`);
 
   // Log bot probabilities (compact single line)
   const botProbs = getBotProbabilities();
@@ -195,6 +202,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
   const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
   const allLogs: TweetLogMap[] = [];
   let candidateCount = 0;
+  const uncategorizedRows: CategorizedRow[] = [];
 
   for (const [idx, post] of posts.entries()) {
     queue.add(async () => {
@@ -215,6 +223,16 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
 
       console.log(formatTweetLogFull(log));
       allLogs.push(log);
+
+      // Write to dataset_runs CSV when running locally
+      if (output) {
+        const url = `https://x.com/i/status/${post.id}`;
+        output.appendRow(resultToCsvRow({ url }, selectedBot.id, tweetResult, "", log));
+        uncategorizedRows.push({
+          category: "uncategorized",
+          parsed: { url, bot_id: selectedBot.id, outcome: tweetResult.outcome, note_text: tweetResult.noteText ?? "" },
+        });
+      }
 
       // If it passed all checks, store as candidate (overwriting the completion from processSingleTweet)
       if (
@@ -238,6 +256,12 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
   }
 
   await queue.onIdle();
+
+  // Write result JSONs and summary for local output
+  if (output) {
+    writeResultJsons(uncategorizedRows, output.folderPath);
+    console.log(`[generate] Results written to ${output.folderPath}`);
+  }
 
   // Summary
   console.log(formatRunSummary(allLogs, feedSize));

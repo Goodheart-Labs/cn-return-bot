@@ -53,11 +53,15 @@ async function main() {
 
     // Phase 1: Generate candidates
     console.log("[pipeline] === Phase 1: Generate Candidates ===");
-    await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5 } : undefined);
+    await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5, localOutput: true } : undefined);
 
-    // Phase 2: Submit best candidates
-    console.log("[pipeline] === Phase 2: Submit Candidates ===");
-    await submitCandidates(supabaseLogger);
+    // Phase 2: Submit best candidates (skipped in local mode)
+    if (isLocal) {
+      console.log("[pipeline] === Phase 2: Skipped (local mode) ===");
+    } else {
+      console.log("[pipeline] === Phase 2: Submit Candidates ===");
+      await submitCandidates(supabaseLogger);
+    }
 
     console.log("[pipeline] Pipeline completed successfully");
     clearTimeout(globalTimeout);
