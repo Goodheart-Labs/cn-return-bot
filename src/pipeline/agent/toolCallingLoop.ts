@@ -71,6 +71,13 @@ export async function runToolCallingLoop(
   log?.set("agent.config", config);
   log?.set("agent.systemPrompt", SYSTEM_PROMPT);
   log?.set("agent.userMessage", userMessage);
+  log?.set("agent.author", {
+    name: post.author_name,
+    description: post.author_description,
+    followers: post.author_followers,
+    tweetCount: post.author_tweet_count,
+    noteHistory: authorHistory ?? null,
+  });
 
   let terminalResult: TerminalResult | null = null;
   let iteration = 0;
