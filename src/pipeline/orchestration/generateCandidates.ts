@@ -71,10 +71,28 @@ async function fetchAndSelectPosts(
     `[generate] Backlog: ${backlogTotal} eligible tweets (${newPosts.length} new, ${retryPosts.length} retries)${backlogHitLimit ? " — hit limit, true backlog may be larger" : ""}`
   );
 
-  // New tweets first, then fill remaining slots with retries
+  // Skip retries when candidate queue is already ≥ 2x writing limit
+  let skipRetries = false;
+  if (supabaseLogger) {
+    try {
+      const [writingLimitStr, candidateCount] = await Promise.all([
+        supabaseLogger.getPipelineState("writing_limit"),
+        supabaseLogger.countCandidates(),
+      ]);
+      const writingLimit = writingLimitStr ? parseInt(writingLimitStr, 10) : null;
+      if (writingLimit !== null && candidateCount >= 2 * writingLimit) {
+        skipRetries = true;
+        console.log(`[generate] Skipping retries: ${candidateCount} candidates >= 2x writing limit (${writingLimit})`);
+      }
+    } catch (err) {
+      console.warn("[generate] Failed to check writing limit:", err);
+    }
+  }
+
+  const retrySlots = skipRetries ? 0 : Math.max(0, MAX_POSTS - newPosts.length);
   const posts = [
     ...newPosts.slice(0, MAX_POSTS),
-    ...retryPosts.slice(0, Math.max(0, MAX_POSTS - newPosts.length)),
+    ...retryPosts.slice(0, retrySlots),
   ].slice(0, MAX_POSTS);
 
   console.log(

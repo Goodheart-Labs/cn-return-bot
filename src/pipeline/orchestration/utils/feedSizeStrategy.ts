@@ -5,7 +5,7 @@
  * eligible posts API based on persistent pipeline state.
  *
  * Rules:
- *   - Bottlenecked (≤5 notes submitted in last 24h when limit was hit) → small
+ *   - Writing limit ≤5 → small
  *   - Otherwise → at least large
  *   - At large, 3 consecutive days without hitting limit → xl
  *   - At xl, 3 consecutive days hitting limit → back to large
@@ -25,10 +25,10 @@ function todayDateString(): string {
 export async function determineFeedSize(
   logger: SupabaseLogger
 ): Promise<{ feedSize: FeedSize; reason: string }> {
-  const [feedSize, bottlenecked, daysWithout, daysWith, limitHitToday, lastCheckDate] =
+  const [feedSize, writingLimitStr, daysWithout, daysWith, limitHitToday, lastCheckDate] =
     await Promise.all([
       logger.getPipelineState("feed_size"),
-      logger.getPipelineState("bottlenecked"),
+      logger.getPipelineState("writing_limit"),
       logger.getPipelineState("days_without_limit_hit"),
       logger.getPipelineState("days_with_limit_hit"),
       logger.getPipelineState("limit_hit_today"),
@@ -68,12 +68,12 @@ export async function determineFeedSize(
     return { feedSize: "small", reason: "no history, starting conservative" };
   }
 
-  // Bottlenecked (≤5 notes in 24h) → small
-  if (bottlenecked === "true") {
+  const writingLimit = writingLimitStr ? parseInt(writingLimitStr, 10) : null;
+  if (writingLimit !== null && writingLimit <= 5) {
     if (currentSize !== "small") {
       await logger.setPipelineState("feed_size", "small");
     }
-    return { feedSize: "small", reason: "bottlenecked (writing limit ≤ 5)" };
+    return { feedSize: "small", reason: `writing limit ${writingLimit} ≤ 5` };
   }
 
   // Not bottlenecked → at least large

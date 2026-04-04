@@ -1,0 +1,202 @@
+[
+  {
+    "i": 0,
+    "our_text": "The giraffe was already dead, not alive or suffering. It died naturally of old age at a zoo and was being transported by a taxidermist for museum mounting. https://www.fox2detroit.com/news/giraffe-back-metro-detroit-truck-goes-viral",
+    "helpful_text": "This video is AI-generated and does not depict a real event. It is inspired by a 2014 incident in South Africa where a giraffe died after hitting a bridge.    https://www.newsmobile.in/nm-fact-checker/verified-videos-of-giraffes-falling-from-truck-after-hitting-bridge-are-ai-generated    https://www.bbc.com/news/world-africa-28586702"
+  },
+  {
+    "i": 1,
+    "our_text": "This appears fraudulent. Legitimate USDM projects don't offer unrestricted &quot;double coin&quot; promotions. Mountain Protocol's USDM disabled minting in wind-down phase. Cardano's USDM requires KYC/beta approval for US users only. https://docs.mountainprotocol.com/wind-down-documentation/usdm-wind-down-overview",
+    "helpful_text": "The USDM account has been compromised    Source (the CTO): https://x.com/amw7/status/1978923650603442474"
+  },
+  {
+    "i": 2,
+    "our_text": "False claim: Xi Jinping did not announce Bitcoin legalization or $40B purchase plan. Cryptocurrency trading/exchanges remain illegal in China as of 2025. No official government statements support this claim. https://coinpedia.org/news/fact-check-did-china-approve-xrp-national-reserve-worth-40b/",
+    "helpful_text": "The claim is false.  No such announcement has been made.  https://english.www.gov.cn/"
+  },
+  {
+    "i": 3,
+    "our_text": "The child in Bad Bunny's Super Bowl halftime show was not Liam Ramos. Multiple outlets confirm it was Lincoln Fox, a child actor, who shared the moment on Instagram. Ramos, detained by ICE in January, was in Minnesota after his Feb 1 release. https://www.tmz.com/2026/02/08/liam-ramos-not-in-bad-bunny-halftime-show/",
+    "helpful_text": "This is not Liam Ramos    This child actor Lincoln Fox. His Instagram confirms this instagram.com/the_lincfox"
+  },
+  {
+    "i": 4,
+    "our_text": "The post claims Chris Jones was drinking vodka on the sideline, but multiple sports outlets have confirmed the bottle did not contain alcohol and that there is no evidence supporting this claim. https://brobible.com/sports/article/chris-jones-alcohol-vodka-tequila-kansas-city-chiefs-sideline/",
+    "helpful_text": "For context, the post shows Chris Jones drinking a clear liquid from a glass bottle on the sideline. NFL rules prohibit alcohol in this area. Previous videos of similar bottles were spring water.    https://brobible.com/sports/article/chris-jones-alcohol-vodka-tequila-kansas-city-chiefs-sideline/    https://www.outkick.com/culture/no-chris-jones-was-not-drinking-beer-on-the-sideline    https://x.com/ProFootballDoc/status/1604557686531534849"
+  },
+  {
+    "i": 5,
+    "our_text": "The Robinhood CEO did not sell &quot;all his shares.&quot; SEC filings confirm he sold 375,000 shares on January 5, 2026, but retains significant holdings. https://www.marketbeat.com/instant-alerts/filing-robinhood-markets-inc-hood-shares-sold-by-udine-wealth-management-inc-2026-01-15/",
+    "helpful_text": "Robinhood CEO Vlad Tenev sold 375,000 Class A shares (converted from Class B) on January 5, 2026. He still owns 219,234 Class A shares directly, 6,907 Class A shares in a trust, and 49,044,572 Class B shares (convertible to Class A).    https://investors.robinhood.com/sec-filings/sec-filing/4/0001783879-26-000004    https://www.nasdaq.com/market-activity/insiders/tenev-vladimir-1171036    https://www.sec.gov/Archives/edgar/data/1783879/000178387926000004/xslF345X05/wk-form4_1767821505.xml"
+  },
+  {
+    "i": 6,
+    "our_text": "The Robinhood CEO did not sell &quot;all his shares.&quot; SEC filings confirm he sold 375,000 shares on January 5, 2026, but retains significant holdings. https://www.marketbeat.com/instant-alerts/filing-robinhood-markets-inc-hood-shares-sold-by-udine-wealth-management-inc-2026-01-15/",
+    "helpful_text": "Robinhood CEO Vladimir Tenev sold 375,000 Class A shares (converted from Class B) on January 5, 2026, but retains 49,044,572 Class B shares directly and 6,907 Class A shares indirectly.    https://www.sec.gov/Archives/edgar/data/1783879/000178387926000004/xslF345X05/wk-form4_1767821505.xml"
+  },
+  {
+    "i": 7,
+    "our_text": "Driver was Jashanpreet Singh from India, not Mexico. Crash occurred on I-10, not I-5. CDLs are issued by CA state dept, not personally by governors. https://www.foxnews.com/us/illegal-immigrant-trucker-accused-fatal-california-crash-released-biden-admin-after-2022-border-crossing",
+    "helpful_text": "This was not a Mexican national. https://x.com/sarahiscensored/status/1981107444052025558?s=46"
+  },
+  {
+    "i": 8,
+    "our_text": "Driver was Jashanpreet Singh from India, not Mexico. Crash occurred on I-10, not I-5. CDLs are issued by CA state dept, not personally by governors. https://www.foxnews.com/us/illegal-immigrant-trucker-accused-fatal-california-crash-released-biden-admin-after-2022-border-crossing",
+    "helpful_text": "The inmate has been identified as an Indian National, Jashanpreet Singh.    https://www.dailybulletin.com/2025/10/22/suspected-dui-truck-driver-identified-in-10-freeway-crash-in-ontario-that-killed-3/"
+  },
+  {
+    "i": 9,
+    "our_text": "The post incorrectly states it costs \u00a3180 &quot;a month&quot; to watch television in the UK. The TV licence fee is actually \u00a3180 per year (approximately \u00a315 per month), not \u00a3180 per month. The quoted tweet correctly refers to the annual fee rising to \u00a3180 from April. https://www.gov.uk/government/news/cost-of-tv-licence-fee-set-for-202627",
+    "helpful_text": "The UK TV licence fee will increase to \u00a3180 per year, not per month, from April 2026. This is an annual charge.    https://www.theguardian.com/media/2026/feb/06/bbc-licence-fee-to-rise-from-april https://www.gbnews.com/money/bbc-licence-fee-set-to-rise"
+  },
+  {
+    "i": 10,
+    "our_text": "False: EBT cards haven't been &quot;shut off&quot; due to shutdown. October SNAP funds remain usable on EBT cards. Concern is about potential November benefit delays, not current cutoffs. https://www.propel.app/snap/government-shutdown-faqs/",
+    "helpful_text": "This video is AI Generated. The Sora watermark can be seen on the right side of the screen (starting at the .05 mark):  https://www.tiktok.com/@tonyangel64/video/7563773731823291662  Sora is an OpenAI App:  https://openai.com/sora/"
+  },
+  {
+    "i": 11,
+    "our_text": "The post incorrectly states Howells lost a &quot;USB pen drive.&quot; All sources confirm he discarded a **laptop hard drive**, not a USB drive. Recovery efforts involve landfill excavation for the HDD. https://en.wikipedia.org/wiki/Bitcoin_buried_in_Newport_landfill",
+    "helpful_text": "James Howells lost a laptop hard drive containing 8,000 Bitcoin in a Newport landfill in 2013, not a USB pen drive. The video shows a generic demonstration of chip-off recovery on a USB flash drive and is unrelated to Howells' case.    https://en.wikipedia.org/wiki/Bitcoin_buried_in_Newport_landfill  https://www.bbc.com/news/articles/c620jej4kd4o"
+  },
+  {
+    "i": 12,
+    "our_text": "The GRAMMYs did not publish this article. The screenshot is fabricated. ELLE called KATSEYE's 2026 GRAMMYs performance &quot;one of the Night's Most Talked-About&quot; with &quot;girl-power energy.&quot; https://www.elle.com/culture/music/a70208968/katseye-performance-2026-grammys/",
+    "helpful_text": "The claimed GRAMMY article does not exist. No such title appears on grammy.com. The screenshot is not genuine.    Official performance video: https://www.grammy.com/series-or-collection/2026-grammys-68th-annual-grammy-awards-videos/katseye-gnarly-performance-best-new-artist    Forbes review: https://www.forbes.com/sites/hannahabraham/2026/02/01/katseye-steals-the-show-at-grammys-2026-with-high-octane-best-new-artist-performance"
+  },
+  {
+    "i": 13,
+    "our_text": "This claim is false. Chick-fil-A has not announced plans to open on Sundays. The company maintains its Sunday closure policy, established in 1946. Current restaurant pages still list &quot;Closed&quot; for all Sunday hours. https://www.chick-fil-a.com/customer-support/who-we-are/our-culture-and-values/why-is-chick-fil-a-closed-on-sunday",
+    "helpful_text": "Chick-fil-A has not changed their stance on being closed on Sundays. This post is engagement farming. Many similar fake Chick-fil-A Sunday claims in the past have drawn debunkings.    https://www.chick-fil-a.com/customer-support/who-we-are/our-culture-and-values/why-is-chick-fil-a-closed-on-sunday  "
+  },
+  {
+    "i": 14,
+    "our_text": "This claim is false. Chick-fil-A has not announced plans to open on Sundays. The company maintains its Sunday closure policy, established in 1946. Current restaurant pages still list &quot;Closed&quot; for all Sunday hours. https://www.chick-fil-a.com/customer-support/who-we-are/our-culture-and-values/why-is-chick-fil-a-closed-on-sunday",
+    "helpful_text": "Chick-Fil-A has never said this and will remain closed on Sundays. This account is known to spread fake information.   https://www.chick-fil-a.com/customer-support/who-we-are/our-culture-and-values/why-is-chick-fil-a-closed-on-sunday"
+  },
+  {
+    "i": 15,
+    "our_text": "Lance Cpl. Kevin Melendez was a U.S. Marine assigned to Quantico, Virginia\u2014not a soldier killed in Saudi Arabia. The cause of death has not been publicly confirmed. The &quot;tripped over a cruise missile&quot; claim has no verified source. https://www.cbsnews.com/texas/news/marine-lance-cpl-kevin-melendez-of-fort-worth-has-died/",
+    "helpful_text": "This is an AI created photo. The service member was in the US Marine Corps, not the US Army. Also, name tag is wrong. FInally, badges are not create correctly.    https://www.instagram.com/p/DVhxZKZDtUh/    https://x.com/ME_Observer_/status/2030720090929275250"
+  },
+  {
+    "i": 16,
+    "our_text": "Lance Cpl. Kevin Melendez was a U.S. Marine assigned to Quantico, Virginia\u2014not a soldier killed in Saudi Arabia. The cause of death has not been publicly confirmed. The &quot;tripped over a cruise missile&quot; claim has no verified source. https://www.cbsnews.com/texas/news/marine-lance-cpl-kevin-melendez-of-fort-worth-has-died/",
+    "helpful_text": "Photo is AI-generated. Kevin Melendez served in the US Marine Corps, not the US Army.    https://www.instagram.com/p/DVhxZKZDtUh/    https://x.com/ME_Observer_/status/2030720090929275250"
+  },
+  {
+    "i": 17,
+    "our_text": "Post incorrectly claims calves &quot;drink straight from the ocean.&quot; Whale calves nurse directly from mother's nipple underwater, not from dispersed milk in ocean water. Thick milk prevents dissolving during transfer but isn't consumed from surrounding water. https://www.whalefacts.org/whale-milk/",
+    "helpful_text": "This is an AI generated image , a bad one at that , baby whales feed from the nipple directly , and suck in a thick fatty milk .    https://www.discoverwildlife.com/animal-facts/marine-animals/how-do-whales-breastfeed-underwater"
+  },
+  {
+    "i": 18,
+    "our_text": "Claim that crop circles are &quot;created by advanced frequency technology&quot; is false. Scientific investigations prove they're human-made using simple tools. Creators Doug Bower &amp; Dave Chorley publicly demonstrated methods in 1991. https://www.livescience.com/26540-crop-circles.html",
+    "helpful_text": "This specific video is created by artificial intelligence (AI) software and does not depict real footage. Crop circles are generally man-made using simple tools, as shown by confessions from creators like Doug Bower and Dave Chorley in 1991.  https://www.rumorguard.org/post/viral-crop-circle-videos-created-by-ai-not-aliens  https://www.youtube.com/watch?v=dYV_zpCXYtc  https://chillinkristen.medium.com/the-origin-of-the-crop-circles-con-is-surprisingly-wholesome-8226f9d252fa"
+  },
+  {
+    "i": 19,
+    "our_text": "O'Leary welcomed Musk to buy shares but said non-Europeans &quot;can't acquire or take ownership.&quot; He has NOT praised Starlink \u2014 on Jan 16, he rejected it again, citing \u20ac200-250m yearly costs and fuel penalties from aerials. https://news.sky.com/story/elon-musk-vs-ryanair-could-tech-billionaire-actually-buy-budget-airline-and-what-started-online-spat-13497018",
+    "helpful_text": "Ryanair CEO Michael O'Leary has not reversed his opposition to installing Starlink Wi-Fi on planes or reconsidered it, citing \u20ac250m annual costs and fuel drag, though he welcomes Musk investment in Ryanair shares. https://www.rte.ie/news/business/2026/0121/1554265-ryanairs-oleary-on-musk-comments https://www.bbc.com/news/articles/ckgyzl4gd1do"
+  },
+  {
+    "i": 20,
+    "our_text": "The post shares a fake Trump social media screenshot. Fact-checkers confirm the widely circulated Trump posts about Canadian baseball teams and refusing to invite teams to his &quot;ball room&quot; are satirical fabrications, not authentic posts. https://globalnews.ca/news/11460122/fact-file-trump-post-on-blue-jays-is-a-fake/",
+    "helpful_text": "This is not a real post from Donald Trump on Truth Social - not listed on his official account.    https://truthsocial.com/@realDonaldTrump"
+  },
+  {
+    "i": 21,
+    "our_text": "Green laser beams from aircraft aren't &quot;mysterious&quot; - they're routine government LIDAR mapping operations. The U.S. Army Corps of Engineers regularly conducts such nighttime flights for terrain mapping using safe laser technology. https://www.army.mil/article/266171/night_flights_for_army_corps_coastal_surveys_to_create_visible_green_laser_beams_in_sky",
+    "helpful_text": "The video shows images of an aerial survey plane performing what is known as a bathymetric scan using LiDAR (the green lasers).  The plane is owned by RANDIGO LLC, you can find it here (search N126RF)  https://www.aviationdb.com/Aviation/AircraftQuery.shtm  More on this  https://www.winknews.com/news/lee/cape-coral-residents-see-mysterious-green-flight-lasers/article_f7bdc1fa-08d4-599e-abad-7d4ef93b6bb7.html  https://alexandermandragon.com/alexander-mandragon/investigating-randigo-llc-and-its-un"
+  },
+  {
+    "i": 22,
+    "our_text": "The post incorrectly states Mbapp\u00e9's record against Barcelona. According to verified sports statistics, Mbapp\u00e9 has played 9 matches against Barcelona and scored 12 goals, not 12 matches and 9 goals as claimed in the post. https://www.sportsmole.co.uk/football/barcelona/champions-league/feature/kylian-mbappes-record-vs-barcelona_541328.html",
+    "helpful_text": "Misleading: Reliable stats show Mbapp\u00e9 has 9 appearances vs Barcelona and 12 goals (updated after Oct 26, 2025)\u2014not 12 matches and 9 goals. https://www.transfermarkt.us/kylian-mbappe/bilanzdetails/spieler/342229/plus/1/gegner/131 https://www.sportsmole.co.uk/football/barcelona/champions-league/feature/kylian-mbappes-record-vs-barcelona_541328.html"
+  },
+  {
+    "i": 23,
+    "our_text": "Post presents Jericho WWE signing as confirmed fact, but no credible sources verify this. Current reports show only speculation fueled by cryptic vignettes, with Jericho's AEW contract running until December 2025. https://www.thesportster.com/chris-jericho-to-stay-in-aew-report-gives-update-amid-wwe-return-talk/",
+    "helpful_text": "No evidence Jericho has signed with WWE. As of Oct 22-26, 2025, AEW\u2019s Tony Khan says Jericho remains under AEW contract through the end of 2025, and reports note no WWE deal or imminent return is confirmed. https://slamwrestling.net/news/chris-jerichos-aew-contract-status-addressed-by-tony-khan/ https://www.sportskeeda.com/aew/news-major-update-chris-jericho-potentially-snubbing-aew-wwe-reports"
+  },
+  {
+    "i": 24,
+    "our_text": "This post shares a fabricated quote and incident. David Muir never &quot;snapped&quot; on air with this statement. Snopes traced this claim to a blog post containing AI-generated misinformation and rated it false. The dramatic studio scene described never occurred. https://www.snopes.com/fact-check/david-muir-martial-law-warning/",
+    "helpful_text": "David Muir did not make these statements about Trump and martial law; the story is fabricated AI-generated fiction with no evidence from ABC broadcasts. https://www.snopes.com/fact-check/david-muir-martial-law-warning/"
+  },
+  {
+    "i": 25,
+    "our_text": "Misleading. A few individual researchers have speculated about this, but it's a fringe hypothesis, not mainstream science. No peer-reviewed studies support this claim\u2014dreams are explained by psychology as processing memories and emotions. https://interestingengineering.com/science/alternate-reality-in-dreams",
+    "helpful_text": "No mainstream scientists claim dreams are literally real in parallel realities; they are brain-generated during sleep (e.g., REM) for memory and emotion processing. This idea is a speculative hypothesis without empirical support. https://pmc.ncbi.nlm.nih.gov/articles/PMC2814941/ https://www.popularmechanics.com/science/a62639294/your-consciousness-enters-other-dimensions-while-dreaming/"
+  },
+  {
+    "i": 26,
+    "our_text": "The post claims to show &quot;an eagle flying with a shark&quot; but wildlife experts have identified that the bird is actually an osprey and the fish is a ladyfish, not a shark. https://www.cbsnews.com/news/viral-video-bird-of-prey-carrying-massive-shark-fish-myrtle-beach/",
+    "helpful_text": "Additional context: Footage is of an Osprey carrying a Spanish mackerel.    Video shot at Myrtle Beach, SC in 2020; coverage:  https://video.storyful.com/record/18114  https://www.wmbfnews.com/2020/07/03/watch-osprey-seen-flying-off-with-large-spanish-mackerel-over-myrtle-beach/"
+  },
+  {
+    "i": 27,
+    "our_text": "False. 82.3% of adult SNAP recipients and 97.1% of children were born in the US. The vast majority of food stamp recipients are American citizens, not 59% non-American. https://www.pewresearch.org/short-reads/2023/07/19/what-the-data-says-about-food-stamps-in-the-u-s/",
+    "helpful_text": "According to the USDA, almost 90% of SNAP recipients are born in the US, and another 6% are naturalized citizens.    Table 3.6: https://fns-prod.azureedge.us/sites/default/files/resource-files/snap-FY23-Characteristics-Report.pdf"
+  },
+  {
+    "i": 28,
+    "our_text": "The post falsely implies a Jeep Wrangler painted with Vantablack exists. No factory vehicle uses Vantablack. The referenced products are aftermarket wraps/sunshades labeled &quot;Vantablack,&quot; not the original material. https://www.extremeterrain.com/jkloud-jeep-wrangler-hammock-sunshade-vantablack-4009.html",
+    "helpful_text": "This is digitally altered and not painted in Ventablack as the author states.  Grok found similar edited viral posts.    Screencap show clear lines even when dust is blown up. No dirt is present on the paint.  The windows aren\u2019t showing any reflection or interior.    https://x.com/grok/status/2012796681184485576?s=46"
+  },
+  {
+    "i": 29,
+    "our_text": "These are not the same person. The left photo shows Obama with his niece Savita Ng, taken in the Oval Office in 2015 by White House photographer Pete Souza. The right image is from an unrelated 2017 hoax about Malaysian children. https://www.politifact.com/factchecks/2020/aug/21/viral-image/old-photos-barack-obama-misused-fuel-baseless-chil/",
+    "helpful_text": "The girl in the left picture is President Obama with his niece Savita Ng in the Oval Office.    https://www.alamy.com/stock-image-dec-4-2015-the-president-snuggles-with-his-niece-savita-ng-after-his-167026961.html    The girl on the right is 2015 Indonesian murder victim Putri Nur Fauziah.    https://x.com/dintentdata/status/1743500390975623231  https://leadstories.com/hoax-alert/2020/09/fact-check-no-credible-evidence-former-president-obama-acted-inappropriately-and-violently-towards-young-girl"
+  },
+  {
+    "i": 30,
+    "our_text": "These are not the same person. The left photo shows Obama with his niece Savita Ng, taken in the Oval Office in 2015 by White House photographer Pete Souza. The right image is from an unrelated 2017 hoax about Malaysian children. https://www.politifact.com/factchecks/2020/aug/21/viral-image/old-photos-barack-obama-misused-fuel-baseless-chil/",
+    "helpful_text": "Misinformation!  The girl in box was shared claiming to be from Malaysia in 2015 and another girl with Barack Obama is his niece    https://x.com/dintentdata/status/1743500390975623231"
+  },
+  {
+    "i": 31,
+    "our_text": "The post incorrectly states that Lewis Hamilton has 8 titles. Hamilton has officially won 7 Formula 1 World Drivers' Championship titles, not 8. While Jarno Opmeer correctly has 8 PSGL sim racing titles, Hamilton's official F1 title count remains at 7. https://en.wikipedia.org/wiki/Lewis_Hamilton",
+    "helpful_text": "Lewis Hamilton has 7 Formula 1 titles.  https://es.wikipedia.org/wiki/Lewis_Hamilton"
+  },
+  {
+    "i": 32,
+    "our_text": "False claim. No credible evidence Xi Jinping announced China will legalize Bitcoin or buy $40B BTC. China continues banning all crypto business activities including exchanges and derivatives trading. https://www.lightspark.com/knowledge/is-crypto-legal-in-china",
+    "helpful_text": "Reuters and SCMP reporting show Beijing exploring RMB\u2011backed stablecoins while mainland crypto restrictions persist. There\u2019s no announcement that China legalized Bitcoin or plans to buy $40B in BTC for a national reserve. https://www.reuters.com/markets/asia/china-considering-yuan-backed-stablecoins-boost-global-currency-usage-sources-2025-08-21/ https://www.scmp.com/economy/china-economy/article/3325856/mainland-china-court-sells-seized-blockchain-tokens-hong-kong-crypto-platform"
+  },
+  {
+    "i": 33,
+    "our_text": "The post incorrectly claims a ball lodged in wall padding is &quot;not a dead ball.&quot; MLB rules explicitly state that when a fair ball gets lodged in outfield wall padding, it is definitively a dead ball and results in a ground-rule double. https://www.mlb.com/glossary/rules/dead-ball",
+    "helpful_text": "Under MLB Rule 5.05(a)(7) and ground rules (2025 editions), a fair ball lodged in outfield wall padding is ruled dead and results in a ground-rule double: batter goes to second, all runners advance two bases from time of pitch. https://www.mlb.com/glossary/rules/dead-ball https://img.mlbstatic.com/mlb-images/image/upload/mlb/hhvryxqioipb87os1puw.pdf https://baseballrulesacademy.com/official-rule/mlb-umpire-manual/lodged-ball/"
+  },
+  {
+    "i": 34,
+    "our_text": "False. Walmart explicitly denied issuing any memo directing stores to lock down or switch to online-only orders due to SNAP issues. Fact-checkers confirmed stores remain open normally. https://www.hindustantimes.com/world-news/us-news/fach-check-walmart-closing-stores-on-november-1-as-snap-benefits-run-out-heres-the-truth-101761594954139.html",
+    "helpful_text": "For clarity, Walmart has stated, &quot;These claims are false, and we will continue to be open for business,&quot; regarding rumors of memos to lock down inner city stores to online orders only if SNAP benefits are not restored. Stores will remain open for in-person shopping.  https://www.foxbusiness.com/retail/walmart-addresses-social-media-rumors-close-stores-snap-benefits-lapse  https://www.wrdw.com/2025/10/30/is-walmart-closing-doors-nov-1-heres-what-company-says/  https://www.newsweek.com/f"
+  },
+  {
+    "i": 35,
+    "our_text": "No evidence Rand Paul proposed raising Social Security taxes to 25%. His actual proposals focus on gradually raising retirement age to 70, not increasing payroll taxes. https://www.paul.senate.gov/dr-rand-paul-forces-amendment-vote-to-save-social-security-from-bankruptcy/",
+    "helpful_text": "This clip excludes the interviewer\u2019s question which adds important context. He asked Rand Paul what options are available to save Social Security given the decline in population in younger generations.    https://rumble.com/v712r50-rand-paul-explains-the-only-two-ways-to-keep-social-security-solvent.html"
+  },
+  {
+    "i": 36,
+    "our_text": "No evidence Rand Paul proposed raising Social Security taxes to 25%. His actual proposals focus on gradually raising retirement age to 70, not increasing payroll taxes. https://www.paul.senate.gov/dr-rand-paul-forces-amendment-vote-to-save-social-security-from-bankruptcy/",
+    "helpful_text": "The clip crops a longer exchange. Host asks: \u2018We are not going to have enough taxpayers to fund Social Security\u2026 we\u2019re on a collision course. What do we do?\u2019 Paul answers with tradeoffs: later retirement (to 70) or raising payroll tax to ~25%.\u201d    Full video (timestamped):  https://www.youtube.com/watch?v=DSAhn_5OtAg&amp;t=1130s"
+  },
+  {
+    "i": 37,
+    "our_text": "Image shows crescent/star decorations (Islamic symbols for Ramadan/Eid), not Oxford Street Christmas lights. Oxford Street's actual 2025 Christmas decorations are star-themed LEDs, not crescents. https://www.oxfordstreet.co.uk/whats-happening/the-countdown-is-on-oxford-street-christmas-2025/",
+    "helpful_text": "This photo shows decorations for Ramadan, in the streets of Amman, Jordan. It was taken in 2015.     https://www.tumblr.com/yazeed-qa/145469137999/marah-samra-jordan-amman-downtown-ramadan    https://ana.ir/en/news/5560/jordan-to-ensure-price-stability-during-ramadan"
+  },
+  {
+    "i": 38,
+    "our_text": "The post claims Taylor Swift turned off comments on Instagram, but according to verified reports, Taylor Swift turned off comments on TikTok in 2025, not Instagram. There is no credible evidence that she has disabled Instagram comments in 2025. https://poprant.indiatimes.com/trending/taylor-swift-turns-off-tiktok-comments-amid-online-harassment-over-alleged-nazi-dog-whistling-racist-undertones-trad-wife-claims-673676.html",
+    "helpful_text": "Taylor Swift has had her comments off since 2016.\u201cYes,I keep comments off. I\u2019m showing my friends/fans updates on my life,but I\u2019m training my brain to not need the validation of someone telling me that I look\ud83d\udd25,\u201d.Other people could never relate because that\u2019s all they depend on  https://time.com/5546298/why-taylor-swift-turned-off-instagram-comments/"
+  },
+  {
+    "i": 39,
+    "our_text": "This is a digital composite, not a real photo. The ISS orbits ~400km above Earth while the Moon is ~384,400km away - nearly 1,000x farther. It's physically impossible to capture all three at this scale/clarity in one frame. https://www.asc-csa.gc.ca/eng/multimedia/search/image/17245",
+    "helpful_text": "AI created video clip. Non feasible for Moon to come in between earth and ISS    https://x.com/ZpitnFacz/status/1984181803813666821?t=AOYvNl293x28OQeIPRdy5g&amp;s=19"
+  }
+]
