@@ -936,6 +936,30 @@ export class SupabaseLogger {
   }
 
   /**
+   * Expire all candidates older than maxAgeHours. Returns count expired.
+   */
+  async expireOldCandidates(maxAgeHours: number = 48): Promise<number> {
+    const cutoff = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000).toISOString();
+    const { data, error } = await this.client
+      .from("pipeline_runs")
+      .update({
+        outcome: "rejected",
+        outcome_reason: "candidate_expired",
+        final_stage: "submission",
+      })
+      .eq("outcome", "candidate")
+      .lt("created_at", cutoff)
+      .select("id");
+
+    if (error) {
+      console.error("[SupabaseLogger] Error expiring old candidates:", error);
+      throw error;
+    }
+
+    return data?.length ?? 0;
+  }
+
+  /**
    * Mark a candidate as expired (too old or failed permanently).
    */
   async markCandidateExpired(runId: string, reason: string): Promise<void> {
@@ -1441,6 +1465,18 @@ export class SupabaseLogger {
       .gte("submitted_at", since);
     if (error) {
       console.warn("[SupabaseLogger] Failed to count recent submissions:", error.message);
+      return 0;
+    }
+    return count ?? 0;
+  }
+
+  async countCandidates(): Promise<number> {
+    const { count, error } = await this.client
+      .from("pipeline_runs")
+      .select("*", { count: "exact", head: true })
+      .eq("outcome", "candidate");
+    if (error) {
+      console.warn("[SupabaseLogger] Failed to count candidates:", error.message);
       return 0;
     }
     return count ?? 0;
