@@ -7,9 +7,9 @@
  */
 
 import { Bot, PipelineResult } from "./types";
-import { enrichedSearch } from "../pipeline/enrichedSearch";
-import { writeNoteDirectFn as writeNote } from "../pipeline/writeNoteDirect";
-import { verifySource } from "../pipeline/sourceVerification";
+import { enrichedSearch } from "../pipeline/search/enrichedSearch";
+import { writeNoteDirectFn as writeNote } from "../pipeline/write/writeNoteDirect";
+import { verifySource } from "../pipeline/verify/sourceVerification";
 
 const MODELS = {
   search: "perplexity/sonar-pro",

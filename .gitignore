@@ -58,6 +58,7 @@ comparison-data.json
 
 # Generated reports
 tmp/reports/
+tryout-results/
 docs/*.html
 
 # Temp notes / not for git
@@ -74,9 +75,9 @@ create-notes-routine-dynamic.yml
 .claude/settings.local.json
 
 # scripts_jim large/generated files
-scripts_jim/cn_data/
-scripts_jim/**/venv/
-scripts_jim/**/.venv/
-scripts_jim/**/*.mp4
-scripts_jim/**/batches/
-scripts_jim/**/results/
+src/scripts_jim/cn_data/
+src/scripts_jim/**/venv/
+src/scripts_jim/**/.venv/
+src/scripts_jim/**/*.mp4
+src/scripts_jim/**/batches/
+src/scripts_jim/**/results/

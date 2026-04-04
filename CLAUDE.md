@@ -40,12 +40,23 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 
 ## Key directories
 
+- `src/pipeline/` - Core logic organized into subfolders:
+  - `search/` - Context search (Perplexity, Grok)
+  - `write/` - Note generation variants
+  - `verify/` - Source verification
+  - `score/` - Note scoring, ranking, evaluation filter
+  - `llm/` - LLM client, xAI client, schemas
+  - `media/` - Media analysis
+  - `orchestration/` - processTweet, generateCandidates, submitCandidates
+  - `utils/` - tweetLog, browserManager, parseStatusNoteUrl
 - `src/bots/` - Bot configurations (opus-main, multi-search)
-- `src/pipeline/` - Core logic: search, note writing, checking
-- `src/scripts/` -
+- `src/production/` - GitHub Actions entry points (runPipeline, updateNoteFeedback)
+- `src/local/` - Local testing tools (tryoutNotes, runOnVideos, evaluateResults)
+- `src/scraper/` - Notewriter page scraper
 - `src/review-dashboard/` - React dashboard for reviewing note failures
+- `src/scripts_jim/` - Jim's investigation journal (Python, by date)
+- `src/scripts_nathan/` - Nathan's investigation scripts (by date)
 - `migrations/` - Supabase SQL migrations
-- `scripts/` - Browser console scripts (see below)
 
 ## Review dashboard
 
@@ -65,7 +76,7 @@ Quick guide: use `canonical_note_information` for performance analysis, `notes` 
 
 ## Notewriter scraper
 
-The main scraper is `src/scripts/scrapeNotewriterClickThrough.ts`. It connects to a local Chrome via Puppeteer CDP (port 9222), scrolls through the notewriter page, clicks "View details" on each note to extract the real note ID and status from the modal, then imports to Supabase. When it breaks, we can rejoin from the same position. 
+The main scraper is `src/scraper/scrapeNotewriterClickThrough.ts`. It connects to a local Chrome via Puppeteer CDP (port 9222), scrolls through the notewriter page, clicks "View details" on each note to extract the real note ID and status from the modal, then imports to Supabase. When it breaks, we can rejoin from the same position. 
 
 - **Notewriter account**: `wholesome-raspberry-stilt` (the only active one)
 - **Primary purpose**: Full coverage audit — ensure every note we've written is tracked in the DB
@@ -79,17 +90,17 @@ Usage:
 /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile
 
 # Run scraper (number = max notes to scrape)
-bun run src/scripts/scrapeNotewriterClickThrough.ts 50
-bun run src/scripts/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page first
+bun run src/scraper/scrapeNotewriterClickThrough.ts 50
+bun run src/scraper/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page first
 ```
 
 ## Standing permissions
 
-- **Scraper**: Claude can start the scraper at any time without asking. Use `~/.bun/bin/bun run src/scripts/scrapeNotewriterClickThrough.ts` with appropriate flags. Ask before stopping it. 
+- **Scraper**: Claude can start the scraper at any time without asking. Use `~/.bun/bin/bun run src/scraper/scrapeNotewriterClickThrough.ts` with appropriate flags. Ask before stopping it.
 
 ## Gotchas
 
-- OpenRouter model IDs use dots: `anthropic/claude-opus-4.5` not `claude-opus-4-5-20251101`
+- OpenRouter model IDs use dots: `anthropic/claude-opus-4.6` not `claude-opus-4-6-20251101`
 - GitHub Actions uses bun, not npm
 - The notewriter page virtualizes its list - can't Ctrl+F, need the scraper
 - After compacting, ask Nathan what to do next. 
@@ -100,5 +111,6 @@ bun run src/scripts/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page fi
 
 ```bash
 bun install
-bun run src/scripts/createNotesRoutine.ts
+bun run src/production/runPipeline.ts          # full pipeline (same as GH Actions)
+bun run src/production/runPipeline.ts --local   # local mode
 ```

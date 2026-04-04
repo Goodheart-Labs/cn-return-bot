@@ -10,14 +10,14 @@
  */
 
 import { Bot, PipelineResult } from "./types";
-import { verifySource } from "../pipeline/sourceVerification";
+import { verifySource } from "../pipeline/verify/sourceVerification";
 import {
   searchXWithGrok,
   extractGrokQuotedTweet,
   compareQuotedTweets,
-} from "../pipeline/grokSearch";
-import { claudeFirstSearch, followUpResearch } from "../pipeline/researchLoop";
-import { writeNoteFn as writeNote } from "../pipeline/writeNote";
+} from "../pipeline/search/grokSearch";
+import { claudeFirstSearch, followUpResearch } from "../pipeline/search/researchLoop";
+import { writeNoteFn as writeNote } from "../pipeline/write/writeNote";
 
 const MODELS = {
   grokSearch: "grok-4-fast",

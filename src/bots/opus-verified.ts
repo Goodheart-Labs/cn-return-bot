@@ -13,16 +13,16 @@
  */
 
 import { Bot, PipelineResult } from "./types";
-import { versionOneFn as search } from "../pipeline/searchContextGoal";
-import { deepFactVerification } from "../pipeline/deepFactVerification";
-import { writeNoteFn as writeNote } from "../pipeline/writeNote";
-import { verifySource } from "../pipeline/sourceVerification";
-import { scoreSourceTrustworthiness } from "../pipeline/sourceTrustworthiness";
+import { versionOneFn as search } from "../pipeline/search/searchContextGoal";
+import { deepFactVerification } from "../pipeline/search/deepFactVerification";
+import { writeNoteFn as writeNote } from "../pipeline/write/writeNote";
+import { verifySource } from "../pipeline/verify/sourceVerification";
+import { scoreSourceTrustworthiness } from "../pipeline/verify/sourceTrustworthiness";
 import {
   runNoteScores,
   checkAllThresholds,
   type AllNoteScores,
-} from "../pipeline/noteScores";
+} from "../pipeline/score/noteScores";
 
 const MODELS = {
   search: "perplexity/sonar-pro",

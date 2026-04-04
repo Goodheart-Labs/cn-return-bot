@@ -1,7 +1,7 @@
 {
-  "entry": ["src/scripts/*.ts", "src/tests/*.ts", "src/reports/*.ts", "src/**/*.test.ts"],
+  "entry": ["src/production/*.ts", "src/local/*.ts", "src/scraper/*.ts", "src/reports/*.ts"],
   "project": ["src/**/*.ts"],
-  "ignore": ["src/elo-rating-web/**"],
+  "ignore": ["src/elo-rating-web/**", "src/scripts_jim/**", "src/scripts_nathan/**"],
   "ignoreDependencies": ["@types/p-queue", "papaparse", "@types/papaparse", "react-dom", "@types/react-dom", "react-json-view-lite", "@vitejs/plugin-react"],
   "ignoreExportsUsedInFile": true,
   "exclude": ["types"],
