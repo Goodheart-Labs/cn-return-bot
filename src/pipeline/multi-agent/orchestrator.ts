@@ -19,6 +19,7 @@ import {
 } from "../agent/agentPricing";
 import {
   type AgentState,
+  type TurnResult,
   initAgentState,
   addUserMessage,
   runAgentTurn,
@@ -28,6 +29,8 @@ import { createNotewriterDef } from "./notewriter";
 import { createSourceVerifierDef } from "./sourceVerifier";
 
 const MAX_TURNS = 10;
+
+// --- Types ---
 
 interface FlowTurn {
   agent: string;
@@ -46,7 +49,29 @@ interface SelectedNote {
   evalScore?: number;
 }
 
-export async function runMultiAgentPipeline(
+interface PipelineState {
+  post: Post;
+  content: PostContent;
+  agents: Record<string, AgentState>;
+  flowTurns: FlowTurn[];
+  allSearchOutputs: string[];
+  selectedNote?: SelectedNote;
+  researcherFindings: string;
+  currentAgentName: string;
+  costs: {
+    researcher: TokenCost;
+    notewriter: TokenCost;
+    sourceVerifier: TokenCost;
+    media: TokenCost;
+    total: TokenCost;
+  };
+  startMs: number;
+  mediaCost?: TokenCost;
+}
+
+// --- Pipeline init ---
+
+function initPipeline(
   post: Post,
   content: PostContent,
   config: BotConfig,
@@ -54,46 +79,35 @@ export async function runMultiAgentPipeline(
   authorHistory?: AuthorNoteHistory,
   mediaCost?: TokenCost,
   comments?: string,
-): Promise<PipelineResult> {
+): PipelineState {
   const log = getTweetLog();
-  const startMs = Date.now();
-  const botId = "multi-agent";
 
   // Build agent descriptions for system prompts
   const agentDefs = [
     { name: "researcher", desc: "Investigates factual claims in tweets using search tools and reports findings." },
     { name: "notewriter", desc: "Writes 3-4 community note variants based on research findings." },
-    { name: "source_verifier", desc: "Verifies that cited sources support the community note correction." },
+    { name: "sourceVerifier", desc: "Verifies that cited sources support the community note correction." },
   ];
-  const agentDescriptions = agentDefs
-    .map((a) => `- ${a.name}: ${a.desc}`)
-    .join("\n");
+  const agentDescriptions = agentDefs.map((a) => `- ${a.name}: ${a.desc}`).join("\n");
 
-  // Create agent definitions
   const researcherDef = createResearcherDef(config, agentDescriptions);
   const notewriterDef = createNotewriterDef(agentDescriptions);
   const sourceVerifierDef = createSourceVerifierDef(agentDescriptions);
 
-  // Initialize agent states (no LLM calls — just sets up messages arrays)
   const agents: Record<string, AgentState> = {
     researcher: initAgentState(researcherDef),
     notewriter: initAgentState(notewriterDef),
-    source_verifier: initAgentState(sourceVerifierDef),
+    sourceVerifier: initAgentState(sourceVerifierDef),
   };
 
   // Log initial state
   log?.set("multiAgent.config", config);
   log?.set("multiAgent.agents", agentDefs);
-  log?.set("multiAgent.researcher.systemPrompt", researcherDef.systemPrompt);
-  log?.set("multiAgent.notewriter.systemPrompt", notewriterDef.systemPrompt);
-  log?.set("multiAgent.sourceVerifier.systemPrompt", sourceVerifierDef.systemPrompt);
 
-  // Build and add researcher's first user message
+  // Build researcher's first user message
   const quotedRef = post.referenced_tweets?.find((rt) => rt.type === "quoted");
   const quotedPostText =
-    quotedRef && post.referenced_tweet_data
-      ? post.referenced_tweet_data.text
-      : undefined;
+    quotedRef && post.referenced_tweet_data ? post.referenced_tweet_data.text : undefined;
 
   const firstMessage = buildResearcherFirstMessage({
     tweetText: content.text,
@@ -111,301 +125,243 @@ export async function runMultiAgentPipeline(
   });
   addUserMessage(agents.researcher!, firstMessage);
 
-  // Track state
-  const flowTurns: FlowTurn[] = [];
-  const allSearchOutputs: string[] = [];
-  let selectedNote: SelectedNote | undefined;
-  let researcherFindings = "";
-  let currentAgentName = "researcher";
-  let turnCount = 0;
-
-  // Cost tracking
-  const costs = {
-    researcher: emptyTokenCost(),
-    notewriter: emptyTokenCost(),
-    sourceVerifier: emptyTokenCost(),
-    media: mediaCost ?? emptyTokenCost(),
-    total: emptyTokenCost(),
+  return {
+    post,
+    content,
+    agents,
+    flowTurns: [],
+    allSearchOutputs: [],
+    researcherFindings: "",
+    currentAgentName: "researcher",
+    costs: {
+      researcher: emptyTokenCost(),
+      notewriter: emptyTokenCost(),
+      sourceVerifier: emptyTokenCost(),
+      media: mediaCost ?? emptyTokenCost(),
+      total: emptyTokenCost(),
+    },
+    startMs: Date.now(),
+    mediaCost,
   };
+}
 
-  // Turn loop
-  while (turnCount < MAX_TURNS) {
-    turnCount++;
-    const currentState = agents[currentAgentName]!;
-    const turnStartMs = Date.now();
+// --- Note evaluation ---
 
-    const result = await runAgentTurn(currentState);
-    const turnDurationMs = Date.now() - turnStartMs;
-    allSearchOutputs.push(...result.searchOutputs);
+async function evaluateProposedNotes(
+  state: PipelineState,
+  result: TurnResult,
+  flowTurn: FlowTurn,
+): Promise<void> {
+  const log = getTweetLog();
+  const proposedNotes: Array<{ note_text: string; sources: string[] }> = result.args.notes ?? [];
+  flowTurn.noteCount = proposedNotes.length;
 
-    // Accumulate cost for this agent
-    const costKey =
-      currentAgentName === "source_verifier" ? "sourceVerifier" : currentAgentName;
-    addTokenCost(costs[costKey as keyof typeof costs], result.cost);
+  const evalResults = await Promise.all(
+    proposedNotes.map(async (n) => {
+      const sources = (n.sources ?? []).filter(Boolean);
+      const allUrls = sources.join(" ");
+      const fullText = n.note_text + " " + allUrls;
+      try {
+        const evalResponse = await evaluateNote(state.post.id, fullText);
+        return { noteText: n.note_text, sources, allUrls, score: evalResponse.data?.claim_opinion_score };
+      } catch (err: any) {
+        return { noteText: n.note_text, sources, allUrls, score: undefined, error: err?.message };
+      }
+    }),
+  );
 
-    // Build flow turn entry
-    const flowTurn: FlowTurn = {
-      agent: currentAgentName,
-      terminalTool: result.terminalTool,
-      durationMs: turnDurationMs,
+  const notewriterTurn = state.agents.notewriter!.turnCount;
+  log?.set(
+    `multiAgent.notewriter.turn.${notewriterTurn}.eval_scores`,
+    evalResults.map((r, i) => ({ index: i, score: r.score, error: (r as any).error })),
+  );
+
+  // Pick highest-scoring note (fall back to first)
+  const scored = evalResults.filter((r) => r.score != null);
+  const best = scored.length > 0
+    ? scored.reduce((a, b) => (b.score! > a.score! ? b : a))
+    : evalResults[0];
+
+  if (best) {
+    state.selectedNote = {
+      noteText: best.noteText,
+      sources: best.sources,
+      allUrls: best.allUrls,
+      evalScore: best.score,
     };
-
-    // Route based on terminal tool
-    if (result.terminalTool === "no_correction_needed" || result.terminalTool === "error") {
-      flowTurn.to = undefined;
-      flowTurns.push(flowTurn);
-      logFinal(log, flowTurns, costs, mediaCost, startMs);
-
-      return {
-        post,
-        botId,
-        lastStage: "multi_agent_complete",
-        searchContextResult: {
-          text: content.text,
-          searchResults: allSearchOutputs.join("\n\n"),
-          citations: [],
-        },
-        noteResult: {
-          note: "",
-          url: "",
-          status: result.terminalTool === "error" ? "ERROR" : "NO MISSING CONTEXT",
-        },
-        error:
-          result.terminalTool === "error" ? result.args.reason : undefined,
-      };
-    }
-
-    if (result.terminalTool === "send_message") {
-      const target: string = result.args.to;
-      const message: string = result.args.message;
-      flowTurn.to = target;
-      flowTurns.push(flowTurn);
-
-      if (target === "output") {
-        // Pipeline complete — return the best note
-        logFinal(log, flowTurns, costs, mediaCost, startMs);
-
-        if (!selectedNote) {
-          return {
-            post,
-            botId,
-            lastStage: "multi_agent_complete",
-            searchContextResult: {
-              text: content.text,
-              searchResults: allSearchOutputs.join("\n\n"),
-              citations: [],
-            },
-            noteResult: { note: "", url: "", status: "ERROR" },
-            error: "Source verifier approved but no note was selected",
-          };
-        }
-
-        return {
-          post,
-          botId,
-          lastStage: "multi_agent_complete",
-          searchContextResult: {
-            text: content.text,
-            searchResults: allSearchOutputs.join("\n\n"),
-            citations: selectedNote.sources,
-          },
-          noteResult: {
-            note: selectedNote.noteText,
-            url: selectedNote.allUrls,
-            status: "CORRECTION WITH TRUSTWORTHY CITATION",
-          },
-          checkResult: "YES",
-        };
-      }
-
-      // Route to target agent
-      if (target === "notewriter") {
-        // Track researcher findings on first researcher → notewriter message
-        if (currentAgentName === "researcher") {
-          researcherFindings = message;
-        }
-        addUserMessage(
-          agents.notewriter!,
-          `Message from ${currentAgentName}:\n${message}`,
-        );
-        currentAgentName = "notewriter";
-      } else if (target === "researcher") {
-        addUserMessage(
-          agents.researcher!,
-          `Message from ${currentAgentName}:\n${message}`,
-        );
-        currentAgentName = "researcher";
-      } else {
-        // Unknown target — treat as error
-        logFinal(log, flowTurns, costs, mediaCost, startMs);
-        return {
-          post,
-          botId,
-          lastStage: "multi_agent_complete",
-          searchContextResult: {
-            text: content.text,
-            searchResults: allSearchOutputs.join("\n\n"),
-            citations: [],
-          },
-          noteResult: { note: "", url: "", status: "ERROR" },
-          error: `Unknown send_message target: ${target}`,
-        };
-      }
-
-      continue;
-    }
-
-    if (result.terminalTool === "propose_notes") {
-      // Notewriter proposed notes — evaluate and pick best
-      const proposedNotes: Array<{ note_text: string; sources: string[] }> =
-        result.args.notes ?? [];
-
-      flowTurn.noteCount = proposedNotes.length;
-      flowTurns.push(flowTurn);
-
-      // Evaluate each note via X API in parallel
-      const evalResults = await Promise.all(
-        proposedNotes.map(async (n) => {
-          const sources = (n.sources ?? []).filter(Boolean);
-          const allUrls = sources.join(" ");
-          const fullText = n.note_text + " " + allUrls;
-          try {
-            const evalResponse = await evaluateNote(post.id, fullText);
-            return {
-              noteText: n.note_text,
-              sources,
-              allUrls,
-              score: evalResponse.data?.claim_opinion_score,
-            };
-          } catch (err: any) {
-            return {
-              noteText: n.note_text,
-              sources,
-              allUrls,
-              score: undefined,
-              error: err?.message,
-            };
-          }
-        }),
-      );
-
-      // Log eval scores
-      log?.set(
-        `multiAgent.notewriter.turn.${agents.notewriter!.turnCount}.eval_scores`,
-        evalResults.map((r, i) => ({
-          index: i,
-          score: r.score,
-          error: (r as any).error,
-        })),
-      );
-
-      // Pick highest-scoring note (fall back to first)
-      const scored = evalResults.filter((r) => r.score != null);
-      const best =
-        scored.length > 0
-          ? scored.reduce((a, b) => (b.score! > a.score! ? b : a))
-          : evalResults[0];
-
-      if (best) {
-        selectedNote = {
-          noteText: best.noteText,
-          sources: best.sources,
-          allUrls: best.allUrls,
-          evalScore: best.score,
-        };
-
-        // Update flow turn with selection
-        const lastFlow = flowTurns[flowTurns.length - 1]!;
-        lastFlow.selectedIndex = evalResults.indexOf(best);
-        lastFlow.evalScore = best.score;
-
-        log?.set(
-          `multiAgent.notewriter.turn.${agents.notewriter!.turnCount}.selectedIndex`,
-          evalResults.indexOf(best),
-        );
-        log?.set(
-          `multiAgent.notewriter.turn.${agents.notewriter!.turnCount}.selectedScore`,
-          best.score,
-        );
-      }
-
-      // Construct source verifier message
-      const svMessage = [
-        `## Selected community note`,
-        `Note: ${selectedNote?.noteText ?? "(none)"}`,
-        `Sources: ${selectedNote?.sources.join(", ") ?? "(none)"}`,
-        `Evaluation score: ${selectedNote?.evalScore ?? "unknown"}`,
-        ``,
-        `## Research context`,
-        researcherFindings,
-      ].join("\n");
-
-      addUserMessage(agents.source_verifier!, svMessage);
-      currentAgentName = "source_verifier";
-      continue;
-    }
-
-    // Unknown terminal tool
-    flowTurns.push(flowTurn);
-    break;
+    flowTurn.selectedIndex = evalResults.indexOf(best);
+    flowTurn.evalScore = best.score;
+    log?.set(`multiAgent.notewriter.turn.${notewriterTurn}.selectedIndex`, evalResults.indexOf(best));
+    log?.set(`multiAgent.notewriter.turn.${notewriterTurn}.selectedScore`, best.score);
   }
 
-  // Max turns exhausted — return whatever we have
-  logFinal(log, flowTurns, costs, mediaCost, startMs);
+  // Route to source verifier
+  const svMessage = [
+    `## Selected community note`,
+    `Note: ${state.selectedNote?.noteText ?? "(none)"}`,
+    `Sources: ${state.selectedNote?.sources.join(", ") ?? "(none)"}`,
+    `Evaluation score: ${state.selectedNote?.evalScore ?? "unknown"}`,
+    ``,
+    `## Research context`,
+    state.researcherFindings,
+  ].join("\n");
 
-  if (selectedNote) {
+  addUserMessage(state.agents.sourceVerifier!, svMessage);
+  state.currentAgentName = "sourceVerifier";
+}
+
+// --- send_message routing ---
+
+type RouteResult = "output" | "routed" | "error";
+
+function routeSendMessage(
+  state: PipelineState,
+  target: string,
+  message: string,
+  senderName: string,
+): RouteResult {
+  if (target === "output") return "output";
+
+  const targetAgent = state.agents[target];
+  if (!targetAgent) return "error";
+
+  if (target === "notewriter" && senderName === "researcher") {
+    state.researcherFindings = message;
+  }
+
+  addUserMessage(targetAgent, `Message from ${senderName}:\n${message}`);
+  state.currentAgentName = target;
+  return "routed";
+}
+
+// --- PipelineResult builders ---
+
+function buildResult(
+  state: PipelineState,
+  lastStage: string,
+  note?: SelectedNote,
+  error?: string,
+  warnings?: string[],
+): PipelineResult {
+  const searchResults = state.allSearchOutputs.join("\n\n");
+
+  if (note) {
     return {
-      post,
-      botId,
-      lastStage: "multi_agent_exhausted",
-      searchContextResult: {
-        text: content.text,
-        searchResults: allSearchOutputs.join("\n\n"),
-        citations: selectedNote.sources,
-      },
-      noteResult: {
-        note: selectedNote.noteText,
-        url: selectedNote.allUrls,
-        status: "CORRECTION WITH TRUSTWORTHY CITATION",
-      },
+      post: state.post,
+      botId: "multi-agent",
+      lastStage,
+      searchContextResult: { text: state.content.text, searchResults, citations: note.sources },
+      noteResult: { note: note.noteText, url: note.allUrls, status: "CORRECTION WITH TRUSTWORTHY CITATION" },
       checkResult: "YES",
-      warnings: [`Multi-agent pipeline exhausted after ${MAX_TURNS} turns`],
+      warnings,
     };
   }
 
   return {
-    post,
-    botId,
-    lastStage: "multi_agent_exhausted",
-    searchContextResult: {
-      text: content.text,
-      searchResults: allSearchOutputs.join("\n\n"),
-      citations: [],
-    },
-    noteResult: { note: "", url: "", status: "ERROR" },
-    error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns`,
+    post: state.post,
+    botId: "multi-agent",
+    lastStage,
+    searchContextResult: { text: state.content.text, searchResults, citations: [] },
+    noteResult: { note: "", url: "", status: error ? "ERROR" : "NO MISSING CONTEXT" },
+    error,
+    warnings,
   };
 }
 
-function logFinal(
-  log: ReturnType<typeof getTweetLog>,
-  flowTurns: FlowTurn[],
-  costs: Record<string, TokenCost>,
-  mediaCost: TokenCost | undefined,
-  startMs: number,
-): void {
-  // Sum total costs
+// --- Cost logging ---
+
+function logFinal(state: PipelineState): void {
+  const log = getTweetLog();
   const total = emptyTokenCost();
   for (const key of ["researcher", "notewriter", "sourceVerifier"] as const) {
-    addTokenCost(total, costs[key]!);
+    addTokenCost(total, state.costs[key]);
   }
-  if (mediaCost) addTokenCost(total, mediaCost);
-  costs.total = total;
+  if (state.mediaCost) addTokenCost(total, state.mediaCost);
+  state.costs.total = total;
 
-  log?.set("multiAgent.flow", {
-    turns: flowTurns,
-    totalTurns: flowTurns.length,
-  });
-  log?.set("multiAgent.costs", costs);
-  log?.set("multiAgent.totalDurationMs", Date.now() - startMs);
+  log?.set("multiAgent.flow", { turns: state.flowTurns, totalTurns: state.flowTurns.length });
+  log?.set("multiAgent.costs", state.costs);
+  log?.set("multiAgent.totalDurationMs", Date.now() - state.startMs);
+}
+
+// --- Main pipeline ---
+
+export async function runMultiAgentPipeline(
+  post: Post,
+  content: PostContent,
+  config: BotConfig,
+  mediaResult: GeminiMediaResult,
+  authorHistory?: AuthorNoteHistory,
+  mediaCost?: TokenCost,
+  comments?: string,
+): Promise<PipelineResult> {
+  const state = initPipeline(post, content, config, mediaResult, authorHistory, mediaCost, comments);
+  let turnCount = 0;
+
+  while (turnCount < MAX_TURNS) {
+    turnCount++;
+    const turnStartMs = Date.now();
+    const result = await runAgentTurn(state.agents[state.currentAgentName]!);
+    const turnDurationMs = Date.now() - turnStartMs;
+
+    state.allSearchOutputs.push(...result.searchOutputs);
+
+    // Accumulate cost
+    addTokenCost(state.costs[state.currentAgentName as keyof typeof state.costs], result.cost);
+
+    const flowTurn: FlowTurn = {
+      agent: state.currentAgentName,
+      terminalTool: result.terminalTool,
+      durationMs: turnDurationMs,
+    };
+
+    // --- no_correction_needed / error ---
+    if (result.terminalTool === "no_correction_needed" || result.terminalTool === "error") {
+      state.flowTurns.push(flowTurn);
+      logFinal(state);
+      const status = result.terminalTool === "error" ? "ERROR" : undefined;
+      return buildResult(state, "multi_agent_complete", undefined, status ? result.args.reason : undefined);
+    }
+
+    // --- send_message ---
+    if (result.terminalTool === "send_message") {
+      flowTurn.to = result.args.to;
+      state.flowTurns.push(flowTurn);
+
+      const route = routeSendMessage(state, result.args.to, result.args.message, state.currentAgentName);
+
+      if (route === "output") {
+        logFinal(state);
+        if (!state.selectedNote) {
+          return buildResult(state, "multi_agent_complete", undefined, "Source verifier approved but no note was selected");
+        }
+        return buildResult(state, "multi_agent_complete", state.selectedNote);
+      }
+      if (route === "error") {
+        logFinal(state);
+        return buildResult(state, "multi_agent_complete", undefined, `Unknown send_message target: ${result.args.to}`);
+      }
+      continue;
+    }
+
+    // --- propose_notes ---
+    if (result.terminalTool === "propose_notes") {
+      await evaluateProposedNotes(state, result, flowTurn);
+      state.flowTurns.push(flowTurn);
+      continue;
+    }
+
+    // Unknown terminal tool
+    state.flowTurns.push(flowTurn);
+    break;
+  }
+
+  // Max turns exhausted
+  logFinal(state);
+  if (state.selectedNote) {
+    return buildResult(state, "multi_agent_exhausted", state.selectedNote, undefined, [
+      `Multi-agent pipeline exhausted after ${MAX_TURNS} turns`,
+    ]);
+  }
+  return buildResult(state, "multi_agent_exhausted", undefined, `Multi-agent pipeline exhausted after ${MAX_TURNS} turns`);
 }

@@ -20,6 +20,7 @@ import {
   emptyTokenCost,
   addTokenCost,
   type TokenCost,
+  type IterationCost,
 } from "../agent/agentPricing";
 
 // --- Types ---
@@ -44,6 +45,7 @@ export interface TurnResult {
   args: Record<string, any>;
   cost: TokenCost;
   iterations: number;
+  iterationCosts: Record<number, IterationCost>;
   searchOutputs: string[];
 }
 
@@ -119,27 +121,165 @@ async function executeToolCall(
   }
 }
 
+// --- Tool call parsing ---
+
+function parseToolCall(toolCall: any): { name: string; args: Record<string, any> } {
+  if (toolCall.type === "function") {
+    try {
+      return { name: toolCall.function.name, args: JSON.parse(toolCall.function.arguments) };
+    } catch {
+      return { name: toolCall.function.name, args: { raw: toolCall.function.arguments } };
+    }
+  }
+  // Built-in tool reported as custom type
+  const custom = (toolCall as any).custom;
+  const name = custom?.name ?? (toolCall as any).type ?? "unknown_builtin";
+  try {
+    return { name, args: custom?.input ? JSON.parse(custom.input) : {} };
+  } catch {
+    return { name, args: { raw: custom?.input } };
+  }
+}
+
+// --- Response logging ---
+
+function logResponse(
+  message: any,
+  response: any,
+  prefix: string,
+  iteration: number,
+  searchOutputs: string[],
+  iterCost: IterationCost,
+): void {
+  const log = getTweetLog();
+
+  // Track LLM cost for this iteration
+  const llmCost = extractOpenRouterCost(response);
+  iterCost.input_tokens += llmCost.input_tokens;
+  iterCost.output_tokens += llmCost.output_tokens;
+  iterCost.cost += llmCost.cost;
+
+  if (message.content) {
+    log?.set(`${prefix}.messages.${iteration}.content`, message.content);
+  }
+
+  const reasoning = (message as any).reasoning;
+  if (reasoning) {
+    log?.set(`${prefix}.messages.${iteration}.reasoning`, reasoning);
+  }
+
+  const annotations = (message as any).annotations as any[] | undefined;
+  if (annotations?.length) {
+    log?.set(`${prefix}.messages.${iteration}.annotations`, annotations);
+    const urls = annotations
+      .filter((a: any) => a.type === "url_citation")
+      .map((a: any) => `${a.url_citation?.title}: ${a.url_citation?.url}`)
+      .join("\n");
+    if (urls) searchOutputs.push(`--- web_search ---\n${urls}`);
+  }
+}
+
+function hasAnnotations(message: any): boolean {
+  const annotations = (message as any).annotations;
+  return Array.isArray(annotations) && annotations.length > 0;
+}
+
+// --- Process a single tool call, log it, update state ---
+
+async function processToolCall(
+  toolCall: any,
+  toolIndex: number,
+  state: AgentState,
+  prefix: string,
+  iteration: number,
+  iterCost: IterationCost,
+  searchOutputs: string[],
+): Promise<TurnResult | null> {
+  const log = getTweetLog();
+  const { name, args } = parseToolCall(toolCall);
+
+  const toolStartMs = Date.now();
+  const result = await executeToolCall(name, args);
+  const toolDurationMs = Date.now() - toolStartMs;
+
+  // Use toolIndex suffix to avoid overwrites when multiple calls share a name
+  const logKey = toolIndex === 0 ? name : `${name}_${toolIndex}`;
+  log?.set(`${prefix}.messages.${iteration}.${logKey}`, {
+    args,
+    result: result.output,
+    durationMs: toolDurationMs,
+  });
+
+  // Track tool cost in this iteration's breakdown
+  if (result.cost) {
+    iterCost.tools[logKey] = result.cost;
+    iterCost.cost += result.cost.cost;
+  }
+
+  state.messages.push({
+    role: "tool",
+    tool_call_id: toolCall.id,
+    content: typeof result.output === "string" ? result.output : JSON.stringify(result.output),
+  });
+
+  if (name === "grok_search" || name === "perplexity_search") {
+    const text = result.output?.results ?? JSON.stringify(result.output);
+    searchOutputs.push(`--- ${name} ---\n${text}`);
+  }
+
+  if (state.def.terminalTools.includes(name)) {
+    return { terminalTool: name, args, cost: emptyTokenCost(), iterations: iteration, iterationCosts: {}, searchOutputs };
+  }
+
+  return null;
+}
+
+// --- Finalize turn (log costs + accumulate) ---
+
+function finalizeTurn(
+  state: AgentState,
+  prefix: string,
+  iteration: number,
+  turnCost: TokenCost,
+  iterationCosts: Record<number, IterationCost>,
+): void {
+  addTokenCost(state.cost, turnCost);
+  const log = getTweetLog();
+  log?.set(`${prefix}.iterations`, iteration);
+  log?.set(`${prefix}.costs`, {
+    messages: iterationCosts,
+    ...turnCost,
+  });
+}
+
 // --- Agent turn loop ---
 
 export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
-  const log = getTweetLog();
   state.turnCount++;
   const turn = state.turnCount;
   const agentName = state.def.name;
   const prefix = `multiAgent.${agentName}.turn.${turn}`;
 
-  // Log the user message that triggered this turn
+  const log = getTweetLog();
+
+  // Log messages.0: system prompt + user message that triggered this turn
+  if (turn === 1) {
+    log?.set(`${prefix}.messages.0.systemPrompt`, state.def.systemPrompt);
+  }
   const lastMsg = state.messages[state.messages.length - 1];
   if (lastMsg?.role === "user") {
-    log?.set(`${prefix}.userMessage`, lastMsg.content);
+    log?.set(`${prefix}.messages.0.userMessage`, lastMsg.content);
   }
 
   const turnCost = emptyTokenCost();
+  const iterationCosts: Record<number, IterationCost> = {};
   const searchOutputs: string[] = [];
   let iteration = 0;
 
   while (iteration < MAX_ITERATIONS) {
     iteration++;
+
+    const iterCost: IterationCost = { input_tokens: 0, output_tokens: 0, cost: 0, tools: {} };
 
     const response = await llm.create({
       model: MULTI_AGENT_MODEL,
@@ -153,132 +293,52 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
       break;
     }
 
-    const iterCost = extractOpenRouterCost(response);
-    addTokenCost(turnCost, iterCost);
+    logResponse(message, response, prefix, iteration, searchOutputs, iterCost);
 
-    // Log content
-    if (message.content) {
-      log?.set(`${prefix}.messages.${iteration}.content`, message.content);
-    }
-
-    // Log reasoning if present
-    const reasoning = (message as any).reasoning;
-    if (reasoning) {
-      log?.set(`${prefix}.messages.${iteration}.reasoning`, reasoning);
-    }
-
-    // Handle native web_search annotations
-    const annotations = (message as any).annotations as any[] | undefined;
-    if (annotations?.length) {
-      log?.set(`${prefix}.messages.${iteration}.annotations`, annotations);
-      const urls = annotations
-        .filter((a: any) => a.type === "url_citation")
-        .map((a: any) => `${a.url_citation?.title}: ${a.url_citation?.url}`)
-        .join("\n");
-      if (urls) searchOutputs.push(`--- web_search ---\n${urls}`);
-    }
-
-    // No tool calls
+    // No tool calls — either web_search annotation (continue) or implicit stop
     if (!message.tool_calls?.length) {
-      if (annotations?.length) {
-        // Model used web_search server-side, continue loop
+      iterationCosts[iteration] = iterCost;
+      addTokenCost(turnCost, iterCost);
+
+      if (hasAnnotations(message)) {
         state.messages.push(message);
         continue;
       }
-      // No tool calls and no annotations — treat as implicit no_correction
+      finalizeTurn(state, prefix, iteration, turnCost, iterationCosts);
       return {
         terminalTool: "no_correction_needed",
         args: { reason: typeof message.content === "string" ? message.content : "No tool calls made" },
         cost: turnCost,
         iterations: iteration,
+        iterationCosts,
         searchOutputs,
       };
     }
 
-    // Add assistant message to conversation
     state.messages.push(message);
 
-    // Execute tool calls
-    for (const toolCall of message.tool_calls) {
-      let name: string;
-      let args: Record<string, any> = {};
-
-      if (toolCall.type === "function") {
-        name = toolCall.function.name;
-        try {
-          args = JSON.parse(toolCall.function.arguments);
-        } catch {
-          args = { raw: toolCall.function.arguments };
-        }
-      } else {
-        const custom = (toolCall as any).custom;
-        name = custom?.name ?? (toolCall as any).type ?? "unknown_builtin";
-        try {
-          args = custom?.input ? JSON.parse(custom.input) : {};
-        } catch {
-          args = { raw: custom?.input };
-        }
-      }
-
-      const toolStartMs = Date.now();
-      const result = await executeToolCall(name, args);
-      const toolDurationMs = Date.now() - toolStartMs;
-
-      // Log tool call
-      log?.set(`${prefix}.messages.${iteration}.${name}`, {
-        args,
-        result: result.output,
-        durationMs: toolDurationMs,
-      });
-
-      // Track tool cost
-      if (result.cost) {
-        addTokenCost(turnCost, result.cost);
-      }
-
-      // Add tool result to conversation
-      state.messages.push({
-        role: "tool",
-        tool_call_id: toolCall.id,
-        content:
-          typeof result.output === "string"
-            ? result.output
-            : JSON.stringify(result.output),
-      });
-
-      // Track search outputs
-      if (name === "grok_search" || name === "perplexity_search") {
-        const text = result.output?.results ?? JSON.stringify(result.output);
-        searchOutputs.push(`--- ${name} ---\n${text}`);
-      }
-
-      // Check for terminal tool
-      if (state.def.terminalTools.includes(name)) {
-        addTokenCost(state.cost, turnCost);
-        log?.set(`${prefix}.iterations`, iteration);
-        log?.set(`${prefix}.cost`, turnCost);
-
-        return {
-          terminalTool: name,
-          args,
-          cost: turnCost,
-          iterations: iteration,
-          searchOutputs,
-        };
+    for (let ti = 0; ti < message.tool_calls.length; ti++) {
+      const toolCall = message.tool_calls[ti];
+      const terminal = await processToolCall(toolCall, ti, state, prefix, iteration, iterCost, searchOutputs);
+      if (terminal) {
+        iterationCosts[iteration] = iterCost;
+        addTokenCost(turnCost, iterCost);
+        finalizeTurn(state, prefix, iteration, turnCost, iterationCosts);
+        return { ...terminal, cost: turnCost, iterationCosts };
       }
     }
+
+    iterationCosts[iteration] = iterCost;
+    addTokenCost(turnCost, iterCost);
   }
 
-  // Loop exhausted
-  addTokenCost(state.cost, turnCost);
-  log?.set(`${prefix}.iterations`, iteration);
-  log?.set(`${prefix}.cost`, turnCost);
-
+  finalizeTurn(state, prefix, iteration, turnCost, iterationCosts);
   return {
     terminalTool: "error",
     args: { reason: `Loop exhausted after ${MAX_ITERATIONS} iterations` },
     cost: turnCost,
     iterations: iteration,
+    iterationCosts,
     searchOutputs,
   };
 }

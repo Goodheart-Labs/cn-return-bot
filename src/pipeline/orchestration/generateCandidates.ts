@@ -10,7 +10,7 @@ import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../../bots/index";
 import { processSingleTweet } from "./processTweet";
-import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../utils/tweetLog";
+import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, nestDotKeys, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions, getTweetScore } from "./utils/tweetSorting";
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -235,9 +235,18 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
       if (output) {
         const url = `https://x.com/i/status/${post.id}`;
         output.appendRow(resultToCsvRow({ url }, selectedBot.id, tweetResult, "", log));
+        const logs = nestDotKeys(Object.fromEntries(log));
         uncategorizedRows.push({
           category: "uncategorized",
-          parsed: { url, bot_id: selectedBot.id, outcome: tweetResult.outcome, note_text: tweetResult.noteText ?? "" },
+          parsed: {
+            url,
+            text: post.text ?? "",
+            bot_id: selectedBot.id,
+            note_status: tweetResult.noteStatus ?? "",
+            outcome: `${tweetResult.outcome}${tweetResult.outcomeReason ? ` (${tweetResult.outcomeReason})` : ""}`,
+            note_text: tweetResult.noteText ?? "",
+            logs,
+          },
         });
       }
 

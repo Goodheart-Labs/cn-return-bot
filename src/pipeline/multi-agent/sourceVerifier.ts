@@ -32,7 +32,7 @@ const SYSTEM_PROMPT = `You are a source verification agent. You receive a commun
 
 export function createSourceVerifierDef(agentDescriptions: string): AgentDef {
   return {
-    name: "source_verifier",
+    name: "sourceVerifier",
     description:
       "Verifies that cited sources support the community note correction.",
     systemPrompt: SYSTEM_PROMPT + `\n\n## Other agents\n${agentDescriptions}`,
