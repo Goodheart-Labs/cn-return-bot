@@ -349,17 +349,18 @@ async function main() {
   const now = new Date().toISOString();
   let newlyHelpful = 0;
 
-  const canonicalRows: Record<string, any>[] = [];
+  // Split new vs existing rows into separate batches because PostgREST normalizes
+  // all rows in a batch to the same columns — mixing rows with/without first_seen_at
+  // causes it to set first_seen_at=NULL on existing rows, violating NOT NULL.
+  const newCanonicalRows: Record<string, any>[] = [];
+  const existingCanonicalRows: Record<string, any>[] = [];
   for (const [noteId, noteData] of ourNotes) {
     const status = statusMap.get(noteId);
 
-    // Track newly helpful
     const wasHelpful = existingStatusMap.get(noteId) === "CURRENTLY_RATED_HELPFUL";
     const isNowHelpful = status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
     if (isNowHelpful && !wasHelpful) newlyHelpful++;
 
-    // Note: we don't write view_count here — public data dumps don't include it yet
-    // (Nathan has requested it). Scraper/reconciliation owns view_count for now.
     const row: Record<string, any> = {
       note_id: noteId,
       tweet_id: noteData.tweetId,
@@ -384,24 +385,27 @@ async function main() {
       bot_name: enrichmentMap.get(noteId)?.bot_name || null,
     };
 
-    if (!existingIds.has(noteId)) {
+    if (existingIds.has(noteId)) {
+      existingCanonicalRows.push(row);
+    } else {
       row.first_seen_at = now;
+      newCanonicalRows.push(row);
     }
-
-    canonicalRows.push(row);
   }
 
   let upserted = 0, upsertErrors = 0;
-  for (let i = 0; i < canonicalRows.length; i += PAGE_SIZE) {
-    const batch = canonicalRows.slice(i, i + PAGE_SIZE);
-    const { error } = await client
-      .from("canonical_note_information")
-      .upsert(batch, { onConflict: "note_id" });
-    if (error) {
-      console.error(`[updateFeedback] Error upserting canonical batch: ${error.message}`);
-      upsertErrors += batch.length;
-    } else {
-      upserted += batch.length;
+  for (const rows of [newCanonicalRows, existingCanonicalRows]) {
+    for (let i = 0; i < rows.length; i += PAGE_SIZE) {
+      const batch = rows.slice(i, i + PAGE_SIZE);
+      const { error } = await client
+        .from("canonical_note_information")
+        .upsert(batch, { onConflict: "note_id" });
+      if (error) {
+        console.error(`[updateFeedback] Error upserting canonical batch: ${error.message}`);
+        upsertErrors += batch.length;
+      } else {
+        upserted += batch.length;
+      }
     }
   }
 
