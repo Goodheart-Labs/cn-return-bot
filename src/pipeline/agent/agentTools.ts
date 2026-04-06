@@ -12,7 +12,7 @@ import TurndownService from "turndown";
 import { xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../write/writeNote";
-import type { AgentConfig } from "./agentConfig";
+import type { BotConfig } from "./agentConfig";
 import {
   GROK_MODEL, PERPLEXITY_MODEL,
   calculateGrokCost, extractOpenRouterCost,
@@ -23,7 +23,7 @@ const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fen
 
 // --- Tool schemas ---
 
-const GROK_SEARCH_TOOL = {
+export const GROK_SEARCH_TOOL = {
   type: "function" as const,
   function: {
     name: "grok_search",
@@ -38,7 +38,7 @@ const GROK_SEARCH_TOOL = {
   },
 };
 
-const PERPLEXITY_SEARCH_TOOL = {
+export const PERPLEXITY_SEARCH_TOOL = {
   type: "function" as const,
   function: {
     name: "perplexity_search",
@@ -53,7 +53,7 @@ const PERPLEXITY_SEARCH_TOOL = {
   },
 };
 
-const WEB_FETCH_TOOL = {
+export const WEB_FETCH_TOOL = {
   type: "function" as const,
   function: {
     name: "web_fetch",
@@ -68,7 +68,7 @@ const WEB_FETCH_TOOL = {
   },
 };
 
-const PROPOSE_NOTES_TOOL = {
+export const PROPOSE_NOTES_TOOL = {
   type: "function" as const,
   function: {
     name: "propose_notes",
@@ -101,7 +101,7 @@ const PROPOSE_NOTES_TOOL = {
   },
 };
 
-const NO_CORRECTION_TOOL = {
+export const NO_CORRECTION_TOOL = {
   type: "function" as const,
   function: {
     name: "no_correction_needed",
@@ -118,12 +118,12 @@ const NO_CORRECTION_TOOL = {
 };
 
 // Claude built-in tools (OpenRouter passthrough)
-const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
-const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, name: "code_execution" };
+export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
+export const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, name: "code_execution" };
 
 // --- Build tool list ---
 
-export function buildToolList(config: AgentConfig): any[] {
+export function buildToolList(config: BotConfig): any[] {
   const tools: any[] = [
     GROK_SEARCH_TOOL,
     WEB_FETCH_TOOL,
@@ -169,7 +169,7 @@ export async function executeToolCall(
   }
 }
 
-async function handleGrokSearch(query: string): Promise<ToolResult> {
+export async function handleGrokSearch(query: string): Promise<ToolResult> {
   if (!process.env.XAI_API_KEY) {
     return { output: { error: "XAI_API_KEY not set" }, isTerminal: false };
   }
@@ -195,7 +195,7 @@ async function handleGrokSearch(query: string): Promise<ToolResult> {
   return { output: { results: text }, isTerminal: false, cost };
 }
 
-async function handlePerplexitySearch(query: string): Promise<ToolResult> {
+export async function handlePerplexitySearch(query: string): Promise<ToolResult> {
   const result = await llm.create({
     model: PERPLEXITY_MODEL,
     messages: [{ role: "user" as const, content: query }],
@@ -208,7 +208,7 @@ async function handlePerplexitySearch(query: string): Promise<ToolResult> {
   return { output: { results: content, citations }, isTerminal: false, cost };
 }
 
-async function handleWebFetch(url: string): Promise<ToolResult> {
+export async function handleWebFetch(url: string): Promise<ToolResult> {
   try {
     const response = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; CommunityNotesBot/1.0)" },
@@ -249,7 +249,7 @@ async function handleWebFetch(url: string): Promise<ToolResult> {
   }
 }
 
-function handleProposeNotes(
+export function handleProposeNotes(
   notes: Array<{ note_text: string; sources: string[] }>,
 ): ToolResult {
   const results = notes.map((n, i) => {

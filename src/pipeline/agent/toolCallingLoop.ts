@@ -10,7 +10,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineResult, PostContent } from "../../bots/types";
 import type { GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "./agentAuthorHistory";
-import type { AgentConfig } from "./agentConfig";
+import type { BotConfig } from "./agentConfig";
 import { llm } from "../llm/llm";
 import { evaluateNote } from "../score/noteEvaluationFilter";
 import { getTweetLog } from "../utils/tweetLog";
@@ -39,7 +39,7 @@ interface TerminalResult {
 export async function runToolCallingLoop(
   post: Post,
   content: PostContent,
-  config: AgentConfig,
+  config: BotConfig,
   mediaResult: GeminiMediaResult,
   authorHistory?: AuthorNoteHistory,
   mediaCost?: TokenCost,

@@ -24,16 +24,16 @@ export const FEATURE_FLAGS: FeatureFlag[] = [
 
 // --- Config type ---
 
-export interface AgentConfig {
+export interface BotConfig {
   search_mode: "native-search" | "perplexity-search";
   [key: string]: string | number | boolean;
 }
 
 // --- AsyncLocalStorage ---
 
-const configStorage = new AsyncLocalStorage<AgentConfig>();
+const configStorage = new AsyncLocalStorage<BotConfig>();
 
-export function withAgentConfig<T>(config: AgentConfig, fn: () => T): T {
+export function withBotConfig<T>(config: BotConfig, fn: () => T): T {
   return configStorage.run(config, fn);
 }
 
@@ -49,17 +49,17 @@ function pickWeighted<T>(options: FlagOption<T>[]): T {
   return options[options.length - 1]!.value;
 }
 
-export function randomizeConfig(): AgentConfig {
+export function randomizeConfig(): BotConfig {
   const config: Record<string, string | number | boolean> = {};
   for (const flag of FEATURE_FLAGS) {
     config[flag.name] = pickWeighted(flag.options);
   }
-  return config as AgentConfig;
+  return config as BotConfig;
 }
 
 // --- Bot name derivation ---
 
-export function deriveBotName(base: string, config: AgentConfig): string {
+export function deriveBotName(base: string, config: BotConfig): string {
   const flagValues = FEATURE_FLAGS.map((f) => String(config[f.name]));
   return [base, ...flagValues].join("_");
 }
