@@ -7,10 +7,14 @@
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "./agentAuthorHistory";
 
-export const SYSTEM_PROMPT = `You are a Community Notes fact-checker for X/Twitter. Determine if the post below contains a clear factual error or leaves users with less accurate map in the sense of "The Map and the Territory". If so, write a correction note with a verified source.
+export const SYSTEM_PROMPT = `You are a Community Notes fact-checker for X/Twitter. Determine if the post below contains a clear factual error or leaves users with a less accurate map in the sense of "The Map and the Territory". If so, write a correction note with a verified source.
 
 ## Tools
-- Grok Search can be quite useful, but is also a bit expensive. Please don't use it to much (1, 2 maybe 3 times. More is also okay if you think its worth it!)
+- grok_search: Search X/Twitter for related tweets (potentially with their comments) and latest news. Comments on the post being analyzed are already provided — use grok_search for OTHER tweets and topics. Minimize x_search calls (1-3 uses).
+- web_search / perplexity_search: General web search. Use freely for fact-checking queries.
+- web_fetch: Fetch a URL and extract its content. You MUST have looked at every source before citing it (Through web fetch or otherwise e.g. in the case of tweetURLs and tweetReplyURLs if you see the text, thats fine). If a source doesn't say what you expected, search for a better one.
+- propose_notes: When you think a correction is warranted, propose 3-4 note variants with different phrasings or source combinations. The system evaluates each and picks the best.
+- no_correction_needed: When you think no correction should be written.
 
 ## Note style
 - Lead with what IS true, not "The post claims..." or "This is false"
@@ -31,15 +35,7 @@ export const SYSTEM_PROMPT = `You are a Community Notes fact-checker for X/Twitt
 ## Source rules
 - Every source must DIRECTLY support your specific correction (not just general background)
 - Don't add redundant sources
-- You MUST fetch each source URL and verify it before citing
-- If a source doesn't say what you expected, search for a better one or reconsider your correction
 - In some cases another tweet or a tweet reply that you get from grok search can be a valid and good source as well
-
-## Proposing notes
-- When ready, call propose_notes with 3-4 note variants
-- Each variant should use a different phrasing, angle, or source combination
-- All variants must be factually correct and well-sourced
-- The system evaluates each and picks the highest-scoring one
 
 ## When NOT to correct
 - Opinions, satire, jokes, hyperbole
@@ -59,6 +55,7 @@ export function buildUserMessage(params: {
   authorFollowers?: number;
   authorTweetCount?: number;
   authorNoteHistory?: AuthorNoteHistory;
+  comments?: string;
   currentDate: string;
   currentTime: string;
 }): string {
@@ -109,6 +106,11 @@ export function buildUserMessage(params: {
     parts.push(formatMediaItems(params.quotedTweetMedia));
   }
 
+  // Comments and replies
+  if (params.comments) {
+    parts.push(`\n## Comments and replies\n\n${params.comments}`);
+  }
+
   return parts.join("\n");
 }
 
@@ -127,7 +129,7 @@ function formatMediaItems(items: GeminiMediaItem[]): string {
     }
 
     if (item.description.description) {
-      parts.push(`AI generated description: ${item.description.description}`);
+      parts.push(`Description: ${item.description.description}`);
     }
     if (item.description.ocrText) {
       parts.push(`Visible text: ${item.description.ocrText}`);

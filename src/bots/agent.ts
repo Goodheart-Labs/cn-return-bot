@@ -1,7 +1,7 @@
 /**
  * Agent Bot
  *
- * Agentic bot using Claude 4.6 Opus with tool calling.
+ * Agentic bot using Claude 4.5 Haiku with tool calling.
  * Replaces the sequential search -> write -> verify pipeline with a single
  * agentic call that decides its own workflow.
  *
@@ -11,14 +11,16 @@
 
 import { Bot, PipelineResult } from "./types";
 import { randomizeConfig, withAgentConfig, deriveBotName } from "../pipeline/agent/agentConfig";
-import { analyzeMediaGemini, type GeminiMediaResult } from "../pipeline/media/mediaAnalysisGemini";
+import { analyzeMediaGemini } from "../pipeline/media/mediaAnalysisGemini";
+import { emptyTokenCost, addTokenCost } from "../pipeline/agent/agentPricing";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "../pipeline/agent/agentAuthorHistory";
+import { fetchTweetComments } from "../pipeline/agent/agentComments";
 import { runToolCallingLoop } from "../pipeline/agent/toolCallingLoop";
 
 export const agentBot: Bot = {
   id: "agent",
-  name: "Agent (Opus 4.6)",
-  description: "Agentic bot using Claude 4.6 Opus with tool calling",
+  name: "Agent (Haiku 4.5)",
+  description: "Agentic bot using Claude 4.5 Haiku with tool calling",
   weight: 10000,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
@@ -28,7 +30,7 @@ export const agentBot: Bot = {
       const warnings: string[] = [];
 
       // 1. Media analysis with Gemini 3 Flash (separate tweet + quoted tweet media)
-      let mediaResult: GeminiMediaResult = { tweetMedia: [], quotedTweetMedia: [] };
+      let mediaResult = { tweetMedia: [] as any[], quotedTweetMedia: [] as any[], cost: emptyTokenCost() };
       const hasTweetMedia = post.media?.length > 0;
       const hasQuotedMedia = post.referenced_tweet_data?.media?.length > 0;
 
@@ -57,8 +59,19 @@ export const agentBot: Bot = {
         console.warn(`[agent] Author history lookup failed: ${err.message}`);
       }
 
-      // 3. Run the tool-calling loop
-      const result = await runToolCallingLoop(post, content, config, mediaResult, authorHistory);
+      // 3. Fetch comments/replies via Grok (best-effort, non-fatal)
+      let comments: string | undefined;
+      const totalMediaCost = { ...mediaResult.cost };
+      try {
+        const commentsResult = await fetchTweetComments(post.id, content.text);
+        comments = commentsResult.comments || undefined;
+        addTokenCost(totalMediaCost, commentsResult.cost);
+      } catch (err: any) {
+        console.warn(`[agent] Comment fetch failed: ${err.message}`);
+      }
+
+      // 4. Run the tool-calling loop
+      const result = await runToolCallingLoop(post, content, config, mediaResult, authorHistory, totalMediaCost, comments);
       result.botId = deriveBotName("agent", config);
 
       if (warnings.length && !result.warnings) {

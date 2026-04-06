@@ -5,11 +5,21 @@
  * Tools are either Claude built-in (handled by OpenRouter) or custom function tools.
  */
 
+import { Readability } from "@mozilla/readability";
 import { generateText } from "ai";
+import { parseHTML } from "linkedom";
+import TurndownService from "turndown";
 import { xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../write/writeNote";
 import type { AgentConfig } from "./agentConfig";
+import {
+  GROK_MODEL, PERPLEXITY_MODEL,
+  calculateGrokCost, extractOpenRouterCost,
+  type TokenCost,
+} from "./agentPricing";
+
+const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced" });
 
 // --- Tool schemas ---
 
@@ -17,8 +27,7 @@ const GROK_SEARCH_TOOL = {
   type: "function" as const,
   function: {
     name: "grok_search",
-    description:
-      "Search X/Twitter using Grok. Has access to real-time X data. Useful for: tweet context (thread, replies, quotes), latest breaking news, detecting AI-generated content (people point it out in comments), finding relevant reply URLs as sources. Grok will provide full tweet texts.",
+    description: "Search X/Twitter using Grok for related tweets (potentially with their comments) and latest news.",
     parameters: {
       type: "object" as const,
       properties: {
@@ -33,7 +42,7 @@ const PERPLEXITY_SEARCH_TOOL = {
   type: "function" as const,
   function: {
     name: "perplexity_search",
-    description: "Search the web using Perplexity AI. Returns search results with citations.",
+    description: "Search the web using Perplexity AI.",
     parameters: {
       type: "object" as const,
       properties: {
@@ -44,12 +53,26 @@ const PERPLEXITY_SEARCH_TOOL = {
   },
 };
 
+const WEB_FETCH_TOOL = {
+  type: "function" as const,
+  function: {
+    name: "web_fetch",
+    description: "Fetch a URL and extract its main content as markdown.",
+    parameters: {
+      type: "object" as const,
+      properties: {
+        url: { type: "string" as const, description: "The URL to fetch." },
+      },
+      required: ["url"],
+    },
+  },
+};
+
 const PROPOSE_NOTES_TOOL = {
   type: "function" as const,
   function: {
     name: "propose_notes",
-    description:
-      "Propose 3-4 community note variants. The system evaluates each and picks the best. Only call when highly confident that a correction is warranted. You must have verified every source URL with web_fetch first.",
+    description: "Propose 3-4 community note variants. The system evaluates each and picks the best.",
     parameters: {
       type: "object" as const,
       properties: {
@@ -64,13 +87,12 @@ const PROPOSE_NOTES_TOOL = {
               },
               sources: {
                 type: "array" as const,
-                items: { type: "string" as const, description: "A verified source URL." },
+                items: { type: "string" as const },
                 description: "Source URLs for this note variant.",
               },
             },
             required: ["note_text", "sources"],
           },
-          description: "3-4 note variants with different phrasings or source combinations.",
           minItems: 1,
         },
       },
@@ -84,7 +106,7 @@ const NO_CORRECTION_TOOL = {
   function: {
     name: "no_correction_needed",
     description:
-      "Call this only when you are highly confident that no good community note can be written for this post — after thorough search. Use when the post is opinion/satire, correct, or you genuinely cannot find strong contradicting evidence.",
+      "Call when no community note should be written (opinion/satire, correct post, or insufficient evidence).",
     parameters: {
       type: "object" as const,
       properties: {
@@ -95,14 +117,13 @@ const NO_CORRECTION_TOOL = {
   },
 };
 
-// Claude built-in tools (OpenRouter passthrough — name field is required)
+// Claude built-in tools (OpenRouter passthrough)
 const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
-const WEB_FETCH_TOOL = { type: "web_fetch_20250305" as const, name: "web_fetch" };
 const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, name: "code_execution" };
 
 // --- Build tool list ---
 
-export function buildToolList(config: AgentConfig, _tweetId: string): any[] {
+export function buildToolList(config: AgentConfig): any[] {
   const tools: any[] = [
     GROK_SEARCH_TOOL,
     WEB_FETCH_TOOL,
@@ -125,68 +146,66 @@ export function buildToolList(config: AgentConfig, _tweetId: string): any[] {
 export interface ToolResult {
   output: any;
   isTerminal: boolean;
+  cost?: TokenCost;
 }
 
 export async function executeToolCall(
   toolName: string,
   args: Record<string, any>,
-  tweetId: string,
 ): Promise<ToolResult> {
   switch (toolName) {
     case "grok_search":
-      return handleGrokSearch(args.query, tweetId);
+      return handleGrokSearch(args.query);
     case "perplexity_search":
       return handlePerplexitySearch(args.query);
+    case "web_fetch":
+      return handleWebFetch(args.url);
     case "propose_notes":
       return handleProposeNotes(args.notes);
     case "no_correction_needed":
       return { output: { acknowledged: true }, isTerminal: true };
-    case "web_fetch":
-      return handleWebFetch(args.url);
-    case "web_search":
-      return { output: "Use grok_search or perplexity_search instead.", isTerminal: false };
-    case "code_execution":
-      return { output: "Code execution not available.", isTerminal: false };
     default:
       return { output: { error: `Unknown tool: ${toolName}` }, isTerminal: false };
   }
 }
 
-async function handleGrokSearch(query: string, tweetId: string): Promise<ToolResult> {
+async function handleGrokSearch(query: string): Promise<ToolResult> {
   if (!process.env.XAI_API_KEY) {
     return { output: { error: "XAI_API_KEY not set" }, isTerminal: false };
   }
 
-  const tweetUrl = `https://x.com/i/status/${tweetId}`;
-  const prompt = `${query}\n\nTweet URL for context: ${tweetUrl}\n\nProvide full tweet texts in your reply.`;
-
-  const { text } = await generateText({
-    model: xai.responses("grok-4-fast") as any,
-    prompt,
+  const { text, usage, steps } = await generateText({
+    model: xai.responses(GROK_MODEL) as any,
+    prompt: query,
     tools: {
       x_search: xai.tools.xSearch({ enableImageUnderstanding: true }) as any,
     },
   });
 
-  return { output: { results: text }, isTerminal: false };
+  const searchCalls = steps?.reduce(
+    (n, s) => n + (s.toolCalls?.filter((tc) => tc.toolName === "x_search").length ?? 0),
+    0,
+  ) ?? 0;
+  const cost = calculateGrokCost(
+    usage?.inputTokens ?? 0,
+    usage?.outputTokens ?? 0,
+    searchCalls,
+  );
+
+  return { output: { results: text }, isTerminal: false, cost };
 }
 
 async function handlePerplexitySearch(query: string): Promise<ToolResult> {
   const result = await llm.create({
-    model: "perplexity/sonar",
-    messages: [
-      {
-        role: "system" as const,
-        content: "Search the web for information. Include specific URLs for sources directly in the text.",
-      },
-      { role: "user" as const, content: query },
-    ],
+    model: PERPLEXITY_MODEL,
+    messages: [{ role: "user" as const, content: query }],
   });
 
   const content = result.choices?.[0]?.message?.content ?? "";
   const citations = extractCitations(result);
+  const cost = extractOpenRouterCost(result);
 
-  return { output: { results: content, citations }, isTerminal: false };
+  return { output: { results: content, citations }, isTerminal: false, cost };
 }
 
 async function handleWebFetch(url: string): Promise<ToolResult> {
@@ -203,15 +222,28 @@ async function handleWebFetch(url: string): Promise<ToolResult> {
     if (!contentType.includes("text/") && !contentType.includes("json")) {
       return { output: `Non-text content: ${contentType}`, isTerminal: false };
     }
-    const text = await response.text();
-    // Strip HTML tags for a rough plaintext extraction, cap at 15k chars
-    const plain = text.replace(/<script[\s\S]*?<\/script>/gi, "")
-      .replace(/<style[\s\S]*?<\/style>/gi, "")
-      .replace(/<[^>]+>/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 15000);
-    return { output: plain, isTerminal: false };
+
+    const html = await response.text();
+
+    // Try Readability extraction → Turndown to markdown
+    const { document } = parseHTML(html);
+    const article = new Readability(document).parse();
+
+    let markdown: string;
+    if (article?.content) {
+      const titleLine = article.title ? `# ${article.title}\n\n` : "";
+      markdown = titleLine + turndown.turndown(article.content);
+    } else {
+      // Fallback: strip HTML tags for non-article pages
+      markdown = html
+        .replace(/<script[\s\S]*?<\/script>/gi, "")
+        .replace(/<style[\s\S]*?<\/style>/gi, "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    return { output: markdown.slice(0, 20000), isTerminal: false };
   } catch (err: any) {
     return { output: `Fetch error: ${err?.message?.slice(0, 200)}`, isTerminal: false };
   }

@@ -1,7 +1,7 @@
 /**
  * Tool-Calling Loop
  *
- * Runs Claude 4.6 Opus with tool access in a loop until a terminal tool
+ * Runs Claude 4.5 Haiku with tool access in a loop until a terminal tool
  * (propose_notes or no_correction_needed) is called, or iterations exhaust.
  * When propose_notes is called, evaluates each candidate and picks the best.
  */
@@ -16,9 +16,13 @@ import { evaluateNote } from "../score/noteEvaluationFilter";
 import { getTweetLog } from "../utils/tweetLog";
 import { buildToolList, executeToolCall } from "./agentTools";
 import { SYSTEM_PROMPT, buildUserMessage } from "./agentPrompt";
+import {
+  CLAUDE_MODEL, CLAUDE_REASONING_EFFORT,
+  extractOpenRouterCost, emptyTokenCost,
+  type TokenCost, type IterationCost, type AgentCosts,
+} from "./agentPricing";
 
 const MAX_ITERATIONS = 50;
-const MODEL = "anthropic/claude-opus-4.6";
 
 interface ProposedNote {
   noteText: string;
@@ -38,6 +42,8 @@ export async function runToolCallingLoop(
   config: AgentConfig,
   mediaResult: GeminiMediaResult,
   authorHistory?: AuthorNoteHistory,
+  mediaCost?: TokenCost,
+  comments?: string,
 ): Promise<PipelineResult> {
   const log = getTweetLog();
   const startMs = Date.now();
@@ -62,6 +68,7 @@ export async function runToolCallingLoop(
     authorFollowers: post.author_followers,
     authorTweetCount: post.author_tweet_count,
     authorNoteHistory: authorHistory,
+    comments,
     currentDate: now.toISOString().split("T")[0]!,
     currentTime: now.toISOString().split("T")[1]!.slice(0, 5),
   });
@@ -71,7 +78,7 @@ export async function runToolCallingLoop(
     { role: "user", content: userMessage },
   ];
 
-  const tools = buildToolList(config, post.id);
+  const tools = buildToolList(config);
 
   // Log initial state
   log?.set("agent.config", config);
@@ -89,15 +96,24 @@ export async function runToolCallingLoop(
   let iteration = 0;
   let allSearchOutputs: string[] = [];
 
+  // Cost tracking
+  const costs: AgentCosts = {
+    messages: {},
+    media: mediaCost ?? emptyTokenCost(),
+    input_tokens: 0,
+    output_tokens: 0,
+    cost: 0,
+  };
+
   while (terminalResult === null && iteration < MAX_ITERATIONS) {
     iteration++;
 
     const response = await llm.create({
-      model: MODEL,
+      model: CLAUDE_MODEL,
       messages,
       tools,
       // @ts-expect-error OpenRouter extended thinking
-      reasoning: { effort: "high" },
+      reasoning: { effort: CLAUDE_REASONING_EFFORT },
     });
 
     const message = response.choices?.[0]?.message;
@@ -105,6 +121,10 @@ export async function runToolCallingLoop(
       console.error("[toolCallingLoop] No message in response");
       break;
     }
+
+    // Track Claude call cost for this iteration
+    const claudeCost = extractOpenRouterCost(response);
+    const iterationCost: IterationCost = { ...claudeCost, tools: {} };
 
     // Log LLM response
     log?.set(`agent.messages.${iteration}.content`, message.content ?? "");
@@ -115,8 +135,35 @@ export async function runToolCallingLoop(
       log?.set(`agent.messages.${iteration}.reasoning`, reasoning);
     }
 
-    // No tool calls — model is done without using a terminal tool
+    // Log native web_search annotations and usage
+    const annotations = (message as any).annotations as any[] | undefined;
+    if (annotations?.length) {
+      log?.set(`agent.messages.${iteration}.annotations`, annotations);
+      const urls = annotations
+        .filter((a: any) => a.type === "url_citation")
+        .map((a: any) => `${a.url_citation?.title}: ${a.url_citation?.url}`)
+        .join("\n");
+      if (urls) {
+        allSearchOutputs.push(`--- web_search ---\n${urls}`);
+      }
+    }
+    const webSearchRequests = (response as any).usage?.server_tool_use?.web_search_requests ?? 0;
+    if (webSearchRequests > 0) {
+      log?.set(`agent.messages.${iteration}.web_search_requests`, webSearchRequests);
+    }
+
+    // No tool calls — check if web_search was used transparently
     if (!message.tool_calls?.length) {
+      if (annotations?.length) {
+        // Model used web_search server-side but didn't call any function tools yet.
+        // Push assistant message and continue the loop.
+        messages.push(message);
+        costs.messages[iteration] = iterationCost;
+        costs.input_tokens += iterationCost.input_tokens;
+        costs.output_tokens += iterationCost.output_tokens;
+        costs.cost += iterationCost.cost;
+        continue;
+      }
       terminalResult = {
         type: "no_correction",
         reason: typeof message.content === "string" ? message.content : "No tool calls made",
@@ -152,7 +199,7 @@ export async function runToolCallingLoop(
       }
 
       const toolStartMs = Date.now();
-      const result = await executeToolCall(name, args, post.id);
+      const result = await executeToolCall(name, args);
       const toolDurationMs = Date.now() - toolStartMs;
 
       // Log tool call
@@ -161,6 +208,12 @@ export async function runToolCallingLoop(
         result: result.output,
         durationMs: toolDurationMs,
       });
+
+      // Track tool cost (only add dollars, not tokens — different models)
+      if (result.cost) {
+        iterationCost.tools[name] = result.cost;
+        iterationCost.cost += result.cost.cost;
+      }
 
       // Add tool result to conversation
       messages.push({
@@ -194,9 +247,19 @@ export async function runToolCallingLoop(
         break;
       }
     }
+
+    // Finalize iteration cost (tokens = Claude only, cost = Claude + tools)
+    costs.messages[iteration] = iterationCost;
+    costs.input_tokens += iterationCost.input_tokens;
+    costs.output_tokens += iterationCost.output_tokens;
+    costs.cost += iterationCost.cost;
   }
 
+  // Add media cost (only dollars — different model)
+  if (mediaCost) costs.cost += mediaCost.cost;
+
   // Log totals
+  log?.set("agent.costs", costs);
   log?.set("agent.iterations", iteration);
   log?.set("agent.totalDurationMs", Date.now() - startMs);
 
