@@ -11,7 +11,7 @@ import { SupabaseLogger } from "../../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../../bots/index";
 import { processSingleTweet } from "./processTweet";
 import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../utils/tweetLog";
-import { determineFeedSize, buildPostSelection } from "./utils/feedSizeStrategy";
+import { buildPostSelection } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions, getTweetScore } from "./utils/tweetSorting";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
@@ -45,19 +45,8 @@ async function fetchAndSelectPosts(
     }
   }
 
-  // Determine feed size
-  let feedSize = "small";
-  if (supabaseLogger) {
-    try {
-      const result = await determineFeedSize(supabaseLogger);
-      feedSize = result.feedSize;
-      console.log(`[generate] Feed: ${feedSize} (${result.reason})`);
-    } catch (err) {
-      console.warn("[generate] Failed to determine feed size, defaulting to small:", err);
-    }
-  }
-
-  const postSelection = buildPostSelection(feedSize as "small" | "large" | "xl");
+  const { query: postSelection, feedSize } = buildPostSelection("small");
+  console.log(`[generate] Feed: ${feedSize}`);
   const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
   const sorted = sortByRecencyAndImpressions(allEligible);
