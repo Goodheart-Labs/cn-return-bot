@@ -31,7 +31,7 @@ export async function fetchTweetComments(
   }
 
   const tweetUrl = `https://x.com/i/status/${tweetId}`;
-  const prompt = `Look at the replies and quote tweets to this tweet. Pick 5-10 representative comments (including the top comments). Give each reply's username, full text and engagement. Please respond with only the list of comments and no other text besides that.
+  const prompt = `Look at the replies and quote tweets to this tweet. Pick 5-10 representative comments (including the top comments). Give each reply's author name, full text and engagement. Please respond with only the list of comments and no other text besides that.
 
 Tweet URL: ${tweetUrl}
 Tweet text: "${tweetText}"`;
