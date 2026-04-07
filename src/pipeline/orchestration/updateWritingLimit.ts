@@ -90,12 +90,12 @@ function computeWritingLimit(notes: WrittenNote[]): WritingLimitVars {
   const HR_R = hitRate(sorted.slice(0, 20));
   const HR_100 = hitRate(sorted.slice(0, 100));
 
-  // HR_14d: notes from last 14 days, excluding unresolved (NMR + minimum_ratings_not_met)
+  // HR_14d: notes from last 14 days, excluding minimum_ratings_not_met
   const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
   const recentQualifying = sorted.filter((n) => {
     const ts = snowflakeToTimestamp(n.id);
     if (ts < fourteenDaysAgo) return false;
-    return n.status !== "needs_more_ratings" && n.status !== "minimum_ratings_not_met";
+    return n.status !== "minimum_ratings_not_met";
   });
   const HR_14d = hitRate(recentQualifying);
 
