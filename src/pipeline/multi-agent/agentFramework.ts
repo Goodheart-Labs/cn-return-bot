@@ -31,6 +31,7 @@ export interface AgentDef {
   systemPrompt: string;
   tools: any[];
   terminalTools: string[];
+  model: string;
 }
 
 export interface AgentState {
@@ -50,9 +51,6 @@ export interface TurnResult {
 }
 
 const MAX_ITERATIONS = 25;
-const MULTI_AGENT_MODEL = "anthropic/claude-sonnet-4.6";
-
-export { MULTI_AGENT_MODEL };
 
 // --- Agent initialization ---
 
@@ -113,6 +111,8 @@ async function executeToolCall(
     case "propose_notes":
       return handleProposeNotes(args.notes);
     case "send_message":
+      return { output: { acknowledged: true }, isTerminal: true };
+    case "approve_note":
       return { output: { acknowledged: true }, isTerminal: true };
     case "no_correction_needed":
       return { output: { acknowledged: true }, isTerminal: true };
@@ -241,15 +241,9 @@ function finalizeTurn(
   prefix: string,
   iteration: number,
   turnCost: TokenCost,
-  iterationCosts: Record<number, IterationCost>,
 ): void {
   addTokenCost(state.cost, turnCost);
-  const log = getTweetLog();
-  log?.set(`${prefix}.iterations`, iteration);
-  log?.set(`${prefix}.costs`, {
-    messages: iterationCosts,
-    ...turnCost,
-  });
+  getTweetLog()?.set(`${prefix}.iterations`, iteration);
 }
 
 // --- Agent turn loop ---
@@ -282,7 +276,7 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
     const iterCost: IterationCost = { input_tokens: 0, output_tokens: 0, cost: 0, tools: {} };
 
     const response = await llm.create({
-      model: MULTI_AGENT_MODEL,
+      model: state.def.model,
       messages: state.messages,
       tools: state.def.tools,
     });
@@ -304,7 +298,7 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
         state.messages.push(message);
         continue;
       }
-      finalizeTurn(state, prefix, iteration, turnCost, iterationCosts);
+      finalizeTurn(state, prefix, iteration, turnCost);
       return {
         terminalTool: "no_correction_needed",
         args: { reason: typeof message.content === "string" ? message.content : "No tool calls made" },
@@ -323,7 +317,7 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
       if (terminal) {
         iterationCosts[iteration] = iterCost;
         addTokenCost(turnCost, iterCost);
-        finalizeTurn(state, prefix, iteration, turnCost, iterationCosts);
+        finalizeTurn(state, prefix, iteration, turnCost);
         return { ...terminal, cost: turnCost, iterationCosts };
       }
     }
@@ -332,7 +326,7 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
     addTokenCost(turnCost, iterCost);
   }
 
-  finalizeTurn(state, prefix, iteration, turnCost, iterationCosts);
+  finalizeTurn(state, prefix, iteration, turnCost);
   return {
     terminalTool: "error",
     args: { reason: `Loop exhausted after ${MAX_ITERATIONS} iterations` },

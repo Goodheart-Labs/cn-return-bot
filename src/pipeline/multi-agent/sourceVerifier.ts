@@ -13,8 +13,8 @@ const SYSTEM_PROMPT = `You are a source verification agent. You receive a commun
 
 ## Your tools
 - web_fetch: Fetch a URL to read its content and verify what it says.
-- send_message: Send your verdict. Options:
-  - to "output": All sources check out, note is ready to submit.
+- approve_note: Approve the note for submission. You can include all sources or only the ones that checked out — drop any that errored, are irrelevant, or don't support the claim.
+- send_message: Send feedback to another agent if the note can't be approved as-is.
   - to "notewriter": Sources have issues but a rewrite could fix it (e.g. use a different source).
   - to "researcher": The correction needs fundamentally different sources or evidence.
 - no_correction_needed: The correction itself is wrong. No note should be written.
@@ -28,9 +28,30 @@ const SYSTEM_PROMPT = `You are a source verification agent. You receive a commun
 ## Your task
 1. Review the sources cited in the note.
 2. Fetch sources that need checking.
-3. Send your verdict with a clear explanation.`;
+3. Call approve_note with the verified sources (may be a subset of the original). At least one source must remain.
+4. If no sources check out at all, use send_message to request a rewrite or more research.`;
 
-export function createSourceVerifierDef(agentDescriptions: string): AgentDef {
+const APPROVE_NOTE_TOOL = {
+  type: "function" as const,
+  function: {
+    name: "approve_note",
+    description: "Approve the note for submission with verified sources. You may include all original sources or only the subset that checked out.",
+    parameters: {
+      type: "object" as const,
+      properties: {
+        sources: {
+          type: "array" as const,
+          items: { type: "string" as const },
+          description: "The verified source URLs to include with the note. Must include at least one.",
+          minItems: 1,
+        },
+      },
+      required: ["sources"],
+    },
+  },
+};
+
+export function createSourceVerifierDef(agentDescriptions: string, model: string): AgentDef {
   return {
     name: "sourceVerifier",
     description:
@@ -38,9 +59,11 @@ export function createSourceVerifierDef(agentDescriptions: string): AgentDef {
     systemPrompt: SYSTEM_PROMPT + `\n\n## Other agents\n${agentDescriptions}`,
     tools: [
       WEB_FETCH_TOOL,
-      buildSendMessageTool(["output", "notewriter", "researcher"]),
+      APPROVE_NOTE_TOOL,
+      buildSendMessageTool(["notewriter", "researcher"]),
       NO_CORRECTION_TOOL,
     ],
-    terminalTools: ["send_message", "no_correction_needed"],
+    terminalTools: ["approve_note", "send_message", "no_correction_needed"],
+    model,
   };
 }

@@ -74,6 +74,7 @@ export function createResearcherDef(
     systemPrompt: SYSTEM_PROMPT + `\n\n## Other agents\n${agentDescriptions}`,
     tools,
     terminalTools: ["send_message", "no_correction_needed"],
+    model: config.model,
   };
 }
 

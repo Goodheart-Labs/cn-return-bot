@@ -34,7 +34,7 @@ const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You recei
 ## Your task
 Call propose_notes with 3-4 note variants. Each variant should have genuinely different phrasing, not just word swaps. Each must stand alone as a complete community note.`;
 
-export function createNotewriterDef(agentDescriptions: string): AgentDef {
+export function createNotewriterDef(agentDescriptions: string, model: string): AgentDef {
   return {
     name: "notewriter",
     description:
@@ -42,5 +42,6 @@ export function createNotewriterDef(agentDescriptions: string): AgentDef {
     systemPrompt: SYSTEM_PROMPT + `\n\n## Other agents\n${agentDescriptions}`,
     tools: [PROPOSE_NOTES_TOOL, NO_CORRECTION_TOOL],
     terminalTools: ["propose_notes", "no_correction_needed"],
+    model,
   };
 }

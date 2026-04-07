@@ -24,6 +24,7 @@ import {
   addUserMessage,
   runAgentTurn,
 } from "./agentFramework";
+import type { IterationCost } from "../agent/agentPricing";
 import { createResearcherDef, buildResearcherFirstMessage } from "./researcher";
 import { createNotewriterDef } from "./notewriter";
 import { createSourceVerifierDef } from "./sourceVerifier";
@@ -49,6 +50,22 @@ interface SelectedNote {
   evalScore?: number;
 }
 
+interface TurnCost extends TokenCost {
+  messages: Record<number, IterationCost>;
+}
+
+interface AgentCostTree extends TokenCost {
+  turn: Record<number, TurnCost>;
+}
+
+interface CostTree {
+  researcher: AgentCostTree;
+  notewriter: AgentCostTree;
+  sourceVerifier: AgentCostTree;
+  media: TokenCost;
+  total: TokenCost;
+}
+
 interface PipelineState {
   post: Post;
   content: PostContent;
@@ -58,13 +75,7 @@ interface PipelineState {
   selectedNote?: SelectedNote;
   researcherFindings: string;
   currentAgentName: string;
-  costs: {
-    researcher: TokenCost;
-    notewriter: TokenCost;
-    sourceVerifier: TokenCost;
-    media: TokenCost;
-    total: TokenCost;
-  };
+  costs: CostTree;
   startMs: number;
   mediaCost?: TokenCost;
 }
@@ -91,8 +102,8 @@ function initPipeline(
   const agentDescriptions = agentDefs.map((a) => `- ${a.name}: ${a.desc}`).join("\n");
 
   const researcherDef = createResearcherDef(config, agentDescriptions);
-  const notewriterDef = createNotewriterDef(agentDescriptions);
-  const sourceVerifierDef = createSourceVerifierDef(agentDescriptions);
+  const notewriterDef = createNotewriterDef(agentDescriptions, config.model);
+  const sourceVerifierDef = createSourceVerifierDef(agentDescriptions, config.model);
 
   const agents: Record<string, AgentState> = {
     researcher: initAgentState(researcherDef),
@@ -103,6 +114,13 @@ function initPipeline(
   // Log initial state
   log?.set("multiAgent.config", config);
   log?.set("multiAgent.agents", agentDefs);
+  log?.set("inputs.author", {
+    name: post.author_name,
+    description: post.author_description,
+    followers: post.author_followers,
+    tweetCount: post.author_tweet_count,
+    noteHistory: authorHistory ?? null,
+  });
 
   // Build researcher's first user message
   const quotedRef = post.referenced_tweets?.find((rt) => rt.type === "quoted");
@@ -134,9 +152,9 @@ function initPipeline(
     researcherFindings: "",
     currentAgentName: "researcher",
     costs: {
-      researcher: emptyTokenCost(),
-      notewriter: emptyTokenCost(),
-      sourceVerifier: emptyTokenCost(),
+      researcher: { ...emptyTokenCost(), turn: {} },
+      notewriter: { ...emptyTokenCost(), turn: {} },
+      sourceVerifier: { ...emptyTokenCost(), turn: {} },
       media: mediaCost ?? emptyTokenCost(),
       total: emptyTokenCost(),
     },
@@ -212,7 +230,7 @@ async function evaluateProposedNotes(
 
 // --- send_message routing ---
 
-type RouteResult = "output" | "routed" | "error";
+type RouteResult = "routed" | "error";
 
 function routeSendMessage(
   state: PipelineState,
@@ -220,8 +238,6 @@ function routeSendMessage(
   message: string,
   senderName: string,
 ): RouteResult {
-  if (target === "output") return "output";
-
   const targetAgent = state.agents[target];
   if (!targetAgent) return "error";
 
@@ -271,7 +287,6 @@ function buildResult(
 // --- Cost logging ---
 
 function logFinal(state: PipelineState): void {
-  const log = getTweetLog();
   const total = emptyTokenCost();
   for (const key of ["researcher", "notewriter", "sourceVerifier"] as const) {
     addTokenCost(total, state.costs[key]);
@@ -279,6 +294,7 @@ function logFinal(state: PipelineState): void {
   if (state.mediaCost) addTokenCost(total, state.mediaCost);
   state.costs.total = total;
 
+  const log = getTweetLog();
   log?.set("multiAgent.flow", { turns: state.flowTurns, totalTurns: state.flowTurns.length });
   log?.set("multiAgent.costs", state.costs);
   log?.set("multiAgent.totalDurationMs", Date.now() - state.startMs);
@@ -306,8 +322,11 @@ export async function runMultiAgentPipeline(
 
     state.allSearchOutputs.push(...result.searchOutputs);
 
-    // Accumulate cost
-    addTokenCost(state.costs[state.currentAgentName as keyof typeof state.costs], result.cost);
+    // Accumulate cost into the tree
+    const agentCost = state.costs[state.currentAgentName as keyof CostTree] as AgentCostTree;
+    const turnNum = state.agents[state.currentAgentName]!.turnCount;
+    agentCost.turn[turnNum] = { messages: result.iterationCosts, ...result.cost };
+    addTokenCost(agentCost, result.cost);
 
     const flowTurn: FlowTurn = {
       agent: state.currentAgentName,
@@ -323,6 +342,26 @@ export async function runMultiAgentPipeline(
       return buildResult(state, "multi_agent_complete", undefined, status ? result.args.reason : undefined);
     }
 
+    // --- approve_note (source verifier approved with verified sources) ---
+    if (result.terminalTool === "approve_note") {
+      state.flowTurns.push(flowTurn);
+      logFinal(state);
+
+      if (!state.selectedNote) {
+        return buildResult(state, "multi_agent_complete", undefined, "Source verifier approved but no note was selected");
+      }
+
+      // Use the verified source subset from the source verifier
+      const verifiedSources: string[] = result.args.sources ?? state.selectedNote.sources;
+      state.selectedNote = {
+        ...state.selectedNote,
+        sources: verifiedSources,
+        allUrls: verifiedSources.join(" "),
+      };
+
+      return buildResult(state, "multi_agent_complete", state.selectedNote);
+    }
+
     // --- send_message ---
     if (result.terminalTool === "send_message") {
       flowTurn.to = result.args.to;
@@ -330,13 +369,6 @@ export async function runMultiAgentPipeline(
 
       const route = routeSendMessage(state, result.args.to, result.args.message, state.currentAgentName);
 
-      if (route === "output") {
-        logFinal(state);
-        if (!state.selectedNote) {
-          return buildResult(state, "multi_agent_complete", undefined, "Source verifier approved but no note was selected");
-        }
-        return buildResult(state, "multi_agent_complete", state.selectedNote);
-      }
       if (route === "error") {
         logFinal(state);
         return buildResult(state, "multi_agent_complete", undefined, `Unknown send_message target: ${result.args.to}`);
