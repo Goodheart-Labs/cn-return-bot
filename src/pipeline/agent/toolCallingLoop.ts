@@ -17,7 +17,6 @@ import { getTweetLog } from "../utils/tweetLog";
 import { buildToolList, executeToolCall } from "./agentTools";
 import { SYSTEM_PROMPT, buildUserMessage } from "./agentPrompt";
 import {
-  CLAUDE_MODEL, CLAUDE_REASONING_EFFORT,
   extractOpenRouterCost, emptyTokenCost,
   type TokenCost, type IterationCost, type AgentCosts,
 } from "./agentPricing";
@@ -84,7 +83,7 @@ export async function runToolCallingLoop(
   log?.set("agent.config", config);
   log?.set("agent.messages.0.systemPrompt", SYSTEM_PROMPT);
   log?.set("agent.messages.0.userMessage", userMessage);
-  log?.set("agent.author", {
+  log?.set("inputs.author", {
     name: post.author_name,
     description: post.author_description,
     followers: post.author_followers,
@@ -109,11 +108,11 @@ export async function runToolCallingLoop(
     iteration++;
 
     const response = await llm.create({
-      model: CLAUDE_MODEL,
+      model: config.model,
       messages,
       tools,
       // @ts-expect-error OpenRouter extended thinking
-      reasoning: { effort: CLAUDE_REASONING_EFFORT },
+      reasoning: { effort: "medium" },
     });
 
     const message = response.choices?.[0]?.message;

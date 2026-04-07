@@ -7,8 +7,6 @@
 
 // --- Model constants ---
 
-export const CLAUDE_MODEL = "anthropic/claude-haiku-4.5";
-export const CLAUDE_REASONING_EFFORT = "medium";
 export const GROK_MODEL = "grok-4-fast";
 export const PERPLEXITY_MODEL = "perplexity/sonar";
 export const GEMINI_MODEL = "google/gemini-3-flash-preview";

@@ -124,13 +124,18 @@ export const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, n
 // --- Build tool list ---
 
 export function buildToolList(config: BotConfig): any[] {
+  const isAnthropic = config.model.startsWith("anthropic/");
+
   const tools: any[] = [
     GROK_SEARCH_TOOL,
     WEB_FETCH_TOOL,
-    CODE_EXECUTION_TOOL,
     PROPOSE_NOTES_TOOL,
     NO_CORRECTION_TOOL,
   ];
+
+  if (isAnthropic) {
+    tools.push(CODE_EXECUTION_TOOL);
+  }
 
   if (config.search_mode === "native-search") {
     tools.push(WEB_SEARCH_TOOL);

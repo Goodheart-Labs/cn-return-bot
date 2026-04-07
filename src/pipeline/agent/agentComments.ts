@@ -54,7 +54,7 @@ Tweet text: "${tweetText}"`;
     searchCalls,
   );
 
-  log?.set("agent.comments", { text, cost });
+  log?.set("inputs.comments", { text, cost });
 
   return { comments: text, cost };
 }
