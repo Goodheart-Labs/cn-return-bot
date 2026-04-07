@@ -161,19 +161,8 @@ function logWritingLimit(v: WritingLimitVars, noteCount: number) {
   }
 
   console.log("");
-  console.log("Formula reference:");
+  console.log("Formula:");
   console.log(`
-  WL = Daily writing limit
-  WL_L = Internal writing limit (before accounting for delta in writing volume vs DN_30)
-  NH_5 = CRNH count among last 5 non-NMR notes
-  NH_10 = CRNH count among last 10 non-NMR notes
-  HR_R = Recent hit rate: (CRH-CRNH)/TotalNotes among most recent 20 notes
-  HR_100 = Hit rate among most recent 100 notes
-  HR_14d = Hit rate over last 14 days, excluding notes with <10 ratings not yet Helpful/Not Helpful
-  HR_L = max(HR_100, HR_14d)
-  DN_30 = Average daily notes written in last 30 days
-  T = Total notes written
-
   If NH_10 >= 8: WL = 2
   Else If NH_5 >= 3: WL = 5
   Else:
