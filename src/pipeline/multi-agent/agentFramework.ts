@@ -279,6 +279,8 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
       model: state.def.model,
       messages: state.messages,
       tools: state.def.tools,
+      // @ts-expect-error OpenRouter extended thinking
+      reasoning: { effort: "medium" },
     });
 
     const message = response.choices?.[0]?.message;
