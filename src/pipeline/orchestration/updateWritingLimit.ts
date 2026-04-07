@@ -30,7 +30,7 @@ async function fetchNotesWritten(): Promise<WrittenNote[]> {
     const params = new URLSearchParams({
       test_mode: "false",
       max_results: "100",
-      "note.fields": "id,status,scoring_status",
+      "note.fields": "id,status",
     });
     if (nextToken) params.append("pagination_token", nextToken);
 
@@ -41,14 +41,6 @@ async function fetchNotesWritten(): Promise<WrittenNote[]> {
     });
 
     const data = response.data;
-
-    // Log raw first page so we can inspect the scoring_status shape
-    if (allNotes.length === 0 && data.data?.length > 0) {
-      console.log("::group::Raw API response (first 3 notes)");
-      console.log(JSON.stringify(data.data.slice(0, 3), null, 2));
-      console.log("::endgroup::");
-    }
-
     if (data.data) {
       for (const note of data.data) {
         allNotes.push({ id: note.id, status: note.status });
@@ -98,12 +90,12 @@ function computeWritingLimit(notes: WrittenNote[]): WritingLimitVars {
   const HR_R = hitRate(sorted.slice(0, 20));
   const HR_100 = hitRate(sorted.slice(0, 100));
 
-  // HR_14d: notes from last 14 days, excluding unresolved (NMR + minimum_ratings_not_met)
+  // HR_14d: notes from last 14 days, excluding minimum_ratings_not_met
   const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
   const recentQualifying = sorted.filter((n) => {
     const ts = snowflakeToTimestamp(n.id);
     if (ts < fourteenDaysAgo) return false;
-    return n.status !== "needs_more_ratings" && n.status !== "minimum_ratings_not_met";
+    return n.status !== "minimum_ratings_not_met";
   });
   const HR_14d = hitRate(recentQualifying);
 
