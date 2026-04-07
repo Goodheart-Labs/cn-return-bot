@@ -255,6 +255,7 @@ async function analyzeVideo(
   videoUrl: string,
   durationMs: number | undefined,
   costAcc: TokenCost,
+  strategy: "full_video" | "frames" = "frames",
 ): Promise<GeminiMediaItem> {
   const isLocal = isLocalPath(videoUrl);
   const tmpDir = join(tmpdir(), `cn-gemini-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -263,13 +264,14 @@ async function analyzeVideo(
     await mkdir(tmpDir, { recursive: true });
     const videoPath = isLocal ? videoUrl : await downloadVideo(videoUrl, tmpDir);
 
-    const isLong = durationMs != null && durationMs > LONG_VIDEO_THRESHOLD_MS;
+    const useFrames = strategy === "frames"
+      || (durationMs != null && durationMs > LONG_VIDEO_THRESHOLD_MS);
 
     // Vision analysis
     let description: GeminiMediaDescription;
-    if (isLong) {
+    if (useFrames) {
       if (!(await checkFfmpeg())) {
-        console.warn("[mediaAnalysisGemini] FFmpeg not available, skipping long video frames");
+        console.warn("[mediaAnalysisGemini] FFmpeg not available, skipping frames");
         description = { description: "", ocrText: "" };
       } else {
         description = await analyzeLongVideoFrames(videoPath, tmpDir, costAcc);
@@ -310,6 +312,7 @@ async function analyzeVideo(
 async function analyzeMediaItems(
   mediaItems: any[],
   costAcc: TokenCost,
+  strategy: "full_video" | "frames" = "frames",
 ): Promise<GeminiMediaItem[]> {
   if (!mediaItems?.length) return [];
 
@@ -334,7 +337,7 @@ async function analyzeMediaItems(
   for (const video of videos) {
     const videoUrl = getBestUrl(video);
     if (!videoUrl) continue;
-    results.push(await analyzeVideo(videoUrl, video.duration_ms, costAcc));
+    results.push(await analyzeVideo(videoUrl, video.duration_ms, costAcc, strategy));
   }
 
   return results;
@@ -343,14 +346,15 @@ async function analyzeMediaItems(
 export async function analyzeMediaGemini(
   tweetMedia?: any[],
   quotedTweetMedia?: any[],
+  strategy: "full_video" | "frames" = "frames",
 ): Promise<GeminiMediaResult> {
   const startMs = Date.now();
   const log = getTweetLog();
   const costAcc = emptyTokenCost();
 
   const [tweetResults, quotedResults] = await Promise.all([
-    analyzeMediaItems(tweetMedia ?? [], costAcc),
-    analyzeMediaItems(quotedTweetMedia ?? [], costAcc),
+    analyzeMediaItems(tweetMedia ?? [], costAcc, strategy),
+    analyzeMediaItems(quotedTweetMedia ?? [], costAcc, strategy),
   ]);
 
   log?.set("media.gemini.tweetMedia", tweetResults);

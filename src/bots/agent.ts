@@ -24,7 +24,7 @@ export const agentBot: Bot = {
   weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
-    const config = randomizeConfig();
+    const { config, variantName } = randomizeConfig();
 
     return withBotConfig(config, async () => {
       const warnings: string[] = [];
@@ -39,6 +39,7 @@ export const agentBot: Bot = {
           mediaResult = await analyzeMediaGemini(
             post.media,
             post.referenced_tweet_data?.media,
+            config.video_description_strategy,
           );
         } catch (err: any) {
           const msg = `Media analysis failed: ${err.message}`;
@@ -72,7 +73,7 @@ export const agentBot: Bot = {
 
       // 4. Run the tool-calling loop
       const result = await runToolCallingLoop(post, content, config, mediaResult, authorHistory, totalMediaCost, comments);
-      result.botId = deriveBotName("agent", config);
+      result.botId = deriveBotName("agent", variantName);
 
       if (warnings.length && !result.warnings) {
         result.warnings = warnings;

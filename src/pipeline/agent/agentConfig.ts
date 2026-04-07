@@ -1,33 +1,36 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
-// --- Feature flag definitions ---
-
-interface FlagOption<T> {
-  value: T;
-  weight: number;
-}
-
-interface FeatureFlag {
-  name: string;
-  options: FlagOption<string | number | boolean>[];
-}
-
-export const FEATURE_FLAGS: FeatureFlag[] = [
-  {
-    name: "search_mode",
-    options: [
-      { value: "native-search", weight: 50 },
-      { value: "perplexity-search", weight: 50 },
-    ],
-  },
-];
-
 // --- Config type ---
 
+export type VideoDescriptionStrategy = "full_video" | "frames";
+
 export interface BotConfig {
+  model: string;
   search_mode: "native-search" | "perplexity-search";
-  [key: string]: string | number | boolean;
+  video_description_strategy: VideoDescriptionStrategy;
 }
+
+// --- Default config + variants ---
+
+const DEFAULT_CONFIG: BotConfig = {
+  model: "anthropic/claude-sonnet-4.6",
+  search_mode: "native-search",
+  video_description_strategy: "frames",
+};
+
+interface ConfigVariant {
+  name: string;
+  weight: number;
+  overrides: Partial<BotConfig>;
+}
+
+const CONFIG_VARIANTS: ConfigVariant[] = [
+  {
+    name: "gemini-3-flash-perplexity",
+    weight: 100,
+    overrides: { model: "google/gemini-3-flash-preview", search_mode: "perplexity-search" },
+  },
+];
 
 // --- AsyncLocalStorage ---
 
@@ -39,27 +42,31 @@ export function withBotConfig<T>(config: BotConfig, fn: () => T): T {
 
 // --- Randomization ---
 
-function pickWeighted<T>(options: FlagOption<T>[]): T {
-  const total = options.reduce((s, o) => s + o.weight, 0);
+function pickVariant(variants: ConfigVariant[]): ConfigVariant {
+  const total = variants.reduce((s, v) => s + v.weight, 0);
   let r = Math.random() * total;
-  for (const o of options) {
-    r -= o.weight;
-    if (r <= 0) return o.value;
+  for (const v of variants) {
+    r -= v.weight;
+    if (r <= 0) return v;
   }
-  return options[options.length - 1]!.value;
+  return variants[variants.length - 1]!;
 }
 
-export function randomizeConfig(): BotConfig {
-  const config: Record<string, string | number | boolean> = {};
-  for (const flag of FEATURE_FLAGS) {
-    config[flag.name] = pickWeighted(flag.options);
-  }
-  return config as BotConfig;
+export interface ConfigSelection {
+  config: BotConfig;
+  variantName: string;
+}
+
+export function randomizeConfig(): ConfigSelection {
+  const variant = pickVariant(CONFIG_VARIANTS);
+  return {
+    config: { ...DEFAULT_CONFIG, ...variant.overrides },
+    variantName: variant.name,
+  };
 }
 
 // --- Bot name derivation ---
 
-export function deriveBotName(base: string, config: BotConfig): string {
-  const flagValues = FEATURE_FLAGS.map((f) => String(config[f.name]));
-  return [base, ...flagValues].join("_");
+export function deriveBotName(base: string, variantName: string): string {
+  return `${base}_${variantName}`;
 }

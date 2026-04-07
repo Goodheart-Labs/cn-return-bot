@@ -20,7 +20,7 @@ export const multiAgentBot: Bot = {
   weight: 10000,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
-    const config = randomizeConfig();
+    const { config, variantName } = randomizeConfig();
 
     return withBotConfig(config, async () => {
       const warnings: string[] = [];
@@ -35,6 +35,7 @@ export const multiAgentBot: Bot = {
           mediaResult = await analyzeMediaGemini(
             post.media,
             post.referenced_tweet_data?.media,
+            config.video_description_strategy,
           );
         } catch (err: any) {
           const msg = `Media analysis failed: ${err.message}`;
@@ -70,7 +71,7 @@ export const multiAgentBot: Bot = {
       const result = await runMultiAgentPipeline(
         post, content, config, mediaResult, authorHistory, totalMediaCost, comments,
       );
-      result.botId = deriveBotName("multi-agent", config);
+      result.botId = deriveBotName("multi-agent", variantName);
 
       if (warnings.length && !result.warnings) {
         result.warnings = warnings;
