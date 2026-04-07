@@ -17,7 +17,7 @@ export const multiAgentBot: Bot = {
   id: "multi-agent",
   name: "Multi-Agent (Sonnet 4.6)",
   description: "Researcher → Notewriter → Source Verifier pipeline using Claude Sonnet 4.6",
-  weight: 10000,
+  weight: 50,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const { config, variantName } = randomizeConfig();

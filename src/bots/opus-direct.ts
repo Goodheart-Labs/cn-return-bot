@@ -22,7 +22,7 @@ export const opusDirect: Bot = {
   id: "opus-direct",
   name: "Opus 4.6 Direct",
   description: "Direct style bot: leads with facts, punchy corrections, primary sources",
-  weight: 15,
+  weight: 7.5,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";

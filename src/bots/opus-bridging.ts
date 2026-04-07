@@ -23,7 +23,7 @@ export const opusBridging: Bot = {
   id: "opus-bridging",
   name: "Opus 4.5 Bridging",
   description: "Optimized for neutral, bridging tone that appeals across political spectrum",
-  weight: 15,
+  weight: 7.5,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
