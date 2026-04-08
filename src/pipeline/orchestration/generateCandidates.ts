@@ -10,7 +10,7 @@ import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../../bots/index";
 import { processSingleTweet } from "./processTweet";
-import { submitCandidates, type Candidate } from "./submitCandidates";
+import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../utils/tweetLog";
 import { determineFeedSize, buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 // import { sortByRecencyAndImpressions, getTweetScore } from "./utils/tweetSorting";
@@ -127,7 +127,7 @@ function logMediaBreakdown(posts: Post[]): void {
 // Main
 // ---------------------------------------------------------------------------
 
-export async function generateCandidates(supabaseLogger: SupabaseLogger | null, options?: { maxPosts?: number; dryRun?: boolean }) {
+export async function generateCandidates(supabaseLogger: SupabaseLogger | null, options?: { maxPosts?: number }): Promise<Candidate[]> {
   if (options?.maxPosts) MAX_POSTS = options.maxPosts;
   const commit = process.env.GITHUB_SHA;
 
@@ -140,7 +140,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
   const { posts, feedSize } = await fetchPosts(supabaseLogger);
   if (!posts.length) {
     console.log("[generate] No eligible posts found.");
-    return;
+    return [];
   }
   logMediaBreakdown(posts);
 
@@ -180,13 +180,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
   console.log(`[generate] ${candidates.length} candidates, ${posts.length - candidates.length} rejected`);
   console.log(formatRunSummary(allLogs, feedSize));
 
-  // Submit candidates sorted by eval score
-  if (candidates.length > 0 && supabaseLogger) {
-    const submitted = await submitCandidates(candidates, supabaseLogger, options?.dryRun ?? false);
-    console.log(`[submit] Submitted ${submitted} of ${candidates.length} candidates`);
-  } else {
-    console.log(`[submit] No candidates to submit`);
-  }
+  return candidates;
 }
 
 // ---------------------------------------------------------------------------

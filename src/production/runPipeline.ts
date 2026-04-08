@@ -24,7 +24,7 @@ if (isLocal) {
 import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates } from "../pipeline/orchestration/generateCandidates";
-// import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
+import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
 // import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes
@@ -55,11 +55,14 @@ async function main() {
     //   await updateWritingLimit(supabaseLogger);
     // }
 
-    // Generate notes and submit immediately
-    await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5, dryRun: true } : undefined);
+    const candidates = await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5 } : undefined);
 
-    // Previously called submitCandidates as a separate phase — now called from generateCandidates
-    // await submitCandidates(supabaseLogger);
+    if (candidates.length > 0 && supabaseLogger) {
+      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates`);
+    } else {
+      console.log(`[pipeline] No candidates to submit`);
+    }
 
     console.log("[pipeline] Pipeline completed successfully");
     clearTimeout(globalTimeout);
