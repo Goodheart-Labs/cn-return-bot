@@ -9,8 +9,8 @@
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../../bots/index";
-import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
-import { submitNoteForTweet } from "./submitNoteForTweet";
+import { processSingleTweet } from "./processTweet";
+import { submitCandidates, type Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../utils/tweetLog";
 import { determineFeedSize, buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 // import { sortByRecencyAndImpressions, getTweetScore } from "./utils/tweetSorting";
@@ -124,74 +124,6 @@ function logMediaBreakdown(posts: Post[]): void {
 }
 
 // ---------------------------------------------------------------------------
-// Submission phase (inline, after processing)
-// ---------------------------------------------------------------------------
-
-interface CandidateResult {
-  post: Post;
-  tweetResult: ProcessTweetResult;
-  botId: string;
-}
-
-async function submitCandidatesInline(
-  candidates: CandidateResult[],
-  supabaseLogger: SupabaseLogger,
-  dryRun: boolean
-): Promise<number> {
-  // Sort by eval score descending
-  candidates.sort((a, b) => (b.tweetResult.evaluationScore ?? -Infinity) - (a.tweetResult.evaluationScore ?? -Infinity));
-
-  console.log(`[submit] ${candidates.length} candidates to submit (sorted by eval score)`);
-
-  if (dryRun) {
-    for (const c of candidates) {
-      console.log(`[submit]   (dry run) eval=${c.tweetResult.evaluationScore?.toFixed(2) ?? "?"} | ${c.post.id}`);
-    }
-    return 0;
-  }
-
-  let submitted = 0;
-  for (const candidate of candidates) {
-    const result = await submitNoteForTweet(
-      candidate.post.id,
-      candidate.tweetResult.pipelineRunId!,
-      candidate.tweetResult.noteText ?? "",
-      candidate.tweetResult.pipelineResult?.noteResult?.url ?? "",
-      candidate.botId,
-      candidate.tweetResult.evaluationScore,
-      supabaseLogger,
-      process.env.GITHUB_SHA,
-    );
-
-    if (result.status === "submitted") {
-      submitted++;
-    } else if (result.status === "daily_limit") {
-      console.log(`[submit] Daily limit reached after ${submitted} submissions`);
-      // Mark remaining candidates as rejected
-      const remaining = candidates.slice(candidates.indexOf(candidate) + 1);
-      for (const r of remaining) {
-        if (r.tweetResult.pipelineRunId) {
-          try {
-            await supabaseLogger.completePipelineRun(r.tweetResult.pipelineRunId, {
-              outcome: "rejected",
-              outcome_reason: "daily_limit_reached",
-              final_stage: "submission",
-            });
-          } catch {}
-        }
-      }
-      break;
-    } else if (result.status === "expired") {
-      console.log(`[submit] Tweet ${candidate.post.id} ${result.reason} — skipping`);
-    } else {
-      console.log(`[submit] Error submitting ${candidate.post.id}: ${result.message} — will not retry`);
-    }
-  }
-
-  return submitted;
-}
-
-// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -215,7 +147,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
   // Process posts concurrently
   const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
   const allLogs: TweetLogMap[] = [];
-  const candidates: CandidateResult[] = [];
+  const candidates: Candidate[] = [];
 
   for (const [idx, post] of posts.entries()) {
     queue.add(async () => {
@@ -250,7 +182,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
 
   // Submit candidates sorted by eval score
   if (candidates.length > 0 && supabaseLogger) {
-    const submitted = await submitCandidatesInline(candidates, supabaseLogger, options?.dryRun ?? false);
+    const submitted = await submitCandidates(candidates, supabaseLogger, options?.dryRun ?? false);
     console.log(`[submit] Submitted ${submitted} of ${candidates.length} candidates`);
   } else {
     console.log(`[submit] No candidates to submit`);
