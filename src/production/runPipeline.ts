@@ -58,7 +58,7 @@ async function main() {
     // Generate notes and submit immediately
     await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5, dryRun: true } : undefined);
 
-    // Submit candidates (disabled — submission now happens inline in generateCandidates)
+    // Previously called submitCandidates as a separate phase — now called from generateCandidates
     // await submitCandidates(supabaseLogger);
 
     console.log("[pipeline] Pipeline completed successfully");
