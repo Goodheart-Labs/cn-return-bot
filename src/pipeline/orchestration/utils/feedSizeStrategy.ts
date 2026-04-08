@@ -1,30 +1,21 @@
 /**
  * Feed Size Strategy
  *
- * Determines which feed size (small/large/xl) to request from the
- * eligible posts API based on persistent pipeline state.
- *
- * Rules:
- *   - Writing limit ≤5 → small
- *   - Otherwise → at least large
- *   - At large, 3 consecutive days without hitting limit → xl
- *   - At xl, 3 consecutive days hitting limit → back to large
+ * Determines which feed size to request from the eligible posts API.
+ * Currently hardcoded to "small" — we lost access to "large" feed (403) as of 2026-03-25.
  */
 
 import type { SupabaseLogger } from "../../../api/supabaseClient";
 
 export type FeedSize = "small" | "large" | "xl";
 
-const DAYS_TO_ESCALATE = 3;
-const DAYS_TO_DEESCALATE = 3;
-
-function todayDateString(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
 export async function determineFeedSize(
-  logger: SupabaseLogger
+  _logger: SupabaseLogger
 ): Promise<{ feedSize: FeedSize; reason: string }> {
+  // Hardcoded to small — we lost access to "large" feed (403) as of 2026-03-25
+  return { feedSize: "small", reason: "hardcoded small (large feed 403)" };
+
+  /*
   const [feedSize, writingLimitStr, daysWithout, daysWith, limitHitToday, lastCheckDate] =
     await Promise.all([
       logger.getPipelineState("feed_size"),
@@ -95,9 +86,18 @@ export async function determineFeedSize(
 
   const parts = [`${daysWithoutHit}d without limit`, `${daysWithHit}d with limit`];
   return { feedSize: currentSize, reason: parts.join(", ") };
+  */
 }
 
-export function buildPostSelection(_feedSize: FeedSize): string {
-  // Hardcoded to small — we lost access to "large" feed (403) as of 2026-03-25
-  return `feed_size: small, feed_lang: en`;
+export function buildPostSelection(feedSize: FeedSize): string {
+  return `feed_size: ${feedSize}, feed_lang: en`;
 }
+
+/*
+const DAYS_TO_ESCALATE = 3;
+const DAYS_TO_DEESCALATE = 3;
+
+function todayDateString(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+*/

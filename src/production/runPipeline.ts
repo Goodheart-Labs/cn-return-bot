@@ -1,9 +1,7 @@
 /**
  * Run Pipeline
  *
- * Orchestrator for the two-phase pipeline:
- * 1. Generate candidates — write notes for new tweets, store as candidates
- * 2. Submit candidates — rank stored candidates, submit the best ones
+ * Single-pass pipeline: fetch tweets, generate notes, submit immediately.
  *
  * Runs on GitHub Actions every 15 minutes.
  * Use --local to route Supabase to a local instance via LOCAL_SUPABASE_URL/KEY.
@@ -26,8 +24,8 @@ if (isLocal) {
 import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates } from "../pipeline/orchestration/generateCandidates";
-import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
-import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
+// import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
+// import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes
 
@@ -52,18 +50,16 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
-    // Update writing limit from X API
-    if (supabaseLogger) {
-      await updateWritingLimit(supabaseLogger);
-    }
+    // Update writing limit from X API (disabled — doesn't work properly)
+    // if (supabaseLogger) {
+    //   await updateWritingLimit(supabaseLogger);
+    // }
 
-    // Phase 1: Generate candidates
-    console.log("[pipeline] === Phase 1: Generate Candidates ===");
-    await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5 } : undefined);
+    // Generate notes and submit immediately
+    await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5, dryRun: true } : undefined);
 
-    // Phase 2: Submit best candidates
-    console.log("[pipeline] === Phase 2: Submit Candidates ===");
-    await submitCandidates(supabaseLogger);
+    // Submit candidates (disabled — submission now happens inline in generateCandidates)
+    // await submitCandidates(supabaseLogger);
 
     console.log("[pipeline] Pipeline completed successfully");
     clearTimeout(globalTimeout);

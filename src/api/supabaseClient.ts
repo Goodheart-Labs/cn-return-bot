@@ -868,9 +868,8 @@ export class SupabaseLogger {
     }
   }
 
-  /**
-   * Fetch all unsubmitted candidates with their scores for ranking.
-   */
+  // Disabled — candidate queue removed. Submission now happens inline.
+  /*
   async fetchCandidates(): Promise<
     {
       id: string;
@@ -915,6 +914,7 @@ export class SupabaseLogger {
       scores: r.pipeline_scores,
     }));
   }
+  */
 
   /**
    * Mark a candidate as submitted after successful note submission.
@@ -935,9 +935,8 @@ export class SupabaseLogger {
     }
   }
 
-  /**
-   * Expire all candidates older than maxAgeHours. Returns count expired.
-   */
+  // Disabled — candidate queue removed.
+  /*
   async expireOldCandidates(maxAgeHours: number = 48): Promise<number> {
     const cutoff = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000).toISOString();
     const { data, error } = await this.client
@@ -958,9 +957,10 @@ export class SupabaseLogger {
 
     return data?.length ?? 0;
   }
+  */
 
   /**
-   * Mark a candidate as expired (too old or failed permanently).
+   * Mark a pipeline run as expired (tweet deleted or ineligible during submission).
    */
   async markCandidateExpired(runId: string, reason: string): Promise<void> {
     const { error } = await this.client
@@ -1050,19 +1050,12 @@ export class SupabaseLogger {
     }
   }
 
-  /**
-   * Get tweet IDs that should be permanently skipped:
-   * - Tweets that were submitted (have a note)
-   * - Tweets with "no_correction_needed" rejections on cooldown:
-   *   1 rejection + <1hr ago → skip (retry after 1 hour)
-   *   2 rejections + <24hr ago → skip (retry after 24 hours)
-   *   3+ rejections → permanent skip
-   */
+  // Disabled — replaced by getAllProcessedTweetIds (no retries, skip everything already seen)
+  /*
   async getProcessedTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
 
     try {
-      // Get submitted notes - always skip these (paginated to avoid 1000-row limit)
       const notesData = await this.fetchAllRows<{ tweet_id: string }>(
         (client) => client.from("notes").select("tweet_id")
       );
@@ -1070,7 +1063,7 @@ export class SupabaseLogger {
         if (row.tweet_id) tweetIds.add(row.tweet_id);
       });
 
-      // Get no_correction_needed rejections with timestamps for cooldown logic
+      // no_correction_needed rejections with cooldown logic
       try {
         const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>(
           (client) => client.from("pipeline_runs").select("tweet_id, created_at")
@@ -1093,7 +1086,6 @@ export class SupabaseLogger {
         const now = new Date();
         for (const [tweetId, info] of rejectionInfo) {
           if (info.count >= 3) {
-            // 3+ rejections: permanent skip
             tweetIds.add(tweetId);
           } else {
             const hoursSinceLatest = (now.getTime() - info.latestAt.getTime()) / (1000 * 60 * 60);
@@ -1101,15 +1093,13 @@ export class SupabaseLogger {
             if (hoursSinceLatest < cooldownHours) {
               tweetIds.add(tweetId);
             }
-            // Otherwise cooldown elapsed — tweet is eligible for retry
           }
         }
       } catch (pipelineError) {
         console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       }
 
-      // Skip tweets that have an above-floor candidate waiting for submission.
-      // Below-floor candidates (eval < 0) are left eligible for re-roll by a different bot.
+      // Skip tweets with above-floor candidates waiting for submission
       try {
         const candidateData = await this.fetchAllRows<{
           id: string;
@@ -1139,10 +1129,11 @@ export class SupabaseLogger {
       return new Set();
     }
   }
+  */
 
   /**
    * Get all tweet IDs that have ever been processed (pipeline_runs + notes).
-   * Used to distinguish new tweets from retries.
+   * Used to skip already-seen tweets — no retries.
    */
   async getAllProcessedTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
@@ -1470,6 +1461,8 @@ export class SupabaseLogger {
     return count ?? 0;
   }
 
+  // Disabled — candidate queue removed.
+  /*
   async countCandidates(): Promise<number> {
     const { count, error } = await this.client
       .from("pipeline_runs")
@@ -1481,4 +1474,5 @@ export class SupabaseLogger {
     }
     return count ?? 0;
   }
+  */
 }

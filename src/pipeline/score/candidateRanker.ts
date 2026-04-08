@@ -1,15 +1,12 @@
 /**
  * Candidate Ranker
  *
- * Ranks candidates by X API evaluation score with freshness decay.
- * When capped, submits the highest-scoring recent candidates first.
- *
- * Previously used a composite of LLM-scored bridging/saysWrong/sourceCount,
- * but analysis of 334 resolved notes showed those signals have zero correlation
- * with H/NH outcome on our own notes (r < 0.08 for all). Removed Mar 2026.
+ * Disabled — submission now happens inline sorted by eval score directly.
+ * Previously ranked candidates by eval score + freshness decay for the
+ * two-phase candidate queue.
  */
 
-// Freshness: score penalty per hour of age
+/*
 const FRESHNESS_DECAY_PER_HOUR = 0.02;
 
 export interface CandidateForRanking {
@@ -30,18 +27,10 @@ export interface RankedCandidate extends CandidateForRanking {
   rankScore: number;
 }
 
-/**
- * Sigmoid function to normalize unbounded eval scores to 0-1 range.
- * eval scores are typically in [-3, 3] range.
- */
 function sigmoid(x: number): number {
   return 1 / (1 + Math.exp(-x));
 }
 
-/**
- * Rank all candidates by eval score + freshness decay.
- * Candidates without eval scores go last (sorted by freshness among themselves).
- */
 export function rankCandidates(candidates: CandidateForRanking[]): RankedCandidate[] {
   if (candidates.length === 0) return [];
 
@@ -51,15 +40,13 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
     const ageHours = (now - c.createdAt.getTime()) / (1000 * 60 * 60);
     const evalScore = c.scores.evaluation !== undefined
       ? sigmoid(c.scores.evaluation)
-      : sigmoid(-1); // ~0.27, "unknown, assume below average"
+      : sigmoid(-1);
     const rankScore = evalScore - FRESHNESS_DECAY_PER_HOUR * ageHours;
     return { ...c, rankScore };
   });
 
-  // Sort descending by rank score
   scored.sort((a, b) => b.rankScore - a.rankScore);
 
-  // Log for visibility
   console.log(`[candidateRanker] ${scored.length} candidates:`);
   for (const c of scored.slice(0, 10)) {
     const ageHours = ((now - c.createdAt.getTime()) / (1000 * 60 * 60)).toFixed(1);
@@ -73,3 +60,4 @@ export function rankCandidates(candidates: CandidateForRanking[]): RankedCandida
 
   return scored;
 }
+*/

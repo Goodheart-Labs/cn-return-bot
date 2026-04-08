@@ -1,11 +1,11 @@
 /**
  * Submit Candidates
  *
- * Phase 2 of the two-phase pipeline. Fetches stored candidates from the DB,
- * ranks them by X API eval score + freshness, and submits
- * the best ones until the daily limit.
+ * Disabled — submission now happens inline in generateCandidates.ts.
+ * Previously Phase 2 of the two-phase pipeline.
  */
 
+/*
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { rankCandidates, type CandidateForRanking } from "../score/candidateRanker";
 
@@ -148,3 +148,4 @@ export async function submitCandidates(supabaseLogger: SupabaseLogger | null) {
 
   console.log(`[submit] Submitted ${submitted} of ${ranked.length} ranked candidates`);
 }
+*/
