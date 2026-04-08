@@ -34,16 +34,7 @@ export async function submitCandidates(
 
   let submitted = 0;
   for (const candidate of candidates) {
-    const result = await submitNoteForTweet(
-      candidate.post.id,
-      candidate.tweetResult.pipelineRunId!,
-      candidate.tweetResult.noteText ?? "",
-      candidate.tweetResult.pipelineResult?.noteResult?.url ?? "",
-      candidate.botId,
-      candidate.tweetResult.evaluationScore,
-      supabaseLogger,
-      process.env.GITHUB_SHA,
-    );
+    const result = await submitNoteForTweet(candidate, supabaseLogger);
 
     if (result.status === "submitted") {
       submitted++;

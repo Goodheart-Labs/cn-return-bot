@@ -3,6 +3,7 @@
  */
 
 import type { SupabaseLogger } from "../../api/supabaseClient";
+import type { Candidate } from "./submitCandidates";
 
 export type SubmissionResult =
   | { status: "submitted"; noteId: string }
@@ -11,15 +12,15 @@ export type SubmissionResult =
   | { status: "error"; message: string };
 
 export async function submitNoteForTweet(
-  tweetId: string,
-  pipelineRunId: string,
-  noteText: string,
-  sourceUrl: string,
-  botId: string,
-  evaluationScore: number | undefined,
-  logger: SupabaseLogger,
-  commitSha?: string
+  candidate: Candidate,
+  logger: SupabaseLogger
 ): Promise<SubmissionResult> {
+  const { post, tweetResult, botId } = candidate;
+  const tweetId = post.id;
+  const pipelineRunId = tweetResult.pipelineRunId!;
+  const noteText = tweetResult.noteText ?? "";
+  const sourceUrl = tweetResult.pipelineResult?.noteResult?.url ?? "";
+
   try {
     const { submitNote } = await import("../../api/submitNote");
     const response = await submitNote(tweetId, {
@@ -46,8 +47,8 @@ export async function submitNoteForTweet(
         bot_name: botId,
         note_text: noteText,
         source_url: sourceUrl,
-        evaluation_score: evaluationScore,
-        commit_sha: commitSha,
+        evaluation_score: tweetResult.evaluationScore,
+        commit_sha: process.env.GITHUB_SHA,
       });
     } catch (logErr) {
       console.error("[submit] Failed to log to Supabase:", logErr);

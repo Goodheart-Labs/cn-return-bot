@@ -1,9 +1,8 @@
 /**
- * Generate & Submit Notes
+ * Generate Candidates
  *
- * Single-pass pipeline. Fetches eligible tweets, runs bot pipelines to write
- * notes, scores them, and immediately submits passing notes (eval >= 0)
- * sorted by eval score descending.
+ * Fetches new tweets from the feed, runs bot pipelines, scores them,
+ * and returns candidates (eval >= 0) for submission.
  */
 
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
