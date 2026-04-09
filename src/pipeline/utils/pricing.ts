@@ -29,12 +29,16 @@ export interface IterationCost extends TokenCost {
   tools: Record<string, TokenCost>;
 }
 
-export interface AgentCosts {
+export interface TurnCost extends TokenCost {
   messages: Record<number, IterationCost>;
-  media: TokenCost;
-  input_tokens: number;
-  output_tokens: number;
-  cost: number;
+}
+
+export interface AgentCostTree extends TokenCost {
+  turn: Record<number, TurnCost>;
+}
+
+export function emptyAgentCostTree(): AgentCostTree {
+  return { ...emptyTokenCost(), turn: {} };
 }
 
 // --- Helpers ---

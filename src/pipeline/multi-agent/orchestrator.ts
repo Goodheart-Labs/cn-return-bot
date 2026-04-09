@@ -10,7 +10,7 @@ import type { PipelineResult, PostContent } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { emptyTokenCost, addTokenCost, type TokenCost, type IterationCost } from "../utils/pricing";
+import { emptyTokenCost, emptyAgentCostTree, addTokenCost, type TokenCost, type AgentCostTree } from "../utils/pricing";
 import { type AgentState, type TurnResult, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
 import { buildNoteResult, buildEmptyResult } from "../utils/pipelineResult";
@@ -31,14 +31,6 @@ interface FlowTurn {
   selectedIndex?: number;
   evalScore?: number;
   durationMs: number;
-}
-
-interface TurnCost extends TokenCost {
-  messages: Record<number, IterationCost>;
-}
-
-interface AgentCostTree extends TokenCost {
-  turn: Record<number, TurnCost>;
 }
 
 interface CostTree {
@@ -108,9 +100,9 @@ function initPipeline(
     researcherFindings: "",
     currentAgentName: "researcher",
     costs: {
-      researcher: { ...emptyTokenCost(), turn: {} },
-      notewriter: { ...emptyTokenCost(), turn: {} },
-      sourceVerifier: { ...emptyTokenCost(), turn: {} },
+      researcher: emptyAgentCostTree(),
+      notewriter: emptyAgentCostTree(),
+      sourceVerifier: emptyAgentCostTree(),
       media: input.mediaCost ?? emptyTokenCost(),
       total: emptyTokenCost(),
     },
