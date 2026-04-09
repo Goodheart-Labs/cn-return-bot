@@ -7,8 +7,7 @@
 
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineResult, PostContent } from "../../bots/types";
-import type { GeminiMediaResult } from "../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "../input/authorHistory";
+import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { emptyTokenCost, addTokenCost, type TokenCost, type IterationCost } from "../utils/pricing";
@@ -69,10 +68,7 @@ interface PipelineState {
 function initPipeline(
   post: Post,
   content: PostContent,
-  mediaResult: GeminiMediaResult,
-  authorHistory?: AuthorNoteHistory,
-  mediaCost?: TokenCost,
-  comments?: string,
+  input: BotInput,
 ): PipelineState {
   const config = getBotConfig();
   const log = getTweetLog();
@@ -92,21 +88,14 @@ function initPipeline(
 
   log?.set("multiAgent.config", config);
   log?.set("multiAgent.agents", agentDefs);
-  log?.set("inputs.author", {
-    name: post.author_name,
-    description: post.author_description,
-    followers: post.author_followers,
-    tweetCount: post.author_tweet_count,
-    noteHistory: authorHistory ?? null,
-  });
 
   const firstMessage = buildUserMessage({
     post,
     tweetText: content.text,
-    tweetMedia: mediaResult.tweetMedia,
-    quotedTweetMedia: mediaResult.quotedTweetMedia,
-    authorNoteHistory: authorHistory,
-    comments,
+    tweetMedia: input.mediaResult.tweetMedia,
+    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
+    authorNoteHistory: input.authorHistory,
+    comments: input.comments,
   });
   addUserMessage(agents.researcher!, firstMessage);
 
@@ -122,11 +111,11 @@ function initPipeline(
       researcher: { ...emptyTokenCost(), turn: {} },
       notewriter: { ...emptyTokenCost(), turn: {} },
       sourceVerifier: { ...emptyTokenCost(), turn: {} },
-      media: mediaCost ?? emptyTokenCost(),
+      media: input.mediaCost ?? emptyTokenCost(),
       total: emptyTokenCost(),
     },
     startMs: Date.now(),
-    mediaCost,
+    mediaCost: input.mediaCost,
   };
 }
 
@@ -209,12 +198,9 @@ function logFinal(state: PipelineState): void {
 export async function runMultiAgentPipeline(
   post: Post,
   content: PostContent,
-  mediaResult: GeminiMediaResult,
-  authorHistory?: AuthorNoteHistory,
-  mediaCost?: TokenCost,
-  comments?: string,
+  input: BotInput,
 ): Promise<PipelineResult> {
-  const state = initPipeline(post, content, mediaResult, authorHistory, mediaCost, comments);
+  const state = initPipeline(post, content, input);
   const searchResults = () => state.allSearchOutputs.join("\n\n");
   const common = () => ({ post, botId: "multi-agent", text: content.text, searchResults: searchResults() });
   let turnCount = 0;

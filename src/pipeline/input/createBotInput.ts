@@ -4,8 +4,10 @@
  * Gathers shared inputs (media, author history, comments) for agent-family bots.
  */
 
+import type { Post } from "../../api/fetchEligiblePosts";
 import type { PostContent } from "../../bots/types";
 import { getBotConfig } from "../utils/botConfig";
+import { getTweetLog } from "../utils/tweetLog";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { emptyTokenCost, addTokenCost, type TokenCost } from "../utils/pricing";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
@@ -20,17 +22,18 @@ export interface BotInput {
 }
 
 export async function createBotInput(
-  post: any,
+  post: Post,
   content: PostContent,
   logTag: string,
 ): Promise<BotInput> {
   const config = getBotConfig();
+  const log = getTweetLog();
   const warnings: string[] = [];
 
   // Media analysis (fatal for media-only tweets)
   let mediaResult: GeminiMediaResult = { tweetMedia: [], quotedTweetMedia: [], cost: emptyTokenCost() };
   const hasTweetMedia = post.media?.length > 0;
-  const hasQuotedMedia = post.referenced_tweet_data?.media?.length > 0;
+  const hasQuotedMedia = (post.referenced_tweet_data?.media?.length ?? 0) > 0;
 
   if (hasTweetMedia || hasQuotedMedia) {
     try {
@@ -68,6 +71,14 @@ export async function createBotInput(
   } catch (err: any) {
     console.warn(`[${logTag}] Comment fetch failed: ${err.message}`);
   }
+
+  log?.set("inputs.author", {
+    name: post.author_name,
+    description: post.author_description,
+    followers: post.author_followers,
+    tweetCount: post.author_tweet_count,
+    noteHistory: authorHistory ?? null,
+  });
 
   return { mediaResult, authorHistory, comments, mediaCost, warnings };
 }

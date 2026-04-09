@@ -21,10 +21,7 @@ export const agentBot: Bot = {
 
     return withBotConfig(config, async () => {
       const input = await createBotInput(post, content, "agent");
-      const result = await runToolCallingLoop(
-        post, content, input.mediaResult,
-        input.authorHistory, input.mediaCost, input.comments,
-      );
+      const result = await runToolCallingLoop(post, content, input);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }

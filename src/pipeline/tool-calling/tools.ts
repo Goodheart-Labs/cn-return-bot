@@ -116,6 +116,26 @@ export const NO_CORRECTION_TOOL = {
   },
 };
 
+export const APPROVE_NOTE_TOOL = {
+  type: "function" as const,
+  function: {
+    name: "approve_note",
+    description: "Approve the note for submission with verified sources. You may include all original sources or only the subset that checked out.",
+    parameters: {
+      type: "object" as const,
+      properties: {
+        sources: {
+          type: "array" as const,
+          items: { type: "string" as const },
+          description: "The verified source URLs to include with the note. Must include at least one.",
+          minItems: 1,
+        },
+      },
+      required: ["sources"],
+    },
+  },
+};
+
 // Claude built-in tools (OpenRouter passthrough)
 export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
 export const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, name: "code_execution" };

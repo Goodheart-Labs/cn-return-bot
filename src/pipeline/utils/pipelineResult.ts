@@ -4,10 +4,11 @@
  * Shared constructors for PipelineResult used by both single-agent and multi-agent pipelines.
  */
 
+import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineResult } from "../../bots/types";
 
 export function buildNoteResult(params: {
-  post: any;
+  post: Post;
   botId: string;
   lastStage: string;
   text: string;
@@ -29,7 +30,7 @@ export function buildNoteResult(params: {
 }
 
 export function buildEmptyResult(params: {
-  post: any;
+  post: Post;
   botId: string;
   lastStage: string;
   text: string;

@@ -7,7 +7,7 @@
 
 import type { AgentDef } from "../tool-calling/agentLoop";
 import { buildSendMessageTool } from "../tool-calling/agentLoop";
-import { WEB_FETCH_TOOL, NO_CORRECTION_TOOL } from "../tool-calling/tools";
+import { WEB_FETCH_TOOL, APPROVE_NOTE_TOOL, NO_CORRECTION_TOOL } from "../tool-calling/tools";
 import { getBotConfig } from "../utils/botConfig";
 
 const SYSTEM_PROMPT = `You are a source verification agent. You receive a community note and verify that the cited sources actually support the correction.
@@ -31,26 +31,6 @@ const SYSTEM_PROMPT = `You are a source verification agent. You receive a commun
 2. Fetch sources that need checking.
 3. Call approve_note with the verified sources (may be a subset of the original). At least one source must remain.
 4. If no sources check out at all, use send_message to request a rewrite or more research.`;
-
-const APPROVE_NOTE_TOOL = {
-  type: "function" as const,
-  function: {
-    name: "approve_note",
-    description: "Approve the note for submission with verified sources. You may include all original sources or only the subset that checked out.",
-    parameters: {
-      type: "object" as const,
-      properties: {
-        sources: {
-          type: "array" as const,
-          items: { type: "string" as const },
-          description: "The verified source URLs to include with the note. Must include at least one.",
-          minItems: 1,
-        },
-      },
-      required: ["sources"],
-    },
-  },
-};
 
 export function createSourceVerifierDef(agentDescriptions: string): AgentDef {
   return {

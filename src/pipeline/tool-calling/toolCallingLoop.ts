@@ -7,9 +7,7 @@
 
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineResult, PostContent } from "../../bots/types";
-import type { GeminiMediaResult } from "../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "../input/authorHistory";
-import type { TokenCost } from "../utils/pricing";
+import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { emptyTokenCost } from "../utils/pricing";
@@ -24,15 +22,11 @@ const MAX_ITERATIONS = 50;
 export async function runToolCallingLoop(
   post: Post,
   content: PostContent,
-  mediaResult: GeminiMediaResult,
-  authorHistory?: AuthorNoteHistory,
-  mediaCost?: TokenCost,
-  comments?: string,
+  input: BotInput,
 ): Promise<PipelineResult> {
   const config = getBotConfig();
   const log = getTweetLog();
 
-  // Build agent definition
   const def: AgentDef = {
     name: "agent",
     description: "Single-turn fact-checking agent",
@@ -45,41 +39,30 @@ export async function runToolCallingLoop(
   const userMessage = buildUserMessage({
     post,
     tweetText: content.text,
-    tweetMedia: mediaResult.tweetMedia,
-    quotedTweetMedia: mediaResult.quotedTweetMedia,
-    authorNoteHistory: authorHistory,
-    comments,
+    tweetMedia: input.mediaResult.tweetMedia,
+    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
+    authorNoteHistory: input.authorHistory,
+    comments: input.comments,
   });
 
-  // Log initial state
   log?.set("agent.config", config);
-  log?.set("inputs.author", {
-    name: post.author_name,
-    description: post.author_description,
-    followers: post.author_followers,
-    tweetCount: post.author_tweet_count,
-    noteHistory: authorHistory ?? null,
-  });
 
-  // Run the agent
   const state = initAgentState(def);
   addUserMessage(state, userMessage);
   const result = await runAgentTurn(state, "agent.messages", MAX_ITERATIONS);
 
-  // Log costs
   const costs = {
     messages: result.iterationCosts,
-    media: mediaCost ?? emptyTokenCost(),
+    media: input.mediaCost ?? emptyTokenCost(),
     ...result.cost,
   };
-  if (mediaCost) costs.cost += mediaCost.cost;
+  if (input.mediaCost) costs.cost += input.mediaCost.cost;
   log?.set("agent.costs", costs);
   log?.set("agent.iterations", result.iterations);
 
   const searchResults = result.searchOutputs.join("\n\n");
   const common = { post, botId: "agent", text: content.text, searchResults };
 
-  // Handle propose_notes: evaluate and pick best
   if (result.terminalTool === "propose_notes") {
     const notes: Array<{ note_text: string; sources: string[] }> = result.args.notes ?? [];
     const { selected, evalResults } = await evaluateAndPickBest(post.id, notes);
