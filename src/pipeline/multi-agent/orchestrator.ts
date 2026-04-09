@@ -73,21 +73,18 @@ function initPipeline(
   const config = getBotConfig();
   const log = getTweetLog();
 
-  const agentDefs = [
-    { name: "researcher", desc: "Investigates factual claims in tweets using search tools and reports findings." },
-    { name: "notewriter", desc: "Writes 3-4 community note variants based on research findings." },
-    { name: "sourceVerifier", desc: "Verifies that cited sources support the community note correction." },
-  ];
-  const agentDescriptions = agentDefs.map((a) => `- ${a.name}: ${a.desc}`).join("\n");
+  const defs = [createResearcherDef(), createNotewriterDef(), createSourceVerifierDef()];
+  const agentDescriptions = defs.map((d) => `- ${d.name}: ${d.description}`).join("\n");
+  for (const def of defs) {
+    def.systemPrompt += `\n\n## Other agents\n${agentDescriptions}`;
+  }
 
-  const agents: Record<string, AgentState> = {
-    researcher: initAgentState(createResearcherDef(agentDescriptions)),
-    notewriter: initAgentState(createNotewriterDef(agentDescriptions)),
-    sourceVerifier: initAgentState(createSourceVerifierDef(agentDescriptions)),
-  };
+  const agents: Record<string, AgentState> = Object.fromEntries(
+    defs.map((def) => [def.name, initAgentState(def)]),
+  );
 
   log?.set("multiAgent.config", config);
-  log?.set("multiAgent.agents", agentDefs);
+  log?.set("multiAgent.agents", defs.map((d) => ({ name: d.name, desc: d.description })));
 
   const firstMessage = buildUserMessage({
     post,

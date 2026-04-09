@@ -49,7 +49,7 @@ In most cases, one round of search calls is enough — search, read the results,
 - Include full URLs for every source. Tweets and tweet replies are valid sources.
 - Include what each source says that's relevant.`;
 
-export function createResearcherDef(agentDescriptions: string): AgentDef {
+export function createResearcherDef(): AgentDef {
   const config = getBotConfig();
   const tools: any[] = [GROK_SEARCH_TOOL, WEB_FETCH_TOOL];
 
@@ -65,7 +65,7 @@ export function createResearcherDef(agentDescriptions: string): AgentDef {
   return {
     name: "researcher",
     description: "Investigates factual claims in tweets using search tools and reports findings.",
-    systemPrompt: SYSTEM_PROMPT + `\n\n## Other agents\n${agentDescriptions}`,
+    systemPrompt: SYSTEM_PROMPT,
     tools,
     terminalTools: ["send_message", "no_correction_needed"],
     model: config.model,

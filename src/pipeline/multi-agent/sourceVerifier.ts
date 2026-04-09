@@ -32,11 +32,11 @@ const SYSTEM_PROMPT = `You are a source verification agent. You receive a commun
 3. Call approve_note with the verified sources (may be a subset of the original). At least one source must remain.
 4. If no sources check out at all, use send_message to request a rewrite or more research.`;
 
-export function createSourceVerifierDef(agentDescriptions: string): AgentDef {
+export function createSourceVerifierDef(): AgentDef {
   return {
     name: "sourceVerifier",
     description: "Verifies that cited sources support the community note correction.",
-    systemPrompt: SYSTEM_PROMPT + `\n\n## Other agents\n${agentDescriptions}`,
+    systemPrompt: SYSTEM_PROMPT,
     tools: [
       WEB_FETCH_TOOL,
       APPROVE_NOTE_TOOL,
