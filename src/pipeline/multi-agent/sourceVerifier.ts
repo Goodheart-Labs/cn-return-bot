@@ -5,9 +5,10 @@
  * Can send back to notewriter (rewrite) or researcher (new evidence needed).
  */
 
-import type { AgentDef } from "./agentFramework";
-import { buildSendMessageTool } from "./agentFramework";
+import type { AgentDef } from "../tool-calling/agentLoop";
+import { buildSendMessageTool } from "../tool-calling/agentLoop";
 import { WEB_FETCH_TOOL, NO_CORRECTION_TOOL } from "../tool-calling/tools";
+import { getBotConfig } from "../utils/botConfig";
 
 const SYSTEM_PROMPT = `You are a source verification agent. You receive a community note and verify that the cited sources actually support the correction.
 
@@ -51,11 +52,10 @@ const APPROVE_NOTE_TOOL = {
   },
 };
 
-export function createSourceVerifierDef(agentDescriptions: string, model: string): AgentDef {
+export function createSourceVerifierDef(agentDescriptions: string): AgentDef {
   return {
     name: "sourceVerifier",
-    description:
-      "Verifies that cited sources support the community note correction.",
+    description: "Verifies that cited sources support the community note correction.",
     systemPrompt: SYSTEM_PROMPT + `\n\n## Other agents\n${agentDescriptions}`,
     tools: [
       WEB_FETCH_TOOL,
@@ -64,6 +64,6 @@ export function createSourceVerifierDef(agentDescriptions: string, model: string
       NO_CORRECTION_TOOL,
     ],
     terminalTools: ["approve_note", "send_message", "no_correction_needed"],
-    model,
+    model: getBotConfig().model,
   };
 }

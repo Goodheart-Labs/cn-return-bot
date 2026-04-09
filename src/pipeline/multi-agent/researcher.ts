@@ -5,8 +5,8 @@
  * to find evidence, then sends findings to the notewriter via send_message.
  */
 
-import type { AgentDef } from "./agentFramework";
-import { buildSendMessageTool } from "./agentFramework";
+import type { AgentDef } from "../tool-calling/agentLoop";
+import { buildSendMessageTool } from "../tool-calling/agentLoop";
 import {
   GROK_SEARCH_TOOL,
   PERPLEXITY_SEARCH_TOOL,
@@ -14,7 +14,7 @@ import {
   WEB_SEARCH_TOOL,
   NO_CORRECTION_TOOL,
 } from "../tool-calling/tools";
-import type { BotConfig } from "../utils/botConfig";
+import { getBotConfig } from "../utils/botConfig";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
 import { buildUserMessage } from "../input/prompt";
@@ -52,10 +52,8 @@ In most cases, one round of search calls is enough — search, read the results,
 - Include full URLs for every source. Tweets and tweet replies are valid sources.
 - Include what each source says that's relevant.`;
 
-export function createResearcherDef(
-  config: BotConfig,
-  agentDescriptions: string,
-): AgentDef {
+export function createResearcherDef(agentDescriptions: string): AgentDef {
+  const config = getBotConfig();
   const tools: any[] = [GROK_SEARCH_TOOL, WEB_FETCH_TOOL];
 
   if (config.search_mode === "native-search") {
@@ -69,8 +67,7 @@ export function createResearcherDef(
 
   return {
     name: "researcher",
-    description:
-      "Investigates factual claims in tweets using search tools and reports findings.",
+    description: "Investigates factual claims in tweets using search tools and reports findings.",
     systemPrompt: SYSTEM_PROMPT + `\n\n## Other agents\n${agentDescriptions}`,
     tools,
     terminalTools: ["send_message", "no_correction_needed"],

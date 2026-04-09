@@ -22,7 +22,7 @@ export const agentBot: Bot = {
     return withBotConfig(config, async () => {
       const input = await createBotInput(post, content, "agent");
       const result = await runToolCallingLoop(
-        post, content, config, input.mediaResult,
+        post, content, input.mediaResult,
         input.authorHistory, input.mediaCost, input.comments,
       );
       if (input.warnings.length) {

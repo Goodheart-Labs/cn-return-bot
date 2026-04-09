@@ -1,20 +1,13 @@
 /**
- * Agent Framework
+ * Agent Loop
  *
- * General-purpose multi-agent abstraction. Each agent has a name, description,
- * system prompt, and tools. The framework runs tool-calling loops and tracks
- * costs. Agents communicate via send_message (routed by the orchestrator).
+ * General-purpose tool-calling loop. Runs an LLM with tools until a terminal
+ * tool is called or iterations exhaust. Tracks costs and logs to tweetLog.
  */
 
 import { llm } from "../llm/llm";
 import { getTweetLog } from "../utils/tweetLog";
-import {
-  type ToolResult,
-  handleGrokSearch,
-  handlePerplexitySearch,
-  handleWebFetch,
-  handleProposeNotes,
-} from "../tool-calling/tools";
+import { executeToolCall } from "./tools";
 import {
   extractOpenRouterCost,
   emptyTokenCost,
@@ -50,7 +43,7 @@ export interface TurnResult {
   searchOutputs: string[];
 }
 
-const MAX_ITERATIONS = 25;
+const DEFAULT_MAX_ITERATIONS = 25;
 
 // --- Agent initialization ---
 
@@ -74,51 +67,17 @@ export function buildSendMessageTool(targets: string[]): any {
     type: "function" as const,
     function: {
       name: "send_message",
-      description:
-        "Send a message to another agent or to output. This ends your turn.",
+      description: "Send a message to another agent or to output. This ends your turn.",
       parameters: {
         type: "object" as const,
         properties: {
-          to: {
-            type: "string" as const,
-            enum: targets,
-            description: "Who to send the message to.",
-          },
-          message: {
-            type: "string" as const,
-            description: "Your message.",
-          },
+          to: { type: "string" as const, enum: targets, description: "Who to send the message to." },
+          message: { type: "string" as const, description: "Your message." },
         },
         required: ["to", "message"],
       },
     },
   };
-}
-
-// --- Tool execution ---
-
-async function executeToolCall(
-  name: string,
-  args: Record<string, any>,
-): Promise<ToolResult> {
-  switch (name) {
-    case "grok_search":
-      return handleGrokSearch(args.query);
-    case "perplexity_search":
-      return handlePerplexitySearch(args.query);
-    case "web_fetch":
-      return handleWebFetch(args.url);
-    case "propose_notes":
-      return handleProposeNotes(args.notes);
-    case "send_message":
-      return { output: { acknowledged: true }, isTerminal: true };
-    case "approve_note":
-      return { output: { acknowledged: true }, isTerminal: true };
-    case "no_correction_needed":
-      return { output: { acknowledged: true }, isTerminal: true };
-    default:
-      return { output: { error: `Unknown tool: ${name}` }, isTerminal: false };
-  }
 }
 
 // --- Tool call parsing ---
@@ -131,7 +90,6 @@ function parseToolCall(toolCall: any): { name: string; args: Record<string, any>
       return { name: toolCall.function.name, args: { raw: toolCall.function.arguments } };
     }
   }
-  // Built-in tool reported as custom type
   const custom = (toolCall as any).custom;
   const name = custom?.name ?? (toolCall as any).type ?? "unknown_builtin";
   try {
@@ -152,39 +110,37 @@ function logResponse(
   iterCost: IterationCost,
 ): void {
   const log = getTweetLog();
-
-  // Track LLM cost for this iteration
   const llmCost = extractOpenRouterCost(response);
   iterCost.input_tokens += llmCost.input_tokens;
   iterCost.output_tokens += llmCost.output_tokens;
   iterCost.cost += llmCost.cost;
 
   if (message.content) {
-    log?.set(`${prefix}.messages.${iteration}.content`, message.content);
+    log?.set(`${prefix}.${iteration}.content`, message.content);
   }
 
   const reasoning = (message as any).reasoning;
   if (reasoning) {
-    log?.set(`${prefix}.messages.${iteration}.reasoning`, reasoning);
+    log?.set(`${prefix}.${iteration}.reasoning`, reasoning);
   }
 
   const annotations = (message as any).annotations as any[] | undefined;
   if (annotations?.length) {
-    log?.set(`${prefix}.messages.${iteration}.annotations`, annotations);
+    log?.set(`${prefix}.${iteration}.annotations`, annotations);
     const urls = annotations
       .filter((a: any) => a.type === "url_citation")
       .map((a: any) => `${a.url_citation?.title}: ${a.url_citation?.url}`)
       .join("\n");
     if (urls) searchOutputs.push(`--- web_search ---\n${urls}`);
   }
+
+  const webSearchRequests = (response as any).usage?.server_tool_use?.web_search_requests ?? 0;
+  if (webSearchRequests > 0) {
+    log?.set(`${prefix}.${iteration}.web_search_requests`, webSearchRequests);
+  }
 }
 
-function hasAnnotations(message: any): boolean {
-  const annotations = (message as any).annotations;
-  return Array.isArray(annotations) && annotations.length > 0;
-}
-
-// --- Process a single tool call, log it, update state ---
+// --- Process a single tool call ---
 
 async function processToolCall(
   toolCall: any,
@@ -202,15 +158,13 @@ async function processToolCall(
   const result = await executeToolCall(name, args);
   const toolDurationMs = Date.now() - toolStartMs;
 
-  // Use toolIndex suffix to avoid overwrites when multiple calls share a name
   const logKey = toolIndex === 0 ? name : `${name}_${toolIndex}`;
-  log?.set(`${prefix}.messages.${iteration}.${logKey}`, {
+  log?.set(`${prefix}.${iteration}.${logKey}`, {
     args,
     result: result.output,
     durationMs: toolDurationMs,
   });
 
-  // Track tool cost in this iteration's breakdown
   if (result.cost) {
     iterCost.tools[logKey] = result.cost;
     iterCost.cost += result.cost.cost;
@@ -234,35 +188,23 @@ async function processToolCall(
   return null;
 }
 
-// --- Finalize turn (log costs + accumulate) ---
-
-function finalizeTurn(
-  state: AgentState,
-  prefix: string,
-  iteration: number,
-  turnCost: TokenCost,
-): void {
-  addTokenCost(state.cost, turnCost);
-  getTweetLog()?.set(`${prefix}.iterations`, iteration);
-}
-
 // --- Agent turn loop ---
 
-export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
+export async function runAgentTurn(
+  state: AgentState,
+  logPrefix: string,
+  maxIterations = DEFAULT_MAX_ITERATIONS,
+): Promise<TurnResult> {
   state.turnCount++;
-  const turn = state.turnCount;
   const agentName = state.def.name;
-  const prefix = `multiAgent.${agentName}.turn.${turn}`;
-
   const log = getTweetLog();
 
-  // Log messages.0: system prompt + user message that triggered this turn
-  if (turn === 1) {
-    log?.set(`${prefix}.messages.0.systemPrompt`, state.def.systemPrompt);
+  if (state.turnCount === 1) {
+    log?.set(`${logPrefix}.0.systemPrompt`, state.def.systemPrompt);
   }
   const lastMsg = state.messages[state.messages.length - 1];
   if (lastMsg?.role === "user") {
-    log?.set(`${prefix}.messages.0.userMessage`, lastMsg.content);
+    log?.set(`${logPrefix}.0.userMessage`, lastMsg.content);
   }
 
   const turnCost = emptyTokenCost();
@@ -270,7 +212,7 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
   const searchOutputs: string[] = [];
   let iteration = 0;
 
-  while (iteration < MAX_ITERATIONS) {
+  while (iteration < maxIterations) {
     iteration++;
 
     const iterCost: IterationCost = { input_tokens: 0, output_tokens: 0, cost: 0, tools: {} };
@@ -289,18 +231,20 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
       break;
     }
 
-    logResponse(message, response, prefix, iteration, searchOutputs, iterCost);
+    logResponse(message, response, logPrefix, iteration, searchOutputs, iterCost);
 
-    // No tool calls — either web_search annotation (continue) or implicit stop
     if (!message.tool_calls?.length) {
       iterationCosts[iteration] = iterCost;
       addTokenCost(turnCost, iterCost);
 
-      if (hasAnnotations(message)) {
+      const hasAnnotations = Array.isArray((message as any).annotations) && (message as any).annotations.length > 0;
+      if (hasAnnotations) {
         state.messages.push(message);
         continue;
       }
-      finalizeTurn(state, prefix, iteration, turnCost);
+
+      addTokenCost(state.cost, turnCost);
+      log?.set(`${logPrefix}.iterations`, iteration);
       return {
         terminalTool: "no_correction_needed",
         args: { reason: typeof message.content === "string" ? message.content : "No tool calls made" },
@@ -314,12 +258,12 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
     state.messages.push(message);
 
     for (let ti = 0; ti < message.tool_calls.length; ti++) {
-      const toolCall = message.tool_calls[ti];
-      const terminal = await processToolCall(toolCall, ti, state, prefix, iteration, iterCost, searchOutputs);
+      const terminal = await processToolCall(message.tool_calls[ti], ti, state, logPrefix, iteration, iterCost, searchOutputs);
       if (terminal) {
         iterationCosts[iteration] = iterCost;
         addTokenCost(turnCost, iterCost);
-        finalizeTurn(state, prefix, iteration, turnCost);
+        addTokenCost(state.cost, turnCost);
+        log?.set(`${logPrefix}.iterations`, iteration);
         return { ...terminal, cost: turnCost, iterationCosts };
       }
     }
@@ -328,10 +272,11 @@ export async function runAgentTurn(state: AgentState): Promise<TurnResult> {
     addTokenCost(turnCost, iterCost);
   }
 
-  finalizeTurn(state, prefix, iteration, turnCost);
+  addTokenCost(state.cost, turnCost);
+  log?.set(`${logPrefix}.iterations`, iteration);
   return {
     terminalTool: "error",
-    args: { reason: `Loop exhausted after ${MAX_ITERATIONS} iterations` },
+    args: { reason: `Loop exhausted after ${maxIterations} iterations` },
     cost: turnCost,
     iterations: iteration,
     iterationCosts,

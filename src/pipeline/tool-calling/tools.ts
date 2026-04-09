@@ -11,7 +11,7 @@ import TurndownService from "turndown";
 import { xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../write/writeNote";
-import type { BotConfig } from "../utils/botConfig";
+import { getBotConfig } from "../utils/botConfig";
 import {
   GROK_MODEL, PERPLEXITY_MODEL,
   calculateGrokCost, extractOpenRouterCost,
@@ -122,7 +122,8 @@ export const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, n
 
 // --- Build tool list ---
 
-export function buildToolList(config: BotConfig): any[] {
+export function buildToolList(): any[] {
+  const config = getBotConfig();
   const isAnthropic = config.model.startsWith("anthropic/");
 
   const tools: any[] = [
@@ -167,6 +168,8 @@ export async function executeToolCall(
     case "propose_notes":
       return handleProposeNotes(args.notes);
     case "no_correction_needed":
+    case "send_message":
+    case "approve_note":
       return { output: { acknowledged: true }, isTerminal: true };
     default:
       return { output: { error: `Unknown tool: ${toolName}` }, isTerminal: false };

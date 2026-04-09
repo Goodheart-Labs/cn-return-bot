@@ -22,7 +22,7 @@ export const multiAgentBot: Bot = {
     return withBotConfig(config, async () => {
       const input = await createBotInput(post, content, "multi-agent");
       const result = await runMultiAgentPipeline(
-        post, content, config, input.mediaResult,
+        post, content, input.mediaResult,
         input.authorHistory, input.mediaCost, input.comments,
       );
       if (input.warnings.length) {
