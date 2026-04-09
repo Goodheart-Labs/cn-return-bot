@@ -52,21 +52,8 @@ function pickVariant(variants: ConfigVariant[]): ConfigVariant {
   return variants[variants.length - 1]!;
 }
 
-export interface ConfigSelection {
-  config: BotConfig;
-  variantName: string;
-}
-
-export function randomizeConfig(): ConfigSelection {
+export function randomizeConfig(): BotConfig {
   const variant = pickVariant(CONFIG_VARIANTS);
-  return {
-    config: { ...DEFAULT_CONFIG, ...variant.overrides },
-    variantName: variant.name,
-  };
+  return { ...DEFAULT_CONFIG, ...variant.overrides };
 }
 
-// --- Bot name derivation ---
-
-export function deriveBotName(base: string, variantName: string): string {
-  return `${base}_${variantName}`;
-}

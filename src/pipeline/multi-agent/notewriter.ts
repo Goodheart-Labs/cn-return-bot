@@ -6,7 +6,7 @@
  */
 
 import type { AgentDef } from "./agentFramework";
-import { PROPOSE_NOTES_TOOL, NO_CORRECTION_TOOL } from "../agent/agentTools";
+import { PROPOSE_NOTES_TOOL, NO_CORRECTION_TOOL } from "../tool-calling/tools";
 
 const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You receive research findings and write community note variants.
 

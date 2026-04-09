@@ -18,7 +18,7 @@ import PQueue from "p-queue";
 import { initOutputFolder, resultToCsvRow, type OutputFolder } from "../../local/outputWriter";
 import { writeResultJsons, type CategorizedRow } from "../../local/evaluateResults";
 
-let MAX_POSTS = 20;
+const DEFAULT_MAX_POSTS = 20;
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
 
@@ -27,7 +27,8 @@ const BACKLOG_LIMIT = 1000;
 // ---------------------------------------------------------------------------
 
 async function fetchAndSelectPosts(
-  supabaseLogger: SupabaseLogger | null
+  supabaseLogger: SupabaseLogger | null,
+  maxPosts: number,
 ): Promise<{ posts: Post[]; feedSize: string }> {
   let skipPostIds = new Set<string>();
   let allProcessedIds = new Set<string>();
@@ -80,11 +81,11 @@ async function fetchAndSelectPosts(
     }
   }
 
-  const retrySlots = skipRetries ? 0 : Math.max(0, MAX_POSTS - newPosts.length);
+  const retrySlots = skipRetries ? 0 : Math.max(0, maxPosts - newPosts.length);
   const posts = [
-    ...newPosts.slice(0, MAX_POSTS),
+    ...newPosts.slice(0, maxPosts),
     ...retryPosts.slice(0, retrySlots),
-  ].slice(0, MAX_POSTS);
+  ].slice(0, maxPosts);
 
   console.log(
     `[generate] Processing ${posts.length} of ${backlogTotal} (${posts.filter((p) => !allProcessedIds.has(p.id)).length} new + ${posts.filter((p) => allProcessedIds.has(p.id)).length} retries)`
@@ -184,7 +185,7 @@ async function storeCandidateResult(
 // ---------------------------------------------------------------------------
 
 export async function generateCandidates(supabaseLogger: SupabaseLogger | null, options?: { maxPosts?: number; localOutput?: boolean }) {
-  if (options?.maxPosts) MAX_POSTS = options.maxPosts;
+  const maxPosts = options?.maxPosts ?? DEFAULT_MAX_POSTS;
   const commit = process.env.GITHUB_SHA;
 
   const output: OutputFolder | null = options?.localOutput
@@ -198,7 +199,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
   // Fetch and select posts
-  const { posts, feedSize } = await fetchAndSelectPosts(supabaseLogger);
+  const { posts, feedSize } = await fetchAndSelectPosts(supabaseLogger, maxPosts);
   if (!posts.length) {
     console.log("[generate] No eligible posts found.");
     return;

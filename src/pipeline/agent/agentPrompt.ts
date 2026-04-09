@@ -5,7 +5,7 @@
  */
 
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "./agentAuthorHistory";
+import type { AuthorNoteHistory } from "../input/authorHistory";
 
 export const SYSTEM_PROMPT = `You are a Community Notes fact-checker for X/Twitter. Determine if the post below contains a clear factual error or leaves users with a less accurate map in the sense of "The Map and the Territory". If so, write a correction note with a verified source.
 

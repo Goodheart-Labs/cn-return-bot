@@ -14,14 +14,14 @@ import {
   handlePerplexitySearch,
   handleWebFetch,
   handleProposeNotes,
-} from "../agent/agentTools";
+} from "../tool-calling/tools";
 import {
   extractOpenRouterCost,
   emptyTokenCost,
   addTokenCost,
   type TokenCost,
   type IterationCost,
-} from "../agent/agentPricing";
+} from "../utils/pricing";
 
 // --- Types ---
 

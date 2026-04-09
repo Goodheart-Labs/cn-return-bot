@@ -7,7 +7,7 @@
 
 import type { AgentDef } from "./agentFramework";
 import { buildSendMessageTool } from "./agentFramework";
-import { WEB_FETCH_TOOL, NO_CORRECTION_TOOL } from "../agent/agentTools";
+import { WEB_FETCH_TOOL, NO_CORRECTION_TOOL } from "../tool-calling/tools";
 
 const SYSTEM_PROMPT = `You are a source verification agent. You receive a community note and verify that the cited sources actually support the correction.
 

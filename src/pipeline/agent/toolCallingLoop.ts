@@ -9,17 +9,17 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineResult, PostContent } from "../../bots/types";
 import type { GeminiMediaResult } from "../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "./agentAuthorHistory";
+import type { AuthorNoteHistory } from "../input/authorHistory";
 import type { BotConfig } from "./agentConfig";
 import { llm } from "../llm/llm";
 import { evaluateNote } from "../score/noteEvaluationFilter";
 import { getTweetLog } from "../utils/tweetLog";
-import { buildToolList, executeToolCall } from "./agentTools";
+import { buildToolList, executeToolCall } from "../tool-calling/tools";
 import { SYSTEM_PROMPT, buildUserMessage } from "./agentPrompt";
 import {
   extractOpenRouterCost, emptyTokenCost,
   type TokenCost, type IterationCost, type AgentCosts,
-} from "./agentPricing";
+} from "../utils/pricing";
 
 const MAX_ITERATIONS = 50;
 

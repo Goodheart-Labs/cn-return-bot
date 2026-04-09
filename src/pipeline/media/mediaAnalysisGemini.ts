@@ -18,7 +18,7 @@ import { getTweetLog } from "../utils/tweetLog";
 import {
   GEMINI_MODEL, extractOpenRouterCost, addTokenCost, emptyTokenCost,
   type TokenCost,
-} from "../agent/agentPricing";
+} from "../utils/pricing";
 
 const execAsync = promisify(exec);
 const LONG_VIDEO_THRESHOLD_MS = 210_000; // 3.5 minutes
@@ -350,12 +350,17 @@ export async function analyzeMediaGemini(
 ): Promise<GeminiMediaResult> {
   const startMs = Date.now();
   const log = getTweetLog();
-  const costAcc = emptyTokenCost();
+  const tweetCost = emptyTokenCost();
+  const quotedCost = emptyTokenCost();
 
   const [tweetResults, quotedResults] = await Promise.all([
-    analyzeMediaItems(tweetMedia ?? [], costAcc, strategy),
-    analyzeMediaItems(quotedTweetMedia ?? [], costAcc, strategy),
+    analyzeMediaItems(tweetMedia ?? [], tweetCost, strategy),
+    analyzeMediaItems(quotedTweetMedia ?? [], quotedCost, strategy),
   ]);
+
+  const totalCost = emptyTokenCost();
+  addTokenCost(totalCost, tweetCost);
+  addTokenCost(totalCost, quotedCost);
 
   log?.set("media.gemini.tweetMedia", tweetResults);
   log?.set("media.gemini.quotedTweetMedia", quotedResults);
@@ -364,6 +369,6 @@ export async function analyzeMediaGemini(
   return {
     tweetMedia: tweetResults,
     quotedTweetMedia: quotedResults,
-    cost: costAcc,
+    cost: totalCost,
   };
 }

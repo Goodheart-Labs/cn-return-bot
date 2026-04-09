@@ -13,7 +13,7 @@ import {
   calculateGrokCost,
   emptyTokenCost,
   type TokenCost,
-} from "./agentPricing";
+} from "../utils/pricing";
 
 export interface CommentsResult {
   comments: string;

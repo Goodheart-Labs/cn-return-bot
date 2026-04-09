@@ -8,7 +8,7 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineResult, PostContent } from "../../bots/types";
 import type { GeminiMediaResult } from "../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "../agent/agentAuthorHistory";
+import type { AuthorNoteHistory } from "../input/authorHistory";
 import type { BotConfig } from "../agent/agentConfig";
 import { evaluateNote } from "../score/noteEvaluationFilter";
 import { getTweetLog } from "../utils/tweetLog";
@@ -16,7 +16,7 @@ import {
   emptyTokenCost,
   addTokenCost,
   type TokenCost,
-} from "../agent/agentPricing";
+} from "../utils/pricing";
 import {
   type AgentState,
   type TurnResult,
@@ -24,7 +24,7 @@ import {
   addUserMessage,
   runAgentTurn,
 } from "./agentFramework";
-import type { IterationCost } from "../agent/agentPricing";
+import type { IterationCost } from "../utils/pricing";
 import { createResearcherDef, buildResearcherFirstMessage } from "./researcher";
 import { createNotewriterDef } from "./notewriter";
 import { createSourceVerifierDef } from "./sourceVerifier";

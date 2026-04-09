@@ -13,10 +13,10 @@ import {
   WEB_FETCH_TOOL,
   WEB_SEARCH_TOOL,
   NO_CORRECTION_TOOL,
-} from "../agent/agentTools";
+} from "../tool-calling/tools";
 import type { BotConfig } from "../agent/agentConfig";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "../agent/agentAuthorHistory";
+import type { AuthorNoteHistory } from "../input/authorHistory";
 import { buildUserMessage } from "../agent/agentPrompt";
 
 const SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
