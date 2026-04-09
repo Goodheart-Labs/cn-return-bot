@@ -10,7 +10,7 @@ import type { PipelineResult, PostContent } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { emptyTokenCost, emptyAgentCostTree, addTokenCost } from "../utils/pricing";
+import { emptyTokenCost } from "../utils/pricing";
 import { buildToolList } from "./tools";
 import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "./agentLoop";
 import { SYSTEM_PROMPT, buildUserMessage } from "../input/prompt";
@@ -51,17 +51,12 @@ export async function runToolCallingLoop(
   addUserMessage(state, userMessage);
   const result = await runAgentTurn(state, "agent.messages", MAX_ITERATIONS);
 
-  const agentCost = emptyAgentCostTree();
-  agentCost.turn[1] = { messages: result.iterationCosts, ...result.cost };
-  addTokenCost(agentCost, result.cost);
-
   const costs = {
-    agent: agentCost,
+    messages: result.iterationCosts,
     media: input.mediaCost ?? emptyTokenCost(),
-    total: emptyTokenCost(),
+    ...result.cost,
   };
-  addTokenCost(costs.total, agentCost);
-  if (input.mediaCost) addTokenCost(costs.total, input.mediaCost);
+  if (input.mediaCost) costs.cost += input.mediaCost.cost;
   log?.set("agent.costs", costs);
   log?.set("agent.iterations", result.iterations);
 
