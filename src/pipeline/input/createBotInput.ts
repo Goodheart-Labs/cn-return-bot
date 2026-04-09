@@ -5,7 +5,7 @@
  */
 
 import type { PostContent } from "../../bots/types";
-import type { BotConfig } from "../utils/botConfig";
+import { getBotConfig } from "../utils/botConfig";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { emptyTokenCost, addTokenCost, type TokenCost } from "../utils/pricing";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
@@ -22,9 +22,9 @@ export interface BotInput {
 export async function createBotInput(
   post: any,
   content: PostContent,
-  config: BotConfig,
   logTag: string,
 ): Promise<BotInput> {
+  const config = getBotConfig();
   const warnings: string[] = [];
 
   // Media analysis (fatal for media-only tweets)

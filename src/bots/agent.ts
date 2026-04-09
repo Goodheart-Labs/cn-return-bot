@@ -20,7 +20,7 @@ export const agentBot: Bot = {
     const config = randomizeConfig();
 
     return withBotConfig(config, async () => {
-      const input = await createBotInput(post, content, config, "agent");
+      const input = await createBotInput(post, content, "agent");
       const result = await runToolCallingLoop(
         post, content, config, input.mediaResult,
         input.authorHistory, input.mediaCost, input.comments,

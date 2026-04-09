@@ -40,6 +40,12 @@ export function withBotConfig<T>(config: BotConfig, fn: () => T): T {
   return configStorage.run(config, fn);
 }
 
+export function getBotConfig(): BotConfig {
+  const config = configStorage.getStore();
+  if (!config) throw new Error("getBotConfig() called outside withBotConfig()");
+  return config;
+}
+
 // --- Randomization ---
 
 function pickVariant(variants: ConfigVariant[]): ConfigVariant {
