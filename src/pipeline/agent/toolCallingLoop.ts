@@ -46,7 +46,7 @@ export async function runToolCallingLoop(
 ): Promise<PipelineResult> {
   const log = getTweetLog();
   const startMs = Date.now();
-  const botId = "agent"; // overridden by caller with deriveBotName
+  const botId = "agent";
 
   // Build quoted post text
   const quotedRef = post.referenced_tweets?.find((rt) => rt.type === "quoted");
