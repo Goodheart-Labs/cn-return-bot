@@ -7,7 +7,6 @@
 
 export type FeedSize = "small" | "large" | "xl";
 
-export function buildPostSelection(_feedSize: FeedSize): { query: string; feedSize: FeedSize } {
-  const feedSize: FeedSize = "small";
-  return { query: `feed_size: ${feedSize}, feed_lang: en`, feedSize };
+export function buildPostSelection(_feedSize: FeedSize): string {
+  return `feed_size: small, feed_lang: en`;
 }

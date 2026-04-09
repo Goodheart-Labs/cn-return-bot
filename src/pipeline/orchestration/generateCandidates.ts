@@ -46,8 +46,8 @@ async function fetchAndSelectPosts(
     }
   }
 
-  const { query: postSelection, feedSize } = buildPostSelection("small");
-  console.log(`[generate] Feed: ${feedSize}`);
+  const postSelection = buildPostSelection("small");
+  const feedSize = "small";
   const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
   const sorted = sortByRecencyAndImpressions(allEligible);
