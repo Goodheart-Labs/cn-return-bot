@@ -17,7 +17,7 @@ import {
 import type { BotConfig } from "../utils/botConfig";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
-import { buildUserMessage } from "../agent/agentPrompt";
+import { buildUserMessage } from "../input/prompt";
 
 const SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 

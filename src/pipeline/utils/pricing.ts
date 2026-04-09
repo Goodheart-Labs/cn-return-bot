@@ -1,7 +1,7 @@
 /**
- * Agent Pricing
+ * Pricing
  *
- * Model constants and cost-tracking helpers for the agent pipeline.
+ * Model constants and cost-tracking helpers.
  * OpenRouter returns usage.cost directly; only Grok (xAI) needs manual calculation.
  */
 

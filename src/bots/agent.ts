@@ -2,13 +2,13 @@
  * Agent Bot
  *
  * Single agentic call with tool calling.
- * Model and search mode determined by agentConfig.
+ * Model and search mode determined by botConfig.
  */
 
 import { Bot, PipelineResult } from "./types";
 import { randomizeConfig, withBotConfig } from "../pipeline/utils/botConfig";
 import { createBotInput } from "../pipeline/input/createBotInput";
-import { runToolCallingLoop } from "../pipeline/agent/toolCallingLoop";
+import { runToolCallingLoop } from "../pipeline/tool-calling/toolCallingLoop";
 
 export const agentBot: Bot = {
   id: "agent",

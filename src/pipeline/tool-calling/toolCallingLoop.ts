@@ -1,7 +1,7 @@
 /**
  * Tool-Calling Loop
  *
- * Runs Claude 4.5 Haiku with tool access in a loop until a terminal tool
+ * Runs the configured model with tool access in a loop until a terminal tool
  * (propose_notes or no_correction_needed) is called, or iterations exhaust.
  * When propose_notes is called, evaluates each candidate and picks the best.
  */
@@ -14,8 +14,8 @@ import type { BotConfig } from "../utils/botConfig";
 import { llm } from "../llm/llm";
 import { evaluateNote } from "../score/noteEvaluationFilter";
 import { getTweetLog } from "../utils/tweetLog";
-import { buildToolList, executeToolCall } from "../tool-calling/tools";
-import { SYSTEM_PROMPT, buildUserMessage } from "./agentPrompt";
+import { buildToolList, executeToolCall } from "./tools";
+import { SYSTEM_PROMPT, buildUserMessage } from "../input/prompt";
 import {
   extractOpenRouterCost, emptyTokenCost,
   type TokenCost, type IterationCost, type AgentCosts,

@@ -1,8 +1,7 @@
 /**
- * Agent Tools
+ * Tools
  *
- * Tool schemas and handlers for the agentic bot.
- * Tools are either Claude built-in (handled by OpenRouter) or custom function tools.
+ * Tool schemas and execution handlers for fact-checking pipelines.
  */
 
 import { Readability } from "@mozilla/readability";

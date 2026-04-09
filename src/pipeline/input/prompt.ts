@@ -1,5 +1,5 @@
 /**
- * Agent Prompt
+ * Prompt
  *
  * Static system prompt (cacheable) and dynamic user message builder.
  */

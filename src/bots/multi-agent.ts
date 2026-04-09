@@ -2,7 +2,7 @@
  * Multi-Agent Bot
  *
  * Three-stage pipeline: Researcher → Notewriter → Source Verifier.
- * Model determined by agentConfig. Messages persist across turns.
+ * Model determined by botConfig. Messages persist across turns.
  */
 
 import { Bot, PipelineResult } from "./types";

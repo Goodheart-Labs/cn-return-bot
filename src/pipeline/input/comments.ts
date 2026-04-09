@@ -1,8 +1,7 @@
 /**
- * Agent Comments
+ * Tweet Comments
  *
- * Pre-loop Grok call to fetch representative comments/replies under a tweet.
- * Provides the agent with reader reactions without burning grok_search calls.
+ * Fetches representative comments/replies under a tweet via Grok.
  */
 
 import { generateText } from "ai";
