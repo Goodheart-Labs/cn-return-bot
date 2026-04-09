@@ -11,7 +11,7 @@ import { SupabaseLogger } from "../../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../../bots/index";
 import { processSingleTweet } from "./processTweet";
 import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, nestDotKeys, type TweetLogMap } from "../utils/tweetLog";
-import { buildPostSelection } from "./utils/feedSizeStrategy";
+import { determineFeedSize, buildPostSelection } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions, getTweetScore } from "./utils/tweetSorting";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
@@ -46,8 +46,10 @@ async function fetchAndSelectPosts(
     }
   }
 
-  const postSelection = buildPostSelection("small");
-  const feedSize = "small";
+  const { feedSize } = supabaseLogger
+    ? await determineFeedSize(supabaseLogger)
+    : { feedSize: "small" as const };
+  const postSelection = buildPostSelection(feedSize);
   const allEligible = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
   const sorted = sortByRecencyAndImpressions(allEligible);
