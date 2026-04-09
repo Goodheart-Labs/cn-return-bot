@@ -12,7 +12,7 @@ import TurndownService from "turndown";
 import { xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../write/writeNote";
-import type { BotConfig } from "../agent/agentConfig";
+import type { BotConfig } from "../utils/botConfig";
 import {
   GROK_MODEL, PERPLEXITY_MODEL,
   calculateGrokCost, extractOpenRouterCost,

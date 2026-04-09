@@ -9,7 +9,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineResult, PostContent } from "../../bots/types";
 import type { GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
-import type { BotConfig } from "../agent/agentConfig";
+import type { BotConfig } from "../utils/botConfig";
 import { evaluateNote } from "../score/noteEvaluationFilter";
 import { getTweetLog } from "../utils/tweetLog";
 import {

@@ -6,7 +6,7 @@
  */
 
 import { Bot, PipelineResult } from "./types";
-import { randomizeConfig, withBotConfig } from "../pipeline/agent/agentConfig";
+import { randomizeConfig, withBotConfig } from "../pipeline/utils/botConfig";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runMultiAgentPipeline } from "../pipeline/multi-agent/orchestrator";
 

@@ -5,7 +5,7 @@
  */
 
 import type { PostContent } from "../../bots/types";
-import type { BotConfig } from "../agent/agentConfig";
+import type { BotConfig } from "../utils/botConfig";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { emptyTokenCost, addTokenCost, type TokenCost } from "../utils/pricing";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";

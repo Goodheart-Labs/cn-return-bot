@@ -14,7 +14,7 @@ import {
   WEB_SEARCH_TOOL,
   NO_CORRECTION_TOOL,
 } from "../tool-calling/tools";
-import type { BotConfig } from "../agent/agentConfig";
+import type { BotConfig } from "../utils/botConfig";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
 import { buildUserMessage } from "../agent/agentPrompt";
