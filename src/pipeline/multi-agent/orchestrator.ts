@@ -15,7 +15,8 @@ import { emptyTokenCost, addTokenCost, type TokenCost, type IterationCost } from
 import { type AgentState, type TurnResult, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
 import { buildNoteResult, buildEmptyResult } from "../utils/pipelineResult";
-import { createResearcherDef, buildResearcherFirstMessage } from "./researcher";
+import { createResearcherDef } from "./researcher";
+import { buildUserMessage } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
 import { createSourceVerifierDef } from "./sourceVerifier";
 
@@ -99,19 +100,11 @@ function initPipeline(
     noteHistory: authorHistory ?? null,
   });
 
-  const firstMessage = buildResearcherFirstMessage({
+  const firstMessage = buildUserMessage({
+    post,
     tweetText: content.text,
-    tweetId: post.id,
-    tweetDate: post.created_at,
-    quotedPostText: post.referenced_tweets?.find((rt) => rt.type === "quoted") && post.referenced_tweet_data
-      ? post.referenced_tweet_data.text
-      : undefined,
     tweetMedia: mediaResult.tweetMedia,
     quotedTweetMedia: mediaResult.quotedTweetMedia,
-    authorName: post.author_name,
-    authorDescription: post.author_description,
-    authorFollowers: post.author_followers,
-    authorTweetCount: post.author_tweet_count,
     authorNoteHistory: authorHistory,
     comments,
   });

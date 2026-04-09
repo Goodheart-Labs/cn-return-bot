@@ -4,6 +4,7 @@
  * Static system prompt (cacheable) and dynamic user message builder.
  */
 
+import type { Post } from "../../api/fetchEligiblePosts";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
 
@@ -43,37 +44,38 @@ export const SYSTEM_PROMPT = `You are a Community Notes fact-checker for X/Twitt
 - When you can't find strong, direct contradicting evidence
 - When the "error" is too minor or pedantic`;
 
+function getQuotedPostText(post: Post): string | undefined {
+  const quotedRef = post.referenced_tweets?.find((rt) => rt.type === "quoted");
+  return quotedRef && post.referenced_tweet_data
+    ? post.referenced_tweet_data.text
+    : undefined;
+}
+
 export function buildUserMessage(params: {
+  post: Post;
   tweetText: string;
-  tweetId: string;
-  tweetDate: string;
-  quotedPostText?: string;
   tweetMedia: GeminiMediaItem[];
   quotedTweetMedia: GeminiMediaItem[];
-  authorName?: string;
-  authorDescription?: string;
-  authorFollowers?: number;
-  authorTweetCount?: number;
   authorNoteHistory?: AuthorNoteHistory;
   comments?: string;
-  currentDate: string;
-  currentTime: string;
 }): string {
+  const { post } = params;
+  const now = new Date();
   const parts: string[] = [];
 
   // Timestamps
-  parts.push(`Current date: ${params.currentDate}`);
-  parts.push(`Current time: ${params.currentTime} UTC`);
-  parts.push(`Tweet posted: ${params.tweetDate}`);
-  parts.push(`Tweet URL: https://x.com/i/status/${params.tweetId}`);
+  parts.push(`Current date: ${now.toISOString().split("T")[0]}`);
+  parts.push(`Current time: ${now.toISOString().split("T")[1]!.slice(0, 5)} UTC`);
+  parts.push(`Tweet posted: ${post.created_at}`);
+  parts.push(`Tweet URL: https://x.com/i/status/${post.id}`);
 
   // Author info
   const authorParts: string[] = [];
-  if (params.authorName) authorParts.push(params.authorName);
-  if (params.authorFollowers != null) authorParts.push(`${params.authorFollowers.toLocaleString()} followers`);
-  if (params.authorTweetCount != null) authorParts.push(`${params.authorTweetCount.toLocaleString()} posts`);
+  if (post.author_name) authorParts.push(post.author_name);
+  if (post.author_followers != null) authorParts.push(`${post.author_followers.toLocaleString()} followers`);
+  if (post.author_tweet_count != null) authorParts.push(`${post.author_tweet_count.toLocaleString()} posts`);
   if (authorParts.length) parts.push(`\nAuthor: ${authorParts.join(" — ")}`);
-  if (params.authorDescription) parts.push(`Author bio: ${params.authorDescription}`);
+  if (post.author_description) parts.push(`Author bio: ${post.author_description}`);
 
   // Author note history
   if (params.authorNoteHistory && params.authorNoteHistory.totalHelpful > 0) {
@@ -90,8 +92,9 @@ export function buildUserMessage(params: {
   parts.push(`\n## Post\n\n${params.tweetText}`);
 
   // Quoted post
-  if (params.quotedPostText) {
-    parts.push(`\n## Quoted post\n\n${params.quotedPostText}`);
+  const quotedPostText = getQuotedPostText(post);
+  if (quotedPostText) {
+    parts.push(`\n## Quoted post\n\n${quotedPostText}`);
   }
 
   // Media on post

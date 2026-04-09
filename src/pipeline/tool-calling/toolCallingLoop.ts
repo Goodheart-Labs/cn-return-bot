@@ -42,28 +42,13 @@ export async function runToolCallingLoop(
     model: config.model,
   };
 
-  // Build user message
-  const quotedRef = post.referenced_tweets?.find((rt) => rt.type === "quoted");
-  const quotedPostText = quotedRef && post.referenced_tweet_data
-    ? post.referenced_tweet_data.text
-    : undefined;
-
-  const now = new Date();
   const userMessage = buildUserMessage({
+    post,
     tweetText: content.text,
-    tweetId: post.id,
-    tweetDate: post.created_at,
-    quotedPostText,
     tweetMedia: mediaResult.tweetMedia,
     quotedTweetMedia: mediaResult.quotedTweetMedia,
-    authorName: post.author_name,
-    authorDescription: post.author_description,
-    authorFollowers: post.author_followers,
-    authorTweetCount: post.author_tweet_count,
     authorNoteHistory: authorHistory,
     comments,
-    currentDate: now.toISOString().split("T")[0]!,
-    currentTime: now.toISOString().split("T")[1]!.slice(0, 5),
   });
 
   // Log initial state

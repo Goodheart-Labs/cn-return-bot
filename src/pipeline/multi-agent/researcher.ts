@@ -15,9 +15,6 @@ import {
   NO_CORRECTION_TOOL,
 } from "../tool-calling/tools";
 import { getBotConfig } from "../utils/botConfig";
-import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "../input/authorHistory";
-import { buildUserMessage } from "../input/prompt";
 
 const SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
@@ -75,24 +72,3 @@ export function createResearcherDef(agentDescriptions: string): AgentDef {
   };
 }
 
-export function buildResearcherFirstMessage(params: {
-  tweetText: string;
-  tweetId: string;
-  tweetDate: string;
-  quotedPostText?: string;
-  tweetMedia: GeminiMediaItem[];
-  quotedTweetMedia: GeminiMediaItem[];
-  authorName?: string;
-  authorDescription?: string;
-  authorFollowers?: number;
-  authorTweetCount?: number;
-  authorNoteHistory?: AuthorNoteHistory;
-  comments?: string;
-}): string {
-  const now = new Date();
-  return buildUserMessage({
-    ...params,
-    currentDate: now.toISOString().split("T")[0]!,
-    currentTime: now.toISOString().split("T")[1]!.slice(0, 5),
-  });
-}
