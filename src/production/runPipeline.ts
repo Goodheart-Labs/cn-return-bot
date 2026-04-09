@@ -27,6 +27,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates } from "../pipeline/orchestration/generateCandidates";
 import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
+import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes
 
@@ -49,6 +50,11 @@ async function main() {
       }
     } else {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
+    }
+
+    // Update writing limit from X API
+    if (supabaseLogger) {
+      await updateWritingLimit(supabaseLogger);
     }
 
     // Phase 1: Generate candidates
