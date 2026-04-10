@@ -5,11 +5,63 @@
  * Model and search mode determined by botConfig.
  */
 
-import { Bot, PipelineResult, outcomeToResult } from "./types";
-import { randomizeConfig, withBotConfig } from "../pipeline/utils/botConfig";
-import { withCostTracker } from "../pipeline/utils/costTracker";
+import type { Post } from "../api/fetchEligiblePosts";
+import { Bot, PipelineResult, PipelineOutcome, outcomeToResult, type PostContent } from "./types";
+import type { BotInput } from "../pipeline/input/createBotInput";
+import { randomizeConfig, withBotConfig, getBotConfig } from "../pipeline/utils/botConfig";
+import { withCostTracker, aggregateAndLogCosts } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
-import { runToolCallingLoop } from "../pipeline/tool-calling/toolCallingLoop";
+import { getTweetLog } from "../pipeline/utils/tweetLog";
+import { buildToolList } from "../pipeline/tool-calling/tools";
+import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "../pipeline/tool-calling/agentLoop";
+import { SYSTEM_PROMPT, buildUserMessage } from "../pipeline/input/prompt";
+import { evaluateAndPickBest } from "../pipeline/score/noteEvaluation";
+
+const MAX_ITERATIONS = 50;
+
+async function runAgent(post: Post, content: PostContent, input: BotInput): Promise<PipelineOutcome> {
+  const config = getBotConfig();
+  const log = getTweetLog();
+
+  const def: AgentDef = {
+    name: "agent",
+    description: "Single-turn fact-checking agent",
+    systemPrompt: SYSTEM_PROMPT,
+    tools: buildToolList(),
+    terminalTools: ["propose_notes", "no_correction_needed"],
+    model: config.model,
+  };
+
+  const userMessage = buildUserMessage({
+    post,
+    tweetText: content.text,
+    tweetMedia: input.mediaResult.tweetMedia,
+    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
+    authorNoteHistory: input.authorHistory,
+    comments: input.comments,
+  });
+
+  log?.set("agent.config", config);
+
+  const state = initAgentState(def);
+  addUserMessage(state, userMessage);
+  const result = await runAgentTurn(state, "agent.messages", MAX_ITERATIONS);
+
+  aggregateAndLogCosts("agent");
+
+  if (result.terminalTool === "propose_notes") {
+    const { selected, evalResults } = await evaluateAndPickBest(post.id, result.args.notes ?? []);
+    log?.set("note.eval_scores", evalResults.map((r) => ({ score: r.evalScore, error: r.error })));
+    log?.set("note.eval_score", selected.evalScore);
+    return { type: "note", noteText: selected.noteText, sources: selected.sources, evalScore: selected.evalScore };
+  }
+
+  if (result.terminalTool === "no_correction_needed") {
+    return { type: "no_correction", reason: result.args.reason ?? "No correction needed" };
+  }
+
+  return { type: "error", error: result.args.reason ?? `Loop exhausted after ${MAX_ITERATIONS} iterations` };
+}
 
 export const agentBot: Bot = {
   id: "agent",
@@ -22,7 +74,7 @@ export const agentBot: Bot = {
 
     return withBotConfig(config, () => withCostTracker(async () => {
       const input = await createBotInput(post, content, "agent");
-      const outcome = await runToolCallingLoop(post, content, input);
+      const outcome = await runAgent(post, content, input);
       const result = outcomeToResult(post, this.id, outcome);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
