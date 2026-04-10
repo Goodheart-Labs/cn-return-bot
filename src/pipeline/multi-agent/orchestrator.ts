@@ -21,37 +21,15 @@ import { createSourceVerifierDef } from "./sourceVerifier";
 
 const MAX_TURNS = 10;
 
-// --- Types ---
-
-interface FlowTurn {
-  agent: string;
-  terminalTool: string;
-  to?: string;
-  noteCount?: number;
-  selectedIndex?: number;
-  evalScore?: number;
-  durationMs: number;
-}
-
 interface PipelineState {
   post: Post;
-  content: PostContent;
   agents: Record<string, AgentState>;
-  flowTurns: FlowTurn[];
-  allSearchOutputs: string[];
   selectedNote?: EvaluatedNote;
   researcherFindings: string;
   currentAgentName: string;
-  startMs: number;
 }
 
-// --- Pipeline init ---
-
-function initPipeline(
-  post: Post,
-  content: PostContent,
-  input: BotInput,
-): PipelineState {
+function initPipeline(post: Post, content: PostContent, input: BotInput): PipelineState {
   const config = getBotConfig();
   const log = getTweetLog();
 
@@ -78,28 +56,14 @@ function initPipeline(
   });
   addUserMessage(agents.researcher!, firstMessage);
 
-  return {
-    post,
-    content,
-    agents,
-    flowTurns: [],
-    allSearchOutputs: [],
-    researcherFindings: "",
-    currentAgentName: "researcher",
-    startMs: Date.now(),
-  };
+  return { post, agents, researcherFindings: "", currentAgentName: "researcher" };
 }
-
-// --- Note evaluation ---
 
 async function handleProposeNotes(
   state: PipelineState,
-  flowTurn: FlowTurn,
   notes: Array<{ note_text: string; sources: string[] }>,
 ): Promise<void> {
   const log = getTweetLog();
-  flowTurn.noteCount = notes.length;
-
   const { selected, evalResults } = await evaluateAndPickBest(state.post.id, notes);
 
   const turnNum = state.agents.notewriter!.turnCount;
@@ -107,12 +71,9 @@ async function handleProposeNotes(
     evalResults.map((r, i) => ({ index: i, score: r.evalScore, error: r.error })));
 
   state.selectedNote = selected;
-  flowTurn.selectedIndex = evalResults.indexOf(selected as any);
-  flowTurn.evalScore = selected.evalScore;
-  log?.set(`multiAgent.notewriter.turn.${turnNum}.selectedIndex`, flowTurn.selectedIndex);
+  log?.set(`multiAgent.notewriter.turn.${turnNum}.selectedIndex`, evalResults.indexOf(selected as any));
   log?.set(`multiAgent.notewriter.turn.${turnNum}.selectedScore`, selected.evalScore);
 
-  // Route to source verifier
   const svMessage = [
     `## Selected community note`,
     `Note: ${selected.noteText}`,
@@ -127,14 +88,7 @@ async function handleProposeNotes(
   state.currentAgentName = "sourceVerifier";
 }
 
-// --- send_message routing ---
-
-function routeSendMessage(
-  state: PipelineState,
-  target: string,
-  message: string,
-  senderName: string,
-): boolean {
+function routeSendMessage(state: PipelineState, target: string, message: string, senderName: string): boolean {
   const targetAgent = state.agents[target];
   if (!targetAgent) return false;
 
@@ -147,52 +101,31 @@ function routeSendMessage(
   return true;
 }
 
-// --- Final logging ---
-
-function logFinal(state: PipelineState): void {
-  const log = getTweetLog();
-  log?.set("multiAgent.flow", { turns: state.flowTurns, totalTurns: state.flowTurns.length });
-  log?.set("multiAgent.totalDurationMs", Date.now() - state.startMs);
-  aggregateAndLogCosts("multiAgent");
-}
-
-// --- Main pipeline ---
-
 export async function runMultiAgentPipeline(
   post: Post,
   content: PostContent,
   input: BotInput,
 ): Promise<PipelineOutcome> {
+  const startMs = Date.now();
   const state = initPipeline(post, content, input);
-  let turnCount = 0;
 
-  while (turnCount < MAX_TURNS) {
-    turnCount++;
-    const turnStartMs = Date.now();
+  for (let turn = 0; turn < MAX_TURNS; turn++) {
     const agentName = state.currentAgentName;
     const logPrefix = `multiAgent.${agentName}.turn.${state.agents[agentName]!.turnCount + 1}.messages`;
     const result = await runAgentTurn(state.agents[agentName]!, logPrefix);
-    const turnDurationMs = Date.now() - turnStartMs;
-
-    state.allSearchOutputs.push(...result.searchOutputs);
-
-    const flowTurn: FlowTurn = { agent: agentName, terminalTool: result.terminalTool, durationMs: turnDurationMs };
 
     if (result.terminalTool === "no_correction_needed") {
-      state.flowTurns.push(flowTurn);
-      logFinal(state);
+      logFinal(startMs);
       return { type: "no_correction", reason: result.args.reason ?? "No correction needed" };
     }
 
     if (result.terminalTool === "error") {
-      state.flowTurns.push(flowTurn);
-      logFinal(state);
+      logFinal(startMs);
       return { type: "error", error: result.args.reason ?? "Agent error" };
     }
 
     if (result.terminalTool === "approve_note") {
-      state.flowTurns.push(flowTurn);
-      logFinal(state);
+      logFinal(startMs);
       if (!state.selectedNote) {
         return { type: "error", error: "Source verifier approved but no note was selected" };
       }
@@ -201,28 +134,30 @@ export async function runMultiAgentPipeline(
     }
 
     if (result.terminalTool === "send_message") {
-      flowTurn.to = result.args.to;
-      state.flowTurns.push(flowTurn);
       if (!routeSendMessage(state, result.args.to, result.args.message, agentName)) {
-        logFinal(state);
+        logFinal(startMs);
         return { type: "error", error: `Unknown send_message target: ${result.args.to}` };
       }
       continue;
     }
 
     if (result.terminalTool === "propose_notes") {
-      await handleProposeNotes(state, flowTurn, result.args.notes ?? []);
-      state.flowTurns.push(flowTurn);
+      await handleProposeNotes(state, result.args.notes ?? []);
       continue;
     }
 
-    state.flowTurns.push(flowTurn);
     break;
   }
 
-  logFinal(state);
+  logFinal(startMs);
   if (state.selectedNote) {
     return { type: "note", noteText: state.selectedNote.noteText, sources: state.selectedNote.sources, evalScore: state.selectedNote.evalScore };
   }
   return { type: "error", error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns` };
+}
+
+function logFinal(startMs: number): void {
+  const log = getTweetLog();
+  log?.set("multiAgent.totalDurationMs", Date.now() - startMs);
+  aggregateAndLogCosts("multiAgent");
 }
