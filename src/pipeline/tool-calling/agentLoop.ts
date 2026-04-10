@@ -94,17 +94,11 @@ function parseToolCall(toolCall: any): { name: string; args: Record<string, any>
 
 function logResponse(
   message: any,
-  response: any,
   prefix: string,
   iteration: number,
   searchOutputs: string[],
-  costEntry: LlmCallCost,
 ): void {
   const log = getTweetLog();
-  const llmCost = extractOpenRouterCost(response);
-  costEntry.input_tokens = llmCost.input_tokens;
-  costEntry.output_tokens = llmCost.output_tokens;
-  costEntry.cost = llmCost.cost;
 
   if (message.content) {
     log?.set(`${prefix}.${iteration}.content`, message.content);
@@ -125,10 +119,6 @@ function logResponse(
     if (urls) searchOutputs.push(`--- web_search ---\n${urls}`);
   }
 
-  const webSearchRequests = (response as any).usage?.server_tool_use?.web_search_requests ?? 0;
-  if (webSearchRequests > 0) {
-    log?.set(`${prefix}.${iteration}.web_search_requests`, webSearchRequests);
-  }
 }
 
 // --- Process a single tool call ---
@@ -226,7 +216,17 @@ export async function runAgentTurn(
       break;
     }
 
-    logResponse(message, response, logPrefix, iteration, searchOutputs, costEntry);
+    const llmCost = extractOpenRouterCost(response);
+    costEntry.input_tokens = llmCost.input_tokens;
+    costEntry.output_tokens = llmCost.output_tokens;
+    costEntry.cost = llmCost.cost;
+
+    logResponse(message, logPrefix, iteration, searchOutputs);
+
+    const webSearchRequests = (response as any).usage?.server_tool_use?.web_search_requests ?? 0;
+    if (webSearchRequests > 0) {
+      log?.set(`${logPrefix}.${iteration}.web_search_requests`, webSearchRequests);
+    }
 
     if (!message.tool_calls?.length) {
       trackLlmCall(costEntry);
