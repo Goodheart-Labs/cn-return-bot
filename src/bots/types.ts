@@ -27,6 +27,34 @@ export interface PipelineResult {
   warnings?: string[];
 }
 
+export type PipelineOutcome =
+  | { type: "note"; noteText: string; sources: string[]; evalScore?: number }
+  | { type: "no_correction"; reason: string }
+  | { type: "error"; error: string };
+
+export function outcomeToResult(post: any, botId: string, outcome: PipelineOutcome): PipelineResult {
+  const base = {
+    post,
+    botId,
+    lastStage: "complete",
+    searchContextResult: { text: "", searchResults: "" },
+    noteResult: { note: "", url: "", status: "NO MISSING CONTEXT" },
+  };
+  switch (outcome.type) {
+    case "note":
+      return {
+        ...base,
+        noteResult: { note: outcome.noteText, url: outcome.sources.join(" "), status: "CORRECTION WITH TRUSTWORTHY CITATION" },
+        searchContextResult: { ...base.searchContextResult, citations: outcome.sources },
+        checkResult: "YES",
+      };
+    case "no_correction":
+      return base;
+    case "error":
+      return { ...base, lastStage: "error", noteResult: { ...base.noteResult, status: "ERROR" }, error: outcome.error };
+  }
+}
+
 export interface MediaItem {
   type: string;
   url?: string;

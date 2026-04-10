@@ -440,7 +440,22 @@ export async function processSingleTweet(
   const { post, bot, logger, commitSha } = options;
 
   // 1. Run bot pipeline
-  const { result, metadata, warnings } = await runBotPipeline(post, bot);
+  let pipelineOutput: BotPipelineOutput;
+  try {
+    pipelineOutput = await runBotPipeline(post, bot);
+  } catch (err: any) {
+    const metadata = extractTweetMetadata(post);
+    const errorResult: PipelineResult = {
+      post,
+      botId: bot.id,
+      lastStage: "error",
+      searchContextResult: { text: post.text ?? "", searchResults: "" },
+      noteResult: { note: "", url: "", status: "ERROR" },
+      error: err.message,
+    };
+    pipelineOutput = { result: errorResult, content: getOriginalTweetContent(post), metadata, warnings: [`[ERROR] ${err.message}`] };
+  }
+  const { result, metadata, warnings } = pipelineOutput;
 
   // 2. Create DB run
   let pipelineRunId: string | null = null;

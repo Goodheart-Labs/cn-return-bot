@@ -5,7 +5,7 @@
  * Model determined by botConfig. Messages persist across turns.
  */
 
-import { Bot, PipelineResult } from "./types";
+import { Bot, PipelineResult, outcomeToResult } from "./types";
 import { randomizeConfig, withBotConfig } from "../pipeline/utils/botConfig";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runMultiAgentPipeline } from "../pipeline/multi-agent/orchestrator";
@@ -21,7 +21,8 @@ export const multiAgentBot: Bot = {
 
     return withBotConfig(config, async () => {
       const input = await createBotInput(post, content, "multi-agent");
-      const result = await runMultiAgentPipeline(post, content, input);
+      const outcome = await runMultiAgentPipeline(post, content, input);
+      const result = outcomeToResult(post, this.id, outcome);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }

@@ -6,7 +6,7 @@
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
-import type { PipelineResult, PostContent } from "../../bots/types";
+import type { PostContent, PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
@@ -195,26 +195,9 @@ export async function runMultiAgentPipeline(
   post: Post,
   content: PostContent,
   input: BotInput,
-): Promise<PipelineResult> {
+): Promise<PipelineOutcome> {
   const state = initPipeline(post, content, input);
   let turnCount = 0;
-
-  const base: PipelineResult = {
-    post,
-    botId: "multi-agent",
-    lastStage: "multi_agent_complete",
-    searchContextResult: { text: content.text, searchResults: "" },
-    noteResult: { note: "", url: "", status: "NO MISSING CONTEXT" },
-  };
-
-  const noteResult = (note: EvaluatedNote, lastStage = "multi_agent_complete", warnings?: string[]): PipelineResult => ({
-    ...base,
-    lastStage,
-    searchContextResult: { ...base.searchContextResult, citations: note.sources },
-    noteResult: { note: note.noteText, url: note.allUrls, status: "CORRECTION WITH TRUSTWORTHY CITATION" },
-    checkResult: "YES",
-    warnings,
-  });
 
   while (turnCount < MAX_TURNS) {
     turnCount++;
@@ -233,20 +216,26 @@ export async function runMultiAgentPipeline(
 
     const flowTurn: FlowTurn = { agent: agentName, terminalTool: result.terminalTool, durationMs: turnDurationMs };
 
-    if (result.terminalTool === "no_correction_needed" || result.terminalTool === "error") {
+    if (result.terminalTool === "no_correction_needed") {
       state.flowTurns.push(flowTurn);
       logFinal(state);
-      return { ...base, error: result.terminalTool === "error" ? result.args.reason : undefined };
+      return { type: "no_correction", reason: result.args.reason ?? "No correction needed" };
+    }
+
+    if (result.terminalTool === "error") {
+      state.flowTurns.push(flowTurn);
+      logFinal(state);
+      return { type: "error", error: result.args.reason ?? "Agent error" };
     }
 
     if (result.terminalTool === "approve_note") {
       state.flowTurns.push(flowTurn);
       logFinal(state);
       if (!state.selectedNote) {
-        return { ...base, error: "Source verifier approved but no note was selected" };
+        return { type: "error", error: "Source verifier approved but no note was selected" };
       }
       const verifiedSources: string[] = result.args.sources ?? state.selectedNote.sources;
-      return noteResult({ ...state.selectedNote, sources: verifiedSources, allUrls: verifiedSources.join(" ") });
+      return { type: "note", noteText: state.selectedNote.noteText, sources: verifiedSources, evalScore: state.selectedNote.evalScore };
     }
 
     if (result.terminalTool === "send_message") {
@@ -254,7 +243,7 @@ export async function runMultiAgentPipeline(
       state.flowTurns.push(flowTurn);
       if (!routeSendMessage(state, result.args.to, result.args.message, agentName)) {
         logFinal(state);
-        return { ...base, error: `Unknown send_message target: ${result.args.to}` };
+        return { type: "error", error: `Unknown send_message target: ${result.args.to}` };
       }
       continue;
     }
@@ -271,7 +260,7 @@ export async function runMultiAgentPipeline(
 
   logFinal(state);
   if (state.selectedNote) {
-    return noteResult(state.selectedNote, "multi_agent_exhausted", [`Multi-agent pipeline exhausted after ${MAX_TURNS} turns`]);
+    return { type: "note", noteText: state.selectedNote.noteText, sources: state.selectedNote.sources, evalScore: state.selectedNote.evalScore };
   }
-  return { ...base, lastStage: "multi_agent_exhausted", error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns` };
+  return { type: "error", error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns` };
 }

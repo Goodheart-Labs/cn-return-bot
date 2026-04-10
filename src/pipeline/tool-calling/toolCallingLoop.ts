@@ -6,7 +6,7 @@
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
-import type { PipelineResult, PostContent } from "../../bots/types";
+import type { PostContent, PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
@@ -22,7 +22,7 @@ export async function runToolCallingLoop(
   post: Post,
   content: PostContent,
   input: BotInput,
-): Promise<PipelineResult> {
+): Promise<PipelineOutcome> {
   const config = getBotConfig();
   const log = getTweetLog();
 
@@ -59,29 +59,16 @@ export async function runToolCallingLoop(
   log?.set("agent.costs", costs);
   log?.set("agent.iterations", result.iterations);
 
-  const base: PipelineResult = {
-    post,
-    botId: "agent",
-    lastStage: "agent_complete",
-    searchContextResult: { text: content.text, searchResults: "" },
-    noteResult: { note: "", url: "", status: "NO MISSING CONTEXT" },
-  };
-
   if (result.terminalTool === "propose_notes") {
     const { selected, evalResults } = await evaluateAndPickBest(post.id, result.args.notes ?? []);
     log?.set("note.eval_scores", evalResults.map((r) => ({ score: r.evalScore, error: r.error })));
     log?.set("note.eval_score", selected.evalScore);
-    return {
-      ...base,
-      searchContextResult: { ...base.searchContextResult, citations: selected.sources },
-      noteResult: { note: selected.noteText, url: selected.allUrls, status: "CORRECTION WITH TRUSTWORTHY CITATION" },
-      checkResult: "YES",
-    };
+    return { type: "note", noteText: selected.noteText, sources: selected.sources, evalScore: selected.evalScore };
   }
 
-  if (result.terminalTool !== "no_correction_needed") {
-    return { ...base, lastStage: "agent_exhausted", error: result.args.reason ?? `Loop exhausted after ${MAX_ITERATIONS} iterations` };
+  if (result.terminalTool === "no_correction_needed") {
+    return { type: "no_correction", reason: result.args.reason ?? "No correction needed" };
   }
 
-  return base;
+  return { type: "error", error: result.args.reason ?? `Loop exhausted after ${MAX_ITERATIONS} iterations` };
 }
