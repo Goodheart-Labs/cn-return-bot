@@ -28,6 +28,8 @@ import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
 // import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes
+const MAX_POSTS = 20;
+const MAX_POSTS_LOCAL = 5;
 
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (15 minutes), forcing exit");
@@ -55,7 +57,7 @@ async function main() {
     //   await updateWritingLimit(supabaseLogger);
     // }
 
-    const candidates = await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5 } : undefined);
+    const candidates = await generateCandidates(supabaseLogger, { maxPosts: isLocal ? MAX_POSTS_LOCAL : MAX_POSTS });
 
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
