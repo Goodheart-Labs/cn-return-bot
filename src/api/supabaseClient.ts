@@ -868,54 +868,6 @@ export class SupabaseLogger {
     }
   }
 
-  // Disabled — candidate queue removed. Submission now happens inline.
-  /*
-  async fetchCandidates(): Promise<
-    {
-      id: string;
-      tweet_id: string;
-      note_text: string;
-      source_url: string;
-      bot_id: string;
-      created_at: string;
-      search_results: string;
-      tweet_text: string;
-      scores: { score_type: string; score_value: number | null }[];
-    }[]
-  > {
-    const runs = await this.fetchAllRows<{
-      id: string;
-      tweet_id: string;
-      note_text: string;
-      source_url: string;
-      bot_id: string;
-      created_at: string;
-      search_results: string;
-      tweet_text: string;
-      pipeline_scores: { score_type: string; score_value: number | null }[];
-    }>(
-      (client) =>
-        client
-          .from("pipeline_runs")
-          .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text, pipeline_scores(score_type, score_value)")
-          .eq("outcome", "candidate")
-          .order("created_at", { ascending: false })
-    );
-
-    return runs.map((r) => ({
-      id: r.id,
-      tweet_id: r.tweet_id,
-      note_text: r.note_text,
-      source_url: r.source_url,
-      bot_id: r.bot_id,
-      created_at: r.created_at,
-      search_results: r.search_results,
-      tweet_text: r.tweet_text,
-      scores: r.pipeline_scores,
-    }));
-  }
-  */
-
   /**
    * Mark a candidate as submitted after successful note submission.
    */
@@ -934,30 +886,6 @@ export class SupabaseLogger {
       throw error;
     }
   }
-
-  // Disabled — candidate queue removed.
-  /*
-  async expireOldCandidates(maxAgeHours: number = 48): Promise<number> {
-    const cutoff = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000).toISOString();
-    const { data, error } = await this.client
-      .from("pipeline_runs")
-      .update({
-        outcome: "rejected",
-        outcome_reason: "candidate_expired",
-        final_stage: "submission",
-      })
-      .eq("outcome", "candidate")
-      .lt("created_at", cutoff)
-      .select("id");
-
-    if (error) {
-      console.error("[SupabaseLogger] Error expiring old candidates:", error);
-      throw error;
-    }
-
-    return data?.length ?? 0;
-  }
-  */
 
   /**
    * Mark a pipeline run as expired (tweet deleted or ineligible during submission).
@@ -1100,32 +1028,6 @@ export class SupabaseLogger {
       } catch (pipelineError) {
         console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       }
-
-      // Disabled — candidate queue removed. Re-enable if queue is restored.
-      // Skip tweets that have an above-floor candidate waiting for submission.
-      // Below-floor candidates (eval < 0) are left eligible for re-roll by a different bot.
-      // try {
-      //   const candidateData = await this.fetchAllRows<{
-      //     id: string;
-      //     tweet_id: string;
-      //     pipeline_scores: { score_type: string; score_value: number | null }[];
-      //   }>(
-      //     (client) => client.from("pipeline_runs")
-      //       .select("id, tweet_id, pipeline_scores(score_type, score_value)")
-      //       .eq("outcome", "candidate")
-      //   );
-      //
-      //   for (const row of candidateData) {
-      //     const evalScore = row.pipeline_scores.find(
-      //       (s) => s.score_type === "evaluation" && s.score_value !== null
-      //     )?.score_value ?? undefined;
-      //     if (evalScore !== undefined && evalScore >= 0) {
-      //       tweetIds.add(row.tweet_id);
-      //     }
-      //   }
-      // } catch (candidateError) {
-      //   console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
-      // }
 
       return tweetIds;
     } catch (error) {
@@ -1464,18 +1366,4 @@ export class SupabaseLogger {
     return count ?? 0;
   }
 
-  // Disabled — candidate queue removed.
-  /*
-  async countCandidates(): Promise<number> {
-    const { count, error } = await this.client
-      .from("pipeline_runs")
-      .select("*", { count: "exact", head: true })
-      .eq("outcome", "candidate");
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count candidates:", error.message);
-      return 0;
-    }
-    return count ?? 0;
-  }
-  */
 }
