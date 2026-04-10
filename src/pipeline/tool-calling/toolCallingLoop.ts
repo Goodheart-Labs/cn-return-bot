@@ -15,7 +15,6 @@ import { buildToolList } from "./tools";
 import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "./agentLoop";
 import { SYSTEM_PROMPT, buildUserMessage } from "../input/prompt";
 import { evaluateAndPickBest } from "../score/noteEvaluation";
-import { buildNoteResult, buildEmptyResult } from "../utils/pipelineResult";
 
 const MAX_ITERATIONS = 50;
 
@@ -60,26 +59,29 @@ export async function runToolCallingLoop(
   log?.set("agent.costs", costs);
   log?.set("agent.iterations", result.iterations);
 
-  const searchResults = result.searchOutputs.join("\n\n");
-  const common = { post, botId: "agent", text: content.text, searchResults };
+  const base: PipelineResult = {
+    post,
+    botId: "agent",
+    lastStage: "agent_complete",
+    searchContextResult: { text: content.text, searchResults: "" },
+    noteResult: { note: "", url: "", status: "NO MISSING CONTEXT" },
+  };
 
   if (result.terminalTool === "propose_notes") {
-    const notes: Array<{ note_text: string; sources: string[] }> = result.args.notes ?? [];
-    const { selected, evalResults } = await evaluateAndPickBest(post.id, notes);
-
+    const { selected, evalResults } = await evaluateAndPickBest(post.id, result.args.notes ?? []);
     log?.set("note.eval_scores", evalResults.map((r) => ({ score: r.evalScore, error: r.error })));
     log?.set("note.eval_score", selected.evalScore);
-
-    return buildNoteResult({ ...common, lastStage: "agent_complete", ...selected });
+    return {
+      ...base,
+      searchContextResult: { ...base.searchContextResult, citations: selected.sources },
+      noteResult: { note: selected.noteText, url: selected.allUrls, status: "CORRECTION WITH TRUSTWORTHY CITATION" },
+      checkResult: "YES",
+    };
   }
 
-  if (result.terminalTool === "no_correction_needed") {
-    return buildEmptyResult({ ...common, lastStage: "agent_complete" });
+  if (result.terminalTool !== "no_correction_needed") {
+    return { ...base, lastStage: "agent_exhausted", error: result.args.reason ?? `Loop exhausted after ${MAX_ITERATIONS} iterations` };
   }
 
-  return buildEmptyResult({
-    ...common,
-    lastStage: "agent_exhausted",
-    error: `Tool-calling loop exhausted after ${MAX_ITERATIONS} iterations`,
-  });
+  return base;
 }

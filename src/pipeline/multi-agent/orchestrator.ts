@@ -13,7 +13,6 @@ import { getTweetLog } from "../utils/tweetLog";
 import { emptyTokenCost, addTokenCost, type TokenCost, type IterationCost } from "../utils/pricing";
 import { type AgentState, type TurnResult, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
-import { buildNoteResult, buildEmptyResult } from "../utils/pipelineResult";
 import { createResearcherDef } from "./researcher";
 import { buildUserMessage } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
@@ -198,9 +197,24 @@ export async function runMultiAgentPipeline(
   input: BotInput,
 ): Promise<PipelineResult> {
   const state = initPipeline(post, content, input);
-  const searchResults = () => state.allSearchOutputs.join("\n\n");
-  const common = () => ({ post, botId: "multi-agent", text: content.text, searchResults: searchResults() });
   let turnCount = 0;
+
+  const base: PipelineResult = {
+    post,
+    botId: "multi-agent",
+    lastStage: "multi_agent_complete",
+    searchContextResult: { text: content.text, searchResults: "" },
+    noteResult: { note: "", url: "", status: "NO MISSING CONTEXT" },
+  };
+
+  const noteResult = (note: EvaluatedNote, lastStage = "multi_agent_complete", warnings?: string[]): PipelineResult => ({
+    ...base,
+    lastStage,
+    searchContextResult: { ...base.searchContextResult, citations: note.sources },
+    noteResult: { note: note.noteText, url: note.allUrls, status: "CORRECTION WITH TRUSTWORTHY CITATION" },
+    checkResult: "YES",
+    warnings,
+  });
 
   while (turnCount < MAX_TURNS) {
     turnCount++;
@@ -212,7 +226,6 @@ export async function runMultiAgentPipeline(
 
     state.allSearchOutputs.push(...result.searchOutputs);
 
-    // Accumulate cost
     const agentCost = state.costs[agentName as keyof CostTree] as AgentCostTree;
     const turnNum = state.agents[agentName]!.turnCount;
     agentCost.turn[turnNum] = { messages: result.iterationCosts, ...result.cost };
@@ -223,27 +236,17 @@ export async function runMultiAgentPipeline(
     if (result.terminalTool === "no_correction_needed" || result.terminalTool === "error") {
       state.flowTurns.push(flowTurn);
       logFinal(state);
-      return buildEmptyResult({
-        ...common(),
-        lastStage: "multi_agent_complete",
-        error: result.terminalTool === "error" ? result.args.reason : undefined,
-      });
+      return { ...base, error: result.terminalTool === "error" ? result.args.reason : undefined };
     }
 
     if (result.terminalTool === "approve_note") {
       state.flowTurns.push(flowTurn);
       logFinal(state);
       if (!state.selectedNote) {
-        return buildEmptyResult({ ...common(), lastStage: "multi_agent_complete", error: "Source verifier approved but no note was selected" });
+        return { ...base, error: "Source verifier approved but no note was selected" };
       }
       const verifiedSources: string[] = result.args.sources ?? state.selectedNote.sources;
-      return buildNoteResult({
-        ...common(),
-        lastStage: "multi_agent_complete",
-        noteText: state.selectedNote.noteText,
-        sources: verifiedSources,
-        allUrls: verifiedSources.join(" "),
-      });
+      return noteResult({ ...state.selectedNote, sources: verifiedSources, allUrls: verifiedSources.join(" ") });
     }
 
     if (result.terminalTool === "send_message") {
@@ -251,7 +254,7 @@ export async function runMultiAgentPipeline(
       state.flowTurns.push(flowTurn);
       if (!routeSendMessage(state, result.args.to, result.args.message, agentName)) {
         logFinal(state);
-        return buildEmptyResult({ ...common(), lastStage: "multi_agent_complete", error: `Unknown send_message target: ${result.args.to}` });
+        return { ...base, error: `Unknown send_message target: ${result.args.to}` };
       }
       continue;
     }
@@ -268,12 +271,7 @@ export async function runMultiAgentPipeline(
 
   logFinal(state);
   if (state.selectedNote) {
-    return buildNoteResult({
-      ...common(),
-      lastStage: "multi_agent_exhausted",
-      ...state.selectedNote,
-      warnings: [`Multi-agent pipeline exhausted after ${MAX_TURNS} turns`],
-    });
+    return noteResult(state.selectedNote, "multi_agent_exhausted", [`Multi-agent pipeline exhausted after ${MAX_TURNS} turns`]);
   }
-  return buildEmptyResult({ ...common(), lastStage: "multi_agent_exhausted", error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns` });
+  return { ...base, lastStage: "multi_agent_exhausted", error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns` };
 }
