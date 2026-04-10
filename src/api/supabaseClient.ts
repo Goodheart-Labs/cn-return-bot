@@ -1050,9 +1050,12 @@ export class SupabaseLogger {
     }
   }
 
-  // Disabled — replaced by getAllProcessedTweetIds (no retries, skip everything already seen)
-  /*
-  async getProcessedTweetIds(): Promise<Set<string>> {
+  /**
+   * Get tweet IDs to skip, with cooldown logic for retries.
+   * - Submitted notes: always skip
+   * - no_correction_needed rejections: 1h after 1st, 24h after 2nd, permanent after 3+
+   */
+  async getSkipTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
 
     try {
@@ -1063,7 +1066,6 @@ export class SupabaseLogger {
         if (row.tweet_id) tweetIds.add(row.tweet_id);
       });
 
-      // no_correction_needed rejections with cooldown logic
       try {
         const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>(
           (client) => client.from("pipeline_runs").select("tweet_id, created_at")
@@ -1099,37 +1101,12 @@ export class SupabaseLogger {
         console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       }
 
-      // Skip tweets with above-floor candidates waiting for submission
-      try {
-        const candidateData = await this.fetchAllRows<{
-          id: string;
-          tweet_id: string;
-          pipeline_scores: { score_type: string; score_value: number | null }[];
-        }>(
-          (client) => client.from("pipeline_runs")
-            .select("id, tweet_id, pipeline_scores(score_type, score_value)")
-            .eq("outcome", "candidate")
-        );
-
-        for (const row of candidateData) {
-          const evalScore = row.pipeline_scores.find(
-            (s) => s.score_type === "evaluation" && s.score_value !== null
-          )?.score_value ?? undefined;
-          if (evalScore !== undefined && evalScore >= 0) {
-            tweetIds.add(row.tweet_id);
-          }
-        }
-      } catch (candidateError) {
-        console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
-      }
-
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);
       return new Set();
     }
   }
-  */
 
   /**
    * Get all tweet IDs that have ever been processed (pipeline_runs + notes).

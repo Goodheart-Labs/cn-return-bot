@@ -12,7 +12,6 @@ import { processSingleTweet } from "./processTweet";
 import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../utils/tweetLog";
 import { determineFeedSize, buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
-// import { sortByRecencyAndImpressions, getTweetScore } from "./utils/tweetSorting";
 import { ageInHours, formatCount } from "./utils/tweetSorting";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
@@ -20,6 +19,7 @@ import PQueue from "p-queue";
 let MAX_POSTS = 20;
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
+const DEFAULT_WRITING_LIMIT = 5;
 
 // ---------------------------------------------------------------------------
 // Post fetching
@@ -27,15 +27,17 @@ const BACKLOG_LIMIT = 1000;
 
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null
-): Promise<{ posts: Post[]; feedSize: FeedSize }> {
+): Promise<{ posts: Post[]; feedSize: FeedSize; newCount: number; retryCount: number }> {
   let skipPostIds = new Set<string>();
-  // let allProcessedIds = new Set<string>();
+  let allProcessedIds = new Set<string>();
 
   if (supabaseLogger) {
     try {
-      skipPostIds = await supabaseLogger.getAllProcessedTweetIds();
-      // allProcessedIds = await supabaseLogger.getAllProcessedTweetIds();
-      console.log(`[generate] Skipping ${skipPostIds.size} already-processed posts`);
+      [skipPostIds, allProcessedIds] = await Promise.all([
+        supabaseLogger.getSkipTweetIds(),
+        supabaseLogger.getAllProcessedTweetIds(),
+      ]);
+      console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${allProcessedIds.size} total processed`);
     } catch (err) {
       console.warn("[generate] Failed to get processed tweet IDs:", err);
     }
@@ -49,57 +51,47 @@ async function fetchPosts(
   const postSelection = buildPostSelection(feedSize);
   const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
-  // const sorted = sortByRecencyAndImpressions(allEligible);
+  const newPosts = posts.filter((p) => !allProcessedIds.has(p.id));
+  const retryPosts = posts.filter((p) => allProcessedIds.has(p.id));
 
-  // const newPosts = sorted.filter((p) => !allProcessedIds.has(p.id));
-  // const retryPosts = sorted.filter(
-  //   (p) => allProcessedIds.has(p.id) && !skipPostIds.has(p.id)
-  // );
+  // Calculate retry budget: fill remaining writing capacity with retries
+  let retrySlots = 0;
+  if (supabaseLogger && retryPosts.length > 0) {
+    try {
+      const [writingLimitStr, recentSubmissions] = await Promise.all([
+        supabaseLogger.getPipelineState("writing_limit"),
+        supabaseLogger.countRecentSubmissions(24),
+      ]);
+      const writingLimit = writingLimitStr ? parseInt(writingLimitStr, 10) : DEFAULT_WRITING_LIMIT;
+      const remainingCapacity = Math.max(0, writingLimit - recentSubmissions);
+      retrySlots = Math.max(0, remainingCapacity - newPosts.length);
+      console.log(`[generate] Writing limit: ${writingLimit}, recent: ${recentSubmissions}, remaining capacity: ${remainingCapacity}, retry slots: ${retrySlots}`);
+    } catch (err) {
+      console.warn("[generate] Failed to calculate retry budget:", err);
+    }
+  }
 
-  // const backlogTotal = sorted.length;
-  // const backlogHitLimit = allEligible.length >= BACKLOG_LIMIT;
+  const selectedNew = newPosts.slice(0, MAX_POSTS);
+  const selectedRetry = retryPosts.slice(0, Math.min(retrySlots, MAX_POSTS - selectedNew.length));
+  const selected = [...selectedNew, ...selectedRetry];
 
-  // Skip retries when candidate queue is already ≥ 2x writing limit
-  // let skipRetries = false;
-  // if (supabaseLogger) {
-  //   try {
-  //     const [writingLimitStr, candidateCount] = await Promise.all([
-  //       supabaseLogger.getPipelineState("writing_limit"),
-  //       supabaseLogger.countCandidates(),
-  //     ]);
-  //     const writingLimit = writingLimitStr ? parseInt(writingLimitStr, 10) : null;
-  //     if (writingLimit !== null && candidateCount >= 2 * writingLimit) {
-  //       skipRetries = true;
-  //     }
-  //   } catch (err) {
-  //     console.warn("[generate] Failed to check writing limit:", err);
-  //   }
-  // }
-
-  // const retrySlots = skipRetries ? 0 : Math.max(0, MAX_POSTS - newPosts.length);
-  // const posts = [
-  //   ...newPosts.slice(0, MAX_POSTS),
-  //   ...retryPosts.slice(0, retrySlots),
-  // ].slice(0, MAX_POSTS);
-
-  const selected = posts.slice(0, MAX_POSTS);
-  console.log(`[generate] Processing ${selected.length} tweets`);
+  console.log(`[generate] Processing ${selectedNew.length} new + ${selectedRetry.length} retry = ${selected.length} tweets`);
 
   for (const [i, p] of selected.entries()) {
     const imp = p.public_metrics?.impression_count ?? 0;
     const age = ageInHours(p);
-    // const score = getTweetScore(p, sorted);
-    console.log(`[generate]   #${i + 1}: ${p.id} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago`);
+    const tag = allProcessedIds.has(p.id) ? " [retry]" : "";
+    console.log(`[generate]   #${i + 1}: ${p.id} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago${tag}`);
   }
 
   if (supabaseLogger) {
     try {
       await supabaseLogger.logRunSnapshot({
         backlog_total: posts.length,
-        backlog_new: posts.length,
-        backlog_retry: 0,
+        backlog_new: newPosts.length,
+        backlog_retry: selectedRetry.length,
         backlog_hit_limit: posts.length >= BACKLOG_LIMIT,
-        posts_processed: Math.min(posts.length, MAX_POSTS),
+        posts_processed: selected.length,
         commit_sha: process.env.GITHUB_SHA,
         feed_size: feedSize,
       });
@@ -108,7 +100,7 @@ async function fetchPosts(
     }
   }
 
-  return { posts: selected, feedSize };
+  return { posts: selected, feedSize, newCount: selectedNew.length, retryCount: selectedRetry.length };
 }
 
 function logMediaBreakdown(posts: Post[]): void {
@@ -136,7 +128,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
   // Fetch posts
-  const { posts, feedSize } = await fetchPosts(supabaseLogger);
+  const { posts, feedSize, newCount, retryCount } = await fetchPosts(supabaseLogger);
   if (!posts.length) {
     console.log("[generate] No eligible posts found.");
     return [];
@@ -176,7 +168,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
 
   await queue.onIdle();
 
-  console.log(`[generate] ${candidates.length} candidates, ${posts.length - candidates.length} rejected`);
+  console.log(`[generate] ${candidates.length} candidates (${newCount} new + ${retryCount} retry processed), ${posts.length - candidates.length} rejected`);
   console.log(formatRunSummary(allLogs, feedSize));
 
   return candidates;
