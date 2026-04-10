@@ -1101,6 +1101,32 @@ export class SupabaseLogger {
         console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
       }
 
+      // Disabled — candidate queue removed. Re-enable if queue is restored.
+      // Skip tweets that have an above-floor candidate waiting for submission.
+      // Below-floor candidates (eval < 0) are left eligible for re-roll by a different bot.
+      // try {
+      //   const candidateData = await this.fetchAllRows<{
+      //     id: string;
+      //     tweet_id: string;
+      //     pipeline_scores: { score_type: string; score_value: number | null }[];
+      //   }>(
+      //     (client) => client.from("pipeline_runs")
+      //       .select("id, tweet_id, pipeline_scores(score_type, score_value)")
+      //       .eq("outcome", "candidate")
+      //   );
+      //
+      //   for (const row of candidateData) {
+      //     const evalScore = row.pipeline_scores.find(
+      //       (s) => s.score_type === "evaluation" && s.score_value !== null
+      //     )?.score_value ?? undefined;
+      //     if (evalScore !== undefined && evalScore >= 0) {
+      //       tweetIds.add(row.tweet_id);
+      //     }
+      //   }
+      // } catch (candidateError) {
+      //   console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
+      // }
+
       return tweetIds;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);
