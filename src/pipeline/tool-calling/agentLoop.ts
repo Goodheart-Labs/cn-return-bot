@@ -5,11 +5,9 @@
  * tool is called or iterations exhaust. Costs tracked via CostTracker ALS.
  */
 
-import { llm } from "../llm/llm";
 import { getTweetLog } from "../utils/tweetLog";
 import { executeToolCall } from "./tools";
-import { extractOpenRouterCost } from "../utils/pricing";
-import { trackLlmCall, type LlmCallCost } from "../utils/costTracker";
+import { trackLlmCall, trackedLlmCreate, type LlmCallCost } from "../utils/costTracker";
 
 // --- Types ---
 
@@ -193,15 +191,7 @@ export async function runAgentTurn(
   while (iteration < maxIterations) {
     iteration++;
 
-    const costEntry: LlmCallCost = {
-      name: `${logPrefix}.${iteration}`,
-      input_tokens: 0,
-      output_tokens: 0,
-      cost: 0,
-      tools: [],
-    };
-
-    const response = await llm.create({
+    const { response, costEntry } = await trackedLlmCreate(`${logPrefix}.${iteration}`, {
       model: state.def.model,
       messages: state.messages,
       tools: state.def.tools,
@@ -215,11 +205,6 @@ export async function runAgentTurn(
       trackLlmCall(costEntry);
       break;
     }
-
-    const llmCost = extractOpenRouterCost(response);
-    costEntry.input_tokens = llmCost.input_tokens;
-    costEntry.output_tokens = llmCost.output_tokens;
-    costEntry.cost = llmCost.cost;
 
     logResponse(message, logPrefix, iteration, searchOutputs);
 

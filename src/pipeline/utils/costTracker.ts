@@ -7,8 +7,9 @@
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
+import { llm } from "../llm/llm";
 import { getTweetLog } from "./tweetLog";
-import { type TokenCost, addTokenCost, emptyTokenCost } from "./pricing";
+import { type TokenCost, extractOpenRouterCost, addTokenCost, emptyTokenCost } from "./pricing";
 
 // --- Types ---
 
@@ -41,6 +42,18 @@ export function getCostTracker(): LlmCallCost[] {
 
 export function trackLlmCall(entry: LlmCallCost): void {
   getCostTracker().push(entry);
+}
+
+// --- Tracked LLM call ---
+
+export async function trackedLlmCreate(
+  name: string,
+  params: Parameters<typeof llm.create>[0],
+): Promise<{ response: any; costEntry: LlmCallCost }> {
+  const response = await llm.create(params);
+  const cost = extractOpenRouterCost(response);
+  const costEntry: LlmCallCost = { name, ...cost, tools: [] };
+  return { response, costEntry };
 }
 
 // --- Aggregation ---

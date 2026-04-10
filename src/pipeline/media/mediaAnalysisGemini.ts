@@ -13,10 +13,9 @@ import { promisify } from "util";
 import { tmpdir } from "os";
 import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
-import { llm } from "../llm/llm";
 import { getTweetLog } from "../utils/tweetLog";
-import { GEMINI_MODEL, extractOpenRouterCost } from "../utils/pricing";
-import { trackLlmCall } from "../utils/costTracker";
+import { GEMINI_MODEL } from "../utils/pricing";
+import { trackLlmCall, trackedLlmCreate } from "../utils/costTracker";
 
 const execAsync = promisify(exec);
 const LONG_VIDEO_THRESHOLD_MS = 210_000; // 3.5 minutes
@@ -121,14 +120,14 @@ async function analyzeImage(imageUrl: string, costName: string): Promise<GeminiM
     },
   ];
 
-  const result = await llm.create({
+  const { response, costEntry } = await trackedLlmCreate(costName, {
     model: GEMINI_MODEL,
     messages,
     response_format: { type: "json_object" as const },
   });
-  trackLlmCall({ name: costName, ...extractOpenRouterCost(result), tools: [] });
+  trackLlmCall(costEntry);
 
-  const content = result.choices?.[0]?.message?.content ?? "";
+  const content = response.choices?.[0]?.message?.content ?? "";
   return {
     type: "image",
     url: imageUrl,
@@ -173,14 +172,14 @@ async function analyzeShortVideo(videoPath: string, costName: string): Promise<G
     },
   ];
 
-  const result = await llm.create({
+  const { response, costEntry } = await trackedLlmCreate(costName, {
     model: GEMINI_MODEL,
     messages,
     response_format: { type: "json_object" as const },
   });
-  trackLlmCall({ name: costName, ...extractOpenRouterCost(result), tools: [] });
+  trackLlmCall(costEntry);
 
-  return parseJsonResponse(result.choices?.[0]?.message?.content ?? "");
+  return parseJsonResponse(response.choices?.[0]?.message?.content ?? "");
 }
 
 async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costName: string): Promise<GeminiMediaDescription> {
@@ -220,14 +219,14 @@ async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costNam
     },
   ];
 
-  const result = await llm.create({
+  const { response, costEntry } = await trackedLlmCreate(costName, {
     model: GEMINI_MODEL,
     messages,
     response_format: { type: "json_object" as const },
   });
-  trackLlmCall({ name: costName, ...extractOpenRouterCost(result), tools: [] });
+  trackLlmCall(costEntry);
 
-  return parseJsonResponse(result.choices?.[0]?.message?.content ?? "");
+  return parseJsonResponse(response.choices?.[0]?.message?.content ?? "");
 }
 
 let ffmpegAvailable: boolean | null = null;
