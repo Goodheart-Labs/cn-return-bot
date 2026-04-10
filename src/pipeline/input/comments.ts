@@ -7,26 +7,17 @@
 import { generateText } from "ai";
 import { xai } from "../llm/xai";
 import { getTweetLog } from "../utils/tweetLog";
-import {
-  GROK_MODEL,
-  calculateGrokCost,
-  emptyTokenCost,
-  type TokenCost,
-} from "../utils/pricing";
-
-export interface CommentsResult {
-  comments: string;
-  cost: TokenCost;
-}
+import { GROK_MODEL, calculateGrokCost } from "../utils/pricing";
+import { trackLlmCall } from "../utils/costTracker";
 
 export async function fetchTweetComments(
   tweetId: string,
   tweetText: string,
-): Promise<CommentsResult> {
+): Promise<string> {
   const log = getTweetLog();
 
   if (!process.env.XAI_API_KEY) {
-    return { comments: "", cost: emptyTokenCost() };
+    return "";
   }
 
   const tweetUrl = `https://x.com/i/status/${tweetId}`;
@@ -53,7 +44,15 @@ Tweet text: "${tweetText}"`;
     searchCalls,
   );
 
-  log?.set("inputs.comments", { text, cost });
+  trackLlmCall({
+    name: "inputs.comments",
+    input_tokens: cost.input_tokens,
+    output_tokens: cost.output_tokens,
+    cost: cost.cost,
+    tools: searchCalls > 0 ? [{ name: "x_search", input_tokens: 0, output_tokens: 0, cost: searchCalls * 0.005 }] : [],
+  });
 
-  return { comments: text, cost };
+  log?.set("inputs.comments", { text });
+
+  return text;
 }

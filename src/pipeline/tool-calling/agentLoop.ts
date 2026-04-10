@@ -2,19 +2,14 @@
  * Agent Loop
  *
  * General-purpose tool-calling loop. Runs an LLM with tools until a terminal
- * tool is called or iterations exhaust. Tracks costs and logs to tweetLog.
+ * tool is called or iterations exhaust. Costs tracked via CostTracker ALS.
  */
 
 import { llm } from "../llm/llm";
 import { getTweetLog } from "../utils/tweetLog";
 import { executeToolCall } from "./tools";
-import {
-  extractOpenRouterCost,
-  emptyTokenCost,
-  addTokenCost,
-  type TokenCost,
-  type IterationCost,
-} from "../utils/pricing";
+import { extractOpenRouterCost } from "../utils/pricing";
+import { trackLlmCall, type LlmCallCost } from "../utils/costTracker";
 
 // --- Types ---
 
@@ -31,15 +26,12 @@ export interface AgentState {
   def: AgentDef;
   messages: any[];
   turnCount: number;
-  cost: TokenCost;
 }
 
 export interface TurnResult {
   terminalTool: string;
   args: Record<string, any>;
-  cost: TokenCost;
   iterations: number;
-  iterationCosts: Record<number, IterationCost>;
   searchOutputs: string[];
 }
 
@@ -52,7 +44,6 @@ export function initAgentState(def: AgentDef): AgentState {
     def,
     messages: [{ role: "system", content: def.systemPrompt }],
     turnCount: 0,
-    cost: emptyTokenCost(),
   };
 }
 
@@ -107,13 +98,13 @@ function logResponse(
   prefix: string,
   iteration: number,
   searchOutputs: string[],
-  iterCost: IterationCost,
+  costEntry: LlmCallCost,
 ): void {
   const log = getTweetLog();
   const llmCost = extractOpenRouterCost(response);
-  iterCost.input_tokens += llmCost.input_tokens;
-  iterCost.output_tokens += llmCost.output_tokens;
-  iterCost.cost += llmCost.cost;
+  costEntry.input_tokens = llmCost.input_tokens;
+  costEntry.output_tokens = llmCost.output_tokens;
+  costEntry.cost = llmCost.cost;
 
   if (message.content) {
     log?.set(`${prefix}.${iteration}.content`, message.content);
@@ -148,7 +139,7 @@ async function processToolCall(
   state: AgentState,
   prefix: string,
   iteration: number,
-  iterCost: IterationCost,
+  costEntry: LlmCallCost,
   searchOutputs: string[],
 ): Promise<TurnResult | null> {
   const log = getTweetLog();
@@ -166,8 +157,7 @@ async function processToolCall(
   });
 
   if (result.cost) {
-    iterCost.tools[logKey] = result.cost;
-    iterCost.cost += result.cost.cost;
+    costEntry.tools.push({ name: logKey, ...result.cost });
   }
 
   state.messages.push({
@@ -182,7 +172,7 @@ async function processToolCall(
   }
 
   if (state.def.terminalTools.includes(name)) {
-    return { terminalTool: name, args, cost: emptyTokenCost(), iterations: iteration, iterationCosts: {}, searchOutputs };
+    return { terminalTool: name, args, iterations: iteration, searchOutputs };
   }
 
   return null;
@@ -207,15 +197,19 @@ export async function runAgentTurn(
     log?.set(`${logPrefix}.0.userMessage`, lastMsg.content);
   }
 
-  const turnCost = emptyTokenCost();
-  const iterationCosts: Record<number, IterationCost> = {};
   const searchOutputs: string[] = [];
   let iteration = 0;
 
   while (iteration < maxIterations) {
     iteration++;
 
-    const iterCost: IterationCost = { input_tokens: 0, output_tokens: 0, cost: 0, tools: {} };
+    const costEntry: LlmCallCost = {
+      name: `${logPrefix}.${iteration}`,
+      input_tokens: 0,
+      output_tokens: 0,
+      cost: 0,
+      tools: [],
+    };
 
     const response = await llm.create({
       model: state.def.model,
@@ -228,14 +222,14 @@ export async function runAgentTurn(
     const message = response.choices?.[0]?.message;
     if (!message) {
       console.error(`[${agentName}] No message in response at iteration ${iteration}`);
+      trackLlmCall(costEntry);
       break;
     }
 
-    logResponse(message, response, logPrefix, iteration, searchOutputs, iterCost);
+    logResponse(message, response, logPrefix, iteration, searchOutputs, costEntry);
 
     if (!message.tool_calls?.length) {
-      iterationCosts[iteration] = iterCost;
-      addTokenCost(turnCost, iterCost);
+      trackLlmCall(costEntry);
 
       const hasAnnotations = Array.isArray((message as any).annotations) && (message as any).annotations.length > 0;
       if (hasAnnotations) {
@@ -243,14 +237,11 @@ export async function runAgentTurn(
         continue;
       }
 
-      addTokenCost(state.cost, turnCost);
       log?.set(`${logPrefix}.iterations`, iteration);
       return {
         terminalTool: "no_correction_needed",
         args: { reason: typeof message.content === "string" ? message.content : "No tool calls made" },
-        cost: turnCost,
         iterations: iteration,
-        iterationCosts,
         searchOutputs,
       };
     }
@@ -258,28 +249,22 @@ export async function runAgentTurn(
     state.messages.push(message);
 
     for (let ti = 0; ti < message.tool_calls.length; ti++) {
-      const terminal = await processToolCall(message.tool_calls[ti], ti, state, logPrefix, iteration, iterCost, searchOutputs);
+      const terminal = await processToolCall(message.tool_calls[ti], ti, state, logPrefix, iteration, costEntry, searchOutputs);
       if (terminal) {
-        iterationCosts[iteration] = iterCost;
-        addTokenCost(turnCost, iterCost);
-        addTokenCost(state.cost, turnCost);
+        trackLlmCall(costEntry);
         log?.set(`${logPrefix}.iterations`, iteration);
-        return { ...terminal, cost: turnCost, iterationCosts };
+        return terminal;
       }
     }
 
-    iterationCosts[iteration] = iterCost;
-    addTokenCost(turnCost, iterCost);
+    trackLlmCall(costEntry);
   }
 
-  addTokenCost(state.cost, turnCost);
   log?.set(`${logPrefix}.iterations`, iteration);
   return {
     terminalTool: "error",
     args: { reason: `Loop exhausted after ${maxIterations} iterations` },
-    cost: turnCost,
     iterations: iteration,
-    iterationCosts,
     searchOutputs,
   };
 }

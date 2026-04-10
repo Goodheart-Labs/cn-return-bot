@@ -2,7 +2,8 @@
  * Multi-Agent Orchestrator
  *
  * Wires the researcher, notewriter, and source verifier together.
- * Manages turn routing, note evaluation, retry loops, and cost aggregation.
+ * Manages turn routing, note evaluation, and retry loops.
+ * Costs tracked via CostTracker ALS.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -10,9 +11,9 @@ import type { PostContent, PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { emptyTokenCost, addTokenCost, type TokenCost, type IterationCost } from "../utils/pricing";
-import { type AgentState, type TurnResult, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
+import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
+import { aggregateAndLogCosts } from "../utils/costTracker";
 import { createResearcherDef } from "./researcher";
 import { buildUserMessage } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
@@ -32,22 +33,6 @@ interface FlowTurn {
   durationMs: number;
 }
 
-interface TurnCost extends TokenCost {
-  messages: Record<number, IterationCost>;
-}
-
-interface AgentCostTree extends TokenCost {
-  turn: Record<number, TurnCost>;
-}
-
-interface CostTree {
-  researcher: AgentCostTree;
-  notewriter: AgentCostTree;
-  sourceVerifier: AgentCostTree;
-  media: TokenCost;
-  total: TokenCost;
-}
-
 interface PipelineState {
   post: Post;
   content: PostContent;
@@ -57,9 +42,7 @@ interface PipelineState {
   selectedNote?: EvaluatedNote;
   researcherFindings: string;
   currentAgentName: string;
-  costs: CostTree;
   startMs: number;
-  mediaCost?: TokenCost;
 }
 
 // --- Pipeline init ---
@@ -103,15 +86,7 @@ function initPipeline(
     allSearchOutputs: [],
     researcherFindings: "",
     currentAgentName: "researcher",
-    costs: {
-      researcher: { ...emptyTokenCost(), turn: {} },
-      notewriter: { ...emptyTokenCost(), turn: {} },
-      sourceVerifier: { ...emptyTokenCost(), turn: {} },
-      media: input.mediaCost ?? emptyTokenCost(),
-      total: emptyTokenCost(),
-    },
     startMs: Date.now(),
-    mediaCost: input.mediaCost,
   };
 }
 
@@ -119,11 +94,10 @@ function initPipeline(
 
 async function handleProposeNotes(
   state: PipelineState,
-  result: TurnResult,
   flowTurn: FlowTurn,
+  notes: Array<{ note_text: string; sources: string[] }>,
 ): Promise<void> {
   const log = getTweetLog();
-  const notes: Array<{ note_text: string; sources: string[] }> = result.args.notes ?? [];
   flowTurn.noteCount = notes.length;
 
   const { selected, evalResults } = await evaluateAndPickBest(state.post.id, notes);
@@ -173,20 +147,13 @@ function routeSendMessage(
   return true;
 }
 
-// --- Cost logging ---
+// --- Final logging ---
 
 function logFinal(state: PipelineState): void {
-  const total = emptyTokenCost();
-  for (const key of ["researcher", "notewriter", "sourceVerifier"] as const) {
-    addTokenCost(total, state.costs[key]);
-  }
-  if (state.mediaCost) addTokenCost(total, state.mediaCost);
-  state.costs.total = total;
-
   const log = getTweetLog();
   log?.set("multiAgent.flow", { turns: state.flowTurns, totalTurns: state.flowTurns.length });
-  log?.set("multiAgent.costs", state.costs);
   log?.set("multiAgent.totalDurationMs", Date.now() - state.startMs);
+  aggregateAndLogCosts("multiAgent");
 }
 
 // --- Main pipeline ---
@@ -208,11 +175,6 @@ export async function runMultiAgentPipeline(
     const turnDurationMs = Date.now() - turnStartMs;
 
     state.allSearchOutputs.push(...result.searchOutputs);
-
-    const agentCost = state.costs[agentName as keyof CostTree] as AgentCostTree;
-    const turnNum = state.agents[agentName]!.turnCount;
-    agentCost.turn[turnNum] = { messages: result.iterationCosts, ...result.cost };
-    addTokenCost(agentCost, result.cost);
 
     const flowTurn: FlowTurn = { agent: agentName, terminalTool: result.terminalTool, durationMs: turnDurationMs };
 
@@ -249,7 +211,7 @@ export async function runMultiAgentPipeline(
     }
 
     if (result.terminalTool === "propose_notes") {
-      await handleProposeNotes(state, result, flowTurn);
+      await handleProposeNotes(state, flowTurn, result.args.notes ?? []);
       state.flowTurns.push(flowTurn);
       continue;
     }

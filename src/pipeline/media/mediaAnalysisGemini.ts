@@ -15,10 +15,8 @@ import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { llm } from "../llm/llm";
 import { getTweetLog } from "../utils/tweetLog";
-import {
-  GEMINI_MODEL, extractOpenRouterCost, addTokenCost, emptyTokenCost,
-  type TokenCost,
-} from "../utils/pricing";
+import { GEMINI_MODEL, extractOpenRouterCost } from "../utils/pricing";
+import { trackLlmCall } from "../utils/costTracker";
 
 const execAsync = promisify(exec);
 const LONG_VIDEO_THRESHOLD_MS = 210_000; // 3.5 minutes
@@ -40,7 +38,6 @@ export interface GeminiMediaItem {
 export interface GeminiMediaResult {
   tweetMedia: GeminiMediaItem[];
   quotedTweetMedia: GeminiMediaItem[];
-  cost: TokenCost;
 }
 
 // --- Prompts ---
@@ -57,7 +54,6 @@ const FRAME_PROMPT = `These are frames extracted from a video. Return JSON:
 // --- Helpers ---
 
 function parseJsonResponse(content: string): GeminiMediaDescription {
-  // Strip markdown code fences if present
   const cleaned = content.replace(/^```json?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
   try {
     const parsed = JSON.parse(cleaned);
@@ -114,7 +110,7 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
-async function analyzeImage(imageUrl: string, costAcc: TokenCost): Promise<GeminiMediaItem> {
+async function analyzeImage(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
   const messages = [
     {
       role: "user" as const,
@@ -130,7 +126,7 @@ async function analyzeImage(imageUrl: string, costAcc: TokenCost): Promise<Gemin
     messages,
     response_format: { type: "json_object" as const },
   });
-  addTokenCost(costAcc, extractOpenRouterCost(result));
+  trackLlmCall({ name: costName, ...extractOpenRouterCost(result), tools: [] });
 
   const content = result.choices?.[0]?.message?.content ?? "";
   return {
@@ -162,7 +158,7 @@ async function extractAudio(videoPath: string, tmpDir: string): Promise<string> 
   return transcribeAudio(audioBuffer);
 }
 
-async function analyzeShortVideo(videoPath: string, costAcc: TokenCost): Promise<GeminiMediaDescription> {
+async function analyzeShortVideo(videoPath: string, costName: string): Promise<GeminiMediaDescription> {
   const videoBytes = await readFile(videoPath);
   const b64 = videoBytes.toString("base64");
   const dataUrl = `data:video/mp4;base64,${b64}`;
@@ -182,13 +178,12 @@ async function analyzeShortVideo(videoPath: string, costAcc: TokenCost): Promise
     messages,
     response_format: { type: "json_object" as const },
   });
-  addTokenCost(costAcc, extractOpenRouterCost(result));
+  trackLlmCall({ name: costName, ...extractOpenRouterCost(result), tools: [] });
 
   return parseJsonResponse(result.choices?.[0]?.message?.content ?? "");
 }
 
-async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costAcc: TokenCost): Promise<GeminiMediaDescription> {
-  // Extract 4 uniformly sampled frames
+async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costName: string): Promise<GeminiMediaDescription> {
   await execAsync(
     `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v 4 "${tmpDir}/frame%03d.jpg" -y 2>&1`,
     { timeout: 60000 },
@@ -230,7 +225,7 @@ async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costAcc
     messages,
     response_format: { type: "json_object" as const },
   });
-  addTokenCost(costAcc, extractOpenRouterCost(result));
+  trackLlmCall({ name: costName, ...extractOpenRouterCost(result), tools: [] });
 
   return parseJsonResponse(result.choices?.[0]?.message?.content ?? "");
 }
@@ -254,7 +249,7 @@ function isLocalPath(p: string): boolean {
 async function analyzeVideo(
   videoUrl: string,
   durationMs: number | undefined,
-  costAcc: TokenCost,
+  costName: string,
   strategy: "full_video" | "frames" = "frames",
 ): Promise<GeminiMediaItem> {
   const isLocal = isLocalPath(videoUrl);
@@ -267,20 +262,18 @@ async function analyzeVideo(
     const useFrames = strategy === "frames"
       || (durationMs != null && durationMs > LONG_VIDEO_THRESHOLD_MS);
 
-    // Vision analysis
     let description: GeminiMediaDescription;
     if (useFrames) {
       if (!(await checkFfmpeg())) {
         console.warn("[mediaAnalysisGemini] FFmpeg not available, skipping frames");
         description = { description: "", ocrText: "" };
       } else {
-        description = await analyzeLongVideoFrames(videoPath, tmpDir, costAcc);
+        description = await analyzeLongVideoFrames(videoPath, tmpDir, costName);
       }
     } else {
-      description = await analyzeShortVideo(videoPath, costAcc);
+      description = await analyzeShortVideo(videoPath, costName);
     }
 
-    // Audio transcription
     let transcription: string | undefined;
     if (!(await checkFfmpeg())) {
       transcription = "(ffmpeg unavailable)";
@@ -311,7 +304,7 @@ async function analyzeVideo(
 
 async function analyzeMediaItems(
   mediaItems: any[],
-  costAcc: TokenCost,
+  namePrefix: string,
   strategy: "full_video" | "frames" = "frames",
 ): Promise<GeminiMediaItem[]> {
   if (!mediaItems?.length) return [];
@@ -321,23 +314,23 @@ async function analyzeMediaItems(
   const images = mediaItems.filter((m) => m.type === "photo");
   const videos = mediaItems.filter((m) => m.type === "video" || m.type === "animated_gif");
 
-  // Images in parallel
+  let imageIdx = 0;
   const imageResults = await Promise.all(
     images
       .map((img) => getBestUrl(img))
       .filter((url): url is string => !!url)
-      .map((url) => analyzeImage(url, costAcc).catch((err) => {
+      .map((url) => analyzeImage(url, `${namePrefix}.image.${imageIdx++}`).catch((err) => {
         console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
         return { type: "image" as const, url, description: { description: "", ocrText: "" } };
       })),
   );
   results.push(...imageResults);
 
-  // Videos sequentially (ffmpeg is CPU-intensive)
+  let videoIdx = 0;
   for (const video of videos) {
     const videoUrl = getBestUrl(video);
     if (!videoUrl) continue;
-    results.push(await analyzeVideo(videoUrl, video.duration_ms, costAcc, strategy));
+    results.push(await analyzeVideo(videoUrl, video.duration_ms, `${namePrefix}.video.${videoIdx++}`, strategy));
   }
 
   return results;
@@ -350,17 +343,11 @@ export async function analyzeMediaGemini(
 ): Promise<GeminiMediaResult> {
   const startMs = Date.now();
   const log = getTweetLog();
-  const tweetCost = emptyTokenCost();
-  const quotedCost = emptyTokenCost();
 
   const [tweetResults, quotedResults] = await Promise.all([
-    analyzeMediaItems(tweetMedia ?? [], tweetCost, strategy),
-    analyzeMediaItems(quotedTweetMedia ?? [], quotedCost, strategy),
+    analyzeMediaItems(tweetMedia ?? [], "media.tweet", strategy),
+    analyzeMediaItems(quotedTweetMedia ?? [], "media.quoted", strategy),
   ]);
-
-  const totalCost = emptyTokenCost();
-  addTokenCost(totalCost, tweetCost);
-  addTokenCost(totalCost, quotedCost);
 
   log?.set("media.gemini.tweetMedia", tweetResults);
   log?.set("media.gemini.quotedTweetMedia", quotedResults);
@@ -369,6 +356,5 @@ export async function analyzeMediaGemini(
   return {
     tweetMedia: tweetResults,
     quotedTweetMedia: quotedResults,
-    cost: totalCost,
   };
 }

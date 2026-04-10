@@ -7,6 +7,7 @@
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
 import { randomizeConfig, withBotConfig } from "../pipeline/utils/botConfig";
+import { withCostTracker } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runToolCallingLoop } from "../pipeline/tool-calling/toolCallingLoop";
 
@@ -19,7 +20,7 @@ export const agentBot: Bot = {
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const config = randomizeConfig();
 
-    return withBotConfig(config, async () => {
+    return withBotConfig(config, () => withCostTracker(async () => {
       const input = await createBotInput(post, content, "agent");
       const outcome = await runToolCallingLoop(post, content, input);
       const result = outcomeToResult(post, this.id, outcome);
@@ -27,6 +28,6 @@ export const agentBot: Bot = {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }
       return result;
-    });
+    }));
   },
 };

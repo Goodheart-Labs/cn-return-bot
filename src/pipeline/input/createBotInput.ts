@@ -9,7 +9,6 @@ import type { PostContent } from "../../bots/types";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
-import { emptyTokenCost, addTokenCost, type TokenCost } from "../utils/pricing";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
 import { fetchTweetComments } from "./comments";
 
@@ -17,7 +16,6 @@ export interface BotInput {
   mediaResult: GeminiMediaResult;
   authorHistory?: AuthorNoteHistory;
   comments?: string;
-  mediaCost: TokenCost;
   warnings: string[];
 }
 
@@ -31,7 +29,7 @@ export async function createBotInput(
   const warnings: string[] = [];
 
   // Media analysis (fatal for media-only tweets)
-  let mediaResult: GeminiMediaResult = { tweetMedia: [], quotedTweetMedia: [], cost: emptyTokenCost() };
+  let mediaResult: GeminiMediaResult = { tweetMedia: [], quotedTweetMedia: [] };
   const hasTweetMedia = post.media?.length > 0;
   const hasQuotedMedia = (post.referenced_tweet_data?.media?.length ?? 0) > 0;
 
@@ -63,11 +61,9 @@ export async function createBotInput(
 
   // Comments (best-effort)
   let comments: string | undefined;
-  const mediaCost = { ...mediaResult.cost };
   try {
-    const commentsResult = await fetchTweetComments(post.id, content.text);
-    comments = commentsResult.comments || undefined;
-    addTokenCost(mediaCost, commentsResult.cost);
+    const text = await fetchTweetComments(post.id, content.text);
+    comments = text || undefined;
   } catch (err: any) {
     console.warn(`[${logTag}] Comment fetch failed: ${err.message}`);
   }
@@ -80,5 +76,5 @@ export async function createBotInput(
     noteHistory: authorHistory ?? null,
   });
 
-  return { mediaResult, authorHistory, comments, mediaCost, warnings };
+  return { mediaResult, authorHistory, comments, warnings };
 }

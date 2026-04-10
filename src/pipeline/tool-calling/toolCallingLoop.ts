@@ -10,11 +10,11 @@ import type { PostContent, PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { emptyTokenCost } from "../utils/pricing";
 import { buildToolList } from "./tools";
 import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "./agentLoop";
 import { SYSTEM_PROMPT, buildUserMessage } from "../input/prompt";
 import { evaluateAndPickBest } from "../score/noteEvaluation";
+import { aggregateAndLogCosts } from "../utils/costTracker";
 
 const MAX_ITERATIONS = 50;
 
@@ -50,14 +50,7 @@ export async function runToolCallingLoop(
   addUserMessage(state, userMessage);
   const result = await runAgentTurn(state, "agent.messages", MAX_ITERATIONS);
 
-  const costs = {
-    messages: result.iterationCosts,
-    media: input.mediaCost ?? emptyTokenCost(),
-    ...result.cost,
-  };
-  if (input.mediaCost) costs.cost += input.mediaCost.cost;
-  log?.set("agent.costs", costs);
-  log?.set("agent.iterations", result.iterations);
+  aggregateAndLogCosts("agent");
 
   if (result.terminalTool === "propose_notes") {
     const { selected, evalResults } = await evaluateAndPickBest(post.id, result.args.notes ?? []);

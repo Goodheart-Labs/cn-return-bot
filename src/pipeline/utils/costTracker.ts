@@ -1,0 +1,75 @@
+/**
+ * Cost Tracker
+ *
+ * Append-only cost tracking via AsyncLocalStorage. Each LLM call appends an entry
+ * with a dot-notation name. One aggregation function at the end builds the tree
+ * and logs everything.
+ */
+
+import { AsyncLocalStorage } from "node:async_hooks";
+import { getTweetLog } from "./tweetLog";
+import { type TokenCost, addTokenCost, emptyTokenCost } from "./pricing";
+
+// --- Types ---
+
+export interface ToolCallCost {
+  name: string;
+  input_tokens: number;
+  output_tokens: number;
+  cost: number;
+}
+
+export interface LlmCallCost {
+  name: string;
+  input_tokens: number;
+  output_tokens: number;
+  cost: number;
+  tools: ToolCallCost[];
+}
+
+// --- AsyncLocalStorage ---
+
+const costStorage = new AsyncLocalStorage<LlmCallCost[]>();
+
+export function withCostTracker<T>(fn: () => T): T {
+  return costStorage.run([], fn);
+}
+
+export function getCostTracker(): LlmCallCost[] {
+  return costStorage.getStore() ?? [];
+}
+
+export function trackLlmCall(entry: LlmCallCost): void {
+  getCostTracker().push(entry);
+}
+
+// --- Aggregation ---
+
+function entryCost(entry: LlmCallCost): TokenCost {
+  const cost = { input_tokens: entry.input_tokens, output_tokens: entry.output_tokens, cost: entry.cost };
+  for (const tool of entry.tools) {
+    cost.cost += tool.cost;
+  }
+  return cost;
+}
+
+export function aggregateAndLogCosts(logKeyPrefix: string): void {
+  const entries = getCostTracker();
+  const log = getTweetLog();
+  if (!log || !entries.length) return;
+
+  // Group by first path segment
+  const groups: Record<string, TokenCost> = {};
+  const total = emptyTokenCost();
+
+  for (const entry of entries) {
+    const cost = entryCost(entry);
+    addTokenCost(total, cost);
+
+    const group = entry.name.split(".")[0]!;
+    if (!groups[group]) groups[group] = emptyTokenCost();
+    addTokenCost(groups[group]!, cost);
+  }
+
+  log.set(`${logKeyPrefix}.costs`, { entries, groups, total });
+}

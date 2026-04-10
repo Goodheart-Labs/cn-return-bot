@@ -25,18 +25,6 @@ export interface TokenCost {
   cost: number;
 }
 
-export interface IterationCost extends TokenCost {
-  tools: Record<string, TokenCost>;
-}
-
-export interface AgentCosts {
-  messages: Record<number, IterationCost>;
-  media: TokenCost;
-  input_tokens: number;
-  output_tokens: number;
-  cost: number;
-}
-
 // --- Helpers ---
 
 export function extractOpenRouterCost(response: any): TokenCost {
