@@ -14,7 +14,7 @@ interface NoteCardProps {
 }
 
 function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: string }) {
-  const display = coreStatus ?? status ?? "unknown";
+  const display = status ?? coreStatus ?? "unknown";
   const colorMap: Record<string, string> = {
     CURRENTLY_RATED_HELPFUL: "bg-green-100 text-green-800",
     CURRENTLY_RATED_NOT_HELPFUL: "bg-red-100 text-red-800",

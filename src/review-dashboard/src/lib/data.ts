@@ -36,7 +36,7 @@ function computeCompetitorLeadTag(
   const ourTime = new Date(ourSubmittedAt).getTime();
 
   const helpfulNotes = comparisonNotes.filter(
-    (cn) => cn.coreStatus === "CURRENTLY_RATED_HELPFUL" && cn.createdAtMillis != null,
+    (cn) => cn.status === "CURRENTLY_RATED_HELPFUL" && cn.createdAtMillis != null,
   );
   if (helpfulNotes.length === 0) return undefined;
 
@@ -135,7 +135,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       authorId: cn.author_participant_id,
       createdAtMillis: cn.created_at_millis,
     });
-    if (cn.current_core_status === "CURRENTLY_RATED_HELPFUL") {
+    if (cn.current_status === "CURRENTLY_RATED_HELPFUL") {
       helpfulCompetitorNoteIds.add(key);
     }
   }
@@ -199,7 +199,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
         .from("competing_notes")
         .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs, created_at)")
         .not("pipeline_run_id", "is", null)
-        .eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
+        .eq("current_status", "CURRENTLY_RATED_HELPFUL"),
       "missed_opportunities"
     );
   } catch (e) {
