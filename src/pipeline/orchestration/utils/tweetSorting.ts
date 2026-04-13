@@ -1,14 +1,13 @@
 /**
  * Tweet Sorting
  *
- * Sorting functions are disabled — tweets are now processed in API-returned order.
- * ageInHours and formatCount are still used for logging.
+ * Sorts tweets by a weighted combination of recency (80%) and impressions (20%).
  */
 
 import type { Post } from "../../../api/fetchEligiblePosts";
 
-// const RECENCY_WEIGHT = 0.8;
-// const IMPRESSION_WEIGHT = 0.2;
+const RECENCY_WEIGHT = 0.8;
+const IMPRESSION_WEIGHT = 0.2;
 const MAX_AGE_HOURS = 48;
 
 export function ageInHours(post: Post): number {
@@ -26,7 +25,6 @@ export function formatCount(n: number): string {
   return String(n);
 }
 
-/*
 function recencyScore(post: Post): number {
   return 1 - ageInHours(post) / MAX_AGE_HOURS;
 }
@@ -49,12 +47,3 @@ export function sortByRecencyAndImpressions(posts: Post[]): Post[] {
 
   return [...posts].sort((a, b) => combinedScore(b, maxLogImp) - combinedScore(a, maxLogImp));
 }
-
-export function getTweetScore(post: Post, allPosts: Post[]): number {
-  const maxLogImp = allPosts.reduce((max, p) => {
-    const val = Math.log10((p.public_metrics?.impression_count ?? 0) + 1);
-    return val > max ? val : max;
-  }, 0);
-  return combinedScore(post, maxLogImp);
-}
-*/

@@ -12,7 +12,7 @@ import { processSingleTweet } from "./processTweet";
 import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../utils/tweetLog";
 import { determineFeedSize, buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
-import { ageInHours, formatCount } from "./utils/tweetSorting";
+import { ageInHours, formatCount, sortByRecencyAndImpressions } from "./utils/tweetSorting";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
@@ -71,8 +71,10 @@ async function fetchPosts(
     }
   }
 
-  const selectedNew = newPosts.slice(0, maxPosts);
-  const selectedRetry = retryPosts.slice(0, Math.min(retrySlots, maxPosts - selectedNew.length));
+  const sortedNew = sortByRecencyAndImpressions(newPosts);
+  const sortedRetry = sortByRecencyAndImpressions(retryPosts);
+  const selectedNew = sortedNew.slice(0, maxPosts);
+  const selectedRetry = sortedRetry.slice(0, Math.min(retrySlots, maxPosts - selectedNew.length));
   const selected = [...selectedNew, ...selectedRetry];
 
   console.log(`[generate] Processing ${selectedNew.length} new + ${selectedRetry.length} retry = ${selected.length} tweets`);
