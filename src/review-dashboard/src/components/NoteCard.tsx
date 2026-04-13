@@ -14,7 +14,7 @@ interface NoteCardProps {
 }
 
 function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: string }) {
-  const display = coreStatus ?? status ?? "unknown";
+  const display = status ?? coreStatus ?? "unknown";
   const colorMap: Record<string, string> = {
     CURRENTLY_RATED_HELPFUL: "bg-green-100 text-green-800",
     CURRENTLY_RATED_NOT_HELPFUL: "bg-red-100 text-red-800",
@@ -81,6 +81,11 @@ export function NoteCard({
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ftConfig.color}`}>
             {ftConfig.label}
           </span>
+          {item.competitorLeadTag && (
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-800">
+              {item.competitorLeadTag}
+            </span>
+          )}
           {item.outcome && (
             <span className="text-xs text-gray-500">
               {item.outcome}{item.outcomeReason ? ` (${item.outcomeReason})` : ""}
