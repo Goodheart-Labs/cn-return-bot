@@ -40,6 +40,9 @@ export interface ReviewItem {
   // Annotation state
   annotation?: Annotation;
 
+  // Auto-computed competitor lead time tag (not persisted)
+  competitorLeadTag?: string;
+
   // For filter categorization
   failureType: FailureType;
 }
@@ -52,6 +55,7 @@ export interface ComparisonNote {
   helpfulCount?: number;
   notHelpfulCount?: number;
   authorId?: string;
+  createdAtMillis?: number;
 }
 
 export interface Annotation {

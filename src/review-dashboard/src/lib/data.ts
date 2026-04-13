@@ -21,6 +21,35 @@ function cnStatusToFailureType(
   return "uncategorized";
 }
 
+const ONE_HOUR_MS = 60 * 60 * 1000;
+const COMPETITOR_LEAD_THRESHOLDS = [
+  { hours: 12, label: "competitor >12h ahead" },
+  { hours: 3, label: "competitor >3h ahead" },
+  { hours: 1, label: "competitor >1h ahead" },
+];
+
+function computeCompetitorLeadTag(
+  ourSubmittedAt: string | undefined,
+  comparisonNotes: ComparisonNote[],
+): string | undefined {
+  if (!ourSubmittedAt) return undefined;
+  const ourTime = new Date(ourSubmittedAt).getTime();
+
+  const helpfulNotes = comparisonNotes.filter(
+    (cn) => cn.coreStatus === "CURRENTLY_RATED_HELPFUL" && cn.createdAtMillis != null,
+  );
+  if (helpfulNotes.length === 0) return undefined;
+
+  const earliestCompetitor = Math.min(...helpfulNotes.map((cn) => cn.createdAtMillis!));
+  const leadMs = ourTime - earliestCompetitor;
+  if (leadMs <= 0) return undefined; // we were first
+
+  for (const { hours, label } of COMPETITOR_LEAD_THRESHOLDS) {
+    if (leadMs > hours * ONE_HOUR_MS) return label;
+  }
+  return undefined;
+}
+
 async function fetchAllRows<T>(query: any, label?: string): Promise<T[]> {
   const all: T[] = [];
   let offset = 0;
@@ -104,6 +133,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       helpfulCount: cn.helpful_count,
       notHelpfulCount: cn.not_helpful_count,
       authorId: cn.author_participant_id,
+      createdAtMillis: cn.created_at_millis,
     });
     if (cn.current_core_status === "CURRENTLY_RATED_HELPFUL") {
       helpfulCompetitorNoteIds.add(key);
@@ -128,6 +158,8 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
   const items: ReviewItem[] = notes.map((note: any) => {
     const pipeline = pipelineByTweet.get(note.tweet_id);
     const hasHelpfulCompetitor = helpfulCompetitorNoteIds.has(note.note_id);
+    const compNotes = competingByNote.get(note.note_id) ?? [];
+    const failureType = cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor);
     return {
       id: note.note_id,
       source: "production" as const,
@@ -150,9 +182,12 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       searchResults: pipeline?.search_results,
       checkReasoning: pipeline?.check_reasoning,
       botId: pipeline?.bot_id,
-      comparisonNotes: competingByNote.get(note.note_id) ?? [],
+      comparisonNotes: compNotes,
       annotation: annotationByTarget.get(note.note_id),
-      failureType: cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor),
+      competitorLeadTag: failureType === "lost_to_competitor"
+        ? computeCompetitorLeadTag(note.submitted_at ?? note.created_at, compNotes)
+        : undefined,
+      failureType,
     };
   });
 

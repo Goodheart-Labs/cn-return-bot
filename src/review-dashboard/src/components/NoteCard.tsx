@@ -81,6 +81,11 @@ export function NoteCard({
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ftConfig.color}`}>
             {ftConfig.label}
           </span>
+          {item.competitorLeadTag && (
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-800">
+              {item.competitorLeadTag}
+            </span>
+          )}
           {item.outcome && (
             <span className="text-xs text-gray-500">
               {item.outcome}{item.outcomeReason ? ` (${item.outcomeReason})` : ""}
