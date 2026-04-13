@@ -64,7 +64,7 @@ async function fetchPosts(
       ]);
       const writingLimit = writingLimitStr ? parseInt(writingLimitStr, 10) : DEFAULT_WRITING_LIMIT;
       const remainingCapacity = Math.max(0, writingLimit - recentSubmissions);
-      retrySlots = Math.max(0, remainingCapacity - newPosts.length);
+      retrySlots = Math.max(0, Math.min((remainingCapacity - newPosts.length) * 2, maxPosts - newPosts.length));
       console.log(`[generate] Writing limit: ${writingLimit}, recent: ${recentSubmissions}, remaining capacity: ${remainingCapacity}, retry slots: ${retrySlots}`);
     } catch (err) {
       console.warn("[generate] Failed to calculate retry budget:", err);
