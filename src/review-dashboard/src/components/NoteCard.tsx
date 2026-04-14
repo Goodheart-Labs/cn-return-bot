@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Component, useState, type ReactNode } from "react";
 import type { ReviewItem, ComparisonNote } from "../lib/types";
 import { FAILURE_TYPE_CONFIG } from "../lib/types";
 import { JsonViewer } from "./JsonViewer";
@@ -14,7 +14,7 @@ interface NoteCardProps {
 }
 
 function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: string }) {
-  const display = status ?? coreStatus ?? "unknown";
+  const display = coreStatus ?? status ?? "unknown";
   const colorMap: Record<string, string> = {
     CURRENTLY_RATED_HELPFUL: "bg-green-100 text-green-800",
     CURRENTLY_RATED_NOT_HELPFUL: "bg-red-100 text-red-800",
@@ -46,6 +46,186 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   );
 }
 
+// Extract media info from pipeline logs (handles both flat dot-notation and nested object formats)
+function extractMedia(logs?: Record<string, unknown>): {
+  images: { url: string; description?: string; textContent?: string }[];
+  videos: { url: string; transcription?: string; keyFrameDescriptions?: string[] }[];
+  summary?: string;
+  quotedPostContext?: string;
+  tweetText?: string;
+} {
+  const result = { images: [] as any[], videos: [] as any[], summary: undefined as string | undefined, quotedPostContext: undefined as string | undefined, tweetText: undefined as string | undefined };
+  if (!logs) return result;
+
+  // Nested object format (newer logs)
+  const media = logs.media as any;
+  if (media && typeof media === "object") {
+    if (Array.isArray(media.images)) {
+      result.images = media.images.map((img: any) => ({
+        url: img.url,
+        description: img.description,
+        textContent: img.textContent,
+      }));
+    }
+    if (Array.isArray(media.videos)) {
+      result.videos = media.videos.map((vid: any) => ({
+        url: vid.url,
+        transcription: vid.transcription,
+        keyFrameDescriptions: vid.keyFrameDescriptions,
+      }));
+    }
+    if (media.summary) result.summary = media.summary;
+  }
+
+  // Quoted post context (nested or flat)
+  const tweet = logs.tweet as any;
+  if (tweet && typeof tweet === "object") {
+    if (tweet.quotedPostContext) {
+      result.quotedPostContext = typeof tweet.quotedPostContext === "string"
+        ? tweet.quotedPostContext
+        : JSON.stringify(tweet.quotedPostContext);
+    }
+    if (tweet.text) result.tweetText = tweet.text;
+  }
+  // Flat dot-notation format (older logs)
+  if (logs["tweet.text"] && typeof logs["tweet.text"] === "string") {
+    result.tweetText = logs["tweet.text"] as string;
+  }
+
+  return result;
+}
+
+function TweetInline({ item, tweetUrl }: { item: ReviewItem; tweetUrl: string }) {
+  const media = extractMedia(item.logs);
+  const tweetText = item.tweetText ?? media.tweetText;
+
+  return (
+    <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">
+      {/* Header: handle + link + media badges */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          {item.tweetHandle && (
+            <span className="text-sm font-medium text-gray-800">@{item.tweetHandle}</span>
+          )}
+          {item.hasPhoto && (
+            <span className="text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">
+              {item.mediaCount && item.mediaCount > 1 ? `${item.mediaCount} images` : "image"}
+            </span>
+          )}
+          {item.hasVideo && (
+            <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded">video</span>
+          )}
+        </div>
+        <a
+          href={tweetUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-blue-500 hover:underline"
+        >
+          View on X ↗
+        </a>
+      </div>
+
+      {/* Tweet text */}
+      {tweetText && (
+        <p className="text-sm text-gray-700 whitespace-pre-wrap mb-2">{tweetText}</p>
+      )}
+
+      {/* Quoted post */}
+      {media.quotedPostContext && (
+        <div className="bg-white border border-gray-200 rounded p-2 mb-2 text-sm text-gray-600">
+          <div className="text-xs text-gray-400 mb-1">Quoted post</div>
+          <p className="whitespace-pre-wrap">{media.quotedPostContext}</p>
+        </div>
+      )}
+
+      {/* Images */}
+      {media.images.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {media.images.map((img, i) => (
+            <div key={i} className="space-y-1">
+              <a href={img.url} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={img.url}
+                  alt={img.description ?? `Image ${i + 1}`}
+                  className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain cursor-pointer hover:opacity-90"
+                  loading="lazy"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+              </a>
+              {img.description && (
+                <p className="text-xs text-gray-500 max-w-[300px]">
+                  <span className="font-medium">AI description:</span> {img.description}
+                </p>
+              )}
+              {img.textContent && (
+                <p className="text-xs text-gray-500 max-w-[300px]">
+                  <span className="font-medium">Text in image:</span> {img.textContent}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Videos */}
+      {media.videos.length > 0 && (
+        <div className="space-y-2 mb-2">
+          {media.videos.map((vid, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded p-2">
+              <div className="text-xs text-gray-400 mb-1">Video {media.videos.length > 1 ? i + 1 : ""}</div>
+              {vid.url && (
+                <a href={vid.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline block mb-1">
+                  {vid.url}
+                </a>
+              )}
+              {vid.transcription && (
+                <div className="text-xs text-gray-600">
+                  <span className="font-medium">Transcript:</span>
+                  <p className="whitespace-pre-wrap mt-0.5">{vid.transcription}</p>
+                </div>
+              )}
+              {vid.keyFrameDescriptions && vid.keyFrameDescriptions.length > 0 && (
+                <details className="text-xs text-gray-500 mt-1">
+                  <summary className="cursor-pointer">Key frames ({vid.keyFrameDescriptions.length})</summary>
+                  <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                    {vid.keyFrameDescriptions.map((desc: string, j: number) => (
+                      <li key={j}>{desc}</li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Media summary if no individual media shown */}
+      {media.images.length === 0 && media.videos.length === 0 && media.summary && (
+        <div className="text-xs text-gray-500 mb-2">
+          <span className="font-medium">Media:</span> {media.summary}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Error boundary so one broken card doesn't blank the whole page
+class CardErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  state = { error: null as Error | null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+          Card failed to render: {this.state.error.message}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function buildLogsFallback(item: ReviewItem): Record<string, unknown> | undefined {
   const obj: Record<string, unknown> = {};
   if (item.botId) obj.bot_id = item.botId;
@@ -74,6 +254,7 @@ export function NoteCard({
   const comment = item.annotation?.comment ?? null;
 
   return (
+    <CardErrorBoundary>
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${seen ? "opacity-60" : ""}`}>
       {/* Header row */}
       <div className="flex items-start justify-between gap-3 mb-3">
@@ -121,21 +302,9 @@ export function NoteCard({
         </div>
       </div>
 
-      {/* Tweet text */}
+      {/* Tweet content */}
       <div className="mb-3">
-        <a
-          href={tweetUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:underline text-sm"
-        >
-          {tweetUrl}
-        </a>
-        {item.tweetText && (
-          <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap line-clamp-4">
-            {item.tweetText}
-          </p>
-        )}
+        <TweetInline item={item} tweetUrl={tweetUrl} />
       </div>
 
       {/* Our note */}
@@ -273,5 +442,6 @@ export function NoteCard({
         )}
       </div>
     </div>
+    </CardErrorBoundary>
   );
 }
