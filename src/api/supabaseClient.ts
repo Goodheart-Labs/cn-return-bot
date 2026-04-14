@@ -869,54 +869,6 @@ export class SupabaseLogger {
   }
 
   /**
-   * Fetch all unsubmitted candidates with their scores for ranking.
-   */
-  async fetchCandidates(): Promise<
-    {
-      id: string;
-      tweet_id: string;
-      note_text: string;
-      source_url: string;
-      bot_id: string;
-      created_at: string;
-      search_results: string;
-      tweet_text: string;
-      scores: { score_type: string; score_value: number | null }[];
-    }[]
-  > {
-    const runs = await this.fetchAllRows<{
-      id: string;
-      tweet_id: string;
-      note_text: string;
-      source_url: string;
-      bot_id: string;
-      created_at: string;
-      search_results: string;
-      tweet_text: string;
-      pipeline_scores: { score_type: string; score_value: number | null }[];
-    }>(
-      (client) =>
-        client
-          .from("pipeline_runs")
-          .select("id, tweet_id, note_text, source_url, bot_id, created_at, search_results, tweet_text, pipeline_scores(score_type, score_value)")
-          .eq("outcome", "candidate")
-          .order("created_at", { ascending: false })
-    );
-
-    return runs.map((r) => ({
-      id: r.id,
-      tweet_id: r.tweet_id,
-      note_text: r.note_text,
-      source_url: r.source_url,
-      bot_id: r.bot_id,
-      created_at: r.created_at,
-      search_results: r.search_results,
-      tweet_text: r.tweet_text,
-      scores: r.pipeline_scores,
-    }));
-  }
-
-  /**
    * Mark a candidate as submitted after successful note submission.
    */
   async markCandidateSubmitted(runId: string, noteId: string): Promise<void> {
@@ -936,31 +888,7 @@ export class SupabaseLogger {
   }
 
   /**
-   * Expire all candidates older than maxAgeHours. Returns count expired.
-   */
-  async expireOldCandidates(maxAgeHours: number = 48): Promise<number> {
-    const cutoff = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000).toISOString();
-    const { data, error } = await this.client
-      .from("pipeline_runs")
-      .update({
-        outcome: "rejected",
-        outcome_reason: "candidate_expired",
-        final_stage: "submission",
-      })
-      .eq("outcome", "candidate")
-      .lt("created_at", cutoff)
-      .select("id");
-
-    if (error) {
-      console.error("[SupabaseLogger] Error expiring old candidates:", error);
-      throw error;
-    }
-
-    return data?.length ?? 0;
-  }
-
-  /**
-   * Mark a candidate as expired (too old or failed permanently).
+   * Mark a pipeline run as expired (tweet deleted or ineligible during submission).
    */
   async markCandidateExpired(runId: string, reason: string): Promise<void> {
     const { error } = await this.client
@@ -1051,18 +979,14 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get tweet IDs that should be permanently skipped:
-   * - Tweets that were submitted (have a note)
-   * - Tweets with "no_correction_needed" rejections on cooldown:
-   *   1 rejection + <1hr ago → skip (retry after 1 hour)
-   *   2 rejections + <24hr ago → skip (retry after 24 hours)
-   *   3+ rejections → permanent skip
+   * Get tweet IDs to skip, with cooldown logic for retries.
+   * - Submitted notes: always skip
+   * - no_correction_needed rejections: 1h after 1st, 24h after 2nd, permanent after 3+
    */
-  async getProcessedTweetIds(): Promise<Set<string>> {
+  async getSkipTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
 
     try {
-      // Get submitted notes - always skip these (paginated to avoid 1000-row limit)
       const notesData = await this.fetchAllRows<{ tweet_id: string }>(
         (client) => client.from("notes").select("tweet_id")
       );
@@ -1070,7 +994,6 @@ export class SupabaseLogger {
         if (row.tweet_id) tweetIds.add(row.tweet_id);
       });
 
-      // Get no_correction_needed rejections with timestamps for cooldown logic
       try {
         const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>(
           (client) => client.from("pipeline_runs").select("tweet_id, created_at")
@@ -1093,7 +1016,6 @@ export class SupabaseLogger {
         const now = new Date();
         for (const [tweetId, info] of rejectionInfo) {
           if (info.count >= 3) {
-            // 3+ rejections: permanent skip
             tweetIds.add(tweetId);
           } else {
             const hoursSinceLatest = (now.getTime() - info.latestAt.getTime()) / (1000 * 60 * 60);
@@ -1101,36 +1023,10 @@ export class SupabaseLogger {
             if (hoursSinceLatest < cooldownHours) {
               tweetIds.add(tweetId);
             }
-            // Otherwise cooldown elapsed — tweet is eligible for retry
           }
         }
       } catch (pipelineError) {
         console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
-      }
-
-      // Skip tweets that have an above-floor candidate waiting for submission.
-      // Below-floor candidates (eval < 0) are left eligible for re-roll by a different bot.
-      try {
-        const candidateData = await this.fetchAllRows<{
-          id: string;
-          tweet_id: string;
-          pipeline_scores: { score_type: string; score_value: number | null }[];
-        }>(
-          (client) => client.from("pipeline_runs")
-            .select("id, tweet_id, pipeline_scores(score_type, score_value)")
-            .eq("outcome", "candidate")
-        );
-
-        for (const row of candidateData) {
-          const evalScore = row.pipeline_scores.find(
-            (s) => s.score_type === "evaluation" && s.score_value !== null
-          )?.score_value ?? undefined;
-          if (evalScore !== undefined && evalScore >= 0) {
-            tweetIds.add(row.tweet_id);
-          }
-        }
-      } catch (candidateError) {
-        console.error("[SupabaseLogger] Error fetching candidate tweet IDs:", candidateError);
       }
 
       return tweetIds;
@@ -1142,7 +1038,7 @@ export class SupabaseLogger {
 
   /**
    * Get all tweet IDs that have ever been processed (pipeline_runs + notes).
-   * Used to distinguish new tweets from retries.
+   * Used to skip already-seen tweets — no retries.
    */
   async getAllProcessedTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
@@ -1470,15 +1366,17 @@ export class SupabaseLogger {
     return count ?? 0;
   }
 
-  async countCandidates(): Promise<number> {
+  /** Check if any notes have been submitted since a given ISO timestamp */
+  async hasSubmissionsSince(since: string): Promise<boolean> {
     const { count, error } = await this.client
-      .from("pipeline_runs")
+      .from("notes")
       .select("*", { count: "exact", head: true })
-      .eq("outcome", "candidate");
+      .gte("submitted_at", since);
     if (error) {
-      console.warn("[SupabaseLogger] Failed to count candidates:", error.message);
-      return 0;
+      console.warn("[SupabaseLogger] Failed to check submissions since:", error.message);
+      return true; // assume reset on error so we don't get stuck in cautious mode
     }
-    return count ?? 0;
+    return (count ?? 0) > 0;
   }
+
 }
