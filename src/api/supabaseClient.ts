@@ -981,7 +981,7 @@ export class SupabaseLogger {
   /**
    * Get tweet IDs to skip, with cooldown logic for retries.
    * - Submitted notes: always skip
-   * - no_correction_needed rejections: 1h after 1st, 24h after 2nd, permanent after 3+
+   * - All rejections: 1h after 1st, 24h after 2nd, permanent after 3+
    */
   async getSkipTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
@@ -998,7 +998,6 @@ export class SupabaseLogger {
         const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>(
           (client) => client.from("pipeline_runs").select("tweet_id, created_at")
             .eq("outcome", "rejected")
-            .eq("outcome_reason", "no_correction_needed")
         );
         const rejectionInfo = new Map<string, { count: number; latestAt: Date }>();
         for (const row of pipelineData) {
