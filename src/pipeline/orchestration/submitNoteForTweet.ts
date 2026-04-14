@@ -63,7 +63,7 @@ export async function submitNoteForTweet(
 
     if (errorText.includes("daily limit")) {
       try {
-        await logger.setPipelineState("limit_hit_today", "true");
+        await logger.setPipelineState("limit_hit_at", new Date().toISOString());
         const recentCount = await logger.countRecentSubmissions(24);
         await logger.setPipelineState("writing_limit", String(recentCount));
         console.log(`[submit] Daily limit reached. Writing limit updated to ${recentCount}`);
@@ -86,6 +86,16 @@ export async function submitNoteForTweet(
     }
 
     console.error(`[submit] Error submitting for tweet ${tweetId} (${statusCode ?? "no status"}):`, errorData || err);
+    try {
+      await logger.completePipelineRun(pipelineRunId, {
+        outcome: "rejected",
+        outcome_reason: "submit_error",
+        final_stage: "submission",
+        error_message: errorText.slice(0, 500),
+      });
+    } catch (logErr) {
+      console.warn("[submit] Failed to record submit error:", logErr);
+    }
     return { status: "error", message: errorText.slice(0, 200) };
   }
 }

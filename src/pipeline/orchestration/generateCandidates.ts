@@ -18,7 +18,6 @@ import PQueue from "p-queue";
 
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
-const DEFAULT_WRITING_LIMIT = 5;
 
 // ---------------------------------------------------------------------------
 // Post fetching
@@ -54,22 +53,8 @@ async function fetchPosts(
   const newPosts = posts.filter((p) => !allProcessedIds.has(p.id));
   const retryPosts = posts.filter((p) => allProcessedIds.has(p.id));
 
-  // Calculate retry budget: fill remaining writing capacity with retries
-  let retrySlots = 0;
-  if (supabaseLogger && retryPosts.length > 0) {
-    try {
-      const [writingLimitStr, recentSubmissions] = await Promise.all([
-        supabaseLogger.getPipelineState("writing_limit"),
-        supabaseLogger.countRecentSubmissions(24),
-      ]);
-      const writingLimit = writingLimitStr ? parseInt(writingLimitStr, 10) : DEFAULT_WRITING_LIMIT;
-      const remainingCapacity = Math.max(0, writingLimit - recentSubmissions);
-      retrySlots = Math.max(0, Math.min((remainingCapacity - newPosts.length) * 2, maxPosts - newPosts.length));
-      console.log(`[generate] Writing limit: ${writingLimit}, recent: ${recentSubmissions}, remaining capacity: ${remainingCapacity}, retry slots: ${retrySlots}`);
-    } catch (err) {
-      console.warn("[generate] Failed to calculate retry budget:", err);
-    }
-  }
+  // Fill remaining slots with retries (submission step handles the daily cap)
+  const retrySlots = Math.max(0, maxPosts - newPosts.length);
 
   const sortedNew = sortByRecencyAndImpressions(newPosts);
   const sortedRetry = sortByRecencyAndImpressions(retryPosts);

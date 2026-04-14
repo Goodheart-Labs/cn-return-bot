@@ -1366,4 +1366,17 @@ export class SupabaseLogger {
     return count ?? 0;
   }
 
+  /** Check if any notes have been submitted since a given ISO timestamp */
+  async hasSubmissionsSince(since: string): Promise<boolean> {
+    const { count, error } = await this.client
+      .from("notes")
+      .select("*", { count: "exact", head: true })
+      .gte("submitted_at", since);
+    if (error) {
+      console.warn("[SupabaseLogger] Failed to check submissions since:", error.message);
+      return true; // assume reset on error so we don't get stuck in cautious mode
+    }
+    return (count ?? 0) > 0;
+  }
+
 }
