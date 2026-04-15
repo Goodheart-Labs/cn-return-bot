@@ -8,7 +8,6 @@ export interface BotConfig {
   model: string;
   provider: "openrouter" | "google";
   web_search: "native" | "perplexity";
-  web_fetch: "native" | "custom";
   video_description_strategy: VideoDescriptionStrategy;
 }
 
@@ -18,7 +17,6 @@ const DEFAULT_CONFIG: BotConfig = {
   model: "anthropic/claude-sonnet-4.6",
   provider: "openrouter",
   web_search: "native",
-  web_fetch: "custom",
   video_description_strategy: "frames",
 };
 
@@ -36,7 +34,6 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
       model: "gemini-3-flash-preview",
       provider: "google",
       web_search: "native",
-      web_fetch: "native",
     },
   },
 ];
@@ -53,10 +50,6 @@ export function getBotConfig(): BotConfig {
   const config = configStorage.getStore();
   if (!config) throw new Error("getBotConfig() called outside withBotConfig()");
   return config;
-}
-
-export function usesNativeWebFetch(config: BotConfig): boolean {
-  return config.web_fetch === "native" && config.provider === "google";
 }
 
 // --- Randomization ---

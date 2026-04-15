@@ -220,8 +220,25 @@ export async function runAgentTurn(
       trackLlmCall(costEntry);
 
       const hasAnnotations = Array.isArray((message as any).annotations) && (message as any).annotations.length > 0;
-      if (hasAnnotations) {
+      const hasNativeSearch = !!(message as any)._nativeToolMeta;
+      if (hasAnnotations || hasNativeSearch) {
         state.messages.push(message);
+
+        // Surface grounding citations so the model can reference real source URLs
+        const citations = hasAnnotations
+          ? (message as any).annotations
+              .filter((a: any) => a.type === "url_citation")
+              .map((a: any) => `- ${a.url_citation?.title}: ${a.url_citation?.url}`)
+              .join("\n")
+          : "";
+        const citationBlock = citations
+          ? `\n\nYour search found these sources:\n${citations}\n\nUse ONLY these URLs as sources — do not fabricate URLs.`
+          : "";
+
+        state.messages.push({
+          role: "user",
+          content: `You've received search results.${citationBlock} Now call the appropriate tool — either send_message with your findings, or no_correction_needed.`,
+        });
         continue;
       }
 
@@ -242,6 +259,22 @@ export async function runAgentTurn(
         trackLlmCall(costEntry);
         log?.set(`${logPrefix}.iterations`, iteration);
         return terminal;
+      }
+    }
+
+    // Surface grounding citations from iterations that also had tool_calls,
+    // so the model sees real source URLs on the next iteration
+    const iterAnnotations = (message as any).annotations as any[] | undefined;
+    if (iterAnnotations?.length) {
+      const citations = iterAnnotations
+        .filter((a: any) => a.type === "url_citation")
+        .map((a: any) => `- ${a.url_citation?.title}: ${a.url_citation?.url}`)
+        .join("\n");
+      if (citations) {
+        state.messages.push({
+          role: "user",
+          content: `Your search also found these sources:\n${citations}\n\nUse ONLY these URLs as sources — do not fabricate URLs.`,
+        });
       }
     }
 

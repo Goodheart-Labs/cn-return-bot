@@ -3,7 +3,7 @@
  *
  * Takes OpenAI-format params (messages, tools), calls the Gemini API directly,
  * and returns an OpenAI-compatible response. This enables the agent loop to work
- * with Gemini's native googleSearch and urlContext tools.
+ * with Gemini's native googleSearch tool.
  */
 
 import { GoogleGenAI } from "@google/genai";
@@ -169,11 +169,6 @@ function convertTools(tools: any[]): { geminiTools: any[]; toolConfig?: any } {
     geminiTools.push({ googleSearch: {} });
     hasNativeTools = true;
   }
-  if (config.web_fetch === "native") {
-    geminiTools.push({ urlContext: {} });
-    hasNativeTools = true;
-  }
-
   // Convert OpenAI function tools to Gemini functionDeclarations
   const functionDeclarations: any[] = [];
   for (const tool of tools) {
@@ -198,15 +193,26 @@ function convertTools(tools: any[]): { geminiTools: any[]; toolConfig?: any } {
   return { geminiTools, toolConfig };
 }
 
+// --- Redirect resolution ---
+
+async function resolveRedirectUrl(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, { method: "HEAD", redirect: "follow" });
+    return res.url;
+  } catch {
+    return url;
+  }
+}
+
 // --- Response conversion: Gemini -> OpenAI ---
 
-function convertResponse(geminiResponse: any, model: string): any {
+async function convertResponse(geminiResponse: any, model: string): Promise<any> {
   const candidate = geminiResponse.candidates?.[0];
   const parts = candidate?.content?.parts ?? [];
 
-  // Extract text parts
+  // Extract text parts (filter out thinking parts, but keep response parts with thoughtSignature)
   const textParts = parts
-    .filter((p: any) => p.text && !p.thoughtSignature)
+    .filter((p: any) => p.text && !p.thought)
     .map((p: any) => p.text);
   const content = textParts.length > 0 ? textParts.join("") : null;
 
@@ -226,38 +232,19 @@ function convertResponse(geminiResponse: any, model: string): any {
   }
 
   // Convert grounding metadata -> annotations (url_citation format)
-  const annotations: any[] = [];
+  // Resolve vertex redirect URLs to real destination URLs in parallel
   const grounding = candidate?.groundingMetadata;
-  if (grounding?.groundingChunks?.length) {
-    for (const chunk of grounding.groundingChunks) {
-      if (chunk.web) {
-        annotations.push({
-          type: "url_citation",
-          url_citation: {
-            url: chunk.web.uri ?? "",
-            title: chunk.web.title ?? "",
-          },
-        });
-      }
-    }
-  }
-
-  // Convert urlContextMetadata -> additional annotations
-  const urlCtx = candidate?.urlContextMetadata;
-  if (urlCtx?.urlMetadata?.length) {
-    for (const meta of urlCtx.urlMetadata) {
-      if (meta.retrievedUrl && meta.urlRetrievalStatus === "URL_RETRIEVAL_STATUS_SUCCESS") {
-        // Only add if not already in annotations
-        const exists = annotations.some((a: any) => a.url_citation?.url === meta.retrievedUrl);
-        if (!exists) {
-          annotations.push({
-            type: "url_citation",
-            url_citation: { url: meta.retrievedUrl, title: meta.retrievedUrl },
-          });
-        }
-      }
-    }
-  }
+  const redirectChunks = (grounding?.groundingChunks ?? []).filter((c: any) => c.web);
+  const resolvedUrls = await Promise.all(
+    redirectChunks.map((c: any) => resolveRedirectUrl(c.web.uri ?? "")),
+  );
+  const annotations = redirectChunks.map((chunk: any, i: number) => ({
+    type: "url_citation",
+    url_citation: {
+      url: resolvedUrls[i],
+      title: chunk.web.title ?? "",
+    },
+  }));
 
   // Extract native tool metadata from toolCall parts (present with includeServerSideToolInvocations)
   const toolCallSearchQueries = parts
@@ -272,14 +259,6 @@ function convertResponse(geminiResponse: any, model: string): any {
     if (queries.length > 0) {
       nativeToolMeta.googleSearch = { queries };
     }
-  }
-  if (urlCtx?.urlMetadata?.length) {
-    nativeToolMeta.urlContext = {
-      urls: urlCtx.urlMetadata.map((m: any) => ({
-        url: m.retrievedUrl,
-        status: m.urlRetrievalStatus?.replace("URL_RETRIEVAL_STATUS_", "") ?? "UNKNOWN",
-      })),
-    };
   }
 
   // Cost calculation
@@ -343,7 +322,7 @@ export async function geminiCreate(params: {
         contents,
         config: Object.keys(config).length > 0 ? config : undefined,
       });
-      return convertResponse(response, params.model);
+      return await convertResponse(response, params.model);
     } catch (err: any) {
       lastError = err;
       if (attempt < MAX_RETRIES && isRetryableError(err)) {

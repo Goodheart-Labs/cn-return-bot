@@ -11,7 +11,7 @@ import TurndownService from "turndown";
 import { xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../write/writeNote";
-import { getBotConfig, usesNativeWebFetch } from "../utils/botConfig";
+import { getBotConfig } from "../utils/botConfig";
 import {
   GROK_MODEL, PERPLEXITY_MODEL,
   calculateGrokCost, extractOpenRouterCost,
@@ -116,26 +116,6 @@ export const NO_CORRECTION_TOOL = {
   },
 };
 
-export const APPROVE_NOTE_TOOL = {
-  type: "function" as const,
-  function: {
-    name: "approve_note",
-    description: "Approve the note for submission with verified sources. You may include all original sources or only the subset that checked out.",
-    parameters: {
-      type: "object" as const,
-      properties: {
-        sources: {
-          type: "array" as const,
-          items: { type: "string" as const },
-          description: "The verified source URLs to include with the note. Must include at least one.",
-          minItems: 1,
-        },
-      },
-      required: ["sources"],
-    },
-  },
-};
-
 // Claude built-in tools (OpenRouter passthrough)
 export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
 export const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, name: "code_execution" };
@@ -164,10 +144,7 @@ export function buildToolList(): any[] {
     tools.push(PERPLEXITY_SEARCH_TOOL);
   }
 
-  // Web fetch: native (urlContext) or custom
-  if (!usesNativeWebFetch(config)) {
-    tools.push(WEB_FETCH_TOOL);
-  }
+  tools.push(WEB_FETCH_TOOL);
 
   return tools;
 }
@@ -195,7 +172,6 @@ export async function executeToolCall(
       return handleProposeNotes(args.notes);
     case "no_correction_needed":
     case "send_message":
-    case "approve_note":
       return { output: { acknowledged: true }, isTerminal: true };
     default:
       return { output: { error: `Unknown tool: ${toolName}` }, isTerminal: false };

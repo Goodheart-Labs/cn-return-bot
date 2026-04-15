@@ -14,7 +14,7 @@ import {
   WEB_SEARCH_TOOL,
   NO_CORRECTION_TOOL,
 } from "../tool-calling/tools";
-import { getBotConfig, usesNativeWebFetch } from "../utils/botConfig";
+import { getBotConfig } from "../utils/botConfig";
 
 const SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
@@ -23,7 +23,7 @@ Your job: investigate whether the post contains a factual error that would benef
 ## Your tools
 - grok_search: Search X/Twitter for related tweets, replies, and breaking news. Use 1-3 times.
 - web_search / perplexity_search: General web search for fact-checking.
-- web_fetch: Fetch a URL and read its content. Only use for complex research where you need to dig deeper into a specific page. Do NOT use just to verify sources before citing — the source verifier handles that.
+- web_fetch: Fetch a URL and read its content. Only use for complex research where you need to dig deeper into a specific page.
 - send_message: Send your findings to the notewriter.
 - no_correction_needed: Call when no correction is warranted, or when you can't find sufficient evidence.
 
@@ -53,9 +53,7 @@ export function createResearcherDef(): AgentDef {
   const config = getBotConfig();
   const tools: any[] = [GROK_SEARCH_TOOL];
 
-  if (!usesNativeWebFetch(config)) {
-    tools.push(WEB_FETCH_TOOL);
-  }
+  tools.push(WEB_FETCH_TOOL);
 
   if (config.web_search === "native") {
     if (!(config.web_search === "native" && config.provider === "google")) {
