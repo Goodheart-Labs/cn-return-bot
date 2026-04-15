@@ -11,7 +11,7 @@ import TurndownService from "turndown";
 import { xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../write/writeNote";
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig, usesNativeWebFetch } from "../utils/botConfig";
 import {
   GROK_MODEL, PERPLEXITY_MODEL,
   calculateGrokCost, extractOpenRouterCost,
@@ -145,10 +145,8 @@ export const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, n
 export function buildToolList(): any[] {
   const config = getBotConfig();
   const isAnthropic = config.model.startsWith("anthropic/");
-
   const tools: any[] = [
     GROK_SEARCH_TOOL,
-    WEB_FETCH_TOOL,
     PROPOSE_NOTES_TOOL,
     NO_CORRECTION_TOOL,
   ];
@@ -157,10 +155,18 @@ export function buildToolList(): any[] {
     tools.push(CODE_EXECUTION_TOOL);
   }
 
-  if (config.search_mode === "native-search") {
-    tools.push(WEB_SEARCH_TOOL);
+  // Web search: native (googleSearch/Claude web_search) or perplexity
+  if (config.web_search === "native") {
+    if (!(config.web_search === "native" && config.provider === "google")) {
+      tools.push(WEB_SEARCH_TOOL); // Claude native web_search via OpenRouter passthrough
+    }
   } else {
     tools.push(PERPLEXITY_SEARCH_TOOL);
+  }
+
+  // Web fetch: native (urlContext) or custom
+  if (!usesNativeWebFetch(config)) {
+    tools.push(WEB_FETCH_TOOL);
   }
 
   return tools;

@@ -156,6 +156,38 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
     };
   });
 
+  // Fetch unsubmitted candidates (e.g. from local pipeline runs) and show as uncategorized
+  const { data: candidateRuns = [], error: candidateErr } = await supabase
+    .from("pipeline_runs")
+    .select("id, tweet_id, tweet_text, note_text, source_url, bot_id, outcome, outcome_reason, logs, search_results, check_reasoning, created_at")
+    .eq("outcome", "candidate")
+    .order("created_at", { ascending: false })
+    .limit(1000);
+  if (candidateErr) console.warn("[data] candidate_pipeline_runs failed:", candidateErr);
+  else console.log(`[data] candidate_pipeline_runs: ${candidateRuns.length} rows`);
+
+  const existingTweetIds = new Set(notes.map((n: any) => n.tweet_id));
+  for (const pr of candidateRuns) {
+    if (existingTweetIds.has(pr.tweet_id)) continue;
+    items.push({
+      id: `candidate:${pr.id}`,
+      source: "production",
+      tweetId: pr.tweet_id,
+      tweetText: pr.tweet_text,
+      noteText: pr.note_text,
+      sourceUrl: pr.source_url,
+      createdAt: pr.created_at,
+      outcome: pr.outcome,
+      outcomeReason: pr.outcome_reason,
+      logs: pr.logs,
+      searchResults: pr.search_results,
+      checkReasoning: pr.check_reasoning,
+      botId: pr.bot_id,
+      comparisonNotes: [],
+      failureType: "uncategorized",
+    });
+  }
+
   // Fetch and append missed opportunities (non-fatal — column may not exist on prod yet)
   let missed: any[] = [];
   try {

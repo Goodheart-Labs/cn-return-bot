@@ -1,21 +1,40 @@
 /**
  * Prompt
  *
- * Static system prompt (cacheable) and dynamic user message builder.
+ * System prompt builder (adapts to provider/tool config) and dynamic user message builder.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
+import { type BotConfig, usesNativeWebFetch } from "../utils/botConfig";
 
-export const SYSTEM_PROMPT = `You are a Community Notes fact-checker for X/Twitter. Determine if the post below contains a clear factual error or leaves users with a less accurate map in the sense of "The Map and the Territory". If so, write a correction note with a verified source.
+function buildToolSection(config: BotConfig): string {
+  const lines: string[] = [];
+  lines.push("- grok_search: Search X/Twitter for related tweets (potentially with their comments) and latest news. Comments on the post being analyzed are already provided — use grok_search for OTHER tweets and topics. Minimize x_search calls (1-3 uses).");
+
+  if (config.web_search === "native" && config.provider === "google") {
+    lines.push("- googleSearch (built-in): Use freely for fact-checking.");
+  } else if (config.web_search === "perplexity") {
+    lines.push("- perplexity_search: General web search. Use freely for fact-checking queries.");
+  }
+
+  if (usesNativeWebFetch(config)) {
+    lines.push("- urlContext (built-in): You MUST verify every source you cite: explicitly request URL fetches for each source to confirm it supports your correction. If a source doesn't say what you expected, search for a better one.");
+  } else {
+    lines.push("- web_fetch: Fetch a URL and extract its content. You MUST have looked at every source before citing it (through web_fetch or otherwise e.g. in the case of tweetURLs and tweetReplyURLs if you see the text, that's fine). If a source doesn't say what you expected, search for a better one.");
+  }
+
+  lines.push("- propose_notes: When you think a correction is warranted, propose 3-4 note variants with different phrasings or source combinations. The system evaluates each and picks the best.");
+  lines.push("- no_correction_needed: When you think no correction should be written.");
+  return lines.join("\n");
+}
+
+export function buildSystemPrompt(config: BotConfig): string {
+  return `You are a Community Notes fact-checker for X/Twitter. Determine if the post below contains a clear factual error or leaves users with a less accurate map in the sense of "The Map and the Territory". If so, write a correction note with a verified source.
 
 ## Tools
-- grok_search: Search X/Twitter for related tweets (potentially with their comments) and latest news. Comments on the post being analyzed are already provided — use grok_search for OTHER tweets and topics. Minimize x_search calls (1-3 uses).
-- web_search / perplexity_search: General web search. Use freely for fact-checking queries.
-- web_fetch: Fetch a URL and extract its content. You MUST have looked at every source before citing it (Through web fetch or otherwise e.g. in the case of tweetURLs and tweetReplyURLs if you see the text, thats fine). If a source doesn't say what you expected, search for a better one.
-- propose_notes: When you think a correction is warranted, propose 3-4 note variants with different phrasings or source combinations. The system evaluates each and picks the best.
-- no_correction_needed: When you think no correction should be written.
+${buildToolSection(config)}
 
 ## Note style
 - Lead with what IS true, not "The post claims..." or "This is false"
@@ -43,6 +62,7 @@ export const SYSTEM_PROMPT = `You are a Community Notes fact-checker for X/Twitt
 - Posts that are correct
 - When you can't find strong, direct contradicting evidence
 - When the "error" is too minor or pedantic`;
+}
 
 function getQuotedPostText(post: Post): string | undefined {
   const quotedRef = post.referenced_tweets?.find((rt) => rt.type === "quoted");

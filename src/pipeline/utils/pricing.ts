@@ -17,6 +17,12 @@ const GROK_INPUT_PER_MTOK = 0.20;
 const GROK_OUTPUT_PER_MTOK = 0.50;
 const GROK_XSEARCH_PER_CALL = 0.005;
 
+// --- Gemini pricing (native API doesn't return cost in response) ---
+
+const GEMINI_3_FLASH_INPUT_PER_MTOK = 0.50;
+const GEMINI_3_FLASH_OUTPUT_PER_MTOK = 3.00;
+const GEMINI_SEARCH_PER_QUERY = 0.014; // $14 per 1,000 queries
+
 // --- Types ---
 
 export interface TokenCost {
@@ -59,4 +65,19 @@ export function addTokenCost(acc: TokenCost, add: TokenCost): void {
   acc.input_tokens += add.input_tokens;
   acc.output_tokens += add.output_tokens;
   acc.cost += add.cost;
+}
+
+export function calculateGeminiCost(
+  inputTokens: number,
+  outputTokens: number,
+  searchQueries: number = 0,
+): TokenCost {
+  const tokenCost =
+    (inputTokens / 1_000_000) * GEMINI_3_FLASH_INPUT_PER_MTOK +
+    (outputTokens / 1_000_000) * GEMINI_3_FLASH_OUTPUT_PER_MTOK;
+  return {
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    cost: tokenCost + searchQueries * GEMINI_SEARCH_PER_QUERY,
+  };
 }

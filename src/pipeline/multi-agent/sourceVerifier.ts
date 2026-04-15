@@ -8,7 +8,7 @@
 import type { AgentDef } from "../tool-calling/agentLoop";
 import { buildSendMessageTool } from "../tool-calling/agentLoop";
 import { WEB_FETCH_TOOL, APPROVE_NOTE_TOOL, NO_CORRECTION_TOOL } from "../tool-calling/tools";
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig, usesNativeWebFetch } from "../utils/botConfig";
 
 const SYSTEM_PROMPT = `You are a source verification agent. You receive a community note and verify that the cited sources actually support the correction.
 
@@ -33,17 +33,22 @@ const SYSTEM_PROMPT = `You are a source verification agent. You receive a commun
 4. If no sources check out at all, use send_message to request a rewrite or more research.`;
 
 export function createSourceVerifierDef(): AgentDef {
+  const config = getBotConfig();
+  const tools: any[] = [];
+
+  if (!usesNativeWebFetch(config)) {
+    tools.push(WEB_FETCH_TOOL);
+  }
+
+  tools.push(APPROVE_NOTE_TOOL);
+  tools.push(buildSendMessageTool(["notewriter", "researcher"]));
+  tools.push(NO_CORRECTION_TOOL);
+
   return {
     name: "sourceVerifier",
     description: "Verifies that cited sources support the community note correction.",
     systemPrompt: SYSTEM_PROMPT,
-    tools: [
-      WEB_FETCH_TOOL,
-      APPROVE_NOTE_TOOL,
-      buildSendMessageTool(["notewriter", "researcher"]),
-      NO_CORRECTION_TOOL,
-    ],
-    terminalTools: ["approve_note", "send_message", "no_correction_needed"],
-    model: getBotConfig().model,
+    tools,
+    model: config.model,
   };
 }

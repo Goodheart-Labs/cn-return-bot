@@ -14,7 +14,7 @@ import { createBotInput } from "../pipeline/input/createBotInput";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
 import { buildToolList } from "../pipeline/tool-calling/tools";
 import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "../pipeline/tool-calling/agentLoop";
-import { SYSTEM_PROMPT, buildUserMessage } from "../pipeline/input/prompt";
+import { buildSystemPrompt, buildUserMessage } from "../pipeline/input/prompt";
 import { evaluateAndPickBest } from "../pipeline/score/noteEvaluation";
 
 const MAX_ITERATIONS = 50;
@@ -26,9 +26,8 @@ async function runAgent(post: Post, content: PostContent, input: BotInput): Prom
   const def: AgentDef = {
     name: "agent",
     description: "Single-turn fact-checking agent",
-    systemPrompt: SYSTEM_PROMPT,
+    systemPrompt: buildSystemPrompt(config),
     tools: buildToolList(),
-    terminalTools: ["propose_notes", "no_correction_needed"],
     model: config.model,
   };
 
@@ -67,7 +66,7 @@ export const agentBot: Bot = {
   id: "agent",
   name: "Agent",
   description: "Agentic bot with tool calling",
-  weight: 0,
+  weight: 100,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const config = randomizeConfig();

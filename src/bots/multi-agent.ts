@@ -15,7 +15,7 @@ export const multiAgentBot: Bot = {
   id: "multi-agent",
   name: "Multi-Agent",
   description: "Researcher → Notewriter → Source Verifier pipeline",
-  weight: 35,
+  weight: 0,
 
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const config = randomizeConfig();

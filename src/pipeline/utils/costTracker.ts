@@ -7,6 +7,7 @@
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
+import { geminiCreate } from "../llm/gemini";
 import { llm } from "../llm/llm";
 import { getTweetLog } from "./tweetLog";
 import { type TokenCost, extractOpenRouterCost, addTokenCost, emptyTokenCost } from "./pricing";
@@ -49,8 +50,11 @@ export function trackLlmCall(entry: LlmCallCost): void {
 export async function trackedLlmCreate(
   name: string,
   params: Parameters<typeof llm.create>[0],
+  options?: { provider?: "openrouter" | "google" },
 ): Promise<{ response: any; costEntry: LlmCallCost }> {
-  const response = await llm.create(params);
+  const response = options?.provider === "google"
+    ? await geminiCreate(params as any)
+    : await llm.create(params);
   const cost = extractOpenRouterCost(response);
   const costEntry: LlmCallCost = { name, ...cost, tools: [] };
   return { response, costEntry };

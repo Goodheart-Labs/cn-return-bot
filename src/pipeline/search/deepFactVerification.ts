@@ -18,6 +18,55 @@ export interface ClaimAnalysis {
   targetedQueries: string[];
 }
 
+const CLAIM_ANALYSIS_RESPONSE_FORMAT = {
+  type: "json_schema" as const,
+  json_schema: {
+    name: "claim_analysis",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        keyClaims: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              claim: { type: "string" },
+              confidence: { type: "string", enum: ["high", "medium", "low"] },
+              needsVerification: { type: "boolean" },
+            },
+            required: ["claim", "confidence", "needsVerification"],
+            additionalProperties: false,
+          },
+        },
+        modelOfEvents: { type: "string" },
+        targetedQueries: { type: "array", items: { type: "string" } },
+      },
+      required: ["keyClaims", "modelOfEvents", "targetedQueries"],
+      additionalProperties: false,
+    },
+  },
+};
+
+const VALIDATION_RESPONSE_FORMAT = {
+  type: "json_schema" as const,
+  json_schema: {
+    name: "event_validation",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        isAccurate: { type: "boolean" },
+        confidence: { type: "string", enum: ["high", "medium", "low"] },
+        issues: { type: "array", items: { type: "string" } },
+        reasoning: { type: "string" },
+      },
+      required: ["isAccurate", "confidence", "issues", "reasoning"],
+      additionalProperties: false,
+    },
+  },
+};
+
 export interface DeepVerificationResult {
   originalSearchResults: string;
   claimAnalysis: ClaimAnalysis;
@@ -53,19 +102,6 @@ Focus on:
 - Verifiable factual assertions (not opinions or predictions)
 - Claims where the search results are ambiguous or don't directly address
 
-Respond in JSON format:
-{
-  "keyClaims": [
-    {
-      "claim": "Specific factual claim from the tweet",
-      "confidence": "high|medium|low",
-      "needsVerification": true|false
-    }
-  ],
-  "modelOfEvents": "A 1-2 sentence narrative of what the tweet claims happened",
-  "targetedQueries": ["Search query 1 to verify claim", "Search query 2 if needed"]
-}
-
 IMPORTANT:
 - Only include 1-2 targeted queries maximum
 - Make queries specific enough to find direct evidence
@@ -77,19 +113,13 @@ IMPORTANT:
     const result = await llm.create({
       model,
       temperature: 0.2,
-      response_format: { type: "json_object" },
+      response_format: CLAIM_ANALYSIS_RESPONSE_FORMAT,
       messages,
     });
 
     const content = result.choices?.[0]?.message?.content || "{}";
     logLlmCall("deepVerify.claimAnalysis", messages, content, Date.now() - startMs);
-    const parsed = JSON.parse(content);
-
-    return {
-      keyClaims: parsed.keyClaims || [],
-      modelOfEvents: parsed.modelOfEvents || "",
-      targetedQueries: parsed.targetedQueries || [],
-    };
+    return JSON.parse(content) as ClaimAnalysis;
   } catch (err: any) {
     console.error("[deepFactVerification] Claim analysis failed:", err.message);
     return {
@@ -200,13 +230,7 @@ Determine:
 2. What specific issues or contradictions exist?
 3. How confident are you in this assessment?
 
-Respond in JSON:
-{
-  "isAccurate": true|false,
-  "confidence": "high|medium|low",
-  "issues": ["Issue 1", "Issue 2"],
-  "reasoning": "Brief explanation of your assessment"
-}`;
+Determine whether the model of events is accurate based on the evidence.`;
 
   try {
     const messages = [{ role: "user" as const, content: prompt }];
@@ -214,33 +238,13 @@ Respond in JSON:
     const result = await llm.create({
       model,
       temperature: 0.2,
-      response_format: { type: "json_object" },
+      response_format: VALIDATION_RESPONSE_FORMAT,
       messages,
     });
 
     const content = result.choices?.[0]?.message?.content || "{}";
     logLlmCall("deepVerify.validate", messages, content, Date.now() - startMs);
-    const parsed = JSON.parse(content);
-
-    // Require explicit isAccurate field - don't default to true
-    const isAccurate = typeof parsed.isAccurate === "boolean" ? parsed.isAccurate : null;
-
-    if (isAccurate === null) {
-      console.warn("[deepFactVerification] Model validation response missing isAccurate field");
-      return {
-        isAccurate: false, // Conservative: treat missing as potentially inaccurate
-        confidence: "low",
-        issues: ["Validation response did not include explicit accuracy determination"],
-        reasoning: parsed.reasoning || "Unable to determine accuracy",
-      };
-    }
-
-    return {
-      isAccurate,
-      confidence: parsed.confidence || "low",
-      issues: parsed.issues || [],
-      reasoning: parsed.reasoning || "",
-    };
+    return JSON.parse(content);
   } catch (err: any) {
     console.error("[deepFactVerification] Model validation failed:", err.message);
     // Conservative: treat validation failure as potentially inaccurate

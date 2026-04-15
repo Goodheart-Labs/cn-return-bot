@@ -5,6 +5,7 @@
  * tool is called or iterations exhaust. Costs tracked via CostTracker ALS.
  */
 
+import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { executeToolCall } from "./tools";
 import { trackLlmCall, trackedLlmCreate, type LlmCallCost } from "../utils/costTracker";
@@ -16,7 +17,6 @@ export interface AgentDef {
   description: string;
   systemPrompt: string;
   tools: any[];
-  terminalTools: string[];
   model: string;
 }
 
@@ -117,6 +117,11 @@ function logResponse(
     if (urls) searchOutputs.push(`--- web_search ---\n${urls}`);
   }
 
+  const nativeToolMeta = (message as any)._nativeToolMeta;
+  if (nativeToolMeta) {
+    log?.set(`${prefix}.${iteration}.nativeTools`, nativeToolMeta);
+  }
+
 }
 
 // --- Process a single tool call ---
@@ -159,7 +164,7 @@ async function processToolCall(
     searchOutputs.push(`--- ${name} ---\n${text}`);
   }
 
-  if (state.def.terminalTools.includes(name)) {
+  if (result.isTerminal) {
     return { terminalTool: name, args, iterations: iteration, searchOutputs };
   }
 
@@ -187,17 +192,20 @@ export async function runAgentTurn(
 
   const searchOutputs: string[] = [];
   let iteration = 0;
+  const config = getBotConfig();
+  const providerOpt = config.provider === "google" ? { provider: "google" as const } : undefined;
 
   while (iteration < maxIterations) {
     iteration++;
-
-    const { response, costEntry } = await trackedLlmCreate(`${logPrefix}.${iteration}`, {
+    const llmParams: any = {
       model: state.def.model,
       messages: state.messages,
       tools: state.def.tools,
-      // @ts-expect-error OpenRouter extended thinking
-      reasoning: { effort: "medium" },
-    });
+    };
+    if (config.provider !== "google") {
+      llmParams.reasoning = { effort: "medium" }; // OpenRouter extended thinking
+    }
+    const { response, costEntry } = await trackedLlmCreate(`${logPrefix}.${iteration}`, llmParams, providerOpt);
 
     const message = response.choices?.[0]?.message;
     if (!message) {
@@ -207,11 +215,6 @@ export async function runAgentTurn(
     }
 
     logResponse(message, logPrefix, iteration, searchOutputs);
-
-    const webSearchRequests = (response as any).usage?.server_tool_use?.web_search_requests ?? 0;
-    if (webSearchRequests > 0) {
-      log?.set(`${logPrefix}.${iteration}.web_search_requests`, webSearchRequests);
-    }
 
     if (!message.tool_calls?.length) {
       trackLlmCall(costEntry);

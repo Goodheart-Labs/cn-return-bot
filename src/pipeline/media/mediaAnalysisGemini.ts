@@ -41,28 +41,34 @@ export interface GeminiMediaResult {
 
 // --- Prompts ---
 
-const IMAGE_PROMPT = `Analyze this image and return JSON:
-{"description": "A factual description of what the image shows", "ocr_text": "All visible text in the image, quoted exactly. Empty string if no text."}`;
+const IMAGE_PROMPT = `Analyze this image. Describe what it shows and extract all visible text.`;
 
-const VIDEO_PROMPT = `Analyze this video and return JSON:
-{"description": "A factual description of what happens in the video", "ocr_text": "All visible text in the video, quoted exactly. Empty string if no text."}`;
+const VIDEO_PROMPT = `Analyze this video. Describe what happens and extract all visible text.`;
 
-const FRAME_PROMPT = `These are frames extracted from a video. Return JSON:
-{"description": "A factual description of what happens in the video", "ocr_text": "All visible text across the frames, quoted exactly. Empty string if no text."}`;
+const FRAME_PROMPT = `These are frames extracted from a video. Describe what happens and extract all visible text.`;
+
+const MEDIA_RESPONSE_FORMAT = {
+  type: "json_schema" as const,
+  json_schema: {
+    name: "media_description",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        description: { type: "string", description: "A factual description of the media content" },
+        ocr_text: { type: "string", description: "All visible text, quoted exactly. Empty string if none." },
+      },
+      required: ["description", "ocr_text"],
+      additionalProperties: false,
+    },
+  },
+};
 
 // --- Helpers ---
 
-function parseJsonResponse(content: string): GeminiMediaDescription {
-  const cleaned = content.replace(/^```json?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
-  try {
-    const parsed = JSON.parse(cleaned);
-    return {
-      description: String(parsed.description ?? ""),
-      ocrText: String(parsed.ocr_text ?? ""),
-    };
-  } catch {
-    return { description: content, ocrText: "" };
-  }
+function parseMediaResponse(content: string): GeminiMediaDescription {
+  const parsed = JSON.parse(content);
+  return { description: parsed.description, ocrText: parsed.ocr_text };
 }
 
 function getBestUrl(item: {
@@ -123,7 +129,7 @@ async function analyzeImage(imageUrl: string, costName: string): Promise<GeminiM
   const { response, costEntry } = await trackedLlmCreate(costName, {
     model: GEMINI_MODEL,
     messages,
-    response_format: { type: "json_object" as const },
+    response_format: MEDIA_RESPONSE_FORMAT,
   });
   trackLlmCall(costEntry);
 
@@ -131,7 +137,7 @@ async function analyzeImage(imageUrl: string, costName: string): Promise<GeminiM
   return {
     type: "image",
     url: imageUrl,
-    description: parseJsonResponse(content),
+    description: parseMediaResponse(content),
   };
 }
 
@@ -175,11 +181,11 @@ async function analyzeShortVideo(videoPath: string, costName: string): Promise<G
   const { response, costEntry } = await trackedLlmCreate(costName, {
     model: GEMINI_MODEL,
     messages,
-    response_format: { type: "json_object" as const },
+    response_format: MEDIA_RESPONSE_FORMAT,
   });
   trackLlmCall(costEntry);
 
-  return parseJsonResponse(response.choices?.[0]?.message?.content ?? "");
+  return parseMediaResponse(response.choices?.[0]?.message?.content ?? "");
 }
 
 async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costName: string): Promise<GeminiMediaDescription> {
@@ -222,11 +228,11 @@ async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costNam
   const { response, costEntry } = await trackedLlmCreate(costName, {
     model: GEMINI_MODEL,
     messages,
-    response_format: { type: "json_object" as const },
+    response_format: MEDIA_RESPONSE_FORMAT,
   });
   trackLlmCall(costEntry);
 
-  return parseJsonResponse(response.choices?.[0]?.message?.content ?? "");
+  return parseMediaResponse(response.choices?.[0]?.message?.content ?? "");
 }
 
 let ffmpegAvailable: boolean | null = null;

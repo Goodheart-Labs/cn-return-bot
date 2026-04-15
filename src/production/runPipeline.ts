@@ -9,6 +9,8 @@
  * Use --local to route Supabase to a local instance via LOCAL_SUPABASE_URL/KEY.
  */
 
+const MAX_POSTS_LOCAL = 5;
+
 const isLocal = process.argv.includes("--local");
 if (isLocal) {
   const localUrl = process.env.LOCAL_SUPABASE_URL;
@@ -59,7 +61,7 @@ async function main() {
 
     // Phase 1: Generate candidates
     console.log("[pipeline] === Phase 1: Generate Candidates ===");
-    await generateCandidates(supabaseLogger, isLocal ? { maxPosts: 5, localOutput: true } : undefined);
+    await generateCandidates(supabaseLogger, isLocal ? { maxPosts: MAX_POSTS_LOCAL, localOutput: true } : undefined);
 
     // Phase 2: Submit best candidates (skipped in local mode)
     if (isLocal) {

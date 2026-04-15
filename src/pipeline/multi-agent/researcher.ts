@@ -14,7 +14,7 @@ import {
   WEB_SEARCH_TOOL,
   NO_CORRECTION_TOOL,
 } from "../tool-calling/tools";
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig, usesNativeWebFetch } from "../utils/botConfig";
 
 const SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
@@ -51,10 +51,16 @@ In most cases, one round of search calls is enough — search, read the results,
 
 export function createResearcherDef(): AgentDef {
   const config = getBotConfig();
-  const tools: any[] = [GROK_SEARCH_TOOL, WEB_FETCH_TOOL];
+  const tools: any[] = [GROK_SEARCH_TOOL];
 
-  if (config.search_mode === "native-search") {
-    tools.push(WEB_SEARCH_TOOL);
+  if (!usesNativeWebFetch(config)) {
+    tools.push(WEB_FETCH_TOOL);
+  }
+
+  if (config.web_search === "native") {
+    if (!(config.web_search === "native" && config.provider === "google")) {
+      tools.push(WEB_SEARCH_TOOL); // Claude native web_search via OpenRouter
+    }
   } else {
     tools.push(PERPLEXITY_SEARCH_TOOL);
   }
@@ -67,7 +73,6 @@ export function createResearcherDef(): AgentDef {
     description: "Investigates factual claims in tweets using search tools and reports findings.",
     systemPrompt: SYSTEM_PROMPT,
     tools,
-    terminalTools: ["send_message", "no_correction_needed"],
     model: config.model,
   };
 }

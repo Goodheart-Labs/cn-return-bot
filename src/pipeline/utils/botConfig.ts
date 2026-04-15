@@ -6,7 +6,9 @@ export type VideoDescriptionStrategy = "full_video" | "frames";
 
 export interface BotConfig {
   model: string;
-  search_mode: "native-search" | "perplexity-search";
+  provider: "openrouter" | "google";
+  web_search: "native" | "perplexity";
+  web_fetch: "native" | "custom";
   video_description_strategy: VideoDescriptionStrategy;
 }
 
@@ -14,7 +16,9 @@ export interface BotConfig {
 
 const DEFAULT_CONFIG: BotConfig = {
   model: "anthropic/claude-sonnet-4.6",
-  search_mode: "native-search",
+  provider: "openrouter",
+  web_search: "native",
+  web_fetch: "custom",
   video_description_strategy: "frames",
 };
 
@@ -26,9 +30,14 @@ interface ConfigVariant {
 
 const CONFIG_VARIANTS: ConfigVariant[] = [
   {
-    name: "gemini-3-flash-perplexity",
+    name: "gemini-3-flash-native",
     weight: 100,
-    overrides: { model: "google/gemini-3-flash-preview", search_mode: "perplexity-search" },
+    overrides: {
+      model: "gemini-3-flash-preview",
+      provider: "google",
+      web_search: "native",
+      web_fetch: "native",
+    },
   },
 ];
 
@@ -44,6 +53,10 @@ export function getBotConfig(): BotConfig {
   const config = configStorage.getStore();
   if (!config) throw new Error("getBotConfig() called outside withBotConfig()");
   return config;
+}
+
+export function usesNativeWebFetch(config: BotConfig): boolean {
+  return config.web_fetch === "native" && config.provider === "google";
 }
 
 // --- Randomization ---
@@ -62,4 +75,3 @@ export function randomizeConfig(): BotConfig {
   const variant = pickVariant(CONFIG_VARIANTS);
   return { ...DEFAULT_CONFIG, ...variant.overrides };
 }
-
