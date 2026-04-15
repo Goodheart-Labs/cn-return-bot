@@ -14,7 +14,7 @@ export interface BotConfig {
 
 const DEFAULT_CONFIG: BotConfig = {
   model: "anthropic/claude-sonnet-4.6",
-  web_search: "native",
+  web_search: "perplexity",
   video_description_strategy: "frames",
 };
 
@@ -26,11 +26,11 @@ interface ConfigVariant {
 
 const CONFIG_VARIANTS: ConfigVariant[] = [
   {
-    name: "claude-sonnet-native",
+    name: "gemini-flash-perplexity",
     weight: 100,
     overrides: {
-      model: "anthropic/claude-sonnet-4.6",
-      web_search: "native",
+      model: "google/gemini-3-flash-preview",
+      web_search: "perplexity",
     },
   },
 ];
