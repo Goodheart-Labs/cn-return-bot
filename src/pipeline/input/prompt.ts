@@ -1,29 +1,23 @@
 /**
  * Prompt
  *
- * System prompt builder (adapts to provider/tool config) and dynamic user message builder.
+ * System prompt builder and dynamic user message builder.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
-import { type BotConfig, usesNativeWebFetch } from "../utils/botConfig";
+import type { BotConfig } from "../utils/botConfig";
 
 function buildToolSection(config: BotConfig): string {
   const lines: string[] = [];
   lines.push("- grok_search: Search X/Twitter for related tweets (potentially with their comments) and latest news. Comments on the post being analyzed are already provided — use grok_search for OTHER tweets and topics. Minimize x_search calls (1-3 uses).");
 
-  if (config.web_search === "native" && config.provider === "google") {
-    lines.push("- googleSearch (built-in): Use freely for fact-checking.");
-  } else if (config.web_search === "perplexity") {
+  if (config.web_search === "perplexity") {
     lines.push("- perplexity_search: General web search. Use freely for fact-checking queries.");
   }
 
-  if (usesNativeWebFetch(config)) {
-    lines.push("- urlContext (built-in): You MUST verify every source you cite: explicitly request URL fetches for each source to confirm it supports your correction. If a source doesn't say what you expected, search for a better one.");
-  } else {
-    lines.push("- web_fetch: Fetch a URL and extract its content. You MUST have looked at every source before citing it (through web_fetch or otherwise e.g. in the case of tweetURLs and tweetReplyURLs if you see the text, that's fine). If a source doesn't say what you expected, search for a better one.");
-  }
+  lines.push("- web_fetch: Fetch a URL and extract its content. You MUST have looked at every source before citing it (through web_fetch or otherwise e.g. in the case of tweetURLs and tweetReplyURLs if you see the text, that's fine). If a source doesn't say what you expected, search for a better one.");
 
   lines.push("- propose_notes: When you think a correction is warranted, propose 3-4 note variants with different phrasings or source combinations. The system evaluates each and picks the best.");
   lines.push("- no_correction_needed: When you think no correction should be written.");
@@ -56,6 +50,7 @@ ${buildToolSection(config)}
 - Every source must DIRECTLY support your specific correction (not just general background)
 - Don't add redundant sources
 - In some cases another tweet or a tweet reply that you get from grok search can be a valid and good source as well
+- For every source (except tweets and tweet replies) you MUST use the web_fetch tool to validate the source before proposing a note!
 
 ## When NOT to correct
 - Opinions, satire, jokes, hyperbole

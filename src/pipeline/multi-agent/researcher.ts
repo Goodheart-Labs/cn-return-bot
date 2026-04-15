@@ -56,9 +56,7 @@ export function createResearcherDef(): AgentDef {
   tools.push(WEB_FETCH_TOOL);
 
   if (config.web_search === "native") {
-    if (!(config.web_search === "native" && config.provider === "google")) {
-      tools.push(WEB_SEARCH_TOOL); // Claude native web_search via OpenRouter
-    }
+    tools.push(WEB_SEARCH_TOOL);
   } else {
     tools.push(PERPLEXITY_SEARCH_TOOL);
   }

@@ -23,8 +23,6 @@ export const opusMultiSource: Bot = {
   id: "opus-multi-source",
   name: "Opus 4.5 Multi-Source",
   description: "Encourages 2-3 inline source URLs for stronger evidence",
-  weight: 0,
-
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     const warnings: string[] = [];

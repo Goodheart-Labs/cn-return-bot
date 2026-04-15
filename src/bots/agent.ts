@@ -66,8 +66,6 @@ export const agentBot: Bot = {
   id: "agent",
   name: "Agent",
   description: "Agentic bot with tool calling",
-  weight: 100,
-
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const config = randomizeConfig();
 

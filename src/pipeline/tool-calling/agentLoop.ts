@@ -5,7 +5,6 @@
  * tool is called or iterations exhaust. Costs tracked via CostTracker ALS.
  */
 
-import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { executeToolCall } from "./tools";
 import { trackLlmCall, trackedLlmCreate, type LlmCallCost } from "../utils/costTracker";
@@ -117,11 +116,6 @@ function logResponse(
     if (urls) searchOutputs.push(`--- web_search ---\n${urls}`);
   }
 
-  const nativeToolMeta = (message as any)._nativeToolMeta;
-  if (nativeToolMeta) {
-    log?.set(`${prefix}.${iteration}.nativeTools`, nativeToolMeta);
-  }
-
 }
 
 // --- Process a single tool call ---
@@ -192,8 +186,6 @@ export async function runAgentTurn(
 
   const searchOutputs: string[] = [];
   let iteration = 0;
-  const config = getBotConfig();
-  const providerOpt = config.provider === "google" ? { provider: "google" as const } : undefined;
 
   while (iteration < maxIterations) {
     iteration++;
@@ -201,11 +193,9 @@ export async function runAgentTurn(
       model: state.def.model,
       messages: state.messages,
       tools: state.def.tools,
+      reasoning: { effort: "medium" },
     };
-    if (config.provider !== "google") {
-      llmParams.reasoning = { effort: "medium" }; // OpenRouter extended thinking
-    }
-    const { response, costEntry } = await trackedLlmCreate(`${logPrefix}.${iteration}`, llmParams, providerOpt);
+    const { response, costEntry } = await trackedLlmCreate(`${logPrefix}.${iteration}`, llmParams);
 
     const message = response.choices?.[0]?.message;
     if (!message) {
@@ -220,24 +210,11 @@ export async function runAgentTurn(
       trackLlmCall(costEntry);
 
       const hasAnnotations = Array.isArray((message as any).annotations) && (message as any).annotations.length > 0;
-      const hasNativeSearch = !!(message as any)._nativeToolMeta;
-      if (hasAnnotations || hasNativeSearch) {
+      if (hasAnnotations) {
         state.messages.push(message);
-
-        // Surface grounding citations so the model can reference real source URLs
-        const citations = hasAnnotations
-          ? (message as any).annotations
-              .filter((a: any) => a.type === "url_citation")
-              .map((a: any) => `- ${a.url_citation?.title}: ${a.url_citation?.url}`)
-              .join("\n")
-          : "";
-        const citationBlock = citations
-          ? `\n\nYour search found these sources:\n${citations}\n\nUse ONLY these URLs as sources — do not fabricate URLs.`
-          : "";
-
         state.messages.push({
           role: "user",
-          content: `You've received search results.${citationBlock} Now call the appropriate tool — either send_message with your findings, or no_correction_needed.`,
+          content: "You've received search results. Now call the appropriate tool — either send_message with your findings, or no_correction_needed.",
         });
         continue;
       }
@@ -259,22 +236,6 @@ export async function runAgentTurn(
         trackLlmCall(costEntry);
         log?.set(`${logPrefix}.iterations`, iteration);
         return terminal;
-      }
-    }
-
-    // Surface grounding citations from iterations that also had tool_calls,
-    // so the model sees real source URLs on the next iteration
-    const iterAnnotations = (message as any).annotations as any[] | undefined;
-    if (iterAnnotations?.length) {
-      const citations = iterAnnotations
-        .filter((a: any) => a.type === "url_citation")
-        .map((a: any) => `- ${a.url_citation?.title}: ${a.url_citation?.url}`)
-        .join("\n");
-      if (citations) {
-        state.messages.push({
-          role: "user",
-          content: `Your search also found these sources:\n${citations}\n\nUse ONLY these URLs as sources — do not fabricate URLs.`,
-        });
       }
     }
 

@@ -21,8 +21,6 @@ export const opusConcise: Bot = {
   name: "Opus 4.5 (Concise)",
   description:
     "Opus 4.5 variant focused on staying within 275 char limit using URL-aware counting",
-  weight: 0,
-
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {

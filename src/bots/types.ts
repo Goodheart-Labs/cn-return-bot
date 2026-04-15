@@ -83,9 +83,6 @@ export interface Bot {
   /** Description of what makes this bot different */
   description: string;
 
-  /** Weight for random selection (higher = more likely) */
-  weight: number;
-
   /** Run the full pipeline for a post */
   runPipeline(post: any, content: PostContent): Promise<PipelineResult | null>;
 }

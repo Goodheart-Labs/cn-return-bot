@@ -1,8 +1,8 @@
 /**
  * Multi-Agent Orchestrator
  *
- * Wires the researcher, notewriter, and source verifier together.
- * Manages turn routing, note evaluation, and retry loops.
+ * Wires the researcher and notewriter together with a fact verification step.
+ * Flow: researcher → notewriter → evaluate → fact verify → accept or loop back.
  * Costs tracked via CostTracker ALS.
  */
 
@@ -14,26 +14,28 @@ import { getTweetLog } from "../utils/tweetLog";
 import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
 import { aggregateAndLogCosts } from "../utils/costTracker";
+import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
 import { buildUserMessage } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
-import { createSourceVerifierDef } from "./sourceVerifier";
 
 const MAX_TURNS = 10;
 
 interface PipelineState {
   post: Post;
+  postText: string;
   agents: Record<string, AgentState>;
   selectedNote?: EvaluatedNote;
   researcherFindings: string;
   currentAgentName: string;
+  sourceVerifierTurnCount: number;
 }
 
 function initPipeline(post: Post, content: PostContent, input: BotInput): PipelineState {
   const config = getBotConfig();
   const log = getTweetLog();
 
-  const defs = [createResearcherDef(), createNotewriterDef(), createSourceVerifierDef()];
+  const defs = [createResearcherDef(), createNotewriterDef()];
   const agentDescriptions = defs.map((d) => `- ${d.name}: ${d.description}`).join("\n");
   for (const def of defs) {
     def.systemPrompt += `\n\n## Other agents\n${agentDescriptions}`;
@@ -56,13 +58,17 @@ function initPipeline(post: Post, content: PostContent, input: BotInput): Pipeli
   });
   addUserMessage(agents.researcher!, firstMessage);
 
-  return { post, agents, researcherFindings: "", currentAgentName: "researcher" };
+  return { post, postText: content.text, agents, researcherFindings: "", currentAgentName: "researcher", sourceVerifierTurnCount: 0 };
 }
+
+type VerificationResult =
+  | { type: "accepted"; note: EvaluatedNote }
+  | { type: "rejected"; reasoning: string };
 
 async function handleProposeNotes(
   state: PipelineState,
   notes: Array<{ note_text: string; sources: string[] }>,
-): Promise<void> {
+): Promise<VerificationResult> {
   const log = getTweetLog();
   const { selected, evalResults } = await evaluateAndPickBest(state.post.id, notes);
 
@@ -74,18 +80,24 @@ async function handleProposeNotes(
   log?.set(`multiAgent.notewriter.turn.${turnNum}.selectedIndex`, evalResults.indexOf(selected as any));
   log?.set(`multiAgent.notewriter.turn.${turnNum}.selectedScore`, selected.evalScore);
 
-  const svMessage = [
-    `## Selected community note`,
-    `Note: ${selected.noteText}`,
-    `Sources: ${selected.sources.join(", ")}`,
-    `Evaluation score: ${selected.evalScore ?? "unknown"}`,
-    ``,
-    `## Research context`,
-    state.researcherFindings,
-  ].join("\n");
+  state.sourceVerifierTurnCount++;
+  const verification = await verifySources({
+    noteText: selected.noteText,
+    sources: selected.sources,
+    postText: state.postText,
+    researcherFindings: state.researcherFindings,
+    turnNumber: state.sourceVerifierTurnCount,
+  });
 
-  addUserMessage(state.agents.sourceVerifier!, svMessage);
-  state.currentAgentName = "sourceVerifier";
+  if (verification.accepted) {
+    return { type: "accepted", note: selected };
+  }
+  return { type: "rejected", reasoning: verification.reasoning };
+}
+
+function resetNotewriter(state: PipelineState): void {
+  const nw = state.agents.notewriter!;
+  nw.messages = [{ role: "system", content: nw.def.systemPrompt }];
 }
 
 function routeSendMessage(state: PipelineState, target: string, message: string, senderName: string): boolean {
@@ -94,6 +106,11 @@ function routeSendMessage(state: PipelineState, target: string, message: string,
 
   if (target === "notewriter" && senderName === "researcher") {
     state.researcherFindings = message;
+  }
+
+  // Notewriter always starts fresh
+  if (target === "notewriter") {
+    resetNotewriter(state);
   }
 
   addUserMessage(targetAgent, `Message from ${senderName}:\n${message}`);
@@ -124,15 +141,6 @@ export async function runMultiAgentPipeline(
       return { type: "error", error: result.args.reason ?? "Agent error" };
     }
 
-    if (result.terminalTool === "approve_note") {
-      logFinal(startMs);
-      if (!state.selectedNote) {
-        return { type: "error", error: "Source verifier approved but no note was selected" };
-      }
-      const verifiedSources: string[] = result.args.sources ?? state.selectedNote.sources;
-      return { type: "note", noteText: state.selectedNote.noteText, sources: verifiedSources, evalScore: state.selectedNote.evalScore };
-    }
-
     if (result.terminalTool === "send_message") {
       if (!routeSendMessage(state, result.args.to, result.args.message, agentName)) {
         logFinal(startMs);
@@ -142,7 +150,32 @@ export async function runMultiAgentPipeline(
     }
 
     if (result.terminalTool === "propose_notes") {
-      await handleProposeNotes(state, result.args.notes ?? []);
+      const verification = await handleProposeNotes(state, result.args.notes ?? []);
+
+      if (verification.type === "accepted") {
+        logFinal(startMs);
+        return {
+          type: "note",
+          noteText: verification.note.noteText,
+          sources: verification.note.sources,
+          evalScore: verification.note.evalScore,
+        };
+      }
+
+      // Rejected — send feedback to researcher and loop
+      const feedback = [
+        `The proposed note was rejected by fact verification.`,
+        ``,
+        `Rejected note: ${state.selectedNote!.noteText}`,
+        `Sources: ${state.selectedNote!.sources.join(", ")}`,
+        `Rejection reason: ${verification.reasoning}`,
+        ``,
+        `Find better evidence or different sources to support a correction, then send updated findings to the notewriter.`,
+      ].join("\n");
+
+      addUserMessage(state.agents.researcher!, feedback);
+      resetNotewriter(state);
+      state.currentAgentName = "researcher";
       continue;
     }
 

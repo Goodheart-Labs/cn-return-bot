@@ -10,7 +10,7 @@ import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../../bots/index";
 import { processSingleTweet } from "./processTweet";
-import { createTweetLog, withTweetLog, formatTweetLogFull, formatRunSummary, nestDotKeys, type TweetLogMap } from "../utils/tweetLog";
+import { createTweetLog, withTweetLog, formatTweetLogFull, formatTweetLogSummary, formatRunSummary, nestDotKeys, type TweetLogMap } from "../utils/tweetLog";
 import { determineFeedSize, buildPostSelection } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions, getTweetScore } from "./utils/tweetSorting";
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -231,6 +231,7 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
         })
       );
 
+      console.log(formatTweetLogSummary(log));
       console.log(formatTweetLogFull(log));
       allLogs.push(log);
 

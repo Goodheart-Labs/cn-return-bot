@@ -135,11 +135,9 @@ export function buildToolList(): any[] {
     tools.push(CODE_EXECUTION_TOOL);
   }
 
-  // Web search: native (googleSearch/Claude web_search) or perplexity
+  // Web search: native (Claude web_search via OpenRouter) or perplexity
   if (config.web_search === "native") {
-    if (!(config.web_search === "native" && config.provider === "google")) {
-      tools.push(WEB_SEARCH_TOOL); // Claude native web_search via OpenRouter passthrough
-    }
+    tools.push(WEB_SEARCH_TOOL);
   } else {
     tools.push(PERPLEXITY_SEARCH_TOOL);
   }

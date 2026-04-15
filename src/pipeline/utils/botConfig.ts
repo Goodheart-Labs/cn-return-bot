@@ -6,7 +6,6 @@ export type VideoDescriptionStrategy = "full_video" | "frames";
 
 export interface BotConfig {
   model: string;
-  provider: "openrouter" | "google";
   web_search: "native" | "perplexity";
   video_description_strategy: VideoDescriptionStrategy;
 }
@@ -15,7 +14,6 @@ export interface BotConfig {
 
 const DEFAULT_CONFIG: BotConfig = {
   model: "anthropic/claude-sonnet-4.6",
-  provider: "openrouter",
   web_search: "native",
   video_description_strategy: "frames",
 };
@@ -28,11 +26,10 @@ interface ConfigVariant {
 
 const CONFIG_VARIANTS: ConfigVariant[] = [
   {
-    name: "gemini-3-flash-native",
+    name: "claude-sonnet-native",
     weight: 100,
     overrides: {
-      model: "gemini-3-flash-preview",
-      provider: "google",
+      model: "anthropic/claude-sonnet-4.6",
       web_search: "native",
     },
   },

@@ -444,6 +444,7 @@ export async function processSingleTweet(
   try {
     pipelineOutput = await runBotPipeline(post, bot);
   } catch (err: any) {
+    console.error(`[processTweet] Bot pipeline failed for ${post.id}:`, err);
     const metadata = extractTweetMetadata(post);
     const errorResult: PipelineResult = {
       post,

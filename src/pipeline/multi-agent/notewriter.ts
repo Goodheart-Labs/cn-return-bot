@@ -41,7 +41,6 @@ export function createNotewriterDef(): AgentDef {
     description: "Writes 3-4 community note variants based on research findings.",
     systemPrompt: SYSTEM_PROMPT,
     tools: [PROPOSE_NOTES_TOOL, NO_CORRECTION_TOOL],
-    terminalTools: ["propose_notes", "no_correction_needed"],
     model: getBotConfig().model,
   };
 }

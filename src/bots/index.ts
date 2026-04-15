@@ -41,82 +41,59 @@ import { opusConcise } from "./opus-concise";
 //   src/pipeline/predictionScores.ts    — post-submit predictor, no longer called
 // =============================================================================
 
-// Register all bots here
-const bots: Bot[] = [
-  // Active bots
-  opusMain,
-  opusMainV2,
-  opusMainNoSourceCheck,
-  opusDirect,
-  opusDirectGrok,
-  opusMainV2Grok,
-  opusMultiSource,
-  opusBridging,
-  agentBot,
-  multiAgentBot,
-  // Legacy bots (disabled)
-  opusResearch,
-  kimiK2,
-  opus46,
-  sonarPro,
-  opusVerified,
-  opusConcise,
+// =============================================================================
+// BOT WEIGHTS — edit this table to change what runs in production
+// =============================================================================
+
+const BOT_WEIGHTS: [Bot, number][] = [
+  [agentBot,                    0],
+  [multiAgentBot,             100],
+  [opusMain,                    0],
+  [opusMainV2,                  0],
+  [opusMainNoSourceCheck,       0],
+  [opusDirect,                  0],
+  [opusDirectGrok,              0],
+  [opusMainV2Grok,              0],
+  [opusMultiSource,             0],
+  [opusBridging,                0],
+  [opusResearch,                0],
+  [kimiK2,                      0],
+  [opus46,                      0],
+  [sonarPro,                    0],
+  [opusVerified,                0],
+  [opusConcise,                 0],
 ];
 
-/**
- * Get all enabled bots (currently all bots are enabled)
- */
+// =============================================================================
+
+const ALL_BOTS = BOT_WEIGHTS.map(([bot]) => bot);
+
 export function getEnabledBots(): Bot[] {
-  return bots;
+  return ALL_BOTS;
 }
 
-/**
- * Select a random bot based on weights
- * Bots with higher weights are more likely to be selected
- */
 export function selectRandomBot(): Bot {
-  const enabledBots = getEnabledBots();
+  const totalWeight = BOT_WEIGHTS.reduce((sum, [, w]) => sum + w, 0);
+  if (totalWeight === 0) throw new Error("No bots have positive weights");
 
-  if (enabledBots.length === 0) {
-    throw new Error("No enabled bots configured");
+  let r = Math.random() * totalWeight;
+  for (const [bot, weight] of BOT_WEIGHTS) {
+    r -= weight;
+    if (r <= 0) return bot;
   }
-
-  // Calculate total weight
-  const totalWeight = enabledBots.reduce((sum, bot) => sum + bot.weight, 0);
-
-  // Generate random number between 0 and totalWeight
-  let random = Math.random() * totalWeight;
-
-  // Select bot based on weight
-  for (const bot of enabledBots) {
-    random -= bot.weight;
-    if (random <= 0) {
-      return bot;
-    }
-  }
-
-  // Fallback to first enabled bot (shouldn't happen due to length check above)
-  return enabledBots[0]!;
+  return BOT_WEIGHTS[BOT_WEIGHTS.length - 1]![0];
 }
 
-/**
- * Get bot probabilities for logging
- */
 export function getBotProbabilities(): { id: string; probability: number }[] {
-  const enabledBots = getEnabledBots();
-  const totalWeight = enabledBots.reduce((sum, bot) => sum + bot.weight, 0);
-
-  return enabledBots.map((bot) => ({
+  const totalWeight = BOT_WEIGHTS.reduce((sum, [, w]) => sum + w, 0);
+  return BOT_WEIGHTS.map(([bot, weight]) => ({
     id: bot.id,
-    probability: (bot.weight / totalWeight) * 100,
+    probability: totalWeight > 0 ? (weight / totalWeight) * 100 : 0,
   }));
 }
 
-/**
- * Get a bot by ID
- */
 export function getBotById(id: string): Bot | undefined {
-  return bots.find((bot) => bot.id === id);
+  return ALL_BOTS.find((bot) => bot.id === id);
 }
 
 // Re-export types
