@@ -53,6 +53,8 @@ interface YtDlpMetadata {
   duration?: number;
   uploader?: string;
   uploader_id?: string;
+  channel_id?: string;
+  timestamp?: number;
   webpage_url?: string;
   ext?: string;
   filename?: string;
@@ -121,11 +123,13 @@ function buildPostFromDownload(meta: YtDlpMetadata, videoPath: string | null, ur
   }
 
   const postId = meta.display_id ?? extractIdFromUrl(url);
+  const createdAt = meta.timestamp ? new Date(meta.timestamp * 1000).toISOString() : new Date().toISOString();
 
   return {
     id: postId,
-    author_id: meta.uploader_id ?? "unknown",
-    created_at: new Date().toISOString(),
+    author_id: meta.channel_id ?? meta.uploader_id ?? "unknown",
+    author_name: meta.uploader,
+    created_at: createdAt,
     text,
     media,
   };
@@ -151,6 +155,7 @@ async function main() {
   const fetchPost: PostFetcher = async (input) => {
     const { meta, videoPath } = downloadWithYtDlp(input.url, downloadDir);
     const post = buildPostFromDownload(meta, videoPath, input.url);
+    console.log(`[runOnVideos] Author: ${post.author_name ?? "?"} (@${meta.uploader_id ?? "?"}, id=${post.author_id}) | Posted: ${post.created_at}`);
     return { post, title: meta.title?.slice(0, 80) ?? "" };
   };
 
