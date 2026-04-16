@@ -148,7 +148,7 @@ export function parseCliArgs(
     process.exit(1);
   }
 
-  if (maxInputs) inputs = inputs.slice(0, maxInputs);
+  if (maxInputs) inputs = inputs.slice(-maxInputs);
 
   return { inputs, forcedBotId, datasetName };
 }
@@ -248,7 +248,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     fetchPost,
     forcedBotId,
     datasetName,
-    concurrency = 2,
+    concurrency = 5,
     cleanup,
   } = options;
 
@@ -272,7 +272,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   const queue = new PQueue({ concurrency });
 
-  for (const [idx, input] of inputs.entries()) {
+  const reversedInputs = [...inputs].reverse();
+  for (const [i, input] of reversedInputs.entries()) {
+    const idx = inputs.length - 1 - i;
     queue.add(async () => {
       const completed: CompletedResult = {
         idx,
