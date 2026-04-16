@@ -21,6 +21,35 @@ function cnStatusToFailureType(
   return "uncategorized";
 }
 
+const ONE_HOUR_MS = 60 * 60 * 1000;
+const COMPETITOR_LEAD_THRESHOLDS = [
+  { hours: 12, label: "competitor >12h ahead" },
+  { hours: 3, label: "competitor >3h ahead" },
+  { hours: 1, label: "competitor >1h ahead" },
+];
+
+function computeCompetitorLeadTag(
+  ourSubmittedAt: string | undefined,
+  comparisonNotes: ComparisonNote[],
+): string | undefined {
+  if (!ourSubmittedAt) return undefined;
+  const ourTime = new Date(ourSubmittedAt).getTime();
+
+  const helpfulNotes = comparisonNotes.filter(
+    (cn) => cn.status === "CURRENTLY_RATED_HELPFUL" && cn.createdAtMillis != null,
+  );
+  if (helpfulNotes.length === 0) return undefined;
+
+  const earliestCompetitor = Math.min(...helpfulNotes.map((cn) => cn.createdAtMillis!));
+  const leadMs = ourTime - earliestCompetitor;
+  if (leadMs <= 0) return undefined; // we were first
+
+  for (const { hours, label } of COMPETITOR_LEAD_THRESHOLDS) {
+    if (leadMs > hours * ONE_HOUR_MS) return label;
+  }
+  return undefined;
+}
+
 async function fetchAllRows<T>(query: any, label?: string): Promise<T[]> {
   const all: T[] = [];
   let offset = 0;
@@ -104,8 +133,9 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       helpfulCount: cn.helpful_count,
       notHelpfulCount: cn.not_helpful_count,
       authorId: cn.author_participant_id,
+      createdAtMillis: cn.created_at_millis,
     });
-    if (cn.current_core_status === "CURRENTLY_RATED_HELPFUL") {
+    if (cn.current_status === "CURRENTLY_RATED_HELPFUL") {
       helpfulCompetitorNoteIds.add(key);
     }
   }
@@ -128,6 +158,8 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
   const items: ReviewItem[] = notes.map((note: any) => {
     const pipeline = pipelineByTweet.get(note.tweet_id);
     const hasHelpfulCompetitor = helpfulCompetitorNoteIds.has(note.note_id);
+    const compNotes = competingByNote.get(note.note_id) ?? [];
+    const failureType = cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor);
     return {
       id: note.note_id,
       source: "production" as const,
@@ -150,43 +182,14 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       searchResults: pipeline?.search_results,
       checkReasoning: pipeline?.check_reasoning,
       botId: pipeline?.bot_id,
-      comparisonNotes: competingByNote.get(note.note_id) ?? [],
+      comparisonNotes: compNotes,
       annotation: annotationByTarget.get(note.note_id),
-      failureType: cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor),
+      competitorLeadTag: failureType === "lost_to_competitor"
+        ? computeCompetitorLeadTag(note.submitted_at ?? note.created_at, compNotes)
+        : undefined,
+      failureType,
     };
   });
-
-  // Fetch unsubmitted candidates (e.g. from local pipeline runs) and show as uncategorized
-  const { data: candidateRuns = [], error: candidateErr } = await supabase
-    .from("pipeline_runs")
-    .select("id, tweet_id, tweet_text, note_text, source_url, bot_id, outcome, outcome_reason, logs, search_results, check_reasoning, created_at")
-    .eq("outcome", "candidate")
-    .order("created_at", { ascending: false })
-    .limit(1000);
-  if (candidateErr) console.warn("[data] candidate_pipeline_runs failed:", candidateErr);
-  else console.log(`[data] candidate_pipeline_runs: ${candidateRuns.length} rows`);
-
-  const existingTweetIds = new Set(notes.map((n: any) => n.tweet_id));
-  for (const pr of candidateRuns) {
-    if (existingTweetIds.has(pr.tweet_id)) continue;
-    items.push({
-      id: `candidate:${pr.id}`,
-      source: "production",
-      tweetId: pr.tweet_id,
-      tweetText: pr.tweet_text,
-      noteText: pr.note_text,
-      sourceUrl: pr.source_url,
-      createdAt: pr.created_at,
-      outcome: pr.outcome,
-      outcomeReason: pr.outcome_reason,
-      logs: pr.logs,
-      searchResults: pr.search_results,
-      checkReasoning: pr.check_reasoning,
-      botId: pr.bot_id,
-      comparisonNotes: [],
-      failureType: "uncategorized",
-    });
-  }
 
   // Fetch and append missed opportunities (non-fatal — column may not exist on prod yet)
   let missed: any[] = [];
@@ -196,7 +199,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
         .from("competing_notes")
         .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs, created_at)")
         .not("pipeline_run_id", "is", null)
-        .eq("current_core_status", "CURRENTLY_RATED_HELPFUL"),
+        .eq("current_status", "CURRENTLY_RATED_HELPFUL"),
       "missed_opportunities"
     );
   } catch (e) {

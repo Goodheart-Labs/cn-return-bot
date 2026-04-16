@@ -1,3 +1,11 @@
+/**
+ * Update Writing Limit
+ *
+ * Disabled — the computed writing limit doesn't work properly.
+ * Writing limit is now only updated when the daily limit is hit during submission.
+ */
+
+/*
 import axios from "axios";
 import { getOAuth1Headers } from "../../api/getOAuthToken";
 import type { SupabaseLogger } from "../../api/supabaseClient";
@@ -191,3 +199,4 @@ export async function updateWritingLimit(supabaseLogger: SupabaseLogger): Promis
     console.warn("[pipeline] Failed to update writing limit:", err.response?.data || err.message || err);
   }
 }
+*/

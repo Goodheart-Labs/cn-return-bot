@@ -70,7 +70,7 @@ cd src/review-dashboard && bunx vite build && cd ../.. && bun run src/review-das
 
 ## Database
 
-See [DATABASE.md](DATABASE.md) for full schema, column descriptions, enum values, and data flow.
+See [DATABASE.md](docs/DATABASE.md) for full schema, column descriptions, enum values, and data flow. See [community-notes-data.md](docs/community-notes-data.md) for X's public Community Notes data schema.
 
 Quick guide: use `canonical_note_information` for performance analysis, `notes` for submission metadata, `pipeline_runs` + `pipeline_scores` for debugging.
 
@@ -106,6 +106,7 @@ bun run src/scraper/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page fi
 - After compacting, ask Nathan what to do next. 
 - Do not delete database enries without confirming. 
 - Common error for supabase to only display the first 1000. Make sure you are getting them all.
+- Community Notes has `currentStatus` (overall) and `currentCoreStatus` (core submodel only, can be empty). Always use `currentStatus` / `current_status` when checking if a note is helpful — `currentCoreStatus` misses notes rated helpful by expansion/group models.
 
 ## Running locally
 
