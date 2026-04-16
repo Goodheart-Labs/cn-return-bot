@@ -9,7 +9,7 @@ import type { AgentDef } from "../tool-calling/agentLoop";
 import { PROPOSE_NOTES_TOOL, NO_CORRECTION_TOOL } from "../tool-calling/tools";
 import { getBotConfig } from "../utils/botConfig";
 
-const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You receive research findings and write community note variants.
+const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You receive research findings, determine whether a correction is needed and if it is, write community note variants.
 
 ## Note style guide
 - Lead with what IS true, not "The post claims..." or "This is false"
@@ -33,12 +33,13 @@ const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You recei
 - Another tweet or tweet reply can be a valid source
 
 ## Your task
-Call propose_notes with 3-4 note variants. Each variant should have genuinely different phrasing, not just word swaps. Each must stand alone as a complete community note.`;
+Determine whether the tweet needs a correction. If it does not, call no_correction_needed.
+Otherwise, call propose_notes with 3-4 note variants. Each variant should have genuinely different phrasing, not just word swaps. Each must stand alone as a complete community note.`;
 
 export function createNotewriterDef(): AgentDef {
   return {
     name: "notewriter",
-    description: "Writes 3-4 community note variants based on research findings.",
+    description: "Writes 3-4 community note variants based on research findings or decides that no correction is needed.",
     systemPrompt: SYSTEM_PROMPT,
     tools: [PROPOSE_NOTES_TOOL, NO_CORRECTION_TOOL],
     model: getBotConfig().model,

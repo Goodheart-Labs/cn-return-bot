@@ -20,6 +20,7 @@ import { buildUserMessage } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
 
 const MAX_TURNS = 10;
+const MAX_SOURCE_VERIFICATION_ATTEMPTS = 2;
 
 interface PipelineState {
   post: Post;
@@ -157,7 +158,12 @@ export async function runMultiAgentPipeline(
         };
       }
 
-      // Rejected — send feedback to researcher and loop
+      // Give researcher one retry, then give up
+      if (state.sourceVerifierTurnCount >= MAX_SOURCE_VERIFICATION_ATTEMPTS) {
+        logFinal(startMs);
+        return { type: "no_correction", reason: `Source verification rejected: ${verification.reasoning}` };
+      }
+
       const feedback = [
         `The proposed note was rejected by fact verification.`,
         ``,
@@ -165,7 +171,7 @@ export async function runMultiAgentPipeline(
         `Sources: ${state.selectedNote!.sources.join(", ")}`,
         `Rejection reason: ${verification.reasoning}`,
         ``,
-        `Find better evidence or different sources to support a correction, then write your updated findings.`,
+        `Now you have more information. You have one more chance to do research and send your updated findings to the notewriter again.`,
       ].join("\n");
 
       addUserMessage(state.agents.researcher!, feedback);

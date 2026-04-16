@@ -74,11 +74,9 @@ const SYSTEM_PROMPT = `You are a source verification step in a Community Notes p
 Determine whether the cited sources actually support the correction made in the note.
 
 Rules:
-- At least one non-Twitter source must be successfully fetched AND directly support the factual claim.
+- All non-Twitter sources must be successfully fetched AND directly support the factual claim.
 - Twitter/X links are accepted as valid sources without content verification.
-- If a source failed to fetch, it provides ZERO evidence. Do not assume it supports the claim based on the URL alone.
-- Reject if no fetched source actually confirms the note's correction.
-- Reject if the note misrepresents what sources say.`;
+- If a source failed to fetch, it provides ZERO evidence. Do not assume it supports the claim based on the URL alone.`;
 
 export async function verifySources(params: {
   noteText: string;
