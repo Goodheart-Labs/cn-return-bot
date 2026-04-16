@@ -45,9 +45,9 @@ export const PERPLEXITY_SEARCH_TOOL = {
     parameters: {
       type: "object" as const,
       properties: {
-        query: { type: "string" as const, description: "The search query." },
+        prompt: { type: "string" as const, description: "The search prompt. Can include rich context" },
       },
-      required: ["query"],
+      required: ["prompt"],
     },
   },
 };
@@ -163,13 +163,12 @@ export async function executeToolCall(
     case "grok_search":
       return handleGrokSearch(args.query);
     case "perplexity_search":
-      return handlePerplexitySearch(args.query);
+      return handlePerplexitySearch(args.prompt ?? args.query);
     case "web_fetch":
       return handleWebFetch(args.url);
     case "propose_notes":
       return handleProposeNotes(args.notes);
     case "no_correction_needed":
-    case "send_message":
       return { output: { acknowledged: true }, isTerminal: true };
     default:
       return { output: { error: `Unknown tool: ${toolName}` }, isTerminal: false };
@@ -202,10 +201,10 @@ export async function handleGrokSearch(query: string): Promise<ToolResult> {
   return { output: { results: text }, isTerminal: false, cost };
 }
 
-export async function handlePerplexitySearch(query: string): Promise<ToolResult> {
+export async function handlePerplexitySearch(prompt: string): Promise<ToolResult> {
   const result = await llm.create({
     model: PERPLEXITY_MODEL,
-    messages: [{ role: "user" as const, content: query }],
+    messages: [{ role: "user" as const, content: prompt }],
   });
 
   const content = result.choices?.[0]?.message?.content ?? "";

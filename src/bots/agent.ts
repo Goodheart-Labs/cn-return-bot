@@ -55,8 +55,8 @@ async function runAgent(post: Post, content: PostContent, input: BotInput): Prom
     return { type: "note", noteText: selected.noteText, sources: selected.sources, evalScore: selected.evalScore };
   }
 
-  if (result.terminalTool === "no_correction_needed") {
-    return { type: "no_correction", reason: result.args.reason ?? "No correction needed" };
+  if (result.terminalTool === "no_correction_needed" || result.terminalTool === "text_response") {
+    return { type: "no_correction", reason: result.args.reason ?? result.args.content ?? "No correction needed" };
   }
 
   return { type: "error", error: result.args.reason ?? `Loop exhausted after ${MAX_ITERATIONS} iterations` };

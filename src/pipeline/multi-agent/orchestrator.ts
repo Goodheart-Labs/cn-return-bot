@@ -100,22 +100,11 @@ function resetNotewriter(state: PipelineState): void {
   nw.messages = [{ role: "system", content: nw.def.systemPrompt }];
 }
 
-function routeSendMessage(state: PipelineState, target: string, message: string, senderName: string): boolean {
-  const targetAgent = state.agents[target];
-  if (!targetAgent) return false;
-
-  if (target === "notewriter" && senderName === "researcher") {
-    state.researcherFindings = message;
-  }
-
-  // Notewriter always starts fresh
-  if (target === "notewriter") {
-    resetNotewriter(state);
-  }
-
-  addUserMessage(targetAgent, `Message from ${senderName}:\n${message}`);
-  state.currentAgentName = target;
-  return true;
+function routResearcherFindings(state: PipelineState, content: string): void {
+  state.researcherFindings = content;
+  resetNotewriter(state);
+  addUserMessage(state.agents.notewriter!, `Message from researcher:\n${content}`);
+  state.currentAgentName = "notewriter";
 }
 
 export async function runMultiAgentPipeline(
@@ -141,12 +130,18 @@ export async function runMultiAgentPipeline(
       return { type: "error", error: result.args.reason ?? "Agent error" };
     }
 
-    if (result.terminalTool === "send_message") {
-      if (!routeSendMessage(state, result.args.to, result.args.message, agentName)) {
-        logFinal(startMs);
-        return { type: "error", error: `Unknown send_message target: ${result.args.to}` };
+    if (result.terminalTool === "text_response") {
+      if (agentName === "researcher") {
+        const content = result.args.content ?? "";
+        if (!content.trim()) {
+          logFinal(startMs);
+          return { type: "no_correction", reason: "Researcher produced no findings" };
+        }
+        routResearcherFindings(state, content);
+        continue;
       }
-      continue;
+      logFinal(startMs);
+      return { type: "no_correction", reason: result.args.content ?? "No correction needed" };
     }
 
     if (result.terminalTool === "propose_notes") {
@@ -170,7 +165,7 @@ export async function runMultiAgentPipeline(
         `Sources: ${state.selectedNote!.sources.join(", ")}`,
         `Rejection reason: ${verification.reasoning}`,
         ``,
-        `Find better evidence or different sources to support a correction, then send updated findings to the notewriter.`,
+        `Find better evidence or different sources to support a correction, then write your updated findings.`,
       ].join("\n");
 
       addUserMessage(state.agents.researcher!, feedback);

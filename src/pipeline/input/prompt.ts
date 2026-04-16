@@ -14,7 +14,7 @@ function buildToolSection(config: BotConfig): string {
   lines.push("- grok_search: Search X/Twitter for related tweets (potentially with their comments) and latest news. Comments on the post being analyzed are already provided — use grok_search for OTHER tweets and topics. Minimize x_search calls (1-3 uses).");
 
   if (config.web_search === "perplexity") {
-    lines.push("- perplexity_search: General web search. Use freely for fact-checking queries.");
+    lines.push("- perplexity_search: General web search. The prompt can include rich context");
   }
 
   lines.push("- web_fetch: Fetch a URL and extract its content. You MUST have looked at every source before citing it (through web_fetch or otherwise e.g. in the case of tweetURLs and tweetReplyURLs if you see the text, that's fine). If a source doesn't say what you expected, search for a better one.");

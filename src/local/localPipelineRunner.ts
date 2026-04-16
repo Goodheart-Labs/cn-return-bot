@@ -97,8 +97,8 @@ export function parseCliArgs(
 ): { inputs: InputRow[]; forcedBotId?: string; datasetName: string } {
   const args = process.argv.slice(2);
   if (args.length === 0) {
-    console.error(`Usage: bun run src/scripts/${scriptName}.ts [--bot <bot-id>] <input.csv>`);
-    console.error(`       bun run src/scripts/${scriptName}.ts [--bot <bot-id>] <url1> <url2> ...`);
+    console.error(`Usage: bun run src/scripts/${scriptName}.ts [--bot <bot-id>] [--max <n>] <input.csv>`);
+    console.error(`       bun run src/scripts/${scriptName}.ts [--bot <bot-id>] [--max <n>] <url1> <url2> ...`);
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);
   }
@@ -119,6 +119,17 @@ export function parseCliArgs(
     args.splice(botFlagIdx, 2);
   }
 
+  let maxInputs: number | undefined;
+  const maxFlagIdx = args.indexOf("--max");
+  if (maxFlagIdx !== -1) {
+    maxInputs = parseInt(args[maxFlagIdx + 1]!, 10);
+    if (!maxInputs || maxInputs < 1) {
+      console.error("--max requires a positive number");
+      process.exit(1);
+    }
+    args.splice(maxFlagIdx, 2);
+  }
+
   // Apply per-script arg transformation (e.g. bare tweet IDs → URLs)
   const transformed = opts?.transformArg ? args.map(opts.transformArg) : args;
 
@@ -136,6 +147,8 @@ export function parseCliArgs(
     console.error(`File not found or invalid args: ${transformed[0]}`);
     process.exit(1);
   }
+
+  if (maxInputs) inputs = inputs.slice(0, maxInputs);
 
   return { inputs, forcedBotId, datasetName };
 }
@@ -235,7 +248,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     fetchPost,
     forcedBotId,
     datasetName,
-    concurrency = 5,
+    concurrency = 2,
     cleanup,
   } = options;
 

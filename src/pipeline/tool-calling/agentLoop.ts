@@ -48,26 +48,6 @@ export function addUserMessage(state: AgentState, message: string): void {
   state.messages.push({ role: "user", content: message });
 }
 
-// --- send_message tool builder ---
-
-export function buildSendMessageTool(targets: string[]): any {
-  return {
-    type: "function" as const,
-    function: {
-      name: "send_message",
-      description: "Send a message to another agent or to output. This ends your turn.",
-      parameters: {
-        type: "object" as const,
-        properties: {
-          to: { type: "string" as const, enum: targets, description: "Who to send the message to." },
-          message: { type: "string" as const, description: "Your message." },
-        },
-        required: ["to", "message"],
-      },
-    },
-  };
-}
-
 // --- Tool call parsing ---
 
 function parseToolCall(toolCall: any): { name: string; args: Record<string, any> } {
@@ -208,21 +188,10 @@ export async function runAgentTurn(
 
     if (!message.tool_calls?.length) {
       trackLlmCall(costEntry);
-
-      const hasAnnotations = Array.isArray((message as any).annotations) && (message as any).annotations.length > 0;
-      if (hasAnnotations) {
-        state.messages.push(message);
-        state.messages.push({
-          role: "user",
-          content: "You've received search results. Now call the appropriate tool — either send_message with your findings, or no_correction_needed.",
-        });
-        continue;
-      }
-
       log?.set(`${logPrefix}.iterations`, iteration);
       return {
-        terminalTool: "no_correction_needed",
-        args: { reason: typeof message.content === "string" ? message.content : "No tool calls made" },
+        terminalTool: "text_response",
+        args: { content: typeof message.content === "string" ? message.content : "" },
         iterations: iteration,
         searchOutputs,
       };
