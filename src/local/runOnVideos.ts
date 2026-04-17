@@ -112,7 +112,7 @@ function buildPostFromDownload(meta: YtDlpMetadata, videoPath: string | null, ur
     media.push({
       type: "video",
       url: videoPath,
-      duration_ms: meta.duration ? meta.duration * 1000 : undefined,
+      duration_ms: meta.duration ? Math.round(meta.duration * 1000) : undefined,
       variants: [{ url: videoPath, content_type: "video/mp4" }],
     });
   } else if (meta.thumbnail) {
@@ -155,7 +155,6 @@ async function main() {
   const fetchPost: PostFetcher = async (input) => {
     const { meta, videoPath } = downloadWithYtDlp(input.url, downloadDir);
     const post = buildPostFromDownload(meta, videoPath, input.url);
-    console.log(`[runOnVideos] Author: ${post.author_name ?? "?"} (@${meta.uploader_id ?? "?"}, id=${post.author_id}) | Posted: ${post.created_at}`);
     return { post, title: meta.title?.slice(0, 80) ?? "" };
   };
 
