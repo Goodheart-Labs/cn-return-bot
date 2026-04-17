@@ -46,16 +46,16 @@ import { opusConcise } from "./opus-concise";
 // =============================================================================
 
 const BOT_WEIGHTS: [Bot, number][] = [
-  [agentBot,                    0],
-  [multiAgentBot,             100],
-  [opusMain,                    0],
-  [opusMainV2,                  0],
+  [agentBot,                   26],
+  [multiAgentBot,               0],
+  [opusMain,                   26],
+  [opusMainV2,                 12],
   [opusMainNoSourceCheck,       0],
-  [opusDirect,                  0],
+  [opusDirect,                 12],
   [opusDirectGrok,              0],
-  [opusMainV2Grok,              0],
+  [opusMainV2Grok,             12],
   [opusMultiSource,             0],
-  [opusBridging,                0],
+  [opusBridging,               12],
   [opusResearch,                0],
   [kimiK2,                      0],
   [opus46,                      0],
