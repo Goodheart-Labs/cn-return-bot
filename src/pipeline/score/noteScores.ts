@@ -449,3 +449,24 @@ export function checkAllThresholds(
     scores.helpfulness.score > thresholds.helpfulness
   );
 }
+
+/**
+ * Apply a list of score filters. Returns the first failure, or null if all pass.
+ */
+export function applyScoreFilters(
+  scores: AllNoteScores,
+  filters: Array<{ score: keyof AllNoteScores; op: "gte" | "lte"; threshold: number }>,
+): { failedFilter: string; reason: string } | null {
+  for (const filter of filters) {
+    const value = scores[filter.score].score;
+    const passed = filter.op === "gte" ? value >= filter.threshold : value <= filter.threshold;
+    if (!passed) {
+      const opSymbol = filter.op === "gte" ? ">=" : "<=";
+      return {
+        failedFilter: filter.score,
+        reason: `${filter.score} ${value.toFixed(2)} failed ${opSymbol} ${filter.threshold}`,
+      };
+    }
+  }
+  return null;
+}

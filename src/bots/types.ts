@@ -30,6 +30,7 @@ export interface PipelineResult {
 export type PipelineOutcome =
   | { type: "note"; noteText: string; sources: string[]; evalScore?: number }
   | { type: "no_correction"; reason: string }
+  | { type: "filtered"; filterName: string; reason: string; noteText: string; sources: string[] }
   | { type: "error"; error: string };
 
 export function outcomeToResult(post: any, botId: string, outcome: PipelineOutcome): PipelineResult {
@@ -50,6 +51,14 @@ export function outcomeToResult(post: any, botId: string, outcome: PipelineOutco
       };
     case "no_correction":
       return base;
+    case "filtered":
+      return {
+        ...base,
+        lastStage: "scoring",
+        noteResult: { note: outcome.noteText, url: outcome.sources.join(" "), status: "SCORING_FILTERS_FAILED" },
+        searchContextResult: { ...base.searchContextResult, citations: outcome.sources },
+        checkResult: "YES",
+      };
     case "error":
       return { ...base, lastStage: "error", noteResult: { ...base.noteResult, status: "ERROR" }, error: outcome.error };
   }

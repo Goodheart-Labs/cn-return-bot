@@ -1,13 +1,21 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import type { AllNoteScores } from "../score/noteScores";
 
 // --- Config type ---
 
 export type VideoDescriptionStrategy = "full_video" | "frames";
 
+export interface ScoreFilter {
+  score: keyof AllNoteScores;
+  op: "gte" | "lte";
+  threshold: number;
+}
+
 export interface BotConfig {
   model: string;
   web_search: "native" | "perplexity";
   video_description_strategy: VideoDescriptionStrategy;
+  scoreFilters: ScoreFilter[];
 }
 
 // --- Default config + variants ---
@@ -16,6 +24,7 @@ const DEFAULT_CONFIG: BotConfig = {
   model: "anthropic/claude-sonnet-4.6",
   web_search: "perplexity",
   video_description_strategy: "frames",
+  scoreFilters: [{ score: "noteNotNeeded", op: "gte", threshold: 0.8 }],
 };
 
 interface ConfigVariant {
