@@ -1,7 +1,8 @@
 /**
  * Multi-Agent Orchestrator
  *
- * Wires researcher → note-needed judge → notewriter → fact verification.
+ * Wires the researcher and notewriter together with a fact verification step.
+ * Flow: researcher → notewriter → evaluate → fact verify → accept or loop back.
  * Costs tracked via CostTracker ALS.
  */
 
@@ -17,16 +18,13 @@ import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
 import { buildUserMessage } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
-import { judgeNoteNeeded } from "./noteNeededJudge";
 
 const MAX_TURNS = 10;
 const MAX_SOURCE_VERIFICATION_ATTEMPTS = 2;
-const MAX_RESEARCHER_MESSAGES = 20;
 
 interface PipelineState {
   post: Post;
   postText: string;
-  postUserMessage: string;
   agents: Record<string, AgentState>;
   selectedNote?: EvaluatedNote;
   researcherFindings: string;
@@ -39,6 +37,11 @@ function initPipeline(post: Post, content: PostContent, input: BotInput): Pipeli
   const log = getTweetLog();
 
   const defs = [createResearcherDef(), createNotewriterDef()];
+  const agentDescriptions = defs.map((d) => `- ${d.name}: ${d.description}`).join("\n");
+  for (const def of defs) {
+    def.systemPrompt += `\n\n## Other agents\n${agentDescriptions}`;
+  }
+
   const agents: Record<string, AgentState> = Object.fromEntries(
     defs.map((def) => [def.name, initAgentState(def)]),
   );
@@ -46,7 +49,7 @@ function initPipeline(post: Post, content: PostContent, input: BotInput): Pipeli
   log?.set("multiAgent.config", config);
   log?.set("multiAgent.agents", defs.map((d) => ({ name: d.name, desc: d.description })));
 
-  const postUserMessage = buildUserMessage({
+  const firstMessage = buildUserMessage({
     post,
     tweetText: content.text,
     tweetMedia: input.mediaResult.tweetMedia,
@@ -54,17 +57,9 @@ function initPipeline(post: Post, content: PostContent, input: BotInput): Pipeli
     authorNoteHistory: input.authorHistory,
     comments: input.comments,
   });
-  addUserMessage(agents.researcher!, postUserMessage);
+  addUserMessage(agents.researcher!, firstMessage);
 
-  return {
-    post,
-    postText: content.text,
-    postUserMessage,
-    agents,
-    researcherFindings: "",
-    currentAgentName: "researcher",
-    sourceVerifierTurnCount: 0,
-  };
+  return { post, postText: content.text, agents, researcherFindings: "", currentAgentName: "researcher", sourceVerifierTurnCount: 0 };
 }
 
 type VerificationResult =
@@ -106,12 +101,10 @@ function resetNotewriter(state: PipelineState): void {
   nw.messages = [{ role: "system", content: nw.def.systemPrompt }];
 }
 
-function handOffToNotewriter(state: PipelineState): void {
+function routResearcherFindings(state: PipelineState, content: string): void {
+  state.researcherFindings = content;
   resetNotewriter(state);
-  addUserMessage(
-    state.agents.notewriter!,
-    `## Original post\n${state.postUserMessage}\n\n## Researcher findings\n${state.researcherFindings}`,
-  );
+  addUserMessage(state.agents.notewriter!, `Message from researcher:\n${content}`);
   state.currentAgentName = "notewriter";
 }
 
@@ -125,20 +118,13 @@ export async function runMultiAgentPipeline(
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     const agentName = state.currentAgentName;
-
-    if (
-      agentName === "researcher" &&
-      state.agents.researcher!.messages.length >= MAX_RESEARCHER_MESSAGES
-    ) {
-      logFinal(startMs);
-      return {
-        type: "no_correction",
-        reason: `Researcher exceeded ${MAX_RESEARCHER_MESSAGES} messages without producing findings`,
-      };
-    }
-
     const logPrefix = `multiAgent.${agentName}.turn.${state.agents[agentName]!.turnCount + 1}.messages`;
     const result = await runAgentTurn(state.agents[agentName]!, logPrefix);
+
+    if (result.terminalTool === "no_correction_needed") {
+      logFinal(startMs);
+      return { type: "no_correction", reason: result.args.reason ?? "No correction needed" };
+    }
 
     if (result.terminalTool === "error") {
       logFinal(startMs);
@@ -147,24 +133,12 @@ export async function runMultiAgentPipeline(
 
     if (result.terminalTool === "text_response") {
       if (agentName === "researcher") {
-        const findings = result.args.content ?? "";
-        if (!findings.trim()) {
+        const content = result.args.content ?? "";
+        if (!content.trim()) {
           logFinal(startMs);
           return { type: "no_correction", reason: "Researcher produced no findings" };
         }
-        state.researcherFindings = findings;
-
-        const decision = await judgeNoteNeeded({
-          postUserMessage: state.postUserMessage,
-          researcherFindings: findings,
-        });
-
-        if (!decision.needed) {
-          logFinal(startMs);
-          return { type: "no_correction", reason: decision.reason };
-        }
-
-        handOffToNotewriter(state);
+        routResearcherFindings(state, content);
         continue;
       }
       logFinal(startMs);
@@ -197,7 +171,7 @@ export async function runMultiAgentPipeline(
         `Sources: ${state.selectedNote!.sources.join(", ")}`,
         `Rejection reason: ${verification.reasoning}`,
         ``,
-        `Now you have more information. You have one more chance to do research and send your updated findings.`,
+        `Now you have more information. You have one more chance to do research and send your updated findings to the notewriter again.`,
       ].join("\n");
 
       addUserMessage(state.agents.researcher!, feedback);

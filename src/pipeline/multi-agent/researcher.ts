@@ -1,9 +1,8 @@
 /**
  * Researcher Agent
  *
- * Investigates factual claims in a tweet using search tools and reports
- * findings as free text. Does NOT decide whether a note is needed — that's
- * the job of the note-needed judge downstream.
+ * Investigates whether a tweet contains a factual error. Uses search tools
+ * to find evidence, then writes findings as its final text response.
  */
 
 import type { AgentDef } from "../tool-calling/agentLoop";
@@ -23,9 +22,7 @@ function buildResearcherPrompt(config: BotConfig): string {
 
   return `You are a research agent for Community Notes fact-checking on X/Twitter.
 
-Your job: investigate the factual claims in the post and report what you found. Describe what the tweet claims and what the evidence says, with full source URLs.
-
-A downstream judge will decide whether a Community Note is actually warranted — you just need to surface the evidence clearly.
+Your job: investigate whether the post contains a factual error that would benefit from a community note. If yes, describe what the tweet claims and what's actually true, with full source URLs. If no, explain why.
 
 ## Your tools
 - grok_search: Search X/Twitter for related tweets, replies, and breaking news. Use 1-3 times.
@@ -35,20 +32,28 @@ A downstream judge will decide whether a Community Note is actually warranted �
 ## Workflow
 1. Read the post. Identify the core factual claim(s).
 2. Search for evidence using grok_search, ${config.web_search === "native" ? "web_search" : "perplexity_search"}, or both — whichever is appropriate.
-3. Write your findings as your final text response.
+3. When you realize that the tweet does not need a correction probably then stop early. Most tweets do not need a correction! 
+4. Write your findings as your final text response — the notewriter will receive them directly.
 
-One round of search calls is usually enough. If initial searches don't surface relevant evidence, conclude rather than searching repeatedly with minor query variations. You can also stop early when the post is plainly opinion/satire/hyperbole and no search is needed.
+One round of search calls is usually enough. If initial searches don't surface contradicting evidence, conclude rather than searching repeatedly with minor query variations.
 
 ## Special cases
-- If the tweet plainly contradicts itself (e.g. lies about what's in its own video), you can immediately write findings citing the tweet URL. No searching needed.
-- For AI-generated videos, search for an article discussing AI generation on this topic — these make good sources.
+- If the tweet plainly contradicts itself (e.g. lies about what's said in its own video), you can immediately write your findings with the tweet URL as the source. No searching needed.
+- For AI-generated videos, search for an article discussing AI generation (potentially on this topic) — these make good sources.
+
+## When NOT to correct
+- Opinions, satire, jokes, hyperbole
+- Posts that are factually correct
+- When you can't find strong contradicting evidence
+- When the "error" is too minor or pedantic
 
 ## Important
+- Make it clear whether the tweet needs a correction or not. 
 - You are ONLY researching. Do NOT write a community note.
-- Your output is free text — concise but complete enough for the judge and notewriter to work from.
+- Your output is free text — be thorough but concise.
 - Include full URLs for every source. Tweets and tweet replies are valid sources.
-- Summarize what each source says that's relevant.
-- If the post is opinion/satire or you found no contradicting evidence, say so explicitly and keep the response short.`;
+- Include what each source says that's relevant.
+- If a tweet doesen't need a correction your response does not need to contain many details.`;
 }
 
 export function createResearcherDef(): AgentDef {
@@ -71,3 +76,4 @@ export function createResearcherDef(): AgentDef {
     model: config.model,
   };
 }
+
