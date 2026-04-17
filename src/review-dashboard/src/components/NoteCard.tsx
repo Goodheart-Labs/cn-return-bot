@@ -30,6 +30,10 @@ function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: str
   );
 }
 
+function noteUrl(noteId: string) {
+  return `https://x.com/i/communitynotes/n/${noteId}`;
+}
+
 function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   return (
     <div className="bg-gray-50 rounded p-3 text-sm border border-gray-100">
@@ -40,6 +44,14 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
             {note.helpfulCount} helpful / {note.notHelpfulCount ?? 0} not helpful
           </span>
         )}
+        <a
+          href={noteUrl(note.noteId)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-blue-500 hover:underline ml-auto"
+        >
+          View note ↗
+        </a>
       </div>
       <p className="text-gray-700 whitespace-pre-wrap">{note.noteText ?? "No text"}</p>
     </div>
@@ -310,7 +322,19 @@ export function NoteCard({
       {/* Our note */}
       {item.noteText && (
         <div className="mb-3 bg-blue-50 rounded p-3 border border-blue-100">
-          <div className="text-xs text-blue-600 font-medium mb-1">Our note</div>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-blue-600 font-medium">Our note</span>
+            {item.noteId && (
+              <a
+                href={noteUrl(item.noteId)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 hover:underline"
+              >
+                View note ↗
+              </a>
+            )}
+          </div>
           <p className="text-sm text-gray-800 whitespace-pre-wrap">{item.noteText}</p>
           {item.sourceUrl && (
             <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline mt-1 block">
