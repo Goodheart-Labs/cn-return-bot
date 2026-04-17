@@ -46,8 +46,8 @@ import { opusConcise } from "./opus-concise";
 // =============================================================================
 
 const BOT_WEIGHTS: [Bot, number][] = [
-  [agentBot,                   26],
-  [multiAgentBot,               0],
+  [agentBot,                    0],
+  [multiAgentBot,              26],
   [opusMain,                   26],
   [opusMainV2,                 12],
   [opusMainNoSourceCheck,       0],
