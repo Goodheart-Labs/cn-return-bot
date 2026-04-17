@@ -1,0 +1,79 @@
+=== Scheme C: helpful=+1, unhelpful=-1, FP=-1, missed=+0 ===
+Dataset: 91 tweets (62 noteworthy, 29 non-noteworthy)
+Baseline (no threshold filter, submit every candidate): score = +26
+  candidates: helpful=55, unhelpful=4, false_pos=25; unchangeable missed=3, correct skip=4
+
+--- Best filter using 1 score(s) ---
+  filter: noteNotNeeded >= 0.8
+  dataset score: +36  (vs baseline +26; delta +10)
+
+  NOTEWORTHY (ground truth = yes): 62 tweets
+    correct:      42/62 (68%)  AI judge confirmed note is good
+    incorrect:    1/62 (2%)  note proposed but wrong
+    not proposed: 19/62 (31%)  missed entirely
+
+  NON-NOTEWORTHY (ground truth = no): 29 tweets
+    correct:      24/29 (83%)  correctly no note
+    incorrect:    5/29 (17%)  false positive
+
+  OVERALL: 66/91 (73%)
+
+--- Best filter using 2 score(s) ---
+  filter: positiveEvidence >= 0.3, noteNotNeeded >= 0.8
+  dataset score: +37  (vs baseline +26; delta +11)
+
+  NOTEWORTHY (ground truth = yes): 62 tweets
+    correct:      42/62 (68%)  AI judge confirmed note is good
+    incorrect:    1/62 (2%)  note proposed but wrong
+    not proposed: 19/62 (31%)  missed entirely
+
+  NON-NOTEWORTHY (ground truth = no): 29 tweets
+    correct:      25/29 (86%)  correctly no note
+    incorrect:    4/29 (14%)  false positive
+
+  OVERALL: 67/91 (74%)
+
+--- Best filter using 3 score(s) ---
+  filter: positiveEvidence >= 0.3, sourceQuality >= 0.3, noteNotNeeded >= 0.8
+  dataset score: +38  (vs baseline +26; delta +12)
+
+  NOTEWORTHY (ground truth = yes): 62 tweets
+    correct:      42/62 (68%)  AI judge confirmed note is good
+    incorrect:    1/62 (2%)  note proposed but wrong
+    not proposed: 19/62 (31%)  missed entirely
+
+  NON-NOTEWORTHY (ground truth = no): 29 tweets
+    correct:      26/29 (90%)  correctly no note
+    incorrect:    3/29 (10%)  false positive
+
+  OVERALL: 68/91 (75%)
+
+--- Best filter using 4 score(s) ---
+  filter: positiveEvidence >= 0.3, helpfulness >= 0.5, pedantry >= 0.9, noteNotNeeded >= 0.5
+  dataset score: +39  (vs baseline +26; delta +13)
+
+  NOTEWORTHY (ground truth = yes): 62 tweets
+    correct:      51/62 (82%)  AI judge confirmed note is good
+    incorrect:    2/62 (3%)  note proposed but wrong
+    not proposed: 9/62 (15%)  missed entirely
+
+  NON-NOTEWORTHY (ground truth = no): 29 tweets
+    correct:      19/29 (66%)  correctly no note
+    incorrect:    10/29 (34%)  false positive
+
+  OVERALL: 70/91 (77%)
+
+--- Best filter using 5 score(s) ---
+  filter: positiveEvidence >= 0.3, helpfulness >= 0.5, sourceQuality >= 0.3, pedantry >= 0.9, noteNotNeeded >= 0.5
+  dataset score: +40  (vs baseline +26; delta +14)
+
+  NOTEWORTHY (ground truth = yes): 62 tweets
+    correct:      51/62 (82%)  AI judge confirmed note is good
+    incorrect:    2/62 (3%)  note proposed but wrong
+    not proposed: 9/62 (15%)  missed entirely
+
+  NON-NOTEWORTHY (ground truth = no): 29 tweets
+    correct:      20/29 (69%)  correctly no note
+    incorrect:    9/29 (31%)  false positive
+
+  OVERALL: 71/91 (78%)
