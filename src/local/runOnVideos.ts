@@ -15,6 +15,8 @@
  */
 
 import "dotenv/config";
+// Capture prod Supabase creds BEFORE the local remap below
+import "./prodSupabaseCreds";
 
 // Route Supabase to local instance (must happen before any Supabase imports)
 const localUrl = process.env.LOCAL_SUPABASE_URL;
@@ -167,6 +169,7 @@ async function main() {
     datasetName: parsed.datasetName,
     reversed: parsed.reversed,
     concurrency: parsed.concurrency,
+    runName: parsed.runName,
     cleanup: async () => {
       fs.rmSync(downloadDir, { recursive: true, force: true });
       console.log(`[runOnVideos] Cleaned up temp directory`);

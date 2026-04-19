@@ -16,6 +16,7 @@ import * as path from "path";
 import PQueue from "p-queue";
 import { parseCsvRecords } from "../utils/csv";
 import { initOutputFolder, resultToCsvRow, errorToCsvRow } from "./outputWriter";
+import { autoOpenInDashboard } from "./dashboardAutoOpen";
 import {
   categorizeRow,
   writeResultJsons,
@@ -292,6 +293,7 @@ export interface RunPipelineOptions {
   datasetName?: string;
   concurrency?: number;
   reversed?: boolean;
+  runName?: string;
   cleanup?: () => Promise<void>;
 }
 
@@ -305,6 +307,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     datasetName,
     concurrency = 5,
     reversed = false,
+    runName,
     cleanup,
   } = options;
 
@@ -403,4 +406,14 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
   }
 
   try { await closeBrowser(); } catch {}
+
+  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId);
+  await autoOpenInDashboard(output.csvPath, uploadLabel);
+}
+
+function buildRunName(folderPrefix: string, datasetName?: string, botId?: string): string {
+  const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 16);
+  const parts = [folderPrefix, datasetName ?? "run", botId, process.env.FORCE_WEB_SEARCH]
+    .filter(Boolean);
+  return `${parts.join("_")}_${ts}`;
 }

@@ -11,6 +11,8 @@
  */
 
 import "dotenv/config";
+// Capture prod Supabase creds BEFORE the local remap below
+import "./prodSupabaseCreds";
 
 // Remap Nathan's X API credentials → standard X API env vars
 // (must happen before any X API imports read them)
@@ -64,6 +66,7 @@ async function main() {
     datasetName: parsed.datasetName,
     reversed: parsed.reversed,
     concurrency: parsed.concurrency,
+    runName: parsed.runName,
   });
 }
 
