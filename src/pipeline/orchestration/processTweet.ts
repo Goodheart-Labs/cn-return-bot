@@ -500,7 +500,8 @@ export async function processSingleTweet(
   // 6. Complete DB run (with logs)
   if (logger && pipelineRunId) {
     const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-    const completionData = buildCompletionData(result, bot.id, outcome, warnings, logs);
+    const loggedBotId = (log?.get("bot.id") as string | undefined) ?? bot.id;
+    const completionData = buildCompletionData(result, loggedBotId, outcome, warnings, logs);
     try {
       await logger.completePipelineRun(pipelineRunId, completionData);
     } catch (err) {

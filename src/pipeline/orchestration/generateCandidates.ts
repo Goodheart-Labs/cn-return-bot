@@ -148,7 +148,8 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
       allLogs.push(log);
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        candidates.push({ post, tweetResult, botId: selectedBot.id });
+        const loggedBotId = (log.get("bot.id") as string | undefined) ?? selectedBot.id;
+        candidates.push({ post, tweetResult, botId: loggedBotId });
       }
     });
   }
