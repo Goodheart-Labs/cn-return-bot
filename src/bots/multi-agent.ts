@@ -10,6 +10,7 @@ import { randomizeConfig, withBotConfig } from "../pipeline/utils/botConfig";
 import { withCostTracker } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runMultiAgentPipeline } from "../pipeline/multi-agent/orchestrator";
+import { getTweetLog } from "../pipeline/utils/tweetLog";
 
 export const multiAgentBot: Bot = {
   id: "multi-agent",
@@ -17,11 +18,13 @@ export const multiAgentBot: Bot = {
   description: "Researcher → Notewriter → Source Verifier pipeline",
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const config = randomizeConfig();
+    const fullBotId = `${this.id}_${config.configName}`;
 
     return withBotConfig(config, () => withCostTracker(async () => {
+      getTweetLog()?.set("bot.id", fullBotId);
       const input = await createBotInput(post, content, "multi-agent");
       const outcome = await runMultiAgentPipeline(post, content, input);
-      const result = outcomeToResult(post, this.id, outcome);
+      const result = outcomeToResult(post, fullBotId, outcome);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }

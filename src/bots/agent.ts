@@ -68,11 +68,13 @@ export const agentBot: Bot = {
   description: "Agentic bot with tool calling",
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const config = randomizeConfig();
+    const fullBotId = `${this.id}_${config.configName}`;
 
     return withBotConfig(config, () => withCostTracker(async () => {
+      getTweetLog()?.set("bot.id", fullBotId);
       const input = await createBotInput(post, content, "agent");
       const outcome = await runAgent(post, content, input);
-      const result = outcomeToResult(post, this.id, outcome);
+      const result = outcomeToResult(post, fullBotId, outcome);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }

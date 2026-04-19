@@ -360,12 +360,14 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         completed.outcomeReason = result.outcomeReason;
         completed.noteText = result.noteText;
 
+        const loggedBotId = (log.get("bot.id") as string | undefined) ?? bot.id;
+
         csvRowData = {
           url: input.url,
           text: result.pipelineResult?.post?.text ?? "",
           needs_note: input.needsNote ?? "",
           ground_truth_note: input.groundTruthNote ?? "",
-          bot_id: bot.id,
+          bot_id: loggedBotId,
           note_status: result.noteStatus ?? "",
           outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
           note_text: result.noteText ?? "",
@@ -383,7 +385,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
           console.error(`[${scriptName}] Judge failed for ${input.url}: ${err?.message}`);
         }
 
-        output.appendRow(resultToCsvRow(input, bot.id, result, resultLabel, log));
+        output.appendRow(resultToCsvRow(input, loggedBotId, result, resultLabel, log));
       } catch (err: any) {
         console.error(`[${scriptName}] ERROR ${input.url}: ${err?.message}`);
         output.appendRow(errorToCsvRow(input.url, err?.message ?? "unknown"));

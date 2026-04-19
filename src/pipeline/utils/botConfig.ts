@@ -12,6 +12,7 @@ export interface ScoreFilter {
 }
 
 export interface BotConfig {
+  configName: string;
   model: string;
   web_search: "native" | "perplexity" | "searxng" | "searxng_summarized";
   video_description_strategy: VideoDescriptionStrategy;
@@ -22,6 +23,7 @@ export interface BotConfig {
 // --- Default config + variants ---
 
 const DEFAULT_CONFIG: BotConfig = {
+  configName: "default",
   model: "anthropic/claude-sonnet-4.6",
   web_search: "perplexity",
   video_description_strategy: "frames",
@@ -119,18 +121,22 @@ export function randomizeConfig(): BotConfig {
   const forcedSearch = process.env.FORCE_WEB_SEARCH;
   const forcedParallel = process.env.FORCE_PARALLEL_RESEARCH === "1";
 
-  let base: BotConfig;
+  let variant: ConfigVariant;
   if (forcedSearch) {
     const match = CONFIG_VARIANTS.find(
-      (v) => v.overrides.web_search === forcedSearch && !v.overrides.parallel_research,
+      (v) =>
+        v.overrides.web_search === forcedSearch &&
+        Boolean(v.overrides.parallel_research) === forcedParallel,
     );
-    if (!match) throw new Error(`FORCE_WEB_SEARCH=${forcedSearch} has no matching CONFIG_VARIANTS entry`);
-    base = { ...DEFAULT_CONFIG, ...match.overrides };
+    if (!match) {
+      throw new Error(
+        `No CONFIG_VARIANTS entry for web_search=${forcedSearch} parallel=${forcedParallel}`,
+      );
+    }
+    variant = match;
   } else {
-    const variant = pickVariant(CONFIG_VARIANTS);
-    base = { ...DEFAULT_CONFIG, ...variant.overrides };
+    variant = pickVariant(CONFIG_VARIANTS);
   }
 
-  if (forcedParallel) base.parallel_research = true;
-  return base;
+  return { ...DEFAULT_CONFIG, ...variant.overrides, configName: variant.name };
 }
