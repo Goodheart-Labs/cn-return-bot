@@ -17,8 +17,16 @@ import { parseCsvRecords } from "../utils/csv";
 
 const DASHBOARD_PORT = 8001;
 const DASHBOARD_HOST = "127.0.0.1";
+const PORT_PROBE_TIMEOUT_MS = 500;
+const DASHBOARD_WAIT_ATTEMPTS = 40;
+const DASHBOARD_WAIT_INTERVAL_MS = 250;
+const BUILD_LOCK_POLL_MS = 500;
+const BUILD_LOCK_MAX_WAIT_MS = 120_000;
 
-function isPortListening(port: number, host: string, timeoutMs = 500): Promise<boolean> {
+const BUILD_LOCK_DIR = path.join(process.cwd(), "dataset_runs", ".dashboard-build.lock");
+const DIST_INDEX = path.join(process.cwd(), "src/review-dashboard/dist/index.html");
+
+function isPortListening(port: number, host: string, timeoutMs = PORT_PROBE_TIMEOUT_MS): Promise<boolean> {
   return new Promise((resolve) => {
     const socket = new net.Socket();
     const done = (result: boolean) => {
@@ -33,25 +41,52 @@ function isPortListening(port: number, host: string, timeoutMs = 500): Promise<b
   });
 }
 
-async function waitForPort(port: number, host: string, maxAttempts = 40): Promise<boolean> {
-  for (let i = 0; i < maxAttempts; i++) {
+async function waitForPort(port: number, host: string): Promise<boolean> {
+  for (let i = 0; i < DASHBOARD_WAIT_ATTEMPTS; i++) {
     if (await isPortListening(port, host)) return true;
-    await new Promise((r) => setTimeout(r, 250));
+    await new Promise((r) => setTimeout(r, DASHBOARD_WAIT_INTERVAL_MS));
   }
   return false;
 }
 
-function ensureDashboardBuilt(): void {
-  const distIndex = path.join(process.cwd(), "src/review-dashboard/dist/index.html");
-  if (fs.existsSync(distIndex)) return;
-  console.log("[dashboard] dist/ missing — building (first run only)...");
-  execSync("bun run build-review", { cwd: process.cwd(), stdio: "inherit" });
+// Atomic lockfile-based mutex: mkdirSync(lockDir) is atomic on POSIX, so the
+// first parallel finisher wins and runs `vite build`; the others wait for
+// dist/index.html to appear. Prevents concurrent builds from corrupting dist/.
+async function ensureDashboardBuilt(): Promise<void> {
+  if (fs.existsSync(DIST_INDEX)) return;
+
+  fs.mkdirSync(path.dirname(BUILD_LOCK_DIR), { recursive: true });
+  let haveLock = false;
+  try {
+    fs.mkdirSync(BUILD_LOCK_DIR);
+    haveLock = true;
+  } catch (err: any) {
+    if (err?.code !== "EEXIST") throw err;
+  }
+
+  if (haveLock) {
+    try {
+      console.log("[dashboard] dist/ missing — building (first run only)...");
+      execSync("bun run build-review", { cwd: process.cwd(), stdio: "inherit" });
+    } finally {
+      try { fs.rmdirSync(BUILD_LOCK_DIR); } catch {}
+    }
+    return;
+  }
+
+  console.log("[dashboard] another process is building dist/ — waiting...");
+  const deadline = Date.now() + BUILD_LOCK_MAX_WAIT_MS;
+  while (Date.now() < deadline) {
+    if (fs.existsSync(DIST_INDEX) && !fs.existsSync(BUILD_LOCK_DIR)) return;
+    await new Promise((r) => setTimeout(r, BUILD_LOCK_POLL_MS));
+  }
+  throw new Error(`dashboard build did not finish within ${BUILD_LOCK_MAX_WAIT_MS}ms`);
 }
 
 async function ensureDashboardRunning(): Promise<void> {
   if (await isPortListening(DASHBOARD_PORT, DASHBOARD_HOST)) return;
 
-  ensureDashboardBuilt();
+  await ensureDashboardBuilt();
 
   const logPath = path.join(process.cwd(), "dataset_runs", "dashboard.log");
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
