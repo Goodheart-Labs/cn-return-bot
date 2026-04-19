@@ -25,7 +25,7 @@ const DEFAULT_CONFIG: BotConfig = {
   model: "anthropic/claude-sonnet-4.6",
   web_search: "perplexity",
   video_description_strategy: "frames",
-  scoreFilters: [{ score: "noteNotNeeded", op: "gte", threshold: 0.8 }],
+  scoreFilters: [],
   parallel_research: false,
 };
 
