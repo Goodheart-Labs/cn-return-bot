@@ -87,6 +87,12 @@ function pickVariant(variants: ConfigVariant[]): ConfigVariant {
 }
 
 export function randomizeConfig(): BotConfig {
+  const forced = process.env.FORCE_WEB_SEARCH;
+  if (forced) {
+    const match = CONFIG_VARIANTS.find((v) => v.overrides.web_search === forced);
+    if (!match) throw new Error(`FORCE_WEB_SEARCH=${forced} has no matching CONFIG_VARIANTS entry`);
+    return { ...DEFAULT_CONFIG, ...match.overrides };
+  }
   const variant = pickVariant(CONFIG_VARIANTS);
   return { ...DEFAULT_CONFIG, ...variant.overrides };
 }
