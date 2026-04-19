@@ -87,6 +87,8 @@ async function handleProposeNotes(
     noteText: selected.noteText,
     sources: selected.sources,
     postText: state.postText,
+    postCreatedAt: state.post.created_at,
+    authorName: state.post.author_name,
     researcherFindings: state.researcherFindings,
     turnNumber: state.sourceVerifierTurnCount,
   });

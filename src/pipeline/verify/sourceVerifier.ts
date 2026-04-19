@@ -82,6 +82,8 @@ export async function verifySources(params: {
   noteText: string;
   sources: string[];
   postText: string;
+  postCreatedAt?: string;
+  authorName?: string;
   researcherFindings: string;
   turnNumber: number;
 }): Promise<SourceVerification> {
@@ -91,8 +93,18 @@ export async function verifySources(params: {
 
   const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(params.sources);
 
+  const postHeader = [
+    params.authorName ? `Author: ${params.authorName}` : null,
+    params.postCreatedAt ? `Posted at: ${params.postCreatedAt}` : null,
+  ].filter(Boolean).join("\n");
+
   const userMessage = [
+    `## Context`,
+    `Current date (UTC): ${new Date().toISOString()}`,
+    ``,
     `## Original post`,
+    postHeader,
+    postHeader ? `` : null,
     params.postText,
     ``,
     `## Research findings`,
@@ -103,7 +115,7 @@ export async function verifySources(params: {
     ``,
     `## Source content`,
     sections,
-  ].join("\n");
+  ].filter((line) => line !== null).join("\n");
 
   log?.set(`${logPrefix}.0`, { systemPrompt: SYSTEM_PROMPT, userMessage });
 
