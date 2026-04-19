@@ -6,7 +6,7 @@
  */
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
-import { randomizeConfig, withBotConfig } from "../pipeline/utils/botConfig";
+import { randomizeConfig, withBotConfig, getFullBotId } from "../pipeline/utils/botConfig";
 import { withCostTracker } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runMultiAgentPipeline } from "../pipeline/multi-agent/orchestrator";
@@ -18,7 +18,7 @@ export const multiAgentBot: Bot = {
   description: "Researcher → Notewriter → Source Verifier pipeline",
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const config = randomizeConfig();
-    const fullBotId = `${this.id}_${config.configName}`;
+    const fullBotId = getFullBotId(this.id, config);
 
     return withBotConfig(config, () => withCostTracker(async () => {
       getTweetLog()?.set("bot.id", fullBotId);

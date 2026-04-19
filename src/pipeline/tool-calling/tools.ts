@@ -282,6 +282,15 @@ export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> 
   }
 }
 
+function buildSearxngSummarizePrompt(query: string, results: SearxngResult[]): string {
+  return `You are a research assistant. The user searched for: "${query}"
+
+Here are the search results:
+${formatSearxngResults(results)}
+
+Summarize the most relevant findings. Include the URLs of the most important sources inline in your summary. Include a lot of URLs. Focus on factual claims and verifiable information.`;
+}
+
 export async function handleGoogleSearchSummarized(query: string): Promise<ToolResult> {
   let results: SearxngResult[];
   try {
@@ -290,12 +299,7 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
     return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
   }
 
-  const prompt = `You are a research assistant. The user searched for: "${query}"
-
-Here are the search results:
-${formatSearxngResults(results)}
-
-Summarize the most relevant findings. Include the URLs of the most important sources inline in your summary. Include a lot of URLs. Focus on factual claims and verifiable information.`;
+  const prompt = buildSearxngSummarizePrompt(query, results);
 
   const response = await llm.create({
     model: GEMINI_MODEL,

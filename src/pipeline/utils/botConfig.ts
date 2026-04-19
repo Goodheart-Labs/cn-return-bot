@@ -105,6 +105,23 @@ export function getBotConfig(): BotConfig {
   return config;
 }
 
+// --- Config overrides (force a specific variant at the pipeline entry point) ---
+
+export interface ConfigOverrides {
+  webSearch?: BotConfig["web_search"];
+  parallelResearch?: boolean;
+}
+
+const overridesStorage = new AsyncLocalStorage<ConfigOverrides>();
+
+export function withConfigOverrides<T>(overrides: ConfigOverrides, fn: () => T): T {
+  return overridesStorage.run(overrides, fn);
+}
+
+function getConfigOverrides(): ConfigOverrides {
+  return overridesStorage.getStore() ?? {};
+}
+
 // --- Randomization ---
 
 function pickVariant(variants: ConfigVariant[]): ConfigVariant {
@@ -117,9 +134,12 @@ function pickVariant(variants: ConfigVariant[]): ConfigVariant {
   return variants[variants.length - 1]!;
 }
 
+export function getFullBotId(botId: string, config: BotConfig): string {
+  return `${botId}_${config.configName}`;
+}
+
 export function randomizeConfig(): BotConfig {
-  const forcedSearch = process.env.FORCE_WEB_SEARCH;
-  const forcedParallel = process.env.FORCE_PARALLEL_RESEARCH === "1";
+  const { webSearch: forcedSearch, parallelResearch: forcedParallel = false } = getConfigOverrides();
 
   let variant: ConfigVariant;
   if (forcedSearch) {

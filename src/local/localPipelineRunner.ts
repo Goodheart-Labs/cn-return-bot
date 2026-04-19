@@ -9,13 +9,14 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotById, getEnabledBots } from "../bots/index";
 import { processSingleTweet } from "../pipeline/orchestration/processTweet";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { createTweetLog, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";
+import { withConfigOverrides, type ConfigOverrides } from "../pipeline/utils/botConfig";
+import { createTweetLog, getLoggedBotId, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";
 import type { Post } from "../api/fetchEligiblePosts";
 import * as fs from "fs";
 import * as path from "path";
 import PQueue from "p-queue";
 import { parseCsvRecords } from "../utils/csv";
-import { initOutputFolder, resultToCsvRow, errorToCsvRow } from "./outputWriter";
+import { buildRunName, initOutputFolder, resultToCsvRow, errorToCsvRow } from "./outputWriter";
 import { autoOpenInDashboard } from "./dashboardAutoOpen";
 import {
   categorizeRow,
@@ -173,7 +174,6 @@ export function parseCliArgs(
       process.exit(1);
     }
     webSearch = wsVal as WebSearchChoice;
-    process.env.FORCE_WEB_SEARCH = webSearch;
   }
 
   const runName = takeFlagValue(args, "--name");
@@ -294,6 +294,7 @@ export interface RunPipelineOptions {
   concurrency?: number;
   reversed?: boolean;
   runName?: string;
+  configOverrides?: ConfigOverrides;
   cleanup?: () => Promise<void>;
 }
 
@@ -308,6 +309,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     concurrency = 5,
     reversed = false,
     runName,
+    configOverrides = {},
     cleanup,
   } = options;
 
@@ -353,14 +355,16 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         log.set("tweet.index", idx + 1);
         log.set("tweet.total", inputs.length);
         const result = await withTweetLog(log, () =>
-          processSingleTweet({ post, bot, logger })
+          withConfigOverrides(configOverrides, () =>
+            processSingleTweet({ post, bot, logger })
+          )
         );
 
         completed.outcome = result.outcome;
         completed.outcomeReason = result.outcomeReason;
         completed.noteText = result.noteText;
 
-        const loggedBotId = (log.get("bot.id") as string | undefined) ?? bot.id;
+        const loggedBotId = getLoggedBotId(bot.id, log);
 
         csvRowData = {
           url: input.url,
@@ -409,13 +413,6 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   try { await closeBrowser(); } catch {}
 
-  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId);
+  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId, configOverrides.webSearch);
   await autoOpenInDashboard(output.csvPath, uploadLabel);
-}
-
-function buildRunName(folderPrefix: string, datasetName?: string, botId?: string): string {
-  const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 16);
-  const parts = [folderPrefix, datasetName ?? "run", botId, process.env.FORCE_WEB_SEARCH]
-    .filter(Boolean);
-  return `${parts.join("_")}_${ts}`;
 }

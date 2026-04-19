@@ -7,8 +7,11 @@
  * Use --local to route Supabase to a local instance via LOCAL_SUPABASE_URL/KEY.
  */
 
+import { captureProdSupabaseCreds } from "../local/prodSupabaseCreds";
+
 const isLocal = process.argv.includes("--local");
 if (isLocal) {
+  captureProdSupabaseCreds();
   const localUrl = process.env.LOCAL_SUPABASE_URL;
   const localKey = process.env.LOCAL_SUPABASE_SERVICE_KEY;
   if (localUrl && localKey) {
@@ -23,9 +26,26 @@ if (isLocal) {
 
 import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { generateCandidates } from "../pipeline/orchestration/generateCandidates";
+import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orchestration/generateCandidates";
 import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
+import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
+import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 // import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
+
+function postUrl(postId: string): string {
+  return `https://x.com/i/status/${postId}`;
+}
+
+function writePipelineRowToCsv(output: OutputFolder, event: TweetProcessedEvent): void {
+  const row = resultToCsvRow(
+    { url: postUrl(event.post.id) },
+    event.botId,
+    event.tweetResult,
+    "",
+    event.log,
+  );
+  output.appendRow(row);
+}
 
 const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_POSTS = 20;
@@ -66,6 +86,14 @@ async function main() {
 
     const maxPosts = isLocal ? MAX_POSTS_LOCAL : MAX_POSTS;
 
+    // --local: collect per-tweet results into a CSV and auto-open the dashboard
+    const localOutput: OutputFolder | null = isLocal
+      ? initOutputFolder("pipeline", "run", undefined)
+      : null;
+    const onTweetProcessed = localOutput
+      ? (event: TweetProcessedEvent) => writePipelineRowToCsv(localOutput, event)
+      : undefined;
+
     if (cautious && supabaseLogger) {
       // Probe in small batches until we get a submission through (limit reset) or confirm it's still active
       let totalSubmitted = 0;
@@ -74,7 +102,7 @@ async function main() {
       while (postsUsed < maxPosts) {
         const batchSize = Math.min(PROBE_POSTS, maxPosts - postsUsed);
         console.log(`[pipeline] Probing batch ${Math.floor(postsUsed / PROBE_POSTS) + 1} (${batchSize} tweets)...`);
-        const candidates = await generateCandidates(supabaseLogger, { maxPosts: batchSize });
+        const candidates = await generateCandidates(supabaseLogger, { maxPosts: batchSize, onTweetProcessed });
         postsUsed += batchSize;
 
         if (candidates.length === 0) continue;
@@ -87,7 +115,7 @@ async function main() {
           console.log(`[pipeline] Limit reset confirmed — continuing with full batch`);
           const remaining = maxPosts - postsUsed;
           if (remaining > 0) {
-            const moreCandidates = await generateCandidates(supabaseLogger, { maxPosts: remaining });
+            const moreCandidates = await generateCandidates(supabaseLogger, { maxPosts: remaining, onTweetProcessed });
             if (moreCandidates.length > 0) {
               totalSubmitted += await submitCandidates(moreCandidates, supabaseLogger, isLocal);
             }
@@ -103,13 +131,17 @@ async function main() {
       console.log(`[pipeline] Submitted ${totalSubmitted} total`);
     } else {
       // Normal flow
-      const candidates = await generateCandidates(supabaseLogger, { maxPosts });
+      const candidates = await generateCandidates(supabaseLogger, { maxPosts, onTweetProcessed });
       if (candidates.length > 0 && supabaseLogger) {
         const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
         console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates`);
       } else {
         console.log(`[pipeline] No candidates to submit`);
       }
+    }
+
+    if (localOutput) {
+      await autoOpenInDashboard(localOutput.csvPath, buildRunName("pipeline", "local"));
     }
 
     console.log("[pipeline] Pipeline completed successfully");

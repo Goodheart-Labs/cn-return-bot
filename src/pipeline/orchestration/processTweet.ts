@@ -16,7 +16,7 @@ import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
 import { runNoteScores, countSources } from "../score/noteScores";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
-import { getTweetLog, nestDotKeys } from "../utils/tweetLog";
+import { getTweetLog, getLoggedBotId, nestDotKeys } from "../utils/tweetLog";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -500,7 +500,7 @@ export async function processSingleTweet(
   // 6. Complete DB run (with logs)
   if (logger && pipelineRunId) {
     const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-    const loggedBotId = (log?.get("bot.id") as string | undefined) ?? bot.id;
+    const loggedBotId = getLoggedBotId(bot.id, log);
     const completionData = buildCompletionData(result, loggedBotId, outcome, warnings, logs);
     try {
       await logger.completePipelineRun(pipelineRunId, completionData);

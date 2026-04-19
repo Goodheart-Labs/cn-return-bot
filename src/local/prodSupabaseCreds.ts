@@ -1,12 +1,30 @@
 /**
- * Capture prod Supabase creds at import time, before any local-remap happens.
+ * Local scripts remap SUPABASE_URL/SUPABASE_SERVICE_KEY to their LOCAL_*
+ * equivalents so the pipeline writes to local Supabase. The dashboard still
+ * lives on prod though, so the auto-open flow needs the original prod values.
  *
- * Both tryoutNotes.ts and runOnVideos.ts remap SUPABASE_URL/SUPABASE_SERVICE_KEY
- * to their LOCAL_* equivalents near the top of the file. The dashboard, however,
- * lives on prod — so the auto-open flow needs the original prod values.
- *
- * Import this module BEFORE the remap lines to capture the prod creds.
+ * Capture the prod creds once (before any remap), then expose them via a
+ * getter so consumers can't accidentally read post-remap values.
  */
 
-export const PROD_SUPABASE_URL = process.env.SUPABASE_URL;
-export const PROD_SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+interface ProdCreds {
+  url: string | undefined;
+  serviceKey: string | undefined;
+}
+
+let captured: ProdCreds | null = null;
+
+export function captureProdSupabaseCreds(): void {
+  if (captured) return;
+  captured = {
+    url: process.env.SUPABASE_URL,
+    serviceKey: process.env.SUPABASE_SERVICE_KEY,
+  };
+}
+
+export function getProdSupabaseCreds(): ProdCreds {
+  if (!captured) {
+    throw new Error("captureProdSupabaseCreds() must be called before the local Supabase remap");
+  }
+  return captured;
+}

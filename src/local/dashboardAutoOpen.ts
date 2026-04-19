@@ -12,13 +12,13 @@ import { spawn, execSync } from "child_process";
 import * as fs from "fs";
 import * as net from "net";
 import * as path from "path";
-import { PROD_SUPABASE_URL, PROD_SUPABASE_SERVICE_KEY } from "./prodSupabaseCreds";
+import { getProdSupabaseCreds } from "./prodSupabaseCreds";
 import { parseCsvRecords } from "../utils/csv";
 
 const DASHBOARD_PORT = 8001;
 const DASHBOARD_HOST = "127.0.0.1";
 const PORT_PROBE_TIMEOUT_MS = 500;
-const DASHBOARD_WAIT_ATTEMPTS = 40;
+const DASHBOARD_STARTUP_TIMEOUT_MS = 10_000;
 const DASHBOARD_WAIT_INTERVAL_MS = 250;
 const BUILD_LOCK_POLL_MS = 500;
 const BUILD_LOCK_MAX_WAIT_MS = 120_000;
@@ -42,7 +42,8 @@ function isPortListening(port: number, host: string, timeoutMs = PORT_PROBE_TIME
 }
 
 async function waitForPort(port: number, host: string): Promise<boolean> {
-  for (let i = 0; i < DASHBOARD_WAIT_ATTEMPTS; i++) {
+  const deadline = Date.now() + DASHBOARD_STARTUP_TIMEOUT_MS;
+  while (Date.now() < deadline) {
     if (await isPortListening(port, host)) return true;
     await new Promise((r) => setTimeout(r, DASHBOARD_WAIT_INTERVAL_MS));
   }
@@ -94,9 +95,10 @@ async function ensureDashboardRunning(): Promise<void> {
 
   // The pipeline process remapped SUPABASE_URL/KEY to local; the dashboard server
   // must inject PROD creds into the page or the browser queries the wrong DB.
+  const prod = getProdSupabaseCreds();
   const childEnv = { ...process.env };
-  if (PROD_SUPABASE_URL) childEnv.SUPABASE_URL = PROD_SUPABASE_URL;
-  if (PROD_SUPABASE_SERVICE_KEY) childEnv.SUPABASE_SERVICE_KEY = PROD_SUPABASE_SERVICE_KEY;
+  if (prod.url) childEnv.SUPABASE_URL = prod.url;
+  if (prod.serviceKey) childEnv.SUPABASE_SERVICE_KEY = prod.serviceKey;
 
   console.log(`[dashboard] starting server at http://localhost:${DASHBOARD_PORT} (log: ${logPath})`);
   const child = spawn("bun", ["run", "serve-review"], {
@@ -126,10 +128,11 @@ function readCsvRows(csvPath: string): Record<string, string>[] {
 }
 
 async function uploadCsvToProdDashboard(csvPath: string, name: string): Promise<string> {
-  if (!PROD_SUPABASE_URL || !PROD_SUPABASE_SERVICE_KEY) {
-    throw new Error("PROD_SUPABASE_URL/SERVICE_KEY missing (prodSupabaseCreds must import before remap)");
+  const prod = getProdSupabaseCreds();
+  if (!prod.url || !prod.serviceKey) {
+    throw new Error("Prod Supabase creds missing — captureProdSupabaseCreds() must be called before the local remap");
   }
-  const client = createClient(PROD_SUPABASE_URL, PROD_SUPABASE_SERVICE_KEY);
+  const client = createClient(prod.url, prod.serviceKey);
   const rows = readCsvRows(csvPath);
   if (rows.length === 0) throw new Error(`no rows in ${csvPath}`);
 

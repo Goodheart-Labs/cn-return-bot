@@ -30,6 +30,17 @@ export interface OutputFolder {
   appendRow: (row: string) => void;
 }
 
+export function buildRunName(
+  folderPrefix: string,
+  datasetName?: string,
+  botId?: string,
+  webSearch?: string,
+): string {
+  const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 16);
+  const parts = [folderPrefix, datasetName ?? "run", botId, webSearch].filter(Boolean);
+  return `${parts.join("_")}_${ts}`;
+}
+
 export function initOutputFolder(prefix: string, datasetName?: string, botName?: string): OutputFolder {
   const baseDir = path.join(process.cwd(), "dataset_runs");
   // YYYYMMDDHHmmssSSS-<pid> — ms precision + PID keep parallel runs from colliding

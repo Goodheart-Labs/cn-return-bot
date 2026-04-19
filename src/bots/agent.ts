@@ -8,7 +8,7 @@
 import type { Post } from "../api/fetchEligiblePosts";
 import { Bot, PipelineResult, PipelineOutcome, outcomeToResult, type PostContent } from "./types";
 import type { BotInput } from "../pipeline/input/createBotInput";
-import { randomizeConfig, withBotConfig, getBotConfig } from "../pipeline/utils/botConfig";
+import { randomizeConfig, withBotConfig, getBotConfig, getFullBotId } from "../pipeline/utils/botConfig";
 import { withCostTracker, aggregateAndLogCosts } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
@@ -68,7 +68,7 @@ export const agentBot: Bot = {
   description: "Agentic bot with tool calling",
   async runPipeline(post, content): Promise<PipelineResult | null> {
     const config = randomizeConfig();
-    const fullBotId = `${this.id}_${config.configName}`;
+    const fullBotId = getFullBotId(this.id, config);
 
     return withBotConfig(config, () => withCostTracker(async () => {
       getTweetLog()?.set("bot.id", fullBotId);

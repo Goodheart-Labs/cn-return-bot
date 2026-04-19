@@ -8,9 +8,9 @@
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { selectRandomBot, getBotProbabilities } from "../../bots/index";
-import { processSingleTweet } from "./processTweet";
+import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
 import type { Candidate } from "./submitCandidates";
-import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, type TweetLogMap } from "../utils/tweetLog";
+import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { determineFeedSize, buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions } from "./utils/tweetSorting";
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -105,7 +105,22 @@ function logMediaBreakdown(posts: Post[]): void {
 // Main
 // ---------------------------------------------------------------------------
 
-export async function generateCandidates(supabaseLogger: SupabaseLogger | null, { maxPosts }: { maxPosts: number }): Promise<Candidate[]> {
+export interface TweetProcessedEvent {
+  post: Post;
+  tweetResult: ProcessTweetResult;
+  log: TweetLogMap;
+  botId: string;
+}
+
+export interface GenerateCandidatesOptions {
+  maxPosts: number;
+  onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+}
+
+export async function generateCandidates(
+  supabaseLogger: SupabaseLogger | null,
+  { maxPosts, onTweetProcessed }: GenerateCandidatesOptions,
+): Promise<Candidate[]> {
   const commit = process.env.GITHUB_SHA;
 
   // Log bot probabilities (compact single line)
@@ -147,9 +162,14 @@ export async function generateCandidates(supabaseLogger: SupabaseLogger | null, 
       console.log(formatTweetLogFull(log));
       allLogs.push(log);
 
+      const botId = getLoggedBotId(selectedBot.id, log);
+      if (onTweetProcessed) {
+        try { await onTweetProcessed({ post, tweetResult, log, botId }); }
+        catch (err) { console.warn("[generate] onTweetProcessed hook failed:", err); }
+      }
+
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        const loggedBotId = (log.get("bot.id") as string | undefined) ?? selectedBot.id;
-        candidates.push({ post, tweetResult, botId: loggedBotId });
+        candidates.push({ post, tweetResult, botId });
       }
     });
   }

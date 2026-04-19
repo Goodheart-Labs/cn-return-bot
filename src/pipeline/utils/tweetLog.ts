@@ -34,6 +34,16 @@ export function withTweetLog<T>(log: TweetLogMap, fn: () => T): T {
   return logStorage.run(log, fn);
 }
 
+/**
+ * Bot id written to the log by the bot that ran — includes config variant
+ * (e.g. "agent_gemini-flash-searxng"). Falls back to the bare bot id if the
+ * bot didn't write one.
+ */
+export function getLoggedBotId(fallback: string, log?: TweetLogMap): string {
+  const source = log ?? getTweetLog();
+  return (source?.get("bot.id") as string | undefined) ?? fallback;
+}
+
 // ---------------------------------------------------------------------------
 // LLM call logging helper
 // ---------------------------------------------------------------------------
