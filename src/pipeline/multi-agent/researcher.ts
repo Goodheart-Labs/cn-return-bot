@@ -7,6 +7,7 @@
 
 import type { AgentDef } from "../tool-calling/agentLoop";
 import {
+  GOOGLE_SEARCH_TOOL,
   GROK_SEARCH_TOOL,
   PERPLEXITY_SEARCH_TOOL,
   WEB_FETCH_TOOL,
@@ -15,10 +16,18 @@ import {
 import type { BotConfig } from "../utils/botConfig";
 import { getBotConfig } from "../utils/botConfig";
 
+function searchToolName(config: BotConfig): string {
+  switch (config.web_search) {
+    case "native": return "web_search";
+    case "searxng":
+    case "searxng_summarized": return "google_search";
+    default: return "perplexity_search";
+  }
+}
+
 function buildResearcherPrompt(config: BotConfig): string {
-  const searchTool = config.web_search === "native"
-    ? "web_search: General web search for fact-checking."
-    : "perplexity_search: General web search for fact-checking.";
+  const name = searchToolName(config);
+  const searchTool = `${name}: General web search for fact-checking.`;
 
   return `You are a research agent for Community Notes fact-checking on X/Twitter.
 
@@ -31,7 +40,7 @@ Your job: investigate whether the post contains a factual error that would benef
 
 ## Workflow
 1. Read the post. Identify the core factual claim(s).
-2. Search for evidence using grok_search, ${config.web_search === "native" ? "web_search" : "perplexity_search"}, or both — whichever is appropriate.
+2. Search for evidence using grok_search, ${name}, or both — whichever is appropriate.
 3. When you realize that the tweet does not need a correction probably then stop early. Most tweets do not need a correction! 
 4. Write your findings as your final text response — the notewriter will receive them directly.
 
@@ -64,6 +73,8 @@ export function createResearcherDef(): AgentDef {
 
   if (config.web_search === "native") {
     tools.push(WEB_SEARCH_TOOL);
+  } else if (config.web_search === "searxng" || config.web_search === "searxng_summarized") {
+    tools.push(GOOGLE_SEARCH_TOOL);
   } else {
     tools.push(PERPLEXITY_SEARCH_TOOL);
   }

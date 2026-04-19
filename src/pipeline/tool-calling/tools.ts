@@ -13,10 +13,14 @@ import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../write/writeNote";
 import { getBotConfig } from "../utils/botConfig";
 import {
+  GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
   calculateGrokCost, extractOpenRouterCost,
   type TokenCost,
 } from "../utils/pricing";
+
+const SEARXNG_URL = process.env.SEARXNG_URL ?? "http://localhost:8080";
+const SEARXNG_MAX_RESULTS = 10;
 
 const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced" });
 
@@ -48,6 +52,21 @@ export const PERPLEXITY_SEARCH_TOOL = {
         prompt: { type: "string" as const, description: "The search prompt. Can include rich context" },
       },
       required: ["prompt"],
+    },
+  },
+};
+
+export const GOOGLE_SEARCH_TOOL = {
+  type: "function" as const,
+  function: {
+    name: "google_search",
+    description: "Search Google for web pages matching a query. Returns titles, URLs, and snippets.",
+    parameters: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string" as const, description: "The Google search query." },
+      },
+      required: ["query"],
     },
   },
 };
@@ -135,9 +154,11 @@ export function buildToolList(): any[] {
     tools.push(CODE_EXECUTION_TOOL);
   }
 
-  // Web search: native (Claude web_search via OpenRouter) or perplexity
+  // Web search: native (Claude web_search via OpenRouter), perplexity, or searxng
   if (config.web_search === "native") {
     tools.push(WEB_SEARCH_TOOL);
+  } else if (config.web_search === "searxng" || config.web_search === "searxng_summarized") {
+    tools.push(GOOGLE_SEARCH_TOOL);
   } else {
     tools.push(PERPLEXITY_SEARCH_TOOL);
   }
@@ -164,6 +185,10 @@ export async function executeToolCall(
       return handleGrokSearch(args.query);
     case "perplexity_search":
       return handlePerplexitySearch(args.prompt ?? args.query);
+    case "google_search":
+      return getBotConfig().web_search === "searxng_summarized"
+        ? handleGoogleSearchSummarized(args.query)
+        : handleGoogleSearchRaw(args.query);
     case "web_fetch":
       return handleWebFetch(args.url);
     case "propose_notes":
@@ -212,6 +237,69 @@ export async function handlePerplexitySearch(prompt: string): Promise<ToolResult
   const cost = extractOpenRouterCost(result);
 
   return { output: { results: content, citations }, isTerminal: false, cost };
+}
+
+interface SearxngResult {
+  title: string;
+  url: string;
+  content: string;
+}
+
+async function fetchSearxngResults(query: string): Promise<SearxngResult[]> {
+  const endpoint = `${SEARXNG_URL}/search?q=${encodeURIComponent(query)}&format=json&engines=google`;
+  const response = await fetch(endpoint, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; CommunityNotesBot/1.0)" },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok) throw new Error(`SearXNG HTTP ${response.status}`);
+  const data: any = await response.json();
+  const results: any[] = data?.results ?? [];
+  return results.slice(0, SEARXNG_MAX_RESULTS).map((r) => ({
+    title: r.title ?? "",
+    url: r.url ?? "",
+    content: r.content ?? "",
+  }));
+}
+
+function formatSearxngResults(results: SearxngResult[]): string {
+  if (results.length === 0) return "No results.";
+  return results
+    .map((r, i) => `${i + 1}. ${r.title}\n   ${r.url}\n   ${r.content}`)
+    .join("\n\n");
+}
+
+export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> {
+  try {
+    const results = await fetchSearxngResults(query);
+    return { output: { results: formatSearxngResults(results) }, isTerminal: false };
+  } catch (err: any) {
+    return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
+  }
+}
+
+export async function handleGoogleSearchSummarized(query: string): Promise<ToolResult> {
+  let results: SearxngResult[];
+  try {
+    results = await fetchSearxngResults(query);
+  } catch (err: any) {
+    return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
+  }
+
+  const prompt = `You are a research assistant. The user searched for: "${query}"
+
+Here are the search results:
+${formatSearxngResults(results)}
+
+Summarize the most relevant findings. Include the URLs of the most important sources inline in your summary. Focus on factual claims and verifiable information.`;
+
+  const response = await llm.create({
+    model: GEMINI_MODEL,
+    messages: [{ role: "user" as const, content: prompt }],
+  });
+  const summary = response.choices?.[0]?.message?.content ?? "";
+  const cost = extractOpenRouterCost(response);
+
+  return { output: { results: summary }, isTerminal: false, cost };
 }
 
 export async function handleWebFetch(url: string): Promise<ToolResult> {

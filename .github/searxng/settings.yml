@@ -1,0 +1,11 @@
+use_default_settings: true
+
+server:
+  secret_key: "cn-return-bot-local-dev-key"
+  limiter: false
+  image_proxy: false
+
+search:
+  formats:
+    - html
+    - json

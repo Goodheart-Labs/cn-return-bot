@@ -13,7 +13,7 @@ export interface ScoreFilter {
 
 export interface BotConfig {
   model: string;
-  web_search: "native" | "perplexity";
+  web_search: "native" | "perplexity" | "searxng" | "searxng_summarized";
   video_description_strategy: VideoDescriptionStrategy;
   scoreFilters: ScoreFilter[];
 }
@@ -36,10 +36,26 @@ interface ConfigVariant {
 const CONFIG_VARIANTS: ConfigVariant[] = [
   {
     name: "gemini-flash-perplexity",
-    weight: 100,
+    weight: 1,
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "perplexity",
+    },
+  },
+  {
+    name: "gemini-flash-searxng",
+    weight: 1,
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "searxng",
+    },
+  },
+  {
+    name: "gemini-flash-searxng-summarized",
+    weight: 1,
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "searxng_summarized",
     },
   },
 ];

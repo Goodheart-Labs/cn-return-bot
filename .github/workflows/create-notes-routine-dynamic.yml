@@ -22,9 +22,28 @@ jobs:
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       # Groq API key for Whisper audio transcription (video analysis)
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      # SearXNG instance running as a Docker container (see "Start SearXNG" step)
+      SEARXNG_URL: http://localhost:8080
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Start SearXNG
+        run: |
+          docker run -d --name searxng \
+            -p 8080:8080 \
+            -v "${{ github.workspace }}/.github/searxng:/etc/searxng:ro" \
+            searxng/searxng:latest
+          for i in {1..30}; do
+            if curl -sf "http://localhost:8080/search?q=test&format=json" > /dev/null; then
+              echo "SearXNG is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "SearXNG failed to start"
+          docker logs searxng || true
+          exit 1
 
       - uses: oven-sh/setup-bun@v1
         with:
