@@ -295,7 +295,7 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
 Here are the search results:
 ${formatSearxngResults(results)}
 
-Summarize the most relevant findings. Include the URLs of the most important sources inline in your summary. Focus on factual claims and verifiable information.`;
+Summarize the most relevant findings. Include the URLs of the most important sources inline in your summary. Include a lot of URLs. Focus on factual claims and verifiable information.`;
 
   const response = await llm.create({
     model: GEMINI_MODEL,
