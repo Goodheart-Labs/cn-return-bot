@@ -9,7 +9,7 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PostContent, PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig, type ScoreFilter } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
@@ -22,6 +22,12 @@ import { createNotewriterDef } from "./notewriter";
 
 const MAX_TURNS = 10;
 const MAX_SOURCE_VERIFICATION_ATTEMPTS = 2;
+
+// Filters baked into every multi-agent variant — the tweet must make a real
+// factual claim (not satire/opinion) before we accept the note.
+const MULTI_AGENT_DEFAULT_FILTERS: ScoreFilter[] = [
+  { score: "noteNotNeeded", op: "gte", threshold: 0.8 },
+];
 
 interface PipelineState {
   post: Post;
@@ -109,7 +115,8 @@ async function applyConfiguredScoreFilters(
   note: EvaluatedNote,
 ): Promise<PipelineOutcome | null> {
   const config = getBotConfig();
-  if (!config.scoreFilters.length) return null;
+  const filters = [...MULTI_AGENT_DEFAULT_FILTERS, ...config.scoreFilters];
+  if (!filters.length) return null;
 
   const log = getTweetLog();
   const scores = await runNoteScores(
@@ -118,7 +125,7 @@ async function applyConfiguredScoreFilters(
     state.researcherFindings,
     note.sources.join(" "),
   );
-  const failure = applyScoreFilters(scores, config.scoreFilters);
+  const failure = applyScoreFilters(scores, filters);
 
   log?.set("multiAgent.scoreFilters.result", failure ?? "passed");
 
