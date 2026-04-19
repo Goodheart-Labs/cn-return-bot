@@ -243,6 +243,7 @@ interface SearxngResult {
   title: string;
   url: string;
   content: string;
+  publishedDate: string | null;
 }
 
 async function fetchSearxngResults(query: string): Promise<SearxngResult[]> {
@@ -258,13 +259,17 @@ async function fetchSearxngResults(query: string): Promise<SearxngResult[]> {
     title: r.title ?? "",
     url: r.url ?? "",
     content: r.content ?? "",
+    publishedDate: r.publishedDate ?? null,
   }));
 }
 
 function formatSearxngResults(results: SearxngResult[]): string {
   if (results.length === 0) return "No results.";
   return results
-    .map((r, i) => `${i + 1}. ${r.title}\n   ${r.url}\n   ${r.content}`)
+    .map((r, i) => {
+      const dateLine = r.publishedDate ? `\n   Published: ${r.publishedDate}` : "";
+      return `${i + 1}. ${r.title}${dateLine}\n   ${r.url}\n   ${r.content}`;
+    })
     .join("\n\n");
 }
 

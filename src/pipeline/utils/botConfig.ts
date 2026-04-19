@@ -16,6 +16,7 @@ export interface BotConfig {
   web_search: "native" | "perplexity" | "searxng" | "searxng_summarized";
   video_description_strategy: VideoDescriptionStrategy;
   scoreFilters: ScoreFilter[];
+  parallel_research: boolean;
 }
 
 // --- Default config + variants ---
@@ -25,6 +26,7 @@ const DEFAULT_CONFIG: BotConfig = {
   web_search: "perplexity",
   video_description_strategy: "frames",
   scoreFilters: [{ score: "noteNotNeeded", op: "gte", threshold: 0.8 }],
+  parallel_research: false,
 };
 
 interface ConfigVariant {
@@ -58,6 +60,33 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
       web_search: "searxng_summarized",
     },
   },
+  {
+    name: "gemini-flash-perplexity-parallel",
+    weight: 1,
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "perplexity",
+      parallel_research: true,
+    },
+  },
+  {
+    name: "gemini-flash-searxng-parallel",
+    weight: 1,
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "searxng",
+      parallel_research: true,
+    },
+  },
+  {
+    name: "gemini-flash-searxng-summarized-parallel",
+    weight: 1,
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "searxng_summarized",
+      parallel_research: true,
+    },
+  },
 ];
 
 // --- AsyncLocalStorage ---
@@ -87,12 +116,21 @@ function pickVariant(variants: ConfigVariant[]): ConfigVariant {
 }
 
 export function randomizeConfig(): BotConfig {
-  const forced = process.env.FORCE_WEB_SEARCH;
-  if (forced) {
-    const match = CONFIG_VARIANTS.find((v) => v.overrides.web_search === forced);
-    if (!match) throw new Error(`FORCE_WEB_SEARCH=${forced} has no matching CONFIG_VARIANTS entry`);
-    return { ...DEFAULT_CONFIG, ...match.overrides };
+  const forcedSearch = process.env.FORCE_WEB_SEARCH;
+  const forcedParallel = process.env.FORCE_PARALLEL_RESEARCH === "1";
+
+  let base: BotConfig;
+  if (forcedSearch) {
+    const match = CONFIG_VARIANTS.find(
+      (v) => v.overrides.web_search === forcedSearch && !v.overrides.parallel_research,
+    );
+    if (!match) throw new Error(`FORCE_WEB_SEARCH=${forcedSearch} has no matching CONFIG_VARIANTS entry`);
+    base = { ...DEFAULT_CONFIG, ...match.overrides };
+  } else {
+    const variant = pickVariant(CONFIG_VARIANTS);
+    base = { ...DEFAULT_CONFIG, ...variant.overrides };
   }
-  const variant = pickVariant(CONFIG_VARIANTS);
-  return { ...DEFAULT_CONFIG, ...variant.overrides };
+
+  if (forcedParallel) base.parallel_research = true;
+  return base;
 }
