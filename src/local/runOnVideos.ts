@@ -170,7 +170,7 @@ async function main() {
     reversed: parsed.reversed,
     concurrency: parsed.concurrency,
     runName: parsed.runName,
-    configOverrides: parsed.webSearch ? { webSearch: parsed.webSearch } : undefined,
+    configOverrides: parsed.configName ? { configName: parsed.configName } : undefined,
     cleanup: async () => {
       fs.rmSync(downloadDir, { recursive: true, force: true });
       console.log(`[runOnVideos] Cleaned up temp directory`);

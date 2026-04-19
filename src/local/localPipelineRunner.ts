@@ -9,7 +9,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotById, getEnabledBots } from "../bots/index";
 import { processSingleTweet } from "../pipeline/orchestration/processTweet";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { withConfigOverrides, type ConfigOverrides } from "../pipeline/utils/botConfig";
+import { getConfigVariantNames, withConfigOverrides, type ConfigOverrides } from "../pipeline/utils/botConfig";
 import { createTweetLog, getLoggedBotId, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";
 import type { Post } from "../api/fetchEligiblePosts";
 import * as fs from "fs";
@@ -93,16 +93,13 @@ export function parseInputCsv(filePath: string): InputRow[] {
 // CLI helpers
 // ---------------------------------------------------------------------------
 
-const WEB_SEARCH_CHOICES = ["native", "perplexity", "searxng", "searxng_summarized"] as const;
-type WebSearchChoice = typeof WEB_SEARCH_CHOICES[number];
-
 export interface ParsedCliArgs {
   inputs: InputRow[];
   forcedBotId?: string;
   datasetName: string;
   reversed: boolean;
   concurrency?: number;
-  webSearch?: WebSearchChoice;
+  configName?: string;
   runName?: string;
 }
 
@@ -123,13 +120,14 @@ export function parseCliArgs(
   opts?: { transformArg?: (arg: string) => string }
 ): ParsedCliArgs {
   const args = process.argv.slice(2);
+  const variantNames = getConfigVariantNames();
   if (args.length === 0) {
     console.error(`Usage: bun run src/local/${scriptName}.ts [flags] <input.csv | url...>`);
     console.error("  --bot <id>              force a specific bot");
     console.error("  --max <n>               limit number of inputs");
     console.error("  --reversed              process newest-last");
     console.error("  --concurrency <n>       parallel workers (default 5)");
-    console.error(`  --web-search <mode>     force web_search config (${WEB_SEARCH_CHOICES.join("|")})`);
+    console.error(`  --config-name <name>    force a BotConfig variant (${variantNames.join("|")})`);
     console.error("  --name <label>          name for dashboard upload (default: derived)");
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);
@@ -166,14 +164,14 @@ export function parseCliArgs(
     }
   }
 
-  let webSearch: WebSearchChoice | undefined;
-  const wsVal = takeFlagValue(args, "--web-search");
-  if (wsVal !== undefined) {
-    if (!WEB_SEARCH_CHOICES.includes(wsVal as WebSearchChoice)) {
-      console.error(`--web-search must be one of ${WEB_SEARCH_CHOICES.join("|")}`);
+  let configName: string | undefined;
+  const cnVal = takeFlagValue(args, "--config-name");
+  if (cnVal !== undefined) {
+    if (!variantNames.includes(cnVal)) {
+      console.error(`--config-name must be one of ${variantNames.join("|")}`);
       process.exit(1);
     }
-    webSearch = wsVal as WebSearchChoice;
+    configName = cnVal;
   }
 
   const runName = takeFlagValue(args, "--name");
@@ -205,7 +203,7 @@ export function parseCliArgs(
 
   if (maxInputs) inputs = inputs.slice(0, maxInputs);
 
-  return { inputs, forcedBotId, datasetName, reversed, concurrency, webSearch, runName };
+  return { inputs, forcedBotId, datasetName, reversed, concurrency, configName, runName };
 }
 
 
@@ -413,6 +411,6 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   try { await closeBrowser(); } catch {}
 
-  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId, configOverrides.webSearch);
+  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId, configOverrides.configName);
   await autoOpenInDashboard(output.csvPath, uploadLabel);
 }

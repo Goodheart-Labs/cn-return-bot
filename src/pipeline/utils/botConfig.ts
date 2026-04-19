@@ -108,8 +108,7 @@ export function getBotConfig(): BotConfig {
 // --- Config overrides (force a specific variant at the pipeline entry point) ---
 
 export interface ConfigOverrides {
-  webSearch?: BotConfig["web_search"];
-  parallelResearch?: boolean;
+  configName?: string;
 }
 
 const overridesStorage = new AsyncLocalStorage<ConfigOverrides>();
@@ -120,6 +119,10 @@ export function withConfigOverrides<T>(overrides: ConfigOverrides, fn: () => T):
 
 function getConfigOverrides(): ConfigOverrides {
   return overridesStorage.getStore() ?? {};
+}
+
+export function getConfigVariantNames(): string[] {
+  return CONFIG_VARIANTS.map((v) => v.name);
 }
 
 // --- Randomization ---
@@ -139,18 +142,14 @@ export function getFullBotId(botId: string, config: BotConfig): string {
 }
 
 export function randomizeConfig(): BotConfig {
-  const { webSearch: forcedSearch, parallelResearch: forcedParallel = false } = getConfigOverrides();
+  const { configName: forcedName } = getConfigOverrides();
 
   let variant: ConfigVariant;
-  if (forcedSearch) {
-    const match = CONFIG_VARIANTS.find(
-      (v) =>
-        v.overrides.web_search === forcedSearch &&
-        Boolean(v.overrides.parallel_research) === forcedParallel,
-    );
+  if (forcedName) {
+    const match = CONFIG_VARIANTS.find((v) => v.name === forcedName);
     if (!match) {
       throw new Error(
-        `No CONFIG_VARIANTS entry for web_search=${forcedSearch} parallel=${forcedParallel}`,
+        `No CONFIG_VARIANTS entry named "${forcedName}". Available: ${getConfigVariantNames().join(", ")}`,
       );
     }
     variant = match;
