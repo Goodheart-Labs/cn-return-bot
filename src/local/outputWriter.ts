@@ -32,7 +32,10 @@ export interface OutputFolder {
 
 export function initOutputFolder(prefix: string, datasetName?: string, botName?: string): OutputFolder {
   const baseDir = path.join(process.cwd(), "dataset_runs");
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "").replace("T", "-").slice(0, 15);
+  // YYYYMMDDHHmmssSSS-<pid> — ms precision + PID keep parallel runs from colliding
+  const iso = new Date().toISOString(); // 2026-04-19T08:50:12.345Z
+  const stamp = iso.replace(/[-:T.Z]/g, "").slice(0, 17); // 20260419085012345
+  const timestamp = `${stamp}-${process.pid}`;
   const folderPath = path.join(baseDir, `${prefix}-${timestamp}`);
   fs.mkdirSync(folderPath, { recursive: true });
 

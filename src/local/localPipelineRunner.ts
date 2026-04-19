@@ -91,43 +91,97 @@ export function parseInputCsv(filePath: string): InputRow[] {
 // CLI helpers
 // ---------------------------------------------------------------------------
 
+const WEB_SEARCH_CHOICES = ["native", "perplexity", "searxng", "searxng_summarized"] as const;
+type WebSearchChoice = typeof WEB_SEARCH_CHOICES[number];
+
+export interface ParsedCliArgs {
+  inputs: InputRow[];
+  forcedBotId?: string;
+  datasetName: string;
+  reversed: boolean;
+  concurrency?: number;
+  webSearch?: WebSearchChoice;
+  runName?: string;
+}
+
+function takeFlagValue(args: string[], flag: string): string | undefined {
+  const idx = args.indexOf(flag);
+  if (idx === -1) return undefined;
+  const value = args[idx + 1];
+  if (!value || value.startsWith("--")) {
+    console.error(`${flag} requires a value`);
+    process.exit(1);
+  }
+  args.splice(idx, 2);
+  return value;
+}
+
 export function parseCliArgs(
   scriptName: string,
   opts?: { transformArg?: (arg: string) => string }
-): { inputs: InputRow[]; forcedBotId?: string; datasetName: string } {
+): ParsedCliArgs {
   const args = process.argv.slice(2);
   if (args.length === 0) {
-    console.error(`Usage: bun run src/scripts/${scriptName}.ts [--bot <bot-id>] [--max <n>] <input.csv>`);
-    console.error(`       bun run src/scripts/${scriptName}.ts [--bot <bot-id>] [--max <n>] <url1> <url2> ...`);
+    console.error(`Usage: bun run src/local/${scriptName}.ts [flags] <input.csv | url...>`);
+    console.error("  --bot <id>              force a specific bot");
+    console.error("  --max <n>               limit number of inputs");
+    console.error("  --reversed              process newest-last");
+    console.error("  --concurrency <n>       parallel workers (default 5)");
+    console.error(`  --web-search <mode>     force web_search config (${WEB_SEARCH_CHOICES.join("|")})`);
+    console.error("  --name <label>          name for dashboard upload (default: derived)");
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);
   }
 
   let forcedBotId: string | undefined;
-  const botFlagIdx = args.indexOf("--bot");
-  if (botFlagIdx !== -1) {
-    forcedBotId = args[botFlagIdx + 1];
-    if (!forcedBotId) {
-      console.error("--bot requires a bot ID");
-      process.exit(1);
-    }
-    if (!getBotById(forcedBotId)) {
-      console.error(`Unknown bot: ${forcedBotId}`);
+  const botVal = takeFlagValue(args, "--bot");
+  if (botVal) {
+    if (!getBotById(botVal)) {
+      console.error(`Unknown bot: ${botVal}`);
       console.error("Available bots:", getEnabledBots().map((b) => b.id).join(", "));
       process.exit(1);
     }
-    args.splice(botFlagIdx, 2);
+    forcedBotId = botVal;
   }
 
   let maxInputs: number | undefined;
-  const maxFlagIdx = args.indexOf("--max");
-  if (maxFlagIdx !== -1) {
-    maxInputs = parseInt(args[maxFlagIdx + 1]!, 10);
+  const maxVal = takeFlagValue(args, "--max");
+  if (maxVal !== undefined) {
+    maxInputs = parseInt(maxVal, 10);
     if (!maxInputs || maxInputs < 1) {
       console.error("--max requires a positive number");
       process.exit(1);
     }
-    args.splice(maxFlagIdx, 2);
+  }
+
+  let concurrency: number | undefined;
+  const concVal = takeFlagValue(args, "--concurrency");
+  if (concVal !== undefined) {
+    concurrency = parseInt(concVal, 10);
+    if (!concurrency || concurrency < 1) {
+      console.error("--concurrency requires a positive number");
+      process.exit(1);
+    }
+  }
+
+  let webSearch: WebSearchChoice | undefined;
+  const wsVal = takeFlagValue(args, "--web-search");
+  if (wsVal !== undefined) {
+    if (!WEB_SEARCH_CHOICES.includes(wsVal as WebSearchChoice)) {
+      console.error(`--web-search must be one of ${WEB_SEARCH_CHOICES.join("|")}`);
+      process.exit(1);
+    }
+    webSearch = wsVal as WebSearchChoice;
+    process.env.FORCE_WEB_SEARCH = webSearch;
+  }
+
+  const runName = takeFlagValue(args, "--name");
+
+  let reversed = false;
+  const reversedFlagIdx = args.indexOf("--reversed");
+  if (reversedFlagIdx !== -1) {
+    reversed = true;
+    args.splice(reversedFlagIdx, 1);
   }
 
   // Apply per-script arg transformation (e.g. bare tweet IDs → URLs)
@@ -150,7 +204,7 @@ export function parseCliArgs(
 
   if (maxInputs) inputs = inputs.slice(0, maxInputs);
 
-  return { inputs, forcedBotId, datasetName };
+  return { inputs, forcedBotId, datasetName, reversed, concurrency, webSearch, runName };
 }
 
 
@@ -237,6 +291,7 @@ export interface RunPipelineOptions {
   forcedBotId?: string;
   datasetName?: string;
   concurrency?: number;
+  reversed?: boolean;
   cleanup?: () => Promise<void>;
 }
 
@@ -249,6 +304,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     forcedBotId,
     datasetName,
     concurrency = 5,
+    reversed = false,
     cleanup,
   } = options;
 
@@ -272,7 +328,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   const queue = new PQueue({ concurrency });
 
-  for (const [idx, input] of inputs.entries()) {
+  const orderedInputs = reversed ? [...inputs].reverse() : inputs;
+  for (const [i, input] of orderedInputs.entries()) {
+    const idx = reversed ? inputs.length - 1 - i : i;
     queue.add(async () => {
       const completed: CompletedResult = {
         idx,

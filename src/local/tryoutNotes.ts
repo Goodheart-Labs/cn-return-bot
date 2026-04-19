@@ -53,17 +53,17 @@ const fetchPost: PostFetcher = async (input) => {
 };
 
 async function main() {
-  const { inputs, forcedBotId, datasetName } = parseCliArgs("tryoutNotes", {
-    transformArg: tweetIdToUrl,
-  });
+  const parsed = parseCliArgs("tryoutNotes", { transformArg: tweetIdToUrl });
 
   await runPipeline({
     scriptName: "tryoutNotes",
     folderPrefix: "tryout",
-    inputs,
+    inputs: parsed.inputs,
     fetchPost,
-    forcedBotId,
-    datasetName,
+    forcedBotId: parsed.forcedBotId,
+    datasetName: parsed.datasetName,
+    reversed: parsed.reversed,
+    concurrency: parsed.concurrency,
   });
 }
 
