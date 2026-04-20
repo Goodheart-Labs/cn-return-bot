@@ -5,9 +5,15 @@
  * Uses Nathan's X API credentials to fetch tweets identically to production.
  *
  * Usage:
- *   bun run src/scripts/tryoutNotes.ts <tweet-url-or-id> [<tweet-url-or-id> ...]
- *   bun run src/scripts/tryoutNotes.ts input.csv
- *   bun run src/scripts/tryoutNotes.ts --bot <bot-id> <tweet-url-or-id>
+ *   bun run src/local/tryoutNotes.ts [flags] <input.csv | tweet-url-or-id...>
+ *
+ * Flags:
+ *   --bot <id>              force a specific bot
+ *   --max <n>               limit number of inputs
+ *   --reversed              process newest-last
+ *   --concurrency <n>       parallel workers (default 5)
+ *   --config-name <name>    force a BotConfig variant
+ *   --name <label>          name for dashboard upload (default: derived)
  */
 
 import "dotenv/config";

@@ -10,8 +10,15 @@
  *   - ground_truth_note (optional): what the note should say
  *
  * Usage:
- *   bun run src/scripts/runOnVideos.ts input.csv
- *   bun run src/scripts/runOnVideos.ts [--bot <bot-id>] <url1> <url2> ...
+ *   bun run src/local/runOnVideos.ts [flags] <input.csv | url...>
+ *
+ * Flags:
+ *   --bot <id>              force a specific bot
+ *   --max <n>               limit number of inputs
+ *   --reversed              process newest-last
+ *   --concurrency <n>       parallel workers (default 5)
+ *   --config-name <name>    force a BotConfig variant
+ *   --name <label>          name for dashboard upload (default: derived)
  */
 
 import "dotenv/config";
