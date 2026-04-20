@@ -33,7 +33,24 @@ export interface AllNoteScores {
 }
 
 /** Default model for note scores */
-const DEFAULT_SCORING_MODEL = "anthropic/claude-sonnet-4";
+const DEFAULT_SCORING_MODEL = "anthropic/claude-sonnet-4.6";
+
+const SCORE_RESPONSE_FORMAT = {
+  type: "json_schema" as const,
+  json_schema: {
+    name: "score_response",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        score: { type: "number", description: "Score between 0 and 1" },
+        reasoning: { type: "string", description: "Single sentence explanation" },
+      },
+      required: ["score", "reasoning"],
+      additionalProperties: false,
+    },
+  },
+};
 
 /**
  * Helper to call LLM and parse a scored response.
@@ -50,21 +67,13 @@ async function scoreWithLLM(
     const result = await llm.create({
       model,
       temperature: 0.2,
-      response_format: { type: "json_object" },
+      response_format: SCORE_RESPONSE_FORMAT,
       messages,
     });
     const content = result.choices?.[0]?.message?.content || "{}";
     const durationMs = Date.now() - startMs;
-    let parsed: { score?: number; reasoning?: string };
-    try {
-      parsed = JSON.parse(content);
-    } catch {
-      console.error(`[noteScores] JSON parse error in ${name}`);
-      return { name, score: defaultOnError, passed: defaultOnError > 0.5, reasoning: "Failed to parse",
-        llmContext: formatLlmMessages(messages), llmResponse: content, llmDurationMs: durationMs };
-    }
-    const score = parsed.score ?? defaultOnError;
-    return { name, score, passed: score > 0.5, reasoning: parsed.reasoning ?? "Could not parse reasoning",
+    const parsed: { score: number; reasoning: string } = JSON.parse(content);
+    return { name, score: parsed.score, passed: parsed.score > 0.5, reasoning: parsed.reasoning,
       llmContext: formatLlmMessages(messages), llmResponse: content, llmDurationMs: durationMs };
   } catch (error) {
     console.error(`[noteScores] Error in ${name}:`, error);
@@ -439,4 +448,25 @@ export function checkAllThresholds(
     scores.disagreement.score > thresholds.disagreement &&
     scores.helpfulness.score > thresholds.helpfulness
   );
+}
+
+/**
+ * Apply a list of score filters. Returns the first failure, or null if all pass.
+ */
+export function applyScoreFilters(
+  scores: AllNoteScores,
+  filters: Array<{ score: keyof AllNoteScores; op: "gte" | "lte"; threshold: number }>,
+): { failedFilter: string; reason: string } | null {
+  for (const filter of filters) {
+    const value = scores[filter.score].score;
+    const passed = filter.op === "gte" ? value >= filter.threshold : value <= filter.threshold;
+    if (!passed) {
+      const opSymbol = filter.op === "gte" ? ">=" : "<=";
+      return {
+        failedFilter: filter.score,
+        reason: `${filter.score} ${value.toFixed(2)} failed ${opSymbol} ${filter.threshold}`,
+      };
+    }
+  }
+  return null;
 }

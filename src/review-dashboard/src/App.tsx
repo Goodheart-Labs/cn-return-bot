@@ -34,8 +34,15 @@ function defaultFilters(source: "production" | "dataset_run"): FilterState {
   return { seen: "all", failureTypes, failureModes: new Set() };
 }
 
+function initialDatasetFromUrl(): DatasetOption {
+  if (typeof window === "undefined") return { type: "production", name: "Production" };
+  const uploadId = new URLSearchParams(window.location.search).get("upload");
+  if (uploadId) return { type: "dataset_run", id: uploadId, name: uploadId };
+  return { type: "production", name: "Production" };
+}
+
 export function App() {
-  const [dataset, setDataset] = useState<DatasetOption>({ type: "production", name: "Production" });
+  const [dataset, setDataset] = useState<DatasetOption>(initialDatasetFromUrl);
   const [uploads, setUploads] = useState<UploadInfo[]>([]);
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
@@ -47,7 +54,15 @@ export function App() {
 
   // Load uploads and failure mode catalog on mount
   useEffect(() => {
-    fetchUploads().then(setUploads).catch((e) => console.warn("Failed to fetch uploads (table may not exist yet):", e));
+    fetchUploads().then((all) => {
+      setUploads(all);
+      // Resolve placeholder name for ?upload=<id> initial dataset
+      setDataset((d) => {
+        if (d.type !== "dataset_run" || !d.id) return d;
+        const match = all.find((u) => u.id === d.id);
+        return match ? { type: "dataset_run", id: match.id, name: match.name } : d;
+      });
+    }).catch((e) => console.warn("Failed to fetch uploads (table may not exist yet):", e));
     fetchFailureModes().then(setFailureModeCatalog).catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
   }, []);
 

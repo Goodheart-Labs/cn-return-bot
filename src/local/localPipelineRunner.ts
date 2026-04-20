@@ -7,14 +7,17 @@
 
 import { SupabaseLogger } from "../api/supabaseClient";
 import { selectRandomBot, getBotById, getEnabledBots } from "../bots/index";
-import { processSingleTweet, type ProcessTweetResult } from "../pipeline/orchestration/processTweet";
+import { processSingleTweet } from "../pipeline/orchestration/processTweet";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { createTweetLog, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";
+import { getConfigVariantNames, withConfigOverrides, type ConfigOverrides } from "../pipeline/utils/botConfig";
+import { createTweetLog, getLoggedBotId, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";
 import type { Post } from "../api/fetchEligiblePosts";
 import * as fs from "fs";
 import * as path from "path";
 import PQueue from "p-queue";
-import { parseCsvRecords, escapeCsvField } from "../utils/csv";
+import { parseCsvRecords } from "../utils/csv";
+import { buildRunName, initOutputFolder, resultToCsvRow, errorToCsvRow } from "./outputWriter";
+import { autoOpenInDashboard } from "./dashboardAutoOpen";
 import {
   categorizeRow,
   writeResultJsons,
@@ -90,32 +93,94 @@ export function parseInputCsv(filePath: string): InputRow[] {
 // CLI helpers
 // ---------------------------------------------------------------------------
 
+export interface ParsedCliArgs {
+  inputs: InputRow[];
+  forcedBotId?: string;
+  datasetName: string;
+  reversed: boolean;
+  concurrency?: number;
+  configName?: string;
+  runName?: string;
+}
+
+function takeFlagValue(args: string[], flag: string): string | undefined {
+  const idx = args.indexOf(flag);
+  if (idx === -1) return undefined;
+  const value = args[idx + 1];
+  if (!value || value.startsWith("--")) {
+    console.error(`${flag} requires a value`);
+    process.exit(1);
+  }
+  args.splice(idx, 2);
+  return value;
+}
+
 export function parseCliArgs(
   scriptName: string,
   opts?: { transformArg?: (arg: string) => string }
-): { inputs: InputRow[]; forcedBotId?: string; datasetName: string } {
+): ParsedCliArgs {
   const args = process.argv.slice(2);
+  const variantNames = getConfigVariantNames();
   if (args.length === 0) {
-    console.error(`Usage: bun run src/scripts/${scriptName}.ts [--bot <bot-id>] <input.csv>`);
-    console.error(`       bun run src/scripts/${scriptName}.ts [--bot <bot-id>] <url1> <url2> ...`);
+    console.error(`Usage: bun run src/local/${scriptName}.ts [flags] <input.csv | url...>`);
+    console.error("  --bot <id>              force a specific bot");
+    console.error("  --max <n>               limit number of inputs");
+    console.error("  --reversed              process newest-last");
+    console.error("  --concurrency <n>       parallel workers (default 5)");
+    console.error(`  --config-name <name>    force a BotConfig variant (${variantNames.join("|")})`);
+    console.error("  --name <label>          name for dashboard upload (default: derived)");
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);
   }
 
   let forcedBotId: string | undefined;
-  const botFlagIdx = args.indexOf("--bot");
-  if (botFlagIdx !== -1) {
-    forcedBotId = args[botFlagIdx + 1];
-    if (!forcedBotId) {
-      console.error("--bot requires a bot ID");
-      process.exit(1);
-    }
-    if (!getBotById(forcedBotId)) {
-      console.error(`Unknown bot: ${forcedBotId}`);
+  const botVal = takeFlagValue(args, "--bot");
+  if (botVal) {
+    if (!getBotById(botVal)) {
+      console.error(`Unknown bot: ${botVal}`);
       console.error("Available bots:", getEnabledBots().map((b) => b.id).join(", "));
       process.exit(1);
     }
-    args.splice(botFlagIdx, 2);
+    forcedBotId = botVal;
+  }
+
+  let maxInputs: number | undefined;
+  const maxVal = takeFlagValue(args, "--max");
+  if (maxVal !== undefined) {
+    maxInputs = parseInt(maxVal, 10);
+    if (!maxInputs || maxInputs < 1) {
+      console.error("--max requires a positive number");
+      process.exit(1);
+    }
+  }
+
+  let concurrency: number | undefined;
+  const concVal = takeFlagValue(args, "--concurrency");
+  if (concVal !== undefined) {
+    concurrency = parseInt(concVal, 10);
+    if (!concurrency || concurrency < 1) {
+      console.error("--concurrency requires a positive number");
+      process.exit(1);
+    }
+  }
+
+  let configName: string | undefined;
+  const cnVal = takeFlagValue(args, "--config-name");
+  if (cnVal !== undefined) {
+    if (!variantNames.includes(cnVal)) {
+      console.error(`--config-name must be one of ${variantNames.join("|")}`);
+      process.exit(1);
+    }
+    configName = cnVal;
+  }
+
+  const runName = takeFlagValue(args, "--name");
+
+  let reversed = false;
+  const reversedFlagIdx = args.indexOf("--reversed");
+  if (reversedFlagIdx !== -1) {
+    reversed = true;
+    args.splice(reversedFlagIdx, 1);
   }
 
   // Apply per-script arg transformation (e.g. bare tweet IDs → URLs)
@@ -136,88 +201,11 @@ export function parseCliArgs(
     process.exit(1);
   }
 
-  return { inputs, forcedBotId, datasetName };
+  if (maxInputs) inputs = inputs.slice(0, maxInputs);
+
+  return { inputs, forcedBotId, datasetName, reversed, concurrency, configName, runName };
 }
 
-// ---------------------------------------------------------------------------
-// CSV output
-// ---------------------------------------------------------------------------
-
-const OUTPUT_HEADERS = [
-  "url",
-  "text",
-  "needs_note",
-  "ground_truth_note",
-  "bot_id",
-  "note_status",
-  "outcome",
-  "result",
-  "note_text",
-  "source_verification",
-  "evaluation_score",
-  "logs",
-] as const;
-
-function resultToCsvRow(
-  input: InputRow,
-  botId: string,
-  result: ProcessTweetResult,
-  resultLabel: string,
-  log?: Map<string, unknown>,
-): string {
-  const pr = result.pipelineResult;
-  const svScore = result.scores.find((s) => s.type === "source_verification");
-
-  const fields: Record<(typeof OUTPUT_HEADERS)[number], string> = {
-    url: input.url,
-    text: pr?.post?.text ?? "",
-    needs_note: input.needsNote ?? "",
-    ground_truth_note: input.groundTruthNote ?? "",
-    bot_id: botId,
-    note_status: result.noteStatus ?? "",
-    outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
-    result: resultLabel,
-    note_text: result.noteText ?? "",
-    source_verification: svScore?.label ?? (svScore ? String(svScore.value) : "skipped"),
-    evaluation_score: result.evaluationScore?.toFixed(2) ?? "",
-    logs: log ? JSON.stringify(nestDotKeys(Object.fromEntries(log))) : "",
-  };
-
-  return OUTPUT_HEADERS.map((h) => escapeCsvField(fields[h])).join(",");
-}
-
-function errorToCsvRow(input: InputRow, errorMsg: string): string {
-  return OUTPUT_HEADERS.map((h) =>
-    escapeCsvField(
-      h === "url" ? input.url :
-        h === "needs_note" ? (input.needsNote ?? "") :
-          h === "ground_truth_note" ? (input.groundTruthNote ?? "") :
-            h === "outcome" ? `error: ${errorMsg}` :
-              h === "result" ? "error" : ""
-    )
-  ).join(",");
-}
-
-function initOutputFolder(prefix: string, datasetName?: string, botName?: string): { folderPath: string; csvPath: string; appendRow: (row: string) => void } {
-  const baseDir = path.join(process.cwd(), "dataset_runs");
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "").replace("T", "-").slice(0, 15);
-  const folderPath = path.join(baseDir, `${prefix}-${timestamp}`);
-  fs.mkdirSync(folderPath, { recursive: true });
-
-  const csvName = [
-    "results",
-    datasetName,
-    botName ?? "random",
-  ].join("_") + ".csv";
-  const csvPath = path.join(folderPath, csvName);
-  fs.writeFileSync(csvPath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
-
-  return {
-    folderPath,
-    csvPath,
-    appendRow: (row: string) => fs.appendFileSync(csvPath, row + "\n", "utf8"),
-  };
-}
 
 // ---------------------------------------------------------------------------
 // Progress tracking
@@ -302,6 +290,9 @@ export interface RunPipelineOptions {
   forcedBotId?: string;
   datasetName?: string;
   concurrency?: number;
+  reversed?: boolean;
+  runName?: string;
+  configOverrides?: ConfigOverrides;
   cleanup?: () => Promise<void>;
 }
 
@@ -314,6 +305,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     forcedBotId,
     datasetName,
     concurrency = 5,
+    reversed = false,
+    runName,
+    configOverrides = {},
     cleanup,
   } = options;
 
@@ -337,7 +331,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   const queue = new PQueue({ concurrency });
 
-  for (const [idx, input] of inputs.entries()) {
+  const orderedInputs = reversed ? [...inputs].reverse() : inputs;
+  for (const [i, input] of orderedInputs.entries()) {
+    const idx = reversed ? inputs.length - 1 - i : i;
     queue.add(async () => {
       const completed: CompletedResult = {
         idx,
@@ -357,19 +353,23 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         log.set("tweet.index", idx + 1);
         log.set("tweet.total", inputs.length);
         const result = await withTweetLog(log, () =>
-          processSingleTweet({ post, bot, logger })
+          withConfigOverrides(configOverrides, () =>
+            processSingleTweet({ post, bot, logger })
+          )
         );
 
         completed.outcome = result.outcome;
         completed.outcomeReason = result.outcomeReason;
         completed.noteText = result.noteText;
 
+        const loggedBotId = getLoggedBotId(bot.id, log);
+
         csvRowData = {
           url: input.url,
           text: result.pipelineResult?.post?.text ?? "",
           needs_note: input.needsNote ?? "",
           ground_truth_note: input.groundTruthNote ?? "",
-          bot_id: bot.id,
+          bot_id: loggedBotId,
           note_status: result.noteStatus ?? "",
           outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
           note_text: result.noteText ?? "",
@@ -387,10 +387,10 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
           console.error(`[${scriptName}] Judge failed for ${input.url}: ${err?.message}`);
         }
 
-        output.appendRow(resultToCsvRow(input, bot.id, result, resultLabel, log));
+        output.appendRow(resultToCsvRow(input, loggedBotId, result, resultLabel, log));
       } catch (err: any) {
         console.error(`[${scriptName}] ERROR ${input.url}: ${err?.message}`);
-        output.appendRow(errorToCsvRow(input, err?.message ?? "unknown"));
+        output.appendRow(errorToCsvRow(input.url, err?.message ?? "unknown"));
         errorCount++;
       }
 
@@ -410,4 +410,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
   }
 
   try { await closeBrowser(); } catch {}
+
+  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId, configOverrides.configName);
+  await autoOpenInDashboard(output.csvPath, uploadLabel);
 }

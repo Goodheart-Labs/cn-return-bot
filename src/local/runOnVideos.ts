@@ -10,11 +10,20 @@
  *   - ground_truth_note (optional): what the note should say
  *
  * Usage:
- *   bun run src/scripts/runOnVideos.ts input.csv
- *   bun run src/scripts/runOnVideos.ts [--bot <bot-id>] <url1> <url2> ...
+ *   bun run src/local/runOnVideos.ts [flags] <input.csv | url...>
+ *
+ * Flags:
+ *   --bot <id>              force a specific bot
+ *   --max <n>               limit number of inputs
+ *   --reversed              process newest-last
+ *   --concurrency <n>       parallel workers (default 5)
+ *   --config-name <name>    force a BotConfig variant
+ *   --name <label>          name for dashboard upload (default: derived)
  */
 
 import "dotenv/config";
+import { captureProdSupabaseCreds } from "./prodSupabaseCreds";
+captureProdSupabaseCreds();
 
 // Route Supabase to local instance (must happen before any Supabase imports)
 const localUrl = process.env.LOCAL_SUPABASE_URL;
@@ -53,6 +62,8 @@ interface YtDlpMetadata {
   duration?: number;
   uploader?: string;
   uploader_id?: string;
+  channel_id?: string;
+  timestamp?: number;
   webpage_url?: string;
   ext?: string;
   filename?: string;
@@ -110,7 +121,7 @@ function buildPostFromDownload(meta: YtDlpMetadata, videoPath: string | null, ur
     media.push({
       type: "video",
       url: videoPath,
-      duration_ms: meta.duration ? meta.duration * 1000 : undefined,
+      duration_ms: meta.duration ? Math.round(meta.duration * 1000) : undefined,
       variants: [{ url: videoPath, content_type: "video/mp4" }],
     });
   } else if (meta.thumbnail) {
@@ -121,11 +132,13 @@ function buildPostFromDownload(meta: YtDlpMetadata, videoPath: string | null, ur
   }
 
   const postId = meta.display_id ?? extractIdFromUrl(url);
+  const createdAt = meta.timestamp ? new Date(meta.timestamp * 1000).toISOString() : new Date().toISOString();
 
   return {
     id: postId,
-    author_id: meta.uploader_id ?? "unknown",
-    created_at: new Date().toISOString(),
+    author_id: meta.channel_id ?? meta.uploader_id ?? "unknown",
+    author_name: meta.uploader,
+    created_at: createdAt,
     text,
     media,
   };
@@ -143,7 +156,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { inputs, forcedBotId, datasetName } = parseCliArgs("runOnVideos");
+  const parsed = parseCliArgs("runOnVideos");
 
   const downloadDir = path.join(tmpdir(), `cn-runOnVideos-${Date.now()}`);
   fs.mkdirSync(downloadDir, { recursive: true });
@@ -157,10 +170,14 @@ async function main() {
   await runPipeline({
     scriptName: "runOnVideos",
     folderPrefix: "videos",
-    inputs,
+    inputs: parsed.inputs,
     fetchPost,
-    forcedBotId,
-    datasetName,
+    forcedBotId: parsed.forcedBotId,
+    datasetName: parsed.datasetName,
+    reversed: parsed.reversed,
+    concurrency: parsed.concurrency,
+    runName: parsed.runName,
+    configOverrides: parsed.configName ? { configName: parsed.configName } : undefined,
     cleanup: async () => {
       fs.rmSync(downloadDir, { recursive: true, force: true });
       console.log(`[runOnVideos] Cleaned up temp directory`);

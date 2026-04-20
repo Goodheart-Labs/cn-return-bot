@@ -37,8 +37,6 @@ export const opusVerified: Bot = {
   name: "Opus 4.6 Verified",
   description:
     "High-quality bot: deep fact verification + source trust gate + scoring filters",
-  weight: 0,
-
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     let scoringResults: AllNoteScores | undefined;

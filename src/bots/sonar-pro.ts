@@ -20,8 +20,6 @@ export const sonarPro: Bot = {
   id: "sonar-pro",
   name: "Opus 4.5 + Sonar Pro",
   description: "Opus 4.5 with Perplexity Sonar Pro for deeper search results",
-  weight: 0,
-
   async runPipeline(post, content): Promise<PipelineResult | null> {
     let lastStage = "started";
     try {

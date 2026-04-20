@@ -1,0 +1,281 @@
+{
+  "query": "Elon Musk tweet fact check",
+  "number_of_results": 0,
+  "results": [
+    {
+      "url": "https://www.factcheck.org/person/elon-musk/",
+      "title": "Elon Musk Archives - FactCheck.org",
+      "content": "An attack ad by a super PAC called MAGA Kentucky targets Republican Rep. Thomas Massie — a longtime conservative foil of President Donald Trump — with claims ...",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "www.factcheck.org",
+        "/person/elon-musk/",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        1
+      ],
+      "score": 1.0,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://www.reuters.com/fact-check/musk-x-post-saying-trump-would-do-anything-him-is-fabricated-2024-11-26/",
+      "title": "Fact Check: Musk X post saying Trump would do 'anything' for him is ...",
+      "content": "27.11.2024 · A screenshot of a supposed X post by Elon Musk saying U.S. President-elect Donald Trump would do anything asked of him stems from a Reddit ...",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "www.reuters.com",
+        "/fact-check/musk-x-post-saying-trump-would-do-anything-him-is-fabricated-2024-11-26/",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        2
+      ],
+      "score": 0.5,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://www.br.de/nachrichten/netzwelt/faktenfuchs-wie-musk-im-us-wahlkampf-falschinfos-verbreitet,UShZJ5A",
+      "title": "#Faktenfuchs: Wie Musk im US-Wahlkampf Falschinfos verbreitet",
+      "content": "01.11.2024 · Elon Musk hat vor etwa zwei Jahren Twitter gekauft und nach seinen Vorstellungen umgebaut. Der #Faktenfuchs erklärt, warum sich nun im ...",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "www.br.de",
+        "/nachrichten/netzwelt/faktenfuchs-wie-musk-im-us-wahlkampf-falschinfos-verbreitet,UShZJ5A",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        3
+      ],
+      "score": 0.3333333333333333,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Twitter_under_Elon_Musk",
+      "title": "Twitter under Elon Musk - Wikipedia",
+      "content": "Elon Musk completed his acquisition of Twitter in October 2022; Musk acted as CEO of Twitter until June 2023 when he was succeeded by Linda Yaccarino.",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "en.wikipedia.org",
+        "/wiki/Twitter_under_Elon_Musk",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        4
+      ],
+      "score": 0.25,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://www.washingtonpost.com/technology/2024/10/30/elon-musk-x-fact-check-community-notes-misinformation/",
+      "title": "Elon Musk's fact-check system, Community Notes, is failing on X",
+      "content": "30.10.2024 · X's crowdsourced fact-checking program, Community Notes, has been hailed as a bold idea for social media. Research shows it's failing at a ...",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "www.washingtonpost.com",
+        "/technology/2024/10/30/elon-musk-x-fact-check-community-notes-misinformation/",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        5
+      ],
+      "score": 0.2,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://www.wired.com/story/elon-musk-embraces-twitters-radical-crowdsourcing-experiment/",
+      "title": "Elon Musk Embraces Twitter's Radical Fact-Checking Experiment | WIRED",
+      "content": "20.11.2022 · The project allows users to suggest short notes that add missing context to viral tweets. It could change how social platforms operate.",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "www.wired.com",
+        "/story/elon-musk-embraces-twitters-radical-crowdsourcing-experiment/",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        6
+      ],
+      "score": 0.16666666666666666,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://www.techpolicy.press/elon-musk-might-not-trust-factcheckers-but-x-users-clearly-do/",
+      "title": "Elon Musk Might Not Trust Fact-Checkers, But X Users Clearly ...",
+      "content": "24.02.2025 · Not all X users share Mr. Musk's disdain for factual information, writes Fundación Maldita.es head of policy Carlos Hernández-Echevarría.",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "www.techpolicy.press",
+        "/elon-musk-might-not-trust-factcheckers-but-x-users-clearly-do/",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        7
+      ],
+      "score": 0.14285714285714285,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://www.congress.gov/118/meeting/house/115561/documents/HHRG-118-IF16-20230328-SD035.pdf",
+      "title": "[PDF] Elon Musk continues to cater to far-right Twitter accounts promoting ...",
+      "content": "27.03.2023 · Musk himself has even used the platform to amplify multiple conspiracy theories and has employed common QAnon tactics like baselessly accusing a ...",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "www.congress.gov",
+        "/118/meeting/house/115561/documents/HHRG-118-IF16-20230328-SD035.pdf",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        8
+      ],
+      "score": 0.125,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://www.reddit.com/r/Twitter/comments/15uy4u9/elon_gets_fact_checked_on_his_own_tweet/",
+      "title": "Elon gets fact checked on his own tweet : r/Twitter - Reddit",
+      "content": "18.08.2023 · 2.3K votes, 173 comments. The fact check is right. If Elon does this, the Twitter app will be pulled from both the App Store and the Google ...",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "www.reddit.com",
+        "/r/Twitter/comments/15uy4u9/elon_gets_fact_checked_on_his_own_tweet/",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        9
+      ],
+      "score": 0.1111111111111111,
+      "category": "general",
+      "publishedDate": null
+    },
+    {
+      "url": "https://edmo.eu/publications/how-elon-musks-powerful-disinformation-machine-works/",
+      "title": "How Elon Musk's powerful disinformation machine works",
+      "content": "19.03.2025 · The owner of X uses fake news and far-right conspiracy theories to discredit political opponents and convey his own ideological battles.",
+      "thumbnail": null,
+      "engine": "google",
+      "template": "default.html",
+      "parsed_url": [
+        "https",
+        "edmo.eu",
+        "/publications/how-elon-musks-powerful-disinformation-machine-works/",
+        "",
+        "",
+        ""
+      ],
+      "img_src": "",
+      "priority": "",
+      "engines": [
+        "google"
+      ],
+      "positions": [
+        10
+      ],
+      "score": 0.1,
+      "category": "general",
+      "publishedDate": null
+    }
+  ],
+  "answers": [],
+  "corrections": [],
+  "infoboxes": [],
+  "suggestions": [],
+  "unresponsive_engines": []
+}

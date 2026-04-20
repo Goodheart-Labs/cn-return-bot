@@ -14,9 +14,9 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
-import { runNoteScores, countSources } from "../score/noteScores";
+import { runNoteScores, countSources, type AllNoteScores } from "../score/noteScores";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
-import { getTweetLog, nestDotKeys } from "../utils/tweetLog";
+import { getTweetLog, getLoggedBotId, nestDotKeys } from "../utils/tweetLog";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -206,32 +206,36 @@ async function computeEvaluationScore(
   }
 }
 
+const NOTE_SCORE_FIELDS: Array<{ name: string; key: keyof AllNoteScores }> = [
+  { name: "positive_evidence", key: "positiveEvidence" },
+  { name: "disagreement", key: "disagreement" },
+  { name: "helpfulness", key: "helpfulness" },
+  { name: "source_quality", key: "sourceQuality" },
+  { name: "breaking_news_risk", key: "breakingNewsRisk" },
+  { name: "pedantry", key: "pedantry" },
+  { name: "note_not_needed", key: "noteNotNeeded" },
+  { name: "tangential_correction", key: "tangentialCorrection" },
+  { name: "rater_verifiability", key: "raterVerifiability" },
+  { name: "overconfidence", key: "overconfidence" },
+];
+
+function noteScoresToEntries(scores: AllNoteScores): ScoreEntry[] {
+  return NOTE_SCORE_FIELDS.map(({ name, key }) => ({
+    type: name,
+    value: scores[key].score,
+    metadata: { reasoning: scores[key].reasoning },
+  }));
+}
+
 async function computeNoteQualityScores(
-  noteText: string,
+  result: PipelineResult,
   tweetText: string,
+  noteText: string,
   searchResults: string,
   sourceUrl: string
 ): Promise<ScoreEntry[]> {
-  const noteScores = await runNoteScores(noteText, tweetText, searchResults, sourceUrl);
-
-  const SCORE_FIELDS: Array<{ name: string; key: keyof typeof noteScores }> = [
-    { name: "positive_evidence", key: "positiveEvidence" },
-    { name: "disagreement", key: "disagreement" },
-    { name: "helpfulness", key: "helpfulness" },
-    { name: "source_quality", key: "sourceQuality" },
-    { name: "breaking_news_risk", key: "breakingNewsRisk" },
-    { name: "pedantry", key: "pedantry" },
-    { name: "note_not_needed", key: "noteNotNeeded" },
-    { name: "tangential_correction", key: "tangentialCorrection" },
-    { name: "rater_verifiability", key: "raterVerifiability" },
-    { name: "overconfidence", key: "overconfidence" },
-  ];
-
-  return SCORE_FIELDS.map(({ name, key }) => ({
-    type: name,
-    value: noteScores[key].score,
-    metadata: { reasoning: noteScores[key].reasoning },
-  }));
+  const scores = result.noteScores ?? await runNoteScores(noteText, tweetText, searchResults, sourceUrl);
+  return noteScoresToEntries(scores);
 }
 
 async function scorePipelineResult(
@@ -274,8 +278,9 @@ async function scorePipelineResult(
   // Note quality scores
   try {
     const qualityScores = await computeNoteQualityScores(
-      noteText,
+      result,
       post.text,
+      noteText,
       result.searchContextResult.searchResults ?? "",
       result.noteResult.url ?? ""
     );
@@ -440,7 +445,23 @@ export async function processSingleTweet(
   const { post, bot, logger, commitSha } = options;
 
   // 1. Run bot pipeline
-  const { result, metadata, warnings } = await runBotPipeline(post, bot);
+  let pipelineOutput: BotPipelineOutput;
+  try {
+    pipelineOutput = await runBotPipeline(post, bot);
+  } catch (err: any) {
+    console.error(`[processTweet] Bot pipeline failed for ${post.id}:`, err);
+    const metadata = extractTweetMetadata(post);
+    const errorResult: PipelineResult = {
+      post,
+      botId: bot.id,
+      lastStage: "error",
+      searchContextResult: { text: post.text ?? "", searchResults: "" },
+      noteResult: { note: "", url: "", status: "ERROR" },
+      error: err.message,
+    };
+    pipelineOutput = { result: errorResult, content: getOriginalTweetContent(post), metadata, warnings: [`[ERROR] ${err.message}`] };
+  }
+  const { result, metadata, warnings } = pipelineOutput;
 
   // 2. Create DB run
   let pipelineRunId: string | null = null;
@@ -484,7 +505,8 @@ export async function processSingleTweet(
   // 6. Complete DB run (with logs)
   if (logger && pipelineRunId) {
     const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-    const completionData = buildCompletionData(result, bot.id, outcome, warnings, logs);
+    const loggedBotId = getLoggedBotId(bot.id, log);
+    const completionData = buildCompletionData(result, loggedBotId, outcome, warnings, logs);
     try {
       await logger.completePipelineRun(pipelineRunId, completionData);
     } catch (err) {

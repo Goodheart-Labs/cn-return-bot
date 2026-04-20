@@ -1,0 +1,84 @@
+/**
+ * Agent Bot
+ *
+ * Single agentic call with tool calling.
+ * Model and search mode determined by botConfig.
+ */
+
+import type { Post } from "../api/fetchEligiblePosts";
+import { Bot, PipelineResult, PipelineOutcome, outcomeToResult, type PostContent } from "./types";
+import type { BotInput } from "../pipeline/input/createBotInput";
+import { randomizeConfig, withBotConfig, getBotConfig, getFullBotId } from "../pipeline/utils/botConfig";
+import { withCostTracker, aggregateAndLogCosts } from "../pipeline/utils/costTracker";
+import { createBotInput } from "../pipeline/input/createBotInput";
+import { getTweetLog } from "../pipeline/utils/tweetLog";
+import { buildToolList } from "../pipeline/tool-calling/tools";
+import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "../pipeline/tool-calling/agentLoop";
+import { buildSystemPrompt, buildUserMessage } from "../pipeline/input/prompt";
+import { evaluateAndPickBest } from "../pipeline/score/noteEvaluation";
+
+const MAX_ITERATIONS = 50;
+
+async function runAgent(post: Post, content: PostContent, input: BotInput): Promise<PipelineOutcome> {
+  const config = getBotConfig();
+  const log = getTweetLog();
+
+  const def: AgentDef = {
+    name: "agent",
+    description: "Single-turn fact-checking agent",
+    systemPrompt: buildSystemPrompt(config),
+    tools: buildToolList(),
+    model: config.model,
+  };
+
+  const userMessage = buildUserMessage({
+    post,
+    tweetText: content.text,
+    tweetMedia: input.mediaResult.tweetMedia,
+    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
+    authorNoteHistory: input.authorHistory,
+    comments: input.comments,
+  });
+
+  log?.set("agent.config", config);
+
+  const state = initAgentState(def);
+  addUserMessage(state, userMessage);
+  const result = await runAgentTurn(state, "agent.messages", MAX_ITERATIONS);
+
+  aggregateAndLogCosts("agent");
+
+  if (result.terminalTool === "propose_notes") {
+    const { selected, evalResults } = await evaluateAndPickBest(post.id, result.args.notes ?? []);
+    log?.set("note.eval_scores", evalResults.map((r) => ({ score: r.evalScore, error: r.error })));
+    log?.set("note.eval_score", selected.evalScore);
+    return { type: "note", noteText: selected.noteText, sources: selected.sources, evalScore: selected.evalScore };
+  }
+
+  if (result.terminalTool === "no_correction_needed" || result.terminalTool === "text_response") {
+    return { type: "no_correction", reason: result.args.reason ?? result.args.content ?? "No correction needed" };
+  }
+
+  return { type: "error", error: result.args.reason ?? `Loop exhausted after ${MAX_ITERATIONS} iterations` };
+}
+
+export const agentBot: Bot = {
+  id: "agent",
+  name: "Agent",
+  description: "Agentic bot with tool calling",
+  async runPipeline(post, content): Promise<PipelineResult | null> {
+    const config = randomizeConfig(this.id);
+    const fullBotId = getFullBotId(this.id, config);
+
+    return withBotConfig(config, () => withCostTracker(async () => {
+      getTweetLog()?.set("bot.id", fullBotId);
+      const input = await createBotInput(post, content, "agent");
+      const outcome = await runAgent(post, content, input);
+      const result = outcomeToResult(post, fullBotId, outcome);
+      if (input.warnings.length) {
+        result.warnings = [...(result.warnings ?? []), ...input.warnings];
+      }
+      return result;
+    }));
+  },
+};

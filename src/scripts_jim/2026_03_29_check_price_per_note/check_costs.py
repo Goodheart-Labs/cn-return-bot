@@ -12,7 +12,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "../../.env"))
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
-OPENROUTER_MGMT_KEY = "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"
+OPENROUTER_MGMT_KEY = os.environ["OPENROUTER_MGMT_KEY"]
 PROD_KEY_NAME = "ai-community-note-writer-2"
 
 

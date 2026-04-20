@@ -34,6 +34,16 @@ export function withTweetLog<T>(log: TweetLogMap, fn: () => T): T {
   return logStorage.run(log, fn);
 }
 
+/**
+ * Bot id written to the log by the bot that ran — includes config variant
+ * (e.g. "agent_gemini-flash-searxng"). Falls back to the bare bot id if the
+ * bot didn't write one.
+ */
+export function getLoggedBotId(fallback: string, log?: TweetLogMap): string {
+  const source = log ?? getTweetLog();
+  return (source?.get("bot.id") as string | undefined) ?? fallback;
+}
+
 // ---------------------------------------------------------------------------
 // LLM call logging helper
 // ---------------------------------------------------------------------------
@@ -132,11 +142,42 @@ function median(values: number[]): number {
 // Full JSON dump in GitHub Actions collapsible group
 // ---------------------------------------------------------------------------
 
-/** Full log as nested JSON in a ::group:: collapsible section for GitHub Actions */
+/** One-line summary for quick scanning in terminal */
+export function formatTweetLogSummary(log: TweetLogMap): string {
+  const index = get(log, "tweet.index") as number | undefined;
+  const total = get(log, "tweet.total") as number | undefined;
+  const tweetId = get(log, "tweet.id") as string | undefined;
+  const impressions = get(log, "tweet.impressions") as number | undefined;
+  const outcome = get(log, "outcome.result") as string | undefined;
+  const reason = get(log, "outcome.reason") as string | undefined;
+  const evalScore = get(log, "eval.score") as number | undefined;
+  const noteStatus = get(log, "note.status") as string | undefined;
+  const botId = get(log, "bot.id") as string | undefined;
+
+  const parts: string[] = [];
+  if (index != null && total != null) parts.push(`[${index}/${total}]`);
+  if (tweetId) parts.push(tweetId);
+  if (impressions != null) parts.push(`${fmtCount(impressions)} imp`);
+  if (botId) parts.push(botId);
+  if (outcome) {
+    const outcomeStr = reason ? `${outcome} (${reason})` : outcome;
+    parts.push(outcomeStr);
+  }
+  if (noteStatus && noteStatus !== "ERROR") parts.push(noteStatus);
+  if (evalScore != null) parts.push(`eval=${evalScore.toFixed(2)}`);
+
+  return parts.join(" | ");
+}
+
+/** Full log as nested JSON — collapsible ::group:: on CI, compact on local terminal */
 export function formatTweetLogFull(log: TweetLogMap): string {
   const tweetId = get(log, "tweet.id") as string | undefined;
+  const label = `Full log: Tweet ${tweetId ?? "?"}`;
   const json = JSON.stringify(nestDotKeys(Object.fromEntries(log)), null, 2);
-  return `::group::Full log: Tweet ${tweetId ?? "?"}\n${json}\n::endgroup::`;
+  if (process.env.CI) {
+    return `::group::${label}\n${json}\n::endgroup::`;
+  }
+  return `--- ${label} ---\n${json}`;
 }
 
 // ---------------------------------------------------------------------------

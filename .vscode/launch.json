@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Debug Current File",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Debug Pipeline",
+      "program": "src/production/runPipeline.ts",
+      "args": ["--local"],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "entry": ["src/production/*.ts", "src/local/*.ts", "src/scraper/*.ts", "src/reports/*.ts"],
   "project": ["src/**/*.ts"],
   "ignore": ["src/elo-rating-web/**", "src/scripts_jim/**", "src/scripts_nathan/**", "src/pipeline/orchestration/updateWritingLimit.ts", "src/pipeline/score/candidateRanker.ts"],
-  "ignoreDependencies": ["@types/p-queue", "papaparse", "@types/papaparse", "react-dom", "@types/react-dom", "react-json-view-lite", "@vitejs/plugin-react"],
+  "ignoreDependencies": ["@types/p-queue", "papaparse", "@types/papaparse", "react", "@types/react", "react-dom", "@types/react-dom", "react-json-view-lite", "@vitejs/plugin-react"],
   "ignoreExportsUsedInFile": true,
   "exclude": ["types"],
   "ignoreWorkspaces": ["src/review-dashboard"]
