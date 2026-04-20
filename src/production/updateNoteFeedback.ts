@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { getSupabaseClient } from "../api/supabaseClient";
+import { fetchNotesWritten } from "../api/fetchNotesWritten";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from "fs";
 import { execSync } from "child_process";
 
@@ -561,7 +562,88 @@ async function main() {
 
   console.log(`[updateFeedback] Updated ${notesTableUpdated} notes in notes table`);
 
-  // ===== 9. Clean up downloaded files =====
+  // ===== 9. API real-time status overlay =====
+  let apiOverlayCount = 0;
+  let apiNewCount = 0;
+  try {
+    console.log("[updateFeedback] Fetching real-time statuses from X API...");
+    const apiNotes = await fetchNotesWritten();
+    console.log(`[updateFeedback] API returned ${apiNotes.length} notes`);
+
+    // Refresh existing IDs (may have been updated by cn_data steps above)
+    const refreshed = await fetchAll<{ note_id: string; cn_status: string | null }>(
+      () => client.from("canonical_note_information").select("note_id, cn_status")
+    );
+    const currentStatusMap = new Map(refreshed.map(n => [n.note_id, n.cn_status]));
+    const currentIds = new Set(refreshed.map(n => n.note_id));
+
+    const overlayRows: Record<string, any>[] = [];
+    const newApiRows: Record<string, any>[] = [];
+
+    for (const note of apiNotes) {
+      const apiStatus = note.status?.toUpperCase() || null;
+      const apiClassification = note.info?.classification?.toUpperCase() || null;
+
+      if (currentIds.has(note.id)) {
+        // Only update if API status differs from what's in the DB
+        if (apiStatus && apiStatus !== currentStatusMap.get(note.id)) {
+          overlayRows.push({
+            note_id: note.id,
+            cn_status: apiStatus,
+            public_data_updated_at: now,
+          });
+        }
+      } else {
+        // Note not yet in canonical table (submitted in last ~3 days)
+        const enrichment = enrichmentMap.get(note.id);
+        newApiRows.push({
+          note_id: note.id,
+          tweet_id: note.post_id,
+          cn_status: apiStatus || "NEEDS_MORE_RATINGS",
+          note_text: note.info?.text || null,
+          classification: apiClassification,
+          public_data_updated_at: now,
+          first_seen_at: now,
+          submitted_at: enrichment?.submitted_at || null,
+          bot_name: enrichment?.bot_name || null,
+        });
+      }
+    }
+
+    // Apply overlay updates (status changed)
+    for (const row of overlayRows) {
+      const { error } = await client
+        .from("canonical_note_information")
+        .update({ cn_status: row.cn_status, public_data_updated_at: row.public_data_updated_at })
+        .eq("note_id", row.note_id);
+      if (!error) apiOverlayCount++;
+    }
+
+    // Insert new API-only notes
+    for (let i = 0; i < newApiRows.length; i += PAGE_SIZE) {
+      const batch = newApiRows.slice(i, i + PAGE_SIZE);
+      const { error } = await client
+        .from("canonical_note_information")
+        .upsert(batch, { onConflict: "note_id" });
+      if (!error) apiNewCount += batch.length;
+    }
+
+    // Also update notes table for API-discovered status changes
+    for (const row of overlayRows) {
+      if (notesTableIdSet.has(row.note_id)) {
+        await client
+          .from("notes")
+          .update({ cn_status: row.cn_status, last_checked_at: now })
+          .eq("note_id", row.note_id);
+      }
+    }
+
+    console.log(`[updateFeedback] API overlay: ${apiOverlayCount} statuses updated, ${apiNewCount} new notes added`);
+  } catch (err: any) {
+    console.warn(`[updateFeedback] API step failed (non-fatal): ${err.message || err}`);
+  }
+
+  // ===== 10. Clean up downloaded files =====
   try {
     for (const p of [...notesResult.paths, ...statusResult.paths]) {
       if (existsSync(p)) unlinkSync(p);
@@ -585,6 +667,7 @@ async function main() {
   console.log(`Missed opportunity competing notes: ${missedInserted} inserted`);
   console.log(`Snapshots: ${snapshotCount}`);
   console.log(`Notes table: ${notesTableUpdated} synced`);
+  console.log(`API overlay: ${apiOverlayCount} updated, ${apiNewCount} new`);
 
   process.exit(0);
 }
