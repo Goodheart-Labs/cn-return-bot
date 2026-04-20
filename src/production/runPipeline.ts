@@ -4,12 +4,29 @@
  * Single-pass pipeline: fetch tweets, generate notes, submit immediately.
  *
  * Runs on GitHub Actions every 15 minutes.
- * Use --local to route Supabase to a local instance via LOCAL_SUPABASE_URL/KEY.
+ *
+ * Flags:
+ *   --local                 route Supabase to LOCAL_SUPABASE_URL/KEY; write CSV + auto-open dashboard
+ *   --bot <id>              force a specific bot (skip random selection)
+ *   --config-name <name>    force a BotConfig variant
  */
 
 import { captureProdSupabaseCreds } from "../local/prodSupabaseCreds";
 
+function takeFlagValue(flag: string): string | undefined {
+  const idx = process.argv.indexOf(flag);
+  if (idx === -1) return undefined;
+  const value = process.argv[idx + 1];
+  if (!value || value.startsWith("--")) {
+    console.error(`${flag} requires a value`);
+    process.exit(1);
+  }
+  return value;
+}
+
 const isLocal = process.argv.includes("--local");
+const forcedBotId = takeFlagValue("--bot");
+const forcedConfigName = takeFlagValue("--config-name");
 if (isLocal) {
   captureProdSupabaseCreds();
   const localUrl = process.env.LOCAL_SUPABASE_URL;
@@ -30,6 +47,7 @@ import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orches
 import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
+import { withConfigOverrides } from "../pipeline/utils/botConfig";
 // import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 function postUrl(postId: string): string {
@@ -102,7 +120,7 @@ async function main() {
       while (postsUsed < maxPosts) {
         const batchSize = Math.min(PROBE_POSTS, maxPosts - postsUsed);
         console.log(`[pipeline] Probing batch ${Math.floor(postsUsed / PROBE_POSTS) + 1} (${batchSize} tweets)...`);
-        const candidates = await generateCandidates(supabaseLogger, { maxPosts: batchSize, onTweetProcessed });
+        const candidates = await generateCandidates(supabaseLogger, { maxPosts: batchSize, onTweetProcessed, forcedBotId });
         postsUsed += batchSize;
 
         if (candidates.length === 0) continue;
@@ -115,7 +133,7 @@ async function main() {
           console.log(`[pipeline] Limit reset confirmed — continuing with full batch`);
           const remaining = maxPosts - postsUsed;
           if (remaining > 0) {
-            const moreCandidates = await generateCandidates(supabaseLogger, { maxPosts: remaining, onTweetProcessed });
+            const moreCandidates = await generateCandidates(supabaseLogger, { maxPosts: remaining, onTweetProcessed, forcedBotId });
             if (moreCandidates.length > 0) {
               totalSubmitted += await submitCandidates(moreCandidates, supabaseLogger, isLocal);
             }
@@ -131,7 +149,7 @@ async function main() {
       console.log(`[pipeline] Submitted ${totalSubmitted} total`);
     } else {
       // Normal flow
-      const candidates = await generateCandidates(supabaseLogger, { maxPosts, onTweetProcessed });
+      const candidates = await generateCandidates(supabaseLogger, { maxPosts, onTweetProcessed, forcedBotId });
       if (candidates.length > 0 && supabaseLogger) {
         const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
         console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates`);
@@ -156,4 +174,8 @@ async function main() {
   }
 }
 
-main();
+if (forcedConfigName) {
+  withConfigOverrides({ configName: forcedConfigName }, main);
+} else {
+  main();
+}

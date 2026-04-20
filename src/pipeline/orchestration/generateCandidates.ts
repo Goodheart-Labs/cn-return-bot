@@ -7,7 +7,7 @@
 
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
-import { selectRandomBot, getBotProbabilities } from "../../bots/index";
+import { selectRandomBot, getBotById, getBotProbabilities } from "../../bots/index";
 import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
 import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
@@ -115,18 +115,27 @@ export interface TweetProcessedEvent {
 export interface GenerateCandidatesOptions {
   maxPosts: number;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+  forcedBotId?: string;
 }
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, onTweetProcessed }: GenerateCandidatesOptions,
+  { maxPosts, onTweetProcessed, forcedBotId }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const commit = process.env.GITHUB_SHA;
 
-  // Log bot probabilities (compact single line)
-  const botProbs = getBotProbabilities();
-  const activeBots = botProbs.filter((b) => b.probability > 0);
-  console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
+  const forcedBot = forcedBotId ? getBotById(forcedBotId) : undefined;
+  if (forcedBotId && !forcedBot) {
+    throw new Error(`Unknown bot id: ${forcedBotId}`);
+  }
+
+  if (forcedBot) {
+    console.log(`[generate] Bots: forced to ${forcedBot.id}`);
+  } else {
+    const botProbs = getBotProbabilities();
+    const activeBots = botProbs.filter((b) => b.probability > 0);
+    console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
+  }
 
   // Fetch posts
   const { posts, feedSize, newCount, retryCount } = await fetchPosts(supabaseLogger, maxPosts);
@@ -143,7 +152,7 @@ export async function generateCandidates(
 
   for (const [idx, post] of posts.entries()) {
     queue.add(async () => {
-      const selectedBot = selectRandomBot();
+      const selectedBot = forcedBot ?? selectRandomBot();
 
       const log = createTweetLog();
       log.set("tweet.index", idx + 1);
