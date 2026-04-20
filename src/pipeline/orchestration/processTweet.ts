@@ -14,7 +14,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
-import { runNoteScores, countSources } from "../score/noteScores";
+import { runNoteScores, countSources, type AllNoteScores } from "../score/noteScores";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotId, nestDotKeys } from "../utils/tweetLog";
 
@@ -206,32 +206,36 @@ async function computeEvaluationScore(
   }
 }
 
+const NOTE_SCORE_FIELDS: Array<{ name: string; key: keyof AllNoteScores }> = [
+  { name: "positive_evidence", key: "positiveEvidence" },
+  { name: "disagreement", key: "disagreement" },
+  { name: "helpfulness", key: "helpfulness" },
+  { name: "source_quality", key: "sourceQuality" },
+  { name: "breaking_news_risk", key: "breakingNewsRisk" },
+  { name: "pedantry", key: "pedantry" },
+  { name: "note_not_needed", key: "noteNotNeeded" },
+  { name: "tangential_correction", key: "tangentialCorrection" },
+  { name: "rater_verifiability", key: "raterVerifiability" },
+  { name: "overconfidence", key: "overconfidence" },
+];
+
+function noteScoresToEntries(scores: AllNoteScores): ScoreEntry[] {
+  return NOTE_SCORE_FIELDS.map(({ name, key }) => ({
+    type: name,
+    value: scores[key].score,
+    metadata: { reasoning: scores[key].reasoning },
+  }));
+}
+
 async function computeNoteQualityScores(
-  noteText: string,
+  result: PipelineResult,
   tweetText: string,
+  noteText: string,
   searchResults: string,
   sourceUrl: string
 ): Promise<ScoreEntry[]> {
-  const noteScores = await runNoteScores(noteText, tweetText, searchResults, sourceUrl);
-
-  const SCORE_FIELDS: Array<{ name: string; key: keyof typeof noteScores }> = [
-    { name: "positive_evidence", key: "positiveEvidence" },
-    { name: "disagreement", key: "disagreement" },
-    { name: "helpfulness", key: "helpfulness" },
-    { name: "source_quality", key: "sourceQuality" },
-    { name: "breaking_news_risk", key: "breakingNewsRisk" },
-    { name: "pedantry", key: "pedantry" },
-    { name: "note_not_needed", key: "noteNotNeeded" },
-    { name: "tangential_correction", key: "tangentialCorrection" },
-    { name: "rater_verifiability", key: "raterVerifiability" },
-    { name: "overconfidence", key: "overconfidence" },
-  ];
-
-  return SCORE_FIELDS.map(({ name, key }) => ({
-    type: name,
-    value: noteScores[key].score,
-    metadata: { reasoning: noteScores[key].reasoning },
-  }));
+  const scores = result.noteScores ?? await runNoteScores(noteText, tweetText, searchResults, sourceUrl);
+  return noteScoresToEntries(scores);
 }
 
 async function scorePipelineResult(
@@ -274,8 +278,9 @@ async function scorePipelineResult(
   // Note quality scores
   try {
     const qualityScores = await computeNoteQualityScores(
-      noteText,
+      result,
       post.text,
+      noteText,
       result.searchContextResult.searchResults ?? "",
       result.noteResult.url ?? ""
     );

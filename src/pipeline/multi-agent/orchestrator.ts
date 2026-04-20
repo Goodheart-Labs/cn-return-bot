@@ -13,7 +13,7 @@ import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
-import { applyScoreFilters, runNoteScores } from "../score/noteScores";
+import { applyScoreFilters, runNoteScores, type AllNoteScores } from "../score/noteScores";
 import { aggregateAndLogCosts } from "../utils/costTracker";
 import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
@@ -104,23 +104,27 @@ function resetNotewriter(state: PipelineState): void {
   nw.messages = [{ role: "system", content: nw.def.systemPrompt }];
 }
 
-async function applyConfiguredScoreFilters(
+async function computeNoteScoresForPipeline(
   state: PipelineState,
   note: EvaluatedNote,
-): Promise<PipelineOutcome | null> {
-  const config = getBotConfig();
-  if (!config.scoreFilters.length) return null;
-
-  const log = getTweetLog();
-  const scores = await runNoteScores(
+): Promise<AllNoteScores> {
+  return runNoteScores(
     note.noteText,
     state.postText,
     state.researcherFindings,
     note.sources.join(" "),
   );
-  const failure = applyScoreFilters(scores, config.scoreFilters);
+}
 
-  log?.set("multiAgent.scoreFilters.result", failure ?? "passed");
+function checkScoreFiltersForNote(
+  scores: AllNoteScores,
+  note: EvaluatedNote,
+): PipelineOutcome | null {
+  const config = getBotConfig();
+  if (!config.scoreFilters.length) return null;
+
+  const failure = applyScoreFilters(scores, config.scoreFilters);
+  getTweetLog()?.set("multiAgent.scoreFilters.result", failure ?? "passed");
 
   if (!failure) return null;
   return {
@@ -129,6 +133,7 @@ async function applyConfiguredScoreFilters(
     reason: failure.reason,
     noteText: note.noteText,
     sources: note.sources,
+    scores,
   };
 }
 
@@ -180,7 +185,8 @@ export async function runMultiAgentPipeline(
       const verification = await handleProposeNotes(state, result.args.notes ?? []);
 
       if (verification.type === "accepted") {
-        const filterOutcome = await applyConfiguredScoreFilters(state, verification.note);
+        const scores = await computeNoteScoresForPipeline(state, verification.note);
+        const filterOutcome = checkScoreFiltersForNote(scores, verification.note);
         logFinal(startMs);
         if (filterOutcome) return filterOutcome;
         return {
@@ -188,6 +194,7 @@ export async function runMultiAgentPipeline(
           noteText: verification.note.noteText,
           sources: verification.note.sources,
           evalScore: verification.note.evalScore,
+          scores,
         };
       }
 
