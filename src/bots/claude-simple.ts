@@ -25,7 +25,7 @@ export const claudeSimpleBot: Bot = {
       getTweetLog()?.set("bot.id", fullBotId);
       const input = await createBotInput(post, content, "claude-simple");
       const outcome = await runClaudeSimplePipeline(post, content, input);
-      const result = outcomeToResult(post, fullBotId, outcome);
+      const result = outcomeToResult(post, fullBotId, outcome, config.scoreFilters);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }

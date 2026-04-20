@@ -13,7 +13,6 @@ import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
-import { applyScoreFilters, runNoteScores, type AllNoteScores } from "../score/noteScores";
 import { aggregateAndLogCosts } from "../utils/costTracker";
 import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
@@ -104,39 +103,6 @@ function resetNotewriter(state: PipelineState): void {
   nw.messages = [{ role: "system", content: nw.def.systemPrompt }];
 }
 
-async function computeNoteScoresForPipeline(
-  state: PipelineState,
-  note: EvaluatedNote,
-): Promise<AllNoteScores> {
-  return runNoteScores(
-    note.noteText,
-    state.postText,
-    state.researcherFindings,
-    note.sources.join(" "),
-  );
-}
-
-function checkScoreFiltersForNote(
-  scores: AllNoteScores,
-  note: EvaluatedNote,
-): PipelineOutcome | null {
-  const config = getBotConfig();
-  if (!config.scoreFilters.length) return null;
-
-  const failure = applyScoreFilters(scores, config.scoreFilters);
-  getTweetLog()?.set("multiAgent.scoreFilters.result", failure ?? "passed");
-
-  if (!failure) return null;
-  return {
-    type: "filtered",
-    filterName: failure.failedFilter,
-    reason: failure.reason,
-    noteText: note.noteText,
-    sources: note.sources,
-    scores,
-  };
-}
-
 function routResearcherFindings(state: PipelineState, content: string): void {
   state.researcherFindings = content;
   resetNotewriter(state);
@@ -185,16 +151,13 @@ export async function runMultiAgentPipeline(
       const verification = await handleProposeNotes(state, result.args.notes ?? []);
 
       if (verification.type === "accepted") {
-        const scores = await computeNoteScoresForPipeline(state, verification.note);
-        const filterOutcome = checkScoreFiltersForNote(scores, verification.note);
         logFinal(startMs);
-        if (filterOutcome) return filterOutcome;
         return {
           type: "note",
           noteText: verification.note.noteText,
           sources: verification.note.sources,
           evalScore: verification.note.evalScore,
-          scores,
+          searchResults: state.researcherFindings,
         };
       }
 
@@ -225,7 +188,13 @@ export async function runMultiAgentPipeline(
 
   logFinal(startMs);
   if (state.selectedNote) {
-    return { type: "note", noteText: state.selectedNote.noteText, sources: state.selectedNote.sources, evalScore: state.selectedNote.evalScore };
+    return {
+      type: "note",
+      noteText: state.selectedNote.noteText,
+      sources: state.selectedNote.sources,
+      evalScore: state.selectedNote.evalScore,
+      searchResults: state.researcherFindings,
+    };
   }
   return { type: "error", error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns` };
 }

@@ -74,7 +74,7 @@ export const agentBot: Bot = {
       getTweetLog()?.set("bot.id", fullBotId);
       const input = await createBotInput(post, content, "agent");
       const outcome = await runAgent(post, content, input);
-      const result = outcomeToResult(post, fullBotId, outcome);
+      const result = outcomeToResult(post, fullBotId, outcome, config.scoreFilters);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }
