@@ -51,7 +51,7 @@ export async function runClaudeSimplePipeline(
   logFinal(startMs);
 
   if (verification.accepted) {
-    return { type: "note", noteText: note.noteText, sources: note.sources };
+    return { type: "note", noteText: note.noteText, sources: note.sources, searchResults: search.findings };
   }
   return { type: "no_correction", reason: `Source verification rejected: ${verification.reasoning}` };
 }

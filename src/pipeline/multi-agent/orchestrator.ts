@@ -157,6 +157,7 @@ export async function runMultiAgentPipeline(
           noteText: verification.note.noteText,
           sources: verification.note.sources,
           evalScore: verification.note.evalScore,
+          searchResults: state.researcherFindings,
         };
       }
 
@@ -187,7 +188,13 @@ export async function runMultiAgentPipeline(
 
   logFinal(startMs);
   if (state.selectedNote) {
-    return { type: "note", noteText: state.selectedNote.noteText, sources: state.selectedNote.sources, evalScore: state.selectedNote.evalScore };
+    return {
+      type: "note",
+      noteText: state.selectedNote.noteText,
+      sources: state.selectedNote.sources,
+      evalScore: state.selectedNote.evalScore,
+      searchResults: state.researcherFindings,
+    };
   }
   return { type: "error", error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns` };
 }

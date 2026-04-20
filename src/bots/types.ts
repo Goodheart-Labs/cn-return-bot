@@ -33,7 +33,7 @@ export interface PipelineResult {
 }
 
 export type PipelineOutcome =
-  | { type: "note"; noteText: string; sources: string[]; evalScore?: number }
+  | { type: "note"; noteText: string; sources: string[]; evalScore?: number; searchResults?: string }
   | { type: "no_correction"; reason: string }
   | { type: "error"; error: string };
 
@@ -56,7 +56,11 @@ export function outcomeToResult(
       return {
         ...base,
         noteResult: { note: outcome.noteText, url: outcome.sources.join(" "), status: "CORRECTION WITH TRUSTWORTHY CITATION" },
-        searchContextResult: { ...base.searchContextResult, citations: outcome.sources },
+        searchContextResult: {
+          ...base.searchContextResult,
+          searchResults: outcome.searchResults ?? "",
+          citations: outcome.sources,
+        },
         checkResult: "YES",
       };
     case "no_correction":
