@@ -31,7 +31,7 @@ function defaultFilters(source: "production" | "dataset_run"): FilterState {
       failureTypes.add(ft);
     }
   }
-  return { seen: "all", failureTypes, failureModes: new Set() };
+  return { seen: "unseen", failureTypes, failureModes: new Set() };
 }
 
 function initialDatasetFromUrl(): DatasetOption {

@@ -115,7 +115,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
   // Fetch competing notes, pipeline runs, and annotations in parallel (batched to avoid URL length limits)
   const [competing, pipelines, annotations] = await Promise.all([
     fetchInBatches<any>("competing_notes", "*", "our_note_id", noteIds, undefined, "competing_notes"),
-    fetchInBatches<any>("pipeline_runs", "tweet_id, outcome, outcome_reason, logs, search_results, check_reasoning, bot_id", "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
+    fetchInBatches<any>("pipeline_runs", "tweet_id, tweet_text, outcome, outcome_reason, logs, search_results, check_reasoning, bot_id, has_photo, has_video, media_count", "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
     fetchInBatches<any>("review_dashboard_annotations", "*", "target_id", noteIds, (q) => q.eq("source", "production"), "annotations").catch(() => [] as any[]),
   ]);
 
@@ -164,8 +164,11 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       id: note.note_id,
       source: "production" as const,
       tweetId: note.tweet_id,
-      tweetText: note.tweet_text,
+      tweetText: note.tweet_text ?? pipeline?.tweet_text,
       tweetHandle: note.tweet_handle,
+      hasPhoto: pipeline?.has_photo ?? false,
+      hasVideo: pipeline?.has_video ?? false,
+      mediaCount: pipeline?.media_count ?? 0,
       noteId: note.note_id,
       noteText: note.note_text,
       sourceUrl: note.source_url,

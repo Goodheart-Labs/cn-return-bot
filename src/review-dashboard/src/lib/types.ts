@@ -5,6 +5,9 @@ export interface ReviewItem {
   tweetId: string;
   tweetText?: string;
   tweetHandle?: string;
+  hasPhoto?: boolean;
+  hasVideo?: boolean;
+  mediaCount?: number;
 
   // Our note
   noteId?: string;
