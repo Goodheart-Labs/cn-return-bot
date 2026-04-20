@@ -14,7 +14,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
-import { runNoteScores, countSources, type AllNoteScores } from "../score/noteScores";
+import { runNoteScores, countSources, applyScoreFilters, type AllNoteScores } from "../score/noteScores";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotId, nestDotKeys } from "../utils/tweetLog";
 
@@ -149,6 +149,8 @@ async function runBotPipeline(
 
 interface ScoringOutput {
   scores: ScoreEntry[];
+  /** Typed note scores (when runNoteScores succeeded). Used for filter gating. */
+  noteScores?: AllNoteScores;
   evaluationScore?: number;
   sourceCountScore?: number;
   /** Whether eval says we should submit (undefined if eval failed/skipped) */
@@ -228,14 +230,13 @@ function noteScoresToEntries(scores: AllNoteScores): ScoreEntry[] {
 }
 
 async function computeNoteQualityScores(
-  result: PipelineResult,
   tweetText: string,
   noteText: string,
   searchResults: string,
   sourceUrl: string
-): Promise<ScoreEntry[]> {
-  const scores = result.noteScores ?? await runNoteScores(noteText, tweetText, searchResults, sourceUrl);
-  return noteScoresToEntries(scores);
+): Promise<{ scores: AllNoteScores; entries: ScoreEntry[] }> {
+  const scores = await runNoteScores(noteText, tweetText, searchResults, sourceUrl);
+  return { scores, entries: noteScoresToEntries(scores) };
 }
 
 async function scorePipelineResult(
@@ -276,20 +277,21 @@ async function scorePipelineResult(
   }
 
   // Note quality scores
+  let noteScores: AllNoteScores | undefined;
   try {
-    const qualityScores = await computeNoteQualityScores(
-      result,
+    const quality = await computeNoteQualityScores(
       post.text,
       noteText,
       result.searchContextResult.searchResults ?? "",
       result.noteResult.url ?? ""
     );
-    scores.push(...qualityScores);
+    noteScores = quality.scores;
+    scores.push(...quality.entries);
   } catch (err: any) {
     console.warn(`[processTweet] Note scores failed for ${post.id}:`, err?.message);
   }
 
-  return { scores, evaluationScore, sourceCountScore, evalShouldSubmit };
+  return { scores, noteScores, evaluationScore, sourceCountScore, evalShouldSubmit };
 }
 
 // ---------------------------------------------------------------------------
@@ -306,6 +308,7 @@ const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 function determineOutcome(
   result: PipelineResult | null,
   scores: ScoreEntry[],
+  noteScores: AllNoteScores | undefined,
   evalShouldSubmit?: boolean
 ): Outcome {
   // Bot returned nothing
@@ -342,6 +345,19 @@ function determineOutcome(
       finalStage: "check",
       errorMessage: checkRaw ? `check: ${checkRaw}` : undefined,
     };
+  }
+
+  // Score filter rejection (filters come from the bot's config)
+  if (result.scoreFilters?.length && noteScores) {
+    const failure = applyScoreFilters(noteScores, result.scoreFilters);
+    if (failure) {
+      return {
+        outcome: "rejected",
+        outcomeReason: "scoring_filters_failed",
+        finalStage: "scoring",
+        errorMessage: failure.reason,
+      };
+    }
   }
 
   // Evaluation score rejection
@@ -471,6 +487,7 @@ export async function processSingleTweet(
 
   // 3. Score (only if bot produced a usable result)
   let scores: ScoreEntry[] = [];
+  let noteScores: AllNoteScores | undefined;
   let evaluationScore: number | undefined;
   let sourceCountScore: number | undefined;
   let evalShouldSubmit: boolean | undefined;
@@ -478,6 +495,7 @@ export async function processSingleTweet(
   if (result && !result.error) {
     const scoring = await scorePipelineResult(result, post);
     scores = scoring.scores;
+    noteScores = scoring.noteScores;
     evaluationScore = scoring.evaluationScore;
     sourceCountScore = scoring.sourceCountScore;
     evalShouldSubmit = scoring.evalShouldSubmit;
@@ -485,7 +503,7 @@ export async function processSingleTweet(
   }
 
   // 4. Determine outcome
-  const outcome = determineOutcome(result, scores, evalShouldSubmit);
+  const outcome = determineOutcome(result, scores, noteScores, evalShouldSubmit);
 
   // 5. Write to tweet log
   const log = getTweetLog();

@@ -75,6 +75,7 @@ export const agentBot: Bot = {
       const input = await createBotInput(post, content, "agent");
       const outcome = await runAgent(post, content, input);
       const result = outcomeToResult(post, fullBotId, outcome);
+      result.scoreFilters = config.scoreFilters;
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }

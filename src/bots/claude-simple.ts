@@ -26,6 +26,7 @@ export const claudeSimpleBot: Bot = {
       const input = await createBotInput(post, content, "claude-simple");
       const outcome = await runClaudeSimplePipeline(post, content, input);
       const result = outcomeToResult(post, fullBotId, outcome);
+      result.scoreFilters = config.scoreFilters;
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }

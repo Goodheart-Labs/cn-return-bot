@@ -4,7 +4,7 @@
  * Defines the interface that all bots must implement.
  */
 
-import type { AllNoteScores } from "../pipeline/score/noteScores";
+import type { ScoreFilter } from "../pipeline/utils/botConfig";
 
 export interface PipelineResult {
   post: any;
@@ -23,9 +23,9 @@ export interface PipelineResult {
     status: string;
   };
   checkResult?: string;
-  /** Note quality scores pre-computed by the bot (e.g. for filter gating). When
-   * present, downstream scoring in processTweet reuses these instead of rerunning. */
-  noteScores?: AllNoteScores;
+  /** Score filters copied from the bot's config. processTweet applies them
+   * against the scores it computes and rejects notes that fail. */
+  scoreFilters?: ScoreFilter[];
   /** If the bot failed, this contains error info */
   error?: string;
   /** Non-fatal warnings (e.g. media analysis failed but pipeline continued) */
@@ -33,9 +33,8 @@ export interface PipelineResult {
 }
 
 export type PipelineOutcome =
-  | { type: "note"; noteText: string; sources: string[]; evalScore?: number; scores?: AllNoteScores }
+  | { type: "note"; noteText: string; sources: string[]; evalScore?: number }
   | { type: "no_correction"; reason: string }
-  | { type: "filtered"; filterName: string; reason: string; noteText: string; sources: string[]; scores: AllNoteScores }
   | { type: "error"; error: string };
 
 export function outcomeToResult(post: any, botId: string, outcome: PipelineOutcome): PipelineResult {
@@ -53,19 +52,9 @@ export function outcomeToResult(post: any, botId: string, outcome: PipelineOutco
         noteResult: { note: outcome.noteText, url: outcome.sources.join(" "), status: "CORRECTION WITH TRUSTWORTHY CITATION" },
         searchContextResult: { ...base.searchContextResult, citations: outcome.sources },
         checkResult: "YES",
-        noteScores: outcome.scores,
       };
     case "no_correction":
       return base;
-    case "filtered":
-      return {
-        ...base,
-        lastStage: "scoring",
-        noteResult: { note: outcome.noteText, url: outcome.sources.join(" "), status: "SCORING_FILTERS_FAILED" },
-        searchContextResult: { ...base.searchContextResult, citations: outcome.sources },
-        checkResult: "YES",
-        noteScores: outcome.scores,
-      };
     case "error":
       return { ...base, lastStage: "error", noteResult: { ...base.noteResult, status: "ERROR" }, error: outcome.error };
   }
