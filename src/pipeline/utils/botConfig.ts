@@ -44,6 +44,12 @@ interface ConfigVariant {
 
 const AGENT_FAMILY_BOT_IDS = ["agent", "multi-agent"];
 
+// Applied to every multi-agent variant: reject notes where the researcher's
+// own assessment says the tweet doesn't really warrant a correction.
+const AGENT_FAMILY_SCORE_FILTERS: ScoreFilter[] = [
+  { score: "noteNotNeeded", op: "gte", threshold: 0.7 },
+];
+
 const CONFIG_VARIANTS: ConfigVariant[] = [
   {
     name: "gemini-flash-perplexity",
@@ -52,6 +58,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "perplexity",
+      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     },
   },
   {
@@ -61,6 +68,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng",
+      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     },
   },
   {
@@ -70,6 +78,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng_summarized",
+      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     },
   },
   {
@@ -80,6 +89,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
       model: "google/gemini-3-flash-preview",
       web_search: "perplexity",
       parallel_research: true,
+      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     },
   },
   {
@@ -90,6 +100,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
       model: "google/gemini-3-flash-preview",
       web_search: "searxng",
       parallel_research: true,
+      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     },
   },
   {
@@ -100,6 +111,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
       model: "google/gemini-3-flash-preview",
       web_search: "searxng_summarized",
       parallel_research: true,
+      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     },
   },
   {
