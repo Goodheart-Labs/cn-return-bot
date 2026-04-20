@@ -15,6 +15,7 @@ import { opusMultiSource } from "./opus-multi-source";
 import { opusBridging } from "./opus-bridging";
 import { agentBot } from "./agent";
 import { multiAgentBot } from "./multi-agent";
+import { claudeSimpleBot } from "./claude-simple";
 
 // Legacy bots (weight=0, kept for historical data)
 import { opusResearch } from "./opus-research";
@@ -47,7 +48,8 @@ import { opusConcise } from "./opus-concise";
 
 const BOT_WEIGHTS: [Bot, number][] = [
   [agentBot,                    0],
-  [multiAgentBot,              30],
+  [multiAgentBot,              20],
+  [claudeSimpleBot,            30],
   [opusMain,                   26],
   [opusMainV2,                 11],
   [opusMainNoSourceCheck,       0],

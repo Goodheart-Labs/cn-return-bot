@@ -102,6 +102,30 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
       parallel_research: true,
     },
   },
+  {
+    name: "claude-simple-sonnet-sonnet",
+    weight: 1,
+    botIds: ["claude-simple"],
+    overrides: {
+      model: "anthropic/claude-sonnet-4.6",
+      search_model: "anthropic/claude-sonnet-4.6",
+      writer_model: "anthropic/claude-sonnet-4.6",
+      verifier_model: "google/gemini-3-flash-preview",
+      web_search: "native",
+    },
+  },
+  {
+    name: "claude-simple-sonnet-gemini",
+    weight: 1,
+    botIds: ["claude-simple"],
+    overrides: {
+      model: "anthropic/claude-sonnet-4.6",
+      search_model: "anthropic/claude-sonnet-4.6",
+      writer_model: "google/gemini-3-flash-preview",
+      verifier_model: "google/gemini-3-flash-preview",
+      web_search: "native",
+    },
+  },
 ];
 
 // --- AsyncLocalStorage ---
