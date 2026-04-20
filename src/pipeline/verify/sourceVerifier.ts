@@ -89,7 +89,7 @@ export async function verifySources(params: {
 }): Promise<SourceVerification> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const logPrefix = `multiAgent.sourceVerifier.turn.${params.turnNumber}.messages`;
+  const logPrefix = `sourceVerifier.turn.${params.turnNumber}.messages`;
 
   const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(params.sources);
 
@@ -131,7 +131,7 @@ export async function verifySources(params: {
 
   try {
     const { response, costEntry } = await trackedLlmCreate(`sourceVerifier.turn.${params.turnNumber}`, {
-      model: config.model,
+      model: config.verifier_model ?? config.model,
       messages: [
         { role: "system" as const, content: SYSTEM_PROMPT },
         { role: "user" as const, content: userMessage },

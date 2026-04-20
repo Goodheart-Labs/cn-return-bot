@@ -14,6 +14,10 @@ export interface ScoreFilter {
 export interface BotConfig {
   configName: string;
   model: string;
+  /** Step-specific model overrides. Each defaults to `model` when unset. */
+  search_model?: string;
+  writer_model?: string;
+  verifier_model?: string;
   web_search: "native" | "perplexity" | "searxng" | "searxng_summarized";
   video_description_strategy: VideoDescriptionStrategy;
   scoreFilters: ScoreFilter[];
@@ -34,13 +38,17 @@ const DEFAULT_CONFIG: BotConfig = {
 interface ConfigVariant {
   name: string;
   weight: number;
+  botIds: string[];
   overrides: Partial<BotConfig>;
 }
+
+const AGENT_FAMILY_BOT_IDS = ["agent", "multi-agent"];
 
 const CONFIG_VARIANTS: ConfigVariant[] = [
   {
     name: "gemini-flash-perplexity",
     weight: 1,
+    botIds: AGENT_FAMILY_BOT_IDS,
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "perplexity",
@@ -49,6 +57,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
   {
     name: "gemini-flash-searxng",
     weight: 1,
+    botIds: AGENT_FAMILY_BOT_IDS,
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng",
@@ -57,6 +66,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
   {
     name: "gemini-flash-searxng-summarized",
     weight: 1,
+    botIds: AGENT_FAMILY_BOT_IDS,
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng_summarized",
@@ -65,6 +75,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
   {
     name: "gemini-flash-perplexity-parallel",
     weight: 1,
+    botIds: AGENT_FAMILY_BOT_IDS,
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "perplexity",
@@ -74,6 +85,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
   {
     name: "gemini-flash-searxng-parallel",
     weight: 1,
+    botIds: AGENT_FAMILY_BOT_IDS,
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng",
@@ -83,6 +95,7 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
   {
     name: "gemini-flash-searxng-summarized-parallel",
     weight: 1,
+    botIds: AGENT_FAMILY_BOT_IDS,
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng_summarized",
@@ -141,7 +154,7 @@ export function getFullBotId(botId: string, config: BotConfig): string {
   return `${botId}_${config.configName}`;
 }
 
-export function randomizeConfig(): BotConfig {
+export function randomizeConfig(botId: string): BotConfig {
   const { configName: forcedName } = getConfigOverrides();
 
   let variant: ConfigVariant;
@@ -152,9 +165,18 @@ export function randomizeConfig(): BotConfig {
         `No CONFIG_VARIANTS entry named "${forcedName}". Available: ${getConfigVariantNames().join(", ")}`,
       );
     }
+    if (!match.botIds.includes(botId)) {
+      throw new Error(
+        `Config variant "${forcedName}" is not allowed for bot "${botId}". Allowed bots: ${match.botIds.join(", ")}`,
+      );
+    }
     variant = match;
   } else {
-    variant = pickVariant(CONFIG_VARIANTS);
+    const pool = CONFIG_VARIANTS.filter((v) => v.botIds.includes(botId));
+    if (pool.length === 0) {
+      throw new Error(`No config variants available for bot "${botId}"`);
+    }
+    variant = pickVariant(pool);
   }
 
   return { ...DEFAULT_CONFIG, ...variant.overrides, configName: variant.name };

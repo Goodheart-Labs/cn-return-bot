@@ -67,7 +67,7 @@ export const agentBot: Bot = {
   name: "Agent",
   description: "Agentic bot with tool calling",
   async runPipeline(post, content): Promise<PipelineResult | null> {
-    const config = randomizeConfig();
+    const config = randomizeConfig(this.id);
     const fullBotId = getFullBotId(this.id, config);
 
     return withBotConfig(config, () => withCostTracker(async () => {

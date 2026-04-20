@@ -17,7 +17,7 @@ export const multiAgentBot: Bot = {
   name: "Multi-Agent",
   description: "Researcher → Notewriter → Source Verifier pipeline",
   async runPipeline(post, content): Promise<PipelineResult | null> {
-    const config = randomizeConfig();
+    const config = randomizeConfig(this.id);
     const fullBotId = getFullBotId(this.id, config);
 
     return withBotConfig(config, () => withCostTracker(async () => {
