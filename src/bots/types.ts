@@ -37,13 +37,19 @@ export type PipelineOutcome =
   | { type: "no_correction"; reason: string }
   | { type: "error"; error: string };
 
-export function outcomeToResult(post: any, botId: string, outcome: PipelineOutcome): PipelineResult {
+export function outcomeToResult(
+  post: any,
+  botId: string,
+  outcome: PipelineOutcome,
+  scoreFilters: ScoreFilter[],
+): PipelineResult {
   const base = {
     post,
     botId,
     lastStage: "complete",
     searchContextResult: { text: "", searchResults: "" },
     noteResult: { note: "", url: "", status: "NO MISSING CONTEXT" },
+    scoreFilters,
   };
   switch (outcome.type) {
     case "note":

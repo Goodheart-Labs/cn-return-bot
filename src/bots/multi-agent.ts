@@ -24,8 +24,7 @@ export const multiAgentBot: Bot = {
       getTweetLog()?.set("bot.id", fullBotId);
       const input = await createBotInput(post, content, "multi-agent");
       const outcome = await runMultiAgentPipeline(post, content, input);
-      const result = outcomeToResult(post, fullBotId, outcome);
-      result.scoreFilters = config.scoreFilters;
+      const result = outcomeToResult(post, fullBotId, outcome, config.scoreFilters);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }
