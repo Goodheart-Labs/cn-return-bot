@@ -7,12 +7,16 @@ import { parsePostsResponse, type Post } from "./fetchEligiblePosts";
  * Uses the same fields/expansions as fetchEligiblePosts for consistent Post shape.
  */
 export async function fetchTweetById(tweetId: string): Promise<Post> {
+  // See BASE_FIELDS in fetchEligiblePosts.ts for why `attachments` and
+  // `referenced_tweets.id.attachments.media_keys` are needed to populate
+  // quoted-tweet media.
   const params = new URLSearchParams({
-    "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics",
+    "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics,attachments",
     "media.fields":
       "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
     "user.fields": "public_metrics,name,description",
-    expansions: "attachments.media_keys,referenced_tweets.id,author_id",
+    expansions:
+      "attachments.media_keys,referenced_tweets.id,referenced_tweets.id.attachments.media_keys,author_id",
   });
 
   const fullUrl = `https://api.x.com/2/tweets/${tweetId}?${params.toString()}`;
