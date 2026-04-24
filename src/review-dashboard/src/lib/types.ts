@@ -27,6 +27,7 @@ export interface ReviewItem {
   outcome?: string;
   outcomeReason?: string;
   logs?: Record<string, unknown>;
+  pipelineRunId?: string;
   botId?: string;
 
   // Comparison notes (competing notes for production, ground truth for dataset runs)

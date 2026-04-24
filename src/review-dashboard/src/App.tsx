@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type {
   ReviewItem,
   DatasetOption,
@@ -8,8 +8,9 @@ import type {
 } from "./lib/types";
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import {
-  fetchCanonicalBatch,
-  fetchMissedBatch,
+  fetchDashboardData,
+  buildDashboardItems,
+  fetchLogsForRuns,
   countsFromItems,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
@@ -19,7 +20,6 @@ import {
   createFailureMode,
   deleteUpload,
   pruneUnusedFailureModes,
-  DB_BATCH_SIZE,
 } from "./lib/data";
 
 const DISPLAY_PAGE_SIZE = 20;
@@ -72,22 +72,13 @@ export function App() {
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   const [failureModeCatalog, setFailureModeCatalog] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingLogs, setLoadingLogs] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Production-only pagination state. Each "Load more" click advances the
-  // canonical cursor and, when missed is enabled, the missed cursor too.
-  const [dbOffset, setDbOffset] = useState(0);
-  const [hasMoreInDb, setHasMoreInDb] = useState(true);
+  // Production: all items are loaded up-front (metadata only, no TOAST). Logs
+  // are lazy-loaded per visible card and cached here keyed by pipeline_run id.
   const [displayLimit, setDisplayLimit] = useState(DISPLAY_PAGE_SIZE);
-  // Missed opportunities are paginated with their own cursor (sorted by
-  // competing_notes.created_at_millis desc). Only advanced while the
-  // missed_opportunity filter is on.
-  const [missedOffset, setMissedOffset] = useState(0);
-  const [hasMoreMissedInDb, setHasMoreMissedInDb] = useState(true);
-  // Ref, not state: if this were state, setting it inside the effect would
-  // change the dep array and cancel the in-flight fetch via the cleanup fn.
-  const missedStartedRef = useRef(false);
+  const [logsByRunId, setLogsByRunId] = useState<Map<string, Record<string, unknown>>>(new Map());
 
   // Load uploads and failure mode catalog on mount
   useEffect(() => {
@@ -103,23 +94,21 @@ export function App() {
     fetchFailureModes().then(setFailureModeCatalog).catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
   }, []);
 
-  // Load data when dataset changes. For production we fetch one DB batch
-  // up-front and rely on "Load more" to paginate; for dataset runs we still
-  // fetch everything (bounded set).
+  // Load data when dataset changes. For production we fetch ALL metadata
+  // (canonical + competing + pipeline_runs sans logs) in one shot; logs are
+  // lazy-loaded per visible card in a separate effect below. Dataset runs
+  // keep their original one-shot fetch (bounded set, already includes logs).
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       if (dataset.type === "production") {
-        const batch = await fetchCanonicalBatch(0, DB_BATCH_SIZE);
-        setItems(batch.items);
-        setDbOffset(batch.items.length);
-        setHasMoreInDb(batch.hasMore);
+        const data = await fetchDashboardData();
+        const built = buildDashboardItems(data);
+        setItems(built);
+        setCounts(countsFromItems(built));
         setDisplayLimit(DISPLAY_PAGE_SIZE);
-        setMissedOffset(0);
-        setHasMoreMissedInDb(true);
-        missedStartedRef.current = false;
-        setCounts(countsFromItems(batch.items));
+        setLogsByRunId(new Map());
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
         setItems(loaded);
@@ -138,101 +127,59 @@ export function App() {
     loadData();
   }, [dataset]);
 
-  // Fetch the first batch of missed opportunities the first time the filter
-  // turns on. Subsequent batches are pulled by handleLoadMore alongside
-  // canonical, so we never over-fetch the full set.
-  useEffect(() => {
-    if (dataset.type !== "production") return;
-    if (!filters.failureTypes.has("missed_opportunity")) return;
-    if (missedStartedRef.current) return;
-    missedStartedRef.current = true;
-    setLoadingMore(true);
-    fetchMissedBatch(0, DB_BATCH_SIZE)
-      .then((batch) => {
-        setItems((prev) => {
-          const existing = new Set(prev.map((i) => i.id));
-          const add = batch.items.filter((m) => !existing.has(m.id));
-          const merged = [...prev, ...add];
-          setCounts(countsFromItems(merged));
-          return merged;
-        });
-        setMissedOffset(batch.items.length);
-        setHasMoreMissedInDb(batch.hasMore);
-      })
-      .finally(() => setLoadingMore(false));
-  }, [dataset.type, filters.failureTypes]);
-
-  // Sort here instead of inside every setItems so missed-opportunity merges
-  // and canonical appends don't have to coordinate the ordering themselves.
+  // Sort items by date (stable memo so renders don't re-sort unnecessarily).
   const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
-  // Filter loaded items (cheap client-side filter covers cn_status-based
-  // categories AND lost_to_competitor, which depends on competing_notes).
   const filtered = sortedItems.filter(matchesFilters(filters));
 
-  const visible = dataset.type === "production" ? filtered.slice(0, displayLimit) : filtered;
-  const missedEnabled = filters.failureTypes.has("missed_opportunity");
-  const canLoadMore =
-    dataset.type === "production" &&
-    (hasMoreInDb || (missedEnabled && hasMoreMissedInDb) || filtered.length > displayLimit);
+  // Fold lazy-loaded logs into the items the list is about to render. Without
+  // this, the first render sees logs=undefined; once the effect below fills
+  // logsByRunId we want the cards to pick them up.
+  const visibleRaw = dataset.type === "production" ? filtered.slice(0, displayLimit) : filtered;
+  const visible = useMemo(
+    () =>
+      visibleRaw.map((item) => {
+        const fromCache = item.pipelineRunId ? logsByRunId.get(item.pipelineRunId) : undefined;
+        return fromCache ? { ...item, logs: fromCache } : item;
+      }),
+    [visibleRaw, logsByRunId],
+  );
+  const canLoadMore = dataset.type === "production" && filtered.length > displayLimit;
 
-  const handleLoadMore = useCallback(async () => {
-    if (dataset.type !== "production" || loadingMore) return;
-    setLoadingMore(true);
-    try {
-      const targetFiltered = displayLimit + DISPLAY_PAGE_SIZE;
-      let currentItems = items;
-      let canonOffset = dbOffset;
-      let canonHasMore = hasMoreInDb;
-      let missOffset = missedOffset;
-      let missHasMore = hasMoreMissedInDb;
-      let currentFiltered = filtered.length;
-      // Each click advances both cursors in parallel (when both are active).
-      // First pass is unconditional so canonical keeps flowing in even after
-      // missed is added; subsequent passes only fire if we're still short of
-      // the display target, bounded so restrictive filters can't hammer the DB.
-      const MAX_FETCHES_PER_CLICK = 5;
-      let fetches = 0;
-      const shouldFetchMore = () =>
-        (canonHasMore || (missedEnabled && missHasMore)) &&
-        fetches < MAX_FETCHES_PER_CLICK &&
-        (fetches === 0 || currentFiltered < targetFiltered);
-      while (shouldFetchMore()) {
-        const calls: Promise<{ items: ReviewItem[]; hasMore: boolean }>[] = [];
-        if (canonHasMore) calls.push(fetchCanonicalBatch(canonOffset, DB_BATCH_SIZE));
-        if (missedEnabled && missHasMore) calls.push(fetchMissedBatch(missOffset, DB_BATCH_SIZE));
-        const results = await Promise.all(calls);
-        let idx = 0;
-        if (canonHasMore) {
-          const canonBatch = results[idx++];
-          currentItems = [...currentItems, ...canonBatch.items];
-          canonOffset += canonBatch.items.length;
-          canonHasMore = canonBatch.hasMore;
-        }
-        if (missedEnabled && missHasMore) {
-          const missBatch = results[idx++];
-          const existing = new Set(currentItems.map((i) => i.id));
-          const add = missBatch.items.filter((m) => !existing.has(m.id));
-          currentItems = [...currentItems, ...add];
-          missOffset += missBatch.items.length;
-          missHasMore = missBatch.hasMore;
-        }
-        currentFiltered = currentItems.filter(matchesFilters(filters)).length;
-        fetches++;
-      }
-      setItems(currentItems);
-      setDbOffset(canonOffset);
-      setHasMoreInDb(canonHasMore);
-      setMissedOffset(missOffset);
-      setHasMoreMissedInDb(missHasMore);
-      setCounts(countsFromItems(currentItems));
-      setDisplayLimit(targetFiltered);
-    } catch (err: any) {
-      console.error("Load more failed:", err);
-      setError(err?.message ?? "Load more failed");
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [dataset.type, loadingMore, displayLimit, items, dbOffset, hasMoreInDb, missedOffset, hasMoreMissedInDb, missedEnabled, filtered.length, filters]);
+  // Lazy-load logs for visible production items that don't have them yet.
+  // Dataset runs already carry logs inline (they're small & come from uploads),
+  // so this only fires for production.
+  const visibleRunIdsKey = useMemo(
+    () => visibleRaw.map((i) => i.pipelineRunId ?? "").join(","),
+    [visibleRaw],
+  );
+  useEffect(() => {
+    if (dataset.type !== "production") return;
+    const needIds = Array.from(
+      new Set(
+        visibleRaw
+          .map((i) => i.pipelineRunId)
+          .filter((id): id is string => !!id && !logsByRunId.has(id)),
+      ),
+    );
+    if (needIds.length === 0) return;
+    setLoadingLogs(true);
+    fetchLogsForRuns(needIds)
+      .then((newLogs) => {
+        if (newLogs.size === 0) return;
+        setLogsByRunId((prev) => {
+          const merged = new Map(prev);
+          for (const [k, v] of newLogs) merged.set(k, v);
+          return merged;
+        });
+      })
+      .finally(() => setLoadingLogs(false));
+    // visibleRunIdsKey guards against re-running when only object identity
+    // changes but the actual set of visible items hasn't.
+  }, [dataset.type, visibleRunIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleLoadMore = useCallback(() => {
+    setDisplayLimit((prev) => prev + DISPLAY_PAGE_SIZE);
+  }, []);
 
   // Annotation handlers
   const handleSeenToggle = async (id: string, seen: boolean) => {
@@ -379,7 +326,7 @@ export function App() {
         {loading && items.length === 0
           ? "Loading..."
           : dataset.type === "production"
-            ? `Showing ${visible.length} of ${filtered.length}${canLoadMore ? "+" : ""}`
+            ? `Showing ${visible.length} of ${filtered.length}`
             : `${filtered.length} items shown`}
       </div>
 
@@ -403,10 +350,9 @@ export function App() {
         <div className="flex justify-center mt-6">
           <button
             onClick={handleLoadMore}
-            disabled={loadingMore}
-            className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50"
           >
-            {loadingMore ? "Loading..." : `Load more (${DISPLAY_PAGE_SIZE})`}
+            {loadingLogs ? "Loading logs..." : `Load more (${DISPLAY_PAGE_SIZE})`}
           </button>
         </div>
       )}
