@@ -355,13 +355,10 @@ async function main() {
   let newlyHelpful = 0;
   let skippedUnchanged = 0;
 
-  // Terminal statuses don't flip once reached (LOCKED_* by definition; CRH/CRNH
-  // very rarely change). Skip the upsert when an existing row's status is
-  // terminal and matches the new status — saves a big chunk of write I/O.
+  // CRH/CRNH rarely flip once reached — skip the upsert when the existing row
+  // already has that status, saving a big chunk of write I/O.
   const isTerminalStatus = (s: string | null | undefined) =>
-    s === "CURRENTLY_RATED_HELPFUL" ||
-    s === "CURRENTLY_RATED_NOT_HELPFUL" ||
-    (s?.startsWith("LOCKED_") ?? false);
+    s === "CURRENTLY_RATED_HELPFUL" || s === "CURRENTLY_RATED_NOT_HELPFUL";
 
   // Split new vs existing rows into separate batches because PostgREST normalizes
   // all rows in a batch to the same columns — mixing rows with/without first_seen_at
