@@ -22,6 +22,8 @@ jobs:
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       # Groq API key for Whisper audio transcription (video analysis)
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      # xAI API key for Grok X search
+      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
       # SearXNG instance running as a Docker container (see "Start SearXNG" step)
       SEARXNG_URL: http://localhost:8080
     steps:
