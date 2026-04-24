@@ -727,9 +727,21 @@ async function main() {
     process.exit(1);
   }
 
+  // 1. Download the daily Community Notes public data dumps (notes TSV +
+  //    noteStatusHistory TSV). X publishes these once a day; they're the
+  //    authoritative source for note ratings, classification, and lock status.
+  //    We try today's date first and fall back up to a week if not yet published.
   const files = await downloadPublicDataFiles();
   if (!files) process.exit(1);
 
+  // 2. Fetch the set of tweets where our pipeline ran but chose not to submit
+  //    ("rejected" outcome). We need this BEFORE parsing the notes TSV because
+  //    parseNotesFile categorises other authors' notes into:
+  //      - competing   (on a tweet we DID note — shows what we were up against)
+  //      - missed      (on a tweet we did NOT note, but someone else did — a
+  //                     missed opportunity, especially if theirs became helpful)
+  //    parseNotesFile mutates rejectedByTweetId to remove tweets where we
+  //    ended up submitting (those can't be "missed"), so only pass it here.
   console.log("[updateFeedback] Parsing notes file...");
   const rejectedByTweetId = await fetchRejectedTweets(client);
   console.log(`[updateFeedback] ${rejectedByTweetId.size} rejected-run tweets before exclusion`);
@@ -737,6 +749,9 @@ async function main() {
   const { ourNotes, competingNotes, missedNotes } = parseNotesFile(files.notesPaths, rejectedByTweetId);
   console.log(`[updateFeedback] Found ${ourNotes.size} of our notes, ${competingNotes.length} competing, ${missedNotes.length} missed-opportunity candidates`);
 
+  // 3. Parse noteStatusHistory — but only for note IDs we care about. The TSV
+  //    has millions of rows across all authors; filtering by `relevantIds`
+  //    during parse keeps memory bounded and parse time short.
   console.log("[updateFeedback] Parsing noteStatusHistory...");
   const relevantIds = new Set<string>([
     ...ourNotes.keys(),
@@ -746,6 +761,12 @@ async function main() {
   const statusMap = parseStatusHistory(files.statusPaths, relevantIds);
   console.log(`[updateFeedback] Found ${statusMap.size} status records for relevant notes`);
 
+  // 4. Snapshot the current DB state ONCE so downstream stages can:
+  //      a. decide new-vs-existing rows without a second canonical scan
+  //      b. skip no-op upserts for terminal-status rows (see syncCanonical)
+  //      c. know which notes exist in the `notes` table (backwards compat)
+  //      d. enrich canonical rows with submitted_at / bot_name from `notes`
+  //    Doing this once up-front is a big disk-I/O win vs re-querying per stage.
   console.log("[updateFeedback] Fetching existing DB state...");
   const existingCanonical = await fetchExistingCanonical(client);
   const enrichmentMap = await fetchNotesEnrichment(client);
@@ -754,6 +775,12 @@ async function main() {
 
   const now = new Date().toISOString();
 
+  // 5. Primary write: merge our notes' latest status / classification / timestamps
+  //    into canonical_note_information. Rows whose cn_status is already
+  //    CRH/CRNH and unchanged are skipped — those states rarely flip, so
+  //    re-upserting them every 4h wastes disk I/O. syncCanonical returns
+  //    postUpsert* maps (fresh copies) describing canonical after this stage;
+  //    the API overlay step below uses them.
   const canonicalResult = await syncCanonical(client, {
     ourNotes,
     statusMap,
@@ -766,14 +793,24 @@ async function main() {
     console.log(`[updateFeedback] ${canonicalResult.newlyHelpful} notes newly rated HELPFUL!`);
   }
 
+  // 6. Sync competing notes (other authors' notes on tweets we noted) so the
+  //    dashboard can render "who else wrote on this tweet, and did they win?".
   console.log("[updateFeedback] Upserting competing notes...");
   const competingResult = await syncCompetingNotes(client, competingNotes, statusMap, now);
   console.log(`[updateFeedback] Competing: ${competingResult.upserted} upserted, ${competingResult.errors} errors`);
 
+  // 7. Missed opportunities: other authors' helpful notes on tweets our bot
+  //    rejected. Stored in competing_notes with our_note_id=NULL (no "our" note
+  //    existed). We DELETE-then-INSERT rather than upsert because the set
+  //    changes frequently (a note can become helpful, losing-helpful, etc.)
+  //    and we only keep currently-helpful ones — a full replace is simpler
+  //    than tracking transitions.
   console.log("[updateFeedback] Replacing missed opportunity competing notes...");
   const missedInserted = await replaceMissedOpportunities(client, missedNotes, statusMap, now);
   console.log(`[updateFeedback] Missed opportunity competing notes: ${missedInserted} inserted (helpful only)`);
 
+  // 8. Append daily history rows to public_data_snapshots. Lets us chart
+  //    per-note status drift over time (e.g. CRH → CRNH reversals).
   console.log("[updateFeedback] Creating public data snapshots...");
   const snapshotCount = await snapshotPublicData(client, {
     ourNotes,
@@ -783,7 +820,11 @@ async function main() {
   });
   console.log(`[updateFeedback] Created/updated ${snapshotCount} snapshots`);
 
-  // Notes-table sync needs the PRE-upsert status (canonicalResult has post-upsert state).
+  // 9. Keep the legacy `notes` table's cn_status in sync with canonical, for
+  //    any consumer still reading notes.cn_status instead of canonical. Uses
+  //    existingCanonical.statusMap (PRE-upsert) — if we used canonicalResult's
+  //    post-upsert map, every row would look "unchanged" and we'd skip the
+  //    notes-table write even for newly-transitioned statuses.
   const notesTableResult = await syncNotesTable(client, {
     ourNotes,
     statusMap,
@@ -793,6 +834,11 @@ async function main() {
   });
   console.log(`[updateFeedback] Updated ${notesTableResult.updated} notes in notes table (${notesTableResult.skipped} skipped)`);
 
+  // 10. API overlay: X's daily TSV lags actual rating state by up to ~3 days.
+  //     The notewriter API (live) fills that gap — for notes we've written
+  //     that are either missing from canonical or have a newer cn_status in
+  //     the API than in the DB, apply the API value. Non-fatal if this fails;
+  //     the public data will catch up on the next run.
   const apiResult = await overlayApiStatus(client, {
     canonicalIds: canonicalResult.postUpsertIds,
     canonicalStatusMap: canonicalResult.postUpsertStatusMap,
@@ -801,6 +847,8 @@ async function main() {
     now,
   });
 
+  // 11. Remove the TSV files — they're large (~100MB+) and the next run
+  //     downloads fresh copies anyway.
   cleanupDataFiles([...files.notesPaths, ...files.statusPaths]);
 
   const helpfulCompeting = competingNotes.filter(
