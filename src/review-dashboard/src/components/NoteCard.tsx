@@ -241,8 +241,6 @@ class CardErrorBoundary extends Component<{ children: ReactNode }, { error: Erro
 function buildLogsFallback(item: ReviewItem): Record<string, unknown> | undefined {
   const obj: Record<string, unknown> = {};
   if (item.botId) obj.bot_id = item.botId;
-  if (item.searchResults) obj.search_results = item.searchResults;
-  if (item.checkReasoning) obj.check_reasoning = item.checkReasoning;
   return Object.keys(obj).length > 0 ? obj : undefined;
 }
 

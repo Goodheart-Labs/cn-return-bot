@@ -338,6 +338,10 @@ async function main() {
   );
   const existingIds = new Set(existing.map(n => n.note_id));
   const existingStatusMap = new Map(existing.map(n => [n.note_id, n.cn_status]));
+  // Frozen snapshot of pre-upsert statuses — the canonical existingStatusMap
+  // gets mutated by the upsert loop to stay in sync for the API overlay step,
+  // but the notes-table update below needs the original values.
+  const preUpsertStatusMap = new Map(existingStatusMap);
   console.log(`[updateFeedback] ${existing.length} existing canonical entries`);
 
   // ===== 5. Upsert our notes into canonical_note_information =====
@@ -349,6 +353,15 @@ async function main() {
 
   const now = new Date().toISOString();
   let newlyHelpful = 0;
+  let skippedUnchanged = 0;
+
+  // Terminal statuses don't flip once reached (LOCKED_* by definition; CRH/CRNH
+  // very rarely change). Skip the upsert when an existing row's status is
+  // terminal and matches the new status — saves a big chunk of write I/O.
+  const isTerminalStatus = (s: string | null | undefined) =>
+    s === "CURRENTLY_RATED_HELPFUL" ||
+    s === "CURRENTLY_RATED_NOT_HELPFUL" ||
+    (s?.startsWith("LOCKED_") ?? false);
 
   // Split new vs existing rows into separate batches because PostgREST normalizes
   // all rows in a batch to the same columns — mixing rows with/without first_seen_at
@@ -357,10 +370,21 @@ async function main() {
   const existingCanonicalRows: Record<string, any>[] = [];
   for (const [noteId, noteData] of ourNotes) {
     const status = statusMap.get(noteId);
+    const newStatus = status?.currentStatus || "NEEDS_MORE_RATINGS";
+    const existingStatus = existingStatusMap.get(noteId);
 
-    const wasHelpful = existingStatusMap.get(noteId) === "CURRENTLY_RATED_HELPFUL";
-    const isNowHelpful = status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
+    const wasHelpful = existingStatus === "CURRENTLY_RATED_HELPFUL";
+    const isNowHelpful = newStatus === "CURRENTLY_RATED_HELPFUL";
     if (isNowHelpful && !wasHelpful) newlyHelpful++;
+
+    if (
+      existingIds.has(noteId) &&
+      existingStatus === newStatus &&
+      isTerminalStatus(newStatus)
+    ) {
+      skippedUnchanged++;
+      continue;
+    }
 
     const row: Record<string, any> = {
       note_id: noteId,
@@ -406,11 +430,16 @@ async function main() {
         upsertErrors += batch.length;
       } else {
         upserted += batch.length;
+        // Mirror upsert state in-memory so the API overlay step (below) doesn't need to re-scan canonical.
+        for (const row of batch) {
+          existingStatusMap.set(row.note_id, row.cn_status);
+          existingIds.add(row.note_id);
+        }
       }
     }
   }
 
-  console.log(`[updateFeedback] Canonical: ${upserted} upserted, ${upsertErrors} errors`);
+  console.log(`[updateFeedback] Canonical: ${upserted} upserted, ${skippedUnchanged} skipped (unchanged terminal), ${upsertErrors} errors`);
   if (newlyHelpful > 0) {
     console.log(`[updateFeedback] ${newlyHelpful} notes newly rated HELPFUL!`);
   }
@@ -538,16 +567,22 @@ async function main() {
 
   // ===== 8. Also update the `notes` table for notes that exist there =====
   // (Keeps backwards compat with any code still reading from `notes.cn_status`)
-  const notesTableIds = await fetchAll<{ note_id: string }>(
-    () => client.from("notes").select("note_id")
-  );
-  const notesTableIdSet = new Set(notesTableIds.map(n => n.note_id));
+  // Reuse enrichmentMap (from the earlier `notes` scan) instead of re-scanning the table.
+  const notesTableIdSet = new Set(enrichmentMap.keys());
   let notesTableUpdated = 0;
 
+  let notesTableSkipped = 0;
   for (const [noteId, _] of ourNotes) {
     if (!notesTableIdSet.has(noteId)) continue;
     const status = statusMap.get(noteId);
     const resolvedStatus = status?.currentStatus || "NEEDS_MORE_RATINGS";
+
+    // Same rationale as the canonical upsert skip: terminal + unchanged = no-op write.
+    // Use preUpsertStatusMap here — existingStatusMap was mutated to post-upsert state.
+    if (preUpsertStatusMap.get(noteId) === resolvedStatus && isTerminalStatus(resolvedStatus)) {
+      notesTableSkipped++;
+      continue;
+    }
 
     const { error } = await client
       .from("notes")
@@ -560,7 +595,7 @@ async function main() {
     if (!error) notesTableUpdated++;
   }
 
-  console.log(`[updateFeedback] Updated ${notesTableUpdated} notes in notes table`);
+  console.log(`[updateFeedback] Updated ${notesTableUpdated} notes in notes table (${notesTableSkipped} skipped)`);
 
   // ===== 9. API real-time status overlay =====
   let apiOverlayCount = 0;
@@ -570,12 +605,9 @@ async function main() {
     const apiNotes = await fetchNotesWritten();
     console.log(`[updateFeedback] API returned ${apiNotes.length} notes`);
 
-    // Refresh existing IDs (may have been updated by cn_data steps above)
-    const refreshed = await fetchAll<{ note_id: string; cn_status: string | null }>(
-      () => client.from("canonical_note_information").select("note_id, cn_status")
-    );
-    const currentStatusMap = new Map(refreshed.map(n => [n.note_id, n.cn_status]));
-    const currentIds = new Set(refreshed.map(n => n.note_id));
+    // Use the in-memory maps kept in sync with the upsert above — avoids re-scanning canonical.
+    const currentStatusMap = existingStatusMap;
+    const currentIds = existingIds;
 
     const overlayRows: Record<string, any>[] = [];
     const newApiRows: Record<string, any>[] = [];

@@ -97,13 +97,38 @@ async function fetchInBatches<T>(
   return results;
 }
 
+// Columns needed to render the production list. Dropping select("*") skips
+// unused columns (classification timestamps, top_*_tag, etc.) and reduces per-row I/O.
+const CANONICAL_LIST_COLUMNS = [
+  "note_id",
+  "tweet_id",
+  "tweet_text",
+  "tweet_handle",
+  "note_text",
+  "source_url",
+  "submitted_at",
+  "created_at",
+  "cn_status",
+  "current_core_status",
+  "view_count",
+  "rating_count",
+  "helpful_count",
+  "not_helpful_count",
+].join(", ");
+
+// Pipeline columns for the list view. search_results and check_reasoning are
+// large TOASTed text blobs only used by the expanded JSON viewer's fallback —
+// skipping them here is the single biggest I/O win per dashboard load.
+const PIPELINE_LIST_COLUMNS =
+  "tweet_id, tweet_text, outcome, outcome_reason, logs, bot_id, has_photo, has_video, media_count";
+
 export async function fetchProductionItems(): Promise<ReviewItem[]> {
   // Fetch all our notes, most recent first
   console.log("[data] Loading production items...");
   const notes = await fetchAllRows<any>(
     supabase
       .from("canonical_note_information")
-      .select("*"),
+      .select(CANONICAL_LIST_COLUMNS),
     "canonical_note_information"
   );
 
@@ -115,7 +140,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
   // Fetch competing notes, pipeline runs, and annotations in parallel (batched to avoid URL length limits)
   const [competing, pipelines, annotations] = await Promise.all([
     fetchInBatches<any>("competing_notes", "*", "our_note_id", noteIds, undefined, "competing_notes"),
-    fetchInBatches<any>("pipeline_runs", "tweet_id, tweet_text, outcome, outcome_reason, logs, search_results, check_reasoning, bot_id, has_photo, has_video, media_count", "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
+    fetchInBatches<any>("pipeline_runs", PIPELINE_LIST_COLUMNS, "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
     fetchInBatches<any>("review_dashboard_annotations", "*", "target_id", noteIds, (q) => q.eq("source", "production"), "annotations").catch(() => [] as any[]),
   ]);
 
@@ -182,8 +207,6 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       outcome: pipeline?.outcome,
       outcomeReason: pipeline?.outcome_reason,
       logs: pipeline?.logs,
-      searchResults: pipeline?.search_results,
-      checkReasoning: pipeline?.check_reasoning,
       botId: pipeline?.bot_id,
       comparisonNotes: compNotes,
       annotation: annotationByTarget.get(note.note_id),
