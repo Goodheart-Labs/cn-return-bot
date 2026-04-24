@@ -18,6 +18,7 @@ import PQueue from "p-queue";
 
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
+const RETRIES_ENABLED = false;
 
 // ---------------------------------------------------------------------------
 // Post fetching
@@ -54,7 +55,7 @@ async function fetchPosts(
   const retryPosts = posts.filter((p) => allProcessedIds.has(p.id));
 
   // Fill remaining slots with retries (submission step handles the daily cap)
-  const retrySlots = Math.max(0, maxPosts - newPosts.length);
+  const retrySlots = RETRIES_ENABLED ? Math.max(0, maxPosts - newPosts.length) : 0;
 
   const sortedNew = sortByRecencyAndImpressions(newPosts);
   const sortedRetry = sortByRecencyAndImpressions(retryPosts);
