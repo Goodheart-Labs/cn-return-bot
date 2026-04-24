@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type {
   ReviewItem,
   DatasetOption,
@@ -153,9 +153,12 @@ export function App() {
     return () => { cancelled = true; };
   }, [dataset.type, filters.failureTypes, missedLoaded]);
 
+  // Sort here instead of inside every setItems so missed-opportunity merges
+  // and canonical appends don't have to coordinate the ordering themselves.
+  const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
   // Filter loaded items (cheap client-side filter covers cn_status-based
   // categories AND lost_to_competitor, which depends on competing_notes).
-  const filtered = items.filter(matchesFilters(filters));
+  const filtered = sortedItems.filter(matchesFilters(filters));
 
   const visible = dataset.type === "production" ? filtered.slice(0, displayLimit) : filtered;
   const canLoadMore = dataset.type === "production" && (hasMoreInDb || filtered.length > displayLimit);
