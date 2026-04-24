@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type {
   ReviewItem,
   DatasetOption,
@@ -8,7 +8,9 @@ import type {
 } from "./lib/types";
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import {
-  fetchProductionItems,
+  fetchDashboardData,
+  buildDashboardItems,
+  fetchLogsForRuns,
   countsFromItems,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
@@ -19,6 +21,8 @@ import {
   deleteUpload,
   pruneUnusedFailureModes,
 } from "./lib/data";
+
+const DISPLAY_PAGE_SIZE = 20;
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
 import { DatasetSelector } from "./components/DatasetSelector";
@@ -32,6 +36,25 @@ function defaultFilters(source: "production" | "dataset_run"): FilterState {
     }
   }
   return { seen: "unseen", failureTypes, failureModes: new Set() };
+}
+
+function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
+  const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+  const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+  return db - da;
+}
+
+function matchesFilters(filters: FilterState) {
+  return (item: ReviewItem) => {
+    if (!filters.failureTypes.has(item.failureType)) return false;
+    if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+    if (filters.seen === "unseen" && item.annotation?.seen) return false;
+    if (filters.failureModes.size > 0) {
+      const itemModes = item.annotation?.failureModes ?? [];
+      if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
+    }
+    return true;
+  };
 }
 
 function initialDatasetFromUrl(): DatasetOption {
@@ -49,8 +72,13 @@ export function App() {
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   const [failureModeCatalog, setFailureModeCatalog] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingLogs, setLoadingLogs] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Production: all items are loaded up-front (metadata only, no TOAST). Logs
+  // are lazy-loaded per visible card and cached here keyed by pipeline_run id.
+  const [displayLimit, setDisplayLimit] = useState(DISPLAY_PAGE_SIZE);
+  const [logsByRunId, setLogsByRunId] = useState<Map<string, Record<string, unknown>>>(new Map());
 
   // Load uploads and failure mode catalog on mount
   useEffect(() => {
@@ -66,22 +94,26 @@ export function App() {
     fetchFailureModes().then(setFailureModeCatalog).catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
   }, []);
 
-  // Load data when dataset changes
+  // Load data when dataset changes. For production we fetch ALL metadata
+  // (canonical + competing + pipeline_runs sans logs) in one shot; logs are
+  // lazy-loaded per visible card in a separate effect below. Dataset runs
+  // keep their original one-shot fetch (bounded set, already includes logs).
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const loaded =
-        dataset.type === "production"
-          ? await fetchProductionItems()
-          : await fetchDatasetRunItems(dataset.id!);
-      setItems(loaded);
-
-      const newCounts =
-        dataset.type === "production"
-          ? countsFromItems(loaded)
-          : await fetchDatasetRunCounts(dataset.id!);
-      setCounts(newCounts);
+      if (dataset.type === "production") {
+        const data = await fetchDashboardData();
+        const built = buildDashboardItems(data);
+        setItems(built);
+        setCounts(countsFromItems(built));
+        setDisplayLimit(DISPLAY_PAGE_SIZE);
+        setLogsByRunId(new Map());
+      } else {
+        const loaded = await fetchDatasetRunItems(dataset.id!);
+        setItems(loaded);
+        setCounts(await fetchDatasetRunCounts(dataset.id!));
+      }
     } catch (err: any) {
       console.error("Failed to load data:", err);
       setError(err?.message ?? "Failed to load data");
@@ -95,17 +127,59 @@ export function App() {
     loadData();
   }, [dataset]);
 
-  // Filter items
-  const filtered = items.filter((item) => {
-    if (!filters.failureTypes.has(item.failureType)) return false;
-    if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
-    if (filters.seen === "unseen" && item.annotation?.seen) return false;
-    if (filters.failureModes.size > 0) {
-      const itemModes = item.annotation?.failureModes ?? [];
-      if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
-    }
-    return true;
-  });
+  // Sort items by date (stable memo so renders don't re-sort unnecessarily).
+  const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
+  const filtered = sortedItems.filter(matchesFilters(filters));
+
+  // Fold lazy-loaded logs into the items the list is about to render. Without
+  // this, the first render sees logs=undefined; once the effect below fills
+  // logsByRunId we want the cards to pick them up.
+  const visibleRaw = dataset.type === "production" ? filtered.slice(0, displayLimit) : filtered;
+  const visible = useMemo(
+    () =>
+      visibleRaw.map((item) => {
+        const fromCache = item.pipelineRunId ? logsByRunId.get(item.pipelineRunId) : undefined;
+        return fromCache ? { ...item, logs: fromCache } : item;
+      }),
+    [visibleRaw, logsByRunId],
+  );
+  const canLoadMore = dataset.type === "production" && filtered.length > displayLimit;
+
+  // Lazy-load logs for visible production items that don't have them yet.
+  // Dataset runs already carry logs inline (they're small & come from uploads),
+  // so this only fires for production.
+  const visibleRunIdsKey = useMemo(
+    () => visibleRaw.map((i) => i.pipelineRunId ?? "").join(","),
+    [visibleRaw],
+  );
+  useEffect(() => {
+    if (dataset.type !== "production") return;
+    const needIds = Array.from(
+      new Set(
+        visibleRaw
+          .map((i) => i.pipelineRunId)
+          .filter((id): id is string => !!id && !logsByRunId.has(id)),
+      ),
+    );
+    if (needIds.length === 0) return;
+    setLoadingLogs(true);
+    fetchLogsForRuns(needIds)
+      .then((newLogs) => {
+        if (newLogs.size === 0) return;
+        setLogsByRunId((prev) => {
+          const merged = new Map(prev);
+          for (const [k, v] of newLogs) merged.set(k, v);
+          return merged;
+        });
+      })
+      .finally(() => setLoadingLogs(false));
+    // visibleRunIdsKey guards against re-running when only object identity
+    // changes but the actual set of visible items hasn't.
+  }, [dataset.type, visibleRunIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleLoadMore = useCallback(() => {
+    setDisplayLimit((prev) => prev + DISPLAY_PAGE_SIZE);
+  }, []);
 
   // Annotation handlers
   const handleSeenToggle = async (id: string, seen: boolean) => {
@@ -249,12 +323,16 @@ export function App() {
 
       {/* Item count */}
       <div className="text-sm text-gray-500 mb-3">
-        {loading && items.length === 0 ? "Loading..." : `${filtered.length} items shown`}
+        {loading && items.length === 0
+          ? "Loading..."
+          : dataset.type === "production"
+            ? `Showing ${visible.length} of ${filtered.length}`
+            : `${filtered.length} items shown`}
       </div>
 
       {/* Items */}
       <div className="space-y-3">
-        {filtered.map((item) => (
+        {visible.map((item) => (
           <NoteCard
             key={item.id}
             item={item}
@@ -266,6 +344,18 @@ export function App() {
           />
         ))}
       </div>
+
+      {/* Load more */}
+      {canLoadMore && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleLoadMore}
+            className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50"
+          >
+            {loadingLogs ? "Loading logs..." : `Load more (${DISPLAY_PAGE_SIZE})`}
+          </button>
+        </div>
+      )}
 
       {/* Upload dialog */}
       <UploadDialog

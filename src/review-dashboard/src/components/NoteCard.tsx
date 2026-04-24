@@ -58,20 +58,64 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   );
 }
 
-// Extract media info from pipeline logs (handles both flat dot-notation and nested object formats)
+type MediaImage = { url: string; description?: string; textContent?: string };
+type MediaVideo = { url: string; transcription?: string; keyFrameDescriptions?: string[] };
+
+// Extract media info from pipeline logs. Handles three shapes:
+//   1. Agentic/multi-agent bot (current): logs.media.gemini.{tweetMedia,quotedTweetMedia}[]
+//   2. Older pipeline: logs.media.{images,videos}[] with inline description/textContent
+//   3. Flat dot-notation (oldest): logs["tweet.text"]
+// Main-tweet media and quoted-tweet media are returned separately so the UI
+// can render each in its own block.
 function extractMedia(logs?: Record<string, unknown>): {
-  images: { url: string; description?: string; textContent?: string }[];
-  videos: { url: string; transcription?: string; keyFrameDescriptions?: string[] }[];
+  images: MediaImage[];
+  videos: MediaVideo[];
+  quotedImages: MediaImage[];
+  quotedVideos: MediaVideo[];
   summary?: string;
   quotedPostContext?: string;
   tweetText?: string;
 } {
-  const result = { images: [] as any[], videos: [] as any[], summary: undefined as string | undefined, quotedPostContext: undefined as string | undefined, tweetText: undefined as string | undefined };
+  const result = {
+    images: [] as MediaImage[],
+    videos: [] as MediaVideo[],
+    quotedImages: [] as MediaImage[],
+    quotedVideos: [] as MediaVideo[],
+    summary: undefined as string | undefined,
+    quotedPostContext: undefined as string | undefined,
+    tweetText: undefined as string | undefined,
+  };
   if (!logs) return result;
 
-  // Nested object format (newer logs)
   const media = logs.media as any;
-  if (media && typeof media === "object") {
+  const tweet = logs.tweet as any;
+
+  const pushMedia = (m: any, imagesOut: MediaImage[], videosOut: MediaVideo[]) => {
+    const desc = m?.description?.description;
+    const ocr = m?.description?.ocrText;
+    if (m?.type === "image") imagesOut.push({ url: m.url, description: desc, textContent: ocr });
+    else if (m?.type === "video") videosOut.push({ url: m.url, transcription: desc });
+  };
+
+  // Shape 1: gemini media analyzer emits { type, url, description: { description, ocrText } }
+  const gemini = media?.gemini;
+  if (gemini && typeof gemini === "object") {
+    for (const m of gemini.tweetMedia ?? []) pushMedia(m, result.images, result.videos);
+    for (const m of gemini.quotedTweetMedia ?? []) pushMedia(m, result.quotedImages, result.quotedVideos);
+  }
+
+  // Fallback: bots without the gemini analyzer (e.g. claude-simple) still have
+  // raw X-API media lists under logs.tweet{.referencedTweetData}.media — {type, url}
+  // with no AI description. Use these when gemini didn't run.
+  if (result.images.length === 0 && result.videos.length === 0 && Array.isArray(tweet?.media)) {
+    for (const m of tweet.media) pushMedia(m, result.images, result.videos);
+  }
+  if (result.quotedImages.length === 0 && result.quotedVideos.length === 0 && Array.isArray(tweet?.referencedTweetData?.media)) {
+    for (const m of tweet.referencedTweetData.media) pushMedia(m, result.quotedImages, result.quotedVideos);
+  }
+
+  // Shape 2: legacy inline lists. Only use as a fallback so we don't double-count shape 1.
+  if (result.images.length === 0 && result.videos.length === 0 && media && typeof media === "object") {
     if (Array.isArray(media.images)) {
       result.images = media.images.map((img: any) => ({
         url: img.url,
@@ -89,22 +133,54 @@ function extractMedia(logs?: Record<string, unknown>): {
     if (media.summary) result.summary = media.summary;
   }
 
-  // Quoted post context (nested or flat)
-  const tweet = logs.tweet as any;
+  // Quoted post: prefer the clean referencedTweetData.text; fall back to the AI-prompt wrapper.
   if (tweet && typeof tweet === "object") {
-    if (tweet.quotedPostContext) {
+    if (tweet.referencedTweetData?.text && typeof tweet.referencedTweetData.text === "string") {
+      result.quotedPostContext = tweet.referencedTweetData.text;
+    } else if (tweet.quotedPostContext) {
       result.quotedPostContext = typeof tweet.quotedPostContext === "string"
         ? tweet.quotedPostContext
         : JSON.stringify(tweet.quotedPostContext);
     }
     if (tweet.text) result.tweetText = tweet.text;
   }
-  // Flat dot-notation format (older logs)
   if (logs["tweet.text"] && typeof logs["tweet.text"] === "string") {
     result.tweetText = logs["tweet.text"] as string;
   }
 
   return result;
+}
+
+function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVideo[] }) {
+  if (images.length === 0 && videos.length === 0) return null;
+  return (
+    <>
+      {images.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {images.map((img, i) => (
+            <a key={i} href={img.url} target="_blank" rel="noopener noreferrer">
+              <img
+                src={img.url}
+                alt={`Image ${i + 1}`}
+                className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain cursor-pointer hover:opacity-90"
+                loading="lazy"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+            </a>
+          ))}
+        </div>
+      )}
+      {videos.length > 0 && (
+        <div className="flex flex-col gap-1 mb-2">
+          {videos.map((vid, i) => vid.url && (
+            <a key={i} href={vid.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+              {vid.url}
+            </a>
+          ))}
+        </div>
+      )}
+    </>
+  );
 }
 
 function TweetInline({ item, tweetUrl }: { item: ReviewItem; tweetUrl: string }) {
@@ -143,79 +219,17 @@ function TweetInline({ item, tweetUrl }: { item: ReviewItem; tweetUrl: string })
         <p className="text-sm text-gray-700 whitespace-pre-wrap mb-2">{tweetText}</p>
       )}
 
-      {/* Quoted post */}
-      {media.quotedPostContext && (
+      {/* Main-tweet media */}
+      <MediaBlock images={media.images} videos={media.videos} />
+
+      {/* Quoted post (text + its own media) */}
+      {(media.quotedPostContext || media.quotedImages.length > 0 || media.quotedVideos.length > 0) && (
         <div className="bg-white border border-gray-200 rounded p-2 mb-2 text-sm text-gray-600">
           <div className="text-xs text-gray-400 mb-1">Quoted post</div>
-          <p className="whitespace-pre-wrap">{media.quotedPostContext}</p>
-        </div>
-      )}
-
-      {/* Images */}
-      {media.images.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
-          {media.images.map((img, i) => (
-            <div key={i} className="space-y-1">
-              <a href={img.url} target="_blank" rel="noopener noreferrer">
-                <img
-                  src={img.url}
-                  alt={img.description ?? `Image ${i + 1}`}
-                  className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain cursor-pointer hover:opacity-90"
-                  loading="lazy"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
-              </a>
-              {img.description && (
-                <p className="text-xs text-gray-500 max-w-[300px]">
-                  <span className="font-medium">AI description:</span> {img.description}
-                </p>
-              )}
-              {img.textContent && (
-                <p className="text-xs text-gray-500 max-w-[300px]">
-                  <span className="font-medium">Text in image:</span> {img.textContent}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Videos */}
-      {media.videos.length > 0 && (
-        <div className="space-y-2 mb-2">
-          {media.videos.map((vid, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded p-2">
-              <div className="text-xs text-gray-400 mb-1">Video {media.videos.length > 1 ? i + 1 : ""}</div>
-              {vid.url && (
-                <a href={vid.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline block mb-1">
-                  {vid.url}
-                </a>
-              )}
-              {vid.transcription && (
-                <div className="text-xs text-gray-600">
-                  <span className="font-medium">Transcript:</span>
-                  <p className="whitespace-pre-wrap mt-0.5">{vid.transcription}</p>
-                </div>
-              )}
-              {vid.keyFrameDescriptions && vid.keyFrameDescriptions.length > 0 && (
-                <details className="text-xs text-gray-500 mt-1">
-                  <summary className="cursor-pointer">Key frames ({vid.keyFrameDescriptions.length})</summary>
-                  <ul className="list-disc pl-4 mt-1 space-y-0.5">
-                    {vid.keyFrameDescriptions.map((desc: string, j: number) => (
-                      <li key={j}>{desc}</li>
-                    ))}
-                  </ul>
-                </details>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Media summary if no individual media shown */}
-      {media.images.length === 0 && media.videos.length === 0 && media.summary && (
-        <div className="text-xs text-gray-500 mb-2">
-          <span className="font-medium">Media:</span> {media.summary}
+          {media.quotedPostContext && (
+            <p className="whitespace-pre-wrap mb-2">{media.quotedPostContext}</p>
+          )}
+          <MediaBlock images={media.quotedImages} videos={media.quotedVideos} />
         </div>
       )}
     </div>
@@ -241,8 +255,6 @@ class CardErrorBoundary extends Component<{ children: ReactNode }, { error: Erro
 function buildLogsFallback(item: ReviewItem): Record<string, unknown> | undefined {
   const obj: Record<string, unknown> = {};
   if (item.botId) obj.bot_id = item.botId;
-  if (item.searchResults) obj.search_results = item.searchResults;
-  if (item.checkReasoning) obj.check_reasoning = item.checkReasoning;
   return Object.keys(obj).length > 0 ? obj : undefined;
 }
 

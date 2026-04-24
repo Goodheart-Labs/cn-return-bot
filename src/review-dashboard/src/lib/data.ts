@@ -97,35 +97,153 @@ async function fetchInBatches<T>(
   return results;
 }
 
-export async function fetchProductionItems(): Promise<ReviewItem[]> {
-  // Fetch all our notes, most recent first
-  console.log("[data] Loading production items...");
-  const notes = await fetchAllRows<any>(
-    supabase
-      .from("canonical_note_information")
-      .select("*"),
-    "canonical_note_information"
-  );
+// Columns needed to render the production list. Dropping select("*") skips
+// unused columns (classification timestamps, top_*_tag, etc.) and reduces per-row I/O.
+const CANONICAL_LIST_COLUMNS = [
+  "note_id",
+  "tweet_id",
+  "tweet_text",
+  "tweet_handle",
+  "note_text",
+  "source_url",
+  "submitted_at",
+  "created_at",
+  "cn_status",
+  "current_core_status",
+  "view_count",
+  "rating_count",
+  "helpful_count",
+  "not_helpful_count",
+].join(", ");
 
-  if (notes.length === 0) return [];
+// pipeline_runs without the logs TOAST column — used for the metadata fetch
+// that drives the list. Logs are lazy-loaded per visible card.
+const PIPELINE_METADATA_COLUMNS =
+  "id, tweet_id, tweet_text, outcome, outcome_reason, bot_id, has_photo, has_video, media_count, created_at";
 
-  const tweetIds = notes.map((n: any) => n.tweet_id);
-  const noteIds = notes.map((n: any) => n.note_id);
-
-  // Fetch competing notes, pipeline runs, and annotations in parallel (batched to avoid URL length limits)
-  const [competing, pipelines, annotations] = await Promise.all([
-    fetchInBatches<any>("competing_notes", "*", "our_note_id", noteIds, undefined, "competing_notes"),
-    fetchInBatches<any>("pipeline_runs", "tweet_id, tweet_text, outcome, outcome_reason, logs, search_results, check_reasoning, bot_id, has_photo, has_video, media_count", "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
-    fetchInBatches<any>("review_dashboard_annotations", "*", "target_id", noteIds, (q) => q.eq("source", "production"), "annotations").catch(() => [] as any[]),
+/**
+ * Fetch all the metadata the production dashboard needs in one shot, without
+ * any TOASTed blobs. Returns the raw rows; caller composes them into ReviewItems.
+ *
+ * - canonical: our notes.
+ * - competing: all competing_notes (both the "on our tweets" kind and the
+ *   "missed opportunity" kind where our_note_id IS NULL).
+ * - submittedRuns: pipeline_runs with outcome='submitted' (matched to canonical by tweet_id).
+ * - missedRuns: the specific pipeline_runs referenced by missed-opportunity competing
+ *   notes (pipeline_run_id IS NOT NULL, current_status='CRH').
+ * - annotations: review_dashboard_annotations for our note_ids.
+ *
+ * This replaces the previous paginated approach — fetching all metadata up
+ * front is cheap because we exclude logs; logs are the only expensive column
+ * and they're pulled on demand by `fetchLogsForRuns`.
+ */
+export async function fetchDashboardData(): Promise<{
+  canonical: any[];
+  competing: any[];
+  submittedRuns: any[];
+  missedRuns: any[];
+  annotations: any[];
+}> {
+  console.log("[data] Loading dashboard metadata...");
+  const [canonical, competing, submittedRuns] = await Promise.all([
+    fetchAllRows<any>(
+      supabase
+        .from("canonical_note_information")
+        .select(CANONICAL_LIST_COLUMNS)
+        .order("submitted_at", { ascending: false, nullsFirst: false }),
+      "canonical",
+    ),
+    fetchAllRows<any>(supabase.from("competing_notes").select("*"), "competing"),
+    fetchAllRows<any>(
+      supabase.from("pipeline_runs").select(PIPELINE_METADATA_COLUMNS).eq("outcome", "submitted"),
+      "submitted_runs",
+    ),
   ]);
 
-  // Build lookup maps
-  const competingByNote = new Map<string, ComparisonNote[]>();
+  // Missed opportunities reference specific pipeline_run ids; fetch just those
+  // (avoids pulling the full rejected-runs table, which is ~20k rows).
+  const missedRunIds = [
+    ...new Set(
+      competing
+        .filter(
+          (cn: any) =>
+            cn.our_note_id === null &&
+            cn.current_status === "CURRENTLY_RATED_HELPFUL" &&
+            cn.pipeline_run_id,
+        )
+        .map((cn: any) => cn.pipeline_run_id as string),
+    ),
+  ];
+  const missedRuns = missedRunIds.length
+    ? await fetchInBatches<any>(
+        "pipeline_runs",
+        PIPELINE_METADATA_COLUMNS,
+        "id",
+        missedRunIds,
+        undefined,
+        "missed_runs",
+      )
+    : [];
+
+  const noteIds = canonical.map((n: any) => n.note_id);
+  const annotations = await fetchInBatches<any>(
+    "review_dashboard_annotations",
+    "*",
+    "target_id",
+    noteIds,
+    (q) => q.eq("source", "production"),
+    "annotations",
+  ).catch(() => [] as any[]);
+
+  return { canonical, competing, submittedRuns, missedRuns, annotations };
+}
+
+/**
+ * Fetch the full JSONB `logs` for a set of pipeline_run ids. Called by the UI
+ * when a card becomes visible so we only pay the TOAST cost for rows the user
+ * actually sees, not every note we've ever written.
+ */
+export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Record<string, unknown>>> {
+  if (runIds.length === 0) return new Map();
+  const rows = await fetchInBatches<{ id: string; logs: Record<string, unknown> | null }>(
+    "pipeline_runs",
+    "id, logs",
+    "id",
+    runIds,
+    undefined,
+    "logs",
+  );
+  const map = new Map<string, Record<string, unknown>>();
+  for (const r of rows) if (r.logs) map.set(r.id, r.logs);
+  return map;
+}
+
+/**
+ * Compose ReviewItems from the raw metadata fetched by fetchDashboardData.
+ * Pure function; no I/O. Items have a `pipelineRunId` instead of `logs`;
+ * `logs` is filled in later by the caller using fetchLogsForRuns.
+ */
+export function buildDashboardItems(data: {
+  canonical: any[];
+  competing: any[];
+  submittedRuns: any[];
+  missedRuns: any[];
+  annotations: any[];
+}): ReviewItem[] {
+  const { canonical, competing, submittedRuns, missedRuns, annotations } = data;
+
+  const pipelineByTweet = new Map<string, any>();
+  for (const pr of submittedRuns) pipelineByTweet.set(pr.tweet_id, pr);
+
+  const pipelineById = new Map<string, any>();
+  for (const pr of missedRuns) pipelineById.set(pr.id, pr);
+
+  const competingByOurNote = new Map<string, ComparisonNote[]>();
   const helpfulCompetitorNoteIds = new Set<string>();
   for (const cn of competing) {
-    const key = cn.our_note_id;
-    if (!competingByNote.has(key)) competingByNote.set(key, []);
-    competingByNote.get(key)!.push({
+    if (cn.our_note_id == null) continue;
+    if (!competingByOurNote.has(cn.our_note_id)) competingByOurNote.set(cn.our_note_id, []);
+    competingByOurNote.get(cn.our_note_id)!.push({
       noteId: cn.note_id,
       noteText: cn.note_text,
       status: cn.current_status,
@@ -135,14 +253,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       authorId: cn.author_participant_id,
       createdAtMillis: cn.created_at_millis,
     });
-    if (cn.current_status === "CURRENTLY_RATED_HELPFUL") {
-      helpfulCompetitorNoteIds.add(key);
-    }
-  }
-
-  const pipelineByTweet = new Map<string, any>();
-  for (const pr of pipelines) {
-    pipelineByTweet.set(pr.tweet_id, pr);
+    if (cn.current_status === "CURRENTLY_RATED_HELPFUL") helpfulCompetitorNoteIds.add(cn.our_note_id);
   }
 
   const annotationByTarget = new Map<string, Annotation>();
@@ -155,12 +266,14 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
     });
   }
 
-  const items: ReviewItem[] = notes.map((note: any) => {
+  const items: ReviewItem[] = [];
+
+  for (const note of canonical) {
     const pipeline = pipelineByTweet.get(note.tweet_id);
     const hasHelpfulCompetitor = helpfulCompetitorNoteIds.has(note.note_id);
-    const compNotes = competingByNote.get(note.note_id) ?? [];
+    const compNotes = competingByOurNote.get(note.note_id) ?? [];
     const failureType = cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor);
-    return {
+    items.push({
       id: note.note_id,
       source: "production" as const,
       tweetId: note.tweet_id,
@@ -181,9 +294,7 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
       notHelpfulCount: note.not_helpful_count,
       outcome: pipeline?.outcome,
       outcomeReason: pipeline?.outcome_reason,
-      logs: pipeline?.logs,
-      searchResults: pipeline?.search_results,
-      checkReasoning: pipeline?.check_reasoning,
+      pipelineRunId: pipeline?.id,
       botId: pipeline?.bot_id,
       comparisonNotes: compNotes,
       annotation: annotationByTarget.get(note.note_id),
@@ -191,55 +302,39 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
         ? computeCompetitorLeadTag(note.submitted_at ?? note.created_at, compNotes)
         : undefined,
       failureType,
-    };
-  });
-
-  // Fetch and append missed opportunities (non-fatal — column may not exist on prod yet)
-  let missed: any[] = [];
-  try {
-    missed = await fetchAllRows<any>(
-      supabase
-        .from("competing_notes")
-        .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs, created_at)")
-        .not("pipeline_run_id", "is", null)
-        .eq("current_status", "CURRENTLY_RATED_HELPFUL"),
-      "missed_opportunities"
-    );
-  } catch (e) {
-    console.warn("Missed opportunities query failed (migration may not be applied yet):", e);
+    });
   }
 
-  for (const cn of missed) {
-    const pr = cn.pipeline_runs;
+  for (const cn of competing) {
+    if (cn.our_note_id != null) continue;
+    if (cn.current_status !== "CURRENTLY_RATED_HELPFUL") continue;
+    if (!cn.pipeline_run_id) continue;
+    const pr = pipelineById.get(cn.pipeline_run_id);
     if (!pr) continue;
     items.push({
       id: `missed:${cn.note_id}`,
-      source: "production",
+      source: "production" as const,
       tweetId: cn.tweet_id,
       tweetText: pr.tweet_text,
       noteText: undefined,
       createdAt: pr.created_at,
       outcome: pr.outcome,
       outcomeReason: pr.outcome_reason,
-      logs: pr.logs,
-      comparisonNotes: [{
-        noteId: cn.note_id,
-        noteText: cn.note_text,
-        status: cn.current_status,
-        coreStatus: cn.current_core_status,
-        helpfulCount: cn.helpful_count,
-        notHelpfulCount: cn.not_helpful_count,
-        authorId: cn.author_participant_id,
-      }],
-      failureType: "missed_opportunity",
+      pipelineRunId: pr.id,
+      comparisonNotes: [
+        {
+          noteId: cn.note_id,
+          noteText: cn.note_text,
+          status: cn.current_status,
+          coreStatus: cn.current_core_status,
+          helpfulCount: cn.helpful_count,
+          notHelpfulCount: cn.not_helpful_count,
+          authorId: cn.author_participant_id,
+        },
+      ],
+      failureType: "missed_opportunity" as const,
     });
   }
-
-  items.sort((a, b) => {
-    const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return db - da;
-  });
 
   return items;
 }
