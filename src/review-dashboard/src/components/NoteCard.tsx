@@ -58,7 +58,10 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   );
 }
 
-// Extract media info from pipeline logs (handles both flat dot-notation and nested object formats)
+// Extract media info from pipeline logs. Handles three shapes:
+//   1. Agentic/multi-agent bot (current): logs.media.gemini.{tweetMedia,quotedTweetMedia}[]
+//   2. Older pipeline: logs.media.{images,videos}[] with inline description/textContent
+//   3. Flat dot-notation (oldest): logs["tweet.text"]
 function extractMedia(logs?: Record<string, unknown>): {
   images: { url: string; description?: string; textContent?: string }[];
   videos: { url: string; transcription?: string; keyFrameDescriptions?: string[] }[];
@@ -69,9 +72,26 @@ function extractMedia(logs?: Record<string, unknown>): {
   const result = { images: [] as any[], videos: [] as any[], summary: undefined as string | undefined, quotedPostContext: undefined as string | undefined, tweetText: undefined as string | undefined };
   if (!logs) return result;
 
-  // Nested object format (newer logs)
   const media = logs.media as any;
-  if (media && typeof media === "object") {
+  const tweet = logs.tweet as any;
+
+  // Shape 1: gemini media analyzer emits { type, url, description: { description, ocrText } }
+  const gemini = media?.gemini;
+  if (gemini && typeof gemini === "object") {
+    const merged = [...(gemini.tweetMedia ?? []), ...(gemini.quotedTweetMedia ?? [])];
+    for (const m of merged) {
+      const desc = m?.description?.description;
+      const ocr = m?.description?.ocrText;
+      if (m?.type === "image") {
+        result.images.push({ url: m.url, description: desc, textContent: ocr });
+      } else if (m?.type === "video") {
+        result.videos.push({ url: m.url, transcription: desc });
+      }
+    }
+  }
+
+  // Shape 2: legacy inline lists. Only use as a fallback so we don't double-count shape 1.
+  if (result.images.length === 0 && result.videos.length === 0 && media && typeof media === "object") {
     if (Array.isArray(media.images)) {
       result.images = media.images.map((img: any) => ({
         url: img.url,
@@ -89,17 +109,17 @@ function extractMedia(logs?: Record<string, unknown>): {
     if (media.summary) result.summary = media.summary;
   }
 
-  // Quoted post context (nested or flat)
-  const tweet = logs.tweet as any;
+  // Quoted post: prefer the clean referencedTweetData.text; fall back to the AI-prompt wrapper.
   if (tweet && typeof tweet === "object") {
-    if (tweet.quotedPostContext) {
+    if (tweet.referencedTweetData?.text && typeof tweet.referencedTweetData.text === "string") {
+      result.quotedPostContext = tweet.referencedTweetData.text;
+    } else if (tweet.quotedPostContext) {
       result.quotedPostContext = typeof tweet.quotedPostContext === "string"
         ? tweet.quotedPostContext
         : JSON.stringify(tweet.quotedPostContext);
     }
     if (tweet.text) result.tweetText = tweet.text;
   }
-  // Flat dot-notation format (older logs)
   if (logs["tweet.text"] && typeof logs["tweet.text"] === "string") {
     result.tweetText = logs["tweet.text"] as string;
   }
