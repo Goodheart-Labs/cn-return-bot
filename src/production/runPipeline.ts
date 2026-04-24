@@ -69,6 +69,7 @@ const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_POSTS = 20;
 const MAX_POSTS_LOCAL = 5;
 const PROBE_POSTS = 3;
+const CAUTIOUS_MODE_ENABLED = false;
 
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (15 minutes), forcing exit");
@@ -93,7 +94,7 @@ async function main() {
 
     // Check if we need to probe first (last run hit the daily limit and no submissions since)
     let cautious = false;
-    if (supabaseLogger) {
+    if (CAUTIOUS_MODE_ENABLED && supabaseLogger) {
       const limitHitAt = await supabaseLogger.getPipelineState("limit_hit_at");
       if (limitHitAt) {
         const hasSubmitted = await supabaseLogger.hasSubmissionsSince(limitHitAt);
