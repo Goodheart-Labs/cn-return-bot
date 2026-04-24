@@ -230,21 +230,25 @@ export async function fetchCanonicalBatch(offset: number, limit: number = DB_BAT
 }
 
 /**
- * Fetch all missed-opportunity items in one go. Called only when the
- * `missed_opportunity` filter is enabled — the set is bounded by helpful
- * competing notes on our rejected tweets, so fetching all at once is fine.
+ * Fetch one batch of missed-opportunity items (helpful competing notes on
+ * tweets where our pipeline rejected). Paginated so we don't drag 3k+ rows
+ * — each with their joined pipeline_runs.logs TOAST blob — on a single
+ * filter toggle. Sorted by competing_notes.created_at_millis desc, which is
+ * when the other author wrote the note (a close proxy for "when our pipeline
+ * ran" and the only date PostgREST can order the outer rows by here).
  */
-export async function fetchMissedOpportunities(): Promise<ReviewItem[]> {
+export async function fetchMissedBatch(offset: number, limit: number = DB_BATCH_SIZE): Promise<CanonicalBatch> {
   try {
-    const missed = await fetchAllRows<any>(
-      supabase
-        .from("competing_notes")
-        .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs, created_at)")
-        .not("pipeline_run_id", "is", null)
-        .eq("current_status", "CURRENTLY_RATED_HELPFUL"),
-      "missed_opportunities"
-    );
-    return missed
+    const { data, error } = await supabase
+      .from("competing_notes")
+      .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs, created_at)")
+      .not("pipeline_run_id", "is", null)
+      .eq("current_status", "CURRENTLY_RATED_HELPFUL")
+      .order("created_at_millis", { ascending: false, nullsFirst: false })
+      .range(offset, offset + limit - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) return { items: [], hasMore: false };
+    const items: ReviewItem[] = data
       .filter((cn: any) => cn.pipeline_runs)
       .map((cn: any) => {
         const pr = cn.pipeline_runs;
@@ -270,9 +274,10 @@ export async function fetchMissedOpportunities(): Promise<ReviewItem[]> {
           failureType: "missed_opportunity" as const,
         };
       });
+    return { items, hasMore: data.length === limit };
   } catch (e) {
     console.warn("Missed opportunities query failed:", e);
-    return [];
+    return { items: [], hasMore: false };
   }
 }
 

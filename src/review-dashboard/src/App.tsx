@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import type {
   ReviewItem,
   DatasetOption,
@@ -9,7 +9,7 @@ import type {
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import {
   fetchCanonicalBatch,
-  fetchMissedOpportunities,
+  fetchMissedBatch,
   countsFromItems,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
@@ -75,12 +75,19 @@ export function App() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Production-only pagination state. Each "Load more" click triggers
-  // additional DB batches until we have DISPLAY_PAGE_SIZE more filtered items.
+  // Production-only pagination state. Each "Load more" click advances the
+  // canonical cursor and, when missed is enabled, the missed cursor too.
   const [dbOffset, setDbOffset] = useState(0);
   const [hasMoreInDb, setHasMoreInDb] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(DISPLAY_PAGE_SIZE);
-  const [missedLoaded, setMissedLoaded] = useState(false);
+  // Missed opportunities are paginated with their own cursor (sorted by
+  // competing_notes.created_at_millis desc). Only advanced while the
+  // missed_opportunity filter is on.
+  const [missedOffset, setMissedOffset] = useState(0);
+  const [hasMoreMissedInDb, setHasMoreMissedInDb] = useState(true);
+  // Ref, not state: if this were state, setting it inside the effect would
+  // change the dep array and cancel the in-flight fetch via the cleanup fn.
+  const missedStartedRef = useRef(false);
 
   // Load uploads and failure mode catalog on mount
   useEffect(() => {
@@ -109,7 +116,9 @@ export function App() {
         setDbOffset(batch.items.length);
         setHasMoreInDb(batch.hasMore);
         setDisplayLimit(DISPLAY_PAGE_SIZE);
-        setMissedLoaded(false);
+        setMissedOffset(0);
+        setHasMoreMissedInDb(true);
+        missedStartedRef.current = false;
         setCounts(countsFromItems(batch.items));
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
@@ -129,33 +138,29 @@ export function App() {
     loadData();
   }, [dataset]);
 
-  // Lazy-load the missed-opportunity set the first time it's enabled. The set
-  // is bounded (helpful competing notes on rejected tweets) so one fetch is OK.
+  // Fetch the first batch of missed opportunities the first time the filter
+  // turns on. Subsequent batches are pulled by handleLoadMore alongside
+  // canonical, so we never over-fetch the full set.
   useEffect(() => {
     if (dataset.type !== "production") return;
     if (!filters.failureTypes.has("missed_opportunity")) return;
-    if (missedLoaded) return;
-    let cancelled = false;
+    if (missedStartedRef.current) return;
+    missedStartedRef.current = true;
     setLoadingMore(true);
-    fetchMissedOpportunities()
-      .then((missed) => {
-        if (cancelled) return;
+    fetchMissedBatch(0, DB_BATCH_SIZE)
+      .then((batch) => {
         setItems((prev) => {
           const existing = new Set(prev.map((i) => i.id));
-          const add = missed.filter((m) => !existing.has(m.id));
+          const add = batch.items.filter((m) => !existing.has(m.id));
           const merged = [...prev, ...add];
-          // Refresh counts — countsFromItems is cheap and the badge was
-          // showing 0 for missed until the next Load-more click otherwise.
           setCounts(countsFromItems(merged));
           return merged;
         });
-        setMissedLoaded(true);
+        setMissedOffset(batch.items.length);
+        setHasMoreMissedInDb(batch.hasMore);
       })
-      .finally(() => {
-        if (!cancelled) setLoadingMore(false);
-      });
-    return () => { cancelled = true; };
-  }, [dataset.type, filters.failureTypes, missedLoaded]);
+      .finally(() => setLoadingMore(false));
+  }, [dataset.type, filters.failureTypes]);
 
   // Sort here instead of inside every setItems so missed-opportunity merges
   // and canonical appends don't have to coordinate the ordering themselves.
@@ -165,7 +170,10 @@ export function App() {
   const filtered = sortedItems.filter(matchesFilters(filters));
 
   const visible = dataset.type === "production" ? filtered.slice(0, displayLimit) : filtered;
-  const canLoadMore = dataset.type === "production" && (hasMoreInDb || filtered.length > displayLimit);
+  const missedEnabled = filters.failureTypes.has("missed_opportunity");
+  const canLoadMore =
+    dataset.type === "production" &&
+    (hasMoreInDb || (missedEnabled && hasMoreMissedInDb) || filtered.length > displayLimit);
 
   const handleLoadMore = useCallback(async () => {
     if (dataset.type !== "production" || loadingMore) return;
@@ -173,30 +181,49 @@ export function App() {
     try {
       const targetFiltered = displayLimit + DISPLAY_PAGE_SIZE;
       let currentItems = items;
-      let currentOffset = dbOffset;
-      let currentHasMore = hasMoreInDb;
+      let canonOffset = dbOffset;
+      let canonHasMore = hasMoreInDb;
+      let missOffset = missedOffset;
+      let missHasMore = hasMoreMissedInDb;
       let currentFiltered = filtered.length;
-      // Always pull at least one more canonical batch per click (if DB has more).
-      // Without this, once missed-opportunities are loaded `filtered.length` can
-      // already exceed the target and the loop skips, so scrolling would only
-      // surface the missed set without ever fetching newer canonical pages.
+      // Each click advances both cursors in parallel (when both are active).
+      // First pass is unconditional so canonical keeps flowing in even after
+      // missed is added; subsequent passes only fire if we're still short of
+      // the display target, bounded so restrictive filters can't hammer the DB.
       const MAX_FETCHES_PER_CLICK = 5;
       let fetches = 0;
       const shouldFetchMore = () =>
-        currentHasMore &&
+        (canonHasMore || (missedEnabled && missHasMore)) &&
         fetches < MAX_FETCHES_PER_CLICK &&
         (fetches === 0 || currentFiltered < targetFiltered);
       while (shouldFetchMore()) {
-        const batch = await fetchCanonicalBatch(currentOffset, DB_BATCH_SIZE);
-        currentItems = [...currentItems, ...batch.items];
-        currentOffset += batch.items.length;
-        currentHasMore = batch.hasMore;
+        const calls: Promise<{ items: ReviewItem[]; hasMore: boolean }>[] = [];
+        if (canonHasMore) calls.push(fetchCanonicalBatch(canonOffset, DB_BATCH_SIZE));
+        if (missedEnabled && missHasMore) calls.push(fetchMissedBatch(missOffset, DB_BATCH_SIZE));
+        const results = await Promise.all(calls);
+        let idx = 0;
+        if (canonHasMore) {
+          const canonBatch = results[idx++];
+          currentItems = [...currentItems, ...canonBatch.items];
+          canonOffset += canonBatch.items.length;
+          canonHasMore = canonBatch.hasMore;
+        }
+        if (missedEnabled && missHasMore) {
+          const missBatch = results[idx++];
+          const existing = new Set(currentItems.map((i) => i.id));
+          const add = missBatch.items.filter((m) => !existing.has(m.id));
+          currentItems = [...currentItems, ...add];
+          missOffset += missBatch.items.length;
+          missHasMore = missBatch.hasMore;
+        }
         currentFiltered = currentItems.filter(matchesFilters(filters)).length;
         fetches++;
       }
       setItems(currentItems);
-      setDbOffset(currentOffset);
-      setHasMoreInDb(currentHasMore);
+      setDbOffset(canonOffset);
+      setHasMoreInDb(canonHasMore);
+      setMissedOffset(missOffset);
+      setHasMoreMissedInDb(missHasMore);
       setCounts(countsFromItems(currentItems));
       setDisplayLimit(targetFiltered);
     } catch (err: any) {
@@ -205,7 +232,7 @@ export function App() {
     } finally {
       setLoadingMore(false);
     }
-  }, [dataset.type, loadingMore, displayLimit, items, dbOffset, hasMoreInDb, filtered.length, filters]);
+  }, [dataset.type, loadingMore, displayLimit, items, dbOffset, hasMoreInDb, missedOffset, hasMoreMissedInDb, missedEnabled, filtered.length, filters]);
 
   // Annotation handlers
   const handleSeenToggle = async (id: string, seen: boolean) => {
