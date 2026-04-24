@@ -143,7 +143,11 @@ export function App() {
         setItems((prev) => {
           const existing = new Set(prev.map((i) => i.id));
           const add = missed.filter((m) => !existing.has(m.id));
-          return [...prev, ...add].sort(byCreatedDesc);
+          const merged = [...prev, ...add];
+          // Refresh counts — countsFromItems is cheap and the badge was
+          // showing 0 for missed until the next Load-more click otherwise.
+          setCounts(countsFromItems(merged));
+          return merged;
         });
         setMissedLoaded(true);
       })
@@ -172,11 +176,17 @@ export function App() {
       let currentOffset = dbOffset;
       let currentHasMore = hasMoreInDb;
       let currentFiltered = filtered.length;
-      // Keep pulling DB batches until we have enough filtered items, or DB is exhausted.
-      // Bound the work so a very restrictive filter can't hammer the DB forever.
+      // Always pull at least one more canonical batch per click (if DB has more).
+      // Without this, once missed-opportunities are loaded `filtered.length` can
+      // already exceed the target and the loop skips, so scrolling would only
+      // surface the missed set without ever fetching newer canonical pages.
       const MAX_FETCHES_PER_CLICK = 5;
       let fetches = 0;
-      while (currentFiltered < targetFiltered && currentHasMore && fetches < MAX_FETCHES_PER_CLICK) {
+      const shouldFetchMore = () =>
+        currentHasMore &&
+        fetches < MAX_FETCHES_PER_CLICK &&
+        (fetches === 0 || currentFiltered < targetFiltered);
+      while (shouldFetchMore()) {
         const batch = await fetchCanonicalBatch(currentOffset, DB_BATCH_SIZE);
         currentItems = [...currentItems, ...batch.items];
         currentOffset += batch.items.length;
