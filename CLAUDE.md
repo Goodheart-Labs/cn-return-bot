@@ -60,12 +60,14 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 
 ## Review dashboard
 
+Dashboard listens on port 8001 — free it first in case a previous run is still bound.
+
 ```bash
 # Production Supabase
-bun run build-review && bun run serve-review
+lsof -ti:8001 | xargs kill -9 2>/dev/null; bun run build-review && bun run serve-review
 
 # Local Supabase
-cd src/review-dashboard && bunx vite build && cd ../.. && bun run src/review-dashboard/server.ts --local
+lsof -ti:8001 | xargs kill -9 2>/dev/null; cd src/review-dashboard && bunx vite build && cd ../.. && bun run src/review-dashboard/server.ts --local
 ```
 
 ## Database
