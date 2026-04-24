@@ -45,7 +45,7 @@ const IMAGE_PROMPT = `Analyze this image. Describe what it shows and extract all
 
 const VIDEO_PROMPT = `Analyze this video. Describe what happens and extract all visible text.`;
 
-const FRAME_PROMPT = `These are frames extracted from a video. Describe what happens and extract all visible text.`;
+const FRAME_PROMPT = `These are frames extracted from a video. Describe what happens per frame and extract all visible text per frame`;
 
 const MEDIA_RESPONSE_FORMAT = {
   type: "json_schema" as const,
