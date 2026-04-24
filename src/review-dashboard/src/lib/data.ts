@@ -122,22 +122,31 @@ const CANONICAL_LIST_COLUMNS = [
 const PIPELINE_LIST_COLUMNS =
   "tweet_id, tweet_text, outcome, outcome_reason, logs, bot_id, has_photo, has_video, media_count";
 
-export async function fetchProductionItems(): Promise<ReviewItem[]> {
-  // Fetch all our notes, most recent first
-  console.log("[data] Loading production items...");
-  const notes = await fetchAllRows<any>(
-    supabase
-      .from("canonical_note_information")
-      .select(CANONICAL_LIST_COLUMNS),
-    "canonical_note_information"
-  );
+export const DB_BATCH_SIZE = 100;
 
-  if (notes.length === 0) return [];
+export type CanonicalBatch = {
+  items: ReviewItem[];
+  hasMore: boolean;
+};
+
+/**
+ * Fetch one batch of our-notes (canonical_note_information) ordered by
+ * submitted_at desc, enriched with the related competing_notes / pipeline_runs /
+ * annotations for those note_ids. Enables paginated rendering so the dashboard
+ * doesn't pull every note's pipeline logs on load.
+ */
+export async function fetchCanonicalBatch(offset: number, limit: number = DB_BATCH_SIZE): Promise<CanonicalBatch> {
+  const { data: notes, error } = await supabase
+    .from("canonical_note_information")
+    .select(CANONICAL_LIST_COLUMNS)
+    .order("submitted_at", { ascending: false, nullsFirst: false })
+    .range(offset, offset + limit - 1);
+  if (error) throw error;
+  if (!notes || notes.length === 0) return { items: [], hasMore: false };
 
   const tweetIds = notes.map((n: any) => n.tweet_id);
   const noteIds = notes.map((n: any) => n.note_id);
 
-  // Fetch competing notes, pipeline runs, and annotations in parallel (batched to avoid URL length limits)
   const [competing, pipelines, annotations] = await Promise.all([
     fetchInBatches<any>("competing_notes", "*", "our_note_id", noteIds, undefined, "competing_notes"),
     fetchInBatches<any>("pipeline_runs", PIPELINE_LIST_COLUMNS, "tweet_id", tweetIds, (q) => q.eq("outcome", "submitted"), "pipeline_runs"),
@@ -217,10 +226,17 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
     };
   });
 
-  // Fetch and append missed opportunities (non-fatal — column may not exist on prod yet)
-  let missed: any[] = [];
+  return { items, hasMore: notes.length === limit };
+}
+
+/**
+ * Fetch all missed-opportunity items in one go. Called only when the
+ * `missed_opportunity` filter is enabled — the set is bounded by helpful
+ * competing notes on our rejected tweets, so fetching all at once is fine.
+ */
+export async function fetchMissedOpportunities(): Promise<ReviewItem[]> {
   try {
-    missed = await fetchAllRows<any>(
+    const missed = await fetchAllRows<any>(
       supabase
         .from("competing_notes")
         .select("*, pipeline_runs!competing_notes_pipeline_run_id_fkey(tweet_id, tweet_text, outcome, outcome_reason, logs, created_at)")
@@ -228,43 +244,36 @@ export async function fetchProductionItems(): Promise<ReviewItem[]> {
         .eq("current_status", "CURRENTLY_RATED_HELPFUL"),
       "missed_opportunities"
     );
+    return missed
+      .filter((cn: any) => cn.pipeline_runs)
+      .map((cn: any) => {
+        const pr = cn.pipeline_runs;
+        return {
+          id: `missed:${cn.note_id}`,
+          source: "production" as const,
+          tweetId: cn.tweet_id,
+          tweetText: pr.tweet_text,
+          noteText: undefined,
+          createdAt: pr.created_at,
+          outcome: pr.outcome,
+          outcomeReason: pr.outcome_reason,
+          logs: pr.logs,
+          comparisonNotes: [{
+            noteId: cn.note_id,
+            noteText: cn.note_text,
+            status: cn.current_status,
+            coreStatus: cn.current_core_status,
+            helpfulCount: cn.helpful_count,
+            notHelpfulCount: cn.not_helpful_count,
+            authorId: cn.author_participant_id,
+          }],
+          failureType: "missed_opportunity" as const,
+        };
+      });
   } catch (e) {
-    console.warn("Missed opportunities query failed (migration may not be applied yet):", e);
+    console.warn("Missed opportunities query failed:", e);
+    return [];
   }
-
-  for (const cn of missed) {
-    const pr = cn.pipeline_runs;
-    if (!pr) continue;
-    items.push({
-      id: `missed:${cn.note_id}`,
-      source: "production",
-      tweetId: cn.tweet_id,
-      tweetText: pr.tweet_text,
-      noteText: undefined,
-      createdAt: pr.created_at,
-      outcome: pr.outcome,
-      outcomeReason: pr.outcome_reason,
-      logs: pr.logs,
-      comparisonNotes: [{
-        noteId: cn.note_id,
-        noteText: cn.note_text,
-        status: cn.current_status,
-        coreStatus: cn.current_core_status,
-        helpfulCount: cn.helpful_count,
-        notHelpfulCount: cn.not_helpful_count,
-        authorId: cn.author_participant_id,
-      }],
-      failureType: "missed_opportunity",
-    });
-  }
-
-  items.sort((a, b) => {
-    const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return db - da;
-  });
-
-  return items;
 }
 
 // ─── Production counts ───────────────────────────────────────────────────────

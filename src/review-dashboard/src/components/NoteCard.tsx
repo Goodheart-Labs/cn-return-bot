@@ -175,67 +175,27 @@ function TweetInline({ item, tweetUrl }: { item: ReviewItem; tweetUrl: string })
       {media.images.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2">
           {media.images.map((img, i) => (
-            <div key={i} className="space-y-1">
-              <a href={img.url} target="_blank" rel="noopener noreferrer">
-                <img
-                  src={img.url}
-                  alt={img.description ?? `Image ${i + 1}`}
-                  className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain cursor-pointer hover:opacity-90"
-                  loading="lazy"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
-              </a>
-              {img.description && (
-                <p className="text-xs text-gray-500 max-w-[300px]">
-                  <span className="font-medium">AI description:</span> {img.description}
-                </p>
-              )}
-              {img.textContent && (
-                <p className="text-xs text-gray-500 max-w-[300px]">
-                  <span className="font-medium">Text in image:</span> {img.textContent}
-                </p>
-              )}
-            </div>
+            <a key={i} href={img.url} target="_blank" rel="noopener noreferrer">
+              <img
+                src={img.url}
+                alt={`Image ${i + 1}`}
+                className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain cursor-pointer hover:opacity-90"
+                loading="lazy"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+            </a>
           ))}
         </div>
       )}
 
       {/* Videos */}
       {media.videos.length > 0 && (
-        <div className="space-y-2 mb-2">
-          {media.videos.map((vid, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded p-2">
-              <div className="text-xs text-gray-400 mb-1">Video {media.videos.length > 1 ? i + 1 : ""}</div>
-              {vid.url && (
-                <a href={vid.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline block mb-1">
-                  {vid.url}
-                </a>
-              )}
-              {vid.transcription && (
-                <div className="text-xs text-gray-600">
-                  <span className="font-medium">Transcript:</span>
-                  <p className="whitespace-pre-wrap mt-0.5">{vid.transcription}</p>
-                </div>
-              )}
-              {vid.keyFrameDescriptions && vid.keyFrameDescriptions.length > 0 && (
-                <details className="text-xs text-gray-500 mt-1">
-                  <summary className="cursor-pointer">Key frames ({vid.keyFrameDescriptions.length})</summary>
-                  <ul className="list-disc pl-4 mt-1 space-y-0.5">
-                    {vid.keyFrameDescriptions.map((desc: string, j: number) => (
-                      <li key={j}>{desc}</li>
-                    ))}
-                  </ul>
-                </details>
-              )}
-            </div>
+        <div className="flex flex-col gap-1 mb-2">
+          {media.videos.map((vid, i) => vid.url && (
+            <a key={i} href={vid.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+              {vid.url}
+            </a>
           ))}
-        </div>
-      )}
-
-      {/* Media summary if no individual media shown */}
-      {media.images.length === 0 && media.videos.length === 0 && media.summary && (
-        <div className="text-xs text-gray-500 mb-2">
-          <span className="font-medium">Media:</span> {media.summary}
         </div>
       )}
     </div>

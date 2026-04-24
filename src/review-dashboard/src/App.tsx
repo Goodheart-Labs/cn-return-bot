@@ -8,7 +8,8 @@ import type {
 } from "./lib/types";
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import {
-  fetchProductionItems,
+  fetchCanonicalBatch,
+  fetchMissedOpportunities,
   countsFromItems,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
@@ -18,7 +19,10 @@ import {
   createFailureMode,
   deleteUpload,
   pruneUnusedFailureModes,
+  DB_BATCH_SIZE,
 } from "./lib/data";
+
+const DISPLAY_PAGE_SIZE = 20;
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
 import { DatasetSelector } from "./components/DatasetSelector";
@@ -32,6 +36,25 @@ function defaultFilters(source: "production" | "dataset_run"): FilterState {
     }
   }
   return { seen: "unseen", failureTypes, failureModes: new Set() };
+}
+
+function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
+  const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+  const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+  return db - da;
+}
+
+function matchesFilters(filters: FilterState) {
+  return (item: ReviewItem) => {
+    if (!filters.failureTypes.has(item.failureType)) return false;
+    if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+    if (filters.seen === "unseen" && item.annotation?.seen) return false;
+    if (filters.failureModes.size > 0) {
+      const itemModes = item.annotation?.failureModes ?? [];
+      if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
+    }
+    return true;
+  };
 }
 
 function initialDatasetFromUrl(): DatasetOption {
@@ -49,8 +72,15 @@ export function App() {
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   const [failureModeCatalog, setFailureModeCatalog] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Production-only pagination state. Each "Load more" click triggers
+  // additional DB batches until we have DISPLAY_PAGE_SIZE more filtered items.
+  const [dbOffset, setDbOffset] = useState(0);
+  const [hasMoreInDb, setHasMoreInDb] = useState(true);
+  const [displayLimit, setDisplayLimit] = useState(DISPLAY_PAGE_SIZE);
+  const [missedLoaded, setMissedLoaded] = useState(false);
 
   // Load uploads and failure mode catalog on mount
   useEffect(() => {
@@ -66,22 +96,26 @@ export function App() {
     fetchFailureModes().then(setFailureModeCatalog).catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
   }, []);
 
-  // Load data when dataset changes
+  // Load data when dataset changes. For production we fetch one DB batch
+  // up-front and rely on "Load more" to paginate; for dataset runs we still
+  // fetch everything (bounded set).
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const loaded =
-        dataset.type === "production"
-          ? await fetchProductionItems()
-          : await fetchDatasetRunItems(dataset.id!);
-      setItems(loaded);
-
-      const newCounts =
-        dataset.type === "production"
-          ? countsFromItems(loaded)
-          : await fetchDatasetRunCounts(dataset.id!);
-      setCounts(newCounts);
+      if (dataset.type === "production") {
+        const batch = await fetchCanonicalBatch(0, DB_BATCH_SIZE);
+        setItems(batch.items);
+        setDbOffset(batch.items.length);
+        setHasMoreInDb(batch.hasMore);
+        setDisplayLimit(DISPLAY_PAGE_SIZE);
+        setMissedLoaded(false);
+        setCounts(countsFromItems(batch.items));
+      } else {
+        const loaded = await fetchDatasetRunItems(dataset.id!);
+        setItems(loaded);
+        setCounts(await fetchDatasetRunCounts(dataset.id!));
+      }
     } catch (err: any) {
       console.error("Failed to load data:", err);
       setError(err?.message ?? "Failed to load data");
@@ -95,17 +129,70 @@ export function App() {
     loadData();
   }, [dataset]);
 
-  // Filter items
-  const filtered = items.filter((item) => {
-    if (!filters.failureTypes.has(item.failureType)) return false;
-    if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
-    if (filters.seen === "unseen" && item.annotation?.seen) return false;
-    if (filters.failureModes.size > 0) {
-      const itemModes = item.annotation?.failureModes ?? [];
-      if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
+  // Lazy-load the missed-opportunity set the first time it's enabled. The set
+  // is bounded (helpful competing notes on rejected tweets) so one fetch is OK.
+  useEffect(() => {
+    if (dataset.type !== "production") return;
+    if (!filters.failureTypes.has("missed_opportunity")) return;
+    if (missedLoaded) return;
+    let cancelled = false;
+    setLoadingMore(true);
+    fetchMissedOpportunities()
+      .then((missed) => {
+        if (cancelled) return;
+        setItems((prev) => {
+          const existing = new Set(prev.map((i) => i.id));
+          const add = missed.filter((m) => !existing.has(m.id));
+          return [...prev, ...add].sort(byCreatedDesc);
+        });
+        setMissedLoaded(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingMore(false);
+      });
+    return () => { cancelled = true; };
+  }, [dataset.type, filters.failureTypes, missedLoaded]);
+
+  // Filter loaded items (cheap client-side filter covers cn_status-based
+  // categories AND lost_to_competitor, which depends on competing_notes).
+  const filtered = items.filter(matchesFilters(filters));
+
+  const visible = dataset.type === "production" ? filtered.slice(0, displayLimit) : filtered;
+  const canLoadMore = dataset.type === "production" && (hasMoreInDb || filtered.length > displayLimit);
+
+  const handleLoadMore = useCallback(async () => {
+    if (dataset.type !== "production" || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const targetFiltered = displayLimit + DISPLAY_PAGE_SIZE;
+      let currentItems = items;
+      let currentOffset = dbOffset;
+      let currentHasMore = hasMoreInDb;
+      let currentFiltered = filtered.length;
+      // Keep pulling DB batches until we have enough filtered items, or DB is exhausted.
+      // Bound the work so a very restrictive filter can't hammer the DB forever.
+      const MAX_FETCHES_PER_CLICK = 5;
+      let fetches = 0;
+      while (currentFiltered < targetFiltered && currentHasMore && fetches < MAX_FETCHES_PER_CLICK) {
+        const batch = await fetchCanonicalBatch(currentOffset, DB_BATCH_SIZE);
+        currentItems = [...currentItems, ...batch.items];
+        currentOffset += batch.items.length;
+        currentHasMore = batch.hasMore;
+        currentFiltered = currentItems.filter(matchesFilters(filters)).length;
+        fetches++;
+      }
+      setItems(currentItems);
+      setDbOffset(currentOffset);
+      setHasMoreInDb(currentHasMore);
+      setCounts(countsFromItems(currentItems));
+      setDisplayLimit(targetFiltered);
+    } catch (err: any) {
+      console.error("Load more failed:", err);
+      setError(err?.message ?? "Load more failed");
+    } finally {
+      setLoadingMore(false);
     }
-    return true;
-  });
+  }, [dataset.type, loadingMore, displayLimit, items, dbOffset, hasMoreInDb, filtered.length, filters]);
 
   // Annotation handlers
   const handleSeenToggle = async (id: string, seen: boolean) => {
@@ -249,12 +336,16 @@ export function App() {
 
       {/* Item count */}
       <div className="text-sm text-gray-500 mb-3">
-        {loading && items.length === 0 ? "Loading..." : `${filtered.length} items shown`}
+        {loading && items.length === 0
+          ? "Loading..."
+          : dataset.type === "production"
+            ? `Showing ${visible.length} of ${filtered.length}${canLoadMore ? "+" : ""}`
+            : `${filtered.length} items shown`}
       </div>
 
       {/* Items */}
       <div className="space-y-3">
-        {filtered.map((item) => (
+        {visible.map((item) => (
           <NoteCard
             key={item.id}
             item={item}
@@ -266,6 +357,19 @@ export function App() {
           />
         ))}
       </div>
+
+      {/* Load more */}
+      {canLoadMore && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loadingMore ? "Loading..." : `Load more (${DISPLAY_PAGE_SIZE})`}
+          </button>
+        </div>
+      )}
 
       {/* Upload dialog */}
       <UploadDialog
