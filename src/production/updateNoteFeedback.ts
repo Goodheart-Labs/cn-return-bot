@@ -7,29 +7,18 @@ import { execSync } from "child_process";
 /**
  * Daily job: update canonical_note_information + competing_notes from CN public data dumps.
  *
- * Pipeline stages (see main()):
- *   download → parse TSVs → fetch existing DB state → sync canonical →
- *   sync competing → replace missed opportunities → snapshot → sync notes table →
- *   overlay with X API statuses → cleanup.
+ * Uses our author participant ID to find ALL our notes in the public data (not just
+ * the ~604 in the `notes` table). Downloads notes-00000 + noteStatusHistory-00000
+ * (all our notes are in partition 00000), extracts status, classification, and
+ * competing note data, then upserts into Supabase.
+ *
+ * Also creates public_data_snapshots for historical tracking.
  */
-
-// ─── Constants ───────────────────────────────────────────────────────────────
 
 const CN_DATA_BASE_URL = "https://ton.twimg.com/birdwatch-public-data";
 const DATA_DIR = "./cn-data";
 const OUR_AUTHOR = "813EB394B10809EBA8D09BCFA8E2E1C25A2DA0085186867F9E9C00696951C447";
 const PAGE_SIZE = 1000;
-const MAX_DAYS_BACK_FOR_CN_DATA = 7;
-const PARTITIONS: Record<string, string[]> = {
-  notes: ["00000", "00001"],
-  noteStatusHistory: ["00000"],
-};
-
-const CN_STATUS_HELPFUL = "CURRENTLY_RATED_HELPFUL";
-const CN_STATUS_NOT_HELPFUL = "CURRENTLY_RATED_NOT_HELPFUL";
-const CN_STATUS_NMR = "NEEDS_MORE_RATINGS";
-const TERMINAL_STATUSES = new Set([CN_STATUS_HELPFUL, CN_STATUS_NOT_HELPFUL]);
-const isTerminalStatus = (s: string | null | undefined): boolean => !!s && TERMINAL_STATUSES.has(s);
 
 const useLocal = process.argv.includes("--local");
 if (useLocal) {
@@ -38,66 +27,6 @@ if (useLocal) {
   process.env.SUPABASE_SERVICE_KEY = process.env.LOCAL_SUPABASE_SERVICE_KEY;
 }
 const client = getSupabaseClient();
-type SupabaseClient = typeof client;
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-type OurNote = {
-  noteId: string;
-  tweetId: string;
-  createdAtMillis: string;
-  classification: string;
-  summary: string;
-};
-
-type OtherNote = {
-  noteId: string;
-  tweetId: string;
-  authorId: string;
-  summary: string;
-  classification: string;
-  createdAtMillis: string;
-};
-
-type CompetingNote = OtherNote & { ourNoteId: string };
-type MissedNote = OtherNote & { pipelineRunId: string };
-
-type PublicNotes = {
-  ourNotes: Map<string, OurNote>;
-  competingNotes: CompetingNote[];
-  missedNotes: MissedNote[];
-};
-
-type StatusRecord = {
-  currentStatus: string;
-  currentCoreStatus: string;
-  currentExpansionStatus: string;
-  currentGroupStatus: string;
-  currentDecidedBy: string;
-  currentModelingGroup: string;
-  firstNonNMRStatus: string;
-  mostRecentNonNMRStatus: string;
-  lockedStatus: string;
-  statusUpdatedAt: string | null;
-  firstNonNmrAt: string | null;
-  statusLockedAt: string | null;
-};
-
-type NotesEnrichment = { submitted_at: string | null; bot_name: string | null };
-type RejectedRun = { runId: string; outcomeReason: string | null };
-
-type ExistingCanonical = {
-  ids: Set<string>;
-  statusMap: Map<string, string | null>;
-};
-
-type PublicDataFiles = {
-  notesPaths: string[];
-  statusPaths: string[];
-  snapshotDate: string;
-};
-
-// ─── Generic helpers ─────────────────────────────────────────────────────────
 
 async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
   const all: T[] = [];
@@ -123,20 +52,31 @@ function formatDateForUrl(date: Date): string {
 async function downloadFile(url: string, outputPath: string): Promise<void> {
   console.log(`[updateFeedback] Downloading ${url}...`);
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to download ${url}: ${response.status}`);
-  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+  if (!response.ok) {
+    throw new Error(`Failed to download ${url}: ${response.status}`);
+  }
+  if (!existsSync(DATA_DIR)) {
+    mkdirSync(DATA_DIR, { recursive: true });
+  }
   const buffer = await response.arrayBuffer();
   writeFileSync(outputPath, Buffer.from(buffer));
 }
 
+const PARTITIONS: Record<string, string[]> = {
+  notes: ["00000", "00001"],
+  noteStatusHistory: ["00000"],
+};
+
 async function downloadCNFile(
-  fileType: "noteStatusHistory" | "notes",
+  fileType: "noteStatusHistory" | "notes"
 ): Promise<{ paths: string[]; dateStr: string } | null> {
-  for (let daysBack = 0; daysBack < MAX_DAYS_BACK_FOR_CN_DATA; daysBack++) {
+  // Try recent dates until we find one that has data
+  for (let daysBack = 0; daysBack < 7; daysBack++) {
     const date = new Date();
     date.setUTCDate(date.getUTCDate() - daysBack);
     const dateStr = formatDateForUrl(date);
 
+    // Try to download the first partition to determine the date
     const testUrl = `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${fileType}-00000.zip`;
     const testZip = `${DATA_DIR}/${fileType}-00000.zip`;
     const testTsv = `${DATA_DIR}/${fileType}-00000.tsv`;
@@ -147,10 +87,15 @@ async function downloadCNFile(
       unlinkSync(testZip);
 
       const paths = [testTsv];
+
+      // Download remaining partitions (best effort)
       for (const partition of (PARTITIONS[fileType] ?? []).slice(1)) {
-        const zipPath = `${DATA_DIR}/${fileType}-${partition}.zip`;
-        const tsvPath = `${DATA_DIR}/${fileType}-${partition}.tsv`;
-        const url = `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${fileType}-${partition}.zip`;
+        const zipName = `${fileType}-${partition}.zip`;
+        const tsvName = `${fileType}-${partition}.tsv`;
+        const zipPath = `${DATA_DIR}/${zipName}`;
+        const tsvPath = `${DATA_DIR}/${tsvName}`;
+        const url = `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${zipName}`;
+
         try {
           await downloadFile(url, zipPath);
           execSync(`unzip -o "${zipPath}" -d "${DATA_DIR}"`, { stdio: "pipe" });
@@ -164,11 +109,12 @@ async function downloadCNFile(
       console.log(`[updateFeedback] Got ${fileType} from ${dateStr} (${paths.length} partition(s))`);
       return { paths, dateStr };
     } catch {
-      if (daysBack < MAX_DAYS_BACK_FOR_CN_DATA - 1) {
+      if (daysBack < 6) {
         console.log(`[updateFeedback] No ${fileType} for ${dateStr}, trying earlier...`);
       }
     }
   }
+
   console.error(`[updateFeedback] Could not find ${fileType} data`);
   return null;
 }
@@ -180,6 +126,7 @@ function readTsvLines(paths: string[]): { header: string; lines: string[] } {
     const content = readFileSync(p, "utf-8");
     const fileLines = content.split("\n");
     if (!header && fileLines[0]) header = fileLines[0];
+    // Skip header for all files, add data lines
     for (let i = 1; i < fileLines.length; i++) {
       if (fileLines[i]) lines.push(fileLines[i]!);
     }
@@ -187,472 +134,472 @@ function readTsvLines(paths: string[]): { header: string; lines: string[] } {
   return { header, lines };
 }
 
-function millisToIso(millis: string | undefined): string | null {
-  return millis ? new Date(parseInt(millis)).toISOString() : null;
-}
+async function main() {
+  console.log("[updateFeedback] Starting public data feedback update...");
 
-// ─── Parse stage ─────────────────────────────────────────────────────────────
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+    console.error("[updateFeedback] Missing Supabase credentials");
+    process.exit(1);
+  }
 
-function parseNotesFile(
-  paths: string[],
-  rejectedByTweetId: Map<string, RejectedRun>,
-): PublicNotes {
-  const { header, lines } = readTsvLines(paths);
-  const cols = header.split("\t");
-  const idx = {
-    noteId: cols.indexOf("noteId"),
-    author: cols.indexOf("noteAuthorParticipantId"),
-    tweetId: cols.indexOf("tweetId"),
-    createdAtMillis: cols.indexOf("createdAtMillis"),
-    classification: cols.indexOf("classification"),
-    summary: cols.indexOf("summary"),
+  // ===== 1. Download public data files =====
+  const notesResult = await downloadCNFile("notes");
+  if (!notesResult) process.exit(1);
+
+  const statusResult = await downloadCNFile("noteStatusHistory");
+  if (!statusResult) process.exit(1);
+
+  const snapshotDate = statusResult.dateStr.replace(/\//g, "-");
+
+  // ===== 2. Parse notes file — find our notes + competing notes =====
+  console.log("[updateFeedback] Parsing notes file...");
+  const { header: notesHeader, lines: noteDataLines } = readTsvLines(notesResult.paths);
+  const nh = notesHeader.split("\t");
+  const nIdx = {
+    noteId: nh.indexOf("noteId"),
+    author: nh.indexOf("noteAuthorParticipantId"),
+    tweetId: nh.indexOf("tweetId"),
+    createdAtMillis: nh.indexOf("createdAtMillis"),
+    classification: nh.indexOf("classification"),
+    summary: nh.indexOf("summary"),
   };
 
-  const ourNotes = new Map<string, OurNote>();
-  const tweetIdToOurNoteId = new Map<string, string>();
+  // First pass: find our notes and their tweet IDs
+  const ourNotes = new Map<string, {
+    tweetId: string;
+    createdAtMillis: string;
+    classification: string;
+    summary: string;
+  }>();
 
-  // Pass 1: collect our notes so competing/missed passes can distinguish them.
-  for (const line of lines) {
+  for (const line of noteDataLines) {
     const vals = line.split("\t");
-    if (vals[idx.author] !== OUR_AUTHOR) continue;
-    const noteId = vals[idx.noteId]!;
-    const tweetId = vals[idx.tweetId]!;
-    ourNotes.set(noteId, {
-      noteId,
-      tweetId,
-      createdAtMillis: vals[idx.createdAtMillis]!,
-      classification: vals[idx.classification]!,
-      summary: vals[idx.summary]!,
+    if (vals[nIdx.author] !== OUR_AUTHOR) continue;
+    ourNotes.set(vals[nIdx.noteId]!, {
+      tweetId: vals[nIdx.tweetId]!,
+      createdAtMillis: vals[nIdx.createdAtMillis]!,
+      classification: vals[nIdx.classification]!,
+      summary: vals[nIdx.summary]!,
     });
-    tweetIdToOurNoteId.set(tweetId, noteId);
   }
+  console.log(`[updateFeedback] Found ${ourNotes.size} of our notes in public data`);
 
-  // A tweet where we submitted is never a "missed opportunity" even if the pipeline also rejected another attempt.
-  for (const n of ourNotes.values()) rejectedByTweetId.delete(n.tweetId);
+  const ourTweetIds = new Set([...ourNotes.values()].map(n => n.tweetId));
+  const ourNoteIds = new Set(ourNotes.keys());
 
-  // Pass 2: competing (other author, tweet we noted) and missed (other author, tweet we rejected).
-  const competingNotes: CompetingNote[] = [];
-  const missedNotes: MissedNote[] = [];
-  for (const line of lines) {
+  // Second pass: find competing notes (other notes on same tweets)
+  const competingNotes: Array<{
+    noteId: string;
+    tweetId: string;
+    ourNoteId: string;
+    authorId: string;
+    summary: string;
+    classification: string;
+    createdAtMillis: string;
+  }> = [];
+
+  for (const line of noteDataLines) {
     const vals = line.split("\t");
-    if (vals[idx.author] === OUR_AUTHOR) continue;
+    const tweetId = vals[nIdx.tweetId]!;
+    if (!ourTweetIds.has(tweetId)) continue;
+    if (vals[nIdx.author] === OUR_AUTHOR) continue;
 
-    const tweetId = vals[idx.tweetId]!;
-    const base: OtherNote = {
-      noteId: vals[idx.noteId]!,
+    // Find which of our notes is on this tweet
+    const ourNoteId = [...ourNotes.entries()].find(([_, n]) => n.tweetId === tweetId)?.[0];
+    if (!ourNoteId) continue;
+
+    competingNotes.push({
+      noteId: vals[nIdx.noteId]!,
       tweetId,
-      authorId: vals[idx.author] || "",
-      summary: vals[idx.summary] || "",
-      classification: vals[idx.classification] || "",
-      createdAtMillis: vals[idx.createdAtMillis] || "",
-    };
-
-    const ourNoteId = tweetIdToOurNoteId.get(tweetId);
-    if (ourNoteId) {
-      competingNotes.push({ ...base, ourNoteId });
-      continue;
-    }
-    const rejected = rejectedByTweetId.get(tweetId);
-    if (rejected) {
-      missedNotes.push({ ...base, pipelineRunId: rejected.runId });
-    }
+      ourNoteId,
+      authorId: vals[nIdx.author] || "",
+      summary: vals[nIdx.summary] || "",
+      classification: vals[nIdx.classification] || "",
+      createdAtMillis: vals[nIdx.createdAtMillis] || "",
+    });
   }
+  console.log(`[updateFeedback] Found ${competingNotes.length} competing notes`);
 
-  return { ourNotes, competingNotes, missedNotes };
-}
+  // ===== 2.5. Third pass: find notes on rejected tweet_ids (missed opportunities) =====
+  console.log("[updateFeedback] Checking for missed opportunities...");
+  const rejectedRuns = await fetchAll<{ id: string; tweet_id: string; outcome_reason: string | null }>(
+    () => client.from("pipeline_runs").select("id, tweet_id, outcome_reason").eq("outcome", "rejected")
+  );
+  const rejectedTweetIds = new Map<string, { runId: string; outcomeReason: string | null }>();
+  for (const run of rejectedRuns) {
+    // Keep the latest run per tweet (overwrite is fine, they're fetched in insertion order)
+    rejectedTweetIds.set(run.tweet_id, { runId: run.id, outcomeReason: run.outcome_reason });
+  }
+  // Exclude tweets where we also submitted a note
+  for (const n of ourNotes.values()) {
+    rejectedTweetIds.delete(n.tweetId);
+  }
+  console.log(`[updateFeedback] ${rejectedTweetIds.size} tweets with rejected pipeline runs (no submission)`);
 
-function parseStatusHistory(paths: string[], relevantIds: Set<string>): Map<string, StatusRecord> {
-  const { header, lines } = readTsvLines(paths);
-  const cols = header.split("\t");
-  const idx = {
-    noteId: cols.indexOf("noteId"),
-    currentStatus: cols.indexOf("currentStatus"),
-    currentCoreStatus: cols.indexOf("currentCoreStatus"),
-    currentExpansionStatus: cols.indexOf("currentExpansionStatus"),
-    currentGroupStatus: cols.indexOf("currentGroupStatus"),
-    currentDecidedBy: cols.indexOf("currentDecidedBy"),
-    currentModelingGroup: cols.indexOf("currentModelingGroup"),
-    firstNonNMRStatus: cols.indexOf("firstNonNMRStatus"),
-    mostRecentNonNMRStatus: cols.indexOf("mostRecentNonNMRStatus"),
-    lockedStatus: cols.indexOf("lockedStatus"),
-    timestampMillisOfCurrentStatus: cols.indexOf("timestampMillisOfCurrentStatus"),
-    timestampMillisOfFirstNonNMRStatus: cols.indexOf("timestampMillisOfFirstNonNMRStatus"),
-    timestampMillisOfStatusLock: cols.indexOf("timestampMillisOfStatusLock"),
+  const missedOpportunityNotes: Array<{
+    noteId: string;
+    tweetId: string;
+    pipelineRunId: string;
+    authorId: string;
+    summary: string;
+    classification: string;
+    createdAtMillis: string;
+  }> = [];
+
+  for (const line of noteDataLines) {
+    const vals = line.split("\t");
+    const tweetId = vals[nIdx.tweetId]!;
+    if (!rejectedTweetIds.has(tweetId)) continue;
+    if (vals[nIdx.author] === OUR_AUTHOR) continue;
+
+    const run = rejectedTweetIds.get(tweetId)!;
+    missedOpportunityNotes.push({
+      noteId: vals[nIdx.noteId]!,
+      tweetId,
+      pipelineRunId: run.runId,
+      authorId: vals[nIdx.author] || "",
+      summary: vals[nIdx.summary] || "",
+      classification: vals[nIdx.classification] || "",
+      createdAtMillis: vals[nIdx.createdAtMillis] || "",
+    });
+  }
+  console.log(`[updateFeedback] Found ${missedOpportunityNotes.length} notes on rejected tweets`);
+
+  // ===== 3. Parse noteStatusHistory =====
+  console.log("[updateFeedback] Parsing noteStatusHistory...");
+  const { header: statusHeader, lines: statusDataLines } = readTsvLines(statusResult.paths);
+  const sh = statusHeader.split("\t");
+  const sIdx = {
+    noteId: sh.indexOf("noteId"),
+    currentStatus: sh.indexOf("currentStatus"),
+    currentCoreStatus: sh.indexOf("currentCoreStatus"),
+    currentExpansionStatus: sh.indexOf("currentExpansionStatus"),
+    currentGroupStatus: sh.indexOf("currentGroupStatus"),
+    currentDecidedBy: sh.indexOf("currentDecidedBy"),
+    currentModelingGroup: sh.indexOf("currentModelingGroup"),
+    firstNonNMRStatus: sh.indexOf("firstNonNMRStatus"),
+    mostRecentNonNMRStatus: sh.indexOf("mostRecentNonNMRStatus"),
+    lockedStatus: sh.indexOf("lockedStatus"),
+    timestampMillisOfCurrentStatus: sh.indexOf("timestampMillisOfCurrentStatus"),
+    timestampMillisOfFirstNonNMRStatus: sh.indexOf("timestampMillisOfFirstNonNMRStatus"),
+    timestampMillisOfStatusLock: sh.indexOf("timestampMillisOfStatusLock"),
   };
 
-  const statusMap = new Map<string, StatusRecord>();
-  for (const line of lines) {
+  // Build sets of note IDs we care about
+  const competingNoteIds = new Set(competingNotes.map(n => n.noteId));
+  const missedNoteIds = new Set(missedOpportunityNotes.map(n => n.noteId));
+  const allRelevantIds = new Set([...ourNoteIds, ...competingNoteIds, ...missedNoteIds]);
+
+  const statusMap = new Map<string, {
+    currentStatus: string;
+    currentCoreStatus: string;
+    currentExpansionStatus: string;
+    currentGroupStatus: string;
+    currentDecidedBy: string;
+    currentModelingGroup: string;
+    firstNonNMRStatus: string;
+    mostRecentNonNMRStatus: string;
+    lockedStatus: string;
+    statusUpdatedAt: string | null;
+    firstNonNmrAt: string | null;
+    statusLockedAt: string | null;
+  }>();
+
+  for (const line of statusDataLines) {
     const firstTab = line.indexOf("\t");
     const noteId = line.slice(0, firstTab);
-    if (!relevantIds.has(noteId)) continue;
+    if (!allRelevantIds.has(noteId)) continue;
 
     const vals = line.split("\t");
     statusMap.set(noteId, {
-      currentStatus: vals[idx.currentStatus] || "",
-      currentCoreStatus: vals[idx.currentCoreStatus] || "",
-      currentExpansionStatus: vals[idx.currentExpansionStatus] || "",
-      currentGroupStatus: vals[idx.currentGroupStatus] || "",
-      currentDecidedBy: vals[idx.currentDecidedBy] || "",
-      currentModelingGroup: vals[idx.currentModelingGroup] || "",
-      firstNonNMRStatus: vals[idx.firstNonNMRStatus] || "",
-      mostRecentNonNMRStatus: vals[idx.mostRecentNonNMRStatus] || "",
-      lockedStatus: vals[idx.lockedStatus] || "",
-      statusUpdatedAt: millisToIso(vals[idx.timestampMillisOfCurrentStatus]),
-      firstNonNmrAt: millisToIso(vals[idx.timestampMillisOfFirstNonNMRStatus]),
-      statusLockedAt: millisToIso(vals[idx.timestampMillisOfStatusLock]),
+      currentStatus: vals[sIdx.currentStatus] || "",
+      currentCoreStatus: vals[sIdx.currentCoreStatus] || "",
+      currentExpansionStatus: vals[sIdx.currentExpansionStatus] || "",
+      currentGroupStatus: vals[sIdx.currentGroupStatus] || "",
+      currentDecidedBy: vals[sIdx.currentDecidedBy] || "",
+      currentModelingGroup: vals[sIdx.currentModelingGroup] || "",
+      firstNonNMRStatus: vals[sIdx.firstNonNMRStatus] || "",
+      mostRecentNonNMRStatus: vals[sIdx.mostRecentNonNMRStatus] || "",
+      lockedStatus: vals[sIdx.lockedStatus] || "",
+      statusUpdatedAt: vals[sIdx.timestampMillisOfCurrentStatus]
+        ? new Date(parseInt(vals[sIdx.timestampMillisOfCurrentStatus]!)).toISOString() : null,
+      firstNonNmrAt: vals[sIdx.timestampMillisOfFirstNonNMRStatus]
+        ? new Date(parseInt(vals[sIdx.timestampMillisOfFirstNonNMRStatus]!)).toISOString() : null,
+      statusLockedAt: vals[sIdx.timestampMillisOfStatusLock]
+        ? new Date(parseInt(vals[sIdx.timestampMillisOfStatusLock]!)).toISOString() : null,
     });
   }
-  return statusMap;
-}
+  console.log(`[updateFeedback] Found ${statusMap.size} status records for relevant notes`);
 
-// ─── DB read stage ───────────────────────────────────────────────────────────
-
-async function fetchRejectedTweets(client: SupabaseClient): Promise<Map<string, RejectedRun>> {
-  const rejectedRuns = await fetchAll<{ id: string; tweet_id: string; outcome_reason: string | null }>(
-    () => client.from("pipeline_runs").select("id, tweet_id, outcome_reason").eq("outcome", "rejected"),
+  // ===== 4. Get existing canonical data =====
+  console.log("[updateFeedback] Fetching existing canonical data...");
+  const existing = await fetchAll<{ note_id: string; cn_status: string | null }>(
+    () => client.from("canonical_note_information").select("note_id, cn_status")
   );
-  const map = new Map<string, RejectedRun>();
-  // Iteration order is insertion order → the last run per tweet wins, which is what we want.
-  for (const run of rejectedRuns) {
-    map.set(run.tweet_id, { runId: run.id, outcomeReason: run.outcome_reason });
-  }
-  return map;
-}
+  const existingIds = new Set(existing.map(n => n.note_id));
+  const existingStatusMap = new Map(existing.map(n => [n.note_id, n.cn_status]));
+  console.log(`[updateFeedback] ${existing.length} existing canonical entries`);
 
-async function fetchExistingCanonical(client: SupabaseClient): Promise<ExistingCanonical> {
-  const rows = await fetchAll<{ note_id: string; cn_status: string | null }>(
-    () => client.from("canonical_note_information").select("note_id, cn_status"),
+  // ===== 5. Upsert our notes into canonical_note_information =====
+  // Fetch submitted_at and bot_name from notes table to keep canonical in sync
+  const notesEnrichment = await fetchAll<{ note_id: string; submitted_at: string | null; bot_name: string | null }>(
+    () => client.from("notes").select("note_id, submitted_at, bot_name")
   );
-  return {
-    ids: new Set(rows.map(r => r.note_id)),
-    statusMap: new Map(rows.map(r => [r.note_id, r.cn_status])),
-  };
-}
+  const enrichmentMap = new Map(notesEnrichment.map(n => [n.note_id, n]));
 
-async function fetchNotesEnrichment(client: SupabaseClient): Promise<Map<string, NotesEnrichment>> {
-  const rows = await fetchAll<{ note_id: string; submitted_at: string | null; bot_name: string | null }>(
-    () => client.from("notes").select("note_id, submitted_at, bot_name"),
-  );
-  return new Map(rows.map(r => [r.note_id, { submitted_at: r.submitted_at, bot_name: r.bot_name }]));
-}
-
-// ─── Row builders ────────────────────────────────────────────────────────────
-
-function buildCanonicalRow(
-  ourNote: OurNote,
-  status: StatusRecord | undefined,
-  enrichment: NotesEnrichment | undefined,
-  now: string,
-): Record<string, any> {
-  return {
-    note_id: ourNote.noteId,
-    tweet_id: ourNote.tweetId,
-    cn_status: status?.currentStatus || CN_STATUS_NMR,
-    note_text: ourNote.summary || null,
-    classification: ourNote.classification || null,
-    current_core_status: status?.currentCoreStatus || null,
-    current_expansion_status: status?.currentExpansionStatus || null,
-    current_group_status: status?.currentGroupStatus || null,
-    current_decided_by: status?.currentDecidedBy || null,
-    current_modeling_group: status?.currentModelingGroup || null,
-    first_non_nmr_status: status?.firstNonNMRStatus || null,
-    most_recent_non_nmr_status: status?.mostRecentNonNMRStatus || null,
-    locked_status: status?.lockedStatus || null,
-    status_updated_at: status?.statusUpdatedAt || null,
-    first_non_nmr_at: status?.firstNonNmrAt || null,
-    status_locked_at: status?.statusLockedAt || null,
-    public_data_updated_at: now,
-    submitted_at: millisToIso(ourNote.createdAtMillis) || enrichment?.submitted_at || null,
-    bot_name: enrichment?.bot_name || null,
-  };
-}
-
-function buildCompetingRow(cn: CompetingNote, status: StatusRecord | undefined, now: string): Record<string, any> {
-  return {
-    tweet_id: cn.tweetId,
-    note_id: cn.noteId,
-    our_note_id: cn.ourNoteId,
-    author_participant_id: cn.authorId || null,
-    note_text: cn.summary || null,
-    classification: cn.classification || null,
-    current_status: status?.currentStatus || null,
-    current_core_status: status?.currentCoreStatus || null,
-    current_decided_by: status?.currentDecidedBy || null,
-    created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : null,
-    last_updated_at: now,
-  };
-}
-
-function buildMissedRow(mn: MissedNote, status: StatusRecord, now: string): Record<string, any> {
-  return {
-    tweet_id: mn.tweetId,
-    note_id: mn.noteId,
-    our_note_id: null,
-    pipeline_run_id: mn.pipelineRunId,
-    author_participant_id: mn.authorId || null,
-    note_text: mn.summary || null,
-    classification: mn.classification || null,
-    current_status: status.currentStatus || null,
-    current_core_status: status.currentCoreStatus || null,
-    current_decided_by: status.currentDecidedBy || null,
-    created_at_millis: mn.createdAtMillis ? parseInt(mn.createdAtMillis) : null,
-    last_updated_at: now,
-  };
-}
-
-// ─── DB write stage ──────────────────────────────────────────────────────────
-
-async function upsertBatches(
-  client: SupabaseClient,
-  table: string,
-  rows: Record<string, any>[],
-  onConflict: string,
-  label: string,
-): Promise<{ upserted: number; errors: number }> {
-  let upserted = 0, errors = 0;
-  for (let i = 0; i < rows.length; i += PAGE_SIZE) {
-    const batch = rows.slice(i, i + PAGE_SIZE);
-    const { error } = await client.from(table).upsert(batch, { onConflict });
-    if (error) {
-      console.error(`[updateFeedback] Error upserting ${label} batch: ${error.message}`);
-      errors += batch.length;
-    } else {
-      upserted += batch.length;
-    }
-  }
-  return { upserted, errors };
-}
-
-type CanonicalSyncResult = {
-  upserted: number;
-  skipped: number;
-  newlyHelpful: number;
-  errors: number;
-  postUpsertIds: Set<string>;
-  postUpsertStatusMap: Map<string, string | null>;
-};
-
-async function syncCanonical(
-  client: SupabaseClient,
-  params: {
-    ourNotes: Map<string, OurNote>;
-    statusMap: Map<string, StatusRecord>;
-    existing: ExistingCanonical;
-    enrichmentMap: Map<string, NotesEnrichment>;
-    now: string;
-  },
-): Promise<CanonicalSyncResult> {
-  const { ourNotes, statusMap, existing, enrichmentMap, now } = params;
-
-  // Separate new vs existing rows: PostgREST normalizes all rows in a batch to the
-  // same columns — mixing rows with/without first_seen_at would set existing rows'
-  // first_seen_at to NULL, violating NOT NULL.
-  const newRows: Record<string, any>[] = [];
-  const existingRows: Record<string, any>[] = [];
-  let skipped = 0;
+  const now = new Date().toISOString();
   let newlyHelpful = 0;
 
-  for (const ourNote of ourNotes.values()) {
-    const status = statusMap.get(ourNote.noteId);
-    const newStatus = status?.currentStatus || CN_STATUS_NMR;
-    const existingStatus = existing.statusMap.get(ourNote.noteId);
+  // Split new vs existing rows into separate batches because PostgREST normalizes
+  // all rows in a batch to the same columns — mixing rows with/without first_seen_at
+  // causes it to set first_seen_at=NULL on existing rows, violating NOT NULL.
+  const newCanonicalRows: Record<string, any>[] = [];
+  const existingCanonicalRows: Record<string, any>[] = [];
+  for (const [noteId, noteData] of ourNotes) {
+    const status = statusMap.get(noteId);
 
-    if (existingStatus !== CN_STATUS_HELPFUL && newStatus === CN_STATUS_HELPFUL) newlyHelpful++;
+    const wasHelpful = existingStatusMap.get(noteId) === "CURRENTLY_RATED_HELPFUL";
+    const isNowHelpful = status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
+    if (isNowHelpful && !wasHelpful) newlyHelpful++;
 
-    // Terminal + unchanged = skip the write.
-    if (existing.ids.has(ourNote.noteId) && existingStatus === newStatus && isTerminalStatus(newStatus)) {
-      skipped++;
-      continue;
-    }
+    const row: Record<string, any> = {
+      note_id: noteId,
+      tweet_id: noteData.tweetId,
+      cn_status: status?.currentStatus || "NEEDS_MORE_RATINGS",
+      note_text: noteData.summary || null,
+      classification: noteData.classification || null,
+      current_core_status: status?.currentCoreStatus || null,
+      current_expansion_status: status?.currentExpansionStatus || null,
+      current_group_status: status?.currentGroupStatus || null,
+      current_decided_by: status?.currentDecidedBy || null,
+      current_modeling_group: status?.currentModelingGroup || null,
+      first_non_nmr_status: status?.firstNonNMRStatus || null,
+      most_recent_non_nmr_status: status?.mostRecentNonNMRStatus || null,
+      locked_status: status?.lockedStatus || null,
+      status_updated_at: status?.statusUpdatedAt || null,
+      first_non_nmr_at: status?.firstNonNmrAt || null,
+      status_locked_at: status?.statusLockedAt || null,
+      public_data_updated_at: now,
+      submitted_at: noteData.createdAtMillis
+        ? new Date(parseInt(noteData.createdAtMillis)).toISOString()
+        : enrichmentMap.get(noteId)?.submitted_at || null,
+      bot_name: enrichmentMap.get(noteId)?.bot_name || null,
+    };
 
-    const row = buildCanonicalRow(ourNote, status, enrichmentMap.get(ourNote.noteId), now);
-    if (existing.ids.has(ourNote.noteId)) {
-      existingRows.push(row);
+    if (existingIds.has(noteId)) {
+      existingCanonicalRows.push(row);
     } else {
       row.first_seen_at = now;
-      newRows.push(row);
+      newCanonicalRows.push(row);
     }
   }
 
-  // Return new state maps instead of mutating the caller's copies. The API overlay
-  // step needs post-upsert state; the notes-table sync needs pre-upsert state.
-  const postUpsertIds = new Set(existing.ids);
-  const postUpsertStatusMap = new Map(existing.statusMap);
-
-  let upserted = 0, errors = 0;
-  for (const rows of [newRows, existingRows]) {
+  let upserted = 0, upsertErrors = 0;
+  for (const rows of [newCanonicalRows, existingCanonicalRows]) {
     for (let i = 0; i < rows.length; i += PAGE_SIZE) {
       const batch = rows.slice(i, i + PAGE_SIZE);
-      const { error } = await client.from("canonical_note_information").upsert(batch, { onConflict: "note_id" });
+      const { error } = await client
+        .from("canonical_note_information")
+        .upsert(batch, { onConflict: "note_id" });
       if (error) {
         console.error(`[updateFeedback] Error upserting canonical batch: ${error.message}`);
-        errors += batch.length;
+        upsertErrors += batch.length;
       } else {
         upserted += batch.length;
-        for (const row of batch) {
-          postUpsertIds.add(row.note_id);
-          postUpsertStatusMap.set(row.note_id, row.cn_status);
-        }
       }
     }
   }
 
-  return { upserted, skipped, newlyHelpful, errors, postUpsertIds, postUpsertStatusMap };
-}
+  console.log(`[updateFeedback] Canonical: ${upserted} upserted, ${upsertErrors} errors`);
+  if (newlyHelpful > 0) {
+    console.log(`[updateFeedback] ${newlyHelpful} notes newly rated HELPFUL!`);
+  }
 
-async function syncCompetingNotes(
-  client: SupabaseClient,
-  competingNotes: CompetingNote[],
-  statusMap: Map<string, StatusRecord>,
-  now: string,
-): Promise<{ upserted: number; errors: number }> {
-  const rows = competingNotes.map(cn => buildCompetingRow(cn, statusMap.get(cn.noteId), now));
-  return upsertBatches(client, "competing_notes", rows, "note_id,our_note_id", "competing");
-}
+  // ===== 6. Upsert competing notes =====
+  console.log("[updateFeedback] Upserting competing notes...");
+  const competingRows = competingNotes.map(cn => {
+    const status = statusMap.get(cn.noteId);
+    return {
+      tweet_id: cn.tweetId,
+      note_id: cn.noteId,
+      our_note_id: cn.ourNoteId,
+      author_participant_id: cn.authorId || null,
+      note_text: cn.summary || null,
+      classification: cn.classification || null,
+      current_status: status?.currentStatus || null,
+      current_core_status: status?.currentCoreStatus || null,
+      current_decided_by: status?.currentDecidedBy || null,
+      created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : null,
+      last_updated_at: now,
+    };
+  });
 
-async function replaceMissedOpportunities(
-  client: SupabaseClient,
-  missedNotes: MissedNote[],
-  statusMap: Map<string, StatusRecord>,
-  now: string,
-): Promise<number> {
-  const rows = missedNotes
-    .filter(mn => statusMap.get(mn.noteId)?.currentCoreStatus === CN_STATUS_HELPFUL)
-    .map(mn => buildMissedRow(mn, statusMap.get(mn.noteId)!, now));
+  let competingUpserted = 0, competingErrors = 0;
+  for (let i = 0; i < competingRows.length; i += PAGE_SIZE) {
+    const batch = competingRows.slice(i, i + PAGE_SIZE);
+    const { error } = await client
+      .from("competing_notes")
+      .upsert(batch, { onConflict: "note_id,our_note_id" });
+    if (error) {
+      console.error(`[updateFeedback] Error upserting competing batch: ${error.message}`);
+      competingErrors += batch.length;
+    } else {
+      competingUpserted += batch.length;
+    }
+  }
+  console.log(`[updateFeedback] Competing: ${competingUpserted} upserted, ${competingErrors} errors`);
+
+  // ===== 6.5. Replace missed opportunity competing notes (helpful only) =====
+  console.log("[updateFeedback] Replacing missed opportunity competing notes...");
+  const missedRows = missedOpportunityNotes
+    .filter(mn => {
+      const status = statusMap.get(mn.noteId);
+      return status?.currentCoreStatus === "CURRENTLY_RATED_HELPFUL";
+    })
+    .map(mn => {
+      const status = statusMap.get(mn.noteId)!;
+      return {
+        tweet_id: mn.tweetId,
+        note_id: mn.noteId,
+        our_note_id: null,
+        pipeline_run_id: mn.pipelineRunId,
+        author_participant_id: mn.authorId || null,
+        note_text: mn.summary || null,
+        classification: mn.classification || null,
+        current_status: status.currentStatus || null,
+        current_core_status: status.currentCoreStatus || null,
+        current_decided_by: status.currentDecidedBy || null,
+        created_at_millis: mn.createdAtMillis ? parseInt(mn.createdAtMillis) : null,
+        last_updated_at: now,
+      };
+    });
 
   await client.from("competing_notes").delete().is("our_note_id", null);
-
-  let inserted = 0;
-  for (let i = 0; i < rows.length; i += PAGE_SIZE) {
-    const batch = rows.slice(i, i + PAGE_SIZE);
-    const { error } = await client.from("competing_notes").insert(batch);
+  let missedInserted = 0;
+  for (let i = 0; i < missedRows.length; i += PAGE_SIZE) {
+    const batch = missedRows.slice(i, i + PAGE_SIZE);
+    const { error } = await client
+      .from("competing_notes")
+      .insert(batch);
     if (error) {
       console.error(`[updateFeedback] Error inserting missed opportunity competing notes: ${error.message}`);
     } else {
-      inserted += batch.length;
+      missedInserted += batch.length;
     }
   }
-  return inserted;
-}
+  console.log(`[updateFeedback] Missed opportunity competing notes: ${missedInserted} inserted (helpful only)`);
 
-async function snapshotPublicData(
-  client: SupabaseClient,
-  params: {
-    ourNotes: Map<string, OurNote>;
-    competingNotes: CompetingNote[];
-    statusMap: Map<string, StatusRecord>;
-    snapshotDate: string;
-  },
-): Promise<number> {
-  const { ourNotes, competingNotes, statusMap, snapshotDate } = params;
-  let count = 0;
+  // ===== 7. Create public_data_snapshots for historical tracking =====
+  console.log("[updateFeedback] Creating public data snapshots...");
+  let snapshotCount = 0;
 
-  const upsertSnapshot = async (row: Record<string, any>) => {
+  for (const [noteId, noteData] of ourNotes) {
+    const status = statusMap.get(noteId);
     try {
       const { error } = await client
         .from("public_data_snapshots")
-        .upsert(row, { onConflict: "note_id,snapshot_date", ignoreDuplicates: false });
-      if (!error) count++;
+        .upsert({
+          note_id: noteId,
+          tweet_id: noteData.tweetId,
+          current_status: status?.currentStatus || "NEEDS_MORE_RATINGS",
+          is_ours: true,
+          snapshot_date: snapshotDate,
+          created_at_millis: noteData.createdAtMillis ? parseInt(noteData.createdAtMillis) : undefined,
+        }, { onConflict: "note_id,snapshot_date", ignoreDuplicates: false });
+      if (!error) snapshotCount++;
     } catch {
       // Ignore duplicates
     }
-  };
-
-  for (const ourNote of ourNotes.values()) {
-    const status = statusMap.get(ourNote.noteId);
-    await upsertSnapshot({
-      note_id: ourNote.noteId,
-      tweet_id: ourNote.tweetId,
-      current_status: status?.currentStatus || CN_STATUS_NMR,
-      is_ours: true,
-      snapshot_date: snapshotDate,
-      created_at_millis: ourNote.createdAtMillis ? parseInt(ourNote.createdAtMillis) : undefined,
-    });
   }
 
+  // Also snapshot helpful competing notes
   for (const cn of competingNotes) {
     const status = statusMap.get(cn.noteId);
-    if (status?.currentStatus !== CN_STATUS_HELPFUL) continue;
-    await upsertSnapshot({
-      note_id: cn.noteId,
-      tweet_id: cn.tweetId,
-      current_status: status.currentStatus,
-      is_ours: false,
-      snapshot_date: snapshotDate,
-      created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : undefined,
-      note_text: cn.summary || null,
-    });
+    if (status?.currentStatus !== "CURRENTLY_RATED_HELPFUL") continue;
+    try {
+      const { error } = await client
+        .from("public_data_snapshots")
+        .upsert({
+          note_id: cn.noteId,
+          tweet_id: cn.tweetId,
+          current_status: status.currentStatus,
+          is_ours: false,
+          snapshot_date: snapshotDate,
+          created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : undefined,
+          note_text: cn.summary || null,
+        }, { onConflict: "note_id,snapshot_date", ignoreDuplicates: false });
+      if (!error) snapshotCount++;
+    } catch {
+      // Ignore duplicates
+    }
   }
 
-  return count;
-}
+  console.log(`[updateFeedback] Created/updated ${snapshotCount} snapshots`);
 
-async function syncNotesTable(
-  client: SupabaseClient,
-  params: {
-    ourNotes: Map<string, OurNote>;
-    statusMap: Map<string, StatusRecord>;
-    preUpsertStatusMap: Map<string, string | null>;
-    notesTableIdSet: Set<string>;
-    now: string;
-  },
-): Promise<{ updated: number; skipped: number }> {
-  const { ourNotes, statusMap, preUpsertStatusMap, notesTableIdSet, now } = params;
-  let updated = 0, skipped = 0;
+  // ===== 8. Also update the `notes` table for notes that exist there =====
+  // (Keeps backwards compat with any code still reading from `notes.cn_status`)
+  const notesTableIds = await fetchAll<{ note_id: string }>(
+    () => client.from("notes").select("note_id")
+  );
+  const notesTableIdSet = new Set(notesTableIds.map(n => n.note_id));
+  let notesTableUpdated = 0;
 
-  for (const ourNote of ourNotes.values()) {
-    if (!notesTableIdSet.has(ourNote.noteId)) continue;
-    const resolvedStatus = statusMap.get(ourNote.noteId)?.currentStatus || CN_STATUS_NMR;
-
-    if (preUpsertStatusMap.get(ourNote.noteId) === resolvedStatus && isTerminalStatus(resolvedStatus)) {
-      skipped++;
-      continue;
-    }
+  for (const [noteId, _] of ourNotes) {
+    if (!notesTableIdSet.has(noteId)) continue;
+    const status = statusMap.get(noteId);
+    const resolvedStatus = status?.currentStatus || "NEEDS_MORE_RATINGS";
 
     const { error } = await client
       .from("notes")
-      .update({ cn_status: resolvedStatus, last_checked_at: now })
-      .eq("note_id", ourNote.noteId);
-    if (!error) updated++;
+      .update({
+        cn_status: resolvedStatus,
+        last_checked_at: now,
+      })
+      .eq("note_id", noteId);
+
+    if (!error) notesTableUpdated++;
   }
 
-  return { updated, skipped };
-}
+  console.log(`[updateFeedback] Updated ${notesTableUpdated} notes in notes table`);
 
-async function overlayApiStatus(
-  client: SupabaseClient,
-  params: {
-    canonicalIds: Set<string>;
-    canonicalStatusMap: Map<string, string | null>;
-    notesTableIdSet: Set<string>;
-    enrichmentMap: Map<string, NotesEnrichment>;
-    now: string;
-  },
-): Promise<{ overlayCount: number; newCount: number }> {
-  const { canonicalIds, canonicalStatusMap, notesTableIdSet, enrichmentMap, now } = params;
-
+  // ===== 9. API real-time status overlay =====
+  let apiOverlayCount = 0;
+  let apiNewCount = 0;
   try {
     console.log("[updateFeedback] Fetching real-time statuses from X API...");
     const apiNotes = await fetchNotesWritten();
     console.log(`[updateFeedback] API returned ${apiNotes.length} notes`);
 
-    const overlayRows: Array<{ note_id: string; cn_status: string; public_data_updated_at: string }> = [];
+    // Refresh existing IDs (may have been updated by cn_data steps above)
+    const refreshed = await fetchAll<{ note_id: string; cn_status: string | null }>(
+      () => client.from("canonical_note_information").select("note_id, cn_status")
+    );
+    const currentStatusMap = new Map(refreshed.map(n => [n.note_id, n.cn_status]));
+    const currentIds = new Set(refreshed.map(n => n.note_id));
+
+    const overlayRows: Record<string, any>[] = [];
     const newApiRows: Record<string, any>[] = [];
 
     for (const note of apiNotes) {
       const apiStatus = note.status?.toUpperCase() || null;
       const apiClassification = note.info?.classification?.toUpperCase() || null;
 
-      if (canonicalIds.has(note.id)) {
-        if (apiStatus && apiStatus !== canonicalStatusMap.get(note.id)) {
-          overlayRows.push({ note_id: note.id, cn_status: apiStatus, public_data_updated_at: now });
+      if (currentIds.has(note.id)) {
+        // Only update if API status differs from what's in the DB
+        if (apiStatus && apiStatus !== currentStatusMap.get(note.id)) {
+          overlayRows.push({
+            note_id: note.id,
+            cn_status: apiStatus,
+            public_data_updated_at: now,
+          });
         }
       } else {
+        // Note not yet in canonical table (submitted in last ~3 days)
         const enrichment = enrichmentMap.get(note.id);
         newApiRows.push({
           note_id: note.id,
           tweet_id: note.post_id,
-          cn_status: apiStatus || CN_STATUS_NMR,
+          cn_status: apiStatus || "NEEDS_MORE_RATINGS",
           note_text: note.info?.text || null,
           classification: apiClassification,
           public_data_updated_at: now,
@@ -663,23 +610,25 @@ async function overlayApiStatus(
       }
     }
 
-    let overlayCount = 0;
+    // Apply overlay updates (status changed)
     for (const row of overlayRows) {
       const { error } = await client
         .from("canonical_note_information")
         .update({ cn_status: row.cn_status, public_data_updated_at: row.public_data_updated_at })
         .eq("note_id", row.note_id);
-      if (!error) overlayCount++;
+      if (!error) apiOverlayCount++;
     }
 
-    let newCount = 0;
+    // Insert new API-only notes
     for (let i = 0; i < newApiRows.length; i += PAGE_SIZE) {
       const batch = newApiRows.slice(i, i + PAGE_SIZE);
-      const { error } = await client.from("canonical_note_information").upsert(batch, { onConflict: "note_id" });
-      if (!error) newCount += batch.length;
+      const { error } = await client
+        .from("canonical_note_information")
+        .upsert(batch, { onConflict: "note_id" });
+      if (!error) apiNewCount += batch.length;
     }
 
-    // Mirror status changes into the notes table too, for rows that exist there.
+    // Also update notes table for API-discovered status changes
     for (const row of overlayRows) {
       if (notesTableIdSet.has(row.note_id)) {
         await client
@@ -689,182 +638,36 @@ async function overlayApiStatus(
       }
     }
 
-    console.log(`[updateFeedback] API overlay: ${overlayCount} statuses updated, ${newCount} new notes added`);
-    return { overlayCount, newCount };
+    console.log(`[updateFeedback] API overlay: ${apiOverlayCount} statuses updated, ${apiNewCount} new notes added`);
   } catch (err: any) {
     console.warn(`[updateFeedback] API step failed (non-fatal): ${err.message || err}`);
-    return { overlayCount: 0, newCount: 0 };
   }
-}
 
-function cleanupDataFiles(paths: string[]): void {
+  // ===== 10. Clean up downloaded files =====
   try {
-    for (const p of paths) if (existsSync(p)) unlinkSync(p);
+    for (const p of [...notesResult.paths, ...statusResult.paths]) {
+      if (existsSync(p)) unlinkSync(p);
+    }
     console.log("[updateFeedback] Cleaned up data files");
   } catch {
     console.log("[updateFeedback] Note: could not clean up some data files");
   }
-}
 
-async function downloadPublicDataFiles(): Promise<PublicDataFiles | null> {
-  const notesResult = await downloadCNFile("notes");
-  if (!notesResult) return null;
-  const statusResult = await downloadCNFile("noteStatusHistory");
-  if (!statusResult) return null;
-  return {
-    notesPaths: notesResult.paths,
-    statusPaths: statusResult.paths,
-    snapshotDate: statusResult.dateStr.replace(/\//g, "-"),
-  };
-}
-
-// ─── Orchestrator ────────────────────────────────────────────────────────────
-
-async function main() {
-  console.log("[updateFeedback] Starting public data feedback update...");
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
-    console.error("[updateFeedback] Missing Supabase credentials");
-    process.exit(1);
-  }
-
-  // 1. Download the daily Community Notes public data dumps (notes TSV +
-  //    noteStatusHistory TSV). X publishes these once a day; they're the
-  //    authoritative source for note ratings, classification, and lock status.
-  //    We try today's date first and fall back up to a week if not yet published.
-  const files = await downloadPublicDataFiles();
-  if (!files) process.exit(1);
-
-  // 2. Fetch the set of tweets where our pipeline ran but chose not to submit
-  //    ("rejected" outcome). We need this BEFORE parsing the notes TSV because
-  //    parseNotesFile categorises other authors' notes into:
-  //      - competing   (on a tweet we DID note — shows what we were up against)
-  //      - missed      (on a tweet we did NOT note, but someone else did — a
-  //                     missed opportunity, especially if theirs became helpful)
-  //    parseNotesFile mutates rejectedByTweetId to remove tweets where we
-  //    ended up submitting (those can't be "missed"), so only pass it here.
-  console.log("[updateFeedback] Parsing notes file...");
-  const rejectedByTweetId = await fetchRejectedTweets(client);
-  console.log(`[updateFeedback] ${rejectedByTweetId.size} rejected-run tweets before exclusion`);
-
-  const { ourNotes, competingNotes, missedNotes } = parseNotesFile(files.notesPaths, rejectedByTweetId);
-  console.log(`[updateFeedback] Found ${ourNotes.size} of our notes, ${competingNotes.length} competing, ${missedNotes.length} missed-opportunity candidates`);
-
-  // 3. Parse noteStatusHistory — but only for note IDs we care about. The TSV
-  //    has millions of rows across all authors; filtering by `relevantIds`
-  //    during parse keeps memory bounded and parse time short.
-  console.log("[updateFeedback] Parsing noteStatusHistory...");
-  const relevantIds = new Set<string>([
-    ...ourNotes.keys(),
-    ...competingNotes.map(n => n.noteId),
-    ...missedNotes.map(n => n.noteId),
-  ]);
-  const statusMap = parseStatusHistory(files.statusPaths, relevantIds);
-  console.log(`[updateFeedback] Found ${statusMap.size} status records for relevant notes`);
-
-  // 4. Snapshot the current DB state ONCE so downstream stages can:
-  //      a. decide new-vs-existing rows without a second canonical scan
-  //      b. skip no-op upserts for terminal-status rows (see syncCanonical)
-  //      c. know which notes exist in the `notes` table (backwards compat)
-  //      d. enrich canonical rows with submitted_at / bot_name from `notes`
-  //    Doing this once up-front is a big disk-I/O win vs re-querying per stage.
-  console.log("[updateFeedback] Fetching existing DB state...");
-  const existingCanonical = await fetchExistingCanonical(client);
-  const enrichmentMap = await fetchNotesEnrichment(client);
-  const notesTableIdSet = new Set(enrichmentMap.keys());
-  console.log(`[updateFeedback] ${existingCanonical.ids.size} canonical rows, ${notesTableIdSet.size} notes-table rows`);
-
-  const now = new Date().toISOString();
-
-  // 5. Primary write: merge our notes' latest status / classification / timestamps
-  //    into canonical_note_information. Rows whose cn_status is already
-  //    CRH/CRNH and unchanged are skipped — those states rarely flip, so
-  //    re-upserting them every 4h wastes disk I/O. syncCanonical returns
-  //    postUpsert* maps (fresh copies) describing canonical after this stage;
-  //    the API overlay step below uses them.
-  const canonicalResult = await syncCanonical(client, {
-    ourNotes,
-    statusMap,
-    existing: existingCanonical,
-    enrichmentMap,
-    now,
-  });
-  console.log(`[updateFeedback] Canonical: ${canonicalResult.upserted} upserted, ${canonicalResult.skipped} skipped (unchanged terminal), ${canonicalResult.errors} errors`);
-  if (canonicalResult.newlyHelpful > 0) {
-    console.log(`[updateFeedback] ${canonicalResult.newlyHelpful} notes newly rated HELPFUL!`);
-  }
-
-  // 6. Sync competing notes (other authors' notes on tweets we noted) so the
-  //    dashboard can render "who else wrote on this tweet, and did they win?".
-  console.log("[updateFeedback] Upserting competing notes...");
-  const competingResult = await syncCompetingNotes(client, competingNotes, statusMap, now);
-  console.log(`[updateFeedback] Competing: ${competingResult.upserted} upserted, ${competingResult.errors} errors`);
-
-  // 7. Missed opportunities: other authors' helpful notes on tweets our bot
-  //    rejected. Stored in competing_notes with our_note_id=NULL (no "our" note
-  //    existed). We DELETE-then-INSERT rather than upsert because the set
-  //    changes frequently (a note can become helpful, losing-helpful, etc.)
-  //    and we only keep currently-helpful ones — a full replace is simpler
-  //    than tracking transitions.
-  console.log("[updateFeedback] Replacing missed opportunity competing notes...");
-  const missedInserted = await replaceMissedOpportunities(client, missedNotes, statusMap, now);
-  console.log(`[updateFeedback] Missed opportunity competing notes: ${missedInserted} inserted (helpful only)`);
-
-  // 8. Append daily history rows to public_data_snapshots. Lets us chart
-  //    per-note status drift over time (e.g. CRH → CRNH reversals).
-  console.log("[updateFeedback] Creating public data snapshots...");
-  const snapshotCount = await snapshotPublicData(client, {
-    ourNotes,
-    competingNotes,
-    statusMap,
-    snapshotDate: files.snapshotDate,
-  });
-  console.log(`[updateFeedback] Created/updated ${snapshotCount} snapshots`);
-
-  // 9. Keep the legacy `notes` table's cn_status in sync with canonical, for
-  //    any consumer still reading notes.cn_status instead of canonical. Uses
-  //    existingCanonical.statusMap (PRE-upsert) — if we used canonicalResult's
-  //    post-upsert map, every row would look "unchanged" and we'd skip the
-  //    notes-table write even for newly-transitioned statuses.
-  const notesTableResult = await syncNotesTable(client, {
-    ourNotes,
-    statusMap,
-    preUpsertStatusMap: existingCanonical.statusMap,
-    notesTableIdSet,
-    now,
-  });
-  console.log(`[updateFeedback] Updated ${notesTableResult.updated} notes in notes table (${notesTableResult.skipped} skipped)`);
-
-  // 10. API overlay: X's daily TSV lags actual rating state by up to ~3 days.
-  //     The notewriter API (live) fills that gap — for notes we've written
-  //     that are either missing from canonical or have a newer cn_status in
-  //     the API than in the DB, apply the API value. Non-fatal if this fails;
-  //     the public data will catch up on the next run.
-  const apiResult = await overlayApiStatus(client, {
-    canonicalIds: canonicalResult.postUpsertIds,
-    canonicalStatusMap: canonicalResult.postUpsertStatusMap,
-    notesTableIdSet,
-    enrichmentMap,
-    now,
-  });
-
-  // 11. Remove the TSV files — they're large (~100MB+) and the next run
-  //     downloads fresh copies anyway.
-  cleanupDataFiles([...files.notesPaths, ...files.statusPaths]);
-
+  // ===== Summary =====
   const helpfulCompeting = competingNotes.filter(
-    cn => statusMap.get(cn.noteId)?.currentStatus === CN_STATUS_HELPFUL,
-  ).length;
-  if (helpfulCompeting > 0) {
-    console.log(`[updateFeedback] ${helpfulCompeting} competing notes are HELPFUL`);
+    cn => statusMap.get(cn.noteId)?.currentStatus === "CURRENTLY_RATED_HELPFUL"
+  );
+  if (helpfulCompeting.length > 0) {
+    console.log(`[updateFeedback] ${helpfulCompeting.length} competing notes are HELPFUL`);
   }
 
   console.log(`\n=== DONE ===`);
-  console.log(`Our notes: ${ourNotes.size} found, ${canonicalResult.upserted} upserted, ${canonicalResult.errors} errors`);
-  console.log(`Competing notes: ${competingNotes.length} found, ${competingResult.upserted} upserted`);
+  console.log(`Our notes: ${ourNotes.size} found, ${upserted} upserted, ${upsertErrors} errors`);
+  console.log(`Competing notes: ${competingNotes.length} found, ${competingUpserted} upserted`);
   console.log(`Missed opportunity competing notes: ${missedInserted} inserted`);
   console.log(`Snapshots: ${snapshotCount}`);
-  console.log(`Notes table: ${notesTableResult.updated} synced`);
-  console.log(`API overlay: ${apiResult.overlayCount} updated, ${apiResult.newCount} new`);
+  console.log(`Notes table: ${notesTableUpdated} synced`);
+  console.log(`API overlay: ${apiOverlayCount} updated, ${apiNewCount} new`);
 
   process.exit(0);
 }
