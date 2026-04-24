@@ -39,11 +39,16 @@ export type Post = {
 };
 
 const API_URL = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
+// `attachments` in tweet.fields is required so that referenced (quoted/retweeted)
+// tweets carry their attachments.media_keys in includes.tweets[] — without it,
+// the referenced-tweet object has no attachments field and parsePostsResponse
+// can't resolve its media. Pairing it with the `referenced_tweets.id.attachments.media_keys`
+// expansion makes X also include those media objects in includes.media[].
 const BASE_FIELDS = {
-  "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics",
+  "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics,attachments",
   "media.fields": "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
   "user.fields": "public_metrics,name,description",
-  expansions: "attachments.media_keys,referenced_tweets.id,author_id",
+  expansions: "attachments.media_keys,referenced_tweets.id,referenced_tweets.id.attachments.media_keys,author_id",
   test_mode: "false",
 };
 
