@@ -18,6 +18,7 @@ import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
 import { buildUserMessage } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
+import { judgeNoteNeeded } from "./noteNeededJudge";
 
 const MAX_TURNS = 10;
 const MAX_SOURCE_VERIFICATION_ATTEMPTS = 2;
@@ -25,6 +26,7 @@ const MAX_SOURCE_VERIFICATION_ATTEMPTS = 2;
 interface PipelineState {
   post: Post;
   postText: string;
+  fullContext: string;
   agents: Record<string, AgentState>;
   selectedNote?: EvaluatedNote;
   researcherFindings: string;
@@ -59,12 +61,13 @@ function initPipeline(post: Post, content: PostContent, input: BotInput): Pipeli
   });
   addUserMessage(agents.researcher!, firstMessage);
 
-  return { post, postText: content.text, agents, researcherFindings: "", currentAgentName: "researcher", sourceVerifierTurnCount: 0 };
+  return { post, postText: content.text, fullContext: firstMessage, agents, researcherFindings: "", currentAgentName: "researcher", sourceVerifierTurnCount: 0 };
 }
 
 type VerificationResult =
   | { type: "accepted"; note: EvaluatedNote }
-  | { type: "rejected"; reasoning: string };
+  | { type: "rejected"; reasoning: string }
+  | { type: "judge_rejected"; reasoning: string };
 
 async function handleProposeNotes(
   state: PipelineState,
@@ -92,10 +95,22 @@ async function handleProposeNotes(
     turnNumber: state.sourceVerifierTurnCount,
   });
 
-  if (verification.accepted) {
-    return { type: "accepted", note: selected };
+  if (!verification.accepted) {
+    return { type: "rejected", reasoning: verification.reasoning };
   }
-  return { type: "rejected", reasoning: verification.reasoning };
+
+  if (getBotConfig().judge) {
+    const judgment = await judgeNoteNeeded({
+      fullContext: state.fullContext,
+      researcherFindings: state.researcherFindings,
+      noteText: selected.noteText,
+      sources: selected.sources,
+    });
+    if (!judgment.needed) {
+      return { type: "judge_rejected", reasoning: judgment.reasoning };
+    }
+  }
+  return { type: "accepted", note: selected };
 }
 
 function resetNotewriter(state: PipelineState): void {
@@ -159,6 +174,11 @@ export async function runMultiAgentPipeline(
           evalScore: verification.note.evalScore,
           searchResults: state.researcherFindings,
         };
+      }
+
+      if (verification.type === "judge_rejected") {
+        logFinal(startMs);
+        return { type: "no_correction", reason: `Note-needed judge rejected: ${verification.reasoning}` };
       }
 
       // Give researcher one retry, then give up

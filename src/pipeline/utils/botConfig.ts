@@ -22,6 +22,8 @@ export interface BotConfig {
   video_description_strategy: VideoDescriptionStrategy;
   scoreFilters: ScoreFilter[];
   parallel_research: boolean;
+  /** Multi-agent only: run the note-needed judge LLM at the end of the pipeline. */
+  judge: boolean;
 }
 
 // --- Default config + variants ---
@@ -33,6 +35,7 @@ const DEFAULT_CONFIG: BotConfig = {
   video_description_strategy: "frames",
   scoreFilters: [],
   parallel_research: false,
+  judge: false,
 };
 
 interface ConfigVariant {
@@ -42,76 +45,141 @@ interface ConfigVariant {
   overrides: Partial<BotConfig>;
 }
 
-const AGENT_FAMILY_BOT_IDS = ["agent", "multi-agent"];
-
-// Applied to every multi-agent variant: reject notes where the researcher's
-// own assessment says the tweet doesn't really warrant a correction.
-const AGENT_FAMILY_SCORE_FILTERS: ScoreFilter[] = [
+// Applied to every `agent` variant: reject notes where the scoring step's
+// assessment says the tweet doesn't really warrant a correction.
+// `multi-agent` uses the richer note-needed judge inside the pipeline instead.
+const AGENT_SCORE_FILTERS: ScoreFilter[] = [
   { score: "noteNotNeeded", op: "gte", threshold: 0.7 },
 ];
 
 const CONFIG_VARIANTS: ConfigVariant[] = [
+  // Single-agent variants — keep the score-filter gate.
   {
     name: "gemini-flash-perplexity",
     weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
+    botIds: ["agent"],
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "perplexity",
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
+      scoreFilters: AGENT_SCORE_FILTERS,
     },
   },
   {
     name: "gemini-flash-searxng",
     weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
+    botIds: ["agent"],
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng",
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
+      scoreFilters: AGENT_SCORE_FILTERS,
     },
   },
   {
     name: "gemini-flash-searxng-summarized",
     weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
+    botIds: ["agent"],
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng_summarized",
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
+      scoreFilters: AGENT_SCORE_FILTERS,
     },
   },
   {
     name: "gemini-flash-perplexity-parallel",
     weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
+    botIds: ["agent"],
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "perplexity",
       parallel_research: true,
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
+      scoreFilters: AGENT_SCORE_FILTERS,
     },
   },
   {
     name: "gemini-flash-searxng-parallel",
     weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
+    botIds: ["agent"],
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng",
       parallel_research: true,
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
+      scoreFilters: AGENT_SCORE_FILTERS,
     },
   },
   {
     name: "gemini-flash-searxng-summarized-parallel",
     weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
+    botIds: ["agent"],
     overrides: {
       model: "google/gemini-3-flash-preview",
       web_search: "searxng_summarized",
       parallel_research: true,
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
+      scoreFilters: AGENT_SCORE_FILTERS,
+    },
+  },
+  // Multi-agent variants — note-needed judge runs inside the pipeline,
+  // so these carry no score-filter gate.
+  {
+    name: "gemini-flash-perplexity-judge",
+    weight: 1,
+    botIds: ["multi-agent"],
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "perplexity",
+      judge: true,
+    },
+  },
+  {
+    name: "gemini-flash-searxng-judge",
+    weight: 1,
+    botIds: ["multi-agent"],
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "searxng",
+      judge: true,
+    },
+  },
+  {
+    name: "gemini-flash-searxng-summarized-judge",
+    weight: 1,
+    botIds: ["multi-agent"],
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "searxng_summarized",
+      judge: true,
+    },
+  },
+  {
+    name: "gemini-flash-perplexity-parallel-judge",
+    weight: 1,
+    botIds: ["multi-agent"],
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "perplexity",
+      parallel_research: true,
+      judge: true,
+    },
+  },
+  {
+    name: "gemini-flash-searxng-parallel-judge",
+    weight: 1,
+    botIds: ["multi-agent"],
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "searxng",
+      parallel_research: true,
+      judge: true,
+    },
+  },
+  {
+    name: "gemini-flash-searxng-summarized-parallel-judge",
+    weight: 1,
+    botIds: ["multi-agent"],
+    overrides: {
+      model: "google/gemini-3-flash-preview",
+      web_search: "searxng_summarized",
+      parallel_research: true,
+      judge: true,
     },
   },
   {
