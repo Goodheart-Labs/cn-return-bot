@@ -74,7 +74,8 @@ const SYSTEM_PROMPT = `You are a source verification step in a Community Notes p
 Determine whether the cited sources actually support the correction made in the note.
 
 Rules:
-- All non-Twitter sources must be successfully fetched AND directly support the factual claim.
+- Only readable text sources count as evidence. Video and audio sources (YouTube, Vimeo, TikTok, Twitch, etc.) are NOT acceptable — you the verifier cannot watch them, so they provide ZERO evidence regardless of what the note or research findings claim about them.
+- All non-Twitter, non-video sources must be successfully fetched AND directly support the factual claim.
 - Twitter/X links are accepted as valid sources without content verification.
 - If a source failed to fetch, it provides ZERO evidence. Do not assume it supports the claim based on the URL alone.`;
 
