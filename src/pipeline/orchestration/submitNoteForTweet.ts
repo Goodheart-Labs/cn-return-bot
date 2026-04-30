@@ -40,11 +40,9 @@ export async function submitNoteForTweet(
     await logger.markCandidateSubmitted(pipelineRunId, noteId);
 
     try {
-      const botConfig = await logger.getOrCreateBotConfig(botId);
       await logger.logNoteSubmission({
         note_id: noteId,
         tweet_id: tweetId,
-        bot_config_id: botConfig.id,
         bot_name: botId,
         note_text: noteText,
         source_url: sourceUrl,

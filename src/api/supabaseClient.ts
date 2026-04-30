@@ -10,21 +10,11 @@ export interface Notewriter {
   created_at: string;
 }
 
-export interface BotConfig {
-  id: string;
-  name: string;
-  description?: string;
-  config?: Record<string, unknown>;
-  is_active: boolean;
-  created_at: string;
-}
-
 export interface Note {
   id: string;
   note_id: string;
   tweet_id: string;
   notewriter_id?: string;
-  bot_config_id?: string;
   bot_name?: string;
   note_text: string;
   source_url?: string;
@@ -64,42 +54,6 @@ export interface PublicDataSnapshot {
   created_at?: string;
   core_note_intercept?: number;
   core_note_factor1?: number;
-}
-
-/**
- * Note enriched with latest snapshot data
- * - effective_status: public data status OR fallback to snapshot status
- * - view_count: always from snapshot (only source)
- */
-export interface NoteWithSnapshot {
-  id: string;
-  note_id: string;
-  tweet_id: string;
-  bot_name?: string;
-  note_text: string;
-  source_url?: string;
-  evaluation_score?: number;
-  submitted_at: string;
-
-  // Effective values (computed)
-  effective_status: string;
-  view_count: number;
-  status_source: "public_data" | "snapshot" | "unknown";
-
-  // Raw values
-  public_data_status?: string;
-  snapshot_status?: string;
-  snapshot_views?: number;
-  snapshot_scraped_at?: string;
-
-  // Timestamps
-  first_helpful_at?: string;
-
-  // Media info (from pipeline_runs)
-  has_video?: boolean;
-
-  // Retry info
-  is_retry?: boolean;
 }
 
 export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
@@ -198,36 +152,6 @@ export class SupabaseLogger {
 
     if (error) {
       console.error("[SupabaseLogger] Error creating notewriter:", error);
-      throw error;
-    }
-
-    return data;
-  }
-
-  /**
-   * Get or create a bot config by name
-   */
-  async getOrCreateBotConfig(name: string, description?: string): Promise<BotConfig> {
-    // Try to find existing
-    const { data: existing } = await this.client
-      .from("bot_configs")
-      .select()
-      .eq("name", name)
-      .single();
-
-    if (existing) {
-      return existing;
-    }
-
-    // Create new
-    const { data, error } = await this.client
-      .from("bot_configs")
-      .insert({ name, description })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("[SupabaseLogger] Error creating bot config:", error);
       throw error;
     }
 
@@ -359,49 +283,6 @@ export class SupabaseLogger {
     return updated;
   }
 
-  /**
-   * Upsert an unmatched scraped note (note found on X but not in our database)
-   * These are notes created before tracking started
-   * If the note exists in unmatched table, updates view count and status. If not, creates it.
-   */
-  async upsertUnmatchedScrapedNote(data: {
-    note_id: string;
-    tweet_id: string;
-    note_text: string;
-    cn_status?: string;
-    view_count?: number;
-    source_url?: string;
-  }): Promise<void> {
-    const now = new Date().toISOString();
-    const upsertData: any = {
-      note_id: data.note_id,
-      tweet_id: data.tweet_id,
-      note_text: data.note_text,
-      cn_status: data.cn_status,
-      source_url: data.source_url,
-      last_checked_at: now,
-    };
-
-    // Add view count fields if provided
-    if (data.view_count !== undefined) {
-      upsertData.view_count = data.view_count;
-      upsertData.views_last_updated_at = now;
-    }
-
-    const { error } = await this.client
-      .from("unmatched_scraped_notes")
-      .upsert(upsertData, {
-        onConflict: "note_id",
-      });
-
-    if (error) {
-      console.error("[SupabaseLogger] Error upserting unmatched note:", error);
-      throw error;
-    }
-
-    console.log(`[SupabaseLogger] Upserted unmatched note ${data.note_id}`);
-  }
-
   // ============================================
   // Scraped Notewriter Data Methods
   // ============================================
@@ -440,9 +321,6 @@ export class SupabaseLogger {
     cn_status?: string;
     view_count?: number;
     shown_on_x?: boolean | null;
-    helpful_count?: number;
-    somewhat_helpful_count?: number;
-    not_helpful_count?: number;
     rater_tags?: string[];
     tweet_handle?: string;
     tweet_text?: string;
@@ -457,9 +335,6 @@ export class SupabaseLogger {
         cn_status: data.cn_status,
         view_count: data.view_count,
         shown_on_x: data.shown_on_x,
-        helpful_count: data.helpful_count,
-        somewhat_helpful_count: data.somewhat_helpful_count,
-        not_helpful_count: data.not_helpful_count,
         rater_tags: data.rater_tags,
         tweet_handle: data.tweet_handle,
         tweet_text: data.tweet_text,
@@ -601,142 +476,6 @@ export class SupabaseLogger {
     }
 
     return (data || []).map((n: { note_id: string }) => n.note_id);
-  }
-
-  // ============================================
-  // Notes with Snapshot Data
-  // ============================================
-
-  /**
-   * Get all notes enriched with their latest snapshot data.
-   *
-   * Logic:
-   * - status: prefer notes.cn_status (public data), fallback to latest snapshot
-   * - views: always from latest snapshot (only source)
-   */
-  async getNotesWithLatestSnapshots(): Promise<NoteWithSnapshot[]> {
-    // Get all notes (paginated to avoid 1000-row default limit)
-    const notes = await this.fetchAllRows<any>(
-      (client) => client.from("notes").select("*")
-    );
-
-    if (notes.length === 0) {
-      return [];
-    }
-
-    // Get reconciled canonical data (tier-classified, collision-resolved)
-    // Only use non-junk tiers for enrichment
-    const reconciledNotes = await this.fetchAllRows<{
-      note_id: string;
-      cn_status: string | null;
-      view_count: number | null;
-      data_tier: string | null;
-      last_reconciled_at: string | null;
-    }>(
-      (client) => client.from("canonical_note_information")
-        .select("note_id, cn_status, view_count, data_tier, last_reconciled_at")
-        .neq("data_tier", "junk")
-    );
-
-    // Get video info from pipeline_runs
-    let pipelineRuns: Array<{ tweet_id: string; has_video: boolean }> = [];
-    try {
-      pipelineRuns = await this.fetchAllRows<{ tweet_id: string; has_video: boolean }>(
-        (client) => client.from("pipeline_runs").select("tweet_id, has_video").eq("outcome", "submitted")
-      );
-    } catch (pipelineError) {
-      console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
-      // Don't throw - video info is optional
-    }
-
-    // Get submitted/failed pipeline_runs to determine retry status (count actual attempts per tweet_id)
-    // Excludes filtered/rejected runs since those aren't real submission attempts
-    let allRuns: Array<{ tweet_id: string }> = [];
-    try {
-      allRuns = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("pipeline_runs").select("tweet_id").in("outcome", ["submitted", "failed"])
-      );
-    } catch (allRunsError) {
-      console.error("[SupabaseLogger] Error fetching all pipeline runs:", allRunsError);
-    }
-
-    // Build tweet_id -> has_video map
-    const videoInfo: Record<string, boolean> = {};
-    for (const run of pipelineRuns || []) {
-      if (run.tweet_id && run.has_video !== null) {
-        videoInfo[run.tweet_id] = run.has_video;
-      }
-    }
-
-    // Build tweet_id -> run count map (>1 means retry)
-    const runCounts: Record<string, number> = {};
-    for (const run of allRuns || []) {
-      if (run.tweet_id) {
-        runCounts[run.tweet_id] = (runCounts[run.tweet_id] || 0) + 1;
-      }
-    }
-
-    // Build reconciled data lookup per note_id
-    const reconciledByNote: Record<
-      string,
-      { cn_status?: string; view_count?: number; reconciled_at?: string }
-    > = {};
-    for (const rec of reconciledNotes || []) {
-      reconciledByNote[rec.note_id] = {
-        cn_status: rec.cn_status ?? undefined,
-        view_count: rec.view_count ?? undefined,
-        reconciled_at: rec.last_reconciled_at ?? undefined,
-      };
-    }
-
-    // Enrich notes with reconciled snapshot data
-    return notes.map((note) => {
-      const rec = reconciledByNote[note.note_id];
-
-      // Status: prefer public data, fallback to reconciled snapshot (junk excluded)
-      const publicDataStatus = note.cn_status;
-      const snapshotStatus = rec?.cn_status;
-      const effectiveStatus = publicDataStatus || snapshotStatus || "unknown";
-
-      // Determine source
-      let statusSource: "public_data" | "snapshot" | "unknown" = "unknown";
-      if (publicDataStatus) {
-        statusSource = "public_data";
-      } else if (snapshotStatus) {
-        statusSource = "snapshot";
-      }
-
-      return {
-        id: note.id,
-        note_id: note.note_id,
-        tweet_id: note.tweet_id,
-        bot_name: note.bot_name,
-        note_text: note.note_text,
-        source_url: note.source_url,
-        evaluation_score: note.evaluation_score,
-        submitted_at: note.submitted_at,
-
-        // Computed values
-        effective_status: effectiveStatus,
-        view_count: rec?.view_count || 0,
-        status_source: statusSource,
-
-        // Raw values
-        public_data_status: publicDataStatus,
-        snapshot_status: snapshotStatus,
-        snapshot_views: rec?.view_count,
-        snapshot_scraped_at: rec?.reconciled_at,
-
-        // Timestamps
-        first_helpful_at: note.first_helpful_at,
-
-        // Media info
-        has_video: videoInfo[note.tweet_id],
-
-        // Retry info
-        is_retry: (runCounts[note.tweet_id] || 1) > 1,
-      };
-    });
   }
 
   // ============================================

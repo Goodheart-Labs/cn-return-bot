@@ -302,80 +302,7 @@ function resolveCollision(
 }
 
 // ---------------------------------------------------------------------------
-// Step 4: Coherence Scoring
-// ---------------------------------------------------------------------------
-
-/**
- * Measures how consistent the non-junk snapshots for a note are.
- * Starts at 1.0, applies penalties for contradictions.
- *
- * Penalties:
- * - Text differs between snapshots:     -0.4 (notes can't be edited, so this = scraper bug)
- * - View count decreases over time:     -0.3 per occurrence (views are monotonically increasing)
- * - Status flips (helpful ↔ not helpful): -0.2 per flip (rare but possible)
- * - Status regresses (rated → needs more): -0.1 per occurrence
- *
- * Returns 1.0 if there's only one snapshot (nothing to contradict).
- */
-export function scoreCoherence(snapshots: ClassifiedSnapshot[]): number {
-  const nonJunk = snapshots.filter((s) => s.tier !== "junk" && s.tier !== "impossible");
-  if (nonJunk.length <= 1) return 1.0;
-
-  let score = 1.0;
-
-  // Sort chronologically for time-series checks
-  const chronological = [...nonJunk].sort(
-    (a, b) => new Date(a.scraped_at).getTime() - new Date(b.scraped_at).getTime()
-  );
-
-  // --- Text consistency ---
-  // Normalize and deduplicate texts
-  const texts = new Set(
-    nonJunk
-      .filter((s) => s.note_text && s.note_text.trim().length > 0)
-      .map((s) => s.note_text!.trim())
-  );
-  if (texts.size > 1) {
-    // Multiple distinct texts = scraper grabbed wrong modal
-    score -= 0.4;
-  }
-
-  // --- View count monotonicity ---
-  const withViews = chronological.filter(
-    (s) => s.view_count !== null && s.view_count !== undefined
-  );
-  for (let i = 1; i < withViews.length; i++) {
-    if (withViews[i].view_count! < withViews[i - 1].view_count!) {
-      score -= 0.3;
-    }
-  }
-
-  // --- Status transition sensibility ---
-  const RATED = new Set(["CURRENTLY_RATED_HELPFUL", "CURRENTLY_RATED_NOT_HELPFUL"]);
-  const withStatus = chronological.filter(
-    (s) => s.cn_status !== null && RECOGNIZED_STATUSES.has(s.cn_status)
-  );
-  for (let i = 1; i < withStatus.length; i++) {
-    const prev = withStatus[i - 1].cn_status!;
-    const curr = withStatus[i].cn_status!;
-    if (prev === curr) continue;
-
-    // Flip: helpful ↔ not helpful
-    if (RATED.has(prev) && RATED.has(curr)) {
-      score -= 0.2;
-    }
-    // Regression: rated → needs more ratings
-    else if (RATED.has(prev) && curr === "NEEDS_MORE_RATINGS") {
-      score -= 0.1;
-    }
-    // Normal progression: needs more → rated — no penalty
-  }
-
-  return Math.max(0, Math.round(score * 100) / 100);
-}
-
-// ---------------------------------------------------------------------------
-// Step 5: Derive Canonical Data
+// Step 4: Derive Canonical Data
 // ---------------------------------------------------------------------------
 
 interface CanonicalNote {
@@ -386,7 +313,6 @@ interface CanonicalNote {
   view_count: number | null;
   source_url: string | null;
   data_tier: Tier;
-  coherence_score: number;
 }
 
 const TIER_RANK: Record<Tier, number> = {
@@ -418,7 +344,6 @@ function deriveCanonicalData(
         view_count: null,
         source_url: null,
         data_tier: "junk",
-        coherence_score: scoreCoherence(snaps),
       });
       continue;
     }
@@ -454,7 +379,6 @@ function deriveCanonicalData(
       view_count: best.view_count,
       source_url: null, // snapshots don't have source_url; keep existing
       data_tier: best.tier,
-      coherence_score: scoreCoherence(snaps),
     });
   }
 
@@ -620,7 +544,6 @@ export async function reconcile(): Promise<{
       note_text: c.note_text,
       view_count: c.view_count,
       data_tier: c.data_tier,
-      coherence_score: c.coherence_score,
       last_reconciled_at: now,
     }));
 
@@ -646,7 +569,6 @@ export async function reconcile(): Promise<{
 
     const row: Record<string, any> = {
       data_tier: c.data_tier,
-      coherence_score: c.coherence_score,
       last_reconciled_at: now,
     };
 
