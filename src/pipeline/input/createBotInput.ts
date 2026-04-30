@@ -5,7 +5,6 @@
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
-import type { PostContent } from "../../bots/types";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
@@ -19,19 +18,32 @@ export interface BotInput {
   warnings: string[];
 }
 
-export async function createBotInput(
-  post: Post,
-  content: PostContent,
-  logTag: string,
-): Promise<BotInput> {
+const MIN_TEXT_LENGTH_FOR_SEARCH = 20;
+
+/**
+ * True if the post has too little text to fact-check on its own — i.e. the
+ * media is the only meaningful signal. Combines wrapping + referenced text and
+ * strips @handles/URLs before measuring.
+ */
+function isMediaOnlyPost(post: Post): boolean {
+  const wrapping = post.text ?? "";
+  const referenced = post.referenced_tweet_data?.text ?? "";
+  const stripped = `${wrapping} ${referenced}`
+    .replace(/@\w+/g, "")
+    .replace(/https?:\/\/\S+/g, "")
+    .trim();
+  return stripped.length < MIN_TEXT_LENGTH_FOR_SEARCH;
+}
+
+export async function createBotInput(post: Post, logTag: string): Promise<BotInput> {
   const config = getBotConfig();
   const log = getTweetLog();
   const warnings: string[] = [];
 
-  // Media analysis (fatal for media-only tweets)
   let mediaResult: GeminiMediaResult = { tweetMedia: [], quotedTweetMedia: [] };
   const hasTweetMedia = post.media?.length > 0;
   const hasQuotedMedia = (post.referenced_tweet_data?.media?.length ?? 0) > 0;
+  const mediaOnly = isMediaOnlyPost(post);
 
   if (hasTweetMedia || hasQuotedMedia) {
     try {
@@ -42,8 +54,7 @@ export async function createBotInput(
       );
     } catch (err: any) {
       const msg = `Media analysis failed: ${err.message}`;
-      const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
-      if (strippedText.length < 20) {
+      if (mediaOnly) {
         throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
       }
       console.warn(`[${logTag}] ${msg} (continuing without media context)`);
@@ -62,7 +73,7 @@ export async function createBotInput(
   // Comments (best-effort)
   let comments: string | undefined;
   try {
-    const text = await fetchTweetComments(post.id, content.text);
+    const text = await fetchTweetComments(post.id, post.text);
     comments = text || undefined;
   } catch (err: any) {
     console.warn(`[${logTag}] Comment fetch failed: ${err.message}`);

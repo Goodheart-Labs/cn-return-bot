@@ -61,10 +61,12 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
 type MediaImage = { url: string; description?: string; textContent?: string };
 type MediaVideo = { url: string; transcription?: string; keyFrameDescriptions?: string[] };
 
-// Extract media info from pipeline logs. Handles three shapes:
+// Extract media info from pipeline logs. Handles four shapes:
 //   1. Agentic/multi-agent bot (current): logs.media.gemini.{tweetMedia,quotedTweetMedia}[]
-//   2. Older pipeline: logs.media.{images,videos}[] with inline description/textContent
-//   3. Flat dot-notation (oldest): logs["tweet.text"]
+//   2. Raw X-API media on the Post object: logs.tweet.post.{media,referenced_tweet_data.media}
+//   3. Legacy nested: logs.tweet.{media,referencedTweetData.media}
+//   4. Older inline lists: logs.media.{images,videos}[]
+//   5. Flat dot-notation (oldest): logs["tweet.text"]
 // Main-tweet media and quoted-tweet media are returned separately so the UI
 // can render each in its own block.
 function extractMedia(logs?: Record<string, unknown>): {
@@ -89,6 +91,7 @@ function extractMedia(logs?: Record<string, unknown>): {
 
   const media = logs.media as any;
   const tweet = logs.tweet as any;
+  const post = tweet?.post as any;
 
   const pushMedia = (m: any, imagesOut: MediaImage[], videosOut: MediaVideo[]) => {
     const desc = m?.description?.description;
@@ -104,17 +107,19 @@ function extractMedia(logs?: Record<string, unknown>): {
     for (const m of gemini.quotedTweetMedia ?? []) pushMedia(m, result.quotedImages, result.quotedVideos);
   }
 
-  // Fallback: bots without the gemini analyzer (e.g. claude-simple) still have
-  // raw X-API media lists under logs.tweet{.referencedTweetData}.media — {type, url}
-  // with no AI description. Use these when gemini didn't run.
-  if (result.images.length === 0 && result.videos.length === 0 && Array.isArray(tweet?.media)) {
-    for (const m of tweet.media) pushMedia(m, result.images, result.videos);
+  // Shape 2: raw Post object — bots without media analysis still have media lists here.
+  const tweetMediaSource = Array.isArray(post?.media) ? post.media : (Array.isArray(tweet?.media) ? tweet.media : null);
+  if (result.images.length === 0 && result.videos.length === 0 && tweetMediaSource) {
+    for (const m of tweetMediaSource) pushMedia(m, result.images, result.videos);
   }
-  if (result.quotedImages.length === 0 && result.quotedVideos.length === 0 && Array.isArray(tweet?.referencedTweetData?.media)) {
-    for (const m of tweet.referencedTweetData.media) pushMedia(m, result.quotedImages, result.quotedVideos);
+  const quotedMediaSource =
+    Array.isArray(post?.referenced_tweet_data?.media) ? post.referenced_tweet_data.media :
+    Array.isArray(tweet?.referencedTweetData?.media) ? tweet.referencedTweetData.media : null;
+  if (result.quotedImages.length === 0 && result.quotedVideos.length === 0 && quotedMediaSource) {
+    for (const m of quotedMediaSource) pushMedia(m, result.quotedImages, result.quotedVideos);
   }
 
-  // Shape 2: legacy inline lists. Only use as a fallback so we don't double-count shape 1.
+  // Shape 4: legacy inline lists. Only use as a fallback so we don't double-count shape 1.
   if (result.images.length === 0 && result.videos.length === 0 && media && typeof media === "object") {
     if (Array.isArray(media.images)) {
       result.images = media.images.map((img: any) => ({
@@ -133,20 +138,21 @@ function extractMedia(logs?: Record<string, unknown>): {
     if (media.summary) result.summary = media.summary;
   }
 
-  // Quoted post: prefer the clean referencedTweetData.text; fall back to the AI-prompt wrapper.
-  if (tweet && typeof tweet === "object") {
-    if (tweet.referencedTweetData?.text && typeof tweet.referencedTweetData.text === "string") {
-      result.quotedPostContext = tweet.referencedTweetData.text;
-    } else if (tweet.quotedPostContext) {
-      result.quotedPostContext = typeof tweet.quotedPostContext === "string"
-        ? tweet.quotedPostContext
-        : JSON.stringify(tweet.quotedPostContext);
-    }
-    if (tweet.text) result.tweetText = tweet.text;
-  }
-  if (logs["tweet.text"] && typeof logs["tweet.text"] === "string") {
+  // Tweet text + quoted post text: prefer Post object, fall back to legacy paths.
+  if (post?.text && typeof post.text === "string") {
+    result.tweetText = post.text;
+  } else if (tweet?.text && typeof tweet.text === "string") {
+    result.tweetText = tweet.text;
+  } else if (typeof logs["tweet.text"] === "string") {
     result.tweetText = logs["tweet.text"] as string;
   }
+
+  const quotedText =
+    typeof post?.referenced_tweet_data?.text === "string" ? post.referenced_tweet_data.text :
+    typeof tweet?.referencedTweetData?.text === "string" ? tweet.referencedTweetData.text :
+    typeof tweet?.quotedPostContext === "string" ? tweet.quotedPostContext :
+    undefined;
+  if (quotedText) result.quotedPostContext = quotedText;
 
   return result;
 }

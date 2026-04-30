@@ -7,7 +7,7 @@
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
-import type { PostContent, PipelineOutcome } from "../../bots/types";
+import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
@@ -24,7 +24,7 @@ const MAX_SOURCE_VERIFICATION_ATTEMPTS = 2;
 
 interface PipelineState {
   post: Post;
-  postText: string;
+  postContext: string;
   agents: Record<string, AgentState>;
   selectedNote?: EvaluatedNote;
   researcherFindings: string;
@@ -32,7 +32,7 @@ interface PipelineState {
   sourceVerifierTurnCount: number;
 }
 
-function initPipeline(post: Post, content: PostContent, input: BotInput): PipelineState {
+function initPipeline(post: Post, input: BotInput): PipelineState {
   const config = getBotConfig();
   const log = getTweetLog();
 
@@ -49,17 +49,16 @@ function initPipeline(post: Post, content: PostContent, input: BotInput): Pipeli
   log?.set("multiAgent.config", config);
   log?.set("multiAgent.agents", defs.map((d) => ({ name: d.name, desc: d.description })));
 
-  const firstMessage = buildUserMessage({
+  const postContext = buildUserMessage({
     post,
-    tweetText: content.text,
     tweetMedia: input.mediaResult.tweetMedia,
     quotedTweetMedia: input.mediaResult.quotedTweetMedia,
     authorNoteHistory: input.authorHistory,
     comments: input.comments,
   });
-  addUserMessage(agents.researcher!, firstMessage);
+  addUserMessage(agents.researcher!, postContext);
 
-  return { post, postText: content.text, agents, researcherFindings: "", currentAgentName: "researcher", sourceVerifierTurnCount: 0 };
+  return { post, postContext, agents, researcherFindings: "", currentAgentName: "researcher", sourceVerifierTurnCount: 0 };
 }
 
 type VerificationResult =
@@ -85,9 +84,7 @@ async function handleProposeNotes(
   const verification = await verifySources({
     noteText: selected.noteText,
     sources: selected.sources,
-    postText: state.postText,
-    postCreatedAt: state.post.created_at,
-    authorName: state.post.author_name,
+    postContext: state.postContext,
     researcherFindings: state.researcherFindings,
     turnNumber: state.sourceVerifierTurnCount,
   });
@@ -112,11 +109,10 @@ function routResearcherFindings(state: PipelineState, content: string): void {
 
 export async function runMultiAgentPipeline(
   post: Post,
-  content: PostContent,
   input: BotInput,
 ): Promise<PipelineOutcome> {
   const startMs = Date.now();
-  const state = initPipeline(post, content, input);
+  const state = initPipeline(post, input);
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     const agentName = state.currentAgentName;

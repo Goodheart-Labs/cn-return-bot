@@ -5,7 +5,7 @@
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
-import type { PostContent, PipelineOutcome } from "../../bots/types";
+import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { buildUserMessage } from "../input/prompt";
 import { getTweetLog } from "../utils/tweetLog";
@@ -16,14 +16,12 @@ import { runWriter } from "./writer";
 
 export async function runClaudeSimplePipeline(
   post: Post,
-  content: PostContent,
   input: BotInput,
 ): Promise<PipelineOutcome> {
   const startMs = Date.now();
 
   const userMessage = buildUserMessage({
     post,
-    tweetText: content.text,
     tweetMedia: input.mediaResult.tweetMedia,
     quotedTweetMedia: input.mediaResult.quotedTweetMedia,
     authorNoteHistory: input.authorHistory,
@@ -41,9 +39,7 @@ export async function runClaudeSimplePipeline(
   const verification = await verifySources({
     noteText: note.noteText,
     sources: note.sources,
-    postText: content.text,
-    postCreatedAt: post.created_at,
-    authorName: post.author_name,
+    postContext: userMessage,
     researcherFindings: search.findings,
     turnNumber: 1,
   });

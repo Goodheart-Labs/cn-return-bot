@@ -16,14 +16,14 @@ export const multiAgentBot: Bot = {
   id: "multi-agent",
   name: "Multi-Agent",
   description: "Researcher → Notewriter → Source Verifier pipeline",
-  async runPipeline(post, content): Promise<PipelineResult | null> {
+  async runPipeline(post): Promise<PipelineResult | null> {
     const config = randomizeConfig(this.id);
     const fullBotId = getFullBotId(this.id, config);
 
     return withBotConfig(config, () => withCostTracker(async () => {
       getTweetLog()?.set("bot.id", fullBotId);
-      const input = await createBotInput(post, content, "multi-agent");
-      const outcome = await runMultiAgentPipeline(post, content, input);
+      const input = await createBotInput(post, "multi-agent");
+      const outcome = await runMultiAgentPipeline(post, input);
       const result = outcomeToResult(post, fullBotId, outcome, config.scoreFilters);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];

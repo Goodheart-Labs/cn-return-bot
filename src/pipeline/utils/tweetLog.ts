@@ -144,10 +144,11 @@ function median(values: number[]): number {
 
 /** One-line summary for quick scanning in terminal */
 export function formatTweetLogSummary(log: TweetLogMap): string {
+  const post = get(log, "tweet.post") as { id?: string; public_metrics?: { impression_count?: number } } | undefined;
   const index = get(log, "tweet.index") as number | undefined;
   const total = get(log, "tweet.total") as number | undefined;
-  const tweetId = get(log, "tweet.id") as string | undefined;
-  const impressions = get(log, "tweet.impressions") as number | undefined;
+  const tweetId = post?.id;
+  const impressions = post?.public_metrics?.impression_count;
   const outcome = get(log, "outcome.result") as string | undefined;
   const reason = get(log, "outcome.reason") as string | undefined;
   const evalScore = get(log, "eval.score") as number | undefined;
@@ -171,8 +172,8 @@ export function formatTweetLogSummary(log: TweetLogMap): string {
 
 /** Full log as nested JSON — collapsible ::group:: on CI, compact on local terminal */
 export function formatTweetLogFull(log: TweetLogMap): string {
-  const tweetId = get(log, "tweet.id") as string | undefined;
-  const label = `Full log: Tweet ${tweetId ?? "?"}`;
+  const post = get(log, "tweet.post") as { id?: string } | undefined;
+  const label = `Full log: Tweet ${post?.id ?? "?"}`;
   const json = JSON.stringify(nestDotKeys(Object.fromEntries(log)), null, 2);
   if (process.env.CI) {
     return `::group::${label}\n${json}\n::endgroup::`;
@@ -204,7 +205,8 @@ export function formatRunSummary(logs: TweetLogMap[], feedSize?: string): string
     const botId = get(log, "bot.id") as string | undefined ?? "unknown";
     botUsage[botId] = (botUsage[botId] ?? 0) + 1;
 
-    const imp = get(log, "tweet.impressions") as number | undefined;
+    const post = get(log, "tweet.post") as { public_metrics?: { impression_count?: number } } | undefined;
+    const imp = post?.public_metrics?.impression_count;
     if (imp != null) impressions.push(imp);
 
     const recency = get(log, "tweet.recencyHours") as number | undefined;
