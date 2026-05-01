@@ -29,23 +29,26 @@ import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 
 const SCHEMA = "mig_test";
-const SAMPLE = 200;
+const FULL = process.argv.includes("--full");
+const SAMPLE_LIMIT = FULL ? undefined : 200;
 const PG_CONN = "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
 const MIGRATIONS_DIR = join(__dirname, "..", "..", "..", "migrations");
+const FETCH_PAGE = 1000;
 
 // Tables we sync from prod (old shape) into the test schema. Order: parents
-// first so we can insert without FK violations.
-const SYNC_TABLES = [
-  { name: "notewriters", limit: SAMPLE },
-  { name: "bot_configs", limit: SAMPLE },
-  { name: "notes", limit: SAMPLE }, // prod's old notes table
-  { name: "canonical_note_information", limit: SAMPLE },
-  { name: "pipeline_runs", limit: SAMPLE },
-  { name: "scraped_notewriter_snapshots", limit: SAMPLE },
-  { name: "competing_notes", limit: SAMPLE },
-  { name: "public_data_snapshots", limit: SAMPLE },
-  { name: "run_snapshots", limit: SAMPLE },
-  { name: "pipeline_state", limit: 50 },
+// first so we can insert without FK violations. limit=undefined means
+// fetch everything via pagination.
+const SYNC_TABLES: Array<{ name: string; limit?: number }> = [
+  { name: "notewriters" },
+  { name: "bot_configs" },
+  { name: "notes" }, // prod's old notes table
+  { name: "canonical_note_information" },
+  { name: "pipeline_runs" },
+  { name: "scraped_notewriter_snapshots" },
+  { name: "competing_notes" },
+  { name: "public_data_snapshots" },
+  { name: "run_snapshots" },
+  { name: "pipeline_state", limit: 50 }, // tiny anyway
 ];
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
@@ -77,13 +80,27 @@ async function applyMigrations(files: string[]) {
   }
 }
 
-async function fetchProdSample(table: string, limit: number): Promise<any[]> {
-  const { data, error } = await prod.from(table).select("*").limit(limit);
-  if (error) {
-    console.warn(`  prod.${table}: ${error.message} (skipping)`);
-    return [];
+async function fetchProdAll(table: string, limit?: number): Promise<any[]> {
+  const rows: any[] = [];
+  let offset = 0;
+  while (true) {
+    const want = limit !== undefined ? Math.min(FETCH_PAGE, limit - rows.length) : FETCH_PAGE;
+    if (want <= 0) break;
+    const { data, error } = await prod
+      .from(table)
+      .select("*")
+      .range(offset, offset + want - 1);
+    if (error) {
+      console.warn(`  prod.${table}: ${error.message} (skipping)`);
+      return rows;
+    }
+    if (!data || data.length === 0) break;
+    rows.push(...data);
+    offset += data.length;
+    if (data.length < want) break;
+    if (limit !== undefined && rows.length >= limit) break;
   }
-  return data ?? [];
+  return rows;
 }
 
 async function insertIntoTestSchema(table: string, rows: any[]) {
@@ -102,22 +119,46 @@ async function insertIntoTestSchema(table: string, rows: any[]) {
     return;
   }
 
-  // Quote column names defensively
   const colList = cols.map((c) => `"${c}"`).join(", ");
-  for (const r of rows) {
-    const placeholders = cols.map((_, i) => `$${i + 1}`).join(", ");
-    const values = cols.map((c) => r[c]);
+  // Multi-row INSERT in batches — single-row was painfully slow on 380k pipeline_scores.
+  const BATCH = 500;
+  let inserted = 0;
+  let skipped = 0;
+  for (let i = 0; i < rows.length; i += BATCH) {
+    const slice = rows.slice(i, i + BATCH);
+    const placeholders = slice
+      .map((_, ri) => `(${cols.map((_, ci) => `$${ri * cols.length + ci + 1}`).join(", ")})`)
+      .join(", ");
+    const values = slice.flatMap((r) => cols.map((c) => r[c]));
     try {
-      await pgClient.query(
-        `INSERT INTO "${SCHEMA}"."${table}" (${colList}) VALUES (${placeholders}) ON CONFLICT DO NOTHING`,
+      const res = await pgClient.query(
+        `INSERT INTO "${SCHEMA}"."${table}" (${colList}) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
         values,
       );
+      inserted += res.rowCount ?? 0;
+      skipped += slice.length - (res.rowCount ?? 0);
     } catch (e: any) {
-      // FK violations are expected for some sample data (e.g. competing_notes
-      // referencing canonical rows we didn't sample). Log and continue.
+      // FK violation on a batch — fall back to per-row inserts for that batch
+      // so we keep what we can. Other errors propagate.
       if (!/foreign key|violates/i.test(e.message)) throw e;
+      for (const r of slice) {
+        const ph = cols.map((_, ci) => `$${ci + 1}`).join(", ");
+        const vals = cols.map((c) => r[c]);
+        try {
+          await pgClient.query(
+            `INSERT INTO "${SCHEMA}"."${table}" (${colList}) VALUES (${ph}) ON CONFLICT DO NOTHING`,
+            vals,
+          );
+          inserted++;
+        } catch (e2: any) {
+          if (!/foreign key|violates/i.test(e2.message)) throw e2;
+          skipped++;
+        }
+      }
     }
   }
+  if (skipped > 0) console.log(`    ${inserted} inserted, ${skipped} skipped (FK)`);
+  else console.log(`    ${inserted} inserted`);
 }
 
 let failures = 0;
@@ -199,12 +240,14 @@ async function main() {
     console.log("==> Applying old-shape migrations 001-026");
     await applyMigrations(listMigrations("001", "026"));
 
-    console.log("==> Fetching prod sample and inserting into test schema");
+    console.log(`==> Fetching prod data and inserting into test schema (${FULL ? "FULL" : "SAMPLE"} mode)`);
     for (const t of SYNC_TABLES) {
-      const rows = await fetchProdSample(t.name, t.limit);
+      const limit = t.limit ?? SAMPLE_LIMIT;
+      console.log(`  ${t.name}${limit ? ` (limit ${limit})` : " (full)"}...`);
+      const rows = await fetchProdAll(t.name, limit);
+      console.log(`    fetched ${rows.length}`);
       await pgClient.query(`SET search_path TO ${SCHEMA}, public`);
       await insertIntoTestSchema(t.name, rows);
-      console.log(`  ${t.name}: ${rows.length} rows fetched`);
     }
 
     // Pre-migration sanity: do we have data?
