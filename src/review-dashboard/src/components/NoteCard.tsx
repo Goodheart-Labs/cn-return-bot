@@ -14,7 +14,10 @@ interface NoteCardProps {
 }
 
 function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: string }) {
-  const display = coreStatus ?? status ?? "unknown";
+  // Prefer overall status; fall back to core only when overall is missing.
+  // Per CLAUDE.md: currentCoreStatus misses notes rated helpful by the
+  // expansion or group submodels.
+  const display = status ?? coreStatus ?? "unknown";
   const colorMap: Record<string, string> = {
     CURRENTLY_RATED_HELPFUL: "bg-green-100 text-green-800",
     CURRENTLY_RATED_NOT_HELPFUL: "bg-red-100 text-red-800",
@@ -38,12 +41,7 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   return (
     <div className="bg-gray-50 rounded p-3 text-sm border border-gray-100">
       <div className="flex items-center gap-2 mb-1">
-        <StatusBadge status={note.status} coreStatus={note.coreStatus} />
-        {note.helpfulCount != null && (
-          <span className="text-xs text-gray-500">
-            {note.helpfulCount} helpful / {note.notHelpfulCount ?? 0} not helpful
-          </span>
-        )}
+        <StatusBadge status={note.status} />
         <a
           href={noteUrl(note.noteId)}
           target="_blank"

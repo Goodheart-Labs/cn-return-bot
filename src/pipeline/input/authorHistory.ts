@@ -29,10 +29,12 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
 
   const tweetIds = [...new Set(runs.map((r) => r.tweet_id))];
 
-  // Our helpful notes on this author's tweets
+  // Our helpful notes on this author's tweets.
+  // Use cn_status (overall) per CLAUDE.md — current_core_status misses notes
+  // rated helpful by the expansion or group submodels.
   const { data: ourNotes } = await supabase
     .from("canonical_note_information")
-    .select("tweet_text, note_text, current_core_status, first_seen_at")
+    .select("tweet_text, note_text, cn_status, first_seen_at")
     .in("tweet_id", tweetIds)
     .not("tweet_text", "is", null)
     .not("note_text", "is", null);
@@ -44,7 +46,7 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
     .in("tweet_id", tweetIds)
     .not("tweet_text", "is", null);
 
-  let competingNotes: Array<{ tweet_text: string; note_text: string; current_core_status: string }> = [];
+  let competingNotes: Array<{ tweet_text: string; note_text: string; current_status: string }> = [];
   if (cniForCompeting?.length) {
     const ourNoteIds = cniForCompeting.map((c) => c.note_id);
     const tweetTextByNoteId = new Map(cniForCompeting.map((c) => [c.note_id, c.tweet_text]));
@@ -55,7 +57,7 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
       const chunk = ourNoteIds.slice(i, i + chunkSize);
       const { data: cn } = await supabase
         .from("competing_notes")
-        .select("our_note_id, note_text, current_core_status")
+        .select("our_note_id, note_text, current_status")
         .in("our_note_id", chunk)
         .not("note_text", "is", null);
 
@@ -64,7 +66,7 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
           competingNotes.push({
             tweet_text: tweetTextByNoteId.get(c.our_note_id) ?? "",
             note_text: c.note_text,
-            current_core_status: c.current_core_status,
+            current_status: c.current_status,
           });
         }
       }
@@ -76,12 +78,12 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
     ...(ourNotes ?? []).map((n) => ({
       tweetText: n.tweet_text,
       noteText: n.note_text,
-      status: n.current_core_status,
+      status: n.cn_status,
     })),
     ...competingNotes.map((n) => ({
       tweetText: n.tweet_text,
       noteText: n.note_text,
-      status: n.current_core_status,
+      status: n.current_status,
     })),
   ];
 

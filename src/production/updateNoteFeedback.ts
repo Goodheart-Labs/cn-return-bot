@@ -427,8 +427,6 @@ async function main() {
       note_text: cn.summary || null,
       classification: cn.classification || null,
       current_status: status?.currentStatus || null,
-      current_core_status: status?.currentCoreStatus || null,
-      current_decided_by: status?.currentDecidedBy || null,
       created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : null,
       last_updated_at: now,
     };
@@ -454,7 +452,7 @@ async function main() {
   const missedRows = missedOpportunityNotes
     .filter(mn => {
       const status = statusMap.get(mn.noteId);
-      return status?.currentCoreStatus === "CURRENTLY_RATED_HELPFUL";
+      return status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
     })
     .map(mn => {
       const status = statusMap.get(mn.noteId)!;
@@ -467,8 +465,6 @@ async function main() {
         note_text: mn.summary || null,
         classification: mn.classification || null,
         current_status: status.currentStatus || null,
-        current_core_status: status.currentCoreStatus || null,
-        current_decided_by: status.currentDecidedBy || null,
         created_at_millis: mn.createdAtMillis ? parseInt(mn.createdAtMillis) : null,
         last_updated_at: now,
       };

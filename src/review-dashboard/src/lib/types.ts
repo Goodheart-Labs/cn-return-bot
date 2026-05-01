@@ -53,9 +53,6 @@ export interface ComparisonNote {
   noteId: string;
   noteText?: string;
   status?: string;
-  coreStatus?: string;
-  helpfulCount?: number;
-  notHelpfulCount?: number;
   authorId?: string;
   createdAtMillis?: number;
 }
