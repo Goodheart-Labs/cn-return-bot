@@ -117,9 +117,14 @@ const CANONICAL_LIST_COLUMNS = [
 ].join(", ");
 
 // pipeline_runs without the logs TOAST column — used for the metadata fetch
-// that drives the list. Logs are lazy-loaded per visible card.
+// that drives the list. Logs are lazy-loaded per visible card. Tweet text /
+// media flags now live on the tweets table; we fetch them separately and
+// stitch by tweet_id.
 const PIPELINE_METADATA_COLUMNS =
-  "id, tweet_id, tweet_text, outcome, outcome_reason, bot_name, bot_name_long, has_photo, has_video, media_count, created_at";
+  "id, tweet_id, outcome, outcome_reason, bot_name, bot_name_long, created_at";
+
+const TWEETS_LIST_COLUMNS =
+  "tweet_id, text, media, referenced_tweet_data, author_handle, has_photo, has_video, media_count";
 
 /**
  * Fetch all the metadata the production dashboard needs in one shot, without
@@ -143,6 +148,7 @@ export async function fetchDashboardData(): Promise<{
   submittedRuns: any[];
   missedRuns: any[];
   annotations: any[];
+  tweets: any[];
 }> {
   console.log("[data] Loading dashboard metadata...");
   const [canonical, competing, submittedRuns] = await Promise.all([
@@ -185,6 +191,27 @@ export async function fetchDashboardData(): Promise<{
       )
     : [];
 
+  // Pull the tweets rows for every tweet_id that appears in canonical or in
+  // either set of pipeline_runs we care about. tweets carries text/media/
+  // engagement after the schema cleanup.
+  const tweetIds = [
+    ...new Set([
+      ...canonical.map((n: any) => n.tweet_id).filter(Boolean),
+      ...submittedRuns.map((r: any) => r.tweet_id).filter(Boolean),
+      ...missedRuns.map((r: any) => r.tweet_id).filter(Boolean),
+    ]),
+  ];
+  const tweets = tweetIds.length
+    ? await fetchInBatches<any>(
+        "tweets",
+        TWEETS_LIST_COLUMNS,
+        "tweet_id",
+        tweetIds,
+        undefined,
+        "tweets",
+      )
+    : [];
+
   const noteIds = canonical.map((n: any) => n.note_id);
   const annotations = await fetchInBatches<any>(
     "review_dashboard_annotations",
@@ -195,7 +222,7 @@ export async function fetchDashboardData(): Promise<{
     "annotations",
   ).catch(() => [] as any[]);
 
-  return { canonical, competing, submittedRuns, missedRuns, annotations };
+  return { canonical, competing, submittedRuns, missedRuns, annotations, tweets };
 }
 
 /**
@@ -229,14 +256,18 @@ export function buildDashboardItems(data: {
   submittedRuns: any[];
   missedRuns: any[];
   annotations: any[];
+  tweets: any[];
 }): ReviewItem[] {
-  const { canonical, competing, submittedRuns, missedRuns, annotations } = data;
+  const { canonical, competing, submittedRuns, missedRuns, annotations, tweets } = data;
 
   const pipelineByTweet = new Map<string, any>();
   for (const pr of submittedRuns) pipelineByTweet.set(pr.tweet_id, pr);
 
   const pipelineById = new Map<string, any>();
   for (const pr of missedRuns) pipelineById.set(pr.id, pr);
+
+  const tweetsById = new Map<string, any>();
+  for (const t of tweets) tweetsById.set(t.tweet_id, t);
 
   const competingByOurNote = new Map<string, ComparisonNote[]>();
   const helpfulCompetitorNoteIds = new Set<string>();
@@ -267,6 +298,7 @@ export function buildDashboardItems(data: {
 
   for (const note of canonical) {
     const pipeline = pipelineByTweet.get(note.tweet_id);
+    const tweet = tweetsById.get(note.tweet_id);
     const hasHelpfulCompetitor = helpfulCompetitorNoteIds.has(note.note_id);
     const compNotes = competingByOurNote.get(note.note_id) ?? [];
     const failureType = cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor);
@@ -274,11 +306,13 @@ export function buildDashboardItems(data: {
       id: note.note_id,
       source: "production" as const,
       tweetId: note.tweet_id,
-      tweetText: note.tweet_text ?? pipeline?.tweet_text,
-      tweetHandle: note.tweet_handle,
-      hasPhoto: pipeline?.has_photo ?? false,
-      hasVideo: pipeline?.has_video ?? false,
-      mediaCount: pipeline?.media_count ?? 0,
+      tweetText: tweet?.text ?? note.tweet_text,
+      tweetHandle: tweet?.author_handle ?? note.tweet_handle,
+      hasPhoto: tweet?.has_photo ?? false,
+      hasVideo: tweet?.has_video ?? false,
+      mediaCount: tweet?.media_count ?? 0,
+      tweetMedia: tweet?.media,
+      referencedTweetData: tweet?.referenced_tweet_data,
       noteId: note.note_id,
       noteText: note.note_text,
       sourceUrl: note.source_url,
@@ -308,11 +342,14 @@ export function buildDashboardItems(data: {
     if (!cn.pipeline_run_id) continue;
     const pr = pipelineById.get(cn.pipeline_run_id);
     if (!pr) continue;
+    const tweet = tweetsById.get(cn.tweet_id);
     items.push({
       id: `missed:${cn.note_id}`,
       source: "production" as const,
       tweetId: cn.tweet_id,
-      tweetText: pr.tweet_text,
+      tweetText: tweet?.text,
+      tweetMedia: tweet?.media,
+      referencedTweetData: tweet?.referenced_tweet_data,
       noteText: undefined,
       createdAt: pr.created_at,
       outcome: pr.outcome,

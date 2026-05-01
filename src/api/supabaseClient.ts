@@ -428,6 +428,75 @@ export class SupabaseLogger {
   }
 
   // ============================================
+  // Tweets
+  // ============================================
+
+  /**
+   * Upsert the tweets row from a Post object. Engagement metrics are LATEST
+   * values (not point-in-time history) — every pipeline run touching this
+   * tweet refreshes them. first_seen_at is preserved on conflict.
+   */
+  async upsertTweet(post: {
+    id: string;
+    author_id?: string;
+    text?: string;
+    created_at?: string;
+    media?: any[];
+    referenced_tweets?: any[];
+    referenced_tweet_data?: any;
+    public_metrics?: {
+      impression_count?: number;
+      like_count?: number;
+      retweet_count?: number;
+      reply_count?: number;
+      quote_count?: number;
+      bookmark_count?: number;
+    };
+    author_followers?: number;
+    author_name?: string;
+    author_description?: string;
+    author_tweet_count?: number;
+  }, derived: {
+    has_video: boolean;
+    has_photo: boolean;
+    media_count: number;
+    video_duration_ms?: number;
+  }): Promise<void> {
+    const now = new Date().toISOString();
+    const { error } = await this.client.from("tweets").upsert(
+      {
+        tweet_id: post.id,
+        author_id: post.author_id,
+        author_name: post.author_name,
+        author_description: post.author_description,
+        author_followers: post.author_followers,
+        author_tweet_count: post.author_tweet_count,
+        text: post.text,
+        posted_at: post.created_at,
+        impressions: post.public_metrics?.impression_count,
+        likes: post.public_metrics?.like_count,
+        retweets: post.public_metrics?.retweet_count,
+        replies: post.public_metrics?.reply_count,
+        quotes: post.public_metrics?.quote_count,
+        bookmarks: post.public_metrics?.bookmark_count,
+        media: post.media ?? null,
+        referenced_tweets: post.referenced_tweets ?? null,
+        referenced_tweet_data: post.referenced_tweet_data ?? null,
+        has_video: derived.has_video,
+        has_photo: derived.has_photo,
+        media_count: derived.media_count,
+        video_duration_ms: derived.video_duration_ms,
+        last_updated_at: now,
+      },
+      { onConflict: "tweet_id" },
+    );
+    if (error) {
+      console.error(`[SupabaseLogger] Error upserting tweet ${post.id}:`, error);
+      throw error;
+    }
+  }
+
+  // ============================================
   // Pipeline Tracking
   // ============================================
 
@@ -437,45 +506,19 @@ export class SupabaseLogger {
    */
   async createPipelineRun(data: {
     tweet_id: string;
-    author_id?: string;
-    tweet_text?: string;
-    has_video?: boolean;
-    has_photo?: boolean;
-    media_count?: number;
-    video_duration_ms?: number;
     bot_name?: string;
     bot_name_long?: string;
     bot_config?: Record<string, unknown>;
     commit_sha?: string;
-    tweet_impressions?: number;
-    tweet_likes?: number;
-    tweet_retweets?: number;
-    tweet_replies?: number;
-    tweet_quotes?: number;
-    tweet_bookmarks?: number;
-    author_followers?: number;
   }): Promise<string> {
     const { data: result, error } = await this.client
       .from("pipeline_runs")
       .insert({
         tweet_id: data.tweet_id,
-        author_id: data.author_id,
-        tweet_text: data.tweet_text,
-        has_video: data.has_video ?? false,
-        has_photo: data.has_photo ?? false,
-        media_count: data.media_count ?? 0,
-        video_duration_ms: data.video_duration_ms,
         bot_name: data.bot_name,
         bot_name_long: data.bot_name_long,
         bot_config: data.bot_config,
         commit_sha: data.commit_sha,
-        tweet_impressions: data.tweet_impressions,
-        tweet_likes: data.tweet_likes,
-        tweet_retweets: data.tweet_retweets,
-        tweet_replies: data.tweet_replies,
-        tweet_quotes: data.tweet_quotes,
-        tweet_bookmarks: data.tweet_bookmarks,
-        author_followers: data.author_followers,
         outcome: "in_progress", // Will be updated when pipeline completes
         final_stage: "started",
       })
@@ -603,40 +646,6 @@ export class SupabaseLogger {
   }
 
   /**
-   * Convenience method: log a filtered post (didn't enter main pipeline)
-   */
-  async logFilteredPost(data: {
-    tweet_id: string;
-    author_id?: string;
-    tweet_text?: string;
-    has_video?: boolean;
-    has_photo?: boolean;
-    media_count?: number;
-    video_duration_ms?: number;
-    filter_reason: string;
-    commit_sha?: string;
-  }): Promise<void> {
-    const { error } = await this.client.from("pipeline_runs").insert({
-      tweet_id: data.tweet_id,
-      author_id: data.author_id,
-      tweet_text: data.tweet_text,
-      has_video: data.has_video ?? false,
-      has_photo: data.has_photo ?? false,
-      media_count: data.media_count ?? 0,
-      video_duration_ms: data.video_duration_ms,
-      commit_sha: data.commit_sha,
-      outcome: "filtered",
-      outcome_reason: data.filter_reason,
-      final_stage: "filtering",
-    });
-
-    if (error) {
-      console.error("[SupabaseLogger] Error logging filtered post:", error);
-      throw error;
-    }
-  }
-
-  /**
    * Get tweet IDs to skip, with cooldown logic for retries.
    * - Submitted notes: always skip
    * - All rejections: 1h after 1st, 24h after 2nd, permanent after 3+
@@ -719,42 +728,6 @@ export class SupabaseLogger {
       console.error("[SupabaseLogger] Error fetching all processed tweet IDs:", error);
       return new Set();
     }
-  }
-
-  /**
-   * Get pipeline statistics
-   */
-  async getPipelineStats(since?: Date): Promise<{
-    total: number;
-    by_outcome: Record<string, number>;
-    by_stage: Record<string, number>;
-    video_count: number;
-  }> {
-    const sinceIso = since?.toISOString();
-    const data = await this.fetchAllRows<{ outcome: string; final_stage: string; has_video: boolean }>(
-      (client) => {
-        let q = client.from("pipeline_runs").select("outcome, final_stage, has_video");
-        if (sinceIso) q = q.gte("created_at", sinceIso);
-        return q;
-      }
-    );
-
-    const by_outcome: Record<string, number> = {};
-    const by_stage: Record<string, number> = {};
-    let video_count = 0;
-
-    for (const row of data) {
-      by_outcome[row.outcome] = (by_outcome[row.outcome] || 0) + 1;
-      by_stage[row.final_stage] = (by_stage[row.final_stage] || 0) + 1;
-      if (row.has_video) video_count++;
-    }
-
-    return {
-      total: data.length,
-      by_outcome,
-      by_stage,
-      video_count,
-    };
   }
 
   /**

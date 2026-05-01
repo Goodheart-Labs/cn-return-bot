@@ -373,23 +373,24 @@ async function initPipelineRun(
   metadata: TweetMetadata,
   commitSha?: string
 ): Promise<string | null> {
+  // Upsert the tweets row first so pipeline_runs.tweet_id has a parent.
+  // Failure here is non-fatal: pipeline_runs.tweet_id is plain TEXT (no FK),
+  // so a missed tweets row only loses the engagement metrics for this run.
   try {
-    return await logger.createPipelineRun({
-      tweet_id: post.id,
-      author_id: post.author_id,
-      tweet_text: post.text.slice(0, 500),
+    await logger.upsertTweet(post, {
       has_video: metadata.hasVideo,
       has_photo: metadata.hasPhoto,
       media_count: post.media?.length ?? 0,
       video_duration_ms: metadata.videoDurationMs,
+    });
+  } catch (err) {
+    console.warn(`[processTweet] Failed to upsert tweets row for ${post.id}:`, err);
+  }
+
+  try {
+    return await logger.createPipelineRun({
+      tweet_id: post.id,
       commit_sha: commitSha,
-      tweet_impressions: post.public_metrics?.impression_count,
-      tweet_likes: post.public_metrics?.like_count,
-      tweet_retweets: post.public_metrics?.retweet_count,
-      tweet_replies: post.public_metrics?.reply_count,
-      tweet_quotes: post.public_metrics?.quote_count,
-      tweet_bookmarks: post.public_metrics?.bookmark_count,
-      author_followers: post.author_followers,
     });
   } catch (err) {
     console.warn(`[processTweet] Failed to create pipeline run for ${post.id}:`, err);

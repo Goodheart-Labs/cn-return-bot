@@ -56,101 +56,45 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   );
 }
 
-type MediaImage = { url: string; description?: string; textContent?: string };
-type MediaVideo = { url: string; transcription?: string; keyFrameDescriptions?: string[] };
+type MediaImage = { url: string };
+type MediaVideo = { url: string };
 
-// Extract media info from pipeline logs. Handles four shapes:
-//   1. Agentic/multi-agent bot (current): logs.media.gemini.{tweetMedia,quotedTweetMedia}[]
-//   2. Raw X-API media on the Post object: logs.tweet.post.{media,referenced_tweet_data.media}
-//   3. Legacy nested: logs.tweet.{media,referencedTweetData.media}
-//   4. Older inline lists: logs.media.{images,videos}[]
-//   5. Flat dot-notation (oldest): logs["tweet.text"]
-// Main-tweet media and quoted-tweet media are returned separately so the UI
-// can render each in its own block.
-function extractMedia(logs?: Record<string, unknown>): {
+// Extract images / videos for the main tweet and (optional) quoted tweet from
+// the new tweets table fields. The historical backfill (migration 032 +
+// scripts_jim/2026_05_01_backfill_tweets_from_logs) populated these from
+// every old log shape, so the dashboard never needs to dig through logs again.
+function extractMedia(
+  tweetMedia?: ReviewItem["tweetMedia"],
+  referencedTweetData?: ReviewItem["referencedTweetData"],
+): {
   images: MediaImage[];
   videos: MediaVideo[];
   quotedImages: MediaImage[];
   quotedVideos: MediaVideo[];
-  summary?: string;
   quotedPostContext?: string;
-  tweetText?: string;
 } {
   const result = {
     images: [] as MediaImage[],
     videos: [] as MediaVideo[],
     quotedImages: [] as MediaImage[],
     quotedVideos: [] as MediaVideo[],
-    summary: undefined as string | undefined,
     quotedPostContext: undefined as string | undefined,
-    tweetText: undefined as string | undefined,
-  };
-  if (!logs) return result;
-
-  const media = logs.media as any;
-  const tweet = logs.tweet as any;
-  const post = tweet?.post as any;
-
-  const pushMedia = (m: any, imagesOut: MediaImage[], videosOut: MediaVideo[]) => {
-    const desc = m?.description?.description;
-    const ocr = m?.description?.ocrText;
-    if (m?.type === "image") imagesOut.push({ url: m.url, description: desc, textContent: ocr });
-    else if (m?.type === "video") videosOut.push({ url: m.url, transcription: desc });
   };
 
-  // Shape 1: gemini media analyzer emits { type, url, description: { description, ocrText } }
-  const gemini = media?.gemini;
-  if (gemini && typeof gemini === "object") {
-    for (const m of gemini.tweetMedia ?? []) pushMedia(m, result.images, result.videos);
-    for (const m of gemini.quotedTweetMedia ?? []) pushMedia(m, result.quotedImages, result.quotedVideos);
-  }
+  const pushMedia = (
+    m: { type?: string; url?: string; preview_image_url?: string },
+    imagesOut: MediaImage[],
+    videosOut: MediaVideo[],
+  ) => {
+    const url = m.url ?? m.preview_image_url;
+    if (!url) return;
+    if (m.type === "photo") imagesOut.push({ url });
+    else if (m.type === "video" || m.type === "animated_gif") videosOut.push({ url });
+  };
 
-  // Shape 2: raw Post object — bots without media analysis still have media lists here.
-  const tweetMediaSource = Array.isArray(post?.media) ? post.media : (Array.isArray(tweet?.media) ? tweet.media : null);
-  if (result.images.length === 0 && result.videos.length === 0 && tweetMediaSource) {
-    for (const m of tweetMediaSource) pushMedia(m, result.images, result.videos);
-  }
-  const quotedMediaSource =
-    Array.isArray(post?.referenced_tweet_data?.media) ? post.referenced_tweet_data.media :
-    Array.isArray(tweet?.referencedTweetData?.media) ? tweet.referencedTweetData.media : null;
-  if (result.quotedImages.length === 0 && result.quotedVideos.length === 0 && quotedMediaSource) {
-    for (const m of quotedMediaSource) pushMedia(m, result.quotedImages, result.quotedVideos);
-  }
-
-  // Shape 4: legacy inline lists. Only use as a fallback so we don't double-count shape 1.
-  if (result.images.length === 0 && result.videos.length === 0 && media && typeof media === "object") {
-    if (Array.isArray(media.images)) {
-      result.images = media.images.map((img: any) => ({
-        url: img.url,
-        description: img.description,
-        textContent: img.textContent,
-      }));
-    }
-    if (Array.isArray(media.videos)) {
-      result.videos = media.videos.map((vid: any) => ({
-        url: vid.url,
-        transcription: vid.transcription,
-        keyFrameDescriptions: vid.keyFrameDescriptions,
-      }));
-    }
-    if (media.summary) result.summary = media.summary;
-  }
-
-  // Tweet text + quoted post text: prefer Post object, fall back to legacy paths.
-  if (post?.text && typeof post.text === "string") {
-    result.tweetText = post.text;
-  } else if (tweet?.text && typeof tweet.text === "string") {
-    result.tweetText = tweet.text;
-  } else if (typeof logs["tweet.text"] === "string") {
-    result.tweetText = logs["tweet.text"] as string;
-  }
-
-  const quotedText =
-    typeof post?.referenced_tweet_data?.text === "string" ? post.referenced_tweet_data.text :
-    typeof tweet?.referencedTweetData?.text === "string" ? tweet.referencedTweetData.text :
-    typeof tweet?.quotedPostContext === "string" ? tweet.quotedPostContext :
-    undefined;
-  if (quotedText) result.quotedPostContext = quotedText;
+  for (const m of tweetMedia ?? []) pushMedia(m, result.images, result.videos);
+  for (const m of referencedTweetData?.media ?? []) pushMedia(m, result.quotedImages, result.quotedVideos);
+  if (referencedTweetData?.text) result.quotedPostContext = referencedTweetData.text;
 
   return result;
 }
@@ -188,8 +132,8 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
 }
 
 function TweetInline({ item, tweetUrl }: { item: ReviewItem; tweetUrl: string }) {
-  const media = extractMedia(item.logs);
-  const tweetText = item.tweetText ?? media.tweetText;
+  const media = extractMedia(item.tweetMedia, item.referencedTweetData);
+  const tweetText = item.tweetText;
 
   return (
     <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">

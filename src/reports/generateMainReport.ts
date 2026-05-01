@@ -104,21 +104,29 @@ const pipelineRuns = rawPipelineRunsFull.map(r => ({
   is_retry: r.created_at !== firstSeenByTweet.get(r.tweet_id),
 }));
 
-// 5. Video info from pipeline_runs (submitted tweets only)
-const videoRuns = await fetchAll<{
-  tweet_id: string;
-  has_video: boolean | null;
-  video_duration_ms: number | null;
-}>(
-  (c) => c.from("pipeline_runs").select("tweet_id, has_video, video_duration_ms").eq("outcome", "submitted")
+// 5. Video info from tweets table (was on pipeline_runs pre-refactor).
+// Filter to tweet_ids that actually had a submitted run. Fetch in batches to
+// keep the IN clause under URI length limits.
+const submittedTweetIds = new Set(
+  rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id)
 );
+const submittedTweetIdsArr = [...submittedTweetIds];
+const VIDEO_BATCH = 200;
+const videoRuns: Array<{ tweet_id: string; has_video: boolean | null; video_duration_ms: number | null }> = [];
+for (let i = 0; i < submittedTweetIdsArr.length; i += VIDEO_BATCH) {
+  const chunk = submittedTweetIdsArr.slice(i, i + VIDEO_BATCH);
+  const rows = await fetchAll<{ tweet_id: string; has_video: boolean | null; video_duration_ms: number | null }>(
+    (c) => c.from("tweets").select("tweet_id, has_video, video_duration_ms").in("tweet_id", chunk)
+  );
+  videoRuns.push(...rows);
+}
 const videoByTweet = new Map<string, { has_video: boolean; video_duration_ms: number | null }>();
 for (const r of videoRuns) {
   if (r.tweet_id && r.has_video !== null) {
     videoByTweet.set(r.tweet_id, { has_video: r.has_video, video_duration_ms: r.video_duration_ms });
   }
 }
-console.log(`  ${videoRuns.length} pipeline runs with video info`);
+console.log(`  ${videoRuns.length} tweets with video info`);
 
 // 6. Competing notes summary
 const competingData = await fetchAll<{
