@@ -119,7 +119,7 @@ const CANONICAL_LIST_COLUMNS = [
 // pipeline_runs without the logs TOAST column — used for the metadata fetch
 // that drives the list. Logs are lazy-loaded per visible card.
 const PIPELINE_METADATA_COLUMNS =
-  "id, tweet_id, tweet_text, outcome, outcome_reason, bot_id, has_photo, has_video, media_count, created_at";
+  "id, tweet_id, tweet_text, outcome, outcome_reason, bot_name, bot_name_long, has_photo, has_video, media_count, created_at";
 
 /**
  * Fetch all the metadata the production dashboard needs in one shot, without
@@ -292,7 +292,7 @@ export function buildDashboardItems(data: {
       outcome: pipeline?.outcome,
       outcomeReason: pipeline?.outcome_reason,
       pipelineRunId: pipeline?.id,
-      botId: pipeline?.bot_id,
+      botId: pipeline?.bot_name_long ?? pipeline?.bot_name,
       comparisonNotes: compNotes,
       annotation: annotationByTarget.get(note.note_id),
       competitorLeadTag: failureType === "lost_to_competitor"

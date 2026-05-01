@@ -77,14 +77,16 @@ const botNotes = await fetchAll<{
 console.log(`  ${botNotes.length} bot notes (for bot_name mapping)`);
 
 // 3. Pipeline runs (single query with all needed fields)
+// `bot_name_long` is the variant-encoded form (was bot_id pre-refactor).
+// Group/render by it so per-variant breakdowns survive.
 const rawPipelineRunsFull = await fetchAll<{
-  bot_id: string;
+  bot_name_long: string;
   outcome: string;
   outcome_reason: string | null;
   created_at: string;
   tweet_id: string;
 }>(
-  (c) => c.from("pipeline_runs").select("bot_id, outcome, outcome_reason, created_at, tweet_id")
+  (c) => c.from("pipeline_runs").select("bot_name_long, outcome, outcome_reason, created_at, tweet_id")
 );
 console.log(`  ${rawPipelineRunsFull.length} pipeline runs`);
 
@@ -95,7 +97,7 @@ for (const r of rawPipelineRunsFull) {
   if (!prev || r.created_at < prev) firstSeenByTweet.set(r.tweet_id, r.created_at);
 }
 const pipelineRuns = rawPipelineRunsFull.map(r => ({
-  bot_id: r.bot_id,
+  bot_id: r.bot_name_long,
   outcome: r.outcome,
   outcome_reason: r.outcome_reason,
   created_at: r.created_at,

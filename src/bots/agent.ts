@@ -70,7 +70,10 @@ export const agentBot: Bot = {
     const fullBotId = getFullBotId(this.id, config);
 
     return withBotConfig(config, () => withCostTracker(async () => {
-      getTweetLog()?.set("bot.id", fullBotId);
+      const log = getTweetLog();
+      log?.set("bot.id", fullBotId);
+      log?.set("bot.name", this.id);
+      log?.set("bot.config", config);
       const input = await createBotInput(post, "agent");
       const outcome = await runAgent(post, input);
       const result = outcomeToResult(post, fullBotId, outcome, config.scoreFilters);

@@ -16,7 +16,7 @@ import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
 import { runNoteScores, countSources, applyScoreFilters, type AllNoteScores } from "../score/noteScores";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
-import { getTweetLog, getLoggedBotId, nestDotKeys } from "../utils/tweetLog";
+import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -399,7 +399,7 @@ async function initPipelineRun(
 
 function buildCompletionData(
   result: PipelineResult | null,
-  botId: string,
+  bot: { name: string; nameLong: string; config?: Record<string, unknown> },
   outcome: Outcome,
   warnings?: string[],
   logs?: Record<string, unknown>
@@ -412,7 +412,9 @@ function buildCompletionData(
     outcome_reason: outcome.outcomeReason,
     error_message: errorParts.length ? errorParts.join(" | ").slice(0, 2000) : undefined,
     final_stage: outcome.finalStage,
-    bot_id: botId,
+    bot_name: bot.name,
+    bot_name_long: bot.nameLong,
+    bot_config: bot.config,
     note_text: result ? result.noteResult.note + " " + result.noteResult.url : undefined,
     source_url: result?.noteResult?.url,
     note_status: result?.noteResult?.status,
@@ -494,8 +496,8 @@ export async function processSingleTweet(
   // 6. Complete DB run (with logs)
   if (logger && pipelineRunId) {
     const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-    const loggedBotId = getLoggedBotId(bot.id, log);
-    const completionData = buildCompletionData(result, loggedBotId, outcome, warnings, logs);
+    const loggedBot = getLoggedBotIdentity(bot.id, log);
+    const completionData = buildCompletionData(result, loggedBot, outcome, warnings, logs);
     try {
       await logger.completePipelineRun(pipelineRunId, completionData);
     } catch (err) {

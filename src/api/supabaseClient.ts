@@ -409,57 +409,6 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get pipeline run outcomes grouped by bot
-   */
-  async getPipelineRunsByBot(): Promise<Record<string, { total: number; submitted: number; filtered: number; failed: number; rejected: number; created_at_min?: string; created_at_max?: string }>> {
-    const data = await this.fetchAllRows<{ bot_id: string; outcome: string; created_at: string }>(
-      (client) => client.from("pipeline_runs").select("bot_id, outcome, created_at")
-    );
-
-    const result: Record<string, { total: number; submitted: number; filtered: number; failed: number; rejected: number; created_at_min?: string; created_at_max?: string }> = {};
-
-    for (const row of data) {
-      const bot = row.bot_id || "unknown";
-      if (!result[bot]) {
-        result[bot] = { total: 0, submitted: 0, filtered: 0, failed: 0, rejected: 0 };
-      }
-      result[bot].total++;
-      const outcome = row.outcome as "submitted" | "filtered" | "failed" | "rejected";
-      if (outcome in result[bot]) {
-        result[bot][outcome]++;
-      }
-      // Track date range
-      if (!result[bot].created_at_min || row.created_at < result[bot].created_at_min!) {
-        result[bot].created_at_min = row.created_at;
-      }
-      if (!result[bot].created_at_max || row.created_at > result[bot].created_at_max!) {
-        result[bot].created_at_max = row.created_at;
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Get raw pipeline runs with timestamps for client-side filtering
-   */
-  async getPipelineRunsRaw(): Promise<Array<{ bot_id: string; outcome: string; created_at: string }>> {
-    try {
-      const data = await this.fetchAllRows<{ bot_id: string; outcome: string; created_at: string }>(
-        (client) => client.from("pipeline_runs").select("bot_id, outcome, created_at")
-      );
-      return data.map(r => ({
-        bot_id: r.bot_id || "unknown",
-        outcome: r.outcome,
-        created_at: r.created_at,
-      }));
-    } catch (error) {
-      console.error("[SupabaseLogger] Error fetching raw pipeline runs:", error);
-      return [];
-    }
-  }
-
-  /**
    * Get scraped note IDs in a given range (for coverage checks)
    */
   async getScrapedNoteIdsInRange(minId: string, maxId: string): Promise<string[]> {
@@ -494,7 +443,9 @@ export class SupabaseLogger {
     has_photo?: boolean;
     media_count?: number;
     video_duration_ms?: number;
-    bot_id?: string;
+    bot_name?: string;
+    bot_name_long?: string;
+    bot_config?: Record<string, unknown>;
     commit_sha?: string;
     tweet_impressions?: number;
     tweet_likes?: number;
@@ -514,7 +465,9 @@ export class SupabaseLogger {
         has_photo: data.has_photo ?? false,
         media_count: data.media_count ?? 0,
         video_duration_ms: data.video_duration_ms,
-        bot_id: data.bot_id,
+        bot_name: data.bot_name,
+        bot_name_long: data.bot_name_long,
+        bot_config: data.bot_config,
         commit_sha: data.commit_sha,
         tweet_impressions: data.tweet_impressions,
         tweet_likes: data.tweet_likes,
@@ -548,7 +501,9 @@ export class SupabaseLogger {
       error_message?: string;
       final_stage: string;
       note_id?: string;
-      bot_id?: string;
+      bot_name?: string;
+      bot_name_long?: string;
+      bot_config?: Record<string, unknown>;
       note_text?: string;
       source_url?: string;
       note_status?: string;
@@ -565,7 +520,9 @@ export class SupabaseLogger {
         error_message: data.error_message,
         final_stage: data.final_stage,
         note_id: data.note_id,
-        bot_id: data.bot_id,
+        bot_name: data.bot_name,
+        bot_name_long: data.bot_name_long,
+        bot_config: data.bot_config,
         note_text: data.note_text,
         source_url: data.source_url,
         note_status: data.note_status,
@@ -643,44 +600,6 @@ export class SupabaseLogger {
       console.error("[SupabaseLogger] Error marking candidate expired:", error);
       throw error;
     }
-  }
-
-  /**
-   * Get pipeline outcomes grouped by bot for reporting
-   */
-  async getPipelineOutcomesByBot(): Promise<{
-    bot_id: string;
-    note_not_needed: number;
-    failed_to_write: number;
-  }[]> {
-    const data = await this.fetchAllRows<{ bot_id: string; outcome: string; outcome_reason: string }>(
-      (client) => client.from("pipeline_runs")
-        .select("bot_id, outcome, outcome_reason")
-        .in("outcome", ["rejected", "failed"])
-    );
-
-    // Group by bot_id
-    const byBot: Record<string, { note_not_needed: number; failed_to_write: number }> = {};
-
-    for (const row of data) {
-      const botId = row.bot_id || "unknown";
-      if (!byBot[botId]) {
-        byBot[botId] = { note_not_needed: 0, failed_to_write: 0 };
-      }
-
-      // "Note Not Needed" = rejected with outcome_reason = "no_correction_needed"
-      if (row.outcome === "rejected" && row.outcome_reason === "no_correction_needed") {
-        byBot[botId].note_not_needed++;
-      } else {
-        // Everything else (failed or other rejected reasons) = "Failed to Write"
-        byBot[botId].failed_to_write++;
-      }
-    }
-
-    return Object.entries(byBot).map(([bot_id, counts]) => ({
-      bot_id,
-      ...counts,
-    }));
   }
 
   /**
