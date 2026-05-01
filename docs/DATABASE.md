@@ -268,7 +268,7 @@ Key-value store for persistent state between runs.
 | value | TEXT | State value |
 | updated_at | TIMESTAMPTZ | Last update |
 
-**Known keys**: `feed_size`, `writing_limit`, `days_without_limit_hit`, `days_with_limit_hit`, `limit_hit_today`, `last_limit_check_date`
+**Known keys**: `feed_size`, `writing_limit`, `days_without_limit_hit`, `days_with_limit_hit`, `limit_hit_today`, `last_limit_check_date`, `limit_hit_at` (ISO ts of last daily-limit error), `next_slot_opens_at` (ISO ts when the next submission slot is expected — pipeline skips entirely until then)
 
 ### unmatched_scraped_notes
 

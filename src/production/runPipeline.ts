@@ -91,6 +91,17 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
+    // Skip the run entirely if the next submission slot hasn't opened yet
+    if (supabaseLogger) {
+      const nextSlotAt = await supabaseLogger.getPipelineState("next_slot_opens_at");
+      if (nextSlotAt && Date.now() < new Date(nextSlotAt).getTime()) {
+        console.log(`[pipeline] Skipping — next submission slot opens at ${nextSlotAt}`);
+        clearTimeout(globalTimeout);
+        await closeBrowser();
+        process.exit(0);
+      }
+    }
+
     // Check if we need to probe first (last run hit the daily limit and no submissions since)
     let cautious = false;
     if (supabaseLogger) {
