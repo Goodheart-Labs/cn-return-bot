@@ -1365,6 +1365,22 @@ export class SupabaseLogger {
     return count ?? 0;
   }
 
+  /** Oldest `submitted_at` within the last N hours, or null if none */
+  async oldestSubmissionWithinHours(hours: number): Promise<string | null> {
+    const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+    const { data, error } = await this.client
+      .from("notes")
+      .select("submitted_at")
+      .gte("submitted_at", since)
+      .order("submitted_at", { ascending: true })
+      .limit(1);
+    if (error) {
+      console.warn("[SupabaseLogger] Failed to fetch oldest recent submission:", error.message);
+      return null;
+    }
+    return data?.[0]?.submitted_at ?? null;
+  }
+
   /** Check if any notes have been submitted since a given ISO timestamp */
   async hasSubmissionsSince(since: string): Promise<boolean> {
     const { count, error } = await this.client
