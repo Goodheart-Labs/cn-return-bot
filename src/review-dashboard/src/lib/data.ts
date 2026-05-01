@@ -97,19 +97,18 @@ async function fetchInBatches<T>(
   return results;
 }
 
-// Columns needed to render the production list. Dropping select("*") skips
-// unused columns (classification timestamps, top_*_tag, etc.) and reduces per-row I/O.
+// Columns needed to render the production list. After the canonical→notes
+// merge, tweet text/handle and current_core_status no longer live on this
+// table — text comes from tweets (joined by tweet_id), and we prefer
+// current_status (cn_status) per CLAUDE.md.
 const CANONICAL_LIST_COLUMNS = [
   "note_id",
   "tweet_id",
-  "tweet_text",
-  "tweet_handle",
   "note_text",
   "source_url",
   "submitted_at",
-  "created_at",
+  "first_seen_at",
   "cn_status",
-  "current_core_status",
   "view_count",
   "rating_count",
   "helpful_count",
@@ -154,7 +153,7 @@ export async function fetchDashboardData(): Promise<{
   const [canonical, competing, submittedRuns] = await Promise.all([
     fetchAllRows<any>(
       supabase
-        .from("canonical_note_information")
+        .from("notes")
         .select(CANONICAL_LIST_COLUMNS)
         .order("submitted_at", { ascending: false, nullsFirst: false }),
       "canonical",
@@ -306,8 +305,8 @@ export function buildDashboardItems(data: {
       id: note.note_id,
       source: "production" as const,
       tweetId: note.tweet_id,
-      tweetText: tweet?.text ?? note.tweet_text,
-      tweetHandle: tweet?.author_handle ?? note.tweet_handle,
+      tweetText: tweet?.text,
+      tweetHandle: tweet?.author_handle,
       hasPhoto: tweet?.has_photo ?? false,
       hasVideo: tweet?.has_video ?? false,
       mediaCount: tweet?.media_count ?? 0,
@@ -316,9 +315,8 @@ export function buildDashboardItems(data: {
       noteId: note.note_id,
       noteText: note.note_text,
       sourceUrl: note.source_url,
-      createdAt: note.submitted_at ?? note.created_at,
+      createdAt: note.submitted_at ?? note.first_seen_at,
       status: note.cn_status,
-      coreStatus: note.current_core_status,
       viewCount: note.view_count,
       ratingCount: note.rating_count,
       helpfulCount: note.helpful_count,
@@ -330,7 +328,7 @@ export function buildDashboardItems(data: {
       comparisonNotes: compNotes,
       annotation: annotationByTarget.get(note.note_id),
       competitorLeadTag: failureType === "lost_to_competitor"
-        ? computeCompetitorLeadTag(note.submitted_at ?? note.created_at, compNotes)
+        ? computeCompetitorLeadTag(note.submitted_at ?? note.first_seen_at, compNotes)
         : undefined,
       failureType,
     });

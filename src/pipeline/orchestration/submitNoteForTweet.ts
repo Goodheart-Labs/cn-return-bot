@@ -16,7 +16,7 @@ export async function submitNoteForTweet(
   candidate: Candidate,
   logger: SupabaseLogger
 ): Promise<SubmissionResult> {
-  const { post, tweetResult, botId } = candidate;
+  const { post, tweetResult } = candidate;
   const tweetId = post.id;
   const pipelineRunId = tweetResult.pipelineRunId!;
   const noteText = tweetResult.noteText ?? "";
@@ -40,14 +40,15 @@ export async function submitNoteForTweet(
     await logger.markCandidateSubmitted(pipelineRunId, noteId);
 
     try {
+      // Bot info, evaluation score, commit_sha, etc. live on pipeline_runs
+      // (already updated by completePipelineRun above). The notes row is just
+      // the immutable submission record.
       await logger.logNoteSubmission({
         note_id: noteId,
         tweet_id: tweetId,
-        bot_name: botId,
         note_text: noteText,
         source_url: sourceUrl,
-        evaluation_score: tweetResult.evaluationScore,
-        commit_sha: process.env.GITHUB_SHA,
+        submitted_at: new Date().toISOString(),
       });
     } catch (logErr) {
       console.error("[submit] Failed to log to Supabase:", logErr);

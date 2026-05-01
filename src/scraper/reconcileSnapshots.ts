@@ -1,10 +1,10 @@
-// @ts-nocheck
+// @ts-nocheck — pre-existing strict-mode issues unrelated to schema refactor
 /**
  * Snapshot Reconciliation
  *
  * Classifies scraped_notewriter_snapshots by quality tier, detects pairing
  * collisions, resolves them by majority vote, and writes canonical data to
- * canonical_note_information.
+ * notes.
  *
  * See docs/snapshot-reconciliation.md for the full design.
  *
@@ -506,7 +506,7 @@ export async function reconcile(): Promise<{
     cn_status: string | null;
   }>(() =>
     supabase
-      .from("canonical_note_information")
+      .from("notes")
       .select("note_id, cn_status")
       .not("public_data_updated_at", "is", null)
   );
@@ -519,7 +519,7 @@ export async function reconcile(): Promise<{
 
   console.log(`[reconcile] Writing ${canonical.length} canonical notes...`);
 
-  // 8. Write to canonical_note_information, respecting public data authority
+  // 8. Write to notes, respecting public data authority
   const now = new Date().toISOString();
   let fullWrites = 0;
   let viewOnlyWrites = 0;
@@ -548,7 +548,7 @@ export async function reconcile(): Promise<{
     }));
 
     const { error } = await supabase
-      .from("canonical_note_information")
+      .from("notes")
       .upsert(rows, { onConflict: "note_id" });
 
     if (error) {
@@ -579,7 +579,7 @@ export async function reconcile(): Promise<{
     }
 
     const { error } = await supabase
-      .from("canonical_note_information")
+      .from("notes")
       .update(row)
       .eq("note_id", c.note_id);
 

@@ -47,7 +47,8 @@ function snowflakeToDate(id: string): Date {
 
 console.log("Fetching data...");
 
-// 1. All scraped notes from canonical (primary data source, public data enriched)
+// 1. All notes (primary data source). Post-merge, this is the unified
+// notes table — submission metadata + ratings + status all on one row.
 const scrapedNotes = await fetchAll<{
   note_id: string;
   tweet_id: string;
@@ -55,26 +56,26 @@ const scrapedNotes = await fetchAll<{
   view_count: number | null;
   data_tier: string | null;
   first_seen_at: string;
+  submitted_at: string | null;
   rating_count: number | null;
   helpful_count: number | null;
   not_helpful_count: number | null;
-  current_decided_by: string | null;
 }>(
-  (c) => c.from("canonical_note_information")
-    .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, rating_count, helpful_count, not_helpful_count, current_decided_by")
+  (c) => c.from("notes")
+    .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, submitted_at, rating_count, helpful_count, not_helpful_count")
     .or("data_tier.neq.junk,data_tier.is.null")
 );
-console.log(`  ${scrapedNotes.length} scraped notes (non-junk)`);
+console.log(`  ${scrapedNotes.length} notes (non-junk)`);
 
-// 2. Bot name + submitted_at from notes table (for enrichment only)
-const botNotes = await fetchAll<{
+// 2. Bot name lookup. Comes from the pipeline_runs row that produced
+// each note (we no longer duplicate bot_name onto notes).
+const botRuns = await fetchAll<{
   note_id: string;
   bot_name: string | null;
-  submitted_at: string;
 }>(
-  (c) => c.from("notes").select("note_id, bot_name, submitted_at")
+  (c) => c.from("pipeline_runs").select("note_id, bot_name").eq("outcome", "submitted").not("note_id", "is", null)
 );
-console.log(`  ${botNotes.length} bot notes (for bot_name mapping)`);
+console.log(`  ${botRuns.length} submitted runs (for bot_name mapping)`);
 
 // 3. Pipeline runs (single query with all needed fields)
 // `bot_name_long` is the variant-encoded form (was bot_id pre-refactor).
@@ -141,24 +142,19 @@ const totalCompeting = competingData.length;
 const helpfulCompeting = competingData.filter(c => c.current_status === "CURRENTLY_RATED_HELPFUL").length;
 console.log(`  ${totalCompeting} competing notes (${helpfulCompeting} helpful)`);
 
-// Build bot_name lookup from notes table
-const botInfoMap = new Map<string, { bot_name: string; submitted_at: string }>();
-for (const n of botNotes) {
-  if (n.note_id) {
-    botInfoMap.set(n.note_id, {
-      bot_name: n.bot_name || "unknown",
-      submitted_at: n.submitted_at,
-    });
-  }
+// Build bot_name lookup from pipeline_runs (one row per submission attempt;
+// last writer wins for retries — fine for "what bot owns this note" purposes).
+const botNameByNoteId = new Map<string, string>();
+for (const r of botRuns) {
+  if (r.note_id && r.bot_name) botNameByNoteId.set(r.note_id, r.bot_name);
 }
 
-// Enrich scraped notes with bot_name and date
+// Enrich notes with bot_name and date
 const notes = scrapedNotes.map((n) => {
-  const info = botInfoMap.get(n.note_id);
-  // Use submitted_at from notes table, or derive from Snowflake ID
+  // Use submitted_at from notes, or derive from Snowflake ID
   let noteDate: string;
-  if (info?.submitted_at) {
-    noteDate = info.submitted_at;
+  if (n.submitted_at) {
+    noteDate = n.submitted_at;
   } else {
     try {
       noteDate = snowflakeToDate(n.note_id).toISOString();
@@ -170,7 +166,7 @@ const notes = scrapedNotes.map((n) => {
     note_id: n.note_id,
     cn_status: n.cn_status || "UNKNOWN",
     view_count: n.view_count || 0,
-    bot_name: info?.bot_name || "pre-tracking",
+    bot_name: botNameByNoteId.get(n.note_id) || "pre-tracking",
     submitted_at: noteDate,
     has_video: videoByTweet.get(n.tweet_id)?.has_video ?? false,
     video_duration_ms: videoByTweet.get(n.tweet_id)?.video_duration_ms ?? null,
@@ -369,7 +365,7 @@ const html = `<!DOCTYPE html>
   </div>
 
   <div class="header-row">
-    <p class="subtitle">Data from canonical_note_information + public data</p>
+    <p class="subtitle">Data from notes + public data</p>
     <div style="display: flex; gap: 16px; align-items: center;">
       <div>
         <span style="color: #666; font-size: 0.85em; margin-right: 8px;">Time:</span>

@@ -10,36 +10,27 @@ export interface Notewriter {
   created_at: string;
 }
 
+// Merged shape after migration 034: notes is the master record per note,
+// with submission metadata (notewriter_id / submitted_at) nullable for
+// pre-tracking rows and rating/status fields populated from public data.
+// For run/bot/score data, join notes.note_id → pipeline_runs.note_id.
 export interface Note {
   id: string;
   note_id: string;
   tweet_id: string;
-  notewriter_id?: string;
-  bot_name?: string;
-  note_text: string;
+  note_text?: string;
   source_url?: string;
-  evaluation_score?: number;
-  commit_sha?: string;
-  submitted_at: string;
+  notewriter_id?: string;
+  submitted_at?: string;
   cn_status?: string;
+  view_count?: number;
+  rating_count: number;
   helpful_count: number;
   somewhat_helpful_count: number;
   not_helpful_count: number;
-  first_helpful_at?: string;
-  view_count?: number;
-  views_last_updated_at?: string;
-  last_checked_at?: string;
-}
-
-export interface NoteStatusHistory {
-  id: string;
-  note_id: string;
-  status: string;
-  helpful_count?: number;
-  somewhat_helpful_count?: number;
-  not_helpful_count?: number;
-  view_count?: number;
-  recorded_at: string;
+  data_tier?: "platinum" | "gold" | "silver" | "junk" | "impossible";
+  last_reconciled_at?: string;
+  first_seen_at: string;
 }
 
 export interface PublicDataSnapshot {
@@ -56,10 +47,16 @@ export interface PublicDataSnapshot {
   core_note_factor1?: number;
 }
 
-export type NoteInsert = Omit<Note, "id" | "submitted_at" | "helpful_count" | "somewhat_helpful_count" | "not_helpful_count"> & {
+// Insert payload for logNoteSubmission: only the columns the submission
+// pipeline actually knows. Status/ratings/views get filled in later by the
+// updateNoteFeedback cron and the scraper.
+export type NoteInsert = {
+  note_id: string;
+  tweet_id: string;
+  note_text?: string;
+  source_url?: string;
+  notewriter_id?: string;
   submitted_at?: string;
-  view_count?: number;
-  views_last_updated_at?: string;
 };
 
 let supabaseInstance: SupabaseClient | null = null;
@@ -110,12 +107,15 @@ export class SupabaseLogger {
   }
 
   /**
-   * Insert a new note record after successful submission
+   * Upsert the notes row after a successful submission. Upsert (not insert)
+   * because the scraper may have already created a row with cn_status / view_count
+   * before we landed the API response — we want to enrich that row with the
+   * submission metadata, not crash on the unique-constraint violation.
    */
   async logNoteSubmission(note: NoteInsert): Promise<Note | null> {
     const { data, error } = await this.client
       .from("notes")
-      .insert(note)
+      .upsert(note, { onConflict: "note_id" })
       .select()
       .single();
 
@@ -158,131 +158,6 @@ export class SupabaseLogger {
     return data;
   }
 
-  /**
-   * Update note with feedback from CN public data
-   */
-  async updateNoteFeedback(
-    noteId: string,
-    feedback: {
-      cn_status?: string;
-      helpful_count?: number;
-      somewhat_helpful_count?: number;
-      not_helpful_count?: number;
-      first_helpful_at?: string;
-    }
-  ): Promise<void> {
-    const { error } = await this.client
-      .from("notes")
-      .update({
-        ...feedback,
-        last_checked_at: new Date().toISOString(),
-      })
-      .eq("note_id", noteId);
-
-    if (error) {
-      console.error("[SupabaseLogger] Error updating note feedback:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get notes that need feedback updates (no status or stale)
-   */
-  async getNotesNeedingFeedback(staleDays: number = 1): Promise<Note[]> {
-    const staleDate = new Date();
-    staleDate.setDate(staleDate.getDate() - staleDays);
-
-    return this.fetchAllRows<Note>(
-      (client) => client.from("notes").select()
-        .or(`last_checked_at.is.null,last_checked_at.lt.${staleDate.toISOString()}`)
-    );
-  }
-
-  /**
-   * Update view count for a note
-   */
-  async updateViewCount(noteId: string, viewCount: number): Promise<void> {
-    const { error } = await this.client
-      .from("notes")
-      .update({
-        view_count: viewCount,
-        views_last_updated_at: new Date().toISOString(),
-      })
-      .eq("note_id", noteId);
-
-    if (error) {
-      console.error("[SupabaseLogger] Error updating view count:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get note by note_id
-   */
-  async getNoteByNoteId(noteId: string): Promise<Note | null> {
-    const { data, error } = await this.client
-      .from("notes")
-      .select()
-      .eq("note_id", noteId)
-      .single();
-
-    if (error) {
-      if (error.code === "PGRST116") {
-        // Not found
-        return null;
-      }
-      console.error("[SupabaseLogger] Error fetching note:", error);
-      throw error;
-    }
-
-    return data;
-  }
-
-  /**
-   * Update an existing note with manual scraped data
-   * Throws error if note doesn't exist - use logUnmatchedScrapedNote() for unmatched notes
-   */
-  async updateScrapedNote(data: {
-    note_id: string;
-    cn_status?: string;
-    view_count?: number;
-  }): Promise<Note> {
-    // Check if note exists
-    const existing = await this.getNoteByNoteId(data.note_id);
-
-    if (!existing) {
-      throw new Error(
-        `Note ${data.note_id} not found in database. Use logUnmatchedScrapedNote() to record unmatched notes.`
-      );
-    }
-
-    // Update existing note
-    const updateData: any = {
-      last_checked_at: new Date().toISOString(),
-    };
-
-    if (data.cn_status) updateData.cn_status = data.cn_status;
-    if (data.view_count !== undefined) {
-      updateData.view_count = data.view_count;
-      updateData.views_last_updated_at = new Date().toISOString();
-    }
-
-    const { data: updated, error } = await this.client
-      .from("notes")
-      .update(updateData)
-      .eq("note_id", data.note_id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("[SupabaseLogger] Error updating scraped note:", error);
-      throw error;
-    }
-
-    console.log(`[SupabaseLogger] Updated note ${data.note_id} with scraped data`);
-    return updated;
-  }
-
   // ============================================
   // Scraped Notewriter Data Methods
   // ============================================
@@ -294,7 +169,7 @@ export class SupabaseLogger {
     source_url?: string;
   }): Promise<void> {
     const { error } = await this.client
-      .from("canonical_note_information")
+      .from("notes")
       .upsert(
         {
           note_id: data.note_id,
@@ -349,7 +224,7 @@ export class SupabaseLogger {
 
   async scrapedNotewriterNoteExists(noteId: string): Promise<boolean> {
     const { data, error } = await this.client
-      .from("canonical_note_information")
+      .from("notes")
       .select("note_id")
       .eq("note_id", noteId)
       .single();
@@ -367,7 +242,7 @@ export class SupabaseLogger {
    */
   async findScrapedNoteByTweetId(tweetId: string): Promise<string | null> {
     const { data, error } = await this.client
-      .from("canonical_note_information")
+      .from("notes")
       .select("note_id")
       .eq("tweet_id", tweetId)
       .single();
@@ -398,7 +273,7 @@ export class SupabaseLogger {
 
     // Update the note itself
     const { error: noteError } = await this.client
-      .from("canonical_note_information")
+      .from("notes")
       .update({ note_id: newNoteId })
       .eq("note_id", oldNoteId);
 
@@ -413,7 +288,7 @@ export class SupabaseLogger {
    */
   async getScrapedNoteIdsInRange(minId: string, maxId: string): Promise<string[]> {
     const { data, error } = await this.client
-      .from("canonical_note_information")
+      .from("notes")
       .select("note_id")
       .gte("note_id", minId)
       .lte("note_id", maxId)
@@ -741,7 +616,7 @@ export class SupabaseLogger {
       cn_status: string | null;
       data_tier: string | null;
     }>(
-      (client) => client.from("canonical_note_information")
+      (client) => client.from("notes")
         .select("note_id, view_count, cn_status, data_tier")
         .neq("data_tier", "junk")
     );
@@ -761,11 +636,11 @@ export class SupabaseLogger {
   /**
    * Derive canonical tweet_ids for scraped notes using snapshot majority vote.
    *
-   * For each note_id in canonical_note_information:
+   * For each note_id in notes:
    * - Collect all non-null tweet_ids from its snapshots
    * - If the top tweet_id has >= 2/3 of votes AND matches the `notes` table (if entry exists), clear the flag
    * - Otherwise, set tweet_id_flag with the reason
-   * - Update canonical_note_information.tweet_id to the majority winner (if there is one)
+   * - Update notes.tweet_id to the majority winner (if there is one)
    *
    * Returns summary stats.
    */
@@ -778,7 +653,7 @@ export class SupabaseLogger {
 
     // 2. Get all scraped notes
     const scrapedNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
-      (client) => client.from("canonical_note_information")
+      (client) => client.from("notes")
         .select("note_id, tweet_id")
     );
 
@@ -838,7 +713,7 @@ export class SupabaseLogger {
           updateData.tweet_id = winnerTweetId;
         }
         const { error } = await this.client
-          .from("canonical_note_information")
+          .from("notes")
           .update(updateData)
           .eq("note_id", note.note_id);
         if (error) {
