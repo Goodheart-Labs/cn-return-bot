@@ -42,7 +42,17 @@ This project automatically:
 bun install
 ```
 
-### 2. Environment Variables
+### 2. Install gitleaks (one-time)
+
+The Husky `pre-commit` hook runs [gitleaks](https://github.com/gitleaks/gitleaks) on the staged diff to block secret commits. Install it once:
+
+```bash
+brew install gitleaks
+```
+
+After this, `git commit` will refuse to commit content containing things like `sk-or-v1-...` or other detected secrets.
+
+### 3. Environment Variables
 
 Create `.env.local` with your credentials (see `.env.example` for full list):
 
