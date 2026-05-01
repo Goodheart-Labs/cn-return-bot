@@ -33,14 +33,23 @@ export async function submitCandidates(
   }
 
   let submitted = 0;
+  let expired = 0;
+  let errors = 0;
+  let limitHit = false;
+  let limitSkipped = 0;
+
   for (const candidate of candidates) {
+    const evalStr = candidate.tweetResult.evaluationScore?.toFixed(2) ?? "?";
     const result = await submitNoteForTweet(candidate, supabaseLogger);
 
     if (result.status === "submitted") {
       submitted++;
+      console.log(`[submit] submitted ${candidate.post.id} (eval=${evalStr}) → note ${result.noteId}`);
     } else if (result.status === "daily_limit") {
-      console.log(`[submit] Daily limit reached after ${submitted} submissions`);
+      limitHit = true;
+      console.log(`[submit] daily limit reached after ${submitted} submissions`);
       const remaining = candidates.slice(candidates.indexOf(candidate) + 1);
+      limitSkipped = remaining.length + 1;
       for (const r of remaining) {
         if (r.tweetResult.pipelineRunId) {
           try {
@@ -54,11 +63,21 @@ export async function submitCandidates(
       }
       break;
     } else if (result.status === "expired") {
-      console.log(`[submit] Tweet ${candidate.post.id} ${result.reason} — skipping`);
+      expired++;
+      console.log(`[submit] expired ${candidate.post.id} (${result.reason}) — skipping`);
     } else {
-      console.log(`[submit] Error submitting ${candidate.post.id}: ${result.message} — will not retry`);
+      errors++;
+      console.log(`[submit] error ${candidate.post.id}: ${result.message} — will not retry`);
     }
   }
+
+  const breakdown = [
+    `${submitted} submitted`,
+    expired ? `${expired} expired` : null,
+    errors ? `${errors} errors` : null,
+    limitHit ? `${limitSkipped} skipped (daily limit)` : null,
+  ].filter(Boolean).join(", ");
+  console.log(`[submit] result: ${breakdown}`);
 
   return submitted;
 }

@@ -168,8 +168,7 @@ export async function generateCandidates(
         })
       );
 
-      console.log(formatTweetLogSummary(log));
-      console.log(formatTweetLogFull(log));
+      console.log(`${formatTweetLogSummary(log)}\n${formatTweetLogFull(log)}`);
       allLogs.push(log);
 
       const botId = getLoggedBotId(selectedBot.id, log);
