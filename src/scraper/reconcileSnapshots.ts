@@ -497,10 +497,13 @@ export async function reconcile(): Promise<{
     quarantinedSnapIds
   );
 
-  // 7. Fetch public data status to determine write authority
-  //    Notes with public_data_updated_at set are owned by public data for
-  //    status/text/tweet_id — reconciliation can only update view_count
-  //    (and only if the scraper's status matches the canonical status).
+  // 7. Fetch public data status to determine write authority.
+  // Notes with submitted_at set are owned by public data for status/text/tweet_id —
+  // reconciliation can only update view_count (and only if the scraper's status
+  // matches the canonical status). submitted_at is set both by submitNoteForTweet
+  // and by updateNoteFeedback from the public-data dump, so it's a clean proxy
+  // for "this note is tracked by public data" post canonical→notes merge
+  // (replaces the dropped public_data_updated_at column).
   const publicDataNotes = await fetchAll<{
     note_id: string;
     cn_status: string | null;
@@ -508,7 +511,7 @@ export async function reconcile(): Promise<{
     supabase
       .from("notes")
       .select("note_id, cn_status")
-      .not("public_data_updated_at", "is", null)
+      .not("submitted_at", "is", null)
   );
   const publicDataStatus = new Map<string, string | null>(
     publicDataNotes.map((n) => [n.note_id, n.cn_status])

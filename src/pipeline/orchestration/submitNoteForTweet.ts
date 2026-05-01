@@ -37,12 +37,12 @@ export async function submitNoteForTweet(
       return { status: "error", message: "No note ID in response" };
     }
 
-    await logger.markCandidateSubmitted(pipelineRunId, noteId);
-
+    // Order matters: insert into notes first, THEN set pipeline_runs.note_id.
+    // Migration 035 added an FK on pipeline_runs.note_id → notes.note_id, so
+    // the reverse order would fail referential integrity.
+    // Both writes are fail-soft — the X submission already succeeded above
+    // and we don't want a DB hiccup to mask that.
     try {
-      // Bot info, evaluation score, commit_sha, etc. live on pipeline_runs
-      // (already updated by completePipelineRun above). The notes row is just
-      // the immutable submission record.
       await logger.logNoteSubmission({
         note_id: noteId,
         tweet_id: tweetId,
@@ -51,7 +51,13 @@ export async function submitNoteForTweet(
         submitted_at: new Date().toISOString(),
       });
     } catch (logErr) {
-      console.error("[submit] Failed to log to Supabase:", logErr);
+      console.error("[submit] Failed to insert notes row:", logErr);
+    }
+
+    try {
+      await logger.markCandidateSubmitted(pipelineRunId, noteId);
+    } catch (logErr) {
+      console.error("[submit] Failed to mark candidate submitted:", logErr);
     }
 
     try {

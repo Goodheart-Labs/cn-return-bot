@@ -80,11 +80,22 @@ async function applyMigrations(files: string[]) {
   }
 }
 
+// Page size per table. Tables with big JSONB blobs (notably pipeline_runs.logs)
+// hit Supabase REST's response-size limit at the default 1000-row page and
+// silently return short pages, terminating pagination early. Smaller pages
+// keep the response under the limit so we get every row.
+const PAGE_OVERRIDES: Record<string, number> = {
+  pipeline_runs: 100,        // logs JSONB can be 100KB+/row
+  pipeline_scores: 500,      // score_metadata is sometimes large
+  public_data_snapshots: 500,
+};
+
 async function fetchProdAll(table: string, limit?: number): Promise<any[]> {
+  const pageSize = PAGE_OVERRIDES[table] ?? FETCH_PAGE;
   const rows: any[] = [];
   let offset = 0;
   while (true) {
-    const want = limit !== undefined ? Math.min(FETCH_PAGE, limit - rows.length) : FETCH_PAGE;
+    const want = limit !== undefined ? Math.min(pageSize, limit - rows.length) : pageSize;
     if (want <= 0) break;
     const { data, error } = await prod
       .from(table)
@@ -97,6 +108,9 @@ async function fetchProdAll(table: string, limit?: number): Promise<any[]> {
     if (!data || data.length === 0) break;
     rows.push(...data);
     offset += data.length;
+    // Only short-page-terminate if we KNOW the API has more (offset + length
+    // matches what we asked, so server is hitting our explicit page size).
+    // If we got fewer than asked, that's the end of the table.
     if (data.length < want) break;
     if (limit !== undefined && rows.length >= limit) break;
   }
