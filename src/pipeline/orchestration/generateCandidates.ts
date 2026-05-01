@@ -72,22 +72,6 @@ async function fetchPosts(
     console.log(`[generate]   #${i + 1}: ${p.id} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago${tag}`);
   }
 
-  if (supabaseLogger) {
-    try {
-      await supabaseLogger.logRunSnapshot({
-        backlog_total: posts.length,
-        backlog_new: newPosts.length,
-        backlog_retry: selectedRetry.length,
-        backlog_hit_limit: posts.length >= BACKLOG_LIMIT,
-        posts_processed: selected.length,
-        commit_sha: process.env.GITHUB_SHA,
-        feed_size: feedSize,
-      });
-    } catch (err) {
-      console.warn("[generate] Failed to log run snapshot:", err);
-    }
-  }
-
   return { posts: selected, feedSize, newCount: selectedNew.length, retryCount: selectedRetry.length };
 }
 

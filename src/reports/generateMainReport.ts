@@ -2,6 +2,20 @@
  * Main report generator — see docs/main-report.md for documentation.
  */
 import "dotenv/config";
+
+const useLocal = process.argv.includes("--local");
+if (useLocal) {
+  const localUrl = process.env.LOCAL_SUPABASE_URL;
+  const localKey = process.env.LOCAL_SUPABASE_SERVICE_KEY;
+  if (!localUrl || !localKey) {
+    console.error("[report] --local requires LOCAL_SUPABASE_URL and LOCAL_SUPABASE_SERVICE_KEY");
+    process.exit(1);
+  }
+  process.env.SUPABASE_URL = localUrl;
+  process.env.SUPABASE_SERVICE_KEY = localKey;
+  console.log(`[report] Using local Supabase at ${localUrl}`);
+}
+
 import { getSupabaseClient } from "../api/supabaseClient";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { execSync } from "child_process";
@@ -87,54 +101,6 @@ const pipelineRuns = rawPipelineRunsFull.map(r => ({
   created_at: r.created_at,
   is_retry: r.created_at !== firstSeenByTweet.get(r.tweet_id),
 }));
-
-// Compute backlog: tweets not currently skipped
-// Skipped = submitted OR no_correction_needed (cooldown: 1hr after 1st, 24hr after 2nd, permanent after 3rd)
-const submittedTweets = new Set(rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id));
-const rejectionInfo = new Map<string, { count: number; latestAt: string }>();
-for (const r of rawPipelineRunsFull) {
-  if (r.outcome === "rejected" && r.outcome_reason === "no_correction_needed") {
-    const existing = rejectionInfo.get(r.tweet_id);
-    if (!existing) {
-      rejectionInfo.set(r.tweet_id, { count: 1, latestAt: r.created_at });
-    } else {
-      existing.count++;
-      if (r.created_at > existing.latestAt) existing.latestAt = r.created_at;
-    }
-  }
-}
-const now = new Date();
-const skippedByNoCorrection = new Set<string>();
-for (const [tid, info] of rejectionInfo) {
-  if (info.count >= 3) {
-    skippedByNoCorrection.add(tid);
-  } else {
-    const hoursSince = (now.getTime() - new Date(info.latestAt).getTime()) / (1000 * 60 * 60);
-    const cooldownHours = info.count === 1 ? 1 : 24;
-    if (hoursSince < cooldownHours) skippedByNoCorrection.add(tid);
-  }
-}
-const allPipelineTweets = new Set(rawPipelineRunsFull.map(r => r.tweet_id));
-const backlogTweets = [...allPipelineTweets].filter(tid => {
-  if (submittedTweets.has(tid)) return false;
-  if (skippedByNoCorrection.has(tid)) return false;
-  return true;
-});
-const backlogSize = backlogTweets.length;
-console.log(`  Backlog: ${backlogSize} tweets eligible for retry (${skippedByNoCorrection.size} no-correction skipped, ${submittedTweets.size} submitted, of ${allPipelineTweets.size} unique)`);
-
-// 4b. Run snapshots (backlog trend)
-const runSnapshots = await fetchAll<{
-  created_at: string;
-  backlog_total: number;
-  backlog_new: number;
-  backlog_retry: number;
-  backlog_hit_limit: boolean;
-  posts_processed: number;
-}>(
-  (c) => c.from("run_snapshots").select("created_at, backlog_total, backlog_new, backlog_retry, backlog_hit_limit, posts_processed").order("created_at", { ascending: true })
-);
-console.log(`  ${runSnapshots.length} run snapshots`);
 
 // 5. Video info from pipeline_runs (submitted tweets only)
 const videoRuns = await fetchAll<{
@@ -447,11 +413,6 @@ const html = `<!DOCTYPE html>
       <div class="card-value" style="color: #ef4444;" id="competing-count">-</div>
       <div class="card-sub" id="competing-sub"></div>
     </div>
-    <div class="card">
-      <div class="card-label">Unresolved Tweets</div>
-      <div class="card-value" style="color: #f59e0b;" id="backlog-count">${backlogSize}</div>
-      <div class="card-sub">seen but not submitted/skipped</div>
-    </div>
   </div>
 
   <div class="section-title">Active Bots</div>
@@ -519,24 +480,6 @@ const html = `<!DOCTYPE html>
     </table>
   </div>
 
-  <div class="summary">
-    <h2>Backlog Trend</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Time (UTC)</th>
-          <th>Total</th>
-          <th>New</th>
-          <th>Retry</th>
-          <th>Processed</th>
-          <th>Hit Limit</th>
-        </tr>
-      </thead>
-      <tbody id="backlog-table-body">
-      </tbody>
-    </table>
-  </div>
-
   <p class="data-source">Generated ${new Date().toISOString().slice(0, 16)} UTC</p>
 
   <script>
@@ -547,7 +490,6 @@ const html = `<!DOCTYPE html>
     const botColors = ${JSON.stringify(botColors)};
     const pipelineRuns = ${JSON.stringify(pipelineRuns)};
     const pipelineOutcomesByBot = ${JSON.stringify(pipelineOutcomesByBot)};
-    const runSnapshots = ${JSON.stringify(runSnapshots)};
     const globalTotalViews = ${globalTotalViews};
     const totalCompeting = ${totalCompeting};
     const helpfulCompeting = ${helpfulCompeting};
@@ -1090,24 +1032,6 @@ const html = `<!DOCTYPE html>
           }
         });
         sankeyCharts.push(chart);
-      }
-    }
-
-    // Render backlog trend table (last 20 runs, newest first)
-    {
-      const tbody = document.getElementById('backlog-table-body');
-      const recent = runSnapshots.slice(-20).reverse();
-      for (const snap of recent) {
-        const t = new Date(snap.created_at);
-        const timeStr = t.toISOString().slice(5, 16).replace('T', ' ');
-        tbody.innerHTML += \`<tr>
-          <td>\${timeStr}</td>
-          <td><strong>\${snap.backlog_total}</strong></td>
-          <td>\${snap.backlog_new}</td>
-          <td>\${snap.backlog_retry}</td>
-          <td>\${snap.posts_processed}</td>
-          <td>\${snap.backlog_hit_limit ? '⚠️ Yes' : 'No'}</td>
-        </tr>\`;
       }
     }
 

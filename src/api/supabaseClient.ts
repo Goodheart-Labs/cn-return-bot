@@ -1050,23 +1050,6 @@ export class SupabaseLogger {
     }
   }
 
-  async logRunSnapshot(data: {
-    backlog_total: number;
-    backlog_new: number;
-    backlog_retry: number;
-    backlog_hit_limit: boolean;
-    posts_processed: number;
-    commit_sha?: string;
-    feed_size?: string;
-  }): Promise<void> {
-    const { error } = await this.client
-      .from("run_snapshots")
-      .insert(data);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to log run snapshot:", error.message);
-    }
-  }
-
   // ---------------------------------------------------------------------------
   // Pipeline state (key-value store for persistent state across runs)
   // ---------------------------------------------------------------------------
