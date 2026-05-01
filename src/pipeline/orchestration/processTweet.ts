@@ -93,40 +93,11 @@ async function runBotPipeline(
   const tweetType = `${content.isQuoteTweet ? "quote tweet" : "original"}${metadata.hasVideo ? " [VIDEO]" : ""}`;
 
   const log = getTweetLog();
-  log?.set("tweet.id", post.id);
-  log?.set("tweet.text", post.text);
+  log?.set("tweet.post", post);
   log?.set("tweet.type", tweetType);
   log?.set("bot.id", bot.id);
 
-  // Full post content including quoted/referenced tweet context
-  if (content.quotedPostContext) {
-    log?.set("tweet.quotedPostContext", content.quotedPostContext);
-  }
-  if (content.isQuoteTweet) {
-    log?.set("tweet.contentText", content.text); // Combined text sent to pipeline
-  }
-  if (post.referenced_tweets?.length) {
-    log?.set("tweet.referencedTweets", post.referenced_tweets);
-  }
-  if (post.referenced_tweet_data) {
-    log?.set("tweet.referencedTweetData", {
-      text: post.referenced_tweet_data.text,
-      media: post.referenced_tweet_data.media?.map(m => ({
-        type: m.type,
-        url: m.url || m.preview_image_url,
-      })),
-    });
-  }
-
-  // Engagement metrics
-  if (post.public_metrics) {
-    log?.set("tweet.impressions", post.public_metrics.impression_count ?? 0);
-    log?.set("tweet.likes", post.public_metrics.like_count ?? 0);
-    log?.set("tweet.retweets", post.public_metrics.retweet_count ?? 0);
-    log?.set("tweet.replies", post.public_metrics.reply_count ?? 0);
-  }
   if (post.created_at) {
-    log?.set("tweet.createdAt", post.created_at);
     const ageMs = Date.now() - new Date(post.created_at).getTime();
     log?.set("tweet.recencyHours", Math.max(0, ageMs / (1000 * 60 * 60)));
   }

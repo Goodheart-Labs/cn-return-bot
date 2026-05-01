@@ -59,16 +59,18 @@ ${buildToolSection(config)}
 - When the "error" is too minor or pedantic`;
 }
 
-function getQuotedPostText(post: Post): string | undefined {
-  const quotedRef = post.referenced_tweets?.find((rt) => rt.type === "quoted");
-  return quotedRef && post.referenced_tweet_data
-    ? post.referenced_tweet_data.text
-    : undefined;
+type ReferenceKind = "quoted" | "retweeted";
+
+function getReferenceKind(post: Post): ReferenceKind | undefined {
+  if (!post.referenced_tweet_data) return undefined;
+  const ref = post.referenced_tweets?.find(
+    (rt) => rt.type === "quoted" || rt.type === "retweeted",
+  );
+  return ref?.type as ReferenceKind | undefined;
 }
 
 export function buildUserMessage(params: {
   post: Post;
-  tweetText: string;
   tweetMedia: GeminiMediaItem[];
   quotedTweetMedia: GeminiMediaItem[];
   authorNoteHistory?: AuthorNoteHistory;
@@ -92,6 +94,18 @@ export function buildUserMessage(params: {
   if (authorParts.length) parts.push(`\nAuthor: ${authorParts.join(" — ")}`);
   if (post.author_description) parts.push(`Author bio: ${post.author_description}`);
 
+  // Engagement metrics
+  const m = post.public_metrics;
+  if (m) {
+    const metricParts: string[] = [];
+    if (m.impression_count != null) metricParts.push(`${m.impression_count.toLocaleString()} impressions`);
+    if (m.like_count != null) metricParts.push(`${m.like_count.toLocaleString()} likes`);
+    if (m.retweet_count != null) metricParts.push(`${m.retweet_count.toLocaleString()} retweets`);
+    if (m.reply_count != null) metricParts.push(`${m.reply_count.toLocaleString()} replies`);
+    if (m.quote_count != null) metricParts.push(`${m.quote_count.toLocaleString()} quotes`);
+    if (metricParts.length) parts.push(`Engagement: ${metricParts.join(" — ")}`);
+  }
+
   // Author note history
   if (params.authorNoteHistory && params.authorNoteHistory.totalHelpful > 0) {
     const h = params.authorNoteHistory;
@@ -103,13 +117,17 @@ export function buildUserMessage(params: {
     }
   }
 
-  // Post
-  parts.push(`\n## Post\n\n${params.tweetText}`);
-
-  // Quoted post
-  const quotedPostText = getQuotedPostText(post);
-  if (quotedPostText) {
-    parts.push(`\n## Quoted post\n\n${quotedPostText}`);
+  // Post + referenced post
+  // For retweets, post.text is "RT @user: <truncated>" — show only the original.
+  // For quote tweets, show the user's commentary AND the quoted post separately.
+  const refKind = getReferenceKind(post);
+  if (refKind === "retweeted") {
+    parts.push(`\n## Post (retweet)\n\n${post.referenced_tweet_data!.text}`);
+  } else {
+    parts.push(`\n## Post\n\n${post.text}`);
+    if (refKind === "quoted") {
+      parts.push(`\n## Quoted post\n\n${post.referenced_tweet_data!.text}`);
+    }
   }
 
   // Media on post
@@ -118,9 +136,10 @@ export function buildUserMessage(params: {
     parts.push(formatMediaItems(params.tweetMedia));
   }
 
-  // Media on quoted post
+  // Media on quoted/retweeted post
   if (params.quotedTweetMedia.length) {
-    parts.push(`\n## Media on quoted post`);
+    const heading = refKind === "retweeted" ? "Media on retweeted post" : "Media on quoted post";
+    parts.push(`\n## ${heading}`);
     parts.push(formatMediaItems(params.quotedTweetMedia));
   }
 

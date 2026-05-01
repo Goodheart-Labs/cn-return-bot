@@ -6,7 +6,7 @@
  */
 
 import type { Post } from "../api/fetchEligiblePosts";
-import { Bot, PipelineResult, PipelineOutcome, outcomeToResult, type PostContent } from "./types";
+import { Bot, PipelineResult, PipelineOutcome, outcomeToResult } from "./types";
 import type { BotInput } from "../pipeline/input/createBotInput";
 import { randomizeConfig, withBotConfig, getBotConfig, getFullBotId } from "../pipeline/utils/botConfig";
 import { withCostTracker, aggregateAndLogCosts } from "../pipeline/utils/costTracker";
@@ -19,7 +19,7 @@ import { evaluateAndPickBest } from "../pipeline/score/noteEvaluation";
 
 const MAX_ITERATIONS = 50;
 
-async function runAgent(post: Post, content: PostContent, input: BotInput): Promise<PipelineOutcome> {
+async function runAgent(post: Post, input: BotInput): Promise<PipelineOutcome> {
   const config = getBotConfig();
   const log = getTweetLog();
 
@@ -33,7 +33,6 @@ async function runAgent(post: Post, content: PostContent, input: BotInput): Prom
 
   const userMessage = buildUserMessage({
     post,
-    tweetText: content.text,
     tweetMedia: input.mediaResult.tweetMedia,
     quotedTweetMedia: input.mediaResult.quotedTweetMedia,
     authorNoteHistory: input.authorHistory,
@@ -66,14 +65,14 @@ export const agentBot: Bot = {
   id: "agent",
   name: "Agent",
   description: "Agentic bot with tool calling",
-  async runPipeline(post, content): Promise<PipelineResult | null> {
+  async runPipeline(post): Promise<PipelineResult | null> {
     const config = randomizeConfig(this.id);
     const fullBotId = getFullBotId(this.id, config);
 
     return withBotConfig(config, () => withCostTracker(async () => {
       getTweetLog()?.set("bot.id", fullBotId);
-      const input = await createBotInput(post, content, "agent");
-      const outcome = await runAgent(post, content, input);
+      const input = await createBotInput(post, "agent");
+      const outcome = await runAgent(post, input);
       const result = outcomeToResult(post, fullBotId, outcome, config.scoreFilters);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
