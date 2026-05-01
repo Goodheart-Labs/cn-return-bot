@@ -153,12 +153,24 @@ function extractFromLogs(logs: any): Extracted {
 async function fetchRunsBatch(client: SupabaseClient, offset: number) {
   const { data, error } = await client
     .from("pipeline_runs")
-    .select("id, tweet_id, created_at, logs")
+    .select("id, tweet_id, created_at, logs, bot_name, bot_name_long")
     .order("created_at", { ascending: true })
     .not("logs", "is", null)
     .range(offset, offset + PAGE_SIZE - 1);
   if (error) throw error;
   return data ?? [];
+}
+
+function extractBotIdentity(logs: any): { name?: string; nameLong?: string; config?: any } {
+  if (!logs || typeof logs !== "object") return {};
+  const bot = logs.bot;
+  if (!bot || typeof bot !== "object") return {};
+  const out: { name?: string; nameLong?: string; config?: any } = {};
+  if (typeof bot.id === "string") out.nameLong = bot.id;
+  if (typeof bot.name === "string") out.name = bot.name;
+  else if (typeof bot.id === "string") out.name = bot.id.split("_")[0];
+  if (bot.config && typeof bot.config === "object") out.config = bot.config;
+  return out;
 }
 
 async function main() {
@@ -167,6 +179,12 @@ async function main() {
   // Best per tweet_id: first non-empty extraction wins (oldest run that had
   // the data — keeps semantics stable on re-run).
   const best: Map<string, Extracted> = new Map();
+  // Per pipeline_run bot identity backfill (only for runs that don't have it)
+  const botUpdates: Array<{ id: string; name?: string; nameLong?: string; config?: any }> = [];
+  // Track tweets that need to exist (even minimally) because some pipeline_run
+  // referenced them — covers the case where the synced pipeline_runs has
+  // tweet_ids that aren't in tweets yet.
+  const seenTweetIds = new Set<string>();
 
   let offset = 0;
   let scanned = 0;
@@ -175,12 +193,21 @@ async function main() {
     if (rows.length === 0) break;
     for (const r of rows) {
       scanned++;
+      if (r.tweet_id) seenTweetIds.add(r.tweet_id);
+
+      // Bot identity from logs.bot.* — only fill in when the column is null.
+      if (r.bot_name == null || r.bot_name_long == null) {
+        const id = extractBotIdentity(r.logs);
+        if (id.name || id.nameLong || id.config) {
+          botUpdates.push({ id: r.id, ...id });
+        }
+      }
+
       if (!r.tweet_id) continue;
       const existing = best.get(r.tweet_id);
       if (existing?.media && existing.media.length > 0) continue;
       const extracted = extractFromLogs(r.logs);
       if (Object.keys(extracted).length === 0) continue;
-      // Merge: keep first non-empty for each field
       const merged: Extracted = { ...(existing ?? {}) };
       for (const [k, v] of Object.entries(extracted)) {
         if (v != null && (merged as any)[k] == null) (merged as any)[k] = v;
@@ -194,9 +221,22 @@ async function main() {
     if (rows.length < PAGE_SIZE) break;
   }
 
-  console.log(`[backfill] Scanned ${scanned} runs total; ${best.size} tweets with extractable data`);
+  console.log(`[backfill] Scanned ${scanned} runs total; ${best.size} tweets with extractable data; ${botUpdates.length} pipeline_runs need bot-identity backfill`);
 
-  // Update tweets in batches
+  // Ensure a tweets row exists for every tweet_id we saw in pipeline_runs.
+  // (It might not, if the pipeline_runs row came from a sync after migration
+  // 032's column-driven backfill ran on stale data.)
+  const now = new Date().toISOString();
+  const minimalTweetRows = [...seenTweetIds].map((tweet_id) => ({
+    tweet_id, first_seen_at: now, last_updated_at: now,
+  }));
+  for (let i = 0; i < minimalTweetRows.length; i += 200) {
+    const batch = minimalTweetRows.slice(i, i + 200);
+    await client.from("tweets").upsert(batch, { onConflict: "tweet_id", ignoreDuplicates: true });
+  }
+  console.log(`[backfill] Ensured tweets rows for ${minimalTweetRows.length} pipeline_run tweet_ids`);
+
+  // Update tweets with extracted log data
   const tweetIds = [...best.keys()];
   let updated = 0;
   let errors = 0;
@@ -213,7 +253,6 @@ async function main() {
         if (e.author_name) update.author_name = e.author_name;
         if (e.author_description) update.author_description = e.author_description;
         if (e.author_tweet_count != null) update.author_tweet_count = e.author_tweet_count;
-        // text gets refreshed only if the existing row has nothing better
         if (e.text) update.text = e.text;
         if (Object.keys(update).length === 0) return;
         const { error } = await client.from("tweets").update(update).eq("tweet_id", tid);
@@ -227,7 +266,24 @@ async function main() {
     );
   }
 
-  console.log(`[backfill] Done. Updated ${updated} tweets, ${errors} errors`);
+  // Bot identity updates on pipeline_runs.
+  let botUpdated = 0;
+  for (let i = 0; i < botUpdates.length; i += 100) {
+    const slice = botUpdates.slice(i, i + 100);
+    await Promise.all(
+      slice.map(async (b) => {
+        const update: Record<string, unknown> = {};
+        if (b.name) update.bot_name = b.name;
+        if (b.nameLong) update.bot_name_long = b.nameLong;
+        if (b.config) update.bot_config = b.config;
+        if (Object.keys(update).length === 0) return;
+        const { error } = await client.from("pipeline_runs").update(update).eq("id", b.id);
+        if (!error) botUpdated++;
+      }),
+    );
+  }
+
+  console.log(`[backfill] Done. Updated ${updated} tweets (${errors} errors); ${botUpdated} pipeline_runs bot-identity-backfilled`);
 }
 
 main().catch((e) => {
