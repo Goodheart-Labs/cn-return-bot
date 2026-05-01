@@ -174,8 +174,14 @@ const notes = scrapedNotes.map((n) => {
 });
 
 // Define active vs legacy bots
-const activeBots = ["opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok", "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source", "opus-bridging"];
-const legacyBots = ["opus-4.6", "sonar-pro", "kimi-k2", "opus-research", "opus-verified", "opus-concise", "opus-scored", "opus-strict", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking"];
+const activeBots = ["multi-agent", "claude-simple", "agent"];
+const legacyBots = [
+  "opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok",
+  "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source",
+  "opus-bridging", "opus-4.6", "sonar-pro", "kimi-k2", "opus-research",
+  "opus-verified", "opus-concise", "opus-scored", "opus-strict",
+  "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking",
+];
 
 // Check for notes from unknown bots
 const knownBots = new Set([...activeBots, ...legacyBots]);

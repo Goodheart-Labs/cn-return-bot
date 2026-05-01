@@ -566,26 +566,13 @@ async function main() {
       if (!error) apiOverlayCount++;
     }
 
-    // Insert new API-only notes. Also upsert minimal tweets rows so the
-    // dashboard's tweets-join doesn't return null for these — without this,
-    // newly-discovered notes have no tweet text/media slot at all (the
-    // X-API-overlay path doesn't go through processTweet, which is the
-    // normal upsertTweet writer).
+    // Insert new API-only notes.
     for (let i = 0; i < newApiRows.length; i += PAGE_SIZE) {
       const batch = newApiRows.slice(i, i + PAGE_SIZE);
       const { error } = await client
         .from("notes")
         .upsert(batch, { onConflict: "note_id" });
       if (!error) apiNewCount += batch.length;
-    }
-    if (newApiRows.length > 0) {
-      const tweetRows = [...new Map(
-        newApiRows.map((n) => [n.tweet_id, { tweet_id: n.tweet_id, first_seen_at: now, last_updated_at: now }]),
-      ).values()];
-      for (let i = 0; i < tweetRows.length; i += PAGE_SIZE) {
-        const batch = tweetRows.slice(i, i + PAGE_SIZE);
-        await client.from("tweets").upsert(batch, { onConflict: "tweet_id", ignoreDuplicates: true });
-      }
     }
 
     console.log(`[updateFeedback] API overlay: ${apiOverlayCount} statuses updated, ${apiNewCount} new notes added`);
