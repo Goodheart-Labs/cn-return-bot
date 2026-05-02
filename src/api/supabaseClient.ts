@@ -1365,20 +1365,33 @@ export class SupabaseLogger {
     return count ?? 0;
   }
 
-  /** Oldest `submitted_at` within the last N hours, or null if none */
-  async oldestSubmissionWithinHours(hours: number): Promise<string | null> {
+  /** Count pipeline_runs created in the last N hours */
+  async countRecentPipelineRuns(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { data, error } = await this.client
-      .from("notes")
-      .select("submitted_at")
-      .gte("submitted_at", since)
-      .order("submitted_at", { ascending: true })
-      .limit(1);
+    const { count, error } = await this.client
+      .from("pipeline_runs")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", since);
     if (error) {
-      console.warn("[SupabaseLogger] Failed to fetch oldest recent submission:", error.message);
-      return null;
+      console.warn("[SupabaseLogger] Failed to count recent pipeline runs:", error.message);
+      return 0;
     }
-    return data?.[0]?.submitted_at ?? null;
+    return count ?? 0;
+  }
+
+  /** Count pipeline_runs created in the last N hours whose outcome is in `outcomes` */
+  async countRecentPipelineRunsByOutcomes(hours: number, outcomes: string[]): Promise<number> {
+    const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+    const { count, error } = await this.client
+      .from("pipeline_runs")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", since)
+      .in("outcome", outcomes);
+    if (error) {
+      console.warn("[SupabaseLogger] Failed to count recent pipeline runs by outcome:", error.message);
+      return 0;
+    }
+    return count ?? 0;
   }
 
   /** Check if any notes have been submitted since a given ISO timestamp */
