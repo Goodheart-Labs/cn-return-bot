@@ -4,6 +4,7 @@
  */
 
 import type { SupabaseLogger } from "../../api/supabaseClient";
+import { readWritingLimit } from "./writingLimit";
 
 const WINDOW_HOURS = 24;
 const MAX_POSTS_CAP = 20;
@@ -46,11 +47,4 @@ export async function computeMaxPosts(logger: SupabaseLogger): Promise<number> {
       ` rate=${conversionRate.toFixed(3)} (${convertedRuns}/${totalRuns}) target=${target} maxPosts=${maxPosts}`,
   );
   return maxPosts;
-}
-
-async function readWritingLimit(logger: SupabaseLogger): Promise<number | null> {
-  const raw = await logger.getPipelineState("writing_limit");
-  if (!raw) return null;
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 }

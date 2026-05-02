@@ -4,8 +4,7 @@
 
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Candidate } from "./submitCandidates";
-
-const RATE_LIMIT_WINDOW_HOURS = 24;
+import { bumpWritingLimitFromSuccess, recordDailyLimitHit } from "./writingLimit";
 
 export type SubmissionResult =
   | { status: "submitted"; noteId: string }
@@ -56,6 +55,12 @@ export async function submitNoteForTweet(
       console.error("[submit] Failed to log to Supabase:", logErr);
     }
 
+    try {
+      await bumpWritingLimitFromSuccess(logger);
+    } catch (limitErr) {
+      console.warn("[submit] Failed to bump writing_limit after success:", limitErr);
+    }
+
     return { status: "submitted", noteId };
   } catch (err: any) {
     const errorData = err.response?.data;
@@ -65,10 +70,7 @@ export async function submitNoteForTweet(
 
     if (errorText.includes("daily limit")) {
       try {
-        await logger.setPipelineState("limit_hit_at", new Date().toISOString());
-        const recentCount = await logger.countRecentSubmissions(RATE_LIMIT_WINDOW_HOURS);
-        await logger.setPipelineState("writing_limit", String(recentCount));
-        console.log(`[submit] Daily limit reached. Writing limit updated to ${recentCount}`);
+        await recordDailyLimitHit(logger);
       } catch (stateErr) {
         console.warn("[submit] Failed to record limit hit state:", stateErr);
       }
