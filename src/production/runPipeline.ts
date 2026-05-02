@@ -45,6 +45,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orchestration/generateCandidates";
 import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
+import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withConfigOverrides } from "../pipeline/utils/botConfig";
@@ -66,8 +67,8 @@ function writePipelineRowToCsv(output: OutputFolder, event: TweetProcessedEvent)
 }
 
 const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_POSTS = 5;
 const MAX_POSTS_LOCAL = 5;
+const MAX_POSTS_FALLBACK = 5;
 
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (15 minutes), forcing exit");
@@ -90,18 +91,18 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
-    // Skip the run entirely if the next submission slot hasn't opened yet
-    if (supabaseLogger) {
-      const nextSlotAt = await supabaseLogger.getPipelineState("next_slot_opens_at");
-      if (nextSlotAt && Date.now() < new Date(nextSlotAt).getTime()) {
-        console.log(`[pipeline] Skipping — next submission slot opens at ${nextSlotAt}`);
-        clearTimeout(globalTimeout);
-        await closeBrowser();
-        process.exit(0);
-      }
-    }
+    const maxPosts = isLocal
+      ? MAX_POSTS_LOCAL
+      : supabaseLogger
+        ? await computeMaxPosts(supabaseLogger)
+        : MAX_POSTS_FALLBACK;
 
-    const maxPosts = isLocal ? MAX_POSTS_LOCAL : MAX_POSTS;
+    if (maxPosts === 0) {
+      console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
+      clearTimeout(globalTimeout);
+      await closeBrowser();
+      process.exit(0);
+    }
 
     // --local: collect per-tweet results into a CSV and auto-open the dashboard
     const localOutput: OutputFolder | null = isLocal
