@@ -66,9 +66,8 @@ function writePipelineRowToCsv(output: OutputFolder, event: TweetProcessedEvent)
 }
 
 const MAX_RUNTIME_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_POSTS = 20;
+const MAX_POSTS = 5;
 const MAX_POSTS_LOCAL = 5;
-const PROBE_POSTS = 3;
 
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (15 minutes), forcing exit");
@@ -102,17 +101,6 @@ async function main() {
       }
     }
 
-    // Check if we need to probe first (last run hit the daily limit and no submissions since)
-    let cautious = false;
-    if (supabaseLogger) {
-      const limitHitAt = await supabaseLogger.getPipelineState("limit_hit_at");
-      if (limitHitAt) {
-        const hasSubmitted = await supabaseLogger.hasSubmissionsSince(limitHitAt);
-        cautious = !hasSubmitted;
-        if (cautious) console.log(`[pipeline] Cautious mode — limit hit at ${limitHitAt}, no submissions since`);
-      }
-    }
-
     const maxPosts = isLocal ? MAX_POSTS_LOCAL : MAX_POSTS;
 
     // --local: collect per-tweet results into a CSV and auto-open the dashboard
@@ -123,50 +111,12 @@ async function main() {
       ? (event: TweetProcessedEvent) => writePipelineRowToCsv(localOutput, event)
       : undefined;
 
-    if (cautious && supabaseLogger) {
-      // Probe in small batches until we get a submission through (limit reset) or confirm it's still active
-      let totalSubmitted = 0;
-      let postsUsed = 0;
-
-      while (postsUsed < maxPosts) {
-        const batchSize = Math.min(PROBE_POSTS, maxPosts - postsUsed);
-        console.log(`[pipeline] Probing batch ${Math.floor(postsUsed / PROBE_POSTS) + 1} (${batchSize} tweets)...`);
-        const candidates = await generateCandidates(supabaseLogger, { maxPosts: batchSize, onTweetProcessed, forcedBotId });
-        postsUsed += batchSize;
-
-        if (candidates.length === 0) continue;
-
-        const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
-        totalSubmitted += submitted;
-
-        if (submitted > 0) {
-          // Limit has reset — continue with a normal batch for the rest
-          console.log(`[pipeline] Limit reset confirmed — continuing with full batch`);
-          const remaining = maxPosts - postsUsed;
-          if (remaining > 0) {
-            const moreCandidates = await generateCandidates(supabaseLogger, { maxPosts: remaining, onTweetProcessed, forcedBotId });
-            if (moreCandidates.length > 0) {
-              totalSubmitted += await submitCandidates(moreCandidates, supabaseLogger, isLocal);
-            }
-          }
-          break;
-        } else {
-          // Had candidates but couldn't submit — limit still active
-          console.log(`[pipeline] Limit still active — stopping`);
-          break;
-        }
-      }
-
-      console.log(`[pipeline] Submitted ${totalSubmitted} total`);
+    const candidates = await generateCandidates(supabaseLogger, { maxPosts, onTweetProcessed, forcedBotId });
+    if (candidates.length > 0 && supabaseLogger) {
+      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates`);
     } else {
-      // Normal flow
-      const candidates = await generateCandidates(supabaseLogger, { maxPosts, onTweetProcessed, forcedBotId });
-      if (candidates.length > 0 && supabaseLogger) {
-        const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
-        console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates`);
-      } else {
-        console.log(`[pipeline] No candidates to submit`);
-      }
+      console.log(`[pipeline] No candidates to submit`);
     }
 
     if (localOutput) {

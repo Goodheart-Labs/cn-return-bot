@@ -185,8 +185,13 @@ export async function generateCandidates(
 
   await queue.onIdle();
 
+  if (process.env.CI) {
+    console.log("::endgroup::");
+    console.log("::group::Run summary");
+  }
   console.log(`[generate] ${candidates.length} candidates (${newCount} new + ${retryCount} retry processed), ${posts.length - candidates.length} rejected`);
   console.log(formatRunSummary(allLogs, feedSize));
+  if (process.env.CI) console.log("::endgroup::");
 
   return candidates;
 }
