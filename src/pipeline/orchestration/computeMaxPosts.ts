@@ -6,7 +6,8 @@
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import { readWritingLimit } from "./writingLimit";
 
-const WINDOW_HOURS = 24;
+const WRITING_LIMIT_WINDOW_HOURS = 24;
+const RATE_SAMPLE_WINDOW_HOURS = 32;
 const MAX_POSTS_CAP = 20;
 const SAFETY_MULTIPLIER = 1.25;
 const FALLBACK_MAX_POSTS = 5;
@@ -20,20 +21,20 @@ export async function computeMaxPosts(logger: SupabaseLogger): Promise<number> {
     return FALLBACK_MAX_POSTS;
   }
 
-  const submissions = await logger.countRecentSubmissions(WINDOW_HOURS);
+  const submissions = await logger.countRecentSubmissions(WRITING_LIMIT_WINDOW_HOURS);
   const remainingSlots = Math.max(writingLimit - submissions, 0);
   if (remainingSlots === 0) {
     console.log(`[max-posts] limit=${writingLimit} submitted=${submissions} remaining=0 maxPosts=0`);
     return 0;
   }
 
-  const totalRuns = await logger.countRecentPipelineRuns(WINDOW_HOURS);
+  const totalRuns = await logger.countRecentPipelineRuns(RATE_SAMPLE_WINDOW_HOURS);
   if (totalRuns < MIN_RUNS_FOR_RATE) {
-    console.log(`[max-posts] only ${totalRuns} runs in last ${WINDOW_HOURS}h — using fallback ${FALLBACK_MAX_POSTS}`);
+    console.log(`[max-posts] only ${totalRuns} runs in last ${RATE_SAMPLE_WINDOW_HOURS}h — using fallback ${FALLBACK_MAX_POSTS}`);
     return FALLBACK_MAX_POSTS;
   }
 
-  const convertedRuns = await logger.countRecentPipelineRunsByOutcomes(WINDOW_HOURS, CONVERTED_OUTCOMES);
+  const convertedRuns = await logger.countRecentPipelineRunsByOutcomes(RATE_SAMPLE_WINDOW_HOURS, CONVERTED_OUTCOMES);
   const conversionRate = convertedRuns / totalRuns;
   if (conversionRate === 0) {
     console.log(`[max-posts] conversion rate is 0 (${convertedRuns}/${totalRuns}) — using fallback ${FALLBACK_MAX_POSTS}`);
