@@ -57,10 +57,12 @@ async function fetchPosts(
   const newPosts = posts.filter((p) => !knownTweetIds.has(p.id));
   const retryPosts = posts.filter((p) => knownTweetIds.has(p.id));
 
-  if (supabaseLogger && posts.length) {
+  // Only insert rows for tweets we haven't seen before — we want the row to
+  // capture engagement metrics at first sight, not refresh them on every run.
+  if (supabaseLogger && newPosts.length) {
     try {
-      await supabaseLogger.bulkUpsertTweets(posts);
-      console.log(`[generate] Upserted ${posts.length} fetched tweets (${newPosts.length} new rows)`);
+      await supabaseLogger.bulkUpsertTweets(newPosts);
+      console.log(`[generate] Inserted ${newPosts.length} new tweets`);
     } catch (err) {
       console.warn("[generate] Failed to bulk-upsert tweets:", err);
     }
