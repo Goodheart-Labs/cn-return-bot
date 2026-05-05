@@ -38,18 +38,21 @@ function warn(label: string, detail?: string) {
   warnings++;
 }
 
-async function tableExists(name: string): Promise<boolean> {
-  // Use INSERT, not SELECT. PostgREST's schema cache can return empty pages
-  // for a dropped table for a window after the DROP, masking it from a
-  // SELECT-based probe. INSERT always surfaces a missing-table error
-  // immediately. We pass a non-conflicting fake row so the call doesn't
-  // actually write anything when the table happens to exist.
-  const { error } = await c.from(name).insert({ id: "00000000-0000-0000-0000-000000000000" });
+async function tableExists(name: string, knownColumn: string): Promise<boolean> {
+  // SELECT a column we know lives on this table. Three outcomes:
+  //   - no error → table + column exist
+  //   - 42P01 / PGRST205 / "relation does not exist" → table is gone
+  //   - 42703 ("column does not exist") → table exists, the column doesn't
+  //     (shouldn't happen if knownColumn is right, but treat as exists)
+  // The earlier SELECT("*", head:true) probe was unreliable because
+  // PostgREST's schema cache can return an empty page for a dropped table
+  // for a window after the DROP. Selecting a specific column forces an
+  // actual schema lookup.
+  const { error } = await c.from(name).select(knownColumn).limit(1);
   if (!error) return true;
-  if (error.code === "PGRST205") return false;
-  if (/does not exist|Could not find/i.test(error.message ?? "")) return false;
-  // Any other error (constraint violation, type mismatch, etc.) means the
-  // table exists; we just couldn't insert into it.
+  if (error.code === "42P01" || error.code === "PGRST205") return false;
+  if (/relation.*does not exist|Could not find the table/i.test(error.message ?? "")) return false;
+  if (error.code === "42703") return true; // wrong column name; table exists
   return true;
 }
 
@@ -74,13 +77,13 @@ async function main() {
   console.log("== Migrations 027-032 applied ==");
 
   // 027: bot_configs gone, dashboard views gone
-  if (await tableExists("bot_configs")) fail("bot_configs is dropped (migration 027)");
+  if (await tableExists("bot_configs", "id")) fail("bot_configs is dropped (migration 027)");
   else ok("bot_configs is dropped");
   if (!(await columnExists("notes", "bot_config_id"))) ok("notes.bot_config_id is dropped");
   else fail("notes.bot_config_id is dropped");
 
   // 028: unmatched_scraped_notes gone, dead canonical columns gone
-  if (await tableExists("unmatched_scraped_notes")) fail("unmatched_scraped_notes is dropped (migration 028)");
+  if (await tableExists("unmatched_scraped_notes", "id")) fail("unmatched_scraped_notes is dropped (migration 028)");
   else ok("unmatched_scraped_notes is dropped");
   if (!(await columnExists("canonical_note_information", "coherence_score"))) ok("canonical.coherence_score dropped");
   else fail("canonical.coherence_score should be dropped");
@@ -90,7 +93,7 @@ async function main() {
   else fail("snapshots.helpful_count should be dropped");
 
   // 029: run_snapshots gone
-  if (await tableExists("run_snapshots")) fail("run_snapshots is dropped (migration 029)");
+  if (await tableExists("run_snapshots", "id")) fail("run_snapshots is dropped (migration 029)");
   else ok("run_snapshots is dropped");
 
   // 030: competing_notes trimmed
@@ -110,7 +113,7 @@ async function main() {
   else fail("pipeline_runs.bot_config should exist");
 
   // 032: tweets table exists
-  if (await tableExists("tweets")) ok("tweets table created");
+  if (await tableExists("tweets", "tweet_id")) ok("tweets table created");
   else fail("tweets table should exist (migration 032)");
 
   console.log("\n== 033-036 NOT yet applied (we should still be in the intermediate state) ==");
@@ -122,7 +125,7 @@ async function main() {
   else warn("pipeline_runs.has_video already dropped");
 
   // 034: canonical not yet renamed
-  if (await tableExists("canonical_note_information")) ok("canonical_note_information still present (034 not applied)");
+  if (await tableExists("canonical_note_information", "id")) ok("canonical_note_information still present (034 not applied)");
   else warn("canonical_note_information missing — 034 may have been applied");
 
   console.log("\n== Backfill counts (sanity) ==");
