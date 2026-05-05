@@ -29,17 +29,17 @@ async function fetchPosts(
   maxPosts: number
 ): Promise<{ posts: Post[]; feedSize: FeedSize; newCount: number; retryCount: number }> {
   let skipPostIds = new Set<string>();
-  let allProcessedIds = new Set<string>();
+  let knownTweetIds = new Set<string>();
 
   if (supabaseLogger) {
     try {
-      [skipPostIds, allProcessedIds] = await Promise.all([
+      [skipPostIds, knownTweetIds] = await Promise.all([
         supabaseLogger.getSkipTweetIds(),
-        supabaseLogger.getAllProcessedTweetIds(),
+        supabaseLogger.getKnownTweetIds(),
       ]);
-      console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${allProcessedIds.size} total processed`);
+      console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${knownTweetIds.size} already in tweets table`);
     } catch (err) {
-      console.warn("[generate] Failed to get processed tweet IDs:", err);
+      console.warn("[generate] Failed to get known tweet IDs:", err);
     }
   }
 
@@ -51,8 +51,21 @@ async function fetchPosts(
   const postSelection = buildPostSelection(feedSize);
   const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
-  const newPosts = posts.filter((p) => !allProcessedIds.has(p.id));
-  const retryPosts = posts.filter((p) => allProcessedIds.has(p.id));
+  // A tweet is "new" iff it wasn't already in the tweets table before this
+  // fetch. Insert the new ones now so subsequent runs see them as known and
+  // we stop re-processing the same backlog. Insert-only (not upsert) so
+  // engagement metrics on existing rows stay frozen at first sight.
+  const newPosts = posts.filter((p) => !knownTweetIds.has(p.id));
+  const retryPosts = posts.filter((p) => knownTweetIds.has(p.id));
+
+  if (supabaseLogger && newPosts.length) {
+    try {
+      await supabaseLogger.bulkInsertNewTweets(newPosts);
+      console.log(`[generate] Inserted ${newPosts.length} new tweets`);
+    } catch (err) {
+      console.warn("[generate] Failed to bulk-insert tweets:", err);
+    }
+  }
 
   // Fill remaining slots with retries (submission step handles the daily cap)
   const retrySlots = RETRIES_ENABLED ? Math.max(0, maxPosts - newPosts.length) : 0;
@@ -68,7 +81,7 @@ async function fetchPosts(
   for (const [i, p] of selected.entries()) {
     const imp = p.public_metrics?.impression_count ?? 0;
     const age = ageInHours(p);
-    const tag = allProcessedIds.has(p.id) ? " [retry]" : "";
+    const tag = knownTweetIds.has(p.id) ? " [retry]" : "";
     console.log(`[generate]   #${i + 1}: ${p.id} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago${tag}`);
   }
 

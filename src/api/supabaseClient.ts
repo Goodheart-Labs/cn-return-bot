@@ -298,11 +298,12 @@ export class SupabaseLogger {
   // ============================================
 
   /**
-   * Upsert the tweets row from a Post object. Engagement metrics are LATEST
-   * values (not point-in-time history) — every pipeline run touching this
-   * tweet refreshes them. first_seen_at is preserved on conflict.
+   * Bulk insert tweets from fetched eligibility-endpoint posts. Derives
+   * has_video / has_photo / media_count / video_duration_ms from post.media.
+   * Insert-only: rows whose tweet_id already exists are skipped, so engagement
+   * metrics remain frozen at first sight.
    */
-  async upsertTweet(post: {
+  async bulkInsertNewTweets(posts: Array<{
     id: string;
     author_id?: string;
     text?: string;
@@ -322,15 +323,12 @@ export class SupabaseLogger {
     author_name?: string;
     author_description?: string;
     author_tweet_count?: number;
-  }, derived: {
-    has_video: boolean;
-    has_photo: boolean;
-    media_count: number;
-    video_duration_ms?: number;
-  }): Promise<void> {
+  }>): Promise<void> {
+    if (!posts.length) return;
     const now = new Date().toISOString();
-    const { error } = await this.client.from("tweets").upsert(
-      {
+    const rows = posts.map((post) => {
+      const videoMedia = post.media?.find((m) => m.type === "video");
+      return {
         tweet_id: post.id,
         author_id: post.author_id,
         author_name: post.author_name,
@@ -348,16 +346,16 @@ export class SupabaseLogger {
         media: post.media ?? null,
         referenced_tweets: post.referenced_tweets ?? null,
         referenced_tweet_data: post.referenced_tweet_data ?? null,
-        has_video: derived.has_video,
-        has_photo: derived.has_photo,
-        media_count: derived.media_count,
-        video_duration_ms: derived.video_duration_ms,
+        has_video: !!videoMedia,
+        has_photo: post.media?.some((m) => m.type === "photo") ?? false,
+        media_count: post.media?.length ?? 0,
+        video_duration_ms: videoMedia?.duration_ms,
         last_updated_at: now,
-      },
-      { onConflict: "tweet_id" },
-    );
+      };
+    });
+    const { error } = await this.client.from("tweets").upsert(rows, { onConflict: "tweet_id", ignoreDuplicates: true });
     if (error) {
-      console.error(`[SupabaseLogger] Error upserting tweet ${post.id}:`, error);
+      console.error(`[SupabaseLogger] Error bulk-inserting ${rows.length} tweets:`, error);
       throw error;
     }
   }
@@ -569,29 +567,18 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get all tweet IDs that have ever been processed (pipeline_runs + notes).
-   * Used to skip already-seen tweets — no retries.
+   * Get all tweet IDs already in the tweets table — i.e. tweets we have
+   * previously seen from the eligibility endpoint. Used to skip already-seen
+   * tweets so each fetched tweet is processed at most once.
    */
-  async getAllProcessedTweetIds(): Promise<Set<string>> {
-    const tweetIds = new Set<string>();
+  async getKnownTweetIds(): Promise<Set<string>> {
     try {
-      const pipelineRows = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("pipeline_runs").select("tweet_id")
+      const rows = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("tweets").select("tweet_id")
       );
-      pipelineRows.forEach((row) => {
-        if (row.tweet_id) tweetIds.add(row.tweet_id);
-      });
-
-      const notesRows = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("notes").select("tweet_id")
-      );
-      notesRows.forEach((row) => {
-        if (row.tweet_id) tweetIds.add(row.tweet_id);
-      });
-
-      return tweetIds;
+      return new Set(rows.map((r) => r.tweet_id).filter(Boolean));
     } catch (error) {
-      console.error("[SupabaseLogger] Error fetching all processed tweet IDs:", error);
+      console.error("[SupabaseLogger] Error fetching known tweet IDs:", error);
       return new Set();
     }
   }

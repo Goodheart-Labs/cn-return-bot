@@ -49,13 +49,8 @@ async function main() {
     referenced_tweet_data: undefined,
   };
 
-  await logger.upsertTweet(fakePost, {
-    has_video: false,
-    has_photo: true,
-    media_count: 1,
-    video_duration_ms: undefined,
-  });
-  console.log(`[smoke] upsertTweet OK`);
+  await logger.bulkInsertNewTweets([fakePost]);
+  console.log(`[smoke] bulkInsertNewTweets OK`);
 
   const runId = await logger.createPipelineRun({
     tweet_id: TWEET_ID,
