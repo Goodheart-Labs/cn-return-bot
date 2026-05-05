@@ -17,11 +17,33 @@ export type WrittenNoteInfo = {
   trustworthy_sources: boolean;
 };
 
+export type NoteFactorBucketCounts = {
+  helpful_count?: number;
+  somewhat_helpful_count?: number;
+  not_helpful_count?: number;
+  helpful_tag_counts?: { tag_name: string; tag_count: number };
+  not_helpful_tag_counts?: { tag_name: string; tag_count: number };
+};
+
+// `rating_counts_per_model` is gated on `has_access` (only true when the
+// authenticated notewriter is currently top-performing). We request the field
+// to future-proof; today it's always missing because our notewriter doesn't
+// qualify yet.
+export type NoteScoringStatus = {
+  has_access?: boolean;
+  rating_counts_per_model?: Record<string, {
+    negative_factor_bucket_counts?: NoteFactorBucketCounts;
+    neutral_factor_bucket_counts?: NoteFactorBucketCounts;
+    positive_factor_bucket_counts?: NoteFactorBucketCounts;
+  }>;
+};
+
 export type WrittenNote = {
   id: string;
   post_id: string;
   status?: NoteRatingStatus;
   info?: WrittenNoteInfo;
+  scoring_status?: NoteScoringStatus;
 };
 
 const API_URL = "https://api.x.com/2/notes/search/notes_written";
@@ -34,7 +56,7 @@ export async function fetchNotesWritten(): Promise<WrittenNote[]> {
     const params = new URLSearchParams({
       test_mode: "false",
       max_results: "100",
-      "note.fields": "id,info,status",
+      "note.fields": "id,info,status,scoring_status",
     });
     if (nextToken) params.append("pagination_token", nextToken);
 
@@ -53,6 +75,7 @@ export async function fetchNotesWritten(): Promise<WrittenNote[]> {
           post_id: note.post_id ?? note.info?.post_id,
           status: note.status,
           info: note.info,
+          scoring_status: note.scoring_status,
         });
       }
     }
