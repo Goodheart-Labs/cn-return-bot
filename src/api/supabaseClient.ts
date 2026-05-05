@@ -298,12 +298,12 @@ export class SupabaseLogger {
   // ============================================
 
   /**
-   * Bulk upsert tweets from fetched eligibility-endpoint posts. Derives
+   * Bulk insert tweets from fetched eligibility-endpoint posts. Derives
    * has_video / has_photo / media_count / video_duration_ms from post.media.
-   * Engagement metrics are LATEST values (not point-in-time history) — every
-   * call refreshes them. first_seen_at is preserved on conflict.
+   * Insert-only: rows whose tweet_id already exists are skipped, so engagement
+   * metrics remain frozen at first sight.
    */
-  async bulkUpsertTweets(posts: Array<{
+  async bulkInsertNewTweets(posts: Array<{
     id: string;
     author_id?: string;
     text?: string;
@@ -353,9 +353,9 @@ export class SupabaseLogger {
         last_updated_at: now,
       };
     });
-    const { error } = await this.client.from("tweets").upsert(rows, { onConflict: "tweet_id" });
+    const { error } = await this.client.from("tweets").upsert(rows, { onConflict: "tweet_id", ignoreDuplicates: true });
     if (error) {
-      console.error(`[SupabaseLogger] Error bulk-upserting ${rows.length} tweets:`, error);
+      console.error(`[SupabaseLogger] Error bulk-inserting ${rows.length} tweets:`, error);
       throw error;
     }
   }

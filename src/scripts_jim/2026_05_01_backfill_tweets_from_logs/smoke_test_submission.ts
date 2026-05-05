@@ -36,7 +36,7 @@ async function main() {
   console.log(`[smoke-sub] tweet_id=${TWEET_ID} note_id=${NOTE_ID}`);
 
   // 1. Upsert tweet (as fetchPosts does)
-  await logger.bulkUpsertTweets([{
+  await logger.bulkInsertNewTweets([{
     id: TWEET_ID,
     author_id: "smoke_author",
     text: "fake tweet",

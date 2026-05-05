@@ -61,7 +61,7 @@ async function fetchPosts(
   // capture engagement metrics at first sight, not refresh them on every run.
   if (supabaseLogger && newPosts.length) {
     try {
-      await supabaseLogger.bulkUpsertTweets(newPosts);
+      await supabaseLogger.bulkInsertNewTweets(newPosts);
       console.log(`[generate] Inserted ${newPosts.length} new tweets`);
     } catch (err) {
       console.warn("[generate] Failed to bulk-upsert tweets:", err);
