@@ -35,13 +35,13 @@ async function main() {
 
   console.log(`[smoke-sub] tweet_id=${TWEET_ID} note_id=${NOTE_ID}`);
 
-  // 1. Upsert tweet (as processTweet does)
-  await logger.upsertTweet({
+  // 1. Upsert tweet (as fetchPosts does)
+  await logger.bulkUpsertTweets([{
     id: TWEET_ID,
     author_id: "smoke_author",
     text: "fake tweet",
     media: [],
-  } as any, { has_video: false, has_photo: false, media_count: 0 });
+  }]);
 
   // 2. Create pipeline_run (as processTweet does)
   const runId = await logger.createPipelineRun({

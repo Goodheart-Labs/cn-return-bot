@@ -298,75 +298,10 @@ export class SupabaseLogger {
   // ============================================
 
   /**
-   * Upsert the tweets row from a Post object. Engagement metrics are LATEST
-   * values (not point-in-time history) — every pipeline run touching this
-   * tweet refreshes them. first_seen_at is preserved on conflict.
-   */
-  async upsertTweet(post: {
-    id: string;
-    author_id?: string;
-    text?: string;
-    created_at?: string;
-    media?: any[];
-    referenced_tweets?: any[];
-    referenced_tweet_data?: any;
-    public_metrics?: {
-      impression_count?: number;
-      like_count?: number;
-      retweet_count?: number;
-      reply_count?: number;
-      quote_count?: number;
-      bookmark_count?: number;
-    };
-    author_followers?: number;
-    author_name?: string;
-    author_description?: string;
-    author_tweet_count?: number;
-  }, derived: {
-    has_video: boolean;
-    has_photo: boolean;
-    media_count: number;
-    video_duration_ms?: number;
-  }): Promise<void> {
-    const now = new Date().toISOString();
-    const { error } = await this.client.from("tweets").upsert(
-      {
-        tweet_id: post.id,
-        author_id: post.author_id,
-        author_name: post.author_name,
-        author_description: post.author_description,
-        author_followers: post.author_followers,
-        author_tweet_count: post.author_tweet_count,
-        text: post.text,
-        posted_at: post.created_at,
-        impressions: post.public_metrics?.impression_count,
-        likes: post.public_metrics?.like_count,
-        retweets: post.public_metrics?.retweet_count,
-        replies: post.public_metrics?.reply_count,
-        quotes: post.public_metrics?.quote_count,
-        bookmarks: post.public_metrics?.bookmark_count,
-        media: post.media ?? null,
-        referenced_tweets: post.referenced_tweets ?? null,
-        referenced_tweet_data: post.referenced_tweet_data ?? null,
-        has_video: derived.has_video,
-        has_photo: derived.has_photo,
-        media_count: derived.media_count,
-        video_duration_ms: derived.video_duration_ms,
-        last_updated_at: now,
-      },
-      { onConflict: "tweet_id" },
-    );
-    if (error) {
-      console.error(`[SupabaseLogger] Error upserting tweet ${post.id}:`, error);
-      throw error;
-    }
-  }
-
-  /**
    * Bulk upsert tweets from fetched eligibility-endpoint posts. Derives
-   * has_video / has_photo / media_count / video_duration_ms from post.media
-   * so callers don't need to pre-compute them. first_seen_at is preserved on
-   * conflict; engagement metrics refresh on every call.
+   * has_video / has_photo / media_count / video_duration_ms from post.media.
+   * Engagement metrics are LATEST values (not point-in-time history) — every
+   * call refreshes them. first_seen_at is preserved on conflict.
    */
   async bulkUpsertTweets(posts: Array<{
     id: string;
