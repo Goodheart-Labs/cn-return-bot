@@ -117,3 +117,5 @@ bun install
 bun run src/production/runPipeline.ts          # full pipeline (same as GH Actions)
 bun run src/production/runPipeline.ts --local   # local mode
 ```
+
+When running locally, the prod X API keys must only be used for reading (fetching tweets, fetching note feedback). Never submit notes or perform any account-modifying action with the prod key without explicit approval — use `LOCAL_X_*` for that.
