@@ -39,10 +39,17 @@ function warn(label: string, detail?: string) {
 }
 
 async function tableExists(name: string): Promise<boolean> {
-  const { error } = await c.from(name).select("*", { count: "exact", head: true });
-  // PGRST205 = "Could not find the table" — table is genuinely gone
-  if (error?.code === "PGRST205") return false;
-  if (error && /does not exist|Could not find/i.test(error.message)) return false;
+  // Use INSERT, not SELECT. PostgREST's schema cache can return empty pages
+  // for a dropped table for a window after the DROP, masking it from a
+  // SELECT-based probe. INSERT always surfaces a missing-table error
+  // immediately. We pass a non-conflicting fake row so the call doesn't
+  // actually write anything when the table happens to exist.
+  const { error } = await c.from(name).insert({ id: "00000000-0000-0000-0000-000000000000" });
+  if (!error) return true;
+  if (error.code === "PGRST205") return false;
+  if (/does not exist|Could not find/i.test(error.message ?? "")) return false;
+  // Any other error (constraint violation, type mismatch, etc.) means the
+  // table exists; we just couldn't insert into it.
   return true;
 }
 
