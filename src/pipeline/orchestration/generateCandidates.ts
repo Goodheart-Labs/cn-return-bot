@@ -51,20 +51,19 @@ async function fetchPosts(
   const postSelection = buildPostSelection(feedSize);
   const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
 
-  // A tweet is "new" iff it was not already in the tweets table before this
-  // fetch. Record every fetched tweet now so subsequent runs see them as
-  // known — this is what stops us re-processing the same backlog.
+  // A tweet is "new" iff it wasn't already in the tweets table before this
+  // fetch. Insert the new ones now so subsequent runs see them as known and
+  // we stop re-processing the same backlog. Insert-only (not upsert) so
+  // engagement metrics on existing rows stay frozen at first sight.
   const newPosts = posts.filter((p) => !knownTweetIds.has(p.id));
   const retryPosts = posts.filter((p) => knownTweetIds.has(p.id));
 
-  // Only insert rows for tweets we haven't seen before — we want the row to
-  // capture engagement metrics at first sight, not refresh them on every run.
   if (supabaseLogger && newPosts.length) {
     try {
       await supabaseLogger.bulkInsertNewTweets(newPosts);
       console.log(`[generate] Inserted ${newPosts.length} new tweets`);
     } catch (err) {
-      console.warn("[generate] Failed to bulk-upsert tweets:", err);
+      console.warn("[generate] Failed to bulk-insert tweets:", err);
     }
   }
 
