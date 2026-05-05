@@ -40,7 +40,11 @@ if (useLocal) {
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const PAGE_SIZE = 500;
+// Small page size because pipeline_runs.logs is JSONB with multi-KB blobs
+// per row. 500/page (the previous value) hits Supabase's statement_timeout
+// on prod. 100 stays safely under it. Trade-off: 5x more requests, still
+// finishes in a couple minutes.
+const PAGE_SIZE = 100;
 
 const client = createClient(
   process.env.SUPABASE_URL!,
@@ -81,13 +85,12 @@ function extractFromLogs(logs: any): Extracted {
     // Shape A: raw X-API media on logs.tweet.media (only present after the
     // Post-passing PR lands)
     if (Array.isArray(tweet.media) && tweet.media.length > 0) {
-      out.media = tweet.media
-        .map((m: any) => {
-          const type = normalizeMediaType(m?.type);
-          if (!type || !m?.url) return null;
-          return { ...m, type } as RawMedia;
-        })
-        .filter((m): m is RawMedia => m !== null);
+      const mapped = tweet.media.map((m: any): RawMedia | null => {
+        const type = normalizeMediaType(m?.type);
+        if (!type || !m?.url) return null;
+        return { ...m, type };
+      });
+      out.media = mapped.filter((m: RawMedia | null): m is RawMedia => m !== null);
     }
     if (tweet.referencedTweetData && typeof tweet.referencedTweetData === "object") {
       out.referenced_tweet_data = tweet.referencedTweetData;
