@@ -39,6 +39,16 @@ if (isLocal) {
     console.error("[pipeline] --local requires LOCAL_SUPABASE_URL and LOCAL_SUPABASE_SERVICE_KEY in env");
     process.exit(1);
   }
+
+  // Route X API calls to the local test account (must happen before any X API imports read these)
+  for (const [src, dest] of Object.entries({
+    LOCAL_X_API_KEY: "X_API_KEY",
+    LOCAL_X_API_KEY_SECRET: "X_API_KEY_SECRET",
+    LOCAL_X_ACCESS_TOKEN: "X_ACCESS_TOKEN",
+    LOCAL_X_ACCESS_TOKEN_SECRET: "X_ACCESS_TOKEN_SECRET",
+  })) {
+    if (process.env[src]) process.env[dest] = process.env[src];
+  }
 }
 
 import { SupabaseLogger } from "../api/supabaseClient";
