@@ -263,65 +263,80 @@ async function main() {
   for (const r of handleRows) {
     if (!handleByTweetId.has(r.tweet_id)) handleByTweetId.set(r.tweet_id, r.tweet_handle);
   }
-  let handlesUpdated = 0;
-  const handleEntries = [...handleByTweetId.entries()];
-  for (let i = 0; i < handleEntries.length; i += 100) {
-    const slice = handleEntries.slice(i, i + 100);
-    await Promise.all(slice.map(async ([tid, handle]) => {
-      const { error } = await client.from("tweets").update({ author_handle: handle }).eq("tweet_id", tid);
-      if (!error) handlesUpdated++;
-    }));
-  }
-  console.log(`[backfill] Backfilled author_handle on ${handlesUpdated} tweets from snapshot history`);
-
-  // Update tweets with extracted log data
-  const tweetIds = [...best.keys()];
-  let updated = 0;
-  let errors = 0;
-  for (let i = 0; i < tweetIds.length; i += 100) {
-    const slice = tweetIds.slice(i, i + 100);
-    await Promise.all(
-      slice.map(async (tid) => {
-        const e = best.get(tid)!;
-        const update: Record<string, unknown> = {};
-        if (e.media) update.media = e.media;
-        if (e.referenced_tweet_data) update.referenced_tweet_data = e.referenced_tweet_data;
-        if (e.referenced_tweets) update.referenced_tweets = e.referenced_tweets;
-        if (e.posted_at) update.posted_at = e.posted_at;
-        if (e.author_name) update.author_name = e.author_name;
-        if (e.author_description) update.author_description = e.author_description;
-        if (e.author_tweet_count != null) update.author_tweet_count = e.author_tweet_count;
-        if (e.text) update.text = e.text;
-        if (Object.keys(update).length === 0) return;
-        const { error } = await client.from("tweets").update(update).eq("tweet_id", tid);
+  // Group-by-shape bulk upsert. Each row has a different subset of populated
+  // fields, but in practice only a handful of distinct shapes show up across
+  // the whole run (e.g. {media,text,posted_at} is one shape, {text,posted_at,
+  // author_name,author_description} is another). Grouping by shape lets us
+  // bulk-upsert each group: every row in a batch has the same column set, so
+  // PostgREST doesn't clobber other columns with NULLs. Result is ~5–10
+  // requests for the whole job instead of 12k+ — much gentler on the pooler.
+  const BULK_BATCH = 500;
+  async function bulkUpsertByShape(
+    table: string,
+    rows: Array<Record<string, unknown>>,
+    pkColumn: string,
+  ): Promise<{ updated: number; errors: number }> {
+    let updated = 0;
+    let errors = 0;
+    // Group by sorted-keys signature (excluding the PK).
+    const groups = new Map<string, Array<Record<string, unknown>>>();
+    for (const r of rows) {
+      const sig = Object.keys(r).filter((k) => k !== pkColumn).sort().join("|");
+      if (!sig) continue; // PK only, nothing to update
+      if (!groups.has(sig)) groups.set(sig, []);
+      groups.get(sig)!.push(r);
+    }
+    for (const [sig, groupRows] of groups) {
+      for (let i = 0; i < groupRows.length; i += BULK_BATCH) {
+        const batch = groupRows.slice(i, i + BULK_BATCH);
+        const { error } = await client.from(table).upsert(batch, { onConflict: pkColumn });
         if (error) {
-          console.error(`[backfill] Error updating ${tid}: ${error.message}`);
-          errors++;
+          console.error(`[backfill] Error upserting ${table} group "${sig}" batch ${i / BULK_BATCH}: ${error.message}`);
+          errors += batch.length;
         } else {
-          updated++;
+          updated += batch.length;
         }
-      }),
-    );
+      }
+    }
+    return { updated, errors };
   }
 
-  // Bot identity updates on pipeline_runs.
-  let botUpdated = 0;
-  for (let i = 0; i < botUpdates.length; i += 100) {
-    const slice = botUpdates.slice(i, i + 100);
-    await Promise.all(
-      slice.map(async (b) => {
-        const update: Record<string, unknown> = {};
-        if (b.name) update.bot_name = b.name;
-        if (b.nameLong) update.bot_name_long = b.nameLong;
-        if (b.config) update.bot_config = b.config;
-        if (Object.keys(update).length === 0) return;
-        const { error } = await client.from("pipeline_runs").update(update).eq("id", b.id);
-        if (!error) botUpdated++;
-      }),
-    );
-  }
+  // 1. author_handle from snapshots — uniform shape.
+  const handleRowsForUpsert = [...handleByTweetId.entries()].map(([tweet_id, author_handle]) => ({
+    tweet_id, author_handle,
+  }));
+  const handleResult = await bulkUpsertByShape("tweets", handleRowsForUpsert, "tweet_id");
+  console.log(`[backfill] Backfilled author_handle on ${handleResult.updated} tweets (${handleResult.errors} errors)`);
 
-  console.log(`[backfill] Done. Updated ${updated} tweets (${errors} errors); ${botUpdated} pipeline_runs bot-identity-backfilled`);
+  // 2. Rich data from logs — heterogeneous shapes, group-then-upsert.
+  const richRows: Array<Record<string, unknown>> = [];
+  for (const [tid, e] of best.entries()) {
+    const row: Record<string, unknown> = { tweet_id: tid };
+    if (e.media) row.media = e.media;
+    if (e.referenced_tweet_data) row.referenced_tweet_data = e.referenced_tweet_data;
+    if (e.referenced_tweets) row.referenced_tweets = e.referenced_tweets;
+    if (e.posted_at) row.posted_at = e.posted_at;
+    if (e.author_name) row.author_name = e.author_name;
+    if (e.author_description) row.author_description = e.author_description;
+    if (e.author_tweet_count != null) row.author_tweet_count = e.author_tweet_count;
+    if (e.text) row.text = e.text;
+    richRows.push(row);
+  }
+  const richResult = await bulkUpsertByShape("tweets", richRows, "tweet_id");
+
+  // 3. Bot identity on pipeline_runs — heterogeneous shapes (bot_name +
+  // bot_name_long always together; bot_config sometimes present, sometimes not).
+  const botRows: Array<Record<string, unknown>> = [];
+  for (const b of botUpdates) {
+    const row: Record<string, unknown> = { id: b.id };
+    if (b.name) row.bot_name = b.name;
+    if (b.nameLong) row.bot_name_long = b.nameLong;
+    if (b.config) row.bot_config = b.config;
+    botRows.push(row);
+  }
+  const botResult = await bulkUpsertByShape("pipeline_runs", botRows, "id");
+
+  console.log(`[backfill] Done. Updated ${richResult.updated} tweets (${richResult.errors} errors); ${botResult.updated} pipeline_runs bot-identity-backfilled (${botResult.errors} errors)`);
 }
 
 main().catch((e) => {
