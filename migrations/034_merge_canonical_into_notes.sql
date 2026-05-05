@@ -13,6 +13,12 @@
 -- All incoming FKs (competing_notes.our_note_id, scraped_notewriter_snapshots.note_id)
 -- already reference canonical_note_information(note_id). Postgres rewrites them
 -- automatically on RENAME, so no FK surgery is needed.
+--
+-- Wrapped in a single transaction so a failure mid-migration leaves the DB
+-- in the previous shape rather than a half-merged state where, say, the old
+-- notes table is dropped but the rename to "notes" hasn't run yet.
+
+BEGIN;
 
 -- 1. Add the columns we'll keep on the merged table.
 ALTER TABLE canonical_note_information
@@ -72,3 +78,5 @@ ALTER TABLE canonical_note_information RENAME TO notes;
 ALTER TABLE notes
   RENAME CONSTRAINT canonical_note_information_data_tier_check
   TO notes_data_tier_check;
+
+COMMIT;

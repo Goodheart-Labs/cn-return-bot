@@ -1,4 +1,3 @@
-// @ts-nocheck — pre-existing strict-mode issues unrelated to schema refactor
 /**
  * Snapshot Reconciliation
  *
@@ -190,7 +189,7 @@ interface CollisionGroup {
 
 function detectCollisions(
   snapshots: ClassifiedSnapshot[],
-  groundTruth: Map<string, string>
+  _groundTruth: Map<string, string>
 ): {
   // Collisions keyed by the conflicting dimension
   noteCollisions: Map<string, CollisionGroup>; // note_id -> collision
@@ -269,14 +268,13 @@ function resolveCollision(
   groundTruth: Map<string, string>,
   groundTruthReverse: Map<string, string> // tweet_id -> note_id
 ): VoteResult {
-  // Check if ground truth resolves this
-  for (const [pairingKey, snaps] of collision.pairings) {
-    const [noteId, tweetId] = pairingKey.split(":");
-    // If notes table says this note_id goes with this tweet_id, that wins
+  // Check if ground truth resolves this. pairingKey is a "noteId:tweetId"
+  // string we built ourselves, so split returns exactly two non-empty parts.
+  for (const pairingKey of collision.pairings.keys()) {
+    const [noteId, tweetId] = pairingKey.split(":") as [string, string];
     if (groundTruth.get(noteId) === tweetId) {
       return { winnerTweetId: tweetId, winnerNoteId: noteId };
     }
-    // If notes table says this tweet_id goes with this note_id, that wins
     if (groundTruthReverse.get(tweetId) === noteId) {
       return { winnerTweetId: tweetId, winnerNoteId: noteId };
     }
@@ -292,12 +290,12 @@ function resolveCollision(
   if (sorted.length === 0) return { winnerTweetId: null, winnerNoteId: null };
 
   // Check for tie
-  if (sorted.length >= 2 && sorted[0][1] === sorted[1][1]) {
+  if (sorted.length >= 2 && sorted[0]![1] === sorted[1]![1]) {
     return { winnerTweetId: null, winnerNoteId: null };
   }
 
-  const [winnerKey] = sorted[0];
-  const [winnerNoteId, winnerTweetId] = winnerKey.split(":");
+  const [winnerKey] = sorted[0]!;
+  const [winnerNoteId, winnerTweetId] = winnerKey.split(":") as [string, string];
   return { winnerTweetId, winnerNoteId };
 }
 
@@ -326,7 +324,7 @@ const TIER_RANK: Record<Tier, number> = {
 function deriveCanonicalData(
   snapshotsByNote: Map<string, ClassifiedSnapshot[]>,
   winningPairings: Map<string, string | null>, // note_id -> winning tweet_id (null = tie)
-  quarantinedSnapIds: Set<string>
+  _quarantinedSnapIds: Set<string>
 ): CanonicalNote[] {
   const results: CanonicalNote[] = [];
 
@@ -355,7 +353,8 @@ function deriveCanonicalData(
       return new Date(b.scraped_at).getTime() - new Date(a.scraped_at).getTime();
     });
 
-    const best = sorted[0];
+    // sorted[0] is defined here because nonJunk.length > 0 (early-return above)
+    const best = sorted[0]!;
 
     // Determine tweet_id
     let tweetId: string | null = best.tweet_id;
@@ -468,7 +467,7 @@ export async function reconcile(): Promise<{
     winningPairings.set(noteId, result.winnerTweetId);
   }
 
-  for (const [tweetId, collision] of tweetCollisions) {
+  for (const [, collision] of tweetCollisions) {
     const result = resolveCollision(
       collision,
       groundTruth,

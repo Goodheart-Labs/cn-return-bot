@@ -11,6 +11,12 @@
 -- prod-data sample in scripts_jim/2026_05_01_merge_canonical_into_notes/
 -- verify_migrations_on_prod_data.ts — without this UPDATE, the
 -- ADD CONSTRAINT throws on those rows.
+--
+-- Wrapped in a transaction so the UPDATE and ADD CONSTRAINT either both
+-- apply or both roll back — leaving NULLed orphans without an enforcing
+-- FK would silently weaken referential integrity going forward.
+BEGIN;
+
 UPDATE pipeline_runs
   SET note_id = NULL
   WHERE note_id IS NOT NULL
@@ -19,3 +25,5 @@ UPDATE pipeline_runs
 ALTER TABLE pipeline_runs
   ADD CONSTRAINT pipeline_runs_note_id_fkey
   FOREIGN KEY (note_id) REFERENCES notes(note_id) ON DELETE SET NULL;
+
+COMMIT;

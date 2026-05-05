@@ -61,6 +61,11 @@ const scrapedNotes = await fetchAll<{
   helpful_count: number | null;
   not_helpful_count: number | null;
 }>(
+  // data_tier IS NULL means the note came from public-data ingest only and
+  // was never reconciled by the scraper — those are real submitted notes,
+  // include them. Pre-merge this filter was just .neq("junk") on canonical,
+  // which never had NULL because the scraper always set it; post-merge the
+  // notes table includes public-data-only rows that legitimately have NULL.
   (c) => c.from("notes")
     .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, submitted_at, rating_count, helpful_count, not_helpful_count")
     .or("data_tier.neq.junk,data_tier.is.null")

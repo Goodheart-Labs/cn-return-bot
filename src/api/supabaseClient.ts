@@ -260,26 +260,17 @@ export class SupabaseLogger {
    * Also updates any snapshots that reference the old note_id
    */
   async updateScrapedNoteId(oldNoteId: string, newNoteId: string): Promise<void> {
-    // Update snapshots first (they have foreign key to notes)
-    const { error: snapshotError } = await this.client
-      .from("scraped_notewriter_snapshots")
-      .update({ note_id: newNoteId })
-      .eq("note_id", oldNoteId);
-
-    if (snapshotError) {
-      console.error("[SupabaseLogger] Error updating snapshot note_ids:", snapshotError);
-      throw snapshotError;
-    }
-
-    // Update the note itself
-    const { error: noteError } = await this.client
+    // Single UPDATE on notes; the FK on scraped_notewriter_snapshots.note_id
+    // is ON UPDATE CASCADE (migration 036), so dependent snapshot rows are
+    // renamed in the same transaction.
+    const { error } = await this.client
       .from("notes")
       .update({ note_id: newNoteId })
       .eq("note_id", oldNoteId);
 
-    if (noteError) {
-      console.error("[SupabaseLogger] Error updating note_id:", noteError);
-      throw noteError;
+    if (error) {
+      console.error("[SupabaseLogger] Error updating note_id:", error);
+      throw error;
     }
   }
 

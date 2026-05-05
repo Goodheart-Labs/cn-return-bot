@@ -236,6 +236,44 @@ async function main() {
   }
   console.log(`[backfill] Ensured tweets rows for ${minimalTweetRows.length} pipeline_run tweet_ids`);
 
+  // author_handle backfill from scraped_notewriter_snapshots.tweet_handle.
+  // Reasoning: pipeline_runs stored author_id (numeric) but never the handle,
+  // and the X API doesn't return it for the tweets we process. The scraper,
+  // by walking the notewriter page, did capture the handle on each snapshot.
+  // For every tweet_id we have a snapshot for, lift the latest non-null
+  // tweet_handle into tweets.author_handle.
+  const handleRows: Array<{ tweet_id: string; tweet_handle: string }> = [];
+  let snapOffset = 0;
+  while (true) {
+    const { data, error } = await client
+      .from("scraped_notewriter_snapshots")
+      .select("tweet_id, tweet_handle, scraped_at")
+      .not("tweet_handle", "is", null)
+      .not("tweet_id", "is", null)
+      .order("scraped_at", { ascending: false })
+      .range(snapOffset, snapOffset + PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    handleRows.push(...(data as any));
+    if (data.length < PAGE_SIZE) break;
+    snapOffset += data.length;
+  }
+  // Latest snapshot wins (we ordered DESC so the first occurrence is latest).
+  const handleByTweetId = new Map<string, string>();
+  for (const r of handleRows) {
+    if (!handleByTweetId.has(r.tweet_id)) handleByTweetId.set(r.tweet_id, r.tweet_handle);
+  }
+  let handlesUpdated = 0;
+  const handleEntries = [...handleByTweetId.entries()];
+  for (let i = 0; i < handleEntries.length; i += 100) {
+    const slice = handleEntries.slice(i, i + 100);
+    await Promise.all(slice.map(async ([tid, handle]) => {
+      const { error } = await client.from("tweets").update({ author_handle: handle }).eq("tweet_id", tid);
+      if (!error) handlesUpdated++;
+    }));
+  }
+  console.log(`[backfill] Backfilled author_handle on ${handlesUpdated} tweets from snapshot history`);
+
   // Update tweets with extracted log data
   const tweetIds = [...best.keys()];
   let updated = 0;
