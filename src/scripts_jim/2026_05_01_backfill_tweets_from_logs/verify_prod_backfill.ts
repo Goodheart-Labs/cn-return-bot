@@ -152,6 +152,51 @@ async function main() {
   if ((withPostedAt ?? 0) >= 5000) ok(`tweets with posted_at: ${withPostedAt} (≥ 5k from log backfill)`);
   else fail(`tweets with posted_at: ${withPostedAt}`, "expected ≥ 5k after log backfill");
 
+  // Columns moved to tweets by migration 032's column-driven backfill.
+  // These come from pipeline_runs scalar columns (which 033 will drop next),
+  // so we need them all confirmed before applying 033.
+  console.log("\n== Tweets columns from migration 032's column backfill ==");
+
+  // author_id: set whenever pipeline_runs had author_id. Most pipeline_runs
+  // populate this from Post.author_id, so most tweets should have it.
+  const { count: withAuthorId } = await c.from("tweets").select("*", { count: "exact", head: true }).not("author_id", "is", null);
+  if ((withAuthorId ?? 0) >= 30000) ok(`tweets with author_id: ${withAuthorId} (≥ 30k)`);
+  else fail(`tweets with author_id: ${withAuthorId}`, "expected ≥ 30k from migration 032 backfill");
+
+  // author_followers: set on most pipeline_runs from Post.author_followers
+  const { count: withFollowers } = await c.from("tweets").select("*", { count: "exact", head: true }).not("author_followers", "is", null);
+  if ((withFollowers ?? 0) >= 20000) ok(`tweets with author_followers: ${withFollowers} (≥ 20k)`);
+  else fail(`tweets with author_followers: ${withFollowers}`, "expected ≥ 20k from migration 032 backfill");
+
+  // Engagement metrics — same source. impressions ≥ 1 means the row had
+  // metrics populated (vs. NULL/0 for missing data).
+  for (const col of ["impressions", "likes", "retweets", "replies", "quotes", "bookmarks"]) {
+    const { count } = await c.from("tweets").select("*", { count: "exact", head: true }).not(col, "is", null);
+    if ((count ?? 0) >= 20000) ok(`tweets with ${col}: ${count} (≥ 20k)`);
+    else fail(`tweets with ${col}: ${count}`, "expected ≥ 20k from migration 032 backfill");
+  }
+
+  // has_video / has_photo are BOOLEAN with default false — checking IS NOT
+  // NULL is uninformative (every row has a value). Check that some rows are
+  // true, which tells us the source column carried real data.
+  const { count: hasVideoTrue } = await c.from("tweets").select("*", { count: "exact", head: true }).eq("has_video", true);
+  if ((hasVideoTrue ?? 0) >= 100) ok(`tweets with has_video=true: ${hasVideoTrue} (≥ 100)`);
+  else fail(`tweets with has_video=true: ${hasVideoTrue}`, "suspiciously low");
+
+  const { count: hasPhotoTrue } = await c.from("tweets").select("*", { count: "exact", head: true }).eq("has_photo", true);
+  if ((hasPhotoTrue ?? 0) >= 1000) ok(`tweets with has_photo=true: ${hasPhotoTrue} (≥ 1k)`);
+  else fail(`tweets with has_photo=true: ${hasPhotoTrue}`, "suspiciously low");
+
+  // media_count: INTEGER, > 0 means tweet had media
+  const { count: mediaPositive } = await c.from("tweets").select("*", { count: "exact", head: true }).gt("media_count", 0);
+  if ((mediaPositive ?? 0) >= 1000) ok(`tweets with media_count > 0: ${mediaPositive} (≥ 1k)`);
+  else fail(`tweets with media_count > 0: ${mediaPositive}`, "suspiciously low");
+
+  // video_duration_ms: tied to has_video=true; should be in same ballpark
+  const { count: withVideoDuration } = await c.from("tweets").select("*", { count: "exact", head: true }).not("video_duration_ms", "is", null);
+  if ((withVideoDuration ?? 0) >= 100) ok(`tweets with video_duration_ms: ${withVideoDuration} (≥ 100, ≈ has_video count)`);
+  else fail(`tweets with video_duration_ms: ${withVideoDuration}`, "suspiciously low");
+
   console.log("\n== Pipeline_runs bot identity ==");
 
   const { count: prTotal } = await c.from("pipeline_runs").select("*", { count: "exact", head: true });
