@@ -48,6 +48,11 @@
     "dev-review": "cd src/review-dashboard && bunx vite --port 8001",
     "build-review": "cd src/review-dashboard && bunx vite build",
     "serve-review": "bun run src/review-dashboard/server.ts",
-    "review": "bun run build-review && bun run serve-review"
+    "review": "lsof -ti:8001 | xargs kill -9 2>/dev/null; bun run build-review && bun run serve-review",
+    "review-local": "lsof -ti:8001 | xargs kill -9 2>/dev/null; bun run build-review && bun run src/review-dashboard/server.ts --local",
+    "scrape": "(curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1 || (echo '🌐 Starting Chrome with remote debugging...' && open -na 'Google Chrome' --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile && until curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1; do sleep 0.5; done)) && bun run src/scraper/scrapeNotewriterClickThrough.ts"
+  },
+  "knip": {
+    "ignoreBinaries": ["lsof", "open", "sleep"]
   }
 }
