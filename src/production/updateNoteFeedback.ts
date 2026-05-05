@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from "
 import { execSync } from "child_process";
 
 /**
- * Daily job: update canonical_note_information + competing_notes from CN public data dumps.
+ * Daily job: update notes + competing_notes from CN public data dumps.
  *
  * Uses our author participant ID to find ALL our notes in the public data (not just
  * the ~604 in the `notes` table). Downloads notes-00000 + noteStatusHistory-00000
@@ -334,25 +334,24 @@ async function main() {
   // ===== 4. Get existing canonical data =====
   console.log("[updateFeedback] Fetching existing canonical data...");
   const existing = await fetchAll<{ note_id: string; cn_status: string | null }>(
-    () => client.from("canonical_note_information").select("note_id, cn_status")
+    () => client.from("notes").select("note_id, cn_status")
   );
   const existingIds = new Set(existing.map(n => n.note_id));
   const existingStatusMap = new Map(existing.map(n => [n.note_id, n.cn_status]));
   console.log(`[updateFeedback] ${existing.length} existing canonical entries`);
 
-  // ===== 5. Upsert our notes into canonical_note_information =====
-  // Fetch submitted_at and bot_name from notes table to keep canonical in sync
-  const notesEnrichment = await fetchAll<{ note_id: string; submitted_at: string | null; bot_name: string | null }>(
-    () => client.from("notes").select("note_id, submitted_at, bot_name")
-  );
-  const enrichmentMap = new Map(notesEnrichment.map(n => [n.note_id, n]));
-
+  // ===== 5. Upsert our notes =====
+  // Post canonical→notes merge, the public-data-derived columns
+  // (current_*_status, classification, etc.) are gone from this table — they
+  // were only ever written, never read. cn_status is the only status column
+  // we still keep here, set from currentStatus per CLAUDE.md.
   const now = new Date().toISOString();
   let newlyHelpful = 0;
 
-  // Split new vs existing rows into separate batches because PostgREST normalizes
-  // all rows in a batch to the same columns — mixing rows with/without first_seen_at
-  // causes it to set first_seen_at=NULL on existing rows, violating NOT NULL.
+  // Split new vs existing rows into separate batches because PostgREST
+  // normalizes all rows in a batch to the same columns — mixing rows
+  // with/without first_seen_at causes it to set first_seen_at=NULL on
+  // existing rows, violating NOT NULL.
   const newCanonicalRows: Record<string, any>[] = [];
   const existingCanonicalRows: Record<string, any>[] = [];
   for (const [noteId, noteData] of ourNotes) {
@@ -367,23 +366,9 @@ async function main() {
       tweet_id: noteData.tweetId,
       cn_status: status?.currentStatus || "NEEDS_MORE_RATINGS",
       note_text: noteData.summary || null,
-      classification: noteData.classification || null,
-      current_core_status: status?.currentCoreStatus || null,
-      current_expansion_status: status?.currentExpansionStatus || null,
-      current_group_status: status?.currentGroupStatus || null,
-      current_decided_by: status?.currentDecidedBy || null,
-      current_modeling_group: status?.currentModelingGroup || null,
-      first_non_nmr_status: status?.firstNonNMRStatus || null,
-      most_recent_non_nmr_status: status?.mostRecentNonNMRStatus || null,
-      locked_status: status?.lockedStatus || null,
-      status_updated_at: status?.statusUpdatedAt || null,
-      first_non_nmr_at: status?.firstNonNmrAt || null,
-      status_locked_at: status?.statusLockedAt || null,
-      public_data_updated_at: now,
       submitted_at: noteData.createdAtMillis
         ? new Date(parseInt(noteData.createdAtMillis)).toISOString()
-        : enrichmentMap.get(noteId)?.submitted_at || null,
-      bot_name: enrichmentMap.get(noteId)?.bot_name || null,
+        : null,
     };
 
     if (existingIds.has(noteId)) {
@@ -399,10 +384,10 @@ async function main() {
     for (let i = 0; i < rows.length; i += PAGE_SIZE) {
       const batch = rows.slice(i, i + PAGE_SIZE);
       const { error } = await client
-        .from("canonical_note_information")
+        .from("notes")
         .upsert(batch, { onConflict: "note_id" });
       if (error) {
-        console.error(`[updateFeedback] Error upserting canonical batch: ${error.message}`);
+        console.error(`[updateFeedback] Error upserting notes batch: ${error.message}`);
         upsertErrors += batch.length;
       } else {
         upserted += batch.length;
@@ -410,7 +395,7 @@ async function main() {
     }
   }
 
-  console.log(`[updateFeedback] Canonical: ${upserted} upserted, ${upsertErrors} errors`);
+  console.log(`[updateFeedback] Notes: ${upserted} upserted, ${upsertErrors} errors`);
   if (newlyHelpful > 0) {
     console.log(`[updateFeedback] ${newlyHelpful} notes newly rated HELPFUL!`);
   }
@@ -427,8 +412,6 @@ async function main() {
       note_text: cn.summary || null,
       classification: cn.classification || null,
       current_status: status?.currentStatus || null,
-      current_core_status: status?.currentCoreStatus || null,
-      current_decided_by: status?.currentDecidedBy || null,
       created_at_millis: cn.createdAtMillis ? parseInt(cn.createdAtMillis) : null,
       last_updated_at: now,
     };
@@ -454,7 +437,7 @@ async function main() {
   const missedRows = missedOpportunityNotes
     .filter(mn => {
       const status = statusMap.get(mn.noteId);
-      return status?.currentCoreStatus === "CURRENTLY_RATED_HELPFUL";
+      return status?.currentStatus === "CURRENTLY_RATED_HELPFUL";
     })
     .map(mn => {
       const status = statusMap.get(mn.noteId)!;
@@ -467,8 +450,6 @@ async function main() {
         note_text: mn.summary || null,
         classification: mn.classification || null,
         current_status: status.currentStatus || null,
-        current_core_status: status.currentCoreStatus || null,
-        current_decided_by: status.currentDecidedBy || null,
         created_at_millis: mn.createdAtMillis ? parseInt(mn.createdAtMillis) : null,
         last_updated_at: now,
       };
@@ -536,33 +517,9 @@ async function main() {
 
   console.log(`[updateFeedback] Created/updated ${snapshotCount} snapshots`);
 
-  // ===== 8. Also update the `notes` table for notes that exist there =====
-  // (Keeps backwards compat with any code still reading from `notes.cn_status`)
-  const notesTableIds = await fetchAll<{ note_id: string }>(
-    () => client.from("notes").select("note_id")
-  );
-  const notesTableIdSet = new Set(notesTableIds.map(n => n.note_id));
-  let notesTableUpdated = 0;
-
-  for (const [noteId, _] of ourNotes) {
-    if (!notesTableIdSet.has(noteId)) continue;
-    const status = statusMap.get(noteId);
-    const resolvedStatus = status?.currentStatus || "NEEDS_MORE_RATINGS";
-
-    const { error } = await client
-      .from("notes")
-      .update({
-        cn_status: resolvedStatus,
-        last_checked_at: now,
-      })
-      .eq("note_id", noteId);
-
-    if (!error) notesTableUpdated++;
-  }
-
-  console.log(`[updateFeedback] Updated ${notesTableUpdated} notes in notes table`);
-
-  // ===== 9. API real-time status overlay =====
+  // ===== 8. API real-time status overlay =====
+  // Public data files lag by ~24h; the X API has fresher status. Use it as
+  // an overlay on top of what we just upserted from the public data dump.
   let apiOverlayCount = 0;
   let apiNewCount = 0;
   try {
@@ -572,40 +529,30 @@ async function main() {
 
     // Refresh existing IDs (may have been updated by cn_data steps above)
     const refreshed = await fetchAll<{ note_id: string; cn_status: string | null }>(
-      () => client.from("canonical_note_information").select("note_id, cn_status")
+      () => client.from("notes").select("note_id, cn_status")
     );
     const currentStatusMap = new Map(refreshed.map(n => [n.note_id, n.cn_status]));
     const currentIds = new Set(refreshed.map(n => n.note_id));
 
-    const overlayRows: Record<string, any>[] = [];
+    const overlayRows: Array<{ note_id: string; cn_status: string }> = [];
     const newApiRows: Record<string, any>[] = [];
 
     for (const note of apiNotes) {
       const apiStatus = note.status?.toUpperCase() || null;
-      const apiClassification = note.info?.classification?.toUpperCase() || null;
 
       if (currentIds.has(note.id)) {
         // Only update if API status differs from what's in the DB
         if (apiStatus && apiStatus !== currentStatusMap.get(note.id)) {
-          overlayRows.push({
-            note_id: note.id,
-            cn_status: apiStatus,
-            public_data_updated_at: now,
-          });
+          overlayRows.push({ note_id: note.id, cn_status: apiStatus });
         }
       } else {
-        // Note not yet in canonical table (submitted in last ~3 days)
-        const enrichment = enrichmentMap.get(note.id);
+        // Note not yet in our table (submitted in last ~3 days)
         newApiRows.push({
           note_id: note.id,
           tweet_id: note.post_id,
           cn_status: apiStatus || "NEEDS_MORE_RATINGS",
           note_text: note.info?.text || null,
-          classification: apiClassification,
-          public_data_updated_at: now,
           first_seen_at: now,
-          submitted_at: enrichment?.submitted_at || null,
-          bot_name: enrichment?.bot_name || null,
         });
       }
     }
@@ -613,29 +560,19 @@ async function main() {
     // Apply overlay updates (status changed)
     for (const row of overlayRows) {
       const { error } = await client
-        .from("canonical_note_information")
-        .update({ cn_status: row.cn_status, public_data_updated_at: row.public_data_updated_at })
+        .from("notes")
+        .update({ cn_status: row.cn_status })
         .eq("note_id", row.note_id);
       if (!error) apiOverlayCount++;
     }
 
-    // Insert new API-only notes
+    // Insert new API-only notes.
     for (let i = 0; i < newApiRows.length; i += PAGE_SIZE) {
       const batch = newApiRows.slice(i, i + PAGE_SIZE);
       const { error } = await client
-        .from("canonical_note_information")
+        .from("notes")
         .upsert(batch, { onConflict: "note_id" });
       if (!error) apiNewCount += batch.length;
-    }
-
-    // Also update notes table for API-discovered status changes
-    for (const row of overlayRows) {
-      if (notesTableIdSet.has(row.note_id)) {
-        await client
-          .from("notes")
-          .update({ cn_status: row.cn_status, last_checked_at: now })
-          .eq("note_id", row.note_id);
-      }
     }
 
     console.log(`[updateFeedback] API overlay: ${apiOverlayCount} statuses updated, ${apiNewCount} new notes added`);
@@ -666,7 +603,6 @@ async function main() {
   console.log(`Competing notes: ${competingNotes.length} found, ${competingUpserted} upserted`);
   console.log(`Missed opportunity competing notes: ${missedInserted} inserted`);
   console.log(`Snapshots: ${snapshotCount}`);
-  console.log(`Notes table: ${notesTableUpdated} synced`);
   console.log(`API overlay: ${apiOverlayCount} updated, ${apiNewCount} new`);
 
   process.exit(0);

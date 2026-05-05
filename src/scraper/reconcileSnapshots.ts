@@ -1,10 +1,9 @@
-// @ts-nocheck
 /**
  * Snapshot Reconciliation
  *
  * Classifies scraped_notewriter_snapshots by quality tier, detects pairing
  * collisions, resolves them by majority vote, and writes canonical data to
- * canonical_note_information.
+ * notes.
  *
  * See docs/snapshot-reconciliation.md for the full design.
  *
@@ -190,7 +189,7 @@ interface CollisionGroup {
 
 function detectCollisions(
   snapshots: ClassifiedSnapshot[],
-  groundTruth: Map<string, string>
+  _groundTruth: Map<string, string>
 ): {
   // Collisions keyed by the conflicting dimension
   noteCollisions: Map<string, CollisionGroup>; // note_id -> collision
@@ -269,14 +268,13 @@ function resolveCollision(
   groundTruth: Map<string, string>,
   groundTruthReverse: Map<string, string> // tweet_id -> note_id
 ): VoteResult {
-  // Check if ground truth resolves this
-  for (const [pairingKey, snaps] of collision.pairings) {
-    const [noteId, tweetId] = pairingKey.split(":");
-    // If notes table says this note_id goes with this tweet_id, that wins
+  // Check if ground truth resolves this. pairingKey is a "noteId:tweetId"
+  // string we built ourselves, so split returns exactly two non-empty parts.
+  for (const pairingKey of collision.pairings.keys()) {
+    const [noteId, tweetId] = pairingKey.split(":") as [string, string];
     if (groundTruth.get(noteId) === tweetId) {
       return { winnerTweetId: tweetId, winnerNoteId: noteId };
     }
-    // If notes table says this tweet_id goes with this note_id, that wins
     if (groundTruthReverse.get(tweetId) === noteId) {
       return { winnerTweetId: tweetId, winnerNoteId: noteId };
     }
@@ -292,90 +290,17 @@ function resolveCollision(
   if (sorted.length === 0) return { winnerTweetId: null, winnerNoteId: null };
 
   // Check for tie
-  if (sorted.length >= 2 && sorted[0][1] === sorted[1][1]) {
+  if (sorted.length >= 2 && sorted[0]![1] === sorted[1]![1]) {
     return { winnerTweetId: null, winnerNoteId: null };
   }
 
-  const [winnerKey] = sorted[0];
-  const [winnerNoteId, winnerTweetId] = winnerKey.split(":");
+  const [winnerKey] = sorted[0]!;
+  const [winnerNoteId, winnerTweetId] = winnerKey.split(":") as [string, string];
   return { winnerTweetId, winnerNoteId };
 }
 
 // ---------------------------------------------------------------------------
-// Step 4: Coherence Scoring
-// ---------------------------------------------------------------------------
-
-/**
- * Measures how consistent the non-junk snapshots for a note are.
- * Starts at 1.0, applies penalties for contradictions.
- *
- * Penalties:
- * - Text differs between snapshots:     -0.4 (notes can't be edited, so this = scraper bug)
- * - View count decreases over time:     -0.3 per occurrence (views are monotonically increasing)
- * - Status flips (helpful ↔ not helpful): -0.2 per flip (rare but possible)
- * - Status regresses (rated → needs more): -0.1 per occurrence
- *
- * Returns 1.0 if there's only one snapshot (nothing to contradict).
- */
-export function scoreCoherence(snapshots: ClassifiedSnapshot[]): number {
-  const nonJunk = snapshots.filter((s) => s.tier !== "junk" && s.tier !== "impossible");
-  if (nonJunk.length <= 1) return 1.0;
-
-  let score = 1.0;
-
-  // Sort chronologically for time-series checks
-  const chronological = [...nonJunk].sort(
-    (a, b) => new Date(a.scraped_at).getTime() - new Date(b.scraped_at).getTime()
-  );
-
-  // --- Text consistency ---
-  // Normalize and deduplicate texts
-  const texts = new Set(
-    nonJunk
-      .filter((s) => s.note_text && s.note_text.trim().length > 0)
-      .map((s) => s.note_text!.trim())
-  );
-  if (texts.size > 1) {
-    // Multiple distinct texts = scraper grabbed wrong modal
-    score -= 0.4;
-  }
-
-  // --- View count monotonicity ---
-  const withViews = chronological.filter(
-    (s) => s.view_count !== null && s.view_count !== undefined
-  );
-  for (let i = 1; i < withViews.length; i++) {
-    if (withViews[i].view_count! < withViews[i - 1].view_count!) {
-      score -= 0.3;
-    }
-  }
-
-  // --- Status transition sensibility ---
-  const RATED = new Set(["CURRENTLY_RATED_HELPFUL", "CURRENTLY_RATED_NOT_HELPFUL"]);
-  const withStatus = chronological.filter(
-    (s) => s.cn_status !== null && RECOGNIZED_STATUSES.has(s.cn_status)
-  );
-  for (let i = 1; i < withStatus.length; i++) {
-    const prev = withStatus[i - 1].cn_status!;
-    const curr = withStatus[i].cn_status!;
-    if (prev === curr) continue;
-
-    // Flip: helpful ↔ not helpful
-    if (RATED.has(prev) && RATED.has(curr)) {
-      score -= 0.2;
-    }
-    // Regression: rated → needs more ratings
-    else if (RATED.has(prev) && curr === "NEEDS_MORE_RATINGS") {
-      score -= 0.1;
-    }
-    // Normal progression: needs more → rated — no penalty
-  }
-
-  return Math.max(0, Math.round(score * 100) / 100);
-}
-
-// ---------------------------------------------------------------------------
-// Step 5: Derive Canonical Data
+// Step 4: Derive Canonical Data
 // ---------------------------------------------------------------------------
 
 interface CanonicalNote {
@@ -386,7 +311,6 @@ interface CanonicalNote {
   view_count: number | null;
   source_url: string | null;
   data_tier: Tier;
-  coherence_score: number;
 }
 
 const TIER_RANK: Record<Tier, number> = {
@@ -400,7 +324,7 @@ const TIER_RANK: Record<Tier, number> = {
 function deriveCanonicalData(
   snapshotsByNote: Map<string, ClassifiedSnapshot[]>,
   winningPairings: Map<string, string | null>, // note_id -> winning tweet_id (null = tie)
-  quarantinedSnapIds: Set<string>
+  _quarantinedSnapIds: Set<string>
 ): CanonicalNote[] {
   const results: CanonicalNote[] = [];
 
@@ -418,7 +342,6 @@ function deriveCanonicalData(
         view_count: null,
         source_url: null,
         data_tier: "junk",
-        coherence_score: scoreCoherence(snaps),
       });
       continue;
     }
@@ -430,7 +353,8 @@ function deriveCanonicalData(
       return new Date(b.scraped_at).getTime() - new Date(a.scraped_at).getTime();
     });
 
-    const best = sorted[0];
+    // sorted[0] is defined here because nonJunk.length > 0 (early-return above)
+    const best = sorted[0]!;
 
     // Determine tweet_id
     let tweetId: string | null = best.tweet_id;
@@ -454,7 +378,6 @@ function deriveCanonicalData(
       view_count: best.view_count,
       source_url: null, // snapshots don't have source_url; keep existing
       data_tier: best.tier,
-      coherence_score: scoreCoherence(snaps),
     });
   }
 
@@ -544,7 +467,7 @@ export async function reconcile(): Promise<{
     winningPairings.set(noteId, result.winnerTweetId);
   }
 
-  for (const [tweetId, collision] of tweetCollisions) {
+  for (const [, collision] of tweetCollisions) {
     const result = resolveCollision(
       collision,
       groundTruth,
@@ -573,18 +496,21 @@ export async function reconcile(): Promise<{
     quarantinedSnapIds
   );
 
-  // 7. Fetch public data status to determine write authority
-  //    Notes with public_data_updated_at set are owned by public data for
-  //    status/text/tweet_id — reconciliation can only update view_count
-  //    (and only if the scraper's status matches the canonical status).
+  // 7. Fetch public data status to determine write authority.
+  // Notes with submitted_at set are owned by public data for status/text/tweet_id —
+  // reconciliation can only update view_count (and only if the scraper's status
+  // matches the canonical status). submitted_at is set both by submitNoteForTweet
+  // and by updateNoteFeedback from the public-data dump, so it's a clean proxy
+  // for "this note is tracked by public data" post canonical→notes merge
+  // (replaces the dropped public_data_updated_at column).
   const publicDataNotes = await fetchAll<{
     note_id: string;
     cn_status: string | null;
   }>(() =>
     supabase
-      .from("canonical_note_information")
+      .from("notes")
       .select("note_id, cn_status")
-      .not("public_data_updated_at", "is", null)
+      .not("submitted_at", "is", null)
   );
   const publicDataStatus = new Map<string, string | null>(
     publicDataNotes.map((n) => [n.note_id, n.cn_status])
@@ -595,7 +521,7 @@ export async function reconcile(): Promise<{
 
   console.log(`[reconcile] Writing ${canonical.length} canonical notes...`);
 
-  // 8. Write to canonical_note_information, respecting public data authority
+  // 8. Write to notes, respecting public data authority
   const now = new Date().toISOString();
   let fullWrites = 0;
   let viewOnlyWrites = 0;
@@ -620,12 +546,11 @@ export async function reconcile(): Promise<{
       note_text: c.note_text,
       view_count: c.view_count,
       data_tier: c.data_tier,
-      coherence_score: c.coherence_score,
       last_reconciled_at: now,
     }));
 
     const { error } = await supabase
-      .from("canonical_note_information")
+      .from("notes")
       .upsert(rows, { onConflict: "note_id" });
 
     if (error) {
@@ -646,7 +571,6 @@ export async function reconcile(): Promise<{
 
     const row: Record<string, any> = {
       data_tier: c.data_tier,
-      coherence_score: c.coherence_score,
       last_reconciled_at: now,
     };
 
@@ -657,7 +581,7 @@ export async function reconcile(): Promise<{
     }
 
     const { error } = await supabase
-      .from("canonical_note_information")
+      .from("notes")
       .update(row)
       .eq("note_id", c.note_id);
 

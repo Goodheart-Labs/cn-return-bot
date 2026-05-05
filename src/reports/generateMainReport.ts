@@ -2,6 +2,20 @@
  * Main report generator — see docs/main-report.md for documentation.
  */
 import "dotenv/config";
+
+const useLocal = process.argv.includes("--local");
+if (useLocal) {
+  const localUrl = process.env.LOCAL_SUPABASE_URL;
+  const localKey = process.env.LOCAL_SUPABASE_SERVICE_KEY;
+  if (!localUrl || !localKey) {
+    console.error("[report] --local requires LOCAL_SUPABASE_URL and LOCAL_SUPABASE_SERVICE_KEY");
+    process.exit(1);
+  }
+  process.env.SUPABASE_URL = localUrl;
+  process.env.SUPABASE_SERVICE_KEY = localKey;
+  console.log(`[report] Using local Supabase at ${localUrl}`);
+}
+
 import { getSupabaseClient } from "../api/supabaseClient";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { execSync } from "child_process";
@@ -33,7 +47,8 @@ function snowflakeToDate(id: string): Date {
 
 console.log("Fetching data...");
 
-// 1. All scraped notes from canonical (primary data source, public data enriched)
+// 1. All notes (primary data source). Post-merge, this is the unified
+// notes table — submission metadata + ratings + status all on one row.
 const scrapedNotes = await fetchAll<{
   note_id: string;
   tweet_id: string;
@@ -41,36 +56,43 @@ const scrapedNotes = await fetchAll<{
   view_count: number | null;
   data_tier: string | null;
   first_seen_at: string;
+  submitted_at: string | null;
   rating_count: number | null;
   helpful_count: number | null;
   not_helpful_count: number | null;
-  current_decided_by: string | null;
 }>(
-  (c) => c.from("canonical_note_information")
-    .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, rating_count, helpful_count, not_helpful_count, current_decided_by")
+  // data_tier IS NULL means the note came from public-data ingest only and
+  // was never reconciled by the scraper — those are real submitted notes,
+  // include them. Pre-merge this filter was just .neq("junk") on canonical,
+  // which never had NULL because the scraper always set it; post-merge the
+  // notes table includes public-data-only rows that legitimately have NULL.
+  (c) => c.from("notes")
+    .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, submitted_at, rating_count, helpful_count, not_helpful_count")
     .or("data_tier.neq.junk,data_tier.is.null")
 );
-console.log(`  ${scrapedNotes.length} scraped notes (non-junk)`);
+console.log(`  ${scrapedNotes.length} notes (non-junk)`);
 
-// 2. Bot name + submitted_at from notes table (for enrichment only)
-const botNotes = await fetchAll<{
+// 2. Bot name lookup. Comes from the pipeline_runs row that produced
+// each note (we no longer duplicate bot_name onto notes).
+const botRuns = await fetchAll<{
   note_id: string;
   bot_name: string | null;
-  submitted_at: string;
 }>(
-  (c) => c.from("notes").select("note_id, bot_name, submitted_at")
+  (c) => c.from("pipeline_runs").select("note_id, bot_name").eq("outcome", "submitted").not("note_id", "is", null)
 );
-console.log(`  ${botNotes.length} bot notes (for bot_name mapping)`);
+console.log(`  ${botRuns.length} submitted runs (for bot_name mapping)`);
 
 // 3. Pipeline runs (single query with all needed fields)
+// `bot_name_long` is the variant-encoded form (was bot_id pre-refactor).
+// Group/render by it so per-variant breakdowns survive.
 const rawPipelineRunsFull = await fetchAll<{
-  bot_id: string;
+  bot_name_long: string;
   outcome: string;
   outcome_reason: string | null;
   created_at: string;
   tweet_id: string;
 }>(
-  (c) => c.from("pipeline_runs").select("bot_id, outcome, outcome_reason, created_at, tweet_id")
+  (c) => c.from("pipeline_runs").select("bot_name_long, outcome, outcome_reason, created_at, tweet_id")
 );
 console.log(`  ${rawPipelineRunsFull.length} pipeline runs`);
 
@@ -81,76 +103,36 @@ for (const r of rawPipelineRunsFull) {
   if (!prev || r.created_at < prev) firstSeenByTweet.set(r.tweet_id, r.created_at);
 }
 const pipelineRuns = rawPipelineRunsFull.map(r => ({
-  bot_id: r.bot_id,
+  bot_id: r.bot_name_long,
   outcome: r.outcome,
   outcome_reason: r.outcome_reason,
   created_at: r.created_at,
   is_retry: r.created_at !== firstSeenByTweet.get(r.tweet_id),
 }));
 
-// Compute backlog: tweets not currently skipped
-// Skipped = submitted OR no_correction_needed (cooldown: 1hr after 1st, 24hr after 2nd, permanent after 3rd)
-const submittedTweets = new Set(rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id));
-const rejectionInfo = new Map<string, { count: number; latestAt: string }>();
-for (const r of rawPipelineRunsFull) {
-  if (r.outcome === "rejected" && r.outcome_reason === "no_correction_needed") {
-    const existing = rejectionInfo.get(r.tweet_id);
-    if (!existing) {
-      rejectionInfo.set(r.tweet_id, { count: 1, latestAt: r.created_at });
-    } else {
-      existing.count++;
-      if (r.created_at > existing.latestAt) existing.latestAt = r.created_at;
-    }
-  }
-}
-const now = new Date();
-const skippedByNoCorrection = new Set<string>();
-for (const [tid, info] of rejectionInfo) {
-  if (info.count >= 3) {
-    skippedByNoCorrection.add(tid);
-  } else {
-    const hoursSince = (now.getTime() - new Date(info.latestAt).getTime()) / (1000 * 60 * 60);
-    const cooldownHours = info.count === 1 ? 1 : 24;
-    if (hoursSince < cooldownHours) skippedByNoCorrection.add(tid);
-  }
-}
-const allPipelineTweets = new Set(rawPipelineRunsFull.map(r => r.tweet_id));
-const backlogTweets = [...allPipelineTweets].filter(tid => {
-  if (submittedTweets.has(tid)) return false;
-  if (skippedByNoCorrection.has(tid)) return false;
-  return true;
-});
-const backlogSize = backlogTweets.length;
-console.log(`  Backlog: ${backlogSize} tweets eligible for retry (${skippedByNoCorrection.size} no-correction skipped, ${submittedTweets.size} submitted, of ${allPipelineTweets.size} unique)`);
-
-// 4b. Run snapshots (backlog trend)
-const runSnapshots = await fetchAll<{
-  created_at: string;
-  backlog_total: number;
-  backlog_new: number;
-  backlog_retry: number;
-  backlog_hit_limit: boolean;
-  posts_processed: number;
-}>(
-  (c) => c.from("run_snapshots").select("created_at, backlog_total, backlog_new, backlog_retry, backlog_hit_limit, posts_processed").order("created_at", { ascending: true })
+// 5. Video info from tweets table (was on pipeline_runs pre-refactor).
+// Filter to tweet_ids that actually had a submitted run. Fetch in batches to
+// keep the IN clause under URI length limits.
+const submittedTweetIds = new Set(
+  rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id)
 );
-console.log(`  ${runSnapshots.length} run snapshots`);
-
-// 5. Video info from pipeline_runs (submitted tweets only)
-const videoRuns = await fetchAll<{
-  tweet_id: string;
-  has_video: boolean | null;
-  video_duration_ms: number | null;
-}>(
-  (c) => c.from("pipeline_runs").select("tweet_id, has_video, video_duration_ms").eq("outcome", "submitted")
-);
+const submittedTweetIdsArr = [...submittedTweetIds];
+const VIDEO_BATCH = 200;
+const videoRuns: Array<{ tweet_id: string; has_video: boolean | null; video_duration_ms: number | null }> = [];
+for (let i = 0; i < submittedTweetIdsArr.length; i += VIDEO_BATCH) {
+  const chunk = submittedTweetIdsArr.slice(i, i + VIDEO_BATCH);
+  const rows = await fetchAll<{ tweet_id: string; has_video: boolean | null; video_duration_ms: number | null }>(
+    (c) => c.from("tweets").select("tweet_id, has_video, video_duration_ms").in("tweet_id", chunk)
+  );
+  videoRuns.push(...rows);
+}
 const videoByTweet = new Map<string, { has_video: boolean; video_duration_ms: number | null }>();
 for (const r of videoRuns) {
   if (r.tweet_id && r.has_video !== null) {
     videoByTweet.set(r.tweet_id, { has_video: r.has_video, video_duration_ms: r.video_duration_ms });
   }
 }
-console.log(`  ${videoRuns.length} pipeline runs with video info`);
+console.log(`  ${videoRuns.length} tweets with video info`);
 
 // 6. Competing notes summary
 const competingData = await fetchAll<{
@@ -165,24 +147,19 @@ const totalCompeting = competingData.length;
 const helpfulCompeting = competingData.filter(c => c.current_status === "CURRENTLY_RATED_HELPFUL").length;
 console.log(`  ${totalCompeting} competing notes (${helpfulCompeting} helpful)`);
 
-// Build bot_name lookup from notes table
-const botInfoMap = new Map<string, { bot_name: string; submitted_at: string }>();
-for (const n of botNotes) {
-  if (n.note_id) {
-    botInfoMap.set(n.note_id, {
-      bot_name: n.bot_name || "unknown",
-      submitted_at: n.submitted_at,
-    });
-  }
+// Build bot_name lookup from pipeline_runs (one row per submission attempt;
+// last writer wins for retries — fine for "what bot owns this note" purposes).
+const botNameByNoteId = new Map<string, string>();
+for (const r of botRuns) {
+  if (r.note_id && r.bot_name) botNameByNoteId.set(r.note_id, r.bot_name);
 }
 
-// Enrich scraped notes with bot_name and date
+// Enrich notes with bot_name and date
 const notes = scrapedNotes.map((n) => {
-  const info = botInfoMap.get(n.note_id);
-  // Use submitted_at from notes table, or derive from Snowflake ID
+  // Use submitted_at from notes, or derive from Snowflake ID
   let noteDate: string;
-  if (info?.submitted_at) {
-    noteDate = info.submitted_at;
+  if (n.submitted_at) {
+    noteDate = n.submitted_at;
   } else {
     try {
       noteDate = snowflakeToDate(n.note_id).toISOString();
@@ -194,7 +171,7 @@ const notes = scrapedNotes.map((n) => {
     note_id: n.note_id,
     cn_status: n.cn_status || "UNKNOWN",
     view_count: n.view_count || 0,
-    bot_name: info?.bot_name || "pre-tracking",
+    bot_name: botNameByNoteId.get(n.note_id) || "pre-tracking",
     submitted_at: noteDate,
     has_video: videoByTweet.get(n.tweet_id)?.has_video ?? false,
     video_duration_ms: videoByTweet.get(n.tweet_id)?.video_duration_ms ?? null,
@@ -202,8 +179,14 @@ const notes = scrapedNotes.map((n) => {
 });
 
 // Define active vs legacy bots
-const activeBots = ["opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok", "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source", "opus-bridging"];
-const legacyBots = ["opus-4.6", "sonar-pro", "kimi-k2", "opus-research", "opus-verified", "opus-concise", "opus-scored", "opus-strict", "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking"];
+const activeBots = ["multi-agent", "claude-simple", "agent"];
+const legacyBots = [
+  "opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok",
+  "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source",
+  "opus-bridging", "opus-4.6", "sonar-pro", "kimi-k2", "opus-research",
+  "opus-verified", "opus-concise", "opus-scored", "opus-strict",
+  "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking",
+];
 
 // Check for notes from unknown bots
 const knownBots = new Set([...activeBots, ...legacyBots]);
@@ -393,7 +376,7 @@ const html = `<!DOCTYPE html>
   </div>
 
   <div class="header-row">
-    <p class="subtitle">Data from canonical_note_information + public data</p>
+    <p class="subtitle">Data from notes + public data</p>
     <div style="display: flex; gap: 16px; align-items: center;">
       <div>
         <span style="color: #666; font-size: 0.85em; margin-right: 8px;">Time:</span>
@@ -446,11 +429,6 @@ const html = `<!DOCTYPE html>
       <div class="card-label">Competing Notes</div>
       <div class="card-value" style="color: #ef4444;" id="competing-count">-</div>
       <div class="card-sub" id="competing-sub"></div>
-    </div>
-    <div class="card">
-      <div class="card-label">Unresolved Tweets</div>
-      <div class="card-value" style="color: #f59e0b;" id="backlog-count">${backlogSize}</div>
-      <div class="card-sub">seen but not submitted/skipped</div>
     </div>
   </div>
 
@@ -519,24 +497,6 @@ const html = `<!DOCTYPE html>
     </table>
   </div>
 
-  <div class="summary">
-    <h2>Backlog Trend</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Time (UTC)</th>
-          <th>Total</th>
-          <th>New</th>
-          <th>Retry</th>
-          <th>Processed</th>
-          <th>Hit Limit</th>
-        </tr>
-      </thead>
-      <tbody id="backlog-table-body">
-      </tbody>
-    </table>
-  </div>
-
   <p class="data-source">Generated ${new Date().toISOString().slice(0, 16)} UTC</p>
 
   <script>
@@ -547,7 +507,6 @@ const html = `<!DOCTYPE html>
     const botColors = ${JSON.stringify(botColors)};
     const pipelineRuns = ${JSON.stringify(pipelineRuns)};
     const pipelineOutcomesByBot = ${JSON.stringify(pipelineOutcomesByBot)};
-    const runSnapshots = ${JSON.stringify(runSnapshots)};
     const globalTotalViews = ${globalTotalViews};
     const totalCompeting = ${totalCompeting};
     const helpfulCompeting = ${helpfulCompeting};
@@ -1090,24 +1049,6 @@ const html = `<!DOCTYPE html>
           }
         });
         sankeyCharts.push(chart);
-      }
-    }
-
-    // Render backlog trend table (last 20 runs, newest first)
-    {
-      const tbody = document.getElementById('backlog-table-body');
-      const recent = runSnapshots.slice(-20).reverse();
-      for (const snap of recent) {
-        const t = new Date(snap.created_at);
-        const timeStr = t.toISOString().slice(5, 16).replace('T', ' ');
-        tbody.innerHTML += \`<tr>
-          <td>\${timeStr}</td>
-          <td><strong>\${snap.backlog_total}</strong></td>
-          <td>\${snap.backlog_new}</td>
-          <td>\${snap.backlog_retry}</td>
-          <td>\${snap.posts_processed}</td>
-          <td>\${snap.backlog_hit_limit ? '⚠️ Yes' : 'No'}</td>
-        </tr>\`;
       }
     }
 

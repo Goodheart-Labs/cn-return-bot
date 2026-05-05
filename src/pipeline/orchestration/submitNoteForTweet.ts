@@ -16,7 +16,7 @@ export async function submitNoteForTweet(
   candidate: Candidate,
   logger: SupabaseLogger
 ): Promise<SubmissionResult> {
-  const { post, tweetResult, botId } = candidate;
+  const { post, tweetResult } = candidate;
   const tweetId = post.id;
   const pipelineRunId = tweetResult.pipelineRunId!;
   const noteText = tweetResult.noteText ?? "";
@@ -37,22 +37,27 @@ export async function submitNoteForTweet(
       return { status: "error", message: "No note ID in response" };
     }
 
-    await logger.markCandidateSubmitted(pipelineRunId, noteId);
-
+    // Order matters: insert into notes first, THEN set pipeline_runs.note_id.
+    // Migration 035 added an FK on pipeline_runs.note_id → notes.note_id, so
+    // the reverse order would fail referential integrity.
+    // Both writes are fail-soft — the X submission already succeeded above
+    // and we don't want a DB hiccup to mask that.
     try {
-      const botConfig = await logger.getOrCreateBotConfig(botId);
       await logger.logNoteSubmission({
         note_id: noteId,
         tweet_id: tweetId,
-        bot_config_id: botConfig.id,
-        bot_name: botId,
         note_text: noteText,
         source_url: sourceUrl,
-        evaluation_score: tweetResult.evaluationScore,
-        commit_sha: process.env.GITHUB_SHA,
+        submitted_at: new Date().toISOString(),
       });
     } catch (logErr) {
-      console.error("[submit] Failed to log to Supabase:", logErr);
+      console.error("[submit] Failed to insert notes row:", logErr);
+    }
+
+    try {
+      await logger.markCandidateSubmitted(pipelineRunId, noteId);
+    } catch (logErr) {
+      console.error("[submit] Failed to mark candidate submitted:", logErr);
     }
 
     try {

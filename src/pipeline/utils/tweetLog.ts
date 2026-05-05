@@ -44,6 +44,23 @@ export function getLoggedBotId(fallback: string, log?: TweetLogMap): string {
   return (source?.get("bot.id") as string | undefined) ?? fallback;
 }
 
+/**
+ * Bot identity captured by the bot at runtime, ready to be persisted in the
+ * pipeline_runs row. `name` is the short family ("claude-simple"); `nameLong`
+ * includes the config variant ("claude-simple_claude-simple-sonnet-gemini");
+ * `config` is the full BotConfig snapshot for the run.
+ */
+export function getLoggedBotIdentity(
+  fallbackName: string,
+  log?: TweetLogMap,
+): { name: string; nameLong: string; config?: Record<string, unknown> } {
+  const source = log ?? getTweetLog();
+  const nameLong = (source?.get("bot.id") as string | undefined) ?? fallbackName;
+  const name = (source?.get("bot.name") as string | undefined) ?? fallbackName;
+  const config = source?.get("bot.config") as Record<string, unknown> | undefined;
+  return { name, nameLong, config };
+}
+
 // ---------------------------------------------------------------------------
 // LLM call logging helper
 // ---------------------------------------------------------------------------

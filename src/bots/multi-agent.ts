@@ -21,7 +21,10 @@ export const multiAgentBot: Bot = {
     const fullBotId = getFullBotId(this.id, config);
 
     return withBotConfig(config, () => withCostTracker(async () => {
-      getTweetLog()?.set("bot.id", fullBotId);
+      const log = getTweetLog();
+      log?.set("bot.id", fullBotId);
+      log?.set("bot.name", this.id);
+      log?.set("bot.config", config);
       const input = await createBotInput(post, "multi-agent");
       const outcome = await runMultiAgentPipeline(post, input);
       const result = outcomeToResult(post, fullBotId, outcome, config.scoreFilters);

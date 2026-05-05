@@ -8,6 +8,11 @@ export interface ReviewItem {
   hasPhoto?: boolean;
   hasVideo?: boolean;
   mediaCount?: number;
+  // Raw X-API media arrays from the tweets table — used to render images/videos
+  // without going through the legacy log-shape parser. Each entry has at least
+  // {type: "photo"|"video"|"animated_gif", url}.
+  tweetMedia?: Array<{ type: string; url?: string; preview_image_url?: string; [k: string]: unknown }>;
+  referencedTweetData?: { text?: string; media?: Array<{ type: string; url?: string; [k: string]: unknown }> };
 
   // Our note
   noteId?: string;
@@ -53,9 +58,6 @@ export interface ComparisonNote {
   noteId: string;
   noteText?: string;
   status?: string;
-  coreStatus?: string;
-  helpfulCount?: number;
-  notHelpfulCount?: number;
   authorId?: string;
   createdAtMillis?: number;
 }
