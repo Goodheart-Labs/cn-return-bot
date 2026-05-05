@@ -36,16 +36,9 @@ export interface ScoreEntry {
   metadata?: Record<string, unknown>;
 }
 
-export interface TweetMetadata {
-  hasVideo: boolean;
-  hasPhoto: boolean;
-  videoDurationMs?: number;
-}
-
 export interface BotPipelineOutput {
   result: PipelineResult | null;
   content: PostContent;
-  metadata: TweetMetadata;
   warnings?: string[];
 }
 
@@ -74,23 +67,14 @@ export interface ProcessTweetResult {
 // Layer 1: Run bot pipeline (no DB, no scoring)
 // ---------------------------------------------------------------------------
 
-function extractTweetMetadata(post: Post): TweetMetadata {
-  const videoMedia = post.media?.find((m) => m.type === "video");
-  return {
-    hasVideo: !!videoMedia,
-    hasPhoto: post.media?.some((m) => m.type === "photo") ?? false,
-    videoDurationMs: videoMedia?.duration_ms,
-  };
-}
-
 async function runBotPipeline(
   post: Post,
   bot: Bot
 ): Promise<BotPipelineOutput> {
   const content = getOriginalTweetContent(post);
-  const metadata = extractTweetMetadata(post);
+  const hasVideo = !!post.media?.some((m) => m.type === "video");
 
-  const tweetType = `${content.isQuoteTweet ? "quote tweet" : "original"}${metadata.hasVideo ? " [VIDEO]" : ""}`;
+  const tweetType = `${content.isQuoteTweet ? "quote tweet" : "original"}${hasVideo ? " [VIDEO]" : ""}`;
 
   const log = getTweetLog();
   log?.set("tweet.post", post);
@@ -111,7 +95,7 @@ async function runBotPipeline(
     log?.set("warnings", warnings);
   }
 
-  return { result, content, metadata, warnings };
+  return { result, content, warnings };
 }
 
 // ---------------------------------------------------------------------------
@@ -370,23 +354,10 @@ async function logScoresToDb(
 async function initPipelineRun(
   logger: SupabaseLogger,
   post: Post,
-  metadata: TweetMetadata,
   commitSha?: string
 ): Promise<string | null> {
-  // Upsert the tweets row first so pipeline_runs.tweet_id has a parent.
-  // Failure here is non-fatal: pipeline_runs.tweet_id is plain TEXT (no FK),
-  // so a missed tweets row only loses the engagement metrics for this run.
-  try {
-    await logger.upsertTweet(post, {
-      has_video: metadata.hasVideo,
-      has_photo: metadata.hasPhoto,
-      media_count: post.media?.length ?? 0,
-      video_duration_ms: metadata.videoDurationMs,
-    });
-  } catch (err) {
-    console.warn(`[processTweet] Failed to upsert tweets row for ${post.id}:`, err);
-  }
-
+  // Note: the tweets row is upserted in bulk at fetch time
+  // (see generateCandidates.fetchPosts), so we don't need to do it here.
   try {
     return await logger.createPipelineRun({
       tweet_id: post.id,
@@ -440,7 +411,6 @@ export async function processSingleTweet(
     pipelineOutput = await runBotPipeline(post, bot);
   } catch (err: any) {
     console.error(`[processTweet] Bot pipeline failed for ${post.id}:`, err);
-    const metadata = extractTweetMetadata(post);
     const errorResult: PipelineResult = {
       post,
       botId: bot.id,
@@ -449,14 +419,14 @@ export async function processSingleTweet(
       noteResult: { note: "", url: "", status: "ERROR" },
       error: err.message,
     };
-    pipelineOutput = { result: errorResult, content: getOriginalTweetContent(post), metadata, warnings: [`[ERROR] ${err.message}`] };
+    pipelineOutput = { result: errorResult, content: getOriginalTweetContent(post), warnings: [`[ERROR] ${err.message}`] };
   }
-  const { result, metadata, warnings } = pipelineOutput;
+  const { result, warnings } = pipelineOutput;
 
   // 2. Create DB run
   let pipelineRunId: string | null = null;
   if (logger) {
-    pipelineRunId = await initPipelineRun(logger, post, metadata, commitSha);
+    pipelineRunId = await initPipelineRun(logger, post, commitSha);
   }
 
   // 3. Score (only if bot produced a usable result)

@@ -362,6 +362,69 @@ export class SupabaseLogger {
     }
   }
 
+  /**
+   * Bulk upsert tweets from fetched eligibility-endpoint posts. Derives
+   * has_video / has_photo / media_count / video_duration_ms from post.media
+   * so callers don't need to pre-compute them. first_seen_at is preserved on
+   * conflict; engagement metrics refresh on every call.
+   */
+  async bulkUpsertTweets(posts: Array<{
+    id: string;
+    author_id?: string;
+    text?: string;
+    created_at?: string;
+    media?: any[];
+    referenced_tweets?: any[];
+    referenced_tweet_data?: any;
+    public_metrics?: {
+      impression_count?: number;
+      like_count?: number;
+      retweet_count?: number;
+      reply_count?: number;
+      quote_count?: number;
+      bookmark_count?: number;
+    };
+    author_followers?: number;
+    author_name?: string;
+    author_description?: string;
+    author_tweet_count?: number;
+  }>): Promise<void> {
+    if (!posts.length) return;
+    const now = new Date().toISOString();
+    const rows = posts.map((post) => {
+      const videoMedia = post.media?.find((m) => m.type === "video");
+      return {
+        tweet_id: post.id,
+        author_id: post.author_id,
+        author_name: post.author_name,
+        author_description: post.author_description,
+        author_followers: post.author_followers,
+        author_tweet_count: post.author_tweet_count,
+        text: post.text,
+        posted_at: post.created_at,
+        impressions: post.public_metrics?.impression_count,
+        likes: post.public_metrics?.like_count,
+        retweets: post.public_metrics?.retweet_count,
+        replies: post.public_metrics?.reply_count,
+        quotes: post.public_metrics?.quote_count,
+        bookmarks: post.public_metrics?.bookmark_count,
+        media: post.media ?? null,
+        referenced_tweets: post.referenced_tweets ?? null,
+        referenced_tweet_data: post.referenced_tweet_data ?? null,
+        has_video: !!videoMedia,
+        has_photo: post.media?.some((m) => m.type === "photo") ?? false,
+        media_count: post.media?.length ?? 0,
+        video_duration_ms: videoMedia?.duration_ms,
+        last_updated_at: now,
+      };
+    });
+    const { error } = await this.client.from("tweets").upsert(rows, { onConflict: "tweet_id" });
+    if (error) {
+      console.error(`[SupabaseLogger] Error bulk-upserting ${rows.length} tweets:`, error);
+      throw error;
+    }
+  }
+
   // ============================================
   // Pipeline Tracking
   // ============================================
@@ -569,29 +632,18 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get all tweet IDs that have ever been processed (pipeline_runs + notes).
-   * Used to skip already-seen tweets — no retries.
+   * Get all tweet IDs already in the tweets table — i.e. tweets we have
+   * previously seen from the eligibility endpoint. Used to skip already-seen
+   * tweets so each fetched tweet is processed at most once.
    */
-  async getAllProcessedTweetIds(): Promise<Set<string>> {
-    const tweetIds = new Set<string>();
+  async getKnownTweetIds(): Promise<Set<string>> {
     try {
-      const pipelineRows = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("pipeline_runs").select("tweet_id")
+      const rows = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("tweets").select("tweet_id")
       );
-      pipelineRows.forEach((row) => {
-        if (row.tweet_id) tweetIds.add(row.tweet_id);
-      });
-
-      const notesRows = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("notes").select("tweet_id")
-      );
-      notesRows.forEach((row) => {
-        if (row.tweet_id) tweetIds.add(row.tweet_id);
-      });
-
-      return tweetIds;
+      return new Set(rows.map((r) => r.tweet_id).filter(Boolean));
     } catch (error) {
-      console.error("[SupabaseLogger] Error fetching all processed tweet IDs:", error);
+      console.error("[SupabaseLogger] Error fetching known tweet IDs:", error);
       return new Set();
     }
   }
