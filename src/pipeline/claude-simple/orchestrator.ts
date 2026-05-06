@@ -55,5 +55,5 @@ export async function runClaudeSimplePipeline(
 function logFinal(startMs: number): void {
   const log = getTweetLog();
   log?.set("claudeSimple.totalDurationMs", Date.now() - startMs);
-  aggregateAndLogCosts("claudeSimple");
+  aggregateAndLogCosts();
 }

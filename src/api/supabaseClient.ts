@@ -417,6 +417,7 @@ export class SupabaseLogger {
       search_results?: string;
       check_reasoning?: string;
       logs?: Record<string, unknown>;
+      cost?: number;
     }
   ): Promise<void> {
     const { error } = await this.client
@@ -436,6 +437,7 @@ export class SupabaseLogger {
         search_results: data.search_results,
         check_reasoning: data.check_reasoning,
         logs: data.logs,
+        cost: data.cost,
       })
       .eq("id", runId);
 
