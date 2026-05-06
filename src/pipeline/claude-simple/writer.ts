@@ -9,11 +9,15 @@
 import { getBotConfig } from "../utils/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../utils/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
+import { countNoteLength } from "../write/writeNote";
 
 export interface WriterResult {
   noteText: string;
   sources: string[];
 }
+
+const MAX_WRITER_ATTEMPTS = 3;
+const MAX_NOTE_CHARS = 280;
 
 const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You receive the original post context and research findings from a prior search step, and you write exactly one community note.
 
@@ -30,7 +34,7 @@ const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You recei
 
 ## Character limit
 - Target: 240-260 non-URL characters
-- Hard max: 275 non-URL characters (URLs are shortened by X and count as 1 character each)
+- Hard max: 280 non-URL characters (URLs are shortened by X and count as 1 character each)
 - Be concise. Every word must earn its place.
 
 ## Source rules
@@ -66,26 +70,49 @@ const RESPONSE_FORMAT = {
 export async function runWriter(userMessage: string, findings: string): Promise<WriterResult> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const logPrefix = "claudeSimple.writer.messages";
-
   const combinedUserMessage = `${userMessage}\n\n## Research findings\n\n${findings}`;
 
-  log?.set(`${logPrefix}.0`, { systemPrompt: SYSTEM_PROMPT, userMessage: combinedUserMessage });
+  const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: combinedUserMessage },
+  ];
 
-  const { response, costEntry } = await trackedLlmCreate("claudeSimple.writer", {
-    model: config.writer_model ?? config.model,
-    messages: [
-      { role: "system" as const, content: SYSTEM_PROMPT },
-      { role: "user" as const, content: combinedUserMessage },
-    ],
-    response_format: RESPONSE_FORMAT,
-  } as any);
-  trackLlmCall(costEntry);
+  for (let attempt = 1; attempt <= MAX_WRITER_ATTEMPTS; attempt++) {
+    const logPrefix = `claudeSimple.writer.attempts.${attempt - 1}`;
+    log?.set(`${logPrefix}.messages`, messages);
 
-  const content = response.choices?.[0]?.message?.content ?? "{}";
-  const parsed = JSON.parse(content) as { note_text: string; sources: string[] };
+    const { response, costEntry } = await trackedLlmCreate(`claudeSimple.writer.${attempt}`, {
+      model: config.writer_model ?? config.model,
+      messages,
+      response_format: RESPONSE_FORMAT,
+    } as any);
+    trackLlmCall(costEntry);
 
-  log?.set(`${logPrefix}.1`, { content: parsed });
+    const content = response.choices?.[0]?.message?.content ?? "{}";
+    const parsed = JSON.parse(content) as { note_text: string; sources: string[] };
+    const charCount = countNoteLength(parsed.note_text);
 
-  return { noteText: parsed.note_text, sources: parsed.sources };
+    log?.set(`${logPrefix}.response`, parsed);
+    log?.set(`${logPrefix}.charCount`, charCount);
+
+    if (charCount <= MAX_NOTE_CHARS) {
+      return { noteText: parsed.note_text, sources: parsed.sources };
+    }
+
+    if (attempt >= MAX_WRITER_ATTEMPTS) {
+      throw new Error(
+        `claude-simple writer exceeded ${MAX_NOTE_CHARS} char limit after ${MAX_WRITER_ATTEMPTS} attempts (last: ${charCount} chars)`,
+      );
+    }
+
+    messages.push({ role: "assistant", content });
+    messages.push({
+      role: "user",
+      content:
+        `Your previous note was ${charCount} characters (URLs count as 1 each), but the hard max is ${MAX_NOTE_CHARS}. ` +
+        `Rewrite the note shorter while keeping the same correction and sources. Previous note: "${parsed.note_text}"`,
+    });
+  }
+
+  throw new Error("unreachable");
 }
