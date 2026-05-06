@@ -63,18 +63,15 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 Dashboard listens on port 8001 — free it first in case a previous run is still bound.
 
 ```bash
-# Production Supabase
-lsof -ti:8001 | xargs kill -9 2>/dev/null; bun run build-review && bun run serve-review
-
-# Local Supabase
-lsof -ti:8001 | xargs kill -9 2>/dev/null; cd src/review-dashboard && bunx vite build && cd ../.. && bun run src/review-dashboard/server.ts --local
+bun run review        # Production Supabase
+bun run review-local  # Local Supabase
 ```
 
 ## Database
 
 See [DATABASE.md](docs/DATABASE.md) for full schema, column descriptions, enum values, and data flow. See [community-notes-data.md](docs/community-notes-data.md) for X's public Community Notes data schema.
 
-Quick guide: use `canonical_note_information` for performance analysis, `notes` for submission metadata, `pipeline_runs` + `pipeline_scores` for debugging.
+Quick guide: use `notes` for performance analysis and submission metadata (the old `canonical_note_information` was merged into it in May 2026), `pipeline_runs` + `pipeline_scores` for debugging.
 
 ## Notewriter scraper
 
@@ -82,23 +79,22 @@ The main scraper is `src/scraper/scrapeNotewriterClickThrough.ts`. It connects t
 
 - **Notewriter account**: `wholesome-raspberry-stilt` (the only active one)
 - **Primary purpose**: Full coverage audit — ensure every note we've written is tracked in the DB
-- **Data destination**: `canonical_note_information` + `scraped_notewriter_snapshots` tables
+- **Data destination**: `notes` + `scraped_notewriter_snapshots` tables (snapshots are the time-series; reconcileSnapshots derives the canonical `notes` row)
 - **Key technical detail**: X's notewriter page scrolls on `document.documentElement` (the `<html>` element), NOT window or body. The virtualizer only renders ~5-10 cells at a time.
 - **One scraper**: Only `scrapeNotewriterClickThrough.ts` exists. Legacy scrapers were deleted Feb 2026.
 
 Usage:
 ```bash
-# Start Chrome with remote debugging first
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile
-
-# Run scraper (number = max notes to scrape)
-bun run src/scraper/scrapeNotewriterClickThrough.ts 50
-bun run src/scraper/scrapeNotewriterClickThrough.ts 50 --fresh  # reload page first
+# Single command — auto-starts Chrome on port 9222 if not already running.
+# First-time only: log into X in the launched Chrome window before re-running.
+bun run scrape              # default 500 notes
+bun run scrape 5000 --fresh # full pass from the top
+bun run scrape 5000 --start-from <noteId>  # resume from a previous run
 ```
 
 ## Standing permissions
 
-- **Scraper**: Claude can start the scraper at any time without asking. Use `~/.bun/bin/bun run src/scraper/scrapeNotewriterClickThrough.ts` with appropriate flags. Ask before stopping it.
+- **Scraper**: Claude can start the scraper at any time without asking. Use `~/.bun/bin/bun run scrape` with appropriate flags. Ask before stopping it.
 
 ## Gotchas
 
