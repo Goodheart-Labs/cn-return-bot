@@ -7,7 +7,6 @@
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
 import { randomizeConfig, withBotConfig, getFullBotId } from "../pipeline/utils/botConfig";
-import { withCostTracker } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runMultiAgentPipeline } from "../pipeline/multi-agent/orchestrator";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
@@ -20,7 +19,7 @@ export const multiAgentBot: Bot = {
     const config = randomizeConfig(this.id);
     const fullBotId = getFullBotId(this.id, config);
 
-    return withBotConfig(config, () => withCostTracker(async () => {
+    return withBotConfig(config, async () => {
       const log = getTweetLog();
       log?.set("bot.id", fullBotId);
       log?.set("bot.name", this.id);
@@ -32,6 +31,6 @@ export const multiAgentBot: Bot = {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }
       return result;
-    }));
+    });
   },
 };

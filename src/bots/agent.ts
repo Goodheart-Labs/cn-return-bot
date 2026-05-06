@@ -9,7 +9,6 @@ import type { Post } from "../api/fetchEligiblePosts";
 import { Bot, PipelineResult, PipelineOutcome, outcomeToResult } from "./types";
 import type { BotInput } from "../pipeline/input/createBotInput";
 import { randomizeConfig, withBotConfig, getBotConfig, getFullBotId } from "../pipeline/utils/botConfig";
-import { withCostTracker, aggregateAndLogCosts } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
 import { buildToolList } from "../pipeline/tool-calling/tools";
@@ -45,8 +44,6 @@ async function runAgent(post: Post, input: BotInput): Promise<PipelineOutcome> {
   addUserMessage(state, userMessage);
   const result = await runAgentTurn(state, "agent.messages", MAX_ITERATIONS);
 
-  aggregateAndLogCosts();
-
   if (result.terminalTool === "propose_notes") {
     const { selected, evalResults } = await evaluateAndPickBest(post.id, result.args.notes ?? []);
     log?.set("note.eval_scores", evalResults.map((r) => ({ score: r.evalScore, error: r.error })));
@@ -69,7 +66,7 @@ export const agentBot: Bot = {
     const config = randomizeConfig(this.id);
     const fullBotId = getFullBotId(this.id, config);
 
-    return withBotConfig(config, () => withCostTracker(async () => {
+    return withBotConfig(config, async () => {
       const log = getTweetLog();
       log?.set("bot.id", fullBotId);
       log?.set("bot.name", this.id);
@@ -81,6 +78,6 @@ export const agentBot: Bot = {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }
       return result;
-    }));
+    });
   },
 };

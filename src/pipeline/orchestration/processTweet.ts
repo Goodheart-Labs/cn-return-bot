@@ -17,6 +17,7 @@ import { getOriginalTweetContent } from "../../utils/retweetUtils";
 import { runNoteScores, countSources, applyScoreFilters, type AllNoteScores } from "../score/noteScores";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
+import { withCostTracker, aggregateAndLogCosts } from "../utils/costTracker";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -369,11 +370,6 @@ async function initPipelineRun(
   }
 }
 
-function extractRunCost(log: ReturnType<typeof getTweetLog>): number | undefined {
-  const total = log?.get("costs.total") as { cost?: number } | undefined;
-  return total?.cost;
-}
-
 function buildCompletionData(
   result: PipelineResult | null,
   bot: { name: string; nameLong: string; config?: Record<string, unknown> },
@@ -408,6 +404,12 @@ function buildCompletionData(
 // ---------------------------------------------------------------------------
 
 export async function processSingleTweet(
+  options: ProcessTweetOptions
+): Promise<ProcessTweetResult> {
+  return withCostTracker(() => processSingleTweetInner(options));
+}
+
+async function processSingleTweetInner(
   options: ProcessTweetOptions
 ): Promise<ProcessTweetResult> {
   const { post, bot, logger, commitSha } = options;
@@ -471,12 +473,14 @@ export async function processSingleTweet(
     }
   }
 
-  // 6. Complete DB run (with logs)
+  // 6. Complete DB run (with logs).
+  // aggregateAndLogCosts writes the cost breakdown to the log AND returns the
+  // total — read it directly here instead of re-parsing the log.
+  const totalCost = aggregateAndLogCosts();
   if (logger && pipelineRunId) {
     const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
     const loggedBot = getLoggedBotIdentity(bot.id, log);
-    const cost = extractRunCost(log);
-    const completionData = buildCompletionData(result, loggedBot, outcome, warnings, logs, cost);
+    const completionData = buildCompletionData(result, loggedBot, outcome, warnings, logs, totalCost?.cost);
     try {
       await logger.completePipelineRun(pipelineRunId, completionData);
     } catch (err) {

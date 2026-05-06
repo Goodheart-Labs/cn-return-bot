@@ -66,10 +66,16 @@ function entryCost(entry: LlmCallCost): TokenCost {
   return cost;
 }
 
-export function aggregateAndLogCosts(): void {
+/**
+ * Sum all tracked cost entries, write the breakdown to the tweet log, and
+ * return the total. Callers persist `total.cost` on the run row.
+ *
+ * Returns null when nothing was tracked (bot crashed before any LLM call,
+ * or no cost-tracker scope is active).
+ */
+export function aggregateAndLogCosts(): TokenCost | null {
   const entries = getCostTracker();
-  const log = getTweetLog();
-  if (!log || !entries.length) return;
+  if (!entries.length) return null;
 
   // Group by first path segment of the entry name (e.g. "search", "writer", "agent.turn3").
   const groups: Record<string, TokenCost> = {};
@@ -84,7 +90,12 @@ export function aggregateAndLogCosts(): void {
     addTokenCost(groups[group]!, cost);
   }
 
-  log.set("costs.entries", entries);
-  log.set("costs.groups", groups);
-  log.set("costs.total", total);
+  const log = getTweetLog();
+  if (log) {
+    log.set("costs.entries", entries);
+    log.set("costs.groups", groups);
+    log.set("costs.total", total);
+  }
+
+  return total;
 }
