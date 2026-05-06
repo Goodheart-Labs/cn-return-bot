@@ -38,6 +38,7 @@ export interface PipelineResult {
 export type PipelineOutcome =
   | { type: "note"; noteText: string; sources: string[]; evalScore?: number; searchResults?: string }
   | { type: "no_correction"; reason: string }
+  | { type: "verification_failed"; noteText: string; sources: string[]; reason: string; searchResults?: string }
   | { type: "error"; error: string };
 
 export function outcomeToResult(
@@ -65,6 +66,17 @@ export function outcomeToResult(
           citations: outcome.sources,
         },
         checkResult: "YES",
+      };
+    case "verification_failed":
+      return {
+        ...base,
+        noteResult: { note: outcome.noteText, url: outcome.sources.join(" "), status: "CORRECTION WITH TRUSTWORTHY CITATION" },
+        searchContextResult: {
+          ...base.searchContextResult,
+          searchResults: outcome.searchResults ?? "",
+          citations: outcome.sources,
+        },
+        checkResult: `NO: ${outcome.reason}`,
       };
     case "no_correction":
       return base;
