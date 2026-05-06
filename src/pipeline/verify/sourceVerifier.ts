@@ -69,15 +69,20 @@ async function fetchSourceContent(sources: string[]): Promise<{ sections: string
   return { sections, fetchedCount, totalNonTwitter: nonTwitter.length };
 }
 
-const SYSTEM_PROMPT = `You are a source verification step in a Community Notes pipeline. You receive a proposed community note, the sources it cites, the fetched content of those sources, and the original research findings.
+const SYSTEM_PROMPT = `You verify whether the sources cited by a proposed community note support the correction made in that note.
 
-Determine whether the cited sources actually support the correction made in the note.
+Your ONLY job: do the URLs listed under "Note's cited sources", as fetched, support the factual claims in the note?
 
-Rules:
-- Only readable text sources count as evidence. Video and audio sources (YouTube, Vimeo, TikTok, Twitch, etc.) are NOT acceptable — you the verifier cannot watch them, so they provide ZERO evidence regardless of what the note or research findings claim about them.
-- All non-Twitter, non-video sources must be successfully fetched AND directly support the factual claim.
-- Twitter/X links are accepted as valid sources without content verification.
-- If a source failed to fetch, it provides ZERO evidence. Do not assume it supports the claim based on the URL alone.`;
+Scope — what to ignore:
+- Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.
+- The "Research findings" section is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under "Note's cited sources".
+
+Decision rules for the note's cited sources:
+- Twitter/X links (x.com, twitter.com) are accepted as valid without content checks.
+- Any other source must (a) have been successfully fetched and (b) directly support a factual claim in the note. A source that failed to fetch provides ZERO evidence.
+- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.
+
+Set accepted=true if every factual claim in the note is supported by at least one valid cited source. Otherwise set accepted=false and name the unsupported claim in your reasoning.`;
 
 export async function verifySources(params: {
   noteText: string;
@@ -96,17 +101,17 @@ export async function verifySources(params: {
     `## Context`,
     `Current date (UTC): ${new Date().toISOString()}`,
     ``,
-    `## Original post`,
-    params.postContext,
-    ``,
-    `## Research findings`,
-    params.researcherFindings,
-    ``,
     `## Proposed community note`,
     params.noteText,
     ``,
-    `## Source content`,
+    `## Note's cited sources (verify these)`,
     sections,
+    ``,
+    `## Original post (background — not a source)`,
+    params.postContext,
+    ``,
+    `## Research findings (background — not a source)`,
+    params.researcherFindings,
   ].join("\n");
 
   log?.set(`${logPrefix}.0`, { systemPrompt: SYSTEM_PROMPT, userMessage });

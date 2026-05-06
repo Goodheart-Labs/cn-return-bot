@@ -48,7 +48,13 @@ export async function runClaudeSimplePipeline(
   if (verification.accepted) {
     return { type: "note", noteText: note.noteText, sources: note.sources, searchResults: search.findings };
   }
-  return { type: "no_correction", reason: `Source verification rejected: ${verification.reasoning}` };
+  return {
+    type: "verification_failed",
+    noteText: note.noteText,
+    sources: note.sources,
+    reason: verification.reasoning,
+    searchResults: search.findings,
+  };
 }
 
 function logFinal(startMs: number): void {

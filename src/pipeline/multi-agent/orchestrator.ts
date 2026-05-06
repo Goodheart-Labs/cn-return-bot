@@ -159,7 +159,13 @@ export async function runMultiAgentPipeline(
       // Give researcher one retry, then give up
       if (state.sourceVerifierTurnCount >= MAX_SOURCE_VERIFICATION_ATTEMPTS) {
         logFinal(startMs);
-        return { type: "no_correction", reason: `Source verification rejected: ${verification.reasoning}` };
+        return {
+          type: "verification_failed",
+          noteText: state.selectedNote!.noteText,
+          sources: state.selectedNote!.sources,
+          reason: verification.reasoning,
+          searchResults: state.researcherFindings,
+        };
       }
 
       const feedback = [
