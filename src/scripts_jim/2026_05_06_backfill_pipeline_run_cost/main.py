@@ -20,6 +20,8 @@ Usage:
 import json
 import os
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from typing import Optional
@@ -28,8 +30,13 @@ from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "../../../.env"))
 
-PAGE_SIZE = 100
+# Small pages keep the per-query detoast burst under prod's statement_timeout.
+# A page that hits a row with unusually large `logs` will retry; if the retry
+# also fails, the script bails (rerunning resumes via the `cost IS NULL` filter).
+PAGE_SIZE = 50
 HTTP_TIMEOUT_S = 120
+MAX_RETRIES = 3
+RETRY_SLEEP_S = 5
 
 SELECT_FIELDS = (
     "id,"
@@ -61,10 +68,21 @@ def rest_request(
         "Content-Type": "application/json",
     }
     data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(full_url, data=data, headers=headers, method=method)
-    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S) as r:
-        body_bytes = r.read()
-        return json.loads(body_bytes) if body_bytes else []
+
+    # Retry transient 5xx (statement_timeout, gateway hiccups). Don't retry 4xx.
+    for attempt in range(MAX_RETRIES):
+        req = urllib.request.Request(full_url, data=data, headers=headers, method=method)
+        try:
+            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S) as r:
+                resp = r.read()
+                return json.loads(resp) if resp else []
+        except urllib.error.HTTPError as e:
+            if e.code >= 500 and attempt < MAX_RETRIES - 1:
+                print(f"    {method} {path} → {e.code}, retrying in {RETRY_SLEEP_S}s ({attempt + 1}/{MAX_RETRIES - 1})")
+                time.sleep(RETRY_SLEEP_S)
+                continue
+            raise
+    raise RuntimeError("unreachable")
 
 
 def main() -> None:
