@@ -30,6 +30,9 @@ export interface PipelineResult {
   error?: string;
   /** Non-fatal warnings (e.g. media analysis failed but pipeline continued) */
   warnings?: string[];
+  /** Total LLM cost (USD) including tool calls. Set by the bot from
+   * aggregateAndLogCosts after all LLM work is done. */
+  cost?: number;
 }
 
 export type PipelineOutcome =

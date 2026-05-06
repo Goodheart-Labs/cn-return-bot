@@ -45,8 +45,6 @@ async function runAgent(post: Post, input: BotInput): Promise<PipelineOutcome> {
   addUserMessage(state, userMessage);
   const result = await runAgentTurn(state, "agent.messages", MAX_ITERATIONS);
 
-  aggregateAndLogCosts();
-
   if (result.terminalTool === "propose_notes") {
     const { selected, evalResults } = await evaluateAndPickBest(post.id, result.args.notes ?? []);
     log?.set("note.eval_scores", evalResults.map((r) => ({ score: r.evalScore, error: r.error })));
@@ -80,6 +78,7 @@ export const agentBot: Bot = {
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }
+      result.cost = aggregateAndLogCosts()?.cost;
       return result;
     }));
   },

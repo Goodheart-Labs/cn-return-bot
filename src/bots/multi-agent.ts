@@ -7,7 +7,7 @@
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
 import { randomizeConfig, withBotConfig, getFullBotId } from "../pipeline/utils/botConfig";
-import { withCostTracker } from "../pipeline/utils/costTracker";
+import { withCostTracker, aggregateAndLogCosts } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runMultiAgentPipeline } from "../pipeline/multi-agent/orchestrator";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
@@ -31,6 +31,7 @@ export const multiAgentBot: Bot = {
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];
       }
+      result.cost = aggregateAndLogCosts()?.cost;
       return result;
     }));
   },
