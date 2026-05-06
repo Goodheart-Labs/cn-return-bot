@@ -129,7 +129,8 @@ gets retried).
 | `evaluation_score` | DOUBLE PRECISION | the bot's self-eval score |
 | `commit_sha` | TEXT | git SHA of the deployed bot at run time |
 | `created_at` | TIMESTAMPTZ NOT NULL | the run's primary timestamp |
-| `logs` | JSONB | full structured debug dump (multiAgent.researcher.turn.N.messages, etc.) |
+| `logs` | JSONB | full structured debug dump; cost breakdown lives at `logs->'costs'` (`entries`, `groups`, `total`) |
+| `cost` | NUMERIC(10, 6) | total LLM cost in USD (incl. tools); NULL for runs without captured cost data |
 
 Indexes: `tweet_id`, `outcome`, `final_stage`, `(outcome, created_at DESC) WHERE outcome='candidate'`, `bot_name`, `bot_name_long`.
 

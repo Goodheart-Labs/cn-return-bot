@@ -66,12 +66,12 @@ function entryCost(entry: LlmCallCost): TokenCost {
   return cost;
 }
 
-export function aggregateAndLogCosts(logKeyPrefix: string): void {
+export function aggregateAndLogCosts(): void {
   const entries = getCostTracker();
   const log = getTweetLog();
   if (!log || !entries.length) return;
 
-  // Group by first path segment
+  // Group by first path segment of the entry name (e.g. "search", "writer", "agent.turn3").
   const groups: Record<string, TokenCost> = {};
   const total = emptyTokenCost();
 
@@ -84,5 +84,7 @@ export function aggregateAndLogCosts(logKeyPrefix: string): void {
     addTokenCost(groups[group]!, cost);
   }
 
-  log.set(`${logKeyPrefix}.costs`, { entries, groups, total });
+  log.set("costs.entries", entries);
+  log.set("costs.groups", groups);
+  log.set("costs.total", total);
 }

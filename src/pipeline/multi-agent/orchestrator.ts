@@ -198,5 +198,5 @@ export async function runMultiAgentPipeline(
 function logFinal(startMs: number): void {
   const log = getTweetLog();
   log?.set("multiAgent.totalDurationMs", Date.now() - startMs);
-  aggregateAndLogCosts("multiAgent");
+  aggregateAndLogCosts();
 }

@@ -45,7 +45,7 @@ async function runAgent(post: Post, input: BotInput): Promise<PipelineOutcome> {
   addUserMessage(state, userMessage);
   const result = await runAgentTurn(state, "agent.messages", MAX_ITERATIONS);
 
-  aggregateAndLogCosts("agent");
+  aggregateAndLogCosts();
 
   if (result.terminalTool === "propose_notes") {
     const { selected, evalResults } = await evaluateAndPickBest(post.id, result.args.notes ?? []);

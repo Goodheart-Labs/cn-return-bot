@@ -369,12 +369,18 @@ async function initPipelineRun(
   }
 }
 
+function extractRunCost(log: ReturnType<typeof getTweetLog>): number | undefined {
+  const total = log?.get("costs.total") as { cost?: number } | undefined;
+  return total?.cost;
+}
+
 function buildCompletionData(
   result: PipelineResult | null,
   bot: { name: string; nameLong: string; config?: Record<string, unknown> },
   outcome: Outcome,
-  warnings?: string[],
-  logs?: Record<string, unknown>
+  warnings: string[] | undefined,
+  logs: Record<string, unknown> | undefined,
+  cost: number | undefined,
 ): Parameters<SupabaseLogger["completePipelineRun"]>[1] {
   const warningText = warnings?.join("; ");
   const errorParts = [warningText, outcome.errorMessage].filter(Boolean);
@@ -393,6 +399,7 @@ function buildCompletionData(
     search_results: result?.searchContextResult?.searchResults?.slice(0, 10000),
     check_reasoning: result?.checkResult,
     logs,
+    cost,
   };
 }
 
@@ -468,7 +475,8 @@ export async function processSingleTweet(
   if (logger && pipelineRunId) {
     const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
     const loggedBot = getLoggedBotIdentity(bot.id, log);
-    const completionData = buildCompletionData(result, loggedBot, outcome, warnings, logs);
+    const cost = extractRunCost(log);
+    const completionData = buildCompletionData(result, loggedBot, outcome, warnings, logs, cost);
     try {
       await logger.completePipelineRun(pipelineRunId, completionData);
     } catch (err) {
