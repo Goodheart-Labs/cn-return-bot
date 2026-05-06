@@ -369,11 +369,6 @@ async function initPipelineRun(
   }
 }
 
-function extractRunCost(log: ReturnType<typeof getTweetLog>): number | undefined {
-  const total = log?.get("costs.total") as { cost?: number } | undefined;
-  return total?.cost;
-}
-
 function buildCompletionData(
   result: PipelineResult | null,
   bot: { name: string; nameLong: string; config?: Record<string, unknown> },
@@ -475,8 +470,7 @@ export async function processSingleTweet(
   if (logger && pipelineRunId) {
     const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
     const loggedBot = getLoggedBotIdentity(bot.id, log);
-    const cost = extractRunCost(log);
-    const completionData = buildCompletionData(result, loggedBot, outcome, warnings, logs, cost);
+    const completionData = buildCompletionData(result, loggedBot, outcome, warnings, logs, result?.cost);
     try {
       await logger.completePipelineRun(pipelineRunId, completionData);
     } catch (err) {

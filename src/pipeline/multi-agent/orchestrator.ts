@@ -13,7 +13,6 @@ import { getBotConfig } from "../utils/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
-import { aggregateAndLogCosts } from "../utils/costTracker";
 import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
 import { buildUserMessage } from "../input/prompt";
@@ -198,5 +197,4 @@ export async function runMultiAgentPipeline(
 function logFinal(startMs: number): void {
   const log = getTweetLog();
   log?.set("multiAgent.totalDurationMs", Date.now() - startMs);
-  aggregateAndLogCosts();
 }

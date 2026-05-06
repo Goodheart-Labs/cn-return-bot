@@ -9,7 +9,6 @@ import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { buildUserMessage } from "../input/prompt";
 import { getTweetLog } from "../utils/tweetLog";
-import { aggregateAndLogCosts } from "../utils/costTracker";
 import { verifySources } from "../verify/sourceVerifier";
 import { runSearch } from "./search";
 import { runWriter } from "./writer";
@@ -55,5 +54,4 @@ export async function runClaudeSimplePipeline(
 function logFinal(startMs: number): void {
   const log = getTweetLog();
   log?.set("claudeSimple.totalDurationMs", Date.now() - startMs);
-  aggregateAndLogCosts();
 }
