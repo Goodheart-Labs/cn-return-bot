@@ -84,3 +84,6 @@ src/scripts_jim/**/results/
 
 # Claude Code self-reviews
 code-reviews/
+
+# Phase 0 raw API dumps — production note content, do not commit
+src/scripts_jim/2026_05_05_rating_endpoint/raw_notes.jsonl
