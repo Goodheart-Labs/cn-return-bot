@@ -8,6 +8,7 @@
 
 import { llm } from "../llm/llm";
 import { geminiNativeGenerate } from "../llm/gemini";
+import { xaiNativeGenerate } from "../llm/xai";
 import { WEB_SEARCH_TOOL } from "../tool-calling/tools";
 import { getBotConfig } from "../utils/botConfig";
 import { extractOpenRouterCost, type TokenCost } from "../utils/pricing";
@@ -60,8 +61,9 @@ const OPENAI_RESPONSE_FORMAT = {
   },
 };
 
-// Gemini-flavoured schema (uppercase types).
-const GEMINI_RESPONSE_SCHEMA = {
+// Inline JSON schema used by Gemini's responseSchema and as a prompt
+// instruction for Grok. Uppercase types follow Gemini's convention.
+const INLINE_RESPONSE_SCHEMA = {
   type: "OBJECT",
   properties: {
     findings: { type: "STRING" },
@@ -88,7 +90,7 @@ export async function dispatchSearch(
   switch (config.web_search) {
     case "native":         return searchWithAnthropicNative(userMessage, name);
     case "native_gemini":  return searchWithGeminiNative(userMessage, name);
-    case "native_grok":
+    case "native_grok":    return searchWithGrokNative(userMessage, name);
     case "native_openai":
     case "bundled":
     case "perplexity":
@@ -137,7 +139,7 @@ async function searchWithGeminiNative(
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const model = stripGooglePrefix(config.search_model ?? config.model);
+  const model = stripPrefix(config.search_model ?? config.model, "google/");
   log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage, model });
 
   const result = await geminiNativeGenerate({
@@ -145,7 +147,7 @@ async function searchWithGeminiNative(
     systemInstruction: SEARCH_SYSTEM_PROMPT,
     userMessage,
     enableGoogleSearch: true,
-    responseSchema: GEMINI_RESPONSE_SCHEMA,
+    responseSchema: INLINE_RESPONSE_SCHEMA,
   });
 
   if (!result.parsed) {
@@ -167,8 +169,40 @@ async function searchWithGeminiNative(
   };
 }
 
-function stripGooglePrefix(model: string): string {
-  return model.startsWith("google/") ? model.slice("google/".length) : model;
+async function searchWithGrokNative(
+  userMessage: string,
+  name: string,
+): Promise<SearchDispatchResult> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const model = stripPrefix(config.search_model ?? config.model, "x-ai/");
+  log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage, model });
+
+  const result = await xaiNativeGenerate({
+    model,
+    systemPrompt: SEARCH_SYSTEM_PROMPT,
+    userMessage,
+    enableXSearch: true,
+    responseSchema: INLINE_RESPONSE_SCHEMA,
+  });
+
+  if (!result.parsed) {
+    throw new Error(
+      `Grok did not return parseable JSON. text=${result.text.slice(0, 200)}`,
+    );
+  }
+  const parsed = result.parsed as { findings: string; correction_needed: boolean };
+  log?.set(`${name}.messages.1`, { content: parsed, searchCalls: result.searchCalls });
+
+  return {
+    findings: parsed.findings,
+    correctionNeeded: parsed.correction_needed,
+    costEntry: castCost(name, result.cost),
+  };
+}
+
+function stripPrefix(model: string, prefix: string): string {
+  return model.startsWith(prefix) ? model.slice(prefix.length) : model;
 }
 
 function castCost(name: string, cost: TokenCost): LlmCallCost {
