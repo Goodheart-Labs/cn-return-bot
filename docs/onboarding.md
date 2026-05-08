@@ -160,7 +160,7 @@ bun run src/local/tryoutNotes.ts --skip-existing <tweet-id>
 
 # Test pipeline on videos from any platform (uses yt-dlp)
 bun run src/local/runOnVideos.ts input.csv
-bun run src/local/runOnVideos.ts --bot opus-main https://x.com/... https://youtube.com/...
+bun run src/local/runOnVideos.ts --pick bot=opus-main https://x.com/... https://youtube.com/...
 
 # Review dashboard (categorize note failures)
 bun run build-review && bun run serve-review
