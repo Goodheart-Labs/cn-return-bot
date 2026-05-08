@@ -179,8 +179,9 @@ const notes = scrapedNotes.map((n) => {
 });
 
 // Define active vs legacy bots
-const activeBots = ["multi-agent", "claude-simple", "agent"];
+const activeBots = ["multi-agent", "simple-bot", "agent"];
 const legacyBots = [
+  "claude-simple",  // renamed to "simple-bot" in commit 1; historical rows keep the old name until migration 038
   "opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok",
   "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source",
   "opus-bridging", "opus-4.6", "sonar-pro", "kimi-k2", "opus-research",

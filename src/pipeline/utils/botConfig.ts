@@ -115,9 +115,9 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
     },
   },
   {
-    name: "claude-simple-sonnet-sonnet",
+    name: "simple-bot-sonnet-sonnet",
     weight: 1,
-    botIds: ["claude-simple"],
+    botIds: ["simple-bot"],
     overrides: {
       model: "anthropic/claude-sonnet-4.6",
       search_model: "anthropic/claude-sonnet-4.6",
@@ -127,9 +127,9 @@ const CONFIG_VARIANTS: ConfigVariant[] = [
     },
   },
   {
-    name: "claude-simple-sonnet-gemini",
+    name: "simple-bot-sonnet-gemini",
     weight: 1,
-    botIds: ["claude-simple"],
+    botIds: ["simple-bot"],
     overrides: {
       model: "anthropic/claude-sonnet-4.6",
       search_model: "anthropic/claude-sonnet-4.6",

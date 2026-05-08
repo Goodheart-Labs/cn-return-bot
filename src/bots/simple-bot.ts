@@ -1,22 +1,23 @@
 /**
- * Claude Simple Bot
+ * Simple Bot
  *
- * Linear three-stage pipeline: native web_search → notewriter → source verifier.
- * Mirrors opus-main's shape but reuses the richer multi-agent ingredients
- * (buildUserMessage, native Claude web_search, shared source verifier).
+ * Linear three-stage pipeline: search → notewriter → source verifier. Search
+ * step dispatches to one of several provider-specific helpers based on
+ * config.web_search (Anthropic native, Gemini native, Grok native, OpenAI
+ * native, Perplexity Sonar bundled, or a SearXNG tool-calling loop).
  */
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
 import { randomizeConfig, withBotConfig, getFullBotId } from "../pipeline/utils/botConfig";
 import { withCostTracker, aggregateAndLogCosts } from "../pipeline/utils/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
-import { runClaudeSimplePipeline } from "../pipeline/claude-simple/orchestrator";
+import { runSimpleBotPipeline } from "../pipeline/simple-bot/orchestrator";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
 
-export const claudeSimpleBot: Bot = {
-  id: "claude-simple",
-  name: "Claude Simple",
-  description: "Search → notewriter → verifier with native Claude web_search",
+export const simpleBot: Bot = {
+  id: "simple-bot",
+  name: "Simple Bot",
+  description: "Search → notewriter → verifier; multi-provider search step",
   async runPipeline(post): Promise<PipelineResult | null> {
     const config = randomizeConfig(this.id);
     const fullBotId = getFullBotId(this.id, config);
@@ -26,8 +27,8 @@ export const claudeSimpleBot: Bot = {
       log?.set("bot.id", fullBotId);
       log?.set("bot.name", this.id);
       log?.set("bot.config", config);
-      const input = await createBotInput(post, "claude-simple");
-      const outcome = await runClaudeSimplePipeline(post, input);
+      const input = await createBotInput(post, "simple-bot");
+      const outcome = await runSimpleBotPipeline(post, input);
       const result = outcomeToResult(post, fullBotId, outcome, config.scoreFilters);
       if (input.warnings.length) {
         result.warnings = [...(result.warnings ?? []), ...input.warnings];

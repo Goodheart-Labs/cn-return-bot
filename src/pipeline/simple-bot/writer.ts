@@ -1,5 +1,5 @@
 /**
- * Claude Simple — Writer
+ * Simple Bot — Writer
  *
  * Single LLM call that produces one community note + its cited sources. The
  * writer trusts the upstream search decision that a correction IS needed; it
@@ -46,7 +46,7 @@ const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You recei
 const RESPONSE_FORMAT = {
   type: "json_schema" as const,
   json_schema: {
-    name: "claude_simple_note",
+    name: "simple_bot_note",
     strict: true,
     schema: {
       type: "object",
@@ -78,10 +78,10 @@ export async function runWriter(userMessage: string, findings: string): Promise<
   ];
 
   for (let attempt = 1; attempt <= MAX_WRITER_ATTEMPTS; attempt++) {
-    const logPrefix = `claudeSimple.writer.attempts.${attempt - 1}`;
+    const logPrefix = `simpleBot.writer.attempts.${attempt - 1}`;
     log?.set(`${logPrefix}.messages`, messages);
 
-    const { response, costEntry } = await trackedLlmCreate(`claudeSimple.writer.${attempt}`, {
+    const { response, costEntry } = await trackedLlmCreate(`simpleBot.writer.${attempt}`, {
       model: config.writer_model ?? config.model,
       messages,
       response_format: RESPONSE_FORMAT,
@@ -101,7 +101,7 @@ export async function runWriter(userMessage: string, findings: string): Promise<
 
     if (attempt >= MAX_WRITER_ATTEMPTS) {
       throw new Error(
-        `claude-simple writer exceeded ${MAX_NOTE_CHARS} char limit after ${MAX_WRITER_ATTEMPTS} attempts (last: ${charCount} chars)`,
+        `simple-bot writer exceeded ${MAX_NOTE_CHARS} char limit after ${MAX_WRITER_ATTEMPTS} attempts (last: ${charCount} chars)`,
       );
     }
 

@@ -1,8 +1,11 @@
 /**
- * Claude Simple — Search
+ * Simple Bot — Search
  *
  * Single LLM call with Claude's native web_search tool. Returns research findings
  * (with full URLs inline) and a decision on whether a correction is warranted.
+ *
+ * In a follow-up commit this becomes a thin wrapper around a search dispatcher
+ * that routes by config.web_search to multiple providers.
  */
 
 import { WEB_SEARCH_TOOL } from "../tool-calling/tools";
@@ -38,7 +41,7 @@ Return JSON with two fields:
 const RESPONSE_FORMAT = {
   type: "json_schema" as const,
   json_schema: {
-    name: "claude_simple_search",
+    name: "simple_bot_search",
     strict: true,
     schema: {
       type: "object",
@@ -61,11 +64,11 @@ const RESPONSE_FORMAT = {
 export async function runSearch(userMessage: string): Promise<SearchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const logPrefix = "claudeSimple.search.messages";
+  const logPrefix = "simpleBot.search.messages";
 
   log?.set(`${logPrefix}.0`, { systemPrompt: SYSTEM_PROMPT, userMessage });
 
-  const { response, costEntry } = await trackedLlmCreate("claudeSimple.search", {
+  const { response, costEntry } = await trackedLlmCreate("simpleBot.search", {
     model: config.search_model ?? config.model,
     messages: [
       { role: "system" as const, content: SYSTEM_PROMPT },

@@ -10,7 +10,7 @@
  *   A. New (post-Post-PR): logs.tweet.media[] is the raw X-API media list
  *      ({type:"photo"|"video"|"animated_gif", url, ...}). logs.tweet.referencedTweetData
  *      carries the quoted-tweet payload.
- *   B. Agentic (multi-agent / claude-simple): logs.media.gemini.{tweetMedia,
+ *   B. Agentic (multi-agent / simple-bot): logs.media.gemini.{tweetMedia,
  *      quotedTweetMedia}[] — items have {type:"image"|"video", url, description}.
  *   C. Legacy: logs.media.images[] and logs.media.videos[] — flat URL lists,
  *      no type field; we synthesize {type:"photo", url} / {type:"video", url}.

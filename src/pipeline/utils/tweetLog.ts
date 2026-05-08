@@ -46,8 +46,8 @@ export function getLoggedBotId(fallback: string, log?: TweetLogMap): string {
 
 /**
  * Bot identity captured by the bot at runtime, ready to be persisted in the
- * pipeline_runs row. `name` is the short family ("claude-simple"); `nameLong`
- * includes the config variant ("claude-simple_claude-simple-sonnet-gemini");
+ * pipeline_runs row. `name` is the short family ("simple-bot"); `nameLong`
+ * includes the config variant ("simple-bot_simple-bot-sonnet-gemini");
  * `config` is the full BotConfig snapshot for the run.
  */
 export function getLoggedBotIdentity(
