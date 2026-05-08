@@ -83,18 +83,28 @@ const botRuns = await fetchAll<{
 console.log(`  ${botRuns.length} submitted runs (for bot_name mapping)`);
 
 // 3. Pipeline runs (single query with all needed fields)
-// `bot_name_long` is the variant-encoded form (was bot_id pre-refactor).
-// Group/render by it so per-variant breakdowns survive.
+// We group/render by a synthetic variant label "<bot>_<v1>-<v2>-..." derived
+// from ab_test_picks so per-variant breakdowns work post-migration-039.
 const rawPipelineRunsFull = await fetchAll<{
-  bot_name_long: string;
+  bot_name: string | null;
+  ab_test_picks: Record<string, string> | null;
   outcome: string;
   outcome_reason: string | null;
   created_at: string;
   tweet_id: string;
 }>(
-  (c) => c.from("pipeline_runs").select("bot_name_long, outcome, outcome_reason, created_at, tweet_id")
+  (c) => c.from("pipeline_runs").select("bot_name, ab_test_picks, outcome, outcome_reason, created_at, tweet_id")
 );
 console.log(`  ${rawPipelineRunsFull.length} pipeline runs`);
+
+function variantLabel(bot_name: string | null, picks: Record<string, string> | null): string {
+  if (!bot_name) return "unknown";
+  if (!picks) return bot_name;
+  const variantTags = Object.entries(picks)
+    .filter(([k]) => k !== "bot")
+    .map(([, v]) => v);
+  return variantTags.length === 0 ? bot_name : `${bot_name}_${variantTags.join("-")}`;
+}
 
 // Compute is_retry: for each tweet_id, the earliest created_at is first try, rest are retries
 const firstSeenByTweet = new Map<string, string>();
@@ -103,7 +113,7 @@ for (const r of rawPipelineRunsFull) {
   if (!prev || r.created_at < prev) firstSeenByTweet.set(r.tweet_id, r.created_at);
 }
 const pipelineRuns = rawPipelineRunsFull.map(r => ({
-  bot_id: r.bot_name_long,
+  bot_id: variantLabel(r.bot_name, r.ab_test_picks),
   outcome: r.outcome,
   outcome_reason: r.outcome_reason,
   created_at: r.created_at,

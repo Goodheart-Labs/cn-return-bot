@@ -371,7 +371,7 @@ export class SupabaseLogger {
   async createPipelineRun(data: {
     tweet_id: string;
     bot_name?: string;
-    bot_name_long?: string;
+    ab_test_picks?: Record<string, string>;
     bot_config?: Record<string, unknown>;
     commit_sha?: string;
   }): Promise<string> {
@@ -380,7 +380,7 @@ export class SupabaseLogger {
       .insert({
         tweet_id: data.tweet_id,
         bot_name: data.bot_name,
-        bot_name_long: data.bot_name_long,
+        ab_test_picks: data.ab_test_picks,
         bot_config: data.bot_config,
         commit_sha: data.commit_sha,
         outcome: "in_progress", // Will be updated when pipeline completes
@@ -409,7 +409,7 @@ export class SupabaseLogger {
       final_stage: string;
       note_id?: string;
       bot_name?: string;
-      bot_name_long?: string;
+      ab_test_picks?: Record<string, string>;
       bot_config?: Record<string, unknown>;
       note_text?: string;
       source_url?: string;
@@ -429,7 +429,7 @@ export class SupabaseLogger {
         final_stage: data.final_stage,
         note_id: data.note_id,
         bot_name: data.bot_name,
-        bot_name_long: data.bot_name_long,
+        ab_test_picks: data.ab_test_picks,
         bot_config: data.bot_config,
         note_text: data.note_text,
         source_url: data.source_url,
