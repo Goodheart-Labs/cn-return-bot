@@ -2,6 +2,9 @@ import { createXai } from "@ai-sdk/xai";
 import { generateText } from "ai";
 import { calculateGrokCost, type TokenCost } from "../utils/pricing";
 
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF_MS = 1000;
+
 if (!process.env.XAI_API_KEY) {
   console.warn("XAI_API_KEY not set - Grok X search will not be available");
 }
@@ -9,6 +12,18 @@ if (!process.env.XAI_API_KEY) {
 export const xai = createXai({
   apiKey: process.env.XAI_API_KEY,
 });
+
+function isRetryableError(err: any): boolean {
+  // Vercel AI SDK error shapes: { statusCode } (APICallError) and { code } (network).
+  const status = err?.statusCode ?? err?.status ?? err?.response?.status;
+  if (status === 429 || status === 500 || status === 502 || status === 503 || status === 504) return true;
+  if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT" || err?.code === "ENETUNREACH") return true;
+  return false;
+}
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 // --- Single-call native helper for simple-bot search ---
 
@@ -53,11 +68,30 @@ export async function xaiNativeGenerate(p: XaiNativeParams): Promise<XaiNativeRe
     );
   }
 
-  const result = await generateText({
-    model: xai.responses(p.model) as any,
-    prompt: promptParts.join("\n\n"),
-    tools: Object.keys(tools).length > 0 ? (tools as any) : undefined,
-  });
+  let result: any;
+  let lastError: any;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      result = await generateText({
+        model: xai.responses(p.model) as any,
+        prompt: promptParts.join("\n\n"),
+        tools: Object.keys(tools).length > 0 ? (tools as any) : undefined,
+      });
+      break;
+    } catch (err: any) {
+      lastError = err;
+      if (attempt < MAX_RETRIES && isRetryableError(err)) {
+        const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
+        console.warn(
+          `[xai] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${p.model}): ${err?.statusCode ?? err?.status ?? err?.code} ${err?.message?.slice(0, 200)}. Retrying in ${backoff}ms...`,
+        );
+        await sleep(backoff);
+        continue;
+      }
+      throw err;
+    }
+  }
+  if (!result) throw lastError;
 
   const text = result.text ?? "";
   let parsed: any | undefined;
@@ -70,8 +104,8 @@ export async function xaiNativeGenerate(p: XaiNativeParams): Promise<XaiNativeRe
     }
   }
 
-  const searchCalls = result.steps?.reduce(
-    (n, s) => n + (s.toolCalls?.filter((tc) => tc.toolName === "x_search").length ?? 0),
+  const searchCalls: number = result.steps?.reduce(
+    (n: number, s: any) => n + (s.toolCalls?.filter((tc: any) => tc.toolName === "x_search").length ?? 0),
     0,
   ) ?? 0;
 

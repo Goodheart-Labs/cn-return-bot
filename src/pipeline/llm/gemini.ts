@@ -8,6 +8,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { calculateGeminiCost, type TokenCost } from "../utils/pricing";
 
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF_MS = 1000;
+
 let _client: GoogleGenAI | undefined;
 
 function getClient(): GoogleGenAI {
@@ -18,6 +21,19 @@ function getClient(): GoogleGenAI {
     _client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   }
   return _client;
+}
+
+function isRetryableError(err: any): boolean {
+  // GoogleGenAI throws { status: number } for HTTP errors, plus standard
+  // Node network errors for connectivity issues.
+  const status = err?.status ?? err?.response?.status;
+  if (status === 429 || status === 500 || status === 502 || status === 503 || status === 504) return true;
+  if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT" || err?.code === "ENETUNREACH") return true;
+  return false;
+}
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export interface GeminiNativeParams {
@@ -51,11 +67,30 @@ export async function geminiNativeGenerate(p: GeminiNativeParams): Promise<Gemin
     config.responseSchema = p.responseSchema;
   }
 
-  const response = await ai.models.generateContent({
-    model: p.model,
-    contents: p.userMessage,
-    config: config as any,
-  });
+  let response: any;
+  let lastError: any;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      response = await ai.models.generateContent({
+        model: p.model,
+        contents: p.userMessage,
+        config: config as any,
+      });
+      break;
+    } catch (err: any) {
+      lastError = err;
+      if (attempt < MAX_RETRIES && isRetryableError(err)) {
+        const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
+        console.warn(
+          `[gemini] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${p.model}): ${err?.status ?? err?.code} ${err?.message?.slice(0, 200)}. Retrying in ${backoff}ms...`,
+        );
+        await sleep(backoff);
+        continue;
+      }
+      throw err;
+    }
+  }
+  if (!response) throw lastError;
 
   const text = response.text ?? "";
   let parsed: any | undefined;

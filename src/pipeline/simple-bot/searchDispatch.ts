@@ -80,6 +80,19 @@ export interface SearchDispatchResult {
   costEntry: LlmCallCost;
 }
 
+interface SearchOutput {
+  findings: string;
+  correction_needed: boolean;
+}
+
+function parseSearchJson(content: string, source: string): SearchOutput {
+  try {
+    return JSON.parse(content) as SearchOutput;
+  } catch (err: any) {
+    throw new Error(`${source}: model output was not valid JSON. content="${content.slice(0, 200)}"`);
+  }
+}
+
 // --- Dispatcher ---
 
 export async function dispatchSearch(
@@ -122,8 +135,8 @@ async function searchWithAnthropicNative(
     response_format: OPENAI_RESPONSE_FORMAT,
   } as any);
 
-  const content = response.choices?.[0]?.message?.content ?? "{}";
-  const parsed = JSON.parse(content) as { findings: string; correction_needed: boolean };
+  const content = response.choices?.[0]?.message?.content ?? "";
+  const parsed = parseSearchJson(content, "searchWithAnthropicNative");
   log?.set(`${name}.messages.1`, { content: parsed });
 
   const cost = extractOpenRouterCost(response);
@@ -233,9 +246,9 @@ async function searchWithOpenaiNative(
     max_tokens: OPENAI_MAX_TOKENS,
   } as any);
 
-  const rawContent = response.choices?.[0]?.message?.content ?? "{}";
+  const rawContent = response.choices?.[0]?.message?.content ?? "";
   const cleaned = rawContent.replace(/^```json\n?|\n?```$/g, "").trim();
-  const parsed = JSON.parse(cleaned) as { findings: string; correction_needed: boolean };
+  const parsed = parseSearchJson(cleaned, "searchWithOpenaiNative");
   log?.set(`${name}.messages.1`, { content: parsed });
 
   const cost = extractOpenRouterCost(response);
@@ -265,8 +278,8 @@ async function searchWithSonarBundled(
     response_format: OPENAI_RESPONSE_FORMAT,
   } as any);
 
-  const content = response.choices?.[0]?.message?.content ?? "{}";
-  const parsed = JSON.parse(content) as { findings: string; correction_needed: boolean };
+  const content = response.choices?.[0]?.message?.content ?? "";
+  const parsed = parseSearchJson(content, "searchWithSonarBundled");
   log?.set(`${name}.messages.1`, { content: parsed });
 
   const cost = extractOpenRouterCost(response);
@@ -347,10 +360,7 @@ async function searchWithSearxngLoop(
       continue;
     }
 
-    const parsed = JSON.parse(message.content ?? "{}") as {
-      findings: string;
-      correction_needed: boolean;
-    };
+    const parsed = parseSearchJson(message.content ?? "", `searxng loop final (turn ${turn})`);
     log?.set(`${name}.messages.final`, { turn, content: parsed });
 
     return {
