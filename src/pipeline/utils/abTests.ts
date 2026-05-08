@@ -86,13 +86,13 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 10 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 10 },
-    { variant: { name: "gemini3pro-native",       overrides: { search_model: "google/gemini-3-pro",               web_search: "native_gemini" }}, weight: 10 },
+    { variant: { name: "gemini3pro-native",       overrides: { search_model: "google/gemini-3-pro-preview",       web_search: "native_gemini" }}, weight: 10 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 10 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 5 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 5 },
-    { variant: { name: "glm5-searxng",            overrides: { search_model: "zai/glm-5",                         web_search: "searxng" }},       weight: 5 },
+    { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 5 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 2 },
-    { variant: { name: "qwen3max-searxng",        overrides: { search_model: "alibaba/qwen-3-max",                web_search: "searxng" }},       weight: 2 },
+    { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 2 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 6 },
     // OpenAI: code path shipped (verified by spike), but kept at weight 0 until
     // production credit is confirmed to cover max_tokens=4000 reasoning+search calls.

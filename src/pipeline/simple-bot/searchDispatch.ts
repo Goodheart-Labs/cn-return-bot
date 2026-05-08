@@ -370,7 +370,31 @@ async function searchWithSearxngLoop(
     };
   }
 
-  throw new Error(`searxng loop: exhausted ${SEARXNG_MAX_TURNS} turns without final answer`);
+  // Loop exhausted: some models (e.g. deepseek-v3.2-exp) keep searching past
+  // the turn limit without ever producing a final answer on their own. Force
+  // synthesis with one more call that has no tools — the model has all the
+  // accumulated search results in messages already.
+  log?.set(`${name}.forced_synthesis`, true);
+  const finalResp = await llm.create({
+    model,
+    messages: [
+      ...messages,
+      {
+        role: "user",
+        content: "Stop searching. Return your final findings as JSON now.",
+      },
+    ],
+    response_format: OPENAI_RESPONSE_FORMAT,
+  } as any);
+  addTokenCost(totalCost, extractOpenRouterCost(finalResp));
+  const finalContent = finalResp.choices?.[0]?.message?.content ?? "";
+  const parsed = parseSearchJson(finalContent, `searxng forced synthesis (after ${SEARXNG_MAX_TURNS} turns)`);
+  log?.set(`${name}.messages.final`, { turn: SEARXNG_MAX_TURNS + 1, content: parsed });
+  return {
+    findings: parsed.findings,
+    correctionNeeded: parsed.correction_needed,
+    costEntry: { name, ...totalCost, tools: toolCosts },
+  };
 }
 
 function stripPrefix(model: string, prefix: string): string {
