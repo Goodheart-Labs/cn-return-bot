@@ -8,11 +8,11 @@
  *   bun run src/local/tryoutNotes.ts [flags] <input.csv | tweet-url-or-id...>
  *
  * Flags:
- *   --bot <id>              force a specific bot
+ *   --bot <id>              force a specific bot (shorthand for --pick bot=<id>)
+ *   --pick test=variant     force an A/B test variant (repeatable)
  *   --max <n>               limit number of inputs
  *   --reversed              process newest-last
  *   --concurrency <n>       parallel workers (default 5)
- *   --config-name <name>    force a BotConfig variant
  *   --name <label>          name for dashboard upload (default: derived)
  */
 
@@ -68,12 +68,11 @@ async function main() {
     folderPrefix: "tryout",
     inputs: parsed.inputs,
     fetchPost,
-    forcedBotId: parsed.forcedBotId,
+    forcedPicks: parsed.forcedPicks,
     datasetName: parsed.datasetName,
     reversed: parsed.reversed,
     concurrency: parsed.concurrency,
     runName: parsed.runName,
-    configOverrides: parsed.configName ? { configName: parsed.configName } : undefined,
   });
 }
 

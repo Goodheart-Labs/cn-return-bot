@@ -120,7 +120,7 @@ const CANONICAL_LIST_COLUMNS = [
 // media flags now live on the tweets table; we fetch them separately and
 // stitch by tweet_id.
 const PIPELINE_METADATA_COLUMNS =
-  "id, tweet_id, outcome, outcome_reason, bot_name, bot_name_long, created_at";
+  "id, tweet_id, outcome, outcome_reason, bot_name, created_at";
 
 const TWEETS_LIST_COLUMNS =
   "tweet_id, text, media, referenced_tweet_data, author_handle, has_photo, has_video, media_count";
@@ -324,7 +324,7 @@ export function buildDashboardItems(data: {
       outcome: pipeline?.outcome,
       outcomeReason: pipeline?.outcome_reason,
       pipelineRunId: pipeline?.id,
-      botId: pipeline?.bot_name_long ?? pipeline?.bot_name,
+      botId: pipeline?.bot_name,
       comparisonNotes: compNotes,
       annotation: annotationByTarget.get(note.note_id),
       competitorLeadTag: failureType === "lost_to_competitor"

@@ -172,12 +172,11 @@ async function main() {
     folderPrefix: "videos",
     inputs: parsed.inputs,
     fetchPost,
-    forcedBotId: parsed.forcedBotId,
+    forcedPicks: parsed.forcedPicks,
     datasetName: parsed.datasetName,
     reversed: parsed.reversed,
     concurrency: parsed.concurrency,
     runName: parsed.runName,
-    configOverrides: parsed.configName ? { configName: parsed.configName } : undefined,
     cleanup: async () => {
       fs.rmSync(downloadDir, { recursive: true, force: true });
       console.log(`[runOnVideos] Cleaned up temp directory`);

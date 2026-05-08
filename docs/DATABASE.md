@@ -117,8 +117,8 @@ gets retried).
 |---|---|---|
 | `id` | UUID PK | |
 | `tweet_id` | TEXT | refers to `tweets.tweet_id` (no DB-level FK) |
-| `bot_name` | TEXT | short family, e.g. `claude-simple` |
-| `bot_name_long` | TEXT | variant-suffixed, e.g. `claude-simple_claude-simple-sonnet-gemini` |
+| `bot_name` | TEXT | short family, e.g. `simple-bot`, `agent`, `multi-agent`, `opus-main`. Equals `ab_test_picks->>'bot'`. |
+| `ab_test_picks` | JSONB | dictionary of A/B test → variant picks for the run, e.g. `{"bot":"simple-bot","simple_bot_search":"sonnet46-native","simple_bot_writer":"sonnet"}`. Replaces the old `bot_name_long`. GIN-indexed. |
 | `bot_config` | JSONB | full BotConfig snapshot for the run (NULL for historical rows) |
 | `outcome` | TEXT | `submitted` / `candidate` / `rejected` / `failed` / `filtered` / `in_progress` |
 | `outcome_reason` | TEXT | semantic category — `no_correction_needed`, `check_failed`, `low_evaluation_score`, `bot_error`, `daily_limit_reached`, `tweet_deleted`, `ineligible`, etc. |

@@ -371,7 +371,7 @@ async function initPipelineRun(
 
 function buildCompletionData(
   result: PipelineResult | null,
-  bot: { name: string; nameLong: string; config?: Record<string, unknown> },
+  bot: { name: string; picks?: Record<string, string>; config?: Record<string, unknown> },
   outcome: Outcome,
   warnings: string[] | undefined,
   logs: Record<string, unknown> | undefined,
@@ -386,7 +386,7 @@ function buildCompletionData(
     error_message: errorParts.length ? errorParts.join(" | ").slice(0, 2000) : undefined,
     final_stage: outcome.finalStage,
     bot_name: bot.name,
-    bot_name_long: bot.nameLong,
+    ab_test_picks: bot.picks,
     bot_config: bot.config,
     note_text: result ? result.noteResult.note + " " + result.noteResult.url : undefined,
     source_url: result?.noteResult?.url,

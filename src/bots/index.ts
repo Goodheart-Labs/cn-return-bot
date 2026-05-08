@@ -1,7 +1,8 @@
 /**
  * Bot Registry
  *
- * Aggregates all bots and provides selection utilities.
+ * Aggregates all bots and exposes lookup-by-id. Bot selection is driven by
+ * `BOT_TEST` in src/pipeline/utils/abTests.ts (no static weight table here).
  */
 
 import { Bot } from "./types";
@@ -15,9 +16,9 @@ import { opusMultiSource } from "./opus-multi-source";
 import { opusBridging } from "./opus-bridging";
 import { agentBot } from "./agent";
 import { multiAgentBot } from "./multi-agent";
-import { claudeSimpleBot } from "./claude-simple";
+import { simpleBot } from "./simple-bot";
 
-// Legacy bots (weight=0, kept for historical data)
+// Legacy bots (kept for historical data; selection weight is 0 in BOT_TEST)
 import { opusResearch } from "./opus-research";
 import { kimiK2 } from "./kimi-k2";
 import { opus46 } from "./opus-4.6";
@@ -42,56 +43,16 @@ import { opusConcise } from "./opus-concise";
 //   src/pipeline/predictionScores.ts    — post-submit predictor, no longer called
 // =============================================================================
 
-// =============================================================================
-// BOT WEIGHTS — edit this table to change what runs in production
-// =============================================================================
-
-const BOT_WEIGHTS: [Bot, number][] = [
-  [agentBot,                    0],
-  [multiAgentBot,              20],
-  [claudeSimpleBot,            60],
-  [opusMain,                   10],
-  [opusMainV2,                 10],
-  [opusMainNoSourceCheck,       0],
-  [opusDirect,                  0],
-  [opusDirectGrok,              0],
-  [opusMainV2Grok,              0],
-  [opusMultiSource,             0],
-  [opusBridging,                0],
-  [opusResearch,                0],
-  [kimiK2,                      0],
-  [opus46,                      0],
-  [sonarPro,                    0],
-  [opusVerified,                0],
-  [opusConcise,                 0],
+const ALL_BOTS: Bot[] = [
+  agentBot, multiAgentBot, simpleBot,
+  opusMain, opusMainV2, opusMainNoSourceCheck,
+  opusDirect, opusDirectGrok, opusMainV2Grok,
+  opusMultiSource, opusBridging,
+  opusResearch, kimiK2, opus46, sonarPro, opusVerified, opusConcise,
 ];
-
-// =============================================================================
-
-const ALL_BOTS = BOT_WEIGHTS.map(([bot]) => bot);
 
 export function getEnabledBots(): Bot[] {
   return ALL_BOTS;
-}
-
-export function selectRandomBot(): Bot {
-  const totalWeight = BOT_WEIGHTS.reduce((sum, [, w]) => sum + w, 0);
-  if (totalWeight === 0) throw new Error("No bots have positive weights");
-
-  let r = Math.random() * totalWeight;
-  for (const [bot, weight] of BOT_WEIGHTS) {
-    r -= weight;
-    if (r <= 0) return bot;
-  }
-  return BOT_WEIGHTS[BOT_WEIGHTS.length - 1]![0];
-}
-
-export function getBotProbabilities(): { id: string; probability: number }[] {
-  const totalWeight = BOT_WEIGHTS.reduce((sum, [, w]) => sum + w, 0);
-  return BOT_WEIGHTS.map(([bot, weight]) => ({
-    id: bot.id,
-    probability: totalWeight > 0 ? (weight / totalWeight) * 100 : 0,
-  }));
 }
 
 export function getBotById(id: string): Bot | undefined {

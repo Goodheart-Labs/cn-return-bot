@@ -1,5 +1,5 @@
 /**
- * Claude Simple Orchestrator
+ * Simple Bot Orchestrator
  *
  * Linear three-stage pipeline: search → write → verify.
  */
@@ -13,7 +13,7 @@ import { verifySources } from "../verify/sourceVerifier";
 import { runSearch } from "./search";
 import { runWriter } from "./writer";
 
-export async function runClaudeSimplePipeline(
+export async function runSimpleBotPipeline(
   post: Post,
   input: BotInput,
 ): Promise<PipelineOutcome> {
@@ -59,5 +59,5 @@ export async function runClaudeSimplePipeline(
 
 function logFinal(startMs: number): void {
   const log = getTweetLog();
-  log?.set("claudeSimple.totalDurationMs", Date.now() - startMs);
+  log?.set("simpleBot.totalDurationMs", Date.now() - startMs);
 }

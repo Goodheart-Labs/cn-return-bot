@@ -12,133 +12,39 @@ export interface ScoreFilter {
 }
 
 export interface BotConfig {
-  configName: string;
+  /** Which bot to run. Set by the BOT_TEST A/B test (or forced via withForcedPicks). */
+  botId: string;
   model: string;
   /** Step-specific model overrides. Each defaults to `model` when unset. */
   search_model?: string;
   writer_model?: string;
+  /** Defaults to gemini-3-flash-preview via DEFAULT_CONFIG (no A/B test). */
   verifier_model?: string;
-  web_search: "native" | "perplexity" | "searxng" | "searxng_summarized";
+  web_search:
+    | "native"             // Anthropic web_search via OpenRouter
+    | "native_gemini"      // Google Gen AI native API + googleSearch tool
+    | "native_grok"        // xAI native + xSearch
+    | "native_openai"      // OpenAI Responses API + web_search_preview tool (via OpenRouter)
+    | "bundled"            // Perplexity Sonar — search baked in
+    | "perplexity"         // Perplexity-as-tool
+    | "searxng"            // tool-calling loop: model calls google_search (raw SearXNG)
+    | "searxng_summarized";// tool-calling loop: model calls google_search (SearXNG → Gemini summary)
   video_description_strategy: VideoDescriptionStrategy;
   scoreFilters: ScoreFilter[];
   parallel_research: boolean;
 }
 
-// --- Default config + variants ---
+// --- Default config ---
 
-const DEFAULT_CONFIG: BotConfig = {
-  configName: "default",
+export const DEFAULT_CONFIG: BotConfig = {
+  botId: "<unset>",
   model: "anthropic/claude-sonnet-4.6",
+  verifier_model: "google/gemini-3-flash-preview", // simple-bot has always verified with gemini-flash
   web_search: "perplexity",
   video_description_strategy: "frames",
   scoreFilters: [],
   parallel_research: false,
 };
-
-interface ConfigVariant {
-  name: string;
-  weight: number;
-  botIds: string[];
-  overrides: Partial<BotConfig>;
-}
-
-const AGENT_FAMILY_BOT_IDS = ["agent", "multi-agent"];
-
-// Applied to every multi-agent variant: reject notes where the researcher's
-// own assessment says the tweet doesn't really warrant a correction.
-const AGENT_FAMILY_SCORE_FILTERS: ScoreFilter[] = [
-  { score: "noteNotNeeded", op: "gte", threshold: 0.7 },
-];
-
-const CONFIG_VARIANTS: ConfigVariant[] = [
-  {
-    name: "gemini-flash-perplexity",
-    weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
-    overrides: {
-      model: "google/gemini-3-flash-preview",
-      web_search: "perplexity",
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
-    },
-  },
-  {
-    name: "gemini-flash-searxng",
-    weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
-    overrides: {
-      model: "google/gemini-3-flash-preview",
-      web_search: "searxng",
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
-    },
-  },
-  {
-    name: "gemini-flash-searxng-summarized",
-    weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
-    overrides: {
-      model: "google/gemini-3-flash-preview",
-      web_search: "searxng_summarized",
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
-    },
-  },
-  {
-    name: "gemini-flash-perplexity-parallel",
-    weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
-    overrides: {
-      model: "google/gemini-3-flash-preview",
-      web_search: "perplexity",
-      parallel_research: true,
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
-    },
-  },
-  {
-    name: "gemini-flash-searxng-parallel",
-    weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
-    overrides: {
-      model: "google/gemini-3-flash-preview",
-      web_search: "searxng",
-      parallel_research: true,
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
-    },
-  },
-  {
-    name: "gemini-flash-searxng-summarized-parallel",
-    weight: 1,
-    botIds: AGENT_FAMILY_BOT_IDS,
-    overrides: {
-      model: "google/gemini-3-flash-preview",
-      web_search: "searxng_summarized",
-      parallel_research: true,
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
-    },
-  },
-  {
-    name: "claude-simple-sonnet-sonnet",
-    weight: 1,
-    botIds: ["claude-simple"],
-    overrides: {
-      model: "anthropic/claude-sonnet-4.6",
-      search_model: "anthropic/claude-sonnet-4.6",
-      writer_model: "anthropic/claude-sonnet-4.6",
-      verifier_model: "google/gemini-3-flash-preview",
-      web_search: "native",
-    },
-  },
-  {
-    name: "claude-simple-sonnet-gemini",
-    weight: 1,
-    botIds: ["claude-simple"],
-    overrides: {
-      model: "anthropic/claude-sonnet-4.6",
-      search_model: "anthropic/claude-sonnet-4.6",
-      writer_model: "google/gemini-3-flash-preview",
-      verifier_model: "google/gemini-3-flash-preview",
-      web_search: "native",
-    },
-  },
-];
 
 // --- AsyncLocalStorage ---
 
@@ -152,68 +58,4 @@ export function getBotConfig(): BotConfig {
   const config = configStorage.getStore();
   if (!config) throw new Error("getBotConfig() called outside withBotConfig()");
   return config;
-}
-
-// --- Config overrides (force a specific variant at the pipeline entry point) ---
-
-export interface ConfigOverrides {
-  configName?: string;
-}
-
-const overridesStorage = new AsyncLocalStorage<ConfigOverrides>();
-
-export function withConfigOverrides<T>(overrides: ConfigOverrides, fn: () => T): T {
-  return overridesStorage.run(overrides, fn);
-}
-
-function getConfigOverrides(): ConfigOverrides {
-  return overridesStorage.getStore() ?? {};
-}
-
-export function getConfigVariantNames(): string[] {
-  return CONFIG_VARIANTS.map((v) => v.name);
-}
-
-// --- Randomization ---
-
-function pickVariant(variants: ConfigVariant[]): ConfigVariant {
-  const total = variants.reduce((s, v) => s + v.weight, 0);
-  let r = Math.random() * total;
-  for (const v of variants) {
-    r -= v.weight;
-    if (r <= 0) return v;
-  }
-  return variants[variants.length - 1]!;
-}
-
-export function getFullBotId(botId: string, config: BotConfig): string {
-  return `${botId}_${config.configName}`;
-}
-
-export function randomizeConfig(botId: string): BotConfig {
-  const { configName: forcedName } = getConfigOverrides();
-
-  let variant: ConfigVariant;
-  if (forcedName) {
-    const match = CONFIG_VARIANTS.find((v) => v.name === forcedName);
-    if (!match) {
-      throw new Error(
-        `No CONFIG_VARIANTS entry named "${forcedName}". Available: ${getConfigVariantNames().join(", ")}`,
-      );
-    }
-    if (!match.botIds.includes(botId)) {
-      throw new Error(
-        `Config variant "${forcedName}" is not allowed for bot "${botId}". Allowed bots: ${match.botIds.join(", ")}`,
-      );
-    }
-    variant = match;
-  } else {
-    const pool = CONFIG_VARIANTS.filter((v) => v.botIds.includes(botId));
-    if (pool.length === 0) {
-      throw new Error(`No config variants available for bot "${botId}"`);
-    }
-    variant = pickVariant(pool);
-  }
-
-  return { ...DEFAULT_CONFIG, ...variant.overrides, configName: variant.name };
 }

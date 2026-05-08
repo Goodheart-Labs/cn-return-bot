@@ -6,10 +6,12 @@
  */
 
 import { SupabaseLogger } from "../api/supabaseClient";
-import { selectRandomBot, getBotById, getEnabledBots } from "../bots/index";
+import { getBotById, getEnabledBots } from "../bots/index";
 import { processSingleTweet } from "../pipeline/orchestration/processTweet";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { getConfigVariantNames, withConfigOverrides, type ConfigOverrides } from "../pipeline/utils/botConfig";
+import { withBotConfig } from "../pipeline/utils/botConfig";
+import { withCostTracker } from "../pipeline/utils/costTracker";
+import { AB_TESTS, runABTests, withForcedPicks } from "../pipeline/utils/abTests";
 import { createTweetLog, getLoggedBotId, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";
 import type { Post } from "../api/fetchEligiblePosts";
 import * as fs from "fs";
@@ -95,11 +97,11 @@ export function parseInputCsv(filePath: string): InputRow[] {
 
 export interface ParsedCliArgs {
   inputs: InputRow[];
-  forcedBotId?: string;
+  /** Forced A/B test picks (e.g. `{ bot: "simple-bot", simple_bot_search: "grok43-native" }`). */
+  forcedPicks: Record<string, string>;
   datasetName: string;
   reversed: boolean;
   concurrency?: number;
-  configName?: string;
   runName?: string;
 }
 
@@ -115,33 +117,50 @@ function takeFlagValue(args: string[], flag: string): string | undefined {
   return value;
 }
 
+function takeAllFlagValues(args: string[], flag: string): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < args.length; ) {
+    if (args[i] !== flag) { i++; continue; }
+    const value = args[i + 1];
+    if (!value || value.startsWith("--")) {
+      console.error(`${flag} requires a value`);
+      process.exit(1);
+    }
+    out.push(value);
+    args.splice(i, 2);
+  }
+  return out;
+}
+
 export function parseCliArgs(
   scriptName: string,
   opts?: { transformArg?: (arg: string) => string }
 ): ParsedCliArgs {
   const args = process.argv.slice(2);
-  const variantNames = getConfigVariantNames();
   if (args.length === 0) {
     console.error(`Usage: bun run src/local/${scriptName}.ts [flags] <input.csv | url...>`);
-    console.error("  --bot <id>              force a specific bot");
+    console.error("  --pick test=variant     force an A/B test variant (repeatable). Use --pick bot=<id> to force the bot.");
     console.error("  --max <n>               limit number of inputs");
     console.error("  --reversed              process newest-last");
     console.error("  --concurrency <n>       parallel workers (default 5)");
-    console.error(`  --config-name <name>    force a BotConfig variant (${variantNames.join("|")})`);
     console.error("  --name <label>          name for dashboard upload (default: derived)");
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);
   }
 
-  let forcedBotId: string | undefined;
-  const botVal = takeFlagValue(args, "--bot");
-  if (botVal) {
-    if (!getBotById(botVal)) {
-      console.error(`Unknown bot: ${botVal}`);
-      console.error("Available bots:", getEnabledBots().map((b) => b.id).join(", "));
+  const forcedPicks: Record<string, string> = {};
+  for (const pick of takeAllFlagValues(args, "--pick")) {
+    const eq = pick.indexOf("=");
+    if (eq < 1 || eq === pick.length - 1) {
+      console.error(`--pick value must be test=variant (got "${pick}")`);
       process.exit(1);
     }
-    forcedBotId = botVal;
+    forcedPicks[pick.slice(0, eq)] = pick.slice(eq + 1);
+  }
+  if (forcedPicks.bot && !getBotById(forcedPicks.bot)) {
+    console.error(`Unknown bot: ${forcedPicks.bot}`);
+    console.error("Available bots:", getEnabledBots().map((b) => b.id).join(", "));
+    process.exit(1);
   }
 
   let maxInputs: number | undefined;
@@ -162,16 +181,6 @@ export function parseCliArgs(
       console.error("--concurrency requires a positive number");
       process.exit(1);
     }
-  }
-
-  let configName: string | undefined;
-  const cnVal = takeFlagValue(args, "--config-name");
-  if (cnVal !== undefined) {
-    if (!variantNames.includes(cnVal)) {
-      console.error(`--config-name must be one of ${variantNames.join("|")}`);
-      process.exit(1);
-    }
-    configName = cnVal;
   }
 
   const runName = takeFlagValue(args, "--name");
@@ -203,7 +212,7 @@ export function parseCliArgs(
 
   if (maxInputs) inputs = inputs.slice(0, maxInputs);
 
-  return { inputs, forcedBotId, datasetName, reversed, concurrency, configName, runName };
+  return { inputs, forcedPicks, datasetName, reversed, concurrency, runName };
 }
 
 
@@ -287,12 +296,12 @@ export interface RunPipelineOptions {
   folderPrefix: string;
   inputs: InputRow[];
   fetchPost: PostFetcher;
-  forcedBotId?: string;
+  /** Forced A/B test picks. May include a `bot` key to force a specific bot. */
+  forcedPicks?: Record<string, string>;
   datasetName?: string;
   concurrency?: number;
   reversed?: boolean;
   runName?: string;
-  configOverrides?: ConfigOverrides;
   cleanup?: () => Promise<void>;
 }
 
@@ -302,14 +311,14 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     folderPrefix,
     inputs,
     fetchPost,
-    forcedBotId,
+    forcedPicks = {},
     datasetName,
     concurrency = 5,
     reversed = false,
     runName,
-    configOverrides = {},
     cleanup,
   } = options;
+  const forcedBotId = forcedPicks.bot;
 
   let logger: SupabaseLogger | null = null;
   try {
@@ -348,14 +357,22 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         const { post, title } = await fetchPost(input);
         completed.title = title;
 
-        const bot = forcedBotId ? getBotById(forcedBotId)! : selectRandomBot();
+        const { config, picks } = withForcedPicks(forcedPicks, () => runABTests(AB_TESTS));
+        const bot = getBotById(config.botId);
+        if (!bot) throw new Error(`No bot registered for id "${config.botId}"`);
+
         const log = createTweetLog();
         log.set("tweet.index", idx + 1);
         log.set("tweet.total", inputs.length);
         const result = await withTweetLog(log, () =>
-          withConfigOverrides(configOverrides, () =>
-            processSingleTweet({ post, bot, logger })
-          )
+          withBotConfig(config, () =>
+            withCostTracker(() => {
+              log.set("bot.id", config.botId);
+              log.set("bot.picks", picks);
+              log.set("bot.config", config);
+              return processSingleTweet({ post, bot, logger });
+            }),
+          ),
         );
 
         completed.outcome = result.outcome;
@@ -411,6 +428,6 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   try { await closeBrowser(); } catch {}
 
-  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId, configOverrides.configName);
+  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId);
   await autoOpenInDashboard(output.csvPath, uploadLabel);
 }
