@@ -17,25 +17,18 @@ import { DEFAULT_CONFIG } from "./botConfig";
 // --- Types ---
 
 /**
- * Pipeline-level config: BotConfig + which bot to run. botId is filled in by
- * BOT_TEST. After commit 2b we'll fold botId into BotConfig itself; for now
- * keep abTests.ts decoupled.
- */
-export type PipelineConfig = BotConfig & { botId: string };
-
-/**
  * A prerequisite value is either the exact value to match (===) or a list of
  * acceptable values (membership). Disjunctions like `botId: ["agent",
  * "multi-agent"]` work without predicate functions.
  */
 export type Prerequisites = {
-  [K in keyof PipelineConfig]?: PipelineConfig[K] | PipelineConfig[K][];
+  [K in keyof BotConfig]?: BotConfig[K] | BotConfig[K][];
 };
 
 export interface ABVariant {
   /** Tag stored under ab_test_picks[testName]. */
   name: string;
-  overrides: Partial<PipelineConfig>;
+  overrides: Partial<BotConfig>;
 }
 
 export interface ABTest {
@@ -147,7 +140,7 @@ export const AB_TESTS: ABTest[] = [
 
 // --- Sampling ---
 
-function matchesPrerequisites(config: Partial<PipelineConfig>, prereqs: Prerequisites): boolean {
+function matchesPrerequisites(config: Partial<BotConfig>, prereqs: Prerequisites): boolean {
   return Object.entries(prereqs).every(([k, expected]) => {
     const actual = (config as any)[k];
     return Array.isArray(expected) ? (expected as unknown[]).includes(actual) : actual === expected;
@@ -184,10 +177,10 @@ function findVariantByName(test: ABTest, name: string): ABVariant {
  * every test that fired.
  */
 export function runABTests(tests: ABTest[]): {
-  config: PipelineConfig;
+  config: BotConfig;
   picks: Record<string, string>;
 } {
-  const config: Partial<PipelineConfig> = { ...DEFAULT_CONFIG };
+  const config: Partial<BotConfig> = { ...DEFAULT_CONFIG };
   const picks: Record<string, string> = {};
   const forced = getForcedPicks();
 
@@ -206,7 +199,7 @@ export function runABTests(tests: ABTest[]): {
   if (!config.botId) {
     throw new Error("AB_TESTS did not produce a botId — make sure the bot test is first");
   }
-  return { config: config as PipelineConfig, picks };
+  return { config: config as BotConfig, picks };
 }
 
 // --- Forced picks (replay / debugging) ---
