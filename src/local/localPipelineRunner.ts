@@ -139,8 +139,7 @@ export function parseCliArgs(
   const args = process.argv.slice(2);
   if (args.length === 0) {
     console.error(`Usage: bun run src/local/${scriptName}.ts [flags] <input.csv | url...>`);
-    console.error("  --bot <id>              force a specific bot (shorthand for --pick bot=<id>)");
-    console.error("  --pick test=variant     force an A/B test variant (repeatable)");
+    console.error("  --pick test=variant     force an A/B test variant (repeatable). Use --pick bot=<id> to force the bot.");
     console.error("  --max <n>               limit number of inputs");
     console.error("  --reversed              process newest-last");
     console.error("  --concurrency <n>       parallel workers (default 5)");
@@ -150,15 +149,6 @@ export function parseCliArgs(
   }
 
   const forcedPicks: Record<string, string> = {};
-  const botVal = takeFlagValue(args, "--bot");
-  if (botVal) {
-    if (!getBotById(botVal)) {
-      console.error(`Unknown bot: ${botVal}`);
-      console.error("Available bots:", getEnabledBots().map((b) => b.id).join(", "));
-      process.exit(1);
-    }
-    forcedPicks.bot = botVal;
-  }
   for (const pick of takeAllFlagValues(args, "--pick")) {
     const eq = pick.indexOf("=");
     if (eq < 1 || eq === pick.length - 1) {
@@ -166,6 +156,11 @@ export function parseCliArgs(
       process.exit(1);
     }
     forcedPicks[pick.slice(0, eq)] = pick.slice(eq + 1);
+  }
+  if (forcedPicks.bot && !getBotById(forcedPicks.bot)) {
+    console.error(`Unknown bot: ${forcedPicks.bot}`);
+    console.error("Available bots:", getEnabledBots().map((b) => b.id).join(", "));
+    process.exit(1);
   }
 
   let maxInputs: number | undefined;

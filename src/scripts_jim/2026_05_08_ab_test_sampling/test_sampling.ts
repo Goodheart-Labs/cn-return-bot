@@ -4,7 +4,7 @@
  * Run: bun run src/scripts_jim/2026_05_08_ab_test_sampling/test_sampling.ts
  */
 
-import { AB_TESTS, runABTests, withForcedPicks } from "../../pipeline/utils/abTests";
+import { AB_TESTS, runABTests, withForcedPicks, getBotProbabilities } from "../../pipeline/utils/abTests";
 
 function assert(cond: boolean, msg: string): void {
   if (!cond) {
@@ -38,9 +38,15 @@ for (const [bot, c] of Object.entries(counts.bot ?? {}).sort((a, b) => b[1] - a[
   console.log(`  ${bot.padEnd(28)} ${String(c).padStart(5)}  (${pct(c, N).toFixed(1)}%)`);
 }
 
-// Bot test weights: simple-bot=60, multi-agent=20, opus-main=10, opus-main-v2=10.
-const simpleBotPct = pct(counts.bot?.["simple-bot"] ?? 0, N);
-assert(simpleBotPct > 55 && simpleBotPct < 65, `simple-bot ~60% (got ${simpleBotPct.toFixed(1)}%)`);
+// Empirical distribution should match the declared BOT_TEST weights within 5pp.
+for (const { id, probability } of getBotProbabilities()) {
+  if (probability === 0) continue;
+  const observed = pct(counts.bot?.[id] ?? 0, N);
+  assert(
+    Math.abs(observed - probability) < 5,
+    `${id} declared ${probability.toFixed(1)}%, observed ${observed.toFixed(1)}% (within 5pp)`,
+  );
+}
 
 // 2. Forced picks: bot=opus-main → no simple_bot_* keys, no agent_* keys.
 const opusMain = withForcedPicks({ bot: "opus-main" }, () => runABTests(AB_TESTS).picks);

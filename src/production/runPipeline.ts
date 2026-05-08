@@ -7,22 +7,11 @@
  *
  * Flags:
  *   --local              route Supabase to LOCAL_SUPABASE_URL/KEY; write CSV + auto-open dashboard
- *   --bot <id>           force a specific bot (shorthand for --pick bot=<id>)
- *   --pick test=variant  force a specific A/B test variant (repeatable)
+ *   --pick test=variant  force a specific A/B test variant (repeatable). The bot itself
+ *                        is picked by the "bot" test, so use --pick bot=<id> to force it.
  */
 
 import { captureProdSupabaseCreds } from "../local/prodSupabaseCreds";
-
-function takeFlagValue(flag: string): string | undefined {
-  const idx = process.argv.indexOf(flag);
-  if (idx === -1) return undefined;
-  const value = process.argv[idx + 1];
-  if (!value || value.startsWith("--")) {
-    console.error(`${flag} requires a value`);
-    process.exit(1);
-  }
-  return value;
-}
 
 function takeAllPicks(): Record<string, string> {
   const picks: Record<string, string> = {};
@@ -44,9 +33,7 @@ function takeAllPicks(): Record<string, string> {
 }
 
 const isLocal = process.argv.includes("--local");
-const forcedBotId = takeFlagValue("--bot");
 const forcedPicks = takeAllPicks();
-if (forcedBotId) forcedPicks.bot = forcedBotId;
 if (isLocal) {
   captureProdSupabaseCreds();
   const localUrl = process.env.LOCAL_SUPABASE_URL;
@@ -142,7 +129,7 @@ async function main() {
       ? (event: TweetProcessedEvent) => writePipelineRowToCsv(localOutput, event)
       : undefined;
 
-    const candidates = await generateCandidates(supabaseLogger, { maxPosts, onTweetProcessed, forcedBotId });
+    const candidates = await generateCandidates(supabaseLogger, { maxPosts, onTweetProcessed });
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
       console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates`);

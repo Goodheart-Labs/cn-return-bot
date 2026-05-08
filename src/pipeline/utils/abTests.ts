@@ -48,19 +48,19 @@ const AGENT_FAMILY_SCORE_FILTERS: ScoreFilter[] = [
 const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
-    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 60 },
+    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
     { variant: { name: "multi-agent", overrides: {
       botId: "multi-agent",
       model: "google/gemini-3-flash-preview",
       scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
-    }}, weight: 20 },
+    }}, weight: 0 },
     { variant: { name: "agent", overrides: {
       botId: "agent",
       model: "google/gemini-3-flash-preview",
       scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     }}, weight: 0 },
-    { variant: { name: "opus-main",                  overrides: { botId: "opus-main" }},                 weight: 10 },
-    { variant: { name: "opus-main-v2",               overrides: { botId: "opus-main-v2" }},              weight: 10 },
+    { variant: { name: "opus-main",                  overrides: { botId: "opus-main" }},                 weight: 0 },
+    { variant: { name: "opus-main-v2",               overrides: { botId: "opus-main-v2" }},              weight: 0 },
     { variant: { name: "opus-main-no-source-check",  overrides: { botId: "opus-main-no-source-check" }}, weight: 0 },
     { variant: { name: "opus-direct",                overrides: { botId: "opus-direct" }},               weight: 0 },
     { variant: { name: "opus-direct-grok",           overrides: { botId: "opus-direct-grok" }},          weight: 0 },
