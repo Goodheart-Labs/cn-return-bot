@@ -9,10 +9,10 @@
 import { llm } from "../llm/llm";
 import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
-import { WEB_SEARCH_TOOL } from "../tool-calling/tools";
+import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, executeToolCall } from "../tool-calling/tools";
 import { getBotConfig } from "../utils/botConfig";
-import { extractOpenRouterCost, type TokenCost } from "../utils/pricing";
-import type { LlmCallCost } from "../utils/costTracker";
+import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../utils/pricing";
+import type { LlmCallCost, ToolCallCost } from "../utils/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 
 // --- Shared prompt + schema ---
@@ -91,11 +91,12 @@ export async function dispatchSearch(
     case "native":         return searchWithAnthropicNative(userMessage, name);
     case "native_gemini":  return searchWithGeminiNative(userMessage, name);
     case "native_grok":    return searchWithGrokNative(userMessage, name);
-    case "native_openai":
-    case "bundled":
-    case "perplexity":
+    case "bundled":        return searchWithSonarBundled(userMessage, name);
     case "searxng":
     case "searxng_summarized":
+                           return searchWithSearxngLoop(userMessage, name);
+    case "native_openai":
+    case "perplexity":
       throw new Error(`simple-bot search arch "${config.web_search}" not yet implemented`);
   }
 }
@@ -199,6 +200,123 @@ async function searchWithGrokNative(
     correctionNeeded: parsed.correction_needed,
     costEntry: castCost(name, result.cost),
   };
+}
+
+async function searchWithSonarBundled(
+  userMessage: string,
+  name: string,
+): Promise<SearchDispatchResult> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const model = config.search_model ?? config.model;
+  log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage, model });
+
+  // Sonar models ground the response in web search automatically; no tool needed.
+  const response = await llm.create({
+    model,
+    messages: [
+      { role: "system" as const, content: SEARCH_SYSTEM_PROMPT },
+      { role: "user" as const, content: userMessage },
+    ],
+    response_format: OPENAI_RESPONSE_FORMAT,
+  } as any);
+
+  const content = response.choices?.[0]?.message?.content ?? "{}";
+  const parsed = JSON.parse(content) as { findings: string; correction_needed: boolean };
+  log?.set(`${name}.messages.1`, { content: parsed });
+
+  const cost = extractOpenRouterCost(response);
+  return {
+    findings: parsed.findings,
+    correctionNeeded: parsed.correction_needed,
+    costEntry: { name, ...cost, tools: [] },
+  };
+}
+
+const SEARXNG_MAX_TURNS = 6;
+
+const SEARXNG_SYSTEM_PROMPT = `${SEARCH_SYSTEM_PROMPT}
+
+You have access to a google_search tool. Issue search queries to gather evidence, then return your final findings as JSON. You may call google_search multiple times. Stop calling tools and return JSON when you have enough evidence.`;
+
+/**
+ * Tool-calling loop for models without native web search (Kimi, GLM, DeepSeek,
+ * Qwen). The model issues google_search calls (which dispatch to SearXNG) and
+ * eventually returns the findings as JSON. Reuses executeToolCall from the
+ * agent flow rather than forking it.
+ */
+async function searchWithSearxngLoop(
+  userMessage: string,
+  name: string,
+): Promise<SearchDispatchResult> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const model = config.search_model ?? config.model;
+  const messages: any[] = [
+    { role: "system", content: SEARXNG_SYSTEM_PROMPT },
+    { role: "user", content: userMessage },
+  ];
+  log?.set(`${name}.messages.0`, { systemPrompt: SEARXNG_SYSTEM_PROMPT, userMessage, model });
+
+  const tools = [GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL];
+  const totalCost: TokenCost = emptyTokenCost();
+  const toolCosts: ToolCallCost[] = [];
+
+  for (let turn = 1; turn <= SEARXNG_MAX_TURNS; turn++) {
+    const response = await llm.create({
+      model,
+      messages,
+      tools,
+      response_format: OPENAI_RESPONSE_FORMAT,
+    } as any);
+    addTokenCost(totalCost, extractOpenRouterCost(response));
+
+    const message = response.choices?.[0]?.message;
+    if (!message) {
+      throw new Error(`searxng loop: empty response on turn ${turn}`);
+    }
+
+    if (message.tool_calls?.length) {
+      messages.push(message);
+      for (const [i, tc] of message.tool_calls.entries()) {
+        const fnName = (tc as any).function?.name ?? "unknown";
+        const args = JSON.parse((tc as any).function?.arguments ?? "{}");
+        const tStart = Date.now();
+        const result = await executeToolCall(fnName, args);
+        const tDuration = Date.now() - tStart;
+
+        const logKey = i === 0 ? fnName : `${fnName}_${i}`;
+        log?.set(`${name}.turn.${turn}.${logKey}`, {
+          args,
+          result: result.output,
+          durationMs: tDuration,
+        });
+
+        if (result.cost) toolCosts.push({ name: logKey, ...result.cost });
+
+        messages.push({
+          role: "tool",
+          tool_call_id: (tc as any).id,
+          content: typeof result.output === "string" ? result.output : JSON.stringify(result.output),
+        });
+      }
+      continue;
+    }
+
+    const parsed = JSON.parse(message.content ?? "{}") as {
+      findings: string;
+      correction_needed: boolean;
+    };
+    log?.set(`${name}.messages.final`, { turn, content: parsed });
+
+    return {
+      findings: parsed.findings,
+      correctionNeeded: parsed.correction_needed,
+      costEntry: { name, ...totalCost, tools: toolCosts },
+    };
+  }
+
+  throw new Error(`searxng loop: exhausted ${SEARXNG_MAX_TURNS} turns without final answer`);
 }
 
 function stripPrefix(model: string, prefix: string): string {
