@@ -371,7 +371,7 @@ async function initPipelineRun(
 
 function buildCompletionData(
   result: PipelineResult | null,
-  bot: { name: string; nameLong: string; config?: Record<string, unknown> },
+  bot: { name: string; picks?: Record<string, string>; config?: Record<string, unknown> },
   outcome: Outcome,
   warnings: string[] | undefined,
   logs: Record<string, unknown> | undefined,
@@ -386,8 +386,12 @@ function buildCompletionData(
     error_message: errorParts.length ? errorParts.join(" | ").slice(0, 2000) : undefined,
     final_stage: outcome.finalStage,
     bot_name: bot.name,
-    bot_name_long: bot.nameLong,
+    // bot_name_long is dropped in migration 038 (next commit); leave NULL on new rows.
+    bot_name_long: undefined,
     bot_config: bot.config,
+    // ab_test_picks column is added in migration 038; for now picks live in
+    // logs.bot.picks via the tweet log. Once the column exists, supabaseClient
+    // will start writing this through.
     note_text: result ? result.noteResult.note + " " + result.noteResult.url : undefined,
     source_url: result?.noteResult?.url,
     note_status: result?.noteResult?.status,

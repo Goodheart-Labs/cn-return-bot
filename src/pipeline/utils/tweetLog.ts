@@ -35,9 +35,8 @@ export function withTweetLog<T>(log: TweetLogMap, fn: () => T): T {
 }
 
 /**
- * Bot id written to the log by the bot that ran — includes config variant
- * (e.g. "agent_gemini-flash-searxng"). Falls back to the bare bot id if the
- * bot didn't write one.
+ * Short bot id written to the log (e.g. "simple-bot"). Falls back if the
+ * pipeline didn't get far enough to set it.
  */
 export function getLoggedBotId(fallback: string, log?: TweetLogMap): string {
   const source = log ?? getTweetLog();
@@ -45,20 +44,20 @@ export function getLoggedBotId(fallback: string, log?: TweetLogMap): string {
 }
 
 /**
- * Bot identity captured by the bot at runtime, ready to be persisted in the
- * pipeline_runs row. `name` is the short family ("simple-bot"); `nameLong`
- * includes the config variant ("simple-bot_simple-bot-sonnet-gemini");
- * `config` is the full BotConfig snapshot for the run.
+ * Bot identity captured at pipeline-run time, ready to persist in pipeline_runs.
+ * - `name`: short bot id ("simple-bot", "agent", ...) — equals ab_test_picks.bot.
+ * - `picks`: dictionary of A/B test picks for this run (e.g. { bot, simple_bot_search, simple_bot_writer }).
+ * - `config`: full resolved BotConfig snapshot.
  */
 export function getLoggedBotIdentity(
   fallbackName: string,
   log?: TweetLogMap,
-): { name: string; nameLong: string; config?: Record<string, unknown> } {
+): { name: string; picks?: Record<string, string>; config?: Record<string, unknown> } {
   const source = log ?? getTweetLog();
-  const nameLong = (source?.get("bot.id") as string | undefined) ?? fallbackName;
-  const name = (source?.get("bot.name") as string | undefined) ?? fallbackName;
+  const name = (source?.get("bot.id") as string | undefined) ?? fallbackName;
+  const picks = source?.get("bot.picks") as Record<string, string> | undefined;
   const config = source?.get("bot.config") as Record<string, unknown> | undefined;
-  return { name, nameLong, config };
+  return { name, picks, config };
 }
 
 // ---------------------------------------------------------------------------

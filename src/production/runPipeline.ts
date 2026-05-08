@@ -6,9 +6,9 @@
  * Runs on GitHub Actions every 15 minutes.
  *
  * Flags:
- *   --local                 route Supabase to LOCAL_SUPABASE_URL/KEY; write CSV + auto-open dashboard
- *   --bot <id>              force a specific bot (skip random selection)
- *   --config-name <name>    force a BotConfig variant
+ *   --local              route Supabase to LOCAL_SUPABASE_URL/KEY; write CSV + auto-open dashboard
+ *   --bot <id>           force a specific bot (shorthand for --pick bot=<id>)
+ *   --pick test=variant  force a specific A/B test variant (repeatable)
  */
 
 import { captureProdSupabaseCreds } from "../local/prodSupabaseCreds";
@@ -24,9 +24,29 @@ function takeFlagValue(flag: string): string | undefined {
   return value;
 }
 
+function takeAllPicks(): Record<string, string> {
+  const picks: Record<string, string> = {};
+  for (let i = 0; i < process.argv.length; i++) {
+    if (process.argv[i] !== "--pick") continue;
+    const value = process.argv[i + 1];
+    if (!value || value.startsWith("--")) {
+      console.error("--pick requires a value of the form test=variant");
+      process.exit(1);
+    }
+    const eq = value.indexOf("=");
+    if (eq < 1 || eq === value.length - 1) {
+      console.error(`--pick value must be test=variant (got "${value}")`);
+      process.exit(1);
+    }
+    picks[value.slice(0, eq)] = value.slice(eq + 1);
+  }
+  return picks;
+}
+
 const isLocal = process.argv.includes("--local");
 const forcedBotId = takeFlagValue("--bot");
-const forcedConfigName = takeFlagValue("--config-name");
+const forcedPicks = takeAllPicks();
+if (forcedBotId) forcedPicks.bot = forcedBotId;
 if (isLocal) {
   captureProdSupabaseCreds();
   const localUrl = process.env.LOCAL_SUPABASE_URL;
@@ -58,7 +78,7 @@ import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
-import { withConfigOverrides } from "../pipeline/utils/botConfig";
+import { withForcedPicks } from "../pipeline/utils/abTests";
 // import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 function postUrl(postId: string): string {
@@ -146,8 +166,8 @@ async function main() {
   }
 }
 
-if (forcedConfigName) {
-  withConfigOverrides({ configName: forcedConfigName }, main);
+if (Object.keys(forcedPicks).length > 0) {
+  withForcedPicks(forcedPicks, main);
 } else {
   main();
 }

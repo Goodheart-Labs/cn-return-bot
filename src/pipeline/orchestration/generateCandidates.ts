@@ -7,12 +7,15 @@
 
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
-import { selectRandomBot, getBotById, getBotProbabilities } from "../../bots/index";
+import { getBotById } from "../../bots/index";
 import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
 import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { determineFeedSize, buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions } from "./utils/tweetSorting";
+import { AB_TESTS, runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from "../utils/abTests";
+import { withBotConfig } from "../utils/botConfig";
+import { withCostTracker } from "../utils/costTracker";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
@@ -122,13 +125,12 @@ export async function generateCandidates(
 ): Promise<Candidate[]> {
   const commit = process.env.GITHUB_SHA;
 
-  const forcedBot = forcedBotId ? getBotById(forcedBotId) : undefined;
-  if (forcedBotId && !forcedBot) {
+  if (forcedBotId && !getBotById(forcedBotId)) {
     throw new Error(`Unknown bot id: ${forcedBotId}`);
   }
 
-  if (forcedBot) {
-    console.log(`[generate] Bots: forced to ${forcedBot.id}`);
+  if (forcedBotId) {
+    console.log(`[generate] Bots: forced to ${forcedBotId}`);
   } else {
     const botProbs = getBotProbabilities();
     const activeBots = botProbs.filter((b) => b.probability > 0);
@@ -150,19 +152,33 @@ export async function generateCandidates(
 
   for (const [idx, post] of posts.entries()) {
     queue.add(async () => {
-      const selectedBot = forcedBot ?? selectRandomBot();
+      // Merge any caller-supplied forced picks (from runPipeline.ts --pick) with --bot.
+      const basePicks = getForcedPicks();
+      const mergedPicks = forcedBotId ? { ...basePicks, bot: forcedBotId } : basePicks;
+      const { config, picks } = withForcedPicks(mergedPicks, () => runABTests(AB_TESTS));
+      const selectedBot = getBotById(config.botId);
+      if (!selectedBot) {
+        throw new Error(`No bot registered for id "${config.botId}" picked by AB_TESTS`);
+      }
 
       const log = createTweetLog();
       log.set("tweet.index", idx + 1);
       log.set("tweet.total", posts.length);
 
       const tweetResult = await withTweetLog(log, () =>
-        processSingleTweet({
-          post,
-          bot: selectedBot,
-          logger: supabaseLogger,
-          commitSha: commit,
-        })
+        withBotConfig(config, () =>
+          withCostTracker(() => {
+            log.set("bot.id", config.botId);
+            log.set("bot.picks", picks);
+            log.set("bot.config", config);
+            return processSingleTweet({
+              post,
+              bot: selectedBot,
+              logger: supabaseLogger,
+              commitSha: commit,
+            });
+          }),
+        ),
       );
 
       console.log(`${formatTweetLogSummary(log)}\n${formatTweetLogFull(log)}`);

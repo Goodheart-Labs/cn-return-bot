@@ -34,10 +34,9 @@ export function buildRunName(
   folderPrefix: string,
   datasetName?: string,
   botId?: string,
-  configName?: string,
 ): string {
   const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 16);
-  const parts = [folderPrefix, datasetName ?? "run", botId, configName].filter(Boolean);
+  const parts = [folderPrefix, datasetName ?? "run", botId].filter(Boolean);
   return `${parts.join("_")}_${ts}`;
 }
 
