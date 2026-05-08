@@ -94,7 +94,8 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 2 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "alibaba/qwen-3-max",                web_search: "searxng" }},       weight: 2 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 6 },
-    // Disabled until commit 7 builds native_openai code path.
+    // OpenAI: code path shipped (verified by spike), but kept at weight 0 until
+    // production credit is confirmed to cover max_tokens=4000 reasoning+search calls.
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
   ],

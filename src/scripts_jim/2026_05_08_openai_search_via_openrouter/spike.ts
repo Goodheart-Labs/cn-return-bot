@@ -74,12 +74,38 @@ async function testWebSearchClaudeStyle(): Promise<void> {
   printResult("Claude-style web_search_20260209 tool", result);
 }
 
+async function testWebSearchPreviewWithSchema(): Promise<void> {
+  const result = await client.chat.completions.create({
+    model: MODEL,
+    messages: [{ role: "user", content: QUERY }],
+    max_tokens: 1500,
+    tools: [{ type: "web_search_preview" as any } as any],
+    response_format: {
+      type: "json_schema" as any,
+      json_schema: {
+        name: "fact_check",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            findings: { type: "string" },
+            correction_needed: { type: "boolean" },
+          },
+          required: ["findings", "correction_needed"],
+          additionalProperties: false,
+        },
+      },
+    } as any,
+  } as any);
+  printResult("web_search_preview + json_schema response_format", result);
+}
+
 async function main(): Promise<void> {
   if (!process.env.OPENROUTER_API_KEY) {
     console.error("OPENROUTER_API_KEY not set");
     process.exit(1);
   }
-  for (const fn of [testBasic, testWebSearchPreview, testWebSearchBare, testWebSearchClaudeStyle]) {
+  for (const fn of [testWebSearchPreviewWithSchema, testBasic, testWebSearchPreview, testWebSearchBare, testWebSearchClaudeStyle]) {
     try {
       await fn();
     } catch (err: any) {

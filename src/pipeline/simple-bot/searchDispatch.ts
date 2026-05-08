@@ -91,11 +91,11 @@ export async function dispatchSearch(
     case "native":         return searchWithAnthropicNative(userMessage, name);
     case "native_gemini":  return searchWithGeminiNative(userMessage, name);
     case "native_grok":    return searchWithGrokNative(userMessage, name);
+    case "native_openai":  return searchWithOpenaiNative(userMessage, name);
     case "bundled":        return searchWithSonarBundled(userMessage, name);
     case "searxng":
     case "searxng_summarized":
                            return searchWithSearxngLoop(userMessage, name);
-    case "native_openai":
     case "perplexity":
       throw new Error(`simple-bot search arch "${config.web_search}" not yet implemented`);
   }
@@ -199,6 +199,50 @@ async function searchWithGrokNative(
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,
     costEntry: castCost(name, result.cost),
+  };
+}
+
+// OpenAI reasoning models (gpt-5*) require max_tokens via OpenRouter (their
+// default is 64k+, which OpenRouter rejects unless your credit covers it).
+// 4000 is a sensible upper bound for findings + reasoning; typical actual
+// usage is <500 completion tokens.
+const OPENAI_MAX_TOKENS = 4000;
+
+async function searchWithOpenaiNative(
+  userMessage: string,
+  name: string,
+): Promise<SearchDispatchResult> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  // OpenRouter passes OpenAI's web_search_preview tool through (verified by
+  // the Phase 0 spike), so this is just an llm.create call — no native client.
+  const model = config.search_model ?? config.model;
+  log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage, model });
+
+  // OpenAI's web_search_preview tool via OpenRouter rejects
+  // response_format=json_schema (returns 500 on production-sized prompts).
+  // Ask for JSON in the prompt and parse the result; gpt-5.x reliably emits
+  // valid JSON when explicitly instructed.
+  const promptedSchema = `Respond with strict JSON only matching: { findings: string, correction_needed: boolean }`;
+  const response = await llm.create({
+    model,
+    messages: [
+      { role: "user" as const, content: `${SEARCH_SYSTEM_PROMPT}\n\n${userMessage}\n\n${promptedSchema}` },
+    ],
+    tools: [{ type: "web_search_preview" }] as any,
+    max_tokens: OPENAI_MAX_TOKENS,
+  } as any);
+
+  const rawContent = response.choices?.[0]?.message?.content ?? "{}";
+  const cleaned = rawContent.replace(/^```json\n?|\n?```$/g, "").trim();
+  const parsed = JSON.parse(cleaned) as { findings: string; correction_needed: boolean };
+  log?.set(`${name}.messages.1`, { content: parsed });
+
+  const cost = extractOpenRouterCost(response);
+  return {
+    findings: parsed.findings,
+    correctionNeeded: parsed.correction_needed,
+    costEntry: { name, ...cost, tools: [] },
   };
 }
 
