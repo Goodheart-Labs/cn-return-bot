@@ -51,6 +51,35 @@ export function calculateGrokCost(
   };
 }
 
+// --- Gemini native API pricing (cloud.google.com/vertex-ai/pricing) ---
+// Used by src/pipeline/llm/gemini.ts since the native API does not return
+// usage.cost like OpenRouter does.
+const GEMINI_PRICING: Record<string, { in: number; out: number; searchPerCall: number }> = {
+  "gemini-3-flash-preview": { in: 0.50, out: 3.00, searchPerCall: 0.014 },
+  "gemini-3-pro":           { in: 2.00, out: 12.00, searchPerCall: 0.014 },
+};
+
+export function calculateGeminiCost(
+  model: string,
+  inputTokens: number,
+  outputTokens: number,
+  searchCalls: number,
+): TokenCost {
+  const p = GEMINI_PRICING[model];
+  if (!p) {
+    console.warn(`[pricing] No Gemini pricing for "${model}" — recording cost as 0`);
+    return { input_tokens: inputTokens, output_tokens: outputTokens, cost: 0 };
+  }
+  const tokenCost =
+    (inputTokens / 1_000_000) * p.in +
+    (outputTokens / 1_000_000) * p.out;
+  return {
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    cost: tokenCost + searchCalls * p.searchPerCall,
+  };
+}
+
 export function emptyTokenCost(): TokenCost {
   return { input_tokens: 0, output_tokens: 0, cost: 0 };
 }
