@@ -11,8 +11,8 @@ import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
 import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, executeToolCall } from "../tool-calling/tools";
 import { getBotConfig } from "../utils/botConfig";
-import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../utils/pricing";
-import type { LlmCallCost, ToolCallCost } from "../utils/costTracker";
+import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../cost-tracking/pricing";
+import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 
 // --- Shared prompt + schema ---

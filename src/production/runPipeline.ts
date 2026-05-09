@@ -65,7 +65,7 @@ import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
-import { withForcedPicks } from "../pipeline/utils/abTests";
+import { withForcedPicks } from "../pipeline/ab-testing/abTests";
 // import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 function postUrl(postId: string): string {

@@ -7,8 +7,8 @@
 import { generateText } from "ai";
 import { xai } from "../llm/xai";
 import { getTweetLog } from "../utils/tweetLog";
-import { GROK_MODEL, calculateGrokCost } from "../utils/pricing";
-import { trackLlmCall } from "../utils/costTracker";
+import { GROK_MODEL, calculateGrokCost } from "../cost-tracking/pricing";
+import { trackLlmCall } from "../cost-tracking/costTracker";
 
 export async function fetchTweetComments(
   tweetId: string,
