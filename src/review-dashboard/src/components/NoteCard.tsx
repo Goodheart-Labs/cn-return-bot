@@ -3,6 +3,8 @@ import type { ReviewItem, ComparisonNote } from "../lib/types";
 import { FAILURE_TYPE_CONFIG } from "../lib/types";
 import { JsonViewer } from "./JsonViewer";
 import { FailureModeSelector } from "./FailureModeSelector";
+import { TweetCard } from "../../../dashboard-shared/TweetCard";
+import type { Tweet } from "../../../dashboard-shared/types";
 
 interface NoteCardProps {
   item: ReviewItem;
@@ -11,6 +13,19 @@ interface NoteCardProps {
   onFailureModesChange: (id: string, modes: string[]) => void;
   onCreateFailureMode: (name: string) => void;
   onCommentChange: (id: string, comment: string | null) => void;
+}
+
+function reviewItemToTweet(item: ReviewItem): Tweet {
+  return {
+    tweetId: item.tweetId,
+    text: item.tweetText,
+    handle: item.tweetHandle,
+    hasPhoto: item.hasPhoto,
+    hasVideo: item.hasVideo,
+    mediaCount: item.mediaCount,
+    media: item.tweetMedia,
+    referencedTweetData: item.referencedTweetData,
+  };
 }
 
 function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: string }) {
@@ -56,134 +71,6 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   );
 }
 
-type MediaImage = { url: string };
-type MediaVideo = { url: string };
-
-// Extract images / videos for the main tweet and (optional) quoted tweet from
-// the new tweets table fields. The historical backfill (migration 032 +
-// scripts_jim/2026_05_01_backfill_tweets_from_logs) populated these from
-// every old log shape, so the dashboard never needs to dig through logs again.
-function extractMedia(
-  tweetMedia?: ReviewItem["tweetMedia"],
-  referencedTweetData?: ReviewItem["referencedTweetData"],
-): {
-  images: MediaImage[];
-  videos: MediaVideo[];
-  quotedImages: MediaImage[];
-  quotedVideos: MediaVideo[];
-  quotedPostContext?: string;
-} {
-  const result = {
-    images: [] as MediaImage[],
-    videos: [] as MediaVideo[],
-    quotedImages: [] as MediaImage[],
-    quotedVideos: [] as MediaVideo[],
-    quotedPostContext: undefined as string | undefined,
-  };
-
-  const pushMedia = (
-    m: { type?: string; url?: string; preview_image_url?: string },
-    imagesOut: MediaImage[],
-    videosOut: MediaVideo[],
-  ) => {
-    const url = m.url ?? m.preview_image_url;
-    if (!url) return;
-    if (m.type === "photo") imagesOut.push({ url });
-    else if (m.type === "video" || m.type === "animated_gif") videosOut.push({ url });
-  };
-
-  for (const m of tweetMedia ?? []) pushMedia(m, result.images, result.videos);
-  for (const m of referencedTweetData?.media ?? []) pushMedia(m, result.quotedImages, result.quotedVideos);
-  if (referencedTweetData?.text) result.quotedPostContext = referencedTweetData.text;
-
-  return result;
-}
-
-function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVideo[] }) {
-  if (images.length === 0 && videos.length === 0) return null;
-  return (
-    <>
-      {images.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
-          {images.map((img, i) => (
-            <a key={i} href={img.url} target="_blank" rel="noopener noreferrer">
-              <img
-                src={img.url}
-                alt={`Image ${i + 1}`}
-                className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain cursor-pointer hover:opacity-90"
-                loading="lazy"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-              />
-            </a>
-          ))}
-        </div>
-      )}
-      {videos.length > 0 && (
-        <div className="flex flex-col gap-1 mb-2">
-          {videos.map((vid, i) => vid.url && (
-            <a key={i} href={vid.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
-              {vid.url}
-            </a>
-          ))}
-        </div>
-      )}
-    </>
-  );
-}
-
-function TweetInline({ item, tweetUrl }: { item: ReviewItem; tweetUrl: string }) {
-  const media = extractMedia(item.tweetMedia, item.referencedTweetData);
-  const tweetText = item.tweetText;
-
-  return (
-    <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">
-      {/* Header: handle + link + media badges */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          {item.tweetHandle && (
-            <span className="text-sm font-medium text-gray-800">@{item.tweetHandle}</span>
-          )}
-          {item.hasPhoto && (
-            <span className="text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">
-              {item.mediaCount && item.mediaCount > 1 ? `${item.mediaCount} images` : "image"}
-            </span>
-          )}
-          {item.hasVideo && (
-            <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded">video</span>
-          )}
-        </div>
-        <a
-          href={tweetUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-500 hover:underline"
-        >
-          View on X ↗
-        </a>
-      </div>
-
-      {/* Tweet text */}
-      {tweetText && (
-        <p className="text-sm text-gray-700 whitespace-pre-wrap mb-2">{tweetText}</p>
-      )}
-
-      {/* Main-tweet media */}
-      <MediaBlock images={media.images} videos={media.videos} />
-
-      {/* Quoted post (text + its own media) */}
-      {(media.quotedPostContext || media.quotedImages.length > 0 || media.quotedVideos.length > 0) && (
-        <div className="bg-white border border-gray-200 rounded p-2 mb-2 text-sm text-gray-600">
-          <div className="text-xs text-gray-400 mb-1">Quoted post</div>
-          {media.quotedPostContext && (
-            <p className="whitespace-pre-wrap mb-2">{media.quotedPostContext}</p>
-          )}
-          <MediaBlock images={media.quotedImages} videos={media.quotedVideos} />
-        </div>
-      )}
-    </div>
-  );
-}
-
 // Error boundary so one broken card doesn't blank the whole page
 class CardErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
@@ -219,7 +106,6 @@ export function NoteCard({
   const [commentEditing, setCommentEditing] = useState(false);
   const [commentDraft, setCommentDraft] = useState("");
 
-  const tweetUrl = `https://x.com/i/status/${item.tweetId}`;
   const ftConfig = FAILURE_TYPE_CONFIG[item.failureType];
   const seen = item.annotation?.seen ?? false;
   const failureModes = item.annotation?.failureModes ?? [];
@@ -276,7 +162,7 @@ export function NoteCard({
 
       {/* Tweet content */}
       <div className="mb-3">
-        <TweetInline item={item} tweetUrl={tweetUrl} />
+        <TweetCard tweet={reviewItemToTweet(item)} />
       </div>
 
       {/* Our note */}
