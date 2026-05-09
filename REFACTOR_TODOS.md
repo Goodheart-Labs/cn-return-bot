@@ -137,7 +137,41 @@ have caught it if we'd had a smoke test.
 against a single test tweet for every variant with `weight > 0`.
 Fail the PR if any variant errors.
 
-### 5. (Polish) Stack-trace `name` already done
-`PipelineError` subclasses now set `this.name = new.target.name` so DB
-stack traces are readable. No follow-up needed; noted here for
-completeness so future readers don't reopen the question.
+### 5. Split DB-serialization out of `processTweet.ts`
+**Motivation:** [`processTweet.ts`](src/pipeline/orchestration/processTweet.ts)
+is ~500 lines doing four jobs: orchestration, scoring, outcome
+decision, and DB-row serialization. The file is growing past the
+size where one reader can hold it in their head, and the symmetry
+between the success-path and failure-path serialization is no longer
+visible because they're separated by ~150 lines of unrelated logic.
+
+**Rough fix:** extract a sibling module (e.g.
+`src/pipeline/orchestration/pipelineRunCompletion.ts`) holding both
+`buildSuccessCompletionData` and `recordFailedRun`, plus the constants
+they share (`STACK_FRAMES_TO_KEEP`, `ERROR_MESSAGE_MAX_LEN`). Important:
+**move both together** — extracting only `recordFailedRun` is what
+this PR avoided, because it would split the success/failure
+symmetry across files asymmetrically.
+
+**Places likely affected:**
+- [`src/pipeline/orchestration/processTweet.ts`](src/pipeline/orchestration/processTweet.ts) — the source of the move; success and failure paths in `processSingleTweet` get reduced to single function calls.
+- New file `src/pipeline/orchestration/pipelineRunCompletion.ts`.
+- Possibly `processTweet.ts` exports — `ProcessTweetResult` and `Outcome` types may need to move alongside (or be re-exported from the new file).
+- `src/pipeline/utils/tweetLog.ts` re-exports — `getLoggedBotIdentity` and `nestDotKeys` are already shared utilities, so no change needed there.
+
+**What the next agent should investigate:**
+1. Whether `Outcome` (the internal struct returned by `determineOutcome`)
+   and `ProcessTweetResult` (the public return shape) belong in
+   the new file, in `processTweet.ts`, or in a separate `types.ts`.
+   Try the move both ways and see which has fewer cross-file imports.
+2. Whether the scoring layer (`scorePipelineResult` + its helpers, lines
+   ~100–250) should *also* move out into `processTweet/scoring.ts`. If
+   yes, the natural shape becomes a `processTweet/` folder rather than
+   sibling files. Decide based on whether scoring has callers other
+   than `processSingleTweet` (today: probably none, but worth grepping).
+3. Whether `determineOutcome` belongs with the orchestrator or with
+   serialization. It's a pure function returning the verdict — fine
+   either side, but adjacency to `Outcome` type matters.
+4. Confirm the catch block in `processSingleTweet` collapses cleanly
+   to one `await recordFailedRun(...)` call after the move; if it
+   needs more than ~3 lines, the helper's signature is wrong.
