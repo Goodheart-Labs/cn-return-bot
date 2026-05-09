@@ -6,7 +6,7 @@
  * does not re-check that here.
  */
 
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { countNoteLength } from "../write/writeNote";

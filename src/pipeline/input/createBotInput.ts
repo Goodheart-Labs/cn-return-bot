@@ -5,7 +5,7 @@
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";

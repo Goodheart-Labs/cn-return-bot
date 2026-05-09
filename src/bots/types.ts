@@ -4,7 +4,7 @@
  * Defines the interface that all bots must implement.
  */
 
-import type { ScoreFilter } from "../pipeline/utils/botConfig";
+import type { ScoreFilter } from "../pipeline/ab-testing/botConfig";
 
 export interface PipelineResult {
   post: any;

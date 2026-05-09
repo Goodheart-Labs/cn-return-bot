@@ -7,7 +7,7 @@
 
 import type { AgentDef } from "../tool-calling/agentLoop";
 import { PROPOSE_NOTES_TOOL, NO_CORRECTION_TOOL } from "../tool-calling/tools";
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig } from "../ab-testing/botConfig";
 
 const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You receive research findings, determine whether a correction is needed and if it is, write community note variants.
 
