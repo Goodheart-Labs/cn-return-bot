@@ -190,23 +190,7 @@ export const opusVerified: Bot = {
       return result;
     } catch (err: any) {
       console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
-      const result: PipelineResult = {
-        post,
-        botId: this.id,
-        lastStage,
-        searchContextResult: {
-          text: content.text,
-          searchResults: "",
-          citations: [],
-        },
-        noteResult: { note: "", url: "", status: "ERROR" },
-        checkResult: "",
-        error: err?.message || String(err),
-      };
-      if (scoringResults) {
-        (result as any).scoringResults = scoringResults;
-      }
-      return result;
+      throw err;
     }
   },
 };

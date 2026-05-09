@@ -81,6 +81,13 @@ src/scripts_jim/**/.venv/
 src/scripts_jim/**/*.mp4
 src/scripts_jim/**/batches/
 src/scripts_jim/**/results/
+src/scripts_jim/**/__pycache__/
+src/scripts_jim/**/*.jsonl
+src/scripts_jim/2026_05_09_broken_search_variants/url_fetch_buckets.json
+src/scripts_jim/2026_05_09_broken_search_variants/searxng_url_match.json
+src/scripts_jim/2026_05_09_json_parse_failures/invalid_output_buckets.json
+src/scripts_jim/2026_05_09_json_parse_failures/invalid_output_samples.json
+src/scripts_jim/2026_05_09_json_parse_failures/response_format_results.json
 
 # Claude Code self-reviews
 code-reviews/

@@ -94,16 +94,7 @@ export const opusMainV2Grok: Bot = {
       };
     } catch (err: any) {
       console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
-      return {
-        post,
-        botId: this.id,
-        lastStage,
-        searchContextResult: { text: content.text, searchResults: "", citations: [] },
-        noteResult: { note: "", url: "", status: "ERROR" },
-        checkResult: "",
-        error: err?.message || String(err),
-        warnings: warnings.length > 0 ? warnings : undefined,
-      };
+      throw err;
     }
   },
 };

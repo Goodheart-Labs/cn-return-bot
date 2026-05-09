@@ -9,6 +9,7 @@ import { handleWebFetch } from "../tool-calling/tools";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
+import { UnfetchableSourcesError, ModelOutputInvalidError } from "../utils/errors";
 
 export interface SourceVerification {
   accepted: boolean;
@@ -116,35 +117,32 @@ export async function verifySources(params: {
 
   log?.set(`${logPrefix}.0`, { systemPrompt: SYSTEM_PROMPT, userMessage });
 
-  // Fast reject: if there are non-Twitter sources but none could be fetched, no point calling the LLM
   if (totalNonTwitter > 0 && fetchedCount === 0) {
-    const result: SourceVerification = {
-      accepted: false,
-      reasoning: `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched. Cannot verify the note's claims without accessible sources.`,
-    };
-    log?.set(`${logPrefix}.1`, { content: result });
-    return result;
+    throw new UnfetchableSourcesError(
+      `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,
+    );
   }
 
+  const { response, costEntry } = await trackedLlmCreate(`sourceVerifier.turn.${params.turnNumber}`, {
+    model: config.verifier_model ?? config.model,
+    messages: [
+      { role: "system" as const, content: SYSTEM_PROMPT },
+      { role: "user" as const, content: userMessage },
+    ],
+    response_format: RESPONSE_FORMAT,
+  } as any);
+  trackLlmCall(costEntry);
+
+  const content = response.choices?.[0]?.message?.content ?? "{}";
+  let result: SourceVerification;
   try {
-    const { response, costEntry } = await trackedLlmCreate(`sourceVerifier.turn.${params.turnNumber}`, {
-      model: config.verifier_model ?? config.model,
-      messages: [
-        { role: "system" as const, content: SYSTEM_PROMPT },
-        { role: "user" as const, content: userMessage },
-      ],
-      response_format: RESPONSE_FORMAT,
-    } as any);
-    trackLlmCall(costEntry);
-
-    const content = response.choices?.[0]?.message?.content ?? "{}";
-    const result: SourceVerification = JSON.parse(content);
-
-    log?.set(`${logPrefix}.1`, { content: result });
-    return result;
-  } catch (err: any) {
-    const fallback: SourceVerification = { accepted: false, reasoning: `Source verification failed: ${err.message}` };
-    log?.set(`${logPrefix}.1`, { content: fallback });
-    return fallback;
+    result = JSON.parse(content);
+  } catch {
+    throw new ModelOutputInvalidError(
+      `sourceVerifier.turn.${params.turnNumber}: model output was not valid JSON. content="${content.slice(0, 200)}"`,
+    );
   }
+
+  log?.set(`${logPrefix}.1`, { content: result });
+  return result;
 }

@@ -67,15 +67,7 @@ export const opusDirectGrok: Bot = {
       };
     } catch (err: any) {
       console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
-      return {
-        post,
-        botId: this.id,
-        lastStage,
-        searchContextResult: { text: content.text, searchResults: "", citations: [] },
-        noteResult: { note: "", url: "", status: "ERROR" },
-        checkResult: "",
-        error: err?.message || String(err),
-      };
+      throw err;
     }
   },
 };

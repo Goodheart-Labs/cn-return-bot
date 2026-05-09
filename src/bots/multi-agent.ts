@@ -8,7 +8,6 @@
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
 import { getBotConfig } from "../pipeline/ab-testing/botConfig";
-import { aggregateAndLogCosts } from "../pipeline/cost-tracking/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runMultiAgentPipeline } from "../pipeline/multi-agent/orchestrator";
 
@@ -24,7 +23,6 @@ export const multiAgentBot: Bot = {
     if (input.warnings.length) {
       result.warnings = [...(result.warnings ?? []), ...input.warnings];
     }
-    result.cost = aggregateAndLogCosts()?.cost;
     return result;
   },
 };

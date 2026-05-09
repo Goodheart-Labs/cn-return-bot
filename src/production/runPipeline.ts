@@ -108,6 +108,16 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
+    // 30 min comfortably exceeds the 15 min job timeout.
+    if (supabaseLogger) {
+      try {
+        const swept = await supabaseLogger.sweepStuckRuns({ olderThanMinutes: 30 });
+        if (swept > 0) console.log(`[pipeline] Swept ${swept} stuck in_progress run(s)`);
+      } catch (err) {
+        console.warn("[pipeline] Sweeper failed (continuing anyway):", err);
+      }
+    }
+
     const maxPosts = isLocal
       ? MAX_POSTS_LOCAL
       : supabaseLogger

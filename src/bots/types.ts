@@ -26,20 +26,14 @@ export interface PipelineResult {
   /** Score filters copied from the bot's config. processTweet applies them
    * against the scores it computes and rejects notes that fail. */
   scoreFilters?: ScoreFilter[];
-  /** If the bot failed, this contains error info */
-  error?: string;
   /** Non-fatal warnings (e.g. media analysis failed but pipeline continued) */
   warnings?: string[];
-  /** Total LLM cost (USD) including tool calls. Set by the bot from
-   * aggregateAndLogCosts after all LLM work is done. */
-  cost?: number;
 }
 
 export type PipelineOutcome =
   | { type: "note"; noteText: string; sources: string[]; evalScore?: number; searchResults?: string }
   | { type: "no_correction"; reason: string }
-  | { type: "verification_failed"; noteText: string; sources: string[]; reason: string; searchResults?: string }
-  | { type: "error"; error: string };
+  | { type: "verification_failed"; noteText: string; sources: string[]; reason: string; searchResults?: string };
 
 export function outcomeToResult(
   post: any,
@@ -80,8 +74,6 @@ export function outcomeToResult(
       };
     case "no_correction":
       return base;
-    case "error":
-      return { ...base, lastStage: "error", noteResult: { ...base.noteResult, status: "ERROR" }, error: outcome.error };
   }
 }
 

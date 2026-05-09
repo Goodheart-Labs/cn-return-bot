@@ -14,6 +14,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../cost-tracking/pricing";
 import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
+import { ModelOutputInvalidError } from "../utils/errors";
 
 // --- Shared prompt + schema ---
 
@@ -88,8 +89,10 @@ interface SearchOutput {
 function parseSearchJson(content: string, source: string): SearchOutput {
   try {
     return JSON.parse(content) as SearchOutput;
-  } catch (err: any) {
-    throw new Error(`${source}: model output was not valid JSON. content="${content.slice(0, 200)}"`);
+  } catch {
+    throw new ModelOutputInvalidError(
+      `${source}: model output was not valid JSON. content="${content.slice(0, 200)}"`,
+    );
   }
 }
 
