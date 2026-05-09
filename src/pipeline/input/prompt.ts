@@ -7,7 +7,7 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
-import type { BotConfig } from "../utils/botConfig";
+import type { BotConfig } from "../ab-testing/botConfig";
 
 function buildToolSection(config: BotConfig): string {
   const lines: string[] = [];

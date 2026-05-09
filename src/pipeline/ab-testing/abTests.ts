@@ -11,8 +11,8 @@
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { BotConfig, ScoreFilter } from "../utils/botConfig";
-import { DEFAULT_CONFIG } from "../utils/botConfig";
+import type { BotConfig, ScoreFilter } from "./botConfig";
+import { DEFAULT_CONFIG } from "./botConfig";
 
 // --- Types ---
 

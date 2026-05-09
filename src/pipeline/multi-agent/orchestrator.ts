@@ -9,7 +9,7 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from "../tool-calling/agentLoop";
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";

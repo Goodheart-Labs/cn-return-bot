@@ -9,7 +9,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { getBotById, getEnabledBots } from "../bots/index";
 import { processSingleTweet } from "../pipeline/orchestration/processTweet";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { withBotConfig } from "../pipeline/utils/botConfig";
+import { withBotConfig } from "../pipeline/ab-testing/botConfig";
 import { withCostTracker } from "../pipeline/cost-tracking/costTracker";
 import { AB_TESTS, runABTests, withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { createTweetLog, getLoggedBotId, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";

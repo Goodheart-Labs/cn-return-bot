@@ -11,7 +11,7 @@ import TurndownService from "turndown";
 import { xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../write/writeNote";
-import { getBotConfig } from "../utils/botConfig";
+import { getBotConfig } from "../ab-testing/botConfig";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,

@@ -14,7 +14,7 @@ import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull
 import { determineFeedSize, buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions } from "./utils/tweetSorting";
 import { AB_TESTS, runABTests, getBotProbabilities, getForcedPicks } from "../ab-testing/abTests";
-import { withBotConfig } from "../utils/botConfig";
+import { withBotConfig } from "../ab-testing/botConfig";
 import { withCostTracker } from "../cost-tracking/costTracker";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";

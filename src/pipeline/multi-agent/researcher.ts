@@ -13,8 +13,8 @@ import {
   WEB_FETCH_TOOL,
   WEB_SEARCH_TOOL,
 } from "../tool-calling/tools";
-import type { BotConfig } from "../utils/botConfig";
-import { getBotConfig } from "../utils/botConfig";
+import type { BotConfig } from "../ab-testing/botConfig";
+import { getBotConfig } from "../ab-testing/botConfig";
 
 function searchToolName(config: BotConfig): string {
   switch (config.web_search) {

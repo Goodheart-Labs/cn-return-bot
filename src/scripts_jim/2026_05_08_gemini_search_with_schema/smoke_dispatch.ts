@@ -4,7 +4,7 @@
  */
 
 import "dotenv/config";
-import { withBotConfig, DEFAULT_CONFIG, type BotConfig } from "../../pipeline/utils/botConfig";
+import { withBotConfig, DEFAULT_CONFIG, type BotConfig } from "../../pipeline/ab-testing/botConfig";
 import { dispatchSearch } from "../../pipeline/simple-bot/searchDispatch";
 
 const POST_TEXT = `Tweet to fact-check:
