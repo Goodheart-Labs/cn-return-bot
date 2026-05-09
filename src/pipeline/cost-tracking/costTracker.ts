@@ -8,7 +8,7 @@
 
 import { AsyncLocalStorage } from "node:async_hooks";
 import { llm } from "../llm/llm";
-import { getTweetLog } from "./tweetLog";
+import { getTweetLog } from "../utils/tweetLog";
 import { type TokenCost, extractOpenRouterCost, addTokenCost, emptyTokenCost } from "./pricing";
 
 // --- Types ---

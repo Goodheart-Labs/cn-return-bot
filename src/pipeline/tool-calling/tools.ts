@@ -17,7 +17,7 @@ import {
   GROK_MODEL, PERPLEXITY_MODEL,
   calculateGrokCost, extractOpenRouterCost,
   type TokenCost,
-} from "../utils/pricing";
+} from "../cost-tracking/pricing";
 
 const SEARXNG_URL = process.env.SEARXNG_URL ?? "http://localhost:8080";
 const SEARXNG_MAX_RESULTS = 10;

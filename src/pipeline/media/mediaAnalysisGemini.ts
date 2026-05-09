@@ -14,8 +14,8 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
-import { GEMINI_MODEL } from "../utils/pricing";
-import { trackLlmCall, trackedLlmCreate } from "../utils/costTracker";
+import { GEMINI_MODEL } from "../cost-tracking/pricing";
+import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
 
 const execAsync = promisify(exec);
 const LONG_VIDEO_THRESHOLD_MS = 210_000; // 3.5 minutes

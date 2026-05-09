@@ -4,7 +4,7 @@
  * Run: bun run src/scripts_jim/2026_05_08_ab_test_sampling/test_sampling.ts
  */
 
-import { AB_TESTS, runABTests, withForcedPicks, getBotProbabilities } from "../../pipeline/utils/abTests";
+import { AB_TESTS, runABTests, withForcedPicks, getBotProbabilities } from "../../pipeline/ab-testing/abTests";
 
 function assert(cond: boolean, msg: string): void {
   if (!cond) {

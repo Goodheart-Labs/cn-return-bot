@@ -2,7 +2,7 @@
  * Bot Registry
  *
  * Aggregates all bots and exposes lookup-by-id. Bot selection is driven by
- * `BOT_TEST` in src/pipeline/utils/abTests.ts (no static weight table here).
+ * `BOT_TEST` in src/pipeline/ab-testing/abTests.ts (no static weight table here).
  */
 
 import { Bot } from "./types";

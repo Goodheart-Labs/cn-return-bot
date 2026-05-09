@@ -7,7 +7,7 @@
  */
 
 import { getBotConfig } from "../utils/botConfig";
-import { trackedLlmCreate, trackLlmCall } from "../utils/costTracker";
+import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { countNoteLength } from "../write/writeNote";
 

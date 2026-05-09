@@ -1,6 +1,6 @@
 import { createXai } from "@ai-sdk/xai";
 import { generateText } from "ai";
-import { calculateGrokCost, type TokenCost } from "../utils/pricing";
+import { calculateGrokCost, type TokenCost } from "../cost-tracking/pricing";
 
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 1000;

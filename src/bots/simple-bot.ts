@@ -12,7 +12,7 @@
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
 import { getBotConfig } from "../pipeline/utils/botConfig";
-import { aggregateAndLogCosts } from "../pipeline/utils/costTracker";
+import { aggregateAndLogCosts } from "../pipeline/cost-tracking/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runSimpleBotPipeline } from "../pipeline/simple-bot/orchestrator";
 

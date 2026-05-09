@@ -6,7 +6,7 @@
  * per-provider implementations live in searchDispatch.ts.
  */
 
-import { trackLlmCall } from "../utils/costTracker";
+import { trackLlmCall } from "../cost-tracking/costTracker";
 import { dispatchSearch } from "./searchDispatch";
 
 export interface SearchResult {

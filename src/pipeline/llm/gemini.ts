@@ -6,7 +6,7 @@
  */
 
 import { GoogleGenAI } from "@google/genai";
-import { calculateGeminiCost, type TokenCost } from "../utils/pricing";
+import { calculateGeminiCost, type TokenCost } from "../cost-tracking/pricing";
 
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 1000;

@@ -9,7 +9,7 @@ import type { Post } from "../api/fetchEligiblePosts";
 import { Bot, PipelineResult, PipelineOutcome, outcomeToResult } from "./types";
 import type { BotInput } from "../pipeline/input/createBotInput";
 import { getBotConfig } from "../pipeline/utils/botConfig";
-import { aggregateAndLogCosts } from "../pipeline/utils/costTracker";
+import { aggregateAndLogCosts } from "../pipeline/cost-tracking/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
 import { buildToolList } from "../pipeline/tool-calling/tools";
