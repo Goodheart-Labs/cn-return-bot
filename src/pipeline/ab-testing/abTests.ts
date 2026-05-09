@@ -68,11 +68,6 @@ const BOT_TEST: ABTest = {
     { variant: { name: "opus-multi-source",          overrides: { botId: "opus-multi-source" }},         weight: 0 },
     { variant: { name: "opus-bridging",              overrides: { botId: "opus-bridging" }},             weight: 0 },
     { variant: { name: "opus-research",              overrides: { botId: "opus-research" }},             weight: 0 },
-    { variant: { name: "kimi-k2",                    overrides: { botId: "kimi-k2" }},                   weight: 0 },
-    { variant: { name: "opus-4.6",                   overrides: { botId: "opus-4.6" }},                  weight: 0 },
-    { variant: { name: "sonar-pro",                  overrides: { botId: "sonar-pro" }},                 weight: 0 },
-    { variant: { name: "opus-verified",              overrides: { botId: "opus-verified" }},             weight: 0 },
-    { variant: { name: "opus-concise",               overrides: { botId: "opus-concise" }},              weight: 0 },
   ],
 };
 

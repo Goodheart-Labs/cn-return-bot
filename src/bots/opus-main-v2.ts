@@ -23,77 +23,67 @@ export const opusMainV2: Bot = {
   name: "Opus 4.5 (Main v2)",
   description: "Primary bot using Claude Opus 4.5 with unified note writer",
   async runPipeline(post, content): Promise<PipelineResult | null> {
-    let lastStage = "started";
     const warnings: string[] = [];
-    try {
-      // Media analysis (non-fatal — continues without it but records warning)
-      let mediaContext = "";
-      if (content.mediaItems?.length) {
-        try {
-          const mediaResult = await analyzeMedia(content.mediaItems, {
-            visionModel: MODELS.vision,
-          });
-          mediaContext = mediaResult.contextForSearch;
-          lastStage = "media_analysis";
-          if (mediaResult.warnings.length > 0) {
-            warnings.push(...mediaResult.warnings);
-          }
-        } catch (err: any) {
-          const msg = `Media analysis failed: ${err.message}`;
-          // If tweet is media-only (no meaningful text), media analysis is essential
-          const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
-          if (strippedText.length < 20) {
-            throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
-          }
-          console.warn(`[${this.id}] ${msg} (continuing without media context)`);
-          warnings.push(msg);
+
+    // Media analysis (non-fatal — continues without it but records warning)
+    let mediaContext = "";
+    if (content.mediaItems?.length) {
+      try {
+        const mediaResult = await analyzeMedia(content.mediaItems, {
+          visionModel: MODELS.vision,
+        });
+        mediaContext = mediaResult.contextForSearch;
+        if (mediaResult.warnings.length > 0) {
+          warnings.push(...mediaResult.warnings);
         }
+      } catch (err: any) {
+        const msg = `Media analysis failed: ${err.message}`;
+        // If tweet is media-only (no meaningful text), media analysis is essential
+        const strippedText = content.text.replace(/@\w+/g, "").replace(/https?:\/\/\S+/g, "").trim();
+        if (strippedText.length < 20) {
+          throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
+        }
+        console.warn(`[${this.id}] ${msg} (continuing without media context)`);
+        warnings.push(msg);
       }
-
-      lastStage = "search";
-      const searchResult = await perplexitySearch(
-        {
-          text: content.text,
-          media: content.media,
-          mediaContext,
-          quotedPostContext: content.quotedPostContext,
-        },
-        { model: MODELS.search }
-      );
-
-      lastStage = "note_writing";
-      const noteResult = await writeNote(
-        {
-          text: searchResult.text,
-          searchResults: searchResult.searchResults,
-          citations: searchResult.citations || [],
-          mediaContext,
-        },
-        { model: MODELS.noteWriting }
-      );
-
-      lastStage = "check";
-      const checkResult = await verifySource(
-        {
-          note: noteResult.note,
-          url: noteResult.url,
-          status: noteResult.status,
-        },
-        { model: MODELS.checking }
-      );
-
-      return {
-        post,
-        botId: this.id,
-        lastStage,
-        searchContextResult: searchResult,
-        noteResult,
-        checkResult,
-        warnings: warnings.length > 0 ? warnings : undefined,
-      };
-    } catch (err: any) {
-      console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
-      throw err;
     }
+
+    const searchResult = await perplexitySearch(
+      {
+        text: content.text,
+        media: content.media,
+        mediaContext,
+        quotedPostContext: content.quotedPostContext,
+      },
+      { model: MODELS.search }
+    );
+
+    const noteResult = await writeNote(
+      {
+        text: searchResult.text,
+        searchResults: searchResult.searchResults,
+        citations: searchResult.citations || [],
+        mediaContext,
+      },
+      { model: MODELS.noteWriting }
+    );
+
+    const checkResult = await verifySource(
+      {
+        note: noteResult.note,
+        url: noteResult.url,
+        status: noteResult.status,
+      },
+      { model: MODELS.checking }
+    );
+
+    return {
+      post,
+      botId: this.id,
+      searchContextResult: searchResult,
+      noteResult,
+      checkResult,
+      warnings: warnings.length > 0 ? warnings : undefined,
+    };
   },
 };

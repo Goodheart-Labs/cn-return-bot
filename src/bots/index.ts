@@ -14,23 +14,20 @@ import { opusDirectGrok } from "./opus-direct-grok";
 import { opusMainV2Grok } from "./opus-main-v2-grok";
 import { opusMultiSource } from "./opus-multi-source";
 import { opusBridging } from "./opus-bridging";
+import { opusResearch } from "./opus-research";
 import { agentBot } from "./agent";
 import { multiAgentBot } from "./multi-agent";
 import { simpleBot } from "./simple-bot";
 
-// Legacy bots (kept for historical data; selection weight is 0 in BOT_TEST)
-import { opusResearch } from "./opus-research";
-import { kimiK2 } from "./kimi-k2";
-import { opus46 } from "./opus-4.6";
-import { sonarPro } from "./sonar-pro";
-import { opusVerified } from "./opus-verified";
-import { opusConcise } from "./opus-concise";
-
 // =============================================================================
-// RETIRED BOTS
-// To recover: git show <commit>:src/bots/legacy/<filename>.ts
+// RETIRED BOTS — recoverable via `git show <commit>:src/bots/<file>.ts`.
 //
 //   bot-id         file                 last commit  notes
+//   opus-4.6       opus-4.6.ts          a698e34      Opus 4.6 baseline, superseded
+//   kimi-k2        kimi-k2.ts           a698e34      Kimi K2 variant
+//   sonar-pro      sonar-pro.ts         a698e34      legacy Perplexity Sonar bot
+//   opus-concise   opus-concise.ts      a698e34      concise-prompt variant
+//   opus-verified  opus-verified.ts     a698e34      pre-verifier variant
 //   opus-scored    opus-scored.ts       0289eae      LLM-scored variant, superseded
 //   opus-strict    opus-strict.ts       0289eae      strict-threshold variant, superseded
 //   gemini-flash   gemini-flash.ts      80841a5      Gemini 1.5 Flash
@@ -47,8 +44,7 @@ const ALL_BOTS: Bot[] = [
   agentBot, multiAgentBot, simpleBot,
   opusMain, opusMainV2, opusMainNoSourceCheck,
   opusDirect, opusDirectGrok, opusMainV2Grok,
-  opusMultiSource, opusBridging,
-  opusResearch, kimiK2, opus46, sonarPro, opusVerified, opusConcise,
+  opusMultiSource, opusBridging, opusResearch,
 ];
 
 export function getEnabledBots(): Bot[] {

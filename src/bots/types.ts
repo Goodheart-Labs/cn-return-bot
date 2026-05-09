@@ -9,8 +9,6 @@ import type { ScoreFilter } from "../pipeline/ab-testing/botConfig";
 export interface PipelineResult {
   post: any;
   botId: string;
-  /** Last stage the bot successfully completed */
-  lastStage: string;
   searchContextResult: {
     text: string;
     searchResults: string;
@@ -44,7 +42,6 @@ export function outcomeToResult(
   const base = {
     post,
     botId,
-    lastStage: "complete",
     searchContextResult: { text: "", searchResults: "" },
     noteResult: { note: "", url: "", status: "NO MISSING CONTEXT" },
     scoreFilters,
