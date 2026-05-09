@@ -21,37 +21,45 @@ and shipped investigation scripts in
 [`src/scripts_jim/2026_05_09_*`](src/scripts_jim/) that produced concrete
 findings. Each item below is intended as its own small PR.
 
-### 1. Per-provider JSON-output fixes
-**Evidence** (from [`scripts_jim/2026_05_09_json_parse_failures/`](src/scripts_jim/2026_05_09_json_parse_failures/),
-specifically `02_test_response_format_strictness.ts`):
+### 1. Per-provider JSON-output fixes (resolved — no code change needed)
 
-#### 1a. `searchWithOpenaiNative` returns empty content
-**Affects:** `gpt-5`, `gpt-5-mini`, `kimi-k2.6` — three of fourteen
-`simple_bot_search` variants.
-**Symptom:** OpenRouter returns `message.content === ""` even with
-`response_format: { type: "json_object" }`. Probably the model is
-responding via tool calls and we're reading the wrong field.
-**Action:** Inspect the raw OpenRouter response shape for these models
-and read the right field, OR force tool-choice on a `submit_findings`
-tool, OR drop these models if the response shape is unfixable.
-**File:** [`src/pipeline/simple-bot/searchDispatch.ts`](src/pipeline/simple-bot/searchDispatch.ts) (`searchWithOpenaiNative` ~line 245).
+The original framing came from
+[`scripts_jim/2026_05_09_json_parse_failures/02_test_response_format_strictness.ts`](src/scripts_jim/2026_05_09_json_parse_failures/02_test_response_format_strictness.ts),
+a synthetic OpenRouter probe that used `response_format: { type:
+"json_object" }` and `max_tokens=200`. Re-investigation in
+[`scripts_jim/2026_05_09_sonar_openrouter_probe/`](src/scripts_jim/2026_05_09_sonar_openrouter_probe/)
+plus 14 days of production data finds **none of the three sub-issues
+need a code fix**:
 
-#### 1b. Perplexity sonar errors on `response_format`
-**Affects:** `sonar-pro`, `sonar-reasoning-pro`.
-**Symptom:** OpenRouter returns an HTTP error (not just non-JSON
-content) when we send `response_format: { type: "json_object" }` for
-sonar models. They don't accept that field.
-**Action:** Branch the call — drop `response_format` for sonar — and
-accept that sonar may emit markdown-fenced JSON. Either parse defensively
-in this one place or use the native Perplexity SDK.
-**File:** [`searchDispatch.ts:262`](src/pipeline/simple-bot/searchDispatch.ts#L262) (`searchWithSonarBundled`).
+- **1a (gpt-5 / gpt-5-mini empty content):** the original probe used
+  `max_tokens=200`; production uses 4000 with the `web_search_preview`
+  tool. Production failure rate over 14 days: 1/4 runs total — sample
+  size too small to act on. Re-probing with realistic params shows
+  reliable JSON output.
+- **1b (sonar errors on `response_format`):** the original probe used
+  `{ type: "json_object" }`, which sonar *does* reject — but production
+  sends `{ type: "json_schema", json_schema: {...} }`, which sonar
+  accepts. `sonar-pro` had 0 failures, `sonar-reasoning-pro` had 1 in
+  36 runs (~3%) over 14 days.
+- **1c (`gemini-3-pro-preview` errors at the API level):** the
+  variant calls the *native* Gemini SDK (`searchWithGeminiNative`),
+  not OpenRouter. Production's 100% failure rate is `GEMINI_API_KEY
+  environment variable is required but not set` — a GitHub Secret
+  configuration issue, not a code issue. The workflow YAML on `main`
+  already contains `GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}`,
+  so the secret itself is missing or named differently. **User action:**
+  add a `GEMINI_API_KEY` secret at
+  https://github.com/Goodheart-Labs/cn-return-bot/settings/secrets/actions.
 
-#### 1c. `gemini-3-pro-preview` errors at the API level
-**Symptom:** Both with and without `response_format`, OpenRouter returns
-an error for this exact model ID.
-**Action:** Verify the model ID is current with OpenRouter; may have
-been renamed. If broken, set the variant's weight to 0 like the
-deepseek/qwen ones.
+**Lesson for future probes:** synthetic JSON-output probes need to
+mirror the production parameters exactly. The original probe varied
+`response_format` shape and `max_tokens` independently of the actual
+call sites and produced false positives on three different
+configurations.
+
+If `model_output_invalid` rates climb in the future, re-run the
+probes in `scripts_jim/2026_05_09_sonar_openrouter_probe/` to
+re-validate.
 
 ### 2. Legacy bot cleanup
 **Goal:** consolidate three loosely-related cleanups in one PR since
