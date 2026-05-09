@@ -117,10 +117,6 @@ export async function verifySources(params: {
 
   log?.set(`${logPrefix}.0`, { systemPrompt: SYSTEM_PROMPT, userMessage });
 
-  // Fast reject: if there are non-Twitter sources but none could be fetched, the
-  // bot's note has no verifiable basis. This is a tooling failure (couldn't reach
-  // the URLs), not a substantive verifier rejection — throw so processTweet
-  // tags it `outcome_reason='unfetchable_sources'` instead of `check_failed`.
   if (totalNonTwitter > 0 && fetchedCount === 0) {
     throw new UnfetchableSourcesError(
       `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,

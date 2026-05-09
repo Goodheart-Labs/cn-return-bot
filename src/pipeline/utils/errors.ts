@@ -1,21 +1,14 @@
 /**
- * Typed pipeline errors.
- *
- * Throw a `PipelineError` (or subclass) when the bot pipeline fails.
- * `processTweet`'s top-level catch reads `err.outcomeReason` to populate
- * `pipeline_runs.outcome_reason` — so adding a new failure mode is just a
- * subclass with the right reason string.
- *
- * Plain `Error`s thrown anywhere in the pipeline land in `bot_error` (the
- * default on the base class).
+ * Errors thrown from the bot pipeline. The orchestrator's catch reads
+ * `err.outcomeReason` to populate `pipeline_runs.outcome_reason`. Plain
+ * `Error`s land in `bot_error`; subclass to introduce a new reason.
  */
 
 export class PipelineError extends Error {
   readonly outcomeReason: string = "bot_error";
   constructor(message?: string) {
     super(message);
-    // JS doesn't propagate the subclass name into the stack header by default;
-    // set it so DB stack traces (logs.error.stack) are readable at a glance.
+    // Without this, every stack header reads "Error:" instead of e.g. "ModelOutputInvalidError:".
     this.name = new.target.name;
   }
 }

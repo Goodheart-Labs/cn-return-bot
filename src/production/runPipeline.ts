@@ -108,7 +108,6 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
-    // Mark any runs that crashed before reaching completePipelineRun as failed.
     // 30 min comfortably exceeds the 15 min job timeout.
     if (supabaseLogger) {
       try {

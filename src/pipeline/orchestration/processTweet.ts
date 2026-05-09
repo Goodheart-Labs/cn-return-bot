@@ -164,10 +164,6 @@ async function computeEvaluationScore(
     return { error: err?.message };
   }
 }
-// Note: shouldSubmitNote can return { error } from a failed eval API call.
-// That's a non-fatal warning (we degrade gracefully — no eval-based
-// rejection), not a pipeline-stopping error, so it stays as a return
-// rather than a throw.
 
 const NOTE_SCORE_FIELDS: Array<{ name: string; key: keyof AllNoteScores }> = [
   { name: "positive_evidence", key: "positiveEvidence" },
@@ -373,10 +369,6 @@ function buildSuccessCompletionData(
   logs: Record<string, unknown> | undefined,
   cost: number | undefined,
 ): Parameters<SupabaseLogger["completePipelineRun"]>[1] {
-  // Non-fatal warnings + per-outcome detail (e.g. "score 0.42 below threshold")
-  // accumulate here. Hard failures don't go through this path — they have
-  // their own DB write in recordFailedRun, so error_message there is unambiguously
-  // an exception message.
   const warningText = warnings?.join("; ");
   const errorParts = [warningText, outcome.errorMessage].filter(Boolean);
 
@@ -398,10 +390,6 @@ function buildSuccessCompletionData(
   };
 }
 
-// ---------------------------------------------------------------------------
-// Failure-path helper — the ONE place outcome='failed' rows are written.
-// ---------------------------------------------------------------------------
-
 const STACK_FRAMES_TO_KEEP = 12;
 const ERROR_MESSAGE_MAX_LEN = 2000;
 
@@ -420,11 +408,8 @@ async function recordFailedRun(
     ? err.stack.split("\n").slice(0, STACK_FRAMES_TO_KEEP).join("\n")
     : undefined;
 
-  // Capture costs incurred before the throw. Reads from the AsyncLocalStorage
-  // CostTracker, so it works regardless of how far the bot got.
   const cost = aggregateAndLogCosts()?.cost;
 
-  // Surface the error in the tweet log so it's also embedded in logs JSONB.
   const log = getTweetLog();
   log?.set("outcome.result", "failed");
   log?.set("outcome.reason", outcomeReason);
@@ -472,8 +457,6 @@ export async function processSingleTweet(
 ): Promise<ProcessTweetResult> {
   const { post, bot, logger, commitSha } = options;
 
-  // Init DB row first so the runId is in scope for both success and failure.
-  // createPipelineRun only needs tweet_id + commit_sha, no log info.
   let pipelineRunId: string | null = null;
   if (logger) {
     pipelineRunId = await initPipelineRun(logger, post, commitSha);
@@ -482,7 +465,6 @@ export async function processSingleTweet(
   try {
     const { result, warnings } = await runBotPipeline(post, bot);
     if (!result) {
-      // bots may return null without throwing — treat as failure.
       throw new PipelineError("Bot returned null without throwing");
     }
 
@@ -491,7 +473,6 @@ export async function processSingleTweet(
 
     const outcome = determineOutcome(result, scoring.scores, scoring.noteScores, scoring.evalShouldSubmit);
 
-    // Write outcome to the tweet log so it's embedded in logs JSONB.
     const log = getTweetLog();
     log?.set("outcome.result", outcome.outcome);
     log?.set("outcome.reason", outcome.outcomeReason ?? "");
@@ -504,8 +485,6 @@ export async function processSingleTweet(
       log?.set("sourceCheck.result", result.checkResult.trim().toUpperCase());
     }
 
-    // Cost capture — single call site for the success path. Mirrored in
-    // recordFailedRun for the failure path. (Used to be duplicated in each bot.)
     const cost = aggregateAndLogCosts()?.cost;
 
     if (logger && pipelineRunId) {
