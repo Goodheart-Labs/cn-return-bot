@@ -23,50 +23,40 @@ export const opusDirect: Bot = {
   name: "Opus 4.6 Direct",
   description: "Direct style bot: leads with facts, punchy corrections, primary sources",
   async runPipeline(post, content): Promise<PipelineResult | null> {
-    let lastStage = "started";
-    try {
-      lastStage = "search";
-      const searchResult = await perplexitySearch(
-        {
-          text: content.text,
-          media: content.media,
-          mediaContext: "",
-          quotedPostContext: content.quotedPostContext,
-        },
-        { model: MODELS.search }
-      );
+    const searchResult = await perplexitySearch(
+      {
+        text: content.text,
+        media: content.media,
+        mediaContext: "",
+        quotedPostContext: content.quotedPostContext,
+      },
+      { model: MODELS.search }
+    );
 
-      lastStage = "note_writing";
-      const noteResult = await writeNote(
-        {
-          text: searchResult.text,
-          searchResults: searchResult.searchResults,
-          citations: searchResult.citations || [],
-        },
-        { model: MODELS.noteWriting }
-      );
+    const noteResult = await writeNote(
+      {
+        text: searchResult.text,
+        searchResults: searchResult.searchResults,
+        citations: searchResult.citations || [],
+      },
+      { model: MODELS.noteWriting }
+    );
 
-      lastStage = "check";
-      const checkResult = await verifySource(
-        {
-          note: noteResult.note,
-          url: noteResult.url,
-          status: noteResult.status,
-        },
-        { model: MODELS.checking }
-      );
+    const checkResult = await verifySource(
+      {
+        note: noteResult.note,
+        url: noteResult.url,
+        status: noteResult.status,
+      },
+      { model: MODELS.checking }
+    );
 
-      return {
-        post,
-        botId: this.id,
-        lastStage,
-        searchContextResult: searchResult,
-        noteResult,
-        checkResult,
-      };
-    } catch (err: any) {
-      console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
-      throw err;
-    }
+    return {
+      post,
+      botId: this.id,
+      searchContextResult: searchResult,
+      noteResult,
+      checkResult,
+    };
   },
 };

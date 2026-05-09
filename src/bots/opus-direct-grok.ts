@@ -23,51 +23,41 @@ export const opusDirectGrok: Bot = {
   name: "Opus 4.6 Direct + Grok",
   description: "Direct style bot with Grok X search for tweet context",
   async runPipeline(post, content): Promise<PipelineResult | null> {
-    let lastStage = "started";
-    try {
-      lastStage = "search";
-      const searchResult = await enrichedSearch(
-        {
-          text: content.text,
-          media: content.media,
-          searchResults: "",
-          quotedPostContext: content.quotedPostContext,
-        },
-        { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
-        post.id
-      );
+    const searchResult = await enrichedSearch(
+      {
+        text: content.text,
+        media: content.media,
+        searchResults: "",
+        quotedPostContext: content.quotedPostContext,
+      },
+      { perplexityModel: MODELS.search, grokModel: MODELS.grokSearch },
+      post.id
+    );
 
-      lastStage = "note_writing";
-      const noteResult = await writeNote(
-        {
-          text: searchResult.text,
-          searchResults: searchResult.searchResults,
-          citations: searchResult.citations || [],
-        },
-        { model: MODELS.noteWriting }
-      );
+    const noteResult = await writeNote(
+      {
+        text: searchResult.text,
+        searchResults: searchResult.searchResults,
+        citations: searchResult.citations || [],
+      },
+      { model: MODELS.noteWriting }
+    );
 
-      lastStage = "check";
-      const checkResult = await verifySource(
-        {
-          note: noteResult.note,
-          url: noteResult.url,
-          status: noteResult.status,
-        },
-        { model: MODELS.checking }
-      );
+    const checkResult = await verifySource(
+      {
+        note: noteResult.note,
+        url: noteResult.url,
+        status: noteResult.status,
+      },
+      { model: MODELS.checking }
+    );
 
-      return {
-        post,
-        botId: this.id,
-        lastStage,
-        searchContextResult: searchResult,
-        noteResult,
-        checkResult,
-      };
-    } catch (err: any) {
-      console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
-      throw err;
-    }
+    return {
+      post,
+      botId: this.id,
+      searchContextResult: searchResult,
+      noteResult,
+      checkResult,
+    };
   },
 };

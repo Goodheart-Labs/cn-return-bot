@@ -437,20 +437,6 @@ export async function runNoteScores(
 }
 
 /**
- * Check if scores pass thresholds (used by opus-verified as a hard gate).
- */
-export function checkAllThresholds(
-  scores: AllNoteScores,
-  thresholds = { positiveEvidence: 0.5, disagreement: 0.5, helpfulness: 0.5 }
-): boolean {
-  return (
-    scores.positiveEvidence.score > thresholds.positiveEvidence &&
-    scores.disagreement.score > thresholds.disagreement &&
-    scores.helpfulness.score > thresholds.helpfulness
-  );
-}
-
-/**
  * Apply a list of score filters. Returns the first failure, or null if all pass.
  */
 export function applyScoreFilters(

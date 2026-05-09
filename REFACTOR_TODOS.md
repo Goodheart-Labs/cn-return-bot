@@ -1,17 +1,5 @@
 # Refactor TODOs
 
-## Migrate all bots to PipelineOutcome
-
-Currently only agent and multi-agent return `PipelineOutcome`. Legacy bots (opus-main, opus-bridging, etc.) still return `PipelineResult` directly.
-
-Goal:
-- Delete legacy bots
-- All bots return `PipelineOutcome`
-- Move `outcomeToResult` mapping into `processSingleTweet` (single place, right before DB storage)
-- Remove `PipelineResult` construction from bot layer entirely
-
----
-
 ## Follow-ups from `refactor/error-handling` (PR #129, May 2026)
 
 The error-handling refactor unblocks several cleanups it deliberately
@@ -61,65 +49,30 @@ If `model_output_invalid` rates climb in the future, re-run the
 probes in `scripts_jim/2026_05_09_sonar_openrouter_probe/` to
 re-validate.
 
-### 2. Legacy bot cleanup
-**Goal:** consolidate three loosely-related cleanups in one PR since
-they all touch the same 14 files.
+### 2. Legacy bot cleanup — Migrate the rest to `PipelineOutcome`
 
-#### 2a. Delete truly retired bots
-None of these have non-zero weight in any A/B test and no scripts
-reference them outside of `bots/index.ts`:
-- `opus-4.6`
-- `kimi-k2`
-- `sonar-pro`
-- `opus-concise`
-- `opus-verified`
+**Status:** sub-items 2a (delete retired bots), 2b (unwind try/catch),
+and 2c (remove `PipelineResult.lastStage`) shipped in the
+`refactor/legacy-bot-cleanup` PR. Remaining work:
 
-`git rm` the file, remove the import + entry from
-[`src/bots/index.ts`](src/bots/index.ts), remove the variant entry from
-`BOT_TEST` in `abTests.ts`. ~5 files removed × ~80 lines each.
+> Currently only agent and multi-agent return `PipelineOutcome`. Legacy
+> bots (`opus-main`, `opus-bridging`, etc.) still return `PipelineResult`
+> directly.
+>
+> Goal:
+> - All bots return `PipelineOutcome`
+> - Move `outcomeToResult` mapping into `processSingleTweet` (single
+>   place, right before DB storage)
+> - Remove `PipelineResult` construction from bot layer entirely
 
-#### 2b. Unwind the try/catch in remaining legacy bots
-The remaining legacy bots (`opus-main`, `opus-main-v2`, `opus-direct`,
-`opus-direct-grok`, `opus-main-v2-grok`, `opus-multi-source`,
-`opus-bridging`, `opus-main-no-source-check`, `opus-research`) currently
-have a try/catch that just rethrows after the error-handling refactor:
-
-```ts
-} catch (err: any) {
-  console.error(`[${this.id}] Pipeline error at ${lastStage}:`, err);
-  throw err;
-}
-```
-
-This is dead weight — `processTweet`'s catch already records the
-failure. The bot-level `console.error` adds nothing the stack trace
-doesn't. **Delete the try/catch entirely**; let exceptions propagate
-naturally.
-
-#### 2c. Remove `PipelineResult.lastStage` (write-only)
-After the error-handling refactor, nothing reads `result.lastStage`.
-Each of the remaining ~9 legacy bots maintains its own `let lastStage =
-"started"` / `lastStage = "search"` / etc. — bookkeeping for a field
-that's never read.
-
-`final_stage` (the DB column) is now set authoritatively by the
-orchestrator. `logs.error.stack` (also set by the orchestrator) tells
-you the file/line of any throw. `lastStage` is the misnamed bot-internal
-version of `final_stage` from before the orchestrator owned it.
-
-**Action:** remove `lastStage: string` from `PipelineResult` in
-[`src/bots/types.ts`](src/bots/types.ts), remove
-`lastStage: "complete"` from `outcomeToResult`, remove every
-`let lastStage` and assignment + the field in returned results. ~60
-lines deleted across the remaining 9 bots.
-
-#### 2d. (Stretch) Migrate the rest to `PipelineOutcome`
-This is the original section above. Now that the legacy bots have
-nothing in the `catch` block and no `lastStage`, their `runPipeline`
-methods are short. Migrating each to `runSimpleBotPipeline`-style
-`PipelineOutcome` returns is the natural next step — and lets us
-delete `outcomeToResult` from each bot's call site (the orchestrator
-becomes the only caller).
+After PR #131 each legacy `runPipeline` is a flat sequence of calls
+ending in a `return { post, botId, searchContextResult, noteResult,
+checkResult, ... }` literal. The migration is mechanical: replace the
+literal with a `PipelineOutcome` (`{type:"note", noteText, sources, ...}`
+or `{type:"verification_failed", ...}` etc.) and drop the
+`PipelineResult` construction. The orchestrator already calls
+`outcomeToResult` for `agent` and `multi-agent`; threading it through
+the legacy bots completes the job.
 
 ### 3. Source-fetcher: handle HTTP 403 better
 **Where:** [`src/pipeline/tool-calling/tools.ts:314`](src/pipeline/tool-calling/tools.ts#L314) (`handleWebFetch`).
