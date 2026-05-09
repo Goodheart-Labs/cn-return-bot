@@ -88,6 +88,10 @@ export class SupabaseLogger {
 
   /**
    * Fetch all rows from a query, paginating past Supabase's 1000-row default limit.
+   *
+   * Uses OFFSET pagination, which gets quadratically slower as the result set
+   * grows past ~30k rows (Postgres has to walk past every skipped row even with
+   * an index). For tables that exceed that, use fetchAllRowsKeyset instead.
    */
   async fetchAllRows<T>(
     buildQuery: (from: SupabaseClient) => any
@@ -102,6 +106,38 @@ export class SupabaseLogger {
       allRows.push(...data);
       if (data.length < PAGE_SIZE) break;
       offset += PAGE_SIZE;
+    }
+    return allRows;
+  }
+
+  /**
+   * Keyset-paginated fetcher for large tables (~tens of thousands of rows or
+   * more). Each page is `WHERE keyCol > <last>` ORDER BY keyCol — an index
+   * range scan from the last row, ~constant time per page regardless of depth.
+   *
+   * keyCol must be unique and indexed (typical: a UUID/serial primary key).
+   *
+   * If the underlying query already does its own ORDER BY, the keyCol order
+   * will override it.
+   */
+  async fetchAllRowsKeyset<T extends Record<string, any>>(
+    buildQuery: (from: SupabaseClient) => any,
+    keyCol: string,
+  ): Promise<T[]> {
+    const PAGE_SIZE = 1000;
+    const allRows: T[] = [];
+    let lastKey: any = null;
+    while (true) {
+      let q = (buildQuery(this.client) as any)
+        .order(keyCol, { ascending: true })
+        .limit(PAGE_SIZE);
+      if (lastKey !== null) q = q.gt(keyCol, lastKey);
+      const { data, error } = await q;
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+      allRows.push(...data);
+      if (data.length < PAGE_SIZE) break;
+      lastKey = data[data.length - 1][keyCol];
     }
     return allRows;
   }
@@ -528,9 +564,14 @@ export class SupabaseLogger {
       });
 
       try {
-        const pipelineData = await this.fetchAllRows<{ tweet_id: string; created_at: string }>(
-          (client) => client.from("pipeline_runs").select("tweet_id, created_at")
-            .eq("outcome", "rejected")
+        // Keyset by id: this query matches ~80% of pipeline_runs (50k+ rows
+        // and growing), and offset pagination times out at deep pages. We
+        // need every row to compute the cooldown counts, so the result set
+        // is unbounded — keyset on the primary key is the right shape.
+        const pipelineData = await this.fetchAllRowsKeyset<{ id: string; tweet_id: string; created_at: string }>(
+          (client) => client.from("pipeline_runs").select("id, tweet_id, created_at")
+            .eq("outcome", "rejected"),
+          "id",
         );
         const rejectionInfo = new Map<string, { count: number; latestAt: Date }>();
         for (const row of pipelineData) {
@@ -575,8 +616,12 @@ export class SupabaseLogger {
    */
   async getKnownTweetIds(): Promise<Set<string>> {
     try {
-      const rows = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("tweets").select("tweet_id")
+      // Keyset by tweet_id: the tweets table has 40k+ rows and grows roughly
+      // linearly with pipeline runs. tweet_id is the primary key so it's
+      // unique, indexed, and a natural pagination key.
+      const rows = await this.fetchAllRowsKeyset<{ tweet_id: string }>(
+        (client) => client.from("tweets").select("tweet_id"),
+        "tweet_id",
       );
       return new Set(rows.map((r) => r.tweet_id).filter(Boolean));
     } catch (error) {
