@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { fetchAllRows as fetchAllRowsShared } from "./paging";
 
 // Database types
 export interface Notewriter {
@@ -87,59 +88,16 @@ export class SupabaseLogger {
   }
 
   /**
-   * Fetch all rows from a query, paginating past Supabase's 1000-row default limit.
-   *
-   * Uses OFFSET pagination, which gets quadratically slower as the result set
-   * grows past ~30k rows (Postgres has to walk past every skipped row even with
-   * an index). For tables that exceed that, use fetchAllRowsKeyset instead.
+   * Fetch every row matching `buildQuery()`. Delegates to the shared keyset
+   * paginator in src/api/paging.ts. Caller must supply a unique, indexed
+   * `keyCol` (typically the table's primary key).
    */
-  async fetchAllRows<T>(
-    buildQuery: (from: SupabaseClient) => any
-  ): Promise<T[]> {
-    const PAGE_SIZE = 1000;
-    const allRows: T[] = [];
-    let offset = 0;
-    while (true) {
-      const { data, error } = await (buildQuery(this.client) as any).range(offset, offset + PAGE_SIZE - 1);
-      if (error) throw error;
-      if (!data || data.length === 0) break;
-      allRows.push(...data);
-      if (data.length < PAGE_SIZE) break;
-      offset += PAGE_SIZE;
-    }
-    return allRows;
-  }
-
-  /**
-   * Keyset-paginated fetcher for large tables (~tens of thousands of rows or
-   * more). Each page is `WHERE keyCol > <last>` ORDER BY keyCol — an index
-   * range scan from the last row, ~constant time per page regardless of depth.
-   *
-   * keyCol must be unique and indexed (typical: a UUID/serial primary key).
-   *
-   * If the underlying query already does its own ORDER BY, the keyCol order
-   * will override it.
-   */
-  async fetchAllRowsKeyset<T extends Record<string, any>>(
+  async fetchAllRows<T extends Record<string, any>>(
     buildQuery: (from: SupabaseClient) => any,
     keyCol: string,
+    label?: string,
   ): Promise<T[]> {
-    const PAGE_SIZE = 1000;
-    const allRows: T[] = [];
-    let lastKey: any = null;
-    while (true) {
-      let q = (buildQuery(this.client) as any)
-        .order(keyCol, { ascending: true })
-        .limit(PAGE_SIZE);
-      if (lastKey !== null) q = q.gt(keyCol, lastKey);
-      const { data, error } = await q;
-      if (error) throw error;
-      if (!data || data.length === 0) break;
-      allRows.push(...data);
-      if (data.length < PAGE_SIZE) break;
-      lastKey = data[data.length - 1][keyCol];
-    }
-    return allRows;
+    return fetchAllRowsShared<T>(() => buildQuery(this.client), keyCol, { label });
   }
 
   /**
@@ -556,22 +514,21 @@ export class SupabaseLogger {
     const tweetIds = new Set<string>();
 
     try {
-      const notesData = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("notes").select("tweet_id")
+      const notesData = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
+        (client) => client.from("notes").select("note_id, tweet_id"),
+        "note_id",
+        "getSkipTweetIds.notes",
       );
       notesData.forEach((row) => {
         if (row.tweet_id) tweetIds.add(row.tweet_id);
       });
 
       try {
-        // Keyset by id: this query matches ~80% of pipeline_runs (50k+ rows
-        // and growing), and offset pagination times out at deep pages. We
-        // need every row to compute the cooldown counts, so the result set
-        // is unbounded — keyset on the primary key is the right shape.
-        const pipelineData = await this.fetchAllRowsKeyset<{ id: string; tweet_id: string; created_at: string }>(
+        const pipelineData = await this.fetchAllRows<{ id: string; tweet_id: string; created_at: string }>(
           (client) => client.from("pipeline_runs").select("id, tweet_id, created_at")
             .eq("outcome", "rejected"),
           "id",
+          "getSkipTweetIds.rejected",
         );
         const rejectionInfo = new Map<string, { count: number; latestAt: Date }>();
         for (const row of pipelineData) {
@@ -619,9 +576,10 @@ export class SupabaseLogger {
       // Keyset by tweet_id: the tweets table has 40k+ rows and grows roughly
       // linearly with pipeline runs. tweet_id is the primary key so it's
       // unique, indexed, and a natural pagination key.
-      const rows = await this.fetchAllRowsKeyset<{ tweet_id: string }>(
+      const rows = await this.fetchAllRows<{ tweet_id: string }>(
         (client) => client.from("tweets").select("tweet_id"),
         "tweet_id",
+        "getKnownTweetIds",
       );
       return new Set(rows.map((r) => r.tweet_id).filter(Boolean));
     } catch (error) {
@@ -643,7 +601,9 @@ export class SupabaseLogger {
     }>(
       (client) => client.from("notes")
         .select("note_id, view_count, cn_status, data_tier")
-        .neq("data_tier", "junk")
+        .neq("data_tier", "junk"),
+      "note_id",
+      "getScrapedNoteSummary",
     );
 
     let totalViews = 0, totalHelpful = 0, totalNotHelpful = 0, totalNeedsMore = 0;
@@ -670,22 +630,28 @@ export class SupabaseLogger {
    * Returns summary stats.
    */
   async deriveTweetIds(): Promise<{ total: number; updated: number; flagged: number; noVotes: number }> {
-    // 1. Get all snapshots with tweet_id
-    const snapshots = await this.fetchAllRows<{ note_id: string; tweet_id: string | null }>(
+    // 1. Get all snapshots with tweet_id (paginate by snapshot id PK).
+    const snapshots = await this.fetchAllRows<{ id: string; note_id: string; tweet_id: string | null }>(
       (client) => client.from("scraped_notewriter_snapshots")
-        .select("note_id, tweet_id")
+        .select("id, note_id, tweet_id"),
+      "id",
+      "deriveTweetIds.snapshots",
     );
 
     // 2. Get all scraped notes
     const scrapedNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
       (client) => client.from("notes")
-        .select("note_id, tweet_id")
+        .select("note_id, tweet_id"),
+      "note_id",
+      "deriveTweetIds.scrapedNotes",
     );
 
     // 3. Get bot-submitted notes (source of truth for tweet_id)
     const botNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
       (client) => client.from("notes")
-        .select("note_id, tweet_id")
+        .select("note_id, tweet_id"),
+      "note_id",
+      "deriveTweetIds.botNotes",
     );
     const botTweetIds = new Map<string, string>();
     for (const n of botNotes) {
@@ -767,8 +733,10 @@ export class SupabaseLogger {
     viewCountDecreases: Array<{ note_id: string; from: number; to: number; fromDate: string; toDate: string }>;
     noteTextChanges: Array<{ note_id: string; texts: string[]; dates: string[] }>;
   }> {
-    // Fetch all snapshots with relevant fields, ordered by scraped_at
+    // Keyset pagination paginates by id so the underlying scraped_at order
+    // is lost; we re-sort each per-note group below.
     const snapshots = await this.fetchAllRows<{
+      id: string;
       note_id: string;
       view_count: number | null;
       note_text: string | null;
@@ -776,15 +744,19 @@ export class SupabaseLogger {
       scraped_at: string;
     }>(
       (client) => client.from("scraped_notewriter_snapshots")
-        .select("note_id, view_count, note_text, cn_status, scraped_at")
-        .order("scraped_at", { ascending: true })
+        .select("id, note_id, view_count, note_text, cn_status, scraped_at"),
+      "id",
+      "detectSnapshotAnomalies",
     );
 
-    // Group by note_id
+    // Group by note_id and sort each group by scraped_at ascending.
     const byNote = new Map<string, typeof snapshots>();
     for (const snap of snapshots) {
       if (!byNote.has(snap.note_id)) byNote.set(snap.note_id, []);
       byNote.get(snap.note_id)!.push(snap);
+    }
+    for (const noteSnaps of byNote.values()) {
+      noteSnaps.sort((a, b) => a.scraped_at.localeCompare(b.scraped_at));
     }
 
     const viewCountDecreases: Array<{ note_id: string; from: number; to: number; fromDate: string; toDate: string }> = [];
