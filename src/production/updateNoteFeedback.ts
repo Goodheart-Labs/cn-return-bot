@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { getSupabaseClient } from "../api/supabaseClient";
+import { fetchAllRows } from "../api/paging";
 import { fetchNotesWritten, type WrittenNote, type NoteFactorBucketCounts } from "../api/fetchNotesWritten";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from "fs";
 import { execSync } from "child_process";
@@ -89,20 +90,7 @@ type ExistingState = {
 };
 
 // ─── Generic helpers ─────────────────────────────────────────────────────────
-
-async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
-  const all: T[] = [];
-  let offset = 0;
-  while (true) {
-    const { data, error } = await buildQuery().range(offset, offset + PAGE_SIZE - 1);
-    if (error) throw error;
-    if (!data || data.length === 0) break;
-    all.push(...data);
-    if (data.length < PAGE_SIZE) break;
-    offset += PAGE_SIZE;
-  }
-  return all;
-}
+// Pagination lives in src/api/paging.ts (fetchAllRows). No local copy.
 
 function formatDateForUrl(date: Date): string {
   const y = date.getUTCFullYear();
@@ -282,19 +270,25 @@ function parsePublicDump(
 
 async function fetchExistingState(): Promise<ExistingState> {
   console.log("[updateFeedback] Fetching rejected pipeline runs...");
-  const rejected = await fetchAll<{ id: string; tweet_id: string }>(() =>
-    client.from("pipeline_runs").select("id, tweet_id").eq("outcome", "rejected"),
+  const rejected = await fetchAllRows<{ id: string; tweet_id: string }>(
+    () => client.from("pipeline_runs").select("id, tweet_id").eq("outcome", "rejected"),
+    "id",
+    { label: "updateFeedback.rejectedRuns" },
   );
   const rejectedTweetIds = new Map<string, string>();
   for (const run of rejected) rejectedTweetIds.set(run.tweet_id, run.id);
   console.log(`[updateFeedback] ${rejectedTweetIds.size} tweets with rejected runs`);
 
   console.log("[updateFeedback] Fetching existing notes state...");
-  const existing = await fetchAll<{
+  const existing = await fetchAllRows<{
     note_id: string;
     cn_status: string | null;
     submitted_at: string | null;
-  }>(() => client.from("notes").select("note_id, cn_status, submitted_at"));
+  }>(
+    () => client.from("notes").select("note_id, cn_status, submitted_at"),
+    "note_id",
+    { label: "updateFeedback.existingNotes" },
+  );
   console.log(`[updateFeedback] ${existing.length} existing notes`);
 
   return {

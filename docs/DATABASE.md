@@ -256,6 +256,48 @@ review dashboard code for usage; they're only touched by
 
 ---
 
+## Querying: the 1000-row cap
+
+PostgREST (the layer between supabase-js and Postgres) **silently caps every
+`.select()` response at 1000 rows**. There's no error if your result would
+be larger — it just gets truncated. So `client.from("pipeline_runs").select("id")`
+returns the first 1000 ids regardless of how many match.
+
+To fetch everything matching a query, use the keyset-paginated helper in
+[`src/api/paging.ts`](../src/api/paging.ts):
+
+```ts
+import { fetchAllRows } from "../api/paging";
+
+const all = await fetchAllRows<{ id: string; tweet_id: string }>(
+  () => client.from("pipeline_runs").select("id, tweet_id").eq("outcome", "rejected"),
+  "id",                                              // unique, indexed key column (always the table's PK)
+  { label: "myFunction.rejectedRuns" },              // shows up in error messages
+);
+```
+
+The helper paginates internally with `WHERE keyCol > <last>` ORDER BY keyCol —
+~constant time per page regardless of depth. Required keyCol per table:
+
+| Table                          | keyCol     |
+|--------------------------------|------------|
+| `notes`                        | `note_id`  |
+| `tweets`                       | `tweet_id` |
+| `pipeline_runs`                | `id`       |
+| `pipeline_scores`              | `id`       |
+| `competing_notes`              | `id`       |
+| `scraped_notewriter_snapshots` | `id`       |
+| `public_data_snapshots`        | `id`       |
+| `notewriters`                  | `id`       |
+
+The keyCol must be in your `select(...)` columns. If your query needs a different
+sort order, sort the result in JS after fetching (the helper's pagination always
+sorts ascending by keyCol; that order overrides any `.order()` you passed in).
+
+Bounded queries — `.single()`, `.limit(N)` for small N, or anything you know
+matches <1000 rows — are fine to issue directly on the supabase client without
+the helper.
+
 ## CN status values
 
 `cn_status` (and `competing_notes.current_status`) come from X's public

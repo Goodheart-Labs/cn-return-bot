@@ -17,27 +17,11 @@ if (useLocal) {
 }
 
 import { getSupabaseClient } from "../api/supabaseClient";
+import { fetchAllRows, fetchInBatches } from "../api/paging";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { execSync } from "child_process";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 const client = getSupabaseClient();
-
-// Paginated fetch to avoid Supabase 1000-row default limit
-async function fetchAll<T>(buildQuery: (client: SupabaseClient) => any): Promise<T[]> {
-  const PAGE_SIZE = 1000;
-  const rows: T[] = [];
-  let offset = 0;
-  while (true) {
-    const { data, error } = await (buildQuery(client) as any).range(offset, offset + PAGE_SIZE - 1);
-    if (error) throw error;
-    if (!data || data.length === 0) break;
-    rows.push(...data);
-    if (data.length < PAGE_SIZE) break;
-    offset += PAGE_SIZE;
-  }
-  return rows;
-}
 
 // Extract creation date from Twitter Snowflake ID
 function snowflakeToDate(id: string): Date {
@@ -49,7 +33,7 @@ console.log("Fetching data...");
 
 // 1. All notes (primary data source). Post-merge, this is the unified
 // notes table — submission metadata + ratings + status all on one row.
-const scrapedNotes = await fetchAll<{
+const scrapedNotes = await fetchAllRows<{
   note_id: string;
   tweet_id: string;
   cn_status: string | null;
@@ -66,26 +50,32 @@ const scrapedNotes = await fetchAll<{
   // include them. Pre-merge this filter was just .neq("junk") on canonical,
   // which never had NULL because the scraper always set it; post-merge the
   // notes table includes public-data-only rows that legitimately have NULL.
-  (c) => c.from("notes")
+  () => client.from("notes")
     .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, submitted_at, rating_count, helpful_count, not_helpful_count")
-    .or("data_tier.neq.junk,data_tier.is.null")
+    .or("data_tier.neq.junk,data_tier.is.null"),
+  "note_id",
+  { label: "report.scrapedNotes" },
 );
 console.log(`  ${scrapedNotes.length} notes (non-junk)`);
 
 // 2. Bot name lookup. Comes from the pipeline_runs row that produced
 // each note (we no longer duplicate bot_name onto notes).
-const botRuns = await fetchAll<{
+const botRuns = await fetchAllRows<{
+  id: string;
   note_id: string;
   bot_name: string | null;
 }>(
-  (c) => c.from("pipeline_runs").select("note_id, bot_name").eq("outcome", "submitted").not("note_id", "is", null)
+  () => client.from("pipeline_runs").select("id, note_id, bot_name").eq("outcome", "submitted").not("note_id", "is", null),
+  "id",
+  { label: "report.botRuns" },
 );
 console.log(`  ${botRuns.length} submitted runs (for bot_name mapping)`);
 
 // 3. Pipeline runs (single query with all needed fields)
 // We group/render by a synthetic variant label "<bot>_<v1>-<v2>-..." derived
 // from ab_test_picks so per-variant breakdowns work post-migration-039.
-const rawPipelineRunsFull = await fetchAll<{
+const rawPipelineRunsFull = await fetchAllRows<{
+  id: string;
   bot_name: string | null;
   ab_test_picks: Record<string, string> | null;
   outcome: string;
@@ -93,7 +83,9 @@ const rawPipelineRunsFull = await fetchAll<{
   created_at: string;
   tweet_id: string;
 }>(
-  (c) => c.from("pipeline_runs").select("bot_name, ab_test_picks, outcome, outcome_reason, created_at, tweet_id")
+  () => client.from("pipeline_runs").select("id, bot_name, ab_test_picks, outcome, outcome_reason, created_at, tweet_id"),
+  "id",
+  { label: "report.allPipelineRuns" },
 );
 console.log(`  ${rawPipelineRunsFull.length} pipeline runs`);
 
@@ -127,15 +119,11 @@ const submittedTweetIds = new Set(
   rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id)
 );
 const submittedTweetIdsArr = [...submittedTweetIds];
-const VIDEO_BATCH = 200;
-const videoRuns: Array<{ tweet_id: string; has_video: boolean | null; video_duration_ms: number | null }> = [];
-for (let i = 0; i < submittedTweetIdsArr.length; i += VIDEO_BATCH) {
-  const chunk = submittedTweetIdsArr.slice(i, i + VIDEO_BATCH);
-  const rows = await fetchAll<{ tweet_id: string; has_video: boolean | null; video_duration_ms: number | null }>(
-    (c) => c.from("tweets").select("tweet_id, has_video, video_duration_ms").in("tweet_id", chunk)
-  );
-  videoRuns.push(...rows);
-}
+const videoRuns = await fetchInBatches<{ tweet_id: string; has_video: boolean | null; video_duration_ms: number | null }>(
+  (chunk) => client.from("tweets").select("tweet_id, has_video, video_duration_ms").in("tweet_id", chunk),
+  submittedTweetIdsArr,
+  { label: "report.videoTweets" },
+);
 const videoByTweet = new Map<string, { has_video: boolean; video_duration_ms: number | null }>();
 for (const r of videoRuns) {
   if (r.tweet_id && r.has_video !== null) {
@@ -145,13 +133,16 @@ for (const r of videoRuns) {
 console.log(`  ${videoRuns.length} tweets with video info`);
 
 // 6. Competing notes summary
-const competingData = await fetchAll<{
+const competingData = await fetchAllRows<{
+  id: string;
   tweet_id: string;
   note_id: string;
   our_note_id: string;
   current_status: string | null;
 }>(
-  (c) => c.from("competing_notes").select("tweet_id, note_id, our_note_id, current_status")
+  () => client.from("competing_notes").select("id, tweet_id, note_id, our_note_id, current_status"),
+  "id",
+  { label: "report.competingNotes" },
 );
 const totalCompeting = competingData.length;
 const helpfulCompeting = competingData.filter(c => c.current_status === "CURRENTLY_RATED_HELPFUL").length;

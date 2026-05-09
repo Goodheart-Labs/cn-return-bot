@@ -13,6 +13,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { createClient } from "@supabase/supabase-js";
+import { fetchAllRows } from "../api/paging";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -56,23 +57,7 @@ const RECOGNIZED_STATUSES = new Set([
 // Helpers
 // ---------------------------------------------------------------------------
 
-async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
-  const PAGE_SIZE = 1000;
-  const all: T[] = [];
-  let offset = 0;
-  while (true) {
-    const { data, error } = await buildQuery().range(
-      offset,
-      offset + PAGE_SIZE - 1
-    );
-    if (error) throw error;
-    if (!data || data.length === 0) break;
-    all.push(...data);
-    if (data.length < PAGE_SIZE) break;
-    offset += PAGE_SIZE;
-  }
-  return all;
-}
+// Pagination lives in src/api/paging.ts (fetchAllRows). No local copy.
 
 function isRealTweetId(tweetId: string | null | undefined): boolean {
   if (!tweetId) return false;
@@ -402,13 +387,17 @@ export async function reconcile(): Promise<{
 
   // 1. Fetch all data
   const [snapshots, groundTruthNotes] = await Promise.all([
-    fetchAll<Snapshot>(() =>
-      supabase
+    fetchAllRows<Snapshot>(
+      () => supabase
         .from("scraped_notewriter_snapshots")
-        .select("id, note_id, tweet_id, note_text, cn_status, view_count, shown_on_x, excluded, scraped_at")
+        .select("id, note_id, tweet_id, note_text, cn_status, view_count, shown_on_x, excluded, scraped_at"),
+      "id",
+      { label: "reconcile.snapshots" },
     ),
-    fetchAll<GroundTruthNote>(() =>
-      supabase.from("notes").select("note_id, tweet_id")
+    fetchAllRows<GroundTruthNote>(
+      () => supabase.from("notes").select("note_id, tweet_id"),
+      "note_id",
+      { label: "reconcile.groundTruth" },
     ),
   ]);
 
@@ -503,14 +492,16 @@ export async function reconcile(): Promise<{
   // and by updateNoteFeedback from the public-data dump, so it's a clean proxy
   // for "this note is tracked by public data" post canonical→notes merge
   // (replaces the dropped public_data_updated_at column).
-  const publicDataNotes = await fetchAll<{
+  const publicDataNotes = await fetchAllRows<{
     note_id: string;
     cn_status: string | null;
-  }>(() =>
-    supabase
+  }>(
+    () => supabase
       .from("notes")
       .select("note_id, cn_status")
-      .not("submitted_at", "is", null)
+      .not("submitted_at", "is", null),
+    "note_id",
+    { label: "reconcile.publicDataNotes" },
   );
   const publicDataStatus = new Map<string, string | null>(
     publicDataNotes.map((n) => [n.note_id, n.cn_status])
