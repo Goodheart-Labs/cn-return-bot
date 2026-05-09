@@ -12,6 +12,12 @@
 
 export class PipelineError extends Error {
   readonly outcomeReason: string = "bot_error";
+  constructor(message?: string) {
+    super(message);
+    // JS doesn't propagate the subclass name into the stack header by default;
+    // set it so DB stack traces (logs.error.stack) are readable at a glance.
+    this.name = new.target.name;
+  }
 }
 
 /** Source verifier couldn't fetch any of the cited URLs — tooling failure,
