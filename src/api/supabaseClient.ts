@@ -478,6 +478,33 @@ export class SupabaseLogger {
   }
 
   /**
+   * Mark any `in_progress` runs older than `olderThanMinutes` as failed.
+   * Catches rows where processTweet's terminal `completePipelineRun` call
+   * itself threw — without this, those rows stay `in_progress` forever
+   * and pollute outcome-rate calculations.
+   */
+  async sweepStuckRuns(opts: { olderThanMinutes: number }): Promise<number> {
+    const cutoff = new Date(Date.now() - opts.olderThanMinutes * 60_000).toISOString();
+    const { data, error } = await this.client
+      .from("pipeline_runs")
+      .update({
+        outcome: "failed",
+        outcome_reason: "not_completed",
+        error_message: `Run did not finish (sweeper marked failed after ${opts.olderThanMinutes} min)`,
+        final_stage: "error",
+      })
+      .eq("outcome", "in_progress")
+      .lt("created_at", cutoff)
+      .select("id");
+
+    if (error) {
+      console.error("[SupabaseLogger] Error sweeping stuck runs:", error);
+      throw error;
+    }
+    return data?.length ?? 0;
+  }
+
+  /**
    * Mark a candidate as submitted after successful note submission.
    */
   async markCandidateSubmitted(runId: string, noteId: string): Promise<void> {

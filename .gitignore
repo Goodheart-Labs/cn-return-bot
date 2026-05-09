@@ -81,6 +81,7 @@ src/scripts_jim/**/.venv/
 src/scripts_jim/**/*.mp4
 src/scripts_jim/**/batches/
 src/scripts_jim/**/results/
+src/scripts_jim/**/__pycache__/
 
 # Claude Code self-reviews
 code-reviews/

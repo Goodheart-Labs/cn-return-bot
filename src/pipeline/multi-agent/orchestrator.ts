@@ -17,6 +17,7 @@ import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
 import { buildUserMessage } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
+import { AgentToolError, PipelineExhaustedError } from "../utils/errors";
 
 const MAX_TURNS = 10;
 const MAX_SOURCE_VERIFICATION_ATTEMPTS = 2;
@@ -125,7 +126,7 @@ export async function runMultiAgentPipeline(
 
     if (result.terminalTool === "error") {
       logFinal(startMs);
-      return { type: "error", error: result.args.reason ?? "Agent error" };
+      throw new AgentToolError(result.args.reason ?? "Agent invoked error tool without a reason");
     }
 
     if (result.terminalTool === "text_response") {
@@ -197,7 +198,7 @@ export async function runMultiAgentPipeline(
       searchResults: state.researcherFindings,
     };
   }
-  return { type: "error", error: `Multi-agent pipeline exhausted after ${MAX_TURNS} turns` };
+  throw new PipelineExhaustedError(`Multi-agent pipeline exhausted after ${MAX_TURNS} turns`);
 }
 
 function logFinal(startMs: number): void {

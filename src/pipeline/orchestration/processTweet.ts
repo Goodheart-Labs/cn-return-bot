@@ -17,6 +17,8 @@ import { getOriginalTweetContent } from "../../utils/retweetUtils";
 import { runNoteScores, countSources, applyScoreFilters, type AllNoteScores } from "../score/noteScores";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
+import { PipelineError } from "../utils/errors";
+import { aggregateAndLogCosts } from "../cost-tracking/costTracker";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -162,6 +164,10 @@ async function computeEvaluationScore(
     return { error: err?.message };
   }
 }
+// Note: shouldSubmitNote can return { error } from a failed eval API call.
+// That's a non-fatal warning (we degrade gracefully — no eval-based
+// rejection), not a pipeline-stopping error, so it stays as a return
+// rather than a throw.
 
 const NOTE_SCORE_FIELDS: Array<{ name: string; key: keyof AllNoteScores }> = [
   { name: "positive_evidence", key: "positiveEvidence" },
@@ -261,21 +267,11 @@ const STATUS_REJECTION_MAP: Record<string, { reason: string; stage: string }> = 
 const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 
 function determineOutcome(
-  result: PipelineResult | null,
+  result: PipelineResult,
   scores: ScoreEntry[],
   noteScores: AllNoteScores | undefined,
   evalShouldSubmit?: boolean
 ): Outcome {
-  // Bot returned nothing
-  if (!result) {
-    return { outcome: "failed", outcomeReason: "bot_returned_null", finalStage: "started" };
-  }
-
-  // Bot returned an error
-  if (result.error) {
-    return { outcome: "failed", outcomeReason: "bot_error", finalStage: result.lastStage };
-  }
-
   // Status-based rejections
   const statusRejection = STATUS_REJECTION_MAP[result.noteResult.status];
   if (statusRejection) {
@@ -369,14 +365,18 @@ async function initPipelineRun(
   }
 }
 
-function buildCompletionData(
-  result: PipelineResult | null,
+function buildSuccessCompletionData(
+  result: PipelineResult,
   bot: { name: string; picks?: Record<string, string>; config?: Record<string, unknown> },
   outcome: Outcome,
   warnings: string[] | undefined,
   logs: Record<string, unknown> | undefined,
   cost: number | undefined,
 ): Parameters<SupabaseLogger["completePipelineRun"]>[1] {
+  // Non-fatal warnings + per-outcome detail (e.g. "score 0.42 below threshold")
+  // accumulate here. Hard failures don't go through this path — they have
+  // their own DB write in recordFailedRun, so error_message there is unambiguously
+  // an exception message.
   const warningText = warnings?.join("; ");
   const errorParts = [warningText, outcome.errorMessage].filter(Boolean);
 
@@ -388,13 +388,78 @@ function buildCompletionData(
     bot_name: bot.name,
     ab_test_picks: bot.picks,
     bot_config: bot.config,
-    note_text: result ? result.noteResult.note + " " + result.noteResult.url : undefined,
-    source_url: result?.noteResult?.url,
-    note_status: result?.noteResult?.status,
-    search_results: result?.searchContextResult?.searchResults?.slice(0, 10000),
-    check_reasoning: result?.checkResult,
+    note_text: result.noteResult.note + " " + result.noteResult.url,
+    source_url: result.noteResult.url,
+    note_status: result.noteResult.status,
+    search_results: result.searchContextResult.searchResults?.slice(0, 10000),
+    check_reasoning: result.checkResult,
     logs,
     cost,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Failure-path helper — the ONE place outcome='failed' rows are written.
+// ---------------------------------------------------------------------------
+
+const STACK_FRAMES_TO_KEEP = 12;
+const ERROR_MESSAGE_MAX_LEN = 2000;
+
+async function recordFailedRun(
+  logger: SupabaseLogger | null,
+  pipelineRunId: string | null,
+  post: Post,
+  bot: Bot,
+  err: any,
+): Promise<ProcessTweetResult> {
+  console.error(`[processTweet] Bot pipeline failed for ${post.id}:`, err);
+
+  const outcomeReason = err instanceof PipelineError ? err.outcomeReason : "bot_error";
+  const message = err?.message ?? String(err);
+  const stack = err?.stack
+    ? err.stack.split("\n").slice(0, STACK_FRAMES_TO_KEEP).join("\n")
+    : undefined;
+
+  // Capture costs incurred before the throw. Reads from the AsyncLocalStorage
+  // CostTracker, so it works regardless of how far the bot got.
+  const cost = aggregateAndLogCosts()?.cost;
+
+  // Surface the error in the tweet log so it's also embedded in logs JSONB.
+  const log = getTweetLog();
+  log?.set("outcome.result", "failed");
+  log?.set("outcome.reason", outcomeReason);
+  log?.set("outcome.finalStage", "error");
+  log?.set("error.message", message);
+  if (stack) log?.set("error.stack", stack);
+
+  if (logger && pipelineRunId) {
+    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
+    const loggedBot = getLoggedBotIdentity(bot.id, log);
+    try {
+      await logger.completePipelineRun(pipelineRunId, {
+        outcome: "failed",
+        outcome_reason: outcomeReason,
+        error_message: message.slice(0, ERROR_MESSAGE_MAX_LEN),
+        final_stage: "error",
+        bot_name: loggedBot.name,
+        ab_test_picks: loggedBot.picks,
+        bot_config: loggedBot.config,
+        logs,
+        cost,
+      });
+    } catch (dbErr) {
+      console.warn(`[processTweet] Failed to record failure DB row:`, dbErr);
+    }
+  }
+
+  return {
+    pipelineResult: null,
+    outcome: "failed",
+    outcomeReason,
+    finalStage: "error",
+    scores: [],
+    pipelineRunId,
+    warnings: [`[ERROR] ${message}`],
   };
 }
 
@@ -407,56 +472,30 @@ export async function processSingleTweet(
 ): Promise<ProcessTweetResult> {
   const { post, bot, logger, commitSha } = options;
 
-  // 1. Run bot pipeline
-  let pipelineOutput: BotPipelineOutput;
-  try {
-    pipelineOutput = await runBotPipeline(post, bot);
-  } catch (err: any) {
-    console.error(`[processTweet] Bot pipeline failed for ${post.id}:`, err);
-    const errorResult: PipelineResult = {
-      post,
-      botId: bot.id,
-      lastStage: "error",
-      searchContextResult: { text: post.text ?? "", searchResults: "" },
-      noteResult: { note: "", url: "", status: "ERROR" },
-      error: err.message,
-    };
-    pipelineOutput = { result: errorResult, content: getOriginalTweetContent(post), warnings: [`[ERROR] ${err.message}`] };
-  }
-  const { result, warnings } = pipelineOutput;
-
-  // 2. Create DB run
+  // Init DB row first so the runId is in scope for both success and failure.
+  // createPipelineRun only needs tweet_id + commit_sha, no log info.
   let pipelineRunId: string | null = null;
   if (logger) {
     pipelineRunId = await initPipelineRun(logger, post, commitSha);
   }
 
-  // 3. Score (only if bot produced a usable result)
-  let scores: ScoreEntry[] = [];
-  let noteScores: AllNoteScores | undefined;
-  let evaluationScore: number | undefined;
-  let sourceCountScore: number | undefined;
-  let evalShouldSubmit: boolean | undefined;
+  try {
+    const { result, warnings } = await runBotPipeline(post, bot);
+    if (!result) {
+      // bots may return null without throwing — treat as failure.
+      throw new PipelineError("Bot returned null without throwing");
+    }
 
-  if (result && !result.error) {
     const scoring = await scorePipelineResult(result, post);
-    scores = scoring.scores;
-    noteScores = scoring.noteScores;
-    evaluationScore = scoring.evaluationScore;
-    sourceCountScore = scoring.sourceCountScore;
-    evalShouldSubmit = scoring.evalShouldSubmit;
-    await logScoresToDb(logger, pipelineRunId, scores);
-  }
+    await logScoresToDb(logger, pipelineRunId, scoring.scores);
 
-  // 4. Determine outcome
-  const outcome = determineOutcome(result, scores, noteScores, evalShouldSubmit);
+    const outcome = determineOutcome(result, scoring.scores, scoring.noteScores, scoring.evalShouldSubmit);
 
-  // 5. Write to tweet log
-  const log = getTweetLog();
-  log?.set("outcome.result", outcome.outcome);
-  log?.set("outcome.reason", outcome.outcomeReason ?? "");
-  log?.set("outcome.finalStage", outcome.finalStage);
-  if (result) {
+    // Write outcome to the tweet log so it's embedded in logs JSONB.
+    const log = getTweetLog();
+    log?.set("outcome.result", outcome.outcome);
+    log?.set("outcome.reason", outcome.outcomeReason ?? "");
+    log?.set("outcome.finalStage", outcome.finalStage);
     log?.set("note.status", result.noteResult.status);
     log?.set("note.text", result.noteResult.note + " " + result.noteResult.url);
     log?.set("note.url", result.noteResult.url);
@@ -464,33 +503,36 @@ export async function processSingleTweet(
     if (result.checkResult != null) {
       log?.set("sourceCheck.result", result.checkResult.trim().toUpperCase());
     }
-  }
 
-  // 6. Complete DB run (with logs)
-  if (logger && pipelineRunId) {
-    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-    const loggedBot = getLoggedBotIdentity(bot.id, log);
-    const completionData = buildCompletionData(result, loggedBot, outcome, warnings, logs, result?.cost);
-    try {
-      await logger.completePipelineRun(pipelineRunId, completionData);
-    } catch (err) {
-      console.warn(`[processTweet] Failed to complete pipeline run:`, err);
+    // Cost capture — single call site for the success path. Mirrored in
+    // recordFailedRun for the failure path. (Used to be duplicated in each bot.)
+    const cost = aggregateAndLogCosts()?.cost;
+
+    if (logger && pipelineRunId) {
+      const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
+      const loggedBot = getLoggedBotIdentity(bot.id, log);
+      const completionData = buildSuccessCompletionData(result, loggedBot, outcome, warnings, logs, cost);
+      try {
+        await logger.completePipelineRun(pipelineRunId, completionData);
+      } catch (err) {
+        console.warn(`[processTweet] Failed to complete pipeline run:`, err);
+      }
     }
-  }
 
-  // 7. Return
-  const noteText = result ? result.noteResult.note + " " + result.noteResult.url : undefined;
-  return {
-    pipelineResult: result,
-    outcome: outcome.outcome,
-    outcomeReason: outcome.outcomeReason,
-    finalStage: outcome.finalStage,
-    noteStatus: result?.noteResult?.status,
-    evaluationScore,
-    sourceCountScore,
-    noteText,
-    scores,
-    pipelineRunId,
-    warnings,
-  };
+    return {
+      pipelineResult: result,
+      outcome: outcome.outcome,
+      outcomeReason: outcome.outcomeReason,
+      finalStage: outcome.finalStage,
+      noteStatus: result.noteResult.status,
+      evaluationScore: scoring.evaluationScore,
+      sourceCountScore: scoring.sourceCountScore,
+      noteText: result.noteResult.note + " " + result.noteResult.url,
+      scores: scoring.scores,
+      pipelineRunId,
+      warnings,
+    };
+  } catch (err: any) {
+    return await recordFailedRun(logger, pipelineRunId, post, bot, err);
+  }
 }

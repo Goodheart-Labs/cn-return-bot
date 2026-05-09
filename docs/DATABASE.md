@@ -120,10 +120,10 @@ gets retried).
 | `bot_name` | TEXT | short family, e.g. `simple-bot`, `agent`, `multi-agent`, `opus-main`. Equals `ab_test_picks->>'bot'`. |
 | `ab_test_picks` | JSONB | dictionary of A/B test → variant picks for the run, e.g. `{"bot":"simple-bot","simple_bot_search":"sonnet46-native","simple_bot_writer":"sonnet"}`. Replaces the old `bot_name_long`. GIN-indexed. |
 | `bot_config` | JSONB | full BotConfig snapshot for the run (NULL for historical rows) |
-| `outcome` | TEXT | `submitted` / `candidate` / `rejected` / `failed` / `filtered` / `in_progress` |
-| `outcome_reason` | TEXT | semantic category — `no_correction_needed`, `check_failed`, `low_evaluation_score`, `bot_error`, `daily_limit_reached`, `tweet_deleted`, `ineligible`, etc. |
-| `final_stage` | TEXT | last stage reached: `started` / `scoring` / `source_trust` / `note_writing` / `check` / `evaluation` / `candidate` / `submission` / `filtering` |
-| `error_message` | TEXT | populated when `outcome = failed` |
+| `outcome` | TEXT | `submitted` / `candidate` / `rejected` / `failed` / `filtered` / `in_progress`. See [outcome_reason taxonomy](#outcome_reason-taxonomy) below for which reasons attach to which outcomes. |
+| `outcome_reason` | TEXT | semantic category. See [taxonomy](#outcome_reason-taxonomy) below. |
+| `final_stage` | TEXT | last stage reached: `started` / `scoring` / `source_trust` / `note_writing` / `check` / `evaluation` / `candidate` / `submission`. Always `error` when `outcome='failed'`. |
+| `error_message` | TEXT | **non-NULL whenever `outcome='failed'`** — the exception's `.message`. NULL otherwise. |
 | `note_id` | TEXT | refers to `notes.note_id` (when submitted) |
 | `note_text` | TEXT | bot's generated note (kept even for non-submitted runs — useful for review) |
 | `evaluation_score` | DOUBLE PRECISION | the bot's self-eval score |
@@ -133,6 +133,30 @@ gets retried).
 | `cost` | NUMERIC(10, 6) | total LLM cost in USD (incl. tools); NULL for runs without captured cost data |
 
 Indexes: `tweet_id`, `outcome`, `final_stage`, `(outcome, created_at DESC) WHERE outcome='candidate'`, `bot_name`, `bot_name_long`.
+
+#### `outcome_reason` taxonomy
+
+| `outcome_reason` | `outcome` | Emitted by | Meaning |
+|---|---|---|---|
+| `no_correction_needed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (note status not `CORRECTION WITH TRUSTWORTHY CITATION`) | Bot decided the post needs no note. |
+| `low_evaluation_score` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`evalShouldSubmit === false`) | Self-eval score below the submission threshold. |
+| `check_failed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`checkResult` is "NO: …") | Source verifier read the sources and decided they don't support the note. **Substantive rejection.** |
+| `check_error` | `failed` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`checkResult` starts with "ERROR") | Verifier returned an error string (legacy path; new code throws instead). |
+| `scoring_filters_failed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (bot's score filters tripped) | A score on the bot's `scoreFilters` list crossed its threshold. |
+| `source_trust_failed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`STATUS_REJECTION_MAP`) | Status from the bot was `SOURCE_TRUST_FAILED`. |
+| `tweet_deleted` | `rejected` | [submitNoteForTweet.ts](../src/pipeline/orchestration/submitNoteForTweet.ts) | X returned 404 at submission time. |
+| `ineligible` | `rejected` | [submitNoteForTweet.ts](../src/pipeline/orchestration/submitNoteForTweet.ts) | X marked the tweet ineligible for notes. |
+| `daily_limit_reached` | `rejected` | [submitCandidates.ts](../src/pipeline/orchestration/submitCandidates.ts) | X writing limit hit; remaining candidates this run get this reason. |
+| `submit_error` | `rejected` | [submitNoteForTweet.ts](../src/pipeline/orchestration/submitNoteForTweet.ts) | Other X-API submit error. |
+| `bot_error` | `failed` | `recordFailedRun` (default) | Uncaught exception of any other kind. Look at `error_message` and `logs->'error'->>'stack'`. |
+| `unfetchable_sources` | `failed` | [`UnfetchableSourcesError`](../src/pipeline/utils/errors.ts) thrown by `sourceVerifier.ts` | The cited URLs couldn't be fetched (404 / blocked / timeout). **Tooling failure** — distinct from `check_failed` (substance). |
+| `model_output_invalid` | `failed` | [`ModelOutputInvalidError`](../src/pipeline/utils/errors.ts) thrown by search dispatch / source verifier | LLM returned content that wasn't parseable JSON. Group by provider via `ab_test_picks->>'simple_bot_search'` to spot misbehaving providers. |
+| `not_completed` | `failed` | `sweepStuckRuns` at pipeline startup | Row was `in_progress` for >30 min — pipeline crashed before the terminal DB write. |
+
+**Invariants** (post-refactor):
+- `outcome='failed'` ⇒ `error_message` is non-NULL and `logs->'error'->>'stack'` is populated.
+- `outcome='failed'` ⇒ `final_stage='error'`.
+- `outcome IN ('candidate','submitted','rejected')` ⇒ `error_message` is NULL (or contains only non-fatal warnings).
 
 ---
 

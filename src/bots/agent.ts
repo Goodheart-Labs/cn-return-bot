@@ -9,13 +9,13 @@ import type { Post } from "../api/fetchEligiblePosts";
 import { Bot, PipelineResult, PipelineOutcome, outcomeToResult } from "./types";
 import type { BotInput } from "../pipeline/input/createBotInput";
 import { getBotConfig } from "../pipeline/ab-testing/botConfig";
-import { aggregateAndLogCosts } from "../pipeline/cost-tracking/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
 import { buildToolList } from "../pipeline/tool-calling/tools";
 import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "../pipeline/tool-calling/agentLoop";
 import { buildSystemPrompt, buildUserMessage } from "../pipeline/input/prompt";
 import { evaluateAndPickBest } from "../pipeline/score/noteEvaluation";
+import { AgentToolError, PipelineExhaustedError } from "../pipeline/utils/errors";
 
 const MAX_ITERATIONS = 50;
 
@@ -56,7 +56,10 @@ async function runAgent(post: Post, input: BotInput): Promise<PipelineOutcome> {
     return { type: "no_correction", reason: result.args.reason ?? result.args.content ?? "No correction needed" };
   }
 
-  return { type: "error", error: result.args.reason ?? `Loop exhausted after ${MAX_ITERATIONS} iterations` };
+  if (result.args.reason) {
+    throw new AgentToolError(result.args.reason);
+  }
+  throw new PipelineExhaustedError(`Loop exhausted after ${MAX_ITERATIONS} iterations`);
 }
 
 export const agentBot: Bot = {
@@ -71,7 +74,6 @@ export const agentBot: Bot = {
     if (input.warnings.length) {
       result.warnings = [...(result.warnings ?? []), ...input.warnings];
     }
-    result.cost = aggregateAndLogCosts()?.cost;
     return result;
   },
 };

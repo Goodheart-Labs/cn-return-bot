@@ -12,7 +12,6 @@
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
 import { getBotConfig } from "../pipeline/ab-testing/botConfig";
-import { aggregateAndLogCosts } from "../pipeline/cost-tracking/costTracker";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runSimpleBotPipeline } from "../pipeline/simple-bot/orchestrator";
 
@@ -28,7 +27,6 @@ export const simpleBot: Bot = {
     if (input.warnings.length) {
       result.warnings = [...(result.warnings ?? []), ...input.warnings];
     }
-    result.cost = aggregateAndLogCosts()?.cost;
     return result;
   },
 };
