@@ -33,6 +33,15 @@ export interface FetchAllOptions {
  * `buildQuery` is invoked once per page so the caller's filters / select
  * shape get reused. The helper appends `.order(keyCol).limit(PAGE_SIZE)` and,
  * on subsequent pages, `.gt(keyCol, lastSeenKey)`.
+ *
+ * Gotchas:
+ *  1. `keyCol` must be UNIQUE and INDEXED (in practice: always the table's PK).
+ *     Non-unique columns can drop or duplicate rows at page boundaries.
+ *  2. `keyCol` must appear in your `select(...)` columns — the helper reads
+ *     `data[i][keyCol]` to advance the cursor.
+ *  3. Any `.order()` your buildQuery sets is OVERRIDDEN by the keyset's
+ *     `.order(keyCol, ascending)`. If you need a different sort order in the
+ *     final result, sort the array in JS after the fetch returns.
  */
 export async function fetchAllRows<T extends Record<string, any>>(
   buildQuery: () => any,

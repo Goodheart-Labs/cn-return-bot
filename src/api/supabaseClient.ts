@@ -62,6 +62,16 @@ export type NoteInsert = {
 
 let supabaseInstance: SupabaseClient | null = null;
 
+/**
+ * Returns the singleton supabase-js client.
+ *
+ * Heads-up for callers writing new queries: PostgREST silently caps any
+ * single `.select()` response at 1000 rows. There's no error if your
+ * result is larger — it just gets truncated. To fetch everything matching
+ * a query, use `fetchAllRows` from ./paging (keyset-paginated, handles
+ * arbitrarily large result sets). Bounded queries with `.limit(N)` or
+ * `.single()` are fine to call directly on this client.
+ */
 export function getSupabaseClient(): SupabaseClient {
   if (supabaseInstance) {
     return supabaseInstance;
