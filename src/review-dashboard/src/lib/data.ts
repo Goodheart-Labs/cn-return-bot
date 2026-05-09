@@ -7,21 +7,7 @@ import type {
   UploadInfo,
 } from "./types";
 import { resultToFailureType } from "./types";
-import {
-  fetchAllRows,
-  fetchInBatches as fetchInBatchesGeneric,
-} from "../../../dashboard-shared/supabasePaging";
-
-function fetchInBatches<T>(
-  table: string,
-  select: string,
-  filterCol: string,
-  ids: string[],
-  extraFilters?: (q: any) => any,
-  label?: string,
-): Promise<T[]> {
-  return fetchInBatchesGeneric<T>(supabase, table, select, filterCol, ids, extraFilters, label);
-}
+import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
@@ -149,6 +135,7 @@ export async function fetchDashboardData(): Promise<{
   ];
   const missedRuns = missedRunIds.length
     ? await fetchInBatches<any>(
+        supabase,
         "pipeline_runs",
         PIPELINE_METADATA_COLUMNS,
         "id",
@@ -170,6 +157,7 @@ export async function fetchDashboardData(): Promise<{
   ];
   const tweets = tweetIds.length
     ? await fetchInBatches<any>(
+        supabase,
         "tweets",
         TWEETS_LIST_COLUMNS,
         "tweet_id",
@@ -181,6 +169,7 @@ export async function fetchDashboardData(): Promise<{
 
   const noteIds = canonical.map((n: any) => n.note_id);
   const annotations = await fetchInBatches<any>(
+    supabase,
     "review_dashboard_annotations",
     "*",
     "target_id",
@@ -200,6 +189,7 @@ export async function fetchDashboardData(): Promise<{
 export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Record<string, unknown>>> {
   if (runIds.length === 0) return new Map();
   const rows = await fetchInBatches<{ id: string; logs: Record<string, unknown> | null }>(
+    supabase,
     "pipeline_runs",
     "id, logs",
     "id",
@@ -386,7 +376,7 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
   const itemIds = data.map((d: any) => d.id);
   let annotations: any[] = [];
   try {
-    annotations = await fetchInBatches<any>("review_dashboard_annotations", "*", "target_id", itemIds, (q) => q.eq("source", "dataset_run"), "dataset_run_annotations");
+    annotations = await fetchInBatches<any>(supabase, "review_dashboard_annotations", "*", "target_id", itemIds, (q) => q.eq("source", "dataset_run"), "dataset_run_annotations");
   } catch {
     // Table may not exist yet
   }

@@ -151,18 +151,17 @@ export function computeHeadlineMetrics(
 // ─── Note list sorting ───────────────────────────────────────────────────────
 
 export function sortNotesForList(notes: NoteRecord[], sort: NoteSort): NoteRecord[] {
-  const sorted = [...notes];
   if (sort === "latest_helpful") {
-    return sorted
+    return notes
       .filter((n) => n.cn_status === "CURRENTLY_RATED_HELPFUL")
       .sort((a, b) => b.submitted_at.localeCompare(a.submitted_at));
   }
   if (sort === "most_views_helpful") {
-    return sorted
+    return notes
       .filter((n) => n.cn_status === "CURRENTLY_RATED_HELPFUL")
       .sort((a, b) => b.view_count - a.view_count);
   }
-  return sorted
+  return notes
     .filter((n) => n.cn_status === "CURRENTLY_RATED_NOT_HELPFUL")
     .sort((a, b) => b.submitted_at.localeCompare(a.submitted_at));
 }

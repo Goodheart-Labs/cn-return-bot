@@ -22,6 +22,10 @@ import { AbFilterPanel } from "./components/ABFilters";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
 
+// Stable reference so the downstream useMemos don't invalidate every render
+// when developer mode is off.
+const EMPTY_FILTERS: ABFilters = {};
+
 export function App() {
   const [snapshot, setSnapshot] = useState<StatsSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +39,7 @@ export function App() {
     loadStatsSnapshot().then(setSnapshot).catch((err) => setError(err.message));
   }, []);
 
-  const filtersForData = devMode ? abFilters : {};
+  const filtersForData = devMode ? abFilters : EMPTY_FILTERS;
   const filteredNotes = useMemo(
     () => (snapshot ? filterNotes(snapshot.notes, filtersForData) : []),
     [snapshot, filtersForData],
