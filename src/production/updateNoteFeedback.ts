@@ -104,6 +104,34 @@ async function fetchAll<T>(buildQuery: () => any): Promise<T[]> {
   return all;
 }
 
+/**
+ * Keyset-paginated fetcher for tables that grow into the tens of thousands.
+ * Offset pagination times out at deep pages (Postgres has to scan past every
+ * skipped row even with an index); keyset uses `WHERE keyCol > lastValue` for
+ * O(log n) per page regardless of depth.
+ *
+ * keyCol must be unique and monotonically scannable (typical: a UUID or
+ * bigserial primary key).
+ */
+async function fetchAllKeyset<T extends Record<string, any>>(
+  buildQuery: () => any,
+  keyCol: string,
+): Promise<T[]> {
+  const all: T[] = [];
+  let lastKey: any = null;
+  while (true) {
+    let q = buildQuery().order(keyCol, { ascending: true }).limit(PAGE_SIZE);
+    if (lastKey !== null) q = q.gt(keyCol, lastKey);
+    const { data, error } = await q;
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    lastKey = data[data.length - 1][keyCol];
+  }
+  return all;
+}
+
 function formatDateForUrl(date: Date): string {
   const y = date.getUTCFullYear();
   const m = String(date.getUTCMonth() + 1).padStart(2, "0");
@@ -282,8 +310,12 @@ function parsePublicDump(
 
 async function fetchExistingState(): Promise<ExistingState> {
   console.log("[updateFeedback] Fetching rejected pipeline runs...");
-  const rejected = await fetchAll<{ id: string; tweet_id: string }>(() =>
-    client.from("pipeline_runs").select("id, tweet_id").eq("outcome", "rejected"),
+  // Keyset pagination by id: ~50k+ rows match outcome=rejected, and offset
+  // pagination times out at deep pages (canceling statement due to statement
+  // timeout). The primary-key index makes each keyset page ~constant time.
+  const rejected = await fetchAllKeyset<{ id: string; tweet_id: string }>(
+    () => client.from("pipeline_runs").select("id, tweet_id").eq("outcome", "rejected"),
+    "id",
   );
   const rejectedTweetIds = new Map<string, string>();
   for (const run of rejected) rejectedTweetIds.set(run.tweet_id, run.id);
