@@ -51,9 +51,20 @@
     "serve-review": "bun run src/review-dashboard/server.ts",
     "review": "lsof -ti:8001 | xargs kill -9 2>/dev/null; bun run build-review && bun run serve-review",
     "review-local": "lsof -ti:8001 | xargs kill -9 2>/dev/null; bun run build-review && bun run src/review-dashboard/server.ts --local",
+    "build-stats-data": "bun run src/stats-dashboard/build-data.ts",
+    "build-stats-data-local": "bun run src/stats-dashboard/build-data.ts --local",
+    "dev-stats": "cd src/stats-dashboard && bunx vite --port 8002",
+    "build-stats": "bun run build-stats-data && cd src/stats-dashboard && bunx vite build",
+    "preview-stats": "cd src/stats-dashboard && bunx vite preview --port 8002",
+    "stats": "lsof -ti:8002 | xargs kill -9 2>/dev/null; bun run build-stats-data && bun run dev-stats",
     "scrape": "(curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1 || (echo '🌐 Starting Chrome with remote debugging...' && open -na 'Google Chrome' --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile && until curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1; do sleep 0.5; done)) && bun run src/scraper/scrapeNotewriterClickThrough.ts"
   },
   "knip": {
-    "ignoreBinaries": ["lsof", "open", "sleep"]
+    "ignoreBinaries": ["lsof", "open", "sleep"],
+    "ignoreFiles": [
+      "src/dashboard-shared/media.ts",
+      "src/stats-dashboard/vite.config.ts",
+      "src/stats-dashboard/src/lib/**"
+    ]
   }
 }
