@@ -64,11 +64,13 @@ export function BarChart({ buckets, granularity, mode, width, showNonCandidate }
   const innerHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
   const barWidth = slotWidth * (1 - BAR_GAP_FRAC);
 
-  // Latest bucket is rightmost; show it first on mount.
+  // Latest bucket is rightmost; show it first whenever the time axis
+  // changes. Mode and the non-candidate toggle don't reshape the axis, so
+  // keep the user's scroll position across those.
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollLeft = el.scrollWidth;
-  }, [buckets.length, mode, granularity, showNonCandidate]);
+  }, [buckets.length, granularity]);
 
   if (!buckets.length) {
     return (
