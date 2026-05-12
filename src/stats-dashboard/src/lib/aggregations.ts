@@ -5,6 +5,7 @@ import type {
   NoteRecord,
   NoteSort,
   PipelineRunAggregate,
+  PipelineRunDayBucket,
 } from "./types";
 
 // ─── A/B-pick filter ─────────────────────────────────────────────────────────
@@ -21,6 +22,14 @@ export function aggMatchesAbFilters(agg: PipelineRunAggregate, filters: ABFilter
   for (const [slot, variant] of Object.entries(filters)) {
     if (!variant) continue;
     if (agg.ab_test_picks?.[slot] !== variant) return false;
+  }
+  return true;
+}
+
+function runDayMatchesAbFilters(day: PipelineRunDayBucket, filters: ABFilters): boolean {
+  for (const [slot, variant] of Object.entries(filters)) {
+    if (!variant) continue;
+    if (day.ab_test_picks?.[slot] !== variant) return false;
   }
   return true;
 }
@@ -68,30 +77,71 @@ export interface ChartBucket {
   helpful: number;
   unhelpful: number;
   nmr: number;
+  /**
+   * Pipeline runs in this bucket that didn't end up as a submitted note.
+   * Computed by `bucketize` from `runsByDay`; `helpful + unhelpful + nmr`
+   * already accounts for all submitted notes that landed in this bucket.
+   */
+  nonCandidate: number;
   total: number;
 }
 
-export function bucketize(notes: NoteRecord[], granularity: ChartGranularity): ChartBucket[] {
+function getOrCreateBucket(
+  byKey: Map<string, ChartBucket>,
+  key: string,
+  granularity: ChartGranularity,
+): ChartBucket {
+  let bucket = byKey.get(key);
+  if (!bucket) {
+    bucket = {
+      key,
+      label: bucketLabel(key, granularity),
+      helpful: 0,
+      unhelpful: 0,
+      nmr: 0,
+      nonCandidate: 0,
+      total: 0,
+    };
+    byKey.set(key, bucket);
+  }
+  return bucket;
+}
+
+/**
+ * Bucket submitted notes (always) and — when `runsByDay` is supplied —
+ * pipeline runs that didn't produce a submitted note (rejected / filtered /
+ * failed / candidate-but-not-yet-submitted). Filters re-apply against
+ * `runsByDay` because each row carries its own ab_test_picks.
+ */
+export function bucketize(
+  notes: NoteRecord[],
+  granularity: ChartGranularity,
+  runsByDay?: PipelineRunDayBucket[],
+  filters: ABFilters = {},
+): ChartBucket[] {
   const byKey = new Map<string, ChartBucket>();
+
   for (const n of notes) {
     const key = bucketKey(n.submitted_at, granularity);
-    let bucket = byKey.get(key);
-    if (!bucket) {
-      bucket = {
-        key,
-        label: bucketLabel(key, granularity),
-        helpful: 0,
-        unhelpful: 0,
-        nmr: 0,
-        total: 0,
-      };
-      byKey.set(key, bucket);
-    }
+    const bucket = getOrCreateBucket(byKey, key, granularity);
     if (n.cn_status === "CURRENTLY_RATED_HELPFUL") bucket.helpful++;
     else if (n.cn_status === "CURRENTLY_RATED_NOT_HELPFUL") bucket.unhelpful++;
     else bucket.nmr++;
     bucket.total++;
   }
+
+  if (runsByDay) {
+    for (const day of runsByDay) {
+      if (!runDayMatchesAbFilters(day, filters)) continue;
+      const nonCandidate = day.total_count - day.submitted_count;
+      if (nonCandidate <= 0) continue;
+      const key = bucketKey(`${day.date}T00:00:00Z`, granularity);
+      const bucket = getOrCreateBucket(byKey, key, granularity);
+      bucket.nonCandidate += nonCandidate;
+      bucket.total += nonCandidate;
+    }
+  }
+
   return [...byKey.values()].sort((a, b) => a.key.localeCompare(b.key));
 }
 

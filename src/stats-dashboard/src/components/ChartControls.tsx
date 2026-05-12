@@ -29,13 +29,19 @@ function ToggleGroup<T extends string>({
 export function ChartControls({
   granularity,
   mode,
+  showNonCandidate,
+  showNonCandidateAvailable,
   onGranularityChange,
   onModeChange,
+  onShowNonCandidateChange,
 }: {
   granularity: ChartGranularity;
   mode: ChartMode;
+  showNonCandidate: boolean;
+  showNonCandidateAvailable: boolean;
   onGranularityChange: (g: ChartGranularity) => void;
   onModeChange: (m: ChartMode) => void;
+  onShowNonCandidateChange: (v: boolean) => void;
 }) {
   return (
     <div className="flex flex-wrap gap-3 items-center">
@@ -55,17 +61,31 @@ export function ChartControls({
           { value: "ratio", label: "Ratio" },
         ]}
       />
+      {showNonCandidateAvailable && mode === "ratio" && (
+        <label className="inline-flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={showNonCandidate}
+            onChange={(e) => onShowNonCandidateChange(e.target.checked)}
+            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          Include non-candidate runs
+        </label>
+      )}
     </div>
   );
 }
 
-export function ChartLegend({ mode }: { mode: ChartMode }) {
+export function ChartLegend({ mode, showNonCandidate }: { mode: ChartMode; showNonCandidate: boolean }) {
   return (
     <div className="flex flex-wrap gap-4 text-xs text-gray-600">
       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-emerald-500" /> Helpful</span>
       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> Not helpful</span>
       {mode === "ratio" && (
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gray-400" /> Needs more ratings / pending</span>
+      )}
+      {mode === "ratio" && showNonCandidate && (
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gray-900" /> Non-candidate pipeline runs</span>
       )}
     </div>
   );

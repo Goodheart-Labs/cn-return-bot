@@ -33,6 +33,7 @@ export function App() {
   const [mode, setMode] = useState<ChartMode>("absolute");
   const [sort, setSort] = useState<NoteSort>("latest_helpful");
   const [devMode, setDevMode] = useState(false);
+  const [showNonCandidate, setShowNonCandidate] = useState(false);
   const [abFilters, setAbFilters] = useState<ABFilters>({});
 
   useEffect(() => {
@@ -44,9 +45,16 @@ export function App() {
     () => (snapshot ? filterNotes(snapshot.notes, filtersForData) : []),
     [snapshot, filtersForData],
   );
+  const useNonCandidate = devMode && showNonCandidate;
   const buckets = useMemo(
-    () => bucketize(filteredNotes, granularity),
-    [filteredNotes, granularity],
+    () =>
+      bucketize(
+        filteredNotes,
+        granularity,
+        useNonCandidate ? snapshot?.pipeline_runs_by_day : undefined,
+        filtersForData,
+      ),
+    [filteredNotes, granularity, useNonCandidate, snapshot, filtersForData],
   );
   const metrics = useMemo(
     () =>
@@ -106,13 +114,22 @@ export function App() {
           <ChartControls
             granularity={granularity}
             mode={mode}
+            showNonCandidate={showNonCandidate}
+            showNonCandidateAvailable={devMode}
             onGranularityChange={setGranularity}
             onModeChange={setMode}
+            onShowNonCandidateChange={setShowNonCandidate}
           />
         </div>
-        <ChartLegend mode={mode} />
+        <ChartLegend mode={mode} showNonCandidate={useNonCandidate} />
         <div ref={chartRef} className="w-full">
-          <BarChart buckets={buckets} granularity={granularity} mode={mode} width={chartWidth} />
+          <BarChart
+            buckets={buckets}
+            granularity={granularity}
+            mode={mode}
+            width={chartWidth}
+            showNonCandidate={useNonCandidate}
+          />
         </div>
       </section>
 
@@ -130,23 +147,22 @@ function DevModeToggle({
   devMode: boolean;
   onChange: (next: boolean) => void;
 }) {
+  // One button captures clicks on both the label text and the visual switch.
+  // The previous label + nested span + sr-only checkbox double-fired when the
+  // user clicked the visual switch (span onClick toggled, label-associated
+  // checkbox also toggled — canceling each other).
   return (
-    <label className="inline-flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+    <button
+      type="button"
+      role="switch"
+      aria-checked={devMode}
+      onClick={() => onChange(!devMode)}
+      className="inline-flex items-center gap-2 text-sm text-gray-600 select-none cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+    >
       <span>Developer mode</span>
-      <span
-        className={`relative inline-block w-9 h-5 rounded-full transition-colors ${devMode ? "bg-blue-600" : "bg-gray-300"}`}
-        onClick={() => onChange(!devMode)}
-      >
-        <span
-          className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${devMode ? "translate-x-4" : ""}`}
-        />
+      <span className={`relative inline-block w-9 h-5 rounded-full transition-colors ${devMode ? "bg-blue-600" : "bg-gray-300"}`}>
+        <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${devMode ? "translate-x-4" : ""}`} />
       </span>
-      <input
-        type="checkbox"
-        checked={devMode}
-        onChange={(e) => onChange(e.target.checked)}
-        className="sr-only"
-      />
-    </label>
+    </button>
   );
 }

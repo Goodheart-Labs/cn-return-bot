@@ -22,7 +22,13 @@ import {
   fetchAllRows,
   fetchInBatches,
 } from "../dashboard-shared/supabasePaging";
-import type { StatsSnapshot, NoteRecord, PipelineRunAggregate, ABTestSlotInfo } from "./src/lib/types";
+import type {
+  StatsSnapshot,
+  NoteRecord,
+  PipelineRunAggregate,
+  PipelineRunDayBucket,
+  ABTestSlotInfo,
+} from "./src/lib/types";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
@@ -121,6 +127,29 @@ function buildPipelineAggregates(runs: RawPipelineRunRow[]): PipelineRunAggregat
     total_cost: v.total_cost,
     run_count: v.run_count,
   }));
+}
+
+function buildPipelineRunsByDay(runs: RawPipelineRunRow[]): PipelineRunDayBucket[] {
+  // Group by (YYYY-MM-DD from created_at, ab_test_picks). Used by the
+  // dashboard to compute non-candidate counts per chart bucket.
+  const byDayKey = new Map<string, PipelineRunDayBucket>();
+  for (const run of runs) {
+    const date = run.created_at.slice(0, 10);
+    const compositeKey = `${date}|${picksKey(run.ab_test_picks)}`;
+    let bucket = byDayKey.get(compositeKey);
+    if (!bucket) {
+      bucket = {
+        date,
+        ab_test_picks: run.ab_test_picks,
+        total_count: 0,
+        submitted_count: 0,
+      };
+      byDayKey.set(compositeKey, bucket);
+    }
+    bucket.total_count++;
+    if (run.outcome === "submitted") bucket.submitted_count++;
+  }
+  return [...byDayKey.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 
 function buildAbTestSlots(runs: RawPipelineRunRow[]): ABTestSlotInfo[] {
@@ -226,12 +255,14 @@ async function buildSnapshot(): Promise<StatsSnapshot> {
 
   const noteRecords = joinNotes(notes, pipelineRuns, tweets);
   const pipelineRunAggregates = buildPipelineAggregates(pipelineRuns);
+  const pipelineRunsByDay = buildPipelineRunsByDay(pipelineRuns);
   const abTestSlots = buildAbTestSlots(pipelineRuns);
 
   return {
     generated_at: new Date().toISOString(),
     notes: noteRecords,
     pipeline_run_aggregates: pipelineRunAggregates,
+    pipeline_runs_by_day: pipelineRunsByDay,
     ab_test_slots: abTestSlots,
   };
 }
@@ -244,7 +275,7 @@ async function main() {
   writeFileSync(outPath, JSON.stringify(snapshot));
   const sizeKb = (Buffer.byteLength(JSON.stringify(snapshot)) / 1024).toFixed(1);
   console.log(`[build-data] Wrote ${outPath} (${sizeKb} KB)`);
-  console.log(`[build-data] notes=${snapshot.notes.length} aggregates=${snapshot.pipeline_run_aggregates.length} slots=${snapshot.ab_test_slots.length}`);
+  console.log(`[build-data] notes=${snapshot.notes.length} aggregates=${snapshot.pipeline_run_aggregates.length} run_days=${snapshot.pipeline_runs_by_day.length} slots=${snapshot.ab_test_slots.length}`);
 }
 
 main().catch((err) => {

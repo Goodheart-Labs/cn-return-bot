@@ -39,6 +39,16 @@ export interface PipelineRunAggregate {
   run_count: number;
 }
 
+// Per-day rollup of pipeline_runs so the dashboard can compute
+// non-candidate counts (runs that didn't end up as a submitted note) per
+// bucket without shipping every individual run row.
+export interface PipelineRunDayBucket {
+  date: string;                              // YYYY-MM-DD (created_at, UTC)
+  ab_test_picks: Record<string, string> | null;
+  total_count: number;
+  submitted_count: number;
+}
+
 export interface ABTestSlotInfo {
   name: string;
   variants: string[];
@@ -48,6 +58,7 @@ export interface StatsSnapshot {
   generated_at: string;
   notes: NoteRecord[];
   pipeline_run_aggregates: PipelineRunAggregate[];
+  pipeline_runs_by_day: PipelineRunDayBucket[];
   ab_test_slots: ABTestSlotInfo[];
 }
 
