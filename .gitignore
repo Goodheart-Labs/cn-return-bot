@@ -88,6 +88,7 @@ src/scripts_jim/2026_05_09_broken_search_variants/searxng_url_match.json
 src/scripts_jim/2026_05_09_json_parse_failures/invalid_output_buckets.json
 src/scripts_jim/2026_05_09_json_parse_failures/invalid_output_samples.json
 src/scripts_jim/2026_05_09_json_parse_failures/response_format_results.json
+src/scripts_jim/2026_05_12_sonar_grounding_probe/*.json
 
 # Claude Code self-reviews
 code-reviews/
