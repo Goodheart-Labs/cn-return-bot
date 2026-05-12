@@ -6,6 +6,7 @@
  * doesn't care which provider ran.
  */
 
+import LinkifyIt from "linkify-it";
 import { llm } from "../llm/llm";
 import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
@@ -15,6 +16,24 @@ import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } f
 import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { ModelOutputInvalidError } from "../utils/errors";
+
+const linkify = new LinkifyIt();
+
+/**
+ * If `findings` already contains a URL, return it unchanged. Otherwise pull
+ * url_citation URLs from the response's `annotations` and append them as a
+ * "# Citations" footer so the downstream note-writer always has sources.
+ * Perplexity sonar (and some OpenAI models with web_search_preview) put their
+ * grounded URLs in `message.annotations`, not always inline in the content.
+ */
+function appendAnnotationCitationsIfMissing(findings: string, annotations: any[] | undefined): string {
+  if (linkify.test(findings)) return findings;
+  const urls = (annotations ?? [])
+    .filter((a) => a?.type === "url_citation" && typeof a?.url_citation?.url === "string")
+    .map((a) => a.url_citation.url as string);
+  if (urls.length === 0) return findings;
+  return `${findings}\n\n# Citations\n${urls.join("\n")}`;
+}
 
 // --- Shared prompt + schema ---
 
@@ -281,13 +300,15 @@ async function searchWithSonarBundled(
     response_format: OPENAI_RESPONSE_FORMAT,
   } as any);
 
-  const content = response.choices?.[0]?.message?.content ?? "";
+  const message = response.choices?.[0]?.message;
+  const content = message?.content ?? "";
   const parsed = parseSearchJson(content, "searchWithSonarBundled");
-  log?.set(`${name}.messages.1`, { content: parsed });
+  const findings = appendAnnotationCitationsIfMissing(parsed.findings, message?.annotations);
+  log?.set(`${name}.messages.1`, { content: { ...parsed, findings } });
 
   const cost = extractOpenRouterCost(response);
   return {
-    findings: parsed.findings,
+    findings,
     correctionNeeded: parsed.correction_needed,
     costEntry: { name, ...cost, tools: [] },
   };
