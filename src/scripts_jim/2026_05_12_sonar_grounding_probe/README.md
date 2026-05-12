@@ -64,12 +64,21 @@ under every config (with or without `response_format`). PR #130's
 "cite=0" was looking at the wrong field (`response.citations` doesn't
 exist over OpenRouter; `message.annotations` is where they live).
 
-The pipeline change: in `searchWithSonarBundled`, detect whether the
-parsed `findings` already contains a URL (via `linkify-it`); if not,
-append a `# Citations\n<url>\n<url>...` footer built from
-`message.annotations`. The downstream note-writer + verifier now
-always has grounded URLs to work with, even on runs where sonar
-forgot to inline citations into its findings text.
+The pipeline change: in `searchWithSonarBundled`, always merge sonar's
+annotation URLs into the findings text. `linkify-it` is used to:
+- extract URLs already inlined by the model, and
+- de-duplicate them against the annotation list.
+
+Two cases:
+- **No inline URLs** → append a `# Citations\n<url>\n...` footer with
+  every annotation URL.
+- **Some inline URLs** → append a `# Additional Citations\n<url>\n...`
+  footer with the annotation URLs that aren't already inline.
+- All annotation URLs already inline (or no annotations) → no footer.
+
+The downstream note-writer + verifier now always have the full set of
+grounded URLs sonar searched, regardless of which ones the model chose
+to inline.
 
 ## What this PR does NOT fix
 

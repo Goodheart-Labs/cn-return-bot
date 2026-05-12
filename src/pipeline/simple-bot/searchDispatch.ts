@@ -20,19 +20,26 @@ import { ModelOutputInvalidError } from "../utils/errors";
 const linkify = new LinkifyIt();
 
 /**
- * If `findings` already contains a URL, return it unchanged. Otherwise pull
- * url_citation URLs from the response's `annotations` and append them as a
- * "# Citations" footer so the downstream note-writer always has sources.
- * Perplexity sonar (and some OpenAI models with web_search_preview) put their
- * grounded URLs in `message.annotations`, not always inline in the content.
+ * Always surface sonar's grounded URLs to the downstream note-writer.
+ * Perplexity (and some OpenAI models with web_search_preview) put their
+ * grounded URLs in `message.annotations[*].url_citation`; the model only
+ * sometimes inlines them in the findings text. Deduplicate against what's
+ * already inline, then append the rest under one of two headers:
+ *   - "# Citations" if the findings text had no URL at all
+ *   - "# Additional Citations" if it had some but not all
  */
-function appendAnnotationCitationsIfMissing(findings: string, annotations: any[] | undefined): string {
-  if (linkify.test(findings)) return findings;
-  const urls = (annotations ?? [])
+function appendSonarCitations(findings: string, annotations: any[] | undefined): string {
+  const annotationUrls = (annotations ?? [])
     .filter((a) => a?.type === "url_citation" && typeof a?.url_citation?.url === "string")
     .map((a) => a.url_citation.url as string);
-  if (urls.length === 0) return findings;
-  return `${findings}\n\n# Citations\n${urls.join("\n")}`;
+  if (annotationUrls.length === 0) return findings;
+
+  const inlineUrls = new Set((linkify.match(findings) ?? []).map((m) => m.url));
+  const missing = annotationUrls.filter((url) => !inlineUrls.has(url));
+  if (missing.length === 0) return findings;
+
+  const header = inlineUrls.size > 0 ? "# Additional Citations" : "# Citations";
+  return `${findings}\n\n${header}\n${missing.join("\n")}`;
 }
 
 // --- Shared prompt + schema ---
@@ -303,7 +310,7 @@ async function searchWithSonarBundled(
   const message = response.choices?.[0]?.message;
   const content = message?.content ?? "";
   const parsed = parseSearchJson(content, "searchWithSonarBundled");
-  const findings = appendAnnotationCitationsIfMissing(parsed.findings, message?.annotations);
+  const findings = appendSonarCitations(parsed.findings, message?.annotations);
   log?.set(`${name}.messages.1`, { content: { ...parsed, findings } });
 
   const cost = extractOpenRouterCost(response);
