@@ -508,7 +508,7 @@ async function scrapeTab(
           }
 
           let cellStatus: string | null = null;
-          if (/Currently not rated helpful/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
+          if (/Currently rated not helpful/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
           else if (/Currently rated helpful/i.test(text)) cellStatus = 'CURRENTLY_RATED_HELPFUL';
           else if (/Needs more ratings/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
 
@@ -661,7 +661,7 @@ async function scrapeTab(
               if (label === 'needs more ratings') return 'NEEDS_MORE_RATINGS';
             }
             // No leading \b — body-fallback text concatenates DOM without spaces.
-            if (/Currently not rated helpful/i.test(text)) return 'CURRENTLY_RATED_NOT_HELPFUL';
+            if (/Currently rated not helpful/i.test(text)) return 'CURRENTLY_RATED_NOT_HELPFUL';
             if (/Currently rated helpful/i.test(text)) return 'CURRENTLY_RATED_HELPFUL';
             if (/Needs more ratings/i.test(text)) return 'NEEDS_MORE_RATINGS';
             return 'UNKNOWN';
