@@ -29,7 +29,7 @@ import type {
   PipelineRunDayBucket,
   ABTestSlotInfo,
 } from "./src/lib/types";
-import { AB_TESTS } from "../pipeline/utils/abTests";
+import { AB_TESTS } from "../pipeline/ab-testing/abTests.ts";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
