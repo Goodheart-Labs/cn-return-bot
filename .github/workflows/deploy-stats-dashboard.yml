@@ -1,0 +1,60 @@
+name: Deploy Stats Dashboard
+
+on:
+  schedule:
+    # Refresh the snapshot every 6 hours.
+    - cron: "0 */4 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "src/stats-dashboard/**"
+      - "src/dashboard-shared/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/deploy-stats-dashboard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      BASE_PATH: /cn-return-bot/
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Snapshot Supabase to stats-data.json
+        run: bun run build-stats-data
+
+      - name: Build SPA
+        run: cd src/stats-dashboard && bunx vite build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: src/stats-dashboard/dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

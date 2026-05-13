@@ -7,6 +7,7 @@ import type {
   UploadInfo,
 } from "./types";
 import { resultToFailureType } from "./types";
+import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
@@ -48,53 +49,6 @@ function computeCompetitorLeadTag(
     if (leadMs > hours * ONE_HOUR_MS) return label;
   }
   return undefined;
-}
-
-async function fetchAllRows<T>(query: any, label?: string): Promise<T[]> {
-  const all: T[] = [];
-  let offset = 0;
-  const PAGE = 1000;
-  while (true) {
-    const { data, error } = await query.range(offset, offset + PAGE - 1);
-    if (error) {
-      console.error(`[data] fetchAllRows failed${label ? ` (${label})` : ""}:`, error);
-      throw error;
-    }
-    if (!data || data.length === 0) break;
-    all.push(...data);
-    if (data.length < PAGE) break;
-    offset += PAGE;
-  }
-  if (label) console.log(`[data] ${label}: ${all.length} rows`);
-  return all;
-}
-
-// Supabase .in() generates a URL query param — too many IDs makes the URL too long.
-// Batch into chunks of 200.
-async function fetchInBatches<T>(
-  table: string,
-  select: string,
-  filterCol: string,
-  ids: string[],
-  extraFilters?: (q: any) => any,
-  label?: string,
-): Promise<T[]> {
-  if (ids.length === 0) return [];
-  const CHUNK = 200;
-  const results: T[] = [];
-  for (let i = 0; i < ids.length; i += CHUNK) {
-    const batch = ids.slice(i, i + CHUNK);
-    let q = supabase.from(table).select(select).in(filterCol, batch);
-    if (extraFilters) q = extraFilters(q);
-    const { data, error } = await q;
-    if (error) {
-      console.error(`[data] fetchInBatches failed${label ? ` (${label})` : ""}:`, error);
-      throw error;
-    }
-    if (data) results.push(...(data as T[]));
-  }
-  if (label) console.log(`[data] ${label}: ${results.length} rows`);
-  return results;
 }
 
 // Columns needed to render the production list. After the canonical→notes
@@ -181,6 +135,7 @@ export async function fetchDashboardData(): Promise<{
   ];
   const missedRuns = missedRunIds.length
     ? await fetchInBatches<any>(
+        supabase,
         "pipeline_runs",
         PIPELINE_METADATA_COLUMNS,
         "id",
@@ -202,6 +157,7 @@ export async function fetchDashboardData(): Promise<{
   ];
   const tweets = tweetIds.length
     ? await fetchInBatches<any>(
+        supabase,
         "tweets",
         TWEETS_LIST_COLUMNS,
         "tweet_id",
@@ -213,6 +169,7 @@ export async function fetchDashboardData(): Promise<{
 
   const noteIds = canonical.map((n: any) => n.note_id);
   const annotations = await fetchInBatches<any>(
+    supabase,
     "review_dashboard_annotations",
     "*",
     "target_id",
@@ -232,6 +189,7 @@ export async function fetchDashboardData(): Promise<{
 export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Record<string, unknown>>> {
   if (runIds.length === 0) return new Map();
   const rows = await fetchInBatches<{ id: string; logs: Record<string, unknown> | null }>(
+    supabase,
     "pipeline_runs",
     "id, logs",
     "id",
@@ -418,7 +376,7 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
   const itemIds = data.map((d: any) => d.id);
   let annotations: any[] = [];
   try {
-    annotations = await fetchInBatches<any>("review_dashboard_annotations", "*", "target_id", itemIds, (q) => q.eq("source", "dataset_run"), "dataset_run_annotations");
+    annotations = await fetchInBatches<any>(supabase, "review_dashboard_annotations", "*", "target_id", itemIds, (q) => q.eq("source", "dataset_run"), "dataset_run_annotations");
   } catch {
     // Table may not exist yet
   }
