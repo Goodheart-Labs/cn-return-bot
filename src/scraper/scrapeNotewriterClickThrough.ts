@@ -513,6 +513,10 @@ async function scrapeTab(
           else if (/Needs more ratings/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
 
           const postUnavailable = /Post unavailable/i.test(text);
+          // Sensitive-content / age-restricted preview: X hides the embedded tweet
+          // behind a "show this content" overlay, so avatar/tweetText/status link
+          // are absent from the cell DOM. Modal still works — skip cell retries.
+          const hasInterstitial = !!el.querySelector('[data-testid="previewInterstitial"]');
 
           // --- Extract original tweet info from the cell ---
           let tweetHandle: string | null = null;
@@ -545,7 +549,7 @@ async function scrapeTab(
             }
           }
 
-          return { noteText, sourceUrl: sourceLinks[0] || null, viewCount, shownOnX, cellStatus, postUnavailable, tweetHandle, tweetText, tweetTime };
+          return { noteText, sourceUrl: sourceLinks[0] || null, viewCount, shownOnX, cellStatus, postUnavailable, hasInterstitial, tweetHandle, tweetText, tweetTime };
         });
       }
 
@@ -697,7 +701,7 @@ async function scrapeTab(
       // Retries everything up to 2 more times if cross-source data conflicts
       // ============================================================
       let tweetData: Awaited<ReturnType<typeof readCellTweetData>> = { tweetId: null, tweetUrl: null, noteIdFromUrl: null };
-      let cellData: Awaited<ReturnType<typeof readCellData>> = { noteText: '', sourceUrl: null, viewCount: null, shownOnX: null, cellStatus: null, postUnavailable: false, tweetHandle: null, tweetText: null, tweetTime: null };
+      let cellData: Awaited<ReturnType<typeof readCellData>> = { noteText: '', sourceUrl: null, viewCount: null, shownOnX: null, cellStatus: null, postUnavailable: false, hasInterstitial: false, tweetHandle: null, tweetText: null, tweetTime: null };
       let modalData: ModalData | null = null;
 
       conflictLoop:
@@ -715,12 +719,17 @@ async function scrapeTab(
           tweetData = await readCellTweetData();
           cellData = await readCellData();
           const cellMissing: string[] = [];
-          if (!tweetData.tweetId) cellMissing.push('tweet_id');
+          // When the original post is unavailable or hidden behind a sensitive-content
+          // interstitial, the embedded tweet DOM doesn't exist in the cell at all —
+          // tweet_id/handle/text will never appear, so don't waste retries on them.
+          // The modal still has the noteId.
+          const embeddedTweetAbsent = cellData.postUnavailable || cellData.hasInterstitial;
+          if (!embeddedTweetAbsent && !tweetData.tweetId) cellMissing.push('tweet_id');
           if (!cellData.noteText) cellMissing.push('note_text');
           if (!cellData.cellStatus) cellMissing.push('status');
           // If we see ANY tweet info, the tweet is present — retry for all tweet fields
           const hasSomeTweetInfo = cellData.tweetHandle || cellData.tweetText || cellData.tweetTime;
-          if (hasSomeTweetInfo) {
+          if (!embeddedTweetAbsent && hasSomeTweetInfo) {
             if (!cellData.tweetHandle) cellMissing.push('tweet_handle');
             if (!cellData.tweetText) cellMissing.push('tweet_text');
             if (!cellData.tweetTime) cellMissing.push('tweet_time');
@@ -841,6 +850,25 @@ async function scrapeTab(
 
           const missingFields = checkModalMissingFields();
           if (missingFields.length === 0) break;
+
+          // On the FINAL retry, dump while the modal is still open so we can see
+          // what the layout actually looks like for the missing field.
+          if (qualityAttempt >= maxQualityRetries) {
+            const dump = await page.evaluate(() => {
+              const modal = document.querySelector('[data-testid="sheetDialog"]') ||
+                            document.querySelector('[role="dialog"]') ||
+                            document.querySelector('[aria-modal="true"]');
+              const modalText = modal ? (modal as HTMLElement).innerText.slice(0, 1500) : '(no modal element)';
+              const bodyText = document.body.innerText;
+              const tagsIdx = bodyText.indexOf('Top tags');
+              const slice = (i: number) => i >= 0 ? bodyText.slice(Math.max(0, i - 50), i + 500) : '(not found)';
+              return { modalText, bodyAroundTags: slice(tagsIdx) };
+            }).catch(() => null);
+            if (dump) {
+              console.log(`   ${prefix} 🐛 Modal dump (final retry, missing=[${missingFields.join(', ')}]) — modal innerText:\n${dump.modalText.split('\n').map(l => '       | ' + l).join('\n')}`);
+              console.log(`   ${prefix} 🐛 Body around "Top tags":\n${dump.bodyAroundTags.split('\n').map(l => '       | ' + l).join('\n')}`);
+            }
+          }
 
           await page.keyboard.press('Escape');
 
