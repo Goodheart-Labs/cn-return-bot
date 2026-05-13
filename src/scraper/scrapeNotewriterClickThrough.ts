@@ -588,7 +588,9 @@ async function scrapeTab(
                           document.querySelector('[data-testid="Drawer"]');
             const text = modal ? (modal as HTMLElement).innerText : document.body.innerText;
             const hasNoteId = /Note ID[\s:]*\d{18,20}/i.test(text);
-            const hasStatus = /\bCurrently (not )?rated helpful\b/i.test(text) || /\bNeeds more ratings\b/i.test(text);
+            const hasStatus = /\bCurrent Status\s+(Not Helpful|Helpful|Needs More Ratings)\b/i.test(text)
+              || /\bCurrently (not )?rated helpful\b/i.test(text)
+              || /\bNeeds more ratings\b/i.test(text);
             return { hasNoteId, hasStatus };
           });
           if (state.hasNoteId && state.hasStatus) break;
@@ -623,7 +625,11 @@ async function scrapeTab(
             }
           }
 
-          if (!modalText) {
+          // New modal (May 2026): the "Note ID …" footer line lives in a sibling
+          // container outside [data-testid="sheetDialog"]. If we found a modal
+          // element but it's missing the Note ID line, widen to body text.
+          const modalMissingNoteId = !!modalText && !/Note ID/i.test(modalText);
+          if (!modalText || modalMissingNoteId) {
             const bodyText = document.body.innerText;
             if (!bodyText.includes('Note Details') && !bodyText.includes('Note ID')) {
               return null;
@@ -635,27 +641,33 @@ async function scrapeTab(
           const noteIdMatch = modalText.match(/Note ID[:\s]*(\d{18,20})/i);
           const noteId = noteIdMatch ? (noteIdMatch[1] ?? null) : null;
 
+          // In the new modal UI (May 2026+), the label appears on its own line
+          // directly under a "Current Status" header: "Helpful" / "Not Helpful" /
+          // "Needs More Ratings". Fall back to the older "Currently rated ..." copy.
+          const parseStatus = (text: string): string => {
+            const headerMatch = text.match(/Current Status\s+(Not Helpful|Helpful|Needs More Ratings)\b/i);
+            if (headerMatch) {
+              const label = headerMatch[1]!.toLowerCase();
+              if (label === 'not helpful') return 'CURRENTLY_RATED_NOT_HELPFUL';
+              if (label === 'helpful') return 'CURRENTLY_RATED_HELPFUL';
+              if (label === 'needs more ratings') return 'NEEDS_MORE_RATINGS';
+            }
+            if (/\bCurrently not rated helpful\b/i.test(text)) return 'CURRENTLY_RATED_NOT_HELPFUL';
+            if (/\bCurrently rated helpful\b/i.test(text)) return 'CURRENTLY_RATED_HELPFUL';
+            if (/\bNeeds more ratings\b/i.test(text)) return 'NEEDS_MORE_RATINGS';
+            return 'UNKNOWN';
+          };
+
           let status = 'UNKNOWN';
           if (usedFallback && noteId) {
             const noteIdPos = modalText.indexOf('Note ID');
             if (noteIdPos !== -1) {
-              const textAfterNoteId = modalText.substring(noteIdPos, noteIdPos + 500);
-              if (/\bCurrently not rated helpful\b/i.test(textAfterNoteId)) {
-                status = 'CURRENTLY_RATED_NOT_HELPFUL';
-              } else if (/\bCurrently rated helpful\b/i.test(textAfterNoteId)) {
-                status = 'CURRENTLY_RATED_HELPFUL';
-              } else if (/\bNeeds more ratings\b/i.test(textAfterNoteId)) {
-                status = 'NEEDS_MORE_RATINGS';
-              }
+              // New UI puts "Current Status" ABOVE "Note ID"; old fallback only looked after.
+              // Search the whole text once we've confirmed Note ID is present.
+              status = parseStatus(modalText);
             }
           } else {
-            if (/\bCurrently not rated helpful\b/i.test(modalText)) {
-              status = 'CURRENTLY_RATED_NOT_HELPFUL';
-            } else if (/\bCurrently rated helpful\b/i.test(modalText)) {
-              status = 'CURRENTLY_RATED_HELPFUL';
-            } else if (/\bNeeds more ratings\b/i.test(modalText)) {
-              status = 'NEEDS_MORE_RATINGS';
-            }
+            status = parseStatus(modalText);
           }
 
           const dateMatch = modalText.match(/Note submitted[:\s]*([\d:]+\s*(?:AM|PM)?)\s*[·•]\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})/i);
