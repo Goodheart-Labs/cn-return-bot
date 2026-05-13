@@ -90,10 +90,11 @@ export function App() {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">AI Community Notes — Stats</h1>
-          <p className="text-sm text-gray-500">
-            Notes written by our AI notewriter. Snapshot generated{" "}
-            {new Date(snapshot.generated_at).toLocaleString()}.
-          </p>
+          {devMode && (
+            <p className="text-sm text-gray-500">
+              Snapshot generated {new Date(snapshot.generated_at).toLocaleString()}.
+            </p>
+          )}
         </div>
         <DevModeToggle devMode={devMode} onChange={setDevMode} />
       </header>
