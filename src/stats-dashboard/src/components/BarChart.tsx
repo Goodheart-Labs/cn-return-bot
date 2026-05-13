@@ -47,14 +47,27 @@ function niceTicks(maxValue: number, count = 4): number[] {
   return ticks;
 }
 
+// Pick the bar interval at which to render an x-axis label so the user sees
+// ~TARGET_LABELS_IN_VIEW labels in any scrolled slice of the chart. Density
+// is measured against the smaller of the dataset and the viewport — for
+// datasets shorter than the viewport we show ~7 labels overall; for longer
+// scrolling datasets we show ~7 labels in any 28-bar window.
+const TARGET_LABELS_IN_VIEW = 7;
 function tickLabelEvery(numBars: number): number {
-  const maxLabels = 8;
-  return Math.max(1, Math.ceil(numBars / maxLabels));
+  const effectiveBars = Math.min(numBars, MAX_VISIBLE_BARS);
+  return Math.max(1, Math.ceil(effectiveBars / TARGET_LABELS_IN_VIEW));
+}
+
+interface HoverState {
+  bucket: ChartBucket;
+  /** Bar center in SVG coordinates (before subtracting scrollLeft). */
+  slotCenter: number;
 }
 
 export function BarChart({ buckets, granularity, mode, width, showNonCandidate }: BarChartProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState<ChartBucket | null>(null);
+  const [hovered, setHovered] = useState<HoverState | null>(null);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const slotWidth = Math.max(
     1,
@@ -69,7 +82,10 @@ export function BarChart({ buckets, granularity, mode, width, showNonCandidate }
   // keep the user's scroll position across those.
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollLeft = el.scrollWidth;
+    if (el) {
+      el.scrollLeft = el.scrollWidth;
+      setScrollLeft(el.scrollLeft);
+    }
   }, [buckets.length, granularity]);
 
   if (!buckets.length) {
@@ -88,15 +104,26 @@ export function BarChart({ buckets, granularity, mode, width, showNonCandidate }
     slotWidth,
     barWidth,
     showNonCandidate,
-    onHover: setHovered,
+    onHover: (bucket, slotCenter) => setHovered({ bucket, slotCenter }),
   };
 
   return (
     <div className="relative">
-      <div ref={scrollRef} className="overflow-x-auto" onMouseLeave={() => setHovered(null)}>
+      <div
+        ref={scrollRef}
+        className="overflow-x-auto"
+        onMouseLeave={() => setHovered(null)}
+        onScroll={(e) => setScrollLeft(e.currentTarget.scrollLeft)}
+      >
         {mode === "ratio" ? <RatioChart {...inner} /> : <AbsoluteChart {...inner} />}
       </div>
-      <ChartTooltip bucket={hovered} mode={mode} showNonCandidate={showNonCandidate} />
+      <ChartTooltip
+        hover={hovered}
+        scrollLeft={scrollLeft}
+        containerWidth={width}
+        mode={mode}
+        showNonCandidate={showNonCandidate}
+      />
     </div>
   );
 }
@@ -109,7 +136,7 @@ interface InnerProps {
   slotWidth: number;
   barWidth: number;
   showNonCandidate: boolean;
-  onHover: (bucket: ChartBucket | null) => void;
+  onHover: (bucket: ChartBucket, slotCenter: number) => void;
 }
 
 function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, barWidth, onHover }: InnerProps) {
@@ -157,7 +184,7 @@ function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, ba
         const helpfulHeight = b.helpful * upperPxPerUnit;
         const unhelpfulHeight = b.unhelpful * lowerPxPerUnit;
         return (
-          <g key={b.key} onMouseEnter={() => onHover(b)}>
+          <g key={b.key} onMouseEnter={() => onHover(b, xCenter)}>
             <rect
               x={xCenter - slotWidth / 2}
               y={PAD_TOP}
@@ -220,7 +247,7 @@ function RatioChart({ buckets, granularity, width, innerHeight, slotWidth, barWi
         const nmrY = unhelpfulY - nmrH;
         const nonCandidateY = nmrY - nonCandidateH;
         return (
-          <g key={b.key} onMouseEnter={() => onHover(b)}>
+          <g key={b.key} onMouseEnter={() => onHover(b, xCenter)}>
             <rect
               x={xCenter - slotWidth / 2}
               y={PAD_TOP}
@@ -250,21 +277,42 @@ function RatioChart({ buckets, granularity, width, innerHeight, slotWidth, barWi
   );
 }
 
+// Approximate tooltip width used to clamp the anchored x-position against
+// the chart edges. Smaller than the actual rendered width so we err on the
+// side of "tooltip slightly off-screen" rather than "tooltip jumps away
+// from the bar".
+const TOOLTIP_HALF_WIDTH = 90;
+const TOOLTIP_EDGE_MARGIN = 4;
+
 function ChartTooltip({
-  bucket,
+  hover,
+  scrollLeft,
+  containerWidth,
   mode,
   showNonCandidate,
 }: {
-  bucket: ChartBucket | null;
+  hover: HoverState | null;
+  scrollLeft: number;
+  containerWidth: number;
   mode: ChartMode;
   showNonCandidate: boolean;
 }) {
-  if (!bucket) return null;
+  if (!hover) return null;
+  const { bucket, slotCenter } = hover;
   const denom = showNonCandidate ? bucket.total : bucket.helpful + bucket.unhelpful + bucket.nmr;
   const pct = (n: number) => (denom === 0 ? "0.0%" : `${((n / denom) * 100).toFixed(1)}%`);
 
+  const rawLeft = slotCenter - scrollLeft;
+  const clampedLeft = Math.max(
+    TOOLTIP_HALF_WIDTH + TOOLTIP_EDGE_MARGIN,
+    Math.min(containerWidth - TOOLTIP_HALF_WIDTH - TOOLTIP_EDGE_MARGIN, rawLeft),
+  );
+
   return (
-    <div className="absolute top-2 right-2 pointer-events-none bg-gray-900 text-white text-xs rounded shadow-lg px-3 py-2 space-y-0.5 min-w-[180px]">
+    <div
+      style={{ left: clampedLeft, transform: "translateX(-50%)" }}
+      className="absolute top-1 pointer-events-none bg-gray-900 text-white text-xs rounded shadow-lg px-3 py-2 space-y-0.5 min-w-[180px]"
+    >
       <div className="font-medium text-sm mb-1">{bucket.label}</div>
       <TooltipRow color={COLOR_HELPFUL} label="Helpful" value={mode === "ratio" ? `${pct(bucket.helpful)} (${bucket.helpful})` : `${bucket.helpful}`} />
       <TooltipRow color={COLOR_UNHELPFUL} label="Not helpful" value={mode === "ratio" ? `${pct(bucket.unhelpful)} (${bucket.unhelpful})` : `${bucket.unhelpful}`} />
