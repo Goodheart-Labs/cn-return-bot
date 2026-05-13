@@ -94,6 +94,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 1 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 1 },
+    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 1 },
   ],
 };
 
@@ -101,8 +102,11 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet",       overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
-    { variant: { name: "gemini-flash", overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "sonnet",            overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
+    { variant: { name: "gemini-flash",      overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "mistral-large-3",   overrides: { writer_model: "mistralai/mistral-large-2512"  }}, weight: 10 },
+    { variant: { name: "mistral-medium-3.5",overrides: { writer_model: "mistralai/mistral-medium-3-5"  }}, weight: 10 },
+    { variant: { name: "mistral-small-4",   overrides: { writer_model: "mistralai/mistral-small-2603"  }}, weight: 10 },
   ],
 };
 
