@@ -486,11 +486,15 @@ async function scrapeTab(
             .map((a) => (a as HTMLAnchorElement).href)
             .filter((h) => !h.includes('x.com') && !h.includes('twitter.com'));
 
+          // NOTE: cell innerText concatenates DOM nodes without whitespace
+          // (e.g. "...GermantownCurrently rated helpful19h..."), so leading/trailing
+          // \b word boundaries fail when a phrase abuts other letters. The phrases
+          // below are distinctive enough that bare substring match is safe.
           let viewCount: number | null = null;
           let shownOnX: boolean | null = null;
-          if (/\bNot shown on X\b/i.test(text)) {
+          if (/Not shown on X/i.test(text)) {
             shownOnX = false;
-          } else if (/\bShown on X\b/i.test(text)) {
+          } else if (/Shown on X/i.test(text)) {
             shownOnX = true;
             const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i);
             if (viewMatch) {
@@ -504,11 +508,11 @@ async function scrapeTab(
           }
 
           let cellStatus: string | null = null;
-          if (/\bCurrently not rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
-          else if (/\bCurrently rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_HELPFUL';
-          else if (/\bNeeds more ratings\b/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
+          if (/Currently not rated helpful/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
+          else if (/Currently rated helpful/i.test(text)) cellStatus = 'CURRENTLY_RATED_HELPFUL';
+          else if (/Needs more ratings/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
 
-          const postUnavailable = /\bPost unavailable\b/i.test(text);
+          const postUnavailable = /Post unavailable/i.test(text);
 
           // --- Extract original tweet info from the cell ---
           let tweetHandle: string | null = null;
@@ -588,9 +592,9 @@ async function scrapeTab(
                           document.querySelector('[data-testid="Drawer"]');
             const text = modal ? (modal as HTMLElement).innerText : document.body.innerText;
             const hasNoteId = /Note ID[\s:]*\d{18,20}/i.test(text);
-            const hasStatus = /\bCurrent Status\s+(Not Helpful|Helpful|Needs More Ratings)\b/i.test(text)
-              || /\bCurrently (not )?rated helpful\b/i.test(text)
-              || /\bNeeds more ratings\b/i.test(text);
+            const hasStatus = /Current Status\s+(Not Helpful|Helpful|Needs More Ratings)\b/i.test(text)
+              || /Currently (not )?rated helpful/i.test(text)
+              || /Needs more ratings/i.test(text);
             return { hasNoteId, hasStatus };
           });
           if (state.hasNoteId && state.hasStatus) break;
@@ -652,9 +656,10 @@ async function scrapeTab(
               if (label === 'helpful') return 'CURRENTLY_RATED_HELPFUL';
               if (label === 'needs more ratings') return 'NEEDS_MORE_RATINGS';
             }
-            if (/\bCurrently not rated helpful\b/i.test(text)) return 'CURRENTLY_RATED_NOT_HELPFUL';
-            if (/\bCurrently rated helpful\b/i.test(text)) return 'CURRENTLY_RATED_HELPFUL';
-            if (/\bNeeds more ratings\b/i.test(text)) return 'NEEDS_MORE_RATINGS';
+            // No leading \b — body-fallback text concatenates DOM without spaces.
+            if (/Currently not rated helpful/i.test(text)) return 'CURRENTLY_RATED_NOT_HELPFUL';
+            if (/Currently rated helpful/i.test(text)) return 'CURRENTLY_RATED_HELPFUL';
+            if (/Needs more ratings/i.test(text)) return 'NEEDS_MORE_RATINGS';
             return 'UNKNOWN';
           };
 
@@ -724,6 +729,19 @@ async function scrapeTab(
           if (cellAttempt < 5) {
             console.log(`   ${prefix} 🔄 Cell retry ${cellAttempt + 1}/6: missing ${cellMissing.join(', ')}`);
             await randomDelay(400, 800);
+          } else {
+            // Final attempt failed — dump cell innerText so we can diagnose the layout.
+            const dump = await cell.evaluate(el => {
+              const text = (el as HTMLElement).innerText || '';
+              const links = [...el.querySelectorAll('a[href]')].map(a => (a as HTMLAnchorElement).getAttribute('href')).slice(0, 10);
+              const testIds = [...el.querySelectorAll('[data-testid]')].map(e => e.getAttribute('data-testid')).slice(0, 20);
+              return { text: text.slice(0, 800), links, testIds };
+            }).catch(() => null);
+            if (dump) {
+              console.log(`   ${prefix} 🐛 Cell dump — testIds: ${JSON.stringify(dump.testIds)}`);
+              console.log(`   ${prefix} 🐛 Cell dump — links: ${JSON.stringify(dump.links)}`);
+              console.log(`   ${prefix} 🐛 Cell dump — innerText:\n${dump.text.split('\n').map(l => '       | ' + l).join('\n')}`);
+            }
           }
         }
 
