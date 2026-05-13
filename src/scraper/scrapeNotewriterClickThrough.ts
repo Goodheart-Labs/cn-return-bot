@@ -28,6 +28,20 @@ import { SupabaseLogger } from "../api/supabaseClient";
 const DEFAULT_USERNAME = "wholesome-raspberry-stilt";
 const SCROLL_PX = 600;
 const BOTTOM_NOTE_ID = 1976702059752911225n; // Oldest known note — reaching this = full coverage
+const RECONCILE_EVERY = 50; // Run snapshot reconciliation every N collected notes
+
+async function runReconcile(label: string): Promise<void> {
+  console.log(`\n🔄 Running snapshot reconciliation (${label})...`);
+  try {
+    const { reconcile } = await import("./reconcileSnapshots");
+    const result = await reconcile();
+    console.log(`   • Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk}`);
+    console.log(`   • Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`);
+    console.log(`   • Notes written: ${result.notesWritten}`);
+  } catch (err) {
+    console.error("   ⚠️ Reconciliation failed (non-fatal):", err);
+  }
+}
 
 function randomDelay(minMs: number, maxMs: number): Promise<void> {
   const delay = minMs + Math.random() * (maxMs - minMs);
@@ -979,6 +993,12 @@ async function scrapeTab(
       // Save to DB immediately so data isn't lost if process is killed
       await saveNoteIncrementally(note);
 
+      // Reconcile every RECONCILE_EVERY notes so the canonical `notes` table stays
+      // fresh on long runs and survives a hard Ctrl+C / crash.
+      if (collectedNotes.size % RECONCILE_EVERY === 0) {
+        await runReconcile(`mid-run @ ${collectedNotes.size}`);
+      }
+
       // Close the modal
       const closed = await page.evaluate(() => {
         const closeSelectors = [
@@ -1416,17 +1436,8 @@ async function main() {
     }
   }
 
-  // Run snapshot reconciliation (tier classification, collision resolution, canonical data)
-  console.log("\n🔄 Running snapshot reconciliation...");
-  try {
-    const { reconcile } = await import("./reconcileSnapshots");
-    const result = await reconcile();
-    console.log(`   • Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk}`);
-    console.log(`   • Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`);
-    console.log(`   • Notes written: ${result.notesWritten}`);
-  } catch (err) {
-    console.error("   ⚠️ Reconciliation failed (non-fatal):", err);
-  }
+  // Final reconciliation (tier classification, collision resolution, canonical data)
+  await runReconcile("final");
 
   // Print resume command based on oldest note scraped
   const scrapedNoteIds = [...collectedNotes.keys()]
