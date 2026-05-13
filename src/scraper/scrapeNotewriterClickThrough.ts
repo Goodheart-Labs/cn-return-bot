@@ -792,14 +792,15 @@ async function scrapeTab(
         let accRaterTags: string[] | null = null;
         let finalModalData: ModalData | null = null;
 
-        // Only check fields the modal can provide (status, submittedDate, raterTags).
+        // Only check fields the modal can provide (status, submittedDate).
         // Cell-only fields (tweet_id, note_text, view_count) can't be fixed by modal retries.
+        // Rater tags are NOT required: X only shows the "Top tags selected by raters"
+        // section when raters have agreed on tags. Many Helpful notes have no tags section
+        // in the modal at all — requiring it caused 5 useless retries per such note.
         function checkModalMissingFields(): string[] {
           const missing: string[] = [];
           if (accStatus === 'UNKNOWN') missing.push('status');
           if (!accSubmittedDate) missing.push('submitted_date');
-          const isRated = accStatus === 'CURRENTLY_RATED_HELPFUL' || accStatus === 'CURRENTLY_RATED_NOT_HELPFUL';
-          if (isRated && !accRaterTags) missing.push('rater_tags');
           return missing;
         }
 
