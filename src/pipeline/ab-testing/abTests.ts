@@ -102,11 +102,8 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet",            overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
-    { variant: { name: "gemini-flash",      overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
-    { variant: { name: "mistral-large-3",   overrides: { writer_model: "mistralai/mistral-large-2512"  }}, weight: 10 },
-    { variant: { name: "mistral-medium-3.5",overrides: { writer_model: "mistralai/mistral-medium-3-5"  }}, weight: 10 },
-    { variant: { name: "mistral-small-4",   overrides: { writer_model: "mistralai/mistral-small-2603"  }}, weight: 10 },
+    { variant: { name: "sonnet",       overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
+    { variant: { name: "gemini-flash", overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
   ],
 };
 
