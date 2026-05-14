@@ -39,37 +39,7 @@ import * as path from "path";
 import { tmpdir } from "os";
 import type { Post } from "../api/fetchEligiblePosts";
 import { parseCliArgs, runPipeline, type PostFetcher } from "./localPipelineRunner";
-
-// ---------------------------------------------------------------------------
-// yt-dlp types & helpers
-// ---------------------------------------------------------------------------
-
-interface YtDlpMetadata {
-  id: string;
-  title: string;
-  description?: string;
-  url?: string;
-  formats?: Array<{
-    url: string;
-    ext: string;
-    vcodec?: string;
-    acodec?: string;
-    width?: number;
-    height?: number;
-    tbr?: number;
-  }>;
-  thumbnail?: string;
-  duration?: number;
-  uploader?: string;
-  uploader_id?: string;
-  channel_id?: string;
-  timestamp?: number;
-  webpage_url?: string;
-  ext?: string;
-  filename?: string;
-  _filename?: string;
-  display_id?: string;
-}
+import { downloadWithYtDlp, type YtDlpMetadata } from "../pipeline/media/ytDlpDownload";
 
 function extractIdFromUrl(url: string): string {
   const tweetMatch = url.match(/status\/(\d+)/);
@@ -83,34 +53,6 @@ function extractIdFromUrl(url: string): string {
     hash = ((hash << 5) - hash + ch.charCodeAt(0)) | 0;
   }
   return Math.abs(hash).toString();
-}
-
-interface DownloadResult {
-  meta: YtDlpMetadata;
-  videoPath: string | null;
-}
-
-function downloadWithYtDlp(url: string, outputDir: string): DownloadResult {
-  const videoOutput = path.join(outputDir, "%(id)s.%(ext)s");
-  try {
-    const output = execSync(
-      `yt-dlp -J -o "${videoOutput}" "${url}"`,
-      { timeout: 120_000, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }
-    );
-    const meta: YtDlpMetadata = JSON.parse(output);
-
-    execSync(
-      `yt-dlp -o "${videoOutput}" "${url}"`,
-      { timeout: 120_000, stdio: ["pipe", "pipe", "pipe"] }
-    );
-
-    const expectedPath = meta.filename ?? meta._filename ?? path.join(outputDir, `${meta.id}.${meta.ext ?? "mp4"}`);
-    const videoPath = fs.existsSync(expectedPath) ? expectedPath : null;
-
-    return { meta, videoPath };
-  } catch (err: any) {
-    throw new Error(`yt-dlp failed for ${url}: ${err?.message}`);
-  }
 }
 
 function buildPostFromDownload(meta: YtDlpMetadata, videoPath: string | null, url: string): Post {

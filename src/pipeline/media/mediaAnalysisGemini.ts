@@ -16,6 +16,7 @@ import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
 import { GEMINI_MODEL } from "../cost-tracking/pricing";
 import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
+import { downloadWithYtDlp, type YtDlpMetadata } from "./ytDlpDownload";
 
 const execAsync = promisify(exec);
 const LONG_VIDEO_THRESHOLD_MS = 210_000; // 3.5 minutes
@@ -339,6 +340,37 @@ async function analyzeMediaItems(
   }
 
   return results;
+}
+
+// --- External video URLs (used by source verifier) ---
+
+export interface VideoSourceDescription {
+  meta: YtDlpMetadata;
+  analysis: GeminiMediaItem;
+}
+
+/**
+ * Download a video URL (YouTube/TikTok/Vimeo/etc.) with yt-dlp and run it
+ * through the same Gemini analysis pipeline used for tweet media. Caller is
+ * responsible for catching errors (yt-dlp failures, private/unavailable
+ * videos, etc.) and deciding how to surface them.
+ */
+export async function describeVideoFromUrl(
+  url: string,
+  costName: string,
+  strategy: "full_video" | "frames" = "frames",
+): Promise<VideoSourceDescription> {
+  const tmpDir = join(tmpdir(), `cn-video-source-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  await mkdir(tmpDir, { recursive: true });
+  try {
+    const { meta, videoPath } = downloadWithYtDlp(url, tmpDir);
+    if (!videoPath) throw new Error(`yt-dlp produced no video file for ${url}`);
+    const durationMs = meta.duration ? Math.round(meta.duration * 1000) : undefined;
+    const analysis = await analyzeVideo(videoPath, durationMs, costName, strategy);
+    return { meta, analysis };
+  } finally {
+    try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
+  }
 }
 
 export async function analyzeMediaGemini(

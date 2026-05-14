@@ -10,6 +10,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { UnfetchableSourcesError, ModelOutputInvalidError } from "../utils/errors";
+import { describeVideoFromUrl, type VideoSourceDescription } from "../media/mediaAnalysisGemini";
 
 export interface SourceVerification {
   accepted: boolean;
@@ -43,36 +44,82 @@ function isTwitterUrl(url: string): boolean {
   }
 }
 
+const VIDEO_HOSTS = ["youtube.com", "youtu.be", "vimeo.com", "tiktok.com", "twitch.tv"];
+
+function isVideoUrl(url: string): boolean {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
+    return VIDEO_HOSTS.some((h) => hostname === h || hostname.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
+}
+
+const PLATFORM_DESCRIPTION_MAX_CHARS = 1500;
+
+function formatVideoSection(url: string, video: VideoSourceDescription): string {
+  const { meta, analysis } = video;
+  const publishedIso = meta.timestamp ? new Date(meta.timestamp * 1000).toISOString() : null;
+  const platformDesc = meta.description?.slice(0, PLATFORM_DESCRIPTION_MAX_CHARS);
+
+  const lines = [
+    `### ${url}`,
+    `Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.`,
+    meta.title ? `Title: ${meta.title}` : null,
+    meta.uploader ? `Uploader: ${meta.uploader}` : null,
+    publishedIso ? `Published: ${publishedIso}` : null,
+    platformDesc ? `Uploader-provided description:\n${platformDesc}` : null,
+    `Content summary: ${analysis.description.description || "(empty)"}`,
+    analysis.description.ocrText ? `On-screen text: ${analysis.description.ocrText}` : null,
+    `Audio transcript: ${analysis.transcription || "(unavailable)"}`,
+  ].filter((l): l is string => l !== null);
+  return lines.join("\n");
+}
+
 interface FetchedSource {
   url: string;
   content: string;
   fetched: boolean;
 }
 
-async function fetchSourceContent(sources: string[]): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number }> {
+async function fetchSourceContent(
+  sources: string[],
+  costPrefix: string,
+  acceptVideoSources: boolean,
+): Promise<{ sections: string; fetchedCount: number; totalNonFreebie: number }> {
   const results: FetchedSource[] = [];
+  let videoIdx = 0;
 
   for (const url of sources) {
     if (isTwitterUrl(url)) {
-      results.push({ url, content: "Twitter/X link — accepted without fetching.", fetched: true });
+      results.push({ url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true });
+      continue;
+    }
+    if (acceptVideoSources && isVideoUrl(url)) {
+      try {
+        const video = await describeVideoFromUrl(url, `${costPrefix}.video.${videoIdx++}`);
+        results.push({ url, content: formatVideoSection(url, video), fetched: true });
+      } catch (err: any) {
+        results.push({ url, content: `### ${url}\nFetch failed: yt-dlp could not download the video (${err?.message ?? "unknown error"}).`, fetched: false });
+      }
       continue;
     }
     const result = await handleWebFetch(url);
     const content = typeof result.output === "string" ? result.output : JSON.stringify(result.output);
     const isFetchError = content.startsWith("Fetch failed:") || content.startsWith("Fetch error:") || content.startsWith("Non-text content:");
-    results.push({ url, content, fetched: !isFetchError });
+    results.push({ url, content: `### ${url}\n${content}`, fetched: !isFetchError });
   }
 
-  const sections = results.map((r) => `### ${r.url}\n${r.content}`).join("\n\n");
-  const nonTwitter = results.filter((r) => !isTwitterUrl(r.url));
-  const fetchedCount = nonTwitter.filter((r) => r.fetched).length;
+  const sections = results.map((r) => r.content).join("\n\n");
+  const nonFreebie = results.filter((r) => !isTwitterUrl(r.url));
+  const fetchedCount = nonFreebie.filter((r) => r.fetched).length;
 
-  return { sections, fetchedCount, totalNonTwitter: nonTwitter.length };
+  return { sections, fetchedCount, totalNonFreebie: nonFreebie.length };
 }
 
 function buildSystemPrompt(acceptsVideoSources: boolean): string {
   const videoRule = acceptsVideoSources
-    ? `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources are accepted as valid evidence without content checks, as long as the URL itself is plausibly relevant to the factual claim.`
+    ? `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch) are presented with an automated content analysis (title, uploader, content summary, on-screen text, audio transcript). Treat that block as the source's content and evaluate it like any other fetched source. A video whose download failed provides ZERO evidence.`
     : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
 
   return `You verify whether the sources cited by a proposed community note support the correction made in that note.
@@ -102,8 +149,13 @@ export async function verifySources(params: {
   const config = getBotConfig();
   const logPrefix = `sourceVerifier.turn.${params.turnNumber}.messages`;
 
-  const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(params.sources);
-  const systemPrompt = buildSystemPrompt(config.verifier_accepts_video_sources ?? false);
+  const acceptVideoSources = config.verifier_accepts_video_sources ?? false;
+  const { sections, fetchedCount, totalNonFreebie } = await fetchSourceContent(
+    params.sources,
+    `sourceVerifier.turn.${params.turnNumber}`,
+    acceptVideoSources,
+  );
+  const systemPrompt = buildSystemPrompt(acceptVideoSources);
 
   const userMessage = [
     `## Context`,
@@ -124,9 +176,9 @@ export async function verifySources(params: {
 
   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
 
-  if (totalNonTwitter > 0 && fetchedCount === 0) {
+  if (totalNonFreebie > 0 && fetchedCount === 0) {
     throw new UnfetchableSourcesError(
-      `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,
+      `None of the ${totalNonFreebie} non-Twitter source(s) could be fetched`,
     );
   }
 
