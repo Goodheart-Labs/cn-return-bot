@@ -125,7 +125,7 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
-export async function describeImageFromUrl(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
+async function describeImageFromUrl(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
   const messages = [
     {
       role: "user" as const,

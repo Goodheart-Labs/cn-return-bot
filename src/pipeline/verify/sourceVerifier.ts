@@ -12,9 +12,7 @@ import { getTweetLog } from "../utils/tweetLog";
 import { UnfetchableSourcesError, ModelOutputInvalidError } from "../utils/errors";
 import {
   describeMediaFromUrl,
-  describeImageFromUrl,
   type MediaSourceDescription,
-  type GeminiMediaItem,
 } from "../media/mediaAnalysisGemini";
 
 export interface SourceVerification {
@@ -91,17 +89,6 @@ function isMediaHost(url: string): boolean {
   }
 }
 
-const DIRECT_IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".heic", ".avif"];
-
-function isDirectImageUrl(url: string): boolean {
-  try {
-    const pathname = new URL(url).pathname.toLowerCase();
-    return DIRECT_IMAGE_EXTS.some((ext) => pathname.endsWith(ext));
-  } catch {
-    return false;
-  }
-}
-
 const PLATFORM_DESCRIPTION_MAX_CHARS = 1500;
 
 function formatCascadeMediaSection(url: string, media: MediaSourceDescription): string {
@@ -122,16 +109,6 @@ function formatCascadeMediaSection(url: string, media: MediaSourceDescription): 
     `Content summary: ${analysis.description.description || "(empty)"}`,
     analysis.description.ocrText ? (kind === "video" ? `On-screen text: ${analysis.description.ocrText}` : `Visible text: ${analysis.description.ocrText}`) : null,
     kind === "video" ? `Audio transcript: ${analysis.transcription || "(unavailable)"}` : null,
-  ].filter((l): l is string => l !== null);
-  return lines.join("\n");
-}
-
-function formatDirectImageSection(url: string, item: GeminiMediaItem): string {
-  const lines = [
-    `### ${url}`,
-    `Automated image analysis (Gemini). Treat this as the source's content.`,
-    `Image description: ${item.description.description || "(empty)"}`,
-    item.description.ocrText ? `Visible text: ${item.description.ocrText}` : null,
   ].filter((l): l is string => l !== null);
   return lines.join("\n");
 }
@@ -175,29 +152,18 @@ async function fetchOneSource(
   return fetchAsWebPage(url);
 }
 
-/** Returns null when the URL isn't media-eligible or the cascade failed (and we should fall through to handleWebFetch). */
+/** Returns null when the URL isn't a media host or the cascade failed (caller falls through to handleWebFetch). */
 async function tryMediaDescription(url: string, costName: string): Promise<FetchedSource | null> {
-  if (isDirectImageUrl(url)) {
-    try {
-      const item = await describeImageFromUrl(url, costName);
-      return { url, content: formatDirectImageSection(url, item), fetched: true };
-    } catch (err: any) {
-      getTweetLog()?.set(`${costName}.image_error`, err?.message ?? "unknown error");
-      return null;
-    }
+  if (!isMediaHost(url)) return null;
+  try {
+    const media = await describeMediaFromUrl(url, costName);
+    return { url, content: formatCascadeMediaSection(url, media), fetched: true };
+  } catch (err: any) {
+    // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
+    // removed content, private account, or host not yet supported).
+    getTweetLog()?.set(`${costName}.media_error`, err?.message ?? "unknown error");
+    return null;
   }
-  if (isMediaHost(url)) {
-    try {
-      const media = await describeMediaFromUrl(url, costName);
-      return { url, content: formatCascadeMediaSection(url, media), fetched: true };
-    } catch (err: any) {
-      // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
-      // removed content, private account, or host not yet supported).
-      getTweetLog()?.set(`${costName}.media_error`, err?.message ?? "unknown error");
-      return null;
-    }
-  }
-  return null;
 }
 
 async function fetchAsWebPage(url: string): Promise<FetchedSource> {
