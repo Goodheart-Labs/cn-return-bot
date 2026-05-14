@@ -46,7 +46,9 @@ export async function runSimpleBotPipeline(
   logFinal(startMs);
 
   if (verification.accepted) {
-    return { type: "note", noteText: note.noteText, sources: note.sources, searchResults: search.findings };
+    // Drop URLs the verifier classified as bad — they don't support any claim
+    // (or failed to fetch), so we don't want them in the published note.
+    return { type: "note", noteText: note.noteText, sources: verification.good_sources, searchResults: search.findings };
   }
   return {
     type: "verification_failed",

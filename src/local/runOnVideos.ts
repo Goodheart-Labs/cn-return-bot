@@ -39,37 +39,7 @@ import * as path from "path";
 import { tmpdir } from "os";
 import type { Post } from "../api/fetchEligiblePosts";
 import { parseCliArgs, runPipeline, type PostFetcher } from "./localPipelineRunner";
-
-// ---------------------------------------------------------------------------
-// yt-dlp types & helpers
-// ---------------------------------------------------------------------------
-
-interface YtDlpMetadata {
-  id: string;
-  title: string;
-  description?: string;
-  url?: string;
-  formats?: Array<{
-    url: string;
-    ext: string;
-    vcodec?: string;
-    acodec?: string;
-    width?: number;
-    height?: number;
-    tbr?: number;
-  }>;
-  thumbnail?: string;
-  duration?: number;
-  uploader?: string;
-  uploader_id?: string;
-  channel_id?: string;
-  timestamp?: number;
-  webpage_url?: string;
-  ext?: string;
-  filename?: string;
-  _filename?: string;
-  display_id?: string;
-}
+import { downloadWithYtDlp, type YtDlpMetadata, type YtDlpKind } from "../pipeline/media/ytDlpDownload";
 
 function extractIdFromUrl(url: string): string {
   const tweetMatch = url.match(/status\/(\d+)/);
@@ -85,44 +55,21 @@ function extractIdFromUrl(url: string): string {
   return Math.abs(hash).toString();
 }
 
-interface DownloadResult {
-  meta: YtDlpMetadata;
-  videoPath: string | null;
-}
-
-function downloadWithYtDlp(url: string, outputDir: string): DownloadResult {
-  const videoOutput = path.join(outputDir, "%(id)s.%(ext)s");
-  try {
-    const output = execSync(
-      `yt-dlp -J -o "${videoOutput}" "${url}"`,
-      { timeout: 120_000, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }
-    );
-    const meta: YtDlpMetadata = JSON.parse(output);
-
-    execSync(
-      `yt-dlp -o "${videoOutput}" "${url}"`,
-      { timeout: 120_000, stdio: ["pipe", "pipe", "pipe"] }
-    );
-
-    const expectedPath = meta.filename ?? meta._filename ?? path.join(outputDir, `${meta.id}.${meta.ext ?? "mp4"}`);
-    const videoPath = fs.existsSync(expectedPath) ? expectedPath : null;
-
-    return { meta, videoPath };
-  } catch (err: any) {
-    throw new Error(`yt-dlp failed for ${url}: ${err?.message}`);
-  }
-}
-
-function buildPostFromDownload(meta: YtDlpMetadata, videoPath: string | null, url: string): Post {
+function buildPostFromDownload(meta: YtDlpMetadata, filePath: string | null, kind: YtDlpKind | null, url: string): Post {
   const text = [meta.title, meta.description].filter(Boolean).join("\n\n");
 
   const media: Post["media"] = [];
-  if (videoPath) {
+  if (filePath && kind === "video") {
     media.push({
       type: "video",
-      url: videoPath,
+      url: filePath,
       duration_ms: meta.duration ? Math.round(meta.duration * 1000) : undefined,
-      variants: [{ url: videoPath, content_type: "video/mp4" }],
+      variants: [{ url: filePath, content_type: "video/mp4" }],
+    });
+  } else if (filePath && kind === "image") {
+    media.push({
+      type: "photo",
+      url: filePath,
     });
   } else if (meta.thumbnail) {
     media.push({
@@ -162,8 +109,8 @@ async function main() {
   fs.mkdirSync(downloadDir, { recursive: true });
 
   const fetchPost: PostFetcher = async (input) => {
-    const { meta, videoPath } = downloadWithYtDlp(input.url, downloadDir);
-    const post = buildPostFromDownload(meta, videoPath, input.url);
+    const { meta, filePath, kind } = downloadWithYtDlp(input.url, downloadDir);
+    const post = buildPostFromDownload(meta, filePath, kind, input.url);
     return { post, title: meta.title?.slice(0, 80) ?? "" };
   };
 

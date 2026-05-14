@@ -16,9 +16,19 @@ import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
 import { GEMINI_MODEL } from "../cost-tracking/pricing";
 import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
+import {
+  downloadVideoWithYtDlp,
+  fetchAutoSubs,
+  fetchYtDlpMetadata,
+  type YtDlpKind,
+  type YtDlpMetadata,
+} from "./ytDlpDownload";
+import { downloadWithGalleryDl } from "./galleryDlDownload";
 
 const execAsync = promisify(exec);
-const LONG_VIDEO_THRESHOLD_MS = 210_000; // 3.5 minutes
+const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes — short videos go to Gemini whole; long videos get 4-frame sampling
+const AUTO_SUBS_THRESHOLD_MS = 300_000;    // 5 minutes — above this we use auto-subs as the transcript and never run Whisper
+const LOW_QUALITY_THRESHOLD_MS = 900_000;  // 15 minutes — above this we request the lowest-resolution stream to cap download bytes
 
 // --- Types ---
 
@@ -115,7 +125,7 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
-async function analyzeImage(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
+async function describeImageFromUrl(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
   const messages = [
     {
       role: "user" as const,
@@ -256,6 +266,13 @@ async function analyzeVideo(
   durationMs: number | undefined,
   costName: string,
   strategy: "full_video" | "frames" = "frames",
+  /**
+   * Transcript decision made by the caller.
+   * - undefined: caller didn't decide — extract audio + Whisper (default behavior).
+   * - string: use this as the transcript verbatim (e.g. auto-subs).
+   * - null: explicit "no transcript available, do NOT fall back to Whisper" (used for long videos to cap cost).
+   */
+  precomputedTranscript?: string | null,
 ): Promise<GeminiMediaItem> {
   const isLocal = isLocalPath(videoUrl);
   const tmpDir = join(tmpdir(), `cn-gemini-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -279,22 +296,7 @@ async function analyzeVideo(
       description = await analyzeShortVideo(videoPath, costName);
     }
 
-    let transcription: string | undefined;
-    if (!(await checkFfmpeg())) {
-      transcription = "(ffmpeg unavailable)";
-    } else {
-      try {
-        const text = await extractAudio(videoPath, tmpDir);
-        if (text) {
-          transcription = text;
-        } else {
-          transcription = "(no audio track)";
-        }
-      } catch (err: any) {
-        console.error("[mediaAnalysisGemini] Audio extraction failed:", err.message);
-        transcription = `(transcription failed: ${err.message?.slice(0, 100)})`;
-      }
-    }
+    const transcription = await resolveTranscription(videoPath, tmpDir, precomputedTranscript);
 
     return { type: "video", url: videoUrl, description, transcription };
   } catch (err: any) {
@@ -302,6 +304,25 @@ async function analyzeVideo(
     return { type: "video", url: videoUrl, description: { description: "", ocrText: "" }, };
   } finally {
     try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
+  }
+}
+
+async function resolveTranscription(
+  videoPath: string,
+  tmpDir: string,
+  precomputed: string | null | undefined,
+): Promise<string> {
+  // Caller forced "no Whisper" — used for long videos where auto-subs are the only allowed transcript source.
+  if (precomputed !== undefined) {
+    return precomputed ?? "(no auto-subs available)";
+  }
+  if (!(await checkFfmpeg())) return "(ffmpeg unavailable)";
+  try {
+    const text = await extractAudio(videoPath, tmpDir);
+    return text || "(no audio track)";
+  } catch (err: any) {
+    console.error("[mediaAnalysisGemini] Audio extraction failed:", err.message);
+    return `(transcription failed: ${err.message?.slice(0, 100)})`;
   }
 }
 
@@ -324,7 +345,7 @@ async function analyzeMediaItems(
     images
       .map((img) => getBestUrl(img))
       .filter((url): url is string => !!url)
-      .map((url) => analyzeImage(url, `${namePrefix}.image.${imageIdx++}`).catch((err) => {
+      .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`).catch((err) => {
         console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
         return { type: "image" as const, url, description: { description: "", ocrText: "" } };
       })),
@@ -339,6 +360,107 @@ async function analyzeMediaItems(
   }
 
   return results;
+}
+
+// --- External media URLs (used by source verifier) ---
+
+export interface MediaSourceDescription {
+  kind: YtDlpKind;
+  meta: YtDlpMetadata;
+  analysis: GeminiMediaItem;
+}
+
+function imageMimeFromPath(filePath: string): string {
+  const ext = filePath.toLowerCase().split(".").pop();
+  switch (ext) {
+    case "png": return "image/png";
+    case "gif": return "image/gif";
+    case "webp": return "image/webp";
+    case "bmp": return "image/bmp";
+    case "heic": return "image/heic";
+    case "avif": return "image/avif";
+    default: return "image/jpeg";
+  }
+}
+
+async function describeImageFromLocalFile(filePath: string, costName: string): Promise<GeminiMediaItem> {
+  const bytes = await readFile(filePath);
+  const dataUrl = `data:${imageMimeFromPath(filePath)};base64,${bytes.toString("base64")}`;
+  return describeImageFromUrl(dataUrl, costName);
+}
+
+/**
+ * Cascading dispatch for cited media URLs:
+ *   yt-dlp (videos + most image posts) → gallery-dl (Facebook / IG / Reddit
+ *   / Tumblr / Imgur image posts that yt-dlp can't extract) → throw.
+ * The caller catches the throw and falls back to handleWebFetch.
+ *
+ * For videos, the strategy adapts to duration to control cost:
+ *   - ≥ 5 min: auto-subs only as the transcript; no Whisper fallback.
+ *   - ≥ 15 min: download the lowest-resolution stream (frames are scaled
+ *     to 640px anyway, so HD bytes are wasted).
+ */
+export async function describeMediaFromUrl(
+  url: string,
+  costName: string,
+  strategy: "full_video" | "frames" = "frames",
+): Promise<MediaSourceDescription> {
+  try {
+    return await describeWithYtDlp(url, costName, strategy);
+  } catch (ytErr: any) {
+    try {
+      return await describeWithGalleryDl(url, costName);
+    } catch (gdlErr: any) {
+      throw new Error(`yt-dlp failed (${ytErr?.message ?? ytErr}); gallery-dl failed (${gdlErr?.message ?? gdlErr})`);
+    }
+  }
+}
+
+async function describeWithYtDlp(
+  url: string,
+  costName: string,
+  strategy: "full_video" | "frames",
+): Promise<MediaSourceDescription> {
+  const meta = fetchYtDlpMetadata(url);
+  const durationMs = meta.duration ? Math.round(meta.duration * 1000) : undefined;
+  const isLongAudio = durationMs != null && durationMs > AUTO_SUBS_THRESHOLD_MS;
+  const isLongVideo = durationMs != null && durationMs > LOW_QUALITY_THRESHOLD_MS;
+
+  const tmpDir = join(tmpdir(), `cn-yt-media-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  await mkdir(tmpDir, { recursive: true });
+  try {
+    let precomputedTranscript: string | null | undefined;
+    if (isLongAudio) {
+      // Videos ≥ 5 min: auto-subs only. If they're missing, we accept "no
+      // transcript" rather than running Whisper on hours of audio.
+      precomputedTranscript = fetchAutoSubs(url, tmpDir, "en") ?? null;
+    }
+
+    const { filePath, kind } = downloadVideoWithYtDlp(url, tmpDir, meta, isLongVideo ? "low" : "default");
+    if (!filePath || !kind) throw new Error(`yt-dlp produced no usable file for ${url}`);
+
+    if (kind === "video") {
+      const analysis = await analyzeVideo(filePath, durationMs, costName, strategy, precomputedTranscript);
+      return { kind, meta, analysis };
+    }
+    const analysis = await describeImageFromLocalFile(filePath, costName);
+    return { kind, meta, analysis };
+  } finally {
+    try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
+  }
+}
+
+async function describeWithGalleryDl(url: string, costName: string): Promise<MediaSourceDescription> {
+  const tmpDir = join(tmpdir(), `cn-gdl-media-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  await mkdir(tmpDir, { recursive: true });
+  try {
+    const { meta, filePath } = downloadWithGalleryDl(url, tmpDir);
+    if (!filePath) throw new Error(`gallery-dl produced no file for ${url}`);
+    const analysis = await describeImageFromLocalFile(filePath, costName);
+    return { kind: "image", meta, analysis };
+  } finally {
+    try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
+  }
 }
 
 export async function analyzeMediaGemini(
