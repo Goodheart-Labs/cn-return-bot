@@ -14,7 +14,7 @@
  * 2. Navigate to your notewriter page and log in
  *
  * 3. Run this script:
- *    bun run src/scripts/scrapeNotewriterClickThrough.ts [maxNotes] [--fresh] [--start-from <noteId>] [--stop-at <noteId>]
+ *    bun run scrape [maxNotes] [--fresh] [--start-from <noteId>] [--stop-at <noteId>]
  *
  *    --fresh: Open a new tab and start from top (otherwise reuses existing tab)
  *    --start-from <noteId>: Scroll to this note ID before scraping
@@ -725,10 +725,11 @@ async function scrapeTab(
           await new Promise(r => setTimeout(r, 1600));
         }
 
-        // --- CELL SCRAPE with retries (up to 6 attempts) ---
+        // --- CELL SCRAPE with retries (up to MAX_CELL_ATTEMPTS attempts) ---
         // If any tweet info is present (handle, text, time), the tweet exists —
         // keep retrying until all tweet fields are populated
-        for (let cellAttempt = 0; cellAttempt < 6; cellAttempt++) {
+        const MAX_CELL_ATTEMPTS = 2;
+        for (let cellAttempt = 0; cellAttempt < MAX_CELL_ATTEMPTS; cellAttempt++) {
           tweetData = await readCellTweetData();
           cellData = await readCellData();
           const cellMissing: string[] = [];
@@ -748,8 +749,8 @@ async function scrapeTab(
             if (!cellData.tweetTime) cellMissing.push('tweet_time');
           }
           if (cellMissing.length === 0) break;
-          if (cellAttempt < 5) {
-            console.log(`   ${prefix} 🔄 Cell retry ${cellAttempt + 1}/6: missing ${cellMissing.join(', ')}`);
+          if (cellAttempt < MAX_CELL_ATTEMPTS - 1) {
+            console.log(`   ${prefix} 🔄 Cell retry ${cellAttempt + 1}/${MAX_CELL_ATTEMPTS}: missing ${cellMissing.join(', ')}`);
             await randomDelay(400, 800);
           } else {
             // Final attempt failed — dump cell innerText so we can diagnose the layout.
@@ -796,8 +797,8 @@ async function scrapeTab(
         }
 
         // --- MODAL EXTRACTION with quality retries (up to 6 attempts) ---
-        const maxQualityRetries = 5;
-        const modalWaits = [3000, 5000, 8000, 10000, 10000, 10000];
+        const maxQualityRetries = 2;
+        const modalWaits = [3000, 5000, 8000];
 
         let accNoteId: string | null = null;
         let accStatus: string = 'UNKNOWN';
@@ -887,7 +888,7 @@ async function scrapeTab(
           await page.keyboard.press('Escape');
 
           if (qualityAttempt < maxQualityRetries) {
-            const retryWait = [800, 1600, 2400, 3200, 4000][qualityAttempt] || 1600;
+            const retryWait = [800, 1600][qualityAttempt] || 1600;
             console.log(`   ${prefix} 🔄 Quality retry ${qualityAttempt + 1}/${maxQualityRetries}: missing=[${missingFields.join(', ')}]`);
             qualityRetryCount++;
             await new Promise(r => setTimeout(r, retryWait));
@@ -1442,7 +1443,7 @@ async function main() {
   if (scrapedNoteIds.length > 0) {
     const oldestReached = scrapedNoteIds.reduce((a, b) => a < b ? a : b);
     console.log(`\n📌 To resume from where this run stopped:`);
-    console.log(`   bun run src/scripts/scrapeNotewriterClickThrough.ts ${maxNotes} --fresh --start-from ${oldestReached}`);
+    console.log(`   bun run scrape ${maxNotes} --start-from ${oldestReached}`);
   }
 
   console.log("\n💡 Chrome browser left open. Close it manually when done.");
