@@ -16,7 +16,7 @@ import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
 import { GEMINI_MODEL } from "../cost-tracking/pricing";
 import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
-import { downloadWithYtDlp, type YtDlpMetadata } from "./ytDlpDownload";
+import { downloadWithYtDlp, type YtDlpMetadata, type YtDlpKind } from "./ytDlpDownload";
 
 const execAsync = promisify(exec);
 const LONG_VIDEO_THRESHOLD_MS = 210_000; // 3.5 minutes
@@ -116,7 +116,7 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
-async function analyzeImage(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
+export async function describeImageFromUrl(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
   const messages = [
     {
       role: "user" as const,
@@ -325,7 +325,7 @@ async function analyzeMediaItems(
     images
       .map((img) => getBestUrl(img))
       .filter((url): url is string => !!url)
-      .map((url) => analyzeImage(url, `${namePrefix}.image.${imageIdx++}`).catch((err) => {
+      .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`).catch((err) => {
         console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
         return { type: "image" as const, url, description: { description: "", ocrText: "" } };
       })),
@@ -342,32 +342,57 @@ async function analyzeMediaItems(
   return results;
 }
 
-// --- External video URLs (used by source verifier) ---
+// --- External media URLs (used by source verifier) ---
 
-export interface VideoSourceDescription {
+export interface MediaSourceDescription {
+  kind: YtDlpKind;
   meta: YtDlpMetadata;
   analysis: GeminiMediaItem;
 }
 
+function imageMimeFromPath(filePath: string): string {
+  const ext = filePath.toLowerCase().split(".").pop();
+  switch (ext) {
+    case "png": return "image/png";
+    case "gif": return "image/gif";
+    case "webp": return "image/webp";
+    case "bmp": return "image/bmp";
+    case "heic": return "image/heic";
+    case "avif": return "image/avif";
+    default: return "image/jpeg";
+  }
+}
+
+async function describeImageFromLocalFile(filePath: string, costName: string): Promise<GeminiMediaItem> {
+  const bytes = await readFile(filePath);
+  const dataUrl = `data:${imageMimeFromPath(filePath)};base64,${bytes.toString("base64")}`;
+  return describeImageFromUrl(dataUrl, costName);
+}
+
 /**
- * Download a video URL (YouTube/TikTok/Vimeo/etc.) with yt-dlp and run it
- * through the same Gemini analysis pipeline used for tweet media. Caller is
- * responsible for catching errors (yt-dlp failures, private/unavailable
- * videos, etc.) and deciding how to surface them.
+ * Download a media URL (YouTube/Vimeo/TikTok/Twitch/Instagram/Facebook/etc.)
+ * with yt-dlp, then run the resulting file through the appropriate Gemini
+ * pipeline — video analysis for video files, image analysis for image files
+ * (e.g. Instagram photo posts). Caller catches errors (yt-dlp failure, removed
+ * content, URL not actually media) and decides how to surface them.
  */
-export async function describeVideoFromUrl(
+export async function describeMediaFromUrl(
   url: string,
   costName: string,
   strategy: "full_video" | "frames" = "frames",
-): Promise<VideoSourceDescription> {
-  const tmpDir = join(tmpdir(), `cn-video-source-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+): Promise<MediaSourceDescription> {
+  const tmpDir = join(tmpdir(), `cn-media-source-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   await mkdir(tmpDir, { recursive: true });
   try {
-    const { meta, videoPath } = downloadWithYtDlp(url, tmpDir);
-    if (!videoPath) throw new Error(`yt-dlp produced no video file for ${url}`);
-    const durationMs = meta.duration ? Math.round(meta.duration * 1000) : undefined;
-    const analysis = await analyzeVideo(videoPath, durationMs, costName, strategy);
-    return { meta, analysis };
+    const { meta, filePath, kind } = downloadWithYtDlp(url, tmpDir);
+    if (!filePath || !kind) throw new Error(`yt-dlp produced no usable media file for ${url}`);
+    if (kind === "video") {
+      const durationMs = meta.duration ? Math.round(meta.duration * 1000) : undefined;
+      const analysis = await analyzeVideo(filePath, durationMs, costName, strategy);
+      return { kind, meta, analysis };
+    }
+    const analysis = await describeImageFromLocalFile(filePath, costName);
+    return { kind, meta, analysis };
   } finally {
     try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
   }

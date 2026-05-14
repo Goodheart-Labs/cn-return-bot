@@ -10,7 +10,12 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { UnfetchableSourcesError, ModelOutputInvalidError } from "../utils/errors";
-import { describeVideoFromUrl, type VideoSourceDescription } from "../media/mediaAnalysisGemini";
+import {
+  describeMediaFromUrl,
+  describeImageFromUrl,
+  type MediaSourceDescription,
+  type GeminiMediaItem,
+} from "../media/mediaAnalysisGemini";
 
 export interface SourceVerification {
   accepted: boolean;
@@ -44,9 +49,9 @@ function isTwitterUrl(url: string): boolean {
   }
 }
 
-// Hosts where we attempt a yt-dlp video download before falling back to
-// handleWebFetch. Includes hosts that are not exclusively video (facebook,
-// instagram) — yt-dlp decides; failures fall through to the web-fetch path.
+// Hosts where we hand the URL to yt-dlp before falling back to handleWebFetch.
+// yt-dlp decides whether the post is a video, an image, or unsupported;
+// unsupported URLs (e.g. a text-only Facebook post) fall through to web-fetch.
 const YT_DLP_HOSTS = [
   "youtube.com", "youtu.be",
   "vimeo.com",
@@ -67,23 +72,47 @@ function isYtDlpCandidate(url: string): boolean {
   }
 }
 
+const DIRECT_IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".heic", ".avif"];
+
+function isDirectImageUrl(url: string): boolean {
+  try {
+    const pathname = new URL(url).pathname.toLowerCase();
+    return DIRECT_IMAGE_EXTS.some((ext) => pathname.endsWith(ext));
+  } catch {
+    return false;
+  }
+}
+
 const PLATFORM_DESCRIPTION_MAX_CHARS = 1500;
 
-function formatVideoSection(url: string, video: VideoSourceDescription): string {
-  const { meta, analysis } = video;
+function formatYtDlpMediaSection(url: string, media: MediaSourceDescription): string {
+  const { kind, meta, analysis } = media;
   const publishedIso = meta.timestamp ? new Date(meta.timestamp * 1000).toISOString() : null;
   const platformDesc = meta.description?.slice(0, PLATFORM_DESCRIPTION_MAX_CHARS);
+  const header = kind === "video"
+    ? `Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.`
+    : `Automated image analysis (yt-dlp + Gemini) — this URL is an image post, not a video. Treat this as the source's content.`;
 
   const lines = [
     `### ${url}`,
-    `Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.`,
+    header,
     meta.title ? `Title: ${meta.title}` : null,
     meta.uploader ? `Uploader: ${meta.uploader}` : null,
     publishedIso ? `Published: ${publishedIso}` : null,
     platformDesc ? `Uploader-provided description:\n${platformDesc}` : null,
     `Content summary: ${analysis.description.description || "(empty)"}`,
-    analysis.description.ocrText ? `On-screen text: ${analysis.description.ocrText}` : null,
-    `Audio transcript: ${analysis.transcription || "(unavailable)"}`,
+    analysis.description.ocrText ? (kind === "video" ? `On-screen text: ${analysis.description.ocrText}` : `Visible text: ${analysis.description.ocrText}`) : null,
+    kind === "video" ? `Audio transcript: ${analysis.transcription || "(unavailable)"}` : null,
+  ].filter((l): l is string => l !== null);
+  return lines.join("\n");
+}
+
+function formatDirectImageSection(url: string, item: GeminiMediaItem): string {
+  const lines = [
+    `### ${url}`,
+    `Automated image analysis (Gemini). Treat this as the source's content.`,
+    `Image description: ${item.description.description || "(empty)"}`,
+    item.description.ocrText ? `Visible text: ${item.description.ocrText}` : null,
   ].filter((l): l is string => l !== null);
   return lines.join("\n");
 }
@@ -97,26 +126,34 @@ interface FetchedSource {
 async function fetchSourceContent(
   sources: string[],
   costPrefix: string,
-  acceptVideoSources: boolean,
+  acceptMediaSources: boolean,
 ): Promise<{ sections: string; fetchedCount: number; totalNonFreebie: number }> {
   const results: FetchedSource[] = [];
-  let videoIdx = 0;
+  let mediaIdx = 0;
 
   for (const url of sources) {
     if (isTwitterUrl(url)) {
       results.push({ url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true });
       continue;
     }
-    if (acceptVideoSources && isYtDlpCandidate(url)) {
+    if (acceptMediaSources && isDirectImageUrl(url)) {
       try {
-        const video = await describeVideoFromUrl(url, `${costPrefix}.video.${videoIdx++}`);
-        results.push({ url, content: formatVideoSection(url, video), fetched: true });
+        const item = await describeImageFromUrl(url, `${costPrefix}.media.${mediaIdx++}`);
+        results.push({ url, content: formatDirectImageSection(url, item), fetched: true });
         continue;
       } catch (err: any) {
-        // yt-dlp failed (private video, removed, or URL isn't actually a video
-        // page). Fall through to handleWebFetch so a text-only page still has a
-        // chance of providing evidence.
-        getTweetLog()?.set(`${costPrefix}.video.${videoIdx - 1}.ytdlp_error`, err?.message ?? "unknown error");
+        getTweetLog()?.set(`${costPrefix}.media.${mediaIdx - 1}.image_error`, err?.message ?? "unknown error");
+      }
+    } else if (acceptMediaSources && isYtDlpCandidate(url)) {
+      try {
+        const media = await describeMediaFromUrl(url, `${costPrefix}.media.${mediaIdx++}`);
+        results.push({ url, content: formatYtDlpMediaSection(url, media), fetched: true });
+        continue;
+      } catch (err: any) {
+        // yt-dlp couldn't handle this URL (text-only post, removed content,
+        // private account). Fall through to handleWebFetch so a text page
+        // still has a chance of providing evidence.
+        getTweetLog()?.set(`${costPrefix}.media.${mediaIdx - 1}.ytdlp_error`, err?.message ?? "unknown error");
       }
     }
     const result = await handleWebFetch(url);
@@ -132,9 +169,9 @@ async function fetchSourceContent(
   return { sections, fetchedCount, totalNonFreebie: nonFreebie.length };
 }
 
-function buildSystemPrompt(acceptsVideoSources: boolean): string {
-  const videoRule = acceptsVideoSources
-    ? `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, Facebook, Instagram, etc.) may be presented with an automated content analysis block (title, uploader, content summary, on-screen text, audio transcript). When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be downloaded as a video, you'll see the raw web page instead (or a fetch error).`
+function buildSystemPrompt(acceptsMediaSources: boolean): string {
+  const mediaRule = acceptsMediaSources
+    ? `- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).`
     : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
 
   return `You verify whether the sources cited by a proposed community note support the correction made in that note.
@@ -148,7 +185,7 @@ Scope — what to ignore:
 Decision rules for the note's cited sources:
 - Twitter/X links (x.com, twitter.com) are accepted as valid without content checks.
 - Any other source must (a) have been successfully fetched and (b) directly support a factual claim in the note. A source that failed to fetch provides ZERO evidence.
-${videoRule}
+${mediaRule}
 
 Set accepted=true if every factual claim in the note is supported by at least one valid cited source. Otherwise set accepted=false and name the unsupported claim in your reasoning.`;
 }
@@ -164,13 +201,13 @@ export async function verifySources(params: {
   const config = getBotConfig();
   const logPrefix = `sourceVerifier.turn.${params.turnNumber}.messages`;
 
-  const acceptVideoSources = config.verifier_accepts_video_sources ?? false;
+  const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
   const { sections, fetchedCount, totalNonFreebie } = await fetchSourceContent(
     params.sources,
     `sourceVerifier.turn.${params.turnNumber}`,
-    acceptVideoSources,
+    acceptMediaSources,
   );
-  const systemPrompt = buildSystemPrompt(acceptVideoSources);
+  const systemPrompt = buildSystemPrompt(acceptMediaSources);
 
   const userMessage = [
     `## Context`,

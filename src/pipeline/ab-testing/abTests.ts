@@ -110,11 +110,11 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
 // Verifier is hardcoded to Gemini-flash via DEFAULT_CONFIG.verifier_model.
 // Add SIMPLE_BOT_VERIFIER_TEST later when comparing verifiers.
 
-const VERIFIER_VIDEO_SOURCES_TEST: ABTest = {
-  name: "verifier_video_sources",
+const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
+  name: "verifier_media_sources",
   variants: [
-    { variant: { name: "reject", overrides: { verifier_accepts_video_sources: false } }, weight: 50 },
-    { variant: { name: "accept", overrides: { verifier_accepts_video_sources: true  } }, weight: 50 },
+    { variant: { name: "reject", overrides: { verifier_accepts_media_sources: false } }, weight: 50 },
+    { variant: { name: "accept", overrides: { verifier_accepts_media_sources: true  } }, weight: 50 },
   ],
 };
 
@@ -141,7 +141,7 @@ export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
-  VERIFIER_VIDEO_SOURCES_TEST,
+  VERIFIER_MEDIA_SOURCES_TEST,
   AGENT_SEARCH_TEST,
   AGENT_PARALLEL_TEST,
 ];

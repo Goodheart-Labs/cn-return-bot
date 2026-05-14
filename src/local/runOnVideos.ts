@@ -39,7 +39,7 @@ import * as path from "path";
 import { tmpdir } from "os";
 import type { Post } from "../api/fetchEligiblePosts";
 import { parseCliArgs, runPipeline, type PostFetcher } from "./localPipelineRunner";
-import { downloadWithYtDlp, type YtDlpMetadata } from "../pipeline/media/ytDlpDownload";
+import { downloadWithYtDlp, type YtDlpMetadata, type YtDlpKind } from "../pipeline/media/ytDlpDownload";
 
 function extractIdFromUrl(url: string): string {
   const tweetMatch = url.match(/status\/(\d+)/);
@@ -55,16 +55,21 @@ function extractIdFromUrl(url: string): string {
   return Math.abs(hash).toString();
 }
 
-function buildPostFromDownload(meta: YtDlpMetadata, videoPath: string | null, url: string): Post {
+function buildPostFromDownload(meta: YtDlpMetadata, filePath: string | null, kind: YtDlpKind | null, url: string): Post {
   const text = [meta.title, meta.description].filter(Boolean).join("\n\n");
 
   const media: Post["media"] = [];
-  if (videoPath) {
+  if (filePath && kind === "video") {
     media.push({
       type: "video",
-      url: videoPath,
+      url: filePath,
       duration_ms: meta.duration ? Math.round(meta.duration * 1000) : undefined,
-      variants: [{ url: videoPath, content_type: "video/mp4" }],
+      variants: [{ url: filePath, content_type: "video/mp4" }],
+    });
+  } else if (filePath && kind === "image") {
+    media.push({
+      type: "photo",
+      url: filePath,
     });
   } else if (meta.thumbnail) {
     media.push({
@@ -104,8 +109,8 @@ async function main() {
   fs.mkdirSync(downloadDir, { recursive: true });
 
   const fetchPost: PostFetcher = async (input) => {
-    const { meta, videoPath } = downloadWithYtDlp(input.url, downloadDir);
-    const post = buildPostFromDownload(meta, videoPath, input.url);
+    const { meta, filePath, kind } = downloadWithYtDlp(input.url, downloadDir);
+    const post = buildPostFromDownload(meta, filePath, kind, input.url);
     return { post, title: meta.title?.slice(0, 80) ?? "" };
   };
 
