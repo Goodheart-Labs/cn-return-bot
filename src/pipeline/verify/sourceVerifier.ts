@@ -44,12 +44,24 @@ function isTwitterUrl(url: string): boolean {
   }
 }
 
-const VIDEO_HOSTS = ["youtube.com", "youtu.be", "vimeo.com", "tiktok.com", "twitch.tv"];
+// Hosts where we attempt a yt-dlp video download before falling back to
+// handleWebFetch. Includes hosts that are not exclusively video (facebook,
+// instagram) — yt-dlp decides; failures fall through to the web-fetch path.
+const YT_DLP_HOSTS = [
+  "youtube.com", "youtu.be",
+  "vimeo.com",
+  "tiktok.com",
+  "twitch.tv",
+  "facebook.com", "fb.watch",
+  "instagram.com",
+  "dailymotion.com",
+  "rumble.com",
+];
 
-function isVideoUrl(url: string): boolean {
+function isYtDlpCandidate(url: string): boolean {
   try {
     const hostname = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
-    return VIDEO_HOSTS.some((h) => hostname === h || hostname.endsWith(`.${h}`));
+    return YT_DLP_HOSTS.some((h) => hostname === h || hostname.endsWith(`.${h}`));
   } catch {
     return false;
   }
@@ -95,14 +107,17 @@ async function fetchSourceContent(
       results.push({ url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true });
       continue;
     }
-    if (acceptVideoSources && isVideoUrl(url)) {
+    if (acceptVideoSources && isYtDlpCandidate(url)) {
       try {
         const video = await describeVideoFromUrl(url, `${costPrefix}.video.${videoIdx++}`);
         results.push({ url, content: formatVideoSection(url, video), fetched: true });
+        continue;
       } catch (err: any) {
-        results.push({ url, content: `### ${url}\nFetch failed: yt-dlp could not download the video (${err?.message ?? "unknown error"}).`, fetched: false });
+        // yt-dlp failed (private video, removed, or URL isn't actually a video
+        // page). Fall through to handleWebFetch so a text-only page still has a
+        // chance of providing evidence.
+        getTweetLog()?.set(`${costPrefix}.video.${videoIdx - 1}.ytdlp_error`, err?.message ?? "unknown error");
       }
-      continue;
     }
     const result = await handleWebFetch(url);
     const content = typeof result.output === "string" ? result.output : JSON.stringify(result.output);
@@ -119,7 +134,7 @@ async function fetchSourceContent(
 
 function buildSystemPrompt(acceptsVideoSources: boolean): string {
   const videoRule = acceptsVideoSources
-    ? `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch) are presented with an automated content analysis (title, uploader, content summary, on-screen text, audio transcript). Treat that block as the source's content and evaluate it like any other fetched source. A video whose download failed provides ZERO evidence.`
+    ? `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, Facebook, Instagram, etc.) may be presented with an automated content analysis block (title, uploader, content summary, on-screen text, audio transcript). When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be downloaded as a video, you'll see the raw web page instead (or a fetch error).`
     : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
 
   return `You verify whether the sources cited by a proposed community note support the correction made in that note.
