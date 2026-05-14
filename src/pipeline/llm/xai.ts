@@ -2,7 +2,7 @@ import { createXai } from "@ai-sdk/xai";
 import { generateText } from "ai";
 import { calculateGrokCost, type TokenCost } from "../cost-tracking/pricing";
 
-const MAX_RETRIES = 5;
+const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 2000;
 
 if (!process.env.XAI_API_KEY) {

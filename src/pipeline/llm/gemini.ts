@@ -8,7 +8,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { calculateGeminiCost, type TokenCost } from "../cost-tracking/pricing";
 
-const MAX_RETRIES = 5;
+const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 2000;
 
 let _client: GoogleGenAI | undefined;
