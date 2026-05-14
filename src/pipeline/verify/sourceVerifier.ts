@@ -146,47 +146,68 @@ async function fetchSourceContent(
   sources: string[],
   costPrefix: string,
   acceptMediaSources: boolean,
-): Promise<{ sections: string; fetchedCount: number; totalNonFreebie: number }> {
+): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number }> {
   const results: FetchedSource[] = [];
-  let mediaIdx = 0;
-
-  for (const url of sources) {
-    if (isTwitterUrl(url)) {
-      results.push({ url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true });
-      continue;
-    }
-    if (acceptMediaSources && isDirectImageUrl(url)) {
-      try {
-        const item = await describeImageFromUrl(url, `${costPrefix}.media.${mediaIdx++}`);
-        results.push({ url, content: formatDirectImageSection(url, item), fetched: true });
-        continue;
-      } catch (err: any) {
-        getTweetLog()?.set(`${costPrefix}.media.${mediaIdx - 1}.image_error`, err?.message ?? "unknown error");
-      }
-    } else if (acceptMediaSources && isMediaHost(url)) {
-      try {
-        const media = await describeMediaFromUrl(url, `${costPrefix}.media.${mediaIdx++}`);
-        results.push({ url, content: formatCascadeMediaSection(url, media), fetched: true });
-        continue;
-      } catch (err: any) {
-        // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
-        // removed content, private account, or host not yet supported). Fall
-        // through to handleWebFetch so a text page still has a chance of
-        // providing evidence.
-        getTweetLog()?.set(`${costPrefix}.media.${mediaIdx - 1}.media_error`, err?.message ?? "unknown error");
-      }
-    }
-    const result = await handleWebFetch(url);
-    const content = typeof result.output === "string" ? result.output : JSON.stringify(result.output);
-    const isFetchError = content.startsWith("Fetch failed:") || content.startsWith("Fetch error:") || content.startsWith("Non-text content:");
-    results.push({ url, content: `### ${url}\n${content}`, fetched: !isFetchError });
+  for (let i = 0; i < sources.length; i++) {
+    results.push(await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, acceptMediaSources));
   }
-
   const sections = results.map((r) => r.content).join("\n\n");
-  const nonFreebie = results.filter((r) => !isTwitterUrl(r.url));
-  const fetchedCount = nonFreebie.filter((r) => r.fetched).length;
+  const nonTwitter = results.filter((r) => !isTwitterUrl(r.url));
+  return {
+    sections,
+    fetchedCount: nonTwitter.filter((r) => r.fetched).length,
+    totalNonTwitter: nonTwitter.length,
+  };
+}
 
-  return { sections, fetchedCount, totalNonFreebie: nonFreebie.length };
+async function fetchOneSource(
+  url: string,
+  costName: string,
+  acceptMediaSources: boolean,
+): Promise<FetchedSource> {
+  if (isTwitterUrl(url)) {
+    return { url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true };
+  }
+  if (acceptMediaSources) {
+    const media = await tryMediaDescription(url, costName);
+    if (media) return media;
+  }
+  return fetchAsWebPage(url);
+}
+
+/** Returns null when the URL isn't media-eligible or the cascade failed (and we should fall through to handleWebFetch). */
+async function tryMediaDescription(url: string, costName: string): Promise<FetchedSource | null> {
+  if (isDirectImageUrl(url)) {
+    try {
+      const item = await describeImageFromUrl(url, costName);
+      return { url, content: formatDirectImageSection(url, item), fetched: true };
+    } catch (err: any) {
+      getTweetLog()?.set(`${costName}.image_error`, err?.message ?? "unknown error");
+      return null;
+    }
+  }
+  if (isMediaHost(url)) {
+    try {
+      const media = await describeMediaFromUrl(url, costName);
+      return { url, content: formatCascadeMediaSection(url, media), fetched: true };
+    } catch (err: any) {
+      // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
+      // removed content, private account, or host not yet supported).
+      getTweetLog()?.set(`${costName}.media_error`, err?.message ?? "unknown error");
+      return null;
+    }
+  }
+  return null;
+}
+
+async function fetchAsWebPage(url: string): Promise<FetchedSource> {
+  const result = await handleWebFetch(url);
+  const content = typeof result.output === "string" ? result.output : JSON.stringify(result.output);
+  const isFetchError =
+    content.startsWith("Fetch failed:") ||
+    content.startsWith("Fetch error:") ||
+    content.startsWith("Non-text content:");
+  return { url, content: `### ${url}\n${content}`, fetched: !isFetchError };
 }
 
 function buildSystemPrompt(acceptsMediaSources: boolean): string {
@@ -224,7 +245,7 @@ export async function verifySources(params: {
   const logPrefix = `sourceVerifier.turn.${params.turnNumber}.messages`;
 
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
-  const { sections, fetchedCount, totalNonFreebie } = await fetchSourceContent(
+  const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(
     params.sources,
     `sourceVerifier.turn.${params.turnNumber}`,
     acceptMediaSources,
@@ -250,9 +271,9 @@ export async function verifySources(params: {
 
   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
 
-  if (totalNonFreebie > 0 && fetchedCount === 0) {
+  if (totalNonTwitter > 0 && fetchedCount === 0) {
     throw new UnfetchableSourcesError(
-      `None of the ${totalNonFreebie} non-Twitter source(s) could be fetched`,
+      `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,
     );
   }
 
