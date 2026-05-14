@@ -20,6 +20,8 @@ export interface BotConfig {
   writer_model?: string;
   /** Defaults to gemini-3-flash-preview via DEFAULT_CONFIG (no A/B test). */
   verifier_model?: string;
+  /** If true, the source verifier treats cited video/audio URLs as valid evidence. Defaults to false. */
+  verifier_accepts_video_sources?: boolean;
   web_search:
     | "native"             // Anthropic web_search via OpenRouter
     | "native_gemini"      // Google Gen AI native API + googleSearch tool

@@ -70,7 +70,12 @@ async function fetchSourceContent(sources: string[]): Promise<{ sections: string
   return { sections, fetchedCount, totalNonTwitter: nonTwitter.length };
 }
 
-const SYSTEM_PROMPT = `You verify whether the sources cited by a proposed community note support the correction made in that note.
+function buildSystemPrompt(acceptsVideoSources: boolean): string {
+  const videoRule = acceptsVideoSources
+    ? `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources are accepted as valid evidence without content checks, as long as the URL itself is plausibly relevant to the factual claim.`
+    : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
+
+  return `You verify whether the sources cited by a proposed community note support the correction made in that note.
 
 Your ONLY job: do the URLs listed under "Note's cited sources", as fetched, support the factual claims in the note?
 
@@ -81,9 +86,10 @@ Scope — what to ignore:
 Decision rules for the note's cited sources:
 - Twitter/X links (x.com, twitter.com) are accepted as valid without content checks.
 - Any other source must (a) have been successfully fetched and (b) directly support a factual claim in the note. A source that failed to fetch provides ZERO evidence.
-- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.
+${videoRule}
 
 Set accepted=true if every factual claim in the note is supported by at least one valid cited source. Otherwise set accepted=false and name the unsupported claim in your reasoning.`;
+}
 
 export async function verifySources(params: {
   noteText: string;
@@ -97,6 +103,7 @@ export async function verifySources(params: {
   const logPrefix = `sourceVerifier.turn.${params.turnNumber}.messages`;
 
   const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(params.sources);
+  const systemPrompt = buildSystemPrompt(config.verifier_accepts_video_sources ?? false);
 
   const userMessage = [
     `## Context`,
@@ -115,7 +122,7 @@ export async function verifySources(params: {
     params.researcherFindings,
   ].join("\n");
 
-  log?.set(`${logPrefix}.0`, { systemPrompt: SYSTEM_PROMPT, userMessage });
+  log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
 
   if (totalNonTwitter > 0 && fetchedCount === 0) {
     throw new UnfetchableSourcesError(
@@ -126,7 +133,7 @@ export async function verifySources(params: {
   const { response, costEntry } = await trackedLlmCreate(`sourceVerifier.turn.${params.turnNumber}`, {
     model: config.verifier_model ?? config.model,
     messages: [
-      { role: "system" as const, content: SYSTEM_PROMPT },
+      { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
     response_format: RESPONSE_FORMAT,
