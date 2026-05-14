@@ -18,6 +18,11 @@ import {
 } from "../media/mediaAnalysisGemini";
 
 export interface SourceVerification {
+  /** Cited URLs that support at least one factual claim in the note. Subset of the input sources. */
+  good_sources: string[];
+  /** Cited URLs that failed to fetch or don't support any factual claim. Subset of the input sources. */
+  bad_sources: string[];
+  /** True iff good_sources together cover every factual claim. */
   accepted: boolean;
   reasoning: string;
 }
@@ -30,10 +35,20 @@ const RESPONSE_FORMAT = {
     schema: {
       type: "object",
       properties: {
-        accepted: { type: "boolean", description: "Whether the sources support the note's correction." },
-        reasoning: { type: "string", description: "Why the note was accepted or rejected." },
+        good_sources: {
+          type: "array",
+          items: { type: "string" },
+          description: "Verbatim URLs from the cited sources that support a factual claim in the note. Twitter/X links are always good if they appear in the cited sources.",
+        },
+        bad_sources: {
+          type: "array",
+          items: { type: "string" },
+          description: "Verbatim URLs from the cited sources that failed to fetch or that do not support any factual claim in the note.",
+        },
+        accepted: { type: "boolean", description: "True iff good_sources together cover every factual claim in the note." },
+        reasoning: { type: "string", description: "Why the note was accepted or rejected, and a short note on any bad_sources." },
       },
-      required: ["accepted", "reasoning"],
+      required: ["good_sources", "bad_sources", "accepted", "reasoning"],
       additionalProperties: false,
     },
   },
@@ -174,20 +189,22 @@ function buildSystemPrompt(acceptsMediaSources: boolean): string {
     ? `- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).`
     : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
 
-  return `You verify whether the sources cited by a proposed community note support the correction made in that note.
-
-Your ONLY job: do the URLs listed under "Note's cited sources", as fetched, support the factual claims in the note?
+  return `You verify whether the sources cited by a proposed community note support the correction made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.
 
 Scope — what to ignore:
 - Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.
 - The "Research findings" section is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under "Note's cited sources".
 
-Decision rules for the note's cited sources:
-- Twitter/X links (x.com, twitter.com) are accepted as valid without content checks.
-- Any other source must (a) have been successfully fetched and (b) directly support a factual claim in the note. A source that failed to fetch provides ZERO evidence.
+Classification rules for each cited source:
+- Twitter/X links (x.com, twitter.com) → always good.
+- Any other source → good only if it (a) was successfully fetched (no "Fetch failed:" / "Fetch error:" / "Non-text content:" marker) AND (b) its content directly supports at least one factual claim in the note. Otherwise bad.
 ${mediaRule}
 
-Set accepted=true if every factual claim in the note is supported by at least one valid cited source. Otherwise set accepted=false and name the unsupported claim in your reasoning.`;
+Output:
+- good_sources: verbatim URLs (exactly as listed) that pass the rules above.
+- bad_sources: every other cited URL — failed-to-fetch, irrelevant, or contradicts the note.
+- Every cited URL must appear in exactly one of good_sources or bad_sources. Do not invent URLs.
+- accepted: true iff good_sources together cover every factual claim in the note. Otherwise false, and name the unsupported claim in reasoning.`;
 }
 
 export async function verifySources(params: {
@@ -245,14 +262,26 @@ export async function verifySources(params: {
   trackLlmCall(costEntry);
 
   const content = response.choices?.[0]?.message?.content ?? "{}";
-  let result: SourceVerification;
+  let parsed: SourceVerification;
   try {
-    result = JSON.parse(content);
+    parsed = JSON.parse(content);
   } catch {
     throw new ModelOutputInvalidError(
       `sourceVerifier.turn.${params.turnNumber}: model output was not valid JSON. content="${content.slice(0, 200)}"`,
     );
   }
+
+  // Defensive: clamp good_sources/bad_sources to URLs the writer actually
+  // cited. A misbehaving model could echo URLs from the research findings
+  // section or hallucinate; we never want the final submitted note to carry
+  // a URL the writer didn't choose.
+  const citedSet = new Set(params.sources);
+  const result: SourceVerification = {
+    good_sources: (parsed.good_sources ?? []).filter((u) => citedSet.has(u)),
+    bad_sources: (parsed.bad_sources ?? []).filter((u) => citedSet.has(u)),
+    accepted: !!parsed.accepted,
+    reasoning: parsed.reasoning ?? "",
+  };
 
   log?.set(`${logPrefix}.1`, { content: result });
   return result;

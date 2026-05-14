@@ -62,7 +62,7 @@ function initPipeline(post: Post, input: BotInput): PipelineState {
 }
 
 type VerificationResult =
-  | { type: "accepted"; note: EvaluatedNote }
+  | { type: "accepted"; note: EvaluatedNote; goodSources: string[] }
   | { type: "rejected"; reasoning: string };
 
 async function handleProposeNotes(
@@ -90,7 +90,7 @@ async function handleProposeNotes(
   });
 
   if (verification.accepted) {
-    return { type: "accepted", note: selected };
+    return { type: "accepted", note: selected, goodSources: verification.good_sources };
   }
   return { type: "rejected", reasoning: verification.reasoning };
 }
@@ -151,7 +151,8 @@ export async function runMultiAgentPipeline(
         return {
           type: "note",
           noteText: verification.note.noteText,
-          sources: verification.note.sources,
+          // Drop URLs the verifier classified as bad — keeps unsupported / failed-fetch sources out of the published note.
+          sources: verification.goodSources,
           evalScore: verification.note.evalScore,
           searchResults: state.researcherFindings,
         };
