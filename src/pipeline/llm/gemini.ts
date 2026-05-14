@@ -8,8 +8,8 @@
 import { GoogleGenAI } from "@google/genai";
 import { calculateGeminiCost, type TokenCost } from "../cost-tracking/pricing";
 
-const MAX_RETRIES = 3;
-const INITIAL_BACKOFF_MS = 1000;
+const MAX_RETRIES = 5;
+const INITIAL_BACKOFF_MS = 2000;
 
 let _client: GoogleGenAI | undefined;
 
@@ -24,11 +24,15 @@ function getClient(): GoogleGenAI {
 }
 
 function isRetryableError(err: any): boolean {
-  // GoogleGenAI throws { status: number } for HTTP errors, plus standard
-  // Node network errors for connectivity issues.
   const status = err?.status ?? err?.response?.status;
   if (status === 429 || status === 500 || status === 502 || status === 503 || status === 504) return true;
   if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT" || err?.code === "ENETUNREACH") return true;
+  // @google/genai's ApiError stuffs the HTTP status into the JSON message body
+  // rather than exposing it as a field, so fall back to inspecting the text.
+  const msg: string = err?.message ?? "";
+  if (/"code"\s*:\s*(429|500|502|503|504)/.test(msg)) return true;
+  if (/UNAVAILABLE|DEADLINE_EXCEEDED|RESOURCE_EXHAUSTED/.test(msg)) return true;
+  if (/operation timed out|timeout/i.test(msg)) return true;
   return false;
 }
 
