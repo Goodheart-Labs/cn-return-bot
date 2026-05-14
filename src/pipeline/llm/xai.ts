@@ -3,7 +3,7 @@ import { generateText } from "ai";
 import { calculateGrokCost, type TokenCost } from "../cost-tracking/pricing";
 
 const MAX_RETRIES = 3;
-const INITIAL_BACKOFF_MS = 1000;
+const INITIAL_BACKOFF_MS = 2000;
 
 if (!process.env.XAI_API_KEY) {
   console.warn("XAI_API_KEY not set - Grok X search will not be available");
@@ -18,6 +18,10 @@ function isRetryableError(err: any): boolean {
   const status = err?.statusCode ?? err?.status ?? err?.response?.status;
   if (status === 429 || status === 500 || status === 502 || status === 503 || status === 504) return true;
   if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT" || err?.code === "ENETUNREACH") return true;
+  const msg: string = err?.message ?? "";
+  if (/"code"\s*:\s*(429|500|502|503|504)/.test(msg)) return true;
+  if (/UNAVAILABLE|DEADLINE_EXCEEDED|RESOURCE_EXHAUSTED/.test(msg)) return true;
+  if (/operation timed out|timeout/i.test(msg)) return true;
   return false;
 }
 

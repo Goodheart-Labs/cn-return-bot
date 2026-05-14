@@ -26,9 +26,13 @@ function isRetryableError(err: any): boolean {
   // OpenRouter wraps provider failures as 400 "Provider returned error"
   if (status === 400 && String(err?.message ?? "").includes("Provider returned error")) return true;
   // Standard retryable codes (in case SDK retries are exhausted)
-  if (status === 429 || status === 502 || status === 503) return true;
+  if (status === 429 || status === 500 || status === 502 || status === 503 || status === 504) return true;
   // Network errors
-  if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT") return true;
+  if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT" || err?.code === "ENETUNREACH") return true;
+  // Fallbacks for SDK shapes that hide status in the message body / generic timeouts
+  const msg: string = err?.message ?? "";
+  if (/"code"\s*:\s*(429|500|502|503|504)/.test(msg)) return true;
+  if (/operation timed out|timeout/i.test(msg)) return true;
   return false;
 }
 

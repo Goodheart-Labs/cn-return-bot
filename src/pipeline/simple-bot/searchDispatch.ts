@@ -246,9 +246,10 @@ async function searchWithGrokNative(
 
 // OpenAI reasoning models (gpt-5*) require max_tokens via OpenRouter (their
 // default is 64k+, which OpenRouter rejects unless your credit covers it).
-// 4000 is a sensible upper bound for findings + reasoning; typical actual
-// usage is <500 completion tokens.
-const OPENAI_MAX_TOKENS = 4000;
+// gpt-5 burns thousands of *reasoning* tokens on top of the visible output,
+// so 4000 frequently truncated the response to empty content. 16000 gives
+// enough headroom for reasoning + a small JSON answer.
+const OPENAI_MAX_TOKENS = 16000;
 
 async function searchWithOpenaiNative(
   userMessage: string,
@@ -275,8 +276,16 @@ async function searchWithOpenaiNative(
     max_tokens: OPENAI_MAX_TOKENS,
   } as any);
 
-  const rawContent = response.choices?.[0]?.message?.content ?? "";
+  const choice = response.choices?.[0];
+  const rawContent = choice?.message?.content ?? "";
   const cleaned = rawContent.replace(/^```json\n?|\n?```$/g, "").trim();
+  if (!cleaned) {
+    const finishReason = choice?.finish_reason ?? "unknown";
+    const usage = response.usage ? JSON.stringify(response.usage) : "(no usage)";
+    throw new ModelOutputInvalidError(
+      `searchWithOpenaiNative: empty content. finish_reason=${finishReason} usage=${usage}`,
+    );
+  }
   const parsed = parseSearchJson(cleaned, "searchWithOpenaiNative");
   log?.set(`${name}.messages.1`, { content: parsed });
 
