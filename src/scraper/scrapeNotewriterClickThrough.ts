@@ -14,7 +14,7 @@
  * 2. Navigate to your notewriter page and log in
  *
  * 3. Run this script:
- *    bun run src/scripts/scrapeNotewriterClickThrough.ts [maxNotes] [--fresh] [--start-from <noteId>] [--stop-at <noteId>]
+ *    bun run scrape [maxNotes] [--fresh] [--start-from <noteId>] [--stop-at <noteId>]
  *
  *    --fresh: Open a new tab and start from top (otherwise reuses existing tab)
  *    --start-from <noteId>: Scroll to this note ID before scraping
@@ -28,6 +28,19 @@ import { SupabaseLogger } from "../api/supabaseClient";
 const DEFAULT_USERNAME = "wholesome-raspberry-stilt";
 const SCROLL_PX = 600;
 const BOTTOM_NOTE_ID = 1976702059752911225n; // Oldest known note — reaching this = full coverage
+
+async function runReconcile(): Promise<void> {
+  console.log("\n🔄 Running snapshot reconciliation...");
+  try {
+    const { reconcile } = await import("./reconcileSnapshots");
+    const result = await reconcile();
+    console.log(`   • Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk}`);
+    console.log(`   • Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`);
+    console.log(`   • Notes written: ${result.notesWritten}`);
+  } catch (err) {
+    console.error("   ⚠️ Reconciliation failed (non-fatal):", err);
+  }
+}
 
 function randomDelay(minMs: number, maxMs: number): Promise<void> {
   const delay = minMs + Math.random() * (maxMs - minMs);
@@ -486,11 +499,15 @@ async function scrapeTab(
             .map((a) => (a as HTMLAnchorElement).href)
             .filter((h) => !h.includes('x.com') && !h.includes('twitter.com'));
 
+          // NOTE: cell innerText concatenates DOM nodes without whitespace
+          // (e.g. "...GermantownCurrently rated helpful19h..."), so leading/trailing
+          // \b word boundaries fail when a phrase abuts other letters. The phrases
+          // below are distinctive enough that bare substring match is safe.
           let viewCount: number | null = null;
           let shownOnX: boolean | null = null;
-          if (/\bNot shown on X\b/i.test(text)) {
+          if (/Not shown on X/i.test(text)) {
             shownOnX = false;
-          } else if (/\bShown on X\b/i.test(text)) {
+          } else if (/Shown on X/i.test(text)) {
             shownOnX = true;
             const viewMatch = text.match(/Shown on X[^·]*·\s*([\d,.]+)([KMB]?)\+?\s*views?/i);
             if (viewMatch) {
@@ -504,11 +521,15 @@ async function scrapeTab(
           }
 
           let cellStatus: string | null = null;
-          if (/\bCurrently not rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
-          else if (/\bCurrently rated helpful\b/i.test(text)) cellStatus = 'CURRENTLY_RATED_HELPFUL';
-          else if (/\bNeeds more ratings\b/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
+          if (/Currently rated not helpful/i.test(text)) cellStatus = 'CURRENTLY_RATED_NOT_HELPFUL';
+          else if (/Currently rated helpful/i.test(text)) cellStatus = 'CURRENTLY_RATED_HELPFUL';
+          else if (/Needs more ratings/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
 
-          const postUnavailable = /\bPost unavailable\b/i.test(text);
+          const postUnavailable = /Post unavailable/i.test(text);
+          // Sensitive-content / age-restricted preview: X hides the embedded tweet
+          // behind a "show this content" overlay, so avatar/tweetText/status link
+          // are absent from the cell DOM. Modal still works — skip cell retries.
+          const hasInterstitial = !!el.querySelector('[data-testid="previewInterstitial"]');
 
           // --- Extract original tweet info from the cell ---
           let tweetHandle: string | null = null;
@@ -541,7 +562,7 @@ async function scrapeTab(
             }
           }
 
-          return { noteText, sourceUrl: sourceLinks[0] || null, viewCount, shownOnX, cellStatus, postUnavailable, tweetHandle, tweetText, tweetTime };
+          return { noteText, sourceUrl: sourceLinks[0] || null, viewCount, shownOnX, cellStatus, postUnavailable, hasInterstitial, tweetHandle, tweetText, tweetTime };
         });
       }
 
@@ -588,7 +609,9 @@ async function scrapeTab(
                           document.querySelector('[data-testid="Drawer"]');
             const text = modal ? (modal as HTMLElement).innerText : document.body.innerText;
             const hasNoteId = /Note ID[\s:]*\d{18,20}/i.test(text);
-            const hasStatus = /\bCurrently (not )?rated helpful\b/i.test(text) || /\bNeeds more ratings\b/i.test(text);
+            const hasStatus = /Current Status\s+(Not Helpful|Helpful|Needs More Ratings)\b/i.test(text)
+              || /Currently (not )?rated helpful/i.test(text)
+              || /Needs more ratings/i.test(text);
             return { hasNoteId, hasStatus };
           });
           if (state.hasNoteId && state.hasStatus) break;
@@ -623,7 +646,11 @@ async function scrapeTab(
             }
           }
 
-          if (!modalText) {
+          // New modal (May 2026): the "Note ID …" footer line lives in a sibling
+          // container outside [data-testid="sheetDialog"]. If we found a modal
+          // element but it's missing the Note ID line, widen to body text.
+          const modalMissingNoteId = !!modalText && !/Note ID/i.test(modalText);
+          if (!modalText || modalMissingNoteId) {
             const bodyText = document.body.innerText;
             if (!bodyText.includes('Note Details') && !bodyText.includes('Note ID')) {
               return null;
@@ -635,27 +662,34 @@ async function scrapeTab(
           const noteIdMatch = modalText.match(/Note ID[:\s]*(\d{18,20})/i);
           const noteId = noteIdMatch ? (noteIdMatch[1] ?? null) : null;
 
+          // In the new modal UI (May 2026+), the label appears on its own line
+          // directly under a "Current Status" header: "Helpful" / "Not Helpful" /
+          // "Needs More Ratings". Fall back to the older "Currently rated ..." copy.
+          const parseStatus = (text: string): string => {
+            const headerMatch = text.match(/Current Status\s+(Not Helpful|Helpful|Needs More Ratings)\b/i);
+            if (headerMatch) {
+              const label = headerMatch[1]!.toLowerCase();
+              if (label === 'not helpful') return 'CURRENTLY_RATED_NOT_HELPFUL';
+              if (label === 'helpful') return 'CURRENTLY_RATED_HELPFUL';
+              if (label === 'needs more ratings') return 'NEEDS_MORE_RATINGS';
+            }
+            // No leading \b — body-fallback text concatenates DOM without spaces.
+            if (/Currently rated not helpful/i.test(text)) return 'CURRENTLY_RATED_NOT_HELPFUL';
+            if (/Currently rated helpful/i.test(text)) return 'CURRENTLY_RATED_HELPFUL';
+            if (/Needs more ratings/i.test(text)) return 'NEEDS_MORE_RATINGS';
+            return 'UNKNOWN';
+          };
+
           let status = 'UNKNOWN';
           if (usedFallback && noteId) {
             const noteIdPos = modalText.indexOf('Note ID');
             if (noteIdPos !== -1) {
-              const textAfterNoteId = modalText.substring(noteIdPos, noteIdPos + 500);
-              if (/\bCurrently not rated helpful\b/i.test(textAfterNoteId)) {
-                status = 'CURRENTLY_RATED_NOT_HELPFUL';
-              } else if (/\bCurrently rated helpful\b/i.test(textAfterNoteId)) {
-                status = 'CURRENTLY_RATED_HELPFUL';
-              } else if (/\bNeeds more ratings\b/i.test(textAfterNoteId)) {
-                status = 'NEEDS_MORE_RATINGS';
-              }
+              // New UI puts "Current Status" ABOVE "Note ID"; old fallback only looked after.
+              // Search the whole text once we've confirmed Note ID is present.
+              status = parseStatus(modalText);
             }
           } else {
-            if (/\bCurrently not rated helpful\b/i.test(modalText)) {
-              status = 'CURRENTLY_RATED_NOT_HELPFUL';
-            } else if (/\bCurrently rated helpful\b/i.test(modalText)) {
-              status = 'CURRENTLY_RATED_HELPFUL';
-            } else if (/\bNeeds more ratings\b/i.test(modalText)) {
-              status = 'NEEDS_MORE_RATINGS';
-            }
+            status = parseStatus(modalText);
           }
 
           const dateMatch = modalText.match(/Note submitted[:\s]*([\d:]+\s*(?:AM|PM)?)\s*[·•]\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4})/i);
@@ -680,7 +714,7 @@ async function scrapeTab(
       // Retries everything up to 2 more times if cross-source data conflicts
       // ============================================================
       let tweetData: Awaited<ReturnType<typeof readCellTweetData>> = { tweetId: null, tweetUrl: null, noteIdFromUrl: null };
-      let cellData: Awaited<ReturnType<typeof readCellData>> = { noteText: '', sourceUrl: null, viewCount: null, shownOnX: null, cellStatus: null, postUnavailable: false, tweetHandle: null, tweetText: null, tweetTime: null };
+      let cellData: Awaited<ReturnType<typeof readCellData>> = { noteText: '', sourceUrl: null, viewCount: null, shownOnX: null, cellStatus: null, postUnavailable: false, hasInterstitial: false, tweetHandle: null, tweetText: null, tweetTime: null };
       let modalData: ModalData | null = null;
 
       conflictLoop:
@@ -691,27 +725,46 @@ async function scrapeTab(
           await new Promise(r => setTimeout(r, 1600));
         }
 
-        // --- CELL SCRAPE with retries (up to 6 attempts) ---
+        // --- CELL SCRAPE with retries (up to MAX_CELL_ATTEMPTS attempts) ---
         // If any tweet info is present (handle, text, time), the tweet exists —
         // keep retrying until all tweet fields are populated
-        for (let cellAttempt = 0; cellAttempt < 6; cellAttempt++) {
+        const MAX_CELL_ATTEMPTS = 2;
+        for (let cellAttempt = 0; cellAttempt < MAX_CELL_ATTEMPTS; cellAttempt++) {
           tweetData = await readCellTweetData();
           cellData = await readCellData();
           const cellMissing: string[] = [];
-          if (!tweetData.tweetId) cellMissing.push('tweet_id');
+          // When the original post is unavailable or hidden behind a sensitive-content
+          // interstitial, the embedded tweet DOM doesn't exist in the cell at all —
+          // tweet_id/handle/text will never appear, so don't waste retries on them.
+          // The modal still has the noteId.
+          const embeddedTweetAbsent = cellData.postUnavailable || cellData.hasInterstitial;
+          if (!embeddedTweetAbsent && !tweetData.tweetId) cellMissing.push('tweet_id');
           if (!cellData.noteText) cellMissing.push('note_text');
           if (!cellData.cellStatus) cellMissing.push('status');
           // If we see ANY tweet info, the tweet is present — retry for all tweet fields
           const hasSomeTweetInfo = cellData.tweetHandle || cellData.tweetText || cellData.tweetTime;
-          if (hasSomeTweetInfo) {
+          if (!embeddedTweetAbsent && hasSomeTweetInfo) {
             if (!cellData.tweetHandle) cellMissing.push('tweet_handle');
             if (!cellData.tweetText) cellMissing.push('tweet_text');
             if (!cellData.tweetTime) cellMissing.push('tweet_time');
           }
           if (cellMissing.length === 0) break;
-          if (cellAttempt < 5) {
-            console.log(`   ${prefix} 🔄 Cell retry ${cellAttempt + 1}/6: missing ${cellMissing.join(', ')}`);
+          if (cellAttempt < MAX_CELL_ATTEMPTS - 1) {
+            console.log(`   ${prefix} 🔄 Cell retry ${cellAttempt + 1}/${MAX_CELL_ATTEMPTS}: missing ${cellMissing.join(', ')}`);
             await randomDelay(400, 800);
+          } else {
+            // Final attempt failed — dump cell innerText so we can diagnose the layout.
+            const dump = await cell.evaluate(el => {
+              const text = (el as HTMLElement).innerText || '';
+              const links = [...el.querySelectorAll('a[href]')].map(a => (a as HTMLAnchorElement).getAttribute('href')).slice(0, 10);
+              const testIds = [...el.querySelectorAll('[data-testid]')].map(e => e.getAttribute('data-testid')).slice(0, 20);
+              return { text: text.slice(0, 800), links, testIds };
+            }).catch(() => null);
+            if (dump) {
+              console.log(`   ${prefix} 🐛 Cell dump — testIds: ${JSON.stringify(dump.testIds)}`);
+              console.log(`   ${prefix} 🐛 Cell dump — links: ${JSON.stringify(dump.links)}`);
+              console.log(`   ${prefix} 🐛 Cell dump — innerText:\n${dump.text.split('\n').map(l => '       | ' + l).join('\n')}`);
+            }
           }
         }
 
@@ -744,8 +797,8 @@ async function scrapeTab(
         }
 
         // --- MODAL EXTRACTION with quality retries (up to 6 attempts) ---
-        const maxQualityRetries = 5;
-        const modalWaits = [3000, 5000, 8000, 10000, 10000, 10000];
+        const maxQualityRetries = 2;
+        const modalWaits = [3000, 5000, 8000];
 
         let accNoteId: string | null = null;
         let accStatus: string = 'UNKNOWN';
@@ -753,14 +806,15 @@ async function scrapeTab(
         let accRaterTags: string[] | null = null;
         let finalModalData: ModalData | null = null;
 
-        // Only check fields the modal can provide (status, submittedDate, raterTags).
+        // Only check fields the modal can provide (status, submittedDate).
         // Cell-only fields (tweet_id, note_text, view_count) can't be fixed by modal retries.
+        // Rater tags are NOT required: X only shows the "Top tags selected by raters"
+        // section when raters have agreed on tags. Many Helpful notes have no tags section
+        // in the modal at all — requiring it caused 5 useless retries per such note.
         function checkModalMissingFields(): string[] {
           const missing: string[] = [];
           if (accStatus === 'UNKNOWN') missing.push('status');
           if (!accSubmittedDate) missing.push('submitted_date');
-          const isRated = accStatus === 'CURRENTLY_RATED_HELPFUL' || accStatus === 'CURRENTLY_RATED_NOT_HELPFUL';
-          if (isRated && !accRaterTags) missing.push('rater_tags');
           return missing;
         }
 
@@ -812,10 +866,29 @@ async function scrapeTab(
           const missingFields = checkModalMissingFields();
           if (missingFields.length === 0) break;
 
+          // On the FINAL retry, dump while the modal is still open so we can see
+          // what the layout actually looks like for the missing field.
+          if (qualityAttempt >= maxQualityRetries) {
+            const dump = await page.evaluate(() => {
+              const modal = document.querySelector('[data-testid="sheetDialog"]') ||
+                            document.querySelector('[role="dialog"]') ||
+                            document.querySelector('[aria-modal="true"]');
+              const modalText = modal ? (modal as HTMLElement).innerText.slice(0, 1500) : '(no modal element)';
+              const bodyText = document.body.innerText;
+              const tagsIdx = bodyText.indexOf('Top tags');
+              const slice = (i: number) => i >= 0 ? bodyText.slice(Math.max(0, i - 50), i + 500) : '(not found)';
+              return { modalText, bodyAroundTags: slice(tagsIdx) };
+            }).catch(() => null);
+            if (dump) {
+              console.log(`   ${prefix} 🐛 Modal dump (final retry, missing=[${missingFields.join(', ')}]) — modal innerText:\n${dump.modalText.split('\n').map(l => '       | ' + l).join('\n')}`);
+              console.log(`   ${prefix} 🐛 Body around "Top tags":\n${dump.bodyAroundTags.split('\n').map(l => '       | ' + l).join('\n')}`);
+            }
+          }
+
           await page.keyboard.press('Escape');
 
           if (qualityAttempt < maxQualityRetries) {
-            const retryWait = [800, 1600, 2400, 3200, 4000][qualityAttempt] || 1600;
+            const retryWait = [800, 1600][qualityAttempt] || 1600;
             console.log(`   ${prefix} 🔄 Quality retry ${qualityAttempt + 1}/${maxQualityRetries}: missing=[${missingFields.join(', ')}]`);
             qualityRetryCount++;
             await new Promise(r => setTimeout(r, retryWait));
@@ -1357,17 +1430,11 @@ async function main() {
     }
   }
 
-  // Run snapshot reconciliation (tier classification, collision resolution, canonical data)
-  console.log("\n🔄 Running snapshot reconciliation...");
-  try {
-    const { reconcile } = await import("./reconcileSnapshots");
-    const result = await reconcile();
-    console.log(`   • Tiers: platinum=${result.tierCounts.platinum} gold=${result.tierCounts.gold} silver=${result.tierCounts.silver} junk=${result.tierCounts.junk}`);
-    console.log(`   • Collisions: ${result.collisions.note} note-level, ${result.collisions.tweet} tweet-level`);
-    console.log(`   • Notes written: ${result.notesWritten}`);
-  } catch (err) {
-    console.error("   ⚠️ Reconciliation failed (non-fatal):", err);
-  }
+  // Final reconciliation (tier classification, collision resolution, canonical data).
+  // Snapshots are persisted per-note already, so a hard Ctrl+C / crash mid-run
+  // is recoverable: a future clean run's end-of-script reconcile rebuilds the
+  // canonical state from the full snapshot history.
+  await runReconcile();
 
   // Print resume command based on oldest note scraped
   const scrapedNoteIds = [...collectedNotes.keys()]
@@ -1376,7 +1443,7 @@ async function main() {
   if (scrapedNoteIds.length > 0) {
     const oldestReached = scrapedNoteIds.reduce((a, b) => a < b ? a : b);
     console.log(`\n📌 To resume from where this run stopped:`);
-    console.log(`   bun run src/scripts/scrapeNotewriterClickThrough.ts ${maxNotes} --fresh --start-from ${oldestReached}`);
+    console.log(`   bun run scrape ${maxNotes} --start-from ${oldestReached}`);
   }
 
   console.log("\n💡 Chrome browser left open. Close it manually when done.");
