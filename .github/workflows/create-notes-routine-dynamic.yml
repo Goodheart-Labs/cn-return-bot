@@ -56,8 +56,8 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Install FFmpeg and yt-dlp for video analysis
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg yt-dlp
+      - name: Install FFmpeg, yt-dlp, and gallery-dl for media analysis
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg yt-dlp gallery-dl
 
       - name: Get Playwright version
         id: playwright-version

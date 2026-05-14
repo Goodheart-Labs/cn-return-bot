@@ -64,10 +64,11 @@ function isTwitterUrl(url: string): boolean {
   }
 }
 
-// Hosts where we hand the URL to yt-dlp before falling back to handleWebFetch.
-// yt-dlp decides whether the post is a video, an image, or unsupported;
-// unsupported URLs (e.g. a text-only Facebook post) fall through to web-fetch.
-const YT_DLP_HOSTS = [
+// Hosts where we attempt the media-download cascade (yt-dlp → gallery-dl)
+// before falling back to handleWebFetch. yt-dlp covers video-leaning hosts;
+// gallery-dl covers image-leaning hosts (Reddit/Tumblr/Imgur) and rescues
+// Facebook/Instagram image posts that yt-dlp can't extract.
+const MEDIA_HOSTS = [
   "youtube.com", "youtu.be",
   "vimeo.com",
   "tiktok.com",
@@ -76,12 +77,15 @@ const YT_DLP_HOSTS = [
   "instagram.com",
   "dailymotion.com",
   "rumble.com",
+  "reddit.com", "redd.it",
+  "tumblr.com",
+  "imgur.com",
 ];
 
-function isYtDlpCandidate(url: string): boolean {
+function isMediaHost(url: string): boolean {
   try {
     const hostname = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
-    return YT_DLP_HOSTS.some((h) => hostname === h || hostname.endsWith(`.${h}`));
+    return MEDIA_HOSTS.some((h) => hostname === h || hostname.endsWith(`.${h}`));
   } catch {
     return false;
   }
@@ -100,13 +104,13 @@ function isDirectImageUrl(url: string): boolean {
 
 const PLATFORM_DESCRIPTION_MAX_CHARS = 1500;
 
-function formatYtDlpMediaSection(url: string, media: MediaSourceDescription): string {
+function formatCascadeMediaSection(url: string, media: MediaSourceDescription): string {
   const { kind, meta, analysis } = media;
   const publishedIso = meta.timestamp ? new Date(meta.timestamp * 1000).toISOString() : null;
   const platformDesc = meta.description?.slice(0, PLATFORM_DESCRIPTION_MAX_CHARS);
   const header = kind === "video"
     ? `Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.`
-    : `Automated image analysis (yt-dlp + Gemini) — this URL is an image post, not a video. Treat this as the source's content.`;
+    : `Automated image analysis (yt-dlp / gallery-dl + Gemini) — this URL is an image post, not a video. Treat this as the source's content.`;
 
   const lines = [
     `### ${url}`,
@@ -159,16 +163,17 @@ async function fetchSourceContent(
       } catch (err: any) {
         getTweetLog()?.set(`${costPrefix}.media.${mediaIdx - 1}.image_error`, err?.message ?? "unknown error");
       }
-    } else if (acceptMediaSources && isYtDlpCandidate(url)) {
+    } else if (acceptMediaSources && isMediaHost(url)) {
       try {
         const media = await describeMediaFromUrl(url, `${costPrefix}.media.${mediaIdx++}`);
-        results.push({ url, content: formatYtDlpMediaSection(url, media), fetched: true });
+        results.push({ url, content: formatCascadeMediaSection(url, media), fetched: true });
         continue;
       } catch (err: any) {
-        // yt-dlp couldn't handle this URL (text-only post, removed content,
-        // private account). Fall through to handleWebFetch so a text page
-        // still has a chance of providing evidence.
-        getTweetLog()?.set(`${costPrefix}.media.${mediaIdx - 1}.ytdlp_error`, err?.message ?? "unknown error");
+        // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
+        // removed content, private account, or host not yet supported). Fall
+        // through to handleWebFetch so a text page still has a chance of
+        // providing evidence.
+        getTweetLog()?.set(`${costPrefix}.media.${mediaIdx - 1}.media_error`, err?.message ?? "unknown error");
       }
     }
     const result = await handleWebFetch(url);
