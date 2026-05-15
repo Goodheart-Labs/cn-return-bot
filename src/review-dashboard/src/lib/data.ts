@@ -495,9 +495,11 @@ export async function createFailureMode(name: string): Promise<void> {
   const normalized = name.trim().toLowerCase();
   if (!normalized) return;
 
+  // Re-adding a previously-fixed tag unfixes it: typing the name into the
+  // picker is an explicit signal the user wants the tag back in active use.
   const { error } = await supabase
     .from("review_dashboard_failure_modes")
-    .upsert({ name: normalized }, { onConflict: "name" });
+    .upsert({ name: normalized, fixed: false }, { onConflict: "name" });
 
   if (error) throw error;
 }

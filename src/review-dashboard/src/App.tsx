@@ -265,11 +265,13 @@ export function App() {
   const handleCreateFailureMode = async (name: string) => {
     try {
       await createFailureMode(name);
-      setFailureModeCatalog((prev) =>
-        prev.some((m) => m.name === name)
-          ? prev
-          : [...prev, { name, fixed: false }].sort((a, b) => a.name.localeCompare(b.name)),
-      );
+      setFailureModeCatalog((prev) => {
+        const existing = prev.find((m) => m.name === name);
+        if (existing) {
+          return existing.fixed ? prev.map((m) => (m.name === name ? { ...m, fixed: false } : m)) : prev;
+        }
+        return [...prev, { name, fixed: false }].sort((a, b) => a.name.localeCompare(b.name));
+      });
     } catch (err: any) {
       console.error("Failed to create failure mode:", err);
     }
