@@ -13,6 +13,9 @@ const HP_LARGE_MIN_HR_L = 0.05;
 const HP_LARGE_MAX_CRNH_RATE = 0.10;
 const HP_XXL_MIN_IMPACT = 100;
 
+export type WlBranch = "nh10" | "nh5" | "newWriter" | "main";
+export type WlLBranch = 0 | 1 | 2 | 3 | 4;
+
 function hitRate(notes: NoteRecord[]): number | null {
   if (!notes.length) return null;
   const crh = notes.filter((n) => n.cn_status === CRH).length;
@@ -32,12 +35,12 @@ function writingImpact(notes: NoteRecord[]): number {
   return crh - crnh;
 }
 
-function computeWlL(hrL: number, hrR: number): number {
-  if (hrL < 0.05) return 300 * Math.max(hrR, hrL);
-  if (hrL < 0.10) return 15 + 700 * (hrL - 0.05);
-  if (hrL < 0.15) return 50 + 3000 * (hrL - 0.10);
-  if (hrL < 0.20) return 200 + 6000 * (hrL - 0.15);
-  return 500;
+function computeWlL(hrL: number, hrR: number): { value: number; branch: WlLBranch } {
+  if (hrL < 0.05) return { value: 300 * Math.max(hrR, hrL), branch: 0 };
+  if (hrL < 0.10) return { value: 15 + 700 * (hrL - 0.05), branch: 1 };
+  if (hrL < 0.15) return { value: 50 + 3000 * (hrL - 0.10), branch: 2 };
+  if (hrL < 0.20) return { value: 200 + 6000 * (hrL - 0.15), branch: 3 };
+  return { value: 500, branch: 4 };
 }
 
 export interface WritingLimitMetrics {
@@ -50,9 +53,10 @@ export interface WritingLimitMetrics {
   HR_14d: number | null;            // null when we lack ratings in the last 14d window
   HR_14dHasRatings: boolean;
   HR_L: number;
-  WL_L: number | null;              // null when an early-cascade short-circuit applied
+  WL_L: number;                     // always computed (even when an early branch short-circuits WL)
+  wlLBranch: WlLBranch;             // which case in the WL_L cascade matched HR_L
   WL: number;
-  wlReason: string;
+  wlBranch: WlBranch;               // which top-level case in the WL cascade determined WL
   crnhRate100: number | null;
   impact90d: number;
   highPerformingLargeXl: boolean;
@@ -99,22 +103,24 @@ export function computeWritingLimitMetrics(notes: NoteRecord[]): WritingLimitMet
   const HR_14d = has14dRatings ? hitRate(qualifying14d) : null;
   const HR_L = HR_14d == null ? HR_100 : Math.max(HR_100, HR_14d);
 
-  let WL_L: number | null = null;
+  // Always compute WL_L so the dashboard can show what it would have been even
+  // when an early branch short-circuits the WL cascade.
+  const { value: WL_L, branch: wlLBranch } = computeWlL(HR_L, HR_R);
+
   let WL: number;
-  let wlReason: string;
+  let wlBranch: WlBranch;
   if (NH_10 >= 8) {
     WL = 2;
-    wlReason = "NH_10 ≥ 8 → WL = 2";
+    wlBranch = "nh10";
   } else if (NH_5 >= 3) {
     WL = 5;
-    wlReason = "NH_5 ≥ 3 → WL = 5";
+    wlBranch = "nh5";
   } else if (T < 20) {
     WL = 10;
-    wlReason = "new writer (T < 20) → WL = 10";
+    wlBranch = "newWriter";
   } else {
-    WL_L = computeWlL(HR_L, HR_R);
     WL = Math.max(5, Math.floor(Math.min(DN_30 * 5, WL_L)));
-    wlReason = `WL = max(5, floor(min(DN_30·5=${(DN_30 * 5).toFixed(2)}, WL_L=${WL_L.toFixed(2)})))`;
+    wlBranch = "main";
   }
 
   const crnhRate100 = crnhRate(last100);
@@ -137,8 +143,9 @@ export function computeWritingLimitMetrics(notes: NoteRecord[]): WritingLimitMet
     HR_14dHasRatings: has14dRatings,
     HR_L,
     WL_L,
+    wlLBranch,
     WL,
-    wlReason,
+    wlBranch,
     crnhRate100,
     impact90d,
     highPerformingLargeXl,
