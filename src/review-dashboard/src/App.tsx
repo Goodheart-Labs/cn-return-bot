@@ -48,16 +48,13 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
 
 function matchesFilters(filters: FilterState) {
   return (item: ReviewItem) => {
-    // Selecting a tag is a "find everything with this tag" query — bypass the
-    // seen + failure-type filters so newly-categorized notes (which are usually
-    // Seen + may be any failure type) actually show up when you click the pill.
-    if (filters.failureModes.size > 0) {
-      const itemModes = item.annotation?.failureModes ?? [];
-      return itemModes.some((m) => filters.failureModes.has(m));
-    }
     if (!filters.failureTypes.has(item.failureType)) return false;
     if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
     if (filters.seen === "unseen" && item.annotation?.seen) return false;
+    if (filters.failureModes.size > 0) {
+      const itemModes = item.annotation?.failureModes ?? [];
+      if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
+    }
     return true;
   };
 }
