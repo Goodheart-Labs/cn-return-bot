@@ -12,6 +12,30 @@ import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabase
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
+/**
+ * Encoded `target_id` for a missed-opportunity review item. The prefix lets a
+ * single annotations table key both `notes.note_id` (canonical items) and
+ * `competing_notes.note_id` (missed-opportunity items) without collision.
+ * All code that constructs or consumes a missed-opp item.id MUST go through
+ * this helper.
+ */
+function missedTargetId(competingNoteId: string): string {
+  return `missed:${competingNoteId}`;
+}
+
+/**
+ * A competing_notes row represents a missed opportunity when it has no
+ * associated note from us, the competing note got rated helpful, and we have
+ * a pipeline_run id to point back to the rejection.
+ */
+function isMissedOppCompetingNote(cn: any): boolean {
+  return (
+    cn.our_note_id === null &&
+    cn.current_status === "CURRENTLY_RATED_HELPFUL" &&
+    !!cn.pipeline_run_id
+  );
+}
+
 function cnStatusToFailureType(
   cnStatus: string | null,
   hasHelpfulCompetitor: boolean,
@@ -122,17 +146,9 @@ export async function fetchDashboardData(): Promise<{
 
   // Missed opportunities reference specific pipeline_run ids; fetch just those
   // (avoids pulling the full rejected-runs table, which is ~20k rows).
+  const missedOpps = competing.filter(isMissedOppCompetingNote);
   const missedRunIds = [
-    ...new Set(
-      competing
-        .filter(
-          (cn: any) =>
-            cn.our_note_id === null &&
-            cn.current_status === "CURRENTLY_RATED_HELPFUL" &&
-            cn.pipeline_run_id,
-        )
-        .map((cn: any) => cn.pipeline_run_id as string),
-    ),
+    ...new Set(missedOpps.map((cn: any) => cn.pipeline_run_id as string)),
   ];
   const missedRuns = missedRunIds.length
     ? await fetchInBatches<any>(
@@ -169,19 +185,11 @@ export async function fetchDashboardData(): Promise<{
     : [];
 
   // Annotations are keyed by item.id: canonical items use note_id directly,
-  // missed-opportunity items use `missed:<competing_note_id>`. Include both
+  // missed-opportunity items use the missedTargetId() encoding. Include both
   // shapes so tags applied to missed-opp cards survive reloads.
-  const missedTargetIds = competing
-    .filter(
-      (cn: any) =>
-        cn.our_note_id === null &&
-        cn.current_status === "CURRENTLY_RATED_HELPFUL" &&
-        cn.pipeline_run_id,
-    )
-    .map((cn: any) => `missed:${cn.note_id}`);
   const annotationTargetIds = [
     ...canonical.map((n: any) => n.note_id),
-    ...missedTargetIds,
+    ...missedOpps.map((cn: any) => missedTargetId(cn.note_id)),
   ];
   const annotations = await fetchInBatches<any>(
     supabase,
@@ -308,13 +316,11 @@ export function buildDashboardItems(data: {
   }
 
   for (const cn of competing) {
-    if (cn.our_note_id != null) continue;
-    if (cn.current_status !== "CURRENTLY_RATED_HELPFUL") continue;
-    if (!cn.pipeline_run_id) continue;
+    if (!isMissedOppCompetingNote(cn)) continue;
     const pr = pipelineById.get(cn.pipeline_run_id);
     if (!pr) continue;
     const tweet = tweetsById.get(cn.tweet_id);
-    const id = `missed:${cn.note_id}`;
+    const id = missedTargetId(cn.note_id);
     items.push({
       id,
       source: "production" as const,
