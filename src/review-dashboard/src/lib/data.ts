@@ -168,13 +168,27 @@ export async function fetchDashboardData(): Promise<{
       )
     : [];
 
-  const noteIds = canonical.map((n: any) => n.note_id);
+  // Annotations are keyed by item.id: canonical items use note_id directly,
+  // missed-opportunity items use `missed:<competing_note_id>`. Include both
+  // shapes so tags applied to missed-opp cards survive reloads.
+  const missedTargetIds = competing
+    .filter(
+      (cn: any) =>
+        cn.our_note_id === null &&
+        cn.current_status === "CURRENTLY_RATED_HELPFUL" &&
+        cn.pipeline_run_id,
+    )
+    .map((cn: any) => `missed:${cn.note_id}`);
+  const annotationTargetIds = [
+    ...canonical.map((n: any) => n.note_id),
+    ...missedTargetIds,
+  ];
   const annotations = await fetchInBatches<any>(
     supabase,
     "review_dashboard_annotations",
     "*",
     "target_id",
-    noteIds,
+    annotationTargetIds,
     (q) => q.eq("source", "production"),
     "annotations",
   ).catch(() => [] as any[]);
@@ -300,8 +314,9 @@ export function buildDashboardItems(data: {
     const pr = pipelineById.get(cn.pipeline_run_id);
     if (!pr) continue;
     const tweet = tweetsById.get(cn.tweet_id);
+    const id = `missed:${cn.note_id}`;
     items.push({
-      id: `missed:${cn.note_id}`,
+      id,
       source: "production" as const,
       tweetId: cn.tweet_id,
       tweetText: tweet?.text,
@@ -320,6 +335,7 @@ export function buildDashboardItems(data: {
           authorId: cn.author_participant_id,
         },
       ],
+      annotation: annotationByTarget.get(id),
       failureType: "missed_opportunity" as const,
     });
   }
