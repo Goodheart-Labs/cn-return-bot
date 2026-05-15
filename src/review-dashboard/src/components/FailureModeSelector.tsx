@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import type { FailureModeInfo } from "../lib/types";
 
 interface FailureModeSelectorProps {
   selected: string[];
-  catalog: string[];
+  catalog: FailureModeInfo[];
+  usage: Map<string, number>;
   onChange: (modes: string[]) => void;
   onCreateNew: (name: string) => void;
 }
@@ -10,6 +12,7 @@ interface FailureModeSelectorProps {
 export function FailureModeSelector({
   selected,
   catalog,
+  usage,
   onChange,
   onCreateNew,
 }: FailureModeSelectorProps) {
@@ -24,6 +27,15 @@ export function FailureModeSelector({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const sortedCatalog = useMemo(() => {
+    return [...catalog].sort((a, b) => {
+      const ca = usage.get(a.name) ?? 0;
+      const cb = usage.get(b.name) ?? 0;
+      if (cb !== ca) return cb - ca;
+      return a.name.localeCompare(b.name);
+    });
+  }, [catalog, usage]);
 
   const toggle = (mode: string) => {
     if (selected.includes(mode)) {
@@ -58,21 +70,27 @@ export function FailureModeSelector({
       </button>
 
       {open && (
-        <div className="absolute z-20 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-80 overflow-y-auto">
-          {catalog.map((mode) => (
-            <label
-              key={mode}
-              className="flex items-center px-3 py-1.5 hover:bg-gray-50 cursor-pointer text-sm"
-            >
-              <input
-                type="checkbox"
-                checked={selected.includes(mode)}
-                onChange={() => toggle(mode)}
-                className="mr-2"
-              />
-              {mode}
-            </label>
-          ))}
+        <div className="absolute z-20 mt-1 right-0 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-80 overflow-y-auto">
+          {sortedCatalog.map((mode) => {
+            const count = usage.get(mode.name) ?? 0;
+            return (
+              <label
+                key={mode.name}
+                className="flex items-center px-3 py-1.5 hover:bg-gray-50 cursor-pointer text-sm"
+              >
+                <input
+                  type="checkbox"
+                  checked={selected.includes(mode.name)}
+                  onChange={() => toggle(mode.name)}
+                  className="mr-2"
+                />
+                <span className="flex-1">{mode.name}</span>
+                {count > 0 && (
+                  <span className="ml-2 text-[10px] text-gray-400">{count}</span>
+                )}
+              </label>
+            );
+          })}
 
           <div className="border-t border-gray-100 px-3 py-2 flex gap-1">
             <input

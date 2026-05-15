@@ -5,6 +5,7 @@ import type {
   Annotation,
   FailureType,
   UploadInfo,
+  FailureModeInfo,
 } from "./types";
 import { resultToFailureType } from "./types";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
@@ -480,14 +481,14 @@ export async function upsertAnnotation(
 
 // ─── Failure modes catalog ───────────────────────────────────────────────────
 
-export async function fetchFailureModes(): Promise<string[]> {
+export async function fetchFailureModes(): Promise<FailureModeInfo[]> {
   const { data, error } = await supabase
     .from("review_dashboard_failure_modes")
-    .select("name")
+    .select("name, fixed")
     .order("name");
 
   if (error) throw error;
-  return (data ?? []).map((d: any) => d.name);
+  return (data ?? []).map((d: any) => ({ name: d.name, fixed: !!d.fixed }));
 }
 
 export async function createFailureMode(name: string): Promise<void> {
@@ -501,8 +502,16 @@ export async function createFailureMode(name: string): Promise<void> {
   if (error) throw error;
 }
 
-/** Delete catalog entries not referenced by any annotation. Returns surviving names. */
-export async function pruneUnusedFailureModes(): Promise<string[]> {
+export async function setFailureModeFixed(name: string, fixed: boolean): Promise<void> {
+  const { error } = await supabase
+    .from("review_dashboard_failure_modes")
+    .update({ fixed })
+    .eq("name", name);
+  if (error) throw error;
+}
+
+/** Delete catalog entries not referenced by any annotation. Returns surviving entries. */
+export async function pruneUnusedFailureModes(): Promise<FailureModeInfo[]> {
   const { data: annotations, error: annErr } = await supabase
     .from("review_dashboard_annotations")
     .select("failure_modes");
@@ -512,9 +521,10 @@ export async function pruneUnusedFailureModes(): Promise<string[]> {
 
   const { data: catalog, error: catErr } = await supabase
     .from("review_dashboard_failure_modes")
-    .select("name");
+    .select("name, fixed");
   if (catErr) throw catErr;
 
+  const survivors = (catalog ?? []).filter((d: any) => used.has(d.name));
   const unused = (catalog ?? []).map((d: any) => d.name).filter((n: string) => !used.has(n));
   if (unused.length > 0) {
     const { error } = await supabase
@@ -524,7 +534,9 @@ export async function pruneUnusedFailureModes(): Promise<string[]> {
     if (error) throw error;
   }
 
-  return [...used].sort();
+  return survivors
+    .map((d: any) => ({ name: d.name as string, fixed: !!d.fixed }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 // ─── Upload ──────────────────────────────────────────────────────────────────
