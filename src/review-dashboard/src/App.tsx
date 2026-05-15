@@ -5,6 +5,7 @@ import type {
   FilterState,
   FailureType,
   UploadInfo,
+  FailureModeInfo,
 } from "./lib/types";
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import {
@@ -18,6 +19,7 @@ import {
   fetchFailureModes,
   upsertAnnotation,
   createFailureMode,
+  setFailureModeFixed,
   deleteUpload,
   pruneUnusedFailureModes,
 } from "./lib/data";
@@ -70,7 +72,8 @@ export function App() {
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
-  const [failureModeCatalog, setFailureModeCatalog] = useState<string[]>([]);
+  const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
+  const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -130,6 +133,33 @@ export function App() {
   // Sort items by date (stable memo so renders don't re-sort unnecessarily).
   const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
   const filtered = sortedItems.filter(matchesFilters(filters));
+
+  // Tag usage counts derived from current items' annotations. Used to sort
+  // and label the failure-mode pills.
+  const failureModeUsage = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of items) {
+      for (const m of item.annotation?.failureModes ?? []) {
+        counts.set(m, (counts.get(m) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [items]);
+
+  const sortedFailureModes = useMemo(() => {
+    const list = showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed);
+    return [...list].sort((a, b) => {
+      const ca = failureModeUsage.get(a.name) ?? 0;
+      const cb = failureModeUsage.get(b.name) ?? 0;
+      if (cb !== ca) return cb - ca;
+      return a.name.localeCompare(b.name);
+    });
+  }, [failureModeCatalog, failureModeUsage, showFixedTags]);
+
+  const activeFailureModes = useMemo(
+    () => failureModeCatalog.filter((m) => !m.fixed),
+    [failureModeCatalog],
+  );
 
   // Fold lazy-loaded logs into the items the list is about to render. Without
   // this, the first render sees logs=undefined; once the effect below fills
@@ -235,11 +265,37 @@ export function App() {
   const handleCreateFailureMode = async (name: string) => {
     try {
       await createFailureMode(name);
-      setFailureModeCatalog((prev) =>
-        prev.includes(name) ? prev : [...prev, name].sort(),
-      );
+      setFailureModeCatalog((prev) => {
+        const existing = prev.find((m) => m.name === name);
+        if (existing) {
+          return existing.fixed ? prev.map((m) => (m.name === name ? { ...m, fixed: false } : m)) : prev;
+        }
+        return [...prev, { name, fixed: false }].sort((a, b) => a.name.localeCompare(b.name));
+      });
     } catch (err: any) {
       console.error("Failed to create failure mode:", err);
+    }
+  };
+
+  const handleToggleFixed = async (name: string, fixed: boolean) => {
+    setFailureModeCatalog((prev) =>
+      prev.map((m) => (m.name === name ? { ...m, fixed } : m)),
+    );
+    if (fixed) {
+      setFilters((prev) => {
+        if (!prev.failureModes.has(name)) return prev;
+        const next = new Set(prev.failureModes);
+        next.delete(name);
+        return { ...prev, failureModes: next };
+      });
+    }
+    try {
+      await setFailureModeFixed(name, fixed);
+    } catch (err: any) {
+      console.error("Failed to update failure mode fixed status:", err);
+      setFailureModeCatalog((prev) =>
+        prev.map((m) => (m.name === name ? { ...m, fixed: !fixed } : m)),
+      );
     }
   };
 
@@ -291,28 +347,54 @@ export function App() {
 
       {/* Failure mode filter pills */}
       {failureModeCatalog.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {failureModeCatalog.map((mode) => {
-            const active = filters.failureModes.has(mode);
+        <div className="flex flex-wrap gap-1 mb-4 items-center">
+          {sortedFailureModes.map((mode) => {
+            const active = filters.failureModes.has(mode.name);
+            const count = failureModeUsage.get(mode.name) ?? 0;
             return (
-              <button
-                key={mode}
-                onClick={() => {
-                  const next = new Set(filters.failureModes);
-                  if (active) next.delete(mode);
-                  else next.add(mode);
-                  setFilters({ ...filters, failureModes: next });
-                }}
-                className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
-                  active
-                    ? "bg-purple-100 text-purple-800 border-purple-300"
-                    : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
+              <span
+                key={mode.name}
+                className={`group inline-flex items-center text-xs rounded-full border transition-colors ${
+                  mode.fixed
+                    ? "bg-gray-50 text-gray-400 border-gray-200 line-through"
+                    : active
+                      ? "bg-purple-100 text-purple-800 border-purple-300"
+                      : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
                 }`}
               >
-                {mode}
-              </button>
+                <button
+                  onClick={() => {
+                    const next = new Set(filters.failureModes);
+                    if (active) next.delete(mode.name);
+                    else next.add(mode.name);
+                    setFilters({ ...filters, failureModes: next });
+                  }}
+                  className="pl-2 pr-1 py-0.5"
+                >
+                  {mode.name}
+                  {count > 0 && (
+                    <span className="ml-1 text-[10px] opacity-60">{count}</span>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleToggleFixed(mode.name, !mode.fixed)}
+                  title={mode.fixed ? "Mark as not fixed" : "Mark as fixed"}
+                  className="pr-2 pl-0.5 py-0.5 text-[10px] opacity-0 group-hover:opacity-60 hover:!opacity-100"
+                >
+                  {mode.fixed ? "↺" : "✓"}
+                </button>
+              </span>
             );
           })}
+          <label className="ml-2 inline-flex items-center gap-1 text-xs text-gray-500 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showFixedTags}
+              onChange={(e) => setShowFixedTags(e.target.checked)}
+              className="rounded"
+            />
+            Show fixed
+          </label>
         </div>
       )}
 
@@ -336,7 +418,8 @@ export function App() {
           <NoteCard
             key={item.id}
             item={item}
-            failureModeCatalog={failureModeCatalog}
+            failureModeCatalog={activeFailureModes}
+            failureModeUsage={failureModeUsage}
             onSeenToggle={handleSeenToggle}
             onFailureModesChange={handleFailureModesChange}
             onCreateFailureMode={handleCreateFailureMode}

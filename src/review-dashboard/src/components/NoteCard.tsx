@@ -1,5 +1,5 @@
 import { Component, useState, type ReactNode } from "react";
-import type { ReviewItem, ComparisonNote } from "../lib/types";
+import type { ReviewItem, ComparisonNote, FailureModeInfo } from "../lib/types";
 import { FAILURE_TYPE_CONFIG } from "../lib/types";
 import { JsonViewer } from "./JsonViewer";
 import { FailureModeSelector } from "./FailureModeSelector";
@@ -8,7 +8,8 @@ import type { Tweet } from "../../../dashboard-shared/types";
 
 interface NoteCardProps {
   item: ReviewItem;
-  failureModeCatalog: string[];
+  failureModeCatalog: FailureModeInfo[];
+  failureModeUsage: Map<string, number>;
   onSeenToggle: (id: string, seen: boolean) => void;
   onFailureModesChange: (id: string, modes: string[]) => void;
   onCreateFailureMode: (name: string) => void;
@@ -96,6 +97,7 @@ function buildLogsFallback(item: ReviewItem): Record<string, unknown> | undefine
 export function NoteCard({
   item,
   failureModeCatalog,
+  failureModeUsage,
   onSeenToggle,
   onFailureModesChange,
   onCreateFailureMode,
@@ -145,6 +147,7 @@ export function NoteCard({
           <FailureModeSelector
             selected={failureModes}
             catalog={failureModeCatalog}
+            usage={failureModeUsage}
             onChange={(modes) => onFailureModesChange(item.id, modes)}
             onCreateNew={onCreateFailureMode}
           />

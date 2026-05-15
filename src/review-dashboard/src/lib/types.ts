@@ -91,7 +91,7 @@ export const FAILURE_TYPE_CONFIG: Record<
 > = {
   rated_helpful: { label: "Rated Helpful", defaultOn: true, production: true, datasetRun: true, color: "bg-green-100 text-green-800" },
   rated_unhelpful: { label: "Rated Unhelpful", defaultOn: true, production: true, datasetRun: true, color: "bg-red-100 text-red-800" },
-  lost_to_competitor: { label: "Lost to competitor", defaultOn: true, production: true, datasetRun: false, color: "bg-orange-100 text-orange-800" },
+  lost_to_competitor: { label: "Lost to competitor", defaultOn: false, production: true, datasetRun: false, color: "bg-orange-100 text-orange-800" },
   missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: true, color: "bg-yellow-100 text-yellow-800" },
   false_positive: { label: "False positive", defaultOn: true, production: false, datasetRun: true, color: "bg-pink-100 text-pink-800" },
   correct_rejection: { label: "Correct rejection", defaultOn: false, production: false, datasetRun: true, color: "bg-gray-100 text-gray-600" },
@@ -123,4 +123,9 @@ export interface UploadInfo {
   name: string;
   itemCount: number;
   createdAt: string;
+}
+
+export interface FailureModeInfo {
+  name: string;
+  fixed: boolean;
 }

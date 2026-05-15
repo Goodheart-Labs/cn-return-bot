@@ -5,11 +5,36 @@ import type {
   Annotation,
   FailureType,
   UploadInfo,
+  FailureModeInfo,
 } from "./types";
 import { resultToFailureType } from "./types";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 
 // ─── Production data ─────────────────────────────────────────────────────────
+
+/**
+ * Encoded `target_id` for a missed-opportunity review item. The prefix lets a
+ * single annotations table key both `notes.note_id` (canonical items) and
+ * `competing_notes.note_id` (missed-opportunity items) without collision.
+ * All code that constructs or consumes a missed-opp item.id MUST go through
+ * this helper.
+ */
+function missedTargetId(competingNoteId: string): string {
+  return `missed:${competingNoteId}`;
+}
+
+/**
+ * A competing_notes row represents a missed opportunity when it has no
+ * associated note from us, the competing note got rated helpful, and we have
+ * a pipeline_run id to point back to the rejection.
+ */
+function isMissedOppCompetingNote(cn: any): boolean {
+  return (
+    cn.our_note_id === null &&
+    cn.current_status === "CURRENTLY_RATED_HELPFUL" &&
+    !!cn.pipeline_run_id
+  );
+}
 
 function cnStatusToFailureType(
   cnStatus: string | null,
@@ -121,17 +146,9 @@ export async function fetchDashboardData(): Promise<{
 
   // Missed opportunities reference specific pipeline_run ids; fetch just those
   // (avoids pulling the full rejected-runs table, which is ~20k rows).
+  const missedOpps = competing.filter(isMissedOppCompetingNote);
   const missedRunIds = [
-    ...new Set(
-      competing
-        .filter(
-          (cn: any) =>
-            cn.our_note_id === null &&
-            cn.current_status === "CURRENTLY_RATED_HELPFUL" &&
-            cn.pipeline_run_id,
-        )
-        .map((cn: any) => cn.pipeline_run_id as string),
-    ),
+    ...new Set(missedOpps.map((cn: any) => cn.pipeline_run_id as string)),
   ];
   const missedRuns = missedRunIds.length
     ? await fetchInBatches<any>(
@@ -167,13 +184,19 @@ export async function fetchDashboardData(): Promise<{
       )
     : [];
 
-  const noteIds = canonical.map((n: any) => n.note_id);
+  // Annotations are keyed by item.id: canonical items use note_id directly,
+  // missed-opportunity items use the missedTargetId() encoding. Include both
+  // shapes so tags applied to missed-opp cards survive reloads.
+  const annotationTargetIds = [
+    ...canonical.map((n: any) => n.note_id),
+    ...missedOpps.map((cn: any) => missedTargetId(cn.note_id)),
+  ];
   const annotations = await fetchInBatches<any>(
     supabase,
     "review_dashboard_annotations",
     "*",
     "target_id",
-    noteIds,
+    annotationTargetIds,
     (q) => q.eq("source", "production"),
     "annotations",
   ).catch(() => [] as any[]);
@@ -293,14 +316,13 @@ export function buildDashboardItems(data: {
   }
 
   for (const cn of competing) {
-    if (cn.our_note_id != null) continue;
-    if (cn.current_status !== "CURRENTLY_RATED_HELPFUL") continue;
-    if (!cn.pipeline_run_id) continue;
+    if (!isMissedOppCompetingNote(cn)) continue;
     const pr = pipelineById.get(cn.pipeline_run_id);
     if (!pr) continue;
     const tweet = tweetsById.get(cn.tweet_id);
+    const id = missedTargetId(cn.note_id);
     items.push({
-      id: `missed:${cn.note_id}`,
+      id,
       source: "production" as const,
       tweetId: cn.tweet_id,
       tweetText: tweet?.text,
@@ -319,6 +341,7 @@ export function buildDashboardItems(data: {
           authorId: cn.author_participant_id,
         },
       ],
+      annotation: annotationByTarget.get(id),
       failureType: "missed_opportunity" as const,
     });
   }
@@ -480,29 +503,39 @@ export async function upsertAnnotation(
 
 // ─── Failure modes catalog ───────────────────────────────────────────────────
 
-export async function fetchFailureModes(): Promise<string[]> {
+export async function fetchFailureModes(): Promise<FailureModeInfo[]> {
   const { data, error } = await supabase
     .from("review_dashboard_failure_modes")
-    .select("name")
+    .select("name, fixed")
     .order("name");
 
   if (error) throw error;
-  return (data ?? []).map((d: any) => d.name);
+  return (data ?? []).map((d: any) => ({ name: d.name, fixed: !!d.fixed }));
 }
 
 export async function createFailureMode(name: string): Promise<void> {
   const normalized = name.trim().toLowerCase();
   if (!normalized) return;
 
+  // Re-adding a previously-fixed tag unfixes it: typing the name into the
+  // picker is an explicit signal the user wants the tag back in active use.
   const { error } = await supabase
     .from("review_dashboard_failure_modes")
-    .upsert({ name: normalized }, { onConflict: "name" });
+    .upsert({ name: normalized, fixed: false }, { onConflict: "name" });
 
   if (error) throw error;
 }
 
-/** Delete catalog entries not referenced by any annotation. Returns surviving names. */
-export async function pruneUnusedFailureModes(): Promise<string[]> {
+export async function setFailureModeFixed(name: string, fixed: boolean): Promise<void> {
+  const { error } = await supabase
+    .from("review_dashboard_failure_modes")
+    .update({ fixed })
+    .eq("name", name);
+  if (error) throw error;
+}
+
+/** Delete catalog entries not referenced by any annotation. Returns surviving entries. */
+export async function pruneUnusedFailureModes(): Promise<FailureModeInfo[]> {
   const { data: annotations, error: annErr } = await supabase
     .from("review_dashboard_annotations")
     .select("failure_modes");
@@ -512,9 +545,10 @@ export async function pruneUnusedFailureModes(): Promise<string[]> {
 
   const { data: catalog, error: catErr } = await supabase
     .from("review_dashboard_failure_modes")
-    .select("name");
+    .select("name, fixed");
   if (catErr) throw catErr;
 
+  const survivors = (catalog ?? []).filter((d: any) => used.has(d.name));
   const unused = (catalog ?? []).map((d: any) => d.name).filter((n: string) => !used.has(n));
   if (unused.length > 0) {
     const { error } = await supabase
@@ -524,7 +558,9 @@ export async function pruneUnusedFailureModes(): Promise<string[]> {
     if (error) throw error;
   }
 
-  return [...used].sort();
+  return survivors
+    .map((d: any) => ({ name: d.name as string, fixed: !!d.fixed }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 // ─── Upload ──────────────────────────────────────────────────────────────────
