@@ -29,7 +29,7 @@ import type {
   PipelineRunDayBucket,
   ABTestSlotInfo,
 } from "./src/lib/types";
-import { AB_TESTS } from "../pipeline/ab-testing/abTests.ts";
+import { AB_TESTS, resolvePicks } from "../pipeline/ab-testing/abTests.ts";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
@@ -244,13 +244,20 @@ function joinNotes(
 }
 
 async function loadAllPipelineRuns(): Promise<RawPipelineRunRow[]> {
-  return fetchAllRows<RawPipelineRunRow>(
+  const rows = await fetchAllRows<RawPipelineRunRow>(
     supabase
       .from("pipeline_runs")
       .select(PIPELINE_RUN_COLUMNS)
       .order("created_at", { ascending: true }),
     "pipeline_runs",
   );
+  // Fill AB-test defaults at the boundary so every downstream consumer
+  // (aggregates, day buckets, slot index, note records) sees a uniform shape
+  // for old rows written before a test existed.
+  for (const row of rows) {
+    row.ab_test_picks = resolvePicks(row.ab_test_picks);
+  }
+  return rows;
 }
 
 async function loadNotes(): Promise<RawNoteRow[]> {

@@ -18,6 +18,7 @@ if (useLocal) {
 
 import { getSupabaseClient } from "../api/supabaseClient";
 import { fetchAllRows, fetchInBatches } from "../api/paging";
+import { resolvePicks } from "../pipeline/ab-testing/abTests";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { execSync } from "child_process";
 
@@ -87,6 +88,11 @@ const rawPipelineRunsFull = await fetchAllRows<{
   "id",
   { label: "report.allPipelineRuns" },
 );
+// Fill AB-test defaults so variant labels stay consistent across rows written
+// before vs. after a test was introduced (e.g. feed_size pre-2026-05-16).
+for (const r of rawPipelineRunsFull) {
+  r.ab_test_picks = resolvePicks(r.ab_test_picks);
+}
 console.log(`  ${rawPipelineRunsFull.length} pipeline runs`);
 
 function variantLabel(bot_name: string | null, picks: Record<string, string> | null): string {
