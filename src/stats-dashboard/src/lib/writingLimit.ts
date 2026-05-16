@@ -1,3 +1,4 @@
+import { formatSignedPercent } from "./format";
 import type { NoteRecord } from "./types";
 
 const CRH = "CURRENTLY_RATED_HELPFUL";
@@ -12,6 +13,150 @@ const HP_LARGE_MIN_NOTES = 100;
 const HP_LARGE_MIN_HR_L = 0.05;
 const HP_LARGE_MAX_CRNH_RATE = 0.10;
 const HP_XXL_MIN_IMPACT = 100;
+
+export type WlBranch = "nh10" | "nh5" | "newWriter" | "main";
+export type WlLBranch = 0 | 1 | 2 | 3 | 4;
+
+export interface WlInputs {
+  NH_5: number;
+  NH_10: number;
+  T: number;
+  DN_30: number;
+  HR_R: number;
+  HR_L: number;
+  WL_L: number;
+}
+
+// Case definitions for the WL_L cascade. Each case carries:
+//   - upperBound: the threshold for "If HR_L < upperBound" (Infinity = "else")
+//   - conditionLabel / formulaLabel: static display text (matches the spec)
+//   - resolve: numeric computation + the resolved-with-numbers label string
+// Single source of truth so computeWlL and the dashboard cannot drift.
+export interface WlLCase {
+  branch: WlLBranch;
+  upperBound: number;
+  conditionLabel: string;
+  formulaLabel: string;
+  resolve(hrL: number, hrR: number): { value: number; resolvedLabel: string };
+}
+
+export const WL_L_CASES: readonly WlLCase[] = [
+  {
+    branch: 0,
+    upperBound: 0.05,
+    conditionLabel: "If HR_L < 5%:",
+    formulaLabel: "WL_L = 300 × max(HR_R, HR_L)",
+    resolve: (hrL, hrR) => {
+      const value = 300 * Math.max(hrR, hrL);
+      return {
+        value,
+        resolvedLabel: `WL_L = 300 × max(${formatSignedPercent(hrR)}, ${formatSignedPercent(hrL)}) = ${value.toFixed(2)}`,
+      };
+    },
+  },
+  {
+    branch: 1,
+    upperBound: 0.10,
+    conditionLabel: "Else If HR_L < 10%:",
+    formulaLabel: "WL_L = 15 + 700 × (HR_L - 5%)",
+    resolve: (hrL) => {
+      const value = 15 + 700 * (hrL - 0.05);
+      return {
+        value,
+        resolvedLabel: `WL_L = 15 + 700 × (${formatSignedPercent(hrL)} - 5%) = ${value.toFixed(2)}`,
+      };
+    },
+  },
+  {
+    branch: 2,
+    upperBound: 0.15,
+    conditionLabel: "Else If HR_L < 15%:",
+    formulaLabel: "WL_L = 50 + 3000 × (HR_L - 10%)",
+    resolve: (hrL) => {
+      const value = 50 + 3000 * (hrL - 0.10);
+      return {
+        value,
+        resolvedLabel: `WL_L = 50 + 3000 × (${formatSignedPercent(hrL)} - 10%) = ${value.toFixed(2)}`,
+      };
+    },
+  },
+  {
+    branch: 3,
+    upperBound: 0.20,
+    conditionLabel: "Else If HR_L < 20%:",
+    formulaLabel: "WL_L = 200 + 6000 × (HR_L - 15%)",
+    resolve: (hrL) => {
+      const value = 200 + 6000 * (hrL - 0.15);
+      return {
+        value,
+        resolvedLabel: `WL_L = 200 + 6000 × (${formatSignedPercent(hrL)} - 15%) = ${value.toFixed(2)}`,
+      };
+    },
+  },
+  {
+    branch: 4,
+    upperBound: Infinity,
+    conditionLabel: "Else:",
+    formulaLabel: "WL_L = 500",
+    resolve: () => ({ value: 500, resolvedLabel: "WL_L = 500" }),
+  },
+];
+
+function pickWlLCase(hrL: number): WlLCase {
+  // Cases are ordered by ascending upperBound; the last has Infinity, so .find always matches.
+  return WL_L_CASES.find((c) => hrL < c.upperBound)!;
+}
+
+// Case definitions for the outer WL cascade.
+export interface WlCase {
+  key: WlBranch;
+  conditionLabel: string;
+  formulaLabel: string;
+  test(inputs: WlInputs): boolean;
+  resolve(inputs: WlInputs): { value: number; resolvedLabel: string };
+}
+
+export const WL_CASES: readonly WlCase[] = [
+  {
+    key: "nh10",
+    conditionLabel: "If NH_10 ≥ 8:",
+    formulaLabel: "WL = 2",
+    test: (i) => i.NH_10 >= 8,
+    resolve: () => ({ value: 2, resolvedLabel: "WL = 2" }),
+  },
+  {
+    key: "nh5",
+    conditionLabel: "Else If NH_5 ≥ 3:",
+    formulaLabel: "WL = 5",
+    test: (i) => i.NH_5 >= 3,
+    resolve: () => ({ value: 5, resolvedLabel: "WL = 5" }),
+  },
+  {
+    key: "newWriter",
+    conditionLabel: "Else If T < 20 (new writer):",
+    formulaLabel: "WL = 10",
+    test: (i) => i.T < 20,
+    resolve: () => ({ value: 10, resolvedLabel: "WL = 10" }),
+  },
+  {
+    key: "main",
+    conditionLabel: "Else:",
+    formulaLabel: "WL = max(5, floor(min(DN_30 × 5, WL_L)))",
+    test: () => true,
+    resolve: (i) => {
+      const dn30x5 = i.DN_30 * 5;
+      const value = Math.max(5, Math.floor(Math.min(dn30x5, i.WL_L)));
+      return {
+        value,
+        resolvedLabel: `WL = max(5, floor(min(${dn30x5.toFixed(2)}, ${i.WL_L.toFixed(2)}))) = ${value}`,
+      };
+    },
+  },
+];
+
+function pickWlCase(inputs: WlInputs): WlCase {
+  return WL_CASES.find((c) => c.test(inputs))!;
+}
 
 function hitRate(notes: NoteRecord[]): number | null {
   if (!notes.length) return null;
@@ -32,14 +177,6 @@ function writingImpact(notes: NoteRecord[]): number {
   return crh - crnh;
 }
 
-function computeWlL(hrL: number, hrR: number): number {
-  if (hrL < 0.05) return 300 * Math.max(hrR, hrL);
-  if (hrL < 0.10) return 15 + 700 * (hrL - 0.05);
-  if (hrL < 0.15) return 50 + 3000 * (hrL - 0.10);
-  if (hrL < 0.20) return 200 + 6000 * (hrL - 0.15);
-  return 500;
-}
-
 export interface WritingLimitMetrics {
   T: number;
   DN_30: number;
@@ -50,9 +187,10 @@ export interface WritingLimitMetrics {
   HR_14d: number | null;            // null when we lack ratings in the last 14d window
   HR_14dHasRatings: boolean;
   HR_L: number;
-  WL_L: number | null;              // null when an early-cascade short-circuit applied
+  WL_L: number;                     // always computed (even when an early branch short-circuits WL)
+  wlLBranch: WlLBranch;
   WL: number;
-  wlReason: string;
+  wlBranch: WlBranch;
   crnhRate100: number | null;
   impact90d: number;
   highPerformingLargeXl: boolean;
@@ -99,23 +237,14 @@ export function computeWritingLimitMetrics(notes: NoteRecord[]): WritingLimitMet
   const HR_14d = has14dRatings ? hitRate(qualifying14d) : null;
   const HR_L = HR_14d == null ? HR_100 : Math.max(HR_100, HR_14d);
 
-  let WL_L: number | null = null;
-  let WL: number;
-  let wlReason: string;
-  if (NH_10 >= 8) {
-    WL = 2;
-    wlReason = "NH_10 ≥ 8 → WL = 2";
-  } else if (NH_5 >= 3) {
-    WL = 5;
-    wlReason = "NH_5 ≥ 3 → WL = 5";
-  } else if (T < 20) {
-    WL = 10;
-    wlReason = "new writer (T < 20) → WL = 10";
-  } else {
-    WL_L = computeWlL(HR_L, HR_R);
-    WL = Math.max(5, Math.floor(Math.min(DN_30 * 5, WL_L)));
-    wlReason = `WL = max(5, floor(min(DN_30·5=${(DN_30 * 5).toFixed(2)}, WL_L=${WL_L.toFixed(2)})))`;
-  }
+  // Always compute WL_L so the dashboard can show what it would have been even
+  // when an early branch short-circuits the WL cascade.
+  const wlLCase = pickWlLCase(HR_L);
+  const { value: WL_L } = wlLCase.resolve(HR_L, HR_R);
+
+  const wlInputs: WlInputs = { NH_5, NH_10, T, DN_30, HR_R, HR_L, WL_L };
+  const wlCase = pickWlCase(wlInputs);
+  const { value: WL } = wlCase.resolve(wlInputs);
 
   const crnhRate100 = crnhRate(last100);
   const impact90d = writingImpact(notes90d);
@@ -137,8 +266,9 @@ export function computeWritingLimitMetrics(notes: NoteRecord[]): WritingLimitMet
     HR_14dHasRatings: has14dRatings,
     HR_L,
     WL_L,
+    wlLBranch: wlLCase.branch,
     WL,
-    wlReason,
+    wlBranch: wlCase.key,
     crnhRate100,
     impact90d,
     highPerformingLargeXl,
