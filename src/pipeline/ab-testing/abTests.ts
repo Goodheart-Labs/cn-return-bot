@@ -37,6 +37,16 @@ export interface ABTest {
   /** Optional gate. Test is skipped (no entry in picks) when prerequisites mismatch. */
   prerequisites?: Prerequisites;
   variants: { variant: ABVariant; weight: number }[];
+  /**
+   * Variant to assume when a `pipeline_runs.ab_test_picks` dict lacks this
+   * test's key — e.g. for rows written before the test existed. Consumers
+   * must read picks through `getPick` / `resolvePicks` for this to apply.
+   *
+   * Leave unset for prereq-gated tests: "missing" there means "the test
+   * didn't fire," and the helpers can't tell that apart from "the test
+   * didn't exist yet."
+   */
+  defaultVariant?: string;
 }
 
 // --- AB_TESTS data ---
@@ -80,12 +90,12 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     // Uniform weights across every variant except haiku45-native. Each gets
     // ~7.69% of simple-bot traffic (1/13). Haiku stays at 0 — code path is the
     // same as sonnet46-native, no novel signal to gather.
-    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 1 },
+    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 4 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 1 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "gemini3pro-native",       overrides: { search_model: "google/gemini-3-pro-preview",       web_search: "native_gemini" }}, weight: 1 },
-    { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 1 },
+    { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 2 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 1 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 1 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
@@ -93,8 +103,8 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 1 },
-    { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 1 },
-    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 1 },
+    { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0.5 },
+    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 2 },
   ],
 };
 
@@ -137,6 +147,22 @@ const AGENT_PARALLEL_TEST: ABTest = {
   ],
 };
 
+// Pseudo A/B test: all weight on `large`. `generateCandidates` forces the pick
+// to match the size the fetch actually succeeded with (falls back to `small`
+// on API failure), so `pipeline_runs.ab_test_picks.feed_size` reflects reality.
+// Pre-existing rows (no `feed_size` key) are resolved to "small" — the bot
+// always fetched with feed_size=small before this change.
+const FEED_SIZE_TEST: ABTest = {
+  name: "feed_size",
+  defaultVariant: "small",
+  variants: [
+    { variant: { name: "large", overrides: { feed_size: "large" }}, weight: 100 },
+    { variant: { name: "small", overrides: { feed_size: "small" }}, weight: 0 },
+    { variant: { name: "xl",    overrides: { feed_size: "xl"    }}, weight: 0 },
+    { variant: { name: "xxl",   overrides: { feed_size: "xxl"   }}, weight: 0 },
+  ],
+};
+
 export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
@@ -144,6 +170,7 @@ export const AB_TESTS: ABTest[] = [
   VERIFIER_MEDIA_SOURCES_TEST,
   AGENT_SEARCH_TEST,
   AGENT_PARALLEL_TEST,
+  FEED_SIZE_TEST,
 ];
 
 // --- Sampling ---
@@ -220,6 +247,31 @@ export function withForcedPicks<T>(picks: Record<string, string>, fn: () => T): 
 
 export function getForcedPicks(): Record<string, string> {
   return forcedPicksStorage.getStore() ?? {};
+}
+
+// --- Reading picks (consumers) ---
+
+/**
+ * Return a new picks dict with every test's `defaultVariant` filled in for
+ * missing keys. Use this at the boundary where raw rows enter a consumer so
+ * everything downstream sees a uniform shape regardless of when the row was
+ * written.
+ *
+ * Deliberately does NOT evaluate prerequisites — callers are expected to
+ * filter to the relevant population first (e.g. `bot === "simple-bot"`)
+ * before reading prereq-gated picks like `simple_bot_search`. Which is why
+ * prereq-gated tests should leave `defaultVariant` unset.
+ */
+export function resolvePicks(
+  picks: Record<string, string> | null | undefined,
+): Record<string, string> {
+  const out: Record<string, string> = { ...(picks ?? {}) };
+  for (const test of AB_TESTS) {
+    if (test.defaultVariant !== undefined && !(test.name in out)) {
+      out[test.name] = test.defaultVariant;
+    }
+  }
+  return out;
 }
 
 // --- Helpers exposed for telemetry / tooling ---

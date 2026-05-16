@@ -5,6 +5,9 @@ import type { AllNoteScores } from "../score/noteScores";
 
 export type VideoDescriptionStrategy = "full_video" | "frames";
 
+/** Feed sizes accepted by X's eligible-posts API. */
+export type FeedSize = "small" | "large" | "xl" | "xxl";
+
 export interface ScoreFilter {
   score: keyof AllNoteScores;
   op: "gte" | "lte";
@@ -34,6 +37,8 @@ export interface BotConfig {
   video_description_strategy: VideoDescriptionStrategy;
   scoreFilters: ScoreFilter[];
   parallel_research: boolean;
+  /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
+  feed_size: FeedSize;
 }
 
 // --- Default config ---
@@ -46,6 +51,7 @@ export const DEFAULT_CONFIG: BotConfig = {
   video_description_strategy: "frames",
   scoreFilters: [],
   parallel_research: false,
+  feed_size: "small",
 };
 
 // --- AsyncLocalStorage ---

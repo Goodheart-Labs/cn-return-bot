@@ -11,10 +11,10 @@ import { getBotById } from "../../bots/index";
 import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
 import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
-import { determineFeedSize, buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
+import { buildPostSelection } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions } from "./utils/tweetSorting";
-import { AB_TESTS, runABTests, getBotProbabilities, getForcedPicks } from "../ab-testing/abTests";
-import { withBotConfig } from "../ab-testing/botConfig";
+import { AB_TESTS, runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from "../ab-testing/abTests";
+import { withBotConfig, type FeedSize } from "../ab-testing/botConfig";
 import { withCostTracker } from "../cost-tracking/costTracker";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
@@ -22,10 +22,33 @@ import PQueue from "p-queue";
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
 const RETRIES_ENABLED = false;
+const PREFERRED_FEED_SIZE: FeedSize = "large";
+const FALLBACK_FEED_SIZE: FeedSize = "small";
 
 // ---------------------------------------------------------------------------
 // Post fetching
 // ---------------------------------------------------------------------------
+
+/**
+ * Tries `large` first, falls back to `small` on any fetch error (the larger
+ * feed sometimes returns 403). Returned `feedSize` is the size that actually
+ * worked — propagated into ab_test_picks.feed_size so the record matches what
+ * the API gave us, not what we asked for.
+ */
+async function fetchWithFeedSizeFallback(
+  skipPostIds: Set<string>
+): Promise<{ feedSize: FeedSize; posts: Post[] }> {
+  try {
+    const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(PREFERRED_FEED_SIZE));
+    console.log(`[generate] Feed: ${PREFERRED_FEED_SIZE}`);
+    return { feedSize: PREFERRED_FEED_SIZE, posts };
+  } catch (err) {
+    console.warn(`[generate] Feed ${PREFERRED_FEED_SIZE} failed (${(err as Error)?.message}); retrying with ${FALLBACK_FEED_SIZE}`);
+    const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(FALLBACK_FEED_SIZE));
+    console.log(`[generate] Feed: ${FALLBACK_FEED_SIZE} (fallback)`);
+    return { feedSize: FALLBACK_FEED_SIZE, posts };
+  }
+}
 
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
@@ -46,13 +69,7 @@ async function fetchPosts(
     }
   }
 
-  const { feedSize, reason } = supabaseLogger
-    ? await determineFeedSize(supabaseLogger)
-    : { feedSize: "small" as FeedSize, reason: "no supabase" };
-  console.log(`[generate] Feed: ${feedSize} (${reason})`);
-
-  const postSelection = buildPostSelection(feedSize);
-  const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, postSelection);
+  const { feedSize, posts } = await fetchWithFeedSizeFallback(skipPostIds);
 
   // A tweet is "new" iff it wasn't already in the tweets table before this
   // fetch. Insert the new ones now so subsequent runs see them as known and
@@ -145,8 +162,12 @@ export async function generateCandidates(
   const allLogs: TweetLogMap[] = [];
   const candidates: Candidate[] = [];
 
+  // Force feed_size pick to the size the fetch actually used (large normally,
+  // small after fallback) so the recorded pick matches reality.
+  const feedSizePick = { ...outerForcedPicks, feed_size: feedSize };
+
   for (const [idx, post] of posts.entries()) {
-    queue.add(async () => {
+    queue.add(() => withForcedPicks(feedSizePick, async () => {
       // Forced picks (if any) are already in ALS — set up by runPipeline.ts
       // via withForcedPicks. runABTests honours them for whichever tests fire.
       const { config, picks } = runABTests(AB_TESTS);
@@ -187,7 +208,7 @@ export async function generateCandidates(
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
         candidates.push({ post, tweetResult, botId });
       }
-    });
+    }));
   }
 
   await queue.onIdle();
