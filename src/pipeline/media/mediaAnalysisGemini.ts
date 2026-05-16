@@ -24,6 +24,13 @@ import {
   type YtDlpMetadata,
 } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
+import {
+  reverseSearchAndScore,
+  formatReverseSearchContextForImage,
+  formatReverseSearchContextForVideoFrames,
+  type ReverseSearchResult,
+} from "./reverseImageSearch";
+import { getBotConfig } from "../ab-testing/botConfig";
 
 const execAsync = promisify(exec);
 const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes — short videos go to Gemini whole; long videos get 4-frame sampling
@@ -125,12 +132,33 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
+/**
+ * Image-side of the reverse_image_search A/B test. Returns the formatted prompt
+ * prefix and the raw result for logging. The `startsWith("http")` guard skips
+ * data: URLs (used by `describeImageFromLocalFile`) — Yandex can only fetch
+ * public URLs.
+ */
+async function gatherImageReverseContext(
+  imageUrl: string,
+): Promise<{ context: string; result: ReverseSearchResult | null }> {
+  if (!getBotConfig().reverse_image_search || !imageUrl.startsWith("http")) {
+    return { context: "", result: null };
+  }
+  const result = await reverseSearchAndScore({ kind: "url", url: imageUrl }).catch((err) => {
+    console.error("[mediaAnalysisGemini] reverse search failed:", err.message);
+    return null;
+  });
+  return { context: formatReverseSearchContextForImage(result), result };
+}
+
 async function describeImageFromUrl(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
+  const { context: reverseContext, result: reverseResult } = await gatherImageReverseContext(imageUrl);
+  const prompt = reverseContext ? `${reverseContext}\n\n${IMAGE_PROMPT}` : IMAGE_PROMPT;
   const messages = [
     {
       role: "user" as const,
       content: [
-        { type: "text" as const, text: IMAGE_PROMPT },
+        { type: "text" as const, text: prompt },
         { type: "image_url" as const, image_url: { url: imageUrl } },
       ],
     },
@@ -144,6 +172,9 @@ async function describeImageFromUrl(imageUrl: string, costName: string): Promise
   trackLlmCall(costEntry);
 
   const content = response.choices?.[0]?.message?.content ?? "";
+  const log = getTweetLog();
+  if (reverseResult) log?.set(`${costName}.reverseSearch`, reverseResult);
+
   return {
     type: "image",
     url: imageUrl,
@@ -173,16 +204,21 @@ async function extractAudio(videoPath: string, tmpDir: string): Promise<string> 
   return transcribeAudio(audioBuffer);
 }
 
-async function analyzeShortVideo(videoPath: string, costName: string): Promise<GeminiMediaDescription> {
+async function analyzeShortVideo(
+  videoPath: string,
+  costName: string,
+  promptPrefix: string = "",
+): Promise<GeminiMediaDescription> {
   const videoBytes = await readFile(videoPath);
   const b64 = videoBytes.toString("base64");
   const dataUrl = `data:video/mp4;base64,${b64}`;
 
+  const prompt = promptPrefix ? `${promptPrefix}\n\n${VIDEO_PROMPT}` : VIDEO_PROMPT;
   const messages = [
     {
       role: "user" as const,
       content: [
-        { type: "text" as const, text: VIDEO_PROMPT },
+        { type: "text" as const, text: prompt },
         { type: "video_url" as const, video_url: { url: dataUrl } } as any,
       ],
     },
@@ -198,7 +234,12 @@ async function analyzeShortVideo(videoPath: string, costName: string): Promise<G
   return parseMediaResponse(response.choices?.[0]?.message?.content ?? "");
 }
 
-async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costName: string): Promise<GeminiMediaDescription> {
+async function analyzeLongVideoFrames(
+  videoPath: string,
+  tmpDir: string,
+  costName: string,
+  promptPrefix: string = "",
+): Promise<GeminiMediaDescription> {
   await execAsync(
     `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v 4 "${tmpDir}/frame%03d.jpg" -y 2>&1`,
     { timeout: 60000 },
@@ -222,11 +263,12 @@ async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costNam
 
   if (frameDataUrls.length === 0) return { description: "", ocrText: "" };
 
+  const prompt = promptPrefix ? `${promptPrefix}\n\n${FRAME_PROMPT}` : FRAME_PROMPT;
   const messages = [
     {
       role: "user" as const,
       content: [
-        { type: "text" as const, text: FRAME_PROMPT },
+        { type: "text" as const, text: prompt },
         ...frameDataUrls.map((url) => ({
           type: "image_url" as const,
           image_url: { url },
@@ -261,6 +303,83 @@ function isLocalPath(p: string): boolean {
   return p.startsWith("/") || p.startsWith("./") || p.startsWith("../");
 }
 
+const REVERSE_VIDEO_FRAME_COUNT = 5;
+
+async function extractRandomFrames(
+  videoPath: string,
+  tmpDir: string,
+  count: number,
+  durationMs: number | undefined,
+): Promise<Buffer[]> {
+  let durSec: number | null = durationMs != null ? durationMs / 1000 : null;
+  if (durSec == null) {
+    try {
+      const { stdout } = await execAsync(
+        `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${videoPath}"`,
+        { timeout: 10000 },
+      );
+      durSec = parseFloat(stdout.trim()) || null;
+    } catch {
+      durSec = null;
+    }
+  }
+  if (!durSec || durSec <= 0) return [];
+
+  // Random timestamps in the inner 90% of the video to avoid title/end cards.
+  const lo = durSec * 0.05;
+  const hi = durSec * 0.95;
+  const stamps = Array.from({ length: count }, () => lo + Math.random() * (hi - lo)).sort(
+    (a, b) => a - b,
+  );
+
+  const buffers: Buffer[] = [];
+  await Promise.all(
+    stamps.map(async (t, i) => {
+      const framePath = join(tmpDir, `rs-frame-${i}.jpg`);
+      try {
+        await execAsync(
+          `ffmpeg -ss ${t.toFixed(2)} -i "${videoPath}" -frames:v 1 -vf "scale=640:-1" "${framePath}" -y 2>&1`,
+          { timeout: 20000 },
+        );
+        const s = await stat(framePath);
+        if (s.size > 0) buffers[i] = await readFile(framePath);
+      } catch (err: any) {
+        console.warn(`[mediaAnalysisGemini] random frame ${i} failed:`, err.message);
+      }
+    }),
+  );
+  return buffers.filter(Boolean);
+}
+
+/**
+ * Video-side of the reverse_image_search A/B test. Samples 5 random frames
+ * from the inner 90% of the video and runs each through reverseSearchAndScore.
+ * Returns the formatted prompt prefix and the raw per-frame results for
+ * logging.
+ */
+async function gatherVideoReverseContext(
+  videoPath: string,
+  tmpDir: string,
+  durationMs: number | undefined,
+): Promise<{ context: string; results: ReverseSearchResult[] }> {
+  if (!getBotConfig().reverse_image_search || !(await checkFfmpeg())) {
+    return { context: "", results: [] };
+  }
+  const frames = await extractRandomFrames(videoPath, tmpDir, REVERSE_VIDEO_FRAME_COUNT, durationMs);
+  if (frames.length === 0) return { context: "", results: [] };
+
+  const settled = await Promise.all(
+    frames.map((bytes) =>
+      reverseSearchAndScore({ kind: "bytes", bytes, topN: 3 }).catch((err) => {
+        console.error("[mediaAnalysisGemini] frame reverse search failed:", err.message);
+        return null;
+      }),
+    ),
+  );
+  const results = settled.filter((r): r is ReverseSearchResult => r != null);
+  return { context: formatReverseSearchContextForVideoFrames(results), results };
+}
+
 async function analyzeVideo(
   videoUrl: string,
   durationMs: number | undefined,
@@ -281,6 +400,12 @@ async function analyzeVideo(
     await mkdir(tmpDir, { recursive: true });
     const videoPath = isLocal ? videoUrl : await downloadVideo(videoUrl, tmpDir);
 
+    const { context: reverseContext, results: reverseResults } = await gatherVideoReverseContext(
+      videoPath,
+      tmpDir,
+      durationMs,
+    );
+
     const useFrames = strategy === "frames"
       || (durationMs != null && durationMs > LONG_VIDEO_THRESHOLD_MS);
 
@@ -290,13 +415,16 @@ async function analyzeVideo(
         console.warn("[mediaAnalysisGemini] FFmpeg not available, skipping frames");
         description = { description: "", ocrText: "" };
       } else {
-        description = await analyzeLongVideoFrames(videoPath, tmpDir, costName);
+        description = await analyzeLongVideoFrames(videoPath, tmpDir, costName, reverseContext);
       }
     } else {
-      description = await analyzeShortVideo(videoPath, costName);
+      description = await analyzeShortVideo(videoPath, costName, reverseContext);
     }
 
     const transcription = await resolveTranscription(videoPath, tmpDir, precomputedTranscript);
+
+    const log = getTweetLog();
+    if (reverseResults.length > 0) log?.set(`${costName}.reverseSearch`, reverseResults);
 
     return { type: "video", url: videoUrl, description, transcription };
   } catch (err: any) {

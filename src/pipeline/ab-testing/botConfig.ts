@@ -22,6 +22,8 @@ export interface BotConfig {
   verifier_model?: string;
   /** If true, the source verifier surfaces an automated Gemini analysis (yt-dlp for video/audio/Instagram-photo, direct vision call for image URLs) for cited media URLs and treats that as the source's content. Defaults to false. */
   verifier_accepts_media_sources?: boolean;
+  /** If true, before describing tweet media we run a Yandex reverse-image-search + DINO cosine-similarity pass and prepend the matches to the description prompt as additional (fallible) context. For videos, runs on 5 random frames. Defaults to false. */
+  reverse_image_search?: boolean;
   web_search:
     | "native"             // Anthropic web_search via OpenRouter
     | "native_gemini"      // Google Gen AI native API + googleSearch tool

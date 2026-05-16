@@ -118,6 +118,14 @@ const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   ],
 };
 
+const REVERSE_IMAGE_SEARCH_TEST: ABTest = {
+  name: "reverse_image_search",
+  variants: [
+    { variant: { name: "off", overrides: { reverse_image_search: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { reverse_image_search: true  } }, weight: 50 },
+  ],
+};
+
 const AGENT_SEARCH_TEST: ABTest = {
   name: "agent_search",
   prerequisites: { botId: ["agent", "multi-agent"] },
@@ -142,6 +150,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
+  REVERSE_IMAGE_SEARCH_TEST,
   AGENT_SEARCH_TEST,
   AGENT_PARALLEL_TEST,
 ];
