@@ -77,8 +77,12 @@ create-notes-routine-dynamic.yml
 # Claude Code local settings (machine-specific permissions)
 .claude/settings.local.json
 
-# scripts_jim large/generated files
+# CN public-data dump (downloaded TSVs — large, regeneratable)
 src/scripts_jim/cn_data/
+src/production/cn_data/
+src/production/_aggregates_cache.json
+
+# scripts_jim large/generated files
 src/scripts_jim/**/venv/
 src/scripts_jim/**/.venv/
 src/scripts_jim/**/*.mp4
