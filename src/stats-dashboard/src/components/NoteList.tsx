@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { NoteRecord, NoteSort } from "../lib/types";
 import { TweetCard } from "../../../dashboard-shared/TweetCard";
+import { Ratings } from "../../../dashboard-shared/Ratings";
 import { cnStatusBadge } from "../lib/aggregations";
-import { formatCount, formatViews } from "../lib/format";
+import { formatViews } from "../lib/format";
 
 const NOTE_URL_PREFIX = "https://x.com/i/communitynotes/n/";
 const PAGE_SIZE = 10;
@@ -79,11 +80,12 @@ function StatsNoteCard({ note }: { note: NoteRecord }) {
         {note.view_count > 0 && (
           <span className="text-xs text-gray-500">{formatViews(note.view_count)} views</span>
         )}
-        {note.rating_count > 0 && (
-          <span className="text-xs text-gray-500">
-            {formatCount(note.helpful_count)} helpful · {formatCount(note.not_helpful_count)} not helpful
-          </span>
-        )}
+        <Ratings
+          publicDumpRatings={note.public_dump_ratings}
+          fallbackHelpfulCount={note.helpful_count}
+          fallbackNotHelpfulCount={note.not_helpful_count}
+          allowExpand={!!import.meta.env.DEV}
+        />
       </div>
 
       {note.tweet && (

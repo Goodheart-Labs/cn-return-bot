@@ -24,6 +24,7 @@ export interface ReviewItem {
   ratingCount?: number;
   helpfulCount?: number;
   notHelpfulCount?: number;
+  publicDumpRatings?: import("../../../dashboard-shared/types").PublicDumpRatings;
 
   // Dates
   createdAt?: string;
