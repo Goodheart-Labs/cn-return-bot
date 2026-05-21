@@ -8,6 +8,7 @@ import type {
   StatsSnapshot,
 } from "./lib/types";
 import {
+  bucketKey,
   bucketize,
   computeHeadlineMetrics,
   filterNotes,
@@ -46,16 +47,19 @@ export function App() {
     [snapshot, filtersForData],
   );
   const useNonCandidate = devMode && showNonCandidate;
-  const buckets = useMemo(
-    () =>
-      bucketize(
-        filteredNotes,
-        granularity,
-        useNonCandidate ? snapshot?.pipeline_runs_by_day : undefined,
-        filtersForData,
-      ),
-    [filteredNotes, granularity, useNonCandidate, snapshot, filtersForData],
-  );
+  const buckets = useMemo(() => {
+    const all = bucketize(
+      filteredNotes,
+      granularity,
+      useNonCandidate ? snapshot?.pipeline_runs_by_day : undefined,
+      filtersForData,
+    );
+    if (granularity !== "weekly") return all;
+    // Hide the in-progress week — it's a partial-week bar that drags the
+    // chart down until Sunday.
+    const currentWeekKey = bucketKey(new Date().toISOString(), "weekly");
+    return all.filter((b) => b.key !== currentWeekKey);
+  }, [filteredNotes, granularity, useNonCandidate, snapshot, filtersForData]);
   const metrics = useMemo(
     () =>
       snapshot
