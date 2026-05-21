@@ -5,8 +5,8 @@ the ratings-*.tsv partitions and aggregates per-note helpfulness counts and
 non-zero tag counts. Upserts one row per note.
 
 Run from repo root:
-  uv run src/scripts_jim/2026_05_21_ratings_dump_fill/fill_ratings.py --local
-  uv run src/scripts_jim/2026_05_21_ratings_dump_fill/fill_ratings.py             # prod
+  uv run src/production/fill_ratings.py --local
+  uv run src/production/fill_ratings.py             # prod
 
 In CI (--stream) the script downloads each ratings shard on demand and deletes
 it after scanning — the 8 partitions sum to ~40 GB so we can't hold them all
@@ -15,24 +15,24 @@ on a GitHub-hosted runner's disk at once.
 
 import argparse
 import csv
+import io
 import json
 import os
 import sys
+import zipfile
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import requests
 from dotenv import load_dotenv
 from supabase import create_client
 
-# Reuse the partition-download primitive from the existing CN dump script.
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from download_cn_data import download_and_extract  # noqa: E402
-
+CN_DATA_BASE_URL = "https://ton.twimg.com/birdwatch-public-data"
+CN_DATA_DIR = Path(__file__).resolve().parent / "cn_data"
 CACHE_PATH = Path(__file__).resolve().parent / "_aggregates_cache.json"
 DOWNLOAD_LOOKBACK_DAYS = 7
 
-CN_DATA_DIR = Path(__file__).resolve().parents[1] / "cn_data"
 NOTE_FILES = ["notes-00000.tsv", "notes-00001.tsv"]
 RATING_FILES = [f"ratings-{i:05d}.tsv" for i in range(8)]
 AUTHOR_ID = "813EB394B10809EBA8D09BCFA8E2E1C25A2DA0085186867F9E9C00696951C447"
@@ -53,8 +53,32 @@ UPSERT_BATCH = 500
 csv.field_size_limit(sys.maxsize)
 
 
+def download_and_extract(file_type: str, partition: str, date_str: str) -> bool:
+    out_path = CN_DATA_DIR / partition
+    if out_path.exists():
+        size_mb = out_path.stat().st_size / (1024 * 1024)
+        print(f"  {partition} already exists ({size_mb:.1f} MB), skipping download")
+        return True
+
+    zip_name = partition.replace(".tsv", ".zip")
+    url = f"{CN_DATA_BASE_URL}/{date_str}/{file_type}/{zip_name}"
+    print(f"  Trying {url}...")
+
+    resp = requests.get(url)
+    if resp.status_code != 200:
+        print(f"    HTTP {resp.status_code}, skipping")
+        return False
+
+    with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
+        zf.extractall(CN_DATA_DIR)
+
+    size_mb = out_path.stat().st_size / (1024 * 1024)
+    print(f"    Extracted {partition} ({size_mb:.1f} MB)")
+    return True
+
+
 def try_download_partition(file_type: str, partition: str) -> bool:
-    """Try the daily snapshot date, walking back up to MAX_DAYS_BACK days."""
+    """Try the daily snapshot date, walking back up to DOWNLOAD_LOOKBACK_DAYS."""
     for days_back in range(DOWNLOAD_LOOKBACK_DAYS):
         date = datetime.now(timezone.utc) - timedelta(days=days_back)
         date_str = date.strftime("%Y/%m/%d")
@@ -188,7 +212,7 @@ def build_upsert_rows(aggregates: dict[str, dict], dump_date: str) -> list[dict]
 
 def latest_dump_date_from_disk() -> str:
     # Use the noteStatusHistory mtime as the dump date — it's always downloaded
-    # together with notes/ratings by download_cn_data.py.
+    # together with notes/ratings by the data fetcher.
     candidates = ["noteStatusHistory-00000.tsv", "notes-00000.tsv", "ratings-00000.tsv"]
     for fname in candidates:
         path = CN_DATA_DIR / fname

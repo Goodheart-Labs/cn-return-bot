@@ -30,4 +30,4 @@ jobs:
         run: pip install requests supabase python-dotenv
 
       - name: Update ratings table from CN public dump
-        run: python src/scripts_jim/2026_05_21_ratings_dump_fill/fill_ratings.py --stream --no-cache
+        run: python src/production/fill_ratings.py --stream --no-cache
