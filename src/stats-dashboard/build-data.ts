@@ -75,6 +75,16 @@ interface RawNoteRow {
   not_helpful_count: number | null;
 }
 
+interface RawPublicDumpRatingRow {
+  note_id: string;
+  helpful_count: number;
+  somewhat_helpful_count: number;
+  not_helpful_count: number;
+  helpful_tag_counts: Record<string, number>;
+  not_helpful_tag_counts: Record<string, number>;
+  dump_date: string;
+}
+
 interface RawPipelineRunRow {
   id: string;
   tweet_id: string | null;
@@ -199,6 +209,7 @@ function joinNotes(
   notes: RawNoteRow[],
   runs: RawPipelineRunRow[],
   tweets: RawTweetRow[],
+  publicRatings: RawPublicDumpRatingRow[],
 ): NoteRecord[] {
   const submittedRunByNoteId = new Map<string, RawPipelineRunRow>();
   for (const run of runs) {
@@ -206,6 +217,8 @@ function joinNotes(
   }
   const tweetById = new Map<string, RawTweetRow>();
   for (const t of tweets) tweetById.set(t.tweet_id, t);
+  const publicRatingByNoteId = new Map<string, RawPublicDumpRatingRow>();
+  for (const r of publicRatings) publicRatingByNoteId.set(r.note_id, r);
 
   const records: NoteRecord[] = [];
   for (const note of notes) {
@@ -213,6 +226,7 @@ function joinNotes(
     if (!submittedAt) continue; // pre-tracking rows: skip from stats dashboard
     const run = submittedRunByNoteId.get(note.note_id);
     const tweet = tweetById.get(note.tweet_id);
+    const publicRating = publicRatingByNoteId.get(note.note_id);
     records.push({
       note_id: note.note_id,
       tweet_id: note.tweet_id,
@@ -235,6 +249,16 @@ function joinNotes(
             has_photo: !!tweet.has_photo,
             has_video: !!tweet.has_video,
             media_count: tweet.media_count ?? 0,
+          }
+        : null,
+      public_dump_ratings: publicRating
+        ? {
+            helpful_count: publicRating.helpful_count,
+            somewhat_helpful_count: publicRating.somewhat_helpful_count,
+            not_helpful_count: publicRating.not_helpful_count,
+            helpful_tag_counts: publicRating.helpful_tag_counts ?? {},
+            not_helpful_tag_counts: publicRating.not_helpful_tag_counts ?? {},
+            dump_date: publicRating.dump_date,
           }
         : null,
     });
@@ -283,12 +307,25 @@ async function loadTweets(tweetIds: string[]): Promise<RawTweetRow[]> {
   );
 }
 
+async function loadPublicRatings(): Promise<RawPublicDumpRatingRow[]> {
+  return fetchAllRows<RawPublicDumpRatingRow>(
+    supabase
+      .from("note_ratings_from_public_dump")
+      .select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date"),
+    "note_ratings_from_public_dump",
+  );
+}
+
 async function buildSnapshot(): Promise<StatsSnapshot> {
-  const [notes, pipelineRuns] = await Promise.all([loadNotes(), loadAllPipelineRuns()]);
+  const [notes, pipelineRuns, publicRatings] = await Promise.all([
+    loadNotes(),
+    loadAllPipelineRuns(),
+    loadPublicRatings(),
+  ]);
   const tweetIds = [...new Set(notes.map((n) => n.tweet_id).filter(Boolean))];
   const tweets = tweetIds.length ? await loadTweets(tweetIds) : [];
 
-  const noteRecords = joinNotes(notes, pipelineRuns, tweets);
+  const noteRecords = joinNotes(notes, pipelineRuns, tweets, publicRatings);
   const pipelineRunAggregates = buildPipelineAggregates(pipelineRuns);
   const pipelineRunsByDay = buildPipelineRunsByDay(pipelineRuns);
   const abTestSlots = buildAbTestSlots(pipelineRuns);

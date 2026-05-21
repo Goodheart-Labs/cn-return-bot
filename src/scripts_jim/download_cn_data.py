@@ -12,13 +12,19 @@ OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "cn_data")
 MAX_DAYS_BACK = 7
 
 PARTITIONS = {
-    # "notes": ["notes-00000.tsv", "notes-00001.tsv"],
+    "notes": ["notes-00000.tsv", "notes-00001.tsv"],
     "noteStatusHistory": ["noteStatusHistory-00000.tsv"],
-    # "noteRatings": [f"ratings-{i:05d}.tsv" for i in range(8)],
+    "noteRatings": [f"ratings-{i:05d}.tsv" for i in range(8)],
 }
 
 
 def download_and_extract(file_type: str, partition: str, date_str: str) -> bool:
+    out_path = os.path.join(OUTPUT_DIR, partition)
+    if os.path.exists(out_path):
+        size_mb = os.path.getsize(out_path) / (1024 * 1024)
+        print(f"  {partition} already exists ({size_mb:.1f} MB), skipping download")
+        return True
+
     zip_name = partition.replace(".tsv", ".zip")
     url = f"{CN_DATA_BASE_URL}/{date_str}/{file_type}/{zip_name}"
     print(f"  Trying {url}...")
@@ -31,7 +37,6 @@ def download_and_extract(file_type: str, partition: str, date_str: str) -> bool:
     with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
         zf.extractall(OUTPUT_DIR)
 
-    out_path = os.path.join(OUTPUT_DIR, partition)
     size_mb = os.path.getsize(out_path) / (1024 * 1024)
     print(f"    Extracted {partition} ({size_mb:.1f} MB)")
     return True

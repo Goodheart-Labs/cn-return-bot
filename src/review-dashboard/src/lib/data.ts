@@ -127,9 +127,10 @@ export async function fetchDashboardData(): Promise<{
   missedRuns: any[];
   annotations: any[];
   tweets: any[];
+  publicDumpRatings: any[];
 }> {
   console.log("[data] Loading dashboard metadata...");
-  const [canonical, competing, submittedRuns] = await Promise.all([
+  const [canonical, competing, submittedRuns, publicDumpRatings] = await Promise.all([
     fetchAllRows<any>(
       supabase
         .from("notes")
@@ -141,6 +142,12 @@ export async function fetchDashboardData(): Promise<{
     fetchAllRows<any>(
       supabase.from("pipeline_runs").select(PIPELINE_METADATA_COLUMNS).eq("outcome", "submitted"),
       "submitted_runs",
+    ),
+    fetchAllRows<any>(
+      supabase
+        .from("note_ratings_from_public_dump")
+        .select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date"),
+      "public_dump_ratings",
     ),
   ]);
 
@@ -201,7 +208,7 @@ export async function fetchDashboardData(): Promise<{
     "annotations",
   ).catch(() => [] as any[]);
 
-  return { canonical, competing, submittedRuns, missedRuns, annotations, tweets };
+  return { canonical, competing, submittedRuns, missedRuns, annotations, tweets, publicDumpRatings };
 }
 
 /**
@@ -237,8 +244,11 @@ export function buildDashboardItems(data: {
   missedRuns: any[];
   annotations: any[];
   tweets: any[];
+  publicDumpRatings: any[];
 }): ReviewItem[] {
-  const { canonical, competing, submittedRuns, missedRuns, annotations, tweets } = data;
+  const { canonical, competing, submittedRuns, missedRuns, annotations, tweets, publicDumpRatings } = data;
+  const publicRatingsByNoteId = new Map<string, any>();
+  for (const r of publicDumpRatings) publicRatingsByNoteId.set(r.note_id, r);
 
   const pipelineByTweet = new Map<string, any>();
   for (const pr of submittedRuns) pipelineByTweet.set(pr.tweet_id, pr);
@@ -302,6 +312,7 @@ export function buildDashboardItems(data: {
       ratingCount: note.rating_count,
       helpfulCount: note.helpful_count,
       notHelpfulCount: note.not_helpful_count,
+      publicDumpRatings: publicRatingsByNoteId.get(note.note_id),
       outcome: pipeline?.outcome,
       outcomeReason: pipeline?.outcome_reason,
       pipelineRunId: pipeline?.id,

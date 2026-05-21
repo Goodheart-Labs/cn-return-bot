@@ -1,4 +1,4 @@
-import type { ReferencedTweetData, TweetMediaItem } from "../../../dashboard-shared/types";
+import type { PublicDumpRatings, ReferencedTweetData, TweetMediaItem } from "../../../dashboard-shared/types";
 
 export type CnStatus =
   | "CURRENTLY_RATED_HELPFUL"
@@ -30,6 +30,7 @@ export interface NoteRecord {
   ab_test_picks: Record<string, string> | null;
   cost: number | null;
   tweet: NoteTweetData | null;
+  public_dump_ratings: PublicDumpRatings | null;
 }
 
 export interface PipelineRunAggregate {

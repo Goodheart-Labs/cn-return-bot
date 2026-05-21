@@ -20,3 +20,12 @@ export interface Tweet {
   media?: TweetMediaItem[];
   referencedTweetData?: ReferencedTweetData;
 }
+
+export interface PublicDumpRatings {
+  helpful_count: number;
+  somewhat_helpful_count: number;
+  not_helpful_count: number;
+  helpful_tag_counts: Record<string, number>;
+  not_helpful_tag_counts: Record<string, number>;
+  dump_date: string;
+}

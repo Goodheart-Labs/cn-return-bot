@@ -4,6 +4,7 @@ import { FAILURE_TYPE_CONFIG } from "../lib/types";
 import { JsonViewer } from "./JsonViewer";
 import { FailureModeSelector } from "./FailureModeSelector";
 import { TweetCard } from "../../../dashboard-shared/TweetCard";
+import { Ratings } from "../../../dashboard-shared/Ratings";
 import type { Tweet } from "../../../dashboard-shared/types";
 
 interface NoteCardProps {
@@ -194,15 +195,15 @@ export function NoteCard({
       )}
 
       {/* Stats row */}
-      {(item.viewCount != null || item.evaluationScore != null) && (
-        <div className="flex gap-4 text-xs text-gray-500 mb-3">
-          {item.viewCount != null && <span>Views: {item.viewCount.toLocaleString()}</span>}
-          {item.ratingCount != null && <span>Ratings: {item.ratingCount}</span>}
-          {item.helpfulCount != null && <span>Helpful: {item.helpfulCount}</span>}
-          {item.notHelpfulCount != null && <span>Not helpful: {item.notHelpfulCount}</span>}
-          {item.evaluationScore != null && <span>Eval: {item.evaluationScore.toFixed(2)}</span>}
-        </div>
-      )}
+      <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 mb-3">
+        {item.viewCount != null && <span>Views: {item.viewCount.toLocaleString()}</span>}
+        <Ratings
+          publicDumpRatings={item.publicDumpRatings}
+          fallbackHelpfulCount={item.helpfulCount}
+          fallbackNotHelpfulCount={item.notHelpfulCount}
+        />
+        {item.evaluationScore != null && <span>Eval: {item.evaluationScore.toFixed(2)}</span>}
+      </div>
 
       {/* Failure mode tags */}
       {failureModes.length > 0 && (

@@ -1,0 +1,33 @@
+name: Update Ratings from CN Public Dump
+
+# X publishes the Community Notes daily snapshot with a 48 h delay; the file
+# is typically available a few hours after UTC midnight. Run at 06:00 UTC to
+# stay clear of that window. The runner ingests ~40 GB of ratings TSVs and
+# upserts ~1k–3k rows into note_ratings_from_public_dump, so a few hours of
+# slip on the snapshot release isn't a problem.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-ratings:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests supabase python-dotenv
+
+      - name: Update ratings table from CN public dump
+        run: python src/scripts_jim/2026_05_21_ratings_dump_fill/fill_ratings.py --stream --no-cache
