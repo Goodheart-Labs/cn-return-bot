@@ -69,8 +69,8 @@ export function App() {
   );
   const sortedNotes = useMemo(() => sortNotesForList(filteredNotes, sort), [filteredNotes, sort]);
   const writingLimitMetrics = useMemo(
-    () => (devMode ? computeWritingLimitMetrics(filteredNotes) : null),
-    [devMode, filteredNotes],
+    () => (devMode && snapshot ? computeWritingLimitMetrics(snapshot.notes) : null),
+    [devMode, snapshot],
   );
 
   const [chartRef, chartWidth] = useResizeWidth<HTMLDivElement>();

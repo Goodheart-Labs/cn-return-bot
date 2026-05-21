@@ -247,9 +247,7 @@ function HighPerformingBlock({ m }: { m: WritingLimitMetrics }) {
 export function WritingLimitPanel({ metrics }: { metrics: WritingLimitMetrics }) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 space-y-6">
-      <h3 className="text-sm font-medium text-gray-800">
-        Writing-limit metrics (selected notes)
-      </h3>
+      <h3 className="text-sm font-medium text-gray-800">Writing-limit metrics</h3>
 
       <section className="space-y-1">
         <h4 className="text-xs uppercase tracking-wide text-gray-500 mb-1">Inputs</h4>

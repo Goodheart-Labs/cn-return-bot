@@ -1,0 +1,53 @@
+[
+  {
+    "run_id": "7b779388-b25e-4203-a8a7-633f51a472bf",
+    "tweet_id": "2054126419752493106",
+    "created_at": "2026-05-12T11:55:16.353097+00:00",
+    "outcome": "rejected",
+    "note_text": "This list of alleged WWE salaries is a fabrication that has circulated online since 2006. Former WWE wrestlers featured on the list, including Rene Dupree and Paul London, have confirmed the figures are fake and do not accurately reflect their actual earnings. https://www.youtube.com/watch?v=galyuH1xMC4",
+    "all_sources": [
+      "https://www.youtube.com/watch?v=galyuH1xMC4"
+    ],
+    "social_sources": [
+      {
+        "url": "https://www.youtube.com/watch?v=galyuH1xMC4",
+        "host": "youtube.com"
+      }
+    ]
+  },
+  {
+    "run_id": "52b57569-02e1-4136-8a43-f9eb448b7171",
+    "tweet_id": "2053709553104032247",
+    "created_at": "2026-05-11T19:01:04.811524+00:00",
+    "outcome": "submitted",
+    "note_text": "This video is AI-generated, not real footage. No zoo gorilla has ever used a barbell, and multiple AI video tools like Sora and Veo 3 are commonly used to create realistic-looking animal weightlifting clips like this one. https://www.tiktok.com/discover/gorilla-lift-weights https://filmora.wondershare.com/ai-prompt/ai-animal-weightlifting.html",
+    "all_sources": [
+      "https://www.tiktok.com/discover/gorilla-lift-weights",
+      "https://filmora.wondershare.com/ai-prompt/ai-animal-weightlifting.html"
+    ],
+    "social_sources": [
+      {
+        "url": "https://www.tiktok.com/discover/gorilla-lift-weights",
+        "host": "tiktok.com"
+      }
+    ]
+  },
+  {
+    "run_id": "663042aa-74f1-4f11-a045-50574a9028a9",
+    "tweet_id": "2053269447993876867",
+    "created_at": "2026-05-10T06:22:16.081206+00:00",
+    "outcome": "rejected",
+    "note_text": "Mixtape was marketed at multiple major events leading to its release, including the 2024 Xbox Games Showcase, Summer Game Fest 2025, and a 2026 Nintendo Indie World. The developer is an independent Australian studio, while the billionaire mentioned is the publisher's owner. https://en.wikipedia.org/wiki/Mixtape_(video_game) https://www.youtube.com/watch?v=cCTH8R6RD74 https://sundayguardianlive.com/tech-news/mixtape-game-review-2026-check-release-date-storyline-feature-price-game-length-total-playtime-more-189971/",
+    "all_sources": [
+      "https://en.wikipedia.org/wiki/Mixtape_(video_game)",
+      "https://www.youtube.com/watch?v=cCTH8R6RD74",
+      "https://sundayguardianlive.com/tech-news/mixtape-game-review-2026-check-release-date-storyline-feature-price-game-length-total-playtime-more-189971/"
+    ],
+    "social_sources": [
+      {
+        "url": "https://www.youtube.com/watch?v=cCTH8R6RD74",
+        "host": "youtube.com"
+      }
+    ]
+  }
+]
