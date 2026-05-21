@@ -22,7 +22,9 @@ import PQueue from "p-queue";
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
 const RETRIES_ENABLED = false;
-const PREFERRED_FEED_SIZE: FeedSize = "large";
+// Flip to "large" (or "xl"/"xxl") to use a bigger feed; FALLBACK_FEED_SIZE
+// kicks in if the bigger feed 403s. "small" is the safe default.
+const PREFERRED_FEED_SIZE: FeedSize = "small";
 const FALLBACK_FEED_SIZE: FeedSize = "small";
 
 // ---------------------------------------------------------------------------
@@ -30,10 +32,10 @@ const FALLBACK_FEED_SIZE: FeedSize = "small";
 // ---------------------------------------------------------------------------
 
 /**
- * Tries `large` first, falls back to `small` on any fetch error (the larger
- * feed sometimes returns 403). Returned `feedSize` is the size that actually
- * worked — propagated into ab_test_picks.feed_size so the record matches what
- * the API gave us, not what we asked for.
+ * Tries `PREFERRED_FEED_SIZE` first, falls back to `FALLBACK_FEED_SIZE` on any
+ * fetch error (the larger feed sometimes returns 403). Returned `feedSize` is
+ * the size that actually worked — propagated into ab_test_picks.feed_size so
+ * the record matches what the API gave us, not what we asked for.
  */
 async function fetchWithFeedSizeFallback(
   skipPostIds: Set<string>
@@ -162,8 +164,8 @@ export async function generateCandidates(
   const allLogs: TweetLogMap[] = [];
   const candidates: Candidate[] = [];
 
-  // Force feed_size pick to the size the fetch actually used (large normally,
-  // small after fallback) so the recorded pick matches reality.
+  // Force feed_size pick to the size the fetch actually used (preferred
+  // normally, fallback after API failure) so the recorded pick matches reality.
   const feedSizePick = { ...outerForcedPicks, feed_size: feedSize };
 
   for (const [idx, post] of posts.entries()) {

@@ -148,17 +148,15 @@ const AGENT_PARALLEL_TEST: ABTest = {
   ],
 };
 
-// Pseudo A/B test: all weight on `large`. `generateCandidates` forces the pick
-// to match the size the fetch actually succeeded with (falls back to `small`
-// on API failure), so `pipeline_runs.ab_test_picks.feed_size` reflects reality.
-// Pre-existing rows (no `feed_size` key) are resolved to "small" — the bot
-// always fetched with feed_size=small before this change.
+// Pseudo A/B test: records the feed size in `pipeline_runs.ab_test_picks.feed_size`.
+// `generateCandidates` forces the pick to the size the fetch actually used.
+// Pre-existing rows (no `feed_size` key) resolve to "small".
 const FEED_SIZE_TEST: ABTest = {
   name: "feed_size",
   defaultVariant: "small",
   variants: [
-    { variant: { name: "large", overrides: { feed_size: "large" }}, weight: 100 },
-    { variant: { name: "small", overrides: { feed_size: "small" }}, weight: 0 },
+    { variant: { name: "small", overrides: { feed_size: "small" }}, weight: 100 },
+    { variant: { name: "large", overrides: { feed_size: "large" }}, weight: 0 },
     { variant: { name: "xl",    overrides: { feed_size: "xl"    }}, weight: 0 },
     { variant: { name: "xxl",   overrides: { feed_size: "xxl"   }}, weight: 0 },
   ],
