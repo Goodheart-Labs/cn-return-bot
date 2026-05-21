@@ -22,38 +22,12 @@ import PQueue from "p-queue";
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
 const RETRIES_ENABLED = false;
-const PREFERRED_FEED_SIZE: FeedSize = "large";
-const FALLBACK_FEED_SIZE: FeedSize = "small";
-
-// ---------------------------------------------------------------------------
-// Post fetching
-// ---------------------------------------------------------------------------
-
-/**
- * Tries `large` first, falls back to `small` on any fetch error (the larger
- * feed sometimes returns 403). Returned `feedSize` is the size that actually
- * worked — propagated into ab_test_picks.feed_size so the record matches what
- * the API gave us, not what we asked for.
- */
-async function fetchWithFeedSizeFallback(
-  skipPostIds: Set<string>
-): Promise<{ feedSize: FeedSize; posts: Post[] }> {
-  try {
-    const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(PREFERRED_FEED_SIZE));
-    console.log(`[generate] Feed: ${PREFERRED_FEED_SIZE}`);
-    return { feedSize: PREFERRED_FEED_SIZE, posts };
-  } catch (err) {
-    console.warn(`[generate] Feed ${PREFERRED_FEED_SIZE} failed (${(err as Error)?.message}); retrying with ${FALLBACK_FEED_SIZE}`);
-    const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(FALLBACK_FEED_SIZE));
-    console.log(`[generate] Feed: ${FALLBACK_FEED_SIZE} (fallback)`);
-    return { feedSize: FALLBACK_FEED_SIZE, posts };
-  }
-}
+const FEED_SIZE: FeedSize = "small";
 
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
   maxPosts: number
-): Promise<{ posts: Post[]; feedSize: FeedSize; newCount: number; retryCount: number }> {
+): Promise<{ posts: Post[]; newCount: number; retryCount: number }> {
   let skipPostIds = new Set<string>();
   let knownTweetIds = new Set<string>();
 
@@ -69,7 +43,8 @@ async function fetchPosts(
     }
   }
 
-  const { feedSize, posts } = await fetchWithFeedSizeFallback(skipPostIds);
+  const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(FEED_SIZE));
+  console.log(`[generate] Feed: ${FEED_SIZE}`);
 
   // A tweet is "new" iff it wasn't already in the tweets table before this
   // fetch. Insert the new ones now so subsequent runs see them as known and
@@ -105,7 +80,7 @@ async function fetchPosts(
     console.log(`[generate]   #${i + 1}: ${p.id} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago${tag}`);
   }
 
-  return { posts: selected, feedSize, newCount: selectedNew.length, retryCount: selectedRetry.length };
+  return { posts: selected, newCount: selectedNew.length, retryCount: selectedRetry.length };
 }
 
 function logMediaBreakdown(posts: Post[]): void {
@@ -150,7 +125,7 @@ export async function generateCandidates(
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
   // Fetch posts
-  const { posts, feedSize, newCount, retryCount } = await fetchPosts(supabaseLogger, maxPosts);
+  const { posts, newCount, retryCount } = await fetchPosts(supabaseLogger, maxPosts);
   if (!posts.length) {
     console.log("[generate] No eligible posts found.");
     return [];
@@ -162,9 +137,9 @@ export async function generateCandidates(
   const allLogs: TweetLogMap[] = [];
   const candidates: Candidate[] = [];
 
-  // Force feed_size pick to the size the fetch actually used (large normally,
-  // small after fallback) so the recorded pick matches reality.
-  const feedSizePick = { ...outerForcedPicks, feed_size: feedSize };
+  // Force feed_size pick to the size the fetch actually used so the
+  // recorded pick matches reality.
+  const feedSizePick = { ...outerForcedPicks, feed_size: FEED_SIZE };
 
   for (const [idx, post] of posts.entries()) {
     queue.add(() => withForcedPicks(feedSizePick, async () => {
@@ -218,7 +193,7 @@ export async function generateCandidates(
     console.log("::group::Run summary");
   }
   console.log(`[generate] ${candidates.length} candidates (${newCount} new + ${retryCount} retry processed), ${posts.length - candidates.length} rejected`);
-  console.log(formatRunSummary(allLogs, feedSize));
+  console.log(formatRunSummary(allLogs, FEED_SIZE));
   if (process.env.CI) console.log("::endgroup::");
 
   return candidates;
