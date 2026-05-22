@@ -1,5 +1,4 @@
 import type {
-  ABFilters,
   ChartGranularity,
   CnStatus,
   NoteRecord,
@@ -7,36 +6,11 @@ import type {
   PipelineRunAggregate,
   PipelineRunDayBucket,
 } from "./types";
-
-// ─── A/B-pick filter ─────────────────────────────────────────────────────────
-
-export function noteMatchesAbFilters(note: NoteRecord, filters: ABFilters): boolean {
-  for (const [slot, variant] of Object.entries(filters)) {
-    if (!variant) continue;
-    if (note.ab_test_picks?.[slot] !== variant) return false;
-  }
-  return true;
-}
-
-export function aggMatchesAbFilters(agg: PipelineRunAggregate, filters: ABFilters): boolean {
-  for (const [slot, variant] of Object.entries(filters)) {
-    if (!variant) continue;
-    if (agg.ab_test_picks?.[slot] !== variant) return false;
-  }
-  return true;
-}
-
-function runDayMatchesAbFilters(day: PipelineRunDayBucket, filters: ABFilters): boolean {
-  for (const [slot, variant] of Object.entries(filters)) {
-    if (!variant) continue;
-    if (day.ab_test_picks?.[slot] !== variant) return false;
-  }
-  return true;
-}
+import { matchesAbFilters, type ABFilters } from "../../../dashboard-shared/abFilters";
 
 export function filterNotes(notes: NoteRecord[], filters: ABFilters): NoteRecord[] {
   const hasFilter = Object.values(filters).some(Boolean);
-  return hasFilter ? notes.filter((n) => noteMatchesAbFilters(n, filters)) : notes;
+  return hasFilter ? notes.filter((n) => matchesAbFilters(n.ab_test_picks, filters)) : notes;
 }
 
 // ─── Time bucketing ──────────────────────────────────────────────────────────
@@ -132,7 +106,7 @@ export function bucketize(
 
   if (runsByDay) {
     for (const day of runsByDay) {
-      if (!runDayMatchesAbFilters(day, filters)) continue;
+      if (!matchesAbFilters(day.ab_test_picks, filters)) continue;
       const nonCandidate = day.total_count - day.submitted_count;
       if (nonCandidate <= 0) continue;
       const key = bucketKey(`${day.date}T00:00:00Z`, granularity);
@@ -171,7 +145,7 @@ export function computeHeadlineMetrics(
   const totalViews = filteredNotes.reduce((sum, n) => sum + n.view_count, 0);
   const viewsOnHelpful = helpfulNotes.reduce((sum, n) => sum + n.view_count, 0);
 
-  const matchingAggregates = aggregates.filter((a) => aggMatchesAbFilters(a, filters));
+  const matchingAggregates = aggregates.filter((a) => matchesAbFilters(a.ab_test_picks, filters));
   const totalCost = matchingAggregates.reduce((sum, a) => sum + a.total_cost, 0);
   const helpfulInCostEra = helpfulNotes.filter((n) => n.cost != null);
 

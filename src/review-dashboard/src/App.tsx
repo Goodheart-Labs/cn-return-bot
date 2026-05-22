@@ -29,6 +29,17 @@ import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
 import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
+import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
+import {
+  abTestOrdering,
+  buildAbTestSlots,
+  matchesAbFilters,
+  type ABFilters,
+} from "../../dashboard-shared/abFilters";
+import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
+
+const { slotOrder: AB_TEST_SLOT_ORDER, variantOrder: AB_TEST_VARIANT_ORDER } =
+  abTestOrdering(AB_TESTS);
 
 function defaultFilters(source: "production" | "dataset_run"): FilterState {
   const failureTypes = new Set<FailureType>();
@@ -46,7 +57,7 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
   return db - da;
 }
 
-function matchesFilters(filters: FilterState) {
+function matchesFilters(filters: FilterState, abFilters: ABFilters) {
   return (item: ReviewItem) => {
     if (!filters.failureTypes.has(item.failureType)) return false;
     if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
@@ -55,6 +66,7 @@ function matchesFilters(filters: FilterState) {
       const itemModes = item.annotation?.failureModes ?? [];
       if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
     }
+    if (!matchesAbFilters(item.abTestPicks ?? null, abFilters)) return false;
     return true;
   };
 }
@@ -71,6 +83,7 @@ export function App() {
   const [uploads, setUploads] = useState<UploadInfo[]>([]);
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
+  const [abFilters, setAbFilters] = useState<ABFilters>({});
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
@@ -127,12 +140,25 @@ export function App() {
 
   useEffect(() => {
     setFilters(defaultFilters(dataset.type));
+    setAbFilters({});
     loadData();
   }, [dataset]);
 
   // Sort items by date (stable memo so renders don't re-sort unnecessarily).
   const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
-  const filtered = sortedItems.filter(matchesFilters(filters));
+  const filtered = sortedItems.filter(matchesFilters(filters, abFilters));
+
+  // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS
+  // declaration order so dropdowns match the stats dashboard layout.
+  const abSlots = useMemo(
+    () =>
+      buildAbTestSlots(
+        items.map((i) => i.abTestPicks),
+        AB_TEST_SLOT_ORDER,
+        AB_TEST_VARIANT_ORDER,
+      ),
+    [items],
+  );
 
   // Tag usage counts derived from current items' annotations. Used to sort
   // and label the failure-mode pills.
@@ -344,6 +370,13 @@ export function App() {
           onFiltersChange={setFilters}
         />
       </div>
+
+      {/* A/B test filters */}
+      {abSlots.length > 0 && (
+        <div className="mb-4">
+          <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} />
+        </div>
+      )}
 
       {/* Failure mode filter pills */}
       {failureModeCatalog.length > 0 && (

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { loadStatsSnapshot } from "./lib/loadData";
 import type {
-  ABFilters,
   ChartGranularity,
   ChartMode,
   NoteSort,
   StatsSnapshot,
 } from "./lib/types";
+import type { ABFilters } from "../../dashboard-shared/abFilters";
 import {
   bucketKey,
   bucketize,
@@ -19,7 +19,7 @@ import { MetricsHeader } from "./components/MetricsHeader";
 import { ChartControls, ChartLegend } from "./components/ChartControls";
 import { BarChart } from "./components/BarChart";
 import { NoteList } from "./components/NoteList";
-import { AbFilterPanel } from "./components/ABFilters";
+import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
 
