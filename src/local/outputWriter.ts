@@ -40,20 +40,29 @@ export function buildRunName(
   return `${parts.join("_")}_${ts}`;
 }
 
-export function initOutputFolder(prefix: string, datasetName?: string, botName?: string): OutputFolder {
+export function initOutputFolder(
+  prefix: string,
+  datasetName?: string,
+  botName?: string,
+  runName?: string,
+): OutputFolder {
   const baseDir = path.join(process.cwd(), "dataset_runs");
-  // YYYYMMDDHHmmssSSS-<pid> — ms precision + PID keep parallel runs from colliding
+  // YYYY-MM-DD-HHMM (e.g. 2026-04-19-0850) — human-readable folder names.
+  // Collisions within a minute resolved by appending -2, -3, …
   const iso = new Date().toISOString(); // 2026-04-19T08:50:12.345Z
-  const stamp = iso.replace(/[-:T.Z]/g, "").slice(0, 17); // 20260419085012345
-  const timestamp = `${stamp}-${process.pid}`;
-  const folderPath = path.join(baseDir, `${prefix}-${timestamp}`);
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/)!;
+  const stamp = `${m[1]}-${m[2]}-${m[3]}-${m[4]}${m[5]}`;
+  const base = runName ? `${prefix}-${runName}-${stamp}` : `${prefix}-${stamp}`;
+  let folderName = base;
+  for (let n = 2; fs.existsSync(path.join(baseDir, folderName)); n++) {
+    folderName = `${base}-${n}`;
+  }
+  const folderPath = path.join(baseDir, folderName);
   fs.mkdirSync(folderPath, { recursive: true });
 
-  const csvName = [
-    "results",
-    datasetName,
-    botName ?? "random",
-  ].join("_") + ".csv";
+  const csvName = runName
+    ? `results_${runName}.csv`
+    : ["results", datasetName, botName ?? "random"].join("_") + ".csv";
   const csvPath = path.join(folderPath, csvName);
   fs.writeFileSync(csvPath, OUTPUT_HEADERS.join(",") + "\n", "utf8");
 

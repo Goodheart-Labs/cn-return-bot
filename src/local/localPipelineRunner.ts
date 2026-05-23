@@ -331,7 +331,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   console.log(`[${scriptName}] Processing ${inputs.length} item(s)`);
 
-  const output = initOutputFolder(folderPrefix, datasetName, forcedBotId);
+  const output = initOutputFolder(folderPrefix, datasetName, forcedBotId, runName);
   console.log(`[${scriptName}] Output folder: ${output.folderPath}`);
 
   const results: CompletedResult[] = [];
