@@ -25,6 +25,16 @@ export interface BotConfig {
   verifier_model?: string;
   /** If true, the source verifier surfaces an automated Gemini analysis (yt-dlp for video/audio/Instagram-photo, direct vision call for image URLs) for cited media URLs and treats that as the source's content. Defaults to false. */
   verifier_accepts_media_sources?: boolean;
+  /**
+   * When true, the simple-bot pipeline runs an extra LLM step between writer
+   * and source verifier that judges whether a note is actually warranted for
+   * the post. The search step's system prompt is also simplified — the "when
+   * NOT to set correction_needed" criteria move into the judge's prompt.
+   * Defaults to false (no judge step, full search prompt).
+   */
+  note_needed_judge?: boolean;
+  /** Model for the note-needed-judge step. Defaults to `model` when unset. */
+  note_judge_model?: string;
   web_search:
     | "native"             // Anthropic web_search via OpenRouter
     | "native_gemini"      // Google Gen AI native API + googleSearch tool

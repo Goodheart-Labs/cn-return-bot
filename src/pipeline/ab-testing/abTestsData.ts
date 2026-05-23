@@ -95,6 +95,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 2 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
@@ -108,13 +109,27 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet",       overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
-    { variant: { name: "gemini-flash", overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
 
 // Verifier is hardcoded to Gemini-flash via DEFAULT_CONFIG.verifier_model.
 // Add SIMPLE_BOT_VERIFIER_TEST later when comparing verifiers.
+
+// Extra LLM step between writer and source verifier that judges whether the
+// proposed note is actually warranted. When "on", the search step's system
+// prompt is simplified (criteria for "when a note is needed" move into the
+// judge's prompt). Prereq-gated to simple-bot, so no defaultVariant.
+const NOTE_NEEDED_JUDGE_TEST: ABTest = {
+  name: "note_needed_judge",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off",              overrides: { note_needed_judge: false }                                                                 }, weight: 100 },
+    { variant: { name: "deepseek-v4flash", overrides: { note_needed_judge: true, note_judge_model: "deepseek/deepseek-v4-flash" }                  }, weight: 0 },
+  ],
+};
 
 const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   name: "verifier_media_sources",
@@ -161,6 +176,7 @@ export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
+  NOTE_NEEDED_JUDGE_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   AGENT_SEARCH_TEST,
   AGENT_PARALLEL_TEST,

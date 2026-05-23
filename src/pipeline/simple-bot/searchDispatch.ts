@@ -44,7 +44,7 @@ function appendSonarCitations(findings: string, annotations: any[] | undefined):
 
 // --- Shared prompt + schema ---
 
-export const SEARCH_SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
+const SEARCH_SYSTEM_PROMPT_FULL = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
 Your job: investigate whether the post below contains a factual error that would benefit from a community note. Use the web_search tool to find evidence.
 
@@ -63,6 +63,29 @@ Return JSON with two fields:
 - Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
+
+// Simplified prompt used when config.note_needed_judge is true. A downstream
+// judge step owns the "is a note warranted?" decision, so this prompt drops
+// the criteria and asks the search step to focus on gathering evidence.
+const SEARCH_SYSTEM_PROMPT_SIMPLIFIED = `You are a research agent for Community Notes fact-checking on X/Twitter.
+
+Your job: investigate the post below for factual errors and gather evidence. Use the web_search tool. A separate step will judge whether a community note is warranted, so do not be conservative — surface any factual error you find, even if you're unsure it rises to the level of a note.
+
+## Output format
+Return JSON with two fields:
+- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
+- correction_needed: true if you found a factual error in the post supported by direct contradicting evidence; false only if the post is plainly correct or you found no contradicting evidence at all.
+
+## Sourcing rules
+- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
+- Include what each source says that's relevant.
+- If correction_needed is false, the findings can be brief — just explain why.`;
+
+export function getSearchSystemPrompt(): string {
+  return getBotConfig().note_needed_judge
+    ? SEARCH_SYSTEM_PROMPT_SIMPLIFIED
+    : SEARCH_SYSTEM_PROMPT_FULL;
+}
 
 // OpenAI-flavoured schema (strict json_schema), used by Anthropic via OpenRouter.
 const OPENAI_RESPONSE_FORMAT = {
@@ -152,12 +175,13 @@ async function searchWithAnthropicNative(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
-  log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage });
+  const systemPrompt = getSearchSystemPrompt();
+  log?.set(`${name}.messages.0`, { systemPrompt, userMessage });
 
   const response = await llm.create({
     model,
     messages: [
-      { role: "system" as const, content: SEARCH_SYSTEM_PROMPT },
+      { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
     tools: [WEB_SEARCH_TOOL],
@@ -183,11 +207,12 @@ async function searchWithGeminiNative(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = stripPrefix(config.search_model ?? config.model, "google/");
-  log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage, model });
+  const systemPrompt = getSearchSystemPrompt();
+  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
 
   const result = await geminiNativeGenerate({
     model,
-    systemInstruction: SEARCH_SYSTEM_PROMPT,
+    systemInstruction: systemPrompt,
     userMessage,
     enableGoogleSearch: true,
     responseSchema: INLINE_RESPONSE_SCHEMA,
@@ -219,11 +244,12 @@ async function searchWithGrokNative(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = stripPrefix(config.search_model ?? config.model, "x-ai/");
-  log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage, model });
+  const systemPrompt = getSearchSystemPrompt();
+  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
 
   const result = await xaiNativeGenerate({
     model,
-    systemPrompt: SEARCH_SYSTEM_PROMPT,
+    systemPrompt,
     userMessage,
     enableXSearch: true,
     responseSchema: INLINE_RESPONSE_SCHEMA,
@@ -260,7 +286,8 @@ async function searchWithOpenaiNative(
   // OpenRouter passes OpenAI's web_search_preview tool through (verified by
   // the Phase 0 spike), so this is just an llm.create call — no native client.
   const model = config.search_model ?? config.model;
-  log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage, model });
+  const systemPrompt = getSearchSystemPrompt();
+  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
 
   // OpenAI's web_search_preview tool via OpenRouter rejects
   // response_format=json_schema (returns 500 on production-sized prompts).
@@ -270,7 +297,7 @@ async function searchWithOpenaiNative(
   const response = await llm.create({
     model,
     messages: [
-      { role: "user" as const, content: `${SEARCH_SYSTEM_PROMPT}\n\n${userMessage}\n\n${promptedSchema}` },
+      { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}\n\n${promptedSchema}` },
     ],
     tools: [{ type: "web_search_preview" }] as any,
     max_tokens: OPENAI_MAX_TOKENS,
@@ -304,13 +331,14 @@ async function searchWithSonarBundled(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
-  log?.set(`${name}.messages.0`, { systemPrompt: SEARCH_SYSTEM_PROMPT, userMessage, model });
+  const systemPrompt = getSearchSystemPrompt();
+  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
 
   // Sonar models ground the response in web search automatically; no tool needed.
   const response = await llm.create({
     model,
     messages: [
-      { role: "system" as const, content: SEARCH_SYSTEM_PROMPT },
+      { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
     response_format: OPENAI_RESPONSE_FORMAT,
@@ -332,10 +360,6 @@ async function searchWithSonarBundled(
 
 const SEARXNG_MAX_TURNS = 6;
 
-const SEARXNG_SYSTEM_PROMPT = `${SEARCH_SYSTEM_PROMPT}
-
-You have access to a google_search tool. Issue search queries to gather evidence, then return your final findings as JSON. You may call google_search multiple times. Stop calling tools and return JSON when you have enough evidence.`;
-
 /**
  * Tool-calling loop for models without native web search (Kimi, GLM, DeepSeek,
  * Qwen). The model issues google_search calls (which dispatch to SearXNG) and
@@ -349,11 +373,14 @@ async function searchWithSearxngLoop(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
+  const systemPrompt = `${getSearchSystemPrompt()}
+
+You have access to a google_search tool. Issue search queries to gather evidence, then return your final findings as JSON. You may call google_search multiple times. Stop calling tools and return JSON when you have enough evidence.`;
   const messages: any[] = [
-    { role: "system", content: SEARXNG_SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt },
     { role: "user", content: userMessage },
   ];
-  log?.set(`${name}.messages.0`, { systemPrompt: SEARXNG_SYSTEM_PROMPT, userMessage, model });
+  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
 
   const tools = [GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL];
   const totalCost: TokenCost = emptyTokenCost();
