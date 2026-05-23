@@ -20,15 +20,20 @@ import "dotenv/config";
 import { captureProdSupabaseCreds } from "./prodSupabaseCreds";
 captureProdSupabaseCreds();
 
-// Remap Nathan's X API credentials → standard X API env vars
-// (must happen before any X API imports read them)
-for (const [src, dest] of Object.entries({
-  X_NATHANPMYOUNG_API_KEY: "X_API_KEY",
-  X_NATHANPMYOUNG_API_KEY_SECRET: "X_API_KEY_SECRET",
-  X_NATHANPMYOUNG_ACCESS_TOKEN: "X_ACCESS_TOKEN",
-  X_NATHANPMYOUNG_ACCESS_TOKEN_SECRET: "X_ACCESS_TOKEN_SECRET",
-})) {
-  if (process.env[src]) process.env[dest] = process.env[src];
+// Remap a per-user X API credential set → standard X API env vars
+// (must happen before any X API imports read them). First prefix that's fully
+// populated wins; Jim's keys take priority so a fresh-account user doesn't
+// silently fall back to Nathan's quota.
+const X_KEY_PREFIXES = ["X_JIMMAAR1", "X_NATHANPMYOUNG"];
+const X_KEY_SUFFIXES = ["API_KEY", "API_KEY_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET"];
+for (const prefix of X_KEY_PREFIXES) {
+  const allSet = X_KEY_SUFFIXES.every((s) => process.env[`${prefix}_${s}`]);
+  if (!allSet) continue;
+  for (const suffix of X_KEY_SUFFIXES) {
+    process.env[`X_${suffix}`] = process.env[`${prefix}_${suffix}`];
+  }
+  console.log(`[tryoutNotes] Using X API credentials: ${prefix}`);
+  break;
 }
 
 // Route Supabase to local instance
