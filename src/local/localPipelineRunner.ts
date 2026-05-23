@@ -339,7 +339,31 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
   let completedCount = 0;
   let errorCount = 0;
 
-  const queue = new PQueue({ concurrency });
+  // Per-task timeout: without this, one hung tweet (e.g. a stuck SearXNG
+  // tool-call loop) blocks queue.onIdle() forever and we never reach the
+  // dashboard upload step. 5 min is well above legitimate runs and short
+  // enough that hangs surface fast.
+  const PER_TWEET_TIMEOUT_MS = 5 * 60 * 1000;
+  const queue = new PQueue({ concurrency, timeout: PER_TWEET_TIMEOUT_MS, throwOnTimeout: true });
+
+  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId);
+  let uploaded = false;
+  const uploadResults = async () => {
+    if (uploaded) return;
+    uploaded = true;
+    try { await autoOpenInDashboard(output.csvPath, uploadLabel); } catch (err: any) {
+      console.error(`[${scriptName}] dashboard upload failed: ${err?.message}`);
+    }
+  };
+
+  // If the user kills the process (Ctrl-C / SIGTERM), still upload what's
+  // already in the CSV so the dashboard reflects partial progress.
+  const onSignal = (sig: string) => {
+    console.log(`\n[${scriptName}] received ${sig} — uploading partial results before exit...`);
+    uploadResults().finally(() => process.exit(130));
+  };
+  process.once("SIGINT", () => onSignal("SIGINT"));
+  process.once("SIGTERM", () => onSignal("SIGTERM"));
 
   const orderedInputs = reversed ? [...inputs].reverse() : inputs;
   for (const [i, input] of orderedInputs.entries()) {
@@ -429,6 +453,5 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   try { await closeBrowser(); } catch {}
 
-  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId);
-  await autoOpenInDashboard(output.csvPath, uploadLabel);
+  await uploadResults();
 }
