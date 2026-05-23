@@ -387,11 +387,15 @@ You have access to a google_search tool. Issue search queries to gather evidence
   const toolCosts: ToolCallCost[] = [];
 
   for (let turn = 1; turn <= SEARXNG_MAX_TURNS; turn++) {
+    // Force a tool call on turn 1: without this, some models (DeepSeek v4
+    // Flash, observed 2026-05-23) prefer the JSON schema and short-circuit
+    // with empty findings + correction_needed=false, never searching.
     const response = await llm.create({
       model,
       messages,
       tools,
       response_format: OPENAI_RESPONSE_FORMAT,
+      tool_choice: turn === 1 ? "required" : "auto",
     } as any);
     addTokenCost(totalCost, extractOpenRouterCost(response));
 
