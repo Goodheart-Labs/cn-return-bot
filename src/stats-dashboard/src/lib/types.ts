@@ -1,4 +1,5 @@
 import type { PublicDumpRatings, ReferencedTweetData, TweetMediaItem } from "../../../dashboard-shared/types";
+import type { ABTestSlotInfo } from "../../../dashboard-shared/abFilters";
 
 export type CnStatus =
   | "CURRENTLY_RATED_HELPFUL"
@@ -50,11 +51,6 @@ export interface PipelineRunDayBucket {
   submitted_count: number;
 }
 
-export interface ABTestSlotInfo {
-  name: string;
-  variants: string[];
-}
-
 export interface StatsSnapshot {
   generated_at: string;
   notes: NoteRecord[];
@@ -66,5 +62,3 @@ export interface StatsSnapshot {
 export type ChartGranularity = "daily" | "weekly";
 export type ChartMode = "absolute" | "ratio";
 export type NoteSort = "latest_helpful" | "most_views_helpful" | "latest_unhelpful";
-
-export type ABFilters = Record<string, string | undefined>;

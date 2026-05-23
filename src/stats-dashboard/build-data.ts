@@ -22,14 +22,15 @@ import {
   fetchAllRows,
   fetchInBatches,
 } from "../dashboard-shared/supabasePaging";
+import { abTestOrdering, buildAbTestSlots } from "../dashboard-shared/abFilters";
 import type {
   StatsSnapshot,
   NoteRecord,
   PipelineRunAggregate,
   PipelineRunDayBucket,
-  ABTestSlotInfo,
 } from "./src/lib/types";
-import { AB_TESTS, resolvePicks } from "../pipeline/ab-testing/abTests.ts";
+import { resolvePicks } from "../pipeline/ab-testing/abTests.ts";
+import { AB_TESTS } from "../pipeline/ab-testing/abTestsData.ts";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
@@ -163,47 +164,12 @@ function buildPipelineRunsByDay(runs: RawPipelineRunRow[]): PipelineRunDayBucket
   return [...byDayKey.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 
-// Index slots and their variants by their position in AB_TESTS so the
-// dashboard renders the filter panel in declaration order. Slots or
-// variants that exist in historical pipeline_runs but no longer in
-// AB_TESTS (e.g., a deleted test) get appended after the known ones,
-// alphabetically.
-const AB_TEST_SLOT_INDEX = new Map(AB_TESTS.map((t, i) => [t.name, i]));
-const AB_TEST_VARIANT_INDEX = new Map(
-  AB_TESTS.map((t) => [t.name, new Map(t.variants.map((v, i) => [v.variant.name, i]))]),
-);
-
-function compareByMaybeIndex(
-  a: string,
-  b: string,
-  index: Map<string, number>,
-): number {
-  const ai = index.get(a);
-  const bi = index.get(b);
-  if (ai != null && bi != null) return ai - bi;
-  if (ai != null) return -1;
-  if (bi != null) return 1;
-  return a.localeCompare(b);
-}
-
-function buildAbTestSlots(runs: RawPipelineRunRow[]): ABTestSlotInfo[] {
-  const variantsBySlot = new Map<string, Set<string>>();
-  for (const run of runs) {
-    const picks = run.ab_test_picks;
-    if (!picks) continue;
-    for (const [slot, variant] of Object.entries(picks)) {
-      if (!variantsBySlot.has(slot)) variantsBySlot.set(slot, new Set());
-      variantsBySlot.get(slot)!.add(variant);
-    }
-  }
-  return [...variantsBySlot.entries()]
-    .map(([name, variants]) => {
-      const variantIndex = AB_TEST_VARIANT_INDEX.get(name) ?? new Map<string, number>();
-      const ordered = [...variants].sort((a, b) => compareByMaybeIndex(a, b, variantIndex));
-      return { name, variants: ordered };
-    })
-    .sort((a, b) => compareByMaybeIndex(a.name, b.name, AB_TEST_SLOT_INDEX));
-}
+// Slot and variant ordering hints derived from AB_TESTS declaration order so
+// the dashboard renders the filter panel in the same order that AB_TESTS
+// declares. Slots / variants that exist in historical pipeline_runs but no
+// longer in AB_TESTS get appended alphabetically by the shared helper.
+const { slotOrder: AB_TEST_SLOT_ORDER, variantOrder: AB_TEST_VARIANT_ORDER } =
+  abTestOrdering(AB_TESTS);
 
 function joinNotes(
   notes: RawNoteRow[],
@@ -328,7 +294,11 @@ async function buildSnapshot(): Promise<StatsSnapshot> {
   const noteRecords = joinNotes(notes, pipelineRuns, tweets, publicRatings);
   const pipelineRunAggregates = buildPipelineAggregates(pipelineRuns);
   const pipelineRunsByDay = buildPipelineRunsByDay(pipelineRuns);
-  const abTestSlots = buildAbTestSlots(pipelineRuns);
+  const abTestSlots = buildAbTestSlots(
+    pipelineRuns.map((r) => r.ab_test_picks),
+    AB_TEST_SLOT_ORDER,
+    AB_TEST_VARIANT_ORDER,
+  );
 
   return {
     generated_at: new Date().toISOString(),

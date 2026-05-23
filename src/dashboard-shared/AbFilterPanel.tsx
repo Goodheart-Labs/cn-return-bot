@@ -1,4 +1,4 @@
-import type { ABFilters, ABTestSlotInfo } from "../lib/types";
+import type { ABFilters, ABTestSlotInfo } from "./abFilters";
 
 export function AbFilterPanel({
   slots,
