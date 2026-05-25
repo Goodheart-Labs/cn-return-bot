@@ -131,6 +131,19 @@ const NOTE_NEEDED_JUDGE_TEST: ABTest = {
   ],
 };
 
+// SearXNG-backed search strategy. multi_turn = existing tool-call loop.
+// single_turn = two plain LLM calls (plan queries → run SearXNG → synthesize),
+// no tool calling. Prereq-gated on web_search being a searxng variant; runs
+// after SIMPLE_BOT_SEARCH_TEST sets web_search.
+const SEARXNG_STRATEGY_TEST: ABTest = {
+  name: "searxng_strategy",
+  prerequisites: { web_search: ["searxng", "searxng_summarized"] },
+  variants: [
+    { variant: { name: "multi_turn",  overrides: { searxng_strategy: "multi_turn"  } }, weight: 100 },
+    { variant: { name: "single_turn", overrides: { searxng_strategy: "single_turn" } }, weight: 0 },
+  ],
+};
+
 const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   name: "verifier_media_sources",
   variants: [
@@ -177,6 +190,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   NOTE_NEEDED_JUDGE_TEST,
+  SEARXNG_STRATEGY_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   AGENT_SEARCH_TEST,
   AGENT_PARALLEL_TEST,

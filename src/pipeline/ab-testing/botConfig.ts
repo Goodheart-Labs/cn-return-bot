@@ -35,6 +35,14 @@ export interface BotConfig {
   note_needed_judge?: boolean;
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
+  /**
+   * Strategy for SearXNG-backed search (only consulted when web_search is
+   * "searxng" or "searxng_summarized"). `multi_turn` runs the existing
+   * tool-calling loop. `single_turn` makes two plain LLM calls: one to plan
+   * queries, then SearXNG, then one to synthesize findings — no tool calling.
+   * Defaults to `multi_turn` (status quo) when unset.
+   */
+  searxng_strategy?: "multi_turn" | "single_turn";
   web_search:
     | "native"             // Anthropic web_search via OpenRouter
     | "native_gemini"      // Google Gen AI native API + googleSearch tool

@@ -160,7 +160,9 @@ export async function dispatchSearch(
     case "bundled":        return searchWithSonarBundled(userMessage, name);
     case "searxng":
     case "searxng_summarized":
-                           return searchWithSearxngLoop(userMessage, name);
+                           return config.searxng_strategy === "single_turn"
+                             ? searchWithSearxngSingleTurn(userMessage, name)
+                             : searchWithSearxngLoop(userMessage, name);
     case "perplexity":
       throw new Error(`simple-bot search arch "${config.web_search}" not yet implemented`);
   }
@@ -474,4 +476,161 @@ function stripPrefix(model: string, prefix: string): string {
 
 function castCost(name: string, cost: TokenCost): LlmCallCost {
   return { name, ...cost, tools: [] };
+}
+
+// --- Single-turn SearXNG search (two LLM calls, no tool calling) ---
+
+const SEARXNG_SINGLE_TURN_MAX_QUERIES = 5;
+
+const SEARXNG_QUERY_PLANNER_PROMPT = `You are a research planner for Community Notes fact-checking on X/Twitter.
+
+Your job: given the post below, design a small set of Google search queries that would help determine whether the post contains a factual error worth a community note. You will NOT see search results yet — just plan the queries.
+
+Return JSON with one field:
+- queries: array of 1 to ${SEARXNG_SINGLE_TURN_MAX_QUERIES} Google search query strings. Each should be specific and likely to surface debunkings, original sources, named-entity Wikipedia pages, or directly contradicting evidence. Avoid vague single-word queries.`;
+
+// Synthesizer prompts: the model has search results in front of it, so the
+// framing differs from the tool-using search prompts. FULL/SIMPLIFIED still
+// split on whether the downstream judge owns the "when not to correct" rules.
+const SEARXNG_SYNTHESIZER_PROMPT_FULL = `You are a research synthesizer for Community Notes fact-checking on X/Twitter.
+
+You will be given an X/Twitter post and the raw output of Google searches that were already run on it. Your job: read the search results and decide whether the post contains a factual error worth a community note.
+
+## Output format
+Return JSON with two fields:
+- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers. Only cite URLs that actually appear in the provided search results.
+- correction_needed: true only if the post contains a clear factual error supported by direct contradicting evidence in the search results.
+
+## When NOT to set correction_needed = true
+- Opinions, satire, jokes, hyperbole
+- Posts that are factually correct
+- When the search results don't strongly contradict the post
+- When the "error" is too minor or pedantic
+
+## Sourcing rules
+- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
+- Include what each source says that's relevant.
+- If no correction is needed, the findings can be brief — just explain why.`;
+
+const SEARXNG_SYNTHESIZER_PROMPT_SIMPLIFIED = `You are a research synthesizer for Community Notes fact-checking on X/Twitter.
+
+You will be given an X/Twitter post and the raw output of Google searches that were already run on it. Your job: read the search results and gather evidence about any factual error in the post. A separate step will judge whether a community note is warranted, so do not be conservative — surface any factual error you find, even if you're unsure it rises to the level of a note.
+
+## Output format
+Return JSON with two fields:
+- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers. Only cite URLs that actually appear in the provided search results.
+- correction_needed: true if you found a factual error in the post supported by direct contradicting evidence in the search results; false only if the post is plainly correct or the results contain no contradicting evidence.
+
+## Sourcing rules
+- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
+- Include what each source says that's relevant.
+- If correction_needed is false, the findings can be brief — just explain why.`;
+
+function getSearxngSynthesizerPrompt(): string {
+  return getBotConfig().note_needed_judge
+    ? SEARXNG_SYNTHESIZER_PROMPT_SIMPLIFIED
+    : SEARXNG_SYNTHESIZER_PROMPT_FULL;
+}
+
+const QUERY_PLANNER_RESPONSE_FORMAT = {
+  type: "json_schema" as const,
+  json_schema: {
+    name: "search_query_plan",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        queries: {
+          type: "array",
+          items: { type: "string" },
+          description: `Google search queries (1-${SEARXNG_SINGLE_TURN_MAX_QUERIES}).`,
+        },
+      },
+      required: ["queries"],
+      additionalProperties: false,
+    },
+  },
+};
+
+async function searchWithSearxngSingleTurn(
+  userMessage: string,
+  name: string,
+): Promise<SearchDispatchResult> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const model = config.search_model ?? config.model;
+  const totalCost: TokenCost = emptyTokenCost();
+  const toolCosts: ToolCallCost[] = [];
+
+  // --- Call 1: query planning ---
+  log?.set(`${name}.plan.messages.0`, {
+    systemPrompt: SEARXNG_QUERY_PLANNER_PROMPT,
+    userMessage,
+    model,
+  });
+  const planResponse = await llm.create({
+    model,
+    messages: [
+      { role: "system" as const, content: SEARXNG_QUERY_PLANNER_PROMPT },
+      { role: "user" as const, content: userMessage },
+    ],
+    response_format: QUERY_PLANNER_RESPONSE_FORMAT,
+  } as any);
+  addTokenCost(totalCost, extractOpenRouterCost(planResponse));
+
+  const planContent = planResponse.choices?.[0]?.message?.content ?? "";
+  let plan: { queries: string[] };
+  try {
+    plan = JSON.parse(planContent);
+  } catch {
+    throw new ModelOutputInvalidError(
+      `searxng single-turn planner: model output was not valid JSON. content="${planContent.slice(0, 200)}"`,
+    );
+  }
+  const queries = (plan.queries ?? []).slice(0, SEARXNG_SINGLE_TURN_MAX_QUERIES);
+  if (queries.length === 0) {
+    throw new ModelOutputInvalidError(`searxng single-turn planner: returned no queries`);
+  }
+  log?.set(`${name}.plan.messages.1`, { content: { queries } });
+
+  // --- Run all queries through SearXNG (raw or summarized per config) ---
+  const sections: string[] = [];
+  for (const [i, query] of queries.entries()) {
+    const tStart = Date.now();
+    const result = await executeToolCall("google_search", { query });
+    const tDuration = Date.now() - tStart;
+    const output = typeof result.output === "string" ? result.output : (result.output as any)?.results ?? JSON.stringify(result.output);
+    log?.set(`${name}.search.${i}`, { query, result: output, durationMs: tDuration });
+    if (result.cost) toolCosts.push({ name: `google_search_${i}`, ...result.cost });
+    sections.push(`### Query: ${query}\n${output}`);
+  }
+  const resultsBlock = sections.join("\n\n");
+
+  // --- Call 2: synthesize findings ---
+  const synthSystemPrompt = getSearxngSynthesizerPrompt();
+  const synthUserMessage = `${userMessage}\n\n## Google search results\n\n${resultsBlock}`;
+  log?.set(`${name}.synth.messages.0`, {
+    systemPrompt: synthSystemPrompt,
+    userMessage: synthUserMessage,
+    model,
+  });
+  const synthResponse = await llm.create({
+    model,
+    messages: [
+      { role: "system" as const, content: synthSystemPrompt },
+      { role: "user" as const, content: synthUserMessage },
+    ],
+    response_format: OPENAI_RESPONSE_FORMAT,
+  } as any);
+  addTokenCost(totalCost, extractOpenRouterCost(synthResponse));
+
+  const synthContent = synthResponse.choices?.[0]?.message?.content ?? "";
+  const parsed = parseSearchJson(synthContent, "searxng single-turn synthesis");
+  log?.set(`${name}.synth.messages.1`, { content: parsed });
+
+  return {
+    findings: parsed.findings,
+    correctionNeeded: parsed.correction_needed,
+    costEntry: { name, ...totalCost, tools: toolCosts },
+  };
 }
