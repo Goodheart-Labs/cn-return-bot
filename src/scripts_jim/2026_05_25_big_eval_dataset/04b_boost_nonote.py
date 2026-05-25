@@ -11,9 +11,10 @@ Strong signal sources (excluding tweets already selected), deduped:
   uv run src/scripts_jim/2026_05_25_big_eval_dataset/04b_boost_nonote.py [--target 250]
 """
 import json
-import re
 import sys
 from pathlib import Path
+
+from _common import dedup_sig as sig
 
 HERE = Path(__file__).resolve().parent
 BIG_EVAL = HERE.parent.parent.parent / "datasets" / "big_eval"
@@ -28,11 +29,6 @@ DEDUP_CAP = 2
 CARRY = ["note_text", "current_status", "role", "needs_note", "categories",
          "not_helpful_tag_counts", "dominant_not_helpful_reason", "rating_volume",
          "impressions", "source"]
-
-
-def sig(text: str) -> frozenset:
-    words = sorted({w.lower() for w in re.findall(r"[A-Za-z]{5,}", text)}, key=len, reverse=True)[:5]
-    return frozenset(words)
 
 
 def main():

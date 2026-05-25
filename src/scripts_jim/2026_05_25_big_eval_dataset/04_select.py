@@ -22,6 +22,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from _common import dedup_sig as sig
+
 HERE = Path(__file__).resolve().parent
 BIG_EVAL = HERE.parent.parent.parent / "datasets" / "big_eval"
 LABELED = BIG_EVAL / "corpus_labeled.jsonl"
@@ -47,11 +49,6 @@ IMPACT_RE = re.compile(r"openai|anthropic|\bagi\b|\bllm\b|data ?center|\bgpu\b|p
 
 def prominence(r: dict) -> float:
     return max(r.get("rating_volume") or 0, (r.get("impressions") or 0) / 1000)
-
-
-def sig(text: str) -> frozenset:
-    words = sorted({w.lower() for w in re.findall(r"[A-Za-z]{5,}", text)}, key=len, reverse=True)[:5]
-    return frozenset(words)
 
 
 class Picker:
