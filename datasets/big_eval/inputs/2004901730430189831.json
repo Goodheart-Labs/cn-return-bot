@@ -1,0 +1,85 @@
+{
+  "tweet_id": "2004901730430189831",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:01.468Z",
+  "post": {
+    "id": "2004901730430189831",
+    "author_id": "1567199719201415169",
+    "created_at": "2025-12-27T13:06:36.000Z",
+    "text": "French TV show Affronter Votre Pire Cauchemar ('Face Your Worst Nightmare') confronts farmer François Lavigne with 36 singing children dressed as the brother he accidentally killed in a drink-driving accident 10 years prior. https://t.co/rd9cHu40Ay",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2004667324562075861"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2004667324562075861",
+      "author_id": "1196487673541746688",
+      "created_at": "2025-12-26T21:35:09.000Z",
+      "text": "ai could never replicate this https://t.co/HQcaTvwmvR",
+      "media": [
+        {
+          "media_key": "7_1775217386918117378",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1775217386918117378/pu/img/n2yz_WBCPL0ZMmCf.jpg",
+          "height": 474,
+          "width": 640,
+          "duration_ms": 61826,
+          "view_count": 9733551,
+          "variants": [
+            {
+              "bit_rate": 256000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/1775217386918117378/pu/vid/avc1/364x270/YLdEmSunOYRUFSYZ.mp4?tag=12"
+            },
+            {
+              "bit_rate": 832000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/1775217386918117378/pu/vid/avc1/640x474/8YRbfFkKQ9gYSQ_M.mp4?tag=12"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/ext_tw_video/1775217386918117378/pu/pl/18VILox-0oXNqPjI.m3u8?tag=12&v=2b8"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 1288,
+      "reply_count": 111,
+      "like_count": 25695,
+      "quote_count": 103,
+      "bookmark_count": 4372,
+      "impression_count": 2178216
+    },
+    "author_followers": 489067,
+    "author_name": "Old Internet",
+    "author_description": "I post things that have the feel of the old internet or just old things (meaning before 2017)",
+    "author_tweet_count": 17250
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1775217386918117378/pu/vid/avc1/640x474/8YRbfFkKQ9gYSQ_M.mp4?tag=12",
+          "description": {
+            "description": "The video shows man smoking a cigarette and watching a group of children performing on a stage. The group of children are dressed in suits and wearing sunglasses. One child is smoking a cigarette and holding a glass of juice. As the man watches, confetti or bubbles are blown in front of him. ",
+            "ocrText": ""
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@cooperx86: I love that Google AI has been poisoned by this meme (Likes: 1213)\n@thecosmicnomad: This video always gets a more ridiculous description every time it gets posted (Likes: 624)\n@WhiteFunk89: This is way funnier than the reality. (Likes: 543)\n@antoinellorca: WTF are you talking about ?\nIt's a show with the French singer Serge Gainsbourg...\n\nI know you want to make money out of disinformation and stupidity but fuck dude... this is insane. (Likes: 486)\n@Keisaraynja_: I know the true story but, I like this one more so (Likes: 375)\n@SmoneyDota: Me when I post misinformation (Likes: 153)\n@lepastier: Directed by David Lynch (Likes: 79)\n@programZDupy: In Poland we also had this show it was called „Oto babka, którą jebnąłeś na pasach” and there was 36 singing kids dressed as old woman in front of our national football player (Likes: 51)\n@kentfunf: (Likes: 46)\n@Kohlliers: Same energy (Likes: 25)",
+    "warnings": []
+  }
+}

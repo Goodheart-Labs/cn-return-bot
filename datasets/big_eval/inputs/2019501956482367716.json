@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2019501956482367716",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:05:44.714Z",
+  "post": {
+    "id": "2019501956482367716",
+    "author_id": "496000129",
+    "created_at": "2026-02-05T20:02:41.000Z",
+    "text": "Spotted in Tel Aviv. Has some major security around him. I wonder who that could be. https://t.co/0KiQ7ivVTm",
+    "media": [
+      {
+        "media_key": "3_2019501952476856320",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HAa2U3SXQAAObYJ.jpg",
+        "height": 547,
+        "width": 1023
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2938,
+      "reply_count": 962,
+      "like_count": 33654,
+      "quote_count": 283,
+      "bookmark_count": 4871,
+      "impression_count": 3370324
+    },
+    "author_followers": 22984,
+    "author_name": "Dan Collins",
+    "author_description": "Engineer. Entrepreneur. Iconoclast. Mental Patient.",
+    "author_tweet_count": 62835
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HAa2U3SXQAAObYJ.jpg",
+          "description": {
+            "description": "A split image showing an older man with long gray hair, a full white beard, and sunglasses walking outdoors. He is flanked by two younger men in casual athletic or tactical jackets. To his right, a second cropped image focuses more closely on his face and the younger man walking beside him.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @727_hugo: I knew the moment those \"fake\" gurney photos were published. Epstein was switched out, they used a body double.  \nno one this loyal to zio. will be killed or left to die.\njust like i said biden was replaced in 2019.\nbezos also replaced years ago.\nDan the deception is greater than almost anyone can comprehend. (Likes: 904)\n- @timelinejunkyAI: It's hilarious people think that he's alive but wouldn't undergo plastic surgery like pretty much every other high profile fugitive criminal. (Likes: 565)\n- @SecretSunBlog: It's not him. Nose and ears too small, slope and size of forehead is different, far less creasing, nasolabial fold is far less pronounced. (Likes: 214)\n- @FlashyTurnip: AI (Likes: 195)\n- @TSLA4orphans: Sounds familiar:\n\"Europe's most wanted man, Radovan Karadzic, former President of the Serbian Republic and the alleged mastermind of the continent's worst slaughter since World War II, was living a \"normal life\" under a false identity in Belgrade, the capital, when he was arrested\" (Likes: 157)\n- @UnapologeticH_1: He is alive (Likes: 64)\n- @MrPickles31147: Is everyone retarded? (Likes: 61)\n- @Mont_Jiang: LOL at \"Jeff Bridges strolling through Tel Aviv\" (Likes: 47)\n- @RealSeanIrish01: that's Meffrey Jeppstein... 😐😬👀 (Likes: 43)\n- @PhillipAKennedy: Hey @grok, remove the sunglasses and beard from this guy, and give him shorter hair (Likes: 42)",
+    "warnings": []
+  }
+}

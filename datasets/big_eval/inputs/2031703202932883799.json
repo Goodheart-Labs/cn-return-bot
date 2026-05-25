@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2031703202932883799",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:46.855Z",
+  "post": {
+    "id": "2031703202932883799",
+    "author_id": "1841113170229776389",
+    "created_at": "2026-03-11T12:06:05.000Z",
+    "text": "Israelis throwing kittens off rooftops after they took over a Palestinian home and found their pets. Freaks. https://t.co/l2AFXgYkzT",
+    "media": [
+      {
+        "media_key": "13_2031703066882486272",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2031703066882486272/img/gVXoz4I-mLVjmgLo.jpg",
+        "height": 1904,
+        "width": 1080,
+        "duration_ms": 17159,
+        "view_count": 241840,
+        "variants": [
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2031703066882486272/pl/-y8gUIPsGdQl8Ioj.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031703066882486272/vid/avc1/320x564/jngWOtigPLK2rWwS.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031703066882486272/vid/avc1/480x846/QEOsP1CQQkZyLFA9.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031703066882486272/vid/avc1/720x1268/_I2IsFVw15Uynd1M.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031703066882486272/vid/avc1/1080x1904/fVIaWL3ErsNmyJnw.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5578,
+      "reply_count": 909,
+      "like_count": 11396,
+      "quote_count": 819,
+      "bookmark_count": 1624,
+      "impression_count": 484117
+    },
+    "author_followers": 256019,
+    "author_name": "Israel Exposed",
+    "author_description": "We archive & publish Israeli war crimes / Send us footage on telegram: https://t.co/bvcis3b9GT Check our highlights or website for published stuff 👇",
+    "author_tweet_count": 51101
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2031703066882486272/vid/avc1/1080x1904/fVIaWL3ErsNmyJnw.mp4",
+          "description": {
+            "description": "A close-up of a person in a dark t-shirt indoors near a window.",
+            "ocrText": "http://t.me/danielamram3"
+          },
+          "transcription": "No, no, no, no. No, no, no."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@Tallie_1968** (Hope Neff): Any proof they are Jewish and not Muslim???  \n  Engagement: Likes=0, Reposts=0, Quotes=0, Replies=0, Views=1\n\n- **@floridasoldat** (floridasoldat ✙): Absolute psychopath behavior. I hope these guys die slowly and extremely painfully.  \n  Engagement: Likes=0, Reposts=0, Quotes=0, Replies=0, Views=15\n\n- **@J_Donduan** (Donduan): 100% an IRCG false flag  \n  Engagement: Likes=0, Reposts=0, Quotes=0, Replies=0, Views=10\n\n- **@gustavovignatii** (gustavo vignati): 🤢  \n  Engagement: Likes=0, Reposts=0, Quotes=0, Replies=0, Views=5\n\n- **@lunaafterdark** (🌙): Disgusting roaches and rats  \n  Engagement: Likes=1, Reposts=0, Quotes=0, Replies=0, Views=8\n\n- **@Hasnat1656745** (Hasnat): Disgrace to humanity these satanic people are  \n  Engagement: Likes=0, Reposts=0, Quotes=0, Replies=0, Views=2\n\n- **@futuretrnx** (TRNX): \"He was arrested the same day\" is the biggest lie and it almost never happens 3 palestinians in the westbank have been shot dead by israeli settler savages and no arrest happened  \n  Engagement: Likes=2, Reposts=0, Quotes=0, Replies=0, Views=116\n\n- **@hive_ai** (Hive): Hive analyzed this post using Hive's AI / Deepfake detection models. \"@hive_ai is this AI generated\" to check any content! https://hivedetect.ai/gc42Tx AI Generated Video: 0% AI Generated Speech: 0% AI Generated Music: 0% Deepfake: 0%  \n  Engagement: Likes=0, Reposts=0, Quotes=0, Replies=0, Views=80\n\n- **@Teresa086252146** (Teresa): Zwyrodnialcy ze ŻMIJOWEGO PLEMIENIA 👹  \n  Engagement: Likes=1, Reposts=0, Quotes=0, Replies=0, Views=27\n\n- **@Not_The_1_Kid** (Crash Out Then 💥): don’t let them see this lol Tiny hats about the start fuming lol  \n  Engagement: Likes=7, Reposts=0, Quotes=0, Replies=0, Views=372",
+    "warnings": []
+  }
+}

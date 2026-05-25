@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2021096278461907285",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:01.461Z",
+  "post": {
+    "id": "2021096278461907285",
+    "author_id": "372705607",
+    "created_at": "2026-02-10T05:37:57.000Z",
+    "text": "This is how the so-called 'Land of the free' treats treat immigrant women... https://t.co/EUI8ZaQjTR",
+    "media": [
+      {
+        "media_key": "7_2021096225043513344",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2021096225043513344/pu/img/XYmGGCvf3hRlhau5.jpg",
+        "height": 802,
+        "width": 720,
+        "duration_ms": 131239,
+        "view_count": 1424910,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2021096225043513344/pu/vid/avc1/320x356/9o63OsixBebAKCQp.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2021096225043513344/pu/vid/avc1/480x534/hX2WeDIMyU3dPmbw.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2021096225043513344/pu/vid/avc1/720x802/HRu6_HFiae6dK1z7.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2021096225043513344/pu/pl/PRZsqIOAW2Iee5z1.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8450,
+      "reply_count": 1363,
+      "like_count": 29470,
+      "quote_count": 287,
+      "bookmark_count": 3113,
+      "impression_count": 2058094
+    },
+    "author_followers": 440907,
+    "author_name": "Idris",
+    "author_description": "To myself first, Just a reminder/I know not more than you/No saint/Not a Sheikh/Far from an Ustadh/PROMOTIONS//IG:7signxx. 07/07/09💔",
+    "author_tweet_count": 240044
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2021096225043513344/pu/vid/avc1/720x802/HRu6_HFiae6dK1z7.mp4",
+          "description": {
+            "description": "A series of frames from a surveillance video showing a detention cell marked with the number 5. A woman is seen sitting on the floor in a corner of the room. In the subsequent frames, uniformed officers enter the cell and approach her while she remains on the ground. The image contains social justice commentary overlaying the video frames.",
+            "ocrText": "What happens in these cells... happens to immigrants every day. Behind closed doors. No witnesses. No mercy. Cassandra had a camera. Immigrant women usually don't. 5 POLICE"
+          },
+          "transcription": "🎵 Thank you. Thank you © transcript Emily Beynon Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Kevin (@kevinpost)**: Not ICE  \n  Likes: 1 | Reposts: 0 | Replies: 0\n\n- **uma_latina_do_BRASIL🇧🇷 (@Uma_LatinaBr)**: US is a PEDO and HATE state  \n  Likes: 0 | Reposts: 0 | Replies: 0\n\n- **Grok (@grok)**: Indeed, the evidence from mtDNA L3 (originating in East Africa ~70,000 years ago as the root of non-African lineages) and light skin alleles (e.g., SLC45A2 rising ~5,800 years ago in Europe) confirms that the earliest Homo sapiens had dark skin and originated in Africa.  \n  Likes: 0 | Reposts: 0 | Replies: 0\n\n- **Grok (@grok)**: This video is 2013 surveillance footage from Skokie, IL police station, showing officer Michael Hart shoving US citizen Cassandra Feuerstein (arrested for DUI) into a cell, where she hit a bench and suffered facial fractures. She won an $875k settlement; Hart resigned. It's not immigrant detention, but recirculated with overlays to highlight ICE abuse reports (e.g., ACLU on Fort Bliss). Sources: ABC, Daily Mail, ACLU.  \n  Likes: 0 | Reposts: 0 | Replies: 0\n\n- **- ᴇʜʜᴛʜᴇʀᴇᴀʟ - - (@ehhthereal)**: Personal jabs aside, implications can exist, but they need to be supported by the wording. A general statement of what happens to immigrants isn't the same as identifying the woman in the video AS an immigrant. Comparison doesn't automatically assign identity.  \n  Likes: 0 | Reposts: 0 | Replies: 0\n\n- **Leo Torres (@kushnersaregay)**: Nah the globe should get over us and stop trying to come here.  \n  Likes: 3 | Reposts: 0 | Replies: 0\n\n- **pine.jahpoe (@neilkerne)**: god damn!!!  \n  Likes: 0 | Reposts: 0 | Replies: 0\n\n- **Mr. Shamsu (@Abou_Humairah)**: Bill Clinton  \n  Likes: 0 | Reposts: 0 | Replies: 0\n\n- **syai (@syaifuzz_barca)**: Americans murder kids also right whenever they invade or “help” other countries  \n  Likes: 0 | Reposts: 0 | Replies: 0\n\n- **Taskable Pros, LLC (@TaskablePros)**: Yes sick! 🤷🏽‍♀️  \n  Likes: 0 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

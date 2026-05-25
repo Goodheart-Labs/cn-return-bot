@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2029667760557432837",
+  "role": "unhelpful_notHelpfulIncorrect",
+  "needs_note": "yes",
+  "categories": ["ai_generated_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tehran Times posts a nighttime video captioned '#BREAKING Cluster warheads over Tel Aviv', framing dispersing glowing objects in the sky as an Iranian cluster-munition strike on Tel Aviv during the March 2026 Iran-Israel war.",
+  "why_note_decision": "A note is warranted: the post makes a specific, checkable, present-tense war claim ('cluster warheads over Tel Aviv') that misleads viewers about a real conflict. The 'Tel Aviv strike' video genre from this week was overwhelmingly AI-generated propaganda (multiple detectors >90%, X demonetized undisclosed AI war content on 3 Mar 2026), and commenters themselves doubt it ('Why do they seem to disappear?', 'glitter memorial', 'like shooting stars').",
+  "judge_guidance": "PASS only if the note (a) tells the reader this clip does NOT depict a real Iranian cluster-munition strike on Tel Aviv, AND (b) backs that with a verifiable basis (AI-generation evidence/detector results, an authoritative debunk, or that no such strike is corroborated by reliable reporting), AND (c) does not itself assert an unverifiable specific cause as fact. The original human note failed by being rated INCORRECT and citing sources that describe a different-looking 'buildings exploding' Tel Aviv fake rather than this dispersing-embers clip; a passing note must not over-claim beyond what the media supports. A note that merely says 'this is AI' with no support, or that confidently re-labels it as a specific real weapon, should FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video depicts AI-generated footage, not real cluster warheads over Tel Aviv. https://www.timesnownews.com/world/middle-east/did-iran-bomb-tel-aviv-viral-video-showing-cluster-bomb-strikes-in-israel-fact-checked-article-153745669 https://www.yahoo.com/news/articles/fact-check-video-does-not-014949987.html",
+    "failure_reason": "Rated notHelpfulIncorrect (7) + irrelevant/unreliable sources (8 combined). The conclusion ('not real cluster warheads') is directionally right, but the cited fact-checks describe a different viral Tel Aviv clip (skyline with buildings exploding) rather than this dispersing-embers/'shooting stars' video, so the AI-generation claim is not clearly substantiated for THIS specific clip and raters flagged the sources as irrelevant.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/fact-check-video-does-not-014949987.html",
+      "https://en.wikipedia.org/wiki/Misinformation_during_the_2026_Iran_war",
+      "https://honestreporting.com/tel-aviv-destroyed-viral-video-proves-the-dangers-of-ai-during-israel-iran-war/"
+    ],
+    "notes": "The 'Iranian strike on Tel Aviv' video genre in early March 2026 was AI-generated propaganda heavily circulated by pro-Iran accounts; the Yahoo/Lead Stories fact-check on the most-viral clip found >90% AI probability and an AI disclaimer on the original post. This specific clip (glowing fragments dispersing and fading) is not the same footage the cited articles analyze, so while the 'cluster warheads' claim is unsupported and misleading, the precise nature of THIS clip (AI vs real flares/interceptor debris) is not nailed down by the cited sources."
+  },
+  "media_reliability_flag": true,
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Wartime AI disinformation from a state-aligned outlet (320k followers, 122k impressions) inflames an active conflict; correcting fog-of-war propaganda is high-value for reducing real-world escalation and misleading views."
+  },
+  "difficulty": "hard"
+}

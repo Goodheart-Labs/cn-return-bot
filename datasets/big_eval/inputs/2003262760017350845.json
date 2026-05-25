@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2003262760017350845",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:27.248Z",
+  "post": {
+    "id": "2003262760017350845",
+    "author_id": "727648168171610112",
+    "created_at": "2025-12-23T00:33:55.000Z",
+    "text": "NEW: Aurora police tackle and arrest the Grinch who was caught stealing presents at the Fox Valley Mall in Colorado.\n\nThe Grinch was seen trying to leave the mall but was caught by Officer Braden Lentini following a brief foot chase. https://t.co/NDhMESv0Vt",
+    "media": [
+      {
+        "media_key": "13_2003262700118228992",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2003262700118228992/img/wn0C253YvHZUa9Gy.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 62233,
+        "view_count": 98663,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2003262700118228992/vid/avc1/320x568/LqP1uisa1B4gvDPJ.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2003262700118228992/vid/avc1/480x852/ddVpUntjtsNGAjCI.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2003262700118228992/vid/avc1/720x1280/GLvBph87BGjbFMOr.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2003262700118228992/pl/GnNzsT3kkdZS-gdc.m3u8?v=4c7"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 94,
+      "reply_count": 96,
+      "like_count": 1374,
+      "quote_count": 14,
+      "bookmark_count": 170,
+      "impression_count": 159555
+    },
+    "author_followers": 590981,
+    "author_name": "E X X ➠A L E R T S",
+    "author_description": "⚠️ # 1 Source for fast accurate trending news, videos and just about anything interesting  |  https://t.co/VSbJFWP2oo  | https://t.co/lMLsDA9Ej2 |",
+    "author_tweet_count": 21432
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2003262700118228992/vid/avc1/720x1280/GLvBph87BGjbFMOr.mp4",
+          "description": {
+            "description": "A figure, presumably a suspect, walks through a brightly lit mall with polished wood floors and a nearby escalator. The scene transitions to a holiday display area within the mall, featuring colorful, oversized stylized trees and a photo setup with a white photography umbrella and a backdrop. At the bottom of the video, a credit to 'AURORA POLICE DEPARTMENT' is visible, along with an ABC 7 news logo in the top right corner.",
+            "ocrText": "AURORA POLICE DEPARTMENT abc 7 BACK IN"
+          },
+          "transcription": "What's up buddy? I'm stealing presents from the Santa's Christmas tree. The Grinch? Yeah. Okay. By the tree? Yeah. Where is he? That way. The Grinch! I want the police! Stop running! Come on, run! red jacket, red hat. See you at Christmas. Come on, police, stop! You're under arrest! Show me your hands. Give me your hands. Ha, that's what you get."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@rab_ag**: Sadly, while the officer was busy filming this, Tren de Agua stole $12,000 worth of merchandise from nearby stores (113 likes)\n- **@DarthVader1701**: This is a joke, Some people think this is real. (63 likes, 1 video)\n- **@ThoughtCrimes80**: There is no mall by that name in Colorado. (55 likes)\n- **@LCNM_Patriot**: Me, as a bystander: \"TASER TASER TASER\" (29 likes)\n- **@LilAnnieLaurie**: Nope, not Colorado. It's Aurora, Illinois. (25 likes)\n- **@VictorE1369**: Are you sure it’s Colorado? There’s an Aurora in Illinois with a Fox Valley mall. (13 likes)\n- **@firstname_numbe**: There’s no fox valley mall in co (10 likes)\n- **@nussbaum_dan**: Fox Valley Mall is in Aurora. Aurora, Illinois!!!. (5 likes)\n- **@ShootLootScoot3**: This shit is so fucking cringy (5 likes)\n- **@thundercron77**: Is this a bit? (4 likes)",
+    "warnings": []
+  }
+}

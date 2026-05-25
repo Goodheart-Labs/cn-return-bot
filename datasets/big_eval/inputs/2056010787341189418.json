@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2056010787341189418",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:48.029Z",
+  "post": {
+    "id": "2056010787341189418",
+    "author_id": "1711334878728368128",
+    "created_at": "2026-05-17T13:55:45.000Z",
+    "text": "A young white female was distracting the class with her cellphone, the teacher asked her to get off her phone and she slapped him instead. The teacher then asked her to apologize she refused and he hit her back.\n\nWas he right to hit her back? https://t.co/Knr615Cgxx",
+    "media": [
+      {
+        "media_key": "13_2056010707561324544",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2056010707561324544/img/loXUgjWrUTio0uCx.jpg",
+        "height": 994,
+        "width": 720,
+        "duration_ms": 68006,
+        "view_count": 460445,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2056010707561324544/vid/avc1/320x440/UO2h_U3lkaCJISXe.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2056010707561324544/vid/avc1/480x662/raOTPrlv8ZXDiixL.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2056010707561324544/vid/avc1/720x994/0zTTaNF2fq0c2Og1.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2056010707561324544/pl/lGkVxdNpzmPOt3rt.m3u8?v=6c8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 495,
+      "reply_count": 1669,
+      "like_count": 8299,
+      "quote_count": 105,
+      "bookmark_count": 868,
+      "impression_count": 586171
+    },
+    "author_followers": 18328,
+    "author_name": "Ally Brawls",
+    "author_description": "I Post Engaging Fight Videos | DM for Promos",
+    "author_tweet_count": 1495
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2056010707561324544/vid/avc1/720x994/0zTTaNF2fq0c2Og1.mp4",
+          "description": {
+            "description": "A series of frames depicting a heated interaction in a classroom setting between a male teacher and a female student. The sequence shows the teacher leaning in closely toward the student, which appears to escalate into a confrontation where he demands an apology while she tells him to get out of her face.",
+            "ocrText": "get off of your get out of my face what apologize"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Steffaneze**: I can watch this over and over. These young girls wanna play with men with hitting them, this is so satisfying. NO MATTER WHO YOU ARE, YOU DO NOT PUT YOUR HANDS ON ANY MAN. And when you do be prepared to suffer the consequences. JUST BECAUSE YOU ARE A FEMALE DOES NOT GIVE YOU ANY RIGHT TO EVER HIT A MAN!  \nEngagement: 424 likes, 15 reposts, 25 replies\n\n**@FedupCitizen250**: He’s hired. My type of man. Accountability matters. That’s what happens to kids when you don’t discipline your kids. Someone else will  \nEngagement: 321 likes, 7 reposts, 2 replies\n\n**@Skrljac**: I’d call round 1 a push. Would like to see how she acts in round 2. I’m with the teacher on this one  \nEngagement: 213 likes, 1 repost\n\n**@justmeohmy**: This teacher should not only lose his job but should never be allowed near children ever again. What a disgusting excuse for an adult. I sincerely hope he got charged or even better sued for this. He could simply have had her expelled but no, he chose violence!  \nEngagement: 153 likes, 2 reposts, 3 quotes, 168 replies\n\n**@justcuzicancan**: This woman does tons of skits. This is fake.  \nEngagement: 108 likes, 7 replies\n\n**@1970corvair**: Fake or not … more adults need to step up to the plate and teach these rebellious, ignorant, misbehaving dip 💩’s a lesson!!!!  \nEngagement: 97 likes, 1 repost, 1 reply\n\n**@TheDeanio**: Back in the day she would of got the belt or the Cane😂 sometimes lessons need to be taught respectfully.  \nEngagement: 82 likes\n\n**@Robbie_M1080**: Imagine if a white teacher punched a black student off their chair.  \nEngagement: 53 likes, 25 replies\n\n**@GregKohYES**: He probably wasn’t right for hitting her but she had It coming  \nEngagement: 45 likes, 2 replies\n\n**@CosmicRanter**: Arrest the teacher and fire him. This was in no way self defense.  \nEngagement: 44 likes, 15 replies",
+    "warnings": []
+  }
+}

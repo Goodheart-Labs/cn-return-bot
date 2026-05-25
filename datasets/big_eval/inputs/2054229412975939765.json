@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2054229412975939765",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:21.390Z",
+  "post": {
+    "id": "2054229412975939765",
+    "author_id": "156563457",
+    "created_at": "2026-05-12T15:57:12.000Z",
+    "text": "Alex Ekubo has passed away 😳😳😳💔 https://t.co/bfCJc5Lcqy",
+    "media": [
+      {
+        "media_key": "13_2054229322165051393",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2054229322165051393/img/A6RGSPBKKU2V5MRC.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 4015,
+        "view_count": 111244,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2054229322165051393/vid/avc1/320x568/2D2UHbQYe4Of8zEa.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2054229322165051393/vid/avc1/480x852/2KcmV_3yJHnAGXNc.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2054229322165051393/vid/avc1/720x1280/Zphq4Sz50wgkOivB.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2054229322165051393/pl/YxbhcOGTBx0yKHmp.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 284,
+      "reply_count": 566,
+      "like_count": 2677,
+      "quote_count": 135,
+      "bookmark_count": 93,
+      "impression_count": 389320
+    },
+    "author_followers": 947275,
+    "author_name": "Dami’ Adenuga",
+    "author_description": "Media & Entertainment Executive • PR Strategist\nFounder, DAW Empire\nPulse Of The Culture\nShaping Culture & Influence\nGod is Able 🙏🏽",
+    "author_tweet_count": 265801
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2054229322165051393/vid/avc1/720x1280/Zphq4Sz50wgkOivB.mp4",
+          "description": {
+            "description": "A man with short dark hair and a groomed beardwearing a black turtleneck shirt, standing against a dark brown, textured background. He is slightly leaned forward and looking directly at the camera with an expressive and smiling face. His hands are raised in a gesturing motion as if he is talking or explaining something.",
+            "ocrText": ""
+          },
+          "transcription": "I wanna say goodbye cause this one means forever"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Representative comments:**\n\n- **@Desmondm6k**: Please guys how true is this ?  \n  Engagement: 29 likes, 9580 views\n\n- **@Afroboyclingzy**: What happened to him,he has been away for a long time.  \n  Engagement: 21 likes, 5444 views\n\n- **@sucrosepapii**: I guess this is the bad news Kate Henshaw wanted to break on her X page 💔💔 May his soul RIP  \n  Engagement: 17 likes, 3160 views\n\n- **@FEdge13358**: Ahhh Jesus! Liver cancer at 40 years of age?? Let this not be my portion oh lord when glorify comes let life not end prematurely 🙏😭  \n  Engagement: 14 likes, 2602 views\n\n- **@IbrahimJoshua5**: So Cancer really left Blessing CEO and took this brilliant man? Men are truly suffering. 😒  \n  Engagement: 11 likes, 6188 views\n\n- **@iamshyblakj**: JESUSSSSSSSSSSSSSS.... NO WAYYYYYY ...PLEASE TELL ME THIS IS NOT TRUE.... NO WAY ALEX NOOOOOOO...i was just joking commenting on a page right now ... JESUS THIS IS NOT TRUE ....PLEASE PLEASE PLEASE ... GOD PLEASE GOD PLEASE 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭  \n  Engagement: 10 likes, 17693 views\n\n- **@Ik_justine2077**: I ran to twitter to know if this story is real😥 Why all of a sudden Cancer is slowly becoming a norm in our society?!  \n  Engagement: 7 likes, 9077 views\n\n- **@Bobbyjay_12**: What has happened is that fans have noticed he’s been largely absent from social media since late 2024, which sparked rumors and concern online. Several entertainment sites discussed his disappearance from public activity, but none reported his death  \n  Engagement: 7 likes, 8318 views\n\n- **@AdesolaBlessin9**: Please tell me this is a lie  \n  Engagement: 5 likes, 10401 views\n\n- **@murdki**: Don’t believe this! Make una dey calm down Same dey did with Chiwetalagu  \n  Engagement: 3 likes, 4555 views",
+    "warnings": []
+  }
+}

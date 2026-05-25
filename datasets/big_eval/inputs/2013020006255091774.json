@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2013020006255091774",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:01.859Z",
+  "post": {
+    "id": "2013020006255091774",
+    "author_id": "1424259086950993921",
+    "created_at": "2026-01-18T22:45:44.000Z",
+    "text": "Your husband raped a child, Ginger. https://t.co/5V4MHba4KF",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2012631323110789122"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2012631323110789122",
+      "author_id": "1242258668638236672",
+      "created_at": "2026-01-17T21:01:14.000Z",
+      "text": "Love my Florida men 🤍 https://t.co/6yj1s5dVT8",
+      "media": [
+        {
+          "media_key": "3_2012631316882239488",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/G-5NhPKXsAAWaLp.jpg",
+          "height": 1536,
+          "width": 2048
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 11174,
+      "reply_count": 669,
+      "like_count": 156324,
+      "quote_count": 86,
+      "bookmark_count": 1428,
+      "impression_count": 3310484
+    },
+    "author_followers": 70109,
+    "author_name": "𝓔𝓶 ♡",
+    "author_description": "ur favorite egirl with incredibly based opinions. | also @emsferatu & @notemkenobi",
+    "author_tweet_count": 27426
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-5NhPKXsAAWaLp.jpg",
+          "description": {
+            "description": "A man in a dark suit and red tie stands outdoors holding an infant while a woman in a brown dress stands next to him. They are positioned in front of green shrubs and palm trees with a large white building and a twilight sky in the background.",
+            "ocrText": ""
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @G0n3WDeW1nd: (image) (Likes=656)\n- @starboydiablo: what in the heck 🤢 (Likes=405)\n- @stephenRB4: (video) (Likes=355)\n- @Jodythewittycat: Moscow Matt, the Nestor-Molestor! (Likes=274)\n- @HereToSeeItBurn: I'm pretty sure it was more than one. (Likes=134)\n- @Zomommey: I knew girls whose mom’s sided with their husband over his victims, (even when that victim was their child), those kids tend to grow up to despise their mothers almost more than their sex offender dads (Likes=126)\n- @beatoincognito: I really wish Gaetz would sue a worthless lying piece of dogshit like you into oblivion. (Likes=107)\n- @CryptKeeper_06: Do the prophet Muhammad which all of Islam is based off of thanks! (Likes=66)\n- @JamesrHarris78: You mean had sex with a girl who had a fake I D and was posing as a 21 year old adult in a 21 to enter club. Shut the fuck up (Likes=46)\n- @AlanSmitheeDGA: MAGA women love pedophiles. Our world is full of proof. (Likes=46)",
+    "warnings": []
+  }
+}

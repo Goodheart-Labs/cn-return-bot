@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2011815889159799167",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:49.325Z",
+  "post": {
+    "id": "2011815889159799167",
+    "author_id": "212315904",
+    "created_at": "2026-01-15T15:01:00.000Z",
+    "text": "Florian Wirtz is leading the way among the big No. 🔟 signings on recent form 👀 https://t.co/ZD0VCGWKAE",
+    "media": [
+      {
+        "media_key": "3_2011520837069717505",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-pbizfWQAEOQ__.jpg",
+        "height": 1500,
+        "width": 1200
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 618,
+      "reply_count": 470,
+      "like_count": 11475,
+      "quote_count": 237,
+      "bookmark_count": 200,
+      "impression_count": 1229523
+    },
+    "author_followers": 576810,
+    "author_name": "LiveScore",
+    "author_description": "Official account for https://t.co/kJ2SOMebyU ⚫️🟠 For the latest football news, stats & insight 🗞️ Download our app now ⬇️",
+    "author_tweet_count": 55699
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-pbizfWQAEOQ__.jpg",
+          "description": {
+            "description": "A sports graphic comparing 'Goals and Assists' (G/A) in the last seven matches for four football players: Florian Wirtz, Rayan Cherki, Xavi Simons, and Eberechi Eze. Florian Wirtz is pictured prominently in a red Liverpool jersey, celebrating with his tongue out, while Eberechi Eze is featured in a smaller inset circle looking downcast in an Arsenal kit. An orange arrow points from the bottom row of the table towards the inset image of Eze.",
+            "ocrText": "LS, L.F.C., standard chartered, Arsenal, G/A IN LAST SEVEN MATCHES, 1, FLORIAN WIRTZ, 5, 2, RAYAN CHERKI, 4, =, XAVI SIMONS, 4, 3, EBERECHI EZE, 0"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Mr Gerald 👑 (@Mr_Gerrie01): Where is the comparison when Ese scored a hartrick against that shir club? Agenda upon agenda (Likes: 429)\n- Rusell (@afcRusell): Who's this mid again (Likes: 397)\n- Big Willy (@Salibasexual02): Now do the whole season, when you pay 130m for him, you don’t get to airbrush 25 games out because all he did was the bleep test. (Likes: 385)\n- Laith (@LFC_Laith): Eze and Gyokeres in one window (Likes: 326)\n- Ronan (@ronanpatlee): Cherki has 2 goals, 3 assists in his last 7. That doesn't equal 4 (Likes: 244)\n- Friday (@fiko_amoako): Since the season begun in the last seven matches, let's go with that🤦‍♂️ (Likes: 206)\n- Etihaland (@etihaland): Last 7? Why not since they signed?? (Likes: 179)\n- Richard ✢ (@BadmanRic): I didn't know EPL started two months ago 😂 you wet doughnuts. (Likes: 75)\n- Dax (@sxne_citizen): Genuinely what is this PR??? 😭😭😭 WE CANNOT COMPETE (Likes: 55)\n- Da Bless (@CryptoDa_Bless): Wtf am i seeing here common man 🤦🏽‍♂️ (Likes: 44)",
+    "warnings": []
+  }
+}

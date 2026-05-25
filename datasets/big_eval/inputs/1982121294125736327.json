@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1982121294125736327",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:32.210Z",
+  "post": {
+    "id": "1982121294125736327",
+    "author_id": "1636458552796520449",
+    "created_at": "2025-10-25T16:25:17.000Z",
+    "text": "BREAKING - The Baltimore Ravens have been eliminated from the playoffs.",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 275,
+      "reply_count": 125,
+      "like_count": 9667,
+      "quote_count": 129,
+      "bookmark_count": 317,
+      "impression_count": 1559898
+    },
+    "author_followers": 149043,
+    "author_name": "SleeperNFL",
+    "author_description": "NFL News, Highlights, Rumors & more from @SleeperHQ & #SleeperApp🏈    Tap view more for terms and restrictions.",
+    "author_tweet_count": 50332
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**BINK🎯 - @therealbink1**  \ncome outside stupid fucking sleeper account  \nLikes: 1087\n\n**•RvW - @ravenwizardd**  \nTop pick in a loaded draft with a new coaching staff? Shit, I can’t be too mad lol  \nLikes: 371\n\n**. - @bluefacerollie5**  \nRavens coming back in 2026 with a top 3 pick  \nLikes: 237\n\n**Alec - @alec_wissler**  \nEasiest bookmark of my life  \nLikes: 227\n\n**Dangerous Blumkin 🚽🪠 - @DangerBlumkin**  \nRaven's fans right now.......Leading the division.  \nLikes: 96\n\n**🏂 - @Hbskiiiii**  \nin ur dreamz btch  \nLikes: 51\n\n**The Sedated Monkey - @Sedated_Monkey**  \nFire your admin. This is pathetic.  \nLikes: 8\n\n**Shannonigans🍀 - @ShannonigansX_**  \nThis ain't heartbreak... it's karmic justice for all those fake tough-guy memes. Enjoy the couch, Baltimore! 😂 We'll see y'all in the draft lottery. Who's the first HC candidate getting the boot!?!? Roman or the entire staff? 😂🖤 ☠️  \nLikes: 9",
+    "warnings": []
+  }
+}

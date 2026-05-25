@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2027225850345599433",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:49.744Z",
+  "post": {
+    "id": "2027225850345599433",
+    "author_id": "15328881",
+    "created_at": "2026-02-27T03:34:41.000Z",
+    "text": "I never met Jeffrey Epstein https://t.co/5bpPDIDlG4",
+    "media": [
+      {
+        "media_key": "3_2027225847942291456",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCInKwIXIAAYlb0.jpg",
+        "height": 1078,
+        "width": 1170
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5697,
+      "reply_count": 779,
+      "like_count": 17209,
+      "quote_count": 280,
+      "bookmark_count": 297,
+      "impression_count": 382116
+    },
+    "author_followers": 327764,
+    "author_name": "David Wolfe",
+    "author_description": "Gorilla🦍Meme📲Rawfare, Medical🥑Freedom, Organic🥗Nutrition, 🌴Superfoods🍍, 🍁SuperHerbs🍄, Natural👣Technology, Spring💦Water and THE💖BEST🍀DAY☀️EVER!",
+    "author_tweet_count": 47289
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCInKwIXIAAYlb0.jpg",
+          "description": {
+            "description": "A photograph of Hillary Clinton, a man identified as Jeffrey Epstein, and Bill Clinton in an indoor social setting with other guests in the background. Hillary Clinton is smiling and touching Jeffrey Epstein's tie, while Bill Clinton is laughing with his head tilted back. This image is a known digital composite or manipulated image.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@PChaibriant**: \"I didn't have sexual relations with that woman\" ... it looks like lying runs in the family. (166 likes)\n**@MadManMarius3**: Its a fake AI generated photo. Stop reposting fake lies. Be better than them. (108 likes)\n**@SimoneGezond**: Please do 🙏 (102 likes)\n**@David17522949**: Still the Republicans Insist on Protecting the Elite Pedophiles. (36 likes)\n**@Thomas38404514**: Who's Epstein🤷‍♂️ (28 likes)\n**@NoTaBoT8700**: Maga chuds falling for AI will never get old (26 likes)\n**@AndrewTradesNQ**: Even Jeffrey Epstein could not handle her kinkiness (20 likes)\n**@heath_bren**: (No text content) (15 likes)\n**@giorgio757**: … never, yes yes of course not (14 likes)\n**@eastcoast636**: This photo is NOT AI generated. Melania with the former Prince Andrew & her pimp. Her relationship with Epstein was very intimate. Why wasn’t the Slovenian stripper deposed? (13 likes)",
+    "warnings": []
+  }
+}

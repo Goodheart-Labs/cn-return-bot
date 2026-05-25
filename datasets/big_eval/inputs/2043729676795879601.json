@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2043729676795879601",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:00.720Z",
+  "post": {
+    "id": "2043729676795879601",
+    "author_id": "1649432778998464512",
+    "created_at": "2026-04-13T16:35:00.000Z",
+    "text": "Zelensky was reportedly close with Jeffrey Epstein.\nNewly surfaced security camera footage leaked from Epstein’s properties appears to show the Ukrainian leader spending time on his private island and engaging with him in intimate, non-public settings. \n#ItsAllOfThem https://t.co/5s6IpudNDe",
+    "media": [
+      {
+        "media_key": "3_2043729672320512000",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFzJTw-W8AAxImH.jpg",
+        "height": 1280,
+        "width": 1280
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 9064,
+      "reply_count": 1013,
+      "like_count": 14191,
+      "quote_count": 534,
+      "bookmark_count": 1262,
+      "impression_count": 850999
+    },
+    "author_followers": 49974,
+    "author_name": "DG🎭",
+    "author_description": "WHAT'S DONE IN THE DARK WILL BE BROUGHT TO THE LIGHT 🕯️",
+    "author_tweet_count": 48541
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFzJTw-W8AAxImH.jpg",
+          "description": {
+            "description": "A composite of four grainy, surveillance-style images in grayscale/monochrome depicting two men in a living room environment. The men, who appear to be the same individuals in each frame, are shown greeting each other with handshakes, standing near an aquarium, and sitting on couches across from a coffee table containing various items. The room features curtains, sofas, and lamps.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Author:** @kvistp  \n  **Text:** Your fake AI propaganda seem to forget how young he was before 2019.. stupid mf  \n  **Engagement:** 4067 likes, 36 reposts, 11 replies\n\n- **Author:** @maxtasty1  \n  **Text:** Epstein died in 2019. This is how Zelensky looked like in 2019. He didn't have beard in the past, idiots  \n  **Engagement:** 1977 likes, 21 reposts, 3 replies\n\n- **Author:** @secretsqrl123  \n  **Text:** wen you have to \"leak\" ai garbage that makes you a bitch  \n  **Engagement:** 1665 likes\n\n- **Author:** @TankChanChannel  \n  **Text:** I don't think the AI you used knows what Zelensky should look like. Below i'm attaching Zelensky's photo at the time of Epstein's death (2019). He should've looked even younger, as this was \"supposedly\" taken years earlier. Meanwhile, In your AI photos he is a time traveller.  \n  **Engagement:** 679 likes\n\n- **Author:** @raynor444  \n  **Text:** Who actually falls for this AI stupidity?  \n  **Engagement:** 466 likes\n\n- **Author:** @ProofOfPath  \n  **Text:** 100 real photos of Trump with Epstein, flight logs, business dealings, rape accusations... and Maga idiots getting all excited about AI fakes of Zelensky I've stepped in things with higher IQ  \n  **Engagement:** 279 likes\n\n- **Author:** @jinamarie1965  \n  **Text:** @CommunityNotes Please address this fake, AI generated tweet! The OP shouldn’t benefit financially from lies. @safety- wasn’t this type of garbage supposed to be against your TOS?  \n  **Engagement:** 218 likes, 31 reposts\n\n- **Author:** @JFS0six  \n  **Text:** @grok Is there any truth to this post and are the pictures AI generated  \n  **Engagement:** 216 likes\n\n- **Author:** @rerum_de_bello  \n  **Text:** 80.7% likely to be deepfake: https://hivemoderation.com/ai-generated-content-detection  \n  **Engagement:** 208 likes\n\n- **Author:** @serhii_rieznik  \n  **Text:** So you consider 44k people who follow you to be dumb enough to blindly swallow this bullshit?  \n  **Engagement:** 183 likes",
+    "warnings": []
+  }
+}

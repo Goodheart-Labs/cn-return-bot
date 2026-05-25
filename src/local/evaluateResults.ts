@@ -32,6 +32,7 @@ interface ParsedRow {
 
 export interface JudgeVerdict {
   correct: boolean;
+  reason?: string;
 }
 
 export type Category =
@@ -98,17 +99,33 @@ function parseRowForJson(row: CsvRow): ParsedRow {
 // ---------------------------------------------------------------------------
 
 export async function judgeRow(row: CsvRow): Promise<JudgeVerdict> {
-  const prompt = `Judge whether the proposed note is directionally correct, given what you know about the ground truth note. Reply JSON: {"correct": true/false}
+  // big_eval datasets carry self-contained judge guidance so a context-free Opus
+  // can score strictly; for failure rows it must also check the note doesn't repeat
+  // the original note's specific failure. Plain datasets fall back to ground-truth.
+  const guidance = (row.judge_guidance ?? "").trim();
+  const originalNote = (row.original_note_text ?? "").trim();
+  const failureReason = (row.failure_reason ?? "").trim();
 
-Tweet: ${row.text}
-Ground truth: ${row.ground_truth_note}
-Proposed note: ${row.note_text}`;
+  const parts = [
+    `Judge whether the proposed Community Note is GOOD for this tweet. Reply JSON: {"correct": true/false, "reason": "<one sentence>"}`,
+    ``,
+    `Tweet: ${row.text}`,
+  ];
+  if (row.ground_truth_note) parts.push(`Reference of a good note: ${row.ground_truth_note}`);
+  if (originalNote) {
+    parts.push(
+      `A PRIOR note on this tweet was rated NOT HELPFUL${failureReason ? ` (${failureReason})` : ""}: "${originalNote}".`,
+      `The proposed note must avoid repeating that failure.`,
+    );
+  }
+  if (guidance) parts.push(`What a correct note must do (judge guidance): ${guidance}`);
+  parts.push(`Proposed note: ${row.note_text}`);
 
   try {
     const result = await llm.create({
       model: JUDGE_MODEL,
       temperature: 1,
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: parts.join("\n") }],
       // @ts-expect-error OpenRouter extended thinking
       reasoning: { effort: "low" },
     });
@@ -117,7 +134,7 @@ Proposed note: ${row.note_text}`;
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       const parsed = JSON.parse(jsonMatch[0]);
-      return { correct: !!parsed.correct };
+      return { correct: !!parsed.correct, reason: parsed.reason };
     }
   } catch (err: any) {
     console.error(`[judge] Failed: ${err?.message}`);

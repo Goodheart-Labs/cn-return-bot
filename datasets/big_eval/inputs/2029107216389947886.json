@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2029107216389947886",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:22.373Z",
+  "post": {
+    "id": "2029107216389947886",
+    "author_id": "1241968542",
+    "created_at": "2026-03-04T08:10:34.000Z",
+    "text": "Reports on the ground in Dubai show that some missiles hitting the gulf nations are coming from the direction of Israel, not Iran. 👀 https://t.co/Bsq76QQ2vl",
+    "media": [
+      {
+        "media_key": "13_2029107153026596869",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2029107153026596869/img/-_M_jq814p9lp0iB.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 32759,
+        "view_count": 435513,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029107153026596869/vid/avc1/320x568/4X4oDcGdn7VXjcPR.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029107153026596869/vid/avc1/480x852/OtA0_BD6b49UXeOr.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029107153026596869/vid/avc1/720x1280/mJsf-R3qgYIEFbwr.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2029107153026596869/pl/0hYRaXjdRSPD-adl.m3u8?v=628"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6060,
+      "reply_count": 470,
+      "like_count": 19021,
+      "quote_count": 228,
+      "bookmark_count": 1778,
+      "impression_count": 483788
+    },
+    "author_followers": 214418,
+    "author_name": "James Li",
+    "author_description": "Independent journalist 🧐 Documentary filmmaker 📹 Co-host @todayishshow 🎙️",
+    "author_tweet_count": 8379
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2029107153026596869/vid/avc1/720x1280/mJsf-R3qgYIEFbwr.mp4",
+          "description": {
+            "description": "A series of frames from a video recorded from inside a moving vehicle on a highway in Dubai, UAE. The footage shows dark plumes of smoke in the distance against a hazy sky, passing billboards and electrical pylons. Text overlays present unsubstantiated claims regarding regional aggressions and location tags for Dubai, UAE.",
+            "ocrText": "Dubai, UAE. Israel is behind some aggr.essions on Dubai not Iran. @SAMIFIKREE. Guys this is Dubai world. fly over your head and hitting. from Iran because Iran is there. TARRAD DEVELOPMENT BEYOND LUXURY WWW.TARRAD.AE"
+          },
+          "transcription": "Guys, this is Dubai World. It's literally a port, a seaport. Which means if you're seeing rockets fly over your head and hitting this port, it did not come from Iran because Iran is there. We won't see any rockets flying over our head unless we're in a ship. The rockets you see came from the opposite direction and everyone witnessed it. No more live motherfuckers."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- 🔋 (@JundAllahT): Just as it happened in Oman as well. Highly likely, especially after Tucker Carlson exposed that Mossad agents were caught plotting false flags in Saudi Arabia and Qatar. Israel’s & Americas dream would be if every gulf nation decided to join the war instead of just aiding with bases/logistics. (Likes: 318)\n- Tracy Whitney (@RuckFulesX): Of course Israel is covertly bombing neighboring countries to put the blame on either Iran or US. Remember folks - two is a company, three is a crowd. Israel is the crowd here. (Likes: 276)\n- Kathleen Tyson (@Kathleen_Tyson_): Confirmed by Russian satellite tracking shared with Saudi and UAE. (Likes: 213)\n- One Eye (@OneEye1987): A jewish rabbi LITERALLY talked about wishing this very scenario: (Likes: 114)\n- Clara🕊 (@LibelulaLara): While all this is happening they keep land grabbing too!!!! (Likes: 62)\n- Patriot Hoppe (@Dems4China): (Likes: 49)\n- zaar (@Zaardaar): that's why they stopped showing/banning the videos. it wasn't because Iran fired them (Likes: 41)\n- Travis (@OVRT1ME): To be fair, it doesn’t show that, it’s just someone saying it…. But, fck Israel (Likes: 39)\n- TheThorny1 ✝️🙏🇺🇸 (@thethorny1): Typical 🧃behavior. False flag attacks. (Likes: 34)\n- Trevor (@realTrevorC): I wouldn’t doubt there are false flags, but he needs a geography lesson. Jebel Ali is the port. Anything launched from Iran to the E or NE will be seen over land in Dubai. Anything from Israel will be over the water. (Likes: 28)",
+    "warnings": []
+  }
+}

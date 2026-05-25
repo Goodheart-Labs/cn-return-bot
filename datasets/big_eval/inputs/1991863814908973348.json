@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1991863814908973348",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:54.656Z",
+  "post": {
+    "id": "1991863814908973348",
+    "author_id": "913220981572931584",
+    "created_at": "2025-11-21T13:38:35.000Z",
+    "text": "another 10% dip and saylor is liquidated btw",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 42,
+      "reply_count": 747,
+      "like_count": 1250,
+      "quote_count": 21,
+      "bookmark_count": 27,
+      "impression_count": 168293
+    },
+    "author_followers": 301391,
+    "author_name": "lynk",
+    "author_description": "I believe in you ❤️ - private group access 👉 https://t.co/WsJyQtpp7l",
+    "author_tweet_count": 189619
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @adam3us: \"nonsense\" (Likes: 1583)\n- @faceofsol: \"Can’t get liquidated on spot you idiot btw\" (Likes: 360)\n- @TheBTCTherapist: \"Not true. Simply false.\" (Likes: 219)\n- @ctoCZLU: \"Saylor isn’t anywhere near liquidation. His loans are hedged into 2027–2028, and the company has enough dividend coverage to survive decades at current prices. The “Saylor liquidation” meme is pure cope.\" (Likes: 56)\n- @pastorcoin: \"Thats not how that works. I'm liquidating you from my feed. Muted.\" (Likes: 38)\n- @chrneww: \"You can’t be liquidated on spot… his creditors may call to have they’re money pulled but that’s his call at the end of the day\" (Likes: 34)\n- @IamNajamuSaqib: \"LoL! And you call yourself a crypto influencer... wannabes everywhere... You know nothing about trading if you think Saylor will be liquidated by another 10% downwards movement...\" (Likes: 29)\n- @_0xHuCk: \"Tell them he’s been selling on side wallets\" (Likes: 29)\n- @SpecialSitsNews: \"no he is not, there are no covenants in the debt documents, he doesn't even have to do anything if bitcoin falls to <$50k\" (Likes: 26)\n- @RobertSB84: \"😂 How to tell the world in 1 tweet you dont understand MSTR. There is a difference between liquidation and making a loss.\" (Likes: 20)",
+    "warnings": []
+  }
+}

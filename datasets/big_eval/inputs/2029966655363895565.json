@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2029966655363895565",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:12.989Z",
+  "post": {
+    "id": "2029966655363895565",
+    "author_id": "1457867047334031360",
+    "created_at": "2026-03-06T17:05:40.000Z",
+    "text": "Video footage purported to show an Iranian ballistic missile strike on Prince Sultan Air Base in Al-Kharj, Saudi Arabia, with the missile impacting very close to several U.S. servicemembers, thankfully said to have resulted in only minor injuries to personnel at Prince Sultan. https://t.co/Nlju8TCZ22",
+    "media": [
+      {
+        "media_key": "13_2029966602305953792",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2029966602305953792/img/xpnS3TQ3zKi7BrCS.jpg",
+        "height": 640,
+        "width": 360,
+        "duration_ms": 14266,
+        "view_count": 2507960,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029966602305953792/vid/avc1/320x568/FbZfor5UB_c82Vv5.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029966602305953792/vid/avc1/360x640/NRwtdlFdjvd_tQto.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2029966602305953792/pl/uqgqA-R-rEMWphN7.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2441,
+      "reply_count": 583,
+      "like_count": 20073,
+      "quote_count": 509,
+      "bookmark_count": 6519,
+      "impression_count": 4474777
+    },
+    "author_followers": 2244372,
+    "author_name": "OSINTdefender",
+    "author_description": "Open Source Intelligence Monitor focused on Europe and Conflicts across the World. RT ≠ Endorsement. Want to Support my Work? https://t.co/PcUbewvWPr",
+    "author_tweet_count": 61288
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2029966602305953792/vid/avc1/360x640/NRwtdlFdjvd_tQto.mp4",
+          "description": {
+            "description": "A series of three low-light frames. In the first frame, a faint, glowing object is visible against a dark, cloudy night sky. The second frame shows the same sky, but the object shines more brightly and intensely. The third frame moves to an indoor setting, showing a blurry, close-up view of an orange-tinted door or wall.",
+            "ocrText": ""
+          },
+          "transcription": "Продолжение следует..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@jodavaho**: Pro tip: If your apparent angle to a ballistic missile is not changing much - you are the target  \nLikes: 2193\n\n**@AlexderBar**: That is one insane shot. If I had captured a video like that I would never shut up about it.  \nLikes: 1564\n\n**@LegacyProgramVP**: Go ahead and play the lottery because that guy filming’s luck is peak level right now.  \nLikes: 449\n\n**@abo_fahad500**: The video was shared 13 hours before this tweet, and it shows his mention it is over the Ali Salem Airbase in Kuwait. And FYI, the Ministry of Defense of Saudi Arabia also announced the interception of three ballistic missiles over Al-Kharj.  \nLikes: 227\n\n**@Globalsurv**: U.S. and Israel have not achieved full air supremacy over Iran, despite claims. How is Iran still able to launch missiles and drones??  \nLikes: 140\n\n**@bluestar812**: Zoomed in slow motion  \nLikes: 118\n\n**@sysqo82**: you gotta be extremely stupid to see the missile coming at your direction like this, and still hold the camera as if nothing.  \nLikes: 108\n\n**@AL_Mohanad1**: This video is fake and misleading There was no strike on Prince Sultan Air Base Stop spreading false info and check the Ministry of Defense statement 🇸🇦  \nLikes: 103\n\n**@unseriousbanda1**: (media attached)  \nLikes: 93\n\n**@bigstormpicture**: Seems kinda real but the length of the clip makes me very suspicious The longer cut clips are harder to make in ai, but 10-15 seconds is probably 99% of the ai videos out there  \nLikes: 51",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2014434985046921417",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:33.954Z",
+  "post": {
+    "id": "2014434985046921417",
+    "author_id": "3353330837",
+    "created_at": "2026-01-22T20:28:21.000Z",
+    "text": "Keepin' it real! 🤣🤣🤣 https://t.co/uKTc1yg0wW",
+    "media": [
+      {
+        "media_key": "3_2014434895762776064",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_S13WEXYAAQYJ-.png",
+        "height": 666,
+        "width": 680
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5872,
+      "reply_count": 550,
+      "like_count": 31300,
+      "quote_count": 277,
+      "bookmark_count": 2003,
+      "impression_count": 1169976
+    },
+    "author_followers": 87039,
+    "author_name": "Damaan, AKA 'Philly's Finest!'",
+    "author_description": "I am Damaan! I am 💯% Blue! FB Blue folks! 🌊 Please read my bio before you post here! No DMs, No Ads, No MAGA! 🚫 Together we are stronger! Who's with me? 🙋",
+    "author_tweet_count": 146051
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_S13WEXYAAQYJ-.png",
+          "description": {
+            "description": "An image featuring a portrait of a younger Donald Trump wearing a suit and red tie, overlaid with a block of text containing a fabricated quote attributed to him from People Magazine in 1998 regarding Republican voters.",
+            "ocrText": "“If I were to run, I'd run as a Republican. They're the dumbest group of voters in the country. They believe anything on Fox News. I could lie and they'd still eat it up. I bet my numbers would be terrific.” Donald Trump People Magazine, 1998"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**JMag** (@jordiep6780): [Image] (Likes: 626)\n**Debbie** (@deb37044994): Weasel-haired cocksplat 😝😅🤣 (Likes: 574)\n**Djesh** (@DrGonzoRoyale): [Image] (Likes: 440)\n**Debbie** (@deb37044994): 😁👇 🇺🇸 (Likes: 345)\n**The Outsider** (@calendarking): At least he got that right… (Likes: 314)\n**PJ** (@PeterGlynnJones): [Image] (Likes: 181)\n**Renata Fella 🇨🇿🇩🇰 #NAFO 🇺🇦🇬🇱🇬🇪** (@Rando02960168): [Images] (Likes: 99)\n**The Spiritual Shift** (@spiritualshift_): Not a fan of Trump but this quote is not real. It has been debunked. Trump never said this. (Likes: 57)\n**Richard Angwin** (@RichardAngwin): Trump once bragged he could shoot someone on Fifth Avenue and not lose voters, proof he knows his base will swallow anything. (Likes: 41)\n**Jim Scholten** (@lctrcjim): The Republican Party has become the refuge for the least educated, least knowledgable, least intelligent, most racist, most resentful and most hate-filled in our country. (Likes: 32)",
+    "warnings": []
+  }
+}

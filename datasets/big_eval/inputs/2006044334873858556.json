@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2006044334873858556",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:02.312Z",
+  "post": {
+    "id": "2006044334873858556",
+    "author_id": "4910249667",
+    "created_at": "2025-12-30T16:46:54.000Z",
+    "text": "Did you see where she landed 😯 that was close  https://t.co/ES0QxICDvl",
+    "media": [
+      {
+        "media_key": "7_2001139443064033280",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2001139443064033280/pu/img/Wwz7Ua8w0FTqz3qW.jpg",
+        "height": 1252,
+        "width": 704,
+        "duration_ms": 10171,
+        "view_count": 22299371,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2001139443064033280/pu/vid/avc1/320x568/njEgwqKYlf4dmEr7.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2001139443064033280/pu/vid/avc1/480x852/FBXgtYQHtsv6KUDp.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2001139443064033280/pu/vid/avc1/704x1252/l-yl4QJqLnHG9ZCT.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2001139443064033280/pu/pl/r51goBF7fMutPzVs.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 650,
+      "reply_count": 904,
+      "like_count": 9555,
+      "quote_count": 191,
+      "bookmark_count": 1815,
+      "impression_count": 13176773
+    },
+    "author_followers": 325494,
+    "author_name": "King Sholz 👑",
+    "author_description": "Growth & Visibility King 👑 || 📈Crypto & Forex Trader 💹😂 Memes | 🎬 Cinematic & Real-Life Content💡 Inspiring • Motivational • Entertaining 📊",
+    "author_tweet_count": 15722
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2001139443064033280/pu/vid/avc1/704x1252/l-yl4QJqLnHG9ZCT.mp4",
+          "description": {
+            "description": "A man is positioned on a red inflatable platform that is cantilevered over a steep cliff face overlooking a lush green valley and distant mountains. Suspended below him by guide wires is a white rectangular target with a red border. In the second frame, the man has jumped or fallen, and a small figure is visible mid-air, plummeting toward the suspended target.",
+            "ocrText": ""
+          },
+          "transcription": "Ready? Set it! She is flying! Yeah! Perfect shot! Nailed it!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **N3ON (@NeonApesYC)**: You can clearly tell this is AI. \nShe bounces higher than the distance she travelled downwards, which defies physics. (28 likes)\n- **EB (@EmixBabs)**: Not every daring move is bravery.\nSometimes it’s just danger dressed as confidence. (18 likes)\n- **Emmanuel....i ⚕️ (@AshE_Nuel)**: Ai (18 likes)\n- **Jameel Ahmed جمیل احمد (@JameelAhmed44)**: My heart skipped a beat  that landing was too close 😅 (16 likes)\n- **Toff (@TheToff_)**: My brain telling me this is another AI video (12 likes)\n- **Grey BTC (@greybtc)**: Another AI slop (9 likes)\n- **UGO SI MBA! (@Janefrances_Al)**: Like what type of risk is this 😩 (8 likes)\n- **Millennial Marketer 📣 (@1nefortunate)**: Can never be me.\nThere are some places you will never find me (8 likes)\n- **LunaClassic 🟨 ™ (@LunaClassicHQ)**: This is AI (8 likes)\n- **EB (@EmixBabs)**: One small miscalculation, and the story would be different. (7 likes)",
+    "warnings": []
+  }
+}

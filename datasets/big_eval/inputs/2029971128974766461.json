@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2029971128974766461",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:42.239Z",
+  "post": {
+    "id": "2029971128974766461",
+    "author_id": "1291128494",
+    "created_at": "2026-03-06T17:23:26.000Z",
+    "text": "BREAKING: Footage from Prince Sultan Air Base in Saudi Arabia shows Iranian ballistic missile exploding right near U.S. troops. https://t.co/g5g0EOg2QE",
+    "media": [
+      {
+        "media_key": "13_2029971045159927808",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2029971045159927808/img/DUC6AblaorKO3Vcl.jpg",
+        "height": 640,
+        "width": 352,
+        "duration_ms": 6548,
+        "view_count": 64210,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029971045159927808/vid/avc1/320x580/2xvRzjscp8JSGGgh.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029971045159927808/vid/avc1/352x640/VXmjhhM5hbw4bU6X.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2029971045159927808/pl/M_-MqdRoG5x2m0zD.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 881,
+      "reply_count": 100,
+      "like_count": 3742,
+      "quote_count": 36,
+      "bookmark_count": 357,
+      "impression_count": 137610
+    },
+    "author_followers": 845693,
+    "author_name": "Sulaiman Ahmed",
+    "author_description": "https://t.co/L7BfZDskci https://t.co/L1qa0ouLiC",
+    "author_tweet_count": 91575
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2029971045159927808/vid/avc1/352x640/VXmjhhM5hbw4bU6X.mp4",
+          "description": {
+            "description": "A very blurry, out-of-focus close-up shot showing shades of yellow and orange, suggesting movement or a lens being obstructed by a brightly colored object.",
+            "ocrText": ""
+          },
+          "transcription": "."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Hunt - @El_Hunto**  \nOld video stop posting bs  \nLikes=39, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=457\n\n**Razzle Dazzle - @marykin12345678**  \nOmg! We started this for the Jews while they cower in underground tunnels. I can’t…  \nLikes=33, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1592\n\n**AFZAL SIDDIQUI🇮🇳 - @AfzalSiddq72851**  \nLoin  \nLikes=27, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2602\n\n**Abu Monzur - @AbuMonzur**  \nThe American bases in Bahrain, Kuwait, Qatar, and Saudi Arabia are among the largest military facilities in the world. These installations have cost trillions of dollars over several decades to build. It was the majority of their military spending over the past 30 years and now has effectively gone up in smoke.  \nLikes=26, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2510\n\n**MUSAB - @A__MUSAB**  \n(No text content)  \nLikes=25, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1634\n\n**KIFAYAT - @kifayatlateef**  \nIf oil moves and stays near $100, prepare for a major inflation shock across Europe that will eventually spill into the U.S. The U.S. economy is already slowing, but imported inflation would prevent the Fed from cutting rates.  \nThe strength of the dollar is already signaling this systemic risk.  \nUSD basket since monday;  \nLikes=13, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3370\n\n**ﻣـﺯاجــيـة 🇸🇦 - @Mazajiyahh**  \nDon't lie to people... This nonsense is believed only by people with their minds in their asses  \nLikes=12, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=126\n\n**Nameless - @Namelesbeing**  \nCamera man never dies… Kudos! 😂He risked it all to give us this video  \nLikes=10, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1410\n\n**Aabid (عابد) | MindFuel📚 - @learnwithaabid**  \nThe supreme art of war is to subdue the enemy without fighting.  \nLikes=8, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1584\n\n**Umar Farooq - @mepatriotic**  \nThose fools who thought that no one could touch America, now look at what Iran is doing to America and Israel alone.  \nLikes=7, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=598",
+    "warnings": []
+  }
+}

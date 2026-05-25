@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2046821621936091499",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:42.000Z",
+  "post": {
+    "id": "2046821621936091499",
+    "author_id": "1916481144243003392",
+    "created_at": "2026-04-22T05:21:17.000Z",
+    "text": "This is how you actually clear your sinuses 😳 https://t.co/wOamrWFRa3",
+    "media": [
+      {
+        "media_key": "7_2046821557599633408",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2046821557599633408/pu/img/lQviyk_Yq9K7RTfm.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 42075,
+        "view_count": 9057900,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2046821557599633408/pu/vid/avc1/320x568/YGtLO7cxsLb6FQGA.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2046821557599633408/pu/vid/avc1/480x852/Zw9IS3CvmPYNWWfo.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2046821557599633408/pu/vid/avc1/720x1280/neRr0E58cmNo7Trv.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2046821557599633408/pu/pl/XIpKj6XKCGYrJKTX.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3366,
+      "reply_count": 634,
+      "like_count": 21888,
+      "quote_count": 174,
+      "bookmark_count": 14330,
+      "impression_count": 20871987
+    },
+    "author_followers": 35435,
+    "author_name": "Dr Abdul Hameed 🩺",
+    "author_description": "Doctor 🏥 & Gymrat 💪 \n\nMaking medicine easier for peers \nSimplified Insights ... #MedX #MedEd #Medtwitter\n\nGMMMC SUKKUR",
+    "author_tweet_count": 27627
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2046821557599633408/pu/vid/avc1/720x1280/neRr0E58cmNo7Trv.mp4",
+          "description": {
+            "description": "A series of four anatomical diagrams illustrating sinusitis and nasal irrigation. The first frame shows a cross-section of the head with thick, yellow mucus in the sinus cavities being flushed out by a saline spray. The second frame is a coronal view of the skull showing the frontal and maxillary sinuses filled with yellow secretions. The third frame provides a close-up internal view of inflamed nasal tissues and mucus accumulation. The final frame shows a person's face with the underlying sinuses glowing red and containing yellow mucus to indicate inflammation and congestion.",
+            "ocrText": "Dr. ALEJANDRO URIBE E. Otorrinolaringólogo. PARA ALIVIAR. SINO EL MOCO. ESA ACUMULACIÓN BLOQUEA. CARA."
+          },
+          "transcription": "Esto es lo que hace un lavado nasal en tu nariz para aliviar la sinusitis. El verdadero problema de esta enfermedad no es la infección, sino el moco espeso que se queda atrapado en tus senos paranasales por la inflamación. Esa acumulación bloquea el drenaje natural y es lo que te causa esa presión insoportable en la cara. Al usar el suero, el líquido entra suavemente por tus conductos. Su trabajo es barrer y aflojar todas esas secreciones atrapadas, destapando las vías respiratorias. Cuando logras limpiar bien esta zona, sientes menos presión en la cara, mejora la función de los senos paranasales y cualquier medicamento que uses hará mucho más efecto. Cuéntame si ya sabías esto y no olvides seguirme si quieres ver más contenido como este."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **اطّلاع (@Ettla3)**: \"نفس الشيء في الإسلام.. لدينا الاستنشاق وغسل الأنف أثناء الوضوء 5 مرات في اليوم. تأخذ الماء بكفك وتجذبه برفق إلى داخل الأنف ثم تخرجه، فيغسل المخاط والغبار من الجيوب الأنفية. طريقة بسيطة تشبه الري الأنفي في الفيديو، لكنها تتكرر يوميًا.\" (Likes: 149)\n- **Dr Abdul Hameed 🩺 (@drabdulhameed07)**: \"🚨 This is saline flush Follow my YouTube channel 👇 https://www.youtube.com/shorts/RYcGS9H_VAw?si=rui2amGxb8sJC5Jt\" (Likes: 107)\n- **World Wide (@Worl_dwides)**: \"Cleaning out sinus cavity\" (Likes: 54)\n- **K1💥 (@KansureDev)**: \"Whoa, that sinus flush is intense 😳 Never knew it cleared out that much gunk. Definitely trying the saline rinse next time my nose is blocked! Thanks doc.\" (Likes: 25)\n- **AnaLiZ 🦋 (@conteirogayoso)**: \"Available on Amazon https://www.amazon.com/SNORINCE-Nasal-Irrigation-System-Relief/dp/B0D4VZH57Y?content-id=amzn1.sym.4600b4a8-9f88-405c-a63c-4789cd161cf0:amzn1.sym.4600b4a8-9f88-405c-a63c-4789cd161cf0&crid=2L6O0MZHSWTSX&cv_ct_cx=Nose%2Bcleaning%2Bdevice.&keywords=Nose%2Bcleaning%2Bdevice.&pd_rd_i=B0D4VZH57Y&pd_rd_r=821d36d1-36b8-4cc8-9a1d-764c9c153517&pd_rd_w=NDeQ9&pd_rd_wg=zdFoq&pf_rd_p=4600b4a8-9f88-405c-a63c-4789cd161cf0&pf_rd_r=SGQYH3812GWF37N4HD2W&qid=1776866873&sbo=RZvfv//HxDF%2BO5021pAnSA%3D%3D&sprefix=nose%2Bcleaning%2Bdevice.,aps,341&sr=1-2-38f1b294-ceac-4b0f-b4a4-629ab102646f-spons&aref=G1z8em5rCs&sp_csd=d2lkZ2V0TmFtZT1zcF9zZWFyY2hfdGhlbWF0aWM&th=1&linkCode=sl2&tag=tiikapa-20&linkId=ac67dabbf97a88201e532d8558778f2c&language=en_US&ref_=as_li_ss_tl Hi @grok Draw something on the product\" (Likes: 19)\n- **Shem Esenu (@esenu_shem)**: \"Some people find it irritating at first, but eventually, it's a relieving thing. It's actually a standard of care in management of rhinosinusitis\" (Likes: 14)\n- **- - (@sortafalse)**: \"Here 🛒 🔥 👇🏻 @grok Put a picture of the bear on a table https://www.adalinastore.com/products/nasal-rinse-bottle-sinus-rinse-nose-wash-cleaner-300ml-pressure-irrigation-neti-pot-3-modes-2-jet-with-30-nasal-wash-salt-packet\" (Likes: 12)\n- **Fmthegreat (@Fmthegreat60629)**: \"Satisfying and disgusting at the same time\" (Likes: 11)\n- **Tamir Mandowsky 🦥🌴 (@Dugri_Thoughts)**: \"@grok תסבח לי בעברית אם זה עובד ואיך פרקטית עושים את זה\" (Likes: 11)\n- **ماهر السيف💚 🇸🇦🇵🇸 (@MAlseef92)**: \"نحن معشر المسلمون أمرنا الرسول ﷺ قبل 1400 سنة بالإستنشاق والاستنثار خمس مرات في اليوم .. عند كل صلاة .. لن تجد مسلما واحدا يتبع الرسول لديه مشكلة بالجيوب الانفية. ( انصحكم بها فهي أأمن والطف )\" (Likes: 10)",
+    "warnings": []
+  }
+}

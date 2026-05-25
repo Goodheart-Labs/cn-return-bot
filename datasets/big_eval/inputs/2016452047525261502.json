@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2016452047525261502",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:49.243Z",
+  "post": {
+    "id": "2016452047525261502",
+    "author_id": "1558653067964325888",
+    "created_at": "2026-01-28T10:03:26.000Z",
+    "text": "a indian guy has been caught secretly mining crypto underneath the school building where he was working at https://t.co/1dEEEBZ4Nc",
+    "media": [
+      {
+        "media_key": "13_2016451970635268096",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2016451970635268096/img/Te27hB_ufAaXQ9AS.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 69538,
+        "view_count": 154416,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2016451970635268096/vid/avc1/480x270/wkCCXQHFsN9c1kx4.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2016451970635268096/vid/avc1/640x360/216uE4zFQN2zhR3p.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2016451970635268096/vid/avc1/1280x720/kpjJVlbJ9n8MsQ1i.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2016451970635268096/pl/zrJguJ_hih21pxcN.m3u8?v=f25"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 365,
+      "reply_count": 267,
+      "like_count": 4669,
+      "quote_count": 43,
+      "bookmark_count": 485,
+      "impression_count": 292746
+    },
+    "author_followers": 61644,
+    "author_name": "Uzi",
+    "author_description": "PHD in Finance & Crypto | @flipgg_ Partner | Alpha: https://t.co/tg86ADl6xR",
+    "author_tweet_count": 270513
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2016451970635268096/vid/avc1/1280x720/kpjJVlbJ9n8MsQ1i.mp4",
+          "description": {
+            "description": "These frames from a news report detail an investigation into a cryptocurrency mining operation hidden within a school. They show a makeshift cooling system using a cooler and ducting, a collection of confiscated mining hardware on a table, a graphic of a bitcoin coin, and a criminal docket for a defendant named Nadeam Nahas listing offenses like fraudulent use of electricity.",
+            "ocrText": "Frame 1: COURTESY COHASSET POLICE, 5 INVESTIGATES, 5 abc, #WCVB. Frame 2: COURTESY COHASSET POLICE, 5 INVESTIGATES, 5 abc, #WCVB. Frame 3: 25 BITCOINS, 5 INVESTIGATES, 5 abc, #WCVB. Frame 4: CRIMINAL DOCKET, DOCKET NUMBER 2356CR000253, DEFENDANT NAME AND ADDRESS Nadeam Nahas, DOB 03/01/1983, DATE COMPLAINT 01/12/2023, FIRST FIVE OFFENSE COUNTS, COUNT CODE, 1 164/127, 2 266/98/A, OFFENSE DESCRIPTION ELECTRICITY, FRAUDULENT USE, SCHOOL VANDALIZE c266 s98, 5 INVESTIGATES, 5 abc, #WCVB."
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **CharlesGPT - @char_gpt**: that's actually genius, free electricity and nobody checking the basement, the hustle is real, bet he was making bank until he got caught, respect the creativity even if it's wild 😂 (Likes: 130)\n- **Murica Furst - @h34j3j8j**: Arab, but that doesn’t get the engagement bucks, does it? (Likes: 129)\n- **Mute hindu🤐 - @Mute_hindu**: Nadeem : muslim \nMight be American patriot (Likes: 124)\n- **Matt Mills - @mattavers**: The man accused of mining cryptocurrency in a school crawlspace is Nadeam Nahas, a resident of Cohasset, Massachusetts..not an Indian man. (Likes: 96)\n- **KEQUE🫘🆙 - @KequeMage**: community notes L (Likes: 81)\n- **Iqshant Ladha | Cryptera - @theCryptera**: should I block you? (Likes: 67)\n- **Teary-Eyes - @FunSadGuy**: THIS IS THE CORRECT WAY TO MINE BTC... \n\nBTC IS A CRIMINAL COIN. (Likes: 42)\n- **Mikku 🐼 - @effucktivehumor**: Go to school, little casino worker! (Likes: 36)\n- **dravidan - @dravidan**: The cooling setup is genius … actually … reduces heating bills for the school too (Likes: 23)\n- **Desi Monarch - @DesiMonarch_**: This is a Classic\n\nOnline Muslim account shifting offline Muslim's crime on another person. (Likes: 20)",
+    "warnings": []
+  }
+}

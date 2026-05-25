@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2016932474081657121",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:17.091Z",
+  "post": {
+    "id": "2016932474081657121",
+    "author_id": "834078524277456897",
+    "created_at": "2026-01-29T17:52:29.000Z",
+    "text": "A Spanish scientist have cured pancreatic cancer in mice. The most deadly cancer out there.\n\nPeople ignoring it and making fun of his birth defect.\n\nA cure in animal models is a huge step closer to a possible cancer treatment in humans.\n\nThank you, Dr. Mariano Barbacid! https://t.co/dfKmdRg0ln",
+    "media": [
+      {
+        "media_key": "3_2016932468121608192",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_2VZMJXIAARGdV.jpg",
+        "height": 2048,
+        "width": 1542
+      },
+      {
+        "media_key": "3_2016932468138356736",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_2VZMNWsAAuy9I.jpg",
+        "height": 1479,
+        "width": 986
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 17879,
+      "reply_count": 774,
+      "like_count": 122923,
+      "quote_count": 336,
+      "bookmark_count": 3615,
+      "impression_count": 2133860
+    },
+    "author_followers": 549865,
+    "author_name": "Mohamad Safa",
+    "author_description": "Executive director. Diplomat rel. @PVAenglish Main Representative at United Nations ECOSOC and accredited at United Nations Office at Geneva.",
+    "author_tweet_count": 5559
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_2VZMJXIAARGdV.jpg",
+          "description": {
+            "description": "A charcoal or graphite-style digital sketch of a man with large, expressive eyes and a slight smile. He is wearing a suit jacket, a collared shirt, and a striped tie. The drawing features visible, energetic brushstrokes and stippling for texture, especially around the cheeks and forehead.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_2VZMNWsAAuy9I.jpg",
+          "description": {
+            "description": "A photograph of an older man with graying hair and glasses speaking at a podium. He wears a dark suit, white shirt, and a blue patterned tie. He has a prominent port-wine stain birthmark on the left side of his face. He is positioned behind a clear acrylic lectern with microphones attached, and his hand is resting on pieces of paper.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **spidermerc (@spydermerc)**: Artist is @colehairlesscat credit his work at least (Likes: 2723)\n- **cherry (@wheremycherries)**: The artist of the picture: (Likes: 2502)\n- **Mikan🍊【KATABASIS】 (@MikanTheMink)**: the artist is @colehairlesscat please credit them adequately next time (Likes: 1517)\n- **Jay Naidu (@JayNaiduX)**: The team led by Mariano Barbacid at the Spanish National Cancer Research Centre (CNIO) reports a triple-drug therapy that made pancreatic tumors completely disappear in mice...with no relapse for 200-300 days. This could be huge for a cancer that kills 500,000+ people globally each year (Likes: 529)\n- **SKYE 🌦️ RIN DEFENDER (@overki11ed)**: Credit the original artist!!!! (Likes: 514)\n- **BigRose (@Roseisbig)**: Let them make fun of this achievement as well Mariano Barbacid is one of those scientists whose name rarely comes up in mainstream conversation, yet his contributions have literally transformed cancer biology and oncology therapy. Let’s put his impact into perspective 1.Pioneering research in human oncogenes: Isolating HRAS, the first human oncogene, was not just a lab milestone; it paved the way to understand that mutations in our own genes can cause cancer. This discovery fundamentally changed oncology. 2.Insights into mutations: By identifying the specific point mutation in HRAS responsible for its cancer-causing properties, he laid the foundation for modern precision medicine, where treatments are designed to target specific genetic alterations. 3.TRK gene and receptors: His work on the TRK oncogene and its neurotrophin receptors bridged neuroscience and oncology, showing how cell growth pathways can go awry in cancer — and later enabling tumor-agnostic therapies, such as TRK inhibitors that work across multiple cancer types. 4.Targeted drug strategies: At Bristol-Myers Squibb, he helped steer oncology toward molecularly targeted drugs, moving beyond just chemotherapy and radiation — essentially the basis for today’s personalized cancer therapies. 5.Redefining cell cycle knowledge: Demonstrating that some CDKs are dispensable for DNA replication was a shock to biology textbooks — changing how researchers understand cell division and potential drug targets. 6.Institutional leadership: Founding the CNIO in Madrid didn’t just create a lab; it created a world-class cancer research center producing discoveries that benefit global oncology. 7.Translational therapy work: His recent animal studies, combining multiple targets such as KRAS, EGFR, STAT3, and RAF1, are directly advancing strategies to treat lethal cancers like pancreatic and lung tumors. These aren’t just experiments — they are preclinical steps toward therapies that could save lives. Barbacid’s work spans from fundamental gene discovery to translational cancer therapy, influencing both science and medicine on multiple levels. Many people know the names of “popular” scientists, but his contributions have likely saved more lives indirectly through therapy development than most get credit for. Humans can be funny (Likes: 510)\n- **🩸dev (@hefookinleft)**: Be decent and credit the artist!! (Likes: 454)\n- **Rokktober (@rokktober)**: Could you please credit the artist if you’re going to share his work? @colehairlesscat (Likes: 303)\n- **Sgt. Tibbs 🏴‍☠️ Dok J.Reko (@SgtTibbles)**: I’d have given a limb to have had a cure for my father’s pancreatic cancer (courtesy of the United States government exposing him to Agent Orange!) the hell with those mocking him. (Likes: 45)\n- **Avraham Berkowitz (@GlobalRabbi)**: Dr. Barbacid is a hero and we hope his human trials will be successful (Likes: 30)",
+    "warnings": []
+  }
+}

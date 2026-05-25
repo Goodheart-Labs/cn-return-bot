@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2041247496333394023",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:05:53.116Z",
+  "post": {
+    "id": "2041247496333394023",
+    "author_id": "1083234774238416896",
+    "created_at": "2026-04-06T20:11:42.000Z",
+    "text": "Free him he didn’t do anything https://t.co/s9Q8g6E7J6",
+    "media": [
+      {
+        "media_key": "3_2041247492227125248",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFP3x3ja0AAwVt9.jpg",
+        "height": 1129,
+        "width": 1206
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4961,
+      "reply_count": 208,
+      "like_count": 60812,
+      "quote_count": 148,
+      "bookmark_count": 2724,
+      "impression_count": 549155
+    },
+    "author_followers": 6400,
+    "author_name": "kar",
+    "author_description": "@hotgirlshatefascism on IG",
+    "author_tweet_count": 4786
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFP3x3ja0AAwVt9.jpg",
+          "description": {
+            "description": "A digital image of a mock news article headline. The text at the top reports on the arrest of an individual for allegedly assaulting a group of people. Below the text is a mugshot of a young male with short brown hair wearing a white tank top, superimposed over a generic news broadcast background featuring a globe graphic. The headline contains red strike-through lines over specific words.",
+            "ocrText": "Pornstar Brandon Cummings, From The Famous \"Let's Go Brandon\" Series Of Male On Male Porn, Has Been Arrested After Beating Up 35 Neo-Nazi's April 22, 2022 Bonine romance 0 dailynewsreported.com"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @LucidTease: Where did he find 35 of them (Likes: 2123)\n- @random7007: If this was 1940’s America, per MAGA when America was last great, he’d be given a military honor for beating up the 35 neo-Nazis, then promptly incarcerated for all the gay sex Make beating the shit out of Nazis legal again. (Likes: 129)\n- @tensodaz: Violence is bad but if the government can blow up literal children I don't see why beating up nazis is a crime. Those pussies are still breathing at least (Likes: 108)\n- @castledquill: Looks familiar (Likes: 107)\n- @thywalmartbag: you're telling me theres a pornstar who's last name is cummings (Likes: 65)\n- @BurnerAcctthree: This is satire Typical of you to believe it though😬 (Likes: 52)\n- @ShadowNem: Did he use his ginormous penis to beat up those Nazis? (Likes: 46)\n- @Cicadafreak: Brandon after being ambushed by 35 neo nazi losers: (Likes: 25)\n- @Johnny039564835: arrested nigga fo wat sumbody get this nigga a medal he fucked up 35 racist niggas and lived to tell the tale nigga (Likes: 12)\n- @Cinna_yummi: Im lwk jealous. How the hell did he do 35 (Likes: 12)",
+    "warnings": []
+  }
+}

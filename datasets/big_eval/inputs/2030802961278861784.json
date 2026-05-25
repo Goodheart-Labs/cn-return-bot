@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2030802961278861784",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:22.845Z",
+  "post": {
+    "id": "2030802961278861784",
+    "author_id": "563168113",
+    "created_at": "2026-03-09T00:28:51.000Z",
+    "text": "In 2021, 42 owls in the UK died after receiving a vitamin supplement which erroneously contained 1000x the intended amount of Vitamin B6 (pyridoxine). \n\nToxicology analyses traced the error to a Japanese firm, Asuka Animal Health Ltd, which had intended to replicate MVS-30, an https://t.co/4NPdIHYR02",
+    "media": [
+      {
+        "media_key": "13_2030802904018223105",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2030802904018223105/img/UF_Ubq9JBss6ePRF.jpg",
+        "height": 720,
+        "width": 1276,
+        "duration_ms": 34068,
+        "view_count": 3034036,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030802904018223105/vid/avc1/478x270/SRSpP2-y4OunmUwm.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030802904018223105/vid/avc1/638x360/UJcrDp-YAJ5SvVT4.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030802904018223105/vid/avc1/1276x720/s7rP3LN5OciKwtlp.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2030802904018223105/pl/QvpFqKQyDg0uWKBa.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1703,
+      "reply_count": 444,
+      "like_count": 24786,
+      "quote_count": 230,
+      "bookmark_count": 4389,
+      "impression_count": 5670676
+    },
+    "author_followers": 212685,
+    "author_name": "Keith Siau",
+    "author_description": "GI doctor with interests in endoscopy, gut health, liver & medicine. 💜 #GITwitter #LiverTwitter #MedEd. Occasional silliness. Siau rhymes with meow 😺",
+    "author_tweet_count": 57238
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2030802904018223105/vid/avc1/1276x720/s7rP3LN5OciKwtlp.mp4",
+          "description": {
+            "description": "A collection of owl specimens laid out on a yellow floor, each resting on a piece of white paper. A woman is seen kneeling and bowing with her head down among the rows of owls, possibly in a moment of mourning or respect for the birds.",
+            "ocrText": ""
+          },
+          "transcription": "Держи. Продолжение следует..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@AskDrKamlesh**  \nOwls did not die in UK they were imported from UK. This happened in Japan . Reason was wrong labelling by UK Company.  \nLikes: 1270\n\n**@Ayurparibhadra**  \nWoah that’s insane labelling error from just a misplaced letter. But then again I’ve seen reports of medical errors like this done to humans  \nLikes: 1015\n\n**@PurnL**  \n@drkeithsiau  \nThe deaths occurred in Japan, in 2021, and not in the United Kingdom. The Owls were imported from the United Kingdom - 42 Owls.  \n  \nA Japanese firm mislabelled the dosage. Horrendously so.  \nLikes: 85\n\n**@BloomOne**  \nI had a hawk when I was a teenager and really bonded with him in training, he died of a clenbuterol overdose from a piece of liver I bought him at the local market.  \n  \nThis reminded me of that, it was human grade meat btw that's the sht they feed us. :(  \nLikes: 72\n\n**@zando75545384**  \nlol and no one sought to question - 'hey why are we making 360grams of vitamin B2 per dose?' '  \nLikes: 69\n\n**@RinaNaichin**  \n😮  \nLikes: 67 (with image)\n\n**@Digitalformedx**  \nWhy are they giving owls vitamins when they get all the vitamins they need in nature.  \nLikes: 63\n\n**@kavehkavoosi**  \nthat quantity makes no sense. 360gm is not gram. must have been μg, had to have been perceived as micrograms but given as mg.  \nLikes: 37\n\n**@findkitty7**  \nThat’s honestly heartbreaking. A simple labeling mistake turned into a tragic outcome for 42 innocent owls. It shows how even a tiny error in science or manufacturing can have massive real-world consequences.  \n  \nIt’s a sad reminder that accuracy and responsibility in research and production aren’t just technical details they can mean life or death. 🦉  \nLikes: 22\n\n**@TAYM1011**  \nThis is a textbook example of why double-checking units is a matter of life and death in manufacturing. Absolute failure in quality control from both sides  \nLikes: 18",
+    "warnings": []
+  }
+}

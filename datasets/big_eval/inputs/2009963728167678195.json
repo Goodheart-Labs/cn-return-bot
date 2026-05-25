@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2009963728167678195",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:54.214Z",
+  "post": {
+    "id": "2009963728167678195",
+    "author_id": "856590732907433985",
+    "created_at": "2026-01-10T12:21:10.000Z",
+    "text": "🇮🇹 Italian American deals with ICE https://t.co/4z9X52vm8h",
+    "media": [
+      {
+        "media_key": "7_2009761176826040320",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2009761176826040320/pu/img/r5miQ7lkLlfA-UlS.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 14999,
+        "view_count": 1168043,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2009761176826040320/pu/vid/avc1/320x568/C14H4h7Tcw3AwdBw.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2009761176826040320/pu/vid/avc1/480x852/Y6ahUnmm9xCsNSRN.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2009761176826040320/pu/vid/avc1/720x1280/pfkoETC7PGpQkYy2.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2009761176826040320/pu/pl/5agBqQwQG0OplVZX.m3u8?tag=12"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3331,
+      "reply_count": 1011,
+      "like_count": 17042,
+      "quote_count": 289,
+      "bookmark_count": 1389,
+      "impression_count": 887872
+    },
+    "author_followers": 243786,
+    "author_name": "Robin Monotti",
+    "author_description": "💭 history & critical thinking (MA) + 🎬 film producer + 🎸lyricist @ericclapton + ex:  🏛️ architect + @LdnMetArts lecturer",
+    "author_tweet_count": 81361
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2009761176826040320/pu/vid/avc1/720x1280/pfkoETC7PGpQkYy2.mp4?tag=12",
+          "description": {
+            "description": "A short video sequence shows a man in a white shirt and black apron, presumably a deli owner, behind a glass counter filled with food. He is animatedly shouting and gesturing with his hand and a white cloth at a law enforcement officer who is standing outside the shop or by the entrance. The officer is wearing a dark uniform with 'ICE' on the cap and 'PICF' on a tactical vest, along with a black face mask. Cured meats hang from the ceiling in the background, and small Italian flags are visible in the food display.",
+            "ocrText": "ICE\nPICF\nITALIA"
+          },
+          "transcription": "Hey! Basta! You two don't belong in here. Get out of my shop, capiche? Sir, we just need to ask a few questions. Questions? For who? For the normal buying more for them? Finito! You're coming here with your mask on and my customers making trouble in my neighborhood. Vap-vap! Get the hell out! Sir, we have authority to... Authority? You got no guts. That's what you got. Cowards. Hiding behind a..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@guyfelicella: Forza!!! That's old school right there. (Likes: 303)\n@Raytrapani: If People don’t realize this is AI we are doomed (Likes: 292)\n@LeighWolf: Boomer AI slop. lol. (Likes: 200)\n@DavidCantone: AI (Likes: 167)\n@mil_force: This is Ai slop 🤢, and please don't ask grok. itas awful at detecting ai images or vid. (Likes: 95)\n@mmysticbloom: His uniform says 'PICE?' (Likes: 85)\n@deftony83: You know that’s AI right? Fockin 🤡 (Likes: 79)\n@Serialluncher: Bring back Tony Soprano to deal with ICE (Likes: 51)\n@robbg80: Cappeeeeeesshhhh?!?!? (Likes: 48)\n@dbaxbt: This is clearly ai propaganda. Wtf is pice? (Likes: 44)",
+    "warnings": []
+  }
+}

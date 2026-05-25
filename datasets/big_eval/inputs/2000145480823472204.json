@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2000145480823472204",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:21.690Z",
+  "post": {
+    "id": "2000145480823472204",
+    "author_id": "177101260",
+    "created_at": "2025-12-14T10:06:58.000Z",
+    "text": "How water heaters cause electrocution and how to find the solution\n\n[🎞️ Zero-Harm International]\nhttps://t.co/D8BjYJe2lJ",
+    "media": [
+      {
+        "media_key": "7_1907009005618155520",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1907009005618155520/pu/img/_Zjqb8Oy59qRykvb.jpg",
+        "height": 1280,
+        "width": 718,
+        "duration_ms": 43723,
+        "view_count": 3017528,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1907009005618155520/pu/vid/avc1/320x570/2QcbMDB4vhcgCdtt.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1907009005618155520/pu/vid/avc1/480x854/MYMR-mXJ8HAlDRlq.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1907009005618155520/pu/vid/avc1/718x1280/tO3vury8fByw312h.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1907009005618155520/pu/pl/cNNI9wI_C389VHbH.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 641,
+      "reply_count": 93,
+      "like_count": 2889,
+      "quote_count": 31,
+      "bookmark_count": 1819,
+      "impression_count": 545659
+    },
+    "author_followers": 4360778,
+    "author_name": "Massimo",
+    "author_description": "Engineer. Selecting and curating pictures and videos trying to awaken your sense of wonder since 2014. Science, tech, art, weather, space, the unusual around us",
+    "author_tweet_count": 469725
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1907009005618155520/pu/vid/avc1/718x1280/tO3vury8fByw312h.mp4?tag=12",
+          "description": {
+            "description": "A sequence of four frames demonstrating a safety issue with an electric water heater and its solution. \n\n1. The first frame is a conceptual illustration showing a person showering. Red lines indicate a dangerous electrical path from the water heater through the water pipes and splashing water onto the person.\n2. The second frame shows a real-world scenario where a person uses a voltage tester pen on the metal hose of a wall-mounted water heater labeled \"热水器\" (Water Heater). The pen glows green, indicating live electricity is present on the plumbing.\n3. The third frame shows hands disconnecting the flexible metal hose from the heater's inlet and outlet connections to prepare for the installation of safety devices.\n4. The fourth frame shows the installation of two \"anti-electric wall\" (insulation) devices directly onto the heater ports. These devices are designed to create a high-resistance path to prevent electric shocks in the event of a heater leak.",
+            "ocrText": "热水器\n0.5MPa"
+          },
+          "transcription": "Welcome to the Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Andrey Smith** (@AndreyTheSmith)  \nJust connect the heater to the ground. That is all.  \nEngagement: 56 likes\n\n**Khalid** (@toplevl)  \nWater heaters cause electrocution not because water conducts electricity, but because of faulty electrical and grounding conditions. Here’s how it happens: \nFaulty internal wiring or heating element\nInside electric water heaters are live heating elements. If the insulation around these elements degrades or cracks, electricity can leak into the water or the metal tank.\n\nPoor or missing earthing (grounding)\nIf the heater is not properly earthed, any leaked current has nowhere safe to go. Instead, the metal body, pipes, or water itself can become energized.\n\nWater as a path, not the source\nPure water isn’t a good conductor, but household water contains minerals and salts. This makes it conductive enough to carry current to anyone touching the water or connected plumbing.\n\nHuman body completes the circuit\nWhen a person touches the energized water or metal while also in contact with ground (wet floor, concrete, bare feet), their body becomes the shortest path to earth; resulting in electrocution.\n\nAbsence of safety devices\nWithout an RCD/ELCB (residual current device), even small leakages won’t trip the power. The current keeps flowing until someone gets shocked.\n\nDamaged plumbing connections\nMetal pipes can transmit electricity from a faulty heater to taps, shower heads, or bathroom fittings, even outside the bathroom.\n\nWhy bathrooms are especially dangerous\nWet skin has very low resistance. That’s why even small voltages can become fatal in bathrooms.  \nEngagement: 42 likes\n\n**Fabulous Nature** (@fazalorkzai30)  \nIn this clip firefighters are using a technique to break the flow & therefore prevent possible electrocution. \n\nNever under any circumstances should you consider using water to put out an electrical fire. This is because water is a natural  \nEngagement: 23 likes\n\n**fisicafisica** (@fisicafisica)  \nMeanwile, in Brazil...  \nEngagement: 19 likes\n\n**🍨🐀❄️💨 Ratcicle the Ice Rat** (@Ratcicle)  \nELCB, Simply safe, no over engineering.  \nEngagement: 15 likes\n\n**The Secret Archives 📜** (@TheSecretFilesX)  \nSimply turn off the water heater when you take a bath.🛀🤙  \nEngagement: 13 likes\n\n**@jurij0001** (@jurijkovalenok1)  \nTap water is a good electrolyte, I don't understand how you remove salt from it?  \nEngagement: 13 likes\n\n**Vadim Vodyanitskiy** (@v_vodyanitskiy)  \nИзолятор в этом месте нужен для предотвращения отгорания гибкой подводки при разности потенциалов между водопроводом и бойлером.\n\nОт поражения электрическим током поможет лишь заземление бойлера и использование УЗО с током срабатывания 10 мА.  \nEngagement: 8 likes\n\n**ThierryDelsaux - Artist** (@factory1821)  \nWater/electrical device:\nNeed protection :  differential switch 30 mA.  \nEngagement: 4 likes\n\n**S** (@petitpain0x)  \nStupid and fake.  \nEngagement: 4 likes",
+    "warnings": []
+  }
+}

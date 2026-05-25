@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2028238482846687618",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:24.629Z",
+  "post": {
+    "id": "2028238482846687618",
+    "author_id": "1205376347528474624",
+    "created_at": "2026-03-01T22:38:31.000Z",
+    "text": "Iranian Air Defense has shot down \"something\" likely a fighter jet over Tehran 🚀\n\nNotice the smoke on impact [Indicates jet fuel] &amp; the speed of the falling object. https://t.co/P6dy0RdnM2",
+    "media": [
+      {
+        "media_key": "7_2028238454619013120",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2028238454619013120/pu/img/hnbp_thhu84Hq8SE.jpg",
+        "height": 640,
+        "width": 352,
+        "duration_ms": 40727,
+        "view_count": 323475,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2028238454619013120/pu/vid/avc1/320x580/JtEEspR7PxHl6k6D.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2028238454619013120/pu/vid/avc1/352x640/0VK1OQV6qo2pAFTy.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2028238454619013120/pu/pl/70HD5p9Oz_bbE13t.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 673,
+      "reply_count": 10,
+      "like_count": 4930,
+      "quote_count": 28,
+      "bookmark_count": 275,
+      "impression_count": 711204
+    },
+    "author_followers": 218098,
+    "author_name": "Pakistan Strategic Forum",
+    "author_description": "PSF is an independent think tank run by an international team of researchers, delivering the intelligence you need to make informed decisions on geopolitics.",
+    "author_tweet_count": 26672
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2028238454619013120/pu/vid/avc1/352x640/0VK1OQV6qo2pAFTy.mp4",
+          "description": {
+            "description": "A series of four frames from a night video shows a city skyline under a dark sky. A bright, glowing object is seen descending through the clouds and moving toward the city buildings in the background. Each frame tracks the object's downward trajectory over the urban area. A colorful graphic logo in Arabic script is present in the top right corner of every frame.",
+            "ocrText": "يلا تنور"
+          },
+          "transcription": "اللا و اکبر مشکل نه مانمونه اللا و اکبر اللا و اکبر اللا و اکبر یوزه یوهوهو یوهوهو اللہ و اکبر اللہ و اکبر"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Andekhinux (@andekhinux)**: from the size of the explosion it was clearly not a drone  \n  Likes: 38 | Reposts: 0 | Views: 10391\n\n- **جاوید شیخ (@JavaidShaikh14)**: US B2  \n  Likes: 38 | Reposts: 0 | Views: 10591\n\n- **Brathwaithe Bonespurs Quackerbush IV (@BrathBonespurs)**: Wow, that's hugeeee explosion!!!  \n  A B2 Bonber?  \n  Likes: 19 | Reposts: 0 | Views: 2994\n\n- **Ty (@tyskill88)**: Who’s the retard yelling in the background?  \n  Likes: 18 | Reposts: 0 | Views: 5468\n\n- **Nardu (@nardutj)**: Iran has shot down a Pakistani jet which violated airspace to beg for money  \n  Likes: 15 | Reposts: 0 | Views: 8360\n\n- **Osama Sultan (@OsamaSultanPK24)**: It was a drone  \n  Likes: 5 | Reposts: 0 | Views: 12484\n\n- **Global Affairs Today (@GlobalAffairs96)**: I think it was a drone hovering over Tehran in search of Launchers  \n  Likes: 1 | Reposts: 0 | Views: 7549\n\n- **doctordoom (@doctorspeakspk)**: [video reply, no text]  \n  Likes: 0 | Reposts: 0 | Views: 279",
+    "warnings": []
+  }
+}

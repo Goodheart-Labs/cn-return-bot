@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2052951612801389005",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:17.165Z",
+  "post": {
+    "id": "2052951612801389005",
+    "author_id": "595731936",
+    "created_at": "2026-05-09T03:19:41.000Z",
+    "text": "Hace 200 días que el Gobierno de Javier Milei incumple la Ley de Financiamiento Universitario.\n\nLa universidad no puede esperar más. \n\nEste martes, seamos miles en todo el país. https://t.co/ACeLL70b32",
+    "media": [
+      {
+        "media_key": "7_2052951587413233667",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2052951587413233667/pu/img/MzLZpwncVlB64CJz.jpg",
+        "height": 1080,
+        "width": 1440,
+        "duration_ms": 12376,
+        "view_count": 35383,
+        "variants": [
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2052951587413233667/pu/vid/avc1/960x720/o1EOv8E_FbyC0rH7.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2052951587413233667/pu/vid/avc1/480x360/sO6EoVs8YL7ZjqIp.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2052951587413233667/pu/pl/IAM0hNuai42X9tJP.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2052951587413233667/pu/vid/avc1/360x270/Ps_IaW9EgBYeSPWN.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2052951587413233667/pu/vid/avc1/1440x1080/Rp-SxcV5cxv7lQla.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 87,
+      "reply_count": 214,
+      "like_count": 210,
+      "quote_count": 13,
+      "bookmark_count": 13,
+      "impression_count": 98643
+    },
+    "author_followers": 1271,
+    "author_name": "Ismael Campos",
+    "author_description": "Ciencia Política UBA -\nArgentino 🇦🇷",
+    "author_tweet_count": 6182
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2052951587413233667/pu/vid/avc1/1440x1080/Rp-SxcV5cxv7lQla.mp4",
+          "description": {
+            "description": "A digital timer graphic with the number 200 prominently displayed. The timer tracks days, hours, minutes, and seconds, with text below in Spanish addressing the university system.",
+            "ocrText": "200\nDÍAS\n00\nHORAS\n00\nMINUTOS\n00\nSEGUNDOS\nSIN APLICAR LA LEY DE FINANCIAMIENTO UNIVERSITARIO.\nLA UNIVERSIDAD PBBLICA NO PUEDE ESPERAR MS.\nCUIDEMOS LO QUE FUNCIONA."
+          },
+          "transcription": "Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Replies:**\n\n- **protraidoraLLA - @leinforquera**: QUEREMOS AUDITORIAS, NO SEAN CHORROS DEJENSE AUDITAR (Likes: 618)\n- **Natalin - @Natalin441**: La ley esta caida gente. Ponganse a dar clases antes que el gobierno les recorte  el presupuesto. (Likes: 218)\n- **Griselda jugando 🐍 - @Griseldajugando**: Vayan. Ya no les cree nadie. Si lo ven a Yacobitti, pídanle que admita las auditorías. Y de paso, que los rectores devuelvan la plata. Última: Que Lula Levy devuelva a la UBA la plata de la campaña de la UCR. (Likes: 131)\n- **Moana Yeta - @MoanaYeta**: \"Toda  ley que autorice o disponga gastos deberá prever en forma expresa el  financiamiento de los mismos. En caso contrario quedará suspendida su  ejecución hasta tanto se incluyan las partidas correspondientes en el  presupuesto nacional\" Sigan participando y ahciendo marchitas (Likes: 131)\n- **Facu - @Facu_Host**: YA SE SUSPENDIO LA LEY (Likes: 113)\n- **Amy - @kawaytsu**: Ley SUSPENDIDA por la Justicia porque: (Likes: 110)\n- **DAN DEL FUTURO - @MonstruOSOGordo**: JAJAJAJAJAAJAJJAJA (Likes: 66)\n- **RODRIGO HERNANDEZ - @BordErnie80148**: Mogolico sos muy imbecil; esta suspendida por la justicia esa ley; pedile a la chorra le sobra plata retrasado mental!!🤡🐒👇 (Likes: 53)\n- **GastonDebian - @gastondebian**: Jajajajajajajajajajajajajajajjaajjajajaajajajja La justicia frenó esa ley por inconsistente, la proxima no sean tan retrasados y redacten una ley cumpliendo todos los puntos que se necesitan como el apartado del financiamiento de la ley. Prueben ahora con el nuevo congreso... (Likes: 45)\n- **Libertador - @RugeLaLibertad**: hace 200 días que los retrasados que inventaron y votaron esa ley no asignaron la partida presupuestaria correspondiente para que se aplique la ley Pensalo capaz se les ocurre hacerlo en algún momento (Likes: 42)",
+    "warnings": []
+  }
+}

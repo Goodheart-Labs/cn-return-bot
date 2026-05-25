@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2008165817519620126",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:21.028Z",
+  "post": {
+    "id": "2008165817519620126",
+    "author_id": "1019848525641932800",
+    "created_at": "2026-01-05T13:16:55.000Z",
+    "text": "The train to Auschwitz, 1942.\nThis footage, in color, shattered my heart.\n\nSo innocent. So noble.\nAt the final station, their lives vanished - dressed in their modest finery, moving toward the gas chambers.\n\nNever again. Never again. https://t.co/7qBrktiPHI",
+    "media": [
+      {
+        "media_key": "7_2008165661785141248",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2008165661785141248/pu/img/X_Wr0oSbc5Y6HKo3.jpg",
+        "height": 1080,
+        "width": 1276,
+        "duration_ms": 100658,
+        "view_count": 811947,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2008165661785141248/pu/vid/avc1/318x270/FhaHTqgRNeQKGnw8.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2008165661785141248/pu/vid/avc1/1276x1080/L-UtWx_fp04_YqmJ.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2008165661785141248/pu/vid/avc1/424x360/m5R0EIQc1zMPiYns.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2008165661785141248/pu/pl/Qk3fiLzwzQ1vkf0h.m3u8"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2008165661785141248/pu/vid/avc1/850x720/Uo5TUdDmydcgb0eh.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5646,
+      "reply_count": 3831,
+      "like_count": 24990,
+      "quote_count": 502,
+      "bookmark_count": 2654,
+      "impression_count": 1711862
+    },
+    "author_followers": 158387,
+    "author_name": "נועה מגיד | Noa magid",
+    "author_description": "Documenting the October 7 massacre |Journalist | Hell is not enough | Former Editor at 0404 News | Support my work:  https://t.co/SOtb4tJlxB",
+    "author_tweet_count": 16739
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2008165661785141248/pu/vid/avc1/1276x1080/L-UtWx_fp04_YqmJ.mp4",
+          "description": {
+            "description": "A series of frames from historical footage showing people at a transit camp, identified by the text as Kamp Westerbork. The people are seen wearing yellow stars on their clothing, signifying they are Jewish. They are carrying bags and bundles of belongings while moving towards or boarding large, brown wooden railway freight cars. Several individuals are wearing armbands, indicating they may be camp police or officials overseeing the deportation process.",
+            "ocrText": "KAMP WESTERB"
+          },
+          "transcription": "Amin. Amin. Amin."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@thelillygaddis**  \nlol  \nLikes: 1086 | Reposts: 0 | Views: 22751\n\n**@MaryRoss815**  \nI can never forgive people today who make believe this didn’t happen. #NeverAgainIsNow 🇮🇱  \nLikes: 462 | Reposts: 0 | Views: 8232\n\n**@teac_smith**  \n[Image]  \nLikes: 445 | Reposts: 0 | Views: 4312\n\n**@0hioWhiteBoy**  \n[Image]  \nLikes: 410 | Reposts: 0 | Views: 2913\n\n**@BarrettNatSocP**  \nThe uniforms are 😎  \nLikes: 355 | Reposts: 0 | Views: 16066\n\n**@vanessaghobson**  \nA brave man Alex Rosenberg survived the holocaust only to be shot whilst shielding his wife on a sunny day at the beachside in Australia 80 years later. ❤️😔  \nLikes: 290 | Reposts: 0 | Views: 10133\n\n**@andre_nus**  \nI have been to Auschwitz-Birkenau. I have seen pictures of people literally already on the way to the gas chambers as their pictures were taken, as they looked right at the camera.  \nLikes: 285 | Reposts: 0 | Views: 28718\n\n**@Israel2252**  \nHow my grandfather survived this hell has no explanation other than his will to live being stronger than to die—something we as Jews carry with us every single day as our most sacred and powerful weapon.  \nLikes: 271 | Reposts: 11 | Views: 12285\n\n**@AbsieEri**  \nToday's Holocaust in Gaza is broadcast in 4K for every one to witness as it happens.  \nLikes: 259 | Reposts: 0 | Views: 5938\n\n**@Ronny_Roehrig**  \nMost of them survived  \nStupid  \nLikes: 259 | Reposts: 0 | Views: 11012",
+    "warnings": []
+  }
+}

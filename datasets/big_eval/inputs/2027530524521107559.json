@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2027530524521107559",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:18.694Z",
+  "post": {
+    "id": "2027530524521107559",
+    "author_id": "39685596",
+    "created_at": "2026-02-27T23:45:21.000Z",
+    "text": "Just another day in Tucson https://t.co/eFxhsV0XmH",
+    "media": [
+      {
+        "media_key": "13_2027530469546524672",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2027530469546524672/img/rJg9FJE2NLdCYFCY.jpg",
+        "height": 560,
+        "width": 560,
+        "duration_ms": 6041,
+        "view_count": 17500,
+        "variants": [
+          {
+            "bit_rate": 800000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027530469546524672/vid/avc1/320x320/uM7qIW-4uOA4ILwN.mp4?tag=24"
+          },
+          {
+            "bit_rate": 5184000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027530469546524672/vid/avc1/560x560/bhlOf3mbdea7TsiF.mp4?tag=24"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2027530469546524672/pl/hrYIIlCvJ8WdGYC5.m3u8?tag=24"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 28,
+      "reply_count": 83,
+      "like_count": 253,
+      "quote_count": 12,
+      "bookmark_count": 31,
+      "impression_count": 30946
+    },
+    "author_followers": 6867,
+    "author_name": "🅴🆅🅰︎ Investigates Nerdy©™",
+    "author_description": "➣ Tʀᴜᴇ Cʀɪᴍᴇ ➢ Mɪssɪɴɢ Pᴇʀsᴏɴs ➣ Uᴛᴛᴇʀ Nᴏɴsᴇɴsᴇ ➢",
+    "author_tweet_count": 5316
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2027530469546524672/vid/avc1/560x560/bhlOf3mbdea7TsiF.mp4?tag=24",
+          "description": {
+            "description": "A man in black clothing holds a camera up to his eye, appearing to take a photo of a woman posing with her arms outstretched outdoors. Between them stands a black tripod on a dusty ground with desert vegetation in the background.",
+            "ocrText": ""
+          },
+          "transcription": "yeah babe we're gonna find nancy and get that million dollar reward"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@JumetPrincess (Pj Vision):** People think this is a real video 😂😂😂😂  \nEngagement: 21 likes, 2043 views\n\n**@lftilxi17 (Alexis Johnson):** Get them out of there! So inappropriate  \nEngagement: 14 likes, 1034 views\n\n**@Klocat05 (Kirstin Loomis):** What is wrong with people. Someone should tell them to leave.  \nEngagement: 10 likes, 1316 views\n\n**@imadriienne (Adriienne F):** @JLRINVESTIGATES This is the video mentioned but on your live!😂 But tell @857Tucson it’s not real!😂  \nEngagement: 9 likes, 1192 views\n\n**@ProntoJoey (Pronto Joey):** This is too funny I shouldn’t laugh but I can’t help it 🤣🤣  \nEngagement: 9 likes, 1389 views\n\n**@Hotmomofive (Karissa Gates):** Oh I didn’t see that part she really brought a lot of props with her  \nEngagement: 9 likes, 2120 views\n\n**@Summer_Sans (Summersans):** I am not understanding why the sheriff or whomever cannot take control of this?!  \nEngagement: 8 likes, 1132 views\n\n**@WakesurfMum (Rufus Woofwright 🫶):** People who make AI videos should be the ones who have to live next to the data centers. It’s only fair.  \nEngagement: 7 likes, 364 views\n\n**@Nicholeah23 (LeahNichole):** Wtf am I watching??? Are they making this shit into a joke? Or a sex scene ? Or?  \nEngagement: 5 likes, 1400 views\n\n**@WestCoastGal63 (Linda):** Disgusting and disrespectful.  \nEngagement: 4 likes, 295 views",
+    "warnings": []
+  }
+}

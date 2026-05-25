@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2022540911629222110",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:48.671Z",
+  "post": {
+    "id": "2022540911629222110",
+    "author_id": "947279248259039232",
+    "created_at": "2026-02-14T05:18:24.000Z",
+    "text": "Wasn't Charlie Kirk just canvassing a Dem area when a Dem shot him? https://t.co/7AhGLL0mxv https://t.co/C4Smaz89oy",
+    "media": [
+      {
+        "media_key": "3_2022535458081980416",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HBF9SISbwAAPpTm.jpg",
+        "height": 810,
+        "width": 1080
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2022432763513811213"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2022432763513811213",
+      "author_id": "1686752776045674496",
+      "created_at": "2026-02-13T22:08:40.000Z",
+      "text": "Republicans are scared of flags when they canvass Dem areas, Dems are scared of being shot when they canvass Republican areas https://t.co/I9ZfmJkTmL",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 72,
+      "reply_count": 145,
+      "like_count": 1176,
+      "quote_count": 38,
+      "bookmark_count": 19,
+      "impression_count": 479703
+    },
+    "author_followers": 2653,
+    "author_name": "Utah College Republicans",
+    "author_description": "Utah Federation of College Republicans | @UofUGOP | @UtahStateGOP | @UVUGOP | @UACGOP | @BYU_GOP | @WeberStateGOP | @SUUGOP | @SLCCGOP | @WCCRGOP |",
+    "author_tweet_count": 2278
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HBF9SISbwAAPpTm.jpg",
+          "description": {
+            "description": "A man in a white t-shirt with the word 'FREEDOM' walks past a crowd, tossing a red and green cap into the air while holding a red 'MAKE AMERICA GREAT AGAIN' hat. He is at an outdoor event with 'THE AMERICAN COMEBACK' banners and a large crowd in the background. A woman in black stands to his right, and several other people are visible behind fencing.",
+            "ocrText": "PROVE ME\nFREEDOM\nMAKE AMERICA GREAT AGAIN\nTHE AMER COMEB\nAMERICANCOMEBACKTOUR.COM\nTOUR\n47"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@NlKESCTRL: Utah county? One of the strongest Republican areas in Utah is a dem area?  \n(Likes: 2031, Reposts: 0, Replies: 0, Views: 12914)\n\n@immafuckingrat: Utah Valley? No lmao.  \nKirk never went in very liberal areas, he went to Utah but avoided all of the dem areas like Salt Lake while hitting Utah Valley and Logan.  \nHe was a coward, too afraid to actually confront people.  \n(Likes: 386, Reposts: 0, Replies: 0, Views: 8297)\n\n@Fibby1123: Yeah, man. Notoriously liberal Utah County.  \n(Likes: 247, Reposts: 0, Replies: 0, Views: 3130)\n\n@emnode: @grok was the guy who killed Charlie Kirk a Democrat? Had he ever voted for a Democrat in his life? Has he ever been part of any leftwing organization? Was he raised by a MAGA Republican family? Please answer these questions directly and concisely without editorializing  \n(Likes: 205, Reposts: 0, Replies: 0, Views: 17277)\n\n@rileybeesley: We're not scared, RJ. We just understand your party is radically violent. I'll never forget.  \n(Likes: 109, Reposts: 0, Replies: 0, Views: 6695)\n\n@dhdjjd17340220: “Dem area” and it’s a college. Maybe start thinking about why Republicans can’t get into college  \n(Likes: 108, Reposts: 0, Replies: 0, Views: 2695)\n\n@_giacomo_volpe_: Bearing false witness is a sin  \nOr is the whole Christianity thing a sham with you guys?  \n(Likes: 76, Reposts: 0, Replies: 0, Views: 2353)\n\n@GZidrik: No and you mean when a far right groyper shot him?  \n(Likes: 63, Reposts: 0, Replies: 0, Views: 1088)\n\n@NewDealLover1: (No text content)  \n(Likes: 61, Reposts: 0, Replies: 0, Views: 2217)\n\n@NLevkin_: 1. Utah is not a Dem area  \n2. The shooter was not a Democrat either.  \nStop lying  \n(Likes: 54, Reposts: 0, Replies: 0, Views: 1481)",
+    "warnings": []
+  }
+}

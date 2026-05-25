@@ -1,0 +1,83 @@
+{
+  "tweet_id": "2005998579744399738",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:46.281Z",
+  "post": {
+    "id": "2005998579744399738",
+    "author_id": "1235929646241394689",
+    "created_at": "2025-12-30T13:45:05.000Z",
+    "text": "🇮🇱⚡- Israel's Samson option, if Israel is losing a war, they will target everyone with nuclear weapons. Los Angeles, New York, Colorado, Beijing, Moscow, Berlin are all on the list. https://t.co/J8zGftfFdH",
+    "media": [
+      {
+        "media_key": "3_2005998572307636224",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G9a9EsJWYAAKoOP.jpg",
+        "height": 1267,
+        "width": 1280
+      },
+      {
+        "media_key": "3_2005998575289864192",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G9a9E3QXkAAmFf2.jpg",
+        "height": 1024,
+        "width": 1024
+      },
+      {
+        "media_key": "3_2005998575252103168",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G9a9E3HXYAA8S4x.jpg",
+        "height": 1024,
+        "width": 711
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2185,
+      "reply_count": 589,
+      "like_count": 7778,
+      "quote_count": 209,
+      "bookmark_count": 1556,
+      "impression_count": 447342
+    },
+    "author_followers": 148103,
+    "author_name": "MonitorX",
+    "author_description": "Global Events and Geopolitics, Independent News Sourcing, Updates on conflicts arround the world.\n\nCovering U.S., Middle East, Europe & Asia.",
+    "author_tweet_count": 49306
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G9a9EsJWYAAKoOP.jpg",
+          "description": {
+            "description": "A table displayed on a screen outlining military objectives and nuclear strike parameters. The table is divided into 'main objectives' and 'Global deterrence attacks'. It lists targets such as Iran, Syria, Russia, and the United States, providing specific cities or locations, delivery methods like Jericho 3 or airplanes, and nuclear yield estimates in kilotons (kt). A red arrow points specifically to the listing for the United States.",
+            "ocrText": "Choosing a main destination target specification delivery yield main objectives Iran Tehran Jericho 3 100-400 kt get up Launched by submarine Mashad Natanz Fordov deserted Isfahan discourse Tabriz Syria Damascus airplanes 50-100 kt Latakia short term hummus milk Lebanon Beirut Bekaa - Bekaa Tyre Sidon Gaza Gaza - Khan Yunis Egypt Cairo - Aswan Dam Alexandria Global deterrence attacks Russia Moscow Jericho 3 200-400 kt Kaliningrad sub-launch Sevastopol United States Washington DC Jericho 3 200-400 kt New York Sub launch Los Angeles (Colorado) NORAD Location סין Beijing Jericho 3 200-400 kt Shanghai Sub launch Guangzhou European destinations For NATO Jericho 3 200-400 kt headquarters in Brussels Sub launch Paris Berlin"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G9a9E3QXkAAmFf2.jpg",
+          "description": {
+            "description": "A Hebrew document featuring the emblem of the Israel Defense Forces (IDF) at the top. The document contains a table labeled 'Samson Option' (Brierat Shimshon) listing potential strategic targets including locations in Iran, Syria, Lebanon, Gaza, Egypt, Russia, the United States, China, and Europe. The table includes columns for target location, delivery method (such as Jericho 3 missiles or submarines), and kiloton yield estimates.",
+            "ocrText": "צבא ההגנה לישראל\nברירת שמשון\nיעדים ראשיים\nתשואה מסירה מפרט יעד\nיעדים ראשיים\n100-400 kt יריחו 3 טהראן איראן\nשוגר על ידי צוללת קום\nמשהד\nנתנז\nפורדוב\nערק\nאיספהאן\nשירז\nתבריז\n50-100 kt מטוסים דמשק סוריה\nטווח קצר לטקיה\nחומס\nחלב\n- - ביירות לבנון\nבקעת בקעה\nצמיג\nצידון\n- - עזה עזה\nחאן יונס\n- - קהיר מצרים\nסכר אסואן\nאלכסנדריה\nהתקפות הרתעה עדלמידות\n200-400 kt יריחו 3 מוסקבה רוסיה\nשיגור משנה קלינינגרד\nסבסטופול\n200-400 kt יריחו 3 וושינגטון ד.ס. ארצות הברית\nשיגור משנה ניו יורק\nלוס אנג'לס\nNORAD (קולורדו)\n200-400 kt יריחו 3 בייג'ין סין\nשיגור משנה שנחאי\nגואנגג'או\n200-400 kt יריחו 3 לונדון יעדי אירופה\nשיגור משנה מטה נאט\"ו בבריסל\nפריז\nברלין"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G9a9E3HXYAA8S4x.jpg",
+          "description": {
+            "description": "A digital document or screen showing a table titled 'Samson's Choice Main Destinations' under an Israel Defense Forces (IDF) logo. The table lists geopolitical targets, delivery methods, and nuclear yields (in kilotons). It maps out potential strikes against various countries including Iran, Syria, Lebanon, Egypt, Russia, the United States, China, and European destinations, categorizing them into 'main objectives' and 'Global deterrence attacks.'",
+            "ocrText": "Israeli Defense Forces Samson's Choice Main Destinations target specification delivery yield main objectives Iran Tehran Jericho3 100-400 kt We Mashad Launched by submarine stand Fordov up and Isfahan fight Tabriz Syria Damascus airplanes 50-100 kt Latakia short term Homs Milk Lebanon Beirut Bekat Bekat viscous Sidon Gaza Gaza Khan Yunis Egypt Cairo Aswan Dam Alexandria Global deterrence attacks Russia Moscow Jericho 3 200-400 kt Kaliningrad Sub launch Sevastopol United States Washington DC Jericho 3 200-400 kt New York Sub launch Los Angeles Colorado) NORAD Words ro Beijing Jericho3 200-400 kt Shanghai Sub launch Guangzhou European destinations Lomon Jericho3 200-400 kt NATO summit in Brussels Sub launch Paris Berlin"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Cultural Capitalist (@StevePender)**: I wish our greatest ally didn't have our biggest cities targeted for total annihilation.  \n  Engagement: 905 likes, 31 reposts, 18 replies, 29158 views\n\n- **Tal Hagin (@talhagin)**: This is a fabricated document  \n  Engagement: 337 likes, 45093 views\n\n- **Yoni Leviatan (@songsofyoni)**: I love how it lists Gaza as one of targets. The border fence is definitely going to protect the Israeli communities living less than a mile away.  \n  Engagement: 337 likes, 21756 views\n\n- **Jack Maxey (@JackMaxey1)**: Humanity would recover. They never would.  \n  Engagement: 213 likes, 16045 views\n\n- **Uri Kurlianchik (@VerminusM)**: Ah yes, because such a document would be public and have an official logo :)  \n  Engagement: 197 likes, 11291 views\n\n- **W.R. Schock, QBD (@iontecs_pemf)**: If anyone wondered, this is the reason every single American maggot politician kissed the wall since before you were even born. They had to. P.S. No human has access to a intercontinental ballistic nuke anymore. This is all theatre 🎭.  \n  Engagement: 188 likes, 31985 views\n\n- **Eldee Stephens (@eldeestephens)**: This document is an obvious forgery. Anyone with the Hebrew skills of a three year-old would know this. Moreover the account posting this rubbish is based in Pakistan. Just ridiculous.  \n  Engagement: 87 likes, 861 views\n\n- **unizen (@ThinkDeepAgain)**: Sampson Option is another reason why Israel is a terrorist state. Israel’s existence depends on terrorism, threats, and terrorizing its own citizens and all the world.  \n  Engagement: 53 likes, 539 views\n\n- **Punished Tree Enthusiast (@psyop_observer3)**: Israel is the LAST country on Earth that should be allowed to keep nuclear weapons.  \n  Engagement: 46 likes, 1416 views\n\n- **Old_Crow2 (@Oldcrow07)**: And this is why you destroy them and take their weapons away.  \n  Engagement: 40 likes, 1710 views",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2055719221812666428",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:38.685Z",
+  "post": {
+    "id": "2055719221812666428",
+    "author_id": "1355721251180961792",
+    "created_at": "2026-05-16T18:37:10.000Z",
+    "text": "We’re watching it happen. https://t.co/OJ0CSPORqI",
+    "media": [
+      {
+        "media_key": "3_2055719216762793985",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIdhvGkXMAEhadc.jpg",
+        "height": 1129,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8838,
+      "reply_count": 382,
+      "like_count": 23392,
+      "quote_count": 208,
+      "bookmark_count": 1192,
+      "impression_count": 237335
+    },
+    "author_followers": 1745926,
+    "author_name": "Gunther Eagleman™",
+    "author_description": "David J. Freeman - Political Commentator - America First - MAGA - Christian",
+    "author_tweet_count": 473395
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIdhvGkXMAEhadc.jpg",
+          "description": {
+            "description": "A political meme featuring two black and white portraits with attributed quotes. The top half shows Ronald Reagan in profile with a quote about fascism and liberalism. The bottom half shows Winston Churchill in a hat and bowtie with a quote about future fascists calling themselves anti-fascists.",
+            "ocrText": "IF FASCISM EVER COMES TO AMERICA, IT WILL COME IN THE NAME OF LIBERALISM RONALD REAGAN CHURCHILL ON THE LEFTWING: \"The fascists of the future will call themselves anti-fascists\""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Distilled (@Distilled123)**: This has been their 100 year plan. It's being exposed and starting to fail. Expect them to thrash about violently when there corruption and power grab comes to an end. (Likes=19)\n- **Gilbert Van Buskirk III (@g_a_vb_iii)**: It's not coming from the left. (Likes=13)\n- **🇺🇸🇺🇦Jim Martin 🏳️‍🌈JusticeForThePeople🎉✊🏼 (@JimMart84288936)**: (image reply, no text) (Likes=12)\n- **Pat Riot62 (@Pat_Riot1962)**: Throw in Saul Alinsky's Rules for Radicals, Eisenhower's warnings and yeah, can't say we were not warned (Likes=11)\n- **Jess_For_Truth (@JDJ_MAGA)**: You guys changed the definition of MAGA therfore forfeit any right to a valued opinion. You are that libt@rd in that photo (Likes=11)\n- **neil flockton (@nflockton)**: (image reply, no text) (Likes=10)\n- **Gregory Borse (@GregoryBorse)**: But it’s not working. Look. This is their bench. (Likes=7)\n- **United States Local (@LocalSonoma)**: Right. Listen to the man who decriminalized stock buybacks and created the wealth gap. Things are just fantastic for workers now that their wages have been stagnant since Reagan and we have 100x more billionaires profiting from the labor. 🫣 (Likes=6)\n- **Barry Mullen (@barrymullen1936)**: (image reply, no text) (Likes=6)\n- **No Quarter (@NoQuarter4MAGA)**: Neither quote is real you retarded bitch But there's an old maxim that goes \"When fascism comes to America, it will be wrapped in the flag and carrying a cross.\" Fascism has always been ushered in by hate and blind nationalism, and that's the GOP in spades. (Likes=5)",
+    "warnings": []
+  }
+}

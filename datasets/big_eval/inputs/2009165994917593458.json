@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2009165994917593458",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:30.111Z",
+  "post": {
+    "id": "2009165994917593458",
+    "author_id": "2948454436",
+    "created_at": "2026-01-08T07:31:16.000Z",
+    "text": "🚨🇺🇸 BREAKING — Federal Agent Fails At Inciting Riot In Minneapolis. https://t.co/qSEosSn5ym",
+    "media": [
+      {
+        "media_key": "7_2009165964584030208",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2009165964584030208/pu/img/WKP6PDTtEWcDglh1.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 54521,
+        "view_count": 503510,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2009165964584030208/pu/vid/avc1/320x568/RCe6Z3Nduyo6Ze98.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2009165964584030208/pu/vid/avc1/480x852/olBUp0WTyW8hzi91.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2009165964584030208/pu/vid/avc1/720x1280/gbxyfEL8gzFXRNjs.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2009165964584030208/pu/pl/-wqt_HgAXoEFV2B3.m3u8?tag=12&v=a0e"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3503,
+      "reply_count": 306,
+      "like_count": 23768,
+      "quote_count": 350,
+      "bookmark_count": 3515,
+      "impression_count": 790086
+    },
+    "author_followers": 13272,
+    "author_name": "north star radio ☀️",
+    "author_description": "Northwoods State Media",
+    "author_tweet_count": 7736
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2009165964584030208/pu/vid/avc1/720x1280/gbxyfEL8gzFXRNjs.mp4?tag=12",
+          "description": {
+            "description": "The video frames show a large crowd gathered on a snowy residential street in Minneapolis. In the lower half of the split-screen view, a person in a tan jacket and black mask uses a long pole to hold up a burning American flag over a fire on the ground while onlookers record with their phones. The upper half of the frame appears to show a close-up profile of a person observing the scene from the crowd. Text overlays provide context about the event and location.",
+            "ocrText": "Protester Confronted After BURNING the American Flag MINNEAPOLIS ICE SHOOTING ONE WAY"
+          },
+          "transcription": "Hey, fuck your flag burning dude, that was fucked up! Yeah. That was not cool! Yeah. Why would you run off? Why would you run off? That's weird to burn a flag and run off. That doesn't make sense. That's not a protest. Why are you running? Why are you not back there at the protest? We've got everybody riled up. You came here to do what? To the Boogaloo Boys? To the Accelerationists? What are you doing here? Where's your car? Where you from? Why you here? Get in your fucking home! Yeah, we know, we remember George Floyd, so we know you guys are around. Hey, fuck your flag burning, dude! That was fucked up! Yeah. That was not cool! Yeah. He doesn't even know where the fuck he is! He doesn't even know where his fucking car is! Why? Why are you hiding your face?"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Bob (@PoopFromDaButt): the ski mask is so tiresome. we know these guys are hiding their identity they’re not slick. (1300 likes)\n- Leftychan.net (@RealLeftypol): On the one hand, hard disagree that burning the flag is not cool. On the other hand, extremely funny that this guy literally showed up, created the clip to scare Fox News dumbfucks, and then immediately fucking left. Agent provocateur comedy gold. (1064 likes)\n- Cuck Norris (@statelypenguin): Those skinny jeans tell me this dude is a middle aged conservative male. They’re the only ones who have been wearing jeans that tight for like ten years. (646 likes)\n- 🔻 🇰🇵National Juche 🟩☫🟥 🪂🇵🇸🇾🇪🇱🇧🇨🇳 (@nationaljuche): I am more disturbed by people giving a sh*t about that stupid flag. (606 likes)\n- Malome (@Malome_ZA): Ice agent burning American flag (343 likes)\n- Dame Sickof-BloodyLies 🌻🇺🇦🏳️‍🌈🇦🇺🤬GOP (@MumOf2RatBags): More chance of being a boogaloo boi (235 likes)\n- slimey (@slimeinuout): deadass if you see a mf with a mask just burning down a flag than it's 10 out of 10 times an undercover cop 😂😂 (233 likes)\n- Midwest People's History (@MPHProject): These paranoid “infiltrator” fantasies do more harm than whatever this man did in the street. Your enemy is not the one taking action in the crowd. Eye on the prize. (233 likes)\n- People's City Council - Los Angeles (@PplsCityCouncil): delete this. (222 likes)\n- Punished Tankie (@commandertankie): FUCK THESE FED PROVOCATEURS (217 likes)",
+    "warnings": []
+  }
+}

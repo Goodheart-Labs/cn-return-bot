@@ -1,0 +1,32 @@
+{
+  "tweet_id": "2036675715228422191",
+  "role": "unhelpful_notHelpfulIncorrect",
+  "needs_note": "yes",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An Indian commentary account ('Indian Gems') posts a video of a scenic mountain-tunnel road and captions it 'How BRO maintains roads can serve as a case study for corrupt contractors', implying the well-built road is an Indian Border Roads Organisation (BRO) project showcasing good Indian maintenance.",
+  "why_note_decision": "A note is warranted: the post miscontextualizes the footage. The road/tunnel shown is in Pakistan, not an Indian BRO road. Whether read as praise or criticism, the post attributes Pakistani infrastructure to India's BRO, which misleads viewers about what they're seeing. Note the AI media description is UNRELIABLE here — it labels the tunnel 'Sonamarg Tunnel' (an Indian/Kashmir project) with OCR 'WELCOME SONAMARG TUNNEL', conflicting with the original note's 'Lowari Tunnel' identification; the geography must be resolved from sources, not the description.",
+  "judge_guidance": "PASS only if the note establishes that the video is NOT an Indian BRO road and identifies the true location as a Pakistani tunnel (Lowari Tunnel in Khyber Pakhtunkhwa, operated by Pakistan's National Highway Authority — or, if the on-screen signage actually reads 'Sonamarg Tunnel', it must resolve that contradiction with evidence rather than assert one name unsupported). The note must be precise about WHICH tunnel and back the location claim with a verifiable source; a vague 'this is not in India' without identifying the place, or repeating the AI description's possibly-wrong tunnel name without checking, should FAIL. Must avoid the original note's failure of asserting a specific tunnel/flag detail that raters found incorrect.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows the entrance to Lowari Tunnel in Pakistan, marked by a \"Lowari Tunnel\" sign and Pakistani flags. It is not a road maintained by India's Border Roads Organisation (BRO). https://en.wikipedia.org/wiki/Lowari_Tunnel https://www.bbc.com/news/world-asia-25972898",
+    "failure_reason": "Rated notHelpfulIncorrect (14) + irrelevant sources (7). The core claim (Pakistani tunnel, not Indian BRO) is correct, but the note asserts specific visual details — a 'Lowari Tunnel' sign and 'Pakistani flags' — that the AI frame description contradicts (it reads 'WELCOME SONAMARG TUNNEL'). If the on-screen signage does not actually say 'Lowari Tunnel', the note's specific descriptive claims are wrong, and the cited BBC link (2014 tunnel-history article) doesn't prove THIS clip's location, so raters flagged it incorrect/irrelevant.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Lowari_Tunnel",
+      "https://en.wikipedia.org/wiki/Border_Roads_Organisation"
+    ],
+    "notes": "Lowari Tunnel is in Pakistan (Khyber Pakhtunkhwa, between Dir and Chitral), inaugurated 2017, operated by Pakistan's NHA on the N-45 — NOT an Indian BRO road. India's Sonamarg/Z-Morh tunnel is a separate Kashmir project. I could not independently confirm the exact tunnel in this specific clip: the AI OCR says 'Sonamarg', the human note says 'Lowari'. Either way the footage is misattributed/miscontextualized relative to the 'BRO maintains roads' framing, so a correction is warranted, but a good note must verify the actual tunnel."
+  },
+  "media_reliability_flag": true,
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Cross-border (India-Pakistan) misattributed infrastructure footage feeds nationalist narratives in a nuclear-armed-rivalry information space; moderate reach (112k impressions), low global stakes but real for regional disinfo dynamics."
+  },
+  "difficulty": "hard"
+}

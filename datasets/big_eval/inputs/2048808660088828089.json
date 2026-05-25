@@ -1,0 +1,74 @@
+{
+  "tweet_id": "2048808660088828089",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:06.476Z",
+  "post": {
+    "id": "2048808660088828089",
+    "author_id": "1985422681265881088",
+    "created_at": "2026-04-27T16:57:04.000Z",
+    "text": "He came back to the US and made a song about it. \n\nSony records refused to release the song. https://t.co/t6zLiqHG4z",
+    "media": [
+      {
+        "media_key": "3_2048808652270620672",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HG7UnTtWUAAYJS3.jpg",
+        "height": 684,
+        "width": 960
+      },
+      {
+        "media_key": "3_2048808652379938816",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HG7UnUHaYAA5Xvv.jpg",
+        "height": 1200,
+        "width": 751
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "2048808637187973323"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 499,
+      "reply_count": 14,
+      "like_count": 3227,
+      "quote_count": 32,
+      "bookmark_count": 403,
+      "impression_count": 227037
+    },
+    "author_followers": 115670,
+    "author_name": "Parody Jeff",
+    "author_description": "Commentary & satire account. All content is opinion, fictional commentary, and satire only. Not affiliated with any real person, entity, or brand.",
+    "author_tweet_count": 7219
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HG7UnTtWUAAYJS3.jpg",
+          "description": {
+            "description": "An image featuring a portrait of Michael Jackson overlaid with the colors and design of the Palestinian flag (red, black, white, and green). The image includes handwritten song lyrics or messages around the portrait, his 'MJ' logo, and the title 'PALESTINE DON'T CRY'.",
+            "ocrText": "MICHAEL JACKSON MJ Palestine Come deep in My heart Ill always love you Seen the plains of the stay of old just a century ago when stories were Told Of How Gallilee Ran To The Jordan River whit Remains are Cold Tale of war of the Death and Dying See the Death shells are Flying Bodies Multiplying see the children crying what are They fighting For I will pray for you OH palestine PALESTINE DON'T CRY I will pray for you OH palestine OH palestine OH palestine God's a place for you OH palestine and I Believe in you oh palestine I Will Die For you"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HG7UnUHaYAA5Xvv.jpg",
+          "description": {
+            "description": "An image displaying two stanzas of poetic lyrics printed in a simple sans-serif font against a plain white background. The text tells a tragic story about the loss of parents due to violence and war.",
+            "ocrText": "Love was taken from a young life\nAnd no one told her why\nHer direction has a dimlight\nFrom one more violent crime\nShe innocently questioned why\nWhy her father had to die\nShe asked the men in blue\nHow is it that you get to choose\nWho will live and who will die\nDid god say that you could decide?\nYou saw he didn't run\nAnd that my daddy had no gun\nIn the middle of a village\nWay in a distant land\nLies a poor boy with his broken toy\nToo young to understand\nHe's awaken, ground is shakin\nHis father grabs his hand\nScreaming, crying, his wife's dying\nNow he's left to explain\nHe innocently questioned why\nWhy his mother had to die\nWhat did these soldiers come here for?\nIf they're for peace, why is there war?\nDid God say that they could decide\nWho will live and who will die?\nAll my mama ever did\nWas try to take care of her kids"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Chase (@bookofchase): This was also the same year he was accused for the first time in his life of any allegations (32 likes)\n- Brother Lenny (@Lenny_knowsalot): https://www.youtube.com/watch?si=HneaYNUVVnNddK72&v=nrrFFj0Jo9w&feature=youtu.be (7 likes)\n- ⋆⭒˚.⋆ angelface (@skinniestjacksn): But wait he wrote a poem about Palestine but those lyrics are from we’ve had enough? (3 likes)\n- LucasMJJ (@lucas_ADP): The Lyrics are from We've Had Enough (2 likes)\n- ren VA A VER A BTS ☽°̥࿐ (@aqualouksna): DID GOD SAY THEY COULD DECIDE WHO LIVED AND WHO DIED (4 likes)\n- “ (@givemeacallback): Michael Jackson said he was a big fan of israel in 2001. Why would he say this if he was such an ally to the Palestinian people? (1 like)\n- Freshie (@JenniferLe47190): Great. Sony too?😒 (1 like)\n- ☁Sailor José ☁️ #Vgen COMMISIONS OPEN (@LaCapu_): Todo eso para que tú hija salga sionista (3 likes)\n- . (@rhazonic): 💯 (0 likes)\n- Cici Mici (@CiciMici1160288): Wow (0 likes)",
+    "warnings": []
+  }
+}

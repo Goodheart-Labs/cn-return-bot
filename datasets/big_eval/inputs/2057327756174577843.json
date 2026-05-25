@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2057327756174577843",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:24.858Z",
+  "post": {
+    "id": "2057327756174577843",
+    "author_id": "2000839698152124416",
+    "created_at": "2026-05-21T05:08:55.000Z",
+    "text": "It’s only God who can do this 🙏🏻 https://t.co/ZNJe9jYC67",
+    "media": [
+      {
+        "media_key": "13_2057327652260761600",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2057327652260761600/img/Y2Ak2wgcm24th7eV.jpg",
+        "height": 1252,
+        "width": 704,
+        "duration_ms": 10051,
+        "view_count": 4258363,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057327652260761600/vid/avc1/320x568/AOr290e0D_1Ukf5h.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057327652260761600/vid/avc1/480x852/iUo9K5R0lMSWRmu_.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057327652260761600/vid/avc1/704x1252/oAWSvAn96gQ9LAdi.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2057327652260761600/pl/0bPp3c3l30IOlM80.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 239,
+      "reply_count": 949,
+      "like_count": 2128,
+      "quote_count": 55,
+      "bookmark_count": 736,
+      "impression_count": 8005842
+    },
+    "author_followers": 10411,
+    "author_name": "KaiTalks",
+    "author_description": "",
+    "author_tweet_count": 37808
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2057327652260761600/vid/avc1/704x1252/oAWSvAn96gQ9LAdi.mp4",
+          "description": {
+            "description": "A snowy roadside scene featuring a red Ferrari. In the first frame, a woman in a red dress is kneeling on the snow-covered ground near the rear passenger wheel, attempting to change a flat tire with a jack and a spare tire nearby. A truck is visible in the background. In the second frame, the woman is seen lying on her side in the snow, still positioned next to the car's wheel, while a snowplow approaches in the distance on the same road.",
+            "ocrText": ""
+          },
+          "transcription": "What the fuck? Hey! You have got to be kidding me! Unfeasible! Alright, let's finish this."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Bwigwam2: I bet it's AI. (Likes=1)\n@avgjoe129: Sigh. So fucking tired of every retard posting AI bullshit and acting like it's real. My feed is full of this shit. (Likes=7)\n@GeoDataGlobal: Al video 😪😪 (Likes=3)\n@Tokenexpress33: No, only a crappy promter. (Likes=0)\n@BenjaminGHAZI9: Fake (Likes=0)\n@TalksKai: Imagine what would happen 😨 (Likes=0)\n@jordanyedid1: this is the most pathetic type of Ai video i have ever seen (Likes=5)\n@OurCivilizatio: God was sleeping, as usual (Likes=0)\n@coastyaf: Makes a good case for having Triple A (Likes=2)\n@jmdeferrer: 1953 (Likes=0)",
+    "warnings": []
+  }
+}

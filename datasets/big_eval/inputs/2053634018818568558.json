@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2053634018818568558",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:58:30.428Z",
+  "post": {
+    "id": "2053634018818568558",
+    "author_id": "1640521359640993798",
+    "created_at": "2026-05-11T00:31:19.000Z",
+    "text": "WHATTTTTT??????????? https://t.co/YyUcylHBe5",
+    "media": [
+      {
+        "media_key": "3_2053634015903563777",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HH_5QcCXQAE13Mh.jpg",
+        "height": 1608,
+        "width": 1206
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 19,
+      "reply_count": 81,
+      "like_count": 780,
+      "quote_count": 9,
+      "bookmark_count": 94,
+      "impression_count": 211285
+    },
+    "author_followers": 12061,
+    "author_name": "nic",
+    "author_description": "codex addict on the shadowy border",
+    "author_tweet_count": 66359
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HH_5QcCXQAE13Mh.jpg",
+          "description": {
+            "description": "The image features a rectangular graphic with a soft, flowing abstract background in warm shades of orange, peach, and hints of lavender. Centered prominently in the graphic is the text 'GPT-6' in large, white, sans-serif font. Below the main image on a black background, there is additional white text that reads 'Introducing GPT-6'.",
+            "ocrText": "GPT-6\nIntroducing GPT-6"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Kimi Morgam (@ilostmyx): reporting, fake news. (64 likes)\n- Ishu Agrawal (@ishuagra02): We know the real name would have been GPT-Goblin (6 likes)\n- Santh (@SanthProject): what? is this ai generated? (6 likes)\n- Proton (@Protonnd): I just got baited (3 likes)\n- Quantum Embezzler (@london51789): Don't show this to @nikitabier (3 likes)\n- Vladimir Jeandillard (@le_1regard): the kitchen is cooking in goblinmode (3 likes)\n- Dr.Crypto Gems (@DrCryptoGems): Wait is this for real? Gpt-6? (2 likes)\n- zero (@twoclipping): this is fake right? (2 likes)\n- Tim B. (@axttimm): Source? (2 likes)\n- JesusIsGodAndKing (@JesusGodAndKing): lol (2 likes)",
+    "warnings": []
+  }
+}

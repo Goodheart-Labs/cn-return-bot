@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2029903100329246865",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:58:27.257Z",
+  "post": {
+    "id": "2029903100329246865",
+    "author_id": "1186465203858231297",
+    "created_at": "2026-03-06T12:53:07.000Z",
+    "text": "Rest in peace Jake Larson. Thank you for your service. \n\nJake passed away at the age of 102 and the last survivor of D-Day. https://t.co/xEkoyNTjeg",
+    "media": [
+      {
+        "media_key": "7_2029903069979312128",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2029903069979312128/pu/img/OO5PlEGqV3J8v6HC.jpg",
+        "height": 1024,
+        "width": 576,
+        "duration_ms": 18065,
+        "view_count": 266756,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2029903069979312128/pu/vid/avc1/320x568/EwcJiIObtXgtRf3F.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2029903069979312128/pu/vid/avc1/480x852/hEh99rwdl_dGe2ZL.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2029903069979312128/pu/vid/avc1/576x1024/iCu8nOGkH3yUyZo4.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2029903069979312128/pu/pl/vEa8FtbnF5EC5S89.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4740,
+      "reply_count": 705,
+      "like_count": 35754,
+      "quote_count": 330,
+      "bookmark_count": 680,
+      "impression_count": 719204
+    },
+    "author_followers": 665486,
+    "author_name": "The Disrespected Trucker",
+    "author_description": "Mandate Freedom! DO NOT COMPLY!! Organizer of The Peoples Convoy.  Anti-Government!",
+    "author_tweet_count": 89898
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2029903069979312128/pu/vid/avc1/576x1024/iCu8nOGkH3yUyZo4.mp4",
+          "description": {
+            "description": "Each frame depicts a WWII veteran in uniform saluting with a smile. Heavy text overlays indicate a memorial message for the 'Last Survivor of D-Day'. The final frame is a TikTok credit screen.",
+            "ocrText": "TikTok @umika.mushatt US US REST IN PEACE LAST SURVIVOR OF D-DAY @umika.mushatt"
+          },
+          "transcription": "Thanks for watching!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @hodge_bc: ... and those who have served. (Likes: 169)\n- @UnknownUnkowner: He died on July 17, 2025.\n\nI hate these channels chasing engagement, who literally do not care.\n\n@UnsubscribeCast actually posted about his death then.  You do it now because Americans have died fighting Iran and you’re making money.\n\nPiece of shit (Likes: 91)\n- @monsterish5: Too bad the wrong side won. (Likes: 63)\n- @charliehummer4: Amazing. Some guys only lived a few seconds this man made it to 102. God bless all of those warriors! 🫡 🇺🇸 (Likes: 59)\n- @NobodyI57448653: Welcome home, Mr. Larsen.  Enjoy your well earned peace 🙏 (Likes: 50)\n- @VoicesofWW2: https://t.co/WXiDQhDNUa (Likes: 47)\n- @FUNPMC: (No text content) (Likes: 45)\n- @PLeg66: I have a 107 year old WW2 vet who lives in my assisted living community.  Stormed the beaches and is still sharper than most people on this site.  He's amazing. (Likes: 42)\n- @NotSure09013362: To bad he was tricked thou. (Likes: 16)\n- @woodwerks84: RIP American Hero!! They made the world so great, great enough that so many people have the opportunity to sit around all day in luxury complaining about how bad it is! The unraveling is almost over (Likes: 15)",
+    "warnings": []
+  }
+}

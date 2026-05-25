@@ -1,0 +1,67 @@
+{
+  "tweet_id": "2030573447869341940",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:45.927Z",
+  "post": {
+    "id": "2030573447869341940",
+    "author_id": "1023079270422171650",
+    "created_at": "2026-03-08T09:16:50.000Z",
+    "text": "JUST IN🇮🇷❌🇧🇭🔥 In Bahrain, King fled the country and people took to the streets, overthrowing the Israeli-funded government of Bahrain. https://t.co/1vaWwkZZ2R",
+    "media": [
+      {
+        "media_key": "13_2030573360338391040",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2030573360338391040/img/fW8WLMwMFGeBgOOv.jpg",
+        "height": 566,
+        "width": 320,
+        "duration_ms": 44133,
+        "view_count": 577362,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030573360338391040/vid/avc1/320x566/Qe_ydnm7dJihdU0v.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2030573360338391040/pl/Nm1dPot84BZDQWhQ.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6532,
+      "reply_count": 552,
+      "like_count": 23634,
+      "quote_count": 464,
+      "bookmark_count": 1360,
+      "impression_count": 1619146
+    },
+    "author_followers": 126793,
+    "author_name": "RKM",
+    "author_description": "Breaking News, Analyzing, Stock Market, Politics, current affairs, #Bitcoin, technology, Finance, Investing, and article on https://t.co/ywNFz0FfoD.",
+    "author_tweet_count": 37783
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2030573360338391040/vid/avc1/320x566/Qe_ydnm7dJihdU0v.mp4",
+          "description": {
+            "description": "A sequence of four blurry, low-light frames showing a night scene with various colored lights and evidence of a fire. The first two frames feature horizontal light streaks from streetlights or vehicles in the distance. The third frame clearly shows a large building or structure on fire with bright orange flames and heavy smoke. The final frame shows white and blue emergency service lights near the site of the incident.",
+            "ocrText": ""
+          },
+          "transcription": "اه وانا لهاد الموت من ظننا انه منذ مدى ومنذ متى يخشى المبايا بريدها ونستعرض نستعرض ونستعرض ونستعرض الامارة خيلنا مامنا فلنعجلها نستجيدها كتقليم قوم تفياكين تريد المنايا عندنا فتجيبها"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@com2sals: The real regime change will start from the Middle East through Isreal & end up in Washington..Yhese people don’t know what they’ve started & the far consequences it brings ..!! (Likes: 829)\n@beuatifulAfrica: If confirmed,this sets the precedent for domino effect on other American allies in the Gulf! (Likes: 474)\n@LezTonny: this is the Israeli puppet, I mean king of bahrain.. (Likes: 247)\n@saeidh1991: It’s only a matter of time. Bahrain was part of Iran until very recently. They will be free soon. (Likes: 163)\n@RiponBest: Topple down all these hypothetical Zionist Slaves! (Likes: 135)\n@Hunter19387719: All these fake western created titles are running away. (Likes: 84)\n@FUADH78666: If this is not fake news that the King of Bahrain Hamad bin ISA al Khalifa has fled the country then this news if true will greatly disturbed President Trump and genocidal Netanyahu because they want regime change in Iran, not in Bahrain! (Likes: 83)\n@azaadfactcheck: Fact checked. (Likes: 61)\n@CeeDaMan71: Not sure if the OP’s post is confirmed but I posted a few hours ago about the Gulf nations leadership being on a knife edge and that Bahrain was experiencing a violent uprise against its leadership. 😉 now let’s wait to see if he really fled. (Likes: 52)\n@ResourceGeopolitics: This post is spreading complete misinformation. The video shows real protests in Bahrain (mostly Shia communities expressing solidarity with Iran and anger over Khamenei's death/assassination amid the ongoing regional conflict). There have been clashes with security forces, tear gas, and some unrest in several areas — that's documented. **But the claim that the King has fled the country or that the government has been overthrown is 100% false and pure propaganda.** King Hamad bin Isa Al Khalifa is still very much in power and active... (Likes: 27)",
+    "warnings": []
+  }
+}

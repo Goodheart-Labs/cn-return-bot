@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2047978936311918600",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:30.778Z",
+  "post": {
+    "id": "2047978936311918600",
+    "author_id": "1052781729423876096",
+    "created_at": "2026-04-25T10:00:02.000Z",
+    "text": "クルーズ船などの汚水処理システムが凄い！ https://t.co/5jHKzCa3p3",
+    "media": [
+      {
+        "media_key": "13_2047767766581882880",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2047767766581882880/img/oc0fo0DUODM_e8nl.jpg",
+        "height": 1192,
+        "width": 720,
+        "duration_ms": 68660,
+        "view_count": 2393020,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047767766581882880/vid/avc1/320x528/XwAEGRDiJm9qz3Yl.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047767766581882880/vid/avc1/480x794/08E98ZcxN4xGoOo8.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047767766581882880/vid/avc1/720x1192/u5jOqfYgLKlla-UN.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2047767766581882880/pl/iacs_CXSw5yuJQDM.m3u8?v=830"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 174,
+      "reply_count": 518,
+      "like_count": 3507,
+      "quote_count": 25,
+      "bookmark_count": 598,
+      "impression_count": 4008832
+    },
+    "author_followers": 228673,
+    "author_name": "358ちゃん",
+    "author_description": "プレミアム➕️会員！フォローしてね｜頑張ってる方を応援してます！｜世界中の面白動画像などをご紹介🎯 政治・経済・芸能ﾆｭｰｽなどを“最速×わかりやすく”解説中！｜お願い🙏 : ﾎﾟｽﾄ画像、動画内容に何か問題がある場合はまずURL付きでDMかﾘﾌﾟﾗｲ下さい📢｜政党や敵味方関係なく是々非々で活動中｜  φβκ",
+    "author_tweet_count": 243714
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2047767766581882880/vid/avc1/720x1192/u5jOqfYgLKlla-UN.mp4",
+          "description": {
+            "description": "A collection of frames showing various pipes discharging dark, brown liquids into the ocean from large ships, presumably waste or ballast water. Japanese subtitles overlay the scenes.",
+            "ocrText": "から発生する数百トンもの排泄物"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- おうら(*･ω･)ﾉ (@rurru_pso2): これAIじゃなかったっけ？ こんな船今まで見たことないよ (Likes:52)\n- 真（MAKOTO）🦊💮🎴🍺🍭💖🐼📚⛩👏🧭💈🦊☔ (@FujinekoM): 「ある国の水道水より綺麗だ」 ・・・なんとなく、察しがつくが・・・・ (Likes:44)\n- やんちゃ (@rGKRba6mESxvYBy): まぁどこの国の船なのかは皆さん分かるよね… (Likes:32)\n- えびすさわ (@ebissusawa): 有機物だったらどうにでもなると思う。きれいすぎるほうが魚介類は生きられない。 (Likes:26)\n- ペロペロペロリン (@nanafushiyusuke): まんま垂れ流した方が海の栄養になって良いのではと思ってる。 (Likes:17)\n- かいんぼーいず (@kainboys72): AIなんだよな (Likes:6)\n- りお (@lio0_s2): クルーズ船乗ってみたいなーって思ってたけどこれみてちょっと萎えた でもこんなに人乗ってるなら仕方がないのかな？ (Likes:3)\n- 1993 (@lqrnynwr): 「ある国の水道水より綺麗だ」 ・・・なんとなく、察しがつくが・・・・ (Likes:3)\n- ここすこちょめお (@m5iPZGSkSa80832): 今は海洋汚染防止法でし尿は直接舷外に排出できないよ。汚物処理装置で処理、生活排水は生活排水タンクで貯めないと。 さすがにこの動画は盛りすぎだと思う。 捨ててる船は夜中にコッソリ捨てる (Likes:1)\n- 𝔞.𝔱𝔞𝔥𝔞 (@I_Beautiful): 本当に凄いですね！！🚢✨ 勉強になりました！ (Likes:1)",
+    "warnings": []
+  }
+}

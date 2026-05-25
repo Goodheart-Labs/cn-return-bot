@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2009464500865650962",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:33.958Z",
+  "post": {
+    "id": "2009464500865650962",
+    "author_id": "1973716272031657985",
+    "created_at": "2026-01-09T03:17:25.000Z",
+    "text": "AI Detectors found out \"CANCELLED!\" by Taylor Swift is 93.75% AI-generated. https://t.co/1WeVJadIxP",
+    "media": [
+      {
+        "media_key": "3_2009464497493430275",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-MNUFna0AMbR5v.jpg",
+        "height": 828,
+        "width": 828
+      },
+      {
+        "media_key": "3_2009464498172907521",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-MNUIJa0AEh1oA.jpg",
+        "height": 2048,
+        "width": 946
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 417,
+      "reply_count": 191,
+      "like_count": 14229,
+      "quote_count": 260,
+      "bookmark_count": 1061,
+      "impression_count": 1430880
+    },
+    "author_followers": 1780,
+    "author_name": "n☆vin",
+    "author_description": "",
+    "author_tweet_count": 4851
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-MNUFna0AMbR5v.jpg",
+          "description": {
+            "description": "A close-up portrait of Taylor Swift against a white background. She has blonde hair with bangs, blue eyes, and pink lipstick. She is wearing a black spaghetti strap top and colorful, jewel-toned hoop earrings. In the foreground, there are iridescent, glittery textures in shades of green and purple.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-MNUIJa0AEh1oA.jpg",
+          "description": {
+            "description": "A screenshot of an AI content detector tool showing a poem and its analysis. The top section contains a text box with lyrics about 'matching scars'. Below the text box, a button says 'Check Text' and a count of '389 words'. At the bottom, a horizontal bar chart indicates an AI probability of 93.75% and a Human probability of 6.25%, with a yellow status box stating 'This text is highly likely to be AI generated' from the website isitai.com.",
+            "ocrText": "you like they've broken me But a shattered glass is a lot more sharp And now you know exactly who your friends are You know who we are We're the ones with matching scars 389 words Check Text AI 93.75% Human 6.25% This text is highly likely to be AI generated isitai.com"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@xcx_angelvv: even her fans agree it's AI like gagggg (887 likes)\n@michael82638: well obviously because what the fuck is this (309 likes)\n@TTPD_tilldawn: Still better than any of scat (220 likes)\n@gauravTS13: Source : Grindr (170 likes)\n@Neridot1: AI can't write this bad (139 likes)\n@l1thiumwhisper: yeah, ai detector also said that \"Memórias Póstumas de Bras Cubas\" by Machado de Assis (1881) is AI generated (130 likes)\n@Serlyrl: Be soooo perfect that ….AI thinks that you’re AI (82 likes)\n@410_Angxl: try again! ❤️ (62 likes)\n@CharlesDar91362: No,because it just means she's not human,oh Taylord the goddess that you are. (59 likes)\n@Im_Page153: To be fair, AI Detectors aren’t the most accurate thing in the world, but I would not be surprised at all if it’s written by AI lol (43 likes)",
+    "warnings": []
+  }
+}

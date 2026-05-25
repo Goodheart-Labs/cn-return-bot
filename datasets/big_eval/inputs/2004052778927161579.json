@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2004052778927161579",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:59.777Z",
+  "post": {
+    "id": "2004052778927161579",
+    "author_id": "1420797376164413445",
+    "created_at": "2025-12-25T04:53:10.000Z",
+    "text": "They are not my babies, they are black, you cheated on me, I can’t forgive you ❓❓\n\nIn the quiet gynecology clinic, tension suddenly fills the room as a white husband begins yelling in shock and disbelief. \n\nThe newborn babies are black, and his voice trembles with anger as he https://t.co/Gl4DwFpxOX",
+    "media": [
+      {
+        "media_key": "13_2004052655920787456",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2004052655920787456/img/MNCZA5faPLuk_2sj.jpg",
+        "height": 1048,
+        "width": 576,
+        "duration_ms": 15000,
+        "view_count": 4966521,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004052655920787456/vid/avc1/320x582/FrvSkQxr8UFWcwv0.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004052655920787456/vid/avc1/480x872/BnagwTZuVKk5ZUjF.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004052655920787456/vid/avc1/576x1048/rZngJCwdkUA6u_m1.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2004052655920787456/pl/2L7rBwla895nt6Ml.m3u8?v=1ff"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 278,
+      "reply_count": 743,
+      "like_count": 2731,
+      "quote_count": 116,
+      "bookmark_count": 1815,
+      "impression_count": 7019584
+    },
+    "author_followers": 27782,
+    "author_name": "ERIC BRAVE",
+    "author_description": "|| Live to inspire|| The sky is no longer the limit || videographer || entertainment || Social experiments videos || Funny videos creator || Travel enthusiast",
+    "author_tweet_count": 120213
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2004052655920787456/vid/avc1/576x1048/rZngJCwdkUA6u_m1.mp4",
+          "description": {
+            "description": "A series of frames captured from a video showing a chaotic and emotional scene in a hospital delivery room. A woman is seen lying in a hospital bed, distraught and crying intensely while holding two newborn infants. A man, presumably the father, is leaning over her in a state of agitation or shock, gesturing with his hands. Medical staff, including a male doctor in teal scrubs with a stethoscope and a female nurse in purple scrubs, are present and attempting to manage the situation or calm the individuals involved. A heart rate monitor is visible in the background, showing vital signs.",
+            "ocrText": "10\n90"
+          },
+          "transcription": "What is happening right now? Are they my children? Mark, please! Oh, okay, sir. Look at them! Look at them! They have black hair, black skin! Ow! It's... Stop yelling, please! You're scaring them! Let's just take a break. They are not my babies! Sir, listen to me. Genetics can be surprising."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Genekmkz 老豆子⛩️ (@genekmkz)**: (image)  \nLikes: 105 | Reposts: 0 | Replies: 0\n\n**Firdausee Yahaya (@honeeybuch)**: AI bullshit  \nLikes: 33 | Reposts: 0 | Replies: 0\n\n**Toñin (@Tonin_eth)**: Stop AI sheet please  \nLikes: 18 | Reposts: 0 | Replies: 0\n\n**Bee🐝 (@BeeOnGrid)**: How are they black is he blind?  \nLikes: 17 | Reposts: 0 | Replies: 0\n\n**D-Intent Data (@dintentdata)**: Fact  \nLikes: 15 | Reposts: 0 | Replies: 0\n\n**Phoenix (@hpareek)**: The AI has gone fully insane. The wall of this guy is full of AI videos  \nLikes: 12 | Reposts: 0 | Replies: 0\n\n**Peak Hobby (@PeakHobby)**: Obviously AI  \nLikes: 9 | Reposts: 0 | Replies: 0\n\n**Haggis Horror (@turasatana1)**: These babies are not black, poor A.I strikes once more...  \nLikes: 9 | Reposts: 0 | Replies: 0\n\n**Smaris (@Smaris)**: I know its Ai but i cant prove it  \nLikes: 7 | Reposts: 0 | Replies: 0\n\n**Olki (@Olking07)**: We're all in agreement that those are the doctor's kids, right?  \nLikes: 3 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

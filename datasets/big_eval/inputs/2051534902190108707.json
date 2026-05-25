@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2051534902190108707",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:28.819Z",
+  "post": {
+    "id": "2051534902190108707",
+    "author_id": "1067619065454223360",
+    "created_at": "2026-05-05T05:30:11.000Z",
+    "text": "私の愛する街、住民に対して失礼な物言いをされているので関係はあります。\nだから落選するんですよ。 https://t.co/jSCX27cONc",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2051533265656590556"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2051533265656590556",
+      "author_id": "88575194",
+      "created_at": "2026-05-05T05:23:40.000Z",
+      "text": "関係ないのに口挟まないでくれます？ https://t.co/OOhiPLidte",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 561,
+      "reply_count": 27,
+      "like_count": 4630,
+      "quote_count": 35,
+      "bookmark_count": 115,
+      "impression_count": 680085
+    },
+    "author_followers": 7101,
+    "author_name": "高橋元気（中央区議会議員/出張鮨パーティー SUSHI WIZ）",
+    "author_description": "中央区晴海在住 SFC→慶大法→DHU大学院修士 行政書士 元ドワンゴ社員 筋トレ鮨パンク議員2期目 出張鮨✖︎政治家 ■出張寿司受付https://t.co/pnePcv5ZeB ■Youtube https://t.co/zpsZMZ0Xxg",
+    "author_tweet_count": 18202
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @taichi_luvwave (アレ): 女性問題で辞職した無職なのに良く偉そうにモノが言えますよねー😂 (Likes: 86)\n- @AkiHatsushika (初鹿明博): 落選してませんが (Likes: 85)\n- @nono_momm (ののママ⛅️): 中央区議なので関係ありすぎて草wwwwww苔むすwwwwwwwww 元気さん、話通じない人を相手にする必要ないですよ！お相手、まじ関係ない人なので😂 (Likes: 63)\n- @hiratan_japan (YH@セキュリティエンジニア): この元衆議院議員しか拠り所がない変なおじさん、 異様なほど上から目線で態度でかいんですけど、 人としてどうかと思いますよ。The老害って感じですよね。 (Likes: 54)\n- @curvingski (Kappei): 高橋区議に、全面的に賛同します。 本来無関係なはずの、デモの騒音による迷惑と、地域の住居とを、結びつけてきたのは、初鹿元議員のほうだ。 (Likes: 20)\n- @bvC0avmTgTcPNMd (ぽんこつぅ): 1つ付け加えると この変態、現在石垣のり子氏の秘書やってます。 菅野というこれまた性犯罪者と一緒にやってる政界の変態コンビです。 (Likes: 16)\n- @YOCCHI011007 (四畳半): 先生、違いますよ 強制わいせつで辞職したんですよ😳 (Likes: 10)\n- @chopari116908 (国民の怒り): 正論パンチやん (Likes: 8)\n- @Bambi3522424434 (😭): 住民です！高橋さんを支持します！🙋‍♀️ (Likes: 8)\n- @HornHighYo (たべるねろ): 一生「素浪人」だろうなこの人。 (Likes: 8)\n- @Samanosukevn6l (Samanosuke): 落選じゃなくて猥褻行為の結果… (Likes: 7)",
+    "warnings": []
+  }
+}

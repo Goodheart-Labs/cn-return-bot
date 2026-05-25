@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2029667760557432837",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:48:29.954Z",
+  "post": {
+    "id": "2029667760557432837",
+    "author_id": "779657810405654528",
+    "created_at": "2026-03-05T21:17:58.000Z",
+    "text": "#BREAKING \nCluster warheads over Tel Aviv https://t.co/vO920wSCtZ",
+    "media": [
+      {
+        "media_key": "7_2029667735861665793",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2029667735861665793/pu/img/NSVB-Xr6X_ZSY1pH.jpg",
+        "height": 848,
+        "width": 480,
+        "duration_ms": 20317,
+        "view_count": 607243,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2029667735861665793/pu/vid/avc1/320x564/nW9VCSdNB8uq5Dyd.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2029667735861665793/pu/vid/avc1/480x848/JD4CBAghnWIzWwll.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2029667735861665793/pu/pl/A4RRk7L2XFOQvJAO.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1116,
+      "reply_count": 78,
+      "like_count": 6952,
+      "quote_count": 36,
+      "bookmark_count": 241,
+      "impression_count": 122502
+    },
+    "author_followers": 320338,
+    "author_name": "Tehran Times",
+    "author_description": "Iran's Leading International Daily Newspaper.\nTelegram channel: https://t.co/NPENjt0hxw",
+    "author_tweet_count": 88305
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2029667735861665793/pu/vid/avc1/480x848/JD4CBAghnWIzWwll.mp4?tag=12",
+          "description": {
+            "description": "A series of frames from a nighttime video showing an object or projectile exploding or disintegrating in the dark sky. The first frame displays a bright flash with a cross-shaped glare, surrounded by small orange embers. Subsequent frames show these glowing fragments dispersing and fading as they fall toward the horizon. The final frame reveals the ground perspective from a rooftop, showing buildings with water tanks and a fence, with the sky now mostly clear of the debris.",
+            "ocrText": ""
+          },
+          "transcription": "Thank you for watching!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Shahid966328905**: We watched this scene all night, all week, may God protect the Iranian people. (Likes=12, Reposts=0, Views=1002)  \n**@Asht10n**: They should use the same type Israel used on GAZA! (Likes=9, Reposts=0, Views=806)  \n**@Lesanfarah**: Not a warhead. A glitter memorial for the MINAB girls school. (Likes=7, Reposts=0, Views=414)  \n**@mo_zeeshan_ali**: Did it impact? (Likes=6, Reposts=0, Views=1599)  \n**@tjkalea**: Why do they seem to disappear? (Likes=4, Reposts=0, Views=995)  \n**@PTIworker199**: Wata great scene.. common Iran it more beautiful 😍 (Likes=4, Reposts=0, Views=961)  \n**@TurPomeg**: Like shooting stars. Make a wish, Netenyahu 💫 (Likes=3, Reposts=0, Views=640)  \n**@ShaneConnor**: Not surprised Iran would use such a weapon. (Likes=3, Reposts=0, Views=1473)  \n**@AmeerD22006**: Send khorramshahrs (Likes=2, Reposts=0, Views=529)  \n**@abidoikko**: Tel Aviv reaps the whirlwind of its aggression. (Likes=1, Reposts=0, Views=254)",
+    "warnings": []
+  }
+}

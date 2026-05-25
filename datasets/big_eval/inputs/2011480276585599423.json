@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2011480276585599423",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:11.809Z",
+  "post": {
+    "id": "2011480276585599423",
+    "author_id": "23022687",
+    "created_at": "2026-01-14T16:47:24.000Z",
+    "text": "Free Iran. https://t.co/DTRRFfqTg0",
+    "media": [
+      {
+        "media_key": "3_2011480271217184768",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-o2pj6bUAAKLJX.jpg",
+        "height": 1350,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3456,
+      "reply_count": 2968,
+      "like_count": 17861,
+      "quote_count": 218,
+      "bookmark_count": 204,
+      "impression_count": 322744
+    },
+    "author_followers": 7084381,
+    "author_name": "Ted Cruz",
+    "author_description": "Father of two, @heidiscruz's husband, fighter for liberty. Representing the great state of Texas in the U.S. Senate.",
+    "author_tweet_count": 59656
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-o2pj6bUAAKLJX.jpg",
+          "description": {
+            "description": "A grainy, black-and-white image of a person with curly hair holding a cigarette in their mouth. They are holding up a photograph that is being consumed by a large flame. The background shows an urban or industrial setting, and stylized white text is overlaid across the center of the frame.",
+            "ocrText": "Smoke 'em if you got 'em."
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Syrian Girl (@Partisangirl): She’s Canadian  \n  Likes: 2672 | Reposts: 0 | Replies: 0 | Views: 14267\n\n- پسر ساحل𓃬☼ (@Sonofthebeach22): This is the final battle, Pahlavi will return. #JavidShah  \n  Likes: 630 | Reposts: 0 | Replies: 0 | Views: 4330\n\n- Mises Caucus (@LPMisesCaucus): Free America. No more war with Iran. No more aggressive regime change wars of choice.  \n  Likes: 509 | Reposts: 0 | Replies: 0 | Views: 5002\n\n- 𝙎👼🏻 (@SZade15): Treacherous scum  \n  Likes: 393 | Reposts: 0 | Replies: 0 | Views: 2696\n\n- Araquel Bloss (@AraquelBloss): Free Congress From Zionists  \n  Likes: 347 | Reposts: 0 | Replies: 0 | Views: 1913\n\n- Bobby Sauce (@takenaps): Bro will defend, talk about and post about every country on Earth except America  \n  Likes: 311 | Reposts: 0 | Replies: 0 | Views: 3393\n\n- Jack Maxey (@JackMaxey1): You are such a clown.  \nHow's that Iran takedown going?  \n  Likes: 206 | Reposts: 0 | Replies: 0 | Views: 1836\n\n- Michael Heise (@MisesChair): Perfect example of why Tucker asked you a basic question like “how many people live there” and made you look like a complete fool. You have no clue what you are talking about.  \nYou have a desired outcome no matter what and work backwords from there.  \n  Likes: 164 | Reposts: 0 | Replies: 0 | Views: 918\n\n- THE PARZIVAL (@The1Parzival): Free America you fucking traitor POS. 🖕  \n  Likes: 154 | Reposts: 0 | Replies: 0 | Views: 1257\n\n- Special Officer Doofy (@DoofyOfficial): FREE AMERICA FROM TED CRUZ AND ISRAEL FIRST POLITICIANS  \n  Likes: 109 | Reposts: 0 | Replies: 0 | Views: 731",
+    "warnings": []
+  }
+}

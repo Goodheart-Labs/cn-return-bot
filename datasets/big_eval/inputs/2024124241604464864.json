@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2024124241604464864",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:25.537Z",
+  "post": {
+    "id": "2024124241604464864",
+    "author_id": "1338960554938011655",
+    "created_at": "2026-02-18T14:10:00.000Z",
+    "text": "Michael Jackson in his free state. \n\nNo makeup, no mask, no worries. 🖤 https://t.co/b2yG2raIp3",
+    "media": [
+      {
+        "media_key": "3_2024074100344340480",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HBb0q5YXwAAO1aq.jpg",
+        "height": 2048,
+        "width": 1647
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2313,
+      "reply_count": 1023,
+      "like_count": 33019,
+      "quote_count": 504,
+      "bookmark_count": 4025,
+      "impression_count": 19420316
+    },
+    "author_followers": 33451,
+    "author_name": "👑 J³ABz👑",
+    "author_description": "Entertainment | Insights | Nostalgia",
+    "author_tweet_count": 379070
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HBb0q5YXwAAO1aq.jpg",
+          "description": {
+            "description": "A medium shot of Michael Jackson standing on a sandy beach during the day. He is shirtless, wearing multi-colored swim trunks with teal, orange, and yellow blocks and white piping. Patches of vitiligo are visible on his face, arms, and hands. Other people and palm trees are visible in the soft-focus background.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Lost_Child_777**  \nThere’s numerous pictures that actually show Michael’s vitiligo that you could have used instead of this AI crap  \nLikes: 2005 | Reposts: 94 | Replies: 11 | Views: 144420\n\n**@TerriblePic**  \nRumor: Michael Jackson bleached his skin.  \nTruth: Michael had vitiligo.  \nLikes: 1675 | Reposts: 140 | Quotes: 22 | Replies: 13 | Bookmarks: 447 | Views: 165537\n\n**@mphodmoloto**  \nthis is AI.  \nLikes: 938 | Views: 102684\n\n**@cynthiajosh701**  \nSo he actually had Vitiligo, and we all accused him of bleaching his skin 🥲  \nRest on legend  \nLikes: 703 | Reposts: 14 | Quotes: 6 | Replies: 82 | Bookmarks: 21 | Views: 237181\n\n**@Michaelukwuma**  \nMichael was such a beautiful soul, little understood and feared by those who thought he was a threat.  \nRest in Power MJ.  \nLikes: 404 | Views: 57865\n\n**@TrendxNow**  \nMany Faces of Jackson  \nLikes: 294 | Views: 61340\n\n**@afadomike**  \nif Michael wasn't comfortable showing his vitiligo spots, you don't have the right to manipulate them using ai.  \nSTOP OBSESSING WITH HIS BODY AND LIFE.  \nif you're going to talk about his vitiligo, at least use real images.  \nLikes: 214 | Views: 13326\n\n**@stitchiot**  \nThis is ai generated  \nLikes: 191 | Reposts: 2 | Views: 10841\n\n**@DaLovemoores**  \nThe editing is terrible but love you Mike!!  \nLikes: 187 | Views: 22633\n\n**@Amplifiers01**  \nThe fact that people still feel the need to circulate edited photos to 'prove' he had vitiligo is wild. The autopsy literally confirmed it nearly 20 years ago. We don't need a photoshopped beach pic to validate a medical reality that he suffered through in the public eye for decades. Why are we still debating this in 2026?  \nLikes: 91 | Views: 28517",
+    "warnings": []
+  }
+}

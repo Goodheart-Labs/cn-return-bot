@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2017225429921194084",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:16.746Z",
+  "post": {
+    "id": "2017225429921194084",
+    "author_id": "1212783083272855552",
+    "created_at": "2026-01-30T13:16:35.000Z",
+    "text": "BREAKING 🔴\n\nFederal agents arrested Don Lemon overnight. https://t.co/pJfcRTtkfD",
+    "media": [
+      {
+        "media_key": "3_2017225424233799681",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_6f1etXoAEmK3G.jpg",
+        "height": 1381,
+        "width": 2000
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 80,
+      "reply_count": 66,
+      "like_count": 721,
+      "quote_count": 25,
+      "bookmark_count": 23,
+      "impression_count": 262935
+    },
+    "author_followers": 1425893,
+    "author_name": "Open Source Intel",
+    "author_description": "Monitoring Real-Time News & Open Source Intelligence • Middle East • US • Global • Geopolitics  Anything on my mind • Newsletter • Signal Tips: Osint.613",
+    "author_tweet_count": 101390
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_6f1etXoAEmK3G.jpg",
+          "description": {
+            "description": "A headshot of journalist Don Lemon wearing amber-colored aviator-style glasses and a pinstripe suit, standing in front of a blue backdrop with blurred white text signs.",
+            "ocrText": "RIGHTS ROBERT F. KENNEDY HUMAN RIGHTS ROBERT"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @CCPISASSH0E: (No text content) [Likes: 19]\n- @BreakerOfChains: Get ready Barrack Hussein Obama no one is above the law, especially you! [Likes: 10]\n- @judeangeneral2: Send the brilliant Don Lemon to Tehran for a media assignment tonight. [Likes: 10]\n- @BreakerOfChains: Wow and wow, none of us thought that would happen. Thank you Lord! [Likes: 9]\n- @BreakerOfChains: Charges under federal civil rights law allege interference with worshippers' religious freedoms at Cities Church, prior DOJ warrant requests were rejected by courts, but a grand jury indictment proceeded yesterday amid the Trump administration's immigration enforcement push. [Likes: 8]\n- @Leader_zeez: 'Arrested overnight' with zero details about charges, which agency, or why is doing a lot of heavy lifting here. Gonna need literally any source or context before this means anything. [Likes: 7]\n- @LakiusMaximus: Bwahahahahahahahaha Drop the soap, bro! You’ll enjoy it! [Likes: 6]\n- @Brettbenraphael: If he were a car he'd be scrapped totally [Likes: 3]\n- @SirDavidChase: Now he can finally live out his fantasy…… [Likes: 3]\n- @anmut: ABOUT FUCKING TIME (although a judge will dismiss it by the weekend) [Likes: 2]",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2052428676478685470",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:45.237Z",
+  "post": {
+    "id": "2052428676478685470",
+    "author_id": "2711139112",
+    "created_at": "2026-05-07T16:41:43.000Z",
+    "text": "Sol beyniniz varsa kedi yavrusu görürsünüz, sağ beyniniz varsa tavşan yavrusu görürsünüz.\n\nNe görüyorsun? https://t.co/jJnFH2Wk4N",
+    "media": [
+      {
+        "media_key": "3_2052428671688876039",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHuxAK7XoAcf0hk.jpg",
+        "height": 1172,
+        "width": 1169
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 406,
+      "reply_count": 6290,
+      "like_count": 4769,
+      "quote_count": 1044,
+      "bookmark_count": 1044,
+      "impression_count": 3612426
+    },
+    "author_followers": 6978,
+    "author_name": "Melis ✨",
+    "author_description": "kişisel keyif aldıklarımı sizlerle paylaşıyorum ,sayfamda herkes kendinden bişeyler bulabilir 🌸",
+    "author_tweet_count": 24747
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHuxAK7XoAcf0hk.jpg",
+          "description": {
+            "description": "A landscape photograph of a rugged, snow-dusted mountain range under a clear blue sky. The shadows and snow patterns on the mountain peaks are arranged in a way that creates a hidden image of a man's face looking slightly to the side.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Ahu_Senturk: Beynim yanmış herhalde.Adolf Hitler’i görüyorum. 🤣🤦‍♀️ (Likes:2117, Replies:149, Views:151190)\n@burak1688037: adolf hitleri gördüm (Likes:361, Replies:7, Views:118507)\n@KlayltonV: Eu vi oHitker dando tchau,  meu Deus (Likes:234, Replies:16, Views:83264)\n@MimikKadn: Selam veren adam görüyorum sanırım iki tarafı da çalışıyor (Likes:97, Replies:2, Views:22866)\n@jose_mario34: Ben niye hitler i görüyorum ya (Likes:67, Replies:0, Views:53096)\n@Hemyko: Mi hemisferio central ve un elefantito! (Likes:44, Replies:10, Views:54516)\n@anna_vom_dorf: Ich sehe weder ein Kätzchen noch ein Kaninchenjunges. Aber zu schreiben, wer es sein könnte, ist in Deutschland leider inzwischen verboten. (Likes:36, Replies:10, Views:18850)\n@BabyDoge: I see a Doge and I do not use any brain (Likes:33, Replies:0, Views:1286)\n@acetmehmettw: Hitler’i gören beyinsizdir mi demek istiyorsunuz😎 (Likes:32, Replies:5, Views:25561)\n@BumblebeeJoe: Ik zie Hitler… (Likes:31, Replies:0, Views:958)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2011092812742164964",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:32.000Z",
+  "post": {
+    "id": "2011092812742164964",
+    "author_id": "3324689194",
+    "created_at": "2026-01-13T15:07:45.000Z",
+    "text": "🚨🗣️ 𝗡𝗘𝗪: Anmar Al Haili: \"It's true that I contacted Lionel Messi before when he was at PSG. I offered him €1.4 billion per year, he refused.\" https://t.co/xdy2qenJQ4",
+    "media": [
+      {
+        "media_key": "3_2011092757528338432",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-jWNS7WYAAJWNY.jpg",
+        "height": 554,
+        "width": 554
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1247,
+      "reply_count": 261,
+      "like_count": 22011,
+      "quote_count": 160,
+      "bookmark_count": 959,
+      "impression_count": 2275089
+    },
+    "author_followers": 1622095,
+    "author_name": "The Touchline | 𝐓",
+    "author_description": "Unrivaled football coverage ⚽️ • Enquiries: info@thetouchline.co.uk",
+    "author_tweet_count": 68939
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-jWNS7WYAAJWNY.jpg",
+          "description": {
+            "description": "A split image showing a man in traditional Saudi attire with a red and white checkered keffiyeh on the left, and a edited photo of Lionel Messi wearing an Al-Ittihad football jersey with yellow and black vertical stripes on the right.",
+            "ocrText": "ITIHIAD CLUB"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @DoudyCalls: Hard to believe anyone would turn that down (746 likes)\n- @Emegothefirst: For €1.4 billion, I would have changed my name to Al-Ittihad and played every position myself. (729 likes)\n- @nobi100x: Bro said no to a billion (594 likes)\n- @cutmovies7: That’s why he’s our Goat, he doesn’t care about the money, just pure football and pleasing his fans while the other is chasing goal breaking records (474 likes)\n- @Horzii_: For context, Ronaldo doesn't earn even quarter of that (346 likes)\n- @ExclusiveMessi: Imagine if Messi had taken the deal. Little Ronaldo makes 200m a year while Messi would’ve made 7x more at 1.4 BILLION a year. Messi would’ve won all the trophies with Hilal, but he chose family over money. That’s a real GOAT. (321 likes)\n- @Timzblazee3: He doesn’t put the money first That’s why he’s the 🐐 Family first (275 likes)\n- @AgedeDestiny: some things really are priceless 😅💸 (222 likes)\n- @damian_iwuoha: Lionel Messi rejected 1.4 billion per year? (133 likes)\n- @NervouusCS: So money isn't everything (125 likes)",
+    "warnings": []
+  }
+}

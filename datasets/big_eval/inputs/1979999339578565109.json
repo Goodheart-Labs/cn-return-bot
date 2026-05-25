@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1979999339578565109",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:27.663Z",
+  "post": {
+    "id": "1979999339578565109",
+    "author_id": "1312367672",
+    "created_at": "2025-10-19T19:53:23.000Z",
+    "text": "For a franchise that once had Tom Brady, #Patriots QB Drake Maye set a new franchise record today for the highest single-game completion percentage (min. 20 pass attempts) — 91.3%.\n\nThe previous record was held by Brady at 88.5%. https://t.co/8JzVlhH4Pg",
+    "media": [
+      {
+        "media_key": "3_1979999328962826240",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3pe5jJXUAAwFo-.jpg",
+        "height": 2472,
+        "width": 1989
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1397,
+      "reply_count": 170,
+      "like_count": 16932,
+      "quote_count": 233,
+      "bookmark_count": 413,
+      "impression_count": 893801
+    },
+    "author_followers": 870620,
+    "author_name": "Ari Meirov",
+    "author_description": "Covering the NFL for @The33rdTeamFB. Follow for breaking news, roster moves, videos & more. Host of @NFL__Spotlight. Would be smart to turn on notifications.",
+    "author_tweet_count": 54997
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3pe5jJXUAAwFo-.jpg",
+          "description": {
+            "description": "A close-up photograph of a football coach wearing a headset and a navy blue vest over a white long-sleeved shirt, placing his hand on the chest of a New England Patriots player wearing jersey number 10 and a silver helmet. Other players and a coach are visible in the blurred background.",
+            "ocrText": "SONY NFL Patriots 10 VRABEL"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@BetMGM** (@BetMGM): Tom Brady watching Drake Maye  \nEngagement: Likes=508, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=21469\n\n**Barry Allen** (@CopiumKing): (No text content)  \nEngagement: Likes=502, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=10118\n\n**DraftKings Sports** (@DKSports): He has been reincarnated  \nEngagement: Likes=425, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=25601\n\n**Real App** (@realapp): Unreal  \nEngagement: Likes=284, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=12009\n\n**eli ⚡️** (@4kteli22): \"Titans don't count\" you've said that about every game this season, just continue to cope  \nEngagement: Likes=121, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3469\n\n**Jus10Herbert Burner** (@Jus10Herbert): Another Brady in my conference im sick  \nEngagement: Likes=116, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5604\n\n**Robbie Byrne** (@Robertbyrne2001): https://t.co/STkWMu0Dz3  \nEngagement: Likes=57, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=14502\n\n**MazzullaMuse** (@Mazzulla_Muse): Drake Maye is the WAY  \nEngagement: Likes=49, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1813\n\n**John O.** (@okeoghene30): Patriots fans spent two decades acting like no one would ever touch Brady’s records, and now a rookie did it before his first tax return even cleared. Wild how fast “the system” starts looking good again when it’s not Brady under center. Maybe it really was Belichick’s magic all along.  \nEngagement: Likes=22, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=13207\n\n**PrizePicks** (@PrizePicks): breaking brady's record already  \nEngagement: Likes=21, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4570",
+    "warnings": []
+  }
+}

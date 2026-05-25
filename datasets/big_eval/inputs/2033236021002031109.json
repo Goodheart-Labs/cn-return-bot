@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2033236021002031109",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:23.421Z",
+  "post": {
+    "id": "2033236021002031109",
+    "author_id": "1513410916473192450",
+    "created_at": "2026-03-15T17:36:57.000Z",
+    "text": "🚨🇮🇱 BREAKING — He's Dead\n\nNetanyahu's AI-Generated Video\n\nLook at the Pocket... https://t.co/awgLWI2GGI",
+    "media": [
+      {
+        "media_key": "13_2033235828273811456",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2033235828273811456/img/dwuqpwI0GjNBitkA.jpg",
+        "height": 1278,
+        "width": 590,
+        "duration_ms": 7000,
+        "view_count": 1298097,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2033235828273811456/vid/avc1/320x692/hw9hoh4LgNlwPQoj.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2033235828273811456/vid/avc1/480x1038/yG6MKlVSJGGF3O3U.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2033235828273811456/vid/avc1/590x1278/nfn0XWo27SAEDwgx.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2033235828273811456/pl/NZDYd3EYWZJNeTFq.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2189,
+      "reply_count": 541,
+      "like_count": 16703,
+      "quote_count": 687,
+      "bookmark_count": 2522,
+      "impression_count": 6640682
+    },
+    "author_followers": 200105,
+    "author_name": "Pamphlets",
+    "author_description": "🚨 ▂▃▅  🇵🇸 Free Palestine  ▅▃▂ 🚨",
+    "author_tweet_count": 73071
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2033235828273811456/vid/avc1/590x1278/nfn0XWo27SAEDwgx.mp4",
+          "description": {
+            "description": "A frame capture of a social media post showing a video of Benjamin Netanyahu. He is indoors, standing in what appears to be a cafe, holding a green paper cup. A man in an apron is visible in the background.",
+            "ocrText": "03:45 X M • 47, 0:54 / 1:00, Megatron @Megatron_ron, BREAKING:, Netanyahu posts a... more, 303 204 1K 131K"
+          },
+          "transcription": "(transcription failed: Command failed: ffmpeg -i \"/var/folders/n4/l4rh4y3n4lz2b0h3p52h20240000gn/T/cn-gemini-1779720788370-)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@emkeayy: He’s actually dead??\nLikes=1327, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=45431\n\n@SFischer8770: Before Grok was lobotomized shortly after the video was released.\nLikes=339, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=32431\n\n@Poppy67_: Well well well\nLikes=333, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=10518\n\n@hamnannde: 13/03/2024\nLikes=247, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=35200\n\n@URHANZEB: Why he doesn't participate in government meetings? Why don't he come to live on TV?\nLikes=206, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=14856\n\n@martinez_j7902: Dude change the lines also on palm in middle of war\nLikes=178, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=13986\n\n@imjamalpat: Look very closely at this video of Netanyahu:\n\n​Bibi’s coffee cup is filled to the very brim. ☕️\n\nHe lifts the cup, yet not a single drop spills. 🚫\n\nThen he takes a massive sip... 👄\n\nAnd the cup is still filled to the top! No change at all. ♾️\n\n​How is this even possible? This feels more \"AI\" than that 6-finger video. 🤖🎬\n\n​It’s officially confirmed now.\n\n​#Israel #Netanyahu #AI #Deepfake #ViralVideo\nLikes=175, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=41902\n\n@justDoNdamian: 🚨 US-based Hive AI analyzed the latest video of Prime Minister Benjamin Netanyahu and found it 96.9% likely to be AI-generated.\nLikes=139, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=10995\n\n@hamzitron: You can create these videos using Google VEO 3 and it's 100% FREE as is Netanyahu 100% Deleted !!!\nLikes=108, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=8556\n\n@PratikSinhatwt: Maybe it is true maybe it's not\nLikes=76, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=8465",
+    "warnings": []
+  }
+}

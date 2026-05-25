@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2036831318655516957",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:32.401Z",
+  "post": {
+    "id": "2036831318655516957",
+    "author_id": "890061634181373952",
+    "created_at": "2026-03-25T15:43:23.000Z",
+    "text": "JUST IN: First Lady Melania Trump walks out with an AI-powered robot at the White House.\n\n\"The first American-made humanoid in the White House,\" Melania Trump said.\n\nMelania Trump is hosting 45 nations at the White House for a two-day global coalition summit. https://t.co/LTqttQgSIr",
+    "media": [
+      {
+        "media_key": "13_2036830503450689536",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2036830503450689536/img/tm428DfmLL26RDPl.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 178069,
+        "view_count": 748985,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036830503450689536/vid/avc1/480x270/AkfG8cs8qaTcLATU.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036830503450689536/vid/avc1/640x360/W0KwBkgnVgBzGtrF.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036830503450689536/vid/avc1/1280x720/kE1yTsYFUzZuyZa4.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2036830503450689536/pl/HdYCREbXrzdsNVF5.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 760,
+      "reply_count": 955,
+      "like_count": 7113,
+      "quote_count": 291,
+      "bookmark_count": 809,
+      "impression_count": 1135219
+    },
+    "author_followers": 2526152,
+    "author_name": "Collin Rugg",
+    "author_description": "Co-Owner of Trending Politics | Investor | American 🇺🇸",
+    "author_tweet_count": 36131
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2036830503450689536/vid/avc1/1280x720/kE1yTsYFUzZuyZa4.mp4",
+          "description": {
+            "description": "A humanoid robot and Melania Trump walk side by side down a red-carpeted hall at the White House, flanked by international flags. They maintain a synchronized pace, moving forward into the camera's view.",
+            "ocrText": "C-SPAN"
+          },
+          "transcription": "🎵 Thank you. Thank you, First Lady Melania Trump, for inviting me to the White House. It is an honor to be at Fostering the Future Together's Global Coalition inaugural meeting. I'm Figure 3, a humanoid built in the United States of America. I am grateful to be part of this historic movement to empower children with technology and education. Welcome. Bienvenidos. Bienvenido. Bienvenido Bienvenido Bienvenido Bienvenido Bienvenido Bienvenido I going to stop on that bit Thank you Good morning. Welcome to the White House. Figure three, thank you for joining me at day two of fostering the future together. It's fair to state you are my first American-made humanoid guest in the White House. But moreover, it is my distinct honor to receive such an impressive group of leaders today. 45 of you have traveled from every corner of the planet to represent your nation as part of this new coalition."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Riley Gaines** (@Riley_Gaines_): Hmm I don't think I like the sound of a \"humanoid\" in the WH  \n  Likes: 656 | Reposts: 7 | Replies: 143\n\n- **The Conservative Alternative** (@OldeWorldOrder): Why does the robot walk like Joe Biden? 🤔  \n  Likes: 163 | Reposts: 0 | Replies: 0\n\n- **Marlene Robertson🇨🇦** (@marlene4719): Give us a hint as to which one is the robot.  \n  Likes: 136 | Reposts: 0 | Replies: 0\n\n- **Miss Qniverse✨** (@MQniverse): There’s something very familiar about that robot… I just can’t put my finger on it. 🤔  \n  Likes: 81 | Reposts: 0 | Replies: 0\n\n- **Legally Dashing** (@LegallyDashing): Jarring to see.  \n  Likes: 77 | Reposts: 0 | Replies: 0\n\n- **Denison Barb** (@DenisonBarbs): Trump has slept with both of them.  \n  Likes: 73 | Reposts: 0 | Replies: 0\n\n- **Kevin M. Nelson** (@KevinMNelsonUSA): Creepy. I don't like where this is all going.  \n  Likes: 60 | Reposts: 0 | Replies: 0\n\n- **God's_own** (@Netarflow): Melania parading a robot at the White House while real Americans struggle? This is peak elite distraction theater. Next they'll replace Congress with them too. 🇺🇲  \n  Likes: 57 | Reposts: 0 | Replies: 0\n\n- **Trisha Hope - National Delegate-TX** (@JustTheTweets17): Don't know what is worse, the robot or Macron pretending to be a woman.  \n  Likes: 25 | Reposts: 0 | Replies: 0\n\n- **Libertarian Mama 🔔** (@LibertarianMama): Great. They can fight in our place.  \n  Likes: 21 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

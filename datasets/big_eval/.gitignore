@@ -1,0 +1,9 @@
+# transient usage-watcher artifacts
+PAUSE
+usage_watch.log
+
+# heavy, regenerable intermediates (corpus build + survey caches). The routine
+# only needs selected.jsonl + inputs/ + annotations/, which ARE committed.
+corpus.jsonl
+corpus_labeled.jsonl
+_cache/

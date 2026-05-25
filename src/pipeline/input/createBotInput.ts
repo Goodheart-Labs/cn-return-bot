@@ -10,6 +10,7 @@ import { getTweetLog } from "../utils/tweetLog";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
 import { fetchTweetComments } from "./comments";
+import { readInputCache, writeInputCache } from "./inputCache";
 
 export interface BotInput {
   mediaResult: GeminiMediaResult;
@@ -37,6 +38,9 @@ function isMediaOnlyPost(post: Post): boolean {
 
 export async function createBotInput(post: Post, logTag: string): Promise<BotInput> {
   const config = getBotConfig();
+  const cached = readInputCache(post.id, config.video_description_strategy);
+  if (cached) return cached;
+
   const log = getTweetLog();
   const warnings: string[] = [];
 
@@ -87,5 +91,7 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
     noteHistory: authorHistory ?? null,
   });
 
-  return { mediaResult, authorHistory, comments, warnings };
+  const result: BotInput = { mediaResult, authorHistory, comments, warnings };
+  writeInputCache(post, config.video_description_strategy, result);
+  return result;
 }

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2048488494243176855",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:57.819Z",
+  "post": {
+    "id": "2048488494243176855",
+    "author_id": "2023052292585648128",
+    "created_at": "2026-04-26T19:44:50.000Z",
+    "text": "Venci o câncer! Estou muito feliz! https://t.co/rbjSGtotNh",
+    "media": [
+      {
+        "media_key": "3_2048488490359480320",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HG2xbbpaYAAtCaz.jpg",
+        "height": 1309,
+        "width": 736
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1092,
+      "reply_count": 320,
+      "like_count": 44791,
+      "quote_count": 55,
+      "bookmark_count": 103,
+      "impression_count": 328827
+    },
+    "author_followers": 12419,
+    "author_name": "Isabella",
+    "author_description": "",
+    "author_tweet_count": 4037
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HG2xbbpaYAAtCaz.jpg",
+          "description": {
+            "description": "A close-up photograph shows a young child with a bald head lying in a hospital bed. The child is smiling widely and giving a thumbs-up gesture with their right hand. The child is wearing a dark blue shirt and has a hospital identification band on their wrist and an IV line attached to their arm. They are resting on a white and light-green pillow, set against the white plastic headboard of a hospital bed.",
+            "ocrText": "TICA CRU... amargo Center"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @sanguchitox2024: (No text content) (Likes=6, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1626)\n- @gustavojuc: Deus te abençoe ! Toda honra e glória ao senhor. 🤩😍🥰🙌🏾 (Likes=4, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1405)\n- @SawaraKali: Gloria a Deus!! 🙏🏾🙏🏾🙏🏾🙏🏾❤️❤️❤️❤️❤️ (Likes=3, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=705)\n- @blusinhadolula: ATENÇÃO GALERA! \n\nAQUI NÃO É FACEBOOK. \n\nEATE TUÍTE É FALSO! (Likes=2, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=76)\n- @alexjr_oliv: que notícia maravilhosa!!!! Jesus seja louvado 🙏🏼 (Likes=2, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=761)\n- @Radar_Funk: Congratulations! (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=157)\n- @samuelvelhancio: FAKE NEWS🥺 (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=28)\n- @BasicsDan_: Nem fudendo que virou moda falar que venceu o câncer vtnc (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=85)\n- @Alvesl_: boa, carinha.. Você é forte e merece o mundo! 🥳🎉 (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=717)\n- @Anna_08299: I’m so happy to see that you’ve beaten cancer! I wish you good health and happiness every day! ❤️ (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=31)",
+    "warnings": []
+  }
+}

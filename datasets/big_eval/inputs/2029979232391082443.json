@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2029979232391082443",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:38.148Z",
+  "post": {
+    "id": "2029979232391082443",
+    "author_id": "750746821018914816",
+    "created_at": "2026-03-06T17:55:38.000Z",
+    "text": "Here is an Iranian missile exploding near US soldiers at Prince Sultan Air Base in Saudi Arabia. Thankfully, no one lost their life.\n\nSaudi Arabia had been secretly allowing Israel and the United States to operate from the base, while publicly stating that it would not permit the https://t.co/zbn9k5lB5E",
+    "media": [
+      {
+        "media_key": "13_2029979112799084544",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2029979112799084544/img/t2IUEx2YMz_h8xqY.jpg",
+        "height": 640,
+        "width": 360,
+        "duration_ms": 14300,
+        "view_count": 110083,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029979112799084544/vid/avc1/320x568/7mDFqhbRRAycxT4S.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029979112799084544/vid/avc1/360x640/lKrkdNkR9uics1el.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2029979112799084544/pl/vgYZ9azR4oFHRZzP.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 659,
+      "reply_count": 123,
+      "like_count": 3273,
+      "quote_count": 37,
+      "bookmark_count": 402,
+      "impression_count": 216857
+    },
+    "author_followers": 404975,
+    "author_name": "Patricia Marins",
+    "author_description": ". support my work here 👉🏻 PayPal: marpatri640@gmail.com pix: marpatri640@gmail.com            join my Substack: @global21.substack.com",
+    "author_tweet_count": 34118
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2029979112799084544/vid/avc1/360x640/lKrkdNkR9uics1el.mp4",
+          "description": {
+            "description": "A three-frame sequence starting with a grainy, low-light shot of a dark night sky with thick clouds. In the second frame, a bright, circular light source, likely the moon or a streetlamp, glows faintly through the heavy cloud cover. The final frame is a blurry, close-up shot of a dimly lit, brownish surface, possibly a door or a piece of furniture, in an indoor setting.",
+            "ocrText": ""
+          },
+          "transcription": "Продолжение следует..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @SpacemanStoned: In reality, the US knows that once those bases are abandoned, we will never return.\n\nThat's why the US is leaving our soldiers in harms way, not realizing that we already lost those bases.\n (Likes: 135)\n- @WilhelmWKohl1: The Saudis are two faced and the world knows it now! No more hiding!\n (Likes: 105)\n- @Chrischeese1: They are killing Iranians so why should anyone be thankful no life was lost?\n (Likes: 83)\n- @thewildkore: Saudi Arabia got caught playing both sides and now Iran is turning their desert into a shooting gallery for US troops. Enough with the half-in, half-out basing. Time to consolidate in secure locations, hit back decisively, and stop treating American lives as bargaining chips. Game over for the charade. 🔥🇺🇸\n (Likes: 44)\n- @webcav1: They've bombed several US Bases but no casualties reported?\n (Likes: 29)\n- @PoeticMarvel: Thank you for your insight and valuable war footage. You are the new media.\n (Likes: 27)\n- @Manjaneegh: If you look closely it got intercepted by its target 😁\n (Likes: 13)\n- @thelensmagic: It would be the last thing US would do i.e. shifting its ppl from the base. Don't forget empires give a shyt about ppl than their image of aggressive posture.\n (Likes: 13)\n- @YukiYo20201004: To stay neutral, you shouldn’t use “thankfully”. You are a professional. Friendly advice\n (Likes: 11)\n- @AceScubaa: Saudi locals can’t say much, they have strict speech laws\n (Likes: 10)",
+    "warnings": []
+  }
+}

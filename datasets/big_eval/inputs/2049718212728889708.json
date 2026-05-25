@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2049718212728889708",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:38.608Z",
+  "post": {
+    "id": "2049718212728889708",
+    "author_id": "1464160197828657153",
+    "created_at": "2026-04-30T05:11:18.000Z",
+    "text": "In 2017, Seven‑year‑old Matilda Jones was paddling in Dozmary Pool in Cornwall when she spotted something lying flat on the bottom. It was a four‑foot sword. According to legend, this is the very lake where King Arthur’s Excalibur was thrown before he died.\n\nMatilda’s father, https://t.co/ultYqiC5wj",
+    "media": [
+      {
+        "media_key": "3_2049718199277764608",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHIP16WawAAFitk.jpg",
+        "height": 1289,
+        "width": 1300
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 870,
+      "reply_count": 157,
+      "like_count": 7507,
+      "quote_count": 59,
+      "bookmark_count": 815,
+      "impression_count": 244960
+    },
+    "author_followers": 123410,
+    "author_name": "Dr. M.F. Khan",
+    "author_description": "Researcher and Author, with profound interest in ancient history. Holds the doctorate (PhD.) degree in History and specialisation in Archaeology. (999)",
+    "author_tweet_count": 79596
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHIP16WawAAFitk.jpg",
+          "description": {
+            "description": "A man and a young girl are standing in knee-deep water in a lake. The man is holding a long, rusted sword vertically in the air, while the girl beside him cheers with her arms raised, holding a green fishing net. In the bottom left corner, an inset photograph shows the same young girl standing in a field, holding the large, rusted sword upright with both hands.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@TexasHospitaler** (@TexasHospitaler): The age of the Sword is irrelevant! The Lady of the Lake has spoken! Long Live Queen Matilda!  \nLikes: 340\n\n**@SandyofCthulhu** (@SandyofCthulhu): Charles III must now step down. All hail Queen Matilda!  \nLikes: 331\n\n**@pre_historic** (@pre_historic): While the pool's depth rarely exceeds nine feet, making it an unlikely spot for ancient relics, finding a four-foot prop in the historic \"Excalibur lake\" is still pure magic.  \nLikes: 128\n\n**@artaimemes** (@artaimemes): There are also naysayers. And NI! too. 😁  \nLikes: 94\n\n**@DanWizzzard** (@DanWizzzard): \"Listen. Strange women lying in ponds distributing swords is no basis for a system of government. Supreme executive power derives from a mandate from the masses, not from some farcical aquatic ceremony.\"  \nLikes: 87\n\n**@HoriKyotsune** (@HoriKyotsune): Clearly a 16th century sword Arthur is from post Roman 6th century Britain, so if anything both Excalibur and Caliburn would be Spatha like That sword is either a fencing trainer left recently for fun or something that is definitely not from 6th century Fun none the less!  \nLikes: 76\n\n**@GirdielBohmer** (@GirdielBohmer): Queen Matilda is the rightful England sovereign. My Banner stands after her!  \nLikes: 42\n\n**@BJWhittingham** (@BJWhittingham): I'd take her as my liege over Chuckles.  \nLikes: 37\n\n**@HagazagaH** (@HagazagaH): Read a story where a sword was thrown in that lake Throw an old reenactment sword you found at flea market in that lake Tell your girl the story about a thrown sword in that lake Go to the lake where you thrown the sword as a trip Your girl \"found\" it by chance - Contact the news  \nLikes: 32\n\n**@SerSquiggy** (@SerSquiggy): Missed photo opportunity of the daughter underwater holding the sword raised 🤣  \nLikes: 29",
+    "warnings": []
+  }
+}

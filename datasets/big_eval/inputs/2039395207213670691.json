@@ -1,0 +1,90 @@
+{
+  "tweet_id": "2039395207213670691",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:11.815Z",
+  "post": {
+    "id": "2039395207213670691",
+    "author_id": "1018666106075021312",
+    "created_at": "2026-04-01T17:31:22.000Z",
+    "text": "Old video. She was killed by an Iranian missile in March. A family member inherited the house tho! https://t.co/8xcUjSw8fJ",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2039306309774746093"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2039306309774746093",
+      "author_id": "1837608355797651459",
+      "created_at": "2026-04-01T11:38:07.000Z",
+      "text": "Woman Celebrates her new home she purchased after joining the Army 🔥🔥 https://t.co/wIeADDqeUE",
+      "media": [
+        {
+          "media_key": "13_2039306224777449472",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2039306224777449472/img/kTJ3p5nYUIhJzGD9.jpg",
+          "height": 1024,
+          "width": 576,
+          "duration_ms": 22684,
+          "view_count": 967962,
+          "variants": [
+            {
+              "bit_rate": 632000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2039306224777449472/vid/avc1/320x568/zjaWcPfupeVOEytI.mp4"
+            },
+            {
+              "bit_rate": 950000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2039306224777449472/vid/avc1/480x852/cWpbOCzFloVb3CPh.mp4"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2039306224777449472/vid/avc1/576x1024/aDz8HEaLTnV7z4bM.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/2039306224777449472/pl/47EhbP3spPb398Vb.m3u8?v=f6e"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 651,
+      "reply_count": 176,
+      "like_count": 22867,
+      "quote_count": 34,
+      "bookmark_count": 1724,
+      "impression_count": 2735636
+    },
+    "author_followers": 18709,
+    "author_name": "Eyes Left",
+    "author_description": "A socialist, anti-war military podcast hosted by veterans. Produced by @empirefiles",
+    "author_tweet_count": 2440
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2039306224777449472/vid/avc1/576x1024/aDz8HEaLTnV7z4bM.mp4",
+          "description": {
+            "description": "A video of a woman in an army uniform dancing in different parts of a house.",
+            "ocrText": "POV: The army helped you move into a new house ❤\nTikTok\n@ blossomt_"
+          },
+          "transcription": "Five star bitch and I'm bout to blow Five star bitch and I'm bout to blow Yeah, yeah Five star bitch and I'm bout to blow Five star bitch and I'm bout to blow Five star bitch and I'm bout to blow Yeah Post-virtual, fuck a boy show Bitch, I'm the illest, the sickest flow Want me to come, but I have my dough Payment on site or I'm out of dough Need a"
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@RimouskanRed**  \n(No text content - image)  \n3605 likes\n\n**@inkredableXR**  \nsource: i made it up!  \n986 likes\n\n**@Trapstar999**  \n(No text content - image)  \n592 likes\n\n**@hlitoroy**  \ntrust me bro  \n403 likes\n\n**@schenn4jvr**  \nI cant imagine being such a loser that you constantly wear your work uniform around so people kiss your feet.  \n118 likes\n\n**@lucavi_ftw**  \nsources say the dog inherited the house  \n62 likes\n\n**@wf_oracle**  \nNo. The video is a recent TikTok dance by blossomt_ (a young Black woman in uniform) celebrating her Army-assisted move into a new house. No reports link her to any death, let alone an Iranian missile strike in March. The claim in the quoted post appears to be false—likely April 1 misinformation. The woman shown is alive and well.  \n39 likes\n\n**@BabyGotCat1**  \nDoubt this is true. Ain’t NO WAY the us government will give anything to a black soldier’s family member for free. They don’t like giving black and brown Dolores their benefits  \n14 likes\n\n**@doit_nasty**  \nNo she didn’t bro you just making up shit  \n14 likes\n\n**@GlugsMackenzie**  \nI heard somebody finessed the house from them for $15.  \n13 likes",
+    "warnings": []
+  }
+}

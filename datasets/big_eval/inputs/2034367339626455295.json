@@ -1,0 +1,97 @@
+{
+  "tweet_id": "2034367339626455295",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:07.062Z",
+  "post": {
+    "id": "2034367339626455295",
+    "author_id": "1367209793686036482",
+    "created_at": "2026-03-18T20:32:25.000Z",
+    "text": "🚨🇺🇸 BREAKING: American jews are now OCCUPYING land in Patagonia, Argentina.\n\nThey are putting up gates to mark their territory. https://t.co/WcN5fsrQi7",
+    "media": [
+      {
+        "media_key": "13_2034367264397430784",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2034367264397430784/img/8wX2FTn1-VvmaWaE.jpg",
+        "height": 1584,
+        "width": 886,
+        "duration_ms": 10491,
+        "view_count": 1710783,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2034367264397430784/vid/avc1/320x572/Yd1QWX8-Ttm5yHGx.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2034367264397430784/pl/S6VXRFsA-5yJJduD.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2034367264397430784/vid/avc1/480x858/0b2XpKpp4syd--CC.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2034367264397430784/vid/avc1/720x1286/NXTriqku8w-9hHIO.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2034367264397430784/vid/avc1/886x1584/Fr0BORLa0tIZZwsW.mp4"
+          }
+        ]
+      },
+      {
+        "media_key": "3_2034367155492245504",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDuGJj3WUAAnL4p.jpg",
+        "height": 680,
+        "width": 383
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 14780,
+      "reply_count": 1552,
+      "like_count": 57489,
+      "quote_count": 1342,
+      "bookmark_count": 4709,
+      "impression_count": 3831176
+    },
+    "author_followers": 172023,
+    "author_name": "Jvnior",
+    "author_description": "Unapologetic Muslim Palestinian | Inquiries: jvniormgmt@gmail.com",
+    "author_tweet_count": 63984
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDuGJj3WUAAnL4p.jpg",
+          "description": {
+            "description": "A view from inside a vehicle looking down a paved two-lane road with double yellow lines in the center. A large metal gate, reinforced with red and white caution tape, blocks the road. The gate is supported by a tall metal frame. In the distance, a dark vehicle is parked on the other side of the gate under a cloudy sky.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2034367264397430784/vid/avc1/886x1584/Fr0BORLa0tIZZwsW.mp4",
+          "description": {
+            "description": "A white pickup truck with an attached metal frame drove directly into a tall metal beam structure over an open road in a desert landscape. The impact caused the truck's structure to crash into the vertical beams, creating a violent collision. The vehicle then skidded off the side of the road into the brush as the structure swayed from the force.",
+            "ocrText": "ATENCION"
+          },
+          "transcription": "Thank you for watching."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Jvnior (@Jvnior): It’s not all of them, but it’s always them. Likes=4120\n- Jvnior (@Jvnior): I wonder if Argentina was promised to them too. Likes=1524\n- Jvnior (@Jvnior): Their president is a Zionist jew plant. Likes=2185\n- Suppressed Voices (@supressedvoic): They are out of control Likes=1433\n- ⚔️ (@saint_eos): I suspect their building an Israeli safe heaven in case of a nuclear war... Likes=795\n- Chaserz🇪🇺 (@TheBlackmkoloni): How is this even legal? Local authorities in Argentina should be looking into these land claims immediately. Likes=662\n- ¥usufnowsees🇺🇸 (@thatguyyusuf): And so it begins… Likes=260\n- fries (@Sandy_DataX): Argentina is cooked Likes=183\n- ThatSeemsUnlikely (@TTSQ_): Argentina passed a law recently that allows fire burnt fields will be sold for cheap. Guess what? All of sudden fires erupted in multiple areas. And now since gates are placed which means land has been sold cheap for 🧃 Likes=151\n- Max Igan (@MaxtheCrowhouse): Well, you just take the gates down and continue using the roads dummy. And if they attack you for it or become aggressive, then you respond in kind. Likes=148",
+    "warnings": []
+  }
+}

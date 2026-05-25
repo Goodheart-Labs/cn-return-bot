@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2056144975818064019",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:36.029Z",
+  "post": {
+    "id": "2056144975818064019",
+    "author_id": "81012942",
+    "created_at": "2026-05-17T22:48:58.000Z",
+    "text": "What kills me more than someone publishing an AI-written article is how many people genuinely consider it the best writing they’ve ever encountered https://t.co/9MdafDSemM",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2056008456344101329"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2056008456344101329",
+      "author_id": "394727752",
+      "created_at": "2026-05-17T13:46:29.000Z",
+      "text": "Beautiful essay on adult friendship https://t.co/aaqjsfSFgP https://t.co/MA3eZoDgla",
+      "media": [
+        {
+          "media_key": "3_2056008377344430080",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HIhoudrXkAARPbm.jpg",
+          "height": 1834,
+          "width": 1320
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 19,
+      "reply_count": 19,
+      "like_count": 292,
+      "quote_count": 11,
+      "bookmark_count": 65,
+      "impression_count": 90652
+    },
+    "author_followers": 6396,
+    "author_name": "♡s♡",
+    "author_description": "☼ arab girl ☼ humancore ☼ new post: https://t.co/YEfeZv5Dll",
+    "author_tweet_count": 27634
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIhoudrXkAARPbm.jpg",
+          "description": {
+            "description": "A close-up photograph of a white page with black sans-serif printed text. The text is arranged in two paragraphs and discusses the nature of adult friendship, contrasting it with the structures of family, marriage, and work.",
+            "ocrText": "And perhaps this is why adult friendship feels increasingly radical. It resists the transactional logic modern life rewards everywhere else. Because a real friend offers something profoundly rare: unoptimised presence. Family is structured by blood. Marriage by institution. Work relationships by utility. Friendship survives purely through mutual choosing. Nobody has to stay. And yet some people do. Despite impossible schedules and emotional fatigue, some friends continue returning. They send memes during meetings. They remember your important dates. They call you out-of-the-blue. Not because it is convenient. But because somewhere, beneath all the exhaustion adulthood imposes, they still consider your inner life important. Sometimes it is simply the stubborn decision to keep returning to people despite the world constantly training you to prioritise everything else."
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @sun_girlxo: Here are the tells for me… [image with highlights] (Likes: 87, Reposts: 10, Quotes: 4, Bookmarks: 79, Views: 17038)\n- @megha_lilly: The sentence fragments give it away. CS Lewis wrote it better in the four loves. (Likes: 26, Reposts: 2, Views: 3453)\n- @MZYouhana: It’s just because they don’t read (Likes: 10, Reposts: 0, Views: 2494)\n- @sakibsahmed: was having the same feeling but at least it’s a well curated piece of ai output (Likes: 9, Reposts: 0, Views: 1291)\n- @arthur_m1968: The prose is terrible. So. Many. Full. Stops. It’s like they’re scared of connectives or punctuation that helps a sentence flow (Likes: 3, Reposts: 0, Views: 349)\n- @supersuperboi: i dont see how that fundamentally matters. if the message is good, the message is good. AI or not. (Likes: 3, Reposts: 0, Views: 1247)\n- @EJulianMiller: I’ve graded a decent amount of undergrad student papers. My takeaway is most people are not good at writing, maybe even most people actually suck at writing. So, not surprised that AI writing would be considered impressive by many. (Likes: 2, Reposts: 0, Views: 664)\n- @t3hSurge: Thinking you have a superior palate doesn’t make you an arbiter of taste. (Likes: 2, Reposts: 0, Views: 983)\n- @sondering__: What are the tells here? (Likes: 2, Reposts: 0, Views: 3121)\n- @rishdotuk: Avg person doesn't read, that's it. Anything written with correct grammar and profoundness sounds like intellectual masturbation to them. There is this other side as well, where people would read this, and even though it's clearly LLM written, it'd resonate with them, because it is for the masses. (Likes: 1, Reposts: 0, Views: 505)",
+    "warnings": []
+  }
+}

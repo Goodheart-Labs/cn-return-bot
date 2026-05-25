@@ -1,0 +1,85 @@
+{
+  "tweet_id": "2029976032799764557",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:27.831Z",
+  "post": {
+    "id": "2029976032799764557",
+    "author_id": "1278464930971299841",
+    "created_at": "2026-03-06T17:42:56.000Z",
+    "text": "As close as we can get to a pov of being hit my a ballistic missile without the person recording being toasted. https://t.co/H4ak52w9jn",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2029966655363895565"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2029966655363895565",
+      "author_id": "1457867047334031360",
+      "created_at": "2026-03-06T17:05:40.000Z",
+      "text": "Video footage purported to show an Iranian ballistic missile strike on Prince Sultan Air Base in Al-Kharj, Saudi Arabia, with the missile impacting very close to several U.S. servicemembers, thankfully said to have resulted in only minor injuries to personnel at Prince Sultan. https://t.co/Nlju8TCZ22",
+      "media": [
+        {
+          "media_key": "13_2029966602305953792",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2029966602305953792/img/xpnS3TQ3zKi7BrCS.jpg",
+          "height": 640,
+          "width": 360,
+          "duration_ms": 14266,
+          "view_count": 2507960,
+          "variants": [
+            {
+              "bit_rate": 632000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2029966602305953792/vid/avc1/320x568/FbZfor5UB_c82Vv5.mp4"
+            },
+            {
+              "bit_rate": 950000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2029966602305953792/vid/avc1/360x640/NRwtdlFdjvd_tQto.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/2029966602305953792/pl/uqgqA-R-rEMWphN7.m3u8?v=cfc"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 817,
+      "reply_count": 48,
+      "like_count": 19341,
+      "quote_count": 1,
+      "bookmark_count": 2753,
+      "impression_count": 1326454
+    },
+    "author_followers": 12483,
+    "author_name": "VLS Enjoyer",
+    "author_description": "",
+    "author_tweet_count": 4663
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2029966602305953792/vid/avc1/360x640/NRwtdlFdjvd_tQto.mp4",
+          "description": {
+            "description": "A series of low-quality video frames capturing atmospheric or indoor scenes. The first frame shows a dark, overcast sky at night. The second frame reveals a bright light source, possibly the moon or a streetlamp, peeking through the clouds. The third frame is a blurry, close-up shot of an indoor architectural detail, possibly a door frame or wall, in dim, amber-colored lighting.",
+            "ocrText": ""
+          },
+          "transcription": "Продолжение следует..."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@machinehacklabs**  \nlol that was close enough to warrant being able to say you were hit by a ballistic missile. That shit hit you how are you not dead.  \nLikes: 445 | Reposts: 0 | Replies: 0 | Views: 10138\n\n**@BanUnsweetTea**  \nStood in there videoing like a fucking champ. Holy shit  \nLikes: 182 | Reposts: 0 | Replies: 0 | Views: 8283\n\n**@bigseb31213**  \nguys there's a reason they built those bunkers, stay in them!  \nLikes: 35 | Reposts: 0 | Replies: 0 | Views: 6045\n\n**@OldTownCrab**  \nYou can understand why the mujahideen were terrified by these in Afghanistan, no warning like with an airstrike, just sudden obliteration  \nLikes: 31 | Reposts: 0 | Replies: 0 | Views: 4837\n\n**@iswarfair**  \nWhat are they feeding these cameramen in the Gulf  \nLikes: 23 | Reposts: 0 | Replies: 0 | Views: 2044\n\n**@mnmcsofgp**  \nThat's way too slow to be a ballistic missile  \nLikes: 21 | Reposts: 0 | Replies: 0 | Views: 16620\n\n**@CJeifler**  \nThis is an old video and NOT in Saudi Arabia. @sentdefender is just a total larping moron posting all the shit he sees on his timeline with zero verification.  \nLikes: 14 | Reposts: 0 | Replies: 0 | Views: 556\n\n**@peppercutsgrass**  \nYeah, I wanted to say to ole buddy “if it stops moving, you should run” but it would have ruined the shot, so I’m glad he held his ground.  \nLikes: 6 | Reposts: 0 | Replies: 0 | Views: 944\n\n**@pindiboy02**  \nNa this the second closesest. First was when the guy was making a video and it hit the floor above. I think qatar  \nLikes: 4 | Reposts: 0 | Replies: 0 | Views: 6955\n\n**@hucklebuck305**  \nCameraman never dies  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 745",
+    "warnings": []
+  }
+}

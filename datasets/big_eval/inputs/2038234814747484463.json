@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2038234814747484463",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:35.053Z",
+  "post": {
+    "id": "2038234814747484463",
+    "author_id": "358175664",
+    "created_at": "2026-03-29T12:40:23.000Z",
+    "text": "Gracie the bear was rescued after years of living in captivity.\n\nThis is her reaction to newfound freedom..🐻🙏🥺🥰\n\n📹wildlifesos https://t.co/GawEOTWHgW",
+    "media": [
+      {
+        "media_key": "13_2038233955502272512",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2038233955502272512/img/_PEIz4VN-fNtsl7j.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 24079,
+        "view_count": 98857,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2038233955502272512/vid/avc1/320x568/RqBw2teZTxrWyjC6.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2038233955502272512/vid/avc1/480x852/FXEYKeslvJtIomfy.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2038233955502272512/vid/avc1/720x1280/fWBWUdXxPNVdVEUu.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2038233955502272512/pl/XDwpbsfcBIg6nJXx.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1161,
+      "reply_count": 164,
+      "like_count": 8639,
+      "quote_count": 81,
+      "bookmark_count": 316,
+      "impression_count": 229886
+    },
+    "author_followers": 964772,
+    "author_name": "𝕐o̴g̴",
+    "author_description": "Funny, good and  upbeat videos of 🐶🐱🐻🐺🐨🐼🌏🐧🐬🐳🐾🐝🐟🐠🏞️👶",
+    "author_tweet_count": 9967
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2038233955502272512/vid/avc1/720x1280/fWBWUdXxPNVdVEUu.mp4",
+          "description": {
+            "description": "A close-up of a bear in a grassy enclosure, with its body facing away from the camera. The bear is dark and furry, and it is standing on its hind legs, reaching up with its front paws to grab onto the trunk of a tree. The tree is thick and dark, and its branches are covered in green leaves. In the background, there is a green fence and some trees. The bear is standing in a lush, green grassy area. The bear is looking up at the tree, and its head is tilted back. Its front paws are resting on the trunk of the tree, and its hind legs are slightly bent. The bear's fur is thick and dark, and it is covered in some dirt. The overall mood of the image is peaceful and tranquil.",
+            "ocrText": "WILDLIFE SOS"
+          },
+          "transcription": "Thank you for watching!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Naturenut 🇬🇧** (@susa5822)  \n🥹  \n\"Until we extend our circle of compassion to all living things, humanity will not find peace.\" - Albert Schweitzer  \nLikes: 88 | Reposts: 19 | Views: 2083\n\n**Sharronmason1237** (@Sharronmason124)  \nGotta admit I cried a few tears over this gurl. To be so so so excited about a real tree…we don’t deserve animals.  \nLikes: 81 | Views: 1488\n\n**Elizabeth** (@LadyElizabeth61)  \nNot quite so simple, but Gracie’s coming along slowly.  \nhttps://news.wildlifesos.org/ending-years-of-torment-for-sloth-bear-gracie/  \nLikes: 42 | Views: 1030\n\n**Tracey Russell** (@TraceyR16154277)  \nThis was really emotional. My eyes were leaking 🥰  \nLikes: 18 | Views: 720\n\n**Just Me** (@Becky7pd)  \nBreaks your heart to see the real Gracie break out of that bear body. Animals DO care about life and were they live and what they do. People who look at animals and see a blob that won't care, doesn't have feelings, etc. are the true unfeeling blobs. So sad she had to wait YEARS to have what God made her to have the minute she was born.  \nLikes: 17 | Views: 978\n\n**Anne Henley** (@Anniy007)  \nShe needs more Bears.. more \"family\".. more so she is not alone anymore  \nLikes: 16 | Views: 787\n\n**Cathleen** (@Cosmic_gal102)  \nJesus, what we do to animals for entertainment. I hope all her days are filled with love & comfort. ❤️  \nLikes: 15 | Views: 541\n\n**Just Wow** (@justt_wow)  \nHer happiness is so real it's overwhelming 🥺  \nLikes: 14 | Views: 559\n\n**@RGBAtlantica** (@RGBAtlantica)  \nAnimals must be freed, not be in cages. Only humans do that sort of thing.  \nLikes: 12 | Views: 386\n\n**Natalie** (@Natalie64827444)  \nI glad she isn't in a small cage and she has more room to roam but she should have never been caged in the first place.  \nLikes: 8 | Views: 239",
+    "warnings": []
+  }
+}

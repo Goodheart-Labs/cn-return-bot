@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2040251271332983064",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:50.020Z",
+  "post": {
+    "id": "2040251271332983064",
+    "author_id": "1718398430819581952",
+    "created_at": "2026-04-04T02:13:03.000Z",
+    "text": "Due to the Muslim population, German schools will no longer have musical education. https://t.co/RPiCXhZmtw",
+    "media": [
+      {
+        "media_key": "13_2040251208573624320",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2040251208573624320/img/KNcUyq8E0Z39MI8x.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 31391,
+        "view_count": 276823,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040251208573624320/vid/avc1/480x270/naTeXI9gWjySQZSx.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040251208573624320/vid/avc1/640x360/FfR13B0dCu1bVVFI.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040251208573624320/vid/avc1/1280x720/Y0aZnFQhadfbkZhZ.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2040251208573624320/pl/eUnUqBn0eFCCWlVz.m3u8?v=a26"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2589,
+      "reply_count": 942,
+      "like_count": 7211,
+      "quote_count": 457,
+      "bookmark_count": 932,
+      "impression_count": 712774
+    },
+    "author_followers": 42338,
+    "author_name": "Our Own Nation",
+    "author_description": "Nationalist, Father, Political commentator, subscribe to my YouTube channel 👇🏻",
+    "author_tweet_count": 6233
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2040251208573624320/vid/avc1/1280x720/Y0aZnFQhadfbkZhZ.mp4",
+          "description": {
+            "description": "A news report from a German news program titled NEWSROOM. The first two frames show a male news anchor in a suit, reporting on a story in front of a blurred background. The third frame shows the facade of a school building. The fourth frame shows several people, including a person wearing a red hijab, walking and viewed from behind. Throughout all four frames, a lower third banner is visible with headlines about Muslims allegedly threatening fellow students and Hamburg taking a clear line against discrimination.",
+            "ocrText": "NEWSROOM MUSLIME BEDROHEN MITSCHÜLER | HAMBURG ZIEHT KLARE LINIE GEGEN DISKRIMINIERUNG"
+          },
+          "transcription": "sind es Einzelfälle, aber offenbar so viele, dass die Hamburger Schulsenatorin jetzt zusammen mit christlichen, jüdischen und muslimischen Religionsverbänden reagiert. Dabei geht es um Übergriffe und Diskriminierungen vorwiegend von muslimischen Schülern. So würden vereinzelt deutsche Mädchen attackiert, sie gehören hier nicht her. Andere würden nicht am Musikunterricht teilnehmen, weil dieser haram sei. Es sei jetzt an der Zeit zu sagen, dass diese Übergriffe nicht mehr geduldet werden. Kein einziger, so Schulsenatorin Xenia Bicke."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- cole - @cole4393631605: The home of Beethoven, Bach, Brahms and Wagner will have no music.  This is genocide. Likes=2013\n- Mark 🇺🇸🐊 - @xMarcoComp: trading Beethoven and Bach for islamic ululating worst trade deal ever Likes=654\n- Sarah Adams - @sarahadams: When we have to remove music, we have given up too much Likes=403\n- Ft. Willow - @alk55Willow: I wonder how long before Germany denies girls an education? Likes=386\n- JerseyGio - @JerseyGio: The land of Bach and Beethoven is caving to the least creative people on earth. Shameful! Likes=310\n- William Boquist - @WilliamBoq7826: That's insane. Newcomers adapt to the ways of the natives, or else they should be expelled. Likes=265\n- Nurse Patriot - @LABeachGal1: Germany is being conquered Likes=260\n- TeacherReality - @TeacherReality: When you take away music from school children, you take away shared customs, shared Arts, shared history, and shared values. That is the Muslim plan. @_FriedrichMerz Likes=189\n- Goy of Nazareth - @GoyOfNazareth: lol white erasure on full display all over the world. But when will we chimp out? Likes=189\n- Samantha Smith - @SamanthaTaghoy: I’m all for calling out Islamic extremism and its creeping takeover of our culture and way of life. But I translated the original clip. This post is false. Music education isn’t being banned. We’re facing enough genuine threats. Fake news only distracts and discredits our side Likes=131",
+    "warnings": []
+  }
+}

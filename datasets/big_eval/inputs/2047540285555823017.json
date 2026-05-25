@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2047540285555823017",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:57.789Z",
+  "post": {
+    "id": "2047540285555823017",
+    "author_id": "1985346009745260544",
+    "created_at": "2026-04-24T04:57:00.000Z",
+    "text": "🚨: Psilocybin extends life of human cells by 50% in wild new study. https://t.co/Fhj6X3VRcS",
+    "media": [
+      {
+        "media_key": "3_2047359118101630976",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGmuRUIa0AA5_Ly.jpg",
+        "height": 800,
+        "width": 600
+      },
+      {
+        "media_key": "3_2047359130374152192",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGmuSB2aoAA4tDM.jpg",
+        "height": 690,
+        "width": 767
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1138,
+      "reply_count": 120,
+      "like_count": 12113,
+      "quote_count": 124,
+      "bookmark_count": 2196,
+      "impression_count": 479943
+    },
+    "author_followers": 34645,
+    "author_name": "Latest in Cosmos",
+    "author_description": "🌌 Daily updates on space, astronomy & cosmic discoveries 🚀 | Science breakthroughs & the wonders of the universe",
+    "author_tweet_count": 1482
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGmuRUIa0AA5_Ly.jpg",
+          "description": {
+            "description": "A close-up photograph shows a cluster of Psilocybe azurescens mushrooms growing out of a decaying, moss-covered log. The mushrooms have smooth, caramel-colored caps and slender, pale-bluish stems. The forest background is softly blurred.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGmuSB2aoAA4tDM.jpg",
+          "description": {
+            "description": "A digital illustration of three mushrooms with conical caps, rendered in a colorful, psychedelic style. The mushrooms are colored with a heat-map effect featuring vibrant blues, yellows, oranges, and greens. They are set against a soft, out-of-focus background of multi-colored bokeh circles in shades of green, purple, and orange.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @CurioSphereX: actually psilocin (the active form of psilocybin) extended the life of lab-grown human skin and lung cells by over 50%. (Likes=115, Reposts=4, Replies=5)\n- @bart_ohm: If you make a claim, show the study. @grok, help us out here. (Likes=52, Reposts=0, Replies=0)\n- @GregMoon: I guess I’m living forever. (Likes=49, Reposts=0, Replies=0)\n- @upsidepart2: The answers to solving countless medical issues... nature. The solutions are all there... you can't deny the effects of neurogenesis. If it is on this planet, we must need it for something. Respecting the power of nature is paramount, but the answers are ALL right there. (Likes=24, Reposts=0, Replies=0)\n- @miragemunny: thought that was a @Tokabu777 mushroom on the right (Likes=15, Reposts=0, Replies=0)\n- @lilbaconboi: [video] (Likes=13, Reposts=0, Replies=0)\n- @hpodotcenter: People called me crazy for removing depression and suicide with mushrooms and dmt but here we are 12 years later. (Likes=12, Reposts=0, Replies=0)\n- @b00mr0ast3d: Beer lobby Democrats and Republicans in four days : PSSILOCYBIN MAKES YOU PUKE UNTL YOU DIE (Likes=6, Reposts=0, Replies=0)\n- @Tobyoshi420: Dancing bears loves the Psilocybin. @Dancingbearxrp [photo] (Likes=5, Reposts=0, Replies=0)\n- @ascensionfather: Studies like this are misleading because the fat Dead Head that chomps shrooms daily isn’t living 50% more - whatever benefit is immediately cancelled out by the hyper toxic world we live in. (Likes=5, Reposts=0, Replies=0)",
+    "warnings": []
+  }
+}

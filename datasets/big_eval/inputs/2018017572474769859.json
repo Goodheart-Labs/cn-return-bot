@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2018017572474769859",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:58:26.026Z",
+  "post": {
+    "id": "2018017572474769859",
+    "author_id": "16635277",
+    "created_at": "2026-02-01T17:44:16.000Z",
+    "text": "Reporter: A Democrat won a special election in Texas in an area that you won by 17 points\n\nTrump: I’m not involved in that. That’s a local race. I don’t know anything about it. I had nothing to do with it. https://t.co/MfWU1DZkar",
+    "media": [
+      {
+        "media_key": "13_2018017536328323072",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2018017536328323072/img/3PGlBdDzkCoh5_Q-.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 61061,
+        "view_count": 847670,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2018017536328323072/vid/avc1/480x270/wfF3I3VXvjTR9UyS.mp4?tag=14"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2018017536328323072/vid/avc1/640x360/sC7swXVftERG8KF2.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2018017536328323072/vid/avc1/1280x720/dlfkkmdMlk2dY8ob.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2018017536328323072/pl/jr1cMj2fuJttzyIp.m3u8?tag=14&v=472"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 598,
+      "reply_count": 663,
+      "like_count": 3752,
+      "quote_count": 313,
+      "bookmark_count": 287,
+      "impression_count": 1538175
+    },
+    "author_followers": 751503,
+    "author_name": "Acyn",
+    "author_description": "Senior Digital Editor for https://t.co/ok280opPL9  Clips made with @SnapStream  Internet Hooligan…",
+    "author_tweet_count": 193319
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2018017536328323072/vid/avc1/1280x720/dlfkkmdMlk2dY8ob.mp4?tag=14",
+          "description": {
+            "description": "A sequence of four frames from a Fox News video showing Donald Trump speaking outdoors at Mar-a-Lago. In all four frames, he is dressed in a dark suit with a blue tie, standing in front of columns and lush greenery. The graphics on the bottom of the screen indicate a 'FOX NEWS ALERT' and 'BREAKING NEWS' with the headline 'TRUMP SPEAKS FROM MAR-A-LAGO'. In the first frame, he looks toward the camera with a neutral expression. In the second frame, his mouth is slightly open as he speaks. In the third frame, his eyes are closed or looking down. In the final frame, he appears to be mid-sentence with his mouth wide open.",
+            "ocrText": "MOMENTS AGO BREAKING NEWS FOX NEWS 9:40 PT TRUMP SPEAKS FROM MAR-A-LAGO FOX NEWS ALERT MOMENTS AGO BREAKING NEWS FOX NEWS channel TRUMP SPEAKS FROM MAR-A-LAGO FOX NEWS ALERT MOMENTS AGO BREAKING NEWS FOX NEWS channel TRUMP SPEAKS FROM MAR-A-LAGO FOX NEWS ALERT MOMENTS AGO BREAKING NEWS FOX NEWS 12:41 ET TRUMP SPEAKS FROM MAR-A-LAGO FOX NEWS ALERT"
+          },
+          "transcription": "The Press Mrs. President, in Texas, a Democrat won in a special election in an area that you had won by 17 points. What is your reaction to that? I don't know. I didn't hear about it. Somebody ran where? In Texas. Special election for legislators. The 9th state Senate. I'm not involved in that. That's a local Texas race. You mean I won by 17? You did. And this person lost. Things like that happen. Does it worry you about the election? Well, you don't know whether or not it's transferable. I'm not on the ballot, so you don't know whether or not it's transferable. You put the Democrats in, you'll end up with open borders again. You'll end up with crime all over the place. We have no crime anymore. I mean, think of it. The country has the lowest crime it's had in 125 years. In recorded history. The year 1900. That's a long time ago. So it's very good. No, I don't know anything about it. I didn't know. I mean, I know there's a race going on there. And it's too bad. What can I say? I have nothing to do with it."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@covie_93**: Huh? Who wrote this then?? (1,319 likes)\n- **@tommyjusa**: Nice try, Jan. (1,003 likes)\n- **@Amy_Siskind**: Other than you literally posted on social media to vote for the Republican (569 likes)\n- **@JohnnyVomits**: Trump: I don't know anything about it. Also Trump: (381 likes)\n- **@gatesisthedevil**: Fact, check, he endorsed the person that lost (377 likes)\n- **@FrankCMYK**: Donald Trump (election day): “GET OUT AND VOTE… she has my Complete and Total Endorsement… KEEP TEXAS RED.” Reporters need to stop translating obvious lies into “both sides” content. (265 likes)\n- **@JoJoFromJerz**: Riiight… 😂😂😂😂 (245 likes)\n- **@TheMaineWonk**: Selective dementia is a real thing. Poor fella (220 likes)\n- **@Krush59**: He posted about it less than 24 hours ago 🤣 Trump has dementia and he’s a pedophile (190 likes)\n- **@LucasSa56947288**: Didn’t you endorse the candidate that lost last night to a Democrat? (181 likes)",
+    "warnings": []
+  }
+}

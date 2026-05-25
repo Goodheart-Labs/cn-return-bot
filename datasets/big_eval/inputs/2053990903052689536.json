@@ -1,0 +1,87 @@
+{
+  "tweet_id": "2053990903052689536",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:12.584Z",
+  "post": {
+    "id": "2053990903052689536",
+    "author_id": "1393335583834091521",
+    "created_at": "2026-05-12T00:09:27.000Z",
+    "text": "We’re bringing back semiconductor manufacturing. https://t.co/klHNNNXikT",
+    "media": [
+      {
+        "media_key": "13_2053990767773851648",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2053990767773851648/img/8geIDQDQMULlmVb0.jpg",
+        "height": 3840,
+        "width": 2160,
+        "duration_ms": 33408,
+        "view_count": 208098,
+        "variants": [
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053990767773851648/vid/avc1/1080x1920/lMokQS9t9iL8yEGx.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053990767773851648/vid/avc1/480x852/kNNzYUJq00RoOwE0.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2053990767773851648/pl/1zP_47W6gFok8WIT.m3u8?v=5c8"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053990767773851648/vid/avc1/320x568/rvxOhmBuQKykrKDV.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053990767773851648/vid/avc1/720x1280/GW68CX2Jfw7IX-mG.mp4"
+          },
+          {
+            "bit_rate": 25128000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053990767773851648/vid/avc1/2160x3840/wdKxDnDgXfoXQEq2.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1024,
+      "reply_count": 1191,
+      "like_count": 7599,
+      "quote_count": 127,
+      "bookmark_count": 554,
+      "impression_count": 594716
+    },
+    "author_followers": 326169,
+    "author_name": "Howard Lutnick",
+    "author_description": "41st United States Secretary of Commerce. Amazing wife and 4 great kids.",
+    "author_tweet_count": 512
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2053990767773851648/vid/avc1/2160x3840/wdKxDnDgXfoXQEq2.mp4",
+          "description": {
+            "description": "A series of frames capturing a meeting between Tim Cook (CEO of Apple) and another man in a formal office setting. The office features wood-paneled walls, an ornate chandelier, and large framed artwork. The men are dressed in dark suits and are shown in conversation, using hand gestures. One close-up frame shows hands interacting with a blue smartphone.",
+            "ocrText": "[{\"frame\": 1, \"text\": \"ARE SERIOUS\"}, {\"frame\": 2, \"text\": \"WE GOT TO WORK TOGETHER\"}, {\"frame\": 3, \"text\": \"CONSUMER PRODUCT\"}, {\"frame\": 4, \"text\": \"\"}]"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Dr. Simon** (@goddek): How about bringing back the death penalty for pedophiles? (Likes: 3845, Reposts: 401, Replies: 63)\n- **⚛️Ⓜ️ Dr_Aquilae.BULL Ⓜ️⚛️** (@Aquilae_80085): Hell awaits. (Likes: 1191)\n- **another stupid blue checkmark.** (@chosenofKek): The Psychopath that Laughs at the Epstein files speaks Huh? (Likes: 543, Reposts: 19, Replies: 5)\n- **Darth Powell** (@VladTheInflator): Bro when your next trip to Epstein island? (Likes: 233, Reposts: 7, Replies: 2)\n- **Shifu 🐺** (@SpiderTrades): Maybe you can build those Trump phones now 😂 (Likes: 229)\n- **Retro Coast** (@RetroCoast): Howard Lutnick is an Epstein Island kiddie diddler (Likes: 208, Reposts: 14, Replies: 4)\n- **Dietz** (@Dietz96956651): Why are you not in prison? This country is corrupt af. Unreal. (Likes: 196)\n- **Wuhan Fourth Turning Swan** (@TheWuhanClan): You’re bringing back insider trading (Likes: 137)\n- **Josh.** (@JoshCPA67): Can we bring back arresting lying corrupt pedophile elitists like yourself instead? (Likes: 127)\n- **Rudy Havenstein, Senior Markets Commentator.** (@RudyHavenstein): https://t.co/ftb5GyUqTd (Likes: 114)",
+    "warnings": []
+  }
+}

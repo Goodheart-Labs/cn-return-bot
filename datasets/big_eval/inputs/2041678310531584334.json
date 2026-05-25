@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2041678310531584334",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:23.427Z",
+  "post": {
+    "id": "2041678310531584334",
+    "author_id": "1929977817384792065",
+    "created_at": "2026-04-08T00:43:36.000Z",
+    "text": "Mike Vrabel on his recent affair with Dianna Russini:\n\n“It was a mistake… I had a few drinks and thought it was Kay Adams.” https://t.co/1TsJ7mhhxE",
+    "media": [
+      {
+        "media_key": "3_2041678307587211264",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFV_mn1bQAAnAVp.jpg",
+        "height": 960,
+        "width": 1440
+      },
+      {
+        "media_key": "3_2041678307578744832",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFV_mnzaEAAhRlI.jpg",
+        "height": 449,
+        "width": 314
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 585,
+      "reply_count": 149,
+      "like_count": 17080,
+      "quote_count": 99,
+      "bookmark_count": 448,
+      "impression_count": 1399053
+    },
+    "author_followers": 18096,
+    "author_name": "Football Crave",
+    "author_description": "Craving Football Culture 🏈 | parody account not affiliated with @popcrave",
+    "author_tweet_count": 4525
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFV_mn1bQAAnAVp.jpg",
+          "description": {
+            "description": "A headshot of Mike Vrabel, former head coach of the Tennessee Titans and current personnel for the Cleveland Browns, speaking at a press conference. He is wearing a blue linen-textured blazer over a light blue collared shirt. He is leaning forward with his arms crossed in front of three microphones from various media outlets, including NBC Sports Boston and a microphone with the New England Patriots logo.",
+            "ocrText": "Sports BOSTON 4"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFV_mnzaEAAhRlI.jpg",
+          "description": {
+            "description": "A headshot image of a woman with long brown hair wearing a blue strapless button-down dress and large hoop earrings. She is standing in front of a black backdrop featuring a white repeating logo and the word 'Fanatics'.",
+            "ocrText": "Fanati Fanc ics ics F Fanc tics ana"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @parlay_play: Dianna's AJ Brown reports make so much sense now (Likes: 243)\n- @pigeonorcat: Bro was def drinking 4loko off a xan (Likes: 90)\n- @Murburto: There is not that much liquor…. (Likes: 75)\n- @randomfrankp: That pfp hits different now 💀 (Likes: 56)\n- @BinTiger22: Need more than booze to get there. (Likes: 34)\n- @Real_Jackalope: \"A few\" is doing a lot of work there (Likes: 32)\n- @AronVonBrando: (Likes: 27)\n- @mrjoshua76: She looks like Kay Adams grandma (Likes: 12)\n- @RarryRobst356: I would die for Kay Adams (Likes: 9)\n- @ABNRanger87: 😂😂😂 (Likes: 6)",
+    "warnings": []
+  }
+}

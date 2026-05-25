@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2047204704015298917",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:42.385Z",
+  "post": {
+    "id": "2047204704015298917",
+    "author_id": "1988913884703649792",
+    "created_at": "2026-04-23T06:43:31.000Z",
+    "text": "🚨 A clear photo of Jennie’s long feet was posted by paparazzi amid her “vgly feet” controversy on social media https://t.co/IqYrTXMPXK",
+    "media": [
+      {
+        "media_key": "3_2047204696297734144",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGkh0yFWgAAiU4N.jpg",
+        "height": 1256,
+        "width": 1080
+      },
+      {
+        "media_key": "3_2047204696071299072",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGkh0xPXYAABQ5w.jpg",
+        "height": 737,
+        "width": 540
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 328,
+      "reply_count": 199,
+      "like_count": 7024,
+      "quote_count": 167,
+      "bookmark_count": 1232,
+      "impression_count": 938316
+    },
+    "author_followers": 5288,
+    "author_name": "KpopInsider",
+    "author_description": "😴 My tweets are clapbacks and not unprovoked ‼️",
+    "author_tweet_count": 4729
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGkh0yFWgAAiU4N.jpg",
+          "description": {
+            "description": "A medium shot of a woman with long black hair, wearing a white t-shirt with a red collar and a graphic print on the front. She is wearing several necklaces and looking directly into the camera. The background is a plain, light-colored wall.",
+            "ocrText": "CHAVARRIA FASHION SERVICES 36 WEST STREET BROOKLYN, NY 11222"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGkh0xPXYAABQ5w.jpg",
+          "description": {
+            "description": "A close-up photograph showing a person's feet wearing dark brown or black flip-flops, standing on a textured red carpet.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **PEARL** (@Pearl___Xdelta): Her toes are bigger then BTS dick (Likes: 252, Replies: 37, Reposts: 3, Views: 35604)\n- **KpopInsider** (@KpopInside4rdi): https://t.co/kh5OFScCE9 (Likes: 130, Replies: 0, Reposts: 0, Views: 77261)\n- **Geo Memes** (@PoliGeoMeme): Use this (Likes: 113, Replies: 0, Reposts: 0, Views: 19023)\n- **Say walahi** (@abdirahman_raw): feet built like Kevin Durant's. 😂😂 (Likes: 57, Replies: 0, Reposts: 0, Views: 10501)\n- **Yellw** (@s_yellw): Me wondering why people care (Likes: 57, Replies: 0, Reposts: 0, Views: 12659)\n- **Staerushka** (@staerushka): Doesn't she have money for a pedicure? It's ugly and unkempt (Likes: 44, Replies: 0, Reposts: 0, Views: 15942)\n- **Tunde** (@callmetunde_): At this rate, we'll have foot analysts account breaking down arch to heel ratios. (Likes: 27, Replies: 0, Reposts: 0, Views: 21492)\n- **Laser Birb 🇳🇿** (@LaserBirb): A clearer photo taken from a youtube video, yw (Likes: 24, Replies: 0, Reposts: 0, Views: 30511)\n- **#1Jennie stan🇰🇷🚲** (@misogynistjenho): You can tell it stinks🤢 (Likes: 20, Replies: 0, Reposts: 0, Views: 2075)\n- **katarina** (@nooiskat): Its okay queen, nicki minaj wrote a song about you (Likes: 16, Replies: 0, Reposts: 0, Views: 8244)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "tweet_id": "1998197662915731867",
+  "role": "no_note_needed",
+  "needs_note": "no",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "insider_reporting_framing_dispute",
+  "tweet_summary": "ESPN college-football insider Pete Thamel reports that Lane Kiffin made the decision to allow Ole Miss assistant coaches to return for the College Football Playoff (to help new HC Pete Golding), noting a prior decision to let Charlie Weis Jr. return.",
+  "why_note_decision": "No correction is warranted. This is sourced insider reporting from ESPN's lead CFB reporter about an internal decision, plus an attributed characterization ('allow'). The underlying facts are accurate: Kiffin departed for LSU, several LSU-bound assistants (Weis, Cox, McDonald, Smith) returned to coach Ole Miss in the CFP, and Golding ran the team. Replies dispute the word 'allow' as spin, but that is a framing/opinion disagreement, not a checkable falsehood. The original note's flat claim that 'Ole Miss leadership made the decision, not Kiffin' overstates certainty about an internal matter that reporting does not cleanly resolve.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet is attributed insider reporting (Pete Thamel/ESPN) plus a characterization ('Kiffin allowed the coaches to return'); the verifiable facts (Kiffin left for LSU; LSU-bound assistants returned for Ole Miss's CFP run; Golding was interim HC) are all true. A note claiming the tweet is FALSE — e.g. asserting as fact that 'Ole Miss leadership, not Kiffin, made the decision' — must FAIL, because who 'allowed' the LSU-employed assistants to return is genuinely murky and the note's certainty is unsupported (this is the original note's error: rated incorrect + missing-key-points + note-not-needed). Reply skepticism about the word 'allow' is opinion, not grounds for a correction.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Post incorrectly claims Kiffin made the decision to allow coaches to return. Ole Miss officials didn't allow Kiffin to coach in CFP to avoid him recruiting players as incoming LSU coach. Ole Miss leadership made the decision. https://www.espn.com/college-football/story/_/id/47182491/lane-kiffin-final-days-ole-miss-move-lsu",
+    "failure_reason": "Rated notHelpfulIncorrect (13) + missingKeyPoints (13) + noteNotNeeded (11). The note conflates two separate decisions: (1) Ole Miss barring KIFFIN from coaching the CFP (true, an Ole Miss/AD decision) vs (2) the ASSISTANT coaches returning (what Thamel's tweet is about). It rebuts a claim the tweet didn't make and asserts the assistants' return was 'Ole Miss leadership's' decision as established fact, which the reporting doesn't clearly support. It contests attributed insider reporting / a framing disagreement, so raters found it incorrect and note-not-needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.espn.com/college-football/story/_/id/47479549/ole-miss-cfp-staff-uncertain-kiffin-plots-lsu-transfer-portal-period",
+      "https://www.cbssports.com/college-football/news/lsu-hires-lane-kiffin-head-coach-ole-miss/",
+      "https://www.si.com/college/lsu/football/what-lsu-ad-verge-ausberry-said-about-ole-miss-not-letting-lane-kiffin-coach-in-cfp"
+    ],
+    "notes": "Confirmed: Ole Miss AD (Keith Carter) refused to let KIFFIN coach the CFP and named Pete Golding interim HC. Separately, LSU-bound assistants (Weis Jr., Cox, McDonald, K. Smith) returned to coach Ole Miss in the Dec 20 CFP win. Thamel's tweet concerns the assistants returning, framed as Kiffin's decision/encouragement. Who 'allowed' the LSU-employed assistants back is not cleanly attributable to Ole Miss leadership; this is an insider framing dispute, not a falsifiable claim. The tweet's facts hold up."
+  },
+  "media_reliability_flag": false,
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "College-football staffing/insider drama; negligible real-world stakes. Useful only as an example of a note that wrongly 'corrects' attributed insider reporting / a framing dispute."
+  },
+  "difficulty": "medium"
+}

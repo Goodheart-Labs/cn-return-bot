@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2050853114719207656",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:01.845Z",
+  "post": {
+    "id": "2050853114719207656",
+    "author_id": "1982757033347817472",
+    "created_at": "2026-05-03T08:21:00.000Z",
+    "text": "This is how a responsible airline handles jet fuel crisis https://t.co/kcAQ5nVrTC",
+    "media": [
+      {
+        "media_key": "3_2050666587380731904",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHVuZXWXUAA2n3i.jpg",
+        "height": 1698,
+        "width": 1912
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 88,
+      "reply_count": 154,
+      "like_count": 2241,
+      "quote_count": 44,
+      "bookmark_count": 307,
+      "impression_count": 553722
+    },
+    "author_followers": 88301,
+    "author_name": "Matthias Schmidt",
+    "author_description": "Founder based in the EU • Building GDPR-compliant startups • 7 years in, €7k MRR",
+    "author_tweet_count": 3267
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHVuZXWXUAA2n3i.jpg",
+          "description": {
+            "description": "An official flight cancellation email from Lufthansa addressed to a customer regarding flight LH1027 from Paris (CDG) to Frankfurt (FRA) on May 2nd, 2026. The email cites market volatility and a commitment to responsible operations as reasons for the cancellation, noting that rail alternatives are available. It offers two options: a standard refund or converting the refund into a climate contribution toward Sustainable Aviation Fuel, which is highlighted in light blue.",
+            "ocrText": "Please do not reply to this e-mail. Direct responses to the sender cannot be dealt with. To contact Lufthansa, please access the FAQ under 'Help & Contact' on www.lufthansa.com english | deutsch Lufthansa Dear customer, We regret to inform you that your flight LH1027 from Paris Charles de Gaulle (CDG) to Frankfurt (FRA) on 02 May 2026 has been cancelled. Please accept our apologies. Due to sustained market volatility and our ongoing commitment to responsible operations, Lufthansa Group is consolidating selected short-haul routes where rail alternatives are available. Select one of these options: -> Standard refund Returned to your original payment method within 14 business days. -> Convert your refund to climate contribution (recommended) Allocate the value of your ticket toward Sustainable Aviation Fuel via our compensation programme. You will receive a digital certificate and 200 Miles & More award miles. A growing number of our passengers are choosing to be sustainable. You can also check the details of your booking and possible alternatives online: -> My Bookings We thank you for your understanding and for flying with us responsibly. Yours sincerely, Your Lufthansa Team"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @BullBoss5: This can't be true !? \"Covert your refund to climate contribution ' ????!!! Donations to big companies???!!!! (306 likes)\n- @WolfgangRichtEU: Dear Matthias,\n\nIf we could make airplanes run on red tape and naivety instead of jet fuel we would be so fucking powerful.\n\nAll the best,\n\nWolfgang (122 likes)\n- @imthatdexter: Sorry we cancelled your flight, but actually we don’t care at all, and in fact would you mind just giving us the money anyhow so that we can pretend to care about the environement? Youll get some magic useless points if you do! (57 likes)\n- @mattbramanti: you better not have printed out that certificate (47 likes)\n- @itsp4z: But I mean, you‘ll receive a digital certificate. What more do you want? 🤔 (43 likes)\n- @JCChristopher: This has to be one of the funniest things I’ve seen. \n\n“We are canceling your flight due to high fuel prices. However, we recommend that instead of taking a refund, you just give the money to us anyway. Trust us bro”\n\n😂🤡 (34 likes)\n- @Manterik: A digital certificate, what a cracking reward. (30 likes)\n- @Mauro_Gilli: 🤣 (18 likes)\n- @Hawkeyethenoo3: I am disappointed they didn’t add a way for you to contribute more money than the price of your original ticket. That is disturbing. The EU should look into this (19 likes)\n- @NkechiOnome: Lufthansa is learning what African carriers mastered long ago resilience beats cancellation every time. (12 likes)",
+    "warnings": []
+  }
+}

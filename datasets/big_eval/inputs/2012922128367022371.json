@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2012922128367022371",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:51.274Z",
+  "post": {
+    "id": "2012922128367022371",
+    "author_id": "1702750026986921985",
+    "created_at": "2026-01-18T16:16:48.000Z",
+    "text": "Massive protest against Netanyahu outside his home in Israel. These protests keep getting bigger. This one isn't backed by intelligence assets so you don't hear about it.\nhttps://t.co/eIegLsJ5Ba",
+    "media": [
+      {
+        "media_key": "13_1903062514604154881",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1903062514604154881/img/edac5hLmjJUleJ3w.jpg",
+        "height": 360,
+        "width": 640,
+        "duration_ms": 28721,
+        "view_count": 1708693,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1903062514604154881/vid/avc1/480x270/NJktgZYm_sQvMRhF.mp4?tag=16"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1903062514604154881/vid/avc1/640x360/bcKNOJLDmpbZ5UV6.mp4?tag=16"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1903062514604154881/pl/Wt1kYWfOQiujoYyq.m3u8?tag=16&v=6c0"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3654,
+      "reply_count": 381,
+      "like_count": 14395,
+      "quote_count": 170,
+      "bookmark_count": 621,
+      "impression_count": 231724
+    },
+    "author_followers": 473163,
+    "author_name": "Owen Shroyer",
+    "author_description": "Official Account of Owen Shroyer ☆ Live 3-6p ct weekdays ☆ Your Home For Political Play By Play ☆ The Owen Report",
+    "author_tweet_count": 14847
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1903062514604154881/vid/avc1/640x360/bcKNOJLDmpbZ5UV6.mp4?tag=16",
+          "description": {
+            "description": "A series of four video frames showing a large crowd of people gathered in an outdoor urban setting. In the first frame, people are congested behind metal barricades with a traffic light visible in the background. The second and third frames show a disruption, where individuals are seen pulling or moving a metal barricade as a crowd gathers around. In the final frame, an individual in a grey uniform appears to be adjusting or holding a metal barricade, with observers nearby.",
+            "ocrText": ""
+          },
+          "transcription": "موسيقى"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@IfindRetards**: Antisemites?  \nLikes=191, Views=6645\n\n**@CubsWorld2**: Wait, are we going to bomb israel and call for regime change since they’re attacking protesters?  \nLikes=183, Views=1673\n\n**@johnysweis**: Not exactly “his home”  \nLikes=134, Views=1964\n\n**@rosemarytexas88**: Good. Jesus save us. 🙏🏼♥️  \nLikes=80, Views=1000\n\n**@OShitMedia**: Should we send troops for a regime change.  \nLikes=71, Views=1498\n\n**@echotoall**: Per the ADL ceo these Israelis are all antisemitic!  \nLikes=67, Views=2791\n\n**@NFLD_Jack**: @realDonaldTrump I am concerned for the protestors in Israel. Since you are such a humanitarian interventionist these days maybe we should \"regime change\" and bomb them? It's your favorite thing  \nLikes=63, Views=786\n\n**@JonIsTheFuture**: I hear he's killed 20,000 protestors. We must strike  \nLikes=43, Views=523\n\n**@LovesLangley**: (image attached)  \nLikes=38, Views=1177\n\n**@purebloodrebell**: At The Door!  \nLikes=36, Views=1217",
+    "warnings": []
+  }
+}

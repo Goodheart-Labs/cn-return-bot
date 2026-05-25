@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2021970148337528877",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:18.637Z",
+  "post": {
+    "id": "2021970148337528877",
+    "author_id": "1537480932613054466",
+    "created_at": "2026-02-12T15:30:24.000Z",
+    "text": "\"JUST IN: Changpeng Zhao has been sentenced to 10 yrs in prison for market manipulation and corruption\"\n\nCT: https://t.co/KJIfiUTd8Y",
+    "media": [
+      {
+        "media_key": "13_2021970054766882816",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2021970054766882816/img/f2XH17VMqliUqSPq.jpg",
+        "height": 582,
+        "width": 720,
+        "duration_ms": 13700,
+        "view_count": 22746,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2021970054766882816/vid/avc1/334x270/CemVgiexbHU-e-7m.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2021970054766882816/vid/avc1/444x360/rX7jf4imtYzqnDHF.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2021970054766882816/vid/avc1/720x582/M1vbrjefh0qHMg23.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2021970054766882816/pl/4yTlHWftwn28lb-T.m3u8?v=f0c"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 35,
+      "reply_count": 22,
+      "like_count": 654,
+      "quote_count": 3,
+      "bookmark_count": 24,
+      "impression_count": 42831
+    },
+    "author_followers": 20799,
+    "author_name": "Wara",
+    "author_description": "never take this account seriously",
+    "author_tweet_count": 37468
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2021970054766882816/vid/avc1/720x582/M1vbrjefh0qHMg23.mp4",
+          "description": {
+            "description": "A man who appears to be Jürgen Klopp, wearing a black Liverpool F.C. jacket and cap, is seen celebrating with intensity amidst a crowded audience. In the following frames, he is shown running across a green football pitch, expressing excitement or joy. His body language is dynamic as he sprints across the field.",
+            "ocrText": "LFC"
+          },
+          "transcription": "I need to know now, know now, can you love me again? I need to know now"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **VG (@vhp_24)**  \n  No, CT will be like whos Changpeng Zhao lmao  \n  \n  \"Oh CZ? LFGGG\" 🤣  \n  Engagement: 5 likes, 0 reposts, 0 quotes, 0 replies, 2521 views\n\n- **Koydr (@Koydr1)**  \n  @grok true?  \n  Engagement: 4 likes, 0 reposts, 0 quotes, 0 replies, 1466 views\n\n- **El_Jomer_Sinson (@Tarkenn)**  \n  He should get a life sentence  \n  Engagement: 4 likes, 0 reposts, 0 quotes, 0 replies, 1153 views\n\n- **Internet Child (@0xinternetchild)**  \n  This was us in the Kamala timeline  \n  Engagement: 4 likes, 0 reposts, 0 quotes, 0 replies, 1580 views\n\n- **ObeseBallerina (@Obese_Ballerina)**  \n  I’d love that to happen. He’s such a wanker  \n  Engagement: 3 likes, 0 reposts, 0 quotes, 0 replies, 1400 views\n\n- **EduGilMx (@EduGilMX)**  \n  fuck, that would be my minimal reaction.  \n  Engagement: 3 likes, 0 reposts, 0 quotes, 0 replies, 1218 views\n\n- **NFT Legend「🦑」 (@0xNftLegend)**  \n  By who?  \n  Engagement: 2 likes, 0 reposts, 0 quotes, 0 replies, 2519 views\n\n- **A Z E E 👑 (@surreal_azee)**  \n  oh dayummmmm  \n  Engagement: 2 likes, 0 reposts, 0 quotes, 0 replies, 480 views\n\n- **Otex.Sui (@otex_03)**  \n  😞😞yo!!!  \n  Engagement: 1 like, 0 reposts, 0 quotes, 0 replies, 337 views\n\n- **CRYPTO MIAO (@KaMiaoRich)**  \n  Crazy!  \n  Engagement: 1 like, 0 reposts, 0 quotes, 0 replies, 249 views",
+    "warnings": []
+  }
+}

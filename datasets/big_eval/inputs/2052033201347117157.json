@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2052033201347117157",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:31.957Z",
+  "post": {
+    "id": "2052033201347117157",
+    "author_id": "3376321847",
+    "created_at": "2026-05-06T14:30:14.000Z",
+    "text": "Bill Gates is now funding a company that wants to CUT DOWN 70 million acres of trees and bury them underground.\n\nWhy?\n\nTo stop climate change of course.\n\nThis is madness. https://t.co/yR0Ciq7lXD",
+    "media": [
+      {
+        "media_key": "3_2052033154324815872",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHpJSB7a4AAAHT-.jpg",
+        "height": 1395,
+        "width": 2480
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5264,
+      "reply_count": 1744,
+      "like_count": 11190,
+      "quote_count": 621,
+      "bookmark_count": 486,
+      "impression_count": 381609
+    },
+    "author_followers": 2499443,
+    "author_name": "illuminatibot",
+    "author_description": "Signals in the noise.",
+    "author_tweet_count": 195210
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHpJSB7a4AAAHT-.jpg",
+          "description": {
+            "description": "A composite image featuring a close-up portrait of Bill Gates looking thoughtfully to the left, which has been superimposed onto a landscape of a dense evergreen forest. Some of the treetops overlap with the bottom and sides of his face, and his skin texture appears partially blended with the patterns of the trees. The background shows a light blue, textured sky.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Layla (@starling615)**: (image reply) | Likes: 499, Reposts: 95, Replies: 23\n- **T Miller (@texashoosiers2)**: This man should be kept away from humanity. I’m certain there’s more to cutting down these trees….. | Likes: 346, Reposts: 85, Replies: 5\n- **Kenneth AleXander Karlsen (@k_A_Karlsen)**: Bill gates is danger to this planet | Likes: 262, Reposts: 0, Replies: 0\n- **Daniel L Collins (@DLC__76)**: Gates needs to be locked up for murder and attempted murder. Why are we allowing him to be free to kill? | Likes: 127, Reposts: 0, Replies: 0\n- **Gen X Rooster (@genx_rooster)**: Trees absorb carbon and release oxygen... | Likes: 100, Reposts: 0, Replies: 0\n- **The Freedom Chronicle 🇰🇷🇺🇸 (@curiousstella)**: No official confirmation of a psychiatric diagnosis is needed to understand what a deeply disturbed psychopath he is. Anyone with a functioning brain can see through his twisted, evil, demonic ways of doing virtually anything. Pure evil must be locked up immediately to prevent further destruction of humanity. | Likes: 80, Reposts: 0, Replies: 0\n- **Pounding Sand (@ThatF99585)**: Another one of America's biggest criminals, who operates within insane perameters that somehow keep him free from prosecution. He has no conscience so there is nothing stopping him ever. | Likes: 58, Reposts: 0, Replies: 0\n- **Christine Brackin (@ChristineB56955)**: Enough of the crap. Gates is FUKING CRIMINALLY INSANE. These scientists that have all been BOUGHT. What good is all that money, when everything and everyone is FUKING DEAD! Assholes! | Likes: 55, Reposts: 0, Replies: 0\n- **Tom (@Tom45644416)**: Everything @BillGates does is to destroy humanity. His current objective is to entice mass famine on a biblical scale. | Likes: 52, Reposts: 0, Replies: 0\n- **Henrik Bentzen (@hben61jul)**: Bill Gates. Yes, he is a madman. There have been trees for millions of years, and they function as our lungs. Bill destroys everything he touches, and why shouldn't he? He is an eugenecist, by his own wording. He belongs in a pattern cell, if you ask me, and millions of others. | Likes: 44, Reposts: 0, Replies: 0\n- **BunnyCrumbs (@ChrisJo00291974)**: Burying trees is not about saving the planet but about hiding the carbon cycle to create artificial scarcity. When you control the atmosphere, you control the food supply and the economy. They want to bury organic matter to disrupt natural cycles and force us into a synthetic world where they own the air we breathe. It is a massive land grab disguised as environmentalism to consolidate power and push us into their controlled, lab grown future. | Likes: 35, Reposts: 0, Replies: 0",
+    "warnings": []
+  }
+}

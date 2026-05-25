@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2047256681856573565",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:45.148Z",
+  "post": {
+    "id": "2047256681856573565",
+    "author_id": "1977919024966328320",
+    "created_at": "2026-04-23T10:10:03.000Z",
+    "text": "Shocking to see this at the end. https://t.co/U1R7h5BPHl",
+    "media": [
+      {
+        "media_key": "7_2047256652911689729",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2047256652911689729/pu/img/DuIFgCYGcsBihRWS.jpg",
+        "height": 1024,
+        "width": 576,
+        "duration_ms": 64179,
+        "view_count": 791659,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2047256652911689729/pu/vid/avc1/320x568/AI6eY9eAkZkSaPJF.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2047256652911689729/pu/vid/avc1/480x852/ZRlhAt8OGh24sj0v.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2047256652911689729/pu/vid/avc1/576x1024/WQAnIc7AOrZEzZpZ.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2047256652911689729/pu/pl/PX_5as6f4Qp1gYWG.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1422,
+      "reply_count": 563,
+      "like_count": 6366,
+      "quote_count": 197,
+      "bookmark_count": 1867,
+      "impression_count": 1683927
+    },
+    "author_followers": 34120,
+    "author_name": "Quality Learing Center",
+    "author_description": "",
+    "author_tweet_count": 1963
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2047256652911689729/pu/vid/avc1/576x1024/WQAnIc7AOrZEzZpZ.mp4",
+          "description": {
+            "description": "This is a series of four frames from a video showing a map of the United Kingdom and Ireland being colored by hand to represent 'Immigrant Distribution'. The map includes a legend with markers for 'Epicenter' (Black), 'Quite High' (Orange), 'Over 35%' (Red), 'Moderate' (Blue), and 'No Immigrants' (Green). In the first frame, a person uses a green marker to shade the northwest coast of Scotland. In the second frame, the person shades the coast of Western Ireland with green. In the third frame, a hand wearing a black glove uses a blue marker to color areas on the east coast of England. In the fourth frame, the blue marker is being used on the west coast of Ireland.",
+            "ocrText": "Immigrant Distribution in the UK, TikTok @doom_map, Epicenter, Quite High, Over 35%, Moderate, No Immigrants, @Doommap"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Ryan O’Neill (@numb9rnine): So there are more immigrants in Hertfordshire than Manchester and Birmingham? Absolute fucking nonsense. Bore off. (326 likes)\n- Chay Bowes (@BowesChay): Ireland is not in the UK. (297 likes)\n- Countess Elizabeth Báthory (@Bathory_1560): Oh..... its all okay when the brits do it... but not back on them...... suffer. (265 likes)\n- Abu Dawood 🦊🇦🇹 (@UserFrom1998): Bollocks (219 likes)\n- Tobias Smythe (@Tobias_Smythe): Why are you colouring in Ireland \n\nThat’s not the U.K. (138 likes)\n- Common Cents (@Reunify32): Ireland isn’t in the UK you clown and anyway most of the orange coloured areas of Ireland are the most rural. Pure horseshit. (127 likes)\n- David Rader (@DavidARader): UK in 1968 (102 likes)\n- ForestContinent 🛸🐐 (@ForestContinent): This is not correct, Hampshire and Surrey are not the epicentre of immigrants! (94 likes)\n- Lars Hörmander 🇩🇰 (@HearLars99199): here is the actual map from 2021. (85 likes)\n- Serena Brown 🧃 (@SerenaJB3): They've all got to leave. (70 likes)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2057319768294896022",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:24.745Z",
+  "post": {
+    "id": "2057319768294896022",
+    "author_id": "3163275751",
+    "created_at": "2026-05-21T04:37:10.000Z",
+    "text": "BREAKING: Vishal Sikka has joined Anthropic https://t.co/wyj76Liklf",
+    "media": [
+      {
+        "media_key": "3_2057319679111376896",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HI0RWRbasAAM5tO.jpg",
+        "height": 4088,
+        "width": 2720
+      },
+      {
+        "media_key": "3_2057319753979748352",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HI0RaoVbYAANdc1.png",
+        "height": 384,
+        "width": 683
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 156,
+      "reply_count": 37,
+      "like_count": 1683,
+      "quote_count": 28,
+      "bookmark_count": 141,
+      "impression_count": 672893
+    },
+    "author_followers": 25284,
+    "author_name": "Shravan Venkataraman",
+    "author_description": "Software Engineer during the week | Quantitative Researcher during weekends\nBuilding @earningsq  with @hemis_research",
+    "author_tweet_count": 783
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HI0RWRbasAAM5tO.jpg",
+          "description": {
+            "description": "A medium shot of Vishal Sikka, a man with salt-and-pepper hair, wearing a black polo shirt. He is leaning on a white table with his right hand resting under his chin in a thoughtful pose. He is wearing a silver smartwatch with a grey band on his right wrist. The background is a plain, light-colored wall.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HI0RaoVbYAANdc1.png",
+          "description": {
+            "description": "A flat, solid tan background featuring the word 'ANTHROP\\C' in black, uppercase sans-serif text. The letter 'I' is uniquely replaced by a backslash character.",
+            "ocrText": "ANTHROP\\C"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @krishgriffin: Anthropic has joined Rajinikanth. (Likes: 95)\n- @Kaustubh_joshi4: That's true. Narayan Murthy joining as Chairman soon — on the condition that all employees log mandatory 70 hours a week minimum. (Likes: 71)\n- @jumpnilay: @grok is this true? Is he a SDE1 at anthropic (Likes: 11)\n- @I_am_Vedvrat: Source: Trust me bro! 🥲 (Likes: 4)\n- @bijuldesai: Don't think news it's true but Infosys lost Multi decade opportunity in cheap labour leverage.... (Likes: 3)\n- @AniketK55267402: Infosys leader are bloody idiot (Likes: 2)\n- @RooshTham: Joining has been cancelled due to him not working for 70 hrs a week in during Infosys days (Likes: 2)\n- @siddhantdas33: Is this real? (Likes: 0)\n- @Siddharth Sharma: Fake news (Likes: 0)\n- @Hemant_ITPro: Anthropic is worth more than all Indian IT services combined 🙄 (Likes: 0)",
+    "warnings": []
+  }
+}

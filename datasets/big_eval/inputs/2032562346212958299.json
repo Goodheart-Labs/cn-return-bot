@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2032562346212958299",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:53.359Z",
+  "post": {
+    "id": "2032562346212958299",
+    "author_id": "1756488099582844928",
+    "created_at": "2026-03-13T21:00:01.000Z",
+    "text": "ANNOUNCEMENT:  \n\nI am officially the world’s FIRST transgender woman to become pregnant by 100% natural means.   \n\nThanks for all your support❤️ https://t.co/Cy9l63Ckxy",
+    "media": [
+      {
+        "media_key": "3_2032514766824976384",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDTxaWVWsAAWTPP.jpg",
+        "height": 2304,
+        "width": 1856
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 197,
+      "reply_count": 1690,
+      "like_count": 5135,
+      "quote_count": 188,
+      "bookmark_count": 1545,
+      "impression_count": 2557134
+    },
+    "author_followers": 102543,
+    "author_name": "Stella Francis 🏳️‍⚧️",
+    "author_description": "22yo | 🏳️‍⚧️✨",
+    "author_tweet_count": 890
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDTxaWVWsAAWTPP.jpg",
+          "description": {
+            "description": "A full-length portrait of a pregnant woman with long brown hair standing on an outdoor stone staircase at dusk. She is wearing a green, gold, and white marbled two-piece outfit consisting of a bandeau top and a long skirt, accented by a decorative body chain over her belly. In the background, there is a scenic view of forested hills and water under a soft twilight sky.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Ron Willemsen - @RonWillemsen7: You're right. Fixed it. 😉 (Likes=1, Reposts=0, Quotes=0, Replies=0)\n- DM Collins - @DonnaMaeGP: Plural is wolves, btw. (Likes=1, Reposts=0, Quotes=0, Replies=0)\n- Rohan 🌱🔸️🇧🇷 - @Rohanburdened: (No text content) (Likes=2, Reposts=0, Quotes=0, Replies=0)\n- Mike Fortune - @FortuneMik30444: I wish that was my t child in gorgeous stomach (Likes=0, Reposts=0, Quotes=0, Replies=0)\n- Keagnes - @Kendragnes: A mentally ill woman with dysphoria got pregnant? Wouldn't be the first time. (Likes=0, Reposts=0, Quotes=0, Replies=0)\n- Ron Willemsen - @RonWillemsen7: Go at it then, good luck. (Likes=1, Reposts=0, Quotes=0, Replies=0)\n- DM Collins - @DonnaMaeGP: It requires nothing more than love and patience. (Likes=4, Reposts=0, Quotes=0, Replies=0)\n- Ron Willemsen - @RonWillemsen7: (No text content) (Likes=1, Reposts=0, Quotes=0, Replies=0)\n- binary egg - @autogampegg: 💯😅 (Likes=3, Reposts=0, Quotes=0, Replies=0)\n- binary egg - @autogampegg: I think Stella would make a great mother. She just needs to find the right man to get her pregnant. (Likes=1, Reposts=0, Quotes=0, Replies=0)",
+    "warnings": []
+  }
+}

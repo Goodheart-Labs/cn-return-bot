@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2020163585821888605",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:50.707Z",
+  "post": {
+    "id": "2020163585821888605",
+    "author_id": "1430605174674964480",
+    "created_at": "2026-02-07T15:51:46.000Z",
+    "text": "Judge overturns election after Democrats caught ballot stuffing. https://t.co/uoL4q8DxWM",
+    "media": [
+      {
+        "media_key": "7_2020163510617939968",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2020163510617939968/pu/img/zpDDp_LlGvrJkMTo.jpg",
+        "height": 474,
+        "width": 848,
+        "duration_ms": 272416,
+        "view_count": 203305,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2020163510617939968/pu/vid/avc1/482x270/HoR6AEuyTpKNc2zn.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2020163510617939968/pu/vid/avc1/848x474/nXRbtpnXTFf1Lj7g.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2020163510617939968/pu/pl/_cE-NCM6qD05YA9i.m3u8?v=8a1"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6162,
+      "reply_count": 242,
+      "like_count": 19784,
+      "quote_count": 96,
+      "bookmark_count": 890,
+      "impression_count": 349479
+    },
+    "author_followers": 378972,
+    "author_name": "JOSH DUNLAP",
+    "author_description": "🇺🇲 MAYOR OF MAGADONIA 🇺🇲 ✝️ CHRISTIAN ✝️ MAGA\n📣 📣BREAKING NEWS FIRST HERE 📣📣",
+    "author_tweet_count": 328239
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2020163510617939968/pu/vid/avc1/848x474/nXRbtpnXTFf1Lj7g.mp4",
+          "description": {
+            "description": "A split-screen news broadcast showing a female news anchor on the left and surveillance footage of a ballot box on the right. A ticker at the bottom reads \"CT JUDGE SHOCKED BY EVIDENCE OF VOTER FRAUD,\" and \"FOX NEWS ALERT.\"",
+            "ocrText": "FACEBOOK/JOHN GOMES\nFOX NEWS CHANNEL\nCT JUDGE SHOCKED BY EVIDENCE OF VOTER FRAUD\nFOX NEWS ALERT\n7:43 ET\n6:43 CT"
+          },
+          "transcription": "This is voter fraud, nothing. Another MAGA conspiracy theory, right? Well, one primary race in Connecticut was so rife with fraud that the results have been overturned by a judge after shocking new video surfaced of what appears to be multiple people stuffing absentee ballots into collection boxes. A judge ruling that the Bridgeport Mayoral Democrat primary has to be held again to determine who should be on the ballot. Now, incumbent Mayor Joe Gannon previously defeated challenger John Gomez by just 251 votes. But a primary redo is very tricky because the general election is on Tuesday, which means voters may have to come back after they vote in the primary to vote on the rightful Democrat nominee. They even know who it is then. Joining me now is David Hurst, Republican candidate for Bridgeport Mayor and Connecticut GOP Chair Ben Proto. So, David, both of those men are still on the ballot since Gomez is running now as an independent. But does that change your campaign here But I want to get to this fraud issue as well Let start with his name is actually Gomes It not Gomez I don't even know what to say. We're all scratching our head here. The court has ordered that the primary, that they actually present the plan for the primary on the 15th of November, which is obviously a week after the ballot. I don't know any way that this isn't going to lead to more litigation that is going to run into possibly the next term. I don't even know how they're going to do it. So we're just scratching our head. Unfortunately, what we're doing is we're saying only in Bridgeport and just kind of have to laugh it off. In terms of my prospects... Yeah, Bridgeport is notoriously corrupt, sorry, but I used to live in New Haven, from Glastonbury, know it well. Even if I didn't know how to say Gomes right, nice little correction. But it a mess Bridgeport been a mess in these races for a long time But I think we have to address what happened here because it such a reflexive comment for someone to say oh there is no such thing as voter fraud That all just made up. But we have evidence. And I'm looking at the pictures of this video, too, Ben. We have evidence that this happened. The judge was so moved by this evidence that even how difficult this is going to be said, no, we're overturning it. We're pulling it back. Absolutely, Laura. Ben, how big is this? How big is this? This is big. And what's interesting is it's not only the Gannon campaign, but the Gomes campaign also engaged in this activity. So it's kind of both sides trying to cheat the other side out of a victory. And what's really sad about it, Laura, is the legislature had an opportunity just recently in a special session to address these issues, and they chose not to. They chose not to increase criminal penalties. In fact, one of the women involved on the Gantum campaign had recently been referred by the State Elections Commission to the Chief State Attorney for criminal prosecution for doing this very same thing four years ago in the Gannon election The legislature chose not to increase penalties They chose not to produce or create mandatory minimum jail sentences, increase fines. They chose not to address the ballot box issue, which are no longer needed in Connecticut, nor do I think they're needed anywhere in the country, for that matter. And in fact, recently we adopted an early voting program in Connecticut that's going to take place next year and start next year. And that's an in-person program. You cannot use a ballot box for early voting. You must go to the polling place to vote. So they've already admitted we don't need these things. And when you have Democrats in Bridgeport saying it's just the way it is or Democrats have raised cheating to an art form, you know it's bad. So the legislature needs to step up and address this situation because it's just out of control right now, Laura, in Bridgeport. Yeah. Well, David, I hope you can break through. My goodness, does Bridgeport need a sane, you know, an actual sane leader? So we appreciate both of you being here tonight. I'm sorry this segment is so short, but got some breaking news."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Toby Turner (@TobyTurner)**: charge everyone involved (who knew about it) with treason and it won’t happen anymore Or don’t, and it will  \n  Engagement: Likes=236, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=8027\n\n- **Mark Depass 🇺🇸 (@mddepass)**: One more example. Pass the SAVE ACT. There is no higher priority @LeaderJohnThune @SenateGOP  \n  Engagement: Likes=207, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5284\n\n- **John Mita (@Johnnywaynes)**: So 2000 Mules wasn’t a conspiracy theory. Got it!  \n  Engagement: Likes=205, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5841\n\n- **Jak (@Julie8xx3)**: This should have happened a lot. Not enough honest judges.  \n  Engagement: Likes=126, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5223\n\n- **cooper (@4Cooperscooper)**: We have been watching these videos for 2 fu(*ing years and no one has been charged/jailed for this corruption, get rid of Pam Bondi FFS  \n  Engagement: Likes=104, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2591\n\n- **MAGA Thunder 🇺🇸 Live Free 🇺🇸 Storm 🇺🇸 IFBAP (@maga_thunder)**: Save Fair Elections in USA.  \n  Engagement: Likes=89, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2727 (with photo)\n\n- **Stephen (@01splcheck)**: Voter Fraud. But there is never any voter fraud, right?  \n  Engagement: Likes=65, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3419\n\n- **CBear (@GoldenWing2022)**: “Another MAGA Conspiracy”. This proves we’ve been right all along. Democrats have taken far too much from each and every one of us. We will right our ship so to speak.  \n  Engagement: Likes=55, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1020\n\n- **Lance Edelman (@Lance_Edelman)**: Once they see voter fraud successfully carried out, they are emboldened to do it again and do it more widely. This is why it is important to not just prosecute the low-hanging fruit, but also prosecute those who organized it.  \n  Engagement: Likes=48, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3842\n\n- **Twisted Sailor ⚓ (@TwistedSailorX)**: They should charge those people stuffing those with treason and give them the death penalty. That's serious stuff  \n  Engagement: Likes=46, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2942",
+    "warnings": []
+  }
+}

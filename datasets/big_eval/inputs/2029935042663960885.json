@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2029935042663960885",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:30.835Z",
+  "post": {
+    "id": "2029935042663960885",
+    "author_id": "1677794266238550018",
+    "created_at": "2026-03-06T15:00:03.000Z",
+    "text": "Mississippi State got a guy throwing 90+ WITH BOTH ARMS?! https://t.co/1rTI2Wvm6R",
+    "media": [
+      {
+        "media_key": "7_1781374153997570048",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1781374153997570048/pu/img/jiXPIWQhbV84PA4e.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 9309,
+        "view_count": 1601732,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1781374153997570048/pu/vid/avc1/320x568/ZVK0cLKqwvvGLcoO.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1781374153997570048/pu/vid/avc1/480x852/XCrJJbkGEtLH7NcE.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1781374153997570048/pu/vid/avc1/720x1280/woPDaav_hZ84Jn5C.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1781374153997570048/pu/pl/pg9iKvXfu_-eSC12.m3u8?tag=12"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 7,
+      "reply_count": 47,
+      "like_count": 264,
+      "quote_count": 14,
+      "bookmark_count": 21,
+      "impression_count": 1002045
+    },
+    "author_followers": 9191,
+    "author_name": "Ohio Divided",
+    "author_description": "JAG From Ohio | Eat More Wings | Former St. Ed's Placeholder | ohiodivided@gmail.com",
+    "author_tweet_count": 68426
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1781374153997570048/pu/vid/avc1/720x1280/woPDaav_hZ84Jn5C.mp4?tag=12",
+          "description": {
+            "description": "A Mississippi State University baseball player walking on the field and then throwing the ball.",
+            "ocrText": "MISSISSIPPI STATE"
+          },
+          "transcription": "请不吝点赞 订阅 转发 打赏支持明镜与点点栏目"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- South Park Seymour🦅🖤💛 - @coasTTTbuzzard: \"They did 2 years ago. He got drafted and is now in the Cardinals organization.\" (Likes: 85)\n- William“exciting white”Faulkner🇹🇹 - @BenDover67_: \"One of the worst attempts to act like you knew baseball I’ve ever seen. I knew you didn’t for the past month, was just waiting for you to show everyone else.\" (Likes: 68)\n- Rick Saban - @RickSabanRTR: \"Trying so hard to “care” about baseball\" (Likes: 50)\n- Mr Elon Musk - @MrElonMuskko: \"He’s entering his second year in pro ball 😂\" (Likes: 29)\n- Finance Reb 🦈 - @OleMissRebel90: \"You’re always late to stuff aren’t you? 😂\" (Likes: 12)\n- Jason Duval - @TshOw23: \"This dude just started watching college baseball in the last year didn’t he? 🤣\" (Likes: 7)\n- The Dude Effect - @TheDudeEffect: \"Bruh\" (Likes: 7)\n- Justin Simeon Taylor IV - @justintay601: \"When did you start watching baseball? Just curious. Happy the sport is growing.\" (Likes: 2)\n- Tyler Smith - @Tsmith7953: \"No, he’s a pro now.\" (Likes: 1)\n- nick - @N_Penn10: \"he’s been drafted\" (Likes: 1)",
+    "warnings": []
+  }
+}

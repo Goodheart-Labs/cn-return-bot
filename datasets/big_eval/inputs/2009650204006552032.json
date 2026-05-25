@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2009650204006552032",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:47.748Z",
+  "post": {
+    "id": "2009650204006552032",
+    "author_id": "1822430797170872320",
+    "created_at": "2026-01-09T15:35:20.000Z",
+    "text": "No, it's not Cuba, nor Venezuela, nor North Korea,Iran, countries where, according to Western media, human rights violations occur daily.\n\nThis is in Arkansas, in the United States, where three police officers beat a defenseless citizen in this way. https://t.co/bck4ZRYzSN",
+    "media": [
+      {
+        "media_key": "13_2009575401828265984",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2009575401828265984/img/aN53ERJ3kVFSg24h.jpg",
+        "height": 1080,
+        "width": 672,
+        "duration_ms": 32333,
+        "view_count": 4148011,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2009575401828265984/vid/avc1/320x514/hjcQaq3B5xthR5h3.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2009575401828265984/vid/avc1/480x770/YmHcxZwSIJhsTSEN.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2009575401828265984/vid/avc1/672x1080/uWWZaRoSn3PvGv9i.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2009575401828265984/pl/lRLkdRVU3oyS9zB5.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 43428,
+      "reply_count": 4550,
+      "like_count": 163023,
+      "quote_count": 2304,
+      "bookmark_count": 10987,
+      "impression_count": 6707559
+    },
+    "author_followers": 190956,
+    "author_name": "MUSAFIR",
+    "author_description": "Be an enemy to the oppressors and a helper to the oppressed",
+    "author_tweet_count": 786
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2009575401828265984/vid/avc1/672x1080/uWWZaRoSn3PvGv9i.mp4",
+          "description": {
+            "description": "These frames show a violent incident between police officers and an individual. In frame 1, two officers are pinning an individual to the ground. In frame 2, a third officer joins the scuffle as they continue to restrain the person. In frame 3, two officers appear to be struggling to hold the person's limbs while a third officer looks to be applying force to the person's upper body. In frame 4, multiple officers are actively using force to keep the individual pinned to the ground.",
+            "ocrText": "My cousin just witnessed this in Crawford county... who do we get this footage too???"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @nourbutwatmi: \"Where is their tasers?\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4)\n- @AntiBlutard: \"asia🙄\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2)\n- @MohamedAmi29702: \"Master.. Master.. 🤟🏻\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5)\n- @MarkoMakiranta: \"Well that in US is still one in million thing, those other countries its goin on daily and all the time\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=9)\n- @Nataliscrzyeyes: \"Nah that was harsh why smash his head like that\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3)\n- @RCrawfish59: \"Why did this happen? What did the victim do?\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5)\n- @barbbbarra: \"Always blinded by lies when you all know the  poor nigga was struggling with his last strong begging for his life  wtf what wrong with you people?\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3)\n- @fabiorosati13: \"💩💩💩💩👹\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=8)\n- @BillJelavich: \"Ashlii and Renee in Minneapolis are the same - failure to comply.\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=21)\n- @Vertutame: \"Oh so the system works properly, The person did something bad, he was being violence but got violence in return but too far so the cops got punished as well. What's the problem then?\" (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=7)",
+    "warnings": []
+  }
+}

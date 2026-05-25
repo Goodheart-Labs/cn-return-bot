@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2034574905858040263",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:34.551Z",
+  "post": {
+    "id": "2034574905858040263",
+    "author_id": "304948827",
+    "created_at": "2026-03-19T10:17:12.000Z",
+    "text": "Just a reminder, Manchester United haven’t played a Champions League knockout game in over 10 years https://t.co/EpPAZDwhy6",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2034017297820500296"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2034017297820500296",
+      "author_id": "2294345816",
+      "created_at": "2026-03-17T21:21:28.000Z",
+      "text": "Call me crazy. But apart from PSG. I think United could beat all these teams left in the Champions League. \n\nHave to keep Bruno next season.",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 1731,
+      "reply_count": 250,
+      "like_count": 15057,
+      "quote_count": 82,
+      "bookmark_count": 190,
+      "impression_count": 814591
+    },
+    "author_followers": 23327,
+    "author_name": "Francis",
+    "author_description": "@NUFC  . Award winning Premier League football expert 📸 IG: FrancisChipp. Everything I post is made up.",
+    "author_tweet_count": 11964
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Mancunianway20: The fact people can just outright lie like this is mad. \n\nWe literally played athletico madrid in knockouts in 21/22. \n\nAre you full of shit or just absolutely terrible at maths? (324 likes)\n@SherffUtd: Literally played R16 in 2022. (50 likes)\n@realdongabriel: Quarterfinals Vs Barcelona 2018\nQuarterfinals Vs Atletico Madrid 2022\n\nYou lack football knowledge (43 likes)\n@AdamJH1982: 4 years thick cunt. Which is the amount of season Newcastle have been in it. 3 technically as you didn’t get past the 3rd qualifying round in 03/04 (35 likes)\n@Bunty78Ciaran: Guess them games against PSG and the game against Atletico must have been dreams then... (17 likes)\n@UtdCal92: [image] (18 likes)\n@TudorPacket: Didn’t they lose to Grimsby in the first round of the carabao Frankie? (5 likes)\n@northernline77: I can understand now why your an award winning football expert ! (4 likes)\n@Scott_H_74: Award winning football expert.... My arse. 2022 was the last time. (3 likes)\n@LeeNattrass: You’re going to need a bigger boat frank. (3 likes)",
+    "warnings": []
+  }
+}

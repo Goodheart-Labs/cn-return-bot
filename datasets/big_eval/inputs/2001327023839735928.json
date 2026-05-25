@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2001327023839735928",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:58:43.705Z",
+  "post": {
+    "id": "2001327023839735928",
+    "author_id": "1112379740688707584",
+    "created_at": "2025-12-17T16:21:59.000Z",
+    "text": "This is horrendous to see. God save Gaza.\nTo donate 👇👇\nhttps://t.co/zZKcCYg3bQ https://t.co/ZEbBSYBBxU",
+    "media": [
+      {
+        "media_key": "7_2001326849935233030",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2001326849935233030/pu/img/zSVbT4qbzV8RF9wD.jpg",
+        "height": 1280,
+        "width": 704,
+        "duration_ms": 15092,
+        "view_count": 32861,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2001326849935233030/pu/vid/avc1/320x580/Eh2cnoeIfagOIVbN.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2001326849935233030/pu/vid/avc1/480x872/O3SU-LOgpgCutzBo.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2001326849935233030/pu/vid/avc1/704x1280/JuS0tkwL6yVFbvfx.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2001326849935233030/pu/pl/lLHIORLV2oiWps-8.m3u8?v=32b"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 510,
+      "reply_count": 1654,
+      "like_count": 811,
+      "quote_count": 109,
+      "bookmark_count": 43,
+      "impression_count": 74045
+    },
+    "author_followers": 61486,
+    "author_name": "Palestine Daily News✌️🇵🇸✌️",
+    "author_description": "Helping families in Gaza with food, water & shelter\n🎯 £50,000 Goal | Almost there\n📍 On the ground\n⬇️ Donate. Share. Save lives",
+    "author_tweet_count": 64220
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2001326849935233030/pu/vid/avc1/704x1280/JuS0tkwL6yVFbvfx.mp4",
+          "description": {
+            "description": "A group of many children are crowded inside a large tent that has been flooded with murky, brown water. Some children are partially submerged up to their waists, while others are huddled together in higher parts of the tent, looking distressed.",
+            "ocrText": ""
+          },
+          "transcription": "شكرا"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@MediaSOI**: People have given you 34 grand for lying and making AI videos. You’re a fucking conman (553 likes)\n- **@janaxolotl**: (No text content) (277 likes)\n- **@AlexSchaumburg**: Pallywood. (237 likes)\n- **@BLAIMGame**: This AI slop has already been community noted: (216 likes)\n- **@hansvantelling**: Fake (187 likes)\n- **@DanburyHammer1**: (No text content) (166 likes)\n- **@TawhakiTheGod**: It's not so bad (116 likes)\n- **@RedeemedRinger**: Why not lieterally just stand on the dry land right where the camera man is filming lmfao... (106 likes)\n- **@Marianasoux**: If you wanna pay for a AI video 😄😄 (73 likes)\n- **@buc97552**: Equally as ridiculous. (36 likes)",
+    "warnings": []
+  }
+}

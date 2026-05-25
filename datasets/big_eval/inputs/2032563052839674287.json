@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2032563052839674287",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:12.562Z",
+  "post": {
+    "id": "2032563052839674287",
+    "author_id": "1224185690713460736",
+    "created_at": "2026-03-13T21:02:49.000Z",
+    "text": "🚨 OH WOW! Another oddity. In parts of the speech Netanyahu suddenly seems to be missing some teeth, which later mysteriously reappear. So… where is Netanyahu?\n https://t.co/aGf3sT4vcJ",
+    "media": [
+      {
+        "media_key": "13_2032492503245680640",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2032492503245680640/img/wTFLujuzp3y-eCHW.jpg",
+        "height": 1080,
+        "width": 1946,
+        "duration_ms": 31566,
+        "view_count": 5133647,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032492503245680640/vid/avc1/486x270/xIb5NkfKO2Up0lso.mp4?tag=14"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032492503245680640/vid/avc1/648x360/VOgWbq1rxvh7lNvm.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032492503245680640/vid/avc1/1296x720/gopnqKVjxy-FnFaN.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2032492503245680640/pl/F_OL3zmxviUayn0c.m3u8?tag=14&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5169,
+      "reply_count": 921,
+      "like_count": 33042,
+      "quote_count": 324,
+      "bookmark_count": 2723,
+      "impression_count": 2869070
+    },
+    "author_followers": 1131414,
+    "author_name": "Dr. Simon",
+    "author_description": "Biotechnologist and sunlight maximalist. Founder @sunfluencer. Living off-grid and building a bunker in the Brazilian jungle. ☀️ n=1 everything",
+    "author_tweet_count": 48719
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2032492503245680640/vid/avc1/1296x720/gopnqKVjxy-FnFaN.mp4?tag=14",
+          "description": {
+            "description": "A close-up of Benjamin Netanyahu speaking, with a red arrow pointing toward his open mouth. The scene is slightly blurry, with the username @SimonSecours and a video progress bar at the bottom. Across the frames, there is no significant change in either the position of the subject or the text.",
+            "ocrText": "@SimonSecours"
+          },
+          "transcription": "Thank you. Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@bearlyprophet**: the perfectly identical flags 😂 (1,098 likes)  \n**@goddek**: Wow. AI is a curse. I miss the past. (534 likes)  \n**@infinity_news9**: [video] (445 likes)  \n**@Thinkbilal**: Also his fingers , while fisting, get joined in a way that there is no separation left. A common AI mistake. (434 likes)  \n**@VaccineCourse**: Six fingers. (372 likes)  \n**@deghost1111**: He's here 😂 (298 likes)  \n**@HopSingDerKoch**: [image] (297 likes)  \n**@silly_goose6767**: Oh wow another oddity (292 likes)  \n**@Poppy67_**: The devil rly is dead huh (174 likes)  \n**@calebinnam**: He’s joined the sweat party (161 likes)",
+    "warnings": []
+  }
+}

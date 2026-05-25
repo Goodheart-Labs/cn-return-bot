@@ -1,0 +1,68 @@
+{
+  "tweet_id": "1983173763350048882",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:51.820Z",
+  "post": {
+    "id": "1983173763350048882",
+    "author_id": "1261335549215989760",
+    "created_at": "2025-10-28T14:07:25.000Z",
+    "text": "BREAKING: Mamdani's odds collapse in NYC Mayoral Election.\n\nIf he continues falling at the rate he has the past 24h, Cuomo would be the projected winner. https://t.co/2C18Ec3QWd",
+    "media": [
+      {
+        "media_key": "3_1983172184706093056",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G4WkmD3XkAAh6ew.jpg",
+        "height": 1024,
+        "width": 1024
+      },
+      {
+        "media_key": "3_1983173310075580416",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G4WlnkMXMAAqRe-.jpg",
+        "height": 950,
+        "width": 889
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1951,
+      "reply_count": 2372,
+      "like_count": 17436,
+      "quote_count": 1599,
+      "bookmark_count": 1589,
+      "impression_count": 31036062
+    },
+    "author_followers": 1552508,
+    "author_name": "Polymarket",
+    "author_description": "The World's Largest Prediction Market. Trade politics, news, crypto, culture, sports, tech, & more. Discord: https://t.co/tzKrbDfF3x",
+    "author_tweet_count": 28281
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G4WkmD3XkAAh6ew.jpg",
+          "description": {
+            "description": "A close-up portrait of a man with dark hair and a beard, wearing a black suit jacket, white dress shirt, and a blue patterned tie. He has a sorrowful expression and a visible tear is running down his left cheek. He is looking downwards against a dark, draped background.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G4WlnkMXMAAqRe-.jpg",
+          "description": {
+            "description": "A screenshot from the Polymarket prediction market website showing the betting odds for the New York City Mayoral Election. The interface features a line graph showing percentage chances over time from June to October for three candidates: Zohran Mamdani, Andrew Cuomo, and Curtis Sliwa. Below the graph, a table lists the current percentage chance for each candidate and the 'Buy Yes' or 'Buy No' prices in cents. Zohran Mamdani is currently leading with an 87% chance.",
+            "ocrText": "New York City Mayoral Election $313,579,779 Vol. Zohran Mamdani 90.0% Andrew Cuomo 9.3% Curtis Sliwa <1% Polymarket 100% 80% 60% 40% 20% 0% Jun Jul Aug Sep Oct 1H 6H 1D 1W 1M ALL OUTCOME % CHANCE Zohran Mamdani $79,971,775 Vol. 87% 8% Buy Yes 90.0\" Buy No 10.1\" Andrew Cuomo $20,688,648 Vol. 14% 9% Buy Yes 9.4\" Buy No 90.9\" Curtis Sliwa $40,111,250 Vol. <1% Buy Yes 0.3\" Buy No 99.8\""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Jaq - @LeftJaq: [image] (Likes=41056)\n- Cosmic Earth ✨As below, so above ☭ - @gallixsee: “Collapse” 😹 (Likes=6265)\n- MisterSpread - @MisterSpread: From 90% to 87% = collapse? \"If he continues falling at the rate he has the past 24h, Cuomo would be the projected winner.\" If my Grandmother had wheels she would have been a bike. (Likes=5552)\n- Dash (sigma male) - @dashisneat: [image] (Likes=6264)\n- Danny K. - @RockinDannyK: [image] (Likes=12953)\n- Fïnder - @Cocksmanofdoom: So it drops 3 points and you say \"if it continues dropping\" he could lose. Well yes, technically this is true. If I continued growing i would eventually be 30 feet tall. (Likes=2370)\n- Mike Rundle - @flyosity: lmao (Likes=2472)\n- John Aziz - @aziz0nomics: He still has an 87% chance of winning, don't confuse the wood for the trees. (Likes=341)\n- Haribaldi - @IamHaribaldi: Collapse my ass (Likes=311)\n- may ❀ - @w1isterias: \"Collapse\" (Likes=302)\n- That Gay Guy Candle Co. 🇺🇸 - @gayguycandleco: Is the collapse in the room with you? 😂 (Likes=291)\n- Savvy ( ˶ˆ꒳ˆ˵ ) - @MadamSavvy: Thats not a full collapse but i wonder how many more lies will go mainstream. The aunt thing is very stupid. But if he lied about that, what else did he lie about? Too bad the left has no thinking skills. (Likes=283)\n- Brett Hoffman - @BrettHoffmanjr: You’re winning a baseball game 10-2 Now it’s 10-3 If this continues you will lose (Likes=167)",
+    "warnings": []
+  }
+}

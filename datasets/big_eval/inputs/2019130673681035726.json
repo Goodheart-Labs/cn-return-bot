@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2019130673681035726",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:37.418Z",
+  "post": {
+    "id": "2019130673681035726",
+    "author_id": "2007893873247526912",
+    "created_at": "2026-02-04T19:27:20.000Z",
+    "text": "BREAKING: 🚨🇺🇸 House Democrats are just 2 votes away from impeaching Trump before March 31. https://t.co/SSmZAZRguA",
+    "media": [
+      {
+        "media_key": "3_2019130644568096768",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HAVkn5iWQAAr2Ow.jpg",
+        "height": 2048,
+        "width": 1583
+      },
+      {
+        "media_key": "3_2019130667225784320",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HAVkpN8XIAA3swr.jpg",
+        "height": 1280,
+        "width": 1280
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 778,
+      "reply_count": 233,
+      "like_count": 6832,
+      "quote_count": 220,
+      "bookmark_count": 233,
+      "impression_count": 1166908
+    },
+    "author_followers": 93451,
+    "author_name": "Globe Observer",
+    "author_description": "Observing the world so you don’t miss a thing | World news with context & analysis | Real Independent",
+    "author_tweet_count": 2713
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HAVkn5iWQAAr2Ow.jpg",
+          "description": {
+            "description": "A close-up portrait of Donald Trump looking directly at the camera with a stern, furrowed expression. He is wearing a dark blue suit jacket, a white collared shirt, and a solid blue tie. An American flag lapel pin is visible on his left lapel. In the background, there is a blurred American flag on the left and dark, ornate wooden paneling on the right.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HAVkpN8XIAA3swr.jpg",
+          "description": {
+            "description": "A wide interior shot of the French National Assembly (Palais Bourbon) during a session. Members are seated in a grand hemi-cycle with red velvet benches facing the speaker’s rostrum and a large tapestry. The walls are decorated with classical statues, gold ornamentation, and dark green panels. Several digital screens display timers and legislative information. Figures at the center are seated behind ornate marble and wood desks.",
+            "ocrText": "REPUBLIQUE FRANÇAISE"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@apollo195564**: PLEASEEE LET THE DEMOCRATS FINALLY DO SOMETHING EFFECTIVE FOR ONCE (Likes: 722)\n- **@nasundertale**: [image] (Likes: 204)\n- **@MoSoVin**: I’ll believe it when it happens (Likes: 200)\n- **@garfinkelzz**: Trump being impeached on my birthday would confirm life is worth living (Likes: 94)\n- **@matterAB007**: Can yall impeach him fr and NOT let him finish his term, that’s how he fucked shit up last time (Likes: 80)\n- **@Jerrybisi**: [image] (Likes: 70)\n- **@coinerkurt**: Fuck them - Trump will NEVER be impeached by pussies! 🖕🏼 (Likes: 34)\n- **@Nikolrem**: No current vote to impeach President Trump is scheduled in the House. Democrats hold 214 seats, while Republicans hold 218 (with 3 vacancies), so bipartisan support would be needed. The last resolution was tabled in December 2025. (Likes: 18)\n- **@todayisnotreal**: Oh god please yes (Likes: 0)\n- **@Skxtchy**: He’s been “impeached” twice already that word literally means nothing here (Likes: 8)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2040927472632656229",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:16.790Z",
+  "post": {
+    "id": "2040927472632656229",
+    "author_id": "2020135886860734464",
+    "created_at": "2026-04-05T23:00:02.000Z",
+    "text": "Can you believe this was made by nature? https://t.co/kf4lDE3EPr",
+    "media": [
+      {
+        "media_key": "13_2040787502156636160",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2040787502156636160/img/IC4QnOQ3ASCw3JTC.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 19272,
+        "view_count": 2833437,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040787502156636160/vid/avc1/320x568/eGzuCqcbL3KCneaJ.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040787502156636160/vid/avc1/480x852/ww3WyOVmmGKjDKb3.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040787502156636160/vid/avc1/720x1280/i4lI950ohToAK-Gg.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2040787502156636160/pl/9x9Qkvi-VGF49qcf.m3u8?v=974"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1060,
+      "reply_count": 854,
+      "like_count": 24744,
+      "quote_count": 87,
+      "bookmark_count": 1741,
+      "impression_count": 6452823
+    },
+    "author_followers": 2642,
+    "author_name": "frada",
+    "author_description": "",
+    "author_tweet_count": 707
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2040787502156636160/vid/avc1/720x1280/i4lI950ohToAK-Gg.mp4",
+          "description": {
+            "description": "These frames show a person discovering and opening a geode. In the first frame, a person is seen pouring a liquid from a plastic bottle onto a dark brown rock located on a rocky riverbed. In the second frame, the person has picked up the rock and is holding a hammer, which they then use to strike the rock in the third frame. In the final frame, the rock has been split open, revealing two halves of a geode containing vibrant purple crystals and a red inner center, held in the person's hands.",
+            "ocrText": ""
+          },
+          "transcription": "Oh my god bro Wah Man Oh my god Wah Man"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @saltsh007: This is complete bullshit. (Likes:140)\n- @rrichsoull: I smell some Ai BS! (Likes:139)\n- @JediAray: The stone changes shape as he turns it, it's Ai (Likes:94)\n- @Annika198505: I don't believe it at all, because this is AI. (Likes:76)\n- @xor_str: you mean ai (Likes:58)\n- @MikeSoRelle: So it changes shape after it’s spilt? Mature is amazing 🤔 (Likes:24)\n- @ratziIla: another AI Bullshit account blocked (Likes:6)\n- @bufferzero90: i love how it obviously switches to ai lmfao they didn't even try (Likes:6)\n- @Crispy876269: This should be included in a \"HOW TO SPOT AI SLOP\" introduction video (Likes:5)\n- @DillysTweets: No, I can't. It's AI (Likes:5)",
+    "warnings": []
+  }
+}

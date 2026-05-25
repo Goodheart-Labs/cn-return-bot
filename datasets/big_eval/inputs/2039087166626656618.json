@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2039087166626656618",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:34.756Z",
+  "post": {
+    "id": "2039087166626656618",
+    "author_id": "1045398019351425026",
+    "created_at": "2026-03-31T21:07:19.000Z",
+    "text": "I was fired from Anthropic today.\n\nI was the engineer responsible for shipping the latest  dev/claude-code npm package. Wanting to improve the debugging experience for the team, I decided to include source maps in the release. This resulted in our entire internal codebase being https://t.co/5Oz0PpI8jj",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2038894956459290963"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2038894956459290963",
+      "author_id": "1048192561863507968",
+      "created_at": "2026-03-31T08:23:33.000Z",
+      "text": "Claude code source code has been leaked via a map file in their npm registry! \n\nCode: https://t.co/jBiMoOzt8G https://t.co/rYo5hbvEj8",
+      "media": [
+        {
+          "media_key": "3_2038894520524226560",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HEubw45WQAA3VRl.jpg",
+          "height": 1784,
+          "width": 1434
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 1475,
+      "reply_count": 1256,
+      "like_count": 11293,
+      "quote_count": 562,
+      "bookmark_count": 5529,
+      "impression_count": 4333798
+    },
+    "author_followers": 100749,
+    "author_name": "Kevin Naughton Jr.",
+    "author_description": "building @ferrymanio, prev eng @google",
+    "author_tweet_count": 18254
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEubw45WQAA3VRl.jpg",
+          "description": {
+            "description": "A screenshot of a terminal window displaying command-line interface output. The user 'shou@dev' has executed 'ls -alht' on a file named cli.js.map and a directory named 'src'. The output shows a long list of files and directories with their permissions, owner (shou), group (staff), file sizes, timestamps (Mar 31 01:17), and names. The list includes various typescript files (.ts, .tsx) and subdirectories like entrypoints, commands, components, and hooks.",
+            "ocrText": "[shou@dev claude-code % ls -alht cli.js.map\n-rw-r--r--  1 shou  staff    57M Mar 31 01:16 cli.js.map\n[shou@dev claude-code % ls -alht src\ntotal 2304\ndrwxr-xr-x   8 shou  staff   256B Mar 31 01:17 entrypoints\n-rw-r--r--   1 shou  staff   785K Mar 31 01:17 main.tsx\ndrwxr-xr-x  55 shou  staff   1.7K Mar 31 01:17 .\ndrwxr-xr-x  10 shou  staff   320B Mar 31 01:17 cli\ndrwxr-xr-x 103 shou  staff   3.2K Mar 31 01:17 commands\ndrwxr-xr-x 331 shou  staff    10K Mar 31 01:17 utils\ndrwxr-xr-x 146 shou  staff   4.6K Mar 31 01:17 components\n-rw-r--r--   1 shou  staff    46K Mar 31 01:17 QueryEngine.ts\n-rw-r--r--   1 shou  staff    20K Mar 31 01:17 setup.ts\ndrwxr-xr-x   5 shou  staff   160B Mar 31 01:17 server\ndrwxr-xr-x  13 shou  staff   416B Mar 31 01:17 migrations\ndrwxr-xr-x  16 shou  staff   512B Mar 31 01:17 keybindings\ndrwxr-xr-x   6 shou  staff   192B Mar 31 01:17 skills\ndrwxr-xr-x   4 shou  staff   128B Mar 31 01:17 plugins\n-rw-r--r--   1 shou  staff    22K Mar 31 01:17 dialogLaunchers.tsx\ndrwxr-xr-x   5 shou  staff   160B Mar 31 01:17 screens\ndrwxr-xr-x  87 shou  staff   2.7K Mar 31 01:17 hooks\n-rw-r--r--   1 shou  staff    56K Mar 31 01:17 interactiveHelpers.tsx\ndrwxr-xr-x  38 shou  staff   1.2K Mar 31 01:17 services\n-rw-r--r--   1 shou  staff   3.4K Mar 31 01:17 replLauncher.tsx\n-rw-r--r--   1 shou  staff   617B Mar 31 01:17 costHook.ts\ndrwxr-xr-x   3 shou  staff    96B Mar 31 01:17 moreright\ndrwxr-xr-x   3 shou  staff    96B Mar 31 01:17 assistant\ndrwxr-xr-x   6 shou  staff   192B Mar 31 01:17 remote\ndrwxr-xr-x   7 shou  staff   224B Mar 31 01:17 vim\ndrwxr-xr-x   8 shou  staff   256B Mar 31 01:17 buddy\ndrwxr-xr-x  33 shou  staff   1.0K Mar 31 01:17 bridge\ndrwxr-xr-x   8 shou  staff   256B Mar 31 01:17 state\ndrwxr-xr-x  11 shou  staff   352B Mar 31 01:17 context\ndrwxr-xr-x   4 shou  staff   128B Mar 31 01:17 upstreamproxy\ndrwxr-xr-x  23 shou  staff   736B Mar 31 01:17 constants\ndrwxr-xr-x  10 shou  staff   320B Mar 31 01:17 types\n-rw-r--r--   1 shou  staff   3.1K Mar 31 01:17 Task.ts\ndrwxr-xr-x  10 shou  staff   320B Mar 31 01:17 memdir\n-rw-r--r--   1 shou  staff    25K Mar 31 01:17 commands.ts\ndrwxr-xr-x   5 shou  staff   160B Mar 31 01:17 native-ts\n-rw-r--r--   1 shou  staff    14K Mar 31 01:17 history.ts\n-rw-r--r--   1 shou  staff   2.3K Mar 31 01:17 projectOnboardingState.ts\ndrwxr-xr-x   3 shou  staff    96B Mar 31 01:17 outputStyles\n-rw-r--r--   1 shou  staff    67K Mar 31 01:17 query.ts\ndrwxr-xr-x   6 shou  staff   192B Mar 31 01:17 query\ndrwxr-xr-x  11 shou  staff   352B Mar 31 01:17 tasks\n-rw-r--r--   1 shou  staff    17K Mar 31 01:17 tools.ts\ndrwxr-xr-x  45 shou  staff   1.4K Mar 31 01:17 tools\ndrwxr-xr-x   3 shou  staff    96B Mar 31 01:17 voice\n-rw-r--r--   1 shou  staff   1.3K Mar 31 01:17 tasks.ts\n-rw-r--r--   1 shou  staff    10K Mar 31 01:17 cost-tracker.ts\ndrwxr-xr-x   3 shou  staff    96B Mar 31 01:17 coordinator\n-rw-r--r--   1 shou  staff   6.3K Mar 31 01:17 context.ts\n-rw-r--r--   1 shou  staff   3.8K Mar 31 01:17 ink.ts\ndrwxr-xr-x  50 shou  staff   1.6K Mar 31 01:17 ink\n-rw-r--r--   1 shou  staff    29K Mar 31 01:17 Tool.ts\ndrwxr-xr-x   3 shou  staff    96B Mar 31 01:17 schemas\ndrwxr-xr-x   3 shou  staff    96B Mar 31 01:17 bootstrap\ndrwxr-xr-x  12 shou  staff   384B Mar 31 01:17 .."
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@KevinNaughtonJr**  \nI was fired from Anthropic today.  \n[Likes: 11293 | Reposts: 1475 | Quotes: 562 | Replies: 1256]\n\n**ben (@_BabTuna_)**  \nanthropic team reading ts  \n[Likes: 2740 | Reposts: 31 | Replies: 17]\n\n**DataRepublican (small r) (@DataRepublican)**  \nWhile it's honorable to take responsibility, it's worrisome that the company had a single point of failure, and that they threw you under the bus for it.  \n[Likes: 2497 | Reposts: 151 | Replies: 78]\n\n**ف (@fheeeeran)**  \nHe had never worked in Anthropic to be fired in the first place.  \nThese kinds of tweets after any AI hype news always piss me off.  \n[Likes: 929 | Reposts: 18 | Replies: 25]\n\n**Kevin Naughton Jr. (@KevinNaughtonJr)**  \ngood thing i can't get fired from @ferrymanio  \nuse code \"FIRED\" for 50% off all plans  \nhttps://ferryman.io/  \n[Likes: 535 | Reposts: 7 | Replies: 64]\n\n**Christopher Chevalier (@cptnjamescook)**  \nI once put the wrong dish liquid in the dishwasher at work, and 3-foot high wall of suds marched across the lunchroom. So I know exactly how you feel.  \n[Likes: 228 | Reposts: 0 | Replies: 0]\n\n**Saladin Xor (@saladinxor)**  \nPlease apply for OpenAI and include the source map in the debugging  \n[Likes: 199 | Reposts: 1 | Replies: 3]\n\n**Paweł T (@tlewap)**  \nNow apply to OpenAI. They could use the help with their npm packaging too  \n[Likes: 197 | Reposts: 0 | Replies: 0]\n\n**Solar BTC & Coffee (@SolarEnergyBTC)**  \nThis is clickbait posting people. This dude was never fired from Anthropic bc he didn’t ever work there:  \n[Likes: 114 | Reposts: 0 | Replies: 0]\n\n**Jad (@byJad)**  \nnice bro, good way to promote your shitty service  \n[Likes: 94 | Reposts: 0 | Replies: 0]",
+    "warnings": []
+  }
+}
