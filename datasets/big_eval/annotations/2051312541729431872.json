@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2051312541729431872",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "politics_elections"],
+  "category_fit": "partial",
+  "suggested_category": "misleading_political_claim",
+  "tweet_summary": "A Reform UK councillor claims the party 'delivered a real-terms cut to council tax here in Leicestershire' ('Less tax. More delivery.'), noting it's the first time in 12 years the maximum increase wasn't passed.",
+  "why_note_decision": "The 'real-terms cut' and 'Less tax' claims are misleading. Leicestershire County Council (Reform-led) approved a 2.99% council-tax INCREASE for 2026/27 — residents pay more in cash, not less. With UK CPI at 3.0% in the 12 months to Feb 2026, a 2.99% rise is essentially a real-terms FREEZE, not a cut. The only true part is that this was the first time in over a decade the council declined the maximum 4.99% cap. A note correcting 'cut' → 'increase that roughly tracks inflation (a real-terms freeze)' helps readers not be misled about whether their tax went down. Multiple repliers independently flag this ('A smaller increase is NOT a tax cut', 'You raised council tax').",
+  "judge_guidance": "PASS only if the note establishes that council tax was RAISED by 2.99% (a nominal increase, not a cut), and that with CPI around 3.0% this amounts to roughly a real-terms freeze rather than a 'real-terms cut'. It is acceptable, but not required, to acknowledge the true claim that this was the first time in ~12 years the council did not take the maximum 4.99% increase. Must cite the council's budget and an inflation source (Leicestershire County Council / ONS CPI). FAIL if the note endorses 'real-terms cut'/'less tax', or claims tax was reduced. A note that calls it merely 'a smaller increase' without the real-terms-freeze point is PARTIAL.",
+  "reference_note": "Leicestershire County Council approved a 2.99% council tax increase, matching CPI inflation for a real-terms freeze rather than a cut. https://www.leicestershire.gov.uk/news/budget-limits-tax-rise-amid-soaring-costs https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/february2026",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": ["https://www.leicestershire.gov.uk/news/budget-limits-tax-rise-amid-soaring-costs", "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/february2026", "https://harboroughfm.co.uk/leicestershire-county-council-approves-2-99-council-tax-rise/"],
+    "notes": "Council approved a 2.99% council-tax rise for 2026/27 (first time in over a decade not taking the 4.99% max). UK CPI was 3.0% in the 12 months to Feb 2026. So 2.99% ≈ a real-terms freeze, NOT a cut, and certainly not 'less tax' in cash terms. The 'first time in 12 years' claim is accurate; the 'real-terms cut' framing is not."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Politician's misleading fiscal claim to ~27k viewers; correcting 'tax cut' spin protects voters' ability to evaluate governance honestly. Moderate civic value."
+  },
+  "difficulty": "medium"
+}

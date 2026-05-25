@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2051653703615025345",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["platform_manipulation", "influencer_dispute"],
+  "category_fit": "poor",
+  "suggested_category": "influencer_dispute",
+  "tweet_summary": "The Redheaded Libertarian (TRHL) responds to an accuser, stating she did NOT endorse Angel Studios' 'Animal Farm' film and declined payment to talk about it after reading the director's interview. It is a self-defense reply in an ongoing influencer feud about the controversial film.",
+  "why_note_decision": "This is an interpersonal credibility dispute, not a checkable public-misinformation claim. Whether a since-deleted promotional tweet constitutes an 'endorsement', and what the author's intentions/payment status were, are contested characterizations turning on private facts (a payment arrangement she says she declined) that no source can authoritatively settle. A community note that asserts 'she did post a paid partnership before deleting it' takes one side of a personal quarrel; that is argumentative framing, not context that protects readers from misinformation. The original note was rated incorrect/argumentative/not-needed by raters, consistent with this.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. Any note here is a false positive: the post is a self-defense reply in an influencer feud over whether a deleted Animal-Farm promo counted as a paid endorsement — a contested framing/private-payment matter, not verifiable public misinformation. In particular, FAIL any note that asserts she DID promote it as a paid partnership (adjudicating the dispute), or that relies on screenshots/quote-tweets from the opposing parties as proof.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The author posted a tweet promoting Animal Farm as a paid partnership before deleting it. https://x.com/mynerdyhome/status/2051392474266960163 https://x.com/TRHLofficial/status/2049490568166744216",
+    "failure_reason": "Takes a side in a personal dispute over a deleted tweet; asserts a contested characterization (that it was a 'paid partnership' / 'endorsement') as settled fact, using partisan X posts as sources. Not public misinformation warranting a note.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "opinion/contested framing",
+    "sources_checked": ["https://x.com/TRHLofficial/status/2049490568166744216", "https://thatparkplace.com/angel-studios-rips-critics-of-animal-farm-and-puts-conservative-partners-in-hot-water/", "https://dnyuz.com/2026/04/30/maga-is-confused-about-animal-farm/"],
+    "notes": "Context confirms a real April-May 2026 controversy: Angel Studios' 'Animal Farm' drew backlash and several conservative influencers were accused of paid #AnimalFarmPartner promos. But the specific question of whether TRHL endorsed/was-paid hinges on a deleted tweet and her stated refusal of payment — a private, contested matter. No authoritative source resolves it; it is an influencer feud, not public misinformation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Niche influencer feud over a movie endorsement; negligible bearing on any EA/progress/safety/welfare priority. Low value to correct."
+  },
+  "difficulty": "medium"
+}

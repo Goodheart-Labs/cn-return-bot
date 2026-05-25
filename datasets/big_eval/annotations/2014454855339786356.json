@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2014454855339786356",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post claims the DHS funding bill (H.R. 7147) 'allocates $10 BILLION MORE for ICE operations,' passed 220-207, giving ICE 'EVEN MORE money,' with SIX Democrats voting yes.",
+  "why_note_decision": "The tweet misstates the bill's effect and the vote. The DHS appropriations bill did not give ICE $10 billion more; it kept ICE funding roughly flat, cut funding for enforcement and removal operations, and reduced detention beds versus FY2025 — the opposite of 'EVEN MORE money to boost deportation numbers.' Seven Democrats voted yes, not six. From a 1.5M-follower account at 253k impressions, these are concrete legislative facts worth correcting.",
+  "judge_guidance": "PASS only if the note corrects the bill's effect and the vote count: the DHS funding bill (H.R. 7147, passed 220-207 on Jan 22, 2026) did NOT add $10 billion for ICE — it kept ICE funding roughly flat, cut enforcement-and-removal funding, and reduced detention beds vs FY2025; and SEVEN Democrats voted yes, not six. The note must rebut the '$10 billion more' / 'even more money to boost deportations' framing with the flat/cut reality. A note that only fixes the Democrat count but lets the '$10B more for ICE' claim stand is incomplete; FAIL any note that endorses the '$10 billion more for ICE' framing. Keep tone neutral/bridging.",
+  "reference_note": "The DHS funding bill (H.R. 7147, passed 220-207) keeps ICE's budget roughly flat rather than adding $10 billion; it cuts funding for enforcement and removal operations and reduces detention beds vs FY2025. Seven Democrats voted yes, not six. https://www.congress.gov/bill/119th-congress/house-bill/7147 https://www.nbcnews.com/politics/congress/house-passes-sprawling-spending-package-democrats-split-ice-funding-rcna255273",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading: bill did not add $10B for ICE (kept flat / cut enforcement-removal funding, fewer detention beds); 7 Democrats voted yes, not 6.",
+    "sources_checked": [
+      "https://www.congress.gov/bill/119th-congress/house-bill/7147",
+      "https://www.nbcnews.com/politics/congress/house-passes-sprawling-spending-package-democrats-split-ice-funding-rcna255273",
+      "https://5calls.org/issue/dhs-budget-ice-defund/"
+    ],
+    "notes": "Congress.gov + NBC confirm 220-207 passage and seven Democratic yes votes (Cuellar, Golden, Gillen, Gluesenkamp Perez, Davis, Suozzi, Gonzalez). Reporting notes Democrats secured cuts to ICE enforcement/removal funding and $20M for body cameras; detention beds capped at 34,000 (a reduction). The '$10 billion MORE' framing is the misleading element. Provisional no_note overweights the partisan 'note not needed' ratings; the factual misstatements justify a note."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.5M-follower account, 253k impressions, on major immigration-enforcement legislation; accurate legislative facts on ICE funding matter for policy-relevant public understanding."
+  },
+  "difficulty": "medium"
+}

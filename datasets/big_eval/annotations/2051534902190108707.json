@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2051534902190108707",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "poor",
+  "suggested_category": "local_political_spat",
+  "tweet_summary": "Tokyo Chuo-ward councillor Genki Takahashi quote-tweets former Diet member Akihiro Hatsushika (who told him to stay out of a matter that doesn't concern him), retorting that it does concern him because it's his beloved town and Hatsushika is being rude to residents, adding 'that's why you lose elections.'",
+  "why_note_decision": "This is a personal political flame war, and the contested phrase 'だから落選するんですよ' ('that's why you lose elections') is a rhetorical insult, not a factual claim a reader benefits from having corrected. It reads as a present-tense generalization about Hatsushika's conduct, not an assertion that a specific past election was lost. While it is true that Hatsushika left the Diet in 2020 by resigning over a groping/indecency allegation (送検, non-prosecuted) rather than by losing an election, inserting that biographical fact to 'correct' a jab in a squabble is pedantic and risks taking sides in a personal dispute. No checkable, materially misleading public claim is being made.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. Any note is a false positive. The tweet is a councillor's opinionated retort in a personal Twitter spat; the only arguably-checkable bit ('that's why you lose elections') is a rhetorical insult, not a factual assertion about a specific election result. A note dragging in Hatsushika's 2020 resignation-over-scandal to litigate a jab would be pedantic and partisan, not a helpful public correction. Reject any note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "初鹿氏は落選ではなく、強制わいせつ容疑（不起訴）で2020年に議員辞職した。 https://ja.wikipedia.org/wiki/%E5%88%9D%E9%B9%BF%E6%98%8E%E5%8D%9A https://www.asahi.com/articles/ASNBQ5RDBNBQUTFK00V.html",
+    "failure_reason": "Treats a rhetorical insult in a personal flame war ('that's why you lose elections') as a checkable factual claim, then injects an unrelated scandal fact to score a point — pedantic and partisan rather than a needed public correction.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "opinion/insult - the underlying biographical fact (Hatsushika resigned in 2020 over an indecency allegation, non-prosecuted, rather than losing an election) is true, but the tweet's phrase is rhetorical, not a factual claim warranting correction",
+    "sources_checked": [
+      "https://ja.wikipedia.org/wiki/%E5%88%9D%E9%B9%BF%E6%98%8E%E5%8D%9A",
+      "https://www.nikkei.com/article/DGXMZO65320090S0A021C2PP8000/",
+      "https://www.shikoku-np.co.jp/national/political/20201022000332"
+    ],
+    "notes": "Confirmed Hatsushika submitted his Diet resignation on 2020-10-22 over a 2015 indecency allegation (書類送検, Tokyo prosecutors declined to indict in Sept 2020). His own reply in-thread ('I didn't lose an election') matches. But the tweet's 'you lose elections' is a heated jab, and a note correcting it is pedantic and takes sides in a personal dispute. No note needed."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "A local Tokyo ward-councillor personal feud; no bearing on world-critical issues. Despite high impressions, the substance is interpersonal squabbling."},
+  "difficulty": "hard"
+}

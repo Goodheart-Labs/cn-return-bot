@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2015520423820083697",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "unverifiable_future_prediction",
+  "tweet_summary": "A 'Barron Trump' commentary account claims, beside a Trump photo, that 'The U.S. military is expected to carry out a military operation against Iran today' (Jan 25, 2026), calling it a 'decisive moment.'",
+  "why_note_decision": "At posting time this was an unverifiable PREDICTION about a future event, not a factual claim about something that had occurred — it is speculation/'expected to' framing, which Community Notes generally cannot fact-check in the moment (you cannot prove a future strike won't happen). In hindsight no US operation occurred on Jan 25, 2026 (the actual US-Israel strikes came Feb 28), so the prediction proved false, but a same-day note can only say 'unconfirmed,' which is weak and itself speculative. The original note ('no operation confirmed or expected today') is exactly that hedge and adds little. This is speculative framing, not a discrete falsifiable claim at the time — no note warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an unverifiable future PREDICTION ('expected to... today') from a parody/commentary account, not a checkable claim about a past or present fact; at posting time it cannot be fact-checked (a same-day note can only say 'unconfirmed,' which is itself speculative). FAIL any note that asserts a definitive verdict about whether a strike will/won't happen. Acknowledging the account is a commentary/parody account would be marginally relevant, but declining is correct. (For reference, no US strike occurred on Jan 25, 2026; the US-Israel operation began Feb 28, 2026 — but that is hindsight unavailable to a same-day note.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No U.S. military operation against Iran is confirmed or expected on January 25, 2026. While U.S. forces are deploying to the region amid heightened tensions, official reports indicate no imminent strikes or actions today.  https://www.reuters.com/world/middle-east/us-military-assets-heading-middle-east-even-trump-backs-off-toughest-iran-2026-01-22  https://apnews.com/article/us-military-middle-east-iran-protests-b7a56659d708f2f11f66a18135f44c40",
+    "failure_reason": "note_not_needed_fact_checking_a_prediction",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Unverifiable prediction (false in hindsight). No US strike occurred on Jan 25, 2026; the actual US-Israel operation began Feb 28, 2026. At posting time it was speculation, not a checkable fact.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Timeline_of_the_2026_Iran_war",
+      "https://en.wikipedia.org/wiki/2026_Iran_war",
+      "https://www.aljazeera.com/news/2026/2/28/us-israel-bomb-iran-a-timeline-of-talks-and-threats-leading-up-to-attacks"
+    ],
+    "notes": "US assets (USS Abraham Lincoln group) were heading to the Gulf around Jan 25, but no operation happened that day; the war's strikes began Feb 28, 2026. The tweet is a same-day 'expected to' prediction from a parody account — not fact-checkable in the moment, and the note can only hedge. No note warranted."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "210k impressions of war-hype speculation during a tense period; correcting unfalsifiable same-day predictions is low-value and risks Community Notes refereeing live war forecasting."
+  },
+  "difficulty": "medium"
+}

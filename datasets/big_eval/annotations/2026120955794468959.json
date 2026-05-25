@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2026120955794468959",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "insider_reporting_framing",
+  "categories": ["platform_manipulation"],
+  "category_fit": "partial",
+  "suggested_category": "tech_platform_policy",
+  "tweet_summary": "Awful Announcing (a sports-media outlet) shares its own article headlined 'X removes Kalshi badges under updated paid partnerships policy,' reporting that Kalshi affiliate badges disappeared from X after X tightened rules on gambling-related paid partnerships.",
+  "why_note_decision": "The dispute is over a framing word — who 'removed' the badges — not over what materially happened. The substance the tweet conveys is correct and well-sourced: the badges are gone, and the cause is X's updated paid-partnerships policy banning gambling/sports-betting promotion. The agency is genuinely contested: Kalshi's newsroom says it pulled the badges itself, but the linked article (and reporting) notes Kalshi was still recruiting badge sponsors hours earlier and implies X's enforcement pressure forced the move. Asserting flatly that 'X removed them is incorrect' overstates a clean factual error where the truth is 'Kalshi formally removed them in response to / under pressure from X's policy.' A reader is not materially misled. This is an attribution nitpick, not correctable misinformation.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. Any note here is a false positive. The tweet accurately conveys the material facts (Kalshi badges removed because of X's gambling paid-partnership policy); the only quibble is whether X or Kalshi technically performed the removal, which is itself contested (Kalshi claims it acted voluntarily; reporting suggests X enforcement pressure forced it). A note asserting 'X did not remove them, Kalshi did' would be presenting a contested framing word as settled fact and is NOT a helpful correction. Reject any such note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Kalshi removed the affiliate badges themselves, not X. This was in response to X's updated paid partnerships policy prohibiting gambling-related promotions. The post's claim that X removed them is incorrect. https://frontofficesports.com/kalshi-abandons-affiliate-badges-after-twitters-policy-shift https://help.x.com/en/rules-and-policies/paid-partnerships-policy https://x.com/KalshiNewsroom/status/2026142489783283825",
+    "failure_reason": "Treats a contested attribution/framing word ('X removes' vs 'Kalshi removed under X policy') as a clean factual error; the material facts in the tweet are accurate and the agency is genuinely ambiguous, so the correction is pedantic and overconfident.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "substantially accurate - badges removed due to X's gambling paid-partnership policy; only the X-vs-Kalshi agency is a contested framing detail",
+    "sources_checked": [
+      "https://frontofficesports.com/kalshi-abandons-affiliate-badges-after-twitters-policy-shift/",
+      "https://awfulannouncing.com/gambling/x-removes-kalshi-badges-paid-partnerships-policy.html",
+      "https://www.theblock.co/post/390983/kalshi-removes-x-affiliate-badges-after-policy-shift-tightens-promotion-rules"
+    ],
+    "notes": "Kalshi newsroom says it removed badges itself; the Awful Announcing article both reports Kalshi's claim and undercuts it (Kalshi was still recruiting badge sponsors hours earlier), implying X enforcement pressure. The 'who removed them' point is genuinely contested, so the original note's flat 'X did not, Kalshi did' is an overconfident framing nitpick rather than a needed correction."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "Low stakes: a niche dispute about prediction-market affiliate badges on X; no bearing on health, safety, war, or major policy outcomes."},
+  "difficulty": "hard"
+}

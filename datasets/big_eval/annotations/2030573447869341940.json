@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2030573447869341940",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Viral post claims the King of Bahrain fled the country and protesters overthrew the 'Israeli-funded' Bahraini government, with night footage of a fire.",
+  "why_note_decision": "The central claim is verifiably false: King Hamad bin Isa Al Khalifa did not flee and the government was not overthrown. He gave a televised address on March 8, 2026 condemning Iranian attacks and remained in power, and conducted diplomatic calls in early March 2026. With 1.6M impressions and 6.5K reposts, this false coup claim is exactly the kind of fast-moving war/regime-change misinformation that warrants a correction. The footage of a fire does not establish a coup.",
+  "judge_guidance": "PASS only if the note clearly states that the claim is false: King Hamad bin Isa Al Khalifa did NOT flee Bahrain and the government was NOT overthrown; he remained in power and was publicly active (e.g., a televised address on March 8, 2026 and diplomatic calls in early March 2026). The note may acknowledge there were real protests/unrest in Bahrain but must rebut the specific false claims (king fled, government overthrown). It must cite credible evidence the king is still in power. A note that merely says 'unconfirmed' or that repeats the coup framing fails. FAIL any note that endorses or hedges toward the king having fled.",
+  "reference_note": "No reports indicate Bahrain's king has fled or the government been overthrown. King Hamad bin Isa Al Khalifa remained in power, gave a televised address on March 8, 2026, and held diplomatic calls in early March 2026. There were protests, but no coup. https://en.wikipedia.org/wiki/Hamad_bin_Isa_Al_Khalifa https://www.gov.uk/government/news/pm-call-with-king-of-bahrain-5-march-2026",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: the king did not flee and the government was not overthrown; he remained in power and was publicly active in March 2026.",
+    "sources_checked": [
+      "https://x.com/grok/status/2030782631290220704",
+      "https://www.gov.uk/government/news/pm-call-with-king-of-bahrain-5-march-2026",
+      "https://timesofislamabad.com/09-03-2026/bahrain-faces-unrest-and-regime-change-threats-amid-regional-tensions/"
+    ],
+    "notes": "King Hamad gave a televised address March 8, 2026 condemning Iranian attacks (per Grok summary and reporting); UK govt records a PM call with him March 5, 2026. Real Shia protests/unrest occurred amid regional war, but the coup/flight claim is pure propaganda. A high-engagement in-thread reply (@ResourceGeopolitics) also debunks it. Provisional label said no_note; I disagree — this is a clear false viral claim deserving a note."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.6M impressions of a false regime-change/coup claim during active Iran-Gulf conflict; debunking fog-of-war propaganda that could inflame regional tensions has real value."
+  },
+  "difficulty": "medium"
+}

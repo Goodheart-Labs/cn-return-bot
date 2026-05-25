@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2010079950800617648",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "cgi_simulation_clearly_illustrative",
+  "tweet_summary": "A long educational post by 'Historic Vids' explains why a C-17 Globemaster cannot take off from an aircraft carrier, accompanied by a clip showing a C-17 rolling off a carrier deck into the ocean.",
+  "why_note_decision": "The tweet's actual claim — that a C-17 cannot take off from an aircraft carrier — is TRUE (the C-17 needs a runway far longer than any carrier deck). The accompanying clip is CGI/flight-simulator footage, but the post never asserts it is real footage; it uses the clip to illustrate the very point that this can't happen in reality, and the thread is framed as an explainer about physics. The audience overwhelmingly understands this (commenters discuss the physics, not whether the crash is real). Since the claim is correct and the video is plainly illustrative rather than presented as a real event, no correction is warranted. The original note even AGREES the post is correct — it essentially adds a footnote that the clip is CGI, which raters found unnecessary (dominant NoteNotNeeded).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's core claim (a C-17 cannot take off from a carrier) is factually correct, and the CGI clip is used illustratively, not asserted as real footage — so there is no misleading claim to correct. A note here is a false positive even if it accurately points out the clip is a simulation, because the post is not deceiving anyone (it's an explainer arguing the event is impossible, and the audience treats the clip as illustrative). FAIL any note, including a technically-true 'the video is CGI' note; the original such note was rated Not Helpful / NoteNotNeeded.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The post correctly states that the C-17 cannot take off from an aircraft carrier. The video is a computer-generated simulation illustrating this, not real footage. Sources: https://en.wikipedia.org/wiki/Boeing_C-17_Globemaster_III https://checkyourfact.com/2025/02/24/fact-check-video-cargo-plane-aircraft-carrier/",
+    "failure_reason": "The note concedes the post is correct and only adds that the clip is CGI — but the post never claimed the clip was real, so the note is unnecessary. Dominant rating NoteNotNeeded — a false positive on a correct, self-evidently illustrative explainer.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's claim is true (C-17 cannot take off from a carrier); clip is CGI but used illustratively.",
+    "sources_checked": [
+      "https://checkyourfact.com/2025/02/24/fact-check-video-cargo-plane-aircraft-carrier/",
+      "https://leadstories.com/hoax-alert/2025/02/fact-check-c-17-globemaster-carrier-deck-takeoff.html",
+      "https://en.wikipedia.org/wiki/Boeing_C-17_Globemaster_III"
+    ],
+    "notes": "C-17 needs >3,000 ft of runway; no carrier deck is long enough. The viral clip originates from a flight-simulator YouTube channel with a disclaimer; fact-checkers confirm CGI. The 'Historic Vids' post argues the event is impossible, so the clip functions as an illustration, not a real-event claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "A correct aviation-physics explainer with an illustrative CGI clip carries essentially no misinformation risk; no EA/progress relevance to correcting it."
+  },
+  "difficulty": "medium"
+}

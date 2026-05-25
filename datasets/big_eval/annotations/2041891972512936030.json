@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2041891972512936030",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "satire_mistaken_as_real"],
+  "category_fit": "partial",
+  "suggested_category": "satire_mistaken_as_real",
+  "tweet_summary": "A quote-tweet ('Cry me a River') amplifies a graphic claiming Ellen DeGeneres forfeited her US citizenship, moved to England, was denied a passport over Antifa ties, and regrets it. The image originates from the satire page America's Last Line of Defense.",
+  "why_note_decision": "The underlying graphic is fabricated. Ellen DeGeneres has not renounced US citizenship, has not been denied a passport, and has no documented Antifa ties; the headline is invented by ALLOD, a satire farm whose stated policy is that nothing it posts is real. The quote-tweeter and many repliers treat it as a real news item ('Best news of the day', 'I hope her prediction is correct'). Because ALLOD content is a well-documented misinformation vector that routinely fools readers despite its disclaimer, a note clarifying it is fabricated satire is warranted. Borderline: the image does carry a small 'NOTHING on this page is REAL' watermark and several top replies already call it fake, so a no-note verdict is defensible.",
+  "judge_guidance": "PASS only if the note (a) states the claim is false/fabricated — Ellen DeGeneres has not given up US citizenship and has not been denied re-entry or a passport over Antifa ties — AND (b) attributes the image to a satire source (America's Last Line of Defense / ALLOD, which labels its content as not real). A note that merely says 'unconfirmed' or 'no evidence' without identifying it as fabricated satire is PARTIAL. FAIL if the note treats the citizenship/passport claim as plausibly true or cites the satire page as a credible source. Sources must be reliable (a fact-check or the satire page's own disclaimer), not the viral image.",
+  "reference_note": "The headline in the image originates from a satire page stating “Nothing on this page is real” and is not factual; Ellen DeGeneres has not forfeited her US citizenship or been denied re-entry over Antifa ties. https://www.facebook.com/ALLODSatire https://www.primetimer.com/features/did-ellen-degeneres-give-up-her-us-citizenship-passport-denial-over-antifa-links-claim-debunked",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": ["https://www.primetimer.com/features/did-ellen-degeneres-give-up-her-us-citizenship-passport-denial-over-antifa-links-claim-debunked", "https://www.facebook.com/ALLODSatire"],
+    "notes": "Primetimer and other outlets debunk the claim and identify America's Last Line of Defense as the satire origin. DeGeneres moved to the UK in 2024 but retains US citizenship; no passport denial or Antifa designation exists. Image bears 'NOTHING on this page is REAL' watermark."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "800k impressions on a fabricated celebrity story that feeds political dehumanization rhetoric; correcting satire-as-news protects the epistemic commons, though the underlying stakes for the world are modest."
+  },
+  "difficulty": "easy"
+}

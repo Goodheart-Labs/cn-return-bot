@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2049464880520888535",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["fabricated_quote", "breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_quote",
+  "tweet_summary": "Claims US Treasury Secretary Scott Bessent said at a press conference 'today' that the US will impose 100% tariffs on Chinese goods if China keeps buying Iranian energy, and quotes Chinese FM Wang Yi defiantly replying that China will keep buying from Iran regardless.",
+  "why_note_decision": "The dramatic quoted exchange does not match the record. Around this period Bessent's actual statements were about US sanctions on specific Chinese refiners/entities buying Iranian crude and urging China to pressure Iran over the Strait of Hormuz — not a blanket '100% tariffs on all Chinese goods' threat delivered at a press conference, paired with a verbatim defiant Wang Yi rebuttal. The post comes from a commentary account and presents fabricated/embellished verbatim quotes as official statements, which is checkable misinformation warranting a note.",
+  "judge_guidance": "PASS only if the note establishes that the specific quoted statements do not appear in the official record / are unverified, and ideally clarifies the accurate context: US measures targeted sanctions on specific entities buying Iranian oil, not a blanket 100% tariff on all Chinese goods announced at a press conference, and there is no record of the quoted Wang Yi defiant reply. The note must NOT repeat the fabricated quotes as if genuine, and must NOT merely debate whether 100% tariffs would be wise. Cite official Treasury releases or credible reporting (Fortune, ABC, CNBC). A note that just says 'no source' is acceptable if it makes clear the quotes are unsubstantiated; stronger if it states what the actual policy posture was.",
+  "reference_note": "The quoted statements attributed to Treasury Secretary Bessent and Chinese FM Wang Yi do not appear in the official record. US actions targeted sanctions on specific entities buying Iranian oil and pressed China over the Strait of Hormuz, not a blanket 100% tariff on all Chinese goods announced at a press conference. https://home.treasury.gov/news/press-releases/sb0476 https://home.treasury.gov/news/press-releases/sb0472",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false/unsubstantiated - the verbatim quoted exchange does not appear in official records; real policy was targeted sanctions, not a blanket 100% tariff announced as quoted",
+    "sources_checked": [
+      "https://fortune.com/2026/03/15/scott-bessent-us-china-talks-trump-xi-summit-iran-trade-war-tariffs/",
+      "https://abcnews.com/International/wireStory/trump-xi-summit-trade-taiwan-iran-agenda-132866731",
+      "https://www.cnbc.com/2026/05/11/trump-xi-summit-beijing-global-leaders-iran-war-taiwan-strait-of-hormuz-.html"
+    ],
+    "notes": "Reporting around this window covers US sanctions on Chinese refiners buying Iranian crude and Bessent urging China to pressure Iran; no source records the verbatim '100% tariffs on Chinese goods' press-conference quote or the paired defiant Wang Yi reply. Author is a commentary account. Original CN note's verdict is sound; reference note retained with slightly tighter wording."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "164k impressions on a fabricated US-China escalation exchange touching war (Iran), trade, and great-power conflict; fake high-level quotes can move sentiment on geopolitically destabilizing topics — valuable to correct."},
+  "difficulty": "medium"
+}

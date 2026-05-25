@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2041143888409182465",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "contested_legal_interpretation",
+  "tweet_summary": "The Federalist links to its op-ed arguing that the word 'reside' (not 'jurisdiction') in the 14th Amendment's Citizenship Clause bans birthright citizenship.",
+  "why_note_decision": "This is an opinion/legal-interpretation op-ed from a clearly-labeled political magazine, advancing a contested constitutional argument — not a false statement of fact. The 'reside' theory is actively debated by serious legal venues (SCOTUSblog, the Federalist Society, Heritage, and constitutional scholars on both sides); it is a disputed interpretation, not a settled falsehood a note can correct. Community Notes should not adjudicate a live constitutional-law debate by declaring one side wrong. The replies already supply the counter-arguments. The original note imposed one interpretive reading as if it were settled fact, which is the false-positive failure mode here.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet promotes an opinion op-ed making a CONTESTED constitutional-law argument (the 14th Amendment's 'reside' clause); this is interpretive legal debate, not a checkable false fact, and scholars actively disagree. Any note that 'corrects' the argument by asserting the opposite reading as settled is a false positive — Community Notes does not resolve legal-interpretation disputes. FAIL any such note. (A bare factual note pointing out the clause text begins 'All persons born...' would still be litigating interpretation, so declining is correct.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The word &quot;reside&quot; in the 14th Amendment's Citizenship Clause determines the state of citizenship for those who are U.S. citizens but does not condition or limit U.S. citizenship itself. https://constitution.congress.gov/browse/essay/amdt14-S1-1-2/ALDE_00000812/ https://constitutioncenter.org/the-constitution/amendments/amendment-xiv/clauses/700",
+    "failure_reason": "note_not_needed_imposes_one_side_of_legal_debate",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Contested legal interpretation / opinion. The 'reside' argument is a disputed constitutional theory debated by scholars and courts, not a settled falsehood.",
+    "sources_checked": [
+      "https://www.scotusblog.com/2026/03/the-14th-amendments-citizenship-clause-does-not-codify-english-principles-of-subjectship/",
+      "https://fedsoc.org/fedsoc-review/birthright-citizenship-two-perspectives",
+      "https://www.heritage.org/immigration/commentary/birthright-citizenship-fundamental-misunderstanding-the-14th-amendment"
+    ],
+    "notes": "Mainstream reading strongly favors birthright citizenship, but the 'reside'/domicile argument is a genuine, actively-litigated interpretive dispute (SCOTUSblog, FedSoc two-perspectives pieces). An op-ed advancing it is protected opinion/legal argument, not a correctable false fact. A note declaring it wrong takes a side in a live legal debate."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "552k impressions on a consequential citizenship-law debate, but it's clearly-framed legal opinion; a note here would set a precedent of Community Notes refereeing constitutional interpretation, which is not its role."
+  },
+  "difficulty": "hard"
+}

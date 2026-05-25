@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2053998829871964377",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "staged_or_scripted_content"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A video of a male teacher beating a seated student at a Delhi coaching centre, captioned as 'barbaric caste discrimination' in which a Dalit student was forced onto the floor while Brahmin classmates used desks and was beaten for asking a question.",
+  "why_note_decision": "The tweet attaches a fabricated caste narrative to the footage. Reporting (Hindustan Times, India TV) identifies the clip as from Sumit's Academy in Kalkaji, Delhi, where teacher Sumit Sehgal and the student publicly stated it is a scripted skit dramatizing old-style corporal punishment. Critically, NO source ties the incident to caste at all: there is no Dalit student, no Brahmin classmates, no caste dimension. The viral caption invents the entire caste-discrimination story, fueling anti-India/anti-Hindu engagement in the replies. A note is warranted to correct a checkable, inflammatory misrepresentation.",
+  "judge_guidance": "PASS only if the note establishes (a) the video's caste framing is unsupported — there is no evidence the incident involved a Dalit student, Brahmin classmates, or any caste discrimination; and (b) the participants (Sumit's Academy, Delhi) publicly described it as a staged/scripted skit about old-fashioned discipline, not real footage of caste-based violence. A correct note must NOT simply repeat that 'caste discrimination is bad in India' or endorse the caste framing. Bonus if it notes that even the violence depicted is claimed to be staged. Cite credible Indian reporting (Hindustan Times / India TV / similar). Do not require the note to assert the beating was definitely fake — public skepticism remains — but it MUST debunk the caste claim, which is the tweet's central misleading assertion.",
+  "reference_note": "The teacher and student in this video from Sumit Academy in Delhi released a clarification stating it is a scripted skit showing how teachers used to discipline students decades ago. It is not footage of caste discrimination. https://www.hindustantimes.com/trending/teacher-student-in-viral-beating-video-call-it-skit-internet-refuses-to-believe-101778555495055.html https://www.indiatvnews.com/trending/news/delhi-teacher-beating-student-coaching-center-viral-video-sumit-academy-kalkaji-2026-05-12-1040786",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading - footage is real but the caste-discrimination framing is fabricated and participants call it a staged skit",
+    "sources_checked": [
+      "https://www.indiatvnews.com/trending/news/delhi-teacher-beating-student-coaching-center-viral-video-sumit-academy-kalkaji-2026-05-12-1040786",
+      "https://www.growjustindia.com/national/it-was-just-a-skit-the-viral-teacher-beating-video-that-the-internet-refuses-to-buy-35191"
+    ],
+    "notes": "India TV and other outlets confirm the Sumit's Academy origin and the skit clarification. None mention caste. The tweet's Dalit/Brahmin narrative is unsupported by any reporting. The original CN note is accurate and addresses the caste claim directly, so it is used as the reference."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "Fabricated caste-atrocity framing on a 33k-impression post drives sectarian/anti-Hindu hatred (visible in replies); correcting communal misinformation reduces real-world intergroup harm."},
+  "difficulty": "medium"
+}

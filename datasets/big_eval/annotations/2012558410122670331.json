@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2012558410122670331",
+  "role": "unhelpful_hard_to_understand",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Posts a video captioned 'Here are Zelensky and Macron before they became presidents', showing them dancing, with the framing 'we're all part of one big show'. The account bio says 'Everything on this page is satire'.",
+  "why_note_decision": "The video is manipulated/deepfaked media presented as authentic footage. Fact-checkers (PolitiFact 'Pants on Fire', Lead Stories, Full Fact, Canadian Press) confirm Macron's face was superimposed onto 1980s California nightclub dancers (he was a banker, not a club dancer), and the Zelensky belly-dancing clip is likewise a deepfake. Although Zelensky was genuinely an entertainer pre-presidency, this specific footage is altered, and the Macron clips are entirely fake — so the 'before they became presidents' framing is false. Despite the bio's blanket 'satire' label, the clip has 1.43M views and is widely shared and consumed credulously (replies treat it as proof the leaders are 'puppets'), and it is a repeatedly-debunked deepfake of world leaders. A note is warranted; the blanket bio disclaimer does not neutralize a viral false-provenance claim.",
+  "judge_guidance": "PASS only if the note (a) states the video is digitally manipulated / deepfaked — NOT authentic footage of Macron or Zelensky dancing — with Macron's face superimposed onto unrelated archival dancers, AND (b) is clearly worded and easy to parse. It must AVOID the original note's failure of being hard to understand: do NOT bury the point in a confusing clause like 'most originating from his pre-presidency comedy sketches'. It is fine to briefly note Zelensky was a pre-presidency entertainer, but the core message — the footage is fake/manipulated — must be unambiguous. Cite a reputable fact-check. FAIL if the note treats the dancing footage as real, or is so convoluted a reader cannot tell what is being corrected.",
+  "reference_note": "This video is digitally manipulated, not authentic footage. Macron's face was superimposed onto 1980s nightclub dancers, and the Zelensky clip is a deepfake; neither shows them actually dancing 'before becoming presidents'. https://www.politifact.com/factchecks/2024/mar/22/instagram-posts/these-clips-of-emmanuel-macron-and-volodymyr-zelen",
+  "original_unhelpful_note": {
+    "text": "This video is a manipulated compilation. The Macron dancing clips are deepfakes created by superimposing his face onto unrelated footage, while some Zelensky clips are altered despite most originating from his pre-presidency comedy sketches.    https://www.politifact.com/factchecks/2024/mar/22/instagram-posts/these-clips-of-emmanuel-macron-and-volodymyr-zelen  https://www.thecanadianpressnews.ca/fact_checking/video-showing-leaders-of-ukraine-france-dancing-is-mostly-fake-digitally-manipulated/article_9feb613f-0906-5efe-922f-631532f813a3.html",
+    "failure_reason": "Accurate but hard to understand: the clause 'some Zelensky clips are altered despite most originating from his pre-presidency comedy sketches' muddies the core point and partly undercuts the 'fake' message. Raters tagged it notHelpfulHardToUnderstand (5) and notHelpfulNoteNotNeeded (16).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading (manipulated media)",
+    "sources_checked": ["https://www.politifact.com/factchecks/2024/mar/22/instagram-posts/these-clips-of-emmanuel-macron-and-volodymyr-zelen/", "https://leadstories.com/hoax-alert/2024/07/fact-check-digitally-manipulated-video-does-not-authentically-portray-dancing-macron-and-zelenskyy.html", "https://fullfact.org/online/Zelenskyy-dancing-deep-fake-video/"],
+    "notes": "PolitiFact rated the dancing-leaders claim 'Pants on Fire'. Macron's face superimposed onto 1980s California nightclub footage; Zelensky belly-dancing clip is a deepfake. Zelensky genuinely was an entertainer pre-politics, but this footage is altered; Macron clips are wholly fake. Bio's 'satire' label does not prevent the 1.43M-view clip spreading as real."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.43M views; deepfakes of world leaders feed homophobic 'compromised puppet' conspiracy narratives during the Ukraine war. Debunking manipulated political media supports a healthier information environment around an active geopolitical conflict."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2047071145749319854",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "draft_or_roster_speculation",
+  "tweet_summary": "An NFL insider's pre-draft analysis arguing the Jets may pick Arvell Reese over David Bailey because the GM doesn't trust the staff to scheme around Reese, with concerns about coaching changes after 2026.",
+  "why_note_decision": "This is opinion/speculation about a future NFL draft decision and the team's internal reasoning, not a checkable factual claim that is false. The original note 'corrects' Bailey's college timeline and whether he overlapped with Frank Reich at Stanford, but the tweet doesn't actually assert they overlapped, so the note rebuts a claim the post never makes (a non-sequitur). No correction is warranted; any note would be a false positive.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet is draft analysis/opinion with no false factual assertion to correct. A note about David Bailey's Stanford/Texas Tech timeline or his overlap (or lack thereof) with Frank Reich does not address any claim in the tweet and is a false positive. Any note here should FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "David Bailey played for Stanford from 2022-2024 and transferred to Texas Tech before Frank Reich became interim head coach in 2025. https://texastech.com/sports/football/roster/david-bailey/13883 https://gostanford.com/sports/football/roster/season/2025/staff/frank-reich",
+    "failure_reason": "Note-not-needed: rebuts a claim the tweet never makes (the tweet is opinion/speculation about the Jets' decision, not an assertion that Bailey overlapped with Reich). Pedantic non-sequitur correction.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "opinion/speculation - no false factual claim; surrounding biographical facts (Stanford 2022-24, transferred to Texas Tech, Reich interim HC at Stanford 2025) are accurate but irrelevant to the post",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/David_Bailey_(American_football)",
+      "https://www.nfl.com/news/david-bailey-jets-no-2-overall-pick-2026-nfl-draft"
+    ],
+    "notes": "Bailey did play Stanford then transfer to Texas Tech (2025), led FBS in sacks, drafted #2 by Jets. Frank Reich was Stanford interim HC in 2025. None of this contradicts the tweet, which is pure draft opinion."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "Niche NFL draft punditry; no real-world stakes."},
+  "difficulty": "medium"
+}

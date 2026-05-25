@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2034677315137905149",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Pairs a Trump video boasting that the US is 'flying wherever we want... nobody even shooting at us' with the caption '10 minutes after he said this, Iran hit an F-35 for the first time in History with anti-air defenses', highlighting the irony.",
+  "why_note_decision": "The tweet's central factual claim is TRUE: on March 19 2026 Iran damaged a US F-35 — the first confirmed combat hit on an F-35 — using its air defenses (CNN, Al Jazeera, Wikipedia 2026 Iran war). The tweet says 'hit', which is accurate (the jet was damaged and made an emergency landing); it does not claim the jet was shot down. The only soft element is the rhetorical '10 minutes after he said this', but the ironic juxtaposition of Trump's 'nobody shooting at us' boast against the F-35 hit is a framing widely made by mainstream outlets, not a fabrication. So the tweet accurately reports a real, significant event; a note is not warranted, and the original note actually injects errors.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet correctly reports a real event (Iran's first confirmed hit/damage of a US F-35, March 19 2026) and does not claim the jet was destroyed. A note here is a false positive that contests accurate reporting. CRITICAL: FAIL any note that (a) claims the video is from Trump's Feb 28 2026 announcement — that quote is NOT in the Feb 28 transcript; the 'flying wherever we want, Pete' remark to Hegseth is from a separate later occasion; or (b) says the pilot was 'unharmed' — the pilot actually suffered shrapnel wounds though survived; or (c) implies no F-35 was hit. A note would only be defensible if it strictly added that the jet was damaged (not downed) and landed safely WITHOUT the false date or 'unharmed' claim — but even that is unnecessary since the tweet never said 'shot down'.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is from Trump's Feb. 28, 2026 announcement starting operations against Iran, not March 19. An F-35 was damaged by Iranian defenses on March 19 & landed safely; the pilot is unharmed.    https://rollcall.com/factbase/trump/transcript/donald-trump-vlog-iran-attack-announcement-february-28-2026  https://www.cnn.com/2026/03/19/politics/f-35-damage-iran-war",
+    "failure_reason": "Two errors: (1) misattributes the clip to the Feb 28 announcement — that quote does not appear in the Feb 28 transcript it cites; the 'flying wherever we want, Pete' remark to Hegseth is from a separate later occasion. (2) 'pilot is unharmed' is wrong — the pilot suffered shrapnel wounds (survived). It also corrects a 'shot down' claim the tweet never made. Rated notHelpfulIncorrect/IrrelevantSources by raters.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true (core claim)",
+    "sources_checked": ["https://www.cnn.com/2026/03/19/politics/f-35-damage-iran-war", "https://www.aljazeera.com/news/2026/3/23/has-iran-brought-down-an-unkillable-us-f-35-jet", "https://en.wikipedia.org/wiki/List_of_aviation_shootdowns_and_accidents_during_the_2026_Iran_war", "https://rollcall.com/factbase/trump/transcript/donald-trump-vlog-iran-attack-announcement-february-28-2026"],
+    "notes": "F-35 damaged by suspected Iranian fire on March 19 2026, emergency landing, pilot survived with shrapnel wounds — first confirmed combat hit on an F-35. Tweet's claim is accurate. The Feb 28 transcript does NOT contain the 'flying wherever we want, Pete / nobody shooting at us' quote, so the note's date attribution is wrong; that remark (to Hegseth) is from a separate occasion covered by a CNN Apr 3 piece on Trump/Hegseth air-invulnerability claims."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.16M impressions on a wartime claim; accurate war reporting that a defensive over-correction could wrongly suppress. Getting war-casualty facts right matters for public understanding during an active conflict."
+  },
+  "difficulty": "hard"
+}

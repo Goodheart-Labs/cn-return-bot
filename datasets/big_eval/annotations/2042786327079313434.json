@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2042786327079313434",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A Magdalena Bay fan account claims the duo will 'reportedly' perform 'Second Sleep' alongside Olivia Rodrigo on SNL the next day (April 12, 2026).",
+  "why_note_decision": "The claim is verifiably false. SNL on April 11, 2026 was hosted by Colman Domingo with musical guest Anitta — not Magdalena Bay, and not with Olivia Rodrigo. Olivia Rodrigo's SNL appearance was May 2, 2026, with no Magdalena Bay collaboration. Replies show fans believed it ('is this real'). It is a concrete, checkable false factual claim about a scheduled broadcast, so a note is warranted, though stakes are low.",
+  "judge_guidance": "PASS only if the note states the claim is false: SNL's April 11, 2026 episode featured host Colman Domingo and musical guest Anitta, not Magdalena Bay and not Olivia Rodrigo, and there was no Magdalena Bay / Olivia Rodrigo 'Second Sleep' performance. (Olivia Rodrigo's own SNL appearance was a later episode, May 2, 2026.) Cite the actual SNL lineup. A note that hedges ('unconfirmed') without stating the real lineup is weak; FAIL any note that endorses the Magdalena-Bay-with-Olivia-Rodrigo claim.",
+  "reference_note": "SNL's April 11, 2026 episode featured host Colman Domingo and musical guest Anitta, not Magdalena Bay performing with Olivia Rodrigo. https://variety.com/2026/tv/news/snl-colman-domingo-anitta-1236700879/ https://www.nbc.com/nbc-insider/who-is-hosting-snl-this-week-april-11-actor-musical-guest",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: April 11, 2026 SNL was Colman Domingo + Anitta; no Magdalena Bay / Olivia Rodrigo performance.",
+    "sources_checked": [
+      "https://variety.com/2026/tv/news/snl-colman-domingo-anitta-1236700879/",
+      "https://www.bostonglobe.com/2026/04/12/arts/snl-recap-colman-domingo-anitta/",
+      "https://www.nbc.com/nbc-insider/watch-olivia-rodrigo-snl-sketches-monologue-from-may-2-episode"
+    ],
+    "notes": "Multiple outlets confirm Colman Domingo hosted with Anitta on April 11, 2026. Olivia Rodrigo's SNL appearance was May 2, 2026 (as host/musical guest), unrelated to Magdalena Bay. Provisional was no_note; I flip to yes because it's a clean checkable false claim, but importance is low (tiny engagement, fan-account speculation)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Only ~2 ratings and minor engagement; a niche entertainment scheduling error with negligible real-world stakes."
+  },
+  "difficulty": "easy"
+}

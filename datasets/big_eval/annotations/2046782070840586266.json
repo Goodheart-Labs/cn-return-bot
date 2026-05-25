@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2046782070840586266",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["scams_fraud_finance", "conspiracy_and_viral_hoax"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_funding_claim",
+  "tweet_summary": "Claims (rhetorically, 'are we surprised?') that Nick Fuentes 'took a quarter mil from the SPLC,' implying the Southern Poverty Law Center funded the far-right activist.",
+  "why_note_decision": "The claim is false. The ~$250k figure traces to a December 2020 cryptocurrency donation (~13.5 BTC) Fuentes received from deceased French programmer Laurent Bachelier — not from the SPLC. The SPLC merely documented/reported on that Bitcoin donation; it did not pay Fuentes (the SPLC tracks him as an extremist and has no record of funding him). The tweet conflates 'SPLC reported on a $250k crypto gift' into 'SPLC paid him $250k.' Many repliers flag it as baseless. This is a concrete, checkable false financial-association claim about named parties, so a note is warranted.",
+  "judge_guidance": "PASS only if the note establishes that there is no evidence the SPLC paid Nick Fuentes any money, and correctly identifies the source of the ~$250k figure as the December 2020 Bitcoin donation from French donor Laurent Bachelier (which the SPLC reported on but did not provide). The note must NOT repeat or lend credence to the claim that the SPLC funded Fuentes. A note that just says 'unverified' is weaker; the strong note names Bachelier as the actual source and clarifies the SPLC's role was reporting, not funding. Cite credible reporting (SPLC/Hatewatch, PBS Frontline, NY Post, or similar). Avoid endorsing either Fuentes or any partisan framing.",
+  "reference_note": "Nick Fuentes did not receive money from the SPLC. The ~$250k figure refers to a Bitcoin donation he received in December 2020 from French programmer Laurent Bachelier (who died shortly after sending it). The SPLC reported on that donation; it did not fund Fuentes. https://www.pbs.org/wgbh/frontline/article/far-right-extremists-raise-millions-cryptocurrency-bitcoin/ https://www.splcenter.org/resources/hatewatch/afpac-co-planner-led-crypto-solicitation-scheme/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false - the ~$250k came from donor Laurent Bachelier (Bitcoin, Dec 2020), not the SPLC; no evidence SPLC paid Fuentes",
+    "sources_checked": [
+      "https://www.pbs.org/wgbh/frontline/article/far-right-extremists-raise-millions-cryptocurrency-bitcoin/",
+      "https://www.splcenter.org/resources/hatewatch/afpac-co-planner-led-crypto-solicitation-scheme/",
+      "https://www.inquisitr.com/laurent-bachelier-bitcoin-capitol-protest"
+    ],
+    "notes": "Bachelier sent ~28 BTC (~$520k) to far-right entities in Dec 2020, the bulk (~13.5 BTC, ~$250k-$400k depending on rate) to Fuentes, then died by suicide. The SPLC and Chainalysis documented this; the SPLC did not pay Fuentes. Replies (@actrons, @AquaGroyper) independently call the SPLC-funding claim baseless. Original CN note's verdict is correct; reference note rewritten to attribute the figure to Bachelier directly rather than the original note's somewhat tangential DOJ-informant framing."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "313k impressions on a fabricated funding-conspiracy smearing a named org (SPLC); corrects defamation-style misinformation, modest societal value for information integrity."},
+  "difficulty": "medium"
+}

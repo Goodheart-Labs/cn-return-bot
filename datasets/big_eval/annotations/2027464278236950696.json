@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2027464278236950696",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post shares a dramatic 'GoPro on a mountain goat' video of a goat traversing a sheer cliff, framed as real footage ('I hike small hills').",
+  "why_note_decision": "The viral clip is AI-generated, not real animal-mounted GoPro footage. Fact-checks and the creator's own clarification confirm it was made with AI tools, and the goat's physically implausible horizontal cliff-running is a tell. Although several replies suspect it's AI, others treat it as real ('mesmerizing... I have watched this in person'), and it's posted by a 389k-follower account as genuine. Flagging synthetic media presented as real wildlife footage is the bot's core job, so a note is warranted (low stakes).",
+  "judge_guidance": "PASS only if the note states the video is AI-generated (synthetic), not real GoPro footage of a mountain goat — ideally noting the creator/fact-checkers confirmed its AI origin. The note may add that real goats do navigate steep terrain, but the core point is that THIS clip is artificial. A note that merely says 'looks unusual' or hedges without calling it AI is insufficient; FAIL any note that endorses it as authentic footage. Because the media itself is the deception, the note must rest on the AI determination, not on the (silent) AI description.",
+  "reference_note": "This viral clip is AI-generated, not real GoPro footage of a mountain goat; the creator and fact-checkers have confirmed it was made with AI tools. Real goats do traverse steep terrain, but this specific video is synthetic. https://www.latestly.com/social-viral/fact-check/did-a-mountain-goat-trigger-the-collapse-of-dhaba-at-hill-station-in-north-india-fact-check-reveals-viral-reel-is-ai-generated-7234657.html https://www.instagram.com/reel/DSttuw4iEmb/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "AI-generated: the 'goat GoPro cliff' clip is synthetic, confirmed by fact-checks and the creator; not authentic footage.",
+    "sources_checked": [
+      "https://www.latestly.com/social-viral/fact-check/did-a-mountain-goat-trigger-the-collapse-of-dhaba-at-hill-station-in-north-india-fact-check-reveals-viral-reel-is-ai-generated-7234657.html",
+      "https://www.instagram.com/reel/DSttuw4iEmb/",
+      "https://www.youtube.com/shorts/SDEsfAe-kzM"
+    ],
+    "notes": "Fact-checkers attribute the clip to AI tools (Imagine Art) and a creator who makes AI wildlife content; the creator clarified its AI origin. The provided AI media description did NOT flag it as AI, so the verdict relies on web corroboration — exactly the case where the AI description can mislead. Borderline: AI-suspicion is voiced in replies, but synthetic-as-real wildlife is the canonical thing to flag, so I lean needs_note yes at low importance."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Only 34k impressions and low rating volume; harmless AI nature clip, but flagging AI-generated media presented as real has modest informational value."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2024124241604464864",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A nostalgia/tribute account posts an image of a shirtless Michael Jackson on a beach showing vitiligo, captioned 'Michael Jackson in his free state. No makeup, no mask, no worries.'",
+  "why_note_decision": "The image is AI-generated/edited (confirmed by fact-checkers and reverse-image checks), but it depicts a TRUE underlying fact: Michael Jackson had vitiligo, confirmed by his 2009 autopsy. It is a fan tribute, not a deceptive factual claim, and the audience already overwhelmingly recognizes it as AI — nearly every top reply flags 'this is AI' (2005, 938, 191 likes). There is no harmful misinformation: the picture is synthetic but the medical reality it illustrates is real. A note here is a false positive on a widely-recognized AI tribute image, and definitively proving 'this specific image is AI' is exactly the unprovable-source problem that sank the original note (dominant tag: sources missing/unreliable).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The image is a recognized AI/edited fan tribute, and the audience already knows it (replies are saturated with 'this is AI'); it illustrates a TRUE fact (MJ had vitiligo, per his autopsy), so there is no harmful false claim to correct. A note is a false positive. If a note is nonetheless written, it must be FAILED — and it must NOT deny that MJ had vitiligo (that would be its own error); the only borderline-acceptable note would flag the image as AI-generated WITHOUT implying the vitiligo itself is fabricated, but declining is the correct behavior.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This image appears to be AI-generated, not an authentic photo of Michael Jackson without makeup. Real photos and his 2009 autopsy confirmed vitiligo caused his skin depigmentation.    https://www.vitiligosociety.org/vitlife/michael-jackson-and-vitiligo/  https://en.wikipedia.org/wiki/Health_and_appearance_of_Michael_Jackson",
+    "failure_reason": "note_not_needed_sources_cannot_prove_ai_and_no_harm",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Image is AI-generated/edited, but depicts a true fact (MJ had vitiligo). Tribute post, audience already aware it's AI; no harmful false claim.",
+    "sources_checked": [
+      "https://srilanka.factcrescendo.com/english/michael-jacksons-skin-depigmentation-picture-is-edited/",
+      "https://en.wikipedia.org/wiki/Health_and_appearance_of_Michael_Jackson"
+    ],
+    "notes": "FactCrescendo and Grok reverse-image analysis indicate the image is edited/AI and has no prior match; MJ's vitiligo is genuine (autopsy-confirmed). Because the synthetic image illustrates a real condition and the audience already labels it AI, the misinformation harm is negligible — no note needed, and the AI claim is hard to source definitively (the original note's weakness)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "19M impressions but a harmless celebrity tribute illustrating a real medical fact; no EA/progress/safety stakes and the crowd is self-correcting on the AI provenance."
+  },
+  "difficulty": "medium"
+}

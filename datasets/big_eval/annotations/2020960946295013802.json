@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2020960946295013802",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["staged_or_scripted_content", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "MLFootball (456k followers, 'credentialed media') shares a viral clip presented as a real incident: a Patriots fan supposedly threw a chair and smashed a TV at a Seahawks Super Bowl watch party and was thrown through a table by Seattle fans.",
+  "why_note_decision": "The clip is presented by a media-styled account as a genuine breaking incident ('THIS IS INSANE', 'WOW'), but it is staged content. Strong corroborating signals: a sports journalist (Sean Pendergast) publicly asked 'These are all staged right?', and the overwhelming majority of top replies identify it as staged for views ('perfect camera angle', '2k YouTuber', 'Staged af'). Passing a staged stunt off as real news misleads viewers, so a note is warranted. However, the verdict rests on the video, which I cannot watch — confidence is medium and a no-note verdict (low-stakes entertainment stunt) is defensible.",
+  "judge_guidance": "PASS only if the note (a) states the clip is staged/scripted content (a stunt by a content creator), not a spontaneous real incident, AND (b) supports this with a credible signal (e.g. the original creator's own channel/admission or reporting identifying it as staged) rather than asserting a specific creator name it cannot source. Must AVOID the original note's failure: do NOT claim the clip is FunnyMike admitting to 'lying about placing a bet' — that describes a different skit (there is no bet in this post) and is an unverified/mismatched attribution. FAIL if the note treats the fight as a real event, or repeats the bet/FunnyMike specifics without solid sourcing.",
+  "reference_note": "This is staged content, not a spontaneous incident: the clip was produced by a social-media creator and presented as real news. Multiple observers, including sports media, flagged the setup (scripted action, ideal camera angle).",
+  "original_unhelpful_note": {
+    "text": "The video depicts a staged skit by content creator FunnyMike, who admits in the full clip to lying about placing the bet. https://www.youtube.com/shorts/XpH_GK4cUNo",
+    "failure_reason": "Likely incorrect/mismatched attribution: the note's explanation references 'lying about placing the bet', but this post is about a chair-throwing watch-party fight with no bet — the cited clip and creator appear to belong to a different skit, so the specific claim is unverifiable and probably wrong.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": ["https://x.com/SeanTPendergast/status/2020987225794814225", "https://www.facebook.com/arildisanto/videos/this-is-insanea-patriots-fan-went-crazy-during-the-game-throwing-his-chair-smash/2363188867437834/"],
+    "notes": "Super Bowl LX (Feb 8 2026) was Patriots vs Seahawks, so the framing is timely. Sports journalist and top repliers call the clip staged. Could not independently confirm the FunnyMike/bet attribution in the original note; the cited YouTube short was behind a consent wall. Staged-content verdict is well supported; the specific creator claim is not."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "3.2M impressions but low real-world stakes (sports entertainment stunt); correcting it mainly protects against the broader 'rage-bait staged as real news' pattern."
+  },
+  "difficulty": "hard"
+}
