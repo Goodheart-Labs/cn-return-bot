@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2046607389676151176",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A 'BREAKING' post claims that during an emergency White House meeting, President Trump tried to access the nuclear codes but was blocked by General Dan Caine, attributed to former CIA analyst Larry Johnson.",
+  "why_note_decision": "The claim is presented as breaking news but rests entirely on one unsourced podcast assertion by Larry Johnson, citing an unnamed source. Multiple fact-checkers (Snopes, Newsweek, France 24) found no evidence; the White House called it false. It is also constitutionally/operationally implausible that a Joint Chiefs chairman could unilaterally block a president from the nuclear codes — the president holds sole launch authority. A checkable, viral, high-stakes claim that is unsubstantiated clearly warrants a note.",
+  "judge_guidance": "PASS only if the note (1) flags the claim as unsubstantiated/unverified, attributing it to Larry Johnson on a podcast citing an unnamed source (not a corroborated report), and ideally (2) notes fact-checkers found no evidence and/or that the president holds sole constitutional nuclear-launch authority so a general 'blocking' him is implausible. A note that merely says 'this is fake' with no sourcing or reasoning is weak; one that treats the claim as plausibly true, or that itself asserts as fact that the event did/did not happen beyond 'no evidence,' should be judged carefully. Cite a credible fact-check (Snopes, Newsweek, France 24).",
+  "reference_note": "This claim originates from Larry Johnson on a podcast, citing an unnamed source. Fact-checks label it unsubstantiated, and Johnson has a record of promoting debunked narratives. Presidents hold sole constitutional authority over nuclear launches.    https://www.newsweek.com/donald-trump-nuclear-codes-11857229  https://www.snopes.com/fact-check/rump-nuclear-codes-iran/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Unsubstantiated/false: no evidence supports the claim; it traces to a single unsourced Larry Johnson podcast statement, the White House denied it, and the premise (a general blocking the president from nuclear codes) is constitutionally implausible.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/rump-nuclear-codes-iran/",
+      "https://www.newsweek.com/donald-trump-nuclear-codes-11857229",
+      "https://www.france24.com/en/was-donald-trump-blocked-from-using-the-nuclear-codes-against-iran-1"
+    ],
+    "notes": "Snopes/Newsweek/France24 all rate the claim unverified-to-false; Johnson offered no documentary evidence and has a history of unverified intelligence claims. President has sole launch authority under the chain of command."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "5.2M impressions on a nuclear-command-and-control conspiracy; misinformation about who controls nuclear weapons is high-stakes for public understanding of catastrophic-risk governance and erodes trust in institutions — strongly worth correcting."
+  },
+  "difficulty": "easy"
+}

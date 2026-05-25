@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2029935042663960885",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "celebrity_entertainment_sports",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "outdated_as_current",
+  "tweet_summary": "Posted March 2026, the tweet reacts as if it's breaking news: 'Mississippi State got a guy throwing 90+ WITH BOTH ARMS?!', showing a switch-pitcher in an MSU uniform.",
+  "why_note_decision": "The switch-pitcher is Jurrangelo Cijntje, who pitched for Mississippi State through 2024, was drafted 15th overall by the Seattle Mariners in the 2024 MLB Draft, and was traded to the St. Louis Cardinals in February 2026. The video is old (from his MSU days); he is no longer on MSU's roster. Presenting it in March 2026 as a current MSU player is misleading; a note adds the missing current context.",
+  "judge_guidance": "PASS only if the note identifies the player as Jurrangelo Cijntje and clarifies he is NOT currently on Mississippi State's roster — he was drafted (15th overall, 2024, by the Mariners) and is now a pro (in the Cardinals organization as of the Feb 2026 trade); the clip is old. FAIL if it treats him as a current MSU player, omits that he turned pro, or claims the switch-pitching itself is fake (it is real). Citing roster/draft/MLB sources strengthens it.",
+  "reference_note": "The switch pitcher shown, Jurrangelo Cijntje, was drafted out of Mississippi State in 2024 and is now a prospect in the St. Louis Cardinals organization, not currently on MSU's roster. https://en.wikipedia.org/wiki/Jurrangelo_Cijntje https://hailstate.com/sports/baseball/roster https://www.mlb.com/prospects/cardinals/jurrangelo-cijntje-701388",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Jurrangelo_Cijntje",
+      "https://www.cbssports.com/mlb/news/2024-mlb-draft-mississippi-states-jurrangelo-cijntje-and-the-history-of-baseballs-switch-pitchers/",
+      "https://www.mlb.com/news/jurrangelo-cijntje-guide"
+    ],
+    "notes": "Cijntje is a real switch-pitcher (mid-90s both arms). Drafted 15th overall by Seattle Mariners in 2024 MLB Draft out of Mississippi State; first switch-pitcher taken in the first round. Traded to St. Louis Cardinals Feb 2, 2026. So as of the March 2026 post he is a pro prospect, not a current MSU player; the video is old footage. Repliers correctly note he's been drafted / is in pro ball."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "1M impressions but purely a sports-trivia 'old clip presented as current' case; negligible real-world stakes. Useful as an 'outdated context' template, not consequential."
+  },
+  "difficulty": "easy"
+}

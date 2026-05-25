@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2022922489727250486",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "celebrity_entertainment_sports"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post claims 'IShowSpeed proposed on Valentine's day to the love of his life,' with photos of him kneeling with roses before a woman and riding in a car with her.",
+  "why_note_decision": "IShowSpeed did not propose to anyone on Valentine's Day 2026. His actual Feb 14, 2026 content was the 'John Bobby' old-man disguise IRL stream (he indicated he was single), and the proposal images are not a genuine 2026 engagement — they are either recontextualized older footage or AI-generated. Either way the '2026 proposal to the love of his life' claim is false and misleads readers.",
+  "judge_guidance": "PASS only if the note establishes that IShowSpeed did NOT actually propose on Valentine's Day 2026 / that the images do not show a real 2026 engagement (e.g., he was single, did an old-man 'John Bobby' stream that day, and/or the images are AI-generated or from an older staged livestream). FAIL if it accepts the proposal as real or congratulates him. The exact provenance of the images is contested (some fact-checks call them AI-generated; the original note attributes them to a staged Feb 2024 Brazil livestream) — the bot need not pin the exact source, only debunk the '2026 proposal' claim. Bonus credit for citing a verifiable source on what Speed actually did Feb 14, 2026.",
+  "reference_note": "IShowSpeed did not propose to anyone on Valentine's Day 2026 — these photos do not show a real 2026 engagement. His actual Feb 14, 2026 content was an IRL stream where he disguised himself as an old man ('John Bobby') looking for love, and he indicated he was single. The images are recontextualized/AI, not a genuine proposal. https://k24.digital/entertainment/why-ishowspeed-disguised-himself-as-an-old-man-in-his-valentines-day-irl-stream",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://k24.digital/entertainment/why-ishowspeed-disguised-himself-as-an-old-man-in-his-valentines-day-irl-stream",
+      "https://www.youtube.com/watch?v=GcIcttvubQc"
+    ],
+    "notes": "Consensus: no real 2026 IShowSpeed proposal occurred; he did the 'John Bobby' old-man Valentine's stream and was single. Provenance of the images is contested — some sources/fact-checks describe them as AI-generated, the original (helpful-rated) note attributes them to a staged Feb 14, 2024 Brazil livestream. I could not definitively confirm which; both lead to the same verdict that the 2026 proposal claim is false."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "5.2M impressions on celebrity engagement-bait; low world-stakes but very high reach. Mainly an information-hygiene case around recontextualized/AI celebrity media."
+  },
+  "difficulty": "medium"
+}

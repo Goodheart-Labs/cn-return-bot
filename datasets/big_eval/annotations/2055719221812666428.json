@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2055719221812666428",
+  "role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence"],
+  "category_fit": "good",
+  "suggested_category": "fabricated_quote",
+  "tweet_summary": "A 1.7M-follower account posts a meme with two attributed quotes — a Reagan quote ('If fascism ever comes to America, it will come in the name of liberalism') and a Churchill quote ('The fascists of the future will call themselves anti-fascists') — captioned 'We're watching it happen.'",
+  "why_note_decision": "The Churchill quote is a well-documented fabrication he never said ('Churchillian Drift'), and the Reagan quote is at best unverifiable / commonly misattributed (a variant of a Sinclair Lewis-style maxim). Presenting fabricated quotes from revered historical figures as authentic political authority to 1.7M followers warrants a note, contrary to the provisional no-note.",
+  "judge_guidance": "PASS only if the note establishes that the Churchill quote is fabricated (Churchill never said it). A strong note ALSO flags that the Reagan attribution is unverified/commonly misattributed. It must AVOID the original note's failure of addressing only one quote: the original note debunked just the Churchill line and ignored the equally prominent Reagan line, so a note that names BOTH is the bar. Must cite a credible source for the Churchill debunk (Snopes / Hillsdale Churchill Project / PolitiFact). Do NOT pass a note that treats either quote as genuine.",
+  "reference_note": "Neither quote is reliably authentic. Churchill never said 'the fascists of the future will call themselves anti-fascists' — it's a long-debunked misattribution (the Hillsdale Churchill Project finds no record of it). The Reagan line ('fascism...in the name of liberalism') is also unverified and widely misattributed, echoing a Sinclair Lewis-style maxim. https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote/ https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/ https://www.snopes.com/fact-check/ronald-reagan-fascism-liberalism/",
+  "original_unhelpful_note": {
+    "text": "The quote attributed to Winston Churchill is not authentic; he never said it. https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote https://winstonchurchill.hillsdale.edu/fascists-anti-fascists",
+    "failure_reason": "Correct but incomplete: the meme features TWO attributed quotes and the note only debunks the Churchill one, leaving the Reagan quote (also unverified/misattributed) unaddressed — a MissingKeyPoints failure for a two-quote image.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Churchill quote = fabricated (definitive). Reagan quote = unverified / commonly misattributed.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote/",
+      "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/",
+      "https://www.snopes.com/fact-check/ronald-reagan-fascism-liberalism/"
+    ],
+    "notes": "Hillsdale's Churchill Papers project and Snopes find no record of Churchill ever saying the anti-fascists line ('Churchillian Drift'). For Reagan, Snopes found no solid evidence beyond an unverifiable/undigitized tape; the line is widely treated as misattributed and parallels the Sinclair Lewis 'wrapped in the flag' maxim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "237k impressions from a 1.7M-follower account weaponizing fake historical quotes for political framing; debunking fabricated 'authority' quotes has modest civic-epistemic value."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,32 @@
+{
+  "tweet_id": "2038205946892075137",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "poor",
+  "suggested_category": "false_cultural_authenticity_claim",
+  "tweet_summary": "A cooking video captioned 'My Italian grandmother taught me this' shows the creator mixing a liquid (described as water) into raw ground beef, presenting it as an authentic Italian technique.",
+  "why_note_decision": "A note is warranted: the post markets a non-authentic technique as genuine Italian heritage ('My Italian grandmother taught me this'). Mixing water into raw ground beef is not part of traditional Italian cooking. The authoritative ragu alla bolognese recipe deposited by the Accademia Italiana della Cucina uses milk (added during cooking and evaporated), wine, broth and soffritto, not water mixed into raw beef. The near-unanimous reply consensus from self-identified Italians ('the least Italian thing I've ever seen') corroborates that the 'Italian grandmother' authenticity claim is false.",
+  "judge_guidance": "PASS only if the note establishes that the shown technique (adding water to raw ground beef) is not authentic traditional Italian cooking, ideally citing what authentic recipes actually do (e.g. Bolognese uses milk/wine/broth during cooking, per the Accademia Italiana della Cucina). It should correct the 'Italian grandmother' authenticity framing factually. FAIL if the note merely insults the creator, repeats the snarky 'rolling in her grave' tone without substance, asserts the technique is fine, or makes an unsupported claim about exactly what liquid is in the bowl that the footage cannot confirm. A neutral, sourced correction beats the original note's argumentative phrasing.",
+  "reference_note": "Adding water to raw ground beef is not a traditional Italian technique. Authentic Italian meat sauces such as ragu alla bolognese use milk, wine and broth added during cooking, not water mixed into raw beef, per the official recipe of the Accademia Italiana della Cucina. https://www.accademiaitalianadellacucina.it/sites/default/files/Rag%C3%B9%20alla%20bolognese%20-%20updated%20recipe_20%20April%202023.pdf",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_false_authenticity",
+    "sources_checked": [
+      "https://www.accademiaitalianadellacucina.it/en/notizie/notizia/italian-academy-cuisine-registers-updated-recipe-true-rag%C3%B9-alla-bolognese",
+      "https://www.accademiaitalianadellacucina.it/sites/default/files/Rag%C3%B9%20alla%20bolognese%20-%20updated%20recipe_20%20April%202023.pdf"
+    ],
+    "notes": "Authentic Italian ragu uses milk (optional but traditional), wine and broth during cooking, not water stirred into raw beef. The 'Italian grandmother taught me this' authenticity claim is what makes it correctable rather than mere opinion. The original note was rated CURRENTLY_RATED_HELPFUL, though its 'rolling in her grave' phrasing is argumentative. Verdict partly depends on the video, which I cannot view, but the claim being corrected is the authenticity framing, not a specific visual detail."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "1.5M+ impressions on a low-stakes culinary authenticity claim; minor world impact, mainly a test of correcting 'tradition/heritage' framing with a sourced fact rather than snark."
+  },
+  "difficulty": "medium"
+}

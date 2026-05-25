@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2053266614745813165",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "missing_temporal_context",
+  "tweet_summary": "A post claims Gavin Newsom's wife Jennifer Siebel Newsom paid herself and her company $3.9 million from her 'gender justice' charity — framed as '33% of its entire annual revenue' with an '$1.8M salary,' implying a recent single-year self-dealing haul.",
+  "why_note_decision": "The dollar figures are roughly accurate per IRS filings (Snopes: $1.8M to her over tax years 2011-2024, plus $2.1M to her for-profit film company over the same span), but the tweet's framing is misleading: it implies these are annual/recent figures ('33% of its ENTIRE ANNUAL revenue') when they are CUMULATIVE TOTALS over ~13 years (avg salary ~$150k/yr). The missing temporal context materially distorts the impression, so a note adding it is warranted.",
+  "judge_guidance": "PASS only if the note supplies the missing temporal context: that the ~$1.8M salary and ~$2.1M company payments are CUMULATIVE TOTALS spanning roughly 2011-2024 (~13 years), not a single year — i.e. her salary averaged about $150k/yr. The note must puncture the 'annual'/recent framing. It should NOT claim the dollar figures are fabricated (they trace to real IRS filings) and should ideally note that how much of the $2.1M film-company payment reached her personally is unclear (Snopes did not rate the claim). A note that merely repeats the $3.9M figure without the multi-year context FAILS.",
+  "reference_note": "Important to note the salary and payments are the total over 2011 - 2024. Jennifer Newsom's annual salary at her non-profit averaged around $150k/yr; how much of the $2.1M paid to her film company reached her personally is unclear.    https://www.snopes.com/news/2026/03/12/gavin-newsom-wife-charity/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_missing_context",
+    "sources_checked": [
+      "https://www.snopes.com/news/2026/03/12/gavin-newsom-wife-charity/",
+      "https://www.allsides.com/story/politics-did-gov-newsoms-wife-pay-herself-37m-her-charity"
+    ],
+    "notes": "Snopes (followed IRS filings): Siebel Newsom received ~$1.8M total from The Representation Project across tax years 2011-2024 (avg ~$150k/yr); her for-profit film company got ~$2.1M over the same span, but it's unclear how much reached her personally — Snopes left it unrated. The tweet's 'annual revenue'/recent framing is the misleading element; the raw numbers are real."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "764k impressions on a political-corruption claim; correcting the multi-year-vs-annual distortion matters for fair political discourse — moderate stakes."},
+  "difficulty": "hard"
+}

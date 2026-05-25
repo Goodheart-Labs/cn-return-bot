@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2039527567204704560",
+  "role": "no_note_needed",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "partial",
+  "suggested_category": "accurate_good_news_no_correction",
+  "tweet_summary": "Post says an 18-year-old high school student invented a water filter that eliminates 95.5% of microplastics, with a photo of microplastics and a portrait of the student.",
+  "why_note_decision": "The tweet's factual claims are accurate: Mia Heller, 18, of Warrenton, Virginia, built a ferrofluid-based filter that removed 95.52% of microplastics in testing (Smithsonian, Regeneron ISEF 2025). There is no misleading claim to correct — the post does not even misstate her name, it just uses the generic 'high school student, 18' framing common to headlines. The original Community Note merely adds her name ('Her name is Mia Heller'), which is supplementary info, not a correction of misinformation. A note is therefore not warranted; adding a name to an accurate post is a false-positive use of Community Notes.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet is accurate (Mia Heller, 18, Virginia; ~95.5% microplastic removal via a ferrofluid filter; Smithsonian / Regeneron ISEF 2025), so any corrective note is a false positive. Merely supplying the inventor's name is not a needed correction and should not pass as a justified note. If the bot writes a note (even just adding her name), FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Her name is Mia Heller.    https://x.com/chronosintelx/status/2039568711506649200?s=46&t=39U7qQkWclw74zlypWbUfg    https://www.smithsonianmag.com/innovation/this-high-school-student-invented-a-filter-that-eliminates-96-percent-of-microplastics-from-drinking-water-180988363/",
+    "failure_reason": "Not a correction of misinformation: the tweet is accurate, and the note only adds the inventor's name (supplementary context, not a needed correction). Community Notes should add context to misleading posts; this post is not misleading.",
+    "original_status": "CURRENTLY_RATED_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "True: Mia Heller (18, Warrenton VA) built a ferrofluid-based filter that removed 95.52% of microplastics in testing; reported by Smithsonian Magazine and a 2025 Regeneron ISEF finalist project.",
+    "sources_checked": [
+      "https://www.smithsonianmag.com/innovation/this-high-school-student-invented-a-filter-that-eliminates-96-percent-of-microplastics-from-drinking-water-180988363/",
+      "https://www.techspot.com/news/111799-high-school-student-develops-membrane-free-filter-removes.html",
+      "https://e.vnexpress.net/news/tech/personalities/us-teen-invents-low-cost-water-filter-removing-nearly-96-of-microplastics-5057778.html"
+    ],
+    "notes": "All sources confirm the core claim. The tweet does not misname her or overstate the result (95.52% measured; ~96% in some headlines). The original 'helpful' note only adds her name, which I judge to be non-corrective context rather than a needed Community Note. Reclassified from the provisional helpful_reference to no_note_needed."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "7.9M impressions on an accurate good-news science/progress story; correcting it is unnecessary, and policing accurate posts wastes note-writer effort that's better spent on misleading content."
+  },
+  "difficulty": "medium"
+}

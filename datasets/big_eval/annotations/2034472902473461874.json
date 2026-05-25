@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2034472902473461874",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_legal_or_court_claim",
+  "tweet_summary": "A 'MAJOR ALERT' post claims the US Supreme Court ruled in a new 2026 decision that Trump has NO immunity in the Epstein case and can now be subpoenaed, accompanied by a stock photo of the nine justices.",
+  "why_note_decision": "The claim is false. There is no 2026 Supreme Court ruling that Trump lacks immunity 'in the Epstein case'; no such case is before the Court. The actual 2024 Trump v. United States decision granted absolute immunity for core official acts and presumptive immunity for other official acts — the opposite directional framing. The image is the routine standard group portrait of the justices, not tied to any ruling. A reader benefits from knowing no such ruling exists, so a note is warranted. A detailed reply (@ChaosLensX) independently debunks it. The fabricated 'court ruled X' framing on a high-salience political topic makes this a clear correction.",
+  "judge_guidance": "PASS only if the note states that no Supreme Court ruling (in 2026 or otherwise) found Trump lacks immunity in any 'Epstein case,' and ideally clarifies that the actual 2024 immunity decision granted broad immunity for official acts. It must NOT endorse the existence of such a ruling or the subpoena claim. It should not be argumentative about Trump/Epstein guilt (raters penalized argumentative/biased notes). Cite the real Trump v. United States opinion or reporting that no such 2026 ruling exists.",
+  "reference_note": "The U.S. Supreme Court has not ruled that former President Trump lacks immunity in any Epstein-related case. Its 2024 presidential immunity decision granted absolute immunity for core official acts and presumptive immunity for other official acts. https://www.supremecourt.gov/opinions/23pdf/23-939_e2pg.pdf https://www.supremecourt.gov/opinions/slipopinion/24",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/fabricated: no 2026 SCOTUS ruling exists that Trump has 'no immunity in the Epstein case.' The real 2024 Trump v. United States decision granted broad immunity for official acts.",
+    "sources_checked": [
+      "https://www.congress.gov/crs-product/LSB11194",
+      "https://constitutioncenter.org/blog/breaking-down-the-trump-immunity-decision",
+      "https://www.ms.now/deadline-white-house/deadline-legal-blog/trump-presidential-immunity-ask-jordan"
+    ],
+    "notes": "No Epstein-related case against Trump is before SCOTUS. The 2024 ruling established absolute immunity for core powers, presumptive for other official acts, none for unofficial acts — directionally opposite the post. The photo is the standard justices' portrait, not evidence of any ruling. A top reply independently debunked it."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "448K impressions, 19K likes, 3.4K reposts on a fabricated court-ruling claim driving partisan euphoria/outrage. Fake 'the Supreme Court ruled X' claims directly corrode trust in legal institutions — correcting them has clear democratic value."
+  },
+  "difficulty": "easy"
+}

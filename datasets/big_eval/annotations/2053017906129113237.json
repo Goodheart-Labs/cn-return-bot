@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2053017906129113237",
+  "role": "no_note_needed",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A football pundit argues Declan Rice has been good for Arsenal but 'no better than Jordan Henderson was for Liverpool when they won the league,' downplaying Ballon d'Or / Player-of-the-Year hype around Rice.",
+  "why_note_decision": "The tweet makes a subjective player-quality comparison, not a checkable factual claim. It never denies that Henderson won any award; it merely invokes Henderson as a benchmark. The original note ('Jordan Henderson won FWA Footballer of the Year in 2020') states a true fact but does not correct any false statement in the tweet — it functions as a gotcha replies are already making, not a needed correction. This is opinion/framing, so no note is warranted. Note that the X 'currently rated helpful' status here likely reflects partisans piling on rather than a genuine factual correction.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet is a subjective opinion comparing two midfielders; it contains no false or misleading factual claim. Any note here is a false positive. In particular, a note that merely points out 'Henderson won FWA Footballer of the Year 2020' should FAIL, because that fact does not contradict anything the tweet actually asserts (the tweet uses Henderson as a quality benchmark, not a claim he won nothing).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Jordan Henderson won the FWA Footballer of the Year award in 2020 for Liverpool's 2019/20 title-winning season. https://footballwriters.co.uk/previous-foty https://en.wikipedia.org/wiki/FWA_Footballer_of_the_Year",
+    "failure_reason": "note_not_needed_corrects_no_false_claim",
+    "original_status": "CURRENTLY_RATED_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "opinion_no_checkable_claim",
+    "sources_checked": [
+      "https://footballwriters.co.uk/foty-archive/footballer-of-the-year-2020-jordan-henderson-liverpool/",
+      "https://www.skysports.com/football/news/11095/12035104/jordan-henderson-liverpool-captain-named-fwa-footballer-of-the-year"
+    ],
+    "notes": "It is TRUE that Henderson won the FWA Footballer of the Year for 2019/20. But the tweet is a subjective comparison ('Rice no better than Henderson'), which is opinion. The fact, while accurate, corrects nothing the tweet claims."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "Sports-pundit opinion with no real-world epistemic stakes; correcting it matters little through any EA/progress/safety lens."},
+  "difficulty": "medium"
+}

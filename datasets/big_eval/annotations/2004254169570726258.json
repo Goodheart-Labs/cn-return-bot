@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2004254169570726258",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_hack_or_breach_claim",
+  "tweet_summary": "A video shows a man claiming he 'logged into Jeffrey Epstein's Gmail account' (password supposedly 'amisraelkai') and is now exposing his emails; the post is captioned 'Epstein Email account.'",
+  "why_note_decision": "The poster/video frames a Gmail-styled inbox as a real hacked account holding suppressed/redacted files. In reality the interface is Jmail.world, a public art/transparency project that mimics Gmail to display the ~20,000+ Epstein emails already released by the U.S. House Oversight Committee. No account was hacked; presenting it as a 'hacked Gmail' with secret files is misleading and a reader benefits from knowing the real provenance.",
+  "judge_guidance": "PASS only if the note explains that the inbox is Jmail.world (a public website that recreates a Gmail interface to display Epstein emails already released by Congress), NOT a real hacked Gmail account, and ideally links jmail.world or coverage of it. FAIL if it endorses the 'hacked account' framing, claims the files are genuinely secret/suppressed, or treats the video as a real account login. The claim that these are 'hidden/redacted files the government is sitting on' must be corrected since the emails are publicly released.",
+  "reference_note": "The shown email interface is Jmail.world, a public website simulating Epstein's inbox using emails released by Congress, not a hacked Gmail account. https://www.jmail.world/ https://mashable.com/article/jmail-read-epstein-emails-via-gmail-inbox-interface",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://jmail.world/",
+      "https://en.wikipedia.org/wiki/Jmail",
+      "https://sfstandard.com/2025/11/21/epstein-emails-san-francisco-jmail/",
+      "https://www.fastcompany.com/91495585/jmail-engineers-epstein-emails"
+    ],
+    "notes": "Jmail was built by Riley Walz and Luke Igel, launched Nov 2025, mimics Gmail to display 20,000+ Epstein emails released under the Epstein Files Transparency Act by the House Oversight Committee. It is a public site, not a hacked account; emails are already public, not secret."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "252k impressions on a politically charged Epstein conspiracy. Correcting the 'secret hacked files' framing matters for epistemic hygiene around a high-emotion topic, though the underlying emails are genuinely public."
+  },
+  "difficulty": "easy"
+}

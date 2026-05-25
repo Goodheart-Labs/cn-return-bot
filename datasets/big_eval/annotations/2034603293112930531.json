@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2034603293112930531",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An alarmist 'WORLD WAR 3?' post claims Arab countries have 'officially threatened to join the United States and Israel in the war against Iran,' over an Al Jazeera clip about Gulf foreign ministers meeting on the Iran conflict.",
+  "why_note_decision": "The attached Al Jazeera report actually shows the opposite of the headline: Gulf/GCC states stress they would DEFEND their territories but NOT attack Iran, and pursue diplomacy/de-escalation. The Saudi FM only says patience is not unlimited and they reserve the right to respond IF attacked — a defensive caveat, not an offer to join an offensive US-Israel war on Iran. The tweet's 'officially threatened to join' framing misrepresents the source, so a corrective note is warranted.",
+  "judge_guidance": "PASS only if the note corrects the specific overstatement: there is no official Arab/GCC statement threatening to JOIN the US-Israel offensive against Iran; Gulf leaders affirmed they are not participating and are prioritizing defense, diplomacy, and de-escalation (a reserved right to self-defense if attacked is not the same as joining the war). It should ideally note the attached clip itself says Gulf states 'would defend their territories but not attack Iran.' The note must NOT deny that the conflict / Gulf ministerial meeting is real. A note that endorses the 'Arabs joining the war' framing, or that just calls it fake without the joining-vs-defending distinction, should FAIL. Cite credible reporting (Al Jazeera, Fox, etc.).",
+  "reference_note": "No official statements from Arab countries threaten joining the US-Israel war against Iran. Gulf/GCC leaders affirm they are not participating — prioritizing defense, diplomacy, and de-escalation. The attached report itself says Gulf states would defend their territory but not attack Iran; a reserved right to self-defense if attacked is not a threat to join the war.    https://www.aljazeera.com/news/liveblog/2026/3/14/iran-war-live-pentagon-vows-to-ramp-up-us-military-campaign-against-iran    https://www.foxnews.com/world/why-gulf-states-arent-joining-war-against-iran-despite-attacks-soil",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading: no Arab/GCC state officially threatened to join the US-Israel offensive against Iran. Gulf states stated they would defend themselves but not attack Iran and pursued de-escalation; the Saudi FM's 'patience is not unlimited / reserve the right to respond' is a defensive caveat, not joining the war.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Reactions_to_the_2026_Iran_war",
+      "https://www.foxnews.com/world/why-gulf-states-arent-joining-war-against-iran-despite-attacks-soil",
+      "https://www.timesofisrael.com/gulf-states-opposed-war-with-iran-some-are-now-pushing-to-keep-the-fight-going/"
+    ],
+    "notes": "At the March 2026 time of the tweet, Gulf states publicly resisted direct participation in the US-Israel campaign, emphasizing defense and diplomacy; the attached Al Jazeera transcript itself states GCC leaders 'would defend their territories but not attack Iran.' Reporting on later quiet pressure to keep the campaign going does not equal an official threat to join, and post-dates the framing here."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "3M impressions amplifying 'WW3' war hysteria during a live regional conflict; misframing diplomatic positions as war declarations inflames escalation narratives — accurate reporting on conflict de-escalation matters for global-stability / catastrophic-risk concerns."
+  },
+  "difficulty": "hard"
+}

@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2049875855929647577",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["outdated_news_recirculated", "celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "outdated_news_recirculated",
+  "tweet_summary": "An April 2026 post claims swim caps for Afro hair 'have been banned from the Olympics' because the official body says elite athletes 'don't require caps of such size,' shown with a photo of a large swim cap.",
+  "why_note_decision": "The claim is outdated and now false. FINA (now World Aquatics) initially rejected Soul Cap caps in 2021, but REVERSED that decision in September 2022, officially approving caps designed for Afro/natural Black hair for competitive and Olympic use. Presenting the ban as current in 2026 is misleading, so a note providing the reversal is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the ban was REVERSED — that FINA/World Aquatics approved swim caps designed for Afro/natural Black hair (e.g. Soul Cap) for competitive and Olympic use in 2022 — so the caps are NOT currently banned. The note must puncture the present-tense 'have been banned' framing as outdated. A note that affirms or leaves standing the claim that the caps are currently banned FAILS. Citing the 2022 reversal (NPR/CNN/Guardian) strengthens it.",
+  "reference_note": "FINA reversed its ban on swim caps for Afro hair in 2022, approving them for Olympic and competitive use. The caps are not currently banned. https://www.npr.org/2022/09/02/1120761124/swimming-cap-black-hair-fina-approval https://edition.cnn.com/2022/09/02/sport/fina-afro-hair-cap-approval-spt-intl",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "outdated_false",
+    "sources_checked": [
+      "https://www.npr.org/2022/09/02/1120761124/swimming-cap-black-hair-fina-approval",
+      "https://edition.cnn.com/2022/09/02/sport/fina-afro-hair-cap-approval-spt-intl",
+      "https://www.itv.com/news/2022-09-02/afro-hair-swim-cap-approved-for-top-level-competition-following-olympics-ban"
+    ],
+    "notes": "FINA rejected Soul Cap caps in 2021, then reversed in Sept 2022, adding them to the approved swimwear list for competitive/Olympic use. The 2026 post presents a ~4-year-old, since-reversed ban as current. Reply consensus also flags this as old, reversed news."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "1.1M impressions reviving an outdated racial-grievance claim; correcting recirculated-as-current misinformation has moderate information-integrity value."},
+  "difficulty": "easy"
+}

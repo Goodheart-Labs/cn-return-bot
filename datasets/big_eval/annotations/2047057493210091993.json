@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2047057493210091993",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post presents a video of Kai Trump supposedly saying she'll never accept Bettina Anderson (Don Jr.'s fiancee) and wants Kimberly Guilfoyle as her new mom, framed as real Trump family drama.",
+  "why_note_decision": "The video is AI-generated, not a real statement by Kai Trump. The clip itself carries an 'AI-generated' label (visible in OCR/TikTok credit), Lead Stories debunked it as fake, and there are no credible reports she said this. A note flagging the fabricated video is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the video is AI-generated / fabricated and is NOT a real statement from Kai Trump. The note should ideally cite the on-video 'AI-generated' label and/or the absence of any credible report of her saying this. A note that treats the quotes as genuine, or that only fact-checks peripheral relationship details without flagging the video as AI/fake, FAILS. The core correction is: the clip is synthetic.",
+  "reference_note": "The video in this post contains \"AI generated\" watermarks and is not a real statement from Kai Trump. No credible reports confirm she said this. She has appeared publicly with her father and Bettina Anderson.    https://leadstories.com/hoax-alert/2026/04/fact-check-fake-video-shows-kai-trump-saying-i-will-never-accept-bettina-anderson-as-my-mother.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "fabricated_ai_video",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/04/fact-check-fake-video-shows-kai-trump-saying-i-will-never-accept-bettina-anderson-as-my-mother.html",
+      "https://thehill.com/blogs/in-the-know/5892432-donald-trump-jr-wedding/"
+    ],
+    "notes": "Lead Stories: video is AI-generated and labeled as such (TikTok yin19042szx, uploaded Apr 17 2026). No credible report Kai Trump said this. Don Jr. has since married Bettina Anderson. The on-video OCR even contains an 'AI-generated' tag — corroborating the description."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "1M impressions; AI-fabricated celebrity statement — low real-world stakes but a clear instance of synthetic-media deception worth flagging for media-literacy."},
+  "difficulty": "easy"
+}

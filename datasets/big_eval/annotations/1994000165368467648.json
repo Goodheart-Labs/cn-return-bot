@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1994000165368467648",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["statistical_or_numerical_claim", "political_misinformation"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Labour MP Mike Tapp posts that UK net migration is down from the Tories' 900,000 to 204,000.",
+  "why_note_decision": "The tweet's two numbers are accurate. ONS confirms net migration for the year ending June 2025 was 204,000, down from a peak of ~944,000 (year ending March 2023, under the Conservatives). Because the headline figures are correct, no corrective note is warranted; the original note is the misinformation here.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's figures (204,000 latest; ~900k Tory peak) are accurate per ONS. Any note asserting the real figure is 431,000 / that 204,000 is wrong is itself FALSE — 431,000 was the (revised) year-ending-June-2024 figure, a different and older period than the tweet's. A note arguing 'but Brits are emigrating / it's only down because of emigration / Tory policies caused it' is contestable political framing, not a factual correction, and should also not pass. The correct outcome is no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Net migration is 431,000 (year ending June 2024), not 204,000 as claimed. While down from 2023's peak of ~900k, current figure is over double the stated amount. https://migrationobservatory.ox.ac.uk/resources/briefings/long-term-international-migration-flows-to-and-from-the-uk/",
+    "failure_reason": "Incorrect (dominant tag, 66 votes): the note rebuts the tweet using the wrong/older period (431k = YE June 2024) when the tweet's 204k refers to the more recent YE June 2025 ONS figure, which is correct. The note manufactures a contradiction that doesn't exist — a false positive.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "True: ONS net migration YE June 2025 = 204,000; down ~two-thirds from a ~944,000 peak (YE March 2023).",
+    "sources_checked": [
+      "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/bulletins/longterminternationalmigrationprovisional/yearendingjune2025",
+      "https://migrationobservatory.ox.ac.uk/resources/briefings/long-term-international-migration-flows-to-and-from-the-uk/",
+      "https://commonslibrary.parliament.uk/research-briefings/cbp-10446/"
+    ],
+    "notes": "ONS: net migration YE June 2025 was 204,000, ~two-thirds below YE June 2024 (revised to 649,000), and far below the YE March 2023 peak of 944,000. The tweet's 204k and ~900k figures are both correct. The original note's 431k figure is an older period (YE June 2024) and does not contradict the tweet. Replies arguing about British emigration are framing, not a factual rebuttal."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "455k impressions on a politically charged migration stat where the NOTE, not the tweet, is wrong — flagging this as a false positive protects the bot from amplifying an incorrect 'correction' on a sensitive topic."
+  },
+  "difficulty": "medium"
+}

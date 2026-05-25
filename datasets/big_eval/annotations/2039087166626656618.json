@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2039087166626656618",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "impersonation_or_false_authority"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_personal_story_engagement_farming",
+  "tweet_summary": "Quote-tweeting a real story about Claude Code source maps leaking via npm, the author claims he was 'fired from Anthropic today' as the engineer responsible for shipping the package and including the source maps.",
+  "why_note_decision": "The underlying event (Anthropic accidentally shipping a cli.js.map source map exposing Claude Code internals) is real, but the author's claim to be the fired Anthropic engineer responsible is fabricated. He never worked at Anthropic (his bio/LinkedIn show he co-founds ferryman.io and was prev at Google), and in replies he promotes his startup with a 'FIRED' discount code — confirming engagement/marketing farming. A reader benefits from knowing the personal 'I got fired' story is false, so a note is warranted.",
+  "judge_guidance": "PASS only if the note makes clear the author was NOT an Anthropic employee / was not actually fired from Anthropic, i.e. the personal 'I was fired from Anthropic' story is fabricated. It should be supported (LinkedIn/bio showing a different employer, or the author's own reply promoting his ferryman.io startup with a discount code as evidence of engagement-baiting). It must NOT deny the genuine underlying leak (Anthropic did ship source maps for Claude Code) — only correct the false claim of authorship/firing. A note that just calls it 'fake news' without establishing he never worked there, or that wrongly claims the whole leak is fake, should FAIL.",
+  "reference_note": "This person was never an Anthropic employee and was not fired by them — the 'I was fired from Anthropic' story is fabricated. His LinkedIn/bio show he co-founds ferryman.io (prev. Google), and in the replies he promotes that startup with a 'FIRED' discount code, i.e. engagement farming. (The actual Claude Code source-map leak was real, but he was not responsible.)    https://www.linkedin.com/in/kevindnaughtonjr",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False personal claim atop a real event: Anthropic did accidentally publish Claude Code source maps to npm, but the author never worked at Anthropic and was not fired; he fabricated the story to promote his startup (uses a 'FIRED' promo code in replies).",
+    "sources_checked": [
+      "https://www.linkedin.com/in/kevindnaughtonjr",
+      "https://www.aibase.com/news/26746",
+      "https://x.com/AI_EmeraldApple/status/2039124268412486124"
+    ],
+    "notes": "Reporting (aibase) and an explicit satire-flagging reply confirm the leak was genuine but Naughton never worked at Anthropic; his own reply offering 'use code FIRED for 50% off' on ferryman.io, plus bio 'building @ferrymanio, prev eng @google', corroborate engagement/marketing farming. The cached quoted-tweet image of the cli.js.map terminal output is consistent with the real leak."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "4.3M impressions; mainly a viral-hoax/marketing-stunt correction, but it intersects AI-lab security narratives — keeping the record straight on what Anthropic did vs. an opportunist's fiction has modest value for clear discourse about AI development."
+  },
+  "difficulty": "easy"
+}

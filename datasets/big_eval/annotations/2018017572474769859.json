@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2018017572474769859",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Video clip of Trump telling reporters he had 'nothing to do with' a Texas State Senate District 9 special election that a Democrat won in a district he carried by 17 points, claiming it was just a local race he knew nothing about.",
+  "why_note_decision": "Trump's 'I had nothing to do with it / I'm not involved' is misleading: he publicly endorsed Republican Leigh Wambsganss on Truth Social, called her a 'MAGA Warrior,' and urged voters to 'KEEP TEXAS RED' the day before the election. Wambsganss then lost to Democrat Taylor Rehmet (~57-43). A note correcting the disavowal is warranted.",
+  "judge_guidance": "PASS only if the note establishes that Trump DID involve himself in the race — specifically that he publicly endorsed the Republican candidate (Leigh Wambsganss) and urged people to vote for her shortly before the election — contradicting his on-camera claim of having 'nothing to do with it.' The note must name the endorsement (not merely say 'he was involved'). Bonus accuracy: the Democrat (Taylor Rehmet) won a district Trump carried by ~17 points. A note that only restates the election result without documenting Trump's endorsement FAILS to address the misleading claim.",
+  "reference_note": "Contrary to Donald Trump’s claim that he had \"nothing to do with\" the Texas State Senate District 9 special election, he had endorsed and promoted the Republican candidate, Leigh Wambsganss, before her loss to Democrat Taylor Rehmet.    https://www.politico.com/news/2026/02/01/democrat-wins-a-reliably-republican-texas-state-senate-seat-stunning-gop-00759046",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.washingtonexaminer.com/news/campaigns/state/4441943/texas-special-election-trump-endorse-leigh-wambsganss/",
+      "https://www.texastribune.org/2026/01/30/texas-senate-district-9-runoff-rehmet-wambsganss-special-election/",
+      "https://en.wikipedia.org/wiki/Leigh_Wambsganss"
+    ],
+    "notes": "Trump endorsed Wambsganss on Truth Social ('true MAGA Warrior', 'KEEP TEXAS RED') and urged a vote for her the day before; she lost to Rehmet. His 'nothing to do with it' is a documented disavowal of his own endorsement."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "1.5M impressions; corrects a head-of-state misrepresenting his own electoral involvement — meaningful for democratic accountability and information integrity."},
+  "difficulty": "easy"
+}

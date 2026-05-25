@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2011622882452128157",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "misattributed_or_miscontextualized_media", "staged_or_scripted_content"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "A viral-clips account posts CCTV-style footage of a German Shepherd reaching for a pot on a burning stove while a woman pulls it away, captioned 'This dog sniffed a gas leak… and saved her life… Real hero,' presenting it as a genuine rescue.",
+  "why_note_decision": "The footage is AI-generated, not real CCTV. The source channel (Mike's Mayhem) is an AI pet-drama entertainment page, and the depicted physics are implausible (a 'gas leak' shown as a grease/stovetop fire, the woman calmly standing by). Multiple credible replies identify it as AI. The post presents it as a 'real hero' event, so a note flagging it as AI/fictional is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the video is AI-generated / fabricated and not real CCTV footage of an actual rescue. The note should make clear no such event happened and that it was made for entertainment. Pointing to the source being an AI-content channel and/or implausible physics strengthens it. A note that treats the rescue as real, or that merely fact-checks whether dogs can detect gas leaks without flagging the video as AI/fictional, FAILS.",
+  "reference_note": "For context, while dogs can detect gas leaks, this video is AI-generated and fictional, not real CCTV footage. It was made for entertainment by an AI-content channel; no such event happened.  https://www.facebook.com/MikesMayhem/videos/dog-smelled-gas-before-she-did-/3892467331053619",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "fabricated_ai_video",
+    "sources_checked": [
+      "https://www.facebook.com/MikesMayhem/",
+      "https://www.linkedin.com/posts/karenesutherland_when-timeless-storytelling-meets-ai-and-digital-activity-7341630996393402368-LSpP"
+    ],
+    "notes": "Source channel 'Mike's Mayhem' produces AI-generated pet-drama entertainment clips. The video's physics are implausible (gas leak depicted as a stovetop grease fire; woman stands calmly). No dedicated named fact-check found, but the source being an AI-content channel plus credible reply consensus support the AI/fictional verdict — hence medium media confidence."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "medium", "lens_rationale": "2.6M impressions but low real-world stakes; a benign AI-slop wholesome video. Value is mainly media-literacy / normalizing synthetic-content labeling."},
+  "difficulty": "medium"
+}

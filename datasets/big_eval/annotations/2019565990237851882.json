@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2019565990237851882",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "ai_generated_media",
+    "conspiracy_and_viral_hoax"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post claims 'Israel faked his death' and that Jeffrey Epstein is still alive and 'walking the streets of Tel Aviv,' with photos of a long-haired bearded man flanked by guards on a street with Hebrew signs.",
+  "why_note_decision": "Epstein died in 2019 (DOJ confirmed suicide by hanging). The images are AI-generated: the uncropped original carries a Google Gemini watermark, AI detectors return ~99.7% AI probability, and the Hebrew on the street signs is gibberish that matches no real Tel Aviv location. The 'Epstein alive in Tel Aviv' claim is a debunked viral hoax (5M+ views) and warrants correction.",
+  "judge_guidance": "PASS only if the note establishes the images are AI-generated (evidence such as the Gemini/SynthID-style watermark, AI-detector results, and/or the gibberish Hebrew signage) and that the 'Epstein alive in Tel Aviv' claim is false (he died in 2019). FAIL if it entertains the conspiracy, treats the photos as authentic, or only argues about Israel without addressing the fabricated images. Bonus credit for noting the gibberish Hebrew or the Reddit r/hardaiimages origin, but the core requirement is debunking authenticity + the alive claim.",
+  "reference_note": "The image is AI-generated and was originally posted to r/hardaiimages on Reddit February 1, 2026, whose description reads: “Post your funny, hard AI images here, feel free to screenshot”  https://www.reddit.com/r/hardaiimages/comments/1qteqd9/dude_looks_oddly_familiar/  https://img.youtube.com/vi/6LSX3Cr2o4I/0.jpg    The Hebrew on the signs is gibberish:  https://x.com/israel_advocacy/status/2019360221135794333",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/",
+      "https://fullfact.org/world/jeffrey-epstein-fake-image-tel-aviv/",
+      "https://leadstories.com/hoax-alert/2026/02/fact-check-jeffrey-epstein-was-not-photographed-walking-in-tel-aviv-ai-generated-image.html"
+    ],
+    "notes": "PolitiFact, Full Fact, Lead Stories, Newschecker all rate the image AI-generated. Uncropped version shows a Gemini watermark; Hive Moderation ~99.7% AI; Hebrew signs are nonsensical and 'Haangus Ev.' street does not exist. Image first appeared on Reddit r/hardaiimages Feb 1, 2026. Epstein died 2019 (DOJ confirmed suicide)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "5.9M impressions and 5M+ views on an antisemitic conspiracy hoax; correcting AI-fabricated 'Israel faked his death' content matters for both information integrity and preventing targeted hate."
+  },
+  "difficulty": "easy"
+}

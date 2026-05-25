@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2022016373363519550",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "false_claim_about_individual",
+  "tweet_summary": "Quote-tweeting @LinkofSunshine, the poster (@WokeJunior) asserts 'You voted for Cuomo,' attacking the user as a Cuomo voter in the NYC mayoral race.",
+  "why_note_decision": "The accusation 'you voted for Cuomo' is a specific factual claim about an individual's vote, and the targeted user (@LinkofSunshine) posted a ballot photo showing they marked Zohran Mamdani for mayor, not Cuomo. The NYC general election did not use ranked-choice voting, so a Mamdani-marked ballot directly contradicts 'voted for Cuomo.' Replies (612-like top reply: 'you guys can only lie'; another posts the ballot image) corroborate. A note pointing readers to the rebuttal evidence is warranted. Caveat: the only evidence is the user's own self-posted ballot photo, which is inherently hard to fully verify, lowering robustness.",
+  "judge_guidance": "PASS only if the note states that the claim '@LinkofSunshine voted for Cuomo' is contradicted by their own posted ballot photo showing they marked Mamdani for mayor, and links to that evidence (the user's ballot-photo tweet). It must point to concrete rebuttal evidence, not merely assert 'this is false.' A note that endorses the 'voted for Cuomo' claim fails. A note that gets bogged down in ranked-choice mechanics (the general election was not RCV) without addressing the ballot evidence is weaker. Keep it short and clearly parseable.",
+  "reference_note": "@LinkofSunshine did not vote for Cuomo, as shown in their ballot photo marking Zohran Mamdani for mayor. https://x.com/linkofsunshine/status/2022057699236884901",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False per available evidence: the targeted user posted a ballot photo showing a vote for Mamdani, contradicting 'you voted for Cuomo.' Mamdani won the NYC mayoral race; the general election did not use RCV.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2025_New_York_City_mayoral_election",
+      "https://www.pbs.org/newshour/politics/mamdani-declares-victory-in-nycs-democratic-mayoral-primary-as-cuomo-concedes",
+      "https://x.com/linkofsunshine/status/2022057699236884901"
+    ],
+    "notes": "Cannot independently verify a private individual's ballot beyond their self-posted photo; the note's claim rests on that photo plus the absence of any contrary evidence. Mamdani defeated Cuomo (independent line) and Sliwa in the general election."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "High raw impressions (487K) but the dispute is an interpersonal accusation about one user's vote; little societal stake beyond general norms against fabricating claims about individuals."
+  },
+  "difficulty": "hard"
+}

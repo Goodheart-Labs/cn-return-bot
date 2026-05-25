@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2056472530836206057",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Stephen Miller (WH Deputy Chief of Staff) posts 'Massie voted to defund ICE,' implying Rep. Thomas Massie opposes ICE/immigration enforcement.",
+  "why_note_decision": "A note is warranted: 'voted to defund ICE' mischaracterizes a no-vote on a broad package. Massie was the only Republican to vote against the January 2026 DHS funding bill, which bundled ~$10B for ICE with funding for many other agencies. His stated reasons were objections to CISA (which he accuses of enabling censorship) and other provisions, not opposition to ICE or immigration enforcement; he has supported border-security measures elsewhere. Framing a 'no' on the whole package as 'defund ICE' is misleading, and a reader benefits from the actual vote context.",
+  "judge_guidance": "PASS only if the note clarifies that Massie's vote was against a broad January 2026 DHS funding package (which happened to include ICE funding among much else), and that his stated objection was to other provisions (e.g. CISA / censorship concerns), NOT a vote to defund ICE or oppose immigration enforcement. It should cite the roll call / DHS bill and stay neutral. FAIL if the note endorses the 'voted to defund ICE' framing, asserts Massie is anti-ICE, argues the broader merits of Massie's politics, or omits that the bill was an omnibus DHS package rather than an ICE-specific defunding measure. Because the original drew heavy notHelpfulMissingKeyPoints ratings, a strong note must concretely name BOTH that the bill funded ICE as part of a package AND Massie's actual stated reason - missing either is the original's weakness.",
+  "reference_note": "Massie voted against a January 2026 DHS funding bill due to its funding for CISA, a cybersecurity agency he opposes as enabling censorship, not due to opposition to ICE funding. https://x.com/RepThomasMassie/status/2014523226592882983 https://clerk.house.gov/Votes/202642",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_framing",
+    "sources_checked": [
+      "https://www.nbcnews.com/politics/congress/house-passes-sprawling-spending-package-democrats-split-ice-funding-rcna255273",
+      "https://time.com/7357264/ice-funding-bill-dhs-congress/",
+      "https://thehill.com/homenews/house/5702347-house-democrats-homeland-security-funding/"
+    ],
+    "notes": "Massie was the only Republican to vote no on the Jan 2026 DHS funding bill (220-207), a $64.4B package including ~$10B for ICE plus FEMA, TSA, Secret Service, CISA, etc. His objection was to CISA/other provisions, not ICE. Miller's 'voted to defund ICE' is misleading. The note is accurate. Status is CURRENTLY_RATED_HELPFUL despite heavy partisan not-helpful tagging (notHelpfulMissingKeyPoints dominant), reflecting a contested but ultimately helpful note."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1M+ impressions from a senior White House official; correcting a misleading characterization of a congressional vote (and modeling a note that survives heavy partisan downvoting) matters for accountability and depolarization."
+  },
+  "difficulty": "medium"
+}

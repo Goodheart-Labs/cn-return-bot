@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2036903878726131807",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "misleading_headline_framing",
+  "tweet_summary": "A NewsWire post states 'Israel, United States and Argentina vote against U.N. resolution to condemn slavery; UK and EU nations abstain.'",
+  "why_note_decision": "A note is warranted: the framing 'vote against a resolution to condemn slavery' is materially misleading. The March 25, 2026 UN General Assembly resolution (A/80/L.48) did not merely condemn slavery; it declared the transatlantic slave trade the gravest crime against humanity AND called on member states to engage in reparatory-justice talks (apology, restitution, compensation). The US, Israel and Argentina voted no, and the EU abstained, primarily over the reparations/retroactive-international-law provisions, not because they endorse slavery. The headline collapses a vote on a specific reparations-and-ranking resolution into 'voting against condemning slavery.'",
+  "judge_guidance": "PASS only if the note clarifies WHAT the resolution actually was - i.e. that it declared transatlantic slavery the gravest crime against humanity and recommended reparations/reparatory justice - and that the 'no' votes / abstentions were about those provisions (reparations, retroactive legal liability, ranking of crimes), not an endorsement of slavery. FAIL if the note accepts the 'voted against condemning slavery' framing, takes a partisan side on whether reparations are merited, or omits the reparations element that is the crux of the dispute. Neutral, factual explanation of the resolution's content is required.",
+  "reference_note": "The vote was against a resolution declaring transatlantic slavery the worst crime against humanity and recommending reparations, not against slavery overall.    https://news.un.org/en/story/2026/03/1167199     https://usun.usmission.gov/explanation-of-vote-for-unga-resolution/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_framing",
+    "sources_checked": [
+      "https://news.un.org/en/story/2026/03/1167199",
+      "https://en.wikipedia.org/wiki/United_Nations_Declaration_of_the_Trafficking_of_Enslaved_Africans_and_Racialized_Chattel_Enslavement_of_Africans_as_the_Gravest_Crime_against_Humanity",
+      "https://www.npr.org/2026/03/26/nx-s1-5761896/un-reparations-slavery-africa",
+      "https://usun.usmission.gov/explanation-of-vote-for-unga-resolution/"
+    ],
+    "notes": "Resolution passed 123-3 (US, Israel, Argentina against), 52 abstentions incl. all 27 EU states. It declared transatlantic slavery the gravest crime against humanity and called for reparatory-justice talks; the US objected to a 'legal right to reparations for historical wrongs not illegal at the time,' the EU to retroactive international law and crime-ranking. The note accurately captures this. Rated CURRENTLY_RATED_HELPFUL."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.2M impressions; a politically charged headline that distorts a real UN vote into 'pro-slavery,' inflaming polarization. Correcting it serves both factual accuracy and depolarization in a high-emotion topic."
+  },
+  "difficulty": "medium"
+}

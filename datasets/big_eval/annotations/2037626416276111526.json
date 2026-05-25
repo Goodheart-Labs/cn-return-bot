@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2037626416276111526",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "conspiracy_and_viral_hoax"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_screenshot_of_post",
+  "tweet_summary": "Headlined 'Erika Kirk responds to Druski's new viral skit on Conservatives,' the post shows a collage with a screenshotted '@MrsErikaKirk' tweet ('if I did blackface as part of a skit, I'd be cancelled and called a racist') presented as her real reaction to Druski's parody.",
+  "why_note_decision": "The screenshotted Erika Kirk response is fabricated. Multiple fact-checkers (Newsweek, Snopes, Primetimer, IBTimes) confirm Erika Kirk did not publicly respond to Druski's skit, the claimed cease-and-desist is false (Druski's rep denied it), and the circulating screenshots of her replying do not exist on her actual accounts. Presenting a fake tweet as a genuine public response from a named public figure is materially misleading, so a note is warranted. (The original note's specific 'last post March 21' detail is a verification aid; the load-bearing fact is that she did not post this response.)",
+  "judge_guidance": "PASS only if the note states that the screenshotted Erika Kirk response/tweet is fake and that she did not publicly respond to Druski's skit (and/or that the related cease-and-desist claim was denied). It must NOT treat the quoted tweet as a real statement by her. A note that argues the merits of blackface/the skit instead of addressing the fabricated screenshot fails. Cite a fact-check (Newsweek / Snopes / Primetimer) or her actual account showing no such post.",
+  "reference_note": "The screenshot of Erika Kirk's tweet is fake. She has not responded to Druski's skit, and her last X post was on March 21, 2026.    https://x.com/MrsErikaKirk    https://www.primetimer.com/news/did-druski-claim-erika-kirk-tried-to-sue-over-viral-skit-comedian-s-cease-and-desist-post-debunked",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/fabricated: Erika Kirk did not publicly respond to Druski's skit; the circulating response screenshots are fake and the cease-and-desist claim was denied by Druski's rep.",
+    "sources_checked": [
+      "https://www.newsweek.com/erika-kirk-druski-fact-check-cease-and-desist-letter-skit-11748831",
+      "https://www.snopes.com/fact-check/erika-kirk-druski-response/",
+      "https://www.primetimer.com/features/did-erika-kirk-tweet-that-her-own-daughter-mistook-druski-for-her-viral-post-claim-debunked"
+    ],
+    "notes": "Druski posted the satirical 'How Conservative Women in America Act' skit (Mar 25). Multiple fact-checks confirm Kirk did not respond on any platform; the cease-and-desist claim (Zellie Imani's now-deleted post) was denied by Druski's representative. The screenshotted reply is fabricated."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.3M impressions on a fabricated quote attributed to a named public figure, fueling a racially charged culture-war pile-on. Correcting fake attributed statements has clear value for discourse integrity, though the topic itself is low-stakes."
+  },
+  "difficulty": "easy"
+}

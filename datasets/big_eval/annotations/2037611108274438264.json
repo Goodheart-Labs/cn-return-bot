@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2037611108274438264",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Official State Dept post quotes Secretary Rubio saying Cuba lacks oil/fuel because it 'wants it for free' and its economic system doesn't work; in the clip he also asserts 'there isn't a naval blockade surrounding Cuba.'",
+  "why_note_decision": "A note is warranted: Rubio's claim that there is no US blockade and that Cuba's fuel shortage is purely self-inflicted omits a material, verifiable fact. In January 2026 Trump signed Executive Order 14380 imposing tariffs on any country that directly or indirectly supplies oil to Cuba, and the US began intercepting/blocking oil tankers bound for Cuba in February 2026 - reported by the New York Times as the first effective US blockade of Cuba since the Cuban Missile Crisis. So US policy is actively obstructing Cuba's oil supply, contradicting the framing that Cuba simply 'wants it for free.' A reader benefits from this missing context.",
+  "judge_guidance": "PASS only if the note supplies the omitted, verifiable context: that the US under EO 14380 (Jan 2026) imposed tariffs on countries supplying oil to Cuba and has been actively blocking/intercepting oil tankers bound for Cuba (a de facto blockade), which contradicts the 'no blockade / they just want it free' framing. It should cite or reference credible reporting (EO 14380, NYT) and stay neutral - presenting the policy facts, not editorializing about Rubio. FAIL if the note merely calls Rubio a liar without evidence, takes a one-sided pro-Cuba polemic tone (risking notHelpfulArgumentativeOrBiased), or omits the concrete EO/tanker-blocking facts that make the correction substantive.",
+  "reference_note": "In January, Trump signed Executive Order 14380, placing harsh tariffs on any country caught &quot;directly or indirectly&quot; supplying oil to Cuba. There are incidents of US navy blocking the oil tankers headed for Cuba.   https://www.presidency.ucsb.edu/documents/executive-order-14380-addressing-threats-the-united-states-the-government-cuba  https://www.nytimes.com/2026/02/20/world/americas/cuba-oil-blockade-trump.html  https://maritime-executive.com/article/report-uscg-cutter-blocks-tanker-bound-for-cuba-with-vital-fuel-supply",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_omission",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Cuban_crisis",
+      "https://www.hklaw.com/en/insights/publications/2026/02/new-executive-order-opens-door-to-tariffs-on-countries",
+      "https://www.justsecurity.org/137325/us-cuba-embargo-international-law/",
+      "https://www.thompsonhinesmartrade.com/2026/02/president-trump-imposes-additional-tariff-on-countries-that-sell-oil-to-cuba/"
+    ],
+    "notes": "EO 14380 (signed Jan 29, in force Jan 30, 2026) imposes tariffs on countries supplying oil to Cuba; the US began blocking tankers in Feb 2026 (NYT: first effective blockade since the Missile Crisis). Rubio's on-camera 'there isn't a naval blockade' is contradicted. The note's 'In January, Trump signed EO 14380' is accurate. Rated CURRENTLY_RATED_HELPFUL."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.8M impressions on an official US government account during a humanitarian energy crisis; correcting an official's omission about US policy responsibility has real geopolitical and humanitarian relevance."
+  },
+  "difficulty": "medium"
+}

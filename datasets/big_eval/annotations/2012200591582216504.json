@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2012200591582216504",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An Iran-focused account reports, as breaking news, Iran's official announcement that it seized 60,000 smuggled weapons bound for Tehran to incite urban clashes, with a photo of firearm components.",
+  "why_note_decision": "The tweet explicitly attributes the claim to Iran ('Iran announced the seizure'), and Iran's security forces did make this announcement on 16 Jan 2026 (PressTV and others). The tweet is accurately reporting a state announcement, not asserting it as independently verified fact. The original note's central correction — that the accompanying photo is recycled from a separate 2021 US maritime seizure — could not be independently verified; the note itself concedes 'no independent verification yet.' Without a confirmed image-provenance match, a note risks asserting an unproven claim, and the underlying reporting is accurately attributed.",
+  "judge_guidance": "PASS only if the bot declines to write a note, OR writes one strictly limited to a VERIFIABLE point. Do NOT pass a note that flatly states the photo is from a 2021 US seizure unless it provides solid provenance evidence (a reverse-image match to a dated 2021 source) — that specific claim is unverified here and was the original note's weak point. Do NOT pass a note that simply asserts the seizure 'didn't happen' or is 'Iranian propaganda,' since the tweet correctly attributes the claim to Iran's own announcement. The bar for a note here is high; absence of a note is the safe outcome.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This post reports Iran's police announcement of seizing 60,000 weapons bound for Tehran, per PressTV. For clarity, the image shown is from a separate 2021 US seizure of Iranian arms, not this event. No independent verification yet amid protests.  https://www.centcom.mil/MEDIA/NEWS-ARTICLES/News-Article-View/Article/2903023/record-seizures-in-2021-after-navcent-and-cmf-increase-patrols/  https://www.presstv.ir/Detail/2026/01/16/762402/Iran-security-forces-dismantle-Mossad-linked-terrorist-cell-seize-weapons",
+    "failure_reason": "The note's load-bearing claim (photo = 2021 US seizure) is unverified — the cited CENTCOM article is a generic 2021 maritime-seizure page, not a match to this specific image, and the note self-discloses 'no independent verification.' Reporters tagged it MissingKeyPoints; it neither cleanly debunks the tweet nor adds confirmed context.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Accurately attributed: Iran did announce a ~60,000-weapon seizure / Mossad-linked cell on 16 Jan 2026; the tweet says 'Iran announced.' The photo's exact provenance is unverified.",
+    "sources_checked": [
+      "https://www.presstv.ir/Detail/2026/01/16/762402/Iran-security-forces-dismantle-Mossad-linked-terrorist-cell-seize-weapons",
+      "https://easternherald.com/2026/01/17/iran-seizes-60000-weapons-us-israel-riots",
+      "https://www.politifact.com/article/2026/mar/12/identifying-fake-war-imagery-us-israel-iran/"
+    ],
+    "notes": "The announcement is real and the tweet attributes it to Iran. PolitiFact notes Iran-war imagery is widely misattributed in this period, but I found no reverse-image confirmation that THIS specific photo is the 2021 US seizure. One in-thread commenter alleges the photo is from 2021, but that's unsubstantiated. AI media description (shotgun receivers on a table by a trailer) does not match a 2021 maritime/at-sea rifle seizure, casting further doubt on the note's specific claim."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "530k impressions amid the 2026 Iran unrest; war-imagery misattribution is a real harm vector, but a note must be evidence-backed — guessing at provenance would itself spread an unverified claim."
+  },
+  "difficulty": "hard"
+}

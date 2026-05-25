@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2001327023839735928",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A fundraising account posts a video of children inside a tent flooded with murky water, captioned 'This is horrendous to see. God save Gaza' with a donation link, presenting it as real footage of flooding in Gaza.",
+  "why_note_decision": "The video is AI-generated, not real footage from Gaza. Lead Stories debunked the circulating December 2025 'flooded tents in Gaza' clips as AI-generated/manipulated (telltale anatomical distortions, shifting water leak points). Although real flooding warnings existed (Storm Byron), this specific clip is synthetic and is being used to solicit donations, so a note flagging it is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the VIDEO is AI-generated / not authentic footage of Gaza flooding. It may note that real flooding warnings existed in Gaza in Dec 2025 (so it should NOT claim no flooding occurred at all) but that THIS clip is synthetic. Citing a fact-check (Lead Stories) or visible AI artifacts strengthens it. A note that treats the video as genuine, or that only critiques the fundraising without flagging the AI media, FAILS. The load-bearing correction is: the footage is AI-generated.",
+  "reference_note": "The featured video is AI-generated, not real footage from Gaza.  https://www.bbc.com/news/live/cjrjjd4gz9et  https://leadstories.com/hoax-alert/2025/12/fact-check-ai-videos-do-not-show-real-flooded-tents-in-gaza.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "fabricated_ai_video",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2025/12/fact-check-ai-videos-do-not-show-real-flooded-tents-in-gaza.html",
+      "https://www.misbar.com/en/editorial/2025/12/15/storm-byron-gaza-trolls-use-ai-generated-videos-falsely-deny-disaster"
+    ],
+    "notes": "Lead Stories: the viral Dec 2025 'flooded tents in Gaza' videos are AI-generated/manipulated (distorted hands, a figure with four arms, shifting water-leak points). Real Storm Byron flooding warnings existed, but this clip is synthetic. Replies (incl. 'already community noted') corroborate."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "74k impressions but AI-generated war imagery driving donations exploits a real humanitarian crisis; flagging synthetic conflict media has meaningful information-integrity value."},
+  "difficulty": "medium"
+}

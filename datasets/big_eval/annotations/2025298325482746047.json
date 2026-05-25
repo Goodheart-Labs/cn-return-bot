@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2025298325482746047",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "ai_generated_media",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post captioned 'We need better planning to protect animals on shared roads' shows a video of a giraffe in an open crate on a moving truck appearing to fall onto the highway.",
+  "why_note_decision": "The video is AI-generated. Africa Check confirms the spate of viral 'giraffe falls off truck / hits bridge' videos are all AI fakes (tell-tale artifacts: rubbery neck physics, two heads, duplicated mirrors). A real, similar incident did occur in 2014 near Pretoria, South Africa (a transported giraffe hit an overpass and died) but it was never captured on video. Presenting AI footage as a real road-safety incident misleads viewers, so a note clarifying it is fabricated is warranted.",
+  "judge_guidance": "PASS only if the note states the video is AI-generated / not real footage. It is acceptable and stronger to add that a genuine but uncaptured 2014 South Africa incident inspired it. FAIL if it treats the video as real footage of an actual giraffe death, claims no such incident ever happened at all (a real 2014 one did, just not on video), or only comments on road safety without addressing authenticity. Citing Africa Check / the 2014 NPR/BBC reporting strengthens it.",
+  "reference_note": "This video is AI-generated and does not depict a real event. A similar real incident occurred in South Africa in 2014, but this footage is fabricated.    https://www.newsmobile.in/nm-fact-checker/verified-videos-of-giraffes-falling-from-truck-after-hitting-bridge-are-ai-generated    https://www.bbc.com/news/world-africa-28586702",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://africacheck.org/fact-checks/meta-programme-fact-checks/viral-videos-giraffe-being-injured-highway-are-ai-generated",
+      "https://www.npr.org/sections/thetwo-way/2014/08/01/337078881/during-transport-a-giraffe-in-south-africa-hits-head-on-overpass-dies",
+      "https://www.nbcnews.com/news/world/giraffe-dies-after-smashing-head-low-highway-bridge-south-africa-n169696"
+    ],
+    "notes": "Africa Check: all viral giraffe-falling-from-truck videos are AI-generated (rubber-neck physics, two heads, duplicated mirrors). The real 2014 incident (giraffe hit Garsfontein bridge on N1 near Pretoria and died) was documented in text but never filmed. So this video is fabricated. Grok in the replies gave contradictory answers (some calling it real), underscoring the need for an accurate note."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "4.3M impressions; animal-welfare emotional bait via AI gore. Correcting fabricated animal-cruelty footage matters for both information integrity and not manipulating public emotion about animal harm."
+  },
+  "difficulty": "medium"
+}

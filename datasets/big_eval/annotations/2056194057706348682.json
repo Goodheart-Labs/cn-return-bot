@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2056194057706348682",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "ai_generated_media",
+    "manipulated_or_fabricated_evidence"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "animal_welfare_misrepresentation",
+  "tweet_summary": "The 'Memecoin' (thememecoincult) account posts an AI video of its smiley mascot gently handing a plush toy to a monkey that cuddles it, captioned 'In another universe… 😪' — a sanitized, fictional version of the account's real, harmful zoo stunt.",
+  "why_note_decision": "The video is AI-generated fiction. In reality, on May 17, 2026 two Americans tied to this memecoin invaded 'Punch the monkey's' enclosure at Ichikawa City Zoo in Japan as a promo stunt, terrifying ~60 macaques; both were arrested for forcible obstruction of business. The post launders a real animal-welfare incident into a wholesome AI fantasy ('another universe') to promote the coin. Readers benefit from knowing the clip is AI and what actually happened.",
+  "judge_guidance": "PASS only if the note (a) makes clear the video is AI-generated / not a real event, AND (b) supplies the real context — that the account/its associates actually intruded into the Ichikawa City Zoo monkey enclosure (around 'Punch the monkey') in a memecoin promo stunt that distressed the animals and led to arrests. Japanese-language notes are acceptable. FAIL if it treats the heartwarming scene as real, omits the real harmful incident, or merely says 'cute video.' A note that only says 'this is AI' without the real-incident context is weaker but the minimum bar is establishing the video is fabricated; full credit requires the real-event correction since that is what makes the post misleading.",
+  "reference_note": "AI生成によるフェイク動画です。このような事実はありません。  仮想通貨Memecoinのマスコットが、宣伝目的で市川市動植物園のサル山に侵入し、すぐさま飼育員によって外へ連れ出され警察に引き渡されました。  @thememecoincult はコインの価格を上げるために過激な行動やフェイクの動画をXに投稿し、インプレッションを稼いでいる悪質なアカウントであることに注意が必要です。  https://decrypt.co/368383/men-arrested-japan-entering-punch-monkey-zoo-enclosure-meme-coin",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://decrypt.co/368383/men-arrested-japan-entering-punch-monkey-zoo-enclosure-meme-coin",
+      "https://www.dexerto.com/entertainment/masked-man-who-entered-punch-the-viral-monkeys-enclosure-arrested-3365616/",
+      "https://gizmodo.com/punch-the-monkeys-enclosure-allegedly-invaded-as-memecoin-pumping-stunt-2000760245"
+    ],
+    "notes": "Confirmed: May 17, 2026, two Americans (Reid Dayson trespassing, Neal Duan filming) entered Ichikawa City Zoo's macaque enclosure in a 'Just a Memecoin' (thememecoincult) promo stunt targeting viral baby monkey 'Punch'; ~60 monkeys scattered in fear; both arrested for forcible obstruction of business; zoo reinforced security and canceled an event. The posted wholesome 'another universe' clip is AI fiction inverting the real harm."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Animal-welfare angle: a crypto-promo stunt that terrorized captive macaques, then was reputation-washed via an AI 'wholesome' video. Correcting it both flags animal cruelty and exposes manipulative crypto-pump tactics."
+  },
+  "difficulty": "hard"
+}

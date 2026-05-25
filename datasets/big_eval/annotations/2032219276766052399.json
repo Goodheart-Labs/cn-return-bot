@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2032219276766052399",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "ai_generated_media",
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A geopolitics account claims an American F/A-18F crashed into the sea while landing on USS Abraham Lincoln after 'bombing Iran' because the arresting gear failed, with the pilot rescued, attaching a short video.",
+  "why_note_decision": "No such F/A-18F crash on USS Abraham Lincoln occurred or was reported; the surrounding 'returning from bombing Iran' / missile-strike narrative is part of a wave of fabricated USS Abraham Lincoln videos debunked by PolitiFact and Lead Stories (CENTCOM stated the Lincoln was not hit). The viral clip is fabricated/manipulated footage (fact-checkers trace similar Lincoln videos to Arma 3 game footage), not a real crash. Multiple repliers flag it as AI/old. A correction is warranted.",
+  "judge_guidance": "PASS only if the note clearly states there is NO record of a real F/A-18F crash on the USS Abraham Lincoln and that the video is fabricated/manipulated (AI-altered or game footage), debunking the 'crashed after bombing Iran, arresting gear failed' claim, ideally with a credible source (CENTCOM denial, navaltoday, AFP/PolitiFact/Lead Stories). FAIL if it treats the crash as real, merely says 'arresting gear failed' as if describing a genuine incident, or affirms the Iran-bombing narrative. Note: the precise origin attribution may differ (one source says Arma 3 video game, the original note says 'AI-altered old footage'); the bot need not nail the exact source so long as it establishes the event did not happen and the video is not authentic.",
+  "reference_note": "No real F/A-18F crash on USS Abraham Lincoln occurred or was reported; this clip is fabricated/manipulated footage, part of a wave of fake 'Abraham Lincoln' videos circulating in early March 2026 (fact-checkers trace similar clips to the Arma 3 game). U.S. CENTCOM stated the Lincoln was not hit. https://www.politifact.com/factchecks/2026/mar/02/social-media/uss-abraham-lincoln-fire-missile-iran/ https://leadstories.com/hoax-alert/2026/03/fact-check-video-does-not-show-us-aircraft-carrier-lincoln-burning.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.politifact.com/factchecks/2026/mar/02/social-media/uss-abraham-lincoln-fire-missile-iran/",
+      "https://leadstories.com/hoax-alert/2026/03/fact-check-video-does-not-show-us-aircraft-carrier-lincoln-burning.html",
+      "https://www.yahoo.com/news/articles/fact-check-video-does-not-032329144.html"
+    ],
+    "notes": "Fact-checkers confirm no real strike/crash on USS Abraham Lincoln; CENTCOM denied any hit. Viral 'Lincoln' videos in early March 2026 are fabricated, with some traced to Arma 3 game footage. The original note's specific 'AI-altered old footage + OP deleted post' provenance is plausible but the dominant fact-check attribution is game footage; the central debunk (event did not happen, footage not authentic) is solidly correct, so the note is a valid helpful reference."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "328k impressions on war-escalation misinformation during a live US-Iran conflict narrative; false 'aircraft carrier lost' claims can inflame geopolitical tension, so accurate correction has real-world stakes."
+  },
+  "difficulty": "medium"
+}

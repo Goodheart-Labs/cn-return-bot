@@ -15,8 +15,8 @@ totals are ~90% cheap cache-reads). It writes `datasets/big_eval/PAUSE` at ≥75
 clears it after the window resets.
 
 ```bash
-# background, while building:
-uv run src/scripts_jim/2026_05_25_big_eval_dataset/usage_watch.py --interval 120
+# background, while building (this user's real 5h block limit ≈ $96, so pause at ~$70):
+uv run src/scripts_jim/2026_05_25_big_eval_dataset/usage_watch.py --interval 120 --ceiling 93
 # one-shot check (used by the resume routine at startup):
 uv run src/scripts_jim/2026_05_25_big_eval_dataset/usage_watch.py --once
 ```

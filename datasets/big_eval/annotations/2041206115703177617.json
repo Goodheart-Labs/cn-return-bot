@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2041206115703177617",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "misunderstood_technical_claim",
+  "tweet_summary": "A 'BREAKING' text post claims Trump revealed that U.S. forces 'rebuilt helicopters in under 10 MINUTES behind Iranian lines after the rotors came off,' framing it as an astonishing feat.",
+  "why_note_decision": "The 'rebuilt after the rotors came off in combat' framing is a misunderstanding/exaggeration. The helicopters were MH-6 Little Birds, which have main rotors that fold by design so they can be transported inside C-130s; on arrival they are unloaded and made flight-ready in minutes by unfolding the rotors — they were not damaged and 'rebuilt.' Multiple defense outlets (TWZ, Aviation Geek Club, Zona Militar) confirm this is the standard 160th SOAR technique. Top replies (incl. Scott Ritter, Crispin Burke) make exactly this correction. Presenting routine fold-out redeployment as miraculous in-combat rebuilding misleads readers about what happened, so a note is warranted. Distinct nuance: the underlying rescue/aircraft did happen; only the 'rebuilt' mechanism is wrong.",
+  "judge_guidance": "PASS only if the note clarifies the technical reality: the MH-6 Little Bird's rotors fold for transport (e.g. inside C-130s) and the aircraft are made flight-ready in minutes by unfolding them, NOT rebuilt after rotors detached in combat. It must NOT deny that a rescue operation / helicopter deployment in Iran occurred, and it must NOT endorse the 'rebuilt in 10 minutes' framing. A note that just calls the post 'fake' wholesale is weaker/inaccurate since the operation was real. Cite a defense-aviation source (TWZ / Aviation Geek Club / Zona Militar).",
+  "reference_note": "Helicopters like the MH-6 Little Bird used in the rescue have rotors that fold for transport inside larger aircraft and can be rapidly redeployed in minutes, not rebuilt after detaching in combat. https://www.zona-militar.com/en/2026/04/06/the-mh-ah-6-little-bird-special-operations-helicopters-key-players-in-the-rescue-of-the-second-crew-member-of-the-f-15e-shot-down-in-iran https://www.yahoo.com/news/articles/night-stalker-little-bird-helicopter-094047775.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading/exaggerated: MH-6 Little Birds have foldable rotors for C-130 transport and are flight-ready in minutes by unfolding — not 'rebuilt' after rotors came off in combat. The rescue itself was real.",
+    "sources_checked": [
+      "https://www.twz.com/air/night-stalker-little-bird-helicopters-destroyed-at-forward-landing-site-in-iran",
+      "https://theaviationgeekclub.com/photos-of-us-mc-130js-mh-6-destroyed-in-iran-during-downed-f-15e-wso-rescue/",
+      "https://en.wikipedia.org/wiki/MD_Helicopters_MH-6_Little_Bird"
+    ],
+    "notes": "Standard 160th SOAR technique: MH-6s loaded into C-130 cargo bays with folded rotors, rolled off, and ready to fly in minutes. Defense outlets confirm; top replies (Scott Ritter: 'rotors are unfolded and locked into position, not rebuilt'; Crispin Burke) make the same point. Four MH-6s + two MC-130Js were later destroyed to prevent capture in Iran (Apr 5, 2026)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "551K impressions on a war-related technical exaggeration; correcting it has modest value (accurate understanding of a military operation, countering hype), no major welfare stake."
+  },
+  "difficulty": "medium"
+}
