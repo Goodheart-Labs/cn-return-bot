@@ -2,28 +2,14 @@ import { serve } from "bun";
 import { readFileSync } from "fs";
 import { join } from "path";
 import dotenv from "dotenv";
+import { injectSupabaseConfig, resolveSupabaseCredentials } from "./supabaseInjection";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
 const useLocal = process.argv.includes("--local");
-const supabaseUrl = useLocal ? process.env.LOCAL_SUPABASE_URL : process.env.SUPABASE_URL;
-const supabaseKey = useLocal ? process.env.LOCAL_SUPABASE_SERVICE_KEY : process.env.SUPABASE_SERVICE_KEY;
+const creds = resolveSupabaseCredentials(process.env, useLocal);
 
 const PORT = 8001;
-
-// WARNING: This injects the Supabase service role key (full DB access) into the page.
-// This server must only run on localhost. Never expose it to the network or deploy it.
-function injectCredentials(html: string): string {
-  const script = `
-    <script>
-      window.__SUPABASE_CONFIG__ = {
-        url: "${supabaseUrl}",
-        key: "${supabaseKey}"
-      };
-    </script>
-  `;
-  return html.replace("</head>", script + "</head>");
-}
 
 serve({
   port: PORT,
@@ -42,7 +28,10 @@ serve({
     }
 
     // Serve index.html with injected credentials (main route + SPA fallback)
-    const html = injectCredentials(readFileSync(join(import.meta.dir, "dist/index.html"), "utf-8"));
+    const html = injectSupabaseConfig(
+      readFileSync(join(import.meta.dir, "dist/index.html"), "utf-8"),
+      creds,
+    );
     return new Response(html, { headers: { "Content-Type": "text/html" } });
   },
 });

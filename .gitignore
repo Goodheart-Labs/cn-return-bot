@@ -76,6 +76,7 @@ create-notes-routine-dynamic.yml
 
 # Claude Code local settings (machine-specific permissions)
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 
 # CN public-data dump (downloaded TSVs — large, regeneratable)
 src/scripts_jim/cn_data/
