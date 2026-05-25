@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2019530774572331058",
+  "role": "unhelpful_notHelpfulOpinionSpeculation",
+  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post by 'Censored Humans' (2.2M views) claims Charlie Kirk was about to prove Jeffrey Epstein is alive and living in Israel — that Epstein was 'exfiltrated from his Manhattan cell' under intelligence protection, and that Kirk's assassination was a cover-up. The video is a narrated conspiracy segment that also pitches a VPN.",
+  "why_note_decision": "A note is warranted: a sweeping, checkable conspiracy claim with high reach. Jeffrey Epstein died Aug 10, 2019 in his Manhattan jail cell; the death was ruled suicide and a forensic pathologist hired by his brother confirmed the body's fingerprints matched Epstein's. The viral 'Epstein alive in Tel Aviv' photos are AI-fabricated (a Gemini AI watermark, a fake street name; AFP and Full Fact debunked them). There is no evidence Epstein was exfiltrated to Israel, and no evidence Charlie Kirk uncovered or was killed over any such secret.",
+  "judge_guidance": "PASS only if the note establishes that the core claim is false: Epstein died in 2019 (ruled suicide; fingerprints confirmed his identity), the 'alive in Israel' photos are AI-fabricated/debunked, and there is no evidence linking his death to Charlie Kirk's assassination — sourced to reliable references (Wikipedia Death of Jeffrey Epstein / AFP or Full Fact debunk / CBS News conspiracy debunk / Al Jazeera). The note need not adjudicate every sub-claim but must rebut the central 'Epstein alive in Israel, Kirk killed to cover it up' assertion. AVOID the original note's failure (rated notHelpfulOpinionSpeculation 11, SourcesMissingOrUnreliable 11): do NOT rely on weak/obscure sources (the original cited 'factually.co'); anchor on a forensic/official source for the death and a named fact-checker (AFP/Full Fact) for the fake photos. A note that merely calls it a 'conspiracy theory' without sourcing the death + the debunked photos fails.",
+  "reference_note": "Jeffrey Epstein died in his Manhattan jail cell on Aug 10, 2019; the death was ruled suicide and a forensic pathologist confirmed the body's fingerprints matched Epstein. Viral photos of him 'alive in Israel' are AI-fabricated and have been debunked (Gemini AI watermark; AFP/Full Fact). There is no evidence he was exfiltrated to Israel or any link to Charlie Kirk's killing. https://en.wikipedia.org/wiki/Death_of_Jeffrey_Epstein https://www.cbsnews.com/news/jeffrey-epstein-conspiracy-theories/",
+  "original_unhelpful_note": {
+    "text": "Jeffrey Epstein died by suicide in 2019; no evidence shows he is alive or in Israel. Charlie Kirk's 2025 assassination was by a politically motivated gunman with no Epstein connection. https://en.wikipedia.org/wiki/Death_of_Jeffrey_Epstein https://en.wikipedia.org/wiki/Assassination_of_Charlie_Kirk https://factually.co/fact-checks/media/is-jeffrey-epstein-alive-in-israel-38875a",
+    "failure_reason": "Substance correct but rated NOT_HELPFUL (28 ratings; dominant notHelpfulOpinionSpeculation 11, SourcesMissingOrUnreliable 11, NoteNotNeeded 8, Incorrect 7). On a hardcore conspiracy thread the flat 'died by suicide / no evidence' framing reads to believers as bare assertion, and one source ('factually.co') is an obscure aggregator. The note also doesn't mention the most concrete debunk — that the 'alive in Israel' photos are AI-fabricated (Gemini watermark) — which is the strongest available counter-evidence.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Death_of_Jeffrey_Epstein",
+      "https://www.cbsnews.com/news/jeffrey-epstein-conspiracy-theories/",
+      "https://mythdetector.com/en/jeffrey-epstein-is-alive/",
+      "https://www.ibtimes.co.uk/epstein-tel-aviv-photos-debunked-1782381",
+      "https://www.aljazeera.com/news/2026/2/9/what-were-jeffrey-epsteins-links-to-israel"
+    ],
+    "notes": "Epstein died Aug 10, 2019 (ruled suicide; brother-hired pathologist confirmed fingerprints match). 'Alive in Tel Aviv' photos are AI fakes — Gemini AI watermark, fake street name ('Haangus Ev.'), built on a real 2015 photo with added beard/hair; debunked by AFP and Full Fact. No evidence of exfiltration to Israel or any Charlie Kirk connection; Kirk's 2025 assassination was by a politically motivated gunman. The tweet's narration is a monetized conspiracy segment (VPN ad), a platform-manipulation tell."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.2M impressions fusing two viral conspiracies (Epstein-alive + Kirk-assassination) with antisemitic 'Israel controls everything' framing; high information-integrity stakes and real potential to incite."
+  },
+  "difficulty": "easy"
+}

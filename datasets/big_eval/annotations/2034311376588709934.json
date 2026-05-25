@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2034311376588709934",
+  "role": "unhelpful_notHelpfulOpinionSpeculation",
+  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war", "ai_generated_media", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A near-8M-view post claims Netanyahu died March 8, 2026, citing as 'evidence' that his son Yair took a 7-day X break (=Jewish Shiva), Trump looked shaken on 3/8, and Israel is now striking oil/civilian targets; attached is a photo of Netanyahu eyes-closed in an apparent hospital bed.",
+  "why_note_decision": "A note is warranted: Netanyahu is alive. He posted proof-of-life videos (Jerusalem café March 15; with Amb. Huckabee March 17) and major fact-checkers debunked the March 2026 death hoax as Iranian information warfare that stitches real fragments (a posting gap, a facial expression) into a false narrative. The attached 'hospital bed' image is unverified/likely AI or misattributed. The original note got the verdict right but was rated opinion/speculation because it leaned on rhetorical claims ('experts and fact-checkers reviewed footage and found it genuine') without crisply dismantling THIS post's specific 'evidence' (the Yair-Shiva inference, the hospital photo).",
+  "judge_guidance": "PASS only if the note establishes Netanyahu is ALIVE with a credible proof-of-life source (post-March-8 café/Huckabee videos or a named fact-check), AND directly neutralizes this post's specific 'evidence' — i.e. a son's social-media gap and a leader's facial expression are not proof of death, and the attached eyes-closed 'hospital' image is unverified (likely AI/misattributed). Must AVOID the original note's failure of asserting fact-checker conclusions abstractly ('experts found it genuine') without engaging the post's actual reasoning. FAIL if it accepts the death claim, treats the hospital photo as authentic, or is vague/argumentative with no source.",
+  "reference_note": "Netanyahu is alive. He posted proof-of-life videos after March 8 (at a Jerusalem café and walking with U.S. Ambassador Huckabee), and fact-checkers debunked the death rumor as Iranian information warfare. A son's posting gap and a facial expression are not evidence of death, and the attached eyes-closed 'hospital' image is unverified and likely AI-generated or misattributed. https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15 https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+  "original_unhelpful_note": {
+    "text": "Benjamin Netanyahu is alive: his office released recent authenticated photos and videos and he posted a proof-of-life clip March 15–17; experts and fact-checkers reviewed post‑Mar‑8 footage and found it genuine. https://www.yahoo.com/news/articles/fact-check-netanyahu-alive-despite-160900467.html https://www.nytimes.com/2026/03/17/technology/netanyahu-ai-video-iran-israel.html",
+    "failure_reason": "Rated notHelpfulOpinionSpeculation (49) + incorrect (31) + sources (29), high volume (87). The verdict (alive) is correct, but the note relies on appeals to authority ('experts found it genuine') without engaging the post's specific claims (the Yair/Shiva inference, the hospital photo), so to skeptical raters it read as assertion rather than rebuttal. It also doesn't flag the attached image as unverified/AI.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false (Netanyahu alive)",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/fact-check-netanyahu-alive-despite-160900467.html",
+      "https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15",
+      "https://www.haaretz.com/israel-news/2026-03-17/ty-article/.premium/netanyahu-isnt-dead-but-even-his-proof-of-life-video-is-being-derided-as-ai/0000019c-fa95-df16-a3dc-feb580990000"
+    ],
+    "notes": "Netanyahu is alive (proof-of-life videos March 15/17, multiple fact-checks). The post's 'evidence' is circumstantial inference (Yair's posting gap, Trump's expression) plus an unverified hospital-bed image; this is the standard March 2026 Iranian-info-war hoax pattern. Correction firmly warranted."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "~8M views on a false head-of-state death claim during active war; high-stakes disinformation where correction has real epistemic and de-escalation value."
+  },
+  "difficulty": "medium"
+}

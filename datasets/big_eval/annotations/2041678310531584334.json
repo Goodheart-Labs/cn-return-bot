@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2041678310531584334",
+  "role": "unhelpful_notHelpfulOpinionSpeculation",
+  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_quote",
+  "tweet_summary": "Post by 'Football Crave' (a self-described parody account, 1.4M views) attributes a fabricated quote to NFL coach Mike Vrabel about a 'recent affair with Dianna Russini': 'It was a mistake… I had a few drinks and thought it was Kay Adams.' Paired with real headshots of Vrabel and Russini.",
+  "why_note_decision": "A note is warranted because the quote is fabricated and was widely taken as real (~1.4M views, 17k likes; mainstream fact-checkers debunked it and the parody-account ecosystem also faked a related TreVeyon Henderson statement that he had to publicly deny). Although the account bio says 'parody', the disclaimer is easily missed and the quote spread as a genuine confession. Vrabel never said this; he called the affair suggestions 'laughable'. The note's job is narrow: flag the quote as fabricated, not litigate whether an affair occurred.",
+  "judge_guidance": "PASS only if the note's core point is that the Vrabel 'Kay Adams' quote is FABRICATED — Vrabel never made this statement and it originates from a parody account — sourced to a reliable outlet (Hindustan Times / Fox News / TotalProSports / NESN / Primetimer). AVOID the original note's specific failure (rated notHelpfulOpinionSpeculation 6, Incorrect 4): do NOT assert as fact that the underlying photos show 'an innocent group outing with friends' or that 'there is no evidence of an affair' — that takes a contested side and is the speculation raters flagged; the verifiable fact is only that the QUOTE is fake. A correct note stays scoped to the fabricated quote (and that the account is parody) and does not adjudicate the affair itself. A note that repeats the quote as if real, or that defends/accuses on the affair, fails.",
+  "reference_note": "This quote is fabricated. Mike Vrabel never said he 'thought it was Kay Adams'; the post is from a self-described parody account. Vrabel addressed the viral Russini photos by calling any affair suggestion 'laughable.' https://www.hindustantimes.com/sports/us-sports/mike-vrabel-thought-dianna-russini-was-kay-adams-fact-checking-viral-affair-claim-after-sedona-hotel-photos-emerge-nfl-101775614089285.html https://www.foxnews.com/sports/patriots-coach-mike-vrabel-responds-photos-new-york-times-nfl-reporter-leak",
+  "original_unhelpful_note": {
+    "text": "This is a parody post. Mike Vrabel did not make this statement. Photos of Vrabel and Russini show an innocent group outing with friends. There is no evidence of an affair, and Vrabel called such suggestions &quot;laughable.&quot;    https://www.hindustantimes.com/sports/us-sports/mike-vrabel-thought-dianna-russini-was-kay-adams-fact-checking-viral-affair-claim-after-sedona-hotel-photos-emerge-nfl-101775614089285.html    https://www.foxnews.com/sports/patriots-coach-mike-vrabel-responds-photos-new-york-times-nfl-reporter-leak",
+    "failure_reason": "Low-volume NOT_HELPFUL (10 ratings; dominant notHelpfulOpinionSpeculation 6, Incorrect 4, NoteNotNeeded 4). The first two sentences are correct (parody, quote not real), but the note overreaches by stating as fact that the photos 'show an innocent group outing' and 'there is no evidence of an affair' — these characterize a contested celebrity dispute as settled, which reads as taking sides / speculation. The verifiable correction (the quote is fabricated) is sound; the editorializing about the affair is what drew the opinion flags.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.totalprosports.com/nfl/did-mike-vrabel-bring-kay-adams-into-dianna-russini-drama/",
+      "https://nesn.com/new-england-patriots/news/patriots-treveyon-henderson-debunks-fake-quote-connected-mike-vrabel/9dac7581691c3800f7bb67e6",
+      "https://www.primetimer.com/news/did-mike-vrabel-drag-kay-adams-into-his-recent-controversy-with-dianna-russini-viral-post-debunked",
+      "https://www.foxnews.com/sports/patriots-coach-mike-vrabel-responds-photos-new-york-times-nfl-reporter-leak"
+    ],
+    "notes": "The 'Kay Adams' quote is a fabrication from the 'Football Crave' parody account; fact-checkers (TotalProSports, Primetimer, NESN) confirmed Vrabel never said it, and the same account faked a TreVeyon Henderson statement Henderson publicly denied. Separately, real NYP photos of Vrabel and Russini at a Sedona hotel did circulate and both denied an affair (Russini later resigned from The Athletic) — but the affair itself is contested/unproven, so the only clean correction is the fabricated quote."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Celebrity/sports gossip with low civic stakes; useful mainly as a fabricated-quote-from-parody-account training case where the bot must scope the correction to the fake quote and resist editorializing the underlying drama."
+  },
+  "difficulty": "medium"
+}

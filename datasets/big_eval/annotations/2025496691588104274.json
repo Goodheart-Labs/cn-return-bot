@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2025496691588104274",
+  "role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "unfounded_inauthenticity_accusation",
+  "tweet_summary": "Claims the new Xbox CEO Asha Sharma's gamertag is a 'pre-set PR bot' account fabricated by Microsoft, citing that her first achievement is Jan 16, 2026 and that achievements across different games all share the same dates.",
+  "why_note_decision": "The tweet's central claim — that the account is a staged/fake 'PR bot' profile — is false. Sharma genuinely shared her real gamertag (AMRAHSAHSA); the account shows authentic, varied gaming activity over a month (multiple games, real playtimes), and she publicly explained the inflated gamerscore as her family having shared the account, which she then restricted to herself. The 'all same date' premise is wrong. The post drives a xenophobic harassment pile-on in replies, so a corrective note is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the account is authentic (Sharma's real, publicly shared gamertag) and rebuts the 'fake PR bot' / 'all achievements same date' premise with the key fact the original note OMITTED: the elevated gamerscore came from family members sharing the account, which Sharma herself publicly acknowledged and then limited to just herself. A passing note should also note the activity is spread across many games/dates with real playtimes. It must NOT merely quibble over 'Jan 15 not 16' without addressing the substance, and must NOT concede the PR-bot framing. Cite a credible gaming outlet (Windows Central, Pure Xbox, TrueAchievements).",
+  "reference_note": "This is Asha Sharma's real Xbox gamertag, which she shared publicly; it is not a fabricated 'PR bot' account. The achievements span many games over weeks with genuine playtimes (e.g., narrative titles played at length), not a single pre-set date. Sharma explained the high gamerscore was because her family had been sharing the account, which she has since limited to herself. https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter",
+  "original_unhelpful_note": {
+    "text": "Sharma's first achievement was Jan 15 (not 16), with varied dates & playtimes (13+ hrs in Halo, 100% Firewatch completed Jan 20). The account shows authentic gaming activity, not a pre-set \"PR bot\" profile as claimed. https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter",
+    "failure_reason": "Missing key points: leads with a pedantic 'Jan 15 not 16' correction and isolated playtime stats but omits the single most decisive, publicly-documented rebuttal — that Sharma explained the apparent anomalies as her family sharing the account. Reads as an unsourced-feeling spot-check rather than the clear authenticity explanation a reader needs.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: the account is genuine, not a staged PR bot; achievement anomalies are explained by family account-sharing, which Sharma publicly disclosed.",
+    "sources_checked": [
+      "https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter",
+      "https://www.purexbox.com/news/2026/03/heres-what-asha-sharma-has-been-playing-on-her-xbox-gamertag-over-the-past-month",
+      "https://www.trueachievements.com/news/asha-sharma-xbox-gamertag"
+    ],
+    "notes": "Sharma shared gamertag AMRAHSAHSA; activity spread across ~30 titles over a month with real playtimes; she clarified inflated gamerscore was due to family sharing the account, now limited to herself. No evidence of a Microsoft-built PR profile."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.6M impressions and an explicitly xenophobic harassment campaign ('their degrees are fake too,' 'thanks India') against a named executive; correcting fabricated inauthenticity accusations reduces real harassment harm."
+  },
+  "difficulty": "medium"
+}

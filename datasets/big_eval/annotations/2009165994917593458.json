@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2009165994917593458",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["misattributed_or_miscontextualized_media", "political_domestic"],
+  "category_fit": "partial",
+  "suggested_category": "unverifiable_identity_speculation",
+  "tweet_summary": "A video from the January 2026 Minneapolis ICE-shooting protests shows a masked person burning a US flag and then leaving while the crowd jeers; the poster captions it 'Federal Agent Fails At Inciting Riot,' i.e. claims the flag-burner was an undercover federal agent provocateur.",
+  "why_note_decision": "No note is warranted, and the original note's framing is itself unsupportable. The video is real and correctly situated (Minneapolis, post-ICE-shooting protests, Jan 2026 — confirmed by ABC/Wikipedia). But the IDENTITY of the masked flag-burner — federal agent vs. ordinary protester vs. far-right provocateur — is pure speculation on all sides; no outlet has identified the person. The tweet's 'Federal Agent' label is an unprovable opinion/insinuation, not a checkable factual claim. The original note 'corrects' it by asserting the person is 'identified as a protester' citing only an Instagram reel — substituting one unverifiable identity claim for another. With no authoritative identification available, a Community Note cannot adjudicate this; the right move is to decline.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap. The video is genuine and accurately placed (Minneapolis ICE-shooting protests, January 2026), but the identity/motive of the masked flag-burner (undercover federal agent provocateur vs. protester vs. far-right provocateur) is UNVERIFIABLE — no credible outlet has identified the individual. Both the tweet's 'Federal Agent' claim and any counter-claim that the person is 'just a protester' are speculation. FAIL any note that asserts the person IS or IS NOT a federal agent, or that 'identifies' them as a protester on the strength of an Instagram reel or eyewitness footage — that repeats the original note's error of swapping one unprovable identity claim for another. Only a note that confined itself to a genuinely verifiable, on-point fact could pass, and none is available here, so the correct output is to write no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "There is no evidence that the individual burning the flag is a federal agent. Local news reports and eyewitness footage identify the person as a protester participating in demonstrations following an ICE shooting in Minneapolis. https://www.instagram.com/reel/DTO-6ppjG52/",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (17) and notHelpfulOpinionSpeculation (15). The note asserts the burner was 'identified as a protester' but sources only an Instagram reel — an unreliable/unverifiable source that does not actually identify the masked person. It rebuts an unprovable claim (federal agent) with an equally unprovable counter-claim (definitely a protester), which is itself speculation. The underlying identity is simply unknown, so no note should have been written.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "unverifiable",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/January_23,_2026_Minnesota_protests_against_ICE",
+      "https://abc3340.com/news/nation-world/american-flag-burns-in-the-streets-of-minneapolis-in-wake-of-ice-killing-of-a-woman-donald-trump-tim-walz-minnesota-dhs",
+      "https://en.wikipedia.org/wiki/2026_Minneapolis_ICE_shooting"
+    ],
+    "notes": "The protests and a viral flag-burning clip are real (Minneapolis, Jan 2026, after the ICE killing of Renee Good). No credible outlet identifies the masked flag-burner as a federal agent OR confirms they were 'just a protester.' The 'federal agent provocateur' angle appears only in opinion/YouTube speculation. Identity is genuinely unknown; the claim is an unfalsifiable insinuation, not a correctable fact."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "790k-impression domestic-politics clip amid contentious ICE protests; emotionally charged but the disputed point (who the masked person is) is unknowable, so it's most valuable as a no-note example teaching the bot to decline on unverifiable identity speculation rather than pick a side."
+  },
+  "difficulty": "hard"
+}

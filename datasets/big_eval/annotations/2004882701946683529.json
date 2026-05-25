@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2004882701946683529",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["conspiracy_and_viral_hoax", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "insinuation_framed_as_question",
+  "tweet_summary": "Quoting a real Megyn Kelly interview, the post relays Erika Kirk's account that at an August donor event Charlie Kirk was asked what would happen to TPUSA if he died, then asks 'isn't that a strange question to ask a healthy 31-year-old weeks before he was assassinated?' — insinuating foreknowledge and floating a link to a 'Zionist donor meeting at the Hamptons.'",
+  "why_note_decision": "No note is warranted. The factual core is accurate: Erika Kirk did describe this August donor exchange on The Megyn Kelly Show, and Charlie was indeed assassinated Sept 10, 2025. The tweet makes no false assertion of fact — it poses a rhetorical 'isn't this strange?' question (pure speculation/insinuation) and floats the Hamptons connection only as a parenthetical question ('?'), not a claim. Succession-planning questions to a founder are unremarkable. A Community Note correcting a question/insinuation is a false positive; the original note was duly rated noteNotNeeded + opinion/speculation. The disputed Owens 'Hamptons intervention' claim is real-but-contested, but the tweet doesn't actually assert it.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet states no checkable falsehood: it accurately quotes a real interview and then editorializes via a leading question. Any note 'debunking' a connection to the 'Zionist donor meeting at the Hamptons' is a false positive — the tweet only floats that as a question, and 'correcting' insinuation is not the job of a note. A note asserting the donor question is innocuous, or that Erika's account is fabricated, would also fail (unsupported speculation in the other direction). Treat as note-not-needed.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The donor question about succession was raised at an unspecified August event per Erika Kirk's account, not identified as the &quot;Zionist donor meeting at the Hamptons&quot;; that characterization stems from unverified, disputed claims by Candace Owens. https://singjupost.com/erika-kirks-interview-on-the-megyn-kelly-show-transcript/ https://factually.co/fact-checks/entertainment/candace-owens-charlie-kirk-statement-a3fd11",
+    "failure_reason": "Rated notHelpfulOpinionSpeculation (14) + notHelpfulNoteNotNeeded (12) + missingKeyPoints (14). The note corrects a connection the tweet only raises as a parenthetical question, so it argues against a strawman; the underlying post makes no false factual claim, so any note here is note-not-needed. It also wades into the contested Owens/Hamptons dispute, which itself isn't cleanly resolvable.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "accurate quote + opinion (no checkable falsehood)",
+    "sources_checked": [
+      "https://www.ibtimes.co.uk/erika-kirk-claims-donors-discussed-charlies-replacement-weeks-before-he-died-1766395",
+      "https://www.megynkelly.com/2025/11/24/highlights-from-megyn-kelly-interview-with-erika-kirk-on-megyn-kelly-live-tour/",
+      "https://www.axios.com/2025/09/17/charlie-kirk-israel-candace-owens-ackman"
+    ],
+    "notes": "Erika Kirk genuinely described the August donor succession exchange on The Megyn Kelly Show; Charlie was assassinated Sept 10, 2025. The 'Hamptons intervention' is a separate, disputed Candace Owens allegation (Ackman and TPUSA staff deny coercion; Owens produced no contract). The tweet asserts none of this as fact — it insinuates via a question. Nothing here is a correctable factual claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Assassination-conspiracy insinuation around a prominent political figure feeds polarization, but the tweet itself asserts no falsehood, so a note adds little and risks looking partisan — useful mainly as a false-positive trap."
+  },
+  "difficulty": "hard"
+}

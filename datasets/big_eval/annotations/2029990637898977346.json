@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2029990637898977346",
+  "role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quote-tweet amused at a cameraman who 'didn't move an inch' as a missile flew at him, amplifying a quoted video framed as a March 2026 Iranian ballistic-missile impact at Saudi Arabia's Prince Sultan Air Base near US troops.",
+  "why_note_decision": "A note is warranted: the underlying viral video is reused old footage being passed off as a current war event during the March 2026 Iran-Saudi strikes. Full Fact, PolitiFact and AFP all confirm the clip is the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port, not any 2026 Saudi strike; commenters on the quoted post ('This is an old video and NOT in Saudi Arabia') flag it too. Context as of the 6 Mar tweet date: Iran did fire missiles toward Prince Sultan Air Base but Saudi defenses intercepted them with no impact that day (a separate later strike ~14/27 Mar damaged US aircraft).",
+  "judge_guidance": "PASS only if the note (a) tells the reader the video does NOT show a 2026 Iranian missile impact at Prince Sultan Air Base, and (b) identifies the footage as old/recycled (the July 2024 Israeli airstrike on Yemen's Hodeidah port) OR otherwise establishes it is misattributed older footage, backed by a verifiable fact-check (Full Fact / PolitiFact / AFP). A passing note may add that the 6 Mar 2026 missiles fired toward the base were intercepted by Saudi defenses with no ground impact, but MUST NOT assert as flat fact that 'no Iranian missile ever hit the base' (a later strike did damage US aircraft) and MUST NOT merely concede the Prince-Sultan framing while only noting interception. FAIL if the note repeats the false 'this clip shows the Saudi base being hit' premise, cites only sources about a different clip, or makes unverifiable absolute claims that aged into being incorrect.",
+  "reference_note": "This is old footage, not a 2026 Iranian strike on Saudi Arabia. Fact-checkers identified it as the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port. Iran did fire missiles toward Prince Sultan Air Base on March 6, 2026, but Saudi defenses intercepted them with no impact on the base. https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.politifact.com/factchecks/2026/mar/04/tweets/iran-strikes-airbase-yemen-explosion/",
+  "original_unhelpful_note": {
+    "text": "This video shows an Israeli airstrike on Yemen's Hodeida port from July 2024, not a 2026 Iranian missile impact at Saudi Arabia's Prince Sultan Airbase. Saudi defenses intercepted the missiles with no reported ground impacts.    https://factcheck.afp.com/doc.afp.com.99J43G3  https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false  https://www.arabnews.com/node/2635432/saudi-arabia",
+    "failure_reason": "Rated notHelpfulIncorrect (9), with notHelpfulIrrelevantSources (6) and notHelpfulNoteNotNeeded (8). The video identification (old Yemen footage) is actually correct and well-sourced. The note was likely flagged 'incorrect' on its second, absolute clause 'no reported ground impacts' — in the fog of the active war, real later strikes did damage US aircraft at the base, so the blanket impact claim was contested by raters even though it held for the specific 6 Mar interception. The note tried to make two claims (old video + interception outcome) and the weaker second claim sank it.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false/",
+      "https://www.politifact.com/factchecks/2026/mar/04/tweets/iran-strikes-airbase-yemen-explosion/",
+      "https://www.arabnews.com/node/2635432/saudi-arabia",
+      "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Saudi_Arabia"
+    ],
+    "notes": "Full Fact (3 Mar) and PolitiFact (4 Mar) both confirm the viral clip is the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port, not a 2026 Saudi strike. On 6 Mar 2026 Saudi MoD intercepted/destroyed three ballistic missiles fired toward Prince Sultan Air Base with no impact reported that day. A separate later Iranian strike (~14/27 Mar) damaged US KC-135/E-3 aircraft at the base — after this tweet — which is why an absolute 'no impacts' framing aged poorly."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "3.5M impressions on a quote-tweet amplifying recycled war footage during an active Iran-Saudi-US conflict; correcting fog-of-war misattribution reduces escalation-fueling misinformation, an EA/progress-relevant harm."
+  },
+  "difficulty": "hard"
+}

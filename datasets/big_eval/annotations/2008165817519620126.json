@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2008165817519620126",
+  "role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "manipulated_or_fabricated_evidence"],
+  "category_fit": "partial",
+  "suggested_category": "ai_colorized_historical_footage",
+  "tweet_summary": "A post captioned 'The train to Auschwitz, 1942' shares emotive color footage of Jews boarding deportation trains, presenting it as authentic 1942 color film.",
+  "why_note_decision": "The footage is misattributed on two counts and warrants a note: (1) it is the famous Werner Breslauer film shot at the Kamp WESTERBORK transit camp in the Netherlands on MAY 19, 1944 (the deportees were bound for Auschwitz, but this is Westerbork, not Auschwitz, and not 1942); (2) it is NOT original color film — the Nazis filmed in black and white; this is a modern AI colorization. The original note correctly flags the colorization but MISSES the larger misattribution (wrong camp, wrong country, wrong year), which is the key context a reader needs. So a better note is warranted.",
+  "judge_guidance": "A correct note must add the KEY MISSING context the original omitted: the footage is the Werner Breslauer film of a deportation from the Westerbork transit camp in the Netherlands on May 19, 1944 (not Auschwitz, not 1942) — the deportees were en route to Auschwitz. It must ALSO note the footage was originally black-and-white and has been digitally/AI-colorized (not authentic 1942 color). PASS requires BOTH the Westerbork-1944 correction AND the colorization point. FAIL if, like the original, the note only addresses colorization and leaves the false 'Auschwitz 1942' attribution uncorrected, or if it wrongly claims the people were not headed to Auschwitz. Keep the tone respectful — this is genuine Holocaust footage, not a fabrication.",
+  "reference_note": "This is authentic Holocaust footage but misdated and mislabeled. It is Werner Breslauer's film of a deportation from the Westerbork transit camp in the Netherlands on 19 May 1944 (the people were being deported toward Auschwitz), not footage of Auschwitz in 1942. The Nazis filmed in black and white; this version has been digitally/AI-colorized. https://perspectives.ushmm.org/item/werner-breslauer-westerbork-deportation-footage https://en.wikipedia.org/wiki/Holocaust_trains",
+  "original_unhelpful_note": {
+    "text": "This footage is not original 1942 color film. The Nazis filmed in black and white only. Any color footage is modern digital colorization of archival footage, not authentic 1942 filming. https://era.org.uk/streaming-service-resource/auschwitz-untold-in-colour/",
+    "failure_reason": "Addresses only the colorization point and leaves the bigger misattribution uncorrected: this is Westerbork (Netherlands), May 1944 footage, not Auschwitz 1942. Raters flagged MissingKeyPoints (57) and NoteNotNeeded (42).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misattributed",
+    "sources_checked": [
+      "https://perspectives.ushmm.org/item/werner-breslauer-westerbork-deportation-footage",
+      "https://en.wikipedia.org/wiki/Holocaust_trains",
+      "https://archive.org/details/de-oldify-wwii-kamp-westerbork-audio-1080p-s-ai-p-3-1944"
+    ],
+    "notes": "Breslauer's Westerbork footage, 19 May 1944, deportation toward Auschwitz; includes the iconic Settela Steinbach shot. Original B&W, AI/digitally colorized. Tweet's 'Auschwitz, 1942' is wrong on camp and year; AI media descriptor correctly read 'KAMP WESTERB' on screen."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.7M views; Holocaust-memory accuracy matters (mislabeling fuels both denialist nitpicking and misinformation). High institutional-trust / historical-record value."
+  },
+  "difficulty": "hard"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2030385230893494719",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "vague_clickbait_no_checkable_claim",
+  "tweet_summary": "Posts a nighttime video of a bright object streaking over a city skyline (described as an Iron Dome interceptor/rocket) with the caption 'Epstein Media won't show you this' — implying suppressed footage without stating what it depicts or when.",
+  "why_note_decision": "The tweet makes no explicit, checkable factual claim: it gives no date, location, or event, only the vague insinuation that media are hiding it. The video plausibly shows a real Iron Dome malfunction (such incidents are documented across 2023-2025), so it is not fabricated. The original note asserted a specific origin ('a 2025 or earlier incident') it could only hedge as 'likely' and could not verify against this exact clip. With no falsifiable claim to correct and no reliable identification of the clip, a note is not warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note (or only flags genuine uncertainty without asserting an unverified origin). The caption 'Epstein Media won't show you this' is vague insinuation, not a checkable claim — no date, place, or event is asserted, and the footage itself appears to be a real (if unidentified) air-defense malfunction. A note that confidently pins the clip to a specific past incident (as the original did, hedged 'likely') is a FALSE POSITIVE here because that origin cannot be reliably verified and the tweet never claimed a specific date to begin with. Do not reward asserting an unverifiable source.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows an Israeli air defense missile malfunction (likely from a 2025 or earlier incident), not current March 2026 events vs Iran. Similar older clips recirculate online. https://www.timesofisrael.com/liveblog_entry/technical-error-caused-iron-dome-to-malfunction-earlier-this-week-says-military/ https://www.aljazeera.com/video/newsfeed/2023/11/6/video-of-israels-iron-dome-missile-malfunctioning https://www.reddit.com/r/CombatFootage/comments/1ld5r9n/air_defense_system_misfiring_in_israel17jun2025",
+    "failure_reason": "Opinion/speculation + irrelevant sources: the note asserts the clip is old ('likely from a 2025 or earlier incident') but cannot identify this specific video, and its cited examples are different malfunction clips, not the one posted. It corrects a date claim the tweet never explicitly made, so raters tagged it opinionSpeculation/irrelevantSources.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "No checkable claim: vague clickbait caption; video shows a plausible-but-unidentified Iron Dome malfunction. Cannot verify this specific clip's date/origin.",
+    "sources_checked": [
+      "https://www.timesofisrael.com/liveblog_entry/idf-probing-possible-interceptor-missile-misfire/",
+      "https://www.aljazeera.com/video/newsfeed/2023/11/6/video-of-israels-iron-dome-missile-malfunctioning"
+    ],
+    "notes": "Many Iron Dome malfunction videos (2023, 2024, 2025) recirculate online. The tweet states no date/event; cannot match this exact clip to a specific incident, so any origin claim would be unverified."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "531K impressions but no concrete misinformation claim — mostly jokes in replies; a note risks asserting an unverifiable origin, so the public-interest value of correcting is low."
+  },
+  "difficulty": "hard"
+}

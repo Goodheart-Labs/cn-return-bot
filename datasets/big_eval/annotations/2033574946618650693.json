@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2033574946618650693",
+  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims Netanyahu 'today has missed his 7th straight security cabinet meeting' with everyone else present, asking 'Where the hell is Bibi?' - fueling viral 'Netanyahu is dead/missing' conspiracy theories (replies say 'He is no more').",
+  "why_note_decision": "The tweet feeds a viral death/disappearance conspiracy that is checkable and demonstrably wrong. The specific '7th straight' figure is unverified - reports vary (some cite a single first absence around March 14, others a running count) - and the PMO denied the death rumors. Crucially, Netanyahu appeared publicly in video on March 15-16 2026 (mocking the conspiracy, mingling with the public), so the 'where is Bibi / he's gone' framing is false. A note is warranted to debunk the implied conspiracy.",
+  "judge_guidance": "A correct note must rebut the death/disappearance conspiracy the tweet is feeding: Netanyahu was alive and appeared in public video around March 15-16 2026 (publicly mocking the rumors), and the PMO denied claims he was dead/missing. It should also flag that the precise '7 consecutive missed meetings' figure is unverified/disputed - some reports describe only a single recent absence. PASS only if the note cites reliable sourcing (e.g. Times of Israel coverage of the public-appearance videos) and clearly establishes Netanyahu is alive/active. FAIL if it simply repeats the unverified '7 straight' count as fact, if it argumentatively speculates about his whereabouts, or if it relies on an unreliable source (the original's failure was being tagged SourcesMissingOrUnreliable - prefer Times of Israel/AP over the Palestine Chronicle as the lead source).",
+  "reference_note": "Netanyahu is not missing or dead: he appeared in public video on March 15-16 2026, including a clip mocking the online conspiracy theories, and his office denied claims of his death. The 'seven consecutive' missed-meeting figure is unverified - reports vary, with some describing only a single recent absence. https://www.timesofisrael.com/in-video-netanyahu-mocks-conspiracy-theories-about-his-death/ https://www.timesofisrael.com/liveblog_entry/netanyahu-mingles-with-public-in-2nd-video-after-conspiracy-theories-about-his-death/",
+  "original_unhelpful_note": {
+    "text": "No reliable sources confirm Netanyahu missed a security cabinet meeting on March 16, 2026, or 7 consecutive ones. Some report a single absence on March 14 as the first. Videos show him active on March 15-16.    https://www.palestinechronicle.com/fact-check-where-is-netanyahu-and-why-are-questions-spreading-online    https://www.timesofisrael.com/in-video-netanyahu-mocks-conspiracy-theories-about-his-death    https://www.timesofisrael.com/liveblog_entry/netanyahu-mingles-with-public-in-2nd-video-after-conspiracy-theories-about-his-death",
+    "failure_reason": "Sources missing/unreliable: the note's substance is largely correct but it leads with the Palestine Chronicle (a source many raters distrust) and was tagged SourcesMissingOrUnreliable (22) and Incorrect (15). Leading with Times of Israel and tightening the focus on the debunked death conspiracy would strengthen it.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "death/missing conspiracy FALSE; '7 straight' figure unverified",
+    "sources_checked": [
+      "https://www.timesofisrael.com/in-video-netanyahu-mocks-conspiracy-theories-about-his-death/",
+      "https://www.ibtimes.co.uk/benjamin-netanyahu-alive-israel-pm-misses-security-cabinet-meeting-14th-time-row-1786597",
+      "https://www.palestinechronicle.com/fact-check-where-is-netanyahu-and-why-are-questions-spreading-online/"
+    ],
+    "notes": "Netanyahu appeared in public video on March 15-16 2026 and his office denied death rumors. The exact number of missed meetings is reported inconsistently (single absence vs. running counts of 14), so the tweet's '7th straight' is unverified."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "High-reach (5.1M views) wartime conspiracy about a head of state during Israel-Iran escalation; debunking false 'dead leader' rumors matters for geopolitical-stability and information-integrity reasons."
+  },
+  "difficulty": "medium"
+}

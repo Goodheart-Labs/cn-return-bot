@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2013275340064395642",
+  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "emotional_video_miscontextualized_as_war_casualty",
+  "tweet_summary": "A large OSINT account shares a video of a man crying alone in an office/classroom 'said to be from Iran,' implying many of his students died (suggesting war/conflict casualties).",
+  "why_note_decision": "A note is warranted: the video is real but miscontextualized. It shows a Shabestar (Iran) teacher, Rahim Nasrallahi, weeping over the death of ONE student (Aydın), an event from around December 2025 unrelated to war casualties — not a classroom emptied by conflict deaths. Iranian news (Rokna) and a corroborating commenter (@Apuntes_, with the same Instagram reel) confirm this. The tweet's 'many of his students may no longer be alive' framing is the misleading element. The original note had the right substance but was rated sourcesMissingOrUnreliable because it leaned on a long Persian-language Rokna URL plus an Instagram reel — sources raters found hard to verify/unreliable.",
+  "judge_guidance": "PASS only if the note establishes that this video is miscontextualized — it shows an Iranian (Shabestar) teacher grieving the death of a SINGLE student (an ordinary, non-war death, ~Dec 2025), NOT a classroom of students killed in conflict — and backs it with a credible, accessible source. The note must AVOID the original's failure of relying solely on a hard-to-verify Persian URL + an Instagram reel; it should cite a clearer source or at minimum present the provenance plainly (Iranian news coverage of the teacher Rahim Nasrallahi grieving his student Aydın). FAIL if it endorses the war-casualty framing, claims the video is fake/AI (it is real), or offers no provenance.",
+  "reference_note": "This video is real but miscontextualized. It shows a teacher in Shabestar, Iran weeping after learning of the death of a single student (Aydın), an incident from around December 2025 unrelated to the war — not a classroom emptied by conflict. Iranian news outlets and the original poster documented the teacher's grief over that one student. https://www.rokna.net/video/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%AE%D8%A8%D8%A7%D8%B1-%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9%DB%8C-95/1192062",
+  "original_unhelpful_note": {
+    "text": "The video from December 2025 shows a teacher in Shabestar, Iran, grieving one student who died accidentally at home, not multiple students amid recent conflict. https://www.rokna.net/video/... https://www.instagram.com/reels/DSx9TGyjeS8/",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (dominant), very low volume (8). The substance is correct (single Dec-2025 student death, not war casualties), but it relies on a long Persian-language Rokna link and an Instagram reel — sources raters treated as unreliable/hard to verify. The fix is clearer/more accessible sourcing, not a different verdict.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading (real video, false war-casualty context)",
+    "sources_checked": [
+      "https://www.rokna.net/video/%D8%A8%D8%AE%D8%B4-%D8%A7%D8%AE%D8%A8%D8%A7%D8%B1-%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9%DB%8C-95/1192062",
+      "https://www.facebook.com/hamava/videos/an-iranian-teacher-crying-after-learning-that-his-students-were-killedwhen-a-tea/1184685023818716/"
+    ],
+    "notes": "Iranian coverage names the teacher Rahim Nasrallahi (Shabestar) grieving the death of his student Aydın Tarudizade Moghaddam — a single student, ~Dec 2025, not war casualties. The tweet's 'many of his students may no longer be alive' is the miscontextualization. A commenter (@Apuntes_) independently corrected it with the same reel. Note's verdict is right; only its sourcing presentation was weak."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Emotionally charged war-casualty miscontextualization from a 1.4M-follower OSINT account fuels conflict narratives with a false premise; correcting reduces emotional war disinformation."
+  },
+  "difficulty": "medium"
+}

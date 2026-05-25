@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2035275294421266535",
+  "role": "helpful_reference",
+  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "The post asks 'Is Netanyahu d£ad?' and claims a heavily-drugged Sara Netanyahu, traumatized by her husband's death, attended a Jerusalem Magistrate's Court hearing via Zoom 'a few days ago,' over a Zoom clip of a blonde woman.",
+  "why_note_decision": "A note is warranted and the original note is good. Netanyahu is alive (debunked March 2026 death hoax; proof-of-life videos), and the Zoom clip is an OLD video from a Nov 3, 2020 psychology conference — not a recent court hearing and not evidence of any 'trauma over her husband's death.' Fact-checks (CyberPeace and the talhagin source the note cites) confirm the 2020 origin. This note correctly debunks BOTH the death claim and the misattributed video, which is why I am reclassifying it from a failure to a helpful reference. (Its low NOT_HELPFUL rating volume of 7 makes the status weak/noisy.)",
+  "judge_guidance": "PASS only if the note establishes (1) Netanyahu is alive (death rumor debunked), AND (2) the Zoom video is OLD — it dates to a 2020 psychology/Zoom conference and is NOT a recent court hearing showing a drugged or grieving Sara Netanyahu. Both prongs are required; a note that only says 'Netanyahu is alive' but leaves the misattributed video unaddressed is incomplete. A high-quality fact-check or provenance source (CyberPeace, AFP, or the 2020 original) should back the video claim. FAIL if it endorses the death claim, accepts the video as recent, or speculates about Sara's condition.",
+  "reference_note": "Benjamin Netanyahu is alive; officials denied recent death reports and he made public appearances https://www.newsweek.com/benjamin-netanyahu-alive-latest-update-israel-six-finger-video-11679702 The Zoom clip dates to Nov 3, 2020 from a psychology convention and does not show Sara Netanyahu or a court hearing https://x.com/talhagin/status/2035291280725475513",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false (Netanyahu alive; Zoom video is from 2020)",
+    "sources_checked": [
+      "https://cyberpeace.org/resources/blogs/fact-check-old-video-shared-to-fuel-netanyahu-death-rumours",
+      "https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15",
+      "https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987"
+    ],
+    "notes": "Netanyahu is alive (March 2026 death hoax debunked). The Zoom clip has been online since Nov 2020 (a psychological conference), not a recent Jerusalem court hearing; CyberPeace traced it to a Nov 4, 2020 Facebook post. The 'drugged / traumatized by husband's death' framing is fabricated. The original note nails both prongs and cites the talhagin provenance tweet."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Part of the high-stakes Netanyahu death-hoax wave; this variant adds a misattributed-media smear of a public figure. Correcting reinforces media provenance literacy during wartime."
+  },
+  "difficulty": "medium"
+}

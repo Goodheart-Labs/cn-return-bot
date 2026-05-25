@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2016313026161299803",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "partisan_rhetorical_comparison",
+  "tweet_summary": "A MAGA commentator posts two portraits with the caption 'The Left said his name over and over again. The Left never said her name' -- a partisan rhetorical contrast (Alex Pretti, killed by federal agents, vs a female crime victim whose name the right amplified).",
+  "why_note_decision": "This is subjective political framing, not a checkable factual claim. 'The Left said his name / never said her name' is a rhetorical generalization about media/movement attention that cannot be cleanly verified or falsified -- both figures were widely named by their respective sides. There is no specific false fact to correct, so no note is warranted. The original note ('hundreds chanted Alex Pretti's name at a vigil') is true but answers a strawman: it neither rebuts nor engages the tweet's actual opinion, and many raters tagged it note-not-needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a partisan opinion/framing ('the Left said his name... never said her name') with no specific, checkable factual claim -- it is a rhetorical generalization about attention, not a falsifiable fact. Any note is a false positive. FAIL especially a note that argues over whether one side 'said' either victim's name or that quotes vigil/chant facts (e.g. 'hundreds chanted Alex Pretti's name') -- that engages a subjective frame, does not correct any false fact, and repeats the original note's strawman. Do not have the bot adjudicate which side cared more.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Hundreds of protesters chanted Alex Pretti's name during a vigil following his death. This article from a student publication details the event and the chants used. https://www.psucollegian.com/news/people-s-defense-front-scds-hold-vigil-protest-to-honor-alex-pretti/article_cd64bf2f-ed80-4bbd-a9a8-959b362223c3.html",
+    "failure_reason": "Answers a strawman: it documents a vigil chanting Pretti's name, but the tweet is a subjective comparison about which 'side' amplified which name. It corrects no false fact and treats a partisan opinion as a checkable claim; raters overwhelmingly tagged note-not-needed/missing key points.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "opinion_not_falsifiable",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Killing_of_Alex_Pretti",
+      "https://www.wsna.org/news/2026/alex-pretti-killing-prompts-protests-and-memorials"
+    ],
+    "notes": "Alex Pretti (ICU nurse) was killed by federal agents Jan 24, 2026 and was widely mourned by the left; the contrasted female victim was amplified by the right. The tweet's 'said his name / never said her name' is a rhetorical attention claim, not a discrete fact. No correctable falsehood."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "13M views on a politically charged death; but it is opinion -- a note would be the bot wading into partisan framing, exactly the false positive to avoid."
+  },
+  "difficulty": "medium"
+}

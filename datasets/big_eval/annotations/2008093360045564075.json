@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2008093360045564075",
+  "role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A journalist posts a two-photo composite (a soldier holding a pistol to a young Black man's head; a soldier kicking a Black child) captioned 'This is how the US wants to bring freedom to Venezuela,' implying US forces abusing Venezuelans.",
+  "why_note_decision": "The images are real but grossly miscontextualized: they are from the 1993 UN peacekeeping mission in Somalia, NOT Venezuela and NOT US soldiers. As replies and historical records confirm, these depict the 'Somalia Affair' abuses by CANADIAN (Airborne Regiment, torture/killing of teenager Shidane Arone) and BELGIAN paratroopers. So a note is clearly warranted. The original note's MissingKeyPoints/Incorrect failure: it mislabels the events as the 'Battle of Mogadishu' and frames the soldiers as engaged in '1993 operations against Somali militia' — implying US Black Hawk Down forces — when the perpetrators were Canadian and Belgian peacekeepers committing documented abuses against civilians. The country/era (Somalia, 1993) is right; the actors and the specific incident are wrong.",
+  "judge_guidance": "A correct note must establish that (1) the photos are NOT from Venezuela and do NOT show US soldiers, and (2) they depict 1993 UN peacekeeping abuses in Somalia — the top image associated with the Canadian 'Somalia Affair' (Canadian Airborne Regiment) and the bottom with Belgian paratroopers. PASS only if it correctly attributes the soldiers as Canadian/Belgian peacekeepers in Somalia and disclaims the Venezuela/US framing. FAIL if it repeats the original note's error of calling it the 'Battle of Mogadishu' or implying these were US forces / US operations against militia — that misattribution is the specific failure to avoid. Saying merely 'old Somalia footage' without correcting the US-soldier implication is insufficient given the tweet's core claim is about US forces.",
+  "reference_note": "These photos are not from Venezuela and do not show US soldiers. They are from the 1993 UN peacekeeping mission in Somalia: the abuses were committed by Canadian (the 'Somalia Affair', Canadian Airborne Regiment) and Belgian paratroopers against Somali civilians. https://en.wikipedia.org/wiki/Somalia_affair https://www.thecanadianencyclopedia.ca/en/article/somalia-affair",
+  "original_unhelpful_note": {"text": "Images show 1990s Battle of Mogadishu in Somalia, not Venezuela. Soldiers wear desert camouflage from 1993 operations against Somali militia, documented in historical records of that conflict. https://www.armytimes.com/news/your-army/2023/11/06/forgotten-bastards-battle-of-mogadishus-unsung-heroes-await-honors/", "failure_reason": "Incorrect/MissingKeyPoints: wrongly labels the scenes as the 'Battle of Mogadishu' and '1993 operations against Somali militia' (which evokes US Black Hawk Down forces). The actual perpetrators were Canadian and Belgian UN peacekeepers abusing civilians (the Somalia Affair), and it cites an irrelevant US-Army article.", "original_status": "CURRENTLY_RATED_NOT_HELPFUL"},
+  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "Images real but miscontextualized: 1993 Somalia peacekeeping abuses by Canadian and Belgian soldiers, not US troops in Venezuela.", "sources_checked": ["https://en.wikipedia.org/wiki/Somalia_affair", "https://www.thecanadianencyclopedia.ca/en/article/somalia-affair", "https://www.vice.com/en/article/remembering-the-somalia-affair-canadas-forgotten-abu-ghraib-moment/"], "notes": "Replies independently identify the soldiers as Canadian (top) and Belgian (bottom); matches documented Somalia Affair / Belgian paratrooper photos."},
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "1.8M impressions; correcting fabricated atrocity attribution during a tense Venezuela-US period reduces inflammatory geopolitical misinformation."},
+  "difficulty": "hard"
+}

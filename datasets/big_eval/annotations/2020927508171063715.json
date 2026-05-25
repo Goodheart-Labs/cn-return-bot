@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2020927508171063715",
+  "role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post celebrates a video as 'Stealing from a Turkish man was a bad idea for that immigrant... he whooped him', framing a beating as deserved justice against an immigrant thief. Video OCR shows 'SECURITY / BEYOGLU / SON DAKIKA' and a Turkish-flag watermark.",
+  "why_note_decision": "A note is warranted because the celebratory 'immigrant thief got justly whooped' framing omits decisive context: the most-supported identification (Grok, Middle East 24, multiple commenters, the Nov-2025 origin of the clip, and the 'BEYOGLU' OCR) is the November 13, 2025 Beyoğlu, Istanbul assault by Turkish actor Bahadır Ünlü on his IRANIAN MIGRANT EMPLOYEE İsmail N. — beaten with a baseball bat over alleged accounting irregularities. Ünlü was ARRESTED and charged with intentional wounding and his (unlicensed) restaurant was sealed. So the 'beating' was a crime the assailant was jailed for, and theft was only the attacker's unproven accusation.",
+  "judge_guidance": "PASS only if the note supplies the missing context that reframes the assault as a crime: identify the video as the Nov 13, 2025 Beyoğlu, Istanbul incident where actor Bahadır Ünlü beat his Iranian migrant employee İsmail N. (with a baseball bat) over alleged theft/accounting irregularities, that Ünlü was ARRESTED and charged with intentional wounding, and that 'theft' is only the assailant's unproven claim — sourced reliably (Al Bawaba / Haberler / AFP/Turkish press). CRITICAL FAILURES TO AVOID (the original note's mistakes): do NOT identify this as a 'December 2020 Bursa business owner fighting off a thief', and do NOT assert 'no reports indicate the thief was an immigrant' — the victim was in fact an Iranian migrant, and the date/location are wrong. Because the media identification is uncertain from the AI description alone, a note that confidently asserts the WRONG incident should FAIL; a note must ground its ID in the BEYOGLU/Ünlü evidence. A note that merely repeats the tweet's 'immigrant thief beaten' framing also fails.",
+  "reference_note": "This video shows the Nov 13, 2025 assault in Beyoğlu, Istanbul, in which Turkish actor Bahadır Ünlü beat his Iranian employee İsmail N. with a baseball bat over alleged accounting theft. Ünlü was arrested and charged with intentional wounding; his restaurant was sealed. The theft is the attacker's unproven claim. https://www.albawaba.com/entertainment/violent-attack-video-sparks-outrage-1616798 https://en.haberler.com/he-had-recorded-the-moments-when-he-beat-his-19256091/",
+  "original_unhelpful_note": {
+    "text": "This video is from a December 2020 incident in Bursa, Turkey, where a business owner fought off a thief caught robbing his establishment. No reports indicate the thief was an immigrant.    https://en.yenisafak.com/video-gallery/life/fight-club-brawl-breaks-out-between-thief-and-business-owner-in-turkey-2205578  https://www.facebook.com/YeniSafakEnglish/videos/848519785911212",
+    "failure_reason": "Rated notHelpfulIncorrect (20) plus heavy MissingKeyPoints (14), IrrelevantSources (10), NoteNotNeeded (13). The note appears to misidentify the clip as a Dec 2020 Bursa 'business owner vs thief' brawl, while the OCR ('BEYOGLU'), the clip's Nov 2025 origin, and converging community/Grok identification point to the Nov 13 2025 Beyoğlu, Istanbul case of actor Bahadır Ünlü beating his Iranian migrant employee with a bat (Ünlü arrested for intentional wounding). The note's flat 'no reports indicate the thief was an immigrant' is the opposite of the truth (the victim was an Iranian migrant), which is why raters flagged it incorrect.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.albawaba.com/entertainment/violent-attack-video-sparks-outrage-1616798",
+      "https://en.haberler.com/he-had-recorded-the-moments-when-he-beat-his-19256091/",
+      "https://x.com/grok/status/2021189361589473355",
+      "https://en.yenisafak.com/video-gallery/life/fight-club-brawl-breaks-out-between-thief-and-business-owner-in-turkey-2205578"
+    ],
+    "notes": "Best-supported ID: Nov 13, 2025 Beyoğlu (Tomtom), Istanbul — actor/influencer Bahadır Ünlü assaulted his Iranian migrant employee İsmail N. with punches, kicks and a baseball bat over alleged accounting irregularities, filmed it himself; arrested and charged with intentional wounding, restaurant sealed (operated without a license). This matches the 'BEYOGLU/SON DAKIKA' OCR and Turkish-flag watermark and the Nov-2025 clip origin. The note's 'Dec 2020 Bursa, no immigrant' framing is unsupported. CAVEAT: the AI media description (a 'SECURITY' guard removing a man) does not perfectly match a bat-beating, so the exact clip ID carries residual uncertainty — but the evidence strongly favors the Ünlü/Beyoğlu incident over the note's Bursa-2020 claim, and the victim being a migrant contradicts the note either way."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "639k impressions on anti-immigrant content recasting a jailed assailant's brutal bat attack as deserved justice against a migrant 'thief'; correcting dehumanizing misframing of violence against migrants has real civic-harm relevance."
+  },
+  "difficulty": "hard"
+}

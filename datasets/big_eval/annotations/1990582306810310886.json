@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1990582306810310886",
+  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A pundit posts a video labeled 'Mental Illness Crisis' of a masked person playing with food, captioned 'SIMPLE: If you're a furry, you are mentally ill. There is no other way to look at it.'",
+  "why_note_decision": "The tweet makes a checkable, categorical health claim ('if you're a furry, you are mentally ill') stated as fact, not opinion. Peer-reviewed research (Furscience / IARP) finds furries do not have higher rates of mental illness than comparable populations and that being a furry is not a recognized disorder in the DSM/ICD. The claim is false misinformation about a stigmatized group, so a note is warranted. Separately, commenters and the media description indicate the video depicts BDSM 'pup play,' not a furry - but that media mislabel does not change the warrant for correcting the textual generalization.",
+  "judge_guidance": "A correct note must establish that being a furry is NOT a mental illness: it is not a recognized disorder in diagnostic manuals (DSM-5 / ICD-11), and peer-reviewed research finds furries do not show higher rates of mental illness than comparable age-matched populations. PASS only if the note rebuts the categorical 'all furries are mentally ill' claim with a credible, verifiable source. Strongest notes also avoid the original's two weaknesses: (1) cite at least one source raters won't dismiss as advocacy - prefer peer-reviewed/secondary coverage of the IARP/Furscience studies, and ideally note the DSM/ICD point with an independent reference - since the original was tagged SourcesMissingOrUnreliable (30) for relying solely on furscience.com; (2) stay neutral and non-argumentative (it was also tagged ArgumentativeOrBiased 15). A note pointing out the video shows BDSM pup play rather than a furry is acceptable as a secondary correction but is not required. FAIL if it merely calls the tweet 'opinion' without the factual rebuttal, or repeats the claim that furries are mentally ill.",
+  "reference_note": "Being a furry is not classified as a mental illness in diagnostic manuals such as the DSM-5 or ICD-11. Peer-reviewed research from the International Anthropomorphic Research Project finds furries are not more likely to have mental-health conditions than comparable age groups. (Note: the masked individual shown is engaged in BDSM 'pup play,' which is distinct from the furry fandom.)",
+  "original_unhelpful_note": {
+    "text": "Scientific research contradicts the claim that all furries are mentally ill. Studies show mental illness prevalence among furries isn't significantly higher than comparable age groups. Being a furry isn't recognized as a mental disorder in diagnostic manuals. https://furscience.com/research-findings/wellness-dysfunction/11-2-psychological-conditions/",
+    "failure_reason": "Sources missing/unreliable + argumentative: the note's claims are accurate but it relies on a single advocacy-affiliated source (furscience.com) for the prevalence point and gives no independent reference for the DSM/ICD claim, so raters tagged SourcesMissingOrUnreliable (30) and ArgumentativeOrBiased (15). A stronger note would add an independent/secondary citation and stay strictly neutral.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet FALSE (categorical claim contradicted by research)",
+    "sources_checked": [
+      "https://furscience.com/research-findings/wellness-dysfunction/11-2-psychological-conditions/",
+      "https://www.researchgate.net/publication/376347770_The_Kids_are_Alright_Furry_Well-Being_and_Mental_Health",
+      "https://academia.edu/36169638"
+    ],
+    "notes": "Furscience/IARP research finds furries' anxiety, depression, and mood-disorder rates are not higher (often lower) than the general population; furry identity is not in the DSM/ICD. The shown subject is doing BDSM pup play, not furry fandom, per replies and the media description."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Stigmatizing health misinformation about a subculture; modest world-stakes but correcting dehumanizing 'X group is mentally ill' framing has mild value for honest public discourse."
+  },
+  "difficulty": "medium"
+}

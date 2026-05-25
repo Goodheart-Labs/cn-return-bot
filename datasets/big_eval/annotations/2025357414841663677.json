@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2025357414841663677",
+  "role": "unhelpful_notHelpfulOpinionSpeculation",
+  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "conspiracy_and_viral_hoax", "ai_generated_or_manipulated_media"],
+  "category_fit": "partial",
+  "suggested_category": "ai_generated_or_manipulated_media",
+  "tweet_summary": "Pushes the theory that a viral video shows Ghislaine Maxwell walking free (in Quebec), now bolstered because the man with her resembles her brother Ian Maxwell — implying she is not actually incarcerated.",
+  "why_note_decision": "The video is a confirmed AI face-swap: a 19-year-old in Quebec City told CBC News they used a face-swap website, and the 'pizza' line is a Pizzagate in-joke. Maxwell remains incarcerated at FPC Bryan in Texas (eligible for release ~2037). The tweet promotes a false 'she's walking free' conspiracy that a reader benefits from having debunked, so a note is warranted.",
+  "judge_guidance": "PASS only if the note states the decisive, now-confirmed fact: the video is an AI face-swap/manipulated (the creator admitted using a face-swap tool), NOT genuine footage of Maxwell. It should also confirm Maxwell remains incarcerated at FPC Bryan. It must AVOID the original note's failure of merely asserting 'there is a resemblance but it's not her' as if it were the annotator's own opinion/speculation — that hedged, source-light framing is exactly why raters tagged it opinionSpeculation. A passing note must attribute the 'not her' conclusion to the confirmed AI-fake reporting, not present it as a personal judgment. Cite CBC/Snopes/AFP.",
+  "reference_note": "This video is a confirmed AI face-swap: the creator, a 19-year-old in Quebec City, told CBC News they digitally swapped Maxwell's face onto another person, and the 'pizza' line references the Pizzagate hoax. Ghislaine Maxwell is not walking free — she remains incarcerated at FPC Bryan in Texas serving a 20-year sentence. https://www.cbc.ca/news/canada/montreal/ai-video-quebec-city-maxwell-9.7104284 https://www.snopes.com/fact-check/video-ghislaine-maxwell-quebec/",
+  "original_unhelpful_note": {
+    "text": "This video does not show Ghislaine Maxwell or her brother Ian. While there is a resemblance, Maxwell remains incarcerated at FPC Bryan in Texas, serving a 20-year sentence. Ian Maxwell was recently interviewed in London. https://en.wikipedia.org/wiki/Ghislaine_Maxwell https://www.telegraph.co.uk/news/2026/02/20/ian-maxwell-ghislaine-family-support-epstein-andrew https://sundayguardianlive.com/world/is-ghislaine-maxwell-walking-free-in-canada-viral-video-sparks-fresh-epstein-conspiracy-claims-heres-the-truth-watch-171740",
+    "failure_reason": "Opinion/speculation: hedges with 'while there is a resemblance' and asserts 'does not show' as the note's own judgment without the decisive fact that the video is a confirmed AI face-swap admitted by its creator. The 'incarcerated' point is correct but the note reads as the annotator's opinion rather than sourced debunking, drawing opinionSpeculation tags.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: video is a confirmed AI face-swap; Maxwell remains incarcerated at FPC Bryan.",
+    "sources_checked": [
+      "https://www.cbc.ca/news/canada/montreal/ai-video-quebec-city-maxwell-9.7104284",
+      "https://www.snopes.com/fact-check/video-ghislaine-maxwell-quebec/",
+      "https://www.yahoo.com/news/articles/fake-video-ghislaine-maxwell-canada-201827120.html"
+    ],
+    "notes": "CBC: 19-year-old creator in Quebec City admitted using a face-swap website. Pizza line = Pizzagate reference. Maxwell at FPC Bryan since Aug 2025, eligible for release ~2037."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "~700K impressions on a viral AI-manipulated video feeding an Epstein conspiracy that institutions are hiding a freed Maxwell; debunking AI face-swaps that distort the justice record is high-value for epistemic integrity."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2031703202932883799",
+  "role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A video of someone throwing a kitten from a high floor, captioned 'Israelis throwing kittens off rooftops after they took over a Palestinian home and found their pets.'",
+  "why_note_decision": "The act is real but the context is fabricated. The footage is the Jan 2025 incident in Jerusalem's Pisgat Ze'ev neighborhood where a 17-year-old threw a stray kitten -- found on the street, not pets from a seized Palestinian home -- off a fifth-floor balcony; he was arrested. There was no 'taking over a Palestinian home'. A note correcting the false context is warranted. The original note has the right facts (Pisgat Ze'ev, stray kitten, not from a Palestinian home) but was rated not-helpful, likely because it reads as minimizing/argumentative in a heated thread and omits that the perpetrator was arrested.",
+  "judge_guidance": "PASS only if the note corrects the fabricated context: the footage shows a stray kitten that teens FOUND ON THE STREET in Jerusalem's Pisgat Ze'ev neighborhood being thrown from a fifth-floor balcony (Jan 2025); it was NOT pets taken from a Palestinian home that was 'taken over', and a 17-year-old was arrested. The note must rebut the 'took over a Palestinian home and found their pets' framing and should cite Israeli outlets (Times of Israel / Ynet). FAIL if it denies the cruelty happened, casts the video as fake/AI (deepfake detectors returned 0%, it is real), omits the 'stray cat, not seized pets' correction, or reads as excusing the act. Stay neutral: confirm the cruelty is real while correcting the false Gaza/home-takeover context.",
+  "reference_note": "This video shows a Jan 2025 incident in Jerusalem's Pisgat Ze'ev neighborhood: teens found a stray kitten on the street and a 17-year-old threw it off a fifth-floor balcony. It was not a pet taken from a 'Palestinian home they took over,' and the teen was arrested. https://www.timesofisrael.com/liveblog_entry/17-year-old-arrested-after-hurling-kitten-off-fifth-floor-balcony-in-jerusalem https://www.ynetnews.com/environment/article/skjk2fldyl",
+  "original_unhelpful_note": {
+    "text": "The video shows Israeli teens in Jerusalem's Pisgat Ze'ev neighborhood throwing a stray kitten they found on the street, not pets from a Palestinian home they took over. https://www.timesofisrael.com/liveblog_entry/17-year-old-arrested-after-hurling-kitten-off-fifth-floor-balcony-in-jerusalem https://www.ynetnews.com/environment/article/skjk2fldyl",
+    "failure_reason": "Facts are correct but the note omits that the perpetrator was arrested and, in a highly charged thread, reads to many raters as minimizing/argumentative rather than purely contextual; hence high notHelpfulArgumentativeOrBiased and NoteNotNeeded counts alongside MissingKeyPoints.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "real_event_false_context",
+    "sources_checked": [
+      "https://www.timesofisrael.com/liveblog_entry/17-year-old-arrested-after-hurling-kitten-off-fifth-floor-balcony-in-jerusalem/",
+      "https://www.ynetnews.com/environment/article/skjk2fldyl",
+      "https://www.timesofisrael.com/liveblog_entry/american-teens-detained-for-hurling-cat-from-fifth-story/"
+    ],
+    "notes": "Jan 2025 Pisgat Ze'ev incident; stray kitten found on the street, thrown from 5th floor, 17-year-old arrested (reports of American-Israeli teens). No connection to taking over a Palestinian home or to Gaza. Hive deepfake detector in-thread reported 0% AI, so the video itself is real."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "484k views on an inflammatory war-crime-framed clip; correcting fabricated conflict context reduces ethnic-hatred amplification (animal-welfare angle: cruelty is real and condemnable, but the false 'Palestinian home' frame is the misinfo)."
+  },
+  "difficulty": "medium"
+}

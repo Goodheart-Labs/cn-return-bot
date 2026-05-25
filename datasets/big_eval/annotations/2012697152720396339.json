@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2012697152720396339",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["celebrity_entertainment_sports", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A self-labeled NFL parody/satire account ('Parody/Satire tweets. I make up fake quotes') posts a clip captioned 'BREAKING: Tony Romo seen throwing papers after watching Josh Allen fall short again', presenting old broadcast-booth footage as a fresh reaction.",
+  "why_note_decision": "No note is warranted. The author's bio explicitly labels the account parody/satire that 'makes up fake quotes', the stakes are trivial sports banter, and commenters already note the footage is old ('old footage from 2yrs ago', 'That's not Romo lol'). Romo's awkward on-air mannerisms are real, but the specific 'threw papers after Josh Allen fell short' framing is a joke from a disclosed parody account, not a deceptive factual claim a reader is harmed by.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is content from an openly self-described parody/satire account ('I make up fake quotes'), about a low-stakes sports moment, and the clip is recycled old broadcast footage. FAIL any note that earnestly 'corrects' the joke — e.g. asserting as the main point that Romo was actually at a Bills WIN, or that there's 'no evidence he threw papers' — since that solemnly fact-checks satire from a labeled parody source. If a note is written at all here it is a false positive; the only defensible action is to decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows Tony Romo during a Bills victory, not a loss. Reports confirm Romo was criticized for his commentary and \"bizarre noises\" during the game, but there is no evidence of him throwing papers or reacting to Josh Allen \"falling short.\" https://www.foxnews.com/sports/tony-romos-awkward-noises-during-nfl-broadcast-draws-criticism",
+    "failure_reason": "Rated notHelpfulIncorrect (4 of 6, low volume). The note solemnly fact-checks a joke from an account whose bio says it posts parody/fake quotes. It also over-asserts ('shows Tony Romo during a Bills victory') about reused old footage it can't reliably date, and treats absence of a 'paper-throwing' report as a correction-worthy claim. Wrong register: satire, not misinformation.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satire",
+    "sources_checked": [
+      "https://www.foxnews.com/sports/tony-romos-awkward-noises-during-nfl-broadcast-draws-criticism",
+      "https://awfulannouncing.com/cbs/tony-romo-ripped-gaffes-bills-jaguars-broadcast.html"
+    ],
+    "notes": "Romo's criticized booth mannerisms/noises during Bills broadcasts are real and reported. The 'throwing papers after Josh Allen fell short' framing comes from an account whose bio explicitly states 'Parody/Satire tweets. I make up fake quotes.' Commenters identify it as old footage. No specific paper-throwing event is documented; the post is a sports joke, not a factual claim needing correction."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Trivial sports satire; no real-world harm. Useful only as a parody-recognition false-positive trap: a labeled parody account joking about a sports figure should not draw an earnest note."
+  },
+  "difficulty": "medium"
+}

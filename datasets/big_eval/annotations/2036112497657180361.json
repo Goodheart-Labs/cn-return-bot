@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2036112497657180361",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "gaming_tech_news",
+  "tweet_summary": "Major gaming-news account CharlieIntel (5M followers) reports 'Battlefield Hardline servers on consoles will be shut down on June 22, 2026', with the game's cover art. Replies all treat it as real, sad news.",
+  "why_note_decision": "No note is warranted; the original note is false. EA officially announced via Battlefield's official X channel (covered by GameSpot, Pure Xbox, Dot Esports, MP1st and others, ~Mar 23 2026) that Battlefield Hardline's PS4/Xbox One online servers shut down June 22, 2026, with console delisting on May 22. The CharlieIntel report is accurate. There is nothing to correct.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap. EA really did announce that Battlefield Hardline console (PS4/Xbox One) servers shut down June 22, 2026 (with delisting May 22); the announcement came from Battlefield's official channel and was widely reported by reliable gaming outlets. The tweet from CharlieIntel is accurate. Any note is a false positive. SPECIFICALLY FAIL any note claiming 'no official EA announcement exists' or that the servers remain active — that repeats the original note's error and is verifiably wrong.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No official EA announcement exists for Battlefield Hardline console servers shutting down on June 22, 2026. Servers for current-gen consoles remain active as of March 2026.    https://www.ea.com/en-gb/legal/service-updates/a-h  https://www.youtube.com/watch?v=ZUTFe-UKwVA",
+    "failure_reason": "Rated notHelpfulIncorrect (26 of 39 ratings) plus sources flags. The note is factually false: EA did officially announce the June 22, 2026 console-server shutdown (via Battlefield's official X channel, widely reported). The note 'corrected' an accurate report from a credible outlet, likely because the bot failed to find the announcement and asserted a negative ('no announcement exists') it could not verify.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.gamespot.com/articles/one-of-the-most-controversial-battlefield-games-is-shutting-down-on-consoles-soon/1100-6538954/",
+      "https://www.purexbox.com/news/2026/03/ea-announces-server-shutdown-and-delisting-plans-for-battlefield-hardline-on-xbox",
+      "https://dotesports.com/battlefield/news/battlefield-hardline-console-delist-online-service-end",
+      "https://mp1st.com/news/battlefield-hardline-console-servers-ending-june-22-removed-ps4-xbox-one-storefronts"
+    ],
+    "notes": "EA announced via Battlefield's official X account (~Mar 23 2026) that Hardline console (PS4/Xbox One) online servers shut down June 22, 2026, console versions delisted May 22; PC unaffected, single-player remains. The announcement followed the game's 11th-anniversary post. The CharlieIntel tweet is accurate; the note's 'no announcement exists / servers remain active' is wrong."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes gaming news (637k impressions). No EA/progress relevance; value is as a clean false-positive case where the bot 'corrected' a true report by asserting an unverifiable negative."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2048808660088828089",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "music_history_claim",
+  "tweet_summary": "Posted by a self-declared parody/satire account, replying to a thread about Michael Jackson and Palestine: 'He came back to the US and made a song about it. Sony records refused to release the song.' Attached images show a 'Palestine Don't Cry' graphic plus typed lyrics.",
+  "why_note_decision": "This is from an explicitly labeled parody/satire commentary account, and the underlying topic is a tangle of partial truths that makes a clean correction infeasible. MJ did write lyrics titled 'Palestine Don't Cry' (lyric sheets auctioned 2014) and it was never released by Sony - so the tweet's gist ('made a song, Sony didn't release it') is closer to true than the original note allows. The original note's own claims are contestable: it asserts 'No evidence Sony refused release' and pins the lyrics to post-Sept-1993 concerts, whereas reporting dates 'Palestine Don't Cry' to early 1993 and describes it as unreleased by Sony. The genuinely checkable error is in the second image: those lyrics ('Did God say that you could decide who will live and who will die') are from MJ's 'We've Had Enough' (recorded 1999-2000), not from a Palestine song - a point raised in the replies. Given the parody framing and that the original note made its own false assertions, a corrective note is not warranted. PASS only if the bot declines.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a parody/satire-account post about a murky music-history topic where the tweet's core gist is largely accurate: Michael Jackson did write lyrics titled 'Palestine Don't Cry' (sold at auction in 2014) and it was never released by Sony. FAIL any note that asserts 'no evidence Sony refused to release it' or that flatly denies MJ wrote such a song, because reporting supports the opposite. The only defensible correction would be the narrow media point that the typed lyrics in the second image are from MJ's separate song 'We've Had Enough,' not 'Palestine Don't Cry' - but because the post is explicitly satire and the principal claim is essentially true, even that note is NoteNotNeeded and a fresh note should FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Michael Jackson wrote lyrics for 'Palestine, Don't Cry' after his Sept 1993 Israel concerts. Allegations began Aug 1993, before that. No evidence Sony refused release (never recorded). Conspiracy claims lack evidence.    https://www.mjinnocent.com/facts/key-facts-1993-allegations  https://www.setlist.fm/setlist/michael-jackson/1993/park-hayarkon-tel-aviv-israel-33d674e9.html  https://www.juliensauctions.com/en/items/45115/michael-jackson-handwritten-lyrics",
+    "failure_reason": "Sources/accuracy: the note itself makes contestable claims. Reporting dates 'Palestine Don't Cry' to early 1993 and says Sony did not release it, contradicting the note's 'No evidence Sony refused release.' The post is also from a declared parody account, making a hard factual correction inappropriate. Low rating volume (8); tagged SourcesMissingOrUnreliable.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet gist substantially TRUE (parody account); MJ wrote unreleased 'Palestine Don't Cry'; images conflate it with 'We've Had Enough'",
+    "sources_checked": [
+      "https://www.cabaltimes.com/2025/06/09/palestine-dont-cry/",
+      "https://www.mjjcommunity.com/threads/unreleased-song-list.201077/",
+      "https://michael-jackson.fandom.com/wiki/We've_Had_Enough"
+    ],
+    "notes": "'Palestine Don't Cry' lyric sheets were auctioned in 2014; the song was written ~1993 and never released by Sony. The image with 'Did God say that you could decide' is 'We've Had Enough' (1999-2000), a different song. The posting account is explicitly parody/satire."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes celebrity/music-history trivia from a satire account; correcting it has negligible world impact and the note risks asserting its own falsehoods."
+  },
+  "difficulty": "hard"
+}

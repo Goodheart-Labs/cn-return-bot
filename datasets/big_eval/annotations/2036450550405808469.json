@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2036450550405808469",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["statistical_or_numerical_claim", "celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "corporate_business_news",
+  "tweet_summary": "HYPEX (a verified Fortnite-leaks creator) posts that Epic Games is laying off over 1,000 employees, quoting a statement blaming a Fortnite engagement downturn that started in 2025, with a Fortnite logo image.",
+  "why_note_decision": "No note is warranted: the claim is TRUE. Epic Games publicly announced layoffs of more than 1,000 employees (~20% of staff) in March 2026, attributing it to declining Fortnite engagement since 2025 and targeting $500M+ in savings. Epic's own news page ('Today's layoffs') and PBS, GeekWire, WRAL, HotHardware all confirm the figure and the rationale. The quoted text matches Epic's real 2026 statement; it was NOT 'altered from a 2023 announcement'. The note is the misinformation here, not the tweet.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet is accurate: Epic Games did announce 1,000+ layoffs in March 2026 driven by a Fortnite engagement decline. Any note asserting the layoffs are false, unannounced, or that the quote was 'altered from the 2023 layoffs' is a FALSE POSITIVE and must FAIL — that is exactly the error the original note made (it confused the real 2026 cuts with the unrelated 2023 round). A note merely adding the official link without disputing the claim is unnecessary and should also be treated as a false positive here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Epic Games has not announced layoffs of over 1,000 employees in 2026. The quoted text is altered from their actual 2023 layoff announcement. No official sources confirm this claim.    https://www.epicgames.com/site/en-US/news/layoffs-at-epic  https://www.epicgames.com/site/en-US/news",
+    "failure_reason": "Rated notHelpfulIncorrect (129 of 166). The note flatly denies a true, widely-reported event: Epic announced 1,000+ layoffs in March 2026 over Fortnite's downturn. The note hallucinated that the quote was 'altered from the 2023 announcement' and that 'no official sources confirm this' — when Epic's own 2026 news post and major outlets confirm it. Classic false positive correcting a real event.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.epicgames.com/site/en-US/news/todays-layoffs",
+      "https://www.pbs.org/newshour/economy/epic-games-lays-off-more-than-1000-employees-as-fortnite-engagement-slows",
+      "https://www.geekwire.com/2026/epic-games-layoffs-impact-82-workers-at-seattle-area-office-as-part-of-broader-cuts/",
+      "https://www.wral.com/business/epic-games-cary-layoffs-1000-500m-cost-savings-fortnite-decline-mar-2026/"
+    ],
+    "notes": "Epic Games cut 1,000+ jobs (~20% of workforce, leaving ~4,000) in March 2026, citing a Fortnite engagement decline since 2025 and targeting $500M+ in savings. Severance was 4+ months base pay. The tweet's quoted statement matches Epic's actual 2026 announcement. The original note's '2023-altered-quote' theory is false."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "8.7M-impression post on real, large-scale tech layoffs; modest world-importance but a high-traffic false-positive trap that teaches the bot not to 'correct' accurately-reported corporate news."
+  },
+  "difficulty": "easy"
+}

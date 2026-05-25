@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1994761464851120432",
+  "role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Reacting to a quoted 'Louis Vuitton' image of the Olsen twins, the poster mocks how 'old' and 'elderly' they look ('aged like fucking bananas'), treating the image as a real recent photo.",
+  "why_note_decision": "The entire premise rests on an AI-generated fake. The viral 'Louis Vuitton' image of Mary-Kate and Ashley Olsen is a confirmed AI deepfake (elongated fingers, distorted faces; LV never ran such a campaign), widely debunked, and the comments overwhelmingly say so. A note is warranted to flag the image as AI-generated. The original note instead only nitpicked their age (and got it wrong -- they were 39, not 38, as of late 2025), entirely MISSING the key point that the photo is fake.",
+  "judge_guidance": "PASS only if the note's central point is that the image is AI-generated / not a real photo of the Olsen twins (the viral 'Louis Vuitton' image is a confirmed AI deepfake; LV ran no such campaign), so the 'they aged terribly / look elderly' premise is based on a fake. FAIL if the note only argues about the twins' exact age, concedes the photo is real, or repeats the original's error that they are 38 (Mary-Kate and Ashley Olsen were born June 13, 1986, so they were 39 by late 2025 -- the quoted '39' was actually correct and the original note's '38' was wrong). The age angle is a distraction; the AI-image flag is the required key point.",
+  "reference_note": "This viral 'Louis Vuitton' image of the Olsen twins is AI-generated, not a real photo -- note the distorted hands/faces, and Louis Vuitton ran no such campaign. It does not show how Mary-Kate and Ashley Olsen actually look. https://cybernews.com/entertainment/mary-kate-ashley-olsen-deepfake-louis-vuitton/",
+  "original_unhelpful_note": {
+    "text": "The quoted tweet incorrectly states that the Olsen twins are 39 years old. Mary-Kate and Ashley Olsen were born on June 13, 1986, making them 38 years old as of 2024, not 39. https://en.wikipedia.org/wiki/Mary-Kate_and_Ashley_Olsen",
+    "failure_reason": "Missed the key point (the image is an AI deepfake) and instead nitpicked age -- and got that wrong: by the tweet's Nov 2025 date the twins were 39, so '38' is incorrect and the quoted '39' was right. Pedantic and factually off.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "ai_generated_image_misrepresented_as_real",
+    "sources_checked": [
+      "https://cybernews.com/entertainment/mary-kate-ashley-olsen-deepfake-louis-vuitton/",
+      "https://www.primetimer.com/features/is-the-mary-kate-and-ashley-olsen-louis-vuitton-ad-real-or-fake-viral-campaign-images-of-the-twins-debunked",
+      "https://en.wikipedia.org/wiki/Mary-Kate_and_Ashley_Olsen"
+    ],
+    "notes": "Image is a confirmed AI deepfake of a fake LV campaign; widely debunked. Twins born June 13, 1986 = 39 as of Nov 2025, so the original note's '38' is wrong and the quoted '39' is correct. Comments (multiple top replies) already identify the image as AI."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.7M views; low real-world stakes but a clean ai_generated_media training case where the bot must flag a deepfake rather than chase a pedantic age nitpick."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2026719854112170126",
+  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax"],
+  "category_fit": "partial",
+  "suggested_category": "viral_lifehack_misinformation",
+  "tweet_summary": "Claims that if someone with Ray-Ban (Meta) smart glasses is recording you, holding up a picture of the ISIS flag to their glasses will 'permanently ban their account almost immediately.'",
+  "why_note_decision": "Presented as genuine actionable advice (not flagged as satire) and went massively viral (7.1M impressions, 217k likes), with users genuinely testing it and reporting nothing happened. The claim is factually false: Ray-Ban Meta glasses do on-device object recognition but do not perform real-time content moderation or auto-ban based on what the camera sees; bans apply to content uploaded/shared to Meta and only after review. A note correcting a false, widely-believed 'life hack' is warranted.",
+  "judge_guidance": "A correct note must clearly state that this does NOT work: simply showing/recording an ISIS flag with Ray-Ban Meta glasses will not trigger an instant or permanent account ban. It should explain that the glasses do not perform real-time content moderation on what is in front of them, and that Meta's enforcement applies to content actually uploaded/shared and happens after review, not in seconds. PASS only if the note debunks the instant-ban claim and is clearly easier to follow than the original; it must cite a reliable source (e.g. a fact-check such as the Daily Dot / Yahoo Tech debunk, or Meta's policy). FAIL if it relies only on a Grok tweet or an unrelated 2018 Meta blog post as evidence (the original note's specific failure), or if it leaves the impression the trick might work.",
+  "reference_note": "This is false. Ray-Ban Meta glasses use on-device object recognition but do not scan what they see for banned symbols or auto-ban wearers in real time. Meta enforces its rules on content that is actually uploaded/shared, and only after review - not instantly from recording. Users who tested the 'ISIS flag' trick report nothing happened. https://www.dailydot.com/debug/streamer-claims-meta-glasses-banned-debunk/",
+  "original_unhelpful_note": {
+    "text": "Showing an ISIS flag to Ray-Ban Meta smart glasses won't instantly ban the wearer's account. The glasses record on command; account actions apply to content uploaded/shared to Meta, which removes terrorist content under its policies after review. https://x.com/grok/status/2026722647455695200 https://about.fb.com/news/2018/04/community-standards-examples",
+    "failure_reason": "Sources missing/unreliable: the note's reasoning is correct but it is sourced to a Grok tweet (not a reliable source) and an unrelated 2018 Meta 'community standards examples' blog post that does not address the specific glasses claim. Raters tagged SourcesMissingOrUnreliable (183) and IrrelevantSources (66) heavily.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "FALSE (debunked hoax/life-hack)",
+    "sources_checked": [
+      "https://www.dailydot.com/debug/streamer-claims-meta-glasses-banned-debunk/",
+      "https://tech.yahoo.com/social-media/articles/prank-targeting-meta-glasses-wearers-200000652.html"
+    ],
+    "notes": "Multiple fact-checks (Daily Dot, Yahoo Tech) confirm the instant-ban claim is false; glasses don't auto-moderate the camera feed, and tester reports say nothing happened. Some replies treat it as a joke, but the post itself presents it as real advice and was widely believed."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Low world-stakes, but it is a high-reach (7M+ views) false 'life hack' that could lead people to harass camera wearers or post extremist imagery believing it is harmless; correcting reduces a viral misconception."
+  },
+  "difficulty": "easy"
+}

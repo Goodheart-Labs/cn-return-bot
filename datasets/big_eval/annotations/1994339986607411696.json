@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1994339986607411696",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "tech_history_nostalgia",
+  "tweet_summary": "A lighthearted/affectionate joke that early Windows 1.x and 2.x had a full-colour GUI before the Mac but used it garishly ('they made it radioactive'), illustrated with two genuine Windows 1.01 and 2.0 screenshots.",
+  "why_note_decision": "This is comedic opinion about an aesthetic, not a checkable factual assertion. The attached screenshots really are colourful early Windows shots (EGA 16-colour mode), so nothing is misrepresented. The original note's pedantic 'actually it often ran in monochrome' is technically true for CGA setups but does not contradict the joke, which is precisely about the colourful EGA palette shown; it also reads as a humourless 'well actually'. A note adds nothing a reader needs.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is an affectionate joke about early Windows' garish colour palette, illustrated with real Windows 1.01/2.0 EGA screenshots; nothing factual is misrepresented. Any note here is a false positive. In particular FAIL any note that 'corrects' the tweet by saying Windows 1.x often ran in monochrome/2-colour CGA mode -- that is pedantic, does not rebut the joke (the screenshots are genuine EGA colour), and is exactly the failure the original note made.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Windows 1.x's look depended on the PC's display mode; on many setups it intentionally used monochrome/2-color modes for compatibility, not to showcase vivid color. https://forum.vcfed.org/index.php?threads/why-no-color-with-windows-1-01.1252551/ https://www.pcjs.org/software/pcx86/sys/windows/1.01/cga/",
+    "failure_reason": "Pedantic correction on a joke/opinion: the tweet jokes about the colourful EGA palette actually shown in the screenshots; pointing out that other setups could be monochrome does not rebut anything and addresses a claim the tweet never made.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "not_a_factual_claim_joke; screenshots are genuine Windows 1.01/2.0 in EGA 16-colour mode",
+    "sources_checked": [
+      "https://www.pcjs.org/software/pcx86/sys/windows/1.01/cga/",
+      "https://en.wikipedia.org/wiki/Enhanced_Graphics_Adapter"
+    ],
+    "notes": "Windows 1.0/1.01 on CGA only supported 640x200 2-colour (mono), but on EGA it supported a 16-colour palette -- which is what the shown screenshots are. The tweet's premise (colourful early Windows) is accurate; it is a joke, not misinfo."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Retro-computing humour; zero EA/progress/safety stakes. Correcting it would be pure noise."
+  },
+  "difficulty": "easy"
+}

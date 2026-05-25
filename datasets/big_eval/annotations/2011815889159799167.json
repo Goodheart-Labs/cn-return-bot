@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2011815889159799167",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["celebrity_entertainment_sports", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "LiveScore graphic comparing 'G/A in last seven matches' for big No.10 signings -- Wirtz 5, Cherki 4, Xavi Simons 4, Eze 0 -- captioned that Wirtz leads on recent form.",
+  "why_note_decision": "The tweet's claim is explicitly scoped to 'last seven matches' (stated on the graphic), and on that basis Wirtz leading is a defensible recent-form stat. The original note 'rebuts' it with FULL-SEASON totals (Cherki 7A/2G, Eze 4G/2A), which does not contradict a last-7-matches comparison at all -- it attacks a claim the tweet never made. Any quibble (a reply says Cherki had 2G+3A=5, not 4, in his last 7) is a minor counting discrepancy on a snapshot stat, not misinformation worth a note. This is an accurate-reporting / strawman situation, so no note is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The graphic is explicitly 'G/A in last SEVEN matches' and Wirtz leading on recent form is a legitimate, narrowly-scoped stat; it is not misleading. Any note is a false positive. FAIL especially any note that 'corrects' the graphic using full-season statistics (e.g. 'Cherki has 7 assists / Eze has 4 goals this season') -- that refutes a claim the tweet never made and repeats the original note's strawman error. A minor last-7 counting quibble (e.g. Cherki 4 vs 5 G/A) is trivial pedantry and also does not justify a note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Official Premier League data shows Rayan Cherki has 7 assists and 2 goals, outperforming Florian Wirtz's overall season impact. Additionally, Eberechi Eze has recorded 4 goals and 2 assists for Arsenal, contradicting the claim of 0 G/A. https://www.premierleague.com/en/players/466052/rayan-cherki/overview https://www.statmuse.com/fc/ask/eberechi-eze-stats-with-arsenal?l=pl",
+    "failure_reason": "Strawman: rebuts the explicitly 'last 7 matches' graphic with full-season totals, so it doesn't actually contradict the tweet. The '0 G/A' figure was scoped to the last seven games, not the season. Note attacks a claim never made.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "accurate_within_stated_scope",
+    "sources_checked": [
+      "https://www.premierleague.com/en/players/466052/rayan-cherki/stats",
+      "https://www.premierleague.com/en/players/232413/eberechi-eze/stats",
+      "https://fbref.com/en/players/ae4fc6a4/Eberechi-Eze"
+    ],
+    "notes": "Full-season totals (Eze ~7G season, Cherki high assists) are real but irrelevant -- the graphic is explicitly last-7-matches. The only in-scope quibble (a reply claims Cherki 2G+3A in last 7, not 4) is a trivial snapshot discrepancy, not misinfo. The original note conflated season vs last-7."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports recent-form graphic from an official account; no real-world stakes. Pure false-positive-suppression value (don't 'correct' accurately-scoped stats)."
+  },
+  "difficulty": "medium"
+}

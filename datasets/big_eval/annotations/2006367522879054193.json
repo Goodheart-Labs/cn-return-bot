@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2006367522879054193",
+  "role": "unhelpful_notHelpfulIrrelevantSources",
+  "provisional_role": "unhelpful_notHelpfulIrrelevantSources",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Ukraine's SPRAVDI Stratcom Centre claims that the 'Ukrainian drone' Russia presented as evidence of an attack on Putin's residence (late Dec 2025) is actually a black-painted Russian Gerbera drone with a battery and cellular modem, implying Russia staged the attack.",
+  "why_note_decision": "A note is warranted, but the situation is more nuanced than the original note frames it. The verified core facts: US/CIA intelligence (per WSJ/CNN) concluded Ukraine did NOT target Putin or any of his residences — Ukraine was likely striking a military site in the region — and the EU dismissed the episode as a Russian 'deliberate distraction.' Ukraine called it a fabrication. So readers benefit from a note that the alleged 'attack on Putin's residence' is not supported. The original note instead asserts a specific OSINT drone-identification claim (Russian Gerbera, not Ukrainian Chaklun-V) that is contested and hard to verify from the image alone.",
+  "judge_guidance": "PASS only if the note establishes the well-sourced fact: US intelligence (CIA) assessed that Ukraine did NOT target Putin or his residence in the late-Dec-2025 drone incident (Ukraine was likely striking a separate military site), and Ukraine called the 'attack on Putin's residence' a fabrication; the EU called it a Russian distraction. The note MUST cite sources that actually support THIS attribution point (e.g. CNN/WSJ/NBC reporting the CIA assessment) and the cited URL must genuinely substantiate it. FAIL the original note's specific failure: do NOT hinge the correction on a contested, image-based drone-model identification (claiming the wreckage is a 'black-painted Russian Gerbera' rather than a 'Ukrainian Chaklun-V') as if it were established fact, and do NOT cite sources that are about a different drone or do not support the claim made (the original was rated notHelpfulIrrelevantSources). Note the SPRAVDI tweet itself names a Gerbera while the bot's reference note named a Chaklun-V — the bot must not confidently assert a specific model it cannot verify.",
+  "reference_note": "US intelligence (CIA) assessed that Ukraine did not target Putin or any of his residences in the late-December 2025 drone incident; officials believe Ukraine was striking a military site in the region, not the Valdai residence. Ukraine called the alleged attack a fabrication and the EU described it as a Russian distraction tactic. https://www.cnn.com/2025/12/31/politics/cia-ukraine-drone-putin-residence https://www.nbcnews.com/world/europe/us-finds-ukraine-not-target-putin-residence-alleged-drone-strike-sourc-rcna251776",
+  "original_unhelpful_note": {
+    "text": "For context: The drone is identified as Ukrainian-made Chaklun-V (a fixed-wing strike drone), not Russian Gerbera (a loitering munition). US intelligence assesses Putin's residence was not targeted.  https://www.reuters.com/world/europe/ukraine-eu-officials-dismiss-alleged-attack-putin-residence-2025-12-31/  https://www.foxnews.com/world/putin-residence-attack-video-slammed-us-officials-say-ukraine-target-leader  https://www.nbcnews.com/world/europe/us-finds-ukraine-not-target-putin-residence-alleged-drone-strike-sourc-rcna251776",
+    "failure_reason": "Rated notHelpfulIrrelevantSources (6). The note opens with a confident drone-model identification (Chaklun-V, not Gerbera) that directly contradicts the tweet's claim and cannot be verified from the image — and that drone-model assertion is not what its cited sources establish (the sources are about US intelligence finding the residence was not targeted, not about the drone model). Raters flagged the sources as not supporting the lead claim. The well-supported point (US intel: residence not targeted) is buried behind a shaky technical claim.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.cnn.com/2025/12/31/politics/cia-ukraine-drone-putin-residence",
+      "https://www.nbcnews.com/world/europe/us-finds-ukraine-not-target-putin-residence-alleged-drone-strike-sourc-rcna251776",
+      "https://www.foxnews.com/world/putin-residence-attack-video-slammed-us-officials-say-ukraine-target-leader",
+      "https://www.axios.com/2025/12/29/putin-ukraine-drone-attack-claim-trump-call"
+    ],
+    "notes": "CIA assessed no attempted attack on Putin occurred; Ukraine was likely targeting a military site previously struck in the region. Ukraine called it a fabrication; EU's Kallas called it a deliberate distraction. The specific drone-model identification (Gerbera vs Chaklun-V) is OSINT-level and contested — not something the bot should assert as settled fact. The tweet's broader insinuation (Russia staged the 'Ukrainian attack on Putin') aligns with the US intel finding that no such attack occurred, so the most defensible correction targets the 'attack on Putin's residence' framing, not the drone model."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Wartime info-operation episode (442k impressions) feeding into Russia-Ukraine peace-talk dynamics; correcting the 'attack on Putin' narrative matters for accurate war reporting, but the specific drone-ID dispute is low-stakes."
+  },
+  "difficulty": "hard"
+}

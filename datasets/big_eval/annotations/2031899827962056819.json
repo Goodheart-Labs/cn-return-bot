@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2031899827962056819",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "A pro-Palestine account captions a chaotic video 'Zionist Politician Attacked in Argentina'; the footage shows Argentine President Javier Milei (pro-Israel) amid a hostile crowd with Argentine 'INFANTERIA' police and Spanish-language shouting.",
+  "why_note_decision": "No note is warranted on the facts: the video genuinely depicts Milei being mobbed/attacked during a campaign caravan in Argentina (Lomas de Zamora, early March 2026; rocks thrown, evacuation, arrests — Infobae/Perfil/Reuters). Milei is openly pro-Israel, so 'Zionist Politician Attacked in Argentina' is an accurate-if-editorial description of a real event. The only debatable element is the subjective 'Zionist' label (opinion/framing), not a factual error. The original note is a catastrophic misattribution — it claims the clip is from an April 2025 anti-Trump protest in Lafayette, Indiana, which is plainly false (it is Milei in Argentina, Spanish audio, Argentine police).",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The video really shows Javier Milei attacked during a March 2026 campaign caravan in Argentina (Lomas de Zamora); the core claim 'politician attacked in Argentina' is true and the only contestable word is the subjective 'Zionist' (Milei is in fact strongly pro-Israel). FAIL hard any note that places the video in the USA / Lafayette, Indiana / an 'anti-Trump protest' / April 2025 — that is the original note's gross misattribution. Also do NOT write a note merely to quibble with the 'Zionist' framing, which is opinion, not a checkable falsehood. Declining is correct.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video shows an incident from April 5, 2025, at an anti-Trump protest in Lafayette, Indiana, USA, where a motorist was headbutted after confronting protesters. It is not from Argentina.    https://www.jconline.com/story/news/local/2025/04/05/bystanders-man-with-long-gun-arrested-after-altercation-in-downtown-lafayette-anti-trump-protest/82949910007    https://www.wlfi.com/news/lafayette-police-investigating-incident-involving-rifle-at-hands-off-protest/article_300ac655-1e48-4f4c-921e-31a595cf696f.html",
+    "failure_reason": "Rated notHelpfulIncorrect (26) and notHelpfulIrrelevantSources (20). The note wildly misidentifies the clip as a 2025 anti-Trump protest in Lafayette, Indiana, when it is unmistakably Javier Milei being attacked in Argentina (Spanish audio, Argentine INFANTERIA police, Milei on screen). A reverse-image/temporal-research failure that asserts the exact opposite of the tweet's correct location, with irrelevant US local-news sources.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.infobae.com/judiciales/2026/03/12/la-camara-de-casacion-confirmo-que-seguira-preso-el-hombre-que-ataco-la-caravana-presidencial-de-milei/",
+      "https://www.perfil.com/noticias/politica/detuvieron-a-dos-personas-durante-los-incidentes-en-la-caravana-de-milei-hay-al-menos-un-herido.phtml",
+      "https://www.youtube.com/watch?v=HK2I-LijSpc"
+    ],
+    "notes": "Milei was attacked during a campaign caravan in Lomas de Zamora, Buenos Aires Province, early March 2026: rocks thrown, evacuation, at least one injured, two arrested (an attacker remained jailed per a March 12 appeals ruling). The video matches this Argentine event (Milei, Spanish, Argentine police). Milei is strongly pro-Israel, so the 'Zionist politician attacked in Argentina' caption is accurate apart from the editorial 'Zionist' label. The note's Lafayette/Indiana attribution is entirely wrong."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "~1M-impression war/politics post about political violence against a head of state; accurate geolocation matters for civic trust. Strong example of a confident-but-wrong misattribution note that the bot must avoid emulating."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2015371356733620372",
+  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_statistic",
+  "tweet_summary": "Claims (with a stern Trump photo + FIFA logo) that 'MORE THAN 38,700 HOTEL BOOKINGS FOR 2026 FIFA WORLD CUP RESERVATIONS IN THE USA HAVE BEEN CANCELLED,' tied to US-politics boycott sentiment in the replies.",
+  "why_note_decision": "The precise '38,700 cancelled hotel bookings' figure is a fabricated/unverified statistic with no official source; fact-checking (DW; Grok summary) traces it to social media and notes the closest real figure is ~16,800 withdrawn World Cup ticket applications, plus FIFA's own contractual cancellation of hotel room blocks for unrelated demand reasons. The tweet launders an unverified specific number to ~860k viewers as established fact. A note correcting the fabricated statistic is warranted (I disagree with the provisional no_note_needed: a precise false number presented as fact is exactly the kind of claim a note should address).",
+  "judge_guidance": "A correct note must establish that the specific '38,700 cancelled hotel bookings' figure is unverified/unsupported by any official source. It should distinguish it from the real, different facts: roughly 16,800 World Cup TICKET applications were reported withdrawn (not hotel bookings), and FIFA separately released/cancelled blocks of hotel rooms for demand reasons - neither equals '38,700 cancelled hotel reservations.' PASS only if the note debunks the precise 38,700 hotel-cancellation number using a reliable source (e.g. DW fact-check) and does not simply validate the boycott narrative. FAIL if it asserts the figure is true, if it conflates ticket withdrawals with hotel cancellations, or if it provides no source.",
+  "reference_note": "There is no official source for the claim that 38,700 hotel bookings for the 2026 FIFA World Cup were cancelled. Fact-checkers trace the figure to social media; the nearest verified number is roughly 16,800 withdrawn ticket applications (not hotel bookings), and FIFA has denied a mass-cancellation narrative. https://www.dw.com/en/fact-check-are-fans-cancelling-world-cup-2026-tickets-over-us-immigration-fears/a-75562821",
+  "original_unhelpful_note": {
+    "text": "No evidence confirms over 38,700 cancelled hotel bookings for the 2026 FIFA World Cup; reported figures refer to unverified ticket application withdrawals, which FIFA has denied as fake news. https://www.dw.com/en/fact-check-are-fans-cancelling-world-cup-2026-tickets-over-us-immigration-fears/a-75562821 https://www.marca.com/en/world-cup/2026/01/14/6966d713e2704e0c6a8b4597.html",
+    "failure_reason": "Note is substantively correct and well-aimed at a fabricated statistic, but it is in NEEDS_MORE_RATINGS (not a confirmed failure). Its tag spread (OpinionSpeculation 16, NoteNotNeeded 15) suggests raters split on whether the boycott framing made the number 'opinion.' A tighter note nailing the fabricated specific figure should land; it is the reference model here.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "specific figure FABRICATED/UNVERIFIED",
+    "sources_checked": [
+      "https://www.dw.com/en/fact-check-are-fans-cancelling-world-cup-2026-tickets-over-us-immigration-fears/a-75562821",
+      "https://www.npr.org/2026/05/04/nx-s1-5810626/world-cup-hotels-tourism-bookings-visitors",
+      "https://x.com/grok/status/2015458660416180625"
+    ],
+    "notes": "DW and others find the 38,700 hotel-cancellation figure unverified and social-media-sourced. Real data: ~16,800 ticket applications withdrawn; FIFA itself cancelled hotel room blocks for demand reasons. The tweet conflates/invents a precise number."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "High-reach fabricated statistic shaping a politically charged boycott narrative; correcting invented precise numbers supports epistemic hygiene, though world-stakes are moderate."
+  },
+  "difficulty": "medium"
+}

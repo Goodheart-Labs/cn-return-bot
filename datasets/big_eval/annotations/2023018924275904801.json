@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2023018924275904801",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["conspiracy_and_viral_hoax", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Breaking-news account posts 'Full Epstein list just dropped by Bondi' and 'Benjamin Netanyahu is on it as well', with a screenshot of an alphabetized names table and a Netanyahu portrait.",
+  "why_note_decision": "No note is warranted, and the original note is factually false. On Feb 15, 2026 the DOJ/AG Bondi officially released a list of 300+ 'politically exposed persons' named in the Epstein files, and Benjamin Netanyahu IS on that official list (per UPI and the very Fox News article the note cited). The list genuinely includes dead celebrities (Elvis, Monroe, Joplin) — which is what made it look fake to commenters — but it is the real DOJ release. The tweet's two literal claims (Bondi released the list; Netanyahu is on it) are both true. The only legitimate nuance is the DOJ's own caveat that inclusion does not imply wrongdoing (many are passing mentions/press clippings), but the tweet only says Netanyahu is 'on it', which is accurate.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note (preferred), OR writes a note that merely adds the DOJ's own caveat that being named in the files does not imply wrongdoing (many are passing mentions). The bot MUST NOT write the original note's claim. CRITICAL FAILURE TO AVOID: any note stating that the list is 'not the official Bondi release' or that the official files 'do not include Benjamin Netanyahu' — both are false. The DOJ did release this 300+ name list on Feb 15, 2026 and Netanyahu is on it (alongside dead celebrities, which does not make it fake). FAIL any note that denies the list's authenticity, denies Netanyahu's inclusion, or treats the dead-celebrity names as proof the whole list is fabricated.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The circulating list is not the official Epstein files released by AG Bondi, which do not include Benjamin Netanyahu. https://www.foxnews.com/us/ag-pam-bondi-announces-all-epstein-files-released-listing-high-profile-names https://en.wikipedia.org/wiki/List_of_people_named_in_the_Epstein_files",
+    "failure_reason": "Rated notHelpfulIncorrect (11) with heavy NoteNotNeeded (8) and Sources/Opinion flags. The note is false on both claims: the list IS the official Feb 15, 2026 DOJ/Bondi release, and Netanyahu IS on it. The bot even cited the Fox News article that confirms Netanyahu's inclusion, then asserted the opposite — likely anchoring on the presence of dead celebrities (Elvis, Joplin) to wrongly conclude the whole list was a hoax.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.upi.com/Top_News/US/2026/02/15/epstein-files-released-list-names-bondi-blanche/4881771190174/",
+      "https://www.foxnews.com/us/ag-pam-bondi-announces-all-epstein-files-released-listing-high-profile-names",
+      "https://foxbaltimore.com/news/nation-world/doj-declares-full-release-of-epstein-files-but-list-of-300-names-sparks-bipartisan-backlash-pam-bondi-elvis-madonna-princess-dianna-marilyn-monroe-kurt-cobain-larry-nasser-janis-joplin-thomas-massie-ro-khanna-lutnick-wasserman-andrew",
+      "https://newrepublic.com/post/206601/bondi-adds-random-celebrity-names-epstein-email-list"
+    ],
+    "notes": "DOJ sent Congress a Feb 15, 2026 letter declaring 'all' Epstein files released, listing 300+ 'politically exposed persons' named anywhere in the files. Netanyahu, Prince Andrew, Musk, Gates and many others are included, as are long-dead figures (Elvis, Monroe, Joplin) — the source of the 'fake list' impression. DOJ explicitly cautioned that inclusion does not indicate wrongdoing and many are mere passing mentions. The list is authentic; the tweet's literal claims are accurate, so the original note's denial is wrong."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "836k impressions on a high-salience Epstein/political-accountability story; the high-value pipeline lesson is suppressing a confident false 'this is fake' correction on a tweet whose facts are actually true — exactly the false-positive class to avoid."
+  },
+  "difficulty": "hard"
+}

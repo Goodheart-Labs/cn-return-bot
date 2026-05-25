@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2011480276585599423",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Sen. Ted Cruz posts 'Free Iran.' with a black-and-white image of a woman lighting a cigarette using a burning photo of Ayatollah Khamenei.",
+  "why_note_decision": "Borderline, but leans no-note. The image is real and depicts a genuine anti-Khamenei protest act by an Iranian woman — a 23-year-old living in exile in Canada — filmed outside a CIBC branch in Ontario in January 2026, not inside Iran (verified by Reuters / Full Fact). However, Cruz's post asserts no location: 'Free Iran' is a political slogan, and the subject genuinely is an Iranian protesting the regime, so the tweet makes no false checkable claim. The X rating profile reflects this ambivalence (NoteNotNeeded 26 nearly ties MissingKeyPoints 28). A geographic 'filmed in Canada, not Iran' note corrects an implication the tweet never stated; with no false assertion to rebut, the better call is to decline.",
+  "judge_guidance": "PASS if the bot declines to write a note. The tweet's only explicit content is the slogan 'Free Iran'; it claims no location, and the image is a genuine anti-Khamenei protest by an Iranian woman (in exile in Canada), so there is no false factual claim to correct. A LIGHT, neutral context note stating that the clip was filmed in Canada (Ontario) by an Iranian living in exile — not inside Iran — is acceptable and should not be marked wrong, BUT it is not required. CRITICAL FAIL: any note that claims the woman is not Iranian, that the protest is fake/staged, or that contradicts the verified fact that this is a real anti-Khamenei act; and any heavy 'debunk' framing implying the tweet lied (it asserted no location).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The image depicts a woman in Canada lighting a cigarette using a photo of Ayatollah Khamenei, not a protest in Iran. https://www.reuters.com/fact-check/woman-who-lit-cigarette-with-burning-khamenei-photo-was-canada-not-iran-2026-01-14 https://fullfact.org/conflict/woman-cigarette-burning-picture-ayatollah-canada-not-iran",
+    "failure_reason": "Factually accurate about location but corrects an implication the tweet never stated ('Free Iran' is a slogan, no location claimed); the subject is genuinely an Iranian protesting the regime. Raters split, with heavy NoteNotNeeded, treating it as an unneeded location nitpick.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_act_unstated_location",
+    "sources_checked": [
+      "https://fullfact.org/conflict/woman-cigarette-burning-picture-ayatollah-canada-not-iran/",
+      "https://newschecker.in/fact-check/fact-check/iran-unrest-this-video-of-woman-lighting-cigarette-with-burning-khamenei-photo-is-from-canada"
+    ],
+    "notes": "Filmed outside a CIBC branch in Ontario, Canada, Jan 2026; woman is a 23-year-old Iranian living in exile in Canada with family still in Iran. Real anti-Khamenei protest; Cruz's caption claims no location."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "High-profile author (Ted Cruz, 7M followers) on Iran politics, but the post makes no false claim. Useful as a false-positive trap: an AI may over-eagerly 'correct' a location the slogan never asserted."
+  },
+  "difficulty": "hard"
+}

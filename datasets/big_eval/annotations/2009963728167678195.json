@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2009963728167678195",
+  "role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Robin Monotti posts a 15s video captioned 'Italian American deals with ICE' showing a deli owner angrily ordering masked 'ICE'/'PICF' agents out of his shop, presented as a real confrontation; it racked up 1.1M+ views.",
+  "why_note_decision": "A note IS warranted: the clip is AI-generated, part of the well-documented wave of viral AI 'deli owner vs ICE' videos (404 Media, HuffPost, Inquisitr, Boston Globe), and it is presented as a real incident. Tells: garbled insignia ('PICF'/'PICE' not 'ICE'), too-perfect staging, AI-flat lighting; commenters repeatedly call it AI. The reader benefit is knowing it's synthetic, not footage of a real ICE encounter. The original note got this materially wrong — it claimed the video is a real comedy 'skit by Italian-American comedian Johnny Charley', attributing AI slop to a human performer and mislabeling synthetic media as a filmed skit.",
+  "judge_guidance": "PASS only if the note establishes that the video is AI-generated (synthetic), not real footage of an ICE encounter — ideally citing an AI tell (e.g. the garbled 'PICF/PICE' insignia) or reliable coverage of the viral AI ICE-video trend. The note must NOT claim the video is a genuine filmed comedy skit by a real performer (e.g. 'Johnny Charley'): that is the original note's specific error and treats AI media as a human production. FAIL if it asserts a real human performance/skit, if it implies the encounter actually happened, or if it merely says 'not a real incident' without identifying it as AI-generated (the AI origin is the key reader-relevant fact in the ICE-video misinformation context).",
+  "reference_note": "This video is AI-generated, not footage of a real ICE encounter. It is part of a viral wave of synthetic 'deli owner confronts ICE' clips; note the garbled agency insignia (\"PICF\"/\"PICE\") and AI artifacts. https://www.404media.co/ai-generated-videos-of-ice-raids-are-wildly-viral-on-facebook/ https://www.huffpost.com/entry/viral-ai-ice-raid-videos_l_69163baee4b0df3e16be4163",
+  "original_unhelpful_note": {
+    "text": "This video depicts a comedic skit by Italian-American comedian Johnny Charley parodying immigration encounters, not a real incident.  https://www.tiktok.com/@johnny.charley/video/7467611870615047470  https://www.instagram.com/reel/DFvPrlOAt3g/?hl=en",
+    "failure_reason": "Rated notHelpfulIncorrect (10) and notHelpfulSourcesMissingOrUnreliable (6). The note correctly says it's 'not a real incident' but misidentifies the cause: it calls the clip a filmed comedy skit by real comedian Johnny Charley, when the video is AI-generated (part of the documented AI ICE-video trend; insignia reads 'PICF/PICE', commenters flag AI). Attributing AI slop to a human performer is the wrong correction and misses the reader-relevant point that the footage is synthetic.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.404media.co/ai-generated-videos-of-ice-raids-are-wildly-viral-on-facebook/",
+      "https://www.huffpost.com/entry/viral-ai-ice-raid-videos_l_69163baee4b0df3e16be4163",
+      "https://www.inquisitr.com/viral-ai-video-of-deli-owner-refusing-to-serve-ice-agents-leaves-internet-divided-were-all-doomed",
+      "https://www.bostonglobe.com/2026/02/05/arts/ai-slop-ice-video/"
+    ],
+    "notes": "Multiple outlets documented a viral wave of AI-generated 'deli/shop owner confronts ICE' videos (Sora/Veo-style) in late 2025-early 2026, including the deli-owner clip. Tells: distorted insignia ('PICF'/'PICE' instead of 'ICE'), flat lighting, too-perfect scenario; many commenters call it AI. Johnny Charley is a real human comedian, but this clip matches the AI-slop trend, not a filmed human skit. media_confidence kept medium because I could not load the cited TikTok directly to 100% rule out a human performance, but the insignia artifacts + trend coverage + AI description strongly indicate AI."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.1M-view AI-generated political video amplifying ICE-confrontation narratives; correctly flagging AI ICE-slop matters for information integrity around a charged immigration-enforcement topic and for preserving trust in real footage."
+  },
+  "difficulty": "hard"
+}

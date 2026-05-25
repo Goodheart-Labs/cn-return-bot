@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2016932474081657121",
+  "role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["overhyped_research_or_product", "health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post (2.1M views) celebrating 'A Spanish scientist have cured pancreatic cancer in mice,' praising Dr. Mariano Barbacid, with an artistic caricature portrait of him plus a real photo.",
+  "why_note_decision": "A note is warranted to add decisive context the tweet and original note both omit: the underlying PNAS paper (Barbacid/CNIO triple-therapy eliminating pancreatic tumors in mice) was RETRACTED on April 27, 2026 for an undisclosed financial conflict of interest (the authors held stakes in Vega Oncotargets) and use of a peer-review pathway they could influence. The retraction was for transparency/COI reasons, not because the mouse results were shown to be wrong, but a reader celebrating a 'cure' must know the paper no longer stands and was never a human cure. The tweet also overstates ('cured pancreatic cancer') a preclinical mouse result. The original note instead spent its text on the (true but non-misleading) fact that the portrait is an artistic caricature, and then RESTATED the now-retracted finding as established fact — exactly the key point a current note must update.",
+  "judge_guidance": "A correct note must add the KEY context: the PNAS study behind this 'cure in mice' claim was retracted (April 27, 2026) over an undisclosed conflict of interest (authors' financial stake in Vega Oncotargets), and in any case it was a preclinical MOUSE result, not a human cure. PASS requires the note to (a) flag that it is a mouse-model result, not a human cure, AND (b) note the retraction / that the published claim no longer stands as peer-reviewed (it may add that the retraction was for COI/disclosure, not proven data fraud). CRITICAL FAIL: any note that, like the original, asserts the therapy 'completely eliminated pancreatic tumors in mice with no relapse' as current established fact without the retraction caveat — that repeats a retracted claim. A note that only argues about the caricature image being artistic should FAIL (that is not the misleading element).",
+  "reference_note": "This is a preclinical MOUSE result, not a human cure. The PNAS study (Barbacid/CNIO triple therapy that eliminated pancreatic tumors in mice) was retracted on 27 April 2026 over an undisclosed conflict of interest — the authors held financial stakes in Vega Oncotargets and used a peer-review pathway they could influence. The retraction was for disclosure/COI, not proven data errors, but the published claim no longer stands. https://www.pnas.org/doi/10.1073/pnas.2523039122 https://en.ara.cat/society/the-national-academy-of-sciences-of-the-united-states-retracts-barbacid-s-article-pancreatic-cancer_1_5721698.html",
+  "original_unhelpful_note": {
+    "text": "The image depicts Dr. Barbacid in an exaggerated, artistic style created for comedic effect, not as a real photograph of his appearance. His team at CNIO developed a triple-drug therapy that completely eliminated pancreatic tumors in mouse models with no relapse observed.    https://x.com/colehairlesscat/status/2016724177491836975  https://www.cnio.es/en/news/the-group-led-by-barbacid-at-cnio-completely-eliminates-pancreatic-tumours-in-mice-with-no-resistance-developing",
+    "failure_reason": "Spends its words on the non-misleading caricature-art point and then restates the headline finding as established fact — but that PNAS paper was retracted (April 2026) for undisclosed COI. The note misses the only context that actually matters now.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "overstated_and_retracted",
+    "sources_checked": [
+      "https://www.pnas.org/doi/10.1073/pnas.2523039122",
+      "https://www.cnio.es/en/news/the-group-led-by-barbacid-at-cnio-completely-eliminates-pancreatic-tumours-in-mice-with-no-resistance-developing/",
+      "https://en.ara.cat/society/the-national-academy-of-sciences-of-the-united-states-retracts-barbacid-s-article-pancreatic-cancer_1_5721698.html",
+      "https://medicalxpress.com/news/2026-02-pancreatic-tumors-mice-resistance.html"
+    ],
+    "notes": "Triple therapy (daraxonrasib + afatinib + SD36) eliminated pancreatic tumors in mice (PNAS, Jan 2026). Retracted 27 Apr 2026 for undisclosed COI (Vega Oncotargets), not for invalidated data per PNAS/experts. Mouse-only; not a human cure. Caricature artist is @colehairlesscat (true but not the misleading element)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.1M views amplifying a 'cured cancer' overhype that has since been retracted; medical-overhype correction is high-value for an EA/health-information lens (sets expectations, flags COI in science reporting)."
+  },
+  "difficulty": "hard"
+}

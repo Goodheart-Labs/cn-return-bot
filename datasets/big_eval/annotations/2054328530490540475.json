@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2054328530490540475",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post by 'Ozzy' (1.6M views) reports, 'per sources,' that the Pittsburgh Steelers and New Orleans Saints will play the inaugural NFL Paris Game at Stade de France on October 25 (Week 7), 9:30 AM EST. Graphic shows Steelers + Saints logos.",
+  "why_note_decision": "No note needed — the tweet is TRUE and the original note is the misinformation. The NFL's 2026 schedule (International games unveiled May 13, full schedule May 14, 2026) confirms exactly this matchup: Steelers vs Saints at Stade de France on Sunday, October 25, 2026. The original note (written May 12, before the official release) wrongly claimed 'the 2026 NFL schedule has not been released' and predicted a Saints-vs-BROWNS matchup — which is incorrect. The tweet's 'per sources' report was accurate; a note here is a false positive.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. Any note is a false positive: the tweet's claim (Steelers vs Saints, Stade de France, Oct 25, Week 7) is confirmed correct by the NFL's official 2026 schedule. A note that 'corrects' this — e.g. claiming the schedule is unreleased, that the matchup is Saints vs Browns, or that the report is speculative — is WRONG and must FAIL. The only marginally noteworthy nit (the 9:30 AM EST kickoff detail) is trivial and does not warrant a note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The 2026 NFL schedule has not been released. Reports since February have indicated the inaugural Paris game at Stade de France will feature the Saints vs Browns. https://www.nfl.com/news/paris-to-host-first-nfl-regular-season-game-in-2026-saints https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/report-nfls-first-game-in-france-will-be-browns-saints-in-paris-on-october-25 https://www.cbssports.com/nfl/news/nfl-2026-international-games-predicting-opponents/",
+    "failure_reason": "False positive on a true tweet. The note (written May 12) said the schedule was unreleased and that the Paris matchup would be Saints vs Browns. The NFL's official release (May 13-14) confirmed the tweet's Steelers-vs-Saints matchup, so the note's earlier-rumor-based 'correction' was simply outdated and wrong. Low-volume NOT_HELPFUL (7 ratings) — raters correctly sensed the note was not needed / incorrect.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.nfl.com/international/games/paris/",
+      "https://media.nfl.com/news-and-releases/international/nfl-unveils-2026-international-games-schedule",
+      "https://operations.nfl.com/updates/the-game/2026-nfl-international-games-schedule-released/",
+      "https://www.profootballhof.com/news/nfl-releases-schedule-of-international-games-for-2026"
+    ],
+    "notes": "NFL officially confirmed the 2026 Paris Game as Pittsburgh Steelers vs New Orleans Saints at Stade de France on Sunday, Oct 25, 2026 (International games unveiled May 13; full schedule May 14). The tweet matches the official matchup, venue, and date. The pre-release 'Saints vs Browns' rumor the note relied on was superseded. Tweet is accurate."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes sports scheduling; valuable as a false-positive trap — a true 'per sources' report that the bot must NOT 'correct' just because an earlier rumor differed (timing/recency-of-truth pitfall)."
+  },
+  "difficulty": "easy"
+}

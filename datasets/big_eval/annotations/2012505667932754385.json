@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2012505667932754385",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Caption 'This is why you don't stop' over genuine, current video of a truck driving into a crowd. The footage is the real Jan 11, 2026 Westwood, Los Angeles incident where a U-Haul truck drove through an anti-Iran-regime solidarity rally; the post is inflammatory commentary (replies invoke Reginald Denny, urge 'hit the gas').",
+  "why_note_decision": "No note is warranted. The video is authentic and current, and the post makes NO checkable false factual claim — it accurately (if implicitly) shows the real LA ramming and adds only an opinion/exhortation ('this is why you don't stop'). There is no misattribution by the poster, no false date/location asserted, and nothing factually correctable. The note that was written supplied accurate background but a note is not needed because the tweet itself isn't misleading about what the video is. (Note: the AI media description calling it 'Minneapolis' with a 'silver tanker' is itself WRONG — it was a U-Haul box truck in LA — so any bot relying on that description could mis-correct.)",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap: the video is the genuine, correctly-contextualized Jan 11, 2026 Westwood/Los Angeles anti-Iran-regime rally truck-ramming, and the post adds only inflammatory opinion ('this is why you don't stop') with no false factual claim to correct. Any note here is a false positive. In particular, DO NOT trust the AI media description's 'Minneapolis'/'tanker truck' details (they are wrong); a bot that writes a note 'correcting' the location to Minneapolis, or labeling the real video as misattributed, must FAIL. A note merely restating accurate background also fails the no-note bar.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The U-Haul driver was detained for reckless driving after plowing into a crowd in Westwood on January 11, 2026. The incident occurred during a demonstration in support of Iranian protesters. https://www.reuters.com/world/us/truck-plows-into-los-angeles-rally-support-iran-demonstrations-knbc-reports-2026-01-12",
+    "failure_reason": "Rated notHelpfulIncorrect (4) and notHelpfulNoteNotNeeded (2) among 12 ratings. The note's facts are actually accurate (U-Haul, Westwood LA, Jan 11 2026, anti-Iran-regime rally, reckless-driving arrest). It failed because no note was needed: the post shows a real, current event and makes only an opinion statement, so adding context reads as superfluous/argumentative rather than correcting misinformation.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Los_Angeles_ramming_attack",
+      "https://abc7.com/post/haul-driver-calor-madanescht-arrested-going-crowd-during-anti-iranian-regime-protest-westwood/18392031/",
+      "https://www.nbcnews.com/news/us-news/man-booked-reckless-driving-charge-u-haul-truck-drives-iran-protesters-rcna253712"
+    ],
+    "notes": "The video genuinely shows the Jan 11, 2026 Westwood, LA U-Haul ramming at an anti-Iran-regime solidarity rally (driver Calor Madanescht, booked for reckless driving, released). The footage is real and current; the post does not misstate it. The post's content is pure opinion ('this is why you don't stop'). The AI media description ('Minneapolis', 'red semi-truck with silver tanker') is incorrect and should not be trusted."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "14M-impression post effectively endorsing driving through protesters; high virality and incitement stakes, but since the underlying video is real and accurate, the correct pipeline behavior (decline) is the high-value signal, not a content correction."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2040248192785088645",
+  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "antisemitic_conspiracy"],
+  "category_fit": "partial",
+  "suggested_category": "antisemitic_conspiracy",
+  "tweet_summary": "A 269k-follower account posts 'BREAKING: A leaked report from Argentina reveals plans to accept 300,000 Israelis and create a mini-state... in burned areas of Patagonia called \"Private Neighborhood Josué, Prophet of Israel,\"' with a photo of a house on fire. Replies push the antisemitic 'Jews started the fires to grab land' narrative.",
+  "why_note_decision": "A note is warranted. The claim is a fabricated antisemitic conspiracy. There is no leaked Argentine government report, no plan to settle 300,000 Israelis, and no 'Private Neighborhood Josué' mini-state; fact-checkers (Maldita, Argentina's Chequeado, and the Combat Antisemitism Movement) found no massive Israeli land purchases and debunked the related 'Israelis started the Patagonia fires' claim (the device blamed was an Argentine-made FMK-2 grenade, not Israeli). The narrative recycles the century-old, baseless 'Andinia Plan' antisemitic trope. This is a checkable, high-reach false claim that a reader benefits from seeing corrected.",
+  "judge_guidance": "PASS only if the note states that there is NO leaked Argentine report and NO plan to settle 300,000 Israelis or create an Israeli 'mini-state' in Patagonia — the claim is an unfounded (antisemitic) conspiracy with no evidence of such plans or land deals — and cites a loadable, on-point fact-check (e.g. Maldita, Chequeado, the Combat Antisemitism Movement, or Buenos Aires Times). Strong notes may add that it revives the debunked 'Andinia Plan' trope and that the related 'Israelis caused the fires' claim was also debunked. FAIL the original note's specific failure: ensure the cited URL actually loads and substantiates the debunk (it was rated notHelpfulSourcesMissingOrUnreliable) rather than a bare Maldita link that may not resolve. FAIL any note that lends credence to the settlement/land-grab claim or treats it as merely unconfirmed-but-plausible.",
+  "reference_note": "There is no leaked Argentine government report and no plan to settle 300,000 Israelis or create an Israeli 'mini-state' in Patagonia. Fact-checkers (Maldita, Argentina's Chequeado) found no such policy and no massive Israeli land purchases; the related claim that Israelis started the Patagonia fires was also debunked. The story recycles the long-debunked antisemitic 'Andinia Plan' myth. https://maldita.es/clima/20260113/incendios-patagonia-argentina-provocados-israel-connivencia-milei-recalificar-terrenos https://combatantisemitism.org/cam-news/antisemitic-wildfire-conspiracy-theories-spread-in-argentina-targeting-israelis/",
+  "original_unhelpful_note": {
+    "text": "There is no evidence of a &quot;leaked report&quot; regarding Israeli settlements in Patagonia. Maldita reports that no such plans or policy changes have been announced by the Argentine government. https://maldita.es/clima/20260113/incendios-patagonia-argentina-provocados-israel-connivencia-milei-recalificar-terrenos",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (6) on a low-volume (9) note. The verdict is correct and Maldita is a reputable fact-checker, but it rests on a single source whose long Spanish URL may not resolve cleanly, and the note doesn't connect to corroborating fact-checks (Chequeado, CAM) or name the antisemitic 'Andinia Plan' trope. Substance is right; the failure is thin/single-source citation reliability.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://combatantisemitism.org/cam-news/antisemitic-wildfire-conspiracy-theories-spread-in-argentina-targeting-israelis/",
+      "https://www.batimes.com.ar/news/argentina/fires-in-patagonia-revive-old-anti-semitic-narratives.phtml",
+      "https://en.wikipedia.org/wiki/Andinia_Plan",
+      "https://www.jns.org/argentine-pundit-apologizes-for-linking-fires-to-israelis/"
+    ],
+    "notes": "No leaked report, no 300,000-Israeli settlement plan, no 'Private Neighborhood Josué' mini-state. CAM: no massive Israeli land purchases; the Patagonia Jewish community is small. Chequeado debunked the 'Israeli grenade started the fires' claim (it was an Argentine FMK-2 grenade). The narrative revives the 19th-century antisemitic 'Andinia Plan' conspiracy. The fire photo is generic/AI-style and not evidence of any settlement plan."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.1M-impression antisemitic conspiracy from a 269k-follower account explicitly inciting hostility ('don't let them,' 'they started the fires'); correcting weaponized ethnic-hatred misinformation has clear social-harm-reduction value."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2033436730251264262",
+  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A viral post (2.6M impressions) claiming, per 'reliable sources,' that Netanyahu died 7 days earlier and that his two subsequent on-camera appearances are deepfakes, predicting Israel will attribute his death to natural causes.",
+  "why_note_decision": "A note is clearly warranted. Netanyahu is alive — same March 2026 death-hoax wave as the sister tweet. He gave a live, multi-outlet news conference on March 12 and posted videos from a Jerusalem cafe on March 15-16 that the cafe independently confirmed as authentic (not deepfakes). Snopes/NBC/Euronews debunked the rumor, which traced to Iranian state media. The 'two appearances are deepfakes' claim is the specific falsehood to correct.",
+  "judge_guidance": "PASS only if the note clearly states Netanyahu is ALIVE and that his post-rumor appearances are GENUINE, not deepfakes — anchored to his live, multi-outlet March 12 news conference and/or his March 15-16 Jerusalem cafe videos corroborated by the cafe — citing a loadable, reliable source (Snopes, NBC, or Euronews). FAIL the original note's specific failure: do NOT lean on a Snopes URL or gov.il page without confirming the claim is actually substantiated, and ensure the cited source loads and directly supports that he is alive (the original was rated notHelpfulSourcesMissingOrUnreliable). Also FAIL any note that entertains the deepfake theory, treats the question as open, or relies solely on the AI image description (the attached image was widely claimed to be AI/fake in the replies, so the bot must not authenticate or debunk via the image alone).",
+  "reference_note": "Benjamin Netanyahu is alive and his recent on-camera appearances are genuine, not deepfakes. He held a live, widely-broadcast news conference on March 12, 2026 and posted videos from the HaSataf cafe in Jerusalem on March 15-16 that the cafe confirmed were authentic. Fact-checkers (Snopes, NBC) traced the death rumor to Iranian state media. https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/ https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+  "original_unhelpful_note": {
+    "text": "Benjamin Netanyahu is alive; he visited Ashdod Port on March 10, 2026, and held a news conference on March 12 debunking death rumors. https://www.gov.il/en/pages/event-ashdod100326 https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (21) — the dominant reason. The verdict is correct and it even cites the right Snopes article, but it leads with the same likely-dead gov.il event URL and a contestable Ashdod-Port visit, and the Snopes URL is missing the trailing slash/path that resolves cleanly. Raters split across sources-unreliable / incorrect / opinion, indicating the cited proof didn't land despite the conclusion being right.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/",
+      "https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+      "https://www.euronews.com/my-europe/2026/03/18/netanyahu-denies-death-rumours-in-social-media-clip-which-grok-falsely-branded-ai"
+    ],
+    "notes": "Same hoax wave as tweet 2034230519907627221. Netanyahu is alive; live March 12 news conference plus corroborated March 15-16 cafe videos disprove the deepfake claim. Rumor seeded by Iranian state media; even Grok briefly mislabeled his denial clip as AI, which was itself debunked."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.6M-impression deepfake/death conspiracy about a sitting head of government during war; the 'his videos are deepfakes' framing erodes trust in authentic footage. High public-interest correction."
+  },
+  "difficulty": "easy"
+}

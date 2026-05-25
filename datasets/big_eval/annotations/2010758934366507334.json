@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2010758934366507334",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A pro-Ukraine OSINT account posts video of Russian soldiers training with green pop-up tents, hedging that this is 'some unknown technology... apparently' an individual tent for infantry to wear during assaults / winter.",
+  "why_note_decision": "The tweet is substantially accurate and appropriately hedged ('unknown technology', 'apparently'). Russian forces ARE documented repurposing commercial portable shower/toilet tents as individual concealment shelters against FPV/thermal drones (Militarnyi, United24, The Sun); the video's own audio is a Russian instructor training troops to wear, fold and walk in the tents — i.e. they are genuinely being fielded as individual infantry shelters. The original note's framing ('these are commercial pop-up privacy shelters... NOT new military technology for infantry protection during assaults') is the misleading part: it is true they are commercial tents, but false to imply they are not being used militarily — Russia is in fact deploying them as improvised infantry concealment. The note injects a dismissive counter-narrative against accurate reporting, so no note is needed.",
+  "judge_guidance": "PASS only if the bot declines to write a corrective note. The tweet correctly (and hedged) reports a REAL, OSINT-documented Russian tactic: commercial pop-up shower/toilet tents repurposed as individual soldier shelters to evade FPV/thermal drones. CRITICAL FAIL: any note that, like the original, claims these are 'just commercial privacy/toilet tents, NOT military technology / not for infantry protection' — that contradicts documented reporting and the video's own training audio. A purely additive note noting the tents are repurposed civilian products AND that Russia is using them for drone concealment would be borderline-acceptable context, but a note framed as a debunk of the tweet should FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The tents depicted are commercial pop-up privacy shelters for use as changing rooms or portable toilets, not new military technology for infantry protection during assaults. https://www.ebay.com/p/Army-Green-Portable-Changing-Room-Shower-Tent-Camp-Toilet-Pop-up-Privacy-Shelter/501262754 https://tuffstuffoverland.com/products/tuff-stuff-r-portable-outdoor-toilet-tent",
+    "failure_reason": "Half-true but misleadingly dismissive: correct that the tents are commercial products, but wrong to imply they are not being used militarily. Russia is documented repurposing them as individual infantry concealment vs drones; the tweet's hedged report is accurate. Sources are shopping listings, not reporting on the tactic.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "substantially_true",
+    "sources_checked": [
+      "https://militarnyi.com/en/news/russian-army-seeks-cover-from-fpv-drones-in-portable-shower-toilet-tents/",
+      "https://united24media.com/latest-news/russias-answer-to-ukrainian-drones-soldiers-shelter-in-bizarre-vertical-pods-14960",
+      "https://www.the-sun.com/news/15772882/desperate-russian-soldiers-hidden-tents-ukraine-tactic/"
+    ],
+    "notes": "Documented tactic: commercial shower/toilet tents repurposed by Russian troops for FPV/thermal-drone concealment (and exposure to weather). Video audio is a Russian instructor drilling troops on wearing/folding the tents — confirms genuine military fielding."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Ukraine-war OSINT with ~667k views; accurate battlefield-adaptation reporting. Mild progress/discourse value in not letting a dismissive false 'correction' bury a real story; not high-stakes misinfo."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2047814291181441211",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "contested_legal_opinion",
+  "tweet_summary": "Lawyer Robert Barnes quotes a legal argument (attributed to one Mohammad Yousef) that Iran is NOT violating international law by applying the 'innocent passage' regime in the Strait of Hormuz, especially given its armed conflict with the US/Israel.",
+  "why_note_decision": "No note is warranted. The tweet shares a legal-interpretation OPINION about a genuinely contested question of international law. The original note frames the matter as settled — 'transit passage applies, unilateral closure or tolls are generally illegal' — but the scholarly literature shows real disagreement: Iran signed but never ratified UNCLOS and formally declared that the transit-passage regime is a treaty 'package deal,' not customary international law binding on non-parties; the persistent-objector doctrine may apply; and whether transit passage has fully crystallized as binding custom on non-parties is openly debated by international lawyers. Because both positions are defensible legal arguments (not a true/false fact), a Community Note that declares one side correct is itself contestable opinion. This is a debate, not a correctable factual claim.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap: the tweet is a legal-interpretation OPINION on a genuinely unsettled question of international law (whether Iran owes only 'innocent passage' or the broader 'transit passage' regime in the Strait of Hormuz). Reputable international lawyers disagree — Iran signed but never ratified UNCLOS and formally rejects transit passage as customary law binding on non-parties, invoking persistent-objector arguments, while the US and others argue transit passage is binding custom. There is no settled fact to correct. FAIL any note that flatly asserts Iran's position is 'disputed/illegal,' that 'transit passage applies' as settled law, or that closure/tolls are 'generally illegal,' because that takes one contested side of a live legal debate and presents it as fact (this is exactly the original note's error). Only declining to write a note is correct here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Iran's claim that it can restrict the Strait of Hormuz to innocent passage is disputed. Under customary international law (reflected in UNCLOS), transit passage applies, and unilateral closure or tolls are generally illegal, even in conflict.    https://www.ejiltalk.org/codifying-coercion-irans-new-legal-regime-and-the-law-of-international-straits    https://gulfnews.com/world/mena/iran-s-hormuz-tolls-defy-global-law-sets-dangerous-precedent-1.500516799    https://www.derasat.org.bh/en/the-strait-of-hormuz-a-legal-perspective-on-maritime-security",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (3) / notHelpfulOpinionSpeculation (3) on a low-volume note. The deeper problem is that the note takes a contested side of an open international-law debate and presents it as settled fact ('transit passage applies... generally illegal'). The scholarship the note itself points to shows genuine disagreement (Iran's non-ratification of UNCLOS, persistent-objector doctrine, uncertainty whether transit passage binds non-parties). 'Correcting' a legal opinion with another legal opinion is not what a Community Note should do — no note was warranted.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "contested_opinion",
+    "sources_checked": [
+      "https://www.derasat.org.bh/en/the-strait-of-hormuz-a-legal-perspective-on-maritime-security/",
+      "https://internationallaw.blog/2026/04/06/does-iran-possess-the-right-to-close-the-strait-of-hormuz-under-international-law/",
+      "http://opiniojuris.org/2026/05/06/the-closure-of-the-strait-of-hormuz-by-iran-considerations-over-the-law-of-the-sea-and-law-of-naval-warfare/",
+      "https://theconversation.com/strait-of-hormuz-why-the-us-and-iran-are-sailing-in-very-different-legal-waters-280557"
+    ],
+    "notes": "Genuinely unsettled. Iran signed but never ratified UNCLOS and declared transit passage a non-customary treaty package; persistent-objector doctrine may apply; scholars (Opinio Juris, EJIL:Talk, Chatham House) note real uncertainty whether transit passage binds non-parties. The US argues it is binding custom. Both are reasoned legal positions, so the tweet states a defensible opinion, not a falsehood."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Text-only legal-opinion post (33k impressions) on a wartime maritime-law dispute; valuable mainly as a no-note example teaching the bot not to adjudicate genuinely contested expert legal debates as if they were factual errors."
+  },
+  "difficulty": "hard"
+}

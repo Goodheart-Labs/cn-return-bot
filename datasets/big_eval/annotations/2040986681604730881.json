@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2040986681604730881",
+  "role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["celebrity_entertainment_sports", "manipulated_or_fabricated_evidence"],
+  "category_fit": "partial",
+  "suggested_category": "miscontextualized_fiction_as_statement",
+  "tweet_summary": "A still from Netflix's 'The Sandman' (S2E7) of two men in papal/cardinal attire kissing, captioned 'This is a scene from the new Netflix show... It depicts the Pope kissing a priest', with a list of Jewish-coded creators -- an antisemitic 'usual suspects' dog-whistle.",
+  "why_note_decision": "The image is a genuine Sandman S2E7 ('Time and Night') scene, but the caption miscontextualizes it: within the story the two figures are the mythological tricksters Loki and Puck (in a relationship) who have DISGUISED themselves as the Pope and a cardinal to sow chaos -- they are not 'the Pope' or a real priest, and the scene is not an attack on Catholicism. The post also misattributes creators (Samuel Kieth and Mike Dringenberg are original comic artists, not the show's producers/directors) to push an antisemitic frame. A note clarifying the in-show context is warranted. The original note states the Loki/Puck context but was rated not-helpful, likely for being incomplete/under-sourced and for not addressing the false creator list.",
+  "judge_guidance": "PASS only if the note establishes the in-show context: the still is from Netflix's The Sandman, season 2 episode 7 ('Time and Night'), and the two characters are the mythological tricksters Loki and Puck, who within the plot have disguised themselves as the Pope and a cardinal to cause chaos -- it is fiction depicting mythic characters, not a real or literal depiction of the Pope/Catholic clergy. Bonus if it notes the listed 'producers/directors' are inaccurate (e.g. Samuel Kieth and Mike Dringenberg are original comic artists, not the series' producers). FAIL if it merely says 'this is a TV scene' without the Loki/Puck disguise context, if it concedes the 'Pope kissing a priest' framing, or if it engages the antisemitic creator framing as legitimate. Keep neutral and avoid editorializing about the controversy.",
+  "reference_note": "This is a scene from Netflix's The Sandman, S2 E7 ('Time and Night'). The two figures are the mythological tricksters Loki and Puck, who in the story have disguised themselves as the Pope and a cardinal to cause chaos -- not a literal depiction of the Pope or Catholic clergy. https://winteriscoming.net/the-sandman-recap-review-season-2-episode-7-time-and-night",
+  "original_unhelpful_note": {
+    "text": "In Season 2, Episode 7 of \"The Sandman,\" this scene depicts the mythical tricksters Loki and Puck. Within the show's narrative, the characters are in a relationship and have disguised themselves as the Pope and a cardinal to cause global chaos. https://winteriscoming.net/the-sandman-recap-review-season-2-episode-7-time-and-night",
+    "failure_reason": "Accurate on the Loki/Puck context but rated not-helpful, likely because it leans on a single fan-site source and does not flag the post's false creator list or the misleading 'Pope kissing a priest' framing; some raters saw it as note-not-needed on obvious fiction.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "miscontextualized_true_image_with_false_framing",
+    "sources_checked": [
+      "https://winteriscoming.net/the-sandman-recap-review-season-2-episode-7-time-and-night",
+      "https://thecatholicherald.com/article/the-sandman-vatican-scene-resurfaces-sparking-fresh-backlash",
+      "https://www.thereviewgeek.com/thesandman-s2e7review/"
+    ],
+    "notes": "Real Sandman S2E7 scene; characters are Loki and Puck disguised as Pope/cardinal. The caption's literal 'Pope kissing a priest' is misleading and the creator list mixes original comic artists with show staff to push a 'usual suspects' antisemitic narrative."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "11M views and an explicitly antisemitic comment section; correcting the fictional-context framing pushes back on a viral religious-grievance/antisemitism narrative."
+  },
+  "difficulty": "medium"
+}
