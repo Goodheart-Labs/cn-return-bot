@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2052363800750305773",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "trivial_pedantry",
+  "tweet_summary": "Tribute to David Attenborough on May 7, 2026, saying he 'just turned 100' with three photos of him.",
+  "why_note_decision": "Attenborough was born May 8, 1926; tweet was posted May 7, 2026 — one day before his actual centennial. The 'just turned 100' framing is one day early — pedantically incorrect but emotionally accurate (centennial celebrations and BBC programming were already underway in the lead-up). Calling this misinformation worthy of a note is exactly the trivial-pedantry trap; raters correctly buried it with 38 'note not needed' vs only 9 'incorrect'. The top reply even gently corrects it ('his birthday is tomorrow') in a friendly tone, which is the appropriate response — not a Community Note.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a tribute one day before Attenborough's 100th birthday (born May 8, 1926; tweet posted May 7, 2026). The 'just turned 100' is one day early but harmless — centennial coverage was already underway. FAIL any note that pedantically corrects 'he turns 100 tomorrow' — the reply thread already does this gently and Community Notes is overkill. FAIL any note that calls the tribute itself into question.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Sir David Attenborough turns 100 on May 8, 2026. Official records and the BBC indicate his birth date is May 8, 1926. Consequently, he remains 99 years old on May 7, with centennial tributes and public events scheduled to take place on Friday, May 8. https://www.britannica.com/biography/David-Attenborough https://www.bbc.com/mediacentre/articles/2026/sir-david-attenborough-100th-birthday-on-the-bbc",
+    "failure_reason": "Pedantic one-day correction on a tribute tweet; replies already corrected gently. 381→ 38 'note not needed' tags / 72 raters affirm note-not-needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Attenborough born May 8, 1926; tweet posted May 7, 2026 — off by one day, trivial",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/100th_birthday_of_David_Attenborough",
+      "https://www.npr.org/2026/05/08/nx-s1-5802305/david-attenborough-celebrates-his-100th-birthday",
+      "https://time.com/article/2026/05/08/david-attenborough-turns-100/"
+    ],
+    "notes": "Multiple sources confirm May 8, 1926 birth; 100th birthday celebrated May 8, 2026 (Royal Albert Hall gala, BBC One special)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Celebratory post; correcting the day is meaningless."
+  },
+  "difficulty": "easy"
+}

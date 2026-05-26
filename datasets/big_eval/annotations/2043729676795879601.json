@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2043729676795879601",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "manipulated_or_fabricated_evidence", "conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Anonymous account 'DG' shares grayscale 'security camera footage' purportedly leaked from Epstein's properties showing Volodymyr Zelensky greeting Epstein and sitting with him in a living room, claiming Zelensky was 'reportedly close' with Epstein.",
+  "why_note_decision": "The images are AI-generated deepfakes: (a) Zelensky has a beard in the photos but had no beard prior to 2019 (when Epstein died); the footage purports to show him at an age that contradicts his real appearance; (b) Hive AI deepfake detector flagged them ~80.7% likely AI; (c) no credible outlet (Reuters, AP, AFP) has reported on or authenticated such 'leaked' footage, and (d) Epstein's properties have been thoroughly investigated — no such footage exists in any public record. Multiple top-engagement comments (4067+ likes) explicitly identify the images as AI fakes. With 850k impressions, this is high-impact disinformation about a wartime head of state. A correction is critically warranted.",
+  "judge_guidance": "PASS only if the note (a) explicitly identifies the images as AI-generated / deepfake (NOT real surveillance footage), AND (b) ideally cites the timeline contradiction (Zelensky beardless before 2019 / Epstein died Aug 2019) or a deepfake-detection result. Strong sources: DW fact-check on AI Epstein fakes, EU vs Disinfo report, Ukrinform fact-check (all already cited by the original note). Notes that say 'no evidence Zelensky knew Epstein' without addressing the AI-generated nature of the images are TOO WEAK and should FAIL — the load-bearing falsehood is the manufactured visual evidence. Notes that endorse the footage as real should FAIL. Notes that get distracted into 'who else was on the island' tangents should FAIL.",
+  "reference_note": "The 'security camera footage' is AI-generated, not real footage from Epstein's properties. Zelensky did not have a beard before 2019 (when Epstein died), contradicting the images; AI detectors flag them as ~80% likely deepfakes; and no credible outlet has authenticated any such footage. https://www.dw.com/en/fact-check-ai-fakes-distort-claims-on-epstein-files/a-75798290 https://euvsdisinfo.eu/report/zelenskyy-appears-in-the-epstein-files-as-a-potential-human-trafficker https://www.ukrinform.net/rubric-factcheck/4087756-epstein-files-russian-propaganda-spreads-fake-claims-of-ukrainian-governments-involvement-in-human-trafficking.html",
+  "original_unhelpful_note": {
+    "text": "The image is AI-generated, not real footage. No evidence exists of Zelensky associating with Epstein or visiting his island. Fact checks confirm such claims and images are often fabricated disinformation. https://www.dw.com/en/fact-check-ai-fakes-distort-claims-on-epstein-files/a-75798290 https://euvsdisinfo.eu/report/zelenskyy-appears-in-the-epstein-files-as-a-potential-human-trafficker https://www.ukrinform.net/rubric-factcheck/4087756-epstein-files-russian-propaganda-spreads-fake-claims-of-ukrainian-governments-involvement-in-human-trafficking.html",
+    "failure_reason": "Note's content is essentially correct and well-sourced. The 'sources missing/unreliable' (12) and 'opinion/speculation' (9) tags likely reflect that DW/EUvsDisinfo/Ukrinform are viewed as 'pro-Ukraine' by skeptical raters; the original note could have benefited from citing a more neutrally branded deepfake-detection tool (Hive moderation) or a major outlet. Provisional 'no_note_needed' is clearly wrong — this is a 850k-impression deepfake of a head of state, exactly what notes are for.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: images are AI-generated deepfakes; no authenticated footage of Zelensky and Epstein exists; the bearded Zelensky depicted is anachronistic given Epstein died in August 2019.",
+    "sources_checked": [
+      "https://www.dw.com/en/fact-check-ai-fakes-distort-claims-on-epstein-files/a-75798290",
+      "https://euvsdisinfo.eu/report/zelenskyy-appears-in-the-epstein-files-as-a-potential-human-trafficker",
+      "https://www.ukrinform.net/rubric-factcheck/4087756-epstein-files-russian-propaganda-spreads-fake-claims-of-ukrainian-governments-involvement-in-human-trafficking.html"
+    ],
+    "notes": "In-thread Hive AI detection (@rerum_de_bello, 208 likes) explicitly flags 80.7% deepfake likelihood. Multiple 1000+-like comments (kvistp, maxtasty1, TankChanChannel) call out the Zelensky-beard timeline anachronism."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "850k impressions on AI-fabricated 'evidence' tying a wartime head of state to Epstein — directly weaponizes deepfakes for geopolitical disinformation. Correcting AI-fake content about world leaders is among the highest-value uses of community notes."
+  },
+  "difficulty": "easy"
+}

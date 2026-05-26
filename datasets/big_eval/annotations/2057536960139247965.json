@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2057536960139247965",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war", "political_misinformation"],
+  "category_fit": "partial",
+  "suggested_category": "contested_framing_war",
+  "tweet_summary": "Quote-tweet asserting 'The USA has murdered about 200 Caribbean fisherman for no reason in the past 5 months', referring to US military strikes on boats in the Caribbean/Pacific.",
+  "why_note_decision": "The tweet is dominated by contested framing ('murdered', 'fishermen', 'no reason') rather than crisp factual claims. The death toll (~200 in 5 months) is in the ballpark: ~194 by May 8, 2026, over ~9 months — so the count is roughly right, the timeframe is off, and 'Caribbean' undercounts (strikes also in eastern Pacific). On 'fishermen': The Guardian's May 2026 investigation identified victims with no known criminal ties and reported families say many were civilian fishers; the US has provided no public evidence the victims were traffickers. So the most charged claim ('fishermen, no reason') is partially supported by reporting. The original note tries to correct factual details but is itself argumentative ('not provided evidence', 'no known criminal ties') in a way that mirrors the tweet's framing — and raters split heavily with high incorrect/argumentative/opinion-speculation tags. A correct community note here would be hard to write without taking a political side, and the tweet's biggest issues are framing words ('murdered', 'no reason'), not falsifiable facts. Falls under opinion/framing.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a strictly factual context note that (a) does NOT use partisan framing words like 'murdered' or 'no reason', (b) accurately states the toll (~194 killed by mid-May 2026 over ~9 months in both Caribbean AND eastern Pacific), and (c) acknowledges both sides: US says strikes target alleged narco-traffickers; investigative reporting (Guardian, May 15 2026) identified victims with no known trafficking ties and families say many were fishers. FAIL if the note declares the tweet 'incorrect' on the 'fishermen' point (Guardian reporting supports it), or if it confidently asserts victims WERE traffickers without evidence. The original note tried this and failed — it mirrored the tweet's politicized framing in reverse.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The US military has killed ~194 people in strikes on boats since September 2025 (~9 months, not 5), in both the Caribbean and eastern Pacific. The US has not provided evidence victims were drug traffickers; some identified victims were fishermen with no known criminal ties. https://en.wikipedia.org/wiki/United_States_strikes_on_alleged_drug_traffickers_during_Operation_Southern_Spear https://www.theguardian.com/us-news/2026/may/15/us-military-airstrikes-caribbean-pacific-victim-identities",
+    "failure_reason": "Note-not-needed for a tweet that's mostly framing/opinion; the note's factual additions (toll, timeframe) are minor pedantry and the rest ('no evidence they were traffickers') effectively endorses the tweet's framing rather than correcting it. Heavily downvoted as argumentative/opinion-speculation.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Mixed — the core death count is approximately right (~194 by May 2026); 'Caribbean' is partial (Pacific too); 'fishermen' is supported by Guardian investigation; 'murdered' and 'no reason' are contested political framing.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/United_States_strikes_on_alleged_drug_traffickers_during_Operation_Southern_Spear",
+      "https://www.theguardian.com/us-news/2026/may/15/us-military-airstrikes-caribbean-pacific-victim-identities",
+      "https://www.hrw.org/news/2025/12/16/qa-us-military-operations-in-the-caribbean-pacific"
+    ],
+    "notes": "Operation Southern Spear; ~194 killed by 8 May 2026 across ~9 months. Guardian May 15 2026 identified victims with no trafficking links; families report many were fishers."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Extrajudicial killings of ~200 people is a major moral/policy issue with international law implications. A note here matters but is also high-risk to get wrong; opting out is reasonable."
+  },
+  "difficulty": "hard"
+}

@@ -76,6 +76,42 @@ suppression. Final counts per `no_note_reason` will be reported in report.md aft
 | Showcase: bridging_cross_partisan | 10 | yes |
 | **Total** | **~495** | ~50/50 |
 
+## v2 territory map (derived from 455 annotations + ~180 subagent-proposed categories)
+
+After ~455 fact-checked annotations the data justifies promoting 5 new territory categories
+(the originals stay; some get scope-clarifying notes). Annotators going forward should use this
+v2 list as the `categories` vocabulary; Phase 6b will normalize the earlier 455 to v2.
+
+**Originals (13, kept):**
+1. `ai_generated_media` — *clarify scope:* media that IS AI-generated. Distinct from #15 below.
+2. `misattributed_or_miscontextualized_media`
+3. `manipulated_or_fabricated_evidence` — incl. doctored images, fake screenshots; fabricated *quotes* split out (see #18).
+4. `staged_or_scripted_content` — *real* footage that was staged/scripted, presented as spontaneous. (Jokes/satire/memes split out, see #14.)
+5. `breaking_news_and_war`
+6. `statistical_or_numerical_claim` — incl. fabricated polls + wrong-by-orders-of-magnitude meme stats.
+7. `conspiracy_and_viral_hoax`
+8. `politics_and_policy` — legislative votes, official actions, partisan claims. (Court/legal cases split out, see #17.)
+9. `health_medical_science`
+10. `overhyped_research_or_product`
+11. `scams_fraud_finance`
+12. `platform_manipulation`
+13. `celebrity_entertainment_sports`
+
+**Promoted from annotation discoveries:**
+14. **`joke_or_satire`** — overt jokes, memes, satire, parody accounts, sarcastic replies, in-jokes, April Fools, sports/community banter. Distinct from staged content because the *form* is humor. (~35+ in suggested_categories; matches the `joke_or_meme` / `satire_parody` no_note_reasons that together account for ~42 flips.)
+15. **`real_media_falsely_called_ai`** — the *inverse* of AI media. The note (or the tweet) wrongly claims real footage/imagery is AI-generated. A distinct failure mode the pipeline must handle (e.g. the note debunks a true event by calling its real video AI).
+16. **`antisemitic_conspiracy`** — antisemitic conspiracy framings (Greater Israel, false-flag, 9/11). Distinct from generic conspiracy_and_viral_hoax for the safety + impact axis.
+17. **`legal_or_court_claim`** — court rulings/lawsuits/legal interpretations/arrests/criminal accusations. Distinct from #8 (which is legislative/executive). Recurs across batches (Cuomo ballot, Bessent crypto, Loomer/Farmer mug shot, Mark Robinson, Tate, etc.).
+18. **`fabricated_quote`** — invented dialogue/statement attributed to a public figure (incl. fake quote-image memes). Promoted out of #3 because it's the most recurring failure-pattern in the data.
+
+**no_note_reason vocabulary** (the false-positive flavor — already a separate axis): keep as-is —
+`true_claim`, `opinion_or_framing`, `accurate_reporting_contested`, `joke_or_meme`, `satire_parody`,
+`trivial_pedantry`, `obvious_fake_widely_known`, `insider_reporting_framing`.
+
+Multi-label allowed (a row can be `ai_generated_media` + `breaking_news_and_war`, etc.). Annotators
+who don't find a fit for a row should set `category_fit: poor` and write a `suggested_category` —
+those continue to feed future taxonomy updates.
+
 ## Data realities that shaped this (FYI)
 
 - **Many "unhelpful" notes are actually correct** but failed on sourcing/tone/timing. For failure rows

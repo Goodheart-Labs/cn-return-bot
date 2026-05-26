@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2011412920903872766",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "celebrity_gossip_no_factcheck",
+  "tweet_summary": "A Selena Gomez fan account claims Miley Cyrus and Ariana Grande 'ignored' Selena's Powerpuff Girls-themed Instagram story tribute after the 2026 Golden Globes; the second image shows Selena's story tagging both.",
+  "why_note_decision": "The 'ignored' claim is celebrity-gossip framing — whether someone reposted/responded to an Instagram story by a deadline is not a stable, checkable fact, and Instagram interactions (likes/views/reshares) are not publicly auditable in a way a note can authoritatively settle. The original note attempts to debunk with 'reports focused on the positive sentiment of the post' without sources, which is opinion-laden. There is no checkable misleading claim to correct; this is the kind of fan-account framing dispute that doesn't warrant a community note.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a fan-account framing claim about how two celebrities reacted to an Instagram story — not publicly verifiable in any decisive way. A note saying 'reports focused on the positive sentiment' (as the original did) is opinion, not correction. The correct outcome is no note; any note that takes a side in a celebrity-feud framing dispute is a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Selena Gomez posted a tribute to Miley Cyrus and Ariana Grande on her Instagram story following the Golden Globes. The post expressed pride in the women she grew up with, and reports focused on the positive sentiment of the post. https://www.instagram.com/p/DTdsjdUkUhF",
+    "failure_reason": "Doesn't address the 'they ignored her' claim at all; just restates what the story said, with no sourced evidence of either celebrity responding. Reads as opinion. Raters tagged 'incorrect', 'opinion/speculation', 'note not needed', 'missing key points'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "unverifiable celebrity gossip — story exists, reactions of tagged users are not publicly auditable",
+    "sources_checked": [
+      "https://www.hola.com/us/celebrities/20260114877776/selena-gomez-miley-cyrus-ariana-grande-powerpuff-girls-tribute/",
+      "https://www.soapcentral.com/pop-culture/news-pure-nostalgia-energy-fans-react-selena-gomez-shares-powerpuff-girls-edit-featuring-herself-ariana-grande-miley-cyrus-golden-globes"
+    ],
+    "notes": "The Powerpuff Girls tribute is real and went viral after the Jan 11 2026 Golden Globes. Public coverage does not document whether Miley/Ariana acknowledged it; this is a feud-framing claim, not a checkable fact."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Celebrity gossip — no EA/AGI/welfare relevance."
+  },
+  "difficulty": "easy"
+}

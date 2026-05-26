@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1981246971810894229",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["satire_or_joke_misread"],
+  "category_fit": "poor",
+  "suggested_category": "satire_or_joke_misread",
+  "tweet_summary": "Designer Soren Iverson posts a fake/joke UI mockup of Google Maps notifying police when you speed, with an obvious 'Wait what?' button and a 'Calling police in 2s' countdown — part of his daily satirical-UI series.",
+  "why_note_decision": "Soren Iverson is well-known for daily fictional-product UI mockups (bio: 'New ideas daily'). The mockup itself contains tongue-in-cheek elements ('Wait what?' button, 2-second countdown). Comments uniformly read it as a joke ('Don't open Pandora's box', 'Seeing that red button will make me crash'). The community correctly rated the original note NOT_HELPFUL (dominant tag noteNotNeeded). The bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: this is a Soren Iverson satirical-UI mockup, not a sincere product announcement. FAIL any note that: (a) literally explains Google Maps doesn't notify police (the original note's failure), (b) calls the post 'misleading' without recognizing the satire context, or (c) treats the image as a real Google Maps screenshot.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The claim that Google Maps notifies police if you go over the speed limit for more than 3 seconds is false. Google Maps only provides speed limit warnings to the user and does not send any reports to law enforcement or third parties. https://developers.google.com/maps/documentation/navigation/android-sdk/speed-alerts",
+    "failure_reason": "note_not_needed — fact-checks an obviously satirical UI mockup by a designer known for daily fictional-UI posts. The community correctly rated it NOT_HELPFUL.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satire_no_factual_claim",
+    "sources_checked": [
+      "https://x.com/soren_iverson"
+    ],
+    "notes": "Soren Iverson is a well-known designer who posts satirical UI mockups daily. The image itself shows obviously-comedic elements ('Wait what?' button, 2s countdown to call police)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "147K-impression joke post; correcting bots' tendency to fact-check satire is the real value here, not the content."
+  },
+  "difficulty": "medium"
+}

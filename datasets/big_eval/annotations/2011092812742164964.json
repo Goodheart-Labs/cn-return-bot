@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2011092812742164964",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "misquoted_per_year_vs_total",
+  "tweet_summary": "Tweet attributes to former Al-Ittihad president Anmar Al Haili the statement that he offered Lionel Messi €1.4 BILLION PER YEAR, which Messi refused.",
+  "why_note_decision": "The €1.4 billion figure is real but is the TOTAL package over the contract length, not annual. Al Haili's June 2024 interview described a total offer of €1.4 billion; the 'per year' phrasing in this recirculation is a viral exaggeration. Multiple outlets (OneFootball, Sports Mole, Sportskeeda, Tribal Football) describe it as a total offer. Comments are mostly stunned ('Bro said no to a billion'), so the misframing is driving viewer reaction. The original note's substance is right but it leans on a single (Goal.com) source and is wordy — raters mostly tagged 'note not needed', suggesting the case wasn't tight. A correction IS warranted because the per-year framing is a meaningfully different and inflated claim.",
+  "judge_guidance": "PASS if the note clearly states that Al Haili's €1.4 billion figure refers to the TOTAL offer (whole contract), not an annual salary, and cites credible football reporting (OneFootball, Tribal Football, Sports Mole, Sportskeeda all support this). FAIL if the note merely says 'unverified' or dives into Messi's family motives without addressing the per-year-vs-total error. FAIL if the note repeats the OP's framing.",
+  "reference_note": "Per Al-Ittihad's then-president Anmar Al Haili, the €1.4 billion figure was the total proposed package across the whole contract length, not €1.4 billion per year. Recent recirculations have framed it as annual, which exaggerates the offer. https://onefootball.com/en/news/confirmed-in-saudi-arabia-messi-was-offered-14-billion-42222013 https://www.sportsmole.co.uk/football/inter-miami/transfer-talk/news/i-offered-messi-1-4-billion-euros-and-he-rejected-the-offer-_589872.html",
+  "original_unhelpful_note": {
+    "text": "Al-Haili stated in a June 2024 interview that Al-Ittihad offered Messi €1.4 billion total—not per year—which he refused due to family preferences for the US. Recent recirculations have exaggerated the figure as annual.    https://www.goal.com/en-us/lists/revealed-the-insane-offer-lionel-messi-received-join-al-hilal-before-argentina-hero-joined-inter-miami/blt425d28a1db5057df",
+    "failure_reason": "Substantively right but raters tagged 'note not needed' / 'sources unreliable' — single Goal.com source and the additional 'family preferences' phrasing added flavor that drew partisan downvoting. The correction is real but the note didn't land.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — figure is total package, not annual",
+    "sources_checked": [
+      "https://onefootball.com/en/news/confirmed-in-saudi-arabia-messi-was-offered-14-billion-42222013",
+      "https://www.sportsmole.co.uk/football/inter-miami/transfer-talk/news/i-offered-messi-1-4-billion-euros-and-he-rejected-the-offer-_589872.html",
+      "https://www.tribalfootball.com/article/soccer-saudi-professional-league-al-ittihad-president-leaves-door-open-to-messi-he-rejected-1-4-billion-from-us-ff2d86be-64e5-472d-abbb-235df2c1aefc"
+    ],
+    "notes": "All credible outlets describe €1.4bn as the total proposed deal value, not annual salary. The OP's quote 'per year' inflates this."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2.3M impressions; not high-stakes, but numerical inflation is the kind of claim CNs should be calibrated to catch."
+  },
+  "difficulty": "medium"
+}

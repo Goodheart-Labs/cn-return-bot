@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2047204704015298917",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "K-pop gossip account claims a paparazzi photo gives a 'clear' view of BLACKPINK's Jennie's feet during a viral 'ugly feet' controversy, sharing two images including a close-up of feet in flip-flops on a red carpet.",
+  "why_note_decision": "The tweet is body-shaming gossip in a viral fan/anti-fan feud. Whether the photo is 'paparazzi' vs 'influencer video screen grab' is a trivia point about provenance that doesn't change anything material; the dispute is over an aesthetic opinion ('ugly feet'), not a factual claim that misleads readers. The original note arguing the image is from an influencer's low-angle video is technically a provenance correction, but it's the kind of fandom-policing pedantry that notes shouldn't address. Rating volume is very low (5) and the tweet isn't asserting a verifiable false fact.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is body-shaming/aesthetic opinion gossip about a celebrity; provenance trivia about whether the photo came from a paparazzo vs an influencer's low-angle video doesn't correct misinformation a reader benefits from. Any note here is a false positive. Failure mode to watch: a note that takes a stance on whether Jennie's feet 'really' look that way — that's opinion territory, not fact-checkable.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The images are from a Coachella video filmed by an influencer using a low angle that distorts foot size, not paparazzi photos. https://www.sportskeeda.com/us/k-pop/news-it-s-just-camera-angle-fans-slam-criticism-blackpink-s-jennie-s-big-feet-viral-2026-coachella-appearance https://www.koreaboo.com/news/influencer-exposes-made-delete-unedited-video-blackpinks-jennie-sparking-backlash",
+    "failure_reason": "Provenance pedantry on body-shaming celebrity gossip; the tweet's actual content (sharing photos in an 'ugly feet' debate) isn't factually misleading in a way readers benefit from correcting.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "No checkable factual claim warranting a note; subjective body-shaming gossip.",
+    "sources_checked": [],
+    "notes": "Photo provenance is contested but irrelevant to any consequential claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Celebrity body-shaming gossip; not a high-leverage target for fact-checking infrastructure."
+  },
+  "difficulty": "easy"
+}

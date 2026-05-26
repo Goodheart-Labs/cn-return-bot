@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2049858815680520235",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["staged_or_scripted_content", "religion_culture"],
+  "category_fit": "partial",
+  "suggested_category": "religious_practice_video",
+  "tweet_summary": "TaraBull (1.47M followers, 94k views on this tweet) posts a video of Pastor Kathryn Krick of 5 Fold 'Revival' Church performing what is framed by the on-screen overlay as 'WOMAN SET FREE FROM WITCHCRAFT' — an exorcism/deliverance ritual. The tweet body is purely a one-line identification of the pastor; the video is the content. Replies are mostly skeptical (calling it performative, fake, possessed-actor).",
+  "why_note_decision": "A note is not warranted. The tweet itself makes no checkable factual claim — it just identifies the pastor in the video. Whether Krick's exorcisms are genuine, performative, or use repeat-attendees is contested and primarily a matter of religious interpretation. The original note's allegation that Krick uses 'crisis actors' is sourced only to Protestia (a Christian discernment blog) — that's a low-tier source for an extraordinary factual claim, and the underlying evidence (one woman with a recognizable tattoo appearing across multiple Krick/Bob Larson sessions) is suggestive but not definitive proof of staging (she could be a recurring attendee, follower, or believer who seeks repeated deliverance). With only 4 ratings dominated by 'Incorrect' (2), raters are right to be skeptical of the note. The tweet's lack of an explicit factual claim, combined with the contested nature of the staging allegation, makes this a no-note situation.",
+  "judge_guidance": "PASS only if the bot declines to write a note (any note is a false positive). The tweet contains no checkable factual misinformation — it merely identifies the pastor in a video of a deliverance ritual. A bot that writes a note accusing Krick of using 'crisis actors' or 'staged exorcisms' based on a single Protestia blog post FAILS — that's an opinion/contested-claim from a partisan source, not a fact-check. A bot that writes a note defending exorcism's reality or attacking it on theological grounds FAILS (religious-practice opinion). A bot that asserts the deliverance ritual is 'fake' generically without strong sourcing FAILS. Genuine misleader on this tweet would only exist if the tweet itself asserted something demonstrably false; it does not.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Kathryn Krick's exorcisms have been exposed as staged using the same actors across multiple videos, including a woman with a distinctive tattoo appearing in sessions by Krick and others. https://protestia.com/2021/08/06/exposed-apostle-kathryn-krick-and-exorcist-bob-larson-use-same-crisis-actor-to-act-demon-possessed https://protestia.substack.com/p/worlds-fakest-exorcist-pays-ladies",
+    "failure_reason": "Note rated NotHelpfulIncorrect (2 of 4) — raters reject the framing. Sources are both from Protestia, a Christian discernment blog (not a mainstream fact-check). The underlying evidence (tattoo-matching across Krick and Bob Larson sessions) is suggestive but doesn't prove staging — the woman could be a recurring follower/attendee seeking repeated deliverance. The tweet itself doesn't make a checkable factual claim, so the note is also adding context to something that wasn't being misrepresented. Classic 'note as opinion' false positive.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "contested_religious_practice",
+    "sources_checked": [
+      "https://protestia.com/2021/08/06/exposed-apostle-kathryn-krick-and-exorcist-bob-larson-use-same-crisis-actor-to-act-demon-possessed",
+      "https://christianresearchnetwork.org/2021/08/06/exposed-apostle-kathryn-krick-and-exorcist-bob-larson-use-same-crisis-actor-to-act-demon-possessed/"
+    ],
+    "notes": "Protestia and Christian Research Network (both Christian discernment outlets) document that Brother John Elving identified a recurring participant with a distinctive tattoo appearing in deliverance videos from both Krick and Bob Larson. Suggestive but not conclusive of intentional staging — the participant could be a repeat seeker or follower. No mainstream fact-checker (Snopes, Lead Stories, AFP, Reuters) has covered this allegation. Tweet itself makes no specific factual claim — it just shows the video."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "94k views on a contested religious-practice video; low policy/safety stakes. From an info-integrity lens, Community Notes is the wrong vehicle for adjudicating whether charismatic exorcisms are 'real' or 'performative' — that's a theological/cultural debate, not a fact-check."
+  },
+  "difficulty": "medium"
+}

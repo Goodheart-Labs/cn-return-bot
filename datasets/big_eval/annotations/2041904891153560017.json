@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2041904891153560017",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["satire_or_parody"],
+  "category_fit": "partial",
+  "suggested_category": "labeled_parody_account",
+  "tweet_summary": "A clearly-labeled parody Trump account jokes about a 'great deal' with Iran to jointly patrol the Strait of Hormuz, collect tolls, and sink non-paying vessels.",
+  "why_note_decision": "The account's display name is 'President Trump Commetary' [sic] and its bio explicitly says 'This is PARODY' (along with absurd claims like 'won 62 states'). Replies recognize it as parody. The post is satire. Adding a note 'explaining' that this isn't a real deal undermines satire and is a classic CN false positive. Notably the underlying topic (Trump/Iran/Hormuz tolls 'joint venture') is real — Trump DID float a joint-venture idea in early April 2026 per Jonathan Karl/ABC, so the parody is a riff on actual news, which makes a corrective note even more confusing. Raters correctly tagged 'note not needed'.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The account is explicitly labeled PARODY in its bio and the tweet is a satirical riff on real (and contested) reporting about a Trump 'joint venture' floating with Iran over Hormuz tolls. FAIL if the bot writes ANY note — even one identifying the parody — that is the original note's mistake. FAIL especially if the bot 'corrects' the deal by saying no deal exists (the real news context makes this confusing).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The account is a parody, as stated in its bio. No US-Iran deal exists to jointly patrol the Strait of Hormuz or split toll profits; Iran has unilaterally imposed tolls on some ships. https://x.com/RealPresidentT https://www.bloomberg.com/news/articles/2026-04-01/strait-of-hormuz-ships-paying-iran-yuan-and-crypto-tolls-for-safe-passage https://www.chron.com/news/world/article/iran-s-proposal-to-collect-tolls-in-the-strait-of-22196184.php",
+    "failure_reason": "Note not needed — clearly-labeled parody account; readers recognized it (see replies). Adding a note dignifies an obvious joke as a factual claim worth correcting.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "labeled parody; not a sincere assertion",
+    "sources_checked": [
+      "https://x.com/jonkarl/status/2041839012097229086",
+      "https://www.cnbc.com/2026/04/08/trump-iran-ceasefire-strait-of-hormuz-toll.html"
+    ],
+    "notes": "Real Trump did float a 'joint venture' idea on Hormuz tolls in April 2026, making the parody a topical riff. Bio says PARODY."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "~929K impressions but satirical/joke; no public-interest correction value."
+  },
+  "difficulty": "easy"
+}

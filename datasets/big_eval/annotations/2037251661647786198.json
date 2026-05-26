@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2037251661647786198",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "legislative_vote_misframing",
+  "tweet_summary": "Eric Daugherty post (1.1M followers, 1.1M impressions): claims the U.S. House 'PASSED a resolution supporting full funding for the Department of Homeland Security 225-187' and that 95%+ of voting Democrats opposed it, calling Democrats 'traitors.'",
+  "why_note_decision": "H. Res. 1128 is a NON-BINDING simple House resolution 'expressing the support of the House of Representatives for the Department of Homeland Security' — it does not authorize, appropriate, or provide any funding. Congress.gov, the House Rules Committee, and GovTrack all describe it as a sense-of-the-House resolution. The tweet's framing ('PASSED a resolution supporting full funding') strongly implies actual funding legislation and is being read that way by readers ('I can't believe... most democrats refuse to fund DHS'). A note clarifying it is a non-binding expression-of-support resolution, not a funding bill, adds genuine missing context.",
+  "judge_guidance": "PASS if the note (1) states H.Res. 1128 is a non-binding 'expression of support' or 'sense-of-the-House' resolution, NOT a funding/appropriation bill, and (2) cites either Congress.gov H.Res.1128 or the House Clerk vote record. FAIL if the note simply restates the vote tally, says the tweet is accurate, claims it WAS funding legislation, or merely critiques the 'traitors' rhetoric. The provisional 'no_note_needed' is wrong — the legislative-misframing IS a checkable factual issue.",
+  "reference_note": "H. Res. 1128 is a non-binding House resolution 'expressing the support of the House of Representatives for the Department of Homeland Security' — it does not authorize, appropriate, or provide any DHS funding. https://www.congress.gov/bill/119th-congress/house-resolution/1128 https://clerk.house.gov/Votes/2026102",
+  "original_unhelpful_note": {
+    "text": "The House passed H. Res. 1128, a non-binding resolution expressing support for the Department of Homeland Security rather than legislation authorizing or providing its funding. https://clerk.house.gov/Votes/2026102 https://www.congress.gov/bill/119th-congress/house-resolution/1128",
+    "failure_reason": "Note is substantively correct and well-sourced; low rating volume (4) likely reflects partisan rater pool rather than note quality. Treat as helpful_reference.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_framing_of_nonbinding_resolution",
+    "sources_checked": [
+      "https://www.congress.gov/bill/119th-congress/house-resolution/1128",
+      "https://rules.house.gov/bill/119/h-res-1128",
+      "https://www.govtrack.us/congress/bills/119/hres1128"
+    ],
+    "notes": "H.Res. is a simple resolution, by definition non-binding and not law. Cannot fund anything."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Partisan misframing of legislative process on a 1M-impression post during a government-shutdown news cycle; corrections here have real downstream policy-literacy value."
+  },
+  "difficulty": "easy"
+}

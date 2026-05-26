@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2010061540528140455",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "climate_environment_science"],
+  "category_fit": "good",
+  "suggested_category": "chemtrails_geoengineering_conspiracy",
+  "tweet_summary": "Viral conspiracy-flavored joke ('clouds from my childhood came back') implying Florida's 2025 cloud-seeding/weather-modification ban (SB 56) explains a return of natural-looking cumulus clouds, with comments echoing chemtrail / geoengineering tropes.",
+  "why_note_decision": "The implied causal claim — that Florida was actively cloud-seeding/spraying and that the SB 56 ban produced visible changes in the sky — is false. Per the Florida DEP, no weather-modification licenses, permits, or authorizations have been issued since the statute was enacted in 1957 (a brief 1957 citrus-grower project was the last). SB 56 (in force July 2025) bans an activity that wasn't being conducted in Florida. Reposted at 215k impressions with comments doubling down on chemtrail beliefs — this is exactly the kind of viral pseudoscience that benefits from a clear factual note. A correction is warranted.",
+  "judge_guidance": "PASS only if the note (a) makes clear that cloud seeding / weather modification has not been actively conducted in Florida (Florida DEP has issued no permits since the 1957 statute), so any visible change in clouds is NOT caused by SB 56, and (b) ideally cites Florida DEP / SB 56 / a reputable fact-check (Poynter, PolitiFact, AP). Notes that just say 'this is sarcasm/joke' are too weak — readers in the thread are clearly taking the chemtrail framing seriously. Notes that endorse the chemtrails framing should FAIL. A correct note must not be wishy-washy; it must clearly establish the absence of actual cloud-seeding activity in Florida pre-ban.",
+  "reference_note": "Florida's 2025 weather-modification ban (SB 56) prohibits activities that have not been conducted in the state for decades — the Florida DEP has issued no weather-modification licenses since the statute was enacted in 1957. Any change in cloud patterns is unrelated to the new ban. https://www.poynter.org/fact-checking/2025/weather-modification-florida-texas-floods-geoengineering/ https://www.flsenate.gov/Committees/BillSummaries/2025/html/56",
+  "original_unhelpful_note": {
+    "text": "Florida's 2025 ban on cloud seeding prohibits weather modification activities that have not been conducted in the state since the 1950s. Any observed changes in cloud patterns are unrelated to the ban. https://www.alligator.org/article/2025/01/weather-modification-conspiracy-theories https://www.wlrn.org/government-politics/2025-07-22/politifact-florida-floridas-attorney-general-said-state-is-under-attack-from-weather-modification-is-that-true",
+    "failure_reason": "Note's substance is essentially correct, but raters tagged it 'opinion/speculation' (15), 'sources unreliable' (13), 'incorrect' (12) — likely because the cited Alligator article is a student paper and the framing didn't directly engage the chemtrails narrative. Better sourcing (Poynter/PolitiFact direct, FL DEP) and a tighter declarative statement would have landed better.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/misleading: Florida had not been conducting cloud seeding before SB 56; visible 'change' in clouds is not caused by the ban.",
+    "sources_checked": [
+      "https://www.poynter.org/fact-checking/2025/weather-modification-florida-texas-floods-geoengineering/",
+      "https://www.flsenate.gov/Committees/BillSummaries/2025/html/56",
+      "https://www.wflx.com/2025/07/09/new-law-bans-cloud-seeding-weather-modification-florida/"
+    ],
+    "notes": "Florida DEP has zero issued weather-modification permits since 1957 (per FL Senate bill analysis). The ban is symbolic/preemptive, not a response to active spraying. Comments in-thread show chemtrail belief is the actual narrative being spread."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "215k impressions; reinforces chemtrails/geoengineering conspiracy thinking that erodes trust in atmospheric science. Correcting viral pseudoscience matters for epistemic infrastructure."
+  },
+  "difficulty": "medium"
+}

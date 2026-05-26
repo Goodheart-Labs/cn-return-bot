@@ -1,0 +1,41 @@
+{
+  "tweet_id": "1991585903379378343",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Brian Tyler Cohen / No Lie podcast (435k followers, 1.65M views) on Nov 20 2025 claims 'the Trump administration has declared that swastikas and nooses are no longer classified as hate symbols.' Sourced (in a reply) to the Washington Post's Nov 20 report on a Coast Guard civil-rights manual update signed Nov 13 by RAdm. Charles Fosse, which reclassified those symbols from 'hate incidents' to 'potentially divisive' under Acting Commandant Adm. Kevin Lunday.",
+  "why_note_decision": "A note is NOT warranted, and the original note is itself misleading. The Coast Guard DID change its civil rights manual on Nov 13 2025 to remove the 'hate incident' terminology and reclassify swastikas/nooses as 'potentially divisive' — this is confirmed by the Washington Post, NPR, CBS, PBS, ABC, Fortune, Hill, and Military Times. The original note quotes Lunday's denial ('categorically false … these symbols remain prohibited') as if it settles the matter — but that denial is narrow/technically-true-but-misleading: symbols remained 'prohibited' under harassment policy, but the 'hate incident' classification WAS removed (as the underlying directive language confirmed: 'the terminology hate incident is no longer present in policy'). After backlash, the Coast Guard reversed on Nov 21 and re-added 'hate symbols' language — confirming the prior change was real. The tweet's claim, posted Nov 20 before the reversal, was substantively accurate. The original note essentially deploys an official denial to debunk a true report — the same denial Time, Newsweek, and ABC News covered skeptically.",
+  "judge_guidance": "PASS only if the bot declines to write a note (any note 'correcting' the Cohen tweet to say the symbols are still prohibited is a false positive — it would repeat the original note's error). The tweet's claim is substantively accurate: the Coast Guard's Nov 13 2025 directive (signed by RAdm. Fosse) removed 'hate incident' classification for swastikas/nooses and downgraded them to 'potentially divisive,' as confirmed by Washington Post, NPR, CBS News, PBS, ABC News, and Military Times. Adm. Lunday's denial ('categorically false') was a narrow technical defense (symbols remained 'prohibited' under harassment policy) — but the classification DID change. The Coast Guard then reversed on Nov 21 after backlash, confirming the original change was real. A bot that writes a note saying 'this is false, symbols remain prohibited per Lunday' FAILS — that's parroting a misleading official denial. A bot that writes a note saying 'as of Nov 21 the Coast Guard reversed' could be acceptable for a tweet posted after Nov 21, but the Cohen tweet was Nov 20 — at that point the claim was accurate. Best move: no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "False. Coast Guard and DHS officials explicitly denied this claim. Acting Commandant Adm. Lunday stated: \"Claims that the U.S. Coast Guard will no longer classify swastikas, nooses as prohibited symbols are categorically false. These symbols remain prohibited.\" https://komonews.com/news/nation-world/coast-guard-drops-hate-incident-label-sparks-dissent-from-congress-and-ranks-pete-hegseth-swastikas-nooses-confederate-flags",
+    "failure_reason": "Note treats an official's narrow technical denial as if it disproves a substantively accurate news report. The Nov 13 Coast Guard directive (signed by RAdm. Fosse) DID remove 'hate incident' classification and reclassify swastikas/nooses as 'potentially divisive' — confirmed by WaPo, NPR, CBS, PBS, ABC, Military Times. Lunday's denial was technically narrow (symbols still 'prohibited' under harassment policy) but the classification change was real, and the Coast Guard reversed on Nov 21 in response to backlash — confirming the underlying change happened. Rated NotHelpfulArgumentativeOrBiased (8), IrrelevantSources (8), NoteNotNeeded (8), Incorrect (7) — raters correctly identified this as a misleading 'correction' that parrots an official denial against the documentary record. Even komonews (the cited source) acknowledges 'Coast Guard drops hate incident label' in its headline.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_substantively_true",
+    "sources_checked": [
+      "https://www.washingtonpost.com/national-security/2025/11/20/coast-guard-swastika-noose/",
+      "https://www.washingtonpost.com/national-security/2025/11/21/coast-guard-policy-hate-symbols-swastika/",
+      "https://www.cnn.com/2025/11/21/politics/coast-guard-hate-symbols-policy-reversal",
+      "https://www.npr.org/2025/11/21/nx-s1-5616396/coast-guard-changes-course-reclassifies-swastikas-and-nooses-as-hate-symbols",
+      "https://www.cbsnews.com/news/coast-guard-guidance-nooses-swastikas-hate-symbols/",
+      "https://time.com/7335634/coast-guard-washington-post-fake-report-hate-symbols-swastika-noose/",
+      "https://www.militarytimes.com/news/your-military/2025/11/21/coast-guard-reverses-course-calls-swastikas-and-nooses-hate-symbols/"
+    ],
+    "notes": "The Nov 13 2025 Coast Guard policy update (Fosse directive) removed 'hate incident' terminology and reclassified swastikas/nooses as 'potentially divisive.' Lunday issued a denial on Nov 20 calling claims 'categorically false' — but multiple mainstream outlets pushed back, and on Nov 21 the Coast Guard reversed and explicitly re-listed swastikas, nooses, and other co-opted hate-group symbols as 'divisive or hate symbols.' The reversal confirms the original Washington Post reporting was accurate. The Cohen tweet (Nov 20) is substantively accurate; the original note uses Lunday's narrow technical denial to falsely 'correct' a true claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.65M views on a politically charged story about DEI rollback and hate-symbol policy. Info-integrity stakes are high — Community Notes being used to launder narrow official denials into 'false' rulings against accurate journalism is a serious failure mode that needs to be guarded against."
+  },
+  "difficulty": "hard"
+}

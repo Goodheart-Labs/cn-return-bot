@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2047256681856573565",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "fake_data_visualization",
+  "tweet_summary": "'Shocking to see this at the end' clip showing a hand-drawn 'Immigrant Distribution in the UK' map by TikTok creator @doom_map, with categories like 'Epicenter', 'Over 35%', 'No Immigrants'. The map also colors in the Republic of Ireland as if it were part of the UK.",
+  "why_note_decision": "The 'doom_map' TikTok account explicitly produces what-if / fictional simulations, not census data. The map is also internally incoherent — it shades the Republic of Ireland (a separate country) and contradicts actual ONS 2021 census data (which shows foreign-born residents distributed across every region of England, with epicentres in London and major cities, not Hampshire/Surrey). With 1.7M impressions and earnest 'they've all got to leave' replies, the post is being received as real data by some viewers. A note labeling it a fictional/what-if visualization and pointing to ONS 2021 / CSO 2022 actual data is warranted.",
+  "judge_guidance": "PASS if the note (1) states the map is a fictional / 'what-if' visualization from the @doom_map TikTok account, not real census or migration data, AND (2) either notes the Republic of Ireland is not in the UK or links to actual ONS 2021 / CSO 2022 country-of-birth data. FAIL if the note treats the map as accurate, debates the politics, or merely says 'sources unclear' without naming the doom_map account context.",
+  "reference_note": "This is a fictional 'what-if' visualization from the @doom_map TikTok account, which specializes in hypothetical simulations rather than real data. It also incorrectly colours the Republic of Ireland (not part of the UK). Actual ONS 2021 and CSO 2022 census data show foreign-born residents distributed across every region of both countries, with concentrations in London and major urban areas — not the pattern shown. https://www.ons.gov.uk/census/maps/choropleth/population/country-of-birth/country-of-birth-3a/born-outside-the-uk https://www.cso.ie/en/releasesandpublications/ep/p-cpsr/censusofpopulation2022-summaryresults/migrationanddiversity/",
+  "original_unhelpful_note": {
+    "text": "This map is a fictional visualization from a TikTok account specializing in &quot;what-if&quot; simulations. It incorrectly includes the Republic of Ireland in the UK. Official 2021 and 2022 Census data shows foreign-born residents in every region of both nations. https://www.ons.gov.uk/census/maps/choropleth/population/country-of-birth/country-of-birth-3a/born-outside-the-uk https://www.cso.ie/en/releasesandpublications/ep/p-cpsr/censusofpopulation2022-summaryresults/migrationanddiversity/",
+    "failure_reason": "Note is substantively good and well-sourced; the MissingKeyPoints / NoteNotNeeded ratings reflect partisan rater backlash rather than note quality. Treat as helpful_reference.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "fictional_visualization_presented_as_real",
+    "sources_checked": [
+      "https://www.ons.gov.uk/census/maps/choropleth/population/country-of-birth/country-of-birth-3a/born-outside-the-uk",
+      "https://www.cso.ie/en/releasesandpublications/ep/p-cpsr/censusofpopulation2022-summaryresults/migrationanddiversity/"
+    ],
+    "notes": "doom_map is a what-if TikTok account. Map colors Ireland as UK. ONS shows foreign-born concentration in London/cities, not Hampshire/Surrey."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Fake-data visualizations on emotive immigration topics drive real political beliefs; correcting them is a strong notewriter use case."
+  },
+  "difficulty": "easy"
+}

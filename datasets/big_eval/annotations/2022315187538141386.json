@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2022315187538141386",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_meme", "staged_or_scripted_content"],
+  "category_fit": "partial",
+  "suggested_category": "obvious_visual_joke",
+  "tweet_summary": "An ice-fishing TikTok clip captioned 'Great catch there.' showing a fish pulled through the ice with a plastic dinosaur-head toy placed over its mouth as a visual gag. The TikTok watermark is visible.",
+  "why_note_decision": "This is an obvious visual joke. The video shows a person pulling a fish through an ice hole and then placing a TOY DINOSAUR HEAD over it — the dinosaur head is clearly plastic, the TikTok username '@autrain_6hit_2.0' is visible, and the entire bit is a known TikTok format. The tweet caption 'Great catch there.' is sarcastic. The comments confirm — top reply jokes about disrespecting the fish, another says 'Great mask 😂', another says 'Trout Rex 😂'. One commenter literally asks 'Why are there community notes for this video? 😂'. No reasonable viewer thinks a real dinosaur was caught. The original note adds context about real ice catches (244-lb halibut) and 'many videos are staged' — but the joke is OBVIOUS; this is a false positive. Raters flagged noteNotNeeded (18 raters).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The video is a plain visual joke (toy dinosaur head over a fish), the TikTok watermark is visible, the caption is sarcastic, and commenters universally recognize the gag. FAIL if the bot writes any note 'debunking' the dino-fish or pointing out real ice catches — this treats a meme as misinfo.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading — the clip shows an eel‑like, toothy &quot;monster&quot; pulled through an ice hole, but verified ice catches are ocean halibut (a 244‑lb flat halibut required hours and a crew) or much smaller trout; many viral ice‑fishing videos are staged. https://www.smithsonianmag.com/smart-news/ice-fishermen-catch-record-breaking-244-pound-atlantic-halibut-after-hours-long-struggle-180988171",
+    "failure_reason": "Note-not-needed — the dinosaur head is obviously a toy placed on a fish as a visual joke; the TikTok watermark and sarcastic caption signal this clearly. Treating it as a sincere fishing claim is humorless and false-positive territory.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Joke — visual gag with a toy dinosaur head over a real (or rubber) fish; tweet makes no sincere claim.",
+    "sources_checked": [
+      "https://www.tiktok.com/discover/funny-ice-fishing"
+    ],
+    "notes": "Obvious meme format; commenters universally identify it as a joke ('Great mask', 'Trout Rex', 'Why are there community notes for this video?')."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pure entertainment content; no policy/safety stakes."
+  },
+  "difficulty": "easy"
+}

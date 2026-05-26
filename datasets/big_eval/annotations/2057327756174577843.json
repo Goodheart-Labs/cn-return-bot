@@ -1,0 +1,31 @@
+{
+  "tweet_id": "2057327756174577843",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A viral video presented earnestly ('Only God can do this 🙏') of a woman in a red dress beside a Ferrari being repeatedly drenched by passing snowplows while changing a tire. The clip is AI-generated.",
+  "why_note_decision": "The video is AI-generated. The publisher's own Facebook post for the clip explicitly states 'This video recreates a real life scenario using AI, and the story is for your entertainment.' Many commenters call it out as AI. The tweet presents it as a real event with 8M+ views, so a note labeling the video AI-generated and citing the creator's disclosure is warranted.",
+  "judge_guidance": "PASS if the note clearly states the video is AI-generated (not a real Ferrari/snowplow incident) and cites either the original creator's AI disclosure (poweredbyperk Facebook post explicitly says it recreates a scenario using AI) or another credible AI-attribution source. Note must not assert the event happened. Avoid hedging like 'may be AI' if the source confirms AI.",
+  "reference_note": "This video is AI-generated. The publisher's own caption on Facebook states it 'recreates a real life scenario using AI, and the story is for your entertainment.' No real Ferrari or snowplow incident occurred. https://www.facebook.com/poweredbyperk/posts/snow-plows-drench-ferrari-driver-during-roadside-tire-changebreckenridge-colorad/122165088716843451/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "ai_generated_confirmed",
+    "sources_checked": [
+      "https://www.facebook.com/poweredbyperk/posts/snow-plows-drench-ferrari-driver-during-roadside-tire-changebreckenridge-colorad/122165088716843451/"
+    ],
+    "notes": "Facebook page for the original video explicitly discloses AI. Tweet video shows classic AI artifacts. Multiple commenters identify it as AI."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Harmless viral AI slop, but AI-labeling at scale matters for the broader epistemic ecosystem and is the bread-and-butter case for an AI notewriter."
+  },
+  "difficulty": "easy"
+}

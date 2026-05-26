@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2057006952421421135",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A celebratory post showing 16-year-old Arsenal player Max Dowman with his mother, captioned 'Youngest Arsenal player ever to win Premier League'.",
+  "why_note_decision": "The tweet's claim is technically a true subset of a broader truth: Dowman is BOTH the youngest Arsenal player and the youngest player in Premier League history to win a title (at 16y 139d). Calling him 'youngest Arsenal player ever' is correct, not misleading — it just understates the achievement. A note adding 'actually he's the youngest in the entire PL' is pedantic context, not a correction; readers aren't misled into believing something false. The 'mother' identity is unconfirmed (some replies speculate it's not his mom, others that the image is AI), but that's tabloid noise, not a misleading factual claim worth a community note. Raters flagged the original as noteNotNeeded.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's claim ('youngest Arsenal player ever to win PL') is true. Adding a note to upgrade it to 'youngest PL player ever' is trivial pedantry — the original is not misleading. FAIL if the bot writes any note 'correcting' a true statement, or if it tries to debunk the 'mother' label without strong evidence (the image authenticity is contested but unresolved).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Max Dowman is the youngest player in the history of the entire Premier League to win the title, not just the youngest at Arsenal. At 16 years and 139 days old, he surpassed the previous record held by Phil Foden, who won it at 17 years and 350 days old. https://www.premierleague.com/en/news/4658279/who-are-the-youngest-ever-players-to-win-the-premier-league-title",
+    "failure_reason": "Trivial pedantry — the tweet's statement is true; the note 'upgrades' the claim rather than correcting a falsehood. Not the kind of misimpression CN exists to address.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's claim is true (and an understatement); the note's added fact is also true but the original isn't misleading.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Max_Dowman",
+      "https://www.premierleague.com/en/news/4658279/who-are-the-youngest-ever-players-to-win-the-premier-league-title",
+      "https://www.espn.com/soccer/story/_/id/48824782/arsenal-max-dowman-16-becomes-youngest-premier-league-title-winner"
+    ],
+    "notes": "Dowman is confirmed as the youngest PL title winner at 16y 139d. The tweet's 'youngest Arsenal player ever' framing is a true subset of that."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports trivia about a teenager. Low EA/AGI-safety relevance."
+  },
+  "difficulty": "easy"
+}

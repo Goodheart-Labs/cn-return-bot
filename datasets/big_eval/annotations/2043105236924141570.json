@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2043105236924141570",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Russel Norman (Greenpeace NZ ED) cites a New Scientist article to claim renewables + batteries are 'collapsing power prices' where rolled out at scale, contrasting with NZ's fossil-fuel policy.",
+  "why_note_decision": "The OP conflates wholesale and retail prices. The New Scientist piece (and South Australian government press releases) refer to wholesale prices being the lowest in the National Energy Market in Q4 2025. But residential retail bills in SA remain the highest in Australia (multiple commenters note this), and the AER's 2025-26 default offer rose 3.2% for SA households. The original note correctly captures this wholesale-vs-retail distinction. The 'note not needed' votes were likely motivated by political sympathy, not substance — the misleading conflation is real and matters. The note is concise; the failure was insufficient persuasive context (only one rater tagged 'incorrect'; dominant complaint was 'missing key points').",
+  "judge_guidance": "PASS if the note (a) distinguishes wholesale electricity prices (which fell ~30%) from retail prices paid by households (which rose ~3.2% in SA's 2025-26 default offer), and (b) cites the AER 2025-26 default-offer determination or equivalent for retail. The note should make clear that the New Scientist piece is about wholesale prices, not consumer bills. FAIL if the note merely says 'this is misleading' without separating wholesale and retail, or if it tries to argue against renewables themselves (the original wasn't argumentative — preserve that). FAIL if it repeats the original's failure of being too terse to convince ('missing key points').",
+  "reference_note": "The linked article refers to wholesale electricity prices falling ~30% in late 2025 in South Australia, not retail prices paid by households. The Australian Energy Regulator's 2025-26 Default Market Offer raised SA residential retail prices by 3.2%, and SA continues to have among the highest retail electricity prices in Australia. https://www.aer.gov.au/news/articles/news-releases/final-determination-2025-26-safety-net-prices-nsw-sa-and-se-qld https://www.newscientist.com/article/2514985-this-states-power-prices-are-plummeting-as-it-nears-100-renewables/",
+  "original_unhelpful_note": {
+    "text": "The linked article refers to wholesale electricity prices falling 30% in late 2025, not retail prices paid by households, which rose 3.2% for 2025-26. https://www.newscientist.com/article/2514985-this-states-power-prices-are-plummeting-as-it-nears-100-renewables/ https://www.aer.gov.au/news/articles/news-releases/final-determination-2025-26-safety-net-prices-nsw-sa-and-se-qld",
+    "failure_reason": "Substantively correct (wholesale vs retail distinction) but too terse to land — raters wanted clearer framing that SA still has among the highest retail prices nationally.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — conflates wholesale and retail",
+    "sources_checked": [
+      "https://premier.sa.gov.au/media-releases/news-archive/sa-wholesale-power-prices-lowest-in-nation",
+      "https://www.aer.gov.au/industry/wholesale/charts"
+    ],
+    "notes": "Q4 2025 SA wholesale was lowest in NEM at ~$37/MWh, but Q1 2026 average rose to $144/MWh; residential retail prices rose 3.2% for 2025-26 under AER's default offer."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Small reach (~11K impressions) but climate/energy framing matters for progress-studies discourse — overstating renewables benefits hurts credibility of real climate arguments."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2038979377527246991",
+  "role": "unhelpful_notHelpfulNoteNotNeeded",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "wrong_country_location_swap",
+  "tweet_summary": "Japanese aggregator account 'エックス速報' (195k followers, 488k views) claims that 'a Chinese person appeared in a Japanese park holding a placard saying never claim cherry blossoms are Japanese — they originated in China.' The post is a quote/repost driving Sino-Japanese animosity in replies. Per the cited Record China article (and confirmed in replies), the photo was actually posted on Chinese platform Xiaohongshu (RED) on March 29 2026 showing a man in hanfu in China, not Japan.",
+  "why_note_decision": "A note IS warranted. The tweet's headline claim ('in a Japanese park') is false — the photo originated on Xiaohongshu in China, not in Japan. This is a meaningful location swap (488k views) that materially changes the framing (from 'Chinese provocateur invading Japan' to 'Chinese internet content posted within China'), and it's directly fueling anti-Chinese sentiment in the replies. Provisional 'no_note_needed' is wrong; the note's correction is exactly the right kind of factual fix Community Notes is built for.",
+  "judge_guidance": "PASS only if the note (a) establishes the event happened in China, not Japan — specifically, the photo was posted on Chinese social platform Xiaohongshu (RED) around March 29 2026, and (b) cites a credible source — Record China (recordchina.co.jp) is acceptable; better is a primary Xiaohongshu link or Japanese mainstream outlet. AVOID writing a note that engages with the cherry-blossom-origin debate (Himalayan/Nepalese origin vs. Somei Yoshino as a Japanese cultivar) — that's a distraction from the actual misleader, which is the *location*. A note that argues 'cherry blossoms originated in Japan/China/Nepal' but doesn't fix the location FAILS. A note that simply says 'no evidence' without naming the actual location FAILS.",
+  "reference_note": "この出来事は中国の公園で起きたものであり、日本ではありません。元画像は2026年3月29日頃、中国のSNS『小紅書（Xiaohongshu/RED）』に投稿されたもので、漢服を着た男性が中国国内で撮影されています。 https://www.recordchina.co.jp/b973720-s25-c30-d0052.html",
+  "original_unhelpful_note": {
+    "text": "この出来事は中国の公園で起きたものであり、日本ではありません。https://www.recordchina.co.jp/b973720-s25-c30-d0052.html",
+    "failure_reason": "Note is correct and concise but rated NEEDS_MORE_RATINGS (only 19 ratings, dominated by NoteNotNeeded 3). Likely too terse — doesn't quote the originating platform (Xiaohongshu) or date, making it easy for raters who don't click the link to dismiss as unsupported. Adding 'posted on Xiaohongshu (中国SNSの小紅書) on March 29 2026' would strengthen it. Also the topic is politically charged (Sino-Japanese antagonism) which makes raters less inclined to mark helpful.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.recordchina.co.jp/b973720-s25-c30-d0052.html"
+    ],
+    "notes": "Record China confirms the photo was posted on Chinese platform Xiaohongshu (RED) on March 29 2026, showing a man in traditional Chinese hanfu under a cherry blossom tree — the location is China, not Japan. Most Chinese commenters on the original Xiaohongshu thread reportedly acknowledged the species may have Chinese origins but cherry blossoms are now culturally tied to Japan (Somei Yoshino is a Japanese cultivar). Reply @zzbbbzbz independently confirmed location is China. The tweet's 'in a Japanese park' framing is fabricated."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "488k views fueling Sino-Japanese animosity (replies include COVID-Wuhan jabs, ethnic slurs). Correcting the location defuses a manufactured 'Chinese provocateur in Japan' narrative — info-integrity value in not letting fabricated international-incident framings spread."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2037175886542246221",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "political_theater_no_misclaim",
+  "tweet_summary": "Rep. Brendan Boyle (D-PA) holds up a 'MISSING' milk carton prop with OMB Director Russell Vought's face at a House Budget Committee hearing, accusing the Project 2025 architect of being absent before the committee to defend the administration's economic record.",
+  "why_note_decision": "The tweet is political theater asking 'where is Vought?' at a specific committee hearing. It is rhetorical performance, not a claim that Vought has resigned, been fired, or literally disappeared. The original note states Vought was confirmed by the Senate on Feb 6 2025 — a fact unrelated to whether he was at this specific Budget Committee hearing in March 2026. That correction doesn't address the actual tweet at all; it's a non-sequitur. The dispute (was Vought ducking the committee, or was he busy with shutdown duties as commenter @amuse argues) is a framing/political-spin disagreement, not a checkable factual misstatement.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is political theater (a stunt with a 'missing person' milk carton) calling out an OMB director's absence at a specific hearing. There is no checkable factual claim — Boyle is not claiming Vought has resigned or vanished. Any note that 'fact-checks' Vought's continued employment (e.g. 'Vought was confirmed Feb 2025') is a non-sequitur false positive. A note about whether Vought was excused vs ducking the hearing would itself be opinion.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Russell Vought was confirmed by the Senate as Director of the Office of Management and Budget on February 6, 2025. https://www.pbs.org/newshour/politics/watch-live-senate-considers-trump-omb-nominee-russell-vought-for-confirmation",
+    "failure_reason": "Non-sequitur — answers a question the tweet didn't ask. Boyle wasn't claiming Vought wasn't OMB director, only that he wasn't present at this committee hearing. Raters tagged 'note not needed', 'incorrect' (in the sense of off-topic), 'missing key points'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "no falsifiable claim — political stunt about hearing attendance",
+    "sources_checked": [
+      "https://www.washingtonpost.com/business/2025/02/06/russell-vought-confirmed-omb-director/",
+      "https://en.wikipedia.org/wiki/Russell_Vought"
+    ],
+    "notes": "Vought was confirmed Feb 6 2025 and remains OMB Director. Whether he was at a specific March 2026 Budget Committee hearing is a question about attendance/scheduling, not a community-notes-worthy factual misstatement by the tweet."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Routine political theater; no EA/AGI/welfare bearing."
+  },
+  "difficulty": "easy"
+}

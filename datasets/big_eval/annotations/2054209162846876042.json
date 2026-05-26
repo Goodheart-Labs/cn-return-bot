@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2054209162846876042",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "MAGA commentator 'The Misfit Patriot' summarizes recent allegations against Rep. Thomas Massie — that he started a relationship with Cynthia West shortly after his wife's death, arranged her a job in Rep. Victoria Spartz's office, that the relationship ended, she was fired, and the situation has since become an alleged hush-money story.",
+  "why_note_decision": "The tweet's summary tracks the public reporting (Axios, Yahoo News, Townhall, Raw Story, Lexington Times): Massie did message West shortly after his wife died, did arrange her a job in Spartz's office, the relationship ended, West was fired, and there is a hush-money/NDA component. The original note tries to relitigate the dollar figures — '$60,000 NDA was from Spartz's office, not Massie, who offered $5,000 cash to drop the complaint' — but the source tweet doesn't actually cite either dollar figure; the screenshot/video is mostly about the allegations narrative. The original note injects a contested-but-not-clearly-wrong correction onto a tweet that's already roughly accurate. Raters flagged 'note not needed' (20) as the dominant tag. This is accurate-reporting-contested territory.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet summarizes allegations against Rep. Massie that are documented in mainstream reporting (Axios, Yahoo, Raw Story, Townhall); it does not make a specific false numeric claim like '$60k NDA from Massie.' Any note that injects the $60k Spartz-NDA vs $5k Massie-cash distinction is correcting a claim the tweet didn't make. Treat any correction-style note as a false positive. Edge case: if a future version of the tweet did claim a specific dollar figure incorrectly, a note would be warranted — but for this tweet as-is, no.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The $60,000 NDA was part of a settlement offer from Rep. Spartz's office for the firing claim, not from Massie, who offered $5,000 cash to drop the complaint. https://x.com/TheFloridaMike/status/2054065167684567235",
+    "failure_reason": "Injects a numeric distinction the tweet never made; tweet summarized the broader allegations narrative which is consistent with mainstream reporting (Axios, Yahoo News). Source is a single x.com post (sources missing/unreliable tag, 10x). Raters correctly flagged 'note not needed' (20x).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet summary is broadly accurate per Axios/Yahoo/Raw Story; no falsifiable claim that needs correction.",
+    "sources_checked": [
+      "https://www.axios.com/2026/05/13/thomas-massie-cynthia-west-nda-spartz",
+      "https://www.yahoo.com/news/articles/massies-ex-girlfriend-alleges-arranged-110045531.html",
+      "https://townhall.com/tipsheet/mattvespa/2026/05/14/about-that-story-involving-thomas-massie-attempting-to-dole-out-hush-money-to-an-ex-girlfriend-n2676105"
+    ],
+    "notes": "The dollar amounts the original note adjudicates ($60k NDA from Spartz, $5k cash from Massie) are themselves accurate per Axios reporting, but the source tweet doesn't make a dollar-figure claim to be corrected."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "148k impressions on US House politics; allegations are real and reported but the specific tweet doesn't need fact-checking. Notes here would create false-positive noise."
+  },
+  "difficulty": "medium"
+}

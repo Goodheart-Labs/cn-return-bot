@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2055268275114606921",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "conspiracy_and_viral_hoax"],
+  "category_fit": "partial",
+  "suggested_category": "antivax_conspiracy_misinfo",
+  "tweet_summary": "'Died Suddenly' antivax account (862K followers) claims French police are using thermal-imaging drones to hunt down 'unvaccinated' cows whose owners refused vaccination, then either forcibly vaccinate or kill the animal.",
+  "why_note_decision": "There is a real story (France is running a mandatory lumpy-skin-disease vaccination campaign, has deployed military veterinarians and gendarme patrols to enforce cattle-movement bans, and is culling some infected herds), but the SPECIFIC tweet claim — police using thermal-imaging drones to locate hidden cattle on individual non-compliant farms — is not reported by Reuters, DW, Le Monde, France3, Euronews, or any credible source. The claim traces back to a single anonymous X post (@thehealthb0t, May 15) recycled by David Icke and conspiracy outlets. The video shown is a gendarme talking with a farmer, not a drone operation. A note grounding readers in the actual policy (vaccination campaign for LSD with military vet assistance, no evidence of thermal-drone hunts) is warranted.",
+  "judge_guidance": "PASS if the note states there is no credible reporting that French police use thermal-imaging drones to locate non-vaccinated cattle, AND provides accurate context that the actual policy is a mandatory lumpy-skin-disease (DNC) vaccination campaign with army veterinary assistance and gendarme enforcement of cattle-movement bans. Must cite at least one mainstream source (Reuters, DW, Le Monde, France3, Euronews, agriculture.gouv.fr). FAIL if note (a) repeats the thermal-drone claim as fact, (b) says vaccinations don't exist, or (c) merely says 'unverified' without sourcing.",
+  "reference_note": "French police are not using thermal-imaging drones to locate unvaccinated cows. France is running a mandatory vaccination campaign against lumpy skin disease (dermatose nodulaire contagieuse), with army veterinarians assisting and gendarmes enforcing cattle-movement restrictions; infected herds are subject to culling. No credible source reports thermal-drone operations against non-compliant farmers. https://www.reuters.com/business/healthcare-pharmaceuticals/france-drafts-army-cattle-vaccination-defuse-farmer-protests-2025-12-18 https://www.dw.com/en/france-culling-cows-amid-lumpy-skin-disease-outbreak/a-75129370 https://www.euronews.com/video/2025/12/21/france-deploys-armed-forces-to-fight-cattle-disease-outbreak",
+  "original_unhelpful_note": {
+    "text": "French police are not using thermal imaging drones to locate unvaccinated cows, as claimed; no credible sources report this. Enforcement for lumpy skin disease involves army-assisted vaccination and police escorts for culling infected animals. https://www.reuters.com/business/healthcare-pharmaceuticals/france-drafts-army-cattle-vaccination-defuse-farmer-protests-2025-12-18 https://www.dw.com/en/france-culling-cows-amid-lumpy-skin-disease-outbreak/a-75129370 https://www.lemonde.fr/en/economy/article/2025/12/18/bovine-skin-disease-massive-vaccination-campaign-pits-some-farmers-against-veterinarians_6748626_19.html",
+    "failure_reason": "Note is substantively correct; high notNeeded ratings reflect the partisan audience of 'Died Suddenly', not note quality. Treat as helpful_reference.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "specific_thermal_drone_claim_unsupported",
+    "sources_checked": [
+      "https://www.reuters.com/business/healthcare-pharmaceuticals/france-drafts-army-cattle-vaccination-defuse-farmer-protests-2025-12-18",
+      "https://www.dw.com/en/france-culling-cows-amid-lumpy-skin-disease-outbreak/a-75129370",
+      "https://france3-regions.franceinfo.fr/occitanie/ariege/foix/chaque-vache-compte-les-veterinaires-de-l-armee-mobilises-pour-vacciner-des-milliers-de-bovins-contre-la-dermatose-nodulaire-3270785.html",
+      "https://agriculture.gouv.fr/dermatose-nodulaire-contagieuse-dnc-lancement-de-la-campagne-de-vaccination-2026"
+    ],
+    "notes": "Vaccination campaign and military vet involvement are real. Thermal-drone-hunt detail traces to a single anon X post repeated by David Icke / antivax circles."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Anti-vaccine conspiracy spillover from COVID-era infrastructure into animal-health policy; corrections here matter for animal-welfare policy coverage and pandemic-era trust."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2002014744727728582",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["crime_legal"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Activist asks supporters to back Karmelo Anthony, charged with murder in the fatal stabbing of Austin Metcalf at a Frisco track meet, saying his trial is 'coming up in 2026'.",
+  "why_note_decision": "The trial IS in 2026 — June 1, 2026 per Collin County court records. The tweet's 'coming up in 2026' is literally correct (when posted Dec 2025, the trial was ~6 months away; as of today it is ~6 days away). The note's only quibble is that 'over a year away' doesn't qualify as 'coming up' — pure pedantry. The actually load-bearing factual context (the self-defense framing vs the prosecution narrative) is contested and not the kind of thing a Community Note settles in one paragraph; raters correctly flagged this as note-not-needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's factual claim ('trial coming up in 2026') is true — June 1, 2026 in Collin County. Any note that nitpicks the phrase 'coming up' is a false positive. A note disputing the self-defense framing or characterizing Anthony as a murderer (rather than defendant) is also wrong — guilt has not been adjudicated. The only marginally noteworthy fact (Metcalf died of a single stab wound; Anthony claims self-defense) is already heavily represented in the replies and doesn't require correction by Community Notes.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The post states the trial is \"coming up in 2026\" but the trial date is specifically set for June 1, 2026, which is over a year away, not \"coming up\" as implied. https://www.cbsnews.com/texas/news/trial-date-set-karmelo-anthony-charged-in-fatal-stabbing-austin-metcalf-frisco-track-meet/",
+    "failure_reason": "Pedantic — 'coming up in 2026' is accurate. At time of writing the trial was ~6 months away; the note manufactures a discrepancy where none exists.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's date claim is accurate; trial is June 1, 2026",
+    "sources_checked": [
+      "https://www.cbsnews.com/texas/news/trial-date-set-karmelo-anthony-charged-in-fatal-stabbing-austin-metcalf-frisco-track-meet/",
+      "https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf"
+    ],
+    "notes": "Multiple outlets confirm June 1, 2026 trial date in Collin County District Court before Judge John Roach."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "High-profile race-charged criminal case with strong tribal narratives on both sides; correcting a non-issue dilutes Community Notes' authority on cases where notes actually matter."
+  },
+  "difficulty": "easy"
+}

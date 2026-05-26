@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2031539160700313846",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet claims 'a group of Islamists brutally attacked and beat a Jewish person who was peacefully eating lunch at a cafe in San Francisco.'",
+  "why_note_decision": "Two factual problems: (1) the attack happened at Santana Row in San Jose on March 8, 2026, NOT San Francisco; (2) police and the Santa Clara County DA have not characterized the suspects as 'Islamists' — they are charged with assault/battery and the investigation is treating it as a possible antisemitic hate crime, but no evidence ties the suspects to Islam or Islamism. The attackers reportedly used antisemitic slurs and mentioned Iran, but that is not the same as being Islamists. The location error and unverified religious labeling on a 931K-impression breaking-news post warrant a note.",
+  "judge_guidance": "PASS if the note (1) corrects the location to San Jose (Santana Row), not San Francisco, AND (2) notes that police/DA have not confirmed the attackers are Islamists / Muslim — the case is being investigated as a possible antisemitic hate crime but suspects' religion is not established. Sources should be reputable local outlets (ABC7, CBS, NBC Bay Area, KRON4, or the DA's office). FAIL if the note denies the attack happened, denies the antisemitic dimension entirely, or repeats the 'Islamist' framing as fact.",
+  "reference_note": "This attack occurred at Santana Row in San Jose, not San Francisco, on March 8, 2026. Police and the Santa Clara County DA are investigating it as a possible antisemitic hate crime; three suspects face assault and battery charges. There is no public evidence the attackers are Islamists. https://abc7news.com/post/caught-video-sjpd-investigating-possible-hate-crime-2-jewish-men-attacked-santana-row-san-jose/18700623/ https://www.cbsnews.com/sanfrancisco/news/san-jose-santana-row-hate-crime-inevstigation-possible-antisemitic-attack/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "partly_false_location_and_religion_label",
+    "sources_checked": [
+      "https://abc7news.com/post/caught-video-sjpd-investigating-possible-hate-crime-2-jewish-men-attacked-santana-row-san-jose/18700623/",
+      "https://www.cbsnews.com/sanfrancisco/news/san-jose-santana-row-hate-crime-inevstigation-possible-antisemitic-attack/",
+      "https://abc7news.com/post/caught-video-3-suspects-arrested-2-jewish-men-attacked-san-joses-santana-row-possible-hate-crime/18721959/",
+      "https://www.nbcbayarea.com/news/local/santana-row-hate-crime-attack/4050385/"
+    ],
+    "notes": "Verified: San Jose (Santana Row), March 8 2026, 3 suspects arrested. Reporting calls it possible antisemitic hate crime; no source identifies attackers as Islamists."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "931K-impression post by 160K-follower account amplifies anti-Muslim framing on a real but mischaracterized hate-crime incident; correcting fuels both inter-communal trust and accurate reporting standards."
+  },
+  "difficulty": "medium"
+}

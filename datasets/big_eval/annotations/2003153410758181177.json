@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2003153410758181177",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "insider_reporting_framing",
+  "categories": ["government_politics", "insider_reporting_framing"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet alleges Kash Patel 'bought' custom-made armored BMW X5s 'for himself and the FBI' and uses it to attack his 'America First' bona fides and ask 'what's wrong with Ford?'.",
+  "why_note_decision": "Two underlying facts are real and widely reported: (a) the FBI is procuring armored BMW X5s at Patel's request (NYT/TMZ/New Republic), and (b) the X5 — and the X5 Protection — are manufactured in Spartanburg, SC. The note picks a third, weakest angle: that Patel didn't personally 'buy' them, the FBI did with taxpayer funds. The tweet's 'bought ... for himself and the FBI' colloquially captures this (he caused them to be purchased). The far more informative correction — that BMW X5s are American-built, undercutting the 'what's wrong with Ford?' jab — is already the top-engagement reply and is the angle raters wanted. A note that only nitpicks 'who paid' adds little; the Spartanburg point is the real correction and is already organically surfaced.",
+  "judge_guidance": "PASS only if the bot declines to write a note, OR writes one that focuses on the BMW X5 being assembled in Spartanburg, SC (which directly answers the tweet's 'America First / what's wrong with Ford' framing). FAIL if the note merely nitpicks that 'Patel didn't personally buy them, the FBI did' — that's a strawman correction; the tweet's colloquial 'bought' clearly means 'caused to be purchased'. FAIL if the note implies the underlying procurement is fabricated — it is real and widely reported.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The post incorrectly states that \"Kash Patel has bought custom made armored BMW X5's for himself and the FBI.\" In fact, Patel did not purchase the vehicles himself - the FBI purchased them at Patel's request using federal taxpayer funds. https://www.ms.now/news/kash-patels-new-ride-of-choice-an-armored-luxury-bmw",
+    "failure_reason": "Strawman correction on 'who paid'. The substantive misleading framing (BMW = un-American vs Ford) goes uncorrected; the X5 is built in Spartanburg, SC.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's procurement claim is substantively accurate; the 'America First' framing is the only thing worth correcting and that's organically corrected in replies",
+    "sources_checked": [
+      "https://newrepublic.com/post/204703/kash-patel-bmw-fbi",
+      "https://www.tmz.com/2025/12/23/kash-patel-request-fbi-armored-bmw/",
+      "https://www.carscoops.com/2025/12/germany-first-trumps-fbi-director-gets-a-new-bmw/"
+    ],
+    "notes": "FBI confirmed the purchase; X5 (including Protection variant) is assembled at BMW's Spartanburg, SC plant. X5 Protection is ~$200-300K, cheaper than the ~$480K armored Suburban it replaces."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Federal-procurement scrutiny matters for government accountability but this particular framing isn't a misinfo crisis."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2015265871862681860",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["staged_or_scripted_content", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "wonder_factoid_no_misclaim",
+  "tweet_summary": "Massimo posts an awe-style clip of a 62-year-old Chinese man performing qinggong (轻功)-style jumps in parks/courtyards; tweet calls qinggong 'a martial arts technique often described as the ability to fly or move with extreme lightness.'",
+  "why_note_decision": "The tweet's wording ('often described as') hedges and is accurate — qinggong is a real training technique whose wuxia-fiction depiction includes superhuman lightness/water-running. The tweet doesn't claim the man is actually flying or that supernatural qinggong is real; it explicitly frames it as 'testing the limits.' The original note pedantically asserts the supernatural version is fictional, which the tweet did not claim. There's no checkable misleading claim to correct. Comments treat it as impressive athleticism, with several jokes about the actor's age; no widespread audience confusion.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet describes qinggong with a hedged 'often described as' framing that is accurate; it doesn't assert flight/water-walking is real. A note clarifying that supernatural qinggong is wuxia fiction is correcting a claim the author didn't quite make and is a false positive. Any note that 'fact-checks' the supernatural reading is the failure to avoid here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "In Chinese martial arts, qinggong is a real training technique used to enhance agility, jumping, and balance. However, the ability to fly or walk on water is a fictional exaggeration from wuxia novels and not a physical reality.    https://en.wikipedia.org/wiki/Qinggong",
+    "failure_reason": "Corrects a literal reading the tweet did not endorse; the tweet's 'often described as' framing is accurate. Raters tagged 'note not needed', 'sources missing/unreliable', 'missing key points'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet accurately describes qinggong as a martial-arts technique whose folkloric depiction includes flying/lightness; no false claim made",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Qinggong",
+      "https://wuxiasociety.com/qinggong/"
+    ],
+    "notes": "Qinggong is a real Chinese martial-arts training tradition; supernatural feats are wuxia fiction. Tweet's hedge ('often described as') is consistent with this. Whether the video itself is real or staged is a separate question the tweet doesn't take a position on."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Curiosity content; no EA/AGI/welfare angle."
+  },
+  "difficulty": "easy"
+}

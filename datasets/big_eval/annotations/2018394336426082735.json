@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2018394336426082735",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["humor_meme", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet jokes that YouTuber Markiplier's self-financed horror film 'Iron Lung' opened to $23 worldwide, with a fabricated tearful quote.",
+  "why_note_decision": "Transparent joke — '$23 worldwide' is a deliberately absurd number, the fabricated quote is a comedic bit. 191K likes and the top reply 'This is real he told me' (6451 likes) confirm the audience reads it as a gag. Iron Lung actually opened to ~$21.7M globally (Variety / NBC News), but the tweet is a meme, not misinformation. Note-not-needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The '$23' figure is obviously a joke (Iron Lung actually opened to ~$21.7M global; replies and likes treat the tweet as comedy). FAIL any note that earnestly 'corrects' the $23 figure or attributes the fake quote — the audience already gets that it's a bit. If the bot somehow writes a serious-but-correct note, that's still a false positive given how clearly the tweet reads as humor.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is false. \"Iron Lung\" opened to $21.7 million worldwide, not $23. The quote is fabricated - the film was a major success, quadrupling its budget in one day. https://www.pcgamer.com/movies-tv/what-the-f-k-iron-lung-creator-puzzled-as-markipliers-film-adaptation-quadruples-its-budget-in-one-day-beating-out-melania-and-send-help-at-the-box-office/",
+    "failure_reason": "Fact-checks an obvious joke. Note-not-needed at scale — 381 'not needed' tags on 687 raters.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is satire/joke; underlying film actually a major success (~$21.7M global open)",
+    "sources_checked": [
+      "https://variety.com/2026/film/box-office/markiplier-cries-iron-lung-indie-film-global-box-office-debut-1236649636/",
+      "https://www.nbcnews.com/pop-culture/viral/markiplier-youtuber-iron-lung-film-box-office-hit-rcna257110"
+    ],
+    "notes": "Iron Lung opened to $18.19M domestic / $21.7M global on a $3M budget. The tweet's '$23' is meme-coded."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "High-engagement tweet but the joke is harmless; misclassifying it as misinfo erodes Community Notes credibility."
+  },
+  "difficulty": "easy"
+}

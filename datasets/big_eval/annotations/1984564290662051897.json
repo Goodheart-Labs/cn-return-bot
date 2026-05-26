@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1984564290662051897",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Reform UK MP Richard Tice shares a photo of a Motability advert offering '£NIL ADVANCE PAYMENT PLUS £750 CASHBACK' and claims the scheme is now giving £750 cashback funded by taxpayers, framing it as 'the great Motability rip-off' growing.",
+  "why_note_decision": "The £750 'cashback' shown in the advert is Motability's New Vehicle Payment, which (per Motability's own news release and multiple dealership announcements) ended for new customers on 3 January 2025 — almost a year before Tice's November 2025 tweet. The advert is stale signage. Additionally, the New Vehicle Payment was funded out of Motability Operations' reserves / charity surplus, not directly by 'taxpayers' as Tice implies (though Motability customers do use their PIP/DLA mobility-component benefit to lease cars, which is the indirect-taxpayer-funding angle). The tweet conflates an expired scheme-funded payment with a new taxpayer giveaway. Multiple in-thread commenters, including high-engagement replies, identify the misinformation. A correction is warranted.",
+  "judge_guidance": "PASS only if the note (a) states clearly that the £750 New Vehicle Payment ended on 3 January 2025 (i.e., is no longer available to new customers at the time of the tweet, Nov 2025), AND (b) clarifies that the payment was funded by the Motability scheme/Motability Operations, not as a new taxpayer-funded giveaway. Strong sources: Motability's own news/scheme pages, dealership announcements, Guardian/BBC coverage. Notes that endorse the 'taxpayer-funded new scheme' framing should FAIL. Notes that only address (a) or only address (b) partially pass; both are needed for the correction to fully land. A note that veers into broader Motability scheme criticism (deserved or not) without addressing the specific factual error should FAIL.",
+  "reference_note": "Misleading: the £750 'cashback' shown in this advert is Motability's New Vehicle Payment, which ended for new customers on 3 January 2025 — it is no longer being offered. The payment was funded by the Motability scheme, not as a new taxpayer-funded giveaway. https://news.motability.co.uk/scheme-news/weve-extended-the-new-vehicle-payment-to-2024-for-new-customers/ https://www.motability.co.uk/get-support/end-of-lease/cars-wavs/next-vehicle/new-vehicle-payment",
+  "original_unhelpful_note": {
+    "text": "Misleading: The £750 'cashback' shown was Motability's one-off New Vehicle Payment for orders placed by Jan 3, 2025. It is no longer available. The payment was made by Motability, not a new taxpayer-funded giveaway. https://www.motability.co.uk/get-support/end-of-lease/cars-wavs/next-vehicle/new-vehicle-payment/ https://www.theguardian.com/society/2025/mar/24/motability-disability-scheme-uk-taxpayers-government",
+    "failure_reason": "Original note is essentially correct and well-sourced. 'Missing key points' (11) and 'incorrect' (7) tags likely reflect partisan rating dynamics on a Reform-UK MP note, not substantive failure. Note could have been slightly tighter by leading with the end-date.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading: the £750 New Vehicle Payment ended January 2025 (before this Nov 2025 tweet) and was funded by Motability, not directly by taxpayers.",
+    "sources_checked": [
+      "https://news.motability.co.uk/scheme-news/weve-extended-the-new-vehicle-payment-to-2024-for-new-customers/",
+      "https://www.motability.co.uk/get-support/end-of-lease/cars-wavs/next-vehicle/new-vehicle-payment",
+      "https://www.motaclarity.co.uk/news/motability-scheme-new-vehicle-payment-will-end-in-2025"
+    ],
+    "notes": "Motability scheme is run by Motability Operations, a not-for-profit. Customers fund leases by surrendering their PIP/DLA mobility allowance — so there's an indirect taxpayer link, but the £750 payment specifically came out of Motability Operations reserves, not the Treasury. Multiple high-engagement comments (incl. 'Reform Party UK Exposed' with 1,557 likes) flag the scheme ended January 2025."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "187k impressions from a sitting MP (Tice has 390k followers) attacking a disability-mobility scheme with a stale/false factual claim. Political misinfo from elected officials about welfare programs has outsized policy-debate consequences."
+  },
+  "difficulty": "easy"
+}

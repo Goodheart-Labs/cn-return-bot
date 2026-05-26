@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2057419233357660391",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "statistical_or_numerical_claim", "election_integrity"],
+  "category_fit": "good",
+  "suggested_category": "election_integrity",
+  "tweet_summary": "Niko House ('Duopoly Destroyer') claims Ed Gallrein got 57,822 'mail-in ballots' and Thomas Massie got 47,538 in the KY-04 primary, implying mail-in ballot fraud explains how Massie lost despite leading in pre-election polls.",
+  "why_note_decision": "The tweet's central factual claim is false: 57,822 and 47,538 are the TOTAL vote counts from the Kentucky SOS results, not mail-in/absentee ballot counts. Per the KY SOS live results (and as multiple in-thread commenters spelled out), Gallrein received roughly 10,854 absentee votes vs Massie's 8,421 — well under 'no 100k mail-in ballots in a day' would imply. The tweet frames a legitimate primary loss as a fraudulent mail-in dump, exactly the kind of election-integrity misinfo notes exist to correct.",
+  "judge_guidance": "PASS only if the note (a) explicitly states that 57,822 and 47,538 are TOTAL votes, not mail-in/absentee ballots, and (b) gives the actual absentee figures (~10,854 for Gallrein, ~8,421 for Massie) or otherwise cites the KY Secretary of State official results. A correct note must cite vrsws.sos.ky.gov or an archived snapshot. Notes that vaguely say 'this is misleading' without giving the real numbers should FAIL. Notes that endorse the mail-in-fraud framing should FAIL. Notes that focus on Massie's politics or the AIPAC angle without correcting the numeric claim should FAIL.",
+  "reference_note": "The figures 57,822 and 47,538 are total votes for Gallrein and Massie in the KY-04 GOP primary, not mail-in ballots. Per the Kentucky Secretary of State, Gallrein received about 10,854 absentee ballots and Massie about 8,421 — Gallrein led both in-person and absentee. https://vrsws.sos.ky.gov/liveresults/",
+  "original_unhelpful_note": {
+    "text": "The figures 57,822 and 47,538 are total votes for Gallrein and Massie, not mail-in ballots; Gallrein received 10,854 absentee ballots to Massie's 8,421. https://vrsws.sos.ky.gov/liveresults/ https://web.archive.org/web/20260520165944/https://vrsws.sos.ky.gov/liveresults/",
+    "failure_reason": "Original note is essentially correct and well-sourced (KY SOS + archive). 'NEEDS_MORE_RATINGS' at low rating volume (19) likely reflects insufficient raters rather than a substantive failure. The provisional 'no_note_needed' label is wrong — election-integrity misinfo on a US House primary is exactly what notes are for.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: the cited numbers are total vote tallies, not mail-in ballots; absentee counts are ~10.8k and ~8.4k respectively per KY SOS.",
+    "sources_checked": [
+      "https://vrsws.sos.ky.gov/liveresults/"
+    ],
+    "notes": "In-thread commenters @v01dp1r4t3, @CHawks12thMan, @kpweaver27 all independently produced the correct breakdown, corroborating the official SOS figures."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "79k impressions on a fraud-narrative claim about a US House primary; election-integrity misinformation is a high-leverage correction target, even at modest reach."
+  },
+  "difficulty": "easy"
+}

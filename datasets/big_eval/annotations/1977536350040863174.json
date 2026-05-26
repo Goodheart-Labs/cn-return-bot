@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1977536350040863174",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["health_medical_science"],
+  "category_fit": "partial",
+  "suggested_category": "sarcasm_or_commentary",
+  "tweet_summary": "Quote-tweet of a Japanese tooth-regrowth news item, with the sarcastic line 'Meanwhile American scientists are saying Tylenol causes autism and sterilizing immigrants' — contrasting Japan's science output with U.S. health-policy controversies.",
+  "why_note_decision": "This is sarcastic commentary, not a factual assertion that all American scientists hold this view. The author is mocking the Trump/RFK-Jr Tylenol-autism announcement (Sept 22, 2025) and RFK Jr's history of WHO-sterilization claims, juxtaposed with real Japanese dental research. Treating it as a literal factual claim — as the original note did — misreads the rhetorical register. The community correctly rated the note NOT HELPFUL (229 ratings, dominant tag noteNotNeeded). A correct bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the tweet is sarcasm contrasting Japan's research output with the U.S. government's contested Tylenol-autism announcement; there's no checkable factual claim being made by the author. FAIL any note that: (a) literally fact-checks 'American scientists say Tylenol causes autism' (Trump/RFK Jr did promote this, while medical consensus disputes it — a long story irrelevant to the tweet's tone), (b) repeats the original note's failure of mis-categorizing snark as misinformation, or (c) introduces tangential health information.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Post falsely claims American scientists say Tylenol &quot;causes autism and sterilizing immigrants.&quot; No scientific consensus exists that Tylenol causes autism - only possible associations under study. No evidence supports sterilization claims. https://www.aap.org/en/news-room/fact-checked/acetaminophen-is-safe-for-children-when-taken-as-directed-no-link-to-autism/",
+    "failure_reason": "note_not_needed — treats sarcasm/opinion as a literal factual claim. The tweet is a quote-tweet making a rhetorical contrast, not asserting a scientific consensus. The community downvoted overwhelmingly.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "sarcasm_not_factual_claim",
+    "sources_checked": [
+      "https://www.cbsnews.com/news/trump-autism-tylenol-medical-experts/",
+      "https://www.factcheck.org/2025/10/rfk-jr-s-inaccurate-claims-about-tylenol-circumcision-and-autism/",
+      "https://www.aljazeera.com/news/2025/10/29/rfk-jr-walks-back-trump-administrations-claims-linking-tylenol-and-autism"
+    ],
+    "notes": "Tweet is rhetorical commentary on real Trump/RFK Jr announcements (Tylenol-autism Sept 22 2025; RFK's history of sterilization claims). Not a sincere factual assertion."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "6.97M-impression post; primary lesson is the bot needs to recognize sarcasm/political commentary rather than fact-checking rhetorical asides."
+  },
+  "difficulty": "hard"
+}

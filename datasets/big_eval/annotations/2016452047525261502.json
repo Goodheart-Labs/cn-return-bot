@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2016452047525261502",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "scams_fraud_finance"],
+  "category_fit": "partial",
+  "suggested_category": "ethnic_misattribution",
+  "tweet_summary": "Crypto-finance influencer 'Uzi' (61K followers) shares a news clip about the Cohasset, Massachusetts school crypto-mining-in-the-crawlspace case, captioning it 'a indian guy has been caught...'.",
+  "why_note_decision": "The video itself shows the on-screen court docket naming the defendant: Nadeam Nahas, a Cohasset, Massachusetts resident and former town assistant facilities director, charged in 2023 with fraudulent electricity use and vandalism. 'Nadeam Nahas' is a Lebanese/Arab name, not an Indian one, and multiple news sources (ABC News, Boston Globe, WBUR, Entrepreneur) confirm he is a Cohasset MA resident, not from India. The tweet's 'indian guy' framing is wrong and is being challenged in the comments. A note correcting the ethnicity/origin claim is genuinely useful — particularly because the tweet is being amplified specifically because of the ethnic frame.",
+  "judge_guidance": "PASS if the note identifies the defendant as Nadeam Nahas of Cohasset, Massachusetts (former town facilities employee), not an Indian man, citing at least one mainstream news source (ABC News, Boston Globe, WBUR, BBC). FAIL if the note says the tweet is correct, claims the defendant IS Indian, or sidesteps the ethnic-misattribution issue.",
+  "reference_note": "The defendant is Nadeam Nahas, a resident of Cohasset, Massachusetts and a former town facilities employee — not an Indian man. He was charged in 2023 with fraudulent electricity use and school vandalism after a hidden crypto-mining rig was discovered in a school crawl space. https://abcnews.go.com/US/massachusetts-man-charged-after-hiding-cryptocurrency-mining-rig/story?id=97440173 https://www.wbur.org/news/2023/02/23/secret-crypto-mining-operation-school-crawl-space",
+  "original_unhelpful_note": {
+    "text": "The man accused of mining cryptocurrency in a school crawlspace is Nadeam Nahas, a resident of Cohasset, Massachusetts—not an Indian man. https://www.bbc.com/news/world-us-canada-64767178 https://www.wcvb.com/article/cohasset-school-employee-power-cryptocurrency-mine-not-guilty-plea/43063078",
+    "failure_reason": "Note is substantively correct and well-sourced. Low rating volume + MissingKeyPoints dominance likely reflect rater pool composition rather than note quality. Treat as helpful_reference.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "ethnic_misattribution_confirmed",
+    "sources_checked": [
+      "https://abcnews.go.com/US/massachusetts-man-charged-after-hiding-cryptocurrency-mining-rig/story?id=97440173",
+      "https://www.bostonglobe.com/2023/02/22/metro/former-cohasset-employee-accused-operating-crypto-mine-crawl-space-beneath-school/",
+      "https://www.wbur.org/news/2023/02/23/secret-crypto-mining-operation-school-crawl-space"
+    ],
+    "notes": "Defendant: Nadeam Nahas, Cohasset MA, former assistant facilities director. Name is Lebanese/Arab origin, not Indian. Charged Feb 2023."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Ethnic-misattribution posts have outsized social-harm potential; clean correctable cases like this are valuable in eval."
+  },
+  "difficulty": "easy"
+}

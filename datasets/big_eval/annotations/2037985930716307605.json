@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2037985930716307605",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["politics_and_policy", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "news_headline_amplification",
+  "tweet_summary": "NY Post headline-tweet: 'Up to 1,000 Iranian sleeper agents embedded in Canada: Govt official' — links to a NY Post article quoting Conservative shadow immigration minister Michelle Rempel Garner.",
+  "why_note_decision": "The tweet accurately reproduces the NY Post's headline and links to the article. The '1,000' figure does come from an opposition MP / volunteer database, not a government intelligence agency, and CBC reporting / intelligence experts cast doubt on the 'sleeper cells' framing — but that is a debate over the NY Post's framing, not a factual misrepresentation by the tweet. Adding the note's specific 'only one deportation' counter-context is the kind of editorial debate readers can pursue through replies; a Community Note correcting a headline-tweet to a credible outlet for framing alone is a false positive.",
+  "judge_guidance": "PASS only if the bot declines (notNeeded). The tweet faithfully reproduces a NY Post headline; framing critiques of the source are not Community-Note material. A note is a false positive UNLESS it can show the NY Post article itself was retracted/corrected or that no such official ever made the claim — neither is true (Rempel Garner did make the claim as cited). Do NOT flag this as misinformation; do NOT inject Liberal-government counter-quotes as a 'correction'.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The estimate of up to 1,000 Iranian agents cited comes from an opposition MP and a volunteer group's unverified database, not a government official; Canada's Public Safety Minister says such numbers are not substantiated, with only one deportation to date. https://nypost.com/2026/03/28/world-news/up-to-1000-iranian-sleeper-agents-embedded-in-canada-govt-official/ https://halifax.citynews.ca/2026/03/19/canada-has-deported-only-one-iran-official-heres-what-we-know-about-those-efforts",
+    "failure_reason": "Disputes framing of a credible-outlet headline rather than a factual claim. Raters overwhelmingly flagged it as MissingKeyPoints / NoteNotNeeded / OpinionSpeculation.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "accurately_quotes_reporting",
+    "sources_checked": [
+      "https://www.foxnews.com/world/trump-warns-iranian-sleeper-cells-canada-accused-harboring-regime-operatives",
+      "https://www.cbc.ca/news/investigates/iran-war-sleeper-cells-risk-intelligence-experts-9.7138536",
+      "https://www.thecentersquare.com/national/article_6bf8d048-657d-4ba0-960c-723bc9df5575.html"
+    ],
+    "notes": "NY Post article cites Conservative shadow immigration minister Rempel Garner. CBC and intel experts dispute the 'sleeper cell' characterization but do not dispute that an MP made the claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Geopolitical narrative-shaping around Iran/Canada has some EA/policy weight, but the tweet itself is a faithful headline amplification, so eval value here is in catching false-positive Community Notes that punish accurate headline-tweets."
+  },
+  "difficulty": "medium"
+}
