@@ -318,6 +318,9 @@ def main() -> None:
     test, remaining = balanced_split(rows, TEST_SIZE, rng)
     val, pool = balanced_split(remaining, VAL_SIZE, rng)
 
+    assert len(test) + len(val) + len(pool) == len(rows), \
+        f"split partition lost rows: {len(test)} + {len(val)} + {len(pool)} != {len(rows)}"
+
     write_split("test", test)
     write_split("val", val)
     write_split("pool", pool)
