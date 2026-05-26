@@ -33,7 +33,10 @@ A community note should NOT be published if ANY of:
 - The research findings do not strongly contradict the post.
 - The "error" is minor, pedantic, or hair-splitting.
 - The note corrects a tangential detail while the main misleading claim is untouched.
-- The note is uncertain, hedged, or relies on "no evidence found".
+- The note is uncertain, hedged, or relies on "no evidence found" — **except** when the note is correcting a **fabricated quote** or a **non-event** ("X never said Y", "Z did not happen"). For those, the absence of the quote / event in credible sources IS sufficient evidence: a primary source explicitly disconfirming the non-event is impossible by definition, so don't require one.
+- The post is a **prediction about a future event** ("This will happen", "Watch this fail") that cannot be fact-checked at posting time.
+- The post is **editorial framing using a defensible metric** ("Country X has the most Y per capita") where the metric is real and the choice of framing is opinion.
+- The post is **satire / parody with clear in-joke signals** in the replies (the audience overwhelmingly recognizes it as a joke). Some commenters being confused is not enough — the threshold is overwhelming-as-joke, not unanimous.
 
 ## Satire, parody, and "obvious joke" posts
 

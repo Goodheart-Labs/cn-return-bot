@@ -50,12 +50,17 @@ export async function runCheapBotPipeline(
   }
 
   // Stage 2: searXNG fetch — one request per query, combined.
-  const findings = await fetchAndFormatSearch(queries);
+  const { findings, totalResults } = await fetchAndFormatSearch(queries);
   log?.set("cheapBot.searchFindings", findings.slice(0, 4000));
+  log?.set("cheapBot.searchResultCount", totalResults);
 
-  if (!findings.trim()) {
+  // No-findings guard: if every query returned zero hits, refuse to invoke
+  // the writer. Without this, the writer fabricates plausible-sounding notes
+  // and cites the tweet's own URL as a source — a major source of false
+  // positives in the baseline run.
+  if (totalResults === 0) {
     logFinal(startMs);
-    return { type: "no_correction", reason: "searXNG returned no results for any query" };
+    return { type: "no_correction", reason: "no_evidence_found: every search query returned zero results — refusing to write a note without evidence" };
   }
 
   // Stage 3: writer
@@ -96,8 +101,9 @@ export async function runCheapBotPipeline(
   };
 }
 
-async function fetchAndFormatSearch(queries: string[]): Promise<string> {
+async function fetchAndFormatSearch(queries: string[]): Promise<{ findings: string; totalResults: number }> {
   const sections: string[] = [];
+  let totalResults = 0;
   for (const q of queries) {
     let results: SearxngResult[] = [];
     try {
@@ -107,9 +113,10 @@ async function fetchAndFormatSearch(queries: string[]): Promise<string> {
       continue;
     }
     const top = results.slice(0, MAX_RESULTS_PER_QUERY);
+    totalResults += top.length;
     sections.push(`## Query: ${q}\n${formatSearxngResults(top)}`);
   }
-  return sections.join("\n\n");
+  return { findings: sections.join("\n\n"), totalResults };
 }
 
 function logFinal(startMs: number): void {

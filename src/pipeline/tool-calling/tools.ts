@@ -246,21 +246,52 @@ export interface SearxngResult {
   publishedDate: string | null;
 }
 
+// Fan out across multiple engines so a single engine's rate-limit (Google
+// in particular) doesn't return zero results for the whole pipeline. The
+// existing simple-bot tool-calling loop still hits "engines=google" via
+// handleGoogleSearchRaw; this exported helper for cheap-bot uses all
+// configured engines and returns the union of results.
+const SEARXNG_ENGINES = "google,bing,duckduckgo,brave";
+
 export async function fetchSearxngResults(query: string): Promise<SearxngResult[]> {
-  const endpoint = `${SEARXNG_URL}/search?q=${encodeURIComponent(query)}&format=json&engines=google`;
-  const response = await fetch(endpoint, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; CommunityNotesBot/1.0)" },
-    signal: AbortSignal.timeout(15000),
-  });
-  if (!response.ok) throw new Error(`SearXNG HTTP ${response.status}`);
-  const data: any = await response.json();
-  const results: any[] = data?.results ?? [];
-  return results.slice(0, SEARXNG_MAX_RESULTS).map((r) => ({
-    title: r.title ?? "",
-    url: r.url ?? "",
-    content: r.content ?? "",
-    publishedDate: r.publishedDate ?? null,
-  }));
+  const endpoint = `${SEARXNG_URL}/search?q=${encodeURIComponent(query)}&format=json&engines=${SEARXNG_ENGINES}`;
+
+  // One retry on transient failure (rate-limit, network blip). The first
+  // baseline run revealed silent zero-result rate-limiting partway through;
+  // the retry + fallback engines together substantially reduce that hole.
+  let lastErr: Error | null = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const response = await fetch(endpoint, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; CommunityNotesBot/1.0)" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!response.ok) throw new Error(`SearXNG HTTP ${response.status}`);
+      const data: any = await response.json();
+      const results: any[] = data?.results ?? [];
+      // De-duplicate by URL — the same source often appears from multiple
+      // engines. Preserve order (first hit wins, which approximates rank).
+      const seen = new Set<string>();
+      const deduped: SearxngResult[] = [];
+      for (const r of results) {
+        const url = r.url ?? "";
+        if (!url || seen.has(url)) continue;
+        seen.add(url);
+        deduped.push({
+          title: r.title ?? "",
+          url,
+          content: r.content ?? "",
+          publishedDate: r.publishedDate ?? null,
+        });
+        if (deduped.length >= SEARXNG_MAX_RESULTS) break;
+      }
+      return deduped;
+    } catch (err: any) {
+      lastErr = err;
+      if (attempt < 2) await new Promise((res) => setTimeout(res, 750));
+    }
+  }
+  throw lastErr ?? new Error("SearXNG: unknown failure after retries");
 }
 
 export function formatSearxngResults(results: SearxngResult[]): string {
@@ -311,12 +342,29 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
   return { output: { results: summary }, isTerminal: false, cost };
 }
 
-export async function handleWebFetch(url: string): Promise<ToolResult> {
+// Two UA strings: many sites bot-detect on the desktop Chrome UA and serve
+// 403 / a wall page; the mobile Safari UA gets through some of them. We try
+// desktop first, then mobile on 4xx, then fall back to Wayback Machine.
+const FETCH_UAS = {
+  desktop:
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  mobile:
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+} as const;
+
+interface RawFetchResult {
+  ok: boolean;
+  status?: number;
+  contentType?: string;
+  body?: string;
+  error?: string;
+}
+
+async function rawFetch(url: string, ua: string): Promise<RawFetchResult> {
   try {
     const response = await fetch(url, {
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "User-Agent": ua,
         Accept:
           "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
@@ -324,38 +372,80 @@ export async function handleWebFetch(url: string): Promise<ToolResult> {
       redirect: "follow",
       signal: AbortSignal.timeout(15000),
     });
-    if (!response.ok) {
-      return { output: `Fetch failed: HTTP ${response.status}`, isTerminal: false };
-    }
     const contentType = response.headers.get("content-type") ?? "";
+    if (!response.ok) {
+      return { ok: false, status: response.status, contentType };
+    }
     if (!contentType.includes("text/") && !contentType.includes("json")) {
-      return { output: `Non-text content: ${contentType}`, isTerminal: false };
+      return { ok: false, status: response.status, contentType };
     }
-
-    const html = await response.text();
-
-    // Try Readability extraction → Turndown to markdown
-    const { document } = parseHTML(html);
-    const article = new Readability(document).parse();
-
-    let markdown: string;
-    if (article?.content) {
-      const titleLine = article.title ? `# ${article.title}\n\n` : "";
-      markdown = titleLine + turndown.turndown(article.content);
-    } else {
-      // Fallback: strip HTML tags for non-article pages
-      markdown = html
-        .replace(/<script[\s\S]*?<\/script>/gi, "")
-        .replace(/<style[\s\S]*?<\/style>/gi, "")
-        .replace(/<[^>]+>/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    return { output: markdown.slice(0, 20000), isTerminal: false };
+    const body = await response.text();
+    return { ok: true, status: response.status, contentType, body };
   } catch (err: any) {
-    return { output: `Fetch error: ${err?.message?.slice(0, 200)}`, isTerminal: false };
+    return { ok: false, error: err?.message?.slice(0, 200) ?? "unknown" };
   }
+}
+
+function htmlToMarkdown(html: string): string {
+  const { document } = parseHTML(html);
+  const article = new Readability(document).parse();
+  if (article?.content) {
+    const titleLine = article.title ? `# ${article.title}\n\n` : "";
+    return titleLine + turndown.turndown(article.content);
+  }
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function tryWayback(originalUrl: string): Promise<RawFetchResult> {
+  // Wayback Machine availability API → fetch the closest snapshot's URL.
+  // Snapshot pages already render the original HTML so Readability still works.
+  try {
+    const availabilityResp = await fetch(
+      `https://archive.org/wayback/available?url=${encodeURIComponent(originalUrl)}`,
+      { signal: AbortSignal.timeout(10000) },
+    );
+    if (!availabilityResp.ok) return { ok: false, status: availabilityResp.status, error: "wayback availability lookup failed" };
+    const data: any = await availabilityResp.json();
+    const snapshotUrl: string | undefined = data?.archived_snapshots?.closest?.url;
+    if (!snapshotUrl) return { ok: false, error: "no wayback snapshot available" };
+    return rawFetch(snapshotUrl, FETCH_UAS.desktop);
+  } catch (err: any) {
+    return { ok: false, error: err?.message?.slice(0, 200) ?? "wayback error" };
+  }
+}
+
+export async function handleWebFetch(url: string): Promise<ToolResult> {
+  // Attempt 1: desktop UA.
+  let result = await rawFetch(url, FETCH_UAS.desktop);
+
+  // Attempt 2: mobile UA on 4xx (bot detection often pings on desktop UAs only).
+  if (!result.ok && result.status !== undefined && result.status >= 400 && result.status < 500) {
+    result = await rawFetch(url, FETCH_UAS.mobile);
+  }
+
+  // Attempt 3: Wayback Machine snapshot for any persistent failure (4xx/5xx
+  // or network error). This recovers paywalled / dead / bot-blocked URLs
+  // without relying on a trusted-domain allowlist.
+  if (!result.ok) {
+    const wayback = await tryWayback(url);
+    if (wayback.ok && wayback.body) {
+      const markdown = htmlToMarkdown(wayback.body);
+      return { output: `[fetched via Wayback Machine snapshot]\n\n${markdown.slice(0, 20000)}`, isTerminal: false };
+    }
+    if (result.error) return { output: `Fetch error: ${result.error}`, isTerminal: false };
+    if (result.contentType && !result.contentType.includes("text/") && !result.contentType.includes("json")) {
+      return { output: `Non-text content: ${result.contentType}`, isTerminal: false };
+    }
+    return { output: `Fetch failed: HTTP ${result.status}`, isTerminal: false };
+  }
+
+  const markdown = htmlToMarkdown(result.body ?? "");
+  return { output: markdown.slice(0, 20000), isTerminal: false };
 }
 
 export function handleProposeNotes(
