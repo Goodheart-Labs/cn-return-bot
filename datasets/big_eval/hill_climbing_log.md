@@ -30,17 +30,49 @@ to the table and a prose section below. Strategic plan:
 
 | Iter | Variant name | PASS / 100 | Δ vs baseline | NW correct | NW missed | NNW correct | False-pos rate | $/row pipeline | Regressions vs prev | Wins vs prev |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 0 | baseline-cheap-bot-v0 | (pending) | — | — | — | — | — | — | — | — |
+| 0 | baseline-cheap-bot-v0 | 49 | — | 4 | 40 | 45 | 10% (5/50) | — | — | — |
 
 ## Iteration 0 — baseline
 
 **Run name:** `baseline-cheap-bot-v0`
-**Variant matrix:** `--pick bot=cheap-bot` (DeepSeek v4 Flash across query writer, writer, note-needed judge, source verifier; searXNG via local Docker)
-**Status:** running in background; numbers will be filled in once complete.
+**Run folder:** `dataset_runs/tryout-baseline-cheap-bot-v0-2026-05-26-1937`
+**Variant matrix:** `--pick bot=cheap-bot` (DeepSeek v4 Flash across query writer, writer, note-needed judge, source verifier; searXNG via local Docker on port 8080)
+**Status:** complete (100/100 processed, 0 errors).
 
-**What this iteration is:** the anchor — no improvements yet. The pipeline is
-the bare 5 stages the user specified: one shot of query writing → searXNG fetch
-→ writer → note-needed judge → source verifier. Every subsequent iteration is
-diffed against this run.
+### Headline numbers
 
-(Diagnosis paragraph + next-step hypothesis go here once the run completes.)
+- **PASS:** 49/100 (49%)
+- **Noteworthy (50 tweets, `needs_note=yes`):**
+  - Correct: 4 (8%)
+  - Incorrect (note proposed but judge said bad): 6 (12%)
+  - Not proposed (missed entirely): 40 (80%)
+- **Non-noteworthy (50 tweets, `needs_note=no`):**
+  - Correct (abstained correctly): 45 (90%)
+  - Incorrect (false positive — proposed a note we shouldn't have): 5 (10%)
+
+### Read of the baseline
+
+cheap-bot is heavily skewed toward abstaining. It correctly abstains on
+non-noteworthy tweets 90% of the time — the note-needed judge + source
+verifier are doing their job as FP guards. But the same conservatism produces
+a brutal 80% miss rate on tweets that genuinely need a note.
+
+The dominant failure pattern (by count) is `note_worthy_not_proposed` — 40
+of the 100 rows. To hit a meaningful PASS rate above 50%, we have to
+get the bot to actually propose notes more often *without* exploding the FP
+rate. The 10% FP rate is acceptable but not great; we want it lower if
+possible, certainly not higher.
+
+The 6 `note_worthy_incorrect` rows are also worth diagnosing — these are
+cases where the bot DID propose a note but it was wrong. Likely query-writer
+or writer-stage issues.
+
+### Next step
+
+Diagnosis subagents (using `failure_analysis_instructions.md`) over the
+40 `note_worthy_not_proposed` rows + the 6 `note_worthy_incorrect` rows +
+the 5 `non_note_worthy_incorrect` rows. Deferred to next session — this
+session is hitting its $40 budget cap. The data is durable in the run folder,
+the scaffolding is in place, the next session can pick up directly from
+the failure JSONs at
+`dataset_runs/tryout-baseline-cheap-bot-v0-2026-05-26-1937/`.
