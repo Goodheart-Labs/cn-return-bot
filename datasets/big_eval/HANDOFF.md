@@ -17,14 +17,18 @@ all notes from 12 AI-notewriter author IDs (in `ai_author_ids.txt`) parsed from 
 ## Current state (as of this handoff)
 
 - **Branch:** `feature/big-eval-dataset` (already pushed to origin).
-- **Selection:** 745 rows in `selected.jsonl` (495 original + 250 no-note booster from the cleaner
-  dominant-`notHelpfulNoteNotNeeded` pool).
-- **Cached inputs:** 657 of 745 (~88 tweets deleted/inaccessible — expected attrition); each in
-  `inputs/<tweet_id>.json` with `post`, AI media description (which **MAY be wrong**), comments.
-- **Annotations: 657 of 657 DONE — annotation phase complete.**
-- **Watcher:** `usage_watch.py --ceiling 67` running (pause at ~$50 per user's revised cap).
-- **Remaining work:** Phase 6b (taxonomy normalization to v2) and Phase 7 (assembly + splits +
-  smoke test). Both are mostly local Python — cheap to run in a fresh session.
+- **Selection:** 745 rows in `selected.jsonl` (495 original + 250 no-note booster).
+- **Cached inputs:** 657 of 745 (~88 deleted/inaccessible — expected attrition).
+- **Annotations:** 657 / 657 complete; Phase 6b normalization applied (195 rows rewritten —
+  role + category names collapsed to v2; 8 pilot rows backfilled).
+- **Assembled:** `dataset.jsonl` 652 rows (5 lost to tweet_id collisions, accepted) at
+  ~47.5% needs_note=yes / 52.5% no.
+- **Splits:** `splits/test.jsonl/.csv` (100 rows, 50/50), `splits/val.jsonl/.csv` (100, 50/50),
+  `splits/pool.jsonl/.csv` (452, 210/242). CSVs are runner-compatible
+  (url/needs_note/ground_truth_note/tweet_text/tags + judge_guidance/original_note_text/failure_reason).
+- **`report.md`:** distributions, suggested_category top-30, example rows.
+- **Smoke test PASSED:** `BIG_EVAL_INPUT_CACHE=<inputs> bun run src/local/tryoutNotes.ts --pick bot=simple-bot --max 5 datasets/big_eval/splits/val.csv` → 1 correct / 1 incorrect / 3 not-proposed (one row hit a Gemini quota cap, unrelated).
+- **Dataset is ready for hill-climbing.**
 
 ## Key findings — context the fresh session needs
 
