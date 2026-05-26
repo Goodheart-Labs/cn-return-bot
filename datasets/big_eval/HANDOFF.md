@@ -21,12 +21,10 @@ all notes from 12 AI-notewriter author IDs (in `ai_author_ids.txt`) parsed from 
   dominant-`notHelpfulNoteNotNeeded` pool).
 - **Cached inputs:** 657 of 745 (~88 tweets deleted/inaccessible — expected attrition); each in
   `inputs/<tweet_id>.json` with `post`, AI media description (which **MAY be wrong**), comments.
-- **Annotations: 455 of 657 done.** Still TODO: **~202 datapoints**.
-- **Distribution so far:** 279 needs-note / 176 no-note (≈39% no, climbing toward 50%).
-  Of the 455, **182 (40%) flipped from the provisional label** — both directions, but mostly
-  `failure → no-note` (false positives on true tweets) and the booster's `no-note → needs-note` (the
-  community signal was still noisy). Assembly will cap to ~50/50.
-- **Watcher:** `usage_watch.py --ceiling 93` running (pause at ~$70).
+- **Annotations: 657 of 657 DONE — annotation phase complete.**
+- **Watcher:** `usage_watch.py --ceiling 67` running (pause at ~$50 per user's revised cap).
+- **Remaining work:** Phase 6b (taxonomy normalization to v2) and Phase 7 (assembly + splits +
+  smoke test). Both are mostly local Python — cheap to run in a fresh session.
 
 ## Key findings — context the fresh session needs
 
