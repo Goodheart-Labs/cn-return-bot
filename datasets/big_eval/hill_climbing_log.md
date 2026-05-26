@@ -31,6 +31,7 @@ to the table and a prose section below. Strategic plan:
 | Iter | Variant name | PASS / 100 | Δ vs baseline | NW correct | NW missed | NNW correct | False-pos rate | $/row pipeline | Regressions vs prev | Wins vs prev |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | 0 | baseline-cheap-bot-v0 | 49 | — | 4 | 40 | 45 | 10% (5/50) | — | — | — |
+| 1 | iter1 | 46 | −3 | 5 | 32 | 41 | 18% (9/50) | — | 11 | 8 |
 
 ## Iteration 0 — baseline
 
@@ -101,7 +102,82 @@ Google engine hit a rate limit partway through the 100-row run.
 Full subagent reports preserved in the transcript and at
 `dataset_runs/tryout-baseline-cheap-bot-v0-2026-05-26-1937/_failure_batches/`.
 
-### Proposed iteration 1 (awaiting user approval)
+## Iteration 1 — fixes from baseline diagnosis
+
+**Run name:** `iter1` · folder: `dataset_runs/tryout-iter1-2026-05-26-2237/`
+**Changes (one commit):**
+1. searXNG multi-engine (google + bing + duckduckgo + brave) + retry+backoff in `fetchSearxngResults`
+2. Writer no-findings guard in `cheap-bot/orchestrator.ts` (skip writer if totalResults === 0)
+3. Note-needed judge prompt loosened on fabricated-quote/non-event absence-of-evidence; tightened on predictions/satire-with-overwhelming-jokes
+4. webFetch reliability — desktop UA → mobile UA on 4xx → Wayback Machine fallback
+
+### Headline numbers
+
+- **PASS: 46/100 (−3 vs baseline)** — REGRESSION on PASS rate
+- **False-pos rate: 18% (9/50) (vs 10% baseline)** — REGRESSION, doubled FP rate
+- NW correct: 5 (+1), NW missed: 32 (−8), NNW correct: 41 (−4)
+
+The fixes succeeded at getting the bot to propose more notes (misses 40 → 32), but
+many of the new notes are bad (FP 5 → 9, incorrect 6 → 13). The judge-prompt
+loosening was too aggressive.
+
+### Diagnosis (4 parallel Sonnet subagents, 54 failure rows)
+
+**Major new finding — searXNG locale issue.** Three of four agents independently
+flagged that searXNG (with the new multi-engine fan-out) is returning
+German-language results. dict.leo.org, Linguee, German Wikipedia, McDonald's
+Germany, Speedtest pages instead of English news. This wasn't in baseline
+(Google-only). Probably one of the engines I enabled (DuckDuckGo / Brave) is
+defaulting to a German locale.
+
+The German-results issue explains the bulk of remaining problems: the
+no-findings guard doesn't fire (results > 0), the writer hallucinates from
+parametric memory or cites the tweet's own URL, the judge approves notes
+based on weak evidence.
+
+**Other patterns:**
+- Judge prompt over-loosening — the fabricated-quote / non-event clause
+  triggered on satire/parody posts that already contain corrective context
+  (attached real video, credited parody creator, roleplay bio). 6 of the 9 FPs
+  share this pattern.
+- Writer not requiring URLs from search findings — 5 misses had a substantively
+  correct note but cited empty / self-tweet / Instagram-only sources, which
+  the source verifier rightly rejected.
+- Writer ignoring retraction signals (Barbacid PNAS retraction visible in
+  search snippet but writer restated the finding as established fact).
+- Writer not addressing all claims in multi-claim tweets (5 incorrects had
+  a directionally-correct note that missed a secondary false claim).
+
+### Proposed iteration 2 (awaiting user approval)
+
+Three changes in one commit, after a 5-minute hand-verification of the German-
+results hypothesis with curl:
+
+1. **searXNG locale fix.** Confirm via curl whether the locale parameter
+   (`language=en`) on the multi-engine query makes results English. If not,
+   identify which engine is leaking German results and either disable it or
+   force its locale. Possibly switch from "engines=google,bing,duckduckgo,brave"
+   back to "engines=google,bing" if locale isolation isn't viable.
+
+2. **Tighten judge on source-signaled satire.** Roll back the fabricated-quote
+   clause for tweets where the tweet itself contains the corrective context
+   (attached video, credited parody creator, roleplay bio in author info,
+   self-debunking caption like "NOTHING on this page is REAL"). Keep the clause
+   for fabricated quotes attributed to real public figures with no in-tweet
+   disambiguation.
+
+3. **Writer source-grounding requirement.** Writer prompt must require at least
+   one URL from the search findings. Block empty sources, self-citation of the
+   tweet's URL, and Instagram/TikTok-only sources (require ≥1 news outlet or
+   Wikipedia link). Five rows in iter-1 would have passed without this.
+
+Expected: PASS climbs to ~55-60 (real evidence finally reaching the writer),
+FP rate drops back toward ~10% (satire tightening reverses iter-1 FP regression),
+cost roughly flat.
+
+### Original (now-stale) iteration 1 proposal text follows for the record
+
+### Proposed iteration 1 (NOW DONE — implemented as above)
 
 Three changes in one commit, then re-run val.csv:
 
