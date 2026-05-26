@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2049179884291768807",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Geopolitics account reports, citing Iranian media, that Iran has transferred 15 unexploded US missiles including an intact GBU-57 bunker buster to 'technical and research units' for reverse engineering.",
+  "why_note_decision": "Tweet is properly attributed ('according to Iranian media'). Iran's IRGC and Press TV (April 26, 2026) did publicly claim recovery of 15 unexploded US munitions including a GBU-57; multiple outlets (Defence Security Asia, JFeed, Defense Mirror, Amwaj Media) reported this. The image is a stock/file photo of a GBU-57, but the tweet does not claim the image is the recovered Iranian unit. The note's correction nitpicks an illustrative image and contests an Iranian claim that the tweet itself flags as 'according to Iranian media' — that's a framing dispute, not a falsification.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately reports an Iranian state-media claim, flagged as such, about IRGC recovering unexploded US munitions including a GBU-57 — a real April 26, 2026 IRGC/Press TV announcement covered by multiple outlets. FAIL any note that 'corrects' the underlying Iranian claim as unconfirmed (the tweet already says 'according to Iranian media'), nitpicks the stock-photo accompaniment, or treats the image as a substantive factual claim made by the tweet. FAIL any note that asserts the image is misleading without evidence the author presented it as the actual recovered bomb.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This post's image is a stock photo of a U.S. Air Force GBU-57 bomb from 2023, not the alleged Iranian-recovered one. The recovery claim comes from Iranian media and lacks independent confirmation. https://theaviationist.com/2023/05/03/photos-of-mop-at-whiteman-afb-emerge https://www.presstv.ir/Detail/2026/04/26/767565/IRGC-forces-destroy-3-US-bunker-buster-bombs-defuse-another-in-Iran-s-Zanjan",
+    "failure_reason": "noteNotNeeded — tweet already flags 'according to Iranian media'; the stock-photo correction is pedantic and the underlying claim is exactly what Iranian state media said.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet accurately reports IRGC/Press TV claim (April 26, 2026) of 15 unexploded US munitions including an intact GBU-57 transferred for reverse engineering. Iranian-sourced claim presented as such; image is a stock GBU-57 but not falsely captioned as the recovered unit.",
+    "sources_checked": [
+      "https://defencesecurityasia.com/en/iran-captures-intact-us-gbu57-bunker-buster-reverse-engineering-middle-east-war-balance/",
+      "https://www.jfeed.com/news-world/iran-reverse-engineering-us-missiles",
+      "https://amwaj.media/en/media-monitor/irgc-touts-capture-reverse-engineering-of-advanced-us-military-gear",
+      "https://defensemirror.com/news/41062/Iran_Could_Reverse_engineer_Unexploded_Tomahawk_Missiles__GBU_57_Bombs"
+    ],
+    "notes": "Independent western verification of the intact-GBU-57 specific claim is limited, but the tweet does not claim independent confirmation — it reports the Iranian claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "175k views, geopolitically significant. The pipeline must learn not to 'correct' properly-attributed wire-style reporting of foreign state claims, especially in war coverage where over-correction destroys trust."
+  },
+  "difficulty": "medium"
+}

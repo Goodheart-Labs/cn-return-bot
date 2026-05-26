@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2030779718811763004",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Megatron (657k follower geopolitics account) posts 13-second footage of a missile striking an urban area in Minab, Iran, claiming it 'proves' the US deliberately targeted a primary school for girls, citing diving-mode targeting and '168 girls aged 7–12'. 887k impressions.",
+  "why_note_decision": "A note IS warranted, but the tweet's framing requires careful correction — and the original note, while better than nothing, is itself imprecise/contested. Confirmed facts from Wikipedia, Amnesty, Bellingcat, CNN, Fox/Hegseth, Al Jazeera (Mar 2026): the strike hit the Shajareh Tayyebeh elementary school in Minab on Feb 28 2026. Amnesty and Bellingcat confirm Tomahawk missile remnants; CNN reports US likely-responsible with outdated DIA intelligence on a nearby naval base. Casualties: 110+ children (66 boys, 54 girls — NOT 168 girls aged 7–12 as the tweet claims), 26 teachers, 4 parents. The tweet's claim of '168 girls' and 'all-girls primary school' is wrong: it was a co-ed school. The 'intentional targeting / diving mode proves it' claim is also unsupported — investigators say the cause was outdated intelligence (still US responsibility, but not deliberate targeting of a school). The original note's 'not directly on the school' framing contradicts Amnesty/Bellingcat (which identified the school itself as struck) — the note's own characterization is contested. Community downrated it (22 noteNotNeeded, 19 incorrect, 17 opinionSpeculation, 16 argumentative).",
+  "judge_guidance": "PASS a note that establishes: (a) the strike on Shajareh Tayyebeh elementary school in Minab occurred Feb 28 2026 and US responsibility is supported by Amnesty/Bellingcat/CNN/Pentagon investigation (Hegseth-elevated); (b) casualties are reported at 110+ children (66 boys, 54 girls per Amnesty), NOT 168 all-girls — the tweet's '168 girls aged 7–12' is incorrect; (c) US investigators attribute the strike to outdated DIA intelligence about a nearby naval base — 'intentional targeting of children' is NOT what the evidence supports, though US legal responsibility is. FAIL any note that (a) repeats the tweet's '168 girls' figure or 'all-girls primary school' framing, (b) repeats the original note's '~168 killed' figure (it's ~110+ children plus adults — not 168 girls), (c) repeats 'not directly on the school' framing — Amnesty and Bellingcat conclude the school itself was struck, (d) writes 'this is fake / not from Minab' — the strike and school are real, (e) cites Bellingcat's bellingcat.com/news/2026/03/08 URL pattern as if no later reporting existed (Bellingcat published a March 27 follow-up confirming more details). Sources: en.wikipedia.org/wiki/2026_Minab_school_attack, amnesty.org, bellingcat.com (both Mar 8 and Mar 27 articles), cnn.com Mar 11, foxnews Hegseth probe announcement.",
+  "reference_note": "Per Amnesty, Bellingcat and CNN, the Feb 28 2026 strike on Shajareh Tayyebeh elementary school in Minab is attributed to the US; investigators say it was caused by outdated DIA intelligence about a nearby naval base, not deliberate targeting of children. Reported toll: 110+ children (66 boys, 54 girls) plus teachers — not '168 girls.' https://en.wikipedia.org/wiki/2026_Minab_school_attack https://www.amnesty.org/en/latest/news/2026/03/usa-iran-those-responsible-for-deadly-and-unlawful-us-strike-on-school-that-killed-over-100-children-must-be-held-accountable/",
+  "original_unhelpful_note": {
+    "text": "The video shows a US Tomahawk missile striking an IRGC facility next to the girls' school in Minab, Iran, not directly on the school. The school was damaged as likely collateral in US strikes on military targets, killing ~168. US denies intentional targeting of civilians.    https://www.bellingcat.com/news/2026/03/08/video-shows-us-tomahawk-missile-strike-next-to-girls-school-in-iran  https://edition.cnn.com/2026/03/06/middleeast/iran-minab-elementary-school-investigation-us-strike-intl  https://www.reuters.com/world/middle-east/us-investigation-points-likely-us-responsibility-iran-school-strike-sources-say-2026-03-06",
+    "failure_reason": "missing_key_points + partially_incorrect — note repeats the '~168' figure (actually ~110+ children + adults; not 168 girls), uses 'girls school' framing (it was co-ed), and 'not directly on the school' framing contested by Amnesty/Bellingcat which identified the school itself as the impact site. Community downrated.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "strike_real_us_responsible_but_tweet_numbers_and_intent_claims_overstated",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Minab_school_attack",
+      "https://www.amnesty.org/en/latest/news/2026/03/usa-iran-those-responsible-for-deadly-and-unlawful-us-strike-on-school-that-killed-over-100-children-must-be-held-accountable/",
+      "https://www.bellingcat.com/news/2026/03/27/new-videos-reveal-more-details-about-iran-girls-school-strike/",
+      "https://edition.cnn.com/2026/03/11/politics/us-iran-school-strike-civilians",
+      "https://www.foxnews.com/politics/hegseth-announces-pentagon-probe-deadly-strike-iranian-school",
+      "https://www.aljazeera.com/news/2026/3/16/us-responsible-for-deadly-attack-on-iranian-school-amnesty-international"
+    ],
+    "notes": "Strike: Shajareh Tayyebeh elementary, Minab, Feb 28 2026. US-manufactured Tomahawk confirmed by Amnesty + Bellingcat. CNN sources: outdated DIA naval-base intel. Casualties: 110+ children (66 boys + 54 girls per Amnesty), plus 26 teachers and 4 parents — NOT 168 all-girls. Hegseth (Mar 13) elevated probe. UN investigation opened Mar 17."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "High-casualty wartime strike on a civilian school with active US/UN investigations and major geopolitical stakes. Accurate reporting here matters for accountability and for not amplifying inflated/contested claims (e.g. '168 girls deliberate targeting'). A precise note that confirms US responsibility, corrects the '168 girls' figure, and notes the outdated-intel finding would be high-impact."
+  },
+  "difficulty": "hard"
+}

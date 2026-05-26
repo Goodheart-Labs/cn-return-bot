@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1996831133414363186",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "legal_or_court_claim", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet (16M impressions) shows a Dutch judge handing a 'migrant killer of a little girl just 120 hours community service'; the father throws a chair. Tweet posted Dec 2025, framing it as current.",
+  "why_note_decision": "The clip is from a 2014 Roermond court ruling on a 2013 Meijel crash where a 35-year-old Polish national, speeding, killed a 2-year-old girl and her grandparents on a cycle path. Prosecutors appealed; in September 2015 an appeals court sentenced him to 15 months in jail (plus a 4-year driving ban); he was later extradited from the UK and served the sentence. Sharing the 2014 outburst in Dec 2025 without that context misleadingly implies the lenient sentence stood. The tweet also misframes a Polish EU-citizen driver as 'migrant killer' in a clearly anti-immigration register. A note IS warranted. The original note correctly supplies the appeal + 15-month outcome but doesn't address the 'migrant' framing (the driver was a Polish national) or that the clip is over a decade old.",
+  "judge_guidance": "PASS if the note (1) flags the clip is from 2014 (not current), AND (2) states the appeals court overturned the 120-hour sentence in September 2015 and imposed 15 months in jail, which the driver served after extradition. Bonus: note that the driver was a Polish (EU) national. FAIL notes that (a) treat the 120 hours as the final sentence, (b) endorse the 'migrant killer' framing, or (c) just say the tweet is fake without explaining the appeal/extradition. The original note is close — it covers (1) and (2), so a similar quality note should pass.",
+  "reference_note": "This is a 2014 ruling on a 2013 Meijel crash where a Polish (EU national) driver killed a 2-year-old and her grandparents on a cycle path. Prosecutors appealed: a Sept 2015 appeals court overturned the 120-hour sentence and imposed 15 months in jail plus a 4-year driving ban. He was extradited from the UK and served the sentence. https://www.dutchnews.nl/2015/09/appeal-court-jails-driver-for-killing-couple-and-grandchild/ https://nltimes.nl/2016/08/24/polish-fugitive-extradited-netherlands-serve-sentence-fatal-accident",
+  "original_unhelpful_note": {
+    "text": "Misleading: the clip shows a 2014 outburst after an initial 120-hour community service sentence, but prosecutors appealed and an appeals court later sentenced the driver to 15 months' jail; he was extradited to serve that term. https://www.dutchnews.nl/2015/09/appeal-court-jails-driver-for-killing-couple-and-grandchild/",
+    "failure_reason": "missing_key_points: covers the appeal correctly but doesn't address the 'migrant killer' framing (the driver was a Polish EU national), nor that the original tweet uses a 11+ year old clip to imply a current ruling",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "outdated_clip_misframed_as_current",
+    "sources_checked": [
+      "https://www.dutchnews.nl/2015/09/appeal-court-jails-driver-for-killing-couple-and-grandchild/",
+      "https://nltimes.nl/2016/08/24/polish-fugitive-extradited-netherlands-serve-sentence-fatal-accident",
+      "https://eadaily.com/en/news/2025/12/06/in-the-netherlands-a-father-threw-a-chair-at-a-judge-for-a-lenient-sentence-to-the-killer-of-a-2-year-old-daughter"
+    ],
+    "notes": "2013 Meijel crash: Polish driver, no alcohol, speeding, killed cyclists. 2014 initial sentence 120 hours community service + 1-yr suspended license. Sept 2015 appeals court → 15 months jail + 4-yr driving ban. Driver fled to UK, extradited Aug 2016 from Thames Valley."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "16M impressions weaponizing an 11-year-old clip in an anti-immigration register; correcting the temporal/appeal context matters for honest democratic discourse."
+  },
+  "difficulty": "medium"
+}

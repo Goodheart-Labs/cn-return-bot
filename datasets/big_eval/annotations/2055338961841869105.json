@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2055338961841869105",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Elon Musk says Chris Nolan 'desecrated' the Odyssey so he would be eligible for an Academy Award (implying diversity-casting was driven by Oscar inclusion standards).",
+  "why_note_decision": "Pure opinion ('desecrated') plus a causal-attribution claim ('so that he would be eligible for an Academy Award') that is unfalsifiable (we can't read Nolan's mind). The factual backdrop: Academy Best Picture inclusion standards (in effect since 2024) require films to meet 2 of 4 standards — casting is one option, but films can also qualify via crew, leadership, or audience-development criteria. Oppenheimer (all-white cast) won Best Picture under these same rules. Variety, No Film School, and other outlets have noted Musk's framing is misleading — but the tweet itself doesn't make a falsifiable claim, it makes a snarky editorial assertion of motive. Original AI note tries to spell out the inclusion rules — got rated notHelpfulMissingKeyPoints (603), notHelpfulNoteNotNeeded (621). Opinion-bait from Musk is exactly the false-positive trap.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is editorial opinion ('desecrated', 'so that he would be eligible') with no falsifiable factual claim — we can't know Nolan's motivation. The Academy's inclusion standards exist and require 2 of 4 (casting is just one path; crew/leadership/audience also qualify), and Oppenheimer was all-white and won Best Picture under them, so the implied premise is weak — but that's a rebuttal of vibes, not fact-checking. Any note here is a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Nolan's Odyssey casting isn't required for Oscars. Films must meet 2 of 4 standards (on-screen rep one option; also crew, leadership, opportunities). Oppenheimer qualified/won Oscars pre-2024 rules. No evidence changes were for eligibility. https://www.forbes.com/sites/conormurray/2026/05/15/musk-boosts-misinformation-about-the-odyssey-in-days-long-crusade-against-christopher-nolan-movie/",
+    "failure_reason": "Note tries to rebut a vibes-tweet by explaining Academy inclusion rules. The tweet doesn't make a falsifiable claim — it ascribes motive. Raters tagged it notHelpfulMissingKeyPoints (603) and notHelpfulNoteNotNeeded (621).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "opinion, not falsifiable",
+    "sources_checked": [
+      "https://variety.com/2026/film/news/elon-musk-odyssey-casting-academy-awards-eligibility-1236750162/",
+      "https://nofilmschool.com/variety-debunks-the-odyssey-outrage",
+      "https://variety.com/2026/film/opinion/the-odyssey-elon-musk-diversity-christopher-nolan-lupita-nyongo-1236747945/"
+    ],
+    "notes": "Academy Inclusion Standards (in effect 2024) require 2/4. Oppenheimer's all-white cast won Best Picture under them. But the tweet is editorial — 'desecrated' is opinion and 'so that he would be eligible' is unverifiable motive."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "70M-view Elon tweet; cultural-war noise more than misinformation. Suppressing a false-positive note here matters for the notewriter's perceived neutrality."
+  },
+  "difficulty": "easy"
+}

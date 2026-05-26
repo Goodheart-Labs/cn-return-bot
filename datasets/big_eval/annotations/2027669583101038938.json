@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2027669583101038938",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["ai_generated_media", "joke_or_satire", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Anti-Trump meme account 'Darth Powell' captions an AI-generated comic clip of Trump on an aircraft carrier with Netanyahu in the background, with a satirical Epstein-files dialogue, captioned 'Trump makes a major announcement about the war with Iran.'",
+  "why_note_decision": "Obvious AI political-satire meme: Trump and Netanyahu in an exaggerated cartoonish scene with absurd dialogue ('release the Epstein files' / 'I'll do whatever you want'). The 8.3M views and 161k likes flow to a meme-account whose followers and commenters universally treat it as satire (#EpsteinWar, 'Board of Peace starts its first war'). No reasonable viewer interprets the literal animation as a real Trump announcement. 37/46 raters flagged noteNotNeeded. The note's solemn 'this is fake audio + Trump's real announcement was on Truth Social' over-explains the joke.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The post is overt AI-generated political satire — an exaggerated cartoon scene with absurd dialogue about Epstein-files blackmail, from an explicitly anti-Trump meme account. Treating it as a misleading factual claim is a category error. FAIL any note that solemnly explains 'audio is fake' / 'Trump's real announcement was on Truth Social' as if commenters were confused.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is manipulated with fake audio depicting nonexistent dialogue about Epstein files; Trump announced military action against Iran in a separate Truth Social video, not on an aircraft carrier. https://truthsocial.com/@realDonaldTrump/posts/116147082884192486 https://www.nbcnews.com/world/iran/live-blog/israel-iran-live-updates-rcna261099",
+    "failure_reason": "noteNotNeeded — fact-checks obvious AI political satire as if it were a real announcement.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "AI-generated political satire meme; no misleading factual claim to correct.",
+    "sources_checked": [],
+    "notes": "Description and comments make satire-status unambiguous."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "7.5M impressions; high-traffic political satire from a meme account; calibration test for not-noting-satire even when it touches breaking-war topics."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2003565251816554746",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["politics_and_policy", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Trump tweets (53M impressions) promoting 'THE TRUMP KENNEDY CENTER HONORS' broadcast on CBS, in which he is the host/Master of Ceremonies.",
+  "why_note_decision": "The post is self-evidently Trump-branded promotion. The ceremony's official name is the 48th Kennedy Center Honors, but Trump labeling it 'Trump Kennedy Center Honors' is bombastic branding, not a factual claim — and Trump IS hosting it. The Kennedy Center venue has actually been board-renamed to 'Donald J. Trump and John F. Kennedy Memorial Center for the Performing Arts' (with a lawsuit pending). The original note is technically correct on the official ceremony name but is trivial pedantry on a tweet that no reasonable reader takes as a literal claim about an official ceremony rename. 780 raters flagged noteNotNeeded.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Trump's 'Trump Kennedy Center Honors' is bombastic self-branding for an event he is actually hosting. The official ceremony name (48th Kennedy Center Honors) isn't a meaningful misrepresentation here; the venue has been board-renamed (pending lawsuit). FAIL notes that (a) treat the bombast as a factual ceremony rename, (b) deny the venue board-rename has occurred, or (c) editorialize about narcissism.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The event is officially titled the 48th Kennedy Center Honors, not the Trump Kennedy Center Honors; a board vote to rename the venue faces legal challenges as federal law designates it a memorial to President Kennedy requiring congressional approval. https://www.kennedy-center.org/whats-on/honors https://www.nbcnews.com/politics/donald-trump/trump-kennedy-center-board-votes-rename-kennedy-center-rcna249948",
+    "failure_reason": "trivial_pedantry: 'Trump Kennedy Center Honors' is bombastic self-branding by the host President, not a factual claim — the official-title note adds little a reader needs",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "branding_bombast_not_factual_misclaim",
+    "sources_checked": [
+      "https://www.washingtonpost.com/entertainment/2025/12/23/trump-kennedy-center-beatty-lawsuit/",
+      "https://www.nbcnews.com/politics/congress/joyce-beatty-sues-trump-officials-kennedy-center-renaming-rcna250609",
+      "https://www.kennedy-center.org/whats-on/honors"
+    ],
+    "notes": "Official ceremony name: 48th Kennedy Center Honors. Venue has been board-renamed; lawsuit by Rep. Joyce Beatty pending in DDC. Trump is in fact hosting. The 'Trump Kennedy Center Honors' phrasing is self-branding bombast."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "53M impressions, but the tweet itself is bombast, not a factual misclaim worth correcting via CN; the venue-rename controversy is a separate story."
+  },
+  "difficulty": "easy"
+}

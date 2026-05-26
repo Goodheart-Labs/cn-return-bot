@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2027165889339032047",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy", "statistical_or_numerical_claim", "scams_fraud_finance"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Libs of TikTok claims Minnesota's autism care spending went from $1M in 2017 to $343M in 2024 under Tim Walz (a 34,200% increase), calling it 'unbelievable fraud'. Cites a table sourced to MN Department of Human Services.",
+  "why_note_decision": "The numerical claim is accurate — Minnesota's EIDBI (Early Intensive Developmental and Behavioral Intervention) Medicaid reimbursements went from ~$1.1M in 2017 to $343M in 2024 per MN DHS, and a January 2026 Optum report commissioned by DHS identified $703M in potential overpayments tied to autism centers from 2022-2025. Federal prosecutors have charged providers in the 'largest autism fraud scheme ever charged by DOJ'. The 'fraud' framing is editorial but supported by ongoing federal indictments and the DHS's own analysis. The original note tries to soften this ('growth led to oversight gaps... but the increase alone isn't proof of statewide fraud') — raters tagged it notHelpfulMissingKeyPoints (649) because the actual fraud charges and Optum's $703M overpayment finding ARE in fact strong evidence of widespread fraud. The note's hedging reads as defending Walz rather than fact-checking. No note needed; the tweet's numbers are right and the 'fraud' framing is reasonable given federal indictments.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The dollar figures are accurate per MN DHS (~$1.1M in 2017 to $343M in 2024). A January 2026 Optum report commissioned by MN DHS identified $703M in potential overpayments tied to autism centers. Federal prosecutors have charged multiple providers (the 'largest autism fraud scheme ever' per DOJ). The 'fraud' framing is reasonable given these facts. The bot MUST NOT write a Walz-defense note that hedges 'increase alone isn't proof of fraud' (which was the original note's failure). The increase IS partly fraud — that's documented.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "EIDBI spending rose because Minnesota expanded autism services to serve far more children/providers. Growth led to oversight gaps and FBI probes, but the increase alone isn't proof of statewide fraud. https://www.mprnews.org/story/2024/12/12/fbi-agents-raid-autism-treatment-centers-in-minnesota",
+    "failure_reason": "Hedges on the fraud framing when federal prosecutors have charged multiple providers and a DHS-commissioned Optum report found $703M in potential overpayments tied to autism centers. Reads as partisan defense; raters tagged notHelpfulMissingKeyPoints (649) and notHelpfulNoteNotNeeded (627).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.shastaunfiltered.com/post/minnesota-autism-reimbursements-surge-amid-fraud-probes-and-nationwide-cost-controls",
+      "https://www.cato.org/blog/autism-therapy-gold-rush",
+      "https://mn.gov/dhs/partners-and-providers/news-initiatives-reports-workgroups/long-term-services-and-supports/eidbi/eidbi.jsp",
+      "https://www.cbsnews.com/minnesota/news/autism-center-billing-minnesota-medicaid-fraud/",
+      "https://www.justice.gov/opa/pr/minnesota-health-care-fraud-takedown-results-charges-against-15-defendants-over-90m-fraud"
+    ],
+    "notes": "Spending went $1.1M (2017) → $343M (2024) — accurate. Per-recipient spending went $1,678 → $60K. Optum/DHS report found $703M in potential overpayments tied to autism centers. Multiple federal indictments. The fraud framing is editorial but well-supported."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "27M-view tweet on a real Medicaid fraud scandal — false-positive notes defending Walz here erode trust badly. Also bears on government-program-integrity narratives."
+  },
+  "difficulty": "medium"
+}

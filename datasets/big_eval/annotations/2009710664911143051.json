@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2009710664911143051",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "character_smear_after_death",
+  "tweet_summary": "Right-wing post smearing Renee Good (the 37yo woman shot and killed by ICE in Minneapolis on Jan 7 2026) — calls her 'the epitome of the modern-day liberal white woman', claims she 'lost custody' of two older children, fled to Canada after Trump won, was a 'poet', moved to Minneapolis to fight for illegal aliens.",
+  "why_note_decision": "The tweet is mostly opinion/framing dressed up as bullet-point biography. The verifiable facts (she was 37, was a poet, lived in Canada then moved to Minneapolis) are largely consistent with mainstream reporting (CNN, CBS, Wikipedia, PBS). The claim that she 'lost custody of her two older children' is the only sharp factual claim — fact-checkers (factually.co, WRAL, limitless-news, MSN) found no credible court/police records supporting that; her two older children live with their father, but there is no public record she lost custody for cause. The original AI note instead chose to defend her from the Renee Nicole Good shooting framing — said no clear evidence she struck/assaulted an agent, and that custody claims are unverified — that note got flagged 'incorrect' (1155 raters) because the disputed 'inching forward' question is itself contested and the note isn't fact-checking the *tweet's* claims, it's defending against a different narrative. A correct note IF written should focus narrowly on the custody claim being unverified by court records; but most of the tweet is opinion ('epitome of the modern-day liberal white woman', 'enrolled the only...') that is not checkable. On balance the tweet is a hostile editorial sketch and the strongest call is no-note (the only checkable claim is small and uncertain).",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a tightly scoped note about the 'lost custody of two older children' claim being unverified by court records. The bot MUST NOT defend Good by relitigating the shooting (whether she 'struck' an agent) — that was the original note's failure (rated incorrect by 1155). Most of the tweet is opinion/framing ('epitome of the modern-day liberal white woman', 'poet', etc.) that isn't checkable. If the bot writes anything beyond the narrow custody point, it is a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Video analysis shows Renee Good's car slowly inching forward, but there is no clear evidence she struck or assaulted an agent with her vehicle. Claims that she lost custody of children due to negligence are unverified. https://abcnews.go.com/US/minneapolis-ice-shooting-minute-minute-timeline-renee-nicole/story?id=129021809 https://m.economictimes.com/news/international/us/renee-nicole-good-partner-rebecca-ever-arrested-for-child-abuse-heres-complete-truth-about-claims-made-against-minnesota-ice-shooting-victim-family/articleshow/126443269.cms",
+    "failure_reason": "Note relitigates the shooting circumstances (whether she struck an agent) which the tweet doesn't even mention; injects contested counter-narrative on the killing itself instead of fact-checking the tweet's actual claims. Raters tagged notHelpfulIncorrect 1155 times.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "mostly opinion; one checkable claim (custody loss) is unverified",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Killing_of_Ren%C3%A9e_Good",
+      "https://www.cnn.com/2026/01/08/us/renee-nicole-good-minneapolis-ice-shooting-hnk",
+      "https://www.wral.com/news/state/fact-check-renee-good-criminal-record-child-abuse-minneapolis-2026/",
+      "https://factually.co/fact-checks/justice/renee-good-custody-two-children-906e1a"
+    ],
+    "notes": "Good was 37, a poet, and had moved to Minneapolis — those facts check out. Her two older children live with their father but no court record shows she 'lost custody' for cause. The bigger problem is the original note tried to defend her from a different narrative (the shooting) rather than fact-check the tweet's actual claims, which is why raters slammed it as incorrect/biased."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Viral character-smear of a killed civilian on a major news story (4.8M views) — false-positive notes that relitigate the shooting itself, as the original did, make the notewriter look partisan."
+  },
+  "difficulty": "hard"
+}

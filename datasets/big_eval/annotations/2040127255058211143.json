@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2040127255058211143",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["joke_or_satire"],
+  "category_fit": "poor",
+  "suggested_category": "hyperbolic_enthusiasm",
+  "tweet_summary": "Dweller (33k followers) shares a 60-second clip of a Danny Huynh Creations RC animatronic — a robot figure (Weyland-Yutani 'W' chevron, Aliens theme) riding a motorcycle-like vehicle on miniature jack stands — with the caption 'Take my money, I want one…'. Replies correctly identify it as a Danny Huynh build.",
+  "why_note_decision": "'Take my money, I want one' is a stock colloquial expression of enthusiasm, not an assertion that the item is for sale. The video itself shows the build on miniature jack stands and has been correctly identified by replies as a Danny Huynh diorama. The note's clarification (RC animatronic, not full-size for sale) is technically true but the original tweet doesn't claim otherwise. Even-split tags (5 NNN, 5 MissingKeyPoints — but only 6 raters total; weak signal) — but the framing of the tweet is enthusiasm, not a sales claim.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet caption 'Take my money, I want one…' is a stock colloquial expression of enthusiasm/joke — it is not a claim that the item is a real full-size vehicle for sale. The clip clearly shows an RC-scale build on miniature jack stands (correctly identified in replies as 'Danny Huynh' / 'Weyland Yutani logo'). Any note 'clarifying' that the video shows an RC model rather than a real vehicle treats a colloquialism as a factual claim and must FAIL. A correct response is no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video depicts a custom remote-controlled (RC) animatronic model trike built by Danny Huynh Creations, not a full-size vehicle for sale. https://www.youtube.com/watch?v=8XAuT7R7NLI",
+    "failure_reason": "notHelpfulNoteNotNeeded — treats 'take my money' colloquialism as a literal sales claim",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "colloquial_enthusiasm_no_claim",
+    "sources_checked": [
+      "https://www.youtube.com/c/DannyHuynhCreations/videos",
+      "https://hackaday.com/2021/09/06/small-scale-mad-max-danny-huynhs-dystopian-animatronics/",
+      "https://www.autoevolution.com/news/meet-blower-head-and-his-fantastic-vehicle-the-yutani-chainsaw-trike-195333.html"
+    ],
+    "notes": "Danny Huynh Creations is a well-known maker of detailed RC animatronic dioramas (Aliens/Weyland-Yutani, Mad Max, etc.). Build is clearly a small-scale model on miniature jack stands."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "70k impressions on a hobby/build clip. Pure no-stakes false-positive trap."
+  },
+  "difficulty": "easy"
+}

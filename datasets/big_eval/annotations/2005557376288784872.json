@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2005557376288784872",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Influencer Nick Shirley (1.6M followers, 3.9M impressions) calls a daycare's phone number on Google Maps; it goes to Gov. Tim Walz's office. He frames this as 'direct link' evidence of fraud and demands Walz be prosecuted.",
+  "why_note_decision": "The whole tweet is built on a misleading premise: the daycare's Google Maps listing displayed 651-201-3400, which is Walz's constituent line — but that number was either a malicious/prank Google Maps user edit OR it was the MN DHS licensing-authority contact scraped onto the listing, NOT the daycare's actual phone. The business's real number is 612-721-1133 per state records (license #1104314). 3.9M impressions accusing a sitting governor of fraud on a Google Maps editing artifact warrants a note. The original note hits the core (the Google listing is wrong; the real number is 612-721-1133) but doesn't fully explain WHY the number resolved to Walz's office (either prank-edit or DHS-contact scrape), which is the missing piece raters flagged.",
+  "judge_guidance": "PASS if the note (1) states the daycare's actual phone number is 612-721-1133 per Minnesota state records (license #1104314), AND (2) explains the 651-201-3400 number that appeared on Google Maps is the MN Governor's constituent services line / DHS licensing-authority contact — Google Maps listings can be user-edited and were not the daycare's official number. FAIL notes that (a) claim the daycare deliberately listed Walz's number, (b) confirm 'evidence of fraud,' or (c) simply say 'this is fake' without addressing the licensing-authority-contact / Google-Maps-edit mechanism.",
+  "reference_note": "Sweet Angel Child Care's actual phone is 612-721-1133 per MN DHS records (license #1104314). The 651-201-3400 number that appeared on the daycare's Google Maps listing is the Governor's constituent services line / DHS licensing authority — not the daycare's number. Google Maps listings can be user-edited; the number was either a prank edit or auto-scraped from the state licensing record. https://licensinglookup.dhs.state.mn.us/Details.aspx?l=1104314 https://www.yahoo.com/news/articles/fact-check-sweet-angel-child-042133817.html",
+  "original_unhelpful_note": {
+    "text": "The phone number listed for Sweet Angel Child Care on Google Maps previously dialed the MN Governor's office due to an erroneous listing, but the business's official number is (612) 721-1133. https://licensinglookup.dhs.state.mn.us/Details.aspx?l=1104314 https://mn.gov/governor/contact/",
+    "failure_reason": "missing_key_points: correctly states the actual phone is 612-721-1133 but doesn't explain the mechanism (Google Maps user-editable; or auto-scrape of MN DHS licensing-authority contact 651-201-3400), so the note reads as bare contradiction rather than explanatory debunk",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_built_on_google_maps_artifact",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/fact-check-sweet-angel-child-042133817.html",
+      "https://mediabiasfactcheck.com/2025/12/30/fact-vs-fiction-did-a-minneapolis-daycare-list-the-governors-office-phone-number-on-google-as-evidence-of-fraud/",
+      "https://licensinglookup.dhs.state.mn.us/Details.aspx?l=1104314"
+    ],
+    "notes": "Lead Stories / Yahoo / MBFC fact-checks confirm: the daycare's actual number is 612-721-1133. The 651-201-3400 number on Google Maps is the Governor's constituent line, which is also the licensing authority contact on MN DHS records. Google Maps listings are user-editable; the visible number was not the business's chosen contact."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "3.9M impressions accusing a sitting governor of fraud on the basis of a Google-Maps editing artifact has democratic-discourse stakes; correctly explaining the mechanism is important."
+  },
+  "difficulty": "medium"
+}

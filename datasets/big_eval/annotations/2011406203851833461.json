@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2011406203851833461",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Elon Musk: '800k voters found to be improperly registered to vote in Oregon' — quoting a post about Oregon planning to remove up to 800,000 inactive voters from registration rolls.",
+  "why_note_decision": "Note is warranted. The framing 'improperly registered to vote' implies these are ineligible/fraudulent registrations — but they are simply long-inactive voter records (people who moved, died, or stopped voting). Oregon SoS Tobias Read agreed to the removal under a Judicial Watch lawsuit settlement; Oregon will cancel registrations that already met legal removal criteria before 2017 (returned mail, failed to respond to notices, missed multiple federal elections). These voters did NOT receive ballots and had NO effect on elections. The actual count is 'up to 800,000', not a confirmed 800K. The original AI note covers this correctly ('routine cleanup prompted by lawsuits; outdated records of real people who haven't voted recently, not fake or fraudulent entries') — but somehow got 527 'note not needed' votes vs 461 'missing key points'. Reading the comments, one even quotes the note approvingly. The tweet IS misleading because 'improperly registered' carries fraud connotations that the underlying story doesn't support; a note is warranted. The original note is actually pretty good and may have been a victim of partisan downvoting.",
+  "judge_guidance": "PASS if the note establishes: (1) Oregon is removing up to ~800,000 INACTIVE voter records (not 'improperly registered' in the sense of fraud); (2) these are real people who haven't voted in years / moved / had mail returned; (3) inactive voters do NOT receive ballots and had no effect on elections; (4) the cleanup is the result of a settlement with Judicial Watch under federal voter-roll-maintenance law. The note MUST NOT validate the 'improperly registered' fraud framing. Reasonable to cite Oregon SoS, OPB, or fact-checkers. Length-OK if it just makes the inactive-voter clarification clearly.",
+  "reference_note": "Oregon is removing up to ~800,000 inactive voter records under a settlement with Judicial Watch — these are long-inactive registrations (people who moved, missed multiple federal elections, or had mail returned), not fraudulent entries. Inactive voters do not receive ballots and had no effect on elections. https://www.opb.org/article/2026/05/07/oregon-settles-lawsuit-failed-police-voter-rolls/ https://sos.oregon.gov/news/Pages/resume-routine-cleanup-outdated-inactive-voter-registration-records-directives-tobias-read.aspx",
+  "original_unhelpful_note": {
+    "text": "Oregon is removing about 800,000 inactive voter registrations as part of routine cleanup prompted by lawsuits; these are outdated records of real people who haven't voted recently, not fake or fraudulent entries.    https://sos.oregon.gov/news/Pages/resume-routine-cleanup-outdated-inactive-voter-registration-records-directives-tobias-read.aspx    https://www.oregonlive.com/politics/2026/01/facing-trump-administration-lawsuit-oregon-will-pare-back-voter-rolls-to-exclude-people-who-havent-voted-in-years.html",
+    "failure_reason": "Note is actually correct and well-sourced. Raters tagged notHelpfulNoteNotNeeded (527) and notHelpfulMissingKeyPoints (461) — likely partisan downvoting given Musk's audience. Could be sharper by noting these voters didn't receive ballots and the removal followed a Judicial Watch lawsuit settlement, but the substance is right.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.opb.org/article/2026/05/07/oregon-settles-lawsuit-failed-police-voter-rolls/",
+      "https://www.judicialwatch.org/oregon-voter-rolls/",
+      "https://www.yahoo.com/news/articles/fact-check-20-oregon-voters-095242332.html",
+      "https://www.foxnews.com/politics/oregon-election-system-faces-scrutiny-state-moves-address-800000-inactive-voters-astounding"
+    ],
+    "notes": "Up to 800K inactive registrations being removed under a Judicial Watch settlement; inactive voters don't receive ballots; these are voters who haven't voted in years or had mail returned. 'Improperly registered' in the fraud sense is misleading."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "45M-view Musk tweet pushing voter-fraud narrative. A correct note here defuses a high-impact misinformation arc."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2023659473466687994",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "insider_reporting_framing",
+  "categories": ["politics_and_policy", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "media_censorship_framing",
+  "tweet_summary": "Texas state Rep. James Talarico (running for US Senate) says 'Trump's FCC refused to air my interview with Stephen Colbert' on The Late Show; posts a video clip from the show.",
+  "why_note_decision": "Tweet is editorializing around a real event. What actually happened: CBS network lawyers told The Late Show the interview could not air on broadcast because doing so would trigger the FCC equal-time rule for Talarico's primary opponents (per FCC Chair Brendan Carr's January guidance). Colbert himself blamed the FCC and Trump on-air; CBS denied the FCC 'prohibited' it but acknowledged the legal advice was in response to FCC guidance. The dispute is over the framing word 'refused' (Talarico says FCC, CBS says CBS lawyers acting on FCC guidance). This is a textbook insider_reporting_framing case — the underlying facts (interview not aired on broadcast, posted to YouTube, FCC equal-time guidance triggered the decision) are reported in NYT, WaPo, CNN, PBS, NBC, CBS itself, Forbes. The original AI note tries to thread the needle ('CBS did not air... due to legal concerns from recent FCC guidance... FCC did not directly block it') which is technically accurate but reads as a partisan correction of a half-true framing; raters slammed it notHelpfulMissingKeyPoints 834, notHelpfulNoteNotNeeded 701. Better to decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The dispute here is purely about whether 'FCC refused to air' is fair shorthand for 'CBS lawyers pulled it citing FCC equal-time guidance from Trump-appointed Chair Carr' — that is framing, not fact. The underlying events (interview pulled from broadcast, posted to YouTube, FCC equal-time rule cited as reason) are well-reported and not in dispute. Any note that tries to 'correct' Talarico by saying CBS, not FCC, made the call is missing the point that CBS made the call BECAUSE of FCC guidance. If the bot writes a note, it's a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "CBS did not air the interview on The Late Show due to legal concerns from recent FCC guidance on equal time rules by Chair Brendan Carr. The FCC did not directly block it. Full interview is on The Late Show's YouTube channel.    https://www.forbes.com/sites/siladityaray/2026/02/17/colbert-says-cbs-refused-to-air-his-interview-with-democrat-candidate-fearing-fcc-blowback    https://www.nytimes.com/2026/02/17/arts/television/colbert-fcc-trump-talarico-cbs.html    https://deadline.com/2026/02/stephen-colbert-cbs-james-talarico-interview-1236726609/",
+    "failure_reason": "Pedantic framing correction. Tries to draw a line between 'CBS lawyers' and 'FCC' when the actual chain is 'CBS lawyers acted because of FCC equal-time guidance from a Trump-appointed chair' — which is what Talarico is summarizing. Raters tagged notHelpfulMissingKeyPoints (834) and notHelpfulNoteNotNeeded (701).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "framing dispute; underlying facts accurate",
+    "sources_checked": [
+      "https://www.pbs.org/newshour/politics/what-is-the-equal-time-rule-that-colbert-says-led-cbs-to-pull-his-talarico-interview",
+      "https://www.cbsnews.com/news/stephen-colbert-cbs-james-talarico-interview-the-late-show/",
+      "https://www.nbcnews.com/business/media/stephen-colbert-cbs-james-talarico-fcc-rcna259341",
+      "https://www.washingtonpost.com/business/2026/02/17/colbert-blocked-talarico-interview/"
+    ],
+    "notes": "Colbert himself said the interview 'could not have him on the broadcast' per CBS lawyers, citing FCC. CBS said the lawyers were responding to FCC equal-time guidance from Trump-appointed FCC Chair Brendan Carr. So both 'CBS pulled it' and 'FCC caused it to be pulled' are defensible shorthands. The dispute is framing, not fact."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Press-freedom / media-regulation story (14M views, US Senate candidate) — the cost of pedantic notes 'correcting' a defensible framing is high; they make the notewriter look like a White House defender."
+  },
+  "difficulty": "medium"
+}

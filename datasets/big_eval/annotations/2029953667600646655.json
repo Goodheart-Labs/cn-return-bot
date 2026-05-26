@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2029953667600646655",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["joke_or_satire", "breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "The official @WhiteHouse account (4.7M followers) posts a Grand Theft Auto: San Andreas meme edit ('Ah shit, here we go again' CJ meme + thermal blast footage + GTA V 'wasted' screen) captioned 'OPERATION EPIC FURY • Destroy Iran's missile arsenal. • Destroy their navy. • Ensure they NEVER get a nuclear weapon.' 17.9M impressions — a massive viral propaganda post mocking war coverage with Gen Z gaming memes.",
+  "why_note_decision": "The video is an obvious GTA-meme edit posted by the official White House account itself. No one was deceived — top comments are all reactions to the WH using GTA imagery for war propaganda ('using clips from Grand Theft Auto in pro-war propaganda', 'OPERATION EPSTEIN'S FURY', 'gen z bait videos'). The meme nature is the POINT of the post. The original note explains 'the video is edited footage from GTA: San Andreas, not real military footage. Operation Epic Fury is an actual U.S. operation against Iranian targets' — which is correct but completely unnecessary; nobody thought the CJ-character animation was real footage. Community overwhelmingly rejected (113 noteNotNeeded, 104 missingKeyPoints, 51 incorrect on 233 ratings).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The post is from the official @WhiteHouse account itself and uses unmistakable GTA: San Andreas imagery (CJ meme, 'Ah shit, here we go again', GTA V 'wasted' screen) — no one is deceived about the video's source. Top comments universally treat it as a propaganda meme, not real footage. FAIL any note that (a) repeats the original failure of solemnly explaining 'this is GTA, not real footage' on overtly-meme content from the official source account, (b) writes a missing-key-points note about the operation being real — that ISN'T the meaningful claim; the meaningful 'claim' is the political posture, which is opinion/framing. The pipeline must not lecture viewers about famous meme imagery posted by the originator with intent.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is edited footage from the video game Grand Theft Auto: San Andreas, not real military footage. Operation Epic Fury is an actual U.S. operation against Iranian targets.    https://en.meming.world/wiki/Ah_Shit,_Here_We_Go_Again  https://www.centcom.mil/MEDIA/VIDEO-AND-IMAGERY/VIDEOS/videoid/997855  https://www.foxnews.com/video/6390440445112",
+    "failure_reason": "note_not_needed — pedantically explains overtly-meme content from the official White House account. Community very strongly downrated (113 noteNotNeeded, 233 total ratings).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "overt_meme_from_official_account",
+    "sources_checked": [
+      "Comment thread (universal meme recognition: 'using clips from Grand Theft Auto in pro-war propaganda', 'Ah shit, here we go again')",
+      "Operation Epic Fury referenced in CENTCOM and Fox News (real US Iran-strike operation)"
+    ],
+    "notes": "Video is unmistakably GTA imagery (CJ, 'wasted' screen, the iconic 'Ah shit, here we go again' meme). Posted by the official @WhiteHouse account as deliberate Gen Z meme propaganda. The 'note explains the meme' framing is the textbook false positive."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "17.9M impressions on a White House propaganda post mixing memes with real war messaging. Important false-positive case — pipeline must not over-correct overt propaganda memes; the more important question (was the strike justified/effective) is framing, not fact-checkable here."
+  },
+  "difficulty": "medium"
+}

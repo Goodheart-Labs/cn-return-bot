@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2008808070424539201",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports", "platform_manipulation"],
+  "category_fit": "partial",
+  "suggested_category": "tabloid_smear",
+  "tweet_summary": "Hyperpartisan account 'Project Constitution' posts inflammatory framing ('Partying HARD', 'MASSIVE Gold Digger Vibes', 'wildin' out') around a 2016 video the tweet itself identifies as from Sydney Perry Stahl's Instagram on Aug 20, 2016, showing a young Erika Frantzve (now Erika Kirk) at LAVO NYC.",
+  "why_note_decision": "The tweet explicitly cites the source and date ('Sydney Perry Stahl's Instagram (Aug 20, 2016)') so it does NOT misrepresent the date or origin. The substantive 'misleading' content is all opinion/framing (gold-digger, partying-hard) — pure characterization that cannot be fact-checked. The original note tries to nitpick 'April 2016' brunch vs 'August' — but the tweet ALREADY says Aug 20, 2016, so the note's date correction may itself be wrong. LAVO Sunday brunch IS a notoriously rowdy 'club brunch' so 'daytime brunch, not partying hard' is also a misleading framing claim. Comments include one rater explicitly noting the framing is unsupported by the clip ('@ShaunaH26666: You used all of these descriptors even though NONE of them are depicted'). The right response is no note — the tweet is opinion-laden trash but contains no checkable factual lie a note can correct.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet self-discloses the video's origin (Sydney Perry Stahl Instagram, Aug 20, 2016) so there is no misattribution to debunk. The substantive complaint ('gold digger vibes', 'partying hard') is opinion/framing — un-noteable. FAIL any note that 'corrects' the month (April vs August) — the tweet says August; FAIL any note asserting LAVO Sunday brunch is 'not partying' as fact (it's a famously rowdy day-club brunch). FAIL any moralistic note about her character. The honest answer here is: there is no factual claim to correct.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows Erika Frantzve attending a daytime brunch at LAVO NYC in April 2016, not partying hard at the club in August. https://www.instagram.com/p/BEcMwASLKRT/",
+    "failure_reason": "notHelpfulIncorrect/noteNotNeeded — tweet already says 'Aug 20, 2016'; note's 'April' date is a contested correction with no clear source; 'daytime brunch vs partying' is itself a framing dispute (LAVO brunch is famously rowdy).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's factual claims (it's Erika Frantzve, 2016, LAVO) are not in dispute; the inflammatory framing is opinion. The note's specific 'April vs August' date claim is itself dubious and contradicted by the source the tweet cites.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Erika_Kirk",
+      "https://www.distractify.com/p/erika-kirk-dancing-on-stage",
+      "https://discotech.me/new-york/lavo/"
+    ],
+    "notes": "I could not independently confirm the April-vs-August date claim; the cited Instagram permalink (BEcMwASLKRT) is from the Distractify article which is about a different (Druski / dancing) controversy. No public fact-check specifically addresses this 'LAVO 2016' video."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "928k impressions on a celebrity-smear post involving the widow of Charlie Kirk. Bot must learn not to engage with opinion-laden hit pieces unless there is a clear factual error — and not invent factual corrections that themselves lack evidence."
+  },
+  "difficulty": "hard"
+}

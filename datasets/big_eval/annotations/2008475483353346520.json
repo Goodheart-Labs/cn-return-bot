@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2008475483353346520",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["breaking_news_and_war", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Lord Bebo reports US fired 12 Tomahawks at ISIS in Nigeria late December 2025, with 4 unexploded warheads now discovered (25% failure rate).",
+  "why_note_decision": "US fired 'over a dozen' / NYT figure of 12+, Washington Post figure of 16 Tomahawks at two ISIS camps in Nigeria on Dec 26, 2025. As of Jan 6, 2026 (the tweet date), four unexploded Tomahawk warheads HAD been confirmed found in civilian areas — exactly what the tweet states. The 25% figure (4/12) is one plausible interpretation; 33% (4/12) or ~25% (4/16) are the bracket. The note's correction — 'more than a dozen, not exactly 12' and 'at least three unexploded warheads, not four' — is doubly weak: (a) NYT actually reported 12+ which matches the tweet's '12'; (b) by the date of the tweet (Jan 6), the FOURTH unexploded warhead WAS confirmed (Niger State, Magama LGA). The note is factually wrong on the four-warhead count.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a note that ADDS calibrated context (e.g. Washington Post reported 16 missiles, NYT 12+; 4 unexploded warheads confirmed by Jan 6 2026; failure rate estimate depends on launch total). FAIL any note that asserts 'only 3 unexploded warheads' — by Jan 6 2026 the 4th had been confirmed in Niger State (Magama LGA), matching the tweet. FAIL any note that flatly says '12 is wrong' without acknowledging NYT's '12+' framing — the tweet's figure is one of the reported numbers.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The US strike involved more than a dozen Tomahawk missiles, not exactly 12; credible reports confirm at least three unexploded warheads found due to a safety mechanism preventing detonation on flight deviation, not four. https://www.nytimes.com/2025/12/25/us/politics/trump-isis-nigeria-strike.html https://militarnyi.com/en/news/at-least-three-tomahawk-missiles-used-by-the-usa-to-attack-isis-in-nigeria-failed-to-reach-targets/ https://defence-blog.com/u-s-cruise-missiles-miss-targets-in-nigeria/",
+    "failure_reason": "notHelpfulIncorrect — note states 'at least three' unexploded but on the tweet's date (Jan 6 2026) the 4th was confirmed; note also nitpicks 'over a dozen' vs '12' when NYT reported '12+'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's core figures (12 Tomahawks, 4 unexploded, ~25% failure rate as of Jan 6 2026) are within the bracket of credible reporting. Note's 'three not four' is outdated/wrong by Jan 6.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2025_United_States_strikes_in_Nigeria",
+      "https://militarnyi.com/en/news/fourth-unexploded-warhead-of-tomahawk-cruise-missile-found-in-nigeria/",
+      "https://clashreport.com/defense/articles/four-unexploded-tomahawks-found-in-nigeria-73j8lzwcfjt",
+      "https://www.jpost.com/international/article-882916"
+    ],
+    "notes": "Multiple outlets (Militarnyi, Clash Report, JPost, TFI Global) confirmed the 4th unexploded warhead by Jan 6/8, 2026. Total launched bracket is 12–16 across sources."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "32k impressions; war-coverage statistical claim. Bot must learn not to issue counter-corrections on numbers within the credible reporting bracket."
+  },
+  "difficulty": "medium"
+}

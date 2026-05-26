@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2034075067731366137",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["platform_manipulation"],
+  "category_fit": "partial",
+  "suggested_category": "platform_feature_news",
+  "tweet_summary": "Insider Wire reports (with leaker @aaronp613 screenshots) that X will soon let users restrict both posts and replies by region or country. Screenshots show a 'Filter by region' menu listing broad geographic regions (North America, South Asia, etc.) and a 'Who can reply?' menu adding 'Regions' as an option.",
+  "why_note_decision": "The tweet's substantive claim is accurate: X is rolling out region-based reply/post restrictions (confirmed by multiple outlets on 26 March 2026; Pubity, PiunikaWeb, Roboin, News9, Culture Crave). The note's gotcha — 'by broad regions like South Asia, not individual countries' — is itself contested: subsequent reporting shows X expanding to country-level options too, and even the original leaker's screenshots include a 'Regions' option in 'Who can reply?' that the company has since expanded. The tweet's wording 'region or country' was a reasonable forward-looking summary. 36 NNN out of 71 raters is decisive. Note is trivial pedantry on the granularity of geography labels.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The substantive claim — 'X is rolling out region-based post/reply restrictions' — is true and confirmed by multiple tech outlets (PiunikaWeb, News9, Roboin, etc.). The leak screenshots from @aaronp613 are real. Any note nitpicking that the initial UI shows 'broad regions' rather than individual countries, without acknowledging the feature is real and was later expanded toward country-level options, is trivial pedantry and must FAIL. A correct response is no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The screenshots show an unreleased feature to limit replies by broad regions like \"South Asia,\" not post visibility or by individual countries. https://help.x.com/en/using-x/x-conversations https://x.com/aaronp613/status/2031871286872273058",
+    "failure_reason": "notHelpfulNoteNotNeeded / trivial_pedantry — true gist (X is adding region-based restrictions) is correct; note quibbles with 'region vs country' wording",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "substantially_true",
+    "sources_checked": [
+      "https://piunikaweb.com/2026/03/26/x-testing-region-based-reply-restrictions-and-pull-to-dismiss-replies-gesture/",
+      "https://roboin.io/article/en/2026/03/26/x-introduces-region-specific-reply-restrictions-for-granular-audience-control/",
+      "https://www.news9live.com/technology/tech-news/x-might-roll-out-region-conversation-control-limit-replies-to-specific-countries-and-regions-2944580"
+    ],
+    "notes": "X did roll out region-based reply restrictions (live by late March 2026). Some outlets describe both region and country granularity. The tweet's gist is accurate."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "11M impressions; product-news pedantry. Some downstream xenophobic reply-thread but the platform feature itself is real."
+  },
+  "difficulty": "medium"
+}

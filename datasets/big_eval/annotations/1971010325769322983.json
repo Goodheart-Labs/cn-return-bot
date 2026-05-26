@@ -1,0 +1,39 @@
+{
+  "tweet_id": "1971010325769322983",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "legal_or_court_claim"],
+  "category_fit": "partial",
+  "suggested_category": "incident_framing_mischaracterized",
+  "tweet_summary": "Libs of TikTok says three men were arrested after they 'reportedly shot a youth baseball coach who was saying a prayer on the field with his team' in Texas, lists three Arab/Muslim-sounding names and shows mugshots.",
+  "why_note_decision": "Note is warranted. The tweet's framing — that the suspects 'shot' the coach (implying intent / targeted attack) — is misleading. Per Waller County Sheriff and Houston-area outlets (KHOU, Fox 26, Houston Public Media, Christian Post), the three were target shooting from a nearby pasture and a STRAY round hit the coach. They were charged with deadly conduct (a reckless-conduct charge), not aggravated assault or attempted murder; no intent to target the field or the coach. The coach was praying with his team, that part is correct. The original AI note covers exactly this — stray round from recreational target shooting, charged with deadly conduct — but raters tagged it notHelpfulNoteNotNeeded (504), notHelpfulMissingKeyPoints (384), notHelpfulIncorrect (317). The note IS actually correct on the key fact (stray bullet, not intentional shooting); some raters may have downvoted because they wanted the note to also mention the suspects' immigration status (per DHS, two were Biden-era parolees) or didn't accept the 'stray' framing. A correct note should make the 'stray vs intentional' point cleanly with mainstream sources.",
+  "judge_guidance": "PASS if the note clearly establishes: (1) authorities/Waller County Sheriff say the coach was hit by a STRAY bullet from people target shooting on nearby private property, not deliberately shot while praying; (2) the suspects were charged with DEADLY CONDUCT (a reckless-conduct charge), not aggravated assault or attempted murder, indicating no intent to target the field; (3) the coach was leading a pregame prayer when hit. The note MUST NOT validate the implication that the men 'shot' the coach with intent. Sources from KHOU, Fox 26, Christian Post, Houston Public Media, or Lead Stories fact-check are appropriate. The bot may but need not address the suspects' immigration status (DHS noted two were Biden-era parolees, which is a separate factual axis).",
+  "reference_note": "Per Waller County Sheriff, the coach was struck by a stray bullet from three men recreationally target shooting on nearby private property — not deliberately shot while praying. They were charged with deadly conduct (a reckless-conduct charge), not aggravated assault. https://www.khou.com/article/news/crime/3-men-arrested-katy-texas-baseball-coach-shot/285-aabc16d9-6cd5-4482-b35f-7e2a9c213c9e https://www.yahoo.com/news/articles/fact-check-police-did-not-075136215.html",
+  "original_unhelpful_note": {
+    "text": "Authorities say the Katy, TX coach was hit by a stray round from recreational target shooting on a nearby property during a youth game, not shot while praying. Three suspects were later charged with deadly conduct. https://www.click2houston.com/news/local/2025/09/21/gunfire-near-katy-baseball-fields-injures-coach-during-game-officials-say/ https://abc13.com/post/coach-injured-shooting-during-katy-baseball-game-rac-ems-says/17862158/",
+    "failure_reason": "Note is actually substantively correct. Likely partisan downvoting because it undercuts the 'Muslim attack on prayer' framing. Could be stronger by explicitly saying the charges are reckless-conduct (deadly conduct), no intent to target the field.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.khou.com/article/news/crime/3-men-arrested-katy-texas-baseball-coach-shot/285-aabc16d9-6cd5-4482-b35f-7e2a9c213c9e",
+      "https://www.yahoo.com/news/articles/fact-check-police-did-not-075136215.html",
+      "https://www.fox26houston.com/news/katy-texas-the-rac-shooting-updates-arrests",
+      "https://www.christianpost.com/news/texas-youth-baseball-coach-hit-by-gunfire-during-pregame-prayer.html",
+      "https://www.dhs.gov/news/2025/09/26/two-charged-opening-gunfire-childrens-baseball-field-were-let-us-biden"
+    ],
+    "notes": "Three men target shooting on a nearby pasture; stray bullet hit the coach during a pregame prayer. Charged with deadly conduct (a reckless-conduct charge), $100K bond each. Lead Stories called the 'opened fire on a children's baseball field' framing inaccurate."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "6.5M views + ethnic/religious targeting narrative. Suppressing the misleading 'Muslims shot a coach while praying' framing matters for social cohesion."
+  },
+  "difficulty": "medium"
+}

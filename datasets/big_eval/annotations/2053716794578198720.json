@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2053716794578198720",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "personal_announcement",
+  "tweet_summary": "A Nigerian woman shares a celebratory personal post announcing 'My Visa has been Approved' alongside a photo of her holding her Nigerian passport.",
+  "why_note_decision": "This is an ordinary personal-life celebration post — the kind of viral 'I got my visa!' Nigerian Twitter trope acknowledged by the comments. The user holds her passport because it is THE document you receive a visa stamped/affixed into; people commonly photograph their passport when celebrating a visa. The note pedantically explains the difference between a passport cover and a visa sticker, which is irrelevant to any checkable claim — the tweet doesn't claim the cover IS a visa. There is no misinformation here; raters correctly tagged this notNeeded.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a personal celebratory post with no checkable claim; the woman holds her passport because visas are issued INTO passports — a culturally well-understood celebration pose. FAIL any note that 'corrects' the image by pointing out it shows a passport cover rather than a visa sticker — that is trivial pedantry on a non-claim. FAIL any note speculating about her visa's authenticity or destination.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The image shows the front cover of a Nigerian passport, not a visa approval. Visas are typically stamps or stickers placed inside passports. https://www.consilium.europa.eu/prado/en/NGA-AO-03001/index.html https://en.wikipedia.org/wiki/Travel_visa",
+    "failure_reason": "noteNotNeeded — pedantic literal reading of a celebration post; the tweet doesn't claim the passport cover IS the visa.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Personal celebration post — no checkable misleading claim. Visa-approval celebrations holding the passport are routine and well-understood.",
+    "sources_checked": [],
+    "notes": "Comments confirm cultural context: 'Only Nigerians celebrate visa approvals' / 'visa approved but it's passport you're showing us 🤣' — comments treat this as normal celebration banter."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "541k views but pure personal-life content with no policy or factual stake. Important pipeline-learning case for not pedantically over-correcting personal posts."
+  },
+  "difficulty": "easy"
+}

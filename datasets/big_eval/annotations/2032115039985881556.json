@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2032115039985881556",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "official_propaganda_meme",
+  "tweet_summary": "Official White House account posts a Wii-Sports-themed propaganda montage labeled 'Operation Epic Fury' juxtaposing Wii golf/baseball clips with FLIR strike footage from the Iran war, captioned 'UNDEFEATED.'",
+  "why_note_decision": "The video is plainly a meme/propaganda mashup — the Wii Sports framing is the entire point of the post and is instantly recognizable. Nobody is being misled into thinking these are Iran strikes filmed inside Wii Sports. The original note states the obvious then adds unrelated casualty figures ('7 US service members killed, 140 wounded'), turning a meme-recognition note into political commentary. The dominant 'noteNotNeeded' tag from 1074 raters confirms the consensus: a note is not warranted here.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The Wii Sports footage is an obvious, deliberate meme element of an official White House propaganda video — not a misleading claim about reality. Writing 'this includes Wii Sports footage' is trivial pedantry; injecting casualty figures (as the original note did) is opinion/political framing. Any note here is a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video includes footage from the video game Wii Sports. Seven US service members have been killed and about 140 wounded in the war with Iran. https://en.wikipedia.org/wiki/Wii_Sports https://www.forbes.com/sites/conormurray/2026/03/12/white-house-uses-wii-sports-imagery-in-iran-war-video-after-usage-of-pokmon-sparked-rebuke https://time.com/article/2026/03/10/us-service-members-killed-iran-war-casualties",
+    "failure_reason": "trivial_pedantry_on_obvious_meme; injects unrelated casualty figures as political framing",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious_meme_no_claim_to_correct",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/trump-posts-most-unhinged-video-171906350.html",
+      "https://www.washingtonexaminer.com/news/entertainment/4490240/white-house-wii-sports-operation-epic-fury-iran/",
+      "https://newrepublic.com/post/207695/donald-trump-unhinged-video-iran-war-game"
+    ],
+    "notes": "Multiple outlets (Yahoo, The New Republic, Washington Examiner, Nintendo Everything) reported the White House released a Wii-Sports-themed montage to promote the Iran offensive. The Wii element is overt, not concealed."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Official-state war propaganda with 100M+ impressions has democratic-discourse stakes, but a Community Note about 'this is Wii Sports' is not the lever that addresses it."
+  },
+  "difficulty": "medium"
+}

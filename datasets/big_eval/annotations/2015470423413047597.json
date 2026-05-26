@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2015470423413047597",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "document_mischaracterization",
+  "tweet_summary": "Conservative reporter Cam Higby shares video screenshots of a PDF titled 'Patrolling/Commuting,' calling it 'the entire TRAINING MANUAL for domestic terrorist patrols chasing ICE agents in Minneapolis.' Got 6M impressions and an Elon Musk reply.",
+  "why_note_decision": "The document shown in the video is the MN ICE Watch 'Patrolling/Commuting' observation guide. On its face it instructs OBSERVATION: explicitly bans weapons (even pocket/utility knives), children, pets, alcohol, and going live; tells patrollers to stay safe, document, contact dispatch and ACLU, and avoid confrontation. Calling it a manual for 'domestic terrorist patrols chasing ICE agents' is a substantive mischaracterization of the document on screen. The original (NEEDS_MORE_RATINGS) note is also wrong: it calls this document the 'De-Arrest Primer' — but the De-Arrest Primer is a SEPARATE document (NY Post 2026-01-12) authored Spring 2024 with 'micro-intifada' framing. Conflating the two documents is a factual error.",
+  "judge_guidance": "PASS only if the note correctly identifies the document on screen as an MN ICE Watch 'Patrolling/Commuting' OBSERVATION guide (whistles, dispatch, ACLU reporting, no weapons/children/pets) — NOT a 'de-arrest' manual and NOT a 'training manual for chasing ICE agents.' It is acceptable to mention the document explicitly bans weapons. FAIL notes that (a) repeat the 'De-Arrest Primer' mislabel from the original note (the de-arrest primer is a separate Spring-2024 document), or (b) endorse the 'domestic terrorist patrols' characterization without qualifier, or (c) ignore the on-screen content (no weapons, no children, observe-and-document).",
+  "reference_note": "The document shown is MN ICE Watch's 'Patrolling/Commuting' observation guide — it explicitly bans weapons (incl. pocket knives), children, pets, and going live, and instructs observers to document, alert dispatch, and contact the ACLU. It is distinct from a separate Spring-2024 'De-Arrest Primer' MN ICE Watch reposted, which contains the 'micro-intifada' language. https://nypost.com/2026/01/12/us-news/minnesota-ice-watch-group-shared-de-arresting-manual-comparing-tactics-for-fighting-cops-to-a-micro-intifada",
+  "original_unhelpful_note": {
+    "text": "The document is a \"De-Arrest Primer\" from the Minnesota ICE Watch activist group, which provides tactics for interfering with arrests by law enforcement, including ICE, during protests. It is not a manual for \"domestic terrorist patrols chasing ICE agents.\"  https://nypost.com/2026/01/12/us-news/minnesota-ice-watch-group-shared-de-arresting-manual-comparing-tactics-for-fighting-cops-to-a-micro-intifada",
+    "failure_reason": "incorrect: misidentifies the document — the video shows the 'Patrolling/Commuting' observation guide, not the separately-published 'De-Arrest Primer' the NY Post reported on",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet_mischaracterizes_document; original_note_misidentifies_document",
+    "sources_checked": [
+      "https://www.cnn.com/2026/01/22/us/ice-watch-observers-federal-agents",
+      "https://www.aol.com/articles/renee-good-minnesota-ice-watch-205133966.html",
+      "https://www.thegatewaypundit.com/2026/01/renee-goods-minnesota-ice-watch-group-promoted-manual/"
+    ],
+    "notes": "The video clearly shows pages titled 'Patrolling/Commuting' with mobile/foot patrol observation instructions, whistles, dispatch protocol, an explicit ban on weapons/children/pets, and ACLU reporting. The separately-reported 'De-Arrest Primer' (NY Post, 2026-01-12) is a different document with 'micro-intifada' language about 'shaking off' arrests."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "6M impressions + Elon Musk amplification + 'domestic terrorist' framing of activists who are observing federal agents has real safety/democratic-discourse stakes; getting which-document-is-this right matters."
+  },
+  "difficulty": "hard"
+}

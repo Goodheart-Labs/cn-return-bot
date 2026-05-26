@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2053097985324789937",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports", "joke_or_satire"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A Tamil fan account posts a clip from the Tamil film 'Ghilli' (2004, starring Vijay) captioned as the 'Governor who cancelled his flight and came back for Anna' — an in-joke quote-tweeting another Vijay-fan tweet ('Governor betrayed anna') about TVK politics, mocking it with movie footage.",
+  "why_note_decision": "The whole exchange is a Tamil-cinema fandom in-joke. The author's bio (@Master_Shelby, 'Vijay Stan • Hollywood') and replies ('Cinema la kuda ivolo twist ila', 'Ghilli mari', 'is it real lmao??') make it obvious this is a meme/cinematic reaction, not a literal claim that a real governor cancelled a flight for actor-politician Vijay. A note 'this is from the 2004 film Ghilli' restates the joke nobody is taking literally.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a Tamil-cinema meme — a fan account posting a clip from a 2004 Vijay film as a humorous reaction to TVK politics in a quote-tweet. Replies treat it as comedy. A note debunking it as 'film footage, not real events' is pedantic literalism on an obvious joke.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The footage shows a kabaddi scene from the 2004 film Ghilli starring Vijay, not real events. https://en.wikipedia.org/wiki/Ghilli https://www.youtube.com/watch?v=_sWjlN7b52M",
+    "failure_reason": "noteNotNeeded — pedantic literal reading of an obvious cinema meme in a Tamil fandom in-joke. Replies show readers understand the comedic framing.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Clip is indeed from the film Ghilli; tweet uses it as a meme reaction in a Tamil-cinema/political in-joke, not as a documentary claim.",
+    "sources_checked": ["Author bio (Vijay stan)", "Reply context (jokes, 'is it real lmao')", "Wikipedia: Ghilli (2004 film)"],
+    "notes": "AI media description is reasonable; transcription confirms Tamil-cinema dialogue. Joke is clear in context."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Tamil-cinema fandom banter; no global EA/policy stakes."
+  },
+  "difficulty": "easy"
+}

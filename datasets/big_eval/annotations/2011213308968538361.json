@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2011213308968538361",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "legal_or_court_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "DHS official account quoting Stephen Miller telling ICE officers: 'You have federal immunity in the conduct of your duties. Anybody who lays a hand on you or tries to stop you... is committing a felony. You have immunity to perform your duties...'",
+  "why_note_decision": "A note IS warranted. Miller's 'federal immunity' framing is legally inaccurate per TIME, AOL, Civil Liberties Defense Center, and legal experts. There is no such thing as 'federal immunity' for ICE officers; they have qualified immunity (subject to losing it for clearly-established constitutional violations) and Supremacy Clause immunity (against state prosecution while performing lawful federal duties, but not for unlawful conduct). The federal government itself can still prosecute officers who break the law. Saying anyone who 'lays a hand on you' is committing a felony is also overbroad — people have First Amendment rights to film, observe, and peacefully protest immigration enforcement, and protected activity isn't a felony. The original AI note hits both points (no absolute immunity; qualified immunity; First Amendment protection for filming) and cites PolitiFact — and was rated notHelpfulMissingKeyPoints (513) and notHelpfulNoteNotNeeded (498). The note's substance is correct; raters likely split along partisan lines. A correct note should center on (a) no 'federal immunity' concept; (b) qualified immunity is conditional; (c) First Amendment protects observation/filming.",
+  "judge_guidance": "PASS if the note establishes: (1) There is no legal concept of blanket 'federal immunity' for ICE officers — they have QUALIFIED immunity (which can be lost for clearly-established constitutional violations) and Supremacy Clause immunity from state prosecution only while performing LAWFUL federal duties; (2) federal officers can still be federally prosecuted for unlawful conduct, civil rights violations, or excessive force; (3) First Amendment protects observing, filming, and peacefully protesting ICE operations. Sources from PolitiFact, TIME, AP, or legal experts (Civil Liberties Defense Center) appropriate. The bot MUST cite that 'federal immunity' as Miller framed it is not a legal doctrine. Length-OK as long as the qualified-immunity correction is present.",
+  "reference_note": "There is no blanket 'federal immunity' for ICE officers. They have QUALIFIED immunity (forfeit for clearly-established constitutional violations) and Supremacy Clause immunity from state prosecution only for LAWFUL duties — federal courts can still prosecute unlawful conduct. The First Amendment protects observing, filming, and peacefully protesting immigration enforcement. https://time.com/7329034/stephen-miller-ice-immunity-pritzker/ https://www.politifact.com/factchecks/2025/oct/29/stephen-miller/ICE-agent-immigration-raids-legal-immunity",
+  "original_unhelpful_note": {
+    "text": "ICE officers do not have absolute immunity. They hold qualified immunity, which does not shield them from prosecution for unlawful conduct, civil rights abuses, or excessive force. Non-violent actions like filming are protected by the First Amendment. https://www.politifact.com/factchecks/2025/oct/29/stephen-miller/ICE-agent-immigration-raids-legal-immunity",
+    "failure_reason": "Note is correct and well-sourced (PolitiFact). Likely partisan downvoting because it contradicts a DHS official statement. Could be slightly sharpened by saying 'federal immunity' isn't a legal doctrine.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false (legal mischaracterization)",
+    "sources_checked": [
+      "https://time.com/7329034/stephen-miller-ice-immunity-pritzker/",
+      "https://www.aol.com/articles/stephen-miller-said-ice-officers-181934448.html",
+      "https://cldc.org/the-truth-about-ice-qualified-immunity/",
+      "https://www.fox9.com/news/trump-adviser-stephen-miller-tells-ice-have-federal-immunity-when-dealing-protesters"
+    ],
+    "notes": "Per legal experts (TIME), no doctrine of 'federal immunity' exists; ICE has qualified immunity (conditional) and Supremacy Clause immunity (only for lawful duties). Federal officers can be federally prosecuted for unlawful conduct. Filming/observing is First Amendment protected."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Official DHS account telling federal officers they have blanket immunity is itself a rule-of-law concern; 4M-view tweet. Correcting this matters for civic integrity."
+  },
+  "difficulty": "medium"
+}

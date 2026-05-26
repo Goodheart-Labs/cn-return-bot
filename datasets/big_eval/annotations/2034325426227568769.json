@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2034325426227568769",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "statistical_or_numerical_claim", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "@HalfwayPost (bio: 'Dadaist graffiti news. Halfway true comedy and satire... I don't report the facts, I improve them') posts a fake 'BREAKING' poll claiming 74% of Americans suspect Kushner of treason over Iran negotiations. The 74% figure and 'new poll' are invented satire.",
+  "why_note_decision": "Halfway Post is a well-known political satire brand by Dash MacIntyre. Its bio explicitly labels it as 'halfway true comedy and satire' and 'I don't report the facts, I improve them.' This is a fabricated-poll satire post (a common Halfway Post format — see Snopes' coverage of the brand). 16 NNN. A note on clearly-labeled satire is the canonical false-positive case.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The author @HalfwayPost is an openly-labeled political satire/comedy account ('Halfway true comedy and satire... I don't report the facts, I improve them') run by Dash MacIntyre and covered as satire by Snopes. The '74%' poll and 'treason' framing are obvious fabricated-statistic satire. Any note debunking the poll or 'explaining' that the account is satire treats a clearly-marked satire account as misinformation and must FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No such poll exists; this is satirical content from @HalfwayPost, which states in its bio that it publishes \"halfway true comedy and satire.\" https://x.com/HalfwayPost https://halfwaypost.com/",
+    "failure_reason": "notHelpfulNoteNotNeeded — note on openly-labeled satire account",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satire_obvious",
+    "sources_checked": [
+      "https://halfwaypost.com/",
+      "https://www.snopes.com/tag/the_halfway_post/"
+    ],
+    "notes": "Halfway Post is a recognized political satire publication, covered as satire by Snopes. The bio is explicit."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "484k impressions on a politically charged Kushner/Iran satire post. Useful trap for the bot: clearly-labeled satire that some readers nonetheless seem to take at face value."
+  },
+  "difficulty": "easy"
+}

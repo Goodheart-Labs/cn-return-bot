@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2036557734410076512",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "anecdotal_personal_story",
+  "tweet_summary": "A tax analyst quote-tweets HBO's announcement that Harry Potter TV won't have annual seasons, and offers an unverifiable personal anecdote attributing a 'we don't know how' quote to a retired Hollywood producer relative.",
+  "why_note_decision": "The author has clarified separately (per the original note's own second link) that the line is adapted from a popular cathedral-construction meme, but the *tweet itself* is presented as a casual personal anecdote on the slow-Hollywood meta-point. It does not make a checkable factual claim about a public figure or event. The note treats an offhand thought-piece as a hoax requiring debunking.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a casual personal anecdote / opinion riff about Hollywood productivity, not a factual claim about a verifiable event. Even if the relative quote is embellished, no public figure is misrepresented and no reader is materially misled. A note that 'this is adapted from a meme' is pedantry on a non-checkable storytelling vignette.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The anecdote in this post is adapted from a popular meme about cathedral construction, not a real conversation with a retired Hollywood producer, as the author clarified. https://x.com/JeremyTate41/status/1669538824685223937 https://x.com/ahardtospell/status/2036618944858005997",
+    "failure_reason": "noteNotNeeded — pedantic correction on an unverifiable personal anecdote shared as commentary on a real industry trend. Not the kind of misinformation Community Notes targets.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Anecdote unverifiable; underlying point (Hollywood adaptations are slower today) is broadly accurate and corroborated by the original HBO quote being quote-tweeted.",
+    "sources_checked": ["Tweet self-citation", "Casey Bloys HBO quote in quoted tweet"],
+    "notes": "Even if the anecdote is meme-inspired, the tweet is opinion/commentary not factual misinfo."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pop-culture industry commentary; no EA/progress/safety stakes."
+  },
+  "difficulty": "easy"
+}

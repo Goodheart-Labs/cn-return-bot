@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2036936648152211845",
+  "role": "unhelpful_notHelpfulNoteNotNeeded",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Account 'Loud Outside' (573k followers) shares a screenshot of an interracial prom photo + a father's racist text rant with caption 'A dad's reaction to his daughter choosing a black man for prom'. 2.2M impressions, 12.5k likes, 691 RTs. Reply section is dominated by white-supremacist/racist 'good father' takes from accounts cheering the abuse.",
+  "why_note_decision": "The screenshot is the 2017 Anna Hayes (Lake Village, Arkansas) incident, widely covered by Daily Mail, BuzzFeed, AOL, Rolling Out, and Raw Story in May 2017. Reposting it 8.5 years later without that context misleads readers into thinking this is a recent event — and the racist reply mob treats it as such. Author of the account is a generic 'entertainment/news' aggregator; tweet does NOT date the event. A note IS warranted to date it. The original note's date attribution is correct; raters likely voted notHelpfulNoteNotNeeded (25/47) because the underlying conduct is so vile that 'it's old' feels deflective, and because the note doesn't address the more important framing (the messages are real, just from 2017).",
+  "judge_guidance": "PASS only if the note (a) identifies the screenshot as the May 2017 Anna Hayes / Lake Village, Arkansas prom incident, (b) makes clear the text messages are real (not staged/fake) but the event is from 2017, NOT a recent occurrence, and (c) cites a contemporaneous source (BuzzFeed News, Daily Mail, AOL, or Rolling Out). AVOID a defensive tone that suggests the event didn't happen or that it is fake — it IS real, just 8+ years old. FAIL any note that calls the conversation fabricated, or that ignores the date issue.",
+  "reference_note": "These text messages are real but from May 2017 — the 'Anna Hayes' incident in Lake Village, Arkansas, where a senior's father disowned her over her Black prom date. Reposting it without context misrepresents a 2017 event as recent. https://www.buzzfeednews.com/article/stephaniemcneal/people-are-sending-a-ton-of-support-to-this-teen-who-was https://rollingout.com/2017/05/06/white-racist-father-disowns-daughter-attended-prom-black-student/",
+  "original_unhelpful_note": {
+    "text": "The screenshot depicts a 2017 incident involving Anna Hayes in Arkansas, not a recent event. https://www.dailymail.co.uk/lifestyle/article-4478232/Dad-s-racist-rant-daughter-took-black-friend-prom.html https://rollingout.com/2017/05/06/white-racist-father-disowns-daughter-attended-prom-black-student",
+    "failure_reason": "Substantively correct date attribution but rated notHelpfulNoteNotNeeded (25/47), with MissingKeyPoints (17). Note is very terse — could anchor the location (Lake Village, AR), confirm the messages are real (not staged), and use a higher-quality outlet (BuzzFeed/AP-style) over Daily Mail/Rolling Out.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Real 2017 incident (Anna Hayes, Lake Village, Arkansas, May 2017). Reposted as if current in 2026.",
+    "sources_checked": [
+      "https://www.buzzfeednews.com/article/stephaniemcneal/people-are-sending-a-ton-of-support-to-this-teen-who-was",
+      "https://rollingout.com/2017/05/06/white-racist-father-disowns-daughter-attended-prom-black-student/",
+      "https://www.aol.com/news/2017-05-08-dad-racially-charged-texts-teen-daughter-prom-black-friend-22076154.html"
+    ],
+    "notes": "Anna Hayes confirmed authenticity in 2017 ('important for people to see that racism is very much alive'). Texts were shared by her date publicly."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.2M impressions repurposed to fuel a racist reply pile-on in 2026; dating misuse of old viral content is a high-volume territory for the bot to handle well."
+  },
+  "difficulty": "easy"
+}

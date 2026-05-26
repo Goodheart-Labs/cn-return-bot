@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2017178174623215965",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "ESPN's Pamela Maldonado posts a video clip from the 2026 Australian Open Alcaraz–Zverev match commenting that Alcaraz 'was about to retire, then at the last second makes the switch' and praising him as 'a competitor'. The on-screen commentary in the clip itself ('it could be, he could be about to retire') backs up that read.",
+  "why_note_decision": "Whether Alcaraz was actually about to retire vs. just confused about which side of the net to cross is a matter of interpretation that even on-court commentators and players (Zverev) disagreed about live. The tweet is a sports-pundit hot-take with an embedded clip whose own commentary supports it. The note recasts the moment as a 'medical timeout for cramping criticized by Zverev' — that's adding a different narrative, not correcting a factual claim. Top replies show readers actively debating the interpretation. This is opinion-vs-opinion framing, not misinformation.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a sports-commentator interpretation of an ambiguous moment that the broadcast commentary itself voices ('he could be about to retire'). Adding 'actually it was a medical timeout for cramps' is a different angle, not a fact-check. Genuine interpretive disagreement among sports pundits is not Community-Notes-able.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Alcaraz received a medical timeout for cramping during the third set rather than retiring, a decision criticized by Zverev as cramps do not qualify for such treatment under tennis rules. He continued playing and won the match in five sets.  https://www.tennisworldusa.org/tennis/news/Carlos_Alcaraz/163663/alexander-zverev-on-carlos-alcaraz-s-medical-timeout-it-was-awful-  https://www.tennis365.com/tennis-news/alexander-zverev-carlos-alcaraz-controversial-cramping-medical-time-australian-open",
+    "failure_reason": "noteNotNeeded / argumentative — substitutes a different sports-pundit interpretation for the one in the tweet; doesn't refute a checkable claim. The broadcast commentary itself raised the 'about to retire' reading.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Underlying match facts are real (Alcaraz beat Zverev in 5; cramping/medical timeout controversy was real). The tweet's framing of the racket-switch moment as 'about to retire then changed his mind' is an interpretive opinion shared on-air by the broadcast.",
+    "sources_checked": [
+      "https://www.tennisworldusa.org/tennis/news/Carlos_Alcaraz/163663/alexander-zverev-on-carlos-alcaraz-s-medical-timeout-it-was-awful-",
+      "Broadcast commentary in the clip itself (ESPN/AO Live)",
+      "Reply context (mixed reads)"
+    ],
+    "notes": "Two valid sports-pundit interpretations of a live ambiguous moment. Not misinformation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pop-sports interpretation; no EA/policy stakes."
+  },
+  "difficulty": "easy"
+}

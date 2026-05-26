@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2042705018521088317",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Curated content account 'GBX' tweets in April 2026 that 'Pedro Sánchez announced that Spain has officially recognized the State of Palestine, with its capital in East Jerusalem,' accompanied by the actual Sánchez Council of Ministers address (from May 28, 2024).",
+  "why_note_decision": "The substantive claim is true: Spain DID officially recognize the State of Palestine with East Jerusalem as its capital, announced May 28, 2024 by Sánchez at the Council of Ministers — the very speech in the attached video. The tweet uses present-perfect / undated phrasing ('Sánchez announced that Spain has officially recognized'), which is technically accurate even years later. The original note's claim that 'a new announcement in April 2026 is incorrect' attacks a temporal-framing the tweet doesn't quite make; the video is real, the event is real, the only ambiguity is whether readers might think it's brand-new — but the note doesn't help with that. 4/11 raters flagged noteNotNeeded (vs 4 incorrect, 4 missing key points — fragmented signal, but the underlying event is true).",
+  "judge_guidance": "PASS if the bot declines to write a note, OR if it writes a narrow contextual note saying 'The announcement shown is from Sánchez's May 28, 2024 Council of Ministers address, when Spain formally recognized Palestine with East Jerusalem as capital.' FAIL any note that calls the recognition itself false / nonexistent / 'not yet happened' (it did happen, May 28, 2024). FAIL notes that imply the tweet fabricated the event.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Spain recognized the State of Palestine on May 28, 2024; the claim of a new announcement in April 2026 is incorrect. https://www.lamoncloa.gob.es/lang/en/gobierno/councilministers/paginas/2024/20240528-council-press-conference.aspx https://en.wikipedia.org/wiki/International_recognition_of_Palestine",
+    "failure_reason": "noteNotNeeded — the underlying event is real, the video is the real speech, and the tweet's present-perfect phrasing is technically accurate; the 'new announcement' counter-claim attacks framing the tweet doesn't quite assert.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Spain recognized Palestine with East Jerusalem as capital on May 28, 2024 — the speech shown is the original 2024 address. Tweet substantively correct.",
+    "sources_checked": ["https://www.lamoncloa.gob.es/lang/en/presidente/news/paginas/2024/20240528-declaration-palestine.aspx", "https://thediplomatinspain.com/en/2024/05/28/sanchez-assures-that-the-recognition-of-palestine-is-not-against-israel-and-is-a-flat-rejection-of-hamas/", "https://english.news.cn/20240528/4c04ed0c13cc424b82d85715c460d733/c.html"],
+    "notes": "May 28, 2024 announcement explicitly designated East Jerusalem as capital. The April 2026 share is a resurfaced clip; date context could help but the event itself is real."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "173k impressions on an Israel-Palestine geopolitics topic; the bot must avoid 'correcting' an accurate-in-substance reshare into false-misinfo territory."
+  },
+  "difficulty": "medium"
+}

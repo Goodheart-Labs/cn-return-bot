@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2023768998861808027",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["health_medical_science", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "viral_lifestyle_trend",
+  "tweet_summary": "Curated 'China pulse' account describes a viral Chinese weight-loss trend of placing plastic over the mouth while eating; underlying video (Spanish-language explainer) clarifies people put plastic wrap inside the mouth, chew, then spit food + wrap.",
+  "why_note_decision": "Both the tweet and the note describe essentially the same fringe weight-loss practice. The note's only correction is the mechanical detail: 'inside mouth, chewed and spit' vs 'bag over mouth.' The tweet's phrasing ('place a plastic bag over their mouth while eating') is loose but not load-bearingly wrong — it's the same harmful pseudo-dietary practice, sourced to the same Chinese trend reporting (Dexerto). 40/79 raters flagged noteNotNeeded. The tweet's actual concern (health-harmful weight-loss trend) is intact regardless of bag-over vs wrap-inside.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The trend itself is real and accurately described; the note nitpicks the mechanic (plastic wrap chewed and spit, not bag held over the mouth) — that's pedantry, not a misleading-claim correction. FAIL any note that 'corrects' the mechanic without adding meaningful safety/context value.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The described trend involves placing plastic wrap inside the mouth to chew and spit out food without swallowing, not putting a plastic bag over the mouth while eating. https://www.dexerto.com/entertainment/bizarre-plastic-eating-trend-for-weight-loss-goes-viral-in-china-3321014",
+    "failure_reason": "noteNotNeeded — pedantic mechanic-correction on a real reported trend; tweet's substance (a harmful Chinese weight-loss practice involving plastic and the mouth) is correct.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Trend exists and is correctly characterized in spirit by the tweet; note's distinction is mechanic-level pedantry.",
+    "sources_checked": ["https://www.dexerto.com/entertainment/bizarre-plastic-eating-trend-for-weight-loss-goes-viral-in-china-3321014"],
+    "notes": "Dexerto source (used by the original note) backs the broad trend; embedded Spanish-language video in the tweet also describes the chew-and-spit mechanic."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "17M impressions but a low-stakes lifestyle-curiosity item; mainly a calibration test for 'don't note pedantic trend-mechanic differences.'"
+  },
+  "difficulty": "easy"
+}
