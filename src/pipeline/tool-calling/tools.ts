@@ -239,14 +239,14 @@ export async function handlePerplexitySearch(prompt: string): Promise<ToolResult
   return { output: { results: content, citations }, isTerminal: false, cost };
 }
 
-interface SearxngResult {
+export interface SearxngResult {
   title: string;
   url: string;
   content: string;
   publishedDate: string | null;
 }
 
-async function fetchSearxngResults(query: string): Promise<SearxngResult[]> {
+export async function fetchSearxngResults(query: string): Promise<SearxngResult[]> {
   const endpoint = `${SEARXNG_URL}/search?q=${encodeURIComponent(query)}&format=json&engines=google`;
   const response = await fetch(endpoint, {
     headers: { "User-Agent": "Mozilla/5.0 (compatible; CommunityNotesBot/1.0)" },
@@ -263,7 +263,7 @@ async function fetchSearxngResults(query: string): Promise<SearxngResult[]> {
   }));
 }
 
-function formatSearxngResults(results: SearxngResult[]): string {
+export function formatSearxngResults(results: SearxngResult[]): string {
   if (results.length === 0) return "No results.";
   return results
     .map((r, i) => {

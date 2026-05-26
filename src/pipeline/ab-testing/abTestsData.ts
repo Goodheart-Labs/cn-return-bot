@@ -54,6 +54,16 @@ export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
+    { variant: { name: "cheap-bot", overrides: {
+      botId: "cheap-bot",
+      model: "deepseek/deepseek-v4-flash",
+      search_model: "deepseek/deepseek-v4-flash",
+      writer_model: "deepseek/deepseek-v4-flash",
+      note_needed_judge: true,
+      note_judge_model: "deepseek/deepseek-v4-flash",
+      verifier_model: "deepseek/deepseek-v4-flash",
+      web_search: "searxng",
+    }}, weight: 0 },
     { variant: { name: "multi-agent", overrides: {
       botId: "multi-agent",
       model: "google/gemini-3-flash-preview",

@@ -18,6 +18,7 @@ import { opusResearch } from "./opus-research";
 import { agentBot } from "./agent";
 import { multiAgentBot } from "./multi-agent";
 import { simpleBot } from "./simple-bot";
+import { cheapBot } from "./cheap-bot";
 
 // =============================================================================
 // RETIRED BOTS — recoverable via `git show <commit>:src/bots/<file>.ts`.
@@ -41,7 +42,7 @@ import { simpleBot } from "./simple-bot";
 // =============================================================================
 
 const ALL_BOTS: Bot[] = [
-  agentBot, multiAgentBot, simpleBot,
+  agentBot, multiAgentBot, simpleBot, cheapBot,
   opusMain, opusMainV2, opusMainNoSourceCheck,
   opusDirect, opusDirectGrok, opusMainV2Grok,
   opusMultiSource, opusBridging, opusResearch,
