@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2036122449536811392",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:00.186Z",
+  "post": {
+    "id": "2036122449536811392",
+    "author_id": "29471238",
+    "created_at": "2026-03-23T16:46:35.000Z",
+    "text": "I never knew this !!! Everyday is a school day https://t.co/trEkBFxDtO",
+    "media": [
+      {
+        "media_key": "3_2036122443203350528",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEHCkwJWEAA-96L.jpg",
+        "height": 1792,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 547,
+      "reply_count": 1540,
+      "like_count": 5926,
+      "quote_count": 596,
+      "bookmark_count": 430,
+      "impression_count": 683873
+    },
+    "author_followers": 114884,
+    "author_name": "steve",
+    "author_description": "Retired fashion retailer, found most days playing golf at The Wrekin GC, 8 H/C golfer. 2nd hole in one 22/07/24. Grandad to 6 beautiful grandkids FPL top 50k",
+    "author_tweet_count": 408726
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEHCkwJWEAA-96L.jpg",
+          "description": {
+            "description": "A close-up photograph of a car steering wheel with a textured surface, featuring small raised bumps circled in red. An overlay of text at the bottom provides a humorous or satirical explanation for the bumps. In the background, a car's dashboard with a speedometer is visible.",
+            "ocrText": "160\n180\n200\n220\nJust realised that these little bumps on the steering wheel are in Braille so that blind drivers have no trouble finding the horn to alert other drivers when necessary\n#themoreyouknow\nPlease share , save lives"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Khutsolization**: \"Blind people going to work\" (Likes: 397, Reposts: 17, Replies: 20, Views: 11075)  \n**@Mike85943797312**: \"That's okay. The deaf people riding their motorcycles won't hear the horn anyway.\" (Likes: 390, Reposts: 0, Replies: 0, Views: 14688)  \n**@TiniHoWie2**: \"(No text content)\" (Likes: 371, Reposts: 0, Replies: 0, Views: 18034)  \n**@poetnchief**: \"If a blind person could see this, they would be offended.\" (Likes: 156, Reposts: 0, Replies: 0, Views: 15263)  \n**@damngourav**: \"The moment when you realise........\" (Likes: 100, Reposts: 0, Replies: 0, Views: 10169)  \n**@HKirshenba74891**: \"Braille for blind drivers?....\" (Likes: 75, Reposts: 0, Replies: 0, Views: 2925)  \n**@Deejay_Buckz**: \"What are blind people doing behind the wheel in the first place?\" (Likes: 50, Reposts: 0, Replies: 0, Views: 11227)  \n**@EgonSpangler777**: \"i am thinking that finding the horn is probably low on the priority list for a blind driver\" (Likes: 50, Reposts: 0, Replies: 0, Views: 2998)  \n**@LI_Wiseass**: \"What the f*ck? Did anyone consider that if we have blind drivers on the road their ability to horn is the least of our f*ucking problems.\" (Likes: 43, Reposts: 1, Replies: 4, Views: 1915)  \n**@iam_durjaytim**: \"To alert other road drivers that he’s about to wreck havoc 😂😂\" (Likes: 35, Reposts: 0, Replies: 0, Views: 5444)",
+    "warnings": []
+  }
+}

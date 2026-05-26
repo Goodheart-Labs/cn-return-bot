@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2019756874048967137",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:49.876Z",
+  "post": {
+    "id": "2019756874048967137",
+    "author_id": "1486911626846806017",
+    "created_at": "2026-02-06T12:55:38.000Z",
+    "text": "This is Otis. Since he was adopted he has a non-negotiable bedtime ritual. Of  Getting tucked in bed with mom . Then those satisfied licks of victory. perfect angel please leave him a heart ❤️ \n https://t.co/PwtFq452rg",
+    "media": [
+      {
+        "media_key": "7_1993872314299985920",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1993872314299985920/pu/img/8hnvl1GBU13dpoqw.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 38359,
+        "view_count": 1868991,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1993872314299985920/pu/vid/avc1/320x568/00Uj4A-ZcaX3hGQf.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1993872314299985920/pu/vid/avc1/480x852/XJKfbyacp4LPcT3y.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1993872314299985920/pu/vid/avc1/720x1280/eJ3bwlIgq4pGumGG.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1993872314299985920/pu/pl/tp_o_ljaoAQkpgLr.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2980,
+      "reply_count": 1528,
+      "like_count": 66971,
+      "quote_count": 165,
+      "bookmark_count": 2316,
+      "impression_count": 1905848
+    },
+    "author_followers": 626165,
+    "author_name": "Puppies 🐶",
+    "author_description": "Your Original source for Original Dog Video",
+    "author_tweet_count": 27073
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1993872314299985920/pu/vid/avc1/720x1280/eJ3bwlIgq4pGumGG.mp4",
+          "description": {
+            "description": "A wrinkled Shar-Pei stands on a white bed in front of a glowing television screen. A person lying under the covers lifts the blanket, and the dog crawls underneath to settle in.",
+            "ocrText": ""
+          },
+          "transcription": "이스라엘의 전쟁 감사합니다."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "Layden Robinson - @LaydenRobinson: #Dogs are everything!\nEngagement: Likes=229, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=10841\n\nMajito Querido - @Lsuscr1to: Same here with wife and her mutt. 🐾🐾🫶🏼\nEngagement: Likes=171, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=10434\n\nLESLIE SCOTT - @Leslieannscott: Sigh. I miss my 4 Poms. I never knew love like I did with them. Such a celebration whenever I came home and each had their own fav spot on my big bed to snuggle. Last one passed at 15 years old in September of 2025.\nEngagement: Likes=104, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3466\n\nRider - @RoxannRider: I have 2 that sleep under the covers, one at the top of the bed and one at the foot\nEngagement: Likes=100, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4638\n\nMichele - @mlo_crmb: Yep.\nEngagement: Likes=81, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1835\n\nSovran Monkey - @SovranMonk_4th: Here is my blanket queen. Must be her blanket. She will bring it.\nEngagement: Likes=80, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3067\n\nJames Jones - @DoctorSailorNew: Silly boy. My girl used to come and get me then stand at the bottom of the steps to say - c'mon Dad, Mom - it's time to go up to bed. C'mon.\nEngagement: Likes=77, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3548\n\nNotTheMessiah - @chuckcorbin: This is what I wake to most mornings\nEngagement: Likes=67, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2125\n\nBS 7 - @CaptWinky1: (No text content)\nEngagement: Likes=67, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3399\n\nJules Ehrhardt - @ezyjules: Dog in bed is feral.\nEngagement: Likes=52, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=9607\n\nPink Find - @PinkPunk_2024: Otis clearly runs the show, and honestly? I respect the hustle. Those victory licks are the ultimate seal of approval. ❤️\nEngagement: Likes=28, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2130\n\nRight Wing Jewess - @RightWingJewess: Okay, so this just melts my stone-cold heart.\nEngagement: Likes=27, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1363",
+    "warnings": []
+  }
+}

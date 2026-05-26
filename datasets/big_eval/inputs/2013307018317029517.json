@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2013307018317029517",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:59.083Z",
+  "post": {
+    "id": "2013307018317029517",
+    "author_id": "16331010",
+    "created_at": "2026-01-19T17:46:13.000Z",
+    "text": "A killer elephant -- who is at-large -- has left a total of 22 people dead over a 10 day period in India.\n\nDetails: https://t.co/Q3njFcHsgJ\n\n🎥: TIM https://t.co/NzXY48gI4d",
+    "media": [
+      {
+        "media_key": "7_2013306982652850177",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2013306982652850177/pu/img/c3TDpqrk6Tm83iX4.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 36669,
+        "view_count": 3590682,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2013306982652850177/pu/vid/avc1/480x270/K2w7MAkK1XRxxplA.mp4?tag=12"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2013306982652850177/pu/vid/avc1/640x360/FSoHcYdBwt1bgeHA.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2013306982652850177/pu/vid/avc1/1280x720/Y7q9tyJYdodxjDhY.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2013306982652850177/pu/pl/QkypE5mdcJ0XbmA3.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3448,
+      "reply_count": 5075,
+      "like_count": 36497,
+      "quote_count": 4486,
+      "bookmark_count": 7871,
+      "impression_count": 15453420
+    },
+    "author_followers": 8764969,
+    "author_name": "TMZ",
+    "author_description": "Breaking entertainment news as it happens ⚡️",
+    "author_tweet_count": 505267
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2013306982652850177/pu/vid/avc1/1280x720/Y7q9tyJYdodxjDhY.mp4?tag=12",
+          "description": {
+            "description": "A low-angle, medium shot of a large field with many people gathered. In the background a large cloud of white smoke is seen. The people are running towards the smoke where a large elephant can be made out and a small object is flying in the air near the elephant. ",
+            "ocrText": ""
+          },
+          "transcription": "गोई किये प्राणिका खीला"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@TorraineWalker: They did something to that elephant.  \nLikes=8356, Reposts=196, Quotes=4, Replies=77, Bookmarks=0, Views=145165\n\n@SkeetsANC: He’s probably had enough of everyone’s sh*t  \nLikes=8346, Reposts=81, Quotes=2, Replies=46, Bookmarks=0, Views=192099\n\n@kinocopter: THERE GOES MYYYYY HERO  \nLikes=4835, Reposts=43, Quotes=1, Replies=14, Bookmarks=0, Views=102083\n\n@TheOnlyDSC: Patriot.  \nLikes=3733, Reposts=35, Quotes=0, Replies=0, Bookmarks=0, Views=44350\n\n@eurorabbit: Who all is on team elephant?  \nLikes=3562, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=68480\n\n@tickerBITCOINbb: Go elephant! Need 10000x more of these  \nLikes=2657, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=66733\n\n@mazemoore: Am I allowed to say who I’m rooting for?  \nLikes=2414, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=111153\n\n@TheHighIndian: nice  \nLikes=2141, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=77308\n\n@LibertyLockPod: 22 people in 10 days! Who does this elephant think he is, an IDF soldier?  \nLikes=2070, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=35785\n\n@iamsouljabrasi: What’s crazy is I saw this video two days ago and save it because I found it interesting. Wild  \nLikes=2016, Reposts=148, Quotes=31, Replies=32, Bookmarks=0, Views=147359",
+    "warnings": []
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2007357044328976752",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:41.412Z",
+  "post": {
+    "id": "2007357044328976752",
+    "author_id": "24222232",
+    "created_at": "2026-01-03T07:43:08.000Z",
+    "text": "The US is now bombing Caracas, Venezuela. Not. What. I. Voted. For. https://t.co/iGe2Cs9vJh",
+    "media": [
+      {
+        "media_key": "13_2007352980366897152",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2007352980366897152/img/TSNNZ5W6BXolEKGZ.jpg",
+        "height": 1404,
+        "width": 886,
+        "duration_ms": 4746,
+        "view_count": 1297492,
+        "variants": [
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2007352980366897152/vid/avc1/480x760/yUekXZhPkpm3eOv4.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2007352980366897152/vid/avc1/720x1140/pv52HrH4IApswKam.mp4"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2007352980366897152/vid/avc1/320x506/n8BHsK9VmqOuhDya.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2007352980366897152/vid/avc1/886x1404/d4XgRrgJSlaq3_YV.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2007352980366897152/pl/RoFeHsO_idu2wBLR.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1038,
+      "reply_count": 1447,
+      "like_count": 8572,
+      "quote_count": 154,
+      "bookmark_count": 438,
+      "impression_count": 402356
+    },
+    "author_followers": 296412,
+    "author_name": "Clint Russell",
+    "author_description": "Host: Liberty Lockdown\n\nhttps://t.co/IJpM7jylLa\n\nfollowing back all subscribers as a thanks for supporting my work.\njust do it. you know you want to.",
+    "author_tweet_count": 26283
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2007352980366897152/vid/avc1/886x1404/d4XgRrgJSlaq3_YV.mp4",
+          "description": {
+            "description": "A single low-quality frame captured at night showing a bright glowing object with a red trail moving across a sky illuminated by a large, orange, patterned light source, likely a building's facade, behind dark urban silhouettes.",
+            "ocrText": ""
+          },
+          "transcription": "(no audio track)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@DMichaelTripi**: CBS just reported it’s a full-scale “invasion” with special forces on the ground. Fox says we’re doing it because of national security threat from, you guessed it, Iran. Unreal…. (Likes: 274)\n- **@kookoarosey**: Venezuelan people are celebrating bro (Likes: 222)\n- **@GoodAMLiberty**: Trump and republicans deserve everything they’re about to get after the midterms. (Likes: 194)\n- **@FinanceLancelot**: Iran is next. (Likes: 176)\n- **@babyLiss365**: I’m from Venezuela and I’m happy xd (Likes: 139)\n- **@Simbastinks**: I voted for this. (Likes: 120)\n- **@jdgreer**: As I read on and do research, it looks like the people of Venezuela are celebrating this while the people of America are condemning it. What does Venezuelans know that we do not? (Likes: 89)\n- **@DanielElHalabi**: Venezuelans are happy, don’t worry. (Likes: 81)\n- **@InLuvWScience**: Cry more commie (Likes: 62)\n- **@TheTater07**: Because you voted for Kamala And tampon Tim (Likes: 53)",
+    "warnings": []
+  }
+}

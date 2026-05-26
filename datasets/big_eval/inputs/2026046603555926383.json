@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2026046603555926383",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:09.564Z",
+  "post": {
+    "id": "2026046603555926383",
+    "author_id": "1879644163769335808",
+    "created_at": "2026-02-23T21:28:47.000Z",
+    "text": "MAKE “THE LAKE” GREAT AGAIN! https://t.co/smePJeNemP",
+    "media": [
+      {
+        "media_key": "3_2026046597331603456",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HB32pVRW0AA8YVX.jpg",
+        "height": 902,
+        "width": 1206
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1325,
+      "reply_count": 686,
+      "like_count": 10119,
+      "quote_count": 67,
+      "bookmark_count": 152,
+      "impression_count": 220171
+    },
+    "author_followers": 4699927,
+    "author_name": "The White House",
+    "author_description": "The Golden Age of America Begins Right Now.\n📱 Text USA to 45470 to receive alerts.",
+    "author_tweet_count": 15262
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HB32pVRW0AA8YVX.jpg",
+          "description": {
+            "description": "A screenshot of a post from the social media platform Truth Social by the user Donald J. Trump. The post discusses the environmental state of The Great Salt Lake in Utah, mentioning collaboration with Governor Spencer Cox and ending with the slogan 'MAKE \"THE LAKE\" GREAT AGAIN!'.",
+            "ocrText": "Donald J. Trump @realDonaldTrump Very important to save The Great Salt Lake in Utah. This is an Environmental hazard that must be worked on, IMMEDIATELY - It is of tremendous interest to me. The people of Utah are spectacular, and they deserve to be helped. I am dealing with your very caring Governor, Spencer Cox, and we are going to make it all happen! MAKE \"THE LAKE\" GREAT AGAIN! PRESIDENT DONALD J. TRUMP"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@GhostOPRockwell: Yes. Save the Lake. But Spencer Cox is a massive fggt. (Likes: 91)\n@aaron117509: Please investigate governor Cox before you help Utah. You will find out he is a Newsom. Any money he gets from taxpayers will be squandered on his donors. (Likes: 54)\n@drefanzor: Trump is making the Great Salt Lake Great Again and people are blackpilling? 😂 (Likes: 51)\n@AutismCapital: “THE LAKE NEEDS MORE SALT FAST!” (Likes: 43)\n@ErinSpksLoudr: You have been fooled by @GovCox th best thing you can do is listen to the conservatives of this state who know he is a fraud and cheated onto the ballot and continues to run our state by leftist policies and undermining our traditional conservative values! (Likes: 40)\n@insatiablevine: The left is about to hate lakes. (Likes: 27)\n@NOBODY_4_POTUS: What an idiotic thing to say by the President of the United States\n\nHe tells us that climate change is a hoax\n\nWhat is the plan? Pumping water from the ocean into it to fill it up?\n\nBleach ??? (Likes: 27)\n@scottiev: So you’re going to fight climate change? (Likes: 22)\n@Toastmusk: Don’t forget to change the name into “Lake TRUMP”, (Likes: 21)\n@PessimistPossum: You made the Swamp great again (Likes: 21)",
+    "warnings": []
+  }
+}

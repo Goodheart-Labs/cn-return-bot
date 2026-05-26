@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2020927588118692329",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:58.920Z",
+  "post": {
+    "id": "2020927588118692329",
+    "author_id": "100250921",
+    "created_at": "2026-02-09T18:27:38.000Z",
+    "text": "OMG he did it. He really did it! (Turn captions on) https://t.co/zD3Q4tUNti",
+    "media": [
+      {
+        "media_key": "13_2020926923707486208",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2020926923707486208/img/0tDt0tzF1Gi1Se3P.jpg",
+        "height": 542,
+        "width": 968,
+        "duration_ms": 47995,
+        "view_count": 1112229,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020926923707486208/vid/avc1/482x270/W3LmJCA3zFJpvYgH.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020926923707486208/vid/avc1/642x360/xRIIQx2Ny2MitTQA.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020926923707486208/vid/avc1/968x542/m5vxQdao4orCFmq_.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2020926923707486208/pl/T4I1Am6HxGwu5WOh.m3u8?v=10a"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2414,
+      "reply_count": 182,
+      "like_count": 23661,
+      "quote_count": 198,
+      "bookmark_count": 3876,
+      "impression_count": 2660392
+    },
+    "author_followers": 106225,
+    "author_name": "Scott Lincicome",
+    "author_description": "VP @CatoInstitute (econ/trade), adjunct @DukeLaw, columnist @TheDispatch & @Bloomberg. CH❤️RTS. You didn't read the article, did you? Go @Rangers.",
+    "author_tweet_count": 286685
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2020926923707486208/vid/avc1/968x542/m5vxQdao4orCFmq_.mp4",
+          "description": {
+            "description": "A man in all-white clothing and a microphone headset walks through a sugarcane field-inspired stage while holding a football. He is surrounded by backup dancers also dressed in white outfits with straw hats, some of whom are wielding tools like machetes in a choreographed performance. The 'ESPN 2 VIVO' logo is visible in the top left corner of each frame.",
+            "ocrText": "ESPN 2\nVIVO"
+          },
+          "transcription": "Titi me pregunto si tengo mucha novia, mucha novia, hoy tengo una, mañana otra, pero no hay boda. Titi me pregunto si tengo mucha novia, mucha novia, hoy tengo una, mañana otra, me la voy a llevar a la topa, un VIP, un VIP. Saludan a Titi Vamos a tirar un selfie Que sonrían las Saludan a Titi Vamos a tirar un selfie Que sonrían las que salpidaron Ya de mí me gustan mucho las Gabriela La Patricia, la Nicole La Sofía, mi primera novia En Quintermaría y mi primera muerte"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@archibaldcrane**  \nCrazy, who knew he was so woke?  \nLikes: 1713 | Reposts: 123 | Views: 363480\n\n**@LPDonovan**  \nWtf i love bad bunny now  \nLikes: 694 | Reposts: 43 | Views: 59835\n\n**@SooperMexican**  \nAs a Spanish speaker I confirm the translation as accurato  \nLikes: 562 | Reposts: 0 | Views: 28803\n\n**@HannahDCox**  \nlol idk how you did this but it’s amazing  \nLikes: 105 | Reposts: 0 | Views: 24882\n\n**@Blake_Allen13**  \nFew people realize that Bad Bunny playing part of the track to the song Gasolina was a callout to the island’s high fuel prices that are directly related to the Jones Act. The song is originally by Daddy Yankee, referencing that only the USG can fix the problem  \nLikes: 86 | Reposts: 0 | Views: 3089\n\n**@damintoell**  \nEl Cabotaje! That's my favorite Bad Bunny track.  \nLikes: 67 | Reposts: 0 | Views: 26828\n\n**@patneedham_**  \nYou have to be resilient on this app to know what's really real  \nLikes: 55 | Reposts: 0 | Views: 19059\n\n**@caedrolo12**  \nSpanish speaker here, I confirm that Benito said this.  \nLikes: 33 | Reposts: 0 | Views: 9148\n\n**@PoliticalSmark**  \nIn the 10 years of snarky comments I've made under your tweets I've internalized a lot of knowledge and distaste for the JA. It all payed off when I got to explain the Jones Act after a Super Bowl Halftime Show.  \nLikes: 29 | Reposts: 0 | Views: 8544\n\n**@BrunoTaltalian**  \nI LOVE how he makes what could have been a dry and academic economics lecture sound like so much fun.  \nLikes: 24 | Reposts: 0 | Views: 8796",
+    "warnings": []
+  }
+}

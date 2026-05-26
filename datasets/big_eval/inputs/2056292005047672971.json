@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2056292005047672971",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:52.956Z",
+  "post": {
+    "id": "2056292005047672971",
+    "author_id": "452540168",
+    "created_at": "2026-05-18T08:33:12.000Z",
+    "text": "President Donald Trump posts a picture of him walking with an alien. https://t.co/iX6iRid9Gd",
+    "media": [
+      {
+        "media_key": "3_2056292002312929280",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIlqrnBWwAAVy3B.jpg",
+        "height": 1576,
+        "width": 1096
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 470,
+      "reply_count": 827,
+      "like_count": 10705,
+      "quote_count": 160,
+      "bookmark_count": 679,
+      "impression_count": 850663
+    },
+    "author_followers": 4549586,
+    "author_name": "Daily Loud",
+    "author_description": "#1 Source For Hip-Hop/Viral News Across The Planet | Follow Us Now & Stay Updated | For Business Or Promo TheDailyLoud@gmail.com | Turn On Notifications 🔥🔔",
+    "author_tweet_count": 115768
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIlqrnBWwAAVy3B.jpg",
+          "description": {
+            "description": "An AI-generated or manipulated image showing Donald Trump walking alongside a tall, muscular grey alien in shackles at what appears to be a military base. They are flanked by men in suits resembling Secret Service agents and a soldier in camouflage. In the background, there are desert mountains and several military Humvees parked near a concrete building.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @AnfieldNigga: 😭😭 Bro will post himself with an alien but not Epstein. How bad are the files, bruh?? (Likes: 816, Reposts: 16, Replies: 11)\n- @pandaa: The big 3. (Likes: 201, Reposts: 2, Replies: 14)\n- @dog_raw68465: 👀 (Likes: 83, Reposts: 5, Replies: 4)\n- @Velocity9i: Trump doing anything to distract us from the fact he’s in the Epstein files: (Likes: 73, Reposts: 3, Replies: 3)\n- @cremescene_: How many more times we gon see this picture though 🤧🤦🏽‍♂️ (Likes: 72, Reposts: 1, Replies: 2)\n- @drew_ponder: https://t.co/LIZ73vWIJc (Likes: 61, Reposts: 3, Replies: 1)\n- @Moshe_Meso: What is John Cena doing there (Likes: 53, Reposts: 0, Replies: 1)\n- @gem_insider: another distraction for the public (Likes: 36, Reposts: 1, Replies: 1)\n- @soupremejelly: Chain breaker (Likes: 35, Reposts: 4, Replies: 2)\n- @Teawithella: Anything to avoid the Epstein files (Likes: 26, Reposts: 0, Replies: 0)",
+    "warnings": []
+  }
+}

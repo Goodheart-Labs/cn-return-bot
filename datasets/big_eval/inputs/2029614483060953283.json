@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2029614483060953283",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:49.294Z",
+  "post": {
+    "id": "2029614483060953283",
+    "author_id": "1190380557768810497",
+    "created_at": "2026-03-05T17:46:15.000Z",
+    "text": "For the first time in history, the value of the British Pound Sterling is worth less than two United States Dollars. \n\nAt 2:39 PM London time, the value of the Pound falls to £1.975/$1 USD. https://t.co/QKTDoaUs8w",
+    "media": [
+      {
+        "media_key": "3_2029614479705513984",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCqjna3WIAAHKtD.jpg",
+        "height": 1024,
+        "width": 1024
+      },
+      {
+        "media_key": "3_2029614479621693440",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCqjnajXIAAtWjZ.jpg",
+        "height": 400,
+        "width": 800
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 61,
+      "reply_count": 49,
+      "like_count": 2846,
+      "quote_count": 15,
+      "bookmark_count": 173,
+      "impression_count": 352361
+    },
+    "author_followers": 79145,
+    "author_name": "1976 Live",
+    "author_description": "Live-posting as a reporter embedded in history. Curated by @MannyMarotta. Companion to @100YearsAgoLive, @25YearsAgoLive, and @250YearsAgoLive. DM for business.",
+    "author_tweet_count": 18849
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCqjna3WIAAHKtD.jpg",
+          "description": {
+            "description": "The obverse side of a British decimal coin from 1976, featuring the second portrait of Queen Elizabeth II by Arnold Machin. The profile shows the Queen facing right, wearing the Girls of Great Britain and Ireland Tiara. The bronze-colored coin has a beaded border.",
+            "ocrText": "ELIZABETH II D·G·REG·F·D·1976"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCqjnajXIAAtWjZ.jpg",
+          "description": {
+            "description": "The image shows both sides of a 1976 United States one-cent coin (penny). The left side is the obverse, featuring the profile of Abraham Lincoln facing right, while the right side is the reverse, showing the Lincoln Memorial.",
+            "ocrText": "IN GOD WE TRUST LIBERTY 1976 UNITED STATES OF AMERICA E PLURIBUS UNUM ONE CENT"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @ancientBygone23: Wtf are you on about? £1 has been worth less than $2 for decades. (134 likes)\n- @MidKnightSquire: The currency notation in the last sentence is incorrect. (58 likes)\n- @itsnotaball: I think your cryptic seemingly impossible to decipher account name may just be confusing a few people. \n\nAlso hope this summer is as good as last year, fingers crossed. (40 likes)\n- @Ga1sby: GBP/USD is 1.33 (23 likes)\n- @MajorGerbil: The account is called 1976 so I presume it means that year. The current exchange is $1.33 to £1 or $1 to 74p. (13 likes)\n- @bird587: What? It’s been £1.35 to $1.00 for the last year at this point (7 likes)\n- @jooeh_m: People are completely missing the point of this account, it is talking about 50 YEARS AGO (hence the @ 50yearsagolive) and this information was correct 50 years ago (4 likes)\n- @mattmmmbop: I'm enjoying how stupid people are in the comments. (2 likes)\n- @AlexSpeirs12: Uk in shambles rn. (1 like)\n- @SusanAntho3071: The amount of stupid in this post is shocking. Is this a US-based account? (1 like)",
+    "warnings": []
+  }
+}

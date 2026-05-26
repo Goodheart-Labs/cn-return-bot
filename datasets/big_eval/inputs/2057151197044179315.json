@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2057151197044179315",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:14.173Z",
+  "post": {
+    "id": "2057151197044179315",
+    "author_id": "2032877151561596928",
+    "created_at": "2026-05-20T17:27:20.000Z",
+    "text": "Iran STRIKES an oil ship attempting to leave the Strait of Hormuz. \n\nThe U.S. Navy guaranteed its safety. \n\nIran is in control. https://t.co/3qo4MOZTCS",
+    "media": [
+      {
+        "media_key": "13_2057151142979661824",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2057151142979661824/img/tfBNmejOVt_Uu1tU.jpg",
+        "height": 360,
+        "width": 640,
+        "duration_ms": 20733,
+        "view_count": 102415,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057151142979661824/vid/avc1/480x270/tKmXiWOllP2NYvJy.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057151142979661824/vid/avc1/640x360/Lxwb5pqiZz1Swdqx.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2057151142979661824/pl/0A9qWdMsT-jJjboP.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1351,
+      "reply_count": 216,
+      "like_count": 8360,
+      "quote_count": 18,
+      "bookmark_count": 191,
+      "impression_count": 198976
+    },
+    "author_followers": 149065,
+    "author_name": "Ethan Levins 🇺🇸",
+    "author_description": "Independent Journalist | American Christian | Truth Seeker | Find me everywhere below ⬇️ | News alerts https://t.co/qtUoQ8LCmg",
+    "author_tweet_count": 2124
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2057151142979661824/vid/avc1/640x360/Lxwb5pqiZz1Swdqx.mp4",
+          "description": {
+            "description": "A crosshair with white lines centers onto a large cargo ship at sea with gray water and gray, foggy skies. The camera appears to be on a drone or plane. As the camera gets closer, it focuses onto a section of the ship. Gray smog or smoke appears to be coming from certain parts of the ship. Suddenly, a bright white explosion occurs and takes over almost the entire frame. In every frame, the TASNIM NEWS logo and another Persian phrase are visible at the bottom of the frame.",
+            "ocrText": "TASNIM NEWS .com آؤنبه نفاكش مؤؤلف TASNIM"
+          },
+          "transcription": "Продолжение следует..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@asal_zahedi**: Your bill (Likes=53, Reposts=3, Replies=9, Views=2434)\n- **@Hoppe88994897**: You are so full of shit. Go fuck yourself along with this fake shit. (Likes=15, Reposts=2, Replies=1, Views=1294)\n- **@CoriBritt1**: This idiot Ti y Tim is not a source of news or realistic punditry. He’s a full on propagandist. (Likes=8, Reposts=0, Replies=0, Views=1115)\n- **@CX7373187313397**: U.S. says one thing and does another... breaking promises is part of American culture. (Likes=7, Reposts=1, Replies=1, Views=724)\n- **@FishermanWords**: Moron! (Likes=7, Reposts=0, Replies=0, Views=317)\n- **@CoriBritt1**: Yet they sti can’t ship or receive to their own ports. Dominant shit. (Likes=6, Reposts=0, Replies=0, Views=1163)\n- **@BobPartridge16**: What's left of the tyrannical Islamist occupation blighting Iran is in disarray. (Likes=5, Reposts=0, Replies=0, Views=1415)\n- **@JCB72X**: Iran is control…… of you😂 (Likes=5, Reposts=0, Replies=1, Views=330)\n- **@Physicist_IR07**: They think Iran is joking or what? (Likes=5, Reposts=0, Replies=0, Views=285)\n- **@autobypayment**: Ethan you are an idiot. Let's not call it \"Iran\", It's the \"IRGC\". The IRGC murders their people. I would hope your idiot dumb ass would use \"IRGC\" instead of \"Iran\" on your future shill posts. If you do, I will promote you to \"Stupid\" instead of and \"Idiot\". (Likes=4, Reposts=0, Replies=4, Views=835)",
+    "warnings": []
+  }
+}

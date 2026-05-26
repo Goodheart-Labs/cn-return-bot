@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2045534887881716156",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:08.562Z",
+  "post": {
+    "id": "2045534887881716156",
+    "author_id": "1021055897148231680",
+    "created_at": "2026-04-18T16:08:16.000Z",
+    "text": "🚨 𝐏𝐌 𝐌𝐨𝐝𝐢 𝐀𝐝𝐝𝐬 “𝐑𝐚𝐝𝐢𝐜𝐚𝐥 𝐅𝐞𝐦𝐢𝐧𝐢𝐬𝐭 💅🏻” 𝐭𝐨 𝐇𝐢𝐬 𝐗 𝐁𝐢𝐨 https://t.co/NEdyMnDrRG",
+    "media": [
+      {
+        "media_key": "3_2045534879186829313",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGMzIomaQAEIWj0.jpg",
+        "height": 1350,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 340,
+      "reply_count": 73,
+      "like_count": 3474,
+      "quote_count": 38,
+      "bookmark_count": 109,
+      "impression_count": 65854
+    },
+    "author_followers": 220694,
+    "author_name": "The Fauxy",
+    "author_description": "India’s most credible and creative news source. Satire Business@thefauxy.com",
+    "author_tweet_count": 3798
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGMzIomaQAEIWj0.jpg",
+          "description": {
+            "description": "A satirical graphic showing a screenshot of Narendra Modi's X profile with the phrase 'Radical Feminist' added to his bio. The image includes a banner for 'The Fauxy Satire' and a 'BREAKING NEWS' headline at the bottom claiming Modi added the title to his bio. A gold-ringed magnifying glass effect highlights the added text in the bio section.",
+            "ocrText": "THE FAUXI SATIRE. Narendra Modi. 50.7K posts. Narendra Modi. @narendramodi Follows you. Prime Minister of India | Radical Feminist. India narendramodi.in Born September 17. Joined January 2009. 2,679 Following 106.6M Followers. Follow. Radical Feminist. BREAKING NEWS. PM Modi Adds \"Radical Feminist\" to His X Bio"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Author:** Lotus Awakened (@SaffronOnX)  \n  **Full text:** Modiji follows Fauxy?😱  \n  **Engagement:** 61 likes, 0 reposts, 0 quotes, 0 replies, 2964 views\n\n- **Author:** NEO 👾 (@Archit245641)  \n  **Full text:** Such a diva he is  \n  **Engagement:** 44 likes, 0 reposts, 0 quotes, 0 replies, 3240 views\n\n- **Author:** cat (@AddhyanKan44899)  \n  **Full text:** Almost got me  \n  **Engagement:** 22 likes, 0 reposts, 0 quotes, 0 replies, 3284 views\n\n- **Author:** Sachin Chaturvedi (@RT_4_SACHIN)  \n  **Full text:** (image only)  \n  **Engagement:** 12 likes, 0 reposts, 0 quotes, 0 replies, 3651 views\n\n- **Author:** Mubeena (@insanelytedious)  \n  **Full text:** Radical misandrist! He likes the drama  \n  **Engagement:** 7 likes, 0 reposts, 0 quotes, 0 replies, 1041 views\n\n- **Author:** Unseculargod (@Unseculargod)  \n  **Full text:** He could wear bra in support of women for all I care, as long as he actually is going to do anything about anything. Only thing he does is spread hate, make rich richer and poor poorer.  \n  **Engagement:** 6 likes, 0 reposts, 0 quotes, 0 replies, 2197 views\n\n- **Author:** Antidisestablishmentarian (@Dissent888881)  \n  **Full text:** Yasoda Ben.... Who brutally kicked Narendra Modi out on the first night when he told her Hedgewar was his first wife.  \n  **Engagement:** 6 likes, 0 reposts, 0 quotes, 0 replies, 1811 views\n\n- **Author:** RaftaKafta (@RaftaKafta06)  \n  **Full text:** Hahaha, his wife, the % of women in power in his party, etc. all tell he is a radical sexist.  \n  **Engagement:** 6 likes, 0 reposts, 0 quotes, 0 replies, 1482 views\n\n- **Author:** Dr. Pusty Shah (@PustyShah)  \n  **Full text:** With nail paint! Making us believe there what Rahul Gandhi said about Epstien was somewhere true!🤷‍♀️  \n  **Engagement:** 6 likes, 0 reposts, 0 quotes, 0 replies, 2547 views\n\n- **Author:** SRKsbot (@SRKsbot)  \n  **Full text:** Radical was already there, just added feminist  \n  **Engagement:** 4 likes, 0 reposts, 0 quotes, 0 replies, 330 views",
+    "warnings": []
+  }
+}

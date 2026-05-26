@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2013559515854078122",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:39.981Z",
+  "post": {
+    "id": "2013559515854078122",
+    "author_id": "1430605174674964480",
+    "created_at": "2026-01-20T10:29:33.000Z",
+    "text": "MAN TRIES TO SHOOT PASTOR IN PENNSYLVANIA BUT THE GUN JAMS!\n\nMan breaks into a church in North Braddock, Pennsylvania and tries to kiII the pastor but the gun jams. https://t.co/pf1H9fHwce",
+    "media": [
+      {
+        "media_key": "7_2013559483964796928",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2013559483964796928/pu/img/M82uN1fENZfL9BDa.jpg",
+        "height": 720,
+        "width": 964,
+        "duration_ms": 32647,
+        "view_count": 3890541,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2013559483964796928/pu/vid/avc1/360x270/P2x_sk0RytleKgCL.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2013559483964796928/pu/vid/avc1/482x360/WhI4BPCZIB7FoCrn.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2013559483964796928/pu/vid/avc1/964x720/pDnnB-VLLq7kgLCq.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2013559483964796928/pu/pl/gntwVnbqJlUcmcPY.m3u8?v=142"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8859,
+      "reply_count": 2074,
+      "like_count": 76888,
+      "quote_count": 1090,
+      "bookmark_count": 8700,
+      "impression_count": 10128873
+    },
+    "author_followers": 379092,
+    "author_name": "JOSH DUNLAP",
+    "author_description": "🇺🇲 MAYOR OF MAGADONIA 🇺🇲 ✝️ CHRISTIAN ✝️ MAGA\n📣 📣BREAKING NEWS FIRST HERE 📣📣",
+    "author_tweet_count": 328243
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2013559483964796928/pu/vid/avc1/964x720/pDnnB-VLLq7kgLCq.mp4",
+          "description": {
+            "description": "A man in a green shirt is preaching behind a pulpit in a church when another man in black clothing climbs onto the stage. The preacher and several other men quickly intervene and wrestle the intruder to the ground on the stage floor while the preacher continues to speak into a microphone.",
+            "ocrText": ""
+          },
+          "transcription": "We're going in a whole different kingdom than God. A God I chose. Jesus! Jesus! Oh! Jesus! Jesus! Jesus! Jesus! Jesus! Jesus! Jesus! Jesus! Jesus! Jesus! Jesus! We are, we are, we are clear."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Ainz (@ainzrules): god saved him (11,010 likes, 66 replies)\n- CryptoHotep.eth 🛡️ (@CryptoHotep): Idk why but this still looks fake (3,901 likes, 42 replies)\n- Zain (@zainmeta): [GIF reaction] (3,844 likes, 3 replies)\n- OG Crypto Boss💥 (@GibsoonCorp): If you didn't believe GOD existed, you have your answer (1,567 likes, 9 replies)\n- Farm Boy (@Reply_Guy11): Why the perfectly positioned camera? (1,473 likes, 135 replies)\n- Santa Decides (@SantaDecides): Proof of God. (799 likes)\n- Logic Police (@logicpolice45): “Jammed ya” [image] (557 likes)\n- Alaskagirl (@Alaskacryptogi1): This happened a couple years ago. (498 likes)\n- CoinSage2k (@CoinSage_2k): looks like a movie scene not real life gun jams, crowd silent, camera perfectly framed (421 likes)\n- CrypticSuit (@CrypticSuit): crazy any backstory? [image] (328 likes)",
+    "warnings": []
+  }
+}

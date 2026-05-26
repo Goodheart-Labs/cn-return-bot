@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2042705018521088317",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:03.430Z",
+  "post": {
+    "id": "2042705018521088317",
+    "author_id": "2031786512564830210",
+    "created_at": "2026-04-10T20:43:22.000Z",
+    "text": "Pedro Sánchez announced that Spain has officially recognized the State of Palestine, with its capital in East Jerusalem.\n\n https://t.co/snJ2bpqCO4",
+    "media": [
+      {
+        "media_key": "7_2042592494525853696",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2042592494525853696/pu/img/19l9MLgtT3wqSpHQ.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 28374,
+        "view_count": 85764,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2042592494525853696/pu/vid/avc1/480x270/p6HiQOav8rioqq7b.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2042592494525853696/pu/vid/avc1/640x360/rCPuvP93DuJ8wvI7.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2042592494525853696/pu/vid/avc1/1280x720/bpNv-ys12r7nF23d.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2042592494525853696/pu/pl/7W3xhOK2Nejontn4.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1793,
+      "reply_count": 152,
+      "like_count": 11618,
+      "quote_count": 83,
+      "bookmark_count": 298,
+      "impression_count": 173715
+    },
+    "author_followers": 148602,
+    "author_name": "GBX",
+    "author_description": "GBX | A curated space for diverse content and selected visual insights that offer deeper perspectives on current events and ideas.\n All our links are here.. ↓↓",
+    "author_tweet_count": 24985
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2042592494525853696/pu/vid/avc1/1280x720/bpNv-ys12r7nF23d.mp4",
+          "description": {
+            "description": "A man in a navy blue suit and tie, Pedro Sánchez, is seen giving a speech from a podium in front of the Spanish and European Union flags. He is standing at a lectern with the Spanish coat of arms in an outdoor setting with brick walls and green bushes visible. A red logo with a 'T' is present in the top right corner throughout.",
+            "ocrText": "Today T"
+          },
+          "transcription": "Good morning. I would like to inform you that at the meeting of the Council of Ministers that will be held today, the government of Spain will approve the official recognition of Palestine as a state. With this decision, Spain joins the more than 140 countries that already recognize Palestine. This is a historic decision that has a single goal, to contribute to achieving peace between Israelis and Palestinians."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@sodojoao**  \n(No text content - image)  \nLikes: 33 | Reposts: 0 | Replies: 0 | Views: 1127\n\n**@Like47**  \nI like him. I don't know why. I just do #CrushZionism  \nLikes: 22 | Reposts: 0 | Replies: 0 | Views: 1464\n\n**@j0hn__b0y**  \nIf Sánchez carves up Israel by recognizing Palestine, the US and Israel and should recognize the independence of Catalonia, the Basque Country & Galicia. To deny them the same statehood he advocates for others makes him the world’s greatest spineless hypocrite. What goes around  \nLikes: 14 | Reposts: 0 | Replies: 0 | Views: 2045\n\n**@ZimaBlue000**  \nhttps://t.co/VTteoAZ98P  \nLikes: 14 | Reposts: 0 | Replies: 0 | Views: 2953\n\n**@magb16610**  \nAs a Filipino, I never thought I would love Spain so much  \nLikes: 11 | Reposts: 0 | Replies: 0 | Views: 1149\n\n**@My2CentsMusic**  \nHere is a new song - 'Pedro - Hijo de Puta' 🤣🤣🤣  \nLikes: 6 | Reposts: 0 | Replies: 0 | Views: 1470\n\n**@Jan6Fun**  \nAwesome. the more the Spanish people know about you and your communist politics the better . Clarity is the best disinfectant  \nLikes: 6 | Reposts: 0 | Replies: 0 | Views: 2134\n\n**@Mad_as_Hel**  \nSpain just gave their 2 weeks notice !  \nLikes: 6 | Reposts: 0 | Replies: 0 | Views: 1927\n\n**@TSoulSA_**  \nThank you Pedro... ❤️🔥  \nLikes: 5 | Reposts: 0 | Replies: 0 | Views: 382\n\n**@soundofwars**  \n(No text content - image)  \nLikes: 5 | Reposts: 0 | Replies: 0 | Views: 334",
+    "warnings": []
+  }
+}

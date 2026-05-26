@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1997637214369648672",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:59.329Z",
+  "post": {
+    "id": "1997637214369648672",
+    "author_id": "177101260",
+    "created_at": "2025-12-07T12:00:00.000Z",
+    "text": "Fun fact.\n\nEvery mobile phone has an average of 36 mg of gold and to extract this small portion, through traditional mining, 3 kg of earth have to be removed.\n\nThis is the process used for extracting it.\n\n[📹 humblesideofficials]\nhttps://t.co/XqSuSOzdez",
+    "media": [
+      {
+        "media_key": "7_1864853431552204800",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1864853431552204800/pu/img/txkFTP5x_tgCXwpm.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 62717,
+        "view_count": 6801328,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1864853431552204800/pu/vid/avc1/320x568/I3CUtP__RjKiOhjM.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1864853431552204800/pu/vid/avc1/480x852/m-ESUVHGH87ZZjuQ.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1864853431552204800/pu/vid/avc1/720x1280/PddPjFA7x30hS2S9.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1864853431552204800/pu/pl/g3f7HhiC8CBKxzsu.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 380,
+      "reply_count": 85,
+      "like_count": 2365,
+      "quote_count": 32,
+      "bookmark_count": 792,
+      "impression_count": 1008962
+    },
+    "author_followers": 4360799,
+    "author_name": "Massimo",
+    "author_description": "Engineer. Selecting and curating pictures and videos trying to awaken your sense of wonder since 2014. Science, tech, art, weather, space, the unusual around us",
+    "author_tweet_count": 469775
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1864853431552204800/pu/vid/avc1/720x1280/PddPjFA7x30hS2S9.mp4?tag=12",
+          "description": {
+            "description": "A close-up view of dozens of old cell phone shells, many of which have their internal components exposed. In the upper-left corner, there is a yellow logo that says 'humble side.'",
+            "ocrText": "humble side CE CE 8820"
+          },
+          "transcription": "Sampai jumpa di video selanjutnya. Kepala Kepala Terima kasih."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- 🤴🏾 CoJo (@KingCodjoe): I don’t know man but that process looks like it has cancer written all over it (99 likes)\n- Jonathan (@HomeCinemaAV): Looks like an easy process 🙄 (65 likes)\n- Robbi Jade Lew (@RobbiJadeLew): Meh… not worth it (18 likes)\n- Science Guy (@pradyumn93): Recycling old phones for gold is far more efficient than mining ore. One metric ton of discarded smartphones contains up to eighty times more gold than a metric ton of gold ore taken from the earth. This means urban e-waste has become one of the richest gold deposits on the planet. Modern recovery labs call this “urban mining,” and in some countries it now produces more precious metals than traditional mines, all while reducing environmental damage and chemical waste. (16 likes)\n- Dcntrlyzr (@dcntrlyzr): Oh!! When you say it like that: the harm to the environment for each mobile is quite a lot Also, is it worth the effort and money that goes into extraction?? Like a get-rich-quick scheme OR a viable long term business?? 🤔🤔 (14 likes)\n- Doolly Noted ✏️ (@doollynoted): Note: Every phone has ~36 mg of gold, worth about $3–$4 at today’s prices. To extract it profitably, you need to process thousands of phones in a proper e-waste facility with acid leaching or cyanide. Doing it from one or a few phones at home costs way more than the gold is worth and is dangerous. So basically, it’s never worth it for individuals. (12 likes)\n- DatisderWillie part2 (@Exarsfriend): This can't be economically viable (10 likes)\n- Mr.Ineffable (@MisterIneffable): E-Waste and gold. 👇🏼 (9 likes)\n- Kimi Boy (@KimiBoyNFT): It's hard to extract it without a proper laboratory. I mean it's possible, I did it years ago but it's not clean. (6 likes)\n- jinofcoolnes (@Rahmeljackson): Now they will be just selling the ram (5 likes)",
+    "warnings": []
+  }
+}

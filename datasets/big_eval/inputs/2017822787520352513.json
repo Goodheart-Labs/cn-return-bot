@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2017822787520352513",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:30.553Z",
+  "post": {
+    "id": "2017822787520352513",
+    "author_id": "1059539826586894337",
+    "created_at": "2026-02-01T04:50:16.000Z",
+    "text": "Pyramids in Egypt, photo taken during the construction in 2549 BC.\n\nThis is proof it wasn't the aliens https://t.co/rel1y0IZU8",
+    "media": [
+      {
+        "media_key": "3_2017822784894750720",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HAC_IclXUAAold1.jpg",
+        "height": 924,
+        "width": 526
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1152,
+      "reply_count": 5015,
+      "like_count": 15811,
+      "quote_count": 859,
+      "bookmark_count": 1985,
+      "impression_count": 4416678
+    },
+    "author_followers": 810919,
+    "author_name": "Zoom Afrika",
+    "author_description": "24/7 on Beautiful Animals, Places, People, Tribes, Life Styles, News and Fact Historical stories in Africa. DM for Promotions.",
+    "author_tweet_count": 40790
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HAC_IclXUAAold1.jpg",
+          "description": {
+            "description": "A grainy, sepia-toned photograph showing a large group of men in simple loincloths or wraps appearing to carry massive prehistoric-style stone blocks on their shoulders. The image is a composite or staged artistic representation likely meant to illustrate ancient construction methods, as the scale of the blocks relative to the men is physically impossible for human strength alone. Several men stand in the foreground watching or crouching on a rocky, uneven ground.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@NelMarcel**: (image reply) Likes=2758, Reposts=39, Replies=26\n- **@dat_WomanSon**: 👇 Likes=1805, Reposts=26, Replies=20\n- **@dazedavinci**: you got the jesus selfies also? Likes=1337, Reposts=9, Replies=14\n- **@BlackPerson**: (image reply) Likes=931, Reposts=0, Replies=0\n- **@CelebrityBoard1**: (image reply) Likes=569, Reposts=0, Replies=0\n- **@SteveCote1974**: (image reply) Likes=549, Reposts=0, Replies=0\n- **@SatoshiNak05476**: (image reply) Likes=516, Reposts=0, Replies=0\n- **@chiduvijay95**: (image reply) Likes=442, Reposts=0, Replies=0\n- **@fiko_amoako**: Yeah this is the video which is going viral Likes=353, Reposts=25, Replies=111\n- **@PoliticalBTC**: (image reply) Likes=198, Reposts=0, Replies=0",
+    "warnings": []
+  }
+}

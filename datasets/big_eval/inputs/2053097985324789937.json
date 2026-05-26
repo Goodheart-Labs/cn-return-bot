@@ -1,0 +1,136 @@
+{
+  "tweet_id": "2053097985324789937",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:05.191Z",
+  "post": {
+    "id": "2053097985324789937",
+    "author_id": "1274937434325704705",
+    "created_at": "2026-05-09T13:01:19.000Z",
+    "text": "Meanwhile Governer who cancelled his flight and came back for Anna https://t.co/7PgmKHCxOu https://t.co/7vt92LSHMo",
+    "media": [
+      {
+        "media_key": "7_2053097942631002112",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2053097942631002112/pu/img/w0ALLMGIWDR1XJ8y.jpg",
+        "height": 574,
+        "width": 1280,
+        "duration_ms": 24554,
+        "view_count": 30206,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2053097942631002112/pu/vid/avc1/602x270/ELMDbR22b1t6gqVb.mp4?tag=12"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2053097942631002112/pu/vid/avc1/802x360/hleATM5OI0subg3k.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2053097942631002112/pu/vid/avc1/1280x574/UEyFHDl96HRyfv9j.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2053097942631002112/pu/pl/PuzcfAVTEx-b_hi8.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2053085804273229836"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2053085804273229836",
+      "author_id": "1885316084070510592",
+      "created_at": "2026-05-09T12:12:54.000Z",
+      "text": "Governor betrayed anna https://t.co/Mn02qa0iux",
+      "media": [
+        {
+          "media_key": "7_2053085758513438720",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2053085758513438720/pu/img/iCzx_HZrJ3VMtflC.jpg",
+          "height": 1080,
+          "width": 1920,
+          "duration_ms": 7314,
+          "view_count": 14694,
+          "variants": [
+            {
+              "bit_rate": 256000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/2053085758513438720/pu/vid/avc1/480x270/5J6bZsMSESQw0hc1.mp4"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/2053085758513438720/pu/vid/avc1/1280x720/WK_HzUiOkfvCF3Sj.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/ext_tw_video/2053085758513438720/pu/pl/tyezL3acRhPCkMxY.m3u8"
+            },
+            {
+              "bit_rate": 10368000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/2053085758513438720/pu/vid/avc1/1920x1080/OHjXzp48DovJsq-z.mp4"
+            },
+            {
+              "bit_rate": 832000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/2053085758513438720/pu/vid/avc1/640x360/Nf3HDvVrJL26hImK.mp4"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 314,
+      "reply_count": 11,
+      "like_count": 3106,
+      "quote_count": 22,
+      "bookmark_count": 234,
+      "impression_count": 89206
+    },
+    "author_followers": 2265,
+    "author_name": "Master_Shelby",
+    "author_description": "Vijay Stan • Hollywood 🤍",
+    "author_tweet_count": 139066
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2053097942631002112/pu/vid/avc1/1280x574/UEyFHDl96HRyfv9j.mp4?tag=12",
+          "description": {
+            "description": "A man in an orange sports uniform is practicing at a stadium.",
+            "ocrText": "YOUR FASHION THAT DOESN'T TEAR"
+          },
+          "transcription": "இப்ப சொல்லுங்கடா அனுப்புந்துக்குப்பிறால் லவு இவு அது இதுன்னு மச்சா உண்மையிலேயே வந்துட்டாடா எங்கடா"
+        }
+      ],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2053085758513438720/pu/vid/avc1/1920x1080/OHjXzp48DovJsq-z.mp4",
+          "description": {
+            "description": "A close-up, back-view shot of a person looking at a small, glowing, translucent object that appears to be shaped like a miniature spaceship or craft, emitting a soft blue and white light against a dark background.",
+            "ocrText": ""
+          },
+          "transcription": "Субтитры сделал DimaTorzok"
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@_faaaz: Adhukulla adutha twist ah mudila yebba😭 (58 likes, 0 reposts)\n@thamu_twtz: Watha twist ku mela twist 😲🫨😵‍💫 (7 likes, 0 reposts)\n@fire_rick88: 😭😂 (7 likes, 0 reposts)\n@nawtme: is it real lmao?? (1 like, 0 reposts)\n@JD_CUTS: Cinema la kuda ivolo twist ila (1 like, 0 reposts)\n@Technically_AS: 😂when actors get elected yk meme material gonna be lit af 💀 (1 like, 0 reposts)\n@prasid_gowda:  (0 likes, 0 reposts)\n@mundhirikottaii: Absolute cinema (0 likes, 0 reposts)\n@reddy39669321: 😂😂 (0 likes, 0 reposts)\n@vjfandom: Final satisfaction Ghilli mari 🔥🔥🔥 (0 likes, 0 reposts)",
+    "warnings": []
+  }
+}

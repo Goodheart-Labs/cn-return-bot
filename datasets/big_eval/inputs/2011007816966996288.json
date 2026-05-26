@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2011007816966996288",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:10.294Z",
+  "post": {
+    "id": "2011007816966996288",
+    "author_id": "1319287761048723458",
+    "created_at": "2026-01-13T09:30:00.000Z",
+    "text": "🚨🇮🇷 IRAN PROTESTERS: “THEY’RE MASSACRING US, BUT WE’RE NOT GOING ANYWHERE”\n\nFootage coming out of Iran shows streets packed with protesters last night: chanting, marching, risking everything.\n\nThis is despite over 100 hours of internet blackout, reports of thousands killed, and https://t.co/eSpcT8YV0k",
+    "media": [
+      {
+        "media_key": "13_2011003044906090496",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2011003044906090496/img/pO7N2C7h7szc-w8w.jpg",
+        "height": 852,
+        "width": 480,
+        "duration_ms": 16462,
+        "view_count": 44632,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2011003044906090496/vid/avc1/320x568/5JqylQCjD-_UbdGp.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2011003044906090496/vid/avc1/480x852/93B_4GMoa2ZRUTJN.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2011003044906090496/pl/L9oUQiOIdbCXfybX.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1401,
+      "reply_count": 282,
+      "like_count": 4131,
+      "quote_count": 42,
+      "bookmark_count": 74,
+      "impression_count": 103468
+    },
+    "author_followers": 3526316,
+    "author_name": "Mario Nawfal",
+    "author_description": "Largest Show on X | 24x7 News | Investor 700+ Startups | Founder @ibcgroupio , https://t.co/sw7OQ5KgAW",
+    "author_tweet_count": 233461
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2011003044906090496/vid/avc1/480x852/93B_4GMoa2ZRUTJN.mp4",
+          "description": {
+            "description": "A dense crowd of people is filmed at night on what appears to be a street or plaza. Many individuals are wearing masks, and the atmosphere suggests a protest or public gathering. Persian text is overlaid on the lower portion of the images.",
+            "ocrText": "@ALEXANDER.SOBHANI \n\n امشب ۲۲ دی \n عاشق تکتکتونم "
+          },
+          "transcription": "موسيقى موسيقى"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@Partisangirl**: No one is being massacred (Likes: 1283)\n- **@Kathleen_Tyson_**: Footage from 9 January coming out of Tel Aviv. (Likes: 115)\n- **@SatanLiveInUSA**: [image] (Likes: 10)\n- **@skjubaaa**: Didn't you feel even a little ashamed of spreading fake news while sitting in Europe and USA and Israhell? (Likes: 10)\n- **@Valex6891**: @MarioNawfal I still remember this from few days ago so you are full of crap (Likes: 9) [2 images]\n- **@JoeyFAFO_JK**: MIGA (Likes: 8) [image]\n- **@moshegelberg**: The courage of the Iranian people is undeniable. Freedom is not given by tyrants, it is claimed by those who refuse to be broken, and the world is watching. (Likes: 8)\n- **@TheGreatOffens**: Freedom to the people of Iran! (Likes: 7) [video]\n- **@SatanLiveInUSA**: [image] (Likes: 6)\n- **@jokerggby46388**: Youve been lying nonstop for days. Sign off and touch grass (Likes: 6)\n- **@NelMarcel**: Go, Iranian people. 💪 Your courage speaks louder than bullets. The world is watching and your courage humbles every tyrant! (Likes: 6) [image]",
+    "warnings": []
+  }
+}

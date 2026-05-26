@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2037974573631594599",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:01.006Z",
+  "post": {
+    "id": "2037974573631594599",
+    "author_id": "1449140157903482882",
+    "created_at": "2026-03-28T19:26:16.000Z",
+    "text": "JUST IN: 🇷🇺🇮🇷 Russia took multiple satellite images of US Prince Sultan Air Base in Saudi Arabia days before Iran attacked, NBC reports. https://t.co/Hx2iTHKrxB",
+    "media": [
+      {
+        "media_key": "3_2037974570116722688",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEhXEukWMAAnpUR.jpg",
+        "height": 798,
+        "width": 889
+      },
+      {
+        "media_key": "3_2037974570112581632",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEhXEujXAAA6kvs.jpg",
+        "height": 835,
+        "width": 1250
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2069,
+      "reply_count": 395,
+      "like_count": 18234,
+      "quote_count": 77,
+      "bookmark_count": 517,
+      "impression_count": 599791
+    },
+    "author_followers": 2069737,
+    "author_name": "BRICS News",
+    "author_description": "We are an independent media company bringing you unparalleled coverage of all-things geopolitics & BRICS News in real-time. Not an official government account.",
+    "author_tweet_count": 12610
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEhXEukWMAAnpUR.jpg",
+          "description": {
+            "description": "A close-up portrait of Vladimir Putin wearing a dark blue suit, a light blue shirt, and a dark patterned tie. He is looking towards the camera with a slight smile.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEhXEujXAAA6kvs.jpg",
+          "description": {
+            "description": "A digital illustration of a cylindrical satellite with gold and silver metallic paneling and two blue rectangular solar arrays. The satellite is positioned in low Earth orbit, reflecting light against a backdrop of deep space filled with stars and a distant galaxy. Below the satellite, the curvature of the Earth is visible with a blue atmosphere and white cloud formations.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **ALISHAIR🐅 (@mraza551)**: \"Thats how russia and china helping IRAN and grabbed USA by Neck check out video\"  \n  Engagement: 317 likes, 19190 views\n\n- **Chebureki Man (@CheburekiMan)**: \"And? That's what observation satellites do.\"  \n  Engagement: 305 likes, 6614 views\n\n- **Prof Moya (@MoyaProf)**: “The completely unprovoked act of aggression against Iran is without foundation or justification. Russia has long-standing, strong, & trustworthy relations with Iran, & we are committed to supporting the Iranian people through our continued efforts.” - President Vladimir Putin  \n  Engagement: 129 likes, 12377 views\n\n- **Medho📡 (@Mugabemedho)**: \"When Russia takes the pics, Iran takes the shot, and the world hits ‘play’ on chaos.\"  \n  Engagement: 101 likes, 4783 views\n\n- **Rapaz do Charuto | Cigar Guy (@RapazdoCharuto)**: \"Russia and Iran have been allies for a long time. I don’t understand the surprise that Iran is being supported by Russia and China... They’re right to join forces against the hostilities from the US and Israel!!!\"  \n  Engagement: 95 likes, 7956 views\n\n- **Hau (@dzerh13)**: (No text content)  \n  Engagement: 89 likes, 4782 views\n\n- **ASCΞND (@MatrixAscender)**: \"My president 🇷🇺\"  \n  Engagement: 79 likes, 3436 views\n\n- **Purely African (@TheRealAssasn)**: \"USA did the same for Ukraine.\"  \n  Engagement: 60 likes, 2554 views\n\n- **Mr Self-Made. (@TjkWAkram)**: \"Show us some before and after photos,we want to confirm something\"  \n  Engagement: 53 likes, 3824 views\n\n- **IndianMemePaglu (@Jiwandeep01)**: \"Big beautiful and fancy planes were dusted by Iran : TRUMP🤣\"  \n  Engagement: 30 likes, 1710 views",
+    "warnings": []
+  }
+}

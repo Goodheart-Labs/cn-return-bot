@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2008475483353346520",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:16.777Z",
+  "post": {
+    "id": "2008475483353346520",
+    "author_id": "1121807798826930177",
+    "created_at": "2026-01-06T09:47:25.000Z",
+    "text": "🇺🇸🇳🇬 End of December US fired 12 Tomahawk missiles in Nigeria at ISIS.\n\nToday another unexplored warhead was discovered in Nigeria, what brings the total to 4.\n\nOut of 12 tomahawks 4 did not reach their target and did not explode.\n\n25% failure rate by itself? https://t.co/GnP1Sa8JQu",
+    "media": [
+      {
+        "media_key": "3_2008475477455892481",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G9-Jzi3XcAEiXSu.jpg",
+        "height": 1080,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 179,
+      "reply_count": 55,
+      "like_count": 879,
+      "quote_count": 13,
+      "bookmark_count": 56,
+      "impression_count": 32143
+    },
+    "author_followers": 802706,
+    "author_name": "Lord Bebo",
+    "author_description": "Geopolitics | Nuanced | Memes | Crazy footage | DM submissions welcome | Trying to be neutral | Video analysis, translations, heavy edits and creation",
+    "author_tweet_count": 149959
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G9-Jzi3XcAEiXSu.jpg",
+          "description": {
+            "description": "A collage of four different photographs showing large, unexploded aerial bombs or munitions. The top-left image shows a bomb lying on a textured surface, possibly a road or pavement. The top-right image captures a bomb partially buried in red soil, focused on the fuse assembly and metal casing. The bottom-left photo shows a similar munition lying in a brushy, outdoor area. The bottom-right image shows a bomb mostly buried in a trench of red dirt with a person holding a smartphone visible in the foreground.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@AlioxcodedAliox: Yes I’m from Nigeria almost all the missiles didn’t reach target. One of the missile falls 731km from the actual target. All the missles failed to reach target some fell and burn villages where citizen lives. Offa is 731km away from sokoto northern where the USA said they target  \nEngagement: Likes=18, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=927\n\n@BaqiRakshanda: That shows that America's weapons are not up to the standard set by China and Russia.  Also these Tomahawks are a disaster which by the way Zelensky wanted urgently.  \nEngagement: Likes=13, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=772\n\n@Dagda2026: Fake and staged  \nEngagement: Likes=6, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=457\n\n@TwoFiveZer0ne: *points back in history*  \n\nTomahawks kind of became a joke after about the 80's  \nEngagement: Likes=5, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=476\n\n@mitopoetica: 33%  \nEngagement: Likes=3, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=290\n\n@_GeoTakes_: According to @deepseek_ai 33% (4 out of 12) is  \n\"anomalously high and unacceptable for a system like the Tomahawk in ideal conditions\" and \"would indicate a systemic, non-random failure most likely rooted in mission planning, data, or a specific component defect\",  \nEngagement: Likes=2, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=182\n\n@jeffb724: 33% failure rate...so far. Did anyone actually report explosions?  \nEngagement: Likes=2, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=95\n\n@miner28788: silver smelter  \nEngagement: Likes=2, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=250\n\n@stipumalagatibo: They used old stock on a not critical target, nothing unusual.  \nEngagement: Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=330\n\n@Laurin__: This should not happen with modern weapon systems?  \nEngagement: Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=880",
+    "warnings": []
+  }
+}

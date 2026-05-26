@@ -1,0 +1,68 @@
+{
+  "tweet_id": "1999238612496556424",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:24.682Z",
+  "post": {
+    "id": "1999238612496556424",
+    "author_id": "1518862117721411585",
+    "created_at": "2025-12-11T22:03:23.000Z",
+    "text": "🚨LEAK: The White House may begin to integrate eating an entire bacon cheeseburger as part of the newly revamped citizenship test in early 2026. https://t.co/tyQeSWP5Jy",
+    "media": [
+      {
+        "media_key": "3_1999238400021528577",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G764u36agAEBHHR.jpg",
+        "height": 1040,
+        "width": 1040
+      },
+      {
+        "media_key": "3_1999238449879220225",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G764xxpagAE5zWl.jpg",
+        "height": 1000,
+        "width": 1000
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1471,
+      "reply_count": 723,
+      "like_count": 37905,
+      "quote_count": 457,
+      "bookmark_count": 1960,
+      "impression_count": 4605661
+    },
+    "author_followers": 16369,
+    "author_name": "Nasser",
+    "author_description": "Megalomaniac",
+    "author_tweet_count": 16927
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G764u36agAEBHHR.jpg",
+          "description": {
+            "description": "A composite image featuring a large, blue-tinted portrait of Donald Trump in the upper half. The foreground showcases a wooden surface with a small American flag propped up against several U.S. Citizenship and Immigration Services (USCIS) booklets titled 'Preparing for the Naturalization Test'. A stack of blue official cards with the Department of Homeland Security seal is also visible at the bottom.",
+            "ocrText": "Naturalization Test Requirements and es Preparing for the Naturalization Test A Pocket Study Guide (English) U.S. Citizenship and Immigration Services M-1122 (08/ Pr N T Prep Na Te AP (E U.S. Citizenship and Immigration Services"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G764xxpagAE5zWl.jpg",
+          "description": {
+            "description": "A close-up photograph of a bacon cheeseburger on a toasted brioche bun, resting on a wooden cutting board. The burger features a thick beef patty covered in melted yellow cheese and topped with several strips of crispy bacon. In the blurred background, a glass of yellow beer and a container of fried side items are visible.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Asmongold: If they do this, it should only be for guys\n\nWe don't need any more fat chicks here\nLikes=17502\n\n@web3_analyst: I'm already a citizen, but can I apply again?\nLikes=1802\n\n@Hyperjumper7: Sign me up 1000x times, man\nLikes=809\n\n@MythoMartin: Disguising myself as a migrant to take the citizenship test over and over again groyper\nLikes=742\n\n@hispanicnomad: Would be extremely based, ngl\nLikes=647\n\n@wraexxa: Need to include a glass of whole milk and a stool audit after.\nLikes=189\n\n@HermesLux: An obvious requirement.\nLikes=132\n\n@BronzeAgeRouter: A certain Filipino female working at Shake Shack proposed this policy to the Trump administration\nLikes=83\n\n@JM_birdman: Additionally you must use the Koran as a napkin\nLikes=74\n\n@LeahRay44: This feels like a joke 😭\nLikes=57",
+    "warnings": []
+  }
+}

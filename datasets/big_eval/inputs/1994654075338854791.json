@@ -1,0 +1,82 @@
+{
+  "tweet_id": "1994654075338854791",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:22.709Z",
+  "post": {
+    "id": "1994654075338854791",
+    "author_id": "1684178413618176007",
+    "created_at": "2025-11-29T06:26:05.000Z",
+    "text": "Coach gave him the motivation he needed and boy did he use it https://t.co/cCS51ir095",
+    "media": [
+      {
+        "media_key": "7_1994653909307006976",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1994653909307006976/pu/img/hJVle-dHnRibkFID.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 58421,
+        "view_count": 1383559,
+        "variants": [
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1994653909307006976/pu/vid/avc1/1080x1920/9LkXrfugqHLVK1Gr.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1994653909307006976/pu/vid/avc1/720x1280/Ee2y6P2MB-qlzp2C.mp4"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1994653909307006976/pu/vid/avc1/320x568/rlc_B2wyxoePu0Vi.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1994653909307006976/pu/pl/9lmjsnFXxeDy4G17.m3u8?v=997"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1994653909307006976/pu/vid/avc1/480x852/fd4SR8KC37RqweFC.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2852,
+      "reply_count": 64,
+      "like_count": 50450,
+      "quote_count": 43,
+      "bookmark_count": 4872,
+      "impression_count": 1088350
+    },
+    "author_followers": 18787,
+    "author_name": "Thessaloniki 💛 🌹",
+    "author_description": "WNC|RIP Uncle Zob|non omnis moriar|Check my Highlights 🎥🎥",
+    "author_tweet_count": 205487
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1994653909307006976/pu/vid/avc1/1080x1920/9LkXrfugqHLVK1Gr.mp4",
+          "description": {
+            "description": "A series of four images from a video about football. In the first image, a referee in a black and white striped shirt gestures with his arm while surrounding football players move around him. The text 'Ref,' is displayed. In the second image, a man in a green jacket with a headset expresses frustration or passion with the text 'Thank you.' overlaid. In the third image, the same man in the green jacket is yelling and pointing as the text 'you get another 15.' appears. In the fourth image, a close-up of a football player in a helmet with tears in his eyes is shown with the text 'defend him.'",
+            "ocrText": "30 32 Ref, Thank you. you get another 15. defend him"
+          },
+          "transcription": "F*** that piece of crap. Hey, ref! Are you going to do something about this? He just kicked my boy in the head and he touched him! Thank you. I'm sportsmanlike conduct, Wingate! 15 yards! What? Shut up, you'll get another 15. This young man plays for my team, my team, and I will defend him like he's my own son against you or any other redneck son of a bitch! Don't worry, coach. I got your back. Coach ain't here to protect him now, is he? Ready? This team is your family, Michael. Go! Come back, come back, watch for him. He's got a hole! He's got a hole! Go! Go, Mike! Go, Michael! Go, Mike! Sorry, Coach. I stopped when I heard the whistle. Where were you taking him, Mike? To the bus. It was time for him to go home. Attaboy, Michael Orr. Attaboy!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Andres (@Andres72671110): Actually ruined this movie for me to find out it was all a lie (100 likes)\n- Stormcastle (@Storm_Castle): This film is a lie. Micheal Oher was a top 5 high school recruit long before the Tuleys pretended to adopt him. (68 likes)\n- Joseph Swift (@JosephS24222715): Another feel good about “whitey “movie that is plagued with lie upon lie. Starting with this scene. (40 likes)\n- Buster Bluth (@Actually_Buster): This reminds me of Will Ferrell and A train in the boys 😂 (18 likes)\n- Chris Schroeder (@CSchroeder125): That last line, \"where were you taking him?\" Love it. (16 likes)\n- LightChop (@RJ_Brooks): Holding. On the offense, number 74. 10 yards, repeat the down. (3 likes)\n- JC (@jessycoker): That was funny 🤣 he was taking him to the bus 😂😂😂 (2 likes)\n- maria (@MariaLu79070365): Love this movie (2 likes)\n- ADA (@Uc_heyy02): i’m proud of him too (2 likes)\n- what’s my name (@FunnyOnana): Bro was so real this time (1 like)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2018031751541526698",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:28.935Z",
+  "post": {
+    "id": "2018031751541526698",
+    "author_id": "1514502401486639110",
+    "created_at": "2026-02-01T18:40:37.000Z",
+    "text": "Elon trying to get invited to Epstein's island:\n\nVideo by @munchy_monk /TikTok https://t.co/s4VroEFcHT",
+    "media": [
+      {
+        "media_key": "7_2018031717966110720",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2018031717966110720/pu/img/WvVkNdpUrAS1UN1z.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 63438,
+        "view_count": 130144,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2018031717966110720/pu/vid/avc1/320x568/ySLczEXld_C8dYkW.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2018031717966110720/pu/vid/avc1/480x852/WC4Ez30m1DHzppni.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2018031717966110720/pu/vid/avc1/720x1280/5o6d060ruT5AVDiT.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2018031717966110720/pu/pl/y_QMUAoZl2AwhscB.m3u8?v=1cc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1063,
+      "reply_count": 38,
+      "like_count": 10191,
+      "quote_count": 32,
+      "bookmark_count": 1692,
+      "impression_count": 213283
+    },
+    "author_followers": 217298,
+    "author_name": "Vatnik Soup",
+    "author_description": "Fighting online disinformation since 2022.",
+    "author_tweet_count": 23319
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2018031717966110720/pu/vid/avc1/720x1280/5o6d060ruT5AVDiT.mp4",
+          "description": {
+            "description": "A young man wears a black fedora and oversized black blazer. Text overhead reads 'Elon Musk in the Files:' as the man speaks to the camera in various poses.",
+            "ocrText": "Elon Musk in the Files:"
+          },
+          "transcription": "Hello, Jeff. I heard you're having le epic parties on your island, and I can't think of anyone more deserving of an invite than the meme lord himself. Would love to hear back from you. Dear Big Steve, it appears my last message never got through. After a long day of being real-life Iron Man, I too would like to party and let loose with a bunch of young babes. When's the wildest party you're throwing? I'll be there. Merry Christmas, Big Jeffy. I know it's 6 a.m. and my family's in the other room, But I'd really love to visit the island. And trust me, a peaceful island experience is the opposite of what I'm looking for. Hey, Elon. Looks like the UN is meeting this Friday. And let's just say there'll be a lot of interesting people at my place. UN? Oh, sorry. I run two large companies, and I'm about to launch arguably the most advanced rocket of all time. Watching diplomats do nothing seems like a silly use of my time. Are you fucking stupid? I'm talking about children. God, you're so annoying. This is why we never invite you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Platomasochist**: U.N. = underage nubiles @elonmusk \n\nMan can write code but can’t speak in code.\n\nWhat a fuqn buffoon. (157 likes)\n\n**@Dimizarwastaken**: probably got uninvited too with his reply about the UN (38 likes)\n\n**@SamuelThornsen**: bro it's literally you @elonmusk lmaooo\n\nfucking loser! (27 likes)\n\n**@GoatofGoats92**: They were talking to Elon like he was a fed (15 likes)\n\n**@Bratt_world**: So fucking good hahahahhahah (12 likes)\n\n**@0ecufdCJ**: Two of his emails he referred to is fake and doctored to make Elon look bad. They are not from the DOJ website. (10 likes)\n\n**@ends_therapy**: Epstein this \nEpstein that\nJust say you were not invited bro😂😂😂 (10 likes)\n\n**@zilevandamme**: Stop. 😂 (9 likes)\n\n**@MakanoTakeko**: [media attached] (8 likes)\n\n**@LapizNotLapiz**: No he said word for word “are you retarded? .” (8 likes)",
+    "warnings": []
+  }
+}

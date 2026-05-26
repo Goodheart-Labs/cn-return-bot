@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2030779718811763004",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:39.386Z",
+  "post": {
+    "id": "2030779718811763004",
+    "author_id": "1225234593789423616",
+    "created_at": "2026-03-08T22:56:29.000Z",
+    "text": "BREAKING: \n\n🇮🇷🇺🇸 Footage of the Tomahawk missile strike on the primary school for girls in the city of Minab.\n\nThis proves it was the US and that the target was intentional, as the missiles goes into diving mode after finding the designated target\n\n168 girls aged 7-12 and https://t.co/AfDy8Yp5Mw",
+    "media": [
+      {
+        "media_key": "13_2030779574330540032",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2030779574330540032/img/8tu3O1ytKbqP2jru.jpg",
+        "height": 1050,
+        "width": 1920,
+        "duration_ms": 13814,
+        "view_count": 558726,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030779574330540032/vid/avc1/492x270/Ute0MyYJV5J34Bpg.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030779574330540032/vid/avc1/1920x1050/jzhO4nM8EUax_2yz.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030779574330540032/vid/avc1/1316x720/LBuTcm6XhDkGF4gC.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2030779574330540032/pl/aPhcIEW9Jswy9KA-.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030779574330540032/vid/avc1/658x360/wYCt3-QSpzTBP58m.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6206,
+      "reply_count": 640,
+      "like_count": 17695,
+      "quote_count": 349,
+      "bookmark_count": 1870,
+      "impression_count": 887953
+    },
+    "author_followers": 657113,
+    "author_name": "Megatron",
+    "author_description": "Breaking news | Geopolitics | War monitoring\nSupport: https://t.co/z52M4ovE0C | https://t.co/JsTMGFACtV\nTgram: https://t.co/hI2fMt3CAZ",
+    "author_tweet_count": 23375
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2030779574330540032/vid/avc1/1920x1050/jzhO4nM8EUax_2yz.mp4",
+          "description": {
+            "description": "A sequence of frames showing a large column of black smoke and dust rising from an urban area following an explosion. In the foreground, there are buildings, palm trees, and power lines, with some cars parked or moving on a nearby street. People can be seen running or gathering on a grassy area in the lower part of the frame.",
+            "ocrText": ""
+          },
+          "transcription": "Ух! Ух!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @gregalmonte_ The demons (356 likes)\n- @nashrakh (No text content) (229 likes)\n- @Fartun333 Tomahawks don't accidentally 'dive' onto a school. They're programmed. They knew exactly where this was going. 168 dead children, and now they're blaming the victims — as if little girls asked to be slaughtered. Shame on you and the system you're defending.\" (206 likes)\n- @TheElusiveEW That's a Tomahawk? Kinda looks like an Iranian Ya Ali to me: (199 likes)\n- @OmerCryptoGuru They even have grok programmed to the cover up the tomahawk. This platform has completely gone unreliable with false information. (72 likes)\n- @MikeUdell07 LMFAO!!! Thanks for proof! That’s 100% an Iranian Ya Ali!! 🤣🤣🤣🤣🤣🤣 Got’em!! Don’t delete this!! (58 likes)\n- @Real_Internets Tomahawks have red fins. Not grey, The Iranian Ya Ali matches the video perfectly. Who the fuck builds a school surrounded by Revolutionary Guard Buildings. (53 likes)\n- @FoxProMAGA Nope. I don't think so. The girl's school was hit by an errant IRGC missile that went haywire. ⤵️ (41 likes)\n- @farhadesmaeili4 All can see the USA missile hit the school and killed 180 little girls. Trump still lies and accusing Iranian (37 likes)\n- @GlobalAffairs96 Trump is exposed once again. He is caught red handed while lying to the world regarding his attack on school (36 likes)",
+    "warnings": []
+  }
+}

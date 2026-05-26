@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2041328344499888579",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:46.644Z",
+  "post": {
+    "id": "2041328344499888579",
+    "author_id": "44196397",
+    "created_at": "2026-04-07T01:32:58.000Z",
+    "text": "NASA Artemis passing close to the Moon https://t.co/jLvGoW1IR9",
+    "media": [
+      {
+        "media_key": "13_2041309231891283968",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2041309231891283968/img/0dlE4w6L7Xzz2a1X.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 65131,
+        "view_count": 39925416,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2041309231891283968/vid/avc1/480x270/_zXDBEAy3LRNQ2_A.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2041309231891283968/vid/avc1/640x360/aqEIEKN2RS6VpOR9.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2041309231891283968/vid/avc1/1280x720/-y4xRLaGrKRAopMY.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2041309231891283968/pl/EWgTEHTDgOo0xXCu.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 117342,
+      "reply_count": 21593,
+      "like_count": 1294898,
+      "quote_count": 4652,
+      "bookmark_count": 87600,
+      "impression_count": 139544109
+    },
+    "author_followers": 240140267,
+    "author_name": "Elon Musk",
+    "author_description": "https://t.co/dDtDyVssfm",
+    "author_tweet_count": 103237
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2041309231891283968/vid/avc1/1280x720/-y4xRLaGrKRAopMY.mp4",
+          "description": {
+            "description": "A close-up of a spaceship with the moon in the background. It is a large, grey, cratered moon which reflects the light of the sun and is against a pitch-black background. There is a small, blue and white earth in the distance, barely visible as a speck in the sky. The camera is slightly tilted and moves as the spaceship continues its flight.",
+            "ocrText": ""
+          },
+          "transcription": "you you you"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Karol Kozicki (@k2__investment): Stunning footage. After 50 years, we’re finally seeing the Moon in high-def with a crew onboard. This is exactly the kind of momentum the space sector needs. (Likes: 10079, Reposts: 947, Replies: 303)\n- Ramy (@TeslaXplored): This is literally from 3 years ago! 🤦🏽‍♂️ (Likes: 7831, Reposts: 379, Replies: 119)\n- m4lka (@m4lkxx): (Likes: 7776, Reposts: 74, Replies: 1)\n- Donna Marie (@sabback): https://t.co/a8XdPgbrBH 🐶🌖🚀 (Likes: 6222, Reposts: 234, Replies: 85)\n- FLAT OUT TRUTH (@TheFlatEartherr): The PS3 has more convincing graphics! (Likes: 5980, Reposts: 79, Replies: 63)\n- KungFuRedNeck (@KungFuRedNeck): (Likes: 5252, Reposts: 309, Replies: 127)\n- Evelyn Janeidy (@JaneidyEve): WOW. Our Sweet Home ♡ (Likes: 4819, Reposts: 142, Replies: 56)\n- Stochastic Sarcastic - The Oh! to your X (@StochasticOh): Photo of the dark side of the moon (Likes: 4816, Reposts: 35, Replies: 35)\n- H.L.U.D.W.I.G (@anmlbhvr7): Go outside tonight and look at the moon. Ask yourself seriously if you think humans can get there… it’s all bullshit people. Wake the fuck up (Likes: 3818, Reposts: 58, Replies: 474)\n- Daily Banter (@DailyBanterMeme): Sure 😏 (Likes: 3563, Reposts: 148, Replies: 34)",
+    "warnings": []
+  }
+}

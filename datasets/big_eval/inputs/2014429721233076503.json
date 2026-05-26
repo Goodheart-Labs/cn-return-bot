@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2014429721233076503",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:28.696Z",
+  "post": {
+    "id": "2014429721233076503",
+    "author_id": "1087640384975577089",
+    "created_at": "2026-01-22T20:07:26.000Z",
+    "text": "Jeff Bezos just community noted Polymarket LMFAOOO https://t.co/Rr8DxHzXvE",
+    "media": [
+      {
+        "media_key": "3_2014429715981828097",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_SxJ14WgAE9mpS.jpg",
+        "height": 1130,
+        "width": 1179
+      },
+      {
+        "media_key": "3_2014429715986018304",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_SxJ15WcAARA_0.jpg",
+        "height": 266,
+        "width": 474
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 37,
+      "reply_count": 68,
+      "like_count": 2677,
+      "quote_count": 13,
+      "bookmark_count": 144,
+      "impression_count": 207072
+    },
+    "author_followers": 68004,
+    "author_name": "NIK",
+    "author_description": "non technical member of technical staff\n\nI am covering full Musk v. Altman trial minute by minute",
+    "author_tweet_count": 29823
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_SxJ14WgAE9mpS.jpg",
+          "description": {
+            "description": "A screenshot of a post on X.com (formerly Twitter) from the account Polymarket, claiming that Jeff Bezos advised Gen Z entrepreneurs to work at jobs like McDonalds or Palantir. Below it is a reply from the verified Jeff Bezos account debunking the claim.",
+            "ocrText": "Polymarket @Polymarket X.com JUST IN: Jeff Bezos advises aspiring Gen Z entrepreneurs to start at real world jobs like McDonalds or Palantir before starting a business. Rate proposed Community Notes 9:26 AM · 2026-01-22 · 3.1M Views 643 1K 6.5K 938 Relevant View quotes Jeff Bezos @JeffBezos · 25m Nope. Not sure why polymarket made this up. 54 26 555 11K"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_SxJ15WcAARA_0.jpg",
+          "description": {
+            "description": "A headshot of actor Vin Diesel wearing aviator sunglasses and a black leather jacket over a black shirt, posing against a dark background with part of a large light blue letter visible on the left.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @ns123abc: Elon must be bored af at Davos trolling Bezos🤣 🤣 (Likes=213)\n- @phteocos: Family... (Likes=50)\n- @ElAdaWongSimp: Didnt know bezos was a family man now (Likes=27)\n- @JinJung: I legit thought this was Vin Diesel (Likes=25)\n- @RSxAI_News: brother that's bruce willis (Likes=15)\n- @Bingus12621: I muted polymarket a while ago. They're pretty much a sloprag (Likes=9)\n- @hundsnus: If you can't trust a bookmaker who can you trust? (Likes=7)\n- @Cyberiusz: https://t.co/jFrOo9rOUe (Likes=7)\n- @cardano_guppy: Jeff Diesel (Likes=6)\n- @BlckKittycat696: I don’t believe him But this a funny template (Likes=6)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2037175886542246221",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:54.507Z",
+  "post": {
+    "id": "2037175886542246221",
+    "author_id": "4304448314",
+    "created_at": "2026-03-26T14:32:34.000Z",
+    "text": "This morning, I have one question — where is Trump's Budget Director Russell Vought?\n\nThe architect of Project 2025 has gone completely missing in front of the Budget Committee, probably because he can't defend the administration's disastrous, unpopular economic record. https://t.co/CGoAsNf7Ye",
+    "media": [
+      {
+        "media_key": "3_2037175865633648641",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEWAqAgXsAEcw_r.jpg",
+        "height": 1333,
+        "width": 2000
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1783,
+      "reply_count": 363,
+      "like_count": 4855,
+      "quote_count": 32,
+      "bookmark_count": 78,
+      "impression_count": 176282
+    },
+    "author_followers": 24904,
+    "author_name": "Rep. Brendan Boyle",
+    "author_description": "Official Legislative Account | Ranking Member @HouseBudgetDems, Co-Chair @BlueCollarDems, Proud Father, Loyal Philly sports fan and Fighter for PA-02",
+    "author_tweet_count": 7621
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEWAqAgXsAEcw_r.jpg",
+          "description": {
+            "description": "A photograph showing Representative Brendan Boyle, a ranking member of a committee, holding up a prop milk carton during a hearing. The milk carton features a \"MISSING\" notice with a photograph of OMB Director Russell Vought. An American flag and other individuals are visible in the background.",
+            "ocrText": "MISSING MISSING OMB DIRECTOR RUSSELL VOUGHT OMB DIRECTOR RUSSELL VOUGHT MR. BOYLE RANKING MEMBER"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Spitfire (@RealSpitfire)**: Liar.  \n  Engagement: Likes=115, Reposts=0, Replies=0, Views=1243\n\n- **🇺🇸Judy Heinken🇺🇸 (@JudyHeinken)**: You should delete your post  \n  Engagement: Likes=114, Reposts=0, Replies=0, Views=1472\n\n- **Art Candee 🍿🥤 (@ArtCandee)**: Motion to subpoena him and watch Republicans block it.  \n  Engagement: Likes=102, Reposts=0, Replies=0, Views=1391\n\n- **Sumbolus (@sumbolus)**: (Image attached)  \n  Engagement: Likes=95, Reposts=0, Replies=0, Views=1061\n\n- **@amuse (@amuse)**: @grok confirm in the past couple of weeks Budget Director Russell Vought hosted at least one West Wing press gaggle. Confirm the OMB Director’s role is not public-facing but to control money, rules, and agency behavior. Confirm that the partial government shutdown has consumed his schedule for at least a month as he grapples with the limits imposed by the Anti-deficiency Act.  \n  Engagement: Likes=85, Reposts=0, Replies=0, Views=1906\n\n- **DarkChrisTopher (@DarkChrisBurner)**: Hey @CongBoyle why don't you keep up? Y'all can't even keep your lies in order!  \n  Engagement: Likes=85, Reposts=0, Replies=0, Views=927\n\n- **Toni Gering (@ToniGering)**: YOU gave us 40-year-high inflation and then imported tens of millions of te**orists.  \n  Engagement: Likes=82, Reposts=0, Replies=0, Views=547\n\n- **Adam Schiffylus (@GogginWalters)**: More performative nonsense, and no plans to help the American people. Congratulations. You embody everything wrong with your failed party. No new plans, since you and Biden made our lives miserable. You just double down on your failed policies, and pull stunts like this. Pathetic. 🤡  \n  Engagement: Likes=66, Reposts=0, Replies=0, Views=818\n\n- **Wade Miller (@WadeMiller)**: 😄  \n  Engagement: Likes=66, Reposts=0, Replies=0, Views=1046\n\n- **ImTHATBitch.. (@13Revelation22)**: (Image attached)  \n  Engagement: Likes=56, Reposts=0, Replies=0, Views=555",
+    "warnings": []
+  }
+}

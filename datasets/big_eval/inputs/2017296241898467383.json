@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2017296241898467383",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:32.814Z",
+  "post": {
+    "id": "2017296241898467383",
+    "author_id": "2429615017",
+    "created_at": "2026-01-30T17:57:58.000Z",
+    "text": "Michael Rapaport gets hit by a snowball in the streets of New York https://t.co/PevjbJe7zz",
+    "media": [
+      {
+        "media_key": "7_1489391662136762373",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1489391662136762373/pu/img/cbx5GYDhz4TzGgqt.jpg",
+        "height": 720,
+        "width": 720,
+        "duration_ms": 18688,
+        "view_count": 4234703,
+        "variants": [
+          {
+            "bit_rate": 1280000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1489391662136762373/pu/vid/720x720/R7oi2T9wGnf7Psu0.mp4?tag=1"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1489391662136762373/pu/vid/480x480/EL7QijWRPsDMf5et.mp4?tag=1"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1489391662136762373/pu/vid/240x240/gbhcufwNEf3YrU-A.mp4?tag=1"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1489391662136762373/pu/pl/8HK4Ch7Z-RuGKpKU.m3u8?tag=1&v=cc4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2438,
+      "reply_count": 924,
+      "like_count": 30594,
+      "quote_count": 701,
+      "bookmark_count": 3920,
+      "impression_count": 5232095
+    },
+    "author_followers": 829775,
+    "author_name": "Hoops",
+    "author_description": "Daily Hoops & Entertainment. Peace & Blessings to All. Powered by @Roobet. Featured on @ESPN, @ESPNNBA, @SportsCenter. Goal = 900k. @OnyxOdds",
+    "author_tweet_count": 23053
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1489391662136762373/pu/vid/720x720/R7oi2T9wGnf7Psu0.mp4?tag=1",
+          "description": {
+            "description": "A middle-aged man with light-colored hair, wearing a black coat and a grey scarf, stands in front of a snowy park background. Behind him, a black sign with a white maple leaf logo is visible on a fence. The subsequent frames show rapid, blurry motion as the camera moves away from the subject, capturing a greyish-blue screen and then highly overexposed architecture before pointing towards a dark surface, likely clothing or ground.",
+            "ocrText": "CITY HALL PARK"
+          },
+          "transcription": "You know this whole crap with this cancel culture and the- Shut up! Shit! Shut the fuck up! Nobody wants to hear it. You've been talking all fucking week! You don't care what you have to say, just stop talking! You got me right in my fucking head, asshole! Alright, stop! Damn it!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- thinker (@AmericaFrogPill): The snowball was promised to him 3000 years ago (842 likes)\n- Jessica (@jayseeonsol): New York City snowballs hit different because they come with that authentic local aggression you just cannot find anywhere else. Seeing Michael Rapaport get a face full of winter is the peak NYC comedy we all needed to see on our feeds today. (530 likes)\n- RexBanner (@TheBeerBar0n321): Staged (320 likes)\n- Emptywalletguy (@emptywallet_guy): The culprit. (272 likes)\n- Reece (@Jurkgy): (272 likes, with photos)\n- ☢️Fallout Films (@FilmsFallout): (254 likes, with photo)\n- Degenerate Liberty 🐝🇺🇦🏳️‍🌈 (@SammiRaeMurray): I watch this whenever I’m sad and it always cheers me up. (147 likes)\n- White Wolf (@brianj075): This is awesome...hope he has a great yea r (112 likes)\n- Jamal L. G. (@JodySaintLouis): We're back, NY (83 likes)\n- McCarthy (@McCarthy_Owie): Wasn’t this dude on prison break ? (54 likes)",
+    "warnings": []
+  }
+}

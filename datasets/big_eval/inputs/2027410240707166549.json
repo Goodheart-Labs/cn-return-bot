@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2027410240707166549",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:50.245Z",
+  "post": {
+    "id": "2027410240707166549",
+    "author_id": "56443153",
+    "created_at": "2026-02-27T15:47:23.000Z",
+    "text": "Who you got in a race? \n\n2026 combine on @nflnetwork https://t.co/rMN1HinNGx",
+    "media": [
+      {
+        "media_key": "13_2027410189175955456",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2027410189175955456/img/3iU6WflNJ64Mze1l.jpg",
+        "height": 1350,
+        "width": 1080,
+        "duration_ms": 5333,
+        "view_count": 92693,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027410189175955456/vid/avc1/320x400/OnNsfcAJTQbEsBGo.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027410189175955456/vid/avc1/720x900/BGN3PcJ2updOUacs.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027410189175955456/vid/avc1/1080x1350/XYQqyDFY6D69dtgi.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027410189175955456/vid/avc1/480x600/pfAE2eJWib9rncBS.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2027410189175955456/pl/fwVVYnuH1fxhSycG.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 25,
+      "reply_count": 21,
+      "like_count": 457,
+      "quote_count": 15,
+      "bookmark_count": 22,
+      "impression_count": 405972
+    },
+    "author_followers": 2823467,
+    "author_name": "Carolina Panthers",
+    "author_description": "#KeepPounding",
+    "author_tweet_count": 103797
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2027410189175955456/vid/avc1/1080x1350/XYQqyDFY6D69dtgi.mp4",
+          "description": {
+            "description": "A high-angle frame from a football broadcast using Simulcam technology to compare two athletes, Jimmy Horn Jr. and Xavier Legette, as they compete in a 40-yard dash. The athletes are shown mid-stride on an indoor turf field with identifying tags above their heads. A blue text box in the center identifies the event, and a scoreboard at the bottom shows timing data for the first and second runs alongside logos and a scrolling list of other players like Luke McCaffrey and Ladd McConkey.",
+            "ocrText": "JIMMY HORN JR. XAVIER LEGETTE SIMULCAM 40-YARD DASH: JIMMY HORN JR AND XAVIER LEGETTE 1ST RUN 2ND RUN 4.47 2.27 UN Luke McCaffrey Ladd McConkey Jalen McMillan Bub"
+          },
+          "transcription": "(no audio track)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @bigmate_otw: I did *not* expect it to be this close (34 likes)\n- @Cpmo17fifa: XL never be running that fast (23 likes)\n- @Owfi5: Woah XL has some speed (21 likes)\n- @lovelyladywestb: That's crazy because they had Jimmy's 40 time at 4.46 and clearly Jimmy beat or at worst ties him. And XL time was 4.39 so someone's math ain't mathing!!! (10 likes)\n- @dxntcxre_: Whoever can catch a damn pass in the clutch (6 likes)\n- @Dino_V20: Damn I really hope Legette figures it out cause this is insane (4 likes)\n- @TaylorPortier: Jimmy FS (3 likes)\n- @SayyidAbdu36931: Horn 💯 (2 likes)\n- @Soofaded1: Jimmy (2 likes)\n- @zaysillmind: if only that brother could catch (1 like)",
+    "warnings": []
+  }
+}

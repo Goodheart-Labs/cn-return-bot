@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2031780631131095289",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:55.779Z",
+  "post": {
+    "id": "2031780631131095289",
+    "author_id": "1686228946986119168",
+    "created_at": "2026-03-11T17:13:45.000Z",
+    "text": "Timothée Chalamet is under fire for calling Helen Keller “not real”\n\n“There’s zero chance she existed. You expect me to believe that girl managed to fly an airplane?” https://t.co/T38d0zv0hq",
+    "media": [
+      {
+        "media_key": "3_2031780627243048960",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDJVtzRXoAAIlH9.jpg",
+        "height": 1290,
+        "width": 1344
+      },
+      {
+        "media_key": "3_2031780627201114112",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDJVtzHXwAAlbwV.jpg",
+        "height": 1600,
+        "width": 1269
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 481,
+      "reply_count": 497,
+      "like_count": 22431,
+      "quote_count": 182,
+      "bookmark_count": 1703,
+      "impression_count": 1621615
+    },
+    "author_followers": 139341,
+    "author_name": "Daily Noud",
+    "author_description": "PARODY Hip-Hop News | Follow For Viral Content | These are fake stories | Not impersonating and not affiliated with @DailyLoud",
+    "author_tweet_count": 1624
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDJVtzRXoAAIlH9.jpg",
+          "description": {
+            "description": "A medium shot of actor Timothée Chalamet during a talk show appearance. He has dark wavy hair, a thin mustache, and a soul patch. He is wearing a light orange button-down shirt over a white undershirt and a thin gold chain necklace. He is looking slightly to his left while speaking. The background consists of a blurred studio audience.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDJVtzHXwAAlbwV.jpg",
+          "description": {
+            "description": "A black and white profile portrait of Helen Keller as a young woman. She is shown from the chest up, facing right with her eyes closed or looking slightly downward. She has her hair pulled back into a bun and is wearing a high-collared white lace dress with concentric patterns. The background is a plain, solid light color.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Shushu ❤️ (@Shasheen_): No matter how men try to hide it, their misogynistic side always find a way to show up. (489 likes)\n- Black Cat (@catwithptsd): people falling for parody accounts that are now LABELED as parody accounts is such a funny concept to me (367 likes)\n- Mr. Nomad (@MisunderstNomad): actually a good argument (299 likes)\n- Say walahi (@abdirahman_raw): I might have misjudged him didn’t know he was based (200 likes)\n- jemy (@moidmanipulator): he’s right her nurse was her ghostwriter how do we have physically healthy feral children rescued by 5-7 who are intellectually handicapped FOR LIFE but you want me to believe this deaf blind scarlet fevering bitch under the same circumstance grew up to write THIS? ain’t no way (153 likes)\n- Aryan Dave Blunts (@NODlegend_): Cooking (110 likes)\n- Anthony Dibble (@TheRealInorka): He's gotta be trolling. I don't care this is funny AF. As if people today aren't making Helen Keller jokes. Fucking hypocrites. (81 likes)\n- AHsAn!!✨🖤 (@ahsan_ch101): people falling for parody accounts that are now LABELED as parody accounts is such a funny concept to me (78 likes)\n- Kat 🐱 (@KC_mpshe): Misogyny at its best (73 likes)\n- cedarzekaya (@LioTheLion3): Brave of him to actually come out and say something like this (50 likes)",
+    "warnings": []
+  }
+}

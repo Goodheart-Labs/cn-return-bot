@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2017706731665514813",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:39.094Z",
+  "post": {
+    "id": "2017706731665514813",
+    "author_id": "1486911626846806017",
+    "created_at": "2026-01-31T21:09:06.000Z",
+    "text": "This is Juniper. She's a Bernese Mountain Dog puppy who spent her days pawing at the kennel window, dreaming of a family. Today she got one complete with two excited boys for nonstop hugs. Pure happiness. adopt don't shop ❤️ https://t.co/tHUKVMHvXL",
+    "media": [
+      {
+        "media_key": "7_1980283399378968576",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1980283399378968576/pu/img/hZ_vBrB74Ke7Se22.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 30373,
+        "view_count": 325798,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1980283399378968576/pu/vid/avc1/320x568/mZfNTwKBXjiB2bTv.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1980283399378968576/pu/vid/avc1/480x852/H8yi9GRv8Lfl74XN.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1980283399378968576/pu/vid/avc1/720x1280/8n17qD0tN-6cvn03.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1980283399378968576/pu/pl/J0Ln1JCtDj539_dR.m3u8?tag=12&v=693"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1043,
+      "reply_count": 164,
+      "like_count": 16146,
+      "quote_count": 22,
+      "bookmark_count": 280,
+      "impression_count": 299189
+    },
+    "author_followers": 626165,
+    "author_name": "Puppies 🐶",
+    "author_description": "Your Original source for Original Dog Video",
+    "author_tweet_count": 27073
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1980283399378968576/pu/vid/avc1/720x1280/8n17qD0tN-6cvn03.mp4?tag=12",
+          "description": {
+            "description": "A series of frames showing a Saint Bernard dog being reunited with its family. In the first and second frames, the large dog is peering through a small window built into an orange door at an animal facility. In the third and fourth frames, the dog is joyfully greeting and being petted by a group consisting of three young children and two adults inside a room.",
+            "ocrText": ""
+          },
+          "transcription": "Is this for you? Is this for you? Did you just get adopted? You did sweetie, you just got adopted. Yes, you did. I'll pass this to you. Thank you. You enjoy your new life, okay? Okay. Thank you guys so much again. Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@gr8fuljon**  \nthat’s a st. bernard. so tired of “dog accounts” that steal content & don’t know shit about dogs.  \nLikes: 141 | Reposts: 0 | Replies: 0 | Views: 2213\n\n**@AyePatriot**  \nJuniper looks like a mix between a Bernese Mountain Dog and a St. Bernard. The bigger the better - just more to love. Congrats to the family and Karma and Zoey are thrilled to hear your good news.  \nLikes: 95 | Reposts: 0 | Replies: 0 | Views: 1689\n\n**@stevinr20**  \nAdopt don’t shop!!!❤️❤️❤️❤️❤️  \nLikes: 70 | Reposts: 0 | Replies: 0 | Views: 2288\n\n**@easstotts**  \n❤️Thank You❤️💙🇺🇸💙 https://whiteriverhumanesociety.org/  \nLikes: 43 | Reposts: 3 | Replies: 5 | Views: 925\n\n**@shmolly_holly**  \nEverything about this is incorrect. Not a Berner, clearly not a puppy, and there are three boys. Good grief.  \nLikes: 40 | Reposts: 0 | Replies: 0 | Views: 657\n\n**@skigirl1965**  \nLooks more St. Bernard than Bernese...but a sweet doggo, just the same (speaking as a dog Mom of my late Saint, Buddy). @Puppieslover  \nLikes: 27 | Reposts: 0 | Replies: 0 | Views: 445\n\n**@hcap07**  \nThat's NOT a BMD. It's a ST. BERNARD.  \nLikes: 18 | Reposts: 0 | Replies: 0 | Views: 387\n\n**@nhmtnbkr1**  \nI think you mean St. Bernard. This is a Bernese Mountain Dog.  \nLikes: 15 | Reposts: 0 | Replies: 0 | Views: 174\n\n**@Yachts7**  \nThat is a St Bernard, not that it matters to the kids. Both breeds are great  \nLikes: 12 | Reposts: 0 | Replies: 0 | Views: 973\n\n**@OsteopathTish**  \nThat is NOT a Bernese mountain dog. It is a Great St Bernard  \nLikes: 9 | Reposts: 0 | Replies: 0 | Views: 252",
+    "warnings": []
+  }
+}

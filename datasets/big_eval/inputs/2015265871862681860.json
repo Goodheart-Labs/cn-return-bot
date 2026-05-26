@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2015265871862681860",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:48.762Z",
+  "post": {
+    "id": "2015265871862681860",
+    "author_id": "177101260",
+    "created_at": "2026-01-25T03:30:00.000Z",
+    "text": "A 62 year old Chinese man tests the limits of qinggong (轻功), a martial arts technique often described as the ability to fly or move with extreme lightness.\nhttps://t.co/O6gEiDuqLl",
+    "media": [
+      {
+        "media_key": "7_1901699561305022464",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1901699561305022464/pu/img/orsW7VhwZsXUxZAn.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 39933,
+        "view_count": 14314631,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1901699561305022464/pu/vid/avc1/320x568/DUftHIql4Bcxkt6H.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1901699561305022464/pu/vid/avc1/480x852/cyNNLJSwViVL9fLp.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1901699561305022464/pu/vid/avc1/720x1280/5lvov-lejljvJThF.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1901699561305022464/pu/pl/KbGDzjQcQnTxfbno.m3u8?tag=12&v=13b"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3069,
+      "reply_count": 585,
+      "like_count": 30521,
+      "quote_count": 592,
+      "bookmark_count": 5115,
+      "impression_count": 4689894
+    },
+    "author_followers": 4360799,
+    "author_name": "Massimo",
+    "author_description": "Engineer. Selecting and curating pictures and videos trying to awaken your sense of wonder since 2014. Science, tech, art, weather, space, the unusual around us",
+    "author_tweet_count": 469775
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1901699561305022464/pu/vid/avc1/720x1280/5lvov-lejljvJThF.mp4?tag=12",
+          "description": {
+            "description": "A series of frames showing an individual performing various acrobatic and athletic stunts in different outdoor settings. In the first frame, he is crouched on the edge of a body of water in a park, about to leap. The second frame shows him mid-air jumping across a stone bridge over water. In the third frame, he is captured in a high jump between two towers made of plastic stools in an alleyway. The final frame shows him performing a precise jump over a stack of wooden benches to lightly touch the surface of water in a small basin.",
+            "ocrText": "中国功夫“蜻蜓点水”"
+          },
+          "transcription": "国公主四方水土洋溢了我们中华武术我们我们"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@fazalorkzai30** (580 likes): A 62 year old Chinese man tests the limits of qinggong (轻功), a martial arts technique often described as the ability to fly or move with extreme lightness.\n\n**@1234jscot** (569 likes): 62? I’m 57 and this would be me.\n\n**@nickells** (245 likes): Type of thing I’d see at age 8 and start jumping around convinced I would be a qinggong master in the backyard\n\n**@monowaimatt** (187 likes): I've got 5 bucks says bro with the glued-on grey goatee is about 30 yrs old.\n\n**@kevstyluss** (141 likes): Old Chinese people been doing ai shit before ai\n\n**@GhostOutDaShell** (97 likes): He is him\n\n**@Buzzlaughzjj4** (76 likes): 🤣🤣🤣\n\n**@Eustaav** (50 likes): We have been doing that for years in the USA.\n\n**@PsychoAIProd** (39 likes): Proof that age is just a number—and mastery turns the impossible into practice. Qinggong isn’t about flying; it’s about precision, balance, and years of relentless discipline.\n\n**@zoeymovies** (30 likes): At 62, he’s not defying gravity, he’s mastered control. Qinggong isn’t about flying, it’s about lightness, balance, and decades of discipline.",
+    "warnings": []
+  }
+}

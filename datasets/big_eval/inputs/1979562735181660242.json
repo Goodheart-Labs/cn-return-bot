@@ -1,0 +1,66 @@
+{
+  "tweet_id": "1979562735181660242",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:15:20.864Z",
+  "post": {
+    "id": "1979562735181660242",
+    "author_id": "1542228578",
+    "created_at": "2025-10-18T14:58:29.000Z",
+    "text": "Or maybe he was wearing the colors of America https://t.co/K1zNmVIAA5",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "1979275356663353829"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "1979275356663353829",
+      "author_id": "1670119979910590466",
+      "created_at": "2025-10-17T19:56:32.000Z",
+      "text": "Pete Hegseth showed up to the White House meeting today with President Zelensky wearing a Russian tricolor flag tie.\n\nThese people love Putin and Russia. https://t.co/qECryLQclY",
+      "media": [
+        {
+          "media_key": "3_1979275343807614976",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/G3fMcERXkAA8byz.png",
+          "height": 420,
+          "width": 552
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 15410,
+      "reply_count": 13932,
+      "like_count": 196278,
+      "quote_count": 1290,
+      "bookmark_count": 2361,
+      "impression_count": 11073004
+    },
+    "author_followers": 5444854,
+    "author_name": "JD Vance",
+    "author_description": "Christian, husband, dad. Vice President of the United States.",
+    "author_tweet_count": 5120
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3fMcERXkAA8byz.png",
+          "description": {
+            "description": "A medium shot of a man sitting at a formal dining table with a microphone in front of him. He is wearing a blue suit, a white shirt, and a red, white, and blue striped tie. In the background, there is a United States Space Force flag and another flag with the word 'PARATUS'. The setting appears to be a formal room with ornate wall decorations and patterned curtains.",
+            "ocrText": "SPACE FORCE PARATUS"
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@skarxbt**: real  \n(Likes: 9816)\n\n**@RealJakeBroe**: That’s not what the Russians are saying.  \n(Likes: 8152, Reposts: 325, Replies: 81)\n\n**@Gamboleer**: They are the colors of America, but that's not how we display them. It's a Russian flag tie. If you didn't KNOW it's a Russian flag tie, you're terrible at diplomacy. If you did, you're a lying weasel.  \n(Likes: 5872, Reposts: 128, Replies: 23)\n\n**@Bricktop_NAFO**: (image)  \n(Likes: 5476, Reposts: 391, Replies: 54)\n\n**@mattvanswol**: He is literally wearing a pocket square American flag. These people are blind fools.  \n(Likes: 4736)\n\n**@OldeWorldOrder**: \"Red, white & blue? Wow you must be a Russian asset lmao\" - the lunatic left  \n(Likes: 4586, Reposts: 70, Replies: 23)\n\n**@Citizen54S**: Have you ever seen a tie based on the American flag that didn't have stars? I haven't.  \n(Likes: 4510, Reposts: 47, Replies: 27)\n\n**@RealJakeBroe**: Since I have the Vice-President’s attention, it has been 10 months of Putin wasting everyone’s time and refusing to agree to Trump’s ceasefire offers. When is President Trump going to make the killing stop and finally show real strength instead of complete weakness before Putin?  \n(Likes: 4092, Reposts: 332, Replies: 119)\n\n**@Mankosmash**: These colors fit dozens of flags, but if you're lib 🧠 you can only see Russia Russia Russia.  \n(Likes: 2141, Reposts: 78, Replies: 238)\n\n**@The_Real_ITDUDE**: Or maybe he wore russian flag colors on purpose?  \n(Likes: 2088)",
+    "warnings": []
+  }
+}

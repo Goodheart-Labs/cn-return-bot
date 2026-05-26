@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2011078844875489465",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:24.147Z",
+  "post": {
+    "id": "2011078844875489465",
+    "author_id": "375721095",
+    "created_at": "2026-01-13T14:12:15.000Z",
+    "text": "An anti-ICE protester alleges he was struck by a Tennessee Highway Patrol vehicle during an anti-ICE protest.\n\nHere is the dash cam footage:\n\n https://t.co/kgv1vdXBMS",
+    "media": [
+      {
+        "media_key": "13_2011073175757508608",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2011073175757508608/img/6rFqpHIQ0Os6BzYL.jpg",
+        "height": 514,
+        "width": 1280,
+        "duration_ms": 20619,
+        "view_count": 2114164,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2011073175757508608/vid/avc1/672x270/CAbETDBPuMPHqU65.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2011073175757508608/vid/avc1/896x360/j00g9xA_bSN1td18.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2011073175757508608/vid/avc1/1280x514/S9s9SQvLTofRLAg4.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2011073175757508608/pl/5GZxtzu18AACVfEB.m3u8?v=e96"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1332,
+      "reply_count": 805,
+      "like_count": 15429,
+      "quote_count": 264,
+      "bookmark_count": 1600,
+      "impression_count": 2531709
+    },
+    "author_followers": 1908910,
+    "author_name": "Breaking911",
+    "author_description": "America’s #1 Alternative News Source | Founded September 2011",
+    "author_tweet_count": 39097
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2011073175757508608/vid/avc1/1280x514/S9s9SQvLTofRLAg4.mp4",
+          "description": {
+            "description": "A dashcam video from a Tennessee State Trooper vehicle shows police response to a street demonstration. In the first frame, multiple vehicles are visible on a road at dusk, including civilian cars and police cruisers with active emergency lights. Subsequent frames show the cruiser approaching a crowd of protesters walking in the street. A man in a high-visibility orange safety vest, hat, and striped sleeves walks in front of the trooper's vehicle with both hands raised, one holding what appears to be a radio. In the final frame, the person in the safety vest is seen moving toward the right side of the screen as the trooper's vehicle continues forward toward the group of protesters carrying signs.",
+            "ocrText": "2026-01-13 17:07:08 -0600 AXON FLEET 3 F XQ85N22P8 TENNESSEE STATE TROOPER HIGHWAY PATROL 2026-01-13 17:07:10 -0600 AXON FLEET 3 F XQ85N22P8 2026-01-13 17:07:13 -0600 AXON FLEET 3 F XQ85N22P8 2026-01-13 17:07:11 -0600 AXON FLEET 3 F XQ85N22P8"
+          },
+          "transcription": "Move! Get out of my way! Get out of my way! Move! Move! Move! Move! Move! Move! Get out! Come here!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Enguerrand VII de Coucy** (@ingelramdecoucy): Here’s the license plate of the car he got into, we need to start seeing these people arrested  \n  Likes: 2620 | Reposts: 130 | Replies: 35 | Views: 92632\n\n- **SuperTrucker** (@supertrucker): It should have gone in this order.  \n  Likes: 352 | Views: 41106\n\n- **Tenacious** (@TenaciousBit): Here we go again  \n  Likes: 324 | Views: 44339\n\n- **Dooner** (@TimothyDooner): Why is he dressed like a mime?  \n  Likes: 274 | Views: 33408\n\n- **Washingtons ghost** (@washghost1): These people are something else  \n  Likes: 271 | Views: 32257\n\n- **Big Nasty** (@TheBigNasty_): run these retards over  \n  Likes: 201 | Views: 21473\n\n- **Piques** (@piques15): Identify him and charge him  \n  Likes: 155 | Views: 21821\n\n- **Stop the Forever Wars** (@DoctorFishbones): ICE officers are showing remarkable patience with these imbeciles  \n  Likes: 141 | Views: 3173\n\n- **clax** (@claxmode): Lebron?  \n  Likes: 138 | Views: 29380\n\n- **Stocktrader** (@stocktrader): Here's your Libtard plate.  \n  Likes: 138 | Views: 19069\n\n- **Baker** (@Baker17274351): This is PROOF that these folks who are putting their physical bodies in front of vehicles are NOT MENTALLY WELL. They should be arrested, after getting out COURT ORDERED psych evaluation MANDATED or re-arrest!  \n  Likes: 107 | Views: 2773\n\n- **Unfiltered Artist** (@EmpireEnjoyer3): He went down on his own you can see it when he pulls.  \n  Likes: 80 | Views: 14510\n\n- **The🐰FOO** (@PolitiBunny): What a moron, lol  \n  Likes: 74 | Views: 5518",
+    "warnings": []
+  }
+}

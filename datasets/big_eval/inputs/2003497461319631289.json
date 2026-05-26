@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2003497461319631289",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:42.843Z",
+  "post": {
+    "id": "2003497461319631289",
+    "author_id": "1476174346309808140",
+    "created_at": "2025-12-23T16:06:32.000Z",
+    "text": "#immigration #netherlands Massive anti-immigration protests in the Netherlands, overwhelming police forces.\nCrowds are enormous, people are demanding their country back💪👍 https://t.co/19r8Q0Tfre",
+    "media": [
+      {
+        "media_key": "13_2003497426259222528",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2003497426259222528/img/WqdIJWC3vVRk2qee.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 23033,
+        "view_count": 405103,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2003497426259222528/vid/avc1/320x568/g20cCmS8k-PreNU1.mp4?tag=14"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2003497426259222528/vid/avc1/480x852/9P6Wki8bEdH60vz0.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2003497426259222528/vid/avc1/720x1280/JF0i2Q3TfxSIq5vw.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2003497426259222528/pl/RHRNSYIkjjhvt9YW.m3u8?tag=14&v=9a0"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 9021,
+      "reply_count": 1072,
+      "like_count": 34121,
+      "quote_count": 434,
+      "bookmark_count": 1142,
+      "impression_count": 452996
+    },
+    "author_followers": 23497,
+    "author_name": "Dolly van den Berg",
+    "author_description": "Mijn naam is Dolly, 62 jaar, erg creatief, tegen de overheid, tegen vaccinatie en tegen onrecht No DM",
+    "author_tweet_count": 81856
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2003497426259222528/vid/avc1/720x1280/JF0i2Q3TfxSIq5vw.mp4?tag=14",
+          "description": {
+            "description": "A series of frames from a video depicting a chaotic protest in the Netherlands. The video captures a massive crowd of people, many in dark clothing, clashing with the police including vehicles. Some protesters are holding flags and umbrellas while others stand in groups on a paved road lined with trees. Overlaid text on each frame provides a context for the event shown.",
+            "ocrText": "Massive anti-immigration protests erupt in the Netherlands"
+          },
+          "transcription": "Субтитры сделал DimaTorzok"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Lina_CryptoA: A patriotic movement is emerging in many European countries.  \nLikes: 294\n\n@Canezuela: GREAT GREAT speech.... \"This is OUR country...\"  \nLikes: 210\n\n@DogFacePonia: I spent 6 months in school in Holland. The Dutch were separated into two groups but now appear to be uniting which is definitely a good thing.  \nLikes: 100\n\n@FellaOfFlanders: Old footage from unrelated rioters.  \nLikes: 47\n\n@KatSapiro: It's astonishing that Muslims from the Middle East and Africa who have come to EU and NATO countries are fighting on the streets of alliance countries, raping, murdering, and terrorizing, yet they refuse to fight for the freedom of their own countries in the Middle East & Africa.  \nLikes: 41\n\n@DUPDAWG: The Netherlands 🇳🇱 and much of Europe are FUCKED, having undermined themselves with multiculturalism. Act now—send them back to where they came from or face the consequences of your own inaction. It’s always been the State vs. the People. Stay vigilant and stay armed my friends!  \nLikes: 38\n\n@StanSmith_1971: Recycled video from 2021. There are enough real immigration problems without making shit up for views. Do better.  \nLikes: 26\n\n@AnneF1610602: Finally, the world is waking up the disaster globalists have unleashed on the world. I hope it isn't too late to turn Europe and Canada around.  \nLikes: 23\n\n@JohDomne1: Massive load of bullshit .. from you. There are spring leaves on the trees for a start Do grow up, Dolly  \nLikes: 18\n\n@VDejan0000: Go Netherlands!!! Take your country back !  \nLikes: 18",
+    "warnings": []
+  }
+}

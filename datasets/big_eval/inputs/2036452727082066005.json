@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2036452727082066005",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:23.524Z",
+  "post": {
+    "id": "2036452727082066005",
+    "author_id": "1147323428392902657",
+    "created_at": "2026-03-24T14:39:00.000Z",
+    "text": "WARNING: 🇺🇸 DOJ admitted 47,635 Epstein files including Trump allegations, were deleted after the war with Iran started. https://t.co/iA5b8ubIms",
+    "media": [
+      {
+        "media_key": "3_2034580447565352961",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDxIIywWkAEb1FV.jpg",
+        "height": 960,
+        "width": 960
+      },
+      {
+        "media_key": "3_2034580459485552640",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDxIJfKWYAASOtA.jpg",
+        "height": 675,
+        "width": 1200
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6490,
+      "reply_count": 447,
+      "like_count": 23445,
+      "quote_count": 443,
+      "bookmark_count": 1844,
+      "impression_count": 1569364
+    },
+    "author_followers": 344939,
+    "author_name": "Coinvo",
+    "author_description": "Crypto News • Real-Time • Global Coverage | @CoinvoTrading",
+    "author_tweet_count": 23294
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDxIIywWkAEb1FV.jpg",
+          "description": {
+            "description": "A close-up, high-angle portrait of Donald Trump looking towards the upper right. He has light-colored hair and wears a blue suit jacket, a white collared shirt, and a purple patterned tie. The background is blurred with hints of yellow and dark tones.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDxIJfKWYAASOtA.jpg",
+          "description": {
+            "description": "The official seal of the United States Department of Justice centered on a blue circular background. The seal features a bald eagle clutching an olive branch and arrows, superimposed over a shield with red and white stripes. Around the border is a gold rope motif, and the name of the department is written in gold letters. At the bottom of the seal are three gold stars. A Latin motto is inscribed in the inner circle.",
+            "ocrText": "DEPARTMENT OF JUSTICE QUI PRO DOMINA JUSTITIA SEQUITUR"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Representative replies (top by engagement + variety):**\n\n- **Catherine 🍀 🇫🇷 Paris (@What_s_Up_You)**: \"18 U.S. Code § 1519 criminalizes the destruction, alteration, or falsification of documents or evidence with the intent to obstruct a federal investigation (even a potential one). The offense is punishable by up to 20 years of imprisonment and substantial fines. In practice, penalties may be more severe in cases involving abuse of office (e.g., a public official) or where the underlying matter is particularly serious, even though these factors are not explicitly set out as aggravating circumstances in this specific provision.\"  \n  Engagement: 526 likes, 59 reposts, 11 replies, 60k views\n\n- **Sailing Warrior (@sailing_warrior)**: \"If the DOJ is deleting Epstein files instead of releasing them per the law, what will be the consequences for that action?\"  \n  Engagement: 482 likes, 26 reposts, 19 replies, 35k views\n\n- **Hazel Grace (@hazelgrace026)**: [Image post]  \n  Engagement: 255 likes, 19k views\n\n- **DanC ₿ (@decentralised82)**: \"This war is just to cover up the Epstein files\"  \n  Engagement: 125 likes, 19k views\n\n- **Dave (@RideToFireStar)**: \"But what if someone has a complete copy of the unredacted files, and they're waiting for just the right moment to use them as the ultimate catalyst for something history will remember forever? 🤔\"  \n  Engagement: 74 likes, 27k views\n\n- **Ansh 🚀 (@hxsxshe)**: \"LOL, we knew it since 28th Feb 2026.😂😂😂😂😂\"  \n  Engagement: 52 likes, 16k views\n\n- **Lucy (@Sea_u2c)**: \"Is the purpose of this war to divert our attention?\"  \n  Engagement: 37 likes, 13k views\n\n- **The Xenophobic Engineer (@RSA_Xenophobe)**: [Image post]  \n  Engagement: 130 likes, 10k views\n\n- **Miyamoto (@SentientRoombas)**: \"Government officials “accidentally” hitting ALT+F4\"  \n  Engagement: 22 likes, 5.6k views\n\n- **Jack of all trades (@masterfno1)**: [Video/GIF post]  \n  Engagement: 18 likes, 9k views",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2053236650075943384",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:12.578Z",
+  "post": {
+    "id": "2053236650075943384",
+    "author_id": "580967619",
+    "created_at": "2026-05-09T22:12:19.000Z",
+    "text": "Exclusive 💣\n\nXabi Alonso’s reps have informed Liverpool that Chelsea are making enquiries for their client, according to club sources. \n\nThey have informed Liverpool that their client's first choice is @LFC. https://t.co/0x6kAIRwYP",
+    "media": [
+      {
+        "media_key": "3_2053236645713891329",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HH6P2cuXUAEN9gw.jpg",
+        "height": 742,
+        "width": 1320
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 679,
+      "reply_count": 380,
+      "like_count": 10039,
+      "quote_count": 213,
+      "bookmark_count": 236,
+      "impression_count": 2132658
+    },
+    "author_followers": 711017,
+    "author_name": "indykaila News",
+    "author_description": "Award winning account ⚽️📰. Team of 5 elite reporters. Contact @indykbusiness or indykbusiness@gmail.com. Sponsored by @Rainbetcom 18+ https://t.co/UvrNCdPLz3",
+    "author_tweet_count": 70259
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HH6P2cuXUAEN9gw.jpg",
+          "description": {
+            "description": "A close-up photograph of football manager Xabi Alonso looking toward the camera. Superimposed to his right are the official crests of Chelsea Football Club and Liverpool Football Club.",
+            "ocrText": "CHELSEA FOOTBALL CLUB YOU'LL NEVER WALK ALONE LIVERPOOL FOOTBALL CLUB EST-1892"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @justcfc: Same situation again, we will see who gets him (Likes: 215, Reposts: 0, Replies: 0)\n- @EmenaIo: Complete waffle. He tried the old club thing at Real and it didn’t end up well. He won’t make that mistake again. (Likes: 127, Reposts: 0, Replies: 0)\n- @WholesomeFB: I can’t handle another year of Slotball (Likes: 121, Reposts: 1, Replies: 1)\n- @AlexisMajester: Bombshell my arse. This is a dogshit exclusive (Likes: 68, Reposts: 0, Replies: 0)\n- @Tarzanjr554: Chelsea better get him Liverpool ain’t serious about getting him so it’ll be a waste of time for Xabi (Likes: 65, Reposts: 0, Replies: 0)\n- @BVB_Andreay: Inquries and Liverpool in same sentence (Likes: 42, Reposts: 0, Replies: 0)\n- @onlyoneChi_p: Somehow, Arne slot is planning next season with his other faction of Liverpool because I’m very sure it’s not with this same Liverpool I’m supporting that he will manage next season (Likes: 32, Reposts: 1, Replies: 2)\n- @HendrickD82: This? This is the \"bombshell\"? Jesus wept. (Likes: 28, Reposts: 0, Replies: 0)\n- @StivShunto: Wow bombshell news this is - so basically someone’s brother told their mate who told their mum who’s sister is their Aunt - the old sources again. What’s the bombshell? Chelsea making enquiries? Wow - what a bombshell (Likes: 15, Reposts: 0, Replies: 0)",
+    "warnings": []
+  }
+}

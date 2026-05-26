@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1988041452493172783",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:07.370Z",
+  "post": {
+    "id": "1988041452493172783",
+    "author_id": "1547232242073849856",
+    "created_at": "2025-11-11T00:29:52.000Z",
+    "text": "Anthony Davis 👀👀 https://t.co/pQN7oWy7t6",
+    "media": [
+      {
+        "media_key": "3_1988041448541880320",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G5bxKhMXgAAh7pM.jpg",
+        "height": 1377,
+        "width": 1284
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 622,
+      "reply_count": 472,
+      "like_count": 32869,
+      "quote_count": 268,
+      "bookmark_count": 881,
+      "impression_count": 6191938
+    },
+    "author_followers": 789154,
+    "author_name": "NBACentel",
+    "author_description": "Featured on @ESPN, @BarstoolSports, @SINoW, @FoxSports, @ComplexSports | PARODY Account. NOT Affiliated with TheDunkCentral",
+    "author_tweet_count": 21645
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G5bxKhMXgAAh7pM.jpg",
+          "description": {
+            "description": "A close-up photograph of NBA players Anthony Davis and Kyrie Irving standing on a basketball court during a pre-game session. Anthony Davis is standing in the center wearing a white t-shirt and black shorts, while Kyrie Irving is to his right holding a basketball, wearing a grey jersey with the number 11 and grey jogger pants. Both are surrounded by empty arena seating in the background.",
+            "ocrText": "MAVERICKS 11"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Beauarcher1: (No text content) (Likes: 2759)\n- @EdotHxncho: niggas traded weight too😭😭 (Likes: 1633)\n- @Fana27014Sports: Anthony Davis after gaining 50 pounds😂 (Likes: 1252)\n- @WealthGathers: Bro feet making a split decision (Likes: 364)\n- @boof69x: Sources say he has entered his 2nd trimester (Likes: 358)\n- @BallsackSports: The food in Dallas is ELITE, I can’t blame him (Likes: 203)\n- @GOATSteph30: Bro got the harden fat suit on 😭😭😭 (Likes: 190)\n- @korky122: Fellas which one is it🤣 (Likes: 156)\n- @OshtwddupBoi: when coach says you can’t eat 12 honey buns before the game (Likes: 113)\n- @busyrocket: Bro looks like he just came to watch his homies play and grab food after (Likes: 76)",
+    "warnings": []
+  }
+}

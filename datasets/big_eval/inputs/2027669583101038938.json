@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2027669583101038938",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:41.046Z",
+  "post": {
+    "id": "2027669583101038938",
+    "author_id": "1373772003191099392",
+    "created_at": "2026-02-28T08:57:55.000Z",
+    "text": "Trump makes a major announcement about the war with Iran \n\nhttps://t.co/rBYbPRf89B",
+    "media": [
+      {
+        "media_key": "13_2016946251200118784",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2016946251200118784/img/PdWF0nTVsGTVwDeJ.jpg",
+        "height": 1080,
+        "width": 1080,
+        "duration_ms": 13100,
+        "view_count": 8299097,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2016946251200118784/vid/avc1/540x540/5xNZZyvxZqXxjW_f.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2016946251200118784/pl/ExQNd9V8pnHCnyX7.m3u8?v=013"
+          },
+          {
+            "bit_rate": 8768000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2016946251200118784/vid/avc1/1080x1080/uUCohVyQq61hWCVn.mp4"
+          },
+          {
+            "bit_rate": 1280000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2016946251200118784/vid/avc1/720x720/icHr9rWwC9TJDQSH.mp4"
+          },
+          {
+            "bit_rate": 432000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2016946251200118784/vid/avc1/320x320/k3KlC6Yg1QQs6H8h.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 30561,
+      "reply_count": 2144,
+      "like_count": 161702,
+      "quote_count": 2020,
+      "bookmark_count": 12694,
+      "impression_count": 7500029
+    },
+    "author_followers": 244382,
+    "author_name": "Darth Powell",
+    "author_description": "If you had not committed great sins, God would not have sent a punishment like me upon you.",
+    "author_tweet_count": 472682
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2016946251200118784/vid/avc1/1080x1080/uUCohVyQq61hWCVn.mp4",
+          "description": {
+            "description": "An AI-generated sequence of frames featuring Donald Trump at a presidential podium on the deck of an aircraft carrier. In the background, Benjamin Netanyahu is seen reacting as Trump leans over the podium with an exaggerated expression of screaming or laughter. Several fighter jets are parked in the distance.",
+            "ocrText": "SEAL OF THE PRESIDENT OF THE UNITED STATES"
+          },
+          "transcription": "Oh, Donald, why haven't you attacked Iran yet? If you don't attack soon, I will release the Epstein files. Ah, shh. Okay, BB, I'll do whatever you want. Ah! Ah!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@Kanarymine4**  \nSitting president  \nLikes: 1036 | Reposts: 67 | Replies: 7\n\n- **@FreedomNews419**  \nNobel Peace Prize FFS  \nLikes: 749 | Reposts: 128 | Replies: 20\n\n- **@veyselc59**  \nTrump's spoiled child is Israel.  \nLikes: 522 | Reposts: 0 | Replies: 0\n\n- **@more69s**  \nIt's the Epstein War  \nLikes: 166 | Reposts: 42 | Replies: 0\n\n- **@shabbirshasha**  \n#Epstienfiles  \nLikes: 170 | Reposts: 0 | Replies: 0\n\n- **@TSN_Mad**  \nMAGA was never a thing  \nLikes: 116 | Reposts: 12 | Replies: 1\n\n- **@im_thereal_oJ**  \nHow ironic. Total disgrace  \nLikes: 94 | Reposts: 17 | Replies: 4\n\n- **@greendragonhq**  \nAll for Daddy Netanyahu.  \nLikes: 89 | Reposts: 10 | Replies: 2\n\n- **@NanciNanci7**  \n“Board of Peace starts its first war”  \n#BoardOfPeace  \n#EpsteinWar  \n#TrumpEpsteinPedoCoverUp  #GOP @GOP  \n#25thAmendmentNow  \nLikes: 77 | Reposts: 23 | Replies: 10\n\n- **@HardTymz25**  \nLindsey Graham is a piece of shit. It's okay that our troops die because YOU SAY that it's a \"noble cause\"? These fucking Neocons...  \nLikes: 50 | Reposts: 8 | Replies: 3",
+    "warnings": []
+  }
+}

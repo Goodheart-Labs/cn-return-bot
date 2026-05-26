@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2049866378229006425",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:25.719Z",
+  "post": {
+    "id": "2049866378229006425",
+    "author_id": "1465697731297509386",
+    "created_at": "2026-04-30T15:00:03.000Z",
+    "text": "The Beatles pose for what would become the cover of their final album “Get Back” https://t.co/j87MQ3XfPB",
+    "media": [
+      {
+        "media_key": "3_2049476492569055232",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHE0AusXkAAmYnI.jpg",
+        "height": 1024,
+        "width": 1024
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 249,
+      "reply_count": 51,
+      "like_count": 3257,
+      "quote_count": 21,
+      "bookmark_count": 173,
+      "impression_count": 118325
+    },
+    "author_followers": 757928,
+    "author_name": "🎸 Rock History 🎸",
+    "author_description": "Long live ROCK AND ROLL and HEAVY METAL!!! 🤘🏻 The best content of the best years of music history 🎸Contact us by DM 📥.",
+    "author_tweet_count": 17344
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHE0AusXkAAmYnI.jpg",
+          "description": {
+            "description": "A low-angle color photograph shows the four members of the Beatles - Ringo Starr, Paul McCartney, George Harrison, and John Lennon - looking down over a wooden railing inside the EMI headquarters in London. They are all sporting long hair and facial hair, dressed in late 1960s attire. This image recreates the shot from their first album, 'Please Please Me', and was used for their '1967-1970' compilation album.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@HateAintACrime: You should’ve written “what would’ve been…Get Back” because there was no such album. \n\nThis photo went on the 1973 Blue Album (greatest hits 1967–1970) \n(Likes: 156)\n\n@zacjones13: Just let an old photo be old. Stop with the AI upscaling.\n(Likes: 63)\n\n@TripaTaquito: AI slop\n(Likes: 15)\n\n@myrant04: Let it be! Was the final album\n(Likes: 12)\n\n@DanielPrado21: Please don't use IA for that.\n(Likes: 10)\n\n@LtGenScott: I'm getting a Michael Palin vibe from George in that picture.\n(Likes: 10)\n\n@christo34036850: Stop with AI Paul looks like jasper Carrott and John who is that\n(Likes: 7)\n\n@Macca15Paul: The Beatles had no \"final album 'Get Back' \". The project was shelved, they recorded Abbey Road instead, and publised Let it Be with a different cover. The pictures were used for the red and blue compilations, and only in 2021 was 'Get Back' released as part of a box set.\n(Likes: 5)\n\n@ZandrTec: Ai slop\n(Likes: 5)\n\n@XStrangeHistory: Is this post meant to be a joke?\n(Likes: 4)",
+    "warnings": []
+  }
+}

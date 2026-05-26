@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2022069134394359950",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:26.984Z",
+  "post": {
+    "id": "2022069134394359950",
+    "author_id": "1505768920879439872",
+    "created_at": "2026-02-12T22:03:44.000Z",
+    "text": "After dunking on Deni Avdija, the NBA has suspended Jaden McDaniels. To return he must:\n\n- $500K donation to anti-hate causes\n- Antisemitic training\n- Meet with ADL, Jewish leaders\n- Meet with Adam Silver and Netanyahu to demonstrate understanding  https://t.co/QXo2soxPOv",
+    "media": [
+      {
+        "media_key": "13_2022023967297462273",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2022023967297462273/img/5SwmBdfarE_TyKNj.jpg",
+        "height": 1440,
+        "width": 1080,
+        "duration_ms": 22155,
+        "view_count": 1623282,
+        "variants": [
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022023967297462273/vid/avc1/1080x1440/2AEgxVNZtwDuck5J.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2022023967297462273/pl/-P9H32MQftG-er70.m3u8?v=75e"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022023967297462273/vid/avc1/320x426/IoiDbVr-KWUdtT54.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022023967297462273/vid/avc1/720x960/cI3NlYLpQl4zj3GF.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022023967297462273/vid/avc1/480x640/UkOA0Fw10SF23xVK.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3474,
+      "reply_count": 425,
+      "like_count": 56607,
+      "quote_count": 213,
+      "bookmark_count": 2575,
+      "impression_count": 2542668
+    },
+    "author_followers": 12439,
+    "author_name": "MNMuse",
+    "author_description": "Stats for all things Wolves, Vikings, and MN sports in general. Christ is King #wolvesback #skol",
+    "author_tweet_count": 7620
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2022023967297462273/vid/avc1/1080x1440/2AEgxVNZtwDuck5J.mp4",
+          "description": {
+            "description": "A man in a blue sports uniform jumps in the air to dunk the ball. There are many viewers in the background of the image. After dunking, the man starts walking along with his teammates. Another man in a blue uniform with a white towel around his neck is seen shouting in another picture. The last frame is a man with a white headband on, in a dark background. ",
+            "ocrText": "MINNESOTA 3, CLINAN 23, MeDANIELS 3 "
+          },
+          "transcription": "Music"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @GiGa_GOATED: They gonna force the league to wear jew lives matter shirts for ts 😭 (Likes: 3604)\n- @Iyadoo: I will add one more: \n- Israel (in self-defense) gets to bomb 4 schools and 2 hospitals in Gaza to kill an additional up to 2000 Palestinian children. (Likes: 1282)\n- @EhhRickyy: The Timberwolves will all be kissing the wall this summer. (Likes: 1259)\n- @541patriot: That block was promised to him 3000 years ago, now he's got to blow up the stadium. (Likes: 923)\n- @T_rashPandada: I heard it was a $6 million fine 😉 (Likes: 533)\n- @bongripenjoyer: those nuts on his face were promised to him 3000 years ago i’m cryin 😂😂 (Likes: 516)\n- @stevenpmullins: Deni is on his way to all star weekend. Jaden. Is. Not. (Likes: 247)\n- @_ILCW_: That charge was promised to him 3000 years ago! (Likes: 234)\n- @MiscWolvesStats: You took this too far... and it's awesome (Likes: 229)\n- @crombuckle: -kiss the wall\n-trip to holocaust museum \n-book report on Anne Frank (Likes: 176)",
+    "warnings": []
+  }
+}

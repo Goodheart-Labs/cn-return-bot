@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2049731418482426059",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:02.080Z",
+  "post": {
+    "id": "2049731418482426059",
+    "author_id": "1294607914036891648",
+    "created_at": "2026-04-30T06:03:46.000Z",
+    "text": "Team of the Season\n\nBox 1: 120 CM Yaya Touré 🇨🇮\nBox 2: 120 RW Cha Bum Kun 🇰🇷\nBox 3: 120 CB Laurent Blanc 🇫🇷\n\n#FCMobile #TOTS https://t.co/SjSosgeif6",
+    "media": [
+      {
+        "media_key": "3_2049731399964561408",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHIb2SvaEAA9tuY.jpg",
+        "height": 902,
+        "width": 2002
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 54,
+      "reply_count": 76,
+      "like_count": 1189,
+      "quote_count": 3,
+      "bookmark_count": 44,
+      "impression_count": 112711
+    },
+    "author_followers": 75093,
+    "author_name": "Madridistaa",
+    "author_description": "Real Madrid fan who also happens to play FC Mobile. \n\nYou'll mainly find tweets regarding Real Madrid and FC Mobile in my profile.",
+    "author_tweet_count": 5734
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHIb2SvaEAA9tuY.jpg",
+          "description": {
+            "description": "A digital promotional graphic for EA Sports FC Mobile features Laurent Blanc in a white jersey. On the right, a series of reward tiles are displayed, including a high-rated 120 OVR Laurent Blanc 'Team of the Season' card, various quantities of tokens and gems, and a silhouette player card. The background is a vibrant purple gradient.",
+            "ocrText": "TEAM OF THE SEASON EA SPORTS FC TOTS 120 CB BLANC x25 x15 x2,500 x5 x800 x500 113-117 x5,000 GUARANTEED 120 OVR LAURENT BLANC IN 12 DRAFTS! MADRIDISTAAFC x ALXNSO_MOBILE"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@fcmobile474268**: WTF🤬🤬, what is this, 9 daily rewards are all filled with league tags 🤬 (61 likes)  \n**@AdityaS37914090**: Ofc They are Trying to milk more money on tots than whores on OF (45 likes)  \n**@legas1710**: Valió mango 😞 (114 likes)  \n**@PhanMinhHauFFM**: Here we go 🇫🇷 (19 likes)  \n**@saijsajib02**: Where is week 3 draft leaks (8 likes)  \n**@_clockSp**: When will you release pool A leaks ? (7 likes)  \n**@jaswinderS57490**: This box thing is so trash! All good cards are in the box! (5 likes)  \n**@fpl_TCK**: Which league is coming in week3? (4 likes)  \n**@RanoFCM**: so we getting Zidane in the draft🥹🥹🥹 (3 likes)  \n**@SajidJoy363647**: Cr7 will get a utots card or not? (3 likes)",
+    "warnings": []
+  }
+}

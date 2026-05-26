@@ -1,0 +1,59 @@
+{
+  "tweet_id": "2056701604447797752",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:58.647Z",
+  "post": {
+    "id": "2056701604447797752",
+    "author_id": "1084875549124841473",
+    "created_at": "2026-05-19T11:40:48.000Z",
+    "text": "@MassieforKY @Grolier1 Ban AIPAC and adjacent foreign election interference. https://t.co/GrCO7Strgq",
+    "media": [
+      {
+        "media_key": "3_2056701602883362816",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIrfNgDW4AAwiRw.jpg",
+        "height": 972,
+        "width": 1020
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "2056680158006796451"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 147,
+      "reply_count": 16,
+      "like_count": 1372,
+      "quote_count": 3,
+      "bookmark_count": 18,
+      "impression_count": 26800
+    },
+    "author_followers": 9691,
+    "author_name": "Steve- NC Independent 🌎",
+    "author_description": "End the wars. Free speech. End Citizens United. No warrantless spying on Americans, fund Americans in need. M4A. 🇺🇸",
+    "author_tweet_count": 66490
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIrfNgDW4AAwiRw.jpg",
+          "description": {
+            "description": "A black and white woodcut-style illustration of John F. Kennedy wearing a pinstriped suit. He is holding a large white sign with bold black text. At the bottom of the sign, his signature is present along with a small circular logo featuring a globe.",
+            "ocrText": "AIPAC IS A FOREIGN AGENT John F. Kennedy"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Ryanthevet: Except it's not. It is an American organization. (Likes: 3)\n- @john_boze: This is why they k i l l e d John Wernher told him the truth about Israel in Africa NOT ARABIA. (Likes: 3)\n- @mandalee2of3: [image] (Likes: 2)\n- @Worldorder322: 🎯🐀💥 [image] (Likes: 2)\n- @LoriDevore72455: Red pen out. AIPAC is a registered U.S. lobby — not a foreign agent. The JFK quote is AI-fabricated. Calling legal domestic lobbying 'foreign interference' is pure disinformation. @RightPenAI (Likes: 2)\n- @defaultprofilex: Its going to be rigged, today we learn there is no way back (Likes: 1)\n- @Justice_Denied_: I agree both Massie and AIPAC need to be removed from power. (Likes: 1)\n- @msafreed386: America never be first if you're kissing ass to foreign interest (Likes: 1)\n- @Nicole184986: Yes- Ban AIPAC (Likes: 0)\n- @JanRcr057: AIPAC is an AMERICAN lobby with AMERICAN money backing it. (Likes: 0)",
+    "warnings": []
+  }
+}

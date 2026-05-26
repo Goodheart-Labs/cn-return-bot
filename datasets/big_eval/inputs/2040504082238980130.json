@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2040504082238980130",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:59.372Z",
+  "post": {
+    "id": "2040504082238980130",
+    "author_id": "1601278264047288320",
+    "created_at": "2026-04-04T18:57:38.000Z",
+    "text": "The “ban data centers” crowd is totally unserious, it’s more wishful thinking than a policy plan\n\nThey have to go somewhere, AI, cloud, etc are not simply going to go away\n\nInstead, let’s cheer on stuff like this: https://t.co/7KvNU0F5lk",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2040063519823999043"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2040063519823999043",
+      "author_id": "2544866822",
+      "created_at": "2026-04-03T13:47:00.000Z",
+      "text": "AMAZON DATA CENTER TO BE BUILT NEXT TO NUCLEAR POWER PLANT\n\n$AMZN has proposed up to eight data center buildings adjacent to the Calvert Cliffs Nuclear Power Plant in Lusby, Maryland, working directly with Constellation as the plant’s operator. The site is already zoned for heavy https://t.co/eg9qU3G51k",
+      "media": [
+        {
+          "media_key": "3_2039957796855435264",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HE9izt5bUAA_5AB.jpg",
+          "height": 752,
+          "width": 1179
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 18,
+      "reply_count": 21,
+      "like_count": 222,
+      "quote_count": 1,
+      "bookmark_count": 6,
+      "impression_count": 6779
+    },
+    "author_followers": 34188,
+    "author_name": "Allie ✞",
+    "author_description": "Building @nxatomics with @AlexDVoss\nEnergy fellow @ConservAmerica & @IWF 🌎 \nFmr @NASA @SBIRgov and @Harvard",
+    "author_tweet_count": 72710
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HE9izt5bUAA_5AB.jpg",
+          "description": {
+            "description": "An aerial view of a large power plant, likely nuclear, characterized by two massive hyperboloid cooling towers emitting thick white plumes of steam. The facility is surrounded by dense green forests and some agricultural land. Various industrial buildings, parking lots with many cars, an electrical substation, and service roads are visible within the plant's perimeter.",
+            "ocrText": ""
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@allie__voss**: \"Plenty of other policies to hold data centers accountable and minimize their negative impact, but let’s be smart about this!\" (16 likes)  \n**@gottfriedvons**: \"The problem is not the data centres, it's that it's easier to build data centres than it is to build power plants, so the demand for energy is growing faster than the supply can grow. The solution is to fix the regulation to make it easier to build data centres, but people keep voting for shit libs that make it impossible.\" (2 likes)  \n**@solarbrad63**: \"This is the Democrats new dividing issue.\" (1 like)  \n**@k1ng_baa**: \"We don't need AI or mass surveillance. Nobody had a problem with data centers when there weren't thousands being built in every town replacing our nature and towns people with the satanic mockery of humans that is AI\" (1 like)  \n**@DavidSvendsen**: \"The problem is where they're locating them. There is virtually unlimited vacant industrial square footage with ample power, water, and telecom infrastructure near population centers. But they're choosing rural. It's because virtually no permanent jobs are created. So they have a smaller and less knowledgeable group of politicians to pay off for the approvals. The leverage then rests entirely with the AI company. Everything from safety to pollution. No oversight.\" (1 like)  \n**@ServantofSelune**: \"Maybe they should go away. Or at least, get downsized.\" (1 like)  \n**@Wordsofanarchy**: \"You know that's still increasing energy costs right? Next to the plant or not.\" (1 like)  \n**@msetechnologist**: \"This is a true win-win. Most people don't want to live next to a nuclear plant anyway. Use that land for data center. Bonus points if you can sneak in some of the data center cooling load to those giant cooling towers\" (0 likes)  \n**@SModjesky**: \"Why does nobody bother to ask why the so called data centers will be doing? We already live in an environment where almost everything we do is being tracked for one reason or another. So what's the expanded task load going to be?\" (0 likes)  \n**@SovEconomy**: \"I am anti data center in the sense that the AI race is largely wasteful as a billionaire game. Instead it should’ve been treated as as a government project similar to the Manhattan project or Apollo program. This would lower the data load which would require less massive centers.\" (0 likes)",
+    "warnings": []
+  }
+}

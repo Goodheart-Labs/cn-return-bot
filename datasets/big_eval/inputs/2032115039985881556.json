@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2032115039985881556",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:19.083Z",
+  "post": {
+    "id": "2032115039985881556",
+    "author_id": "1879644163769335808",
+    "created_at": "2026-03-12T15:22:35.000Z",
+    "text": "UNDEFEATED. https://t.co/Jt69bcag5y",
+    "media": [
+      {
+        "media_key": "13_2032114841943416832",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2032114841943416832/img/8TH7AQaFNTxPFYYQ.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 52308,
+        "view_count": 24505504,
+        "variants": [
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032114841943416832/vid/avc1/1280x720/Ps8NSBYoiO1e0EX9.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032114841943416832/vid/avc1/640x360/vFmGihDQU4Wo_xie.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2032114841943416832/pl/D6-Cb8UKklhMNVR-.m3u8?v=7fb"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032114841943416832/vid/avc1/1920x1080/lXsBOYPlvF8p-_Mj.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032114841943416832/vid/avc1/480x270/vnTYcYncj4YYPV-k.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 24234,
+      "reply_count": 22845,
+      "like_count": 199563,
+      "quote_count": 30442,
+      "bookmark_count": 48994,
+      "impression_count": 102866026
+    },
+    "author_followers": 4699939,
+    "author_name": "The White House",
+    "author_description": "The Golden Age of America Begins Right Now.\n📱 Text USA to 45470 to receive alerts.",
+    "author_tweet_count": 15262
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2032114841943416832/vid/avc1/1920x1080/lXsBOYPlvF8p-_Mj.mp4",
+          "description": {
+            "description": "A series of frames depicting a video game interface transitioning into gameplay, followed by infrared footage of air strikes. The first frame shows a custom Wii-style menu for 'Operation Epic Fury'. The second frame shows a Wii Sports Golf gameplay screen where a character is about to swing. The third and fourth frames display real-world infrared (FLIR) or thermal imagery labeled 'UNCLASSIFIED' depicting large explosions at target sites.",
+            "ocrText": "< Operation Epic Fury > Wii Menu Start UNCLASSIFIED UNCLASSIFIED 6M"
+          },
+          "transcription": "The Wait, I'm dumb! Wait!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@chiitan7407**: My beloved humans, I want you to be more thoughtful and full of love. War is not a game. (Likes: 73242, Reposts: 5677, Replies: 210)  \n**@USA_Polling**: (No text content) (Likes: 63241, Reposts: 1295, Replies: 48)  \n**@Conchrisador**: Yikes (Likes: 26981, Reposts: 423, Replies: 47)  \n**@krassenstein**: Eight Americans are dead 140 injured, we’ve wasted about $13 billion and gas prices are through the roof. This is not a game. (Likes: 26980, Reposts: 1011, Replies: 323)  \n**@JonathanWiltsh7**: You do realise this video itself is a war crime? Every member of the Trump administration is a psychopathic cunt that jokes about people being killed. Fuck you all. Sincerely, THE WORLD. (Likes: 26941, Reposts: 1393, Replies: 203)  \n**@DhruTech**: Me checking this isn’t a parody account (Likes: 22507, Reposts: 279, Replies: 26)  \n**@Partisan_12**: You missed the school where you killed 168 little iranian girls (Likes: 19643, Reposts: 485, Replies: 39)  \n**@ShanonLee_AF**: You literally just brought a 20 year old home in a box and you post fucking cartoon videos like this war is a joke! What the fuck is wrong with this administration? How much more incompetent, disrespectful, insensitive are you going to be! This administration is a disgrace😡! (Likes: 10533, Reposts: 622, Replies: 127)  \n**@hodgetwins**: What the hell is wrong with y’all? (Likes: 9222, Reposts: 192, Replies: 307)  \n**@lmfindlaaay**: (No text content) (Likes: 9045, Reposts: 28, Replies: 7)",
+    "warnings": []
+  }
+}

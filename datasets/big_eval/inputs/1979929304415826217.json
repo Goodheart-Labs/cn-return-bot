@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1979929304415826217",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:00.577Z",
+  "post": {
+    "id": "1979929304415826217",
+    "author_id": "2327400218",
+    "created_at": "2025-10-19T15:15:06.000Z",
+    "text": "The No Kings crowds were crazy! https://t.co/iAeMcDYNj5",
+    "media": [
+      {
+        "media_key": "3_1979929296987639808",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3ofNJtWUAAKBpm.jpg",
+        "height": 1050,
+        "width": 1584
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2212,
+      "reply_count": 3394,
+      "like_count": 25890,
+      "quote_count": 389,
+      "bookmark_count": 179,
+      "impression_count": 425323
+    },
+    "author_followers": 324234,
+    "author_name": "C3",
+    "author_description": "",
+    "author_tweet_count": 109611
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3ofNJtWUAAKBpm.jpg",
+          "description": {
+            "description": "A high-angle, wide-shot photograph from behind Freddie Mercury on stage during the Live Aid concert at Wembley Stadium in 1985. Mercury is facing a massive, dense crowd that fills the stadium, wearing his iconic white tank top and light-colored jeans with one arm raised in the air. In the background, a small control tower and several distant structures are visible among the sea of spectators. Large black stage monitors line the front edge of the stage platform.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- AwakenedOutlaw (@AwakenedOutlaw): My favorite part was when Gov Tim Walz took the stage. (Likes: 912)\n- MeanTweetsRule (@MeanTweetsRule): 😂😅🤣 (Likes: 269)\n- WhatDaFookNC (@WhatDaFookNC): LMFAO 😆😆🤣😆 (Likes: 173)\n- Steve_A_Reno (@Steve_A_Reno): I hear they were packed! (Likes: 166)\n- Reality_Slam (@Reality_Slam): Yes here is a historic photo of the Last last time the same group of people got together 🤣 It was pure mayhem I tell you 🤣 (Likes: 134)\n- EmEllEeP (@EmEllEeP): Right? This one was so groovy. We ran out of water and food! (Likes: 127)\n- SpaceWoot (@SpaceWoot): No Kingsstock was wild man! (Likes: 100)\n- ShowMeGuy (@ShowMeGuy): (Likes: 99)\n- osagekid (@osagekid): True … Amazing (Likes: 75)\n- 62FlamingArrows (@62FlamingArrows): What's with all the concert pics of people from years past being used as no kings protests? This is pitiful to have to use old pictures of people at concerts. Wow. (Likes: 33)",
+    "warnings": []
+  }
+}

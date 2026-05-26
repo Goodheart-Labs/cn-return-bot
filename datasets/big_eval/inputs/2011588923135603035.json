@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2011588923135603035",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:36.209Z",
+  "post": {
+    "id": "2011588923135603035",
+    "author_id": "1653923110108688384",
+    "created_at": "2026-01-14T23:59:07.000Z",
+    "text": "Type of thing that Micr*soft would do. https://t.co/8VatjBaElb",
+    "media": [
+      {
+        "media_key": "3_2011588854902636547",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-qZZ9qbQAMaX-D.jpg",
+        "height": 2122,
+        "width": 3248
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 15,
+      "reply_count": 12,
+      "like_count": 455,
+      "quote_count": 0,
+      "bookmark_count": 45,
+      "impression_count": 22118
+    },
+    "author_followers": 21024,
+    "author_name": "Keith",
+    "author_description": "Program Manager @brave\n\nVery serious marketing man @Obscuravpn\n\nAll I do is sit inside my room and watch the fire burn on the internet",
+    "author_tweet_count": 15115
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-qZZ9qbQAMaX-D.jpg",
+          "description": {
+            "description": "A screenshot of a web browser displaying the Nobara Project website. A pop-up dialog box is centered over the page containing a message from Microsoft Edge attempting to discourage the user from navigating away or switching operating systems, specifically mentioning Copilot. The website in the background features sections for 'Steam-HTPC', 'Steam-Handheld', and support guides like 'Step-by-step install' and 'Wiki & troubleshooting'.",
+            "ocrText": "nobaralinux - Search X Nobara Linux | The Nobara Project X + https://nobaraproject.org Chat Nobara Project Overview Downloads Wiki FAQ Getting started Community Store Please consider staying on Windows We are actively working on making Copilot better. Stay on current page Take me off the page Steam-HTPC Living-room-friendly setup, tuned for TVs and controllers. Feels at home on the couch. Navigation that works well with gamepads. Boot straight into a console-like experience. Get Steam-HTPC Fast switch between desktop and game modes. Get Steam-Handheld Start with confidence These guides help you go from ISO to daily driver smoothly. Step-by-step install From download and USB creation to first boot and updates — everything in one place. Open new user guide Wiki & troubleshooting Learn how to upgrade, switch desktops, add extra drives, and adjust graphics drivers. Explore Nobara wiki Changelog See what changed in each Nobara release: fixes, improvements, and new features across editions. View changelog"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- .☘︎ ݁˖ april@vapenation (@bongripper30000): nah. if they knew, you wouldnt have an option to stay on the page. why would microsoft let you control Their computer? (11 likes)\n- PiX (@pa1nark): Microslop* (9 likes)\n- kris (@idkclarkie): And you're on a Mac 🤣🤣 (9 likes)\n- plastaferian440 (@plasta440): Now if we can find a way to spam Copilot to upload AI generated dick pics to their OneDrivers servers. (2 likes)\n- Goat1337 (@go4t1337): „We are actively making copilot better” 😂😂 (1 like)\n- Gcv (@gcvftw): Excuse me? (1 like)\n- Dismembered Newsom (@deadsoulmaga): They don't have to. Over 94% of all personal computers use Microsoft Windows. (0 likes)\n- W. Clifton (@wclifton968): Wouldn't be the first time they've ever done something like this (if they do actually do this LOL). They would probably only limit this to people going to https://ubuntu.com/ or https://fedoraproject.org/ with the notice \"Have you tried Windows Subsystem for Linux?\" (0 likes)",
+    "warnings": []
+  }
+}

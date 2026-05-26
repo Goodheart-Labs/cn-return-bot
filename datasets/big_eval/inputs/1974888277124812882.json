@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1974888277124812882",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:12.315Z",
+  "post": {
+    "id": "1974888277124812882",
+    "author_id": "1666123375884873728",
+    "created_at": "2025-10-05T17:23:51.000Z",
+    "text": "A man was caught using the woman’s bathroom at a shopping center in Brooklyn https://t.co/ohzVSU6nJ4",
+    "media": [
+      {
+        "media_key": "13_1974888206064553984",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1974888206064553984/img/Qi4IrlInoxIqrcjA.jpg",
+        "height": 720,
+        "width": 576,
+        "duration_ms": 20600,
+        "view_count": 27010460,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1974888206064553984/vid/avc1/320x400/9JCpFJ5Kj5w7O9MQ.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1974888206064553984/vid/avc1/480x600/CEi_LVXtip9MctSA.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1974888206064553984/vid/avc1/576x720/l1MybJzhG1Szfhxl.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1974888206064553984/pl/m7sMrk2jIPOIhz8R.m3u8?v=b17"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 7741,
+      "reply_count": 4540,
+      "like_count": 113335,
+      "quote_count": 1536,
+      "bookmark_count": 13193,
+      "impression_count": 24128433
+    },
+    "author_followers": 1279999,
+    "author_name": "Crime Net",
+    "author_description": "Crime Caught On Camera💥| Viewer Discretion Is Advised | Turn Notifications On | More @CrimeNetNews",
+    "author_tweet_count": 8261
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1974888206064553984/vid/avc1/576x720/l1MybJzhG1Szfhxl.mp4",
+          "description": {
+            "description": "A sequence of four frames showing two young women taking a mirror selfie in what appears to be a restroom. In the first and second frames, they are seen posing and adjusting their hair; a person wearing a traditional Shtreimel (fur hat) and long black coat is partially visible in the background. In the third and fourth frames, the camera focuses on the individual in the Shtreimel and long coat, who is washing their hands at a sink while a third woman in olive green clothing walks by in the background.",
+            "ocrText": "A"
+          },
+          "transcription": "I'm not going to be late. Don't get my love up. Excuse me, sir? You're late. Yeah? I'm sorry."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@degen4lyfe_**: Doesn’t matter… that bathroom was promised to him 4,000 years ago (8086 likes)\n- **@Truthtellerftm**: A man you say….! (3793 likes)\n- **@Howlingmutant0**: Oh that’s a man, how do you know? Did you ask them? (3697 likes)\n- **@s7600084**: Jews have no boundaries even of shame… (2569 likes)\n- **@mohsinkhaniyc**: That washroom was promised to him by God 3,000 years ago, fcuking criminal's (2193 likes)\n- **@Emolclause**: The Black lady’s reaction is priceless😂 “I know his a$$ didn’t just…”😂 (2144 likes)\n- **@ManInDamascus**: No Jew no less a religious one, would go into a bathroom with a tallet on. I guess the demand for videos showing bad behavior by Jews has outstripped supply. (1058 likes)\n- **@RockwellIsGood**: You dont understand, that bathroom was promised to him thousands of years ago! (728 likes)\n- **@HebrewHammer_3**: Ahhh such bullshit snd such a staged video, besides that there is Zero chance an orthodox jew would go into a bathroom with a talit on, The clothing he is wearing is for shabbat, and no charadei would go into a mall on shabbatz Or wear a streimel into the bathroom. P.S. go fuck yourself (562 likes)\n- **@ObviousRises**: Just say a Rabbi. (286 likes)",
+    "warnings": []
+  }
+}

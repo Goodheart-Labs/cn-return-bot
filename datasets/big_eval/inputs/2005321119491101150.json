@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2005321119491101150",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:09.340Z",
+  "post": {
+    "id": "2005321119491101150",
+    "author_id": "227221651",
+    "created_at": "2025-12-28T16:53:06.000Z",
+    "text": "Predictive programming https://t.co/YHxCzr1dZn",
+    "media": [
+      {
+        "media_key": "13_2005320998371954688",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2005320998371954688/img/tsFJKAgtcrBeKB9d.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 23300,
+        "view_count": 112523,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2005320998371954688/vid/avc1/320x568/_I9iWc6XhF0Dgydh.mp4?tag=14"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2005320998371954688/vid/avc1/480x852/WQ5iJ645scblOu1u.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2005320998371954688/vid/avc1/720x1280/AmEDz91XH4UL9Di0.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2005320998371954688/pl/hRbeaT0Ix-bLkLxB.m3u8?tag=14&v=d42"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2180,
+      "reply_count": 41,
+      "like_count": 11911,
+      "quote_count": 52,
+      "bookmark_count": 2679,
+      "impression_count": 162876
+    },
+    "author_followers": 92754,
+    "author_name": "Kentah Gwanjez",
+    "author_description": "Always in service of His Majesty",
+    "author_tweet_count": 28497
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2005320998371954688/vid/avc1/720x1280/AmEDz91XH4UL9Di0.mp4?tag=14",
+          "description": {
+            "description": "A set of four consecutive frames from a video showing a scene between three actors in a dark setting, with overlay text claiming the movie was released 5 years before 9/11. The sequence starts with Samuel L. Jackson's character questioning someone about faking a terrorist act for funding. The following frames show two other characters (a man in a suit and a blonde woman) discussing that there is no way to fake killing 4000 people and deciding they must do it for real to secure their funding.",
+            "ocrText": "This movie was released 5 years before 9 / 11. tufaha.falastinia. You're gonna fake some terrorist thing just to scare some money out of Congress? ... I have no idea how to fake killing 4000 people. So we're just gonna have to do it for real. Then I get my funding."
+          },
+          "transcription": "You're telling me that you're gonna fake some terrorist thing just to get some money out of Congress? Well, unfortunately, Mr. Hennessy, I have no idea how to fake killing 4,000 people. So we're just gonna have to do it for real. Don't blame it on the Muslims, naturally. Then I get my funding. Good night, old girl. Timothy Albion, Sharper One."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**disjointed fn 🇬🇵 🫡 - @blankfacepantha**  \nSam L. Jackson will be in a movie like this then roll his eyes when people bring up the genocide of a Muslim country  \n(226 likes)\n\n**KC Red or Dead - @SeaSkyOutdoors**  \nThey get all their ideas from Hollywood  \n(166 likes)\n\n**Jay - @JayTheGreat305**  \nPrecisely  \n(150 likes)\n\n**Seed of my ancestors - @foot2azz247**  \nThe Long Kiss Goodnight. Excellent movie  \n(38 likes)\n\n**King ☀️ ☥ - PREMIER LEAGUE CHAMPIONS #️⃣1️⃣4️⃣🏆🌟 - @Regalbynature_1**  \nC 👁️ A have strong connections to film industry & have use predictive programming; truths hidden in plain sight for future false flag events. This is eerily identical to 9/11. 🇮🇱 M*ssad planned & carried out satanic ritualistic sacrifices with the collaboration of U.S intel.  \n(19 likes)\n\n**ᐅᗕᐱᐱᓵᔑ - @_CallMeDennis_**  \nSo they just copied what the movie showed? Lol  \n(16 likes)\n\n**Blackpill CIA 🔅🔆 - @BlackpillCIA**  \nYup bud. Long term plan is to Hunger Games us. Stay safe  \n(11 likes)\n\n**AJ - @AJ56334**  \npaying forward karmic debt...  \n(11 likes)\n\n**HeartHeaded Alchemist - @CollectivePlate**  \nLong kiss goodnight is one of my favorites  \n(9 likes)\n\n**Bigperro - @ogbigperro**  \n@grok what movie is this?  \n(4 likes)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2002340981287629001",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:57.246Z",
+  "post": {
+    "id": "2002340981287629001",
+    "author_id": "1599510806680535042",
+    "created_at": "2025-12-20T11:31:06.000Z",
+    "text": "Biden won Georgia by 11,779 votes. Now, over 5 years later, they admit 315,000 votes in Georgia were actually counted illegally. https://t.co/PZjM4ixbym",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2001481673641463924"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2001481673641463924",
+      "author_id": "2309156352",
+      "created_at": "2025-12-18T02:36:31.000Z",
+      "text": "Massive scandal: \n\nFulton County admits they \"violated\" the rules in 2020 when they certified ≈315K early votes that lacked poll workers' signatures \n\n\"We don't dispute the allegation.\"\n\nThe SOS also found FC \"violated Official Election... Processes\"\n\nhttps://t.co/Gy9pgnbT8E",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 30746,
+      "reply_count": 6779,
+      "like_count": 139173,
+      "quote_count": 1595,
+      "bookmark_count": 10050,
+      "impression_count": 31259209
+    },
+    "author_followers": 1157836,
+    "author_name": "Mike Benz",
+    "author_description": "Executive Director, @FFO_Freedom. Former State Dept Cyber. Author of the unpublishable monstrosity, Weapons Of Mass Deletion.",
+    "author_tweet_count": 34977
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Mrs B (@attackdogX)**: \"All I wanna know is what’s gonna be done about it?? Oh, right, nothing ….\"  \n  Engagement: Likes=5791, Reposts=51, Replies=194, Views=370907\n\n- **Western Lensman (@WesternLensman)**: \"And they wanted Trump in prison for *this*\"  \n  Engagement: Likes=5370, Reposts=518, Replies=178, Views=358648\n\n- **Righteous⚡️Crusader (@Craftmastah)**: \"Of course 2020 was stolen everybody knows it, but as it turns out it gave Trump a chance to get all his ducks in a row and comeback with the most organized and successful administrations we’ve seen. The cheating has totally backfired on the Democrats.\"  \n  Engagement: Likes=4767, Reposts=74, Replies=436, Views=160654\n\n- **Chamath Palihapitiya (@chamath)**: \"Is someone inspecting these exact ballots so the public can have a truthful accounting of how much it swung the outcome??\"  \n  Engagement: Likes=3426, Reposts=126, Replies=217, Views=636058\n\n- **MAGA’s the Fix™ (@Honesttruthman)**: \"Five years later and they’re still not complying. At what point do politicians go to prison and the people see justice?\"  \n  Engagement: Likes=2045, Reposts=0, Replies=0, Views=114837\n\n- **Gunther Eagleman™ (@GuntherEagleman)**: \"2020 was stolen.\"  \n  Engagement: Likes=1731, Reposts=157, Replies=46, Views=28834\n\n- **Kevin M. Nelson (@KevinMNelsonUSA)**: \"And yet no one we’ve ever heard of will go to jail for it. Trump was right again.\"  \n  Engagement: Likes=1245, Reposts=0, Replies=0, Views=68968\n\n- **PewPewGirl (@Defundmedianow)**: \"Will get zero media coverage…\"  \n  Engagement: Likes=1051, Reposts=36, Replies=9, Views=44094\n\n- **James Surowiecki (@JamesSurowiecki)**: \"They did not admit they were counted \"illegally,\" man.\"  \n  Engagement: Likes=846, Reposts=0, Replies=0, Views=82562\n\n- **🇺🇸Deplorable Viking🇩🇰 (@DanishVikingGA)**: \"No more gaslighting from Georgia officials. @GovKemp and @GaSecofState should be in federal prison.\"  \n  Engagement: Likes=1031, Reposts=375, Replies=68, Views=14499",
+    "warnings": []
+  }
+}

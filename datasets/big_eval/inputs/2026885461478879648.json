@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2026885461478879648",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:20.728Z",
+  "post": {
+    "id": "2026885461478879648",
+    "author_id": "1780870181381881856",
+    "created_at": "2026-02-26T05:02:06.000Z",
+    "text": "Daniel Radcliffe says that  J.K. Rowling's transphobic comments left him deeply saddened:\n\n“It makes me really sad, ultimately. Because I do look at the person that I met, the times that we met, and the books that she wrote, and the world that she created, and all of that is to https://t.co/JzeQStECsh",
+    "media": [
+      {
+        "media_key": "3_2026885454663163904",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCDxlQWaoAADRGO.jpg",
+        "height": 768,
+        "width": 646
+      },
+      {
+        "media_key": "3_2026885458341613568",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCDxleDbUAABhhC.jpg",
+        "height": 768,
+        "width": 669
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4499,
+      "reply_count": 1325,
+      "like_count": 56869,
+      "quote_count": 622,
+      "bookmark_count": 2782,
+      "impression_count": 3516940
+    },
+    "author_followers": 106392,
+    "author_name": "Movies Scenes 🎫",
+    "author_description": "🎬 Movies | 📺 TV Shows | 🌐 Best Movie Moments & Behind-the-scenes clips, film discussions \n📩 DM for Promo & removal | © Rights belong to owners | Cinema fan",
+    "author_tweet_count": 4412
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCDxlQWaoAADRGO.jpg",
+          "description": {
+            "description": "A head-and-shoulders medium shot of actor Daniel Radcliffe seated in a grey armchair, holding a microphone in his right hand and gesturing with his left. He is wearing a dark jacket over a dark t-shirt. The background is a dark wall featuring repeating light-colored logos for '92NY'.",
+            "ocrText": "92NY 92NY 92 Y 92 92NY 9"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCDxleDbUAABhhC.jpg",
+          "description": {
+            "description": "A head-and-shoulders portrait of J.K. Rowling. She has medium-length red hair, blue eyes, and is wearing a dark teal or green v-neck dress. She is also wearing green cluster earrings and a red remembrance poppy pin on her left lapel. The background is dark and out of focus with golden bokeh lights.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Sushil** (@sushilwtf): He didn’t drag her he just chose humanity over nostalgia (Likes: 2761)\n- **🔆Amy 👾** (@WitchAmy01): (image reply) (Likes: 2331)\n- **HammerStone** (@Hammerstone911): If transwomen were women we would just call them women. (Likes: 2226)\n- **Sushil** (@sushilwtf): Radcliffe handled a nuclear topic with more grace than most politicians manage in a lifetime (Likes: 1630)\n- **Amy Eileen Hamm** (@preta_6): Pathetic little man (Likes: 1609)\n- **Bob Sacamano** (@BobSaca08005552): He acts like Rowling isn’t empathetic. She’s very empathetic, to women. Women who want to have separate sports, locker rooms, and prisons. Imagine being a female and being put in a cell with a biological male who’s in prison for raping women. Sound peachy? (Likes: 1116)\n- **Sushil** (@sushilwtf): She built a world about accepting the different and outcast. Then became the thing her books warned about (Likes: 972)\n- **John Hawkins** (@johnhawkinsrwn): He's selling out his friend and his soul to push something everyone knows is a lie. Men aren't women. Never have been. Never can be. (Likes: 944)\n- **Hollo 🏴‍☠️** (@Hollo1390): He's full of shit JK isn't trans phobic she's standing up for woman's rights as she should (Likes: 904)\n- **Dinny ִ ࣪𖤐** (@oinghyuk): Out of topic, but I admire how he can differentiate appreciation and gratefulness to indebted. He doesn't forget what Rowling gave him, but he also knows boundaries. Need to take note of this for myself. (Likes: 805)",
+    "warnings": []
+  }
+}

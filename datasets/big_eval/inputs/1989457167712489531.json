@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1989457167712489531",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:46.011Z",
+  "post": {
+    "id": "1989457167712489531",
+    "author_id": "3888491",
+    "created_at": "2025-11-14T22:15:25.000Z",
+    "text": "Men just want one thing. GTA6 Gameplay https://t.co/JVcyLJskvU",
+    "media": [
+      {
+        "media_key": "13_1989457048837271552",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1989457048837271552/img/FksJC8d9GI8vojuN.jpg",
+        "height": 576,
+        "width": 1016,
+        "duration_ms": 62640,
+        "view_count": 557056,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1989457048837271552/vid/avc1/476x270/IG8DMBHScAUelPTx.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1989457048837271552/vid/avc1/634x360/00HW_FEit-T53pPK.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1989457048837271552/vid/avc1/1016x576/3H1KLJZgnDhWLh2J.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1989457048837271552/pl/CrodzhtqPB48k893.m3u8?v=8aa"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 464,
+      "reply_count": 199,
+      "like_count": 9452,
+      "quote_count": 57,
+      "bookmark_count": 1311,
+      "impression_count": 684448
+    },
+    "author_followers": 238660,
+    "author_name": "Linus ✦ Ekenstam",
+    "author_description": "AI Evangelist & Optimist. Latest AI News, Trends and learn how to use AI tools to augment your abilities. collab@linusekenstam.com for partnerships 🤝",
+    "author_tweet_count": 60284
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1989457048837271552/vid/avc1/1016x576/3H1KLJZgnDhWLh2J.mp4",
+          "description": {
+            "description": "A military tank drives in reverse through a crowded beach at sunset, with numerous people scattered on the sand near high-rise buildings and neon signs. A first-person view of a skydiver with a colorful parachute gliding over a coastal city illuminated at night, with a game HUD map in the bottom right corner. A red pickup truck drives across a large steel truss bridge towards a city skyline during golden hour, with oncoming traffic visible.",
+            "ocrText": "5R6 H6AA"
+          },
+          "transcription": "The more I rise, the more I know The less I feel the undertow White fire rising through the snow And there's nowhere else No where else Interceptor bogey now Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@sahaj_soti**: gta 6 would only be realistic if people ran away when a tank is coming (Likes=136)  \n**@gamestopper15**: This is ai (Likes=62)  \n**@manchatz**: I wish I were 13 again when GTA VI comes out. Everything hit different back then, 🥲. Can't wait to play, anyway. (Likes=9)  \n**@nnirvi**: Pretty low standards for \"gameplay\". (Likes=8)  \n**@Alberto_Abichu**: Men just want one thing, for IA bros to stop doing shit dog with gen AI. (Likes=7)  \n**@TankTheDragon**: God it looks awful, just like some AI slop created by someone trying to bait engagement. I waited 13 years for this? Disappointing (Likes=5)  \n**@HendoAi**: wen killdozer skin (Likes=5)  \n**@helish88**: AI SLOP (Likes=4)  \n**@babybluebowtie**: bro this is just ai slop (Likes=2)  \n**@BigD1928**: I really don’t want that at all (Likes=2)",
+    "warnings": []
+  }
+}

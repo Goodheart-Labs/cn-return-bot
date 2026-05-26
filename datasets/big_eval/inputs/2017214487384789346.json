@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2017214487384789346",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:26.558Z",
+  "post": {
+    "id": "2017214487384789346",
+    "author_id": "548711252",
+    "created_at": "2026-01-30T12:33:06.000Z",
+    "text": "The level of AI slopification is so high that Ariana Grande has 6 fingers on the cover of Vogue Japan and NOBODY noticed it before publishing it: https://t.co/5b3HyNz8kb",
+    "media": [
+      {
+        "media_key": "3_2017214476894765056",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_6V4QsWgAA5dfT.jpg",
+        "height": 1535,
+        "width": 1242
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1856,
+      "reply_count": 425,
+      "like_count": 29788,
+      "quote_count": 284,
+      "bookmark_count": 1678,
+      "impression_count": 2496227
+    },
+    "author_followers": 28951,
+    "author_name": "Luiza Jarovsky, PhD",
+    "author_description": "Co-founder of the AI, Tech & Privacy Academy (1,500+ participants). Author of Luiza's Newsletter (95,000+ subscribers). Mother of 3.",
+    "author_tweet_count": 9956
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_6V4QsWgAA5dfT.jpg",
+          "description": {
+            "description": "A portrait of Ariana Grande for Vogue Japan. She is wearing a cream-colored floral print blouse with a bow neckline, sheer white gloves, and large sparkling earrings. She is leaning against a pale green wall next to a dark floral painting.",
+            "ocrText": "VOGUE\n\nVOGUE JAPAN MAR 2024 Issue Photo: MICHAEL BAILEY-GATES\n©2024 Condé Nast Japan. All rights reserved."
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@MOZZIEMUTANT**  \nIt looks like they tried to blend two different takes together. So more a photoshop error.  \nLikes: 2625 | Reposts: 0 | Replies: 0 | Views: 109504\n\n**@billybinion**  \nThis isn't AI, it's photo editing error. Not everything is an AI problem lol  \nLikes: 2092 | Reposts: 10 | Replies: 30 | Views: 159244\n\n**@TechFocused**  \nThis isn't AI, its very sloppy photoshop layering work.  \nLikes: 1280 | Reposts: 3 | Replies: 11 | Views: 91945\n\n**@howlingglitter**  \nWelcome to the Stage:  \nASIANA GRANDE  \nLikes: 712 | Reposts: 0 | Replies: 0 | Views: 27170\n\n**@Pentagear**  \nPatterns look consistent, AI doesn't do this well yet. The extra digit looks as though it's from a 2nd layered shot for pose blending (body from image A, hand from image B, etc)  \nThis is just bad Photoshopping.  \nLikes: 570 | Reposts: 5 | Replies: 10 | Views: 18090\n\n**@ReinceNiebuhr**  \nYou can tell this picture is fake bc grande looks like she’s eaten this week  \nLikes: 235 | Reposts: 0 | Replies: 0 | Views: 14561\n\n**@ewglenah**  \nlooks like a Photoshop issue to me: patterns wouldn’t be so consistent with AI, even more advanced versions  \nLikes: 199 | Reposts: 0 | Replies: 2 | Views: 7291\n\n**@trickybuddha**  \nAs someone who’s worked retouching photos before the AI era, this looks like a production error made by a human. They retouched the photo (common) and probably printed the wrong version.  \nLikes: 120 | Reposts: 0 | Replies: 0 | Views: 3904\n\n**@MerriamWebster**  \n(taps sign)  \nhttps://www.merriam-webster.com/wordplay/word-of-the-year  \nLikes: 118 | Reposts: 0 | Replies: 0 | Views: 22820\n\n**@Kosowsky_**  \n> not AI  \n> not the cover  \n\nHere is the cover:  \nLikes: 80 | Reposts: 0 | Replies: 0 | Views: 11616",
+    "warnings": []
+  }
+}

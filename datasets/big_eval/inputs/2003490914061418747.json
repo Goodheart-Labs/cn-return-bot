@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2003490914061418747",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:12.611Z",
+  "post": {
+    "id": "2003490914061418747",
+    "author_id": "1608459779239706627",
+    "created_at": "2025-12-23T15:40:31.000Z",
+    "text": "Disturbing new images from the Epstein files have been released, showing when Jeffrey Epstein attempted to take his own life.\n\nThis attempt on his life occurred before he was officially pronounced dead by the government. https://t.co/cYVYuuWaPo",
+    "media": [
+      {
+        "media_key": "7_2003490891437129728",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2003490891437129728/pu/img/w3wIFzPRODJUs8bW.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 12033,
+        "view_count": 1977212,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2003490891437129728/pu/vid/avc1/320x568/zofsiskbbRe_u9TW.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2003490891437129728/pu/vid/avc1/1080x1920/pYC399zNzHLI0D12.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2003490891437129728/pu/vid/avc1/480x852/Wa7AyEHV4lKsYEW6.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2003490891437129728/pu/pl/KCy0pC7KrUih7e3L.m3u8"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2003490891437129728/pu/vid/avc1/720x1280/UoJ-SJXm8Q40nx4m.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 649,
+      "reply_count": 404,
+      "like_count": 9997,
+      "quote_count": 89,
+      "bookmark_count": 2817,
+      "impression_count": 4408365
+    },
+    "author_followers": 899701,
+    "author_name": "Shadow of Ezra",
+    "author_description": "I am only on X and Telegram under the same handle. All other accounts are scamners and imposters.",
+    "author_tweet_count": 7382
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2003490891437129728/pu/vid/avc1/1080x1920/pYC399zNzHLI0D12.mp4",
+          "description": {
+            "description": "Two frames showing Jeffrey Epstein in a blue Department of Justice anti-suicide smock. The first frame shows a head-and-shoulders view of Epstein against a light-colored wall. The second frame is a close-up of his torso and hands, showing his arms extended down with palms facing forward, and a mark visible around his neck area.",
+            "ocrText": "DOJ"
+          },
+          "transcription": "Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @ThrillaRilla369: Not a single person believes he offed himself\n  Likes=1252, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=48307\n\n- @DMichaelTripi: Documents show that his cellmate or an otherwise unknown person did this to him, he did not do this to himself.\n  Likes=737, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=159379\n\n- @hayasaka_aryan: Bro was aura farming even after almost dying\n  Likes=260, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=28567\n\n- @ShadowofEzra: Full story: https://www.dailymail.com/news/article-15409205/Epstein-files-new-photos-suicide-prison.html\n  Likes=195, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=300586\n\n- @FreeThinkerFit: Epstein didn’t hang himself.\n  Likes=149, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=39174\n\n- @stevespiffler: He said “yeah take some pictures it will fool everyone”\n  Likes=77, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=33992\n\n- @therealZNO: Nah.\n  Likes=73, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=245002\n\n- @NikkiRocky50413: Whether or not the government orchestrated Epstein’s death, one thing is undeniable: the MCC catastrophically failed to safeguard a high-profile prisoner, forever depriving his victims of closure and justice.\n  Likes=32, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=32102\n\n- @CryptoEmpressX: He doesn't look dead! 🤔\n  He's just closing his eyes.\n  Likes=32, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=12598\n\n- @tezvendsmachine: Finally, some truth is coming out. But let's be real, the timing of these 'leaks' is suspiciously convenient. Who's using Epstein's case to distract us from something bigger?\" 🤔\n  Likes=30, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=39808",
+    "warnings": []
+  }
+}

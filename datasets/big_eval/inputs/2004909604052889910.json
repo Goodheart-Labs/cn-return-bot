@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2004909604052889910",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:23.742Z",
+  "post": {
+    "id": "2004909604052889910",
+    "author_id": "931286316",
+    "created_at": "2025-12-27T13:37:53.000Z",
+    "text": "Minnesota Voter Fraud \n\nDid you know that a registered voter in MN can vouch for up to 👉EIGHT👈 other voters in their precinct? \n\nNo ID required. No proof of residency. \n\n1 voter can vouch for 8 others. \n\nYes, this is the law &amp; it’s directly on the MN SOS website https://t.co/q7aK9goo7T",
+    "media": [
+      {
+        "media_key": "3_2004909600428920832",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G9LeqLxWEAA5iN5.jpg",
+        "height": 768,
+        "width": 1206
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 9122,
+      "reply_count": 1264,
+      "like_count": 24226,
+      "quote_count": 772,
+      "bookmark_count": 1187,
+      "impression_count": 2949741
+    },
+    "author_followers": 2493643,
+    "author_name": "ThePersistence",
+    "author_description": "I helped defeat Hillary, Kamala, & organized the Baltimore cleanup. We delivered Pennsylvania for President Trump. 👀 ➡️ @EarlyVoteAction MAGA 🤝 MAHA 🤝 BARBZ",
+    "author_tweet_count": 164752
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G9LeqLxWEAA5iN5.jpg",
+          "description": {
+            "description": "Information regarding the process of 'vouching' for a voter's address at a polling place. The text explains that a registered voter from the same precinct can sign an oath confirming a person's address, and includes rules such as a limit of eight voters and a restriction against vouching for others if you were vouched for yourself. Portions of the text are highlighted in yellow and red.",
+            "ocrText": "③ Registered voter who can confirm your address\n\nA registered voter from your precinct can go with you to the polling place to sign an oath confirming your address. This is known as 'vouching.' A registered voter can vouch for up to eight voters. You cannot vouch for others if someone vouched for you."
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- DataRepublican (small r) (@DataRepublican): What's to stop them from going precinct to precinct and vouching multiple times? Engagement: Likes=2599\n- @amuse (@amuse): So every Democrat can invent eight fellow Democrat voters? Engagement: Likes=429\n- Nordic god (@jackweows): Scott, I have personal experience in MN voter fraud with what happened to me in the 2022 mid-term election. Engagement: Likes=290\n- Dale Stark (@DaleStarkA10): Send in the 82d Airborne. Engagement: Likes=281\n- Deplorable Dog (@TTP_ThatsMe): @MSNOWNews @NBCNews @ABC @CBSNews @CNN @nytimes @latimes @washingtonpost @OANN @NEWSMAX @TheEconomist @Forbes @Reuters @AP Engagement: Likes=257\n- Xi Van Fleet (@XVanFleet): That’s how they cheat to win election!! Engagement: Likes=213\n- Planet Of Memes (@PlanetOfMemes): It's as if the laws are written and designed to encourage and protect fraudulent behaviors. Engagement: Likes=81\n- Kentucky Girl (@Notwokenow): This is insanity. Engagement: Likes=70\n- Ryan Nichols Sr. (@RealRyanNichols): I think most people are ignorant to this. Very eye opening. Minnesota and the Somalis have to be stopped. Engagement: Likes=67\n- Funky Beach (@FunkyBeaches): Where tf is the @GOP ? Trump is correct … we live amongst the most incompetent people in history Engagement: Likes=63",
+    "warnings": []
+  }
+}

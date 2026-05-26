@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2008970581732147251",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:15.439Z",
+  "post": {
+    "id": "2008970581732147251",
+    "author_id": "1312367672",
+    "created_at": "2026-01-07T18:34:46.000Z",
+    "text": "#Cowboys owner Jerry Jones was asked if he’s going to let HC Brian Schottenheimer hire the next DC. \n\n“Trump just said it. I’m running Venezuela.” https://t.co/GH1y05oL5I",
+    "media": [
+      {
+        "media_key": "7_2008970551268704256",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2008970551268704256/pu/img/7JHFFGm_7Xpdloc0.jpg",
+        "height": 360,
+        "width": 650,
+        "duration_ms": 40020,
+        "view_count": 1114736,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2008970551268704256/pu/vid/avc1/486x270/aLbf4m7HDWqlFXjh.mp4?tag=12"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2008970551268704256/pu/vid/avc1/650x360/Jl5AQfTnPHutsvWD.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2008970551268704256/pu/pl/6PzzxQAj_ejdANE5.m3u8?tag=12&v=c6e"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 609,
+      "reply_count": 723,
+      "like_count": 17295,
+      "quote_count": 893,
+      "bookmark_count": 2656,
+      "impression_count": 4486804
+    },
+    "author_followers": 870609,
+    "author_name": "Ari Meirov",
+    "author_description": "Covering the NFL for @The33rdTeamFB. Follow for breaking news, roster moves, videos & more. Host of @NFL__Spotlight. Would be smart to turn on notifications.",
+    "author_tweet_count": 54998
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2008970551268704256/pu/vid/avc1/650x360/Jl5AQfTnPHutsvWD.mp4?tag=12",
+          "description": {
+            "description": "A man wearing a purple baseball hat and a black hoodie is speaking, identified by an on-screen graphic as Clarence Hill Jr. The video then transitions to a press conference with three men sitting at a table with a blue background featuring the Cowboys and Ford logos. The man in the middle is Jerry Jones, flanked by two other men who are laughing and smiling as the press conference continues.",
+            "ocrText": "COWBOYS CLARENCE HILL JR. DLLS SEASON ENDING PRESS CONFERENCE Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER Ford FORD CENTER"
+          },
+          "transcription": "Will Schott and I ever get to hire his own coordinator? Trump just said it. I'm running. Venezuela. Seriously. Schottie had everything to do with hiring Matt Eberflus last time, and that's not done. Done as a negative. No way in the world he's here if Schottie didn't want him here. okay let me be real clear about that and he can tell you in his own words there no way in the world if Stephen didn't want him here but I particularly had a party when we got him"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**david - @Davethe_King1**  \nJerry when it comes to saying confusing ass shit  \n(Likes: 1783)\n\n**Onyx - @OnyxOdds**  \n“I’m running Venezuela”  \n(Likes: 1537)\n\n**bob truck - @TruckBon**  \nwhat  \n(Likes: 1098)\n\n**One11 Recruiting - @One11Recruiting**  \nAnd that’s the reason the Cowboys won’t win a Super Bowl in the next decade  \n(Likes: 771)\n\n**Jay - @Jayy_Hardyy252**  \nJerry has to be stopped man and I’m not even a cowboys fan  \n(Likes: 679)\n\n**gac - @gchurchilli**  \nWhat the fuck does that mean Kobe Bryant?  \n(Likes: 544)\n\n**Loveless - @LovelessEnt**  \nThis is why the Cowboys will remain mediocre. He can’t relinquish control.  \n(Likes: 423)\n\n**MARK GIANGRECO - @mark_giangreco**  \nThey’re the same POS guy  \n(Likes: 200)\n\n**Drink More Water | Read More Books🐬 - @flaquaticfan**  \n....what  \n(Likes: 185)\n\n**Pistol Meat Maravich 👑 - @MorrisChestbutt**  \nHuh  \n(Likes: 179)",
+    "warnings": []
+  }
+}

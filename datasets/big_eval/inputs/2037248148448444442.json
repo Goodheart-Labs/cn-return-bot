@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2037248148448444442",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:56.008Z",
+  "post": {
+    "id": "2037248148448444442",
+    "author_id": "1388303720564334594",
+    "created_at": "2026-03-26T19:19:43.000Z",
+    "text": "LEAK: New music kit found in CS2 gamefiles! 😱 https://t.co/rv9ml9PYQh",
+    "media": [
+      {
+        "media_key": "13_2037247868788948993",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2037247868788948993/img/Kh7a1P-qn5zRlmGF.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 22397,
+        "view_count": 55655,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037247868788948993/vid/avc1/640x360/x77lTyP91Z3Bvl4_.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037247868788948993/vid/avc1/480x270/bhKD5uhuXFy055fT.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037247868788948993/vid/avc1/1280x720/tKi5ObNH1Y9uWS_G.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2037247868788948993/pl/yiQZBIJ7PHUQ21Rn.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037247868788948993/vid/avc1/1920x1080/sQjM7oh6McyW49n9.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 195,
+      "reply_count": 28,
+      "like_count": 3412,
+      "quote_count": 6,
+      "bookmark_count": 559,
+      "impression_count": 127817
+    },
+    "author_followers": 2086,
+    "author_name": "Oehoe de Uil",
+    "author_description": "Lecturer • Didactician • Calculus • Statistics. 🦉 \n\nI enjoy playing CS2, but I enjoy complaining about it too.",
+    "author_tweet_count": 3655
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2037247868788948993/vid/avc1/1920x1080/sQjM7oh6McyW49n9.mp4",
+          "description": {
+            "description": "A player in a first-person shooter game walks to a wall and plants a bomb at the base of the wall. Once the bomb is planted, the player turns their back to the bomb. The video is cut to black, and the game displays the round result.",
+            "ocrText": "1:40\n0 4\nBombsite B\n@OehoeU\nBomb Planted\n$16000\n100\nC4 Explosive\n0 4\nBombsite B\n@OehoeU\nBomb Planted\n$16000\n100\n20 31\n0 4\nBombsite B\n@OehoeU\nBomb Planted\n$16000\n100\n20 31\nOehoe de uil\n0 5\n$16000\nOehoe de uil\nBombsite B\nROUND WON\nTerrorists won without killing any Counter-Terrorists.\n@OehoeU\nMVP for planting and defending the bomb\nOehoe de uil\nPaul Call, Release 2\n10 Year Veteran Coin\nOehoe de uil\nYou were killed by the C4 explosion\nMVP\n$16000"
+          },
+          "transcription": "AL I I I line Friday"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Terp_frog**: We must get this in the game to combat antisemitism (77 likes, 2897 views)  \n**@frostReZv2**: we already have israeli music in cs2, its called bbnos (64 likes, 2487 views)  \n**@ssoka09**: i’d unironically purchase this music kit if released (10 likes, 769 views)  \n**@zurdszn**: ADL finna change their rating after seeing this leak! ABSOLUTE WIN!!! (5 likes, 566 views)  \n**@Nousopher**: Need boom boom tel Aviv once it goes off (5 likes, 1213 views)  \n**@Pr0fesssoR**: Get ready for all gold skins in game shile it plays start losing float (4 likes, 1231 views)  \n**@bobyyG_**: Jew york (2 likes, 261 views)  \n**@BasedBot001**: Instant buy (2 likes, 240 views)  \n**@Yoav_Karmona**: אפשר ?! @CounterStrike (1 like, 46 views)  \n**@OGJunglist**: put it into terminals and ask leg and an arm for, I promise it will still sell :D (1 like, 990 views)",
+    "warnings": []
+  }
+}

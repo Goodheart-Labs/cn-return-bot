@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2031091781786276155",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:51.607Z",
+  "post": {
+    "id": "2031091781786276155",
+    "author_id": "988433413303603201",
+    "created_at": "2026-03-09T19:36:31.000Z",
+    "text": "BREAKING NEWS 🔥 🔥 🔥 \n\n'israeli' media unconfirmed reports Itamar Ben Gvir involved in 'car crash' when he has actually been killed in an Iranian missile strike on his home. https://t.co/0XUHjbIO0f",
+    "media": [
+      {
+        "media_key": "3_2031091779651395585",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HC_jNmBWYAE0Yva.jpg",
+        "height": 438,
+        "width": 701
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4709,
+      "reply_count": 1380,
+      "like_count": 21324,
+      "quote_count": 981,
+      "bookmark_count": 973,
+      "impression_count": 1421059
+    },
+    "author_followers": 114451,
+    "author_name": "UNN",
+    "author_description": "Official UNN Twitter, the UK'S ONLY fully live, fully interactive news channel.\n\nRT's/Likes not endorsements\n\nSupport us here: https://t.co/hUwc3zZ4vC",
+    "author_tweet_count": 32639
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HC_jNmBWYAE0Yva.jpg",
+          "description": {
+            "description": "A close-up photograph of Itamar Ben-Gvir, an Israeli politician, speaking into microphones. He is wearing rectangular glasses and a dark suit. In the background, there is a blurry wall with directional signage including an arrow and silhouettes indicating a restroom or handicap-accessible area.",
+            "ocrText": "14"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **douglas campbell (@douglascam52025)**: This nasty piece of shit has finally been silenced. Torture, rape of Palestinians all his life..may he rot in hell the fucking cunt  \n  Engagement: Likes=1215, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=24275\n\n- **Jenny Jinx 🍉 ™®©° (@Jennyjinx)**: If that's true then I have to go dance a jig. That man is a terrorist  \n  Engagement: Likes=946, Reposts=15, Quotes=0, Replies=0, Bookmarks=0, Views=17100\n\n- **Rana ? (@KSA804)**: Finally  \n  Engagement: Likes=683, Reposts=37, Quotes=0, Replies=3, Bookmarks=0, Views=23254\n\n- **Blue|Sapphire (@bdshaaw)**: 😂  \n  Engagement: Likes=479, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=22016\n\n- **GlenKimberley (@GlenKimberley)**: So sad. Too bad.  \n  Engagement: Likes=317, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=17142\n\n- **Adi el Grande (@icardo8)**: The \"car crash\"  \n  Engagement: Likes=298, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=24484\n\n- **Tracey Gallagher (@asmartbrunette1)**: Good he was the butcher of Gaza and had tours so the Jews could see the prisoners with their eyes removed  \n  Engagement: Likes=216, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=6450\n\n- **Ava Petrucci (@mmeJen)**: If he is actually dead he is now rotting in hell.  \n  Engagement: Likes=173, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4320\n\n- **Cecilia 🇳🇴 (@CeeGronli)**: Nah, I do not believe it. I wish, though, because this man is pure evil.  \n  Engagement: Likes=166, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4103\n\n- **Gopic™ (@Gopic)**: Wow Karma prevails again! Amazing! He is not yelling and cursing Palestinians to death anymore!  \n  Engagement: Likes=135, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=6061",
+    "warnings": []
+  }
+}

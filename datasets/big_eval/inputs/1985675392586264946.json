@@ -1,0 +1,68 @@
+{
+  "tweet_id": "1985675392586264946",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:43.958Z",
+  "post": {
+    "id": "1985675392586264946",
+    "author_id": "76766018",
+    "created_at": "2025-11-04T11:48:00.000Z",
+    "text": "Tech YouTuber 'Enderman' says AI wrongly shut down his 350k subscriber channel after it linked him to a random banned non-English account\n\nThis comes after his alt account was removed without warning https://t.co/Bad5u22PcE",
+    "media": [
+      {
+        "media_key": "3_1985675387909672960",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G46JPqeXkAAKXxX.jpg",
+        "height": 1000,
+        "width": 880
+      },
+      {
+        "media_key": "3_1985675390581387264",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G46JP0bWsAAW_r-.jpg",
+        "height": 495,
+        "width": 436
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 605,
+      "reply_count": 115,
+      "like_count": 7229,
+      "quote_count": 64,
+      "bookmark_count": 521,
+      "impression_count": 290909
+    },
+    "author_followers": 1353025,
+    "author_name": "Dexerto",
+    "author_description": "The leading source for influencer, streamer, gaming, and viral content",
+    "author_tweet_count": 137996
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G46JPqeXkAAKXxX.jpg",
+          "description": {
+            "description": "A close-up of the YouTube logo, featuring a red rounded rectangle with a white playback triangle in the center, set against a dark grey background.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G46JP0bWsAAW_r-.jpg",
+          "description": {
+            "description": "A human-like robot with a smooth white face and glowing blue eyes is depicted wearing a business suit and tie. The robot appears to be interacting with a three-dimensional holographic interface displaying various data visualizations, including a world map, line graphs, bar charts, and business concepts. One hand of the robot (with human-like skin) is shown holding a stylus, pointing towards an upward-trending arrow next to the word 'Success'.",
+            "ocrText": "Success Solution Business Strategy SOCIAL NETWORK Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Kiwiuh: This is exactly why people are scared of AI moderation. One false flag and 10 years of work disappear 💀 (804 likes)\n@OdyseeTeam: It's appalling what YouTube is doing. Hopefully he gets his channel back soon, along with the others.\n\nIf you want to enjoy Enderman's content, it's all backed up on Odysee: https://odysee.com/@endermanch:d (657 likes)\n@TaigaxHolic: same (192 likes)\n@xKhalifan: AI is making more noise than actual people right now ngl (153 likes)\n@HyperProphet: good luck to him with \"real human\" support on Youtube lol (146 likes)\n@nobledabeast: AI moderation is getting wild, man got his whole 350k channel nuked because a bot thought he was someone else 😭 one bad match and poof, years of work gone. (103 likes)\n@zeroXhope: This Enderman situation is a perfect, terrifying case study of everything wrong with platform moderation at scale (87 likes)\n@mykoclone: Recently @youtube introduced a circumvention policy that says if someone's channel gets terminated, all associated channels will be terminated even if they have not violated violated any YouTube policy. Its wild and far fetched. (49 likes)\n@SmileySmilik: YouTube’s AI moderation is dogshit. Tons of creators are getting banned for no clear reason, appeals are auto-rejected in minutes, and support is just bots—no way to reach a human. YouTube needs to stop this AI slop (29 likes)",
+    "warnings": []
+  }
+}

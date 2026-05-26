@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2052862535364157550",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:09.471Z",
+  "post": {
+    "id": "2052862535364157550",
+    "author_id": "1837608355797651459",
+    "created_at": "2026-05-08T21:25:43.000Z",
+    "text": "I was today years old when I found out you could do this… https://t.co/HpIgOC0WcX",
+    "media": [
+      {
+        "media_key": "13_2052862446637899776",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2052862446637899776/img/qEF0kkJX_K2VPwcn.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 19689,
+        "view_count": 728766,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2052862446637899776/vid/avc1/320x568/qqH-RmnvP8beNnZ3.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2052862446637899776/vid/avc1/480x852/sbraQcfd4dy5_M8v.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2052862446637899776/vid/avc1/720x1280/ChONjYqczHuR-ksp.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2052862446637899776/pl/Xv4oorP1uuwqGGkr.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 58,
+      "reply_count": 104,
+      "like_count": 850,
+      "quote_count": 98,
+      "bookmark_count": 668,
+      "impression_count": 2826848
+    },
+    "author_followers": 10393,
+    "author_name": "iza",
+    "author_description": "her💋",
+    "author_tweet_count": 31137
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2052862446637899776/vid/avc1/720x1280/ChONjYqczHuR-ksp.mp4",
+          "description": {
+            "description": "A person demonstrates a pizza box life hack by breaking down a large pizza box into a smaller storage container. The video begins with several pizza slices stacked to one side of the cardboard box. The person then proceed to tear the perforated edges of the box base, removing the large flat surface. Finally, they fold the remaining cardboard along pre-cut lines to create a compact, lidded box that perfectly fits the left-over stacked pizza slices.",
+            "ocrText": "5-Minute Crafts LAE ALLA RAKENDUS TURVALISEM ON HOIDKE KAHE KAEGA REBI SIIT DOMINO'S"
+          },
+          "transcription": "Right se Now"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **GW - @Gxdubya**: No one has time for this fuck ass shit lmfao 🤣 (Likes: 165)\n- **Grom - @a3r0id**: Big freezer bag doesn't want you to know this one fuckass trick. (Likes: 129)\n- **Shadow of a Doubt - @Shadow_ofaDoubt**: If I am going to take the time to stack my pizza like that, I am going to store it in a sealed Pyrex for freshness, not waste several minute to try (and probably fail) to fold a box on it. (Likes: 118)\n- **outsider - @outsiderorder**: literally no one in their right mind is doing origami on a pizza box when you could just slide it on top of everything sitting in the fridge (Likes: 72)\n- **Super Good Facts - @SuperGoodFacts**: You found out you can fold things to make them smaller? (Likes: 41)\n- **ShaneSaw M̷a̷s̷s̷a̷c̷r̷e̷ - @FinalDude78**: nobody be doing this shit be fucking forreal (Likes: 39)\n- **MaЯy • ༺击༻ - @MaryfulOfGhosts**: Who orders a full pizza just to stick it in the fridge? Be serious (Likes: 14)\n- **psidb - @RoyerSteele**: Notice they never show it without their hand on top of the lid. That mf is not staying closed. (Likes: 11)\n- **Zen💛🤍💜🖤 - @Jalzen7**: Shit ass lid has to be held down in place 💀 (Likes: 9)\n- **Charli - @CharliByrnes**: It will dry out. Put the pizza in a baggie. (Likes: 8)",
+    "warnings": []
+  }
+}

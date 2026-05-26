@@ -1,0 +1,66 @@
+{
+  "tweet_id": "1977536350040863174",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:16.943Z",
+  "post": {
+    "id": "1977536350040863174",
+    "author_id": "424124066",
+    "created_at": "2025-10-13T00:46:21.000Z",
+    "text": "Meanwhile American scientists are saying Tylenol causes autism and sterilizing immigrants https://t.co/wWQqNjfVWA",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "1977473103291617610"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "1977473103291617610",
+      "author_id": "1659871093513920512",
+      "created_at": "2025-10-12T20:35:02.000Z",
+      "text": "Scientists in Japan have created a drug that lets humans regrow lost teeth naturally https://t.co/oazunUfQAI",
+      "media": [
+        {
+          "media_key": "3_1977473095720951811",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/G3FlTa9W4AMGaML.jpg",
+          "height": 1449,
+          "width": 1266
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 27014,
+      "reply_count": 5,
+      "like_count": 358395,
+      "quote_count": 302,
+      "bookmark_count": 10619,
+      "impression_count": 6971464
+    },
+    "author_followers": 51325,
+    "author_name": "Roy Drones Jr",
+    "author_description": "I used to be a narcissist but now I’m perfect",
+    "author_tweet_count": 491705
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3FlTa9W4AMGaML.jpg",
+          "description": {
+            "description": "A panoramic dental X-ray showing a full set of human teeth, overlaid with news-style text at the bottom about a drug trial in Japan for regrowing teeth.",
+            "ocrText": "Japan trials new drug that regrows human teeth — ending dentures and implants forever!"
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@chiweethedog: I think Chinese invented that (2374 likes)\n@chiweethedog: they’re firing all the American scientists (then rehiring them lol) then firing them again. There’s no American scientists even left to refute what the ignorant RFK Jr. in charge is propagandizing. (398 likes)\n@RudimentalDeath: America was never amazing. It just had an incredible hype media team. No longer. (1 like)\n@Echo_4609: Tylenol is in fact harmful to the growth of a child in the womb, and I have no idea wtf you're talking about sterilizing immigrants (0 likes)\n@VeanLwa: Based (0 likes)\n@ruffbnuuy: It’s not the actual scientists saying this. Thats the problem here. (2 likes)\n@cubby_tm: Idk if I'd call our government officials scientists but point taken (0 likes)\n@TheCloudation: Both are insanely based (0 likes)",
+    "warnings": []
+  }
+}
