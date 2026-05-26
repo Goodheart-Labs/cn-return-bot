@@ -1,15 +1,19 @@
 {
   "tweet_id": "2056058915121766400",
-  "role": "unhelpful_incorrect_detail",
+  "role": "unhelpful_incorrect",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["manipulated_or_fabricated_evidence", "statistical_or_numerical_claim", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "manipulated_or_fabricated_evidence",
+    "statistical_or_numerical_claim",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "good",
   "suggested_category": "fabricated_poll",
-  "tweet_summary": "An engagement-poll post about removing Pete Hegseth shows a graphic claiming '🚨 NEW POLL: 75% of Americans say Pete Hegseth should be removed from office.'",
-  "why_note_decision": "The '75%' figure in the graphic is fabricated — no credible poll shows 75% of Americans wanting Hegseth removed. The real, identifiable poll on this question is a J.L. Partners/Daily Mail survey (Mar 25-27, 1,001 registered voters) showing 54% backing his resignation and 22% saying he should stay. The graphic inflates that to a fake '75% of Americans / removed from office' statistic with a 'NEW POLL' siren framing, which is a checkable false numerical claim being spread as fact. A note correcting the fabricated number is warranted. Provisional 'no_note' is wrong.",
+  "tweet_summary": "An engagement-poll post about removing Pete Hegseth shows a graphic claiming '\ud83d\udea8 NEW POLL: 75% of Americans say Pete Hegseth should be removed from office.'",
+  "why_note_decision": "The '75%' figure in the graphic is fabricated \u2014 no credible poll shows 75% of Americans wanting Hegseth removed. The real, identifiable poll on this question is a J.L. Partners/Daily Mail survey (Mar 25-27, 1,001 registered voters) showing 54% backing his resignation and 22% saying he should stay. The graphic inflates that to a fake '75% of Americans / removed from office' statistic with a 'NEW POLL' siren framing, which is a checkable false numerical claim being spread as fact. A note correcting the fabricated number is warranted. Provisional 'no_note' is wrong.",
   "judge_guidance": "A correct note must establish that the '75% of Americans say Hegseth should be removed' statistic is fabricated/unsupported, and should cite the real figure: a J.L. Partners/Daily Mail poll found ~54% support his resignation and ~22% say he should stay. PASS if the note flags '75%' as unsupported AND supplies the actual poll numbers with a reliable source (The Hill / Newsweek / Daily Mail-J.L. Partners). FAIL if it (a) merely opines on Hegseth, (b) says 'no note needed', or (c) repeats the 75% figure. The original note had the right correction but cite-quality/relevance dragged it down, so a correct note must cleanly tie the real 54% poll to the fake 75% graphic.",
   "reference_note": "The '75%' figure is fabricated; no credible poll shows 75% of Americans want Hegseth removed. The actual poll on this question, by J.L. Partners/Daily Mail (Mar 25-27, 1,001 registered voters), found 54% support his resignation and 22% say he should stay. https://thehill.com/policy/defense/5220560-hegseth-resign-poll-waltz-vance-signalgate-atlantic-goldberg",
   "original_unhelpful_note": {

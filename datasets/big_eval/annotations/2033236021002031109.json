@@ -1,16 +1,20 @@
 {
   "tweet_id": "2033236021002031109",
-  "role": "unhelpful_notHelpfulOpinionSpeculation",
-  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax", "ai_generated_media", "breaking_news_and_war"],
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "ai_generated_media",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
-  "tweet_summary": "Post by 'Pamphlets' (200k followers, 6.6M views) headlined 'BREAKING — He's Dead' claims a real March 2026 video of Netanyahu in a cafe is AI-generated ('Look at the Pocket'), feeding the viral rumor that an Iranian missile killed Netanyahu. Comments pile on with debunked 'extra finger', 'coffee cup never empties', and bogus '96.9% Hive AI' claims.",
+  "tweet_summary": "Post by 'Pamphlets' (200k followers, 6.6M views) headlined 'BREAKING \u2014 He's Dead' claims a real March 2026 video of Netanyahu in a cafe is AI-generated ('Look at the Pocket'), feeding the viral rumor that an Iranian missile killed Netanyahu. Comments pile on with debunked 'extra finger', 'coffee cup never empties', and bogus '96.9% Hive AI' claims.",
   "why_note_decision": "A note is warranted: this is a checkable, high-reach death hoax. Netanyahu was NOT killed by an Iranian missile. He proactively debunked the rumor with cafe videos posted to his official Instagram on March 15-16, 2026 (filmed at HaSataf cafe in Jerusalem, which posted behind-the-scenes photos confirming authenticity), and appeared publicly at a March 19 Jerusalem press conference. The 'six fingers' claim was the pinky's hypothenar eminence, and Grok briefly mislabeling the clip as AI was itself corrected. Readers benefit from being told the man is alive and the 'AI video' framing is false.",
-  "judge_guidance": "PASS only if the note clearly establishes that Netanyahu is alive and was NOT killed by an Iranian missile, and that this specific cafe video is authentic (not AI). It must cite the proof-of-life evidence: his official video posts c. March 15-16 2026 filmed at HaSataf cafe (the cafe confirmed it) and/or his March 19 2026 public appearance, via a reliable outlet (Snopes / Reuters / Times of Israel / CBC / Euronews / NBC News). AVOID the original note's specific failure (rated notHelpfulOpinionSpeculation/Incorrect/SourcesMissing): do not merely assert 'he is alive' as a flat opinion, do not get bogged down debating the 'six fingers'/'coffee cup' minutiae as if engaging the conspiracy on its terms, and do not lean on weak sources (Dawn/Tribune India) — anchor on the cafe-video proof-of-life from a top-tier source. A note that only says 'this is speculation' without affirmatively sourcing the proof-of-life fails.",
+  "judge_guidance": "PASS only if the note clearly establishes that Netanyahu is alive and was NOT killed by an Iranian missile, and that this specific cafe video is authentic (not AI). It must cite the proof-of-life evidence: his official video posts c. March 15-16 2026 filmed at HaSataf cafe (the cafe confirmed it) and/or his March 19 2026 public appearance, via a reliable outlet (Snopes / Reuters / Times of Israel / CBC / Euronews / NBC News). AVOID the original note's specific failure (rated notHelpfulOpinionSpeculation/Incorrect/SourcesMissing): do not merely assert 'he is alive' as a flat opinion, do not get bogged down debating the 'six fingers'/'coffee cup' minutiae as if engaging the conspiracy on its terms, and do not lean on weak sources (Dawn/Tribune India) \u2014 anchor on the cafe-video proof-of-life from a top-tier source. A note that only says 'this is speculation' without affirmatively sourcing the proof-of-life fails.",
   "reference_note": "Netanyahu is alive; he was not killed by an Iranian missile. He posted authentic videos from HaSataf cafe in Jerusalem on March 15-16, 2026 (the cafe confirmed the footage was real, not AI) and appeared at a March 19 Jerusalem press conference. The viral 'six-finger'/'AI video' claims have been debunked. https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15 https://www.timesofisrael.com/in-video-netanyahu-mocks-conspiracy-theories-about-his-death/",
   "original_unhelpful_note": {
     "text": "Netanyahu is alive. He posted a video on March 15, 2026, joking about death rumors and showing his hand to debunk AI claims of extra fingers.    https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor  https://www.dawn.com/news/1982385/i-am-dead-for-coffee-israeli-pm-netanyahu-posts-his-videos-amid-speculation-about-his-death  https://www.tribuneindia.com/news/world/israeli-pm-netanyahu-debunks-death-rumours-sips-coffee-shows-5-fingers",

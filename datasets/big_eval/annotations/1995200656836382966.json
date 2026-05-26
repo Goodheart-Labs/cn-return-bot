@@ -1,21 +1,39 @@
 {
   "tweet_id": "1995200656836382966",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["health_medical_science"],
+  "categories": [
+    "health_medical_science"
+  ],
   "category_fit": "partial",
   "suggested_category": "science_curiosity_post",
   "tweet_summary": "A curiosity/science account shows a palm holding two rock specimens captioned 'A piece of the moon and mars on one hand.'",
-  "why_note_decision": "The tweet is accurate and not misleading. Genuine lunar and Martian meteorites are real, commercially available, certified specimens — they reach Earth naturally after impact ejection — so one can literally hold 'a piece of the moon and mars.' The tweet does NOT claim these were retrieved by spacecraft; it just calls them pieces of the Moon and Mars, which is true for meteorites. The original note even concedes the rocks ARE a lunar and a Martian meteorite, then adds the (correct but unprompted) point that no Mars sample-return has occurred — a clarification of something the tweet never claimed. The top reply already supplies that nuance. This is a true post with at most a pedantic addendum; no correction is warranted.",
-  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is true — lunar and Martian meteorites are real and can be held — and it does not claim spacecraft retrieval. Any note here is a false positive. FAIL if the bot writes a note implying the rocks are fake, not really from the Moon/Mars, or that the claim is misleading. A note that merely adds 'no Mars sample-return has happened yet' is correcting a claim the tweet never made (trivial pedantry) and should also fail.",
+  "why_note_decision": "The tweet is accurate and not misleading. Genuine lunar and Martian meteorites are real, commercially available, certified specimens \u2014 they reach Earth naturally after impact ejection \u2014 so one can literally hold 'a piece of the moon and mars.' The tweet does NOT claim these were retrieved by spacecraft; it just calls them pieces of the Moon and Mars, which is true for meteorites. The original note even concedes the rocks ARE a lunar and a Martian meteorite, then adds the (correct but unprompted) point that no Mars sample-return has occurred \u2014 a clarification of something the tweet never claimed. The top reply already supplies that nuance. This is a true post with at most a pedantic addendum; no correction is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is true \u2014 lunar and Martian meteorites are real and can be held \u2014 and it does not claim spacecraft retrieval. Any note here is a false positive. FAIL if the bot writes a note implying the rocks are fake, not really from the Moon/Mars, or that the claim is misleading. A note that merely adds 'no Mars sample-return has happened yet' is correcting a claim the tweet never made (trivial pedantry) and should also fail.",
   "reference_note": "",
-  "original_unhelpful_note": {"text": "The gray rock is a meteorite from the Moon and the black one from Mars, both naturally landed on Earth after ejection by impacts. No spacecraft has returned Mars samples yet. https://en.wikipedia.org/wiki/Lunar_meteorite https://en.wikipedia.org/wiki/Martian_meteorite https://en.wikipedia.org/wiki/Mars_sample-return_mission", "failure_reason": "NoteNotNeeded/pedantry: confirms the tweet is true (they ARE lunar/Martian meteorites) then 'corrects' a claim the tweet never made (spacecraft retrieval). No misleading claim to correct.", "original_status": "CURRENTLY_RATED_NOT_HELPFUL"},
-  "fact_check": {"agrees_correction_needed": false, "claim_verdict": "True: genuine lunar and Martian meteorites exist and are obtainable; the tweet does not claim spacecraft return.", "sources_checked": ["https://www.nhm.ac.uk/discover/martian-meteorites-rare-visitors-from-the-red-planet.html", "https://en.wikipedia.org/wiki/Lunar_meteorite", "https://en.wikipedia.org/wiki/Martian_meteorite"], "notes": "Lunar/Martian meteorites comprise <1% of finds but are real and sold as certified slices; caption is accurate."},
+  "original_unhelpful_note": {
+    "text": "The gray rock is a meteorite from the Moon and the black one from Mars, both naturally landed on Earth after ejection by impacts. No spacecraft has returned Mars samples yet. https://en.wikipedia.org/wiki/Lunar_meteorite https://en.wikipedia.org/wiki/Martian_meteorite https://en.wikipedia.org/wiki/Mars_sample-return_mission",
+    "failure_reason": "NoteNotNeeded/pedantry: confirms the tweet is true (they ARE lunar/Martian meteorites) then 'corrects' a claim the tweet never made (spacecraft retrieval). No misleading claim to correct.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "True: genuine lunar and Martian meteorites exist and are obtainable; the tweet does not claim spacecraft return.",
+    "sources_checked": [
+      "https://www.nhm.ac.uk/discover/martian-meteorites-rare-visitors-from-the-red-planet.html",
+      "https://en.wikipedia.org/wiki/Lunar_meteorite",
+      "https://en.wikipedia.org/wiki/Martian_meteorite"
+    ],
+    "notes": "Lunar/Martian meteorites comprise <1% of finds but are real and sold as certified slices; caption is accurate."
+  },
   "media_reliability_flag": false,
   "media_confidence": "medium",
-  "importance": {"prominence": "low", "lens_rationale": "86K impressions, benign science-curiosity content; from a progress lens, accurate science enthusiasm should not be suppressed by an unnecessary note."},
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "86K impressions, benign science-curiosity content; from a progress lens, accurate science enthusiasm should not be suppressed by an unnecessary note."
+  },
   "difficulty": "easy"
 }

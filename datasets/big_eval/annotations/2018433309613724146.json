@@ -1,11 +1,13 @@
 {
   "tweet_id": "2018433309613724146",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["business_finance"],
+  "categories": [
+    "scams_fraud_finance"
+  ],
   "category_fit": "poor",
   "suggested_category": "markets_and_corporate_news",
   "tweet_summary": "Kalshi posts 'JUST IN: Tesla to reportedly also be potentially included' as a quote of its own earlier post claiming SpaceX confirmed an xAI merger - implying Tesla is being folded into the SpaceX/xAI deal.",

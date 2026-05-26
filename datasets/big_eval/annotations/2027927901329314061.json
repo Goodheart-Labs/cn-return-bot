@@ -1,20 +1,22 @@
 {
   "tweet_id": "2027927901329314061",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "provisional_role": "unhelpful_opinion_speculation",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "opinion_or_framing",
-  "categories": ["breaking_news_and_war"],
+  "categories": [
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "subjective_prediction_or_hot_take",
   "tweet_summary": "A large account opines that 'Dubai is done' and that it will be 'nearly impossible' for the UAE to sell a secure lifestyle to expats/investors, in the context of the 2026 Iranian missile attacks on the UAE.",
-  "why_note_decision": "No note is warranted. 'Dubai is done' and 'nearly impossible to sell a secure lifestyle' are subjective predictions/opinions, not checkable factual assertions. The underlying event is real — Iran did strike the UAE in 2026 and most missiles/drones were intercepted, with limited (but non-zero) casualties and debris damage — so the tweet contains no false factual claim to correct. A Community Note arguing the situation is 'overstated' is injecting a counter-opinion, which is why the original was rated opinion/speculation + noteNotNeeded. You cannot fact-check a hot take.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet's load-bearing content ('Dubai is done', 'nearly impossible to sell a secure lifestyle') is opinion/prediction with no checkable claim. Any note that 'corrects' this by arguing the interception success, low casualties, or safety alerts mean the doom framing is overblown is a false positive — that is rebutting opinion with opinion. A note would only be justified if the tweet asserted a specific falsehood about the attacks (it does not). FAIL any note here.",
+  "why_note_decision": "No note is warranted. 'Dubai is done' and 'nearly impossible to sell a secure lifestyle' are subjective predictions/opinions, not checkable factual assertions. The underlying event is real \u2014 Iran did strike the UAE in 2026 and most missiles/drones were intercepted, with limited (but non-zero) casualties and debris damage \u2014 so the tweet contains no false factual claim to correct. A Community Note arguing the situation is 'overstated' is injecting a counter-opinion, which is why the original was rated opinion/speculation + noteNotNeeded. You cannot fact-check a hot take.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet's load-bearing content ('Dubai is done', 'nearly impossible to sell a secure lifestyle') is opinion/prediction with no checkable claim. Any note that 'corrects' this by arguing the interception success, low casualties, or safety alerts mean the doom framing is overblown is a false positive \u2014 that is rebutting opinion with opinion. A note would only be justified if the tweet asserted a specific falsehood about the attacks (it does not). FAIL any note here.",
   "reference_note": "",
   "original_unhelpful_note": {
-    "text": "Most missiles aimed near Dubai were intercepted and UAE authorities issued safety alerts and reassured residents; officials reported limited casualties and an active response—calling Dubai &quot;done&quot; overstates the situation. https://www.khaleejtimes.com/uae/emergencies/uae-residents-reassured-safety-receive-safety-alerts-iranian-missiles",
-    "failure_reason": "Rated notHelpfulOpinionSpeculation (31) + notHelpfulNoteNotNeeded (26). The note explicitly argues the tweet's framing 'overstates the situation' — i.e. it rebuts an opinion with its own opinion. The tweet asserts no false fact, so there is nothing to correct; the note is a false positive.",
+    "text": "Most missiles aimed near Dubai were intercepted and UAE authorities issued safety alerts and reassured residents; officials reported limited casualties and an active response\u2014calling Dubai &quot;done&quot; overstates the situation. https://www.khaleejtimes.com/uae/emergencies/uae-residents-reassured-safety-receive-safety-alerts-iranian-missiles",
+    "failure_reason": "Rated notHelpfulOpinionSpeculation (31) + notHelpfulNoteNotNeeded (26). The note explicitly argues the tweet's framing 'overstates the situation' \u2014 i.e. it rebuts an opinion with its own opinion. The tweet asserts no false fact, so there is nothing to correct; the note is a false positive.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {
@@ -24,7 +26,7 @@
       "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_the_United_Arab_Emirates",
       "https://www.thenationalnews.com/news/uae/2026/03/13/debris-hits-dubai-building-after-air-strike-intercepted-as-more-alerts-issued/"
     ],
-    "notes": "Iran did strike the UAE in 2026; the UAE intercepted the large majority of missiles/drones but there were some deaths from debris (a Bangladeshi and a Pakistani national) and damage (Burj Al Arab lower floor, Jebel Ali Port fire). The tweet doesn't misstate the event — it just renders a doom-laden opinion about Dubai's future. No correctable factual claim."
+    "notes": "Iran did strike the UAE in 2026; the UAE intercepted the large majority of missiles/drones but there were some deaths from debris (a Bangladeshi and a Pakistani national) and damage (Burj Al Arab lower floor, Jebel Ali Port fire). The tweet doesn't misstate the event \u2014 it just renders a doom-laden opinion about Dubai's future. No correctable factual claim."
   },
   "media_reliability_flag": false,
   "media_confidence": "high",

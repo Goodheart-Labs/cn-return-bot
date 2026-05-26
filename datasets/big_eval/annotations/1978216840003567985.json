@@ -1,20 +1,23 @@
 {
   "tweet_id": "1978216840003567985",
-  "role": "unhelpful_incorrect_detail",
+  "role": "unhelpful_incorrect",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["politics_and_policy", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "politics_and_policy",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "mischaracterized_legal_status",
   "tweet_summary": "Tweet says 'A US citizen was fined $130 for not having their papers on them. Tell me this isn't Germany again', over a video about Chicago man Ruben Cruz being fined by ICE for not carrying his immigration documents.",
-  "why_note_decision": "The tweet's headline claim is false in a specific, checkable way: the man fined (Ruben Antonio Cruz, ~60, from El Salvador) is a lawful PERMANENT RESIDENT (green-card holder), NOT a U.S. citizen. This distinction is legally material: federal law (8 USC 1304(e)) requires non-citizens 18+ to carry their registration/green card at all times, while U.S. citizens have no such requirement. The tweet's own video correctly identifies Cruz as a legal permanent resident; the tweet text mislabels him 'a US citizen', which inverts the legal facts and inflates the claim. A note correcting the citizen-vs-LPR error is warranted. Provisional 'no_note' is wrong — there is a concrete false factual claim.",
-  "judge_guidance": "A correct note must establish that the person fined is a lawful permanent resident (green-card holder), NOT a U.S. citizen, and that under federal law (8 USC 1304(e)) non-citizens 18+ must carry their registration document while U.S. citizens are not required to. It must AVOID the original note's drift into citing newsbreak.com (a low-trust aggregator, flagged SourcesMissingOrUnreliable). PASS if the note corrects the citizen/LPR mischaracterization with a reliable source (NBC Chicago or the U.S. Code) and notes the carry requirement applies to non-citizens; FAIL if it (a) accepts the 'US citizen' framing, (b) claims citizens must carry papers, or (c) relies solely on an unreliable aggregator. A bare 'note not needed' should FAIL — the false 'US citizen' claim is the whole point of the tweet.",
+  "why_note_decision": "The tweet's headline claim is false in a specific, checkable way: the man fined (Ruben Antonio Cruz, ~60, from El Salvador) is a lawful PERMANENT RESIDENT (green-card holder), NOT a U.S. citizen. This distinction is legally material: federal law (8 USC 1304(e)) requires non-citizens 18+ to carry their registration/green card at all times, while U.S. citizens have no such requirement. The tweet's own video correctly identifies Cruz as a legal permanent resident; the tweet text mislabels him 'a US citizen', which inverts the legal facts and inflates the claim. A note correcting the citizen-vs-LPR error is warranted. Provisional 'no_note' is wrong \u2014 there is a concrete false factual claim.",
+  "judge_guidance": "A correct note must establish that the person fined is a lawful permanent resident (green-card holder), NOT a U.S. citizen, and that under federal law (8 USC 1304(e)) non-citizens 18+ must carry their registration document while U.S. citizens are not required to. It must AVOID the original note's drift into citing newsbreak.com (a low-trust aggregator, flagged SourcesMissingOrUnreliable). PASS if the note corrects the citizen/LPR mischaracterization with a reliable source (NBC Chicago or the U.S. Code) and notes the carry requirement applies to non-citizens; FAIL if it (a) accepts the 'US citizen' framing, (b) claims citizens must carry papers, or (c) relies solely on an unreliable aggregator. A bare 'note not needed' should FAIL \u2014 the false 'US citizen' claim is the whole point of the tweet.",
   "reference_note": "The man fined was a lawful permanent resident (green-card holder), not a U.S. citizen. Federal law (8 USC 1304(e)) requires non-citizens 18+ to carry their registration document; U.S. citizens are not required to carry papers. https://www.nbcchicago.com/news/local/chicago-man-fined-130-by-ice-agents-for-not-carrying-identification/3838101/ https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title8-section1304",
   "original_unhelpful_note": {
     "text": "The man fined is identified in reports and the video as a legal permanent resident, not a U.S. citizen. Federal law requires permanent residents (green card holders) to carry their green card or registration at all times, but U.S. citizens are not required to do so. https://www.newsbreak.com/nbc-chicago-509956/4290426798501-chicago-man-fined-130-by-ice-agents-for-not-carrying-identification https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title8-section1304&num=0&edition=prelim",
-    "failure_reason": "Substance is correct (LPR not citizen; carry requirement), but it cited a newsbreak.com re-host instead of the primary NBC Chicago report — heavily downrated SourcesMissingOrUnreliable (4) and MissingKeyPoints (8). A correct note keeps the same facts but cites the primary outlet and the U.S. Code directly.",
+    "failure_reason": "Substance is correct (LPR not citizen; carry requirement), but it cited a newsbreak.com re-host instead of the primary NBC Chicago report \u2014 heavily downrated SourcesMissingOrUnreliable (4) and MissingKeyPoints (8). A correct note keeps the same facts but cites the primary outlet and the U.S. Code directly.",
     "original_status": "NEEDS_MORE_RATINGS"
   },
   "fact_check": {

@@ -1,11 +1,14 @@
 {
   "tweet_id": "2007457717040931265",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "politics_and_policy"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "On Jan 3, 2026, a MAGA account posts crowd-celebration footage ('VENEZUELA LIBRE') captioned 'Today is Venezuela's Independence Day!'",

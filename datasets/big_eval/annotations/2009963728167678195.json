@@ -1,16 +1,18 @@
 {
   "tweet_id": "2009963728167678195",
-  "role": "unhelpful_notHelpfulIncorrect",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["ai_generated_media"],
+  "categories": [
+    "ai_generated_media"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Robin Monotti posts a 15s video captioned 'Italian American deals with ICE' showing a deli owner angrily ordering masked 'ICE'/'PICF' agents out of his shop, presented as a real confrontation; it racked up 1.1M+ views.",
-  "why_note_decision": "A note IS warranted: the clip is AI-generated, part of the well-documented wave of viral AI 'deli owner vs ICE' videos (404 Media, HuffPost, Inquisitr, Boston Globe), and it is presented as a real incident. Tells: garbled insignia ('PICF'/'PICE' not 'ICE'), too-perfect staging, AI-flat lighting; commenters repeatedly call it AI. The reader benefit is knowing it's synthetic, not footage of a real ICE encounter. The original note got this materially wrong — it claimed the video is a real comedy 'skit by Italian-American comedian Johnny Charley', attributing AI slop to a human performer and mislabeling synthetic media as a filmed skit.",
-  "judge_guidance": "PASS only if the note establishes that the video is AI-generated (synthetic), not real footage of an ICE encounter — ideally citing an AI tell (e.g. the garbled 'PICF/PICE' insignia) or reliable coverage of the viral AI ICE-video trend. The note must NOT claim the video is a genuine filmed comedy skit by a real performer (e.g. 'Johnny Charley'): that is the original note's specific error and treats AI media as a human production. FAIL if it asserts a real human performance/skit, if it implies the encounter actually happened, or if it merely says 'not a real incident' without identifying it as AI-generated (the AI origin is the key reader-relevant fact in the ICE-video misinformation context).",
+  "why_note_decision": "A note IS warranted: the clip is AI-generated, part of the well-documented wave of viral AI 'deli owner vs ICE' videos (404 Media, HuffPost, Inquisitr, Boston Globe), and it is presented as a real incident. Tells: garbled insignia ('PICF'/'PICE' not 'ICE'), too-perfect staging, AI-flat lighting; commenters repeatedly call it AI. The reader benefit is knowing it's synthetic, not footage of a real ICE encounter. The original note got this materially wrong \u2014 it claimed the video is a real comedy 'skit by Italian-American comedian Johnny Charley', attributing AI slop to a human performer and mislabeling synthetic media as a filmed skit.",
+  "judge_guidance": "PASS only if the note establishes that the video is AI-generated (synthetic), not real footage of an ICE encounter \u2014 ideally citing an AI tell (e.g. the garbled 'PICF/PICE' insignia) or reliable coverage of the viral AI ICE-video trend. The note must NOT claim the video is a genuine filmed comedy skit by a real performer (e.g. 'Johnny Charley'): that is the original note's specific error and treats AI media as a human production. FAIL if it asserts a real human performance/skit, if it implies the encounter actually happened, or if it merely says 'not a real incident' without identifying it as AI-generated (the AI origin is the key reader-relevant fact in the ICE-video misinformation context).",
   "reference_note": "This video is AI-generated, not footage of a real ICE encounter. It is part of a viral wave of synthetic 'deli owner confronts ICE' clips; note the garbled agency insignia (\"PICF\"/\"PICE\") and AI artifacts. https://www.404media.co/ai-generated-videos-of-ice-raids-are-wildly-viral-on-facebook/ https://www.huffpost.com/entry/viral-ai-ice-raid-videos_l_69163baee4b0df3e16be4163",
   "original_unhelpful_note": {
     "text": "This video depicts a comedic skit by Italian-American comedian Johnny Charley parodying immigration encounters, not a real incident.  https://www.tiktok.com/@johnny.charley/video/7467611870615047470  https://www.instagram.com/reel/DFvPrlOAt3g/?hl=en",

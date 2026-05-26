@@ -1,11 +1,14 @@
 {
   "tweet_id": "2031703202932883799",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "A video of someone throwing a kitten from a high floor, captioned 'Israelis throwing kittens off rooftops after they took over a Palestinian home and found their pets.'",

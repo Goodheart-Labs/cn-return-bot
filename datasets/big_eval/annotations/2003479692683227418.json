@@ -1,20 +1,24 @@
 {
   "tweet_id": "2003479692683227418",
-  "role": "unhelpful_needs_more_ratings",
+  "role": "unhelpful_other",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax", "manipulated_or_fabricated_evidence", "politics_and_policy"],
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "manipulated_or_fabricated_evidence",
+    "politics_and_policy"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Mike Nellis cites a handwritten 'J. Epstein' letter to Larry Nassar saying 'our president shares our love of young, nubile girls' as proof Trump is implicated in the latest Epstein DOJ release.",
-  "why_note_decision": "The DOJ and FBI determined this specific letter is fake (CNN, Axios, NewsNation, The Hill, Reuters): postmarked August 13, 2019 — three days after Epstein's August 10 suicide; postmarked in Virginia, not New York where he was held; the return address gives a different jail; the envelope lacks Epstein's required inmate number; handwriting does not match. Jail staff flagged it to the FBI at the time. Many comments on the post already note the post-death postmark. A note is clearly warranted on a ~99K-view post presenting fabricated evidence as a Trump-Epstein smoking gun.",
-  "judge_guidance": "PASS if the note clearly states (a) DOJ and FBI determined the letter is fake / not authentic, and (b) cites at least two of the supporting red flags: postmarked Aug 13 2019 (three days after Epstein's Aug 10 death), postmarked in Virginia rather than NY, no Epstein inmate number, handwriting mismatch. Strong notes cite Reuters, CNN, Axios, or The Hill. FAIL if the bot treats the letter as authentic or hedges ('disputed'). FAIL if the bot declines (the letter is verifiably fabricated). FAIL if the note presents only the DOJ statement without any of the specific red flags — raters in the original note tagged it 'opinion/speculation', suggesting they wanted concrete evidence, not just a DOJ assertion.",
-  "reference_note": "The postcard is a known fake. DOJ and FBI flagged it as inauthentic: it was postmarked Aug 13, 2019 — three days after Epstein's Aug 10 death — from Virginia (not the NY jail where he was held), uses a different jail's return address, lacks his required inmate number, and the handwriting does not match Epstein's. https://www.reuters.com/world/us/justice-department-releases-card-mentioning-trump-purportedly-sent-epstein-2025-12-23/ https://www.cnn.com/2025/12/23/politics/larry-nassar-epstein-files-letter",
+  "why_note_decision": "The DOJ and FBI determined this specific letter is fake (CNN, Axios, NewsNation, The Hill, Reuters): postmarked August 13, 2019 \u2014 three days after Epstein's August 10 suicide; postmarked in Virginia, not New York where he was held; the return address gives a different jail; the envelope lacks Epstein's required inmate number; handwriting does not match. Jail staff flagged it to the FBI at the time. Many comments on the post already note the post-death postmark. A note is clearly warranted on a ~99K-view post presenting fabricated evidence as a Trump-Epstein smoking gun.",
+  "judge_guidance": "PASS if the note clearly states (a) DOJ and FBI determined the letter is fake / not authentic, and (b) cites at least two of the supporting red flags: postmarked Aug 13 2019 (three days after Epstein's Aug 10 death), postmarked in Virginia rather than NY, no Epstein inmate number, handwriting mismatch. Strong notes cite Reuters, CNN, Axios, or The Hill. FAIL if the bot treats the letter as authentic or hedges ('disputed'). FAIL if the bot declines (the letter is verifiably fabricated). FAIL if the note presents only the DOJ statement without any of the specific red flags \u2014 raters in the original note tagged it 'opinion/speculation', suggesting they wanted concrete evidence, not just a DOJ assertion.",
+  "reference_note": "The postcard is a known fake. DOJ and FBI flagged it as inauthentic: it was postmarked Aug 13, 2019 \u2014 three days after Epstein's Aug 10 death \u2014 from Virginia (not the NY jail where he was held), uses a different jail's return address, lacks his required inmate number, and the handwriting does not match Epstein's. https://www.reuters.com/world/us/justice-department-releases-card-mentioning-trump-purportedly-sent-epstein-2025-12-23/ https://www.cnn.com/2025/12/23/politics/larry-nassar-epstein-files-letter",
   "original_unhelpful_note": {
-    "text": "The postcard is fake. DOJ and the FBI determined the card mentioning \"our president\" is inauthentic — it was postmarked Aug 13, 2019 (after Epstein's Aug 10 death) and was flagged by investigators. https://www.reuters.com/world/us/justice-department-releases-card-mentioning-trump-purportedly-sent-epstein-2025-12-23/",
-    "failure_reason": "Substantively correct but could be sharper — leaves out two strong red flags (Virginia postmark, missing inmate number, handwriting mismatch). Reached NEEDS_MORE_RATINGS likely due to political polarization more than note quality.",
+    "text": "The postcard is fake. DOJ and the FBI determined the card mentioning \"our president\" is inauthentic \u2014 it was postmarked Aug 13, 2019 (after Epstein's Aug 10 death) and was flagged by investigators. https://www.reuters.com/world/us/justice-department-releases-card-mentioning-trump-purportedly-sent-epstein-2025-12-23/",
+    "failure_reason": "Substantively correct but could be sharper \u2014 leaves out two strong red flags (Virginia postmark, missing inmate number, handwriting mismatch). Reached NEEDS_MORE_RATINGS likely due to political polarization more than note quality.",
     "original_status": "NEEDS_MORE_RATINGS"
   },
   "fact_check": {

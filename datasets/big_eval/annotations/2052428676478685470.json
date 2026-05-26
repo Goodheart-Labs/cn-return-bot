@@ -1,19 +1,21 @@
 {
   "tweet_id": "2052428676478685470",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["health_and_science_misinformation"],
+  "categories": [
+    "health_medical_science"
+  ],
   "category_fit": "good",
   "suggested_category": "",
-  "tweet_summary": "A Turkish-language viral post (3.6M impressions) claims that whether you see a kitten or a rabbit in an image reveals 'left-brain' vs 'right-brain' dominance, asking 'what do you see?' (Note: the attached image per the AI description is actually a mountain range with a hidden face, and most replies say they see Hitler — so the image appears unrelated to the kitten/rabbit framing.)",
+  "tweet_summary": "A Turkish-language viral post (3.6M impressions) claims that whether you see a kitten or a rabbit in an image reveals 'left-brain' vs 'right-brain' dominance, asking 'what do you see?' (Note: the attached image per the AI description is actually a mountain range with a hidden face, and most replies say they see Hitler \u2014 so the image appears unrelated to the kitten/rabbit framing.)",
   "why_note_decision": "A note is warranted on the textual claim. The 'left-brain/right-brain dominance determines what you perceive (kitten vs rabbit)' premise is a well-documented neuromyth: while some functions are lateralized, neuroscience finds no evidence that individuals are 'left-brained' or 'right-brained,' and perceptual ambiguity in an image does not map onto hemispheric dominance. Debunking this is the standard, well-sourced correction (Harvard Health, Britannica, University of Utah study). It's a low-stakes but high-reach pseudoscience claim, so a concise note adds value. (The image/text mismatch is a secondary oddity; the correctable claim is the brain-myth premise.)",
-  "judge_guidance": "PASS only if the note clearly states that the left-brain/right-brain 'dominance' premise is a scientific myth — what you see in an ambiguous image does NOT indicate hemispheric dominance, and neuroscience finds no evidence people are 'left-brained' or 'right-brained' — and cites a loadable, authoritative source (e.g. Harvard Health, Britannica, University of Utah / ScienceDaily 2013 study, or TED-Ed). The note may be written in Turkish or English. FAIL the original note's specific failure: ensure the cited URLs actually load and substantiate the debunk (it was rated notHelpfulSourcesMissingOrUnreliable) and that the explanation is clear and self-contained. FAIL any note that endorses the brain-dominance framing or that merely calls the post 'just for fun' without addressing the false scientific claim.",
-  "reference_note": "Sol/sağ beyin baskınlığına göre farklı şeyler görme iddiası bilimsel bir mittir; bir görselde ne gördüğünüz beyin yarımküresi baskınlığını göstermez. Sinirbilim, insanların 'sol beyinli' veya 'sağ beyinli' olduğuna dair bir kanıt bulamamıştır. https://www.health.harvard.edu/blog/right-brainleft-brain-right-2017082512222 https://www.britannica.com/story/are-there-really-right-brained-and-left-brained-people",
+  "judge_guidance": "PASS only if the note clearly states that the left-brain/right-brain 'dominance' premise is a scientific myth \u2014 what you see in an ambiguous image does NOT indicate hemispheric dominance, and neuroscience finds no evidence people are 'left-brained' or 'right-brained' \u2014 and cites a loadable, authoritative source (e.g. Harvard Health, Britannica, University of Utah / ScienceDaily 2013 study, or TED-Ed). The note may be written in Turkish or English. FAIL the original note's specific failure: ensure the cited URLs actually load and substantiate the debunk (it was rated notHelpfulSourcesMissingOrUnreliable) and that the explanation is clear and self-contained. FAIL any note that endorses the brain-dominance framing or that merely calls the post 'just for fun' without addressing the false scientific claim.",
+  "reference_note": "Sol/sa\u011f beyin bask\u0131nl\u0131\u011f\u0131na g\u00f6re farkl\u0131 \u015feyler g\u00f6rme iddias\u0131 bilimsel bir mittir; bir g\u00f6rselde ne g\u00f6rd\u00fc\u011f\u00fcn\u00fcz beyin yar\u0131mk\u00fcresi bask\u0131nl\u0131\u011f\u0131n\u0131 g\u00f6stermez. Sinirbilim, insanlar\u0131n 'sol beyinli' veya 'sa\u011f beyinli' oldu\u011funa dair bir kan\u0131t bulamam\u0131\u015ft\u0131r. https://www.health.harvard.edu/blog/right-brainleft-brain-right-2017082512222 https://www.britannica.com/story/are-there-really-right-brained-and-left-brained-people",
   "original_unhelpful_note": {
-    "text": "Sol/sağ beyin yarımküresi baskınlığına göre farklı şeyler görme iddiası bilimsel bir mittir; beyin taramaları böyle bir ayrımı desteklemez. https://www.health.harvard.edu/blog/right-brainleft-brain-right-2017082512222 https://www.britannica.com/story/are-there-really-right-brained-and-left-brained-people https://ed.ted.com/lessons/the-left-brain-vs-right-brain-myth-elizabeth-waters",
+    "text": "Sol/sa\u011f beyin yar\u0131mk\u00fcresi bask\u0131nl\u0131\u011f\u0131na g\u00f6re farkl\u0131 \u015feyler g\u00f6rme iddias\u0131 bilimsel bir mittir; beyin taramalar\u0131 b\u00f6yle bir ayr\u0131m\u0131 desteklemez. https://www.health.harvard.edu/blog/right-brainleft-brain-right-2017082512222 https://www.britannica.com/story/are-there-really-right-brained-and-left-brained-people https://ed.ted.com/lessons/the-left-brain-vs-right-brain-myth-elizabeth-waters",
     "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (2) on a very small rating pool (12 total; only 6 not-helpful tags). The verdict is correct and the sources (Harvard/Britannica/TED-Ed) are reputable. The likely issue is the exact Harvard Health URL slug resolving (the '...-right-2017082512222' path may not load cleanly) plus the tiny sample. Substantively a sound debunk; weak point is citation reliability.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
@@ -26,7 +28,7 @@
       "https://www.sciencedaily.com/releases/2013/08/130814190513.htm",
       "https://en.wikipedia.org/wiki/Lateralization_of_brain_function"
     ],
-    "notes": "Brain lateralization is real for some functions (e.g. language left-dominant), but the 'left-brained vs right-brained person' concept is debunked — a 2013 University of Utah fMRI study found no evidence individuals preferentially use one hemisphere. Perception of an ambiguous image does not indicate hemispheric dominance. The tweet's premise is a classic neuromyth."
+    "notes": "Brain lateralization is real for some functions (e.g. language left-dominant), but the 'left-brained vs right-brained person' concept is debunked \u2014 a 2013 University of Utah fMRI study found no evidence individuals preferentially use one hemisphere. Perception of an ambiguous image does not indicate hemispheric dominance. The tweet's premise is a classic neuromyth."
   },
   "media_reliability_flag": false,
   "media_confidence": "low",

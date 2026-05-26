@@ -1,16 +1,20 @@
 {
   "tweet_id": "2031899827962056819",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "opinion_or_framing",
-  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war", "politics_and_policy"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war",
+    "politics_and_policy"
+  ],
   "category_fit": "partial",
   "suggested_category": "",
   "tweet_summary": "A pro-Palestine account captions a chaotic video 'Zionist Politician Attacked in Argentina'; the footage shows Argentine President Javier Milei (pro-Israel) amid a hostile crowd with Argentine 'INFANTERIA' police and Spanish-language shouting.",
-  "why_note_decision": "No note is warranted on the facts: the video genuinely depicts Milei being mobbed/attacked during a campaign caravan in Argentina (Lomas de Zamora, early March 2026; rocks thrown, evacuation, arrests — Infobae/Perfil/Reuters). Milei is openly pro-Israel, so 'Zionist Politician Attacked in Argentina' is an accurate-if-editorial description of a real event. The only debatable element is the subjective 'Zionist' label (opinion/framing), not a factual error. The original note is a catastrophic misattribution — it claims the clip is from an April 2025 anti-Trump protest in Lafayette, Indiana, which is plainly false (it is Milei in Argentina, Spanish audio, Argentine police).",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note. The video really shows Javier Milei attacked during a March 2026 campaign caravan in Argentina (Lomas de Zamora); the core claim 'politician attacked in Argentina' is true and the only contestable word is the subjective 'Zionist' (Milei is in fact strongly pro-Israel). FAIL hard any note that places the video in the USA / Lafayette, Indiana / an 'anti-Trump protest' / April 2025 — that is the original note's gross misattribution. Also do NOT write a note merely to quibble with the 'Zionist' framing, which is opinion, not a checkable falsehood. Declining is correct.",
+  "why_note_decision": "No note is warranted on the facts: the video genuinely depicts Milei being mobbed/attacked during a campaign caravan in Argentina (Lomas de Zamora, early March 2026; rocks thrown, evacuation, arrests \u2014 Infobae/Perfil/Reuters). Milei is openly pro-Israel, so 'Zionist Politician Attacked in Argentina' is an accurate-if-editorial description of a real event. The only debatable element is the subjective 'Zionist' label (opinion/framing), not a factual error. The original note is a catastrophic misattribution \u2014 it claims the clip is from an April 2025 anti-Trump protest in Lafayette, Indiana, which is plainly false (it is Milei in Argentina, Spanish audio, Argentine police).",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The video really shows Javier Milei attacked during a March 2026 campaign caravan in Argentina (Lomas de Zamora); the core claim 'politician attacked in Argentina' is true and the only contestable word is the subjective 'Zionist' (Milei is in fact strongly pro-Israel). FAIL hard any note that places the video in the USA / Lafayette, Indiana / an 'anti-Trump protest' / April 2025 \u2014 that is the original note's gross misattribution. Also do NOT write a note merely to quibble with the 'Zionist' framing, which is opinion, not a checkable falsehood. Declining is correct.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "This video shows an incident from April 5, 2025, at an anti-Trump protest in Lafayette, Indiana, USA, where a motorist was headbutted after confronting protesters. It is not from Argentina.    https://www.jconline.com/story/news/local/2025/04/05/bystanders-man-with-long-gun-arrested-after-altercation-in-downtown-lafayette-anti-trump-protest/82949910007    https://www.wlfi.com/news/lafayette-police-investigating-incident-involving-rifle-at-hands-off-protest/article_300ac655-1e48-4f4c-921e-31a595cf696f.html",

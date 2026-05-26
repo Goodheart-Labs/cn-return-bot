@@ -1,11 +1,14 @@
 {
   "tweet_id": "2048808660088828089",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "satire_parody",
-  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "partial",
   "suggested_category": "music_history_claim",
   "tweet_summary": "Posted by a self-declared parody/satire account, replying to a thread about Michael Jackson and Palestine: 'He came back to the US and made a song about it. Sony records refused to release the song.' Attached images show a 'Palestine Don't Cry' graphic plus typed lyrics.",

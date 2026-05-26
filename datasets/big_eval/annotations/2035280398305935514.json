@@ -1,19 +1,22 @@
 {
   "tweet_id": "2035280398305935514",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["celebrity_entertainment_sports", "manipulated_or_fabricated_evidence"],
+  "categories": [
+    "celebrity_entertainment_sports",
+    "manipulated_or_fabricated_evidence"
+  ],
   "category_fit": "partial",
   "suggested_category": "",
   "tweet_summary": "A PSG Turkish fan account posts (in Turkish): 'Paris Saint-Germain management requested a UEFA investigation regarding Anfield after Noa Lang's injury and demanded stadium deficiencies be fixed,' with a PSG jersey image.",
   "why_note_decision": "The tweet's core factual claim is false and presented in news style, so a note is warranted. Noa Lang is a GALATASARAY player, not PSG. He suffered a thumb injury colliding with the advertising hoardings at Anfield during a Liverpool vs Galatasaray Champions League match (March 2026), and it is GALATASARAY (not PSG) that complained to UEFA and is pursuing legal action/compensation. PSG has no role in this. The post wrongly attributes the player and the UEFA complaint to PSG. The original note correctly identifies that Lang is a Galatasaray player and that Galatasaray, not PSG, requested the UEFA review. (Note: the post is from a PSG fan account and could be partly sarcastic banter, but it reads as a factual news claim and is factually wrong on player and complainant.)",
-  "judge_guidance": "A correct note must establish that Noa Lang plays for GALATASARAY, not PSG, and that his injury occurred at Anfield against Liverpool (Champions League, March 2026); it was GALATASARAY — not PSG — that complained to UEFA / is pursuing action over the advertising hoardings. PASS requires correcting the PSG attribution (player and/or UEFA complaint) to Galatasaray. FAIL if the note accepts the premise that PSG requested the investigation, or if it claims Lang is a PSG player. A note may acknowledge the post may be fan satire, but the factual correction (Galatasaray, not PSG) is the bar. Language can be Turkish or English.",
-  "reference_note": "Noa Lang is a Galatasaray player, not PSG. He injured his thumb on the advertising hoardings during Liverpool's 4-0 Champions League win over Galatasaray at Anfield (March 2026). It is Galatasaray — not PSG — that complained to UEFA and is pursuing compensation over the pitch-side setup. https://www.goal.com/en/lists/uefa-liverpool-launch-investigation-noa-lang-injury-galatasaray-star-collided-advertising-board/blt14f4a72dc8d03dd1 https://www.transfermarkt.com.tr/noa-lang/profil/spieler/339332",
+  "judge_guidance": "A correct note must establish that Noa Lang plays for GALATASARAY, not PSG, and that his injury occurred at Anfield against Liverpool (Champions League, March 2026); it was GALATASARAY \u2014 not PSG \u2014 that complained to UEFA / is pursuing action over the advertising hoardings. PASS requires correcting the PSG attribution (player and/or UEFA complaint) to Galatasaray. FAIL if the note accepts the premise that PSG requested the investigation, or if it claims Lang is a PSG player. A note may acknowledge the post may be fan satire, but the factual correction (Galatasaray, not PSG) is the bar. Language can be Turkish or English.",
+  "reference_note": "Noa Lang is a Galatasaray player, not PSG. He injured his thumb on the advertising hoardings during Liverpool's 4-0 Champions League win over Galatasaray at Anfield (March 2026). It is Galatasaray \u2014 not PSG \u2014 that complained to UEFA and is pursuing compensation over the pitch-side setup. https://www.goal.com/en/lists/uefa-liverpool-launch-investigation-noa-lang-injury-galatasaray-star-collided-advertising-board/blt14f4a72dc8d03dd1 https://www.transfermarkt.com.tr/noa-lang/profil/spieler/339332",
   "original_unhelpful_note": {
-    "text": "Noa Lang, Galatasaray oyuncusudur, PSG'nin değil. Sakatlığı Liverpool-Galatasaray maçında oldu ve UEFA'ya inceleme talebinde bulunan Galatasaray'dı. PSG'nin böyle bir talebi bildirilmemiştir.    https://www.transfermarkt.com.tr/noa-lang/profil/spieler/339332  https://www.goal.com/en-us/lists/uefa-liverpool-launch-investigation-noa-lang-injury-galatasaray-star-collided-advertising-board/blt14f4a72dc8d03dd1  https://www.nytimes.com/athletic/7130408/2026/03/19/noa-lang-galatasaray-surgery-osimhen-anfield/",
+    "text": "Noa Lang, Galatasaray oyuncusudur, PSG'nin de\u011fil. Sakatl\u0131\u011f\u0131 Liverpool-Galatasaray ma\u00e7\u0131nda oldu ve UEFA'ya inceleme talebinde bulunan Galatasaray'd\u0131. PSG'nin b\u00f6yle bir talebi bildirilmemi\u015ftir.    https://www.transfermarkt.com.tr/noa-lang/profil/spieler/339332  https://www.goal.com/en-us/lists/uefa-liverpool-launch-investigation-noa-lang-injury-galatasaray-star-collided-advertising-board/blt14f4a72dc8d03dd1  https://www.nytimes.com/athletic/7130408/2026/03/19/noa-lang-galatasaray-surgery-osimhen-anfield/",
     "failure_reason": "The note is actually accurate and well-sourced; it correctly fixes the player and the UEFA-complainant. Its NOT_HELPFUL status likely reflects that many raters saw the post as obvious fan satire/banter (NoteNotNeeded) rather than a note flaw. Retained as a failure row per provisional, but the note's content is sound.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },

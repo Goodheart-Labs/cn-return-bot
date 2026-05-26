@@ -1,17 +1,22 @@
 {
   "tweet_id": "2032563052839674287",
-  "role": "unhelpful_notHelpfulOpinionSpeculation",
-  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war", "conspiracy_and_viral_hoax", "ai_generated_or_manipulated_media"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war",
+    "conspiracy_and_viral_hoax",
+    "ai_generated_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "ai_generated_or_manipulated_media",
-  "tweet_summary": "Dr. Simon (1.1M followers, 2.9M views) claims Netanyahu's speech video shows teeth that disappear and reappear as an 'oddity,' insinuating the video is fake/AI and asking 'where is Netanyahu?' — feeding the death conspiracy.",
+  "tweet_summary": "Dr. Simon (1.1M followers, 2.9M views) claims Netanyahu's speech video shows teeth that disappear and reappear as an 'oddity,' insinuating the video is fake/AI and asking 'where is Netanyahu?' \u2014 feeding the death conspiracy.",
   "why_note_decision": "The video is authentic: it is Netanyahu's real March 12, 2026 press conference, and forensic analysis (GetReal Security) found no signs of AI generation/manipulation. The 'missing teeth' and 'six fingers' anomalies are video/compression artifacts, not evidence of AI. Netanyahu is alive (live press conference plus March 15-17 appearances). The post insinuates a false 'fake video / he's missing' conspiracy to 2.9M viewers, so a note is warranted.",
-  "judge_guidance": "PASS only if the note establishes (1) the video is genuine — Netanyahu's real March 12, 2026 press conference, with forensic analysis finding no AI manipulation — and (2) the 'missing teeth' (and related 'six fingers') anomalies are ordinary video/compression artifacts, NOT proof of AI; and (3) Netanyahu is alive/not missing. It must AVOID the original note's failure of stating 'these are video artifacts, not AI' as the note's own assertion — attribute the authentic/not-AI verdict to a fact-check or forensic analysis (PolitiFact/Snopes/GetReal/Reuters). FAIL if it concedes the video may be AI, ignores the 'where is Netanyahu' death insinuation, or reads as unsourced opinion.",
-  "reference_note": "This is Netanyahu's genuine March 12, 2026 press conference; forensic analysis found no signs of AI manipulation. The 'missing teeth' (and 'six fingers') anomalies are video/compression artifacts, not evidence the video is AI-generated. Netanyahu is alive and not missing — he appeared again March 15-17 to dispel the death rumor, which fact-checkers rated false. https://www.politifact.com/factchecks/2026/mar/13/social-media/netanyahu-dead-video-artificial-intelligence https://www.politifact.com/article/2026/mar/17/netanyahu-dead-false-narrative/",
+  "judge_guidance": "PASS only if the note establishes (1) the video is genuine \u2014 Netanyahu's real March 12, 2026 press conference, with forensic analysis finding no AI manipulation \u2014 and (2) the 'missing teeth' (and related 'six fingers') anomalies are ordinary video/compression artifacts, NOT proof of AI; and (3) Netanyahu is alive/not missing. It must AVOID the original note's failure of stating 'these are video artifacts, not AI' as the note's own assertion \u2014 attribute the authentic/not-AI verdict to a fact-check or forensic analysis (PolitiFact/Snopes/GetReal/Reuters). FAIL if it concedes the video may be AI, ignores the 'where is Netanyahu' death insinuation, or reads as unsourced opinion.",
+  "reference_note": "This is Netanyahu's genuine March 12, 2026 press conference; forensic analysis found no signs of AI manipulation. The 'missing teeth' (and 'six fingers') anomalies are video/compression artifacts, not evidence the video is AI-generated. Netanyahu is alive and not missing \u2014 he appeared again March 15-17 to dispel the death rumor, which fact-checkers rated false. https://www.politifact.com/factchecks/2026/mar/13/social-media/netanyahu-dead-video-artificial-intelligence https://www.politifact.com/article/2026/mar/17/netanyahu-dead-false-narrative/",
   "original_unhelpful_note": {
     "text": "This video is from Netanyahu's real March 12, 2026 press conference. Claims of AI due to anomalies like \"missing teeth\" or extra fingers are debunked; these are video artifacts, not AI. He is not missing or dead. https://www.politifact.com/factchecks/2026/mar/13/social-media/netanyahu-dead-video-artificial-intelligence https://www.foxnews.com/video/6390815587112 https://www.aljazeera.com/video/newsfeed/2026/3/13/netanyahu-wants-to-create-conditions-for-iran-regime-change",
     "failure_reason": "Opinion/speculation + incorrect tags on a charged topic: the note's verdict is correct and it even cites PolitiFact, but phrasings like 'these are video artifacts, not AI' read as the note's own conclusion to skeptical raters, and a Fox video link is weak sourcing. Better to foreground the forensic/fact-check authority for the 'authentic, not AI' verdict.",

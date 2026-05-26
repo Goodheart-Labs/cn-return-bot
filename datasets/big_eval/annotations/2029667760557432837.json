@@ -1,8 +1,11 @@
 {
   "tweet_id": "2029667760557432837",
-  "role": "unhelpful_notHelpfulIncorrect",
+  "role": "unhelpful_incorrect",
   "needs_note": "yes",
-  "categories": ["ai_generated_media", "breaking_news_and_war"],
+  "categories": [
+    "ai_generated_media",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Tehran Times posts a nighttime video captioned '#BREAKING Cluster warheads over Tel Aviv', framing dispersing glowing objects in the sky as an Iranian cluster-munition strike on Tel Aviv during the March 2026 Iran-Israel war.",
@@ -29,5 +32,9 @@
     "prominence": "high",
     "lens_rationale": "Wartime AI disinformation from a state-aligned outlet (320k followers, 122k impressions) inflames an active conflict; correcting fog-of-war propaganda is high-value for reducing real-world escalation and misleading views."
   },
-  "difficulty": "hard"
+  "difficulty": "hard",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": false,
+  "no_note_reason": "",
+  "media_confidence": "high"
 }

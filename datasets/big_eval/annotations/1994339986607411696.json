@@ -1,11 +1,13 @@
 {
   "tweet_id": "1994339986607411696",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "joke_or_meme",
-  "categories": ["celebrity_entertainment_sports"],
+  "categories": [
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "poor",
   "suggested_category": "tech_history_nostalgia",
   "tweet_summary": "A lighthearted/affectionate joke that early Windows 1.x and 2.x had a full-colour GUI before the Mac but used it garishly ('they made it radioactive'), illustrated with two genuine Windows 1.01 and 2.0 screenshots.",

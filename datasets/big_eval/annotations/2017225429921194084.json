@@ -1,16 +1,19 @@
 {
   "tweet_id": "2017225429921194084",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["politics_and_policy", "celebrity_entertainment_sports"],
+  "categories": [
+    "politics_and_policy",
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "partial",
   "suggested_category": "",
   "tweet_summary": "An OSINT account posts 'BREAKING: Federal agents arrested Don Lemon overnight' with a headshot of Don Lemon.",
-  "why_note_decision": "The tweet's claim is TRUE: on Jan 30 2026 federal agents (HSI/FBI) arrested former CNN anchor Don Lemon over his coverage of a protest at Cities Church in St. Paul, MN; he was charged with conspiracy against religious-freedom rights and later released. The tweet states only that he was arrested overnight by federal agents — accurate, with no false location or detail. The original note 'corrects' a location ('in Los Angeles, not St. Paul, Minnesota') that the tweet never claimed — a strawman correction of an accurate post. No note is warranted.",
-  "judge_guidance": "PASS only if the bot declines to write a note. The core claim — Don Lemon was arrested overnight by federal agents (Jan 30 2026, over the St. Paul Cities Church protest coverage; physically taken into custody in LA) — is TRUE and the tweet adds no false specifics. CRITICAL FAIL: any note that frames a 'correction' the tweet didn't claim (e.g. 'arrested in Los Angeles, not St. Paul'), as the original did — the tweet never asserted a location, so this is a confusing false positive. A note is only justifiable if the tweet were denying the arrest happened, which it is not.",
+  "why_note_decision": "The tweet's claim is TRUE: on Jan 30 2026 federal agents (HSI/FBI) arrested former CNN anchor Don Lemon over his coverage of a protest at Cities Church in St. Paul, MN; he was charged with conspiracy against religious-freedom rights and later released. The tweet states only that he was arrested overnight by federal agents \u2014 accurate, with no false location or detail. The original note 'corrects' a location ('in Los Angeles, not St. Paul, Minnesota') that the tweet never claimed \u2014 a strawman correction of an accurate post. No note is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The core claim \u2014 Don Lemon was arrested overnight by federal agents (Jan 30 2026, over the St. Paul Cities Church protest coverage; physically taken into custody in LA) \u2014 is TRUE and the tweet adds no false specifics. CRITICAL FAIL: any note that frames a 'correction' the tweet didn't claim (e.g. 'arrested in Los Angeles, not St. Paul'), as the original did \u2014 the tweet never asserted a location, so this is a confusing false positive. A note is only justifiable if the tweet were denying the arrest happened, which it is not.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "Don Lemon was taken into custody by federal agents in Los Angeles, not St. Paul, Minnesota. https://www.nytimes.com/2026/01/30/us/don-lemon-arrest-minnesota-church-protest.html https://www.cbsnews.com/news/don-lemon-in-custody-former-cnn-anchor-sources-say",

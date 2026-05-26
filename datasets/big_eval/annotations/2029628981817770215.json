@@ -1,16 +1,19 @@
 {
   "tweet_id": "2029628981817770215",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["politics_and_policy", "manipulated_or_fabricated_evidence"],
+  "categories": [
+    "politics_and_policy",
+    "manipulated_or_fabricated_evidence"
+  ],
   "category_fit": "partial",
   "suggested_category": "",
   "tweet_summary": "The Kobeissi Letter reports that Trump removed Kristi Noem as DHS Secretary and nominated Sen. Markwayne Mullin to replace her, with a screenshot of a Trump Truth Social post making the announcement.",
-  "why_note_decision": "No note is warranted: the event is TRUE and the screenshot is genuine. On March 5, 2026 Trump fired Noem and named Mullin as DHS Secretary effective March 31, moving Noem to 'Special Envoy for the Shield of the Americas' — confirmed by CNN, CBS, NPR, Al Jazeera, Roll Call. The screenshot is a real Trump Truth Social post whose wording matches the reported announcement. The original note's claim that it is a 'fabricated X post' is false; at most it is a pedantic platform nitpick (the image is plainly a Truth Social post, not claimed to be from X), and the substance is accurate.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet accurately reports a real March 5, 2026 announcement (Noem out, Mullin nominated for DHS effective March 31, Noem to a new 'Shield of the Americas' envoy role), and the embedded screenshot is a genuine Trump Truth Social post. FAIL any note that calls the screenshot 'fabricated' or claims the announcement didn't happen — that is the original note's error. Also FAIL a note whose only content is the pedantic point that the post is from Truth Social rather than X: the tweet never claims it came from X, and the factual substance is correct, so that nitpick does not warrant a note.",
+  "why_note_decision": "No note is warranted: the event is TRUE and the screenshot is genuine. On March 5, 2026 Trump fired Noem and named Mullin as DHS Secretary effective March 31, moving Noem to 'Special Envoy for the Shield of the Americas' \u2014 confirmed by CNN, CBS, NPR, Al Jazeera, Roll Call. The screenshot is a real Trump Truth Social post whose wording matches the reported announcement. The original note's claim that it is a 'fabricated X post' is false; at most it is a pedantic platform nitpick (the image is plainly a Truth Social post, not claimed to be from X), and the substance is accurate.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet accurately reports a real March 5, 2026 announcement (Noem out, Mullin nominated for DHS effective March 31, Noem to a new 'Shield of the Americas' envoy role), and the embedded screenshot is a genuine Trump Truth Social post. FAIL any note that calls the screenshot 'fabricated' or claims the announcement didn't happen \u2014 that is the original note's error. Also FAIL a note whose only content is the pedantic point that the post is from Truth Social rather than X: the tweet never claims it came from X, and the factual substance is correct, so that nitpick does not warrant a note.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "The image depicts a fabricated X post; President Trump announced Kristi Noem's removal as DHS Secretary and Markwayne Mullin's nomination on Truth Social, not X. https://truthsocial.com/@realDonaldTrump/posts/116178030946996760 https://www.wdbj7.com/2026/03/05/kristi-noem-replaced-dhs-secretary-trump-says",

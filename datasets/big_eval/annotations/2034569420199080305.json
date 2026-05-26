@@ -1,11 +1,14 @@
 {
   "tweet_id": "2034569420199080305",
-  "role": "unhelpful_notHelpfulOpinionSpeculation",
-  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Post by 'StarPlatinum' (5.2M views) asserts 'Netanyahu is not alive', stacking circumstantial 'evidence': that Ariel Sharon's death took 8 years to confirm, and that a USAF C-17 'flying hospital' left Tel Nof on March 11 bound for Germany, supposedly matching an emergency.",

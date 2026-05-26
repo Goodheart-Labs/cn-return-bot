@@ -1,20 +1,22 @@
 {
   "tweet_id": "2002086396576887148",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["ai_generated_media"],
+  "categories": [
+    "ai_generated_media"
+  ],
   "category_fit": "good",
   "suggested_category": "",
-  "tweet_summary": "An account posts a video of a rusty mechanical 'Iron Man'-style figure being assembled in a scrapyard, captioned 'Can you believe this stunning visual was created by Ai' — i.e. the author openly presents it as AI-generated.",
-  "why_note_decision": "No note is warranted: the tweet is truthful. The author explicitly states the visual 'was created by Ai', and commenters confirm it is AI (a lazily reskinned Iron Man 2 scene). There is no deception — AI content is being disclosed as AI. The original note ('a real handmade suit, not one created by AI') is doubly wrong: it both denies the AI origin (which is real) and confuses this AI clip with an unrelated real-world Chinese 'mecha suit' food-delivery story. Correcting a truthful AI disclosure is a false positive.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note. The author truthfully labels the video as AI-generated ('created by Ai'); nothing is being passed off as real, so no correction is needed. FAIL any note claiming the video is 'a real handmade suit, not AI' or otherwise denying the AI origin — that is the original note's error, which also wrongly imported the unrelated real Chinese mecha-suit delivery-driver story (Dexerto/SCMP) as if it were this clip. Because the tweet's own claim (it's AI) is correct, any note that disputes it is a false positive.",
+  "tweet_summary": "An account posts a video of a rusty mechanical 'Iron Man'-style figure being assembled in a scrapyard, captioned 'Can you believe this stunning visual was created by Ai' \u2014 i.e. the author openly presents it as AI-generated.",
+  "why_note_decision": "No note is warranted: the tweet is truthful. The author explicitly states the visual 'was created by Ai', and commenters confirm it is AI (a lazily reskinned Iron Man 2 scene). There is no deception \u2014 AI content is being disclosed as AI. The original note ('a real handmade suit, not one created by AI') is doubly wrong: it both denies the AI origin (which is real) and confuses this AI clip with an unrelated real-world Chinese 'mecha suit' food-delivery story. Correcting a truthful AI disclosure is a false positive.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The author truthfully labels the video as AI-generated ('created by Ai'); nothing is being passed off as real, so no correction is needed. FAIL any note claiming the video is 'a real handmade suit, not AI' or otherwise denying the AI origin \u2014 that is the original note's error, which also wrongly imported the unrelated real Chinese mecha-suit delivery-driver story (Dexerto/SCMP) as if it were this clip. Because the tweet's own claim (it's AI) is correct, any note that disputes it is a false positive.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "The video shows a real handmade suit, not one created by AI. https://www.dexerto.com/entertainment/chinese-restaurant-owner-builds-real-life-mecha-suit-and-uses-it-for-food-deliveries-3294603/ https://www.scmp.com/news/people-culture/trending-china/article/3335571/china-eatery-owner-wears-mecha-suit-deliver-food-dubbed-iron-man-courier-netizens",
-    "failure_reason": "Rated notHelpfulIncorrect (55 of 74). The note asserts the clip is 'a real handmade suit, not AI' and cites a real Chinese mecha-suit delivery story — but that is a different video. This clip is AI (a reskinned Iron Man 2 scene), which the author themselves disclose. The note manufactured a contradiction with a truthful tweet by matching it to the wrong source.",
+    "failure_reason": "Rated notHelpfulIncorrect (55 of 74). The note asserts the clip is 'a real handmade suit, not AI' and cites a real Chinese mecha-suit delivery story \u2014 but that is a different video. This clip is AI (a reskinned Iron Man 2 scene), which the author themselves disclose. The note manufactured a contradiction with a truthful tweet by matching it to the wrong source.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

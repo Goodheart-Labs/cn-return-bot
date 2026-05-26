@@ -1,11 +1,14 @@
 {
   "tweet_id": "2011382269697814907",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["statistical_or_numerical_claim", "health_medical_science"],
+  "categories": [
+    "statistical_or_numerical_claim",
+    "health_medical_science"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Quoting a clip of Nadhim Zahawi announcing COVID vaccine-as-condition-of-entry rules, the poster claims the UK 'lost 20% of our care workers because of this creatures vax mandates'.",

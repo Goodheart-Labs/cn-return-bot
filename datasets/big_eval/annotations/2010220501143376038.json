@@ -1,20 +1,22 @@
 {
   "tweet_id": "2010220501143376038",
-  "role": "unhelpful_notHelpfulHardToUnderstand",
+  "role": "unhelpful_hard_to_understand",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["manipulated_or_fabricated_evidence"],
+  "categories": [
+    "manipulated_or_fabricated_evidence"
+  ],
   "category_fit": "good",
   "suggested_category": "fabricated_quote",
   "tweet_summary": "A Ronaldo fan account attributes a quote to Jurgen Klopp: 'Cristiano has achieved everything, he can retire anytime. Messi still has a lot to win in football.'",
-  "why_note_decision": "The quote is fabricated — there is no credible record of Klopp saying it, and it contradicts his repeatedly-stated view (he has called Messi the best player he has ever seen). It is presented as a genuine Klopp statement, so a note flagging the quote as fake is warranted, contrary to the provisional no-note.",
-  "judge_guidance": "PASS only if the note states the attributed Klopp quote is fabricated / has no credible source. It may note Klopp's actual on-record stance (he has called Messi the best player he's seen). It must AVOID the original note's failures: (1) hard-to-understand wording / encoding artifacts, and (2) drifting into an argumentative Messi-vs-Ronaldo opinion debate — pass only if the note is clearly readable and stays on the verifiable point (the quote is fake). A note that merely re-litigates who is better, or that asserts the quote is fake without any basis, should not pass.",
-  "reference_note": "This quote is not authentic — there is no credible record of Jurgen Klopp saying it, and it's part of a wave of fabricated Klopp quotes (often with the names swapped). On record, Klopp has repeatedly called Messi the best player he has ever seen. https://www.goal.com/en-us/news/liverpool-klopp-hails-messi-longevity-argentina-world-cup-triumph/blta61d25b62f7a7e2c",
+  "why_note_decision": "The quote is fabricated \u2014 there is no credible record of Klopp saying it, and it contradicts his repeatedly-stated view (he has called Messi the best player he has ever seen). It is presented as a genuine Klopp statement, so a note flagging the quote as fake is warranted, contrary to the provisional no-note.",
+  "judge_guidance": "PASS only if the note states the attributed Klopp quote is fabricated / has no credible source. It may note Klopp's actual on-record stance (he has called Messi the best player he's seen). It must AVOID the original note's failures: (1) hard-to-understand wording / encoding artifacts, and (2) drifting into an argumentative Messi-vs-Ronaldo opinion debate \u2014 pass only if the note is clearly readable and stays on the verifiable point (the quote is fake). A note that merely re-litigates who is better, or that asserts the quote is fake without any basis, should not pass.",
+  "reference_note": "This quote is not authentic \u2014 there is no credible record of Jurgen Klopp saying it, and it's part of a wave of fabricated Klopp quotes (often with the names swapped). On record, Klopp has repeatedly called Messi the best player he has ever seen. https://www.goal.com/en-us/news/liverpool-klopp-hails-messi-longevity-argentina-world-cup-triumph/blta61d25b62f7a7e2c",
   "original_unhelpful_note": {
-    "text": "This alleged quote from Jürgen Klopp is fabricated, as no credible sources confirm it. Klopp has actually said Messi is better than Ronaldo and the best he's seen. Sources: https://www.upi.com/Sports_News/Soccer/2020/05/13/Liverpools-Jurgen-Klopp-says-Lionel-Messi-is-better-than-Cristiano-Ronaldo/4231589371825/ https://www.youtube.com/watch?v=J332NciQYeQ https://www.goal.com/en-us/news/liverpool-klopp-hails-messi-longevity-argentina-world-cup-triumph/blta61d25b62f7a7e2c",
-    "failure_reason": "Tagged HardToUnderstand (dominant): garbled author name ('Jürgen' mojibake), three piled-on sources, and an editorializing 'Messi is better than Ronaldo' aside that reads as taking a side in the fan debate rather than just stating the quote is fake.",
+    "text": "This alleged quote from J\u00fcrgen Klopp is fabricated, as no credible sources confirm it. Klopp has actually said Messi is better than Ronaldo and the best he's seen. Sources: https://www.upi.com/Sports_News/Soccer/2020/05/13/Liverpools-Jurgen-Klopp-says-Lionel-Messi-is-better-than-Cristiano-Ronaldo/4231589371825/ https://www.youtube.com/watch?v=J332NciQYeQ https://www.goal.com/en-us/news/liverpool-klopp-hails-messi-longevity-argentina-world-cup-triumph/blta61d25b62f7a7e2c",
+    "failure_reason": "Tagged HardToUnderstand (dominant): garbled author name ('J\u00fcrgen' mojibake), three piled-on sources, and an editorializing 'Messi is better than Ronaldo' aside that reads as taking a side in the fan debate rather than just stating the quote is fake.",
     "original_status": "NEEDS_MORE_RATINGS"
   },
   "fact_check": {

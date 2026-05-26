@@ -1,11 +1,14 @@
 {
   "tweet_id": "2029990637898977346",
-  "role": "unhelpful_notHelpfulIncorrect",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Quote-tweet amused at a cameraman who 'didn't move an inch' as a missile flew at him, amplifying a quoted video framed as a March 2026 Iranian ballistic-missile impact at Saudi Arabia's Prince Sultan Air Base near US troops.",
@@ -14,7 +17,7 @@
   "reference_note": "This is old footage, not a 2026 Iranian strike on Saudi Arabia. Fact-checkers identified it as the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port. Iran did fire missiles toward Prince Sultan Air Base on March 6, 2026, but Saudi defenses intercepted them with no impact on the base. https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.politifact.com/factchecks/2026/mar/04/tweets/iran-strikes-airbase-yemen-explosion/",
   "original_unhelpful_note": {
     "text": "This video shows an Israeli airstrike on Yemen's Hodeida port from July 2024, not a 2026 Iranian missile impact at Saudi Arabia's Prince Sultan Airbase. Saudi defenses intercepted the missiles with no reported ground impacts.    https://factcheck.afp.com/doc.afp.com.99J43G3  https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false  https://www.arabnews.com/node/2635432/saudi-arabia",
-    "failure_reason": "Rated notHelpfulIncorrect (9), with notHelpfulIrrelevantSources (6) and notHelpfulNoteNotNeeded (8). The video identification (old Yemen footage) is actually correct and well-sourced. The note was likely flagged 'incorrect' on its second, absolute clause 'no reported ground impacts' — in the fog of the active war, real later strikes did damage US aircraft at the base, so the blanket impact claim was contested by raters even though it held for the specific 6 Mar interception. The note tried to make two claims (old video + interception outcome) and the weaker second claim sank it.",
+    "failure_reason": "Rated notHelpfulIncorrect (9), with notHelpfulIrrelevantSources (6) and notHelpfulNoteNotNeeded (8). The video identification (old Yemen footage) is actually correct and well-sourced. The note was likely flagged 'incorrect' on its second, absolute clause 'no reported ground impacts' \u2014 in the fog of the active war, real later strikes did damage US aircraft at the base, so the blanket impact claim was contested by raters even though it held for the specific 6 Mar interception. The note tried to make two claims (old video + interception outcome) and the weaker second claim sank it.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {
@@ -26,7 +29,7 @@
       "https://www.arabnews.com/node/2635432/saudi-arabia",
       "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Saudi_Arabia"
     ],
-    "notes": "Full Fact (3 Mar) and PolitiFact (4 Mar) both confirm the viral clip is the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port, not a 2026 Saudi strike. On 6 Mar 2026 Saudi MoD intercepted/destroyed three ballistic missiles fired toward Prince Sultan Air Base with no impact reported that day. A separate later Iranian strike (~14/27 Mar) damaged US KC-135/E-3 aircraft at the base — after this tweet — which is why an absolute 'no impacts' framing aged poorly."
+    "notes": "Full Fact (3 Mar) and PolitiFact (4 Mar) both confirm the viral clip is the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port, not a 2026 Saudi strike. On 6 Mar 2026 Saudi MoD intercepted/destroyed three ballistic missiles fired toward Prince Sultan Air Base with no impact reported that day. A separate later Iranian strike (~14/27 Mar) damaged US KC-135/E-3 aircraft at the base \u2014 after this tweet \u2014 which is why an absolute 'no impacts' framing aged poorly."
   },
   "media_reliability_flag": true,
   "media_confidence": "medium",

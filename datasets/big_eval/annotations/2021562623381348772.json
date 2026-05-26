@@ -5,7 +5,7 @@
   "disagrees_with_provisional": false,
   "needs_note": "no",
   "no_note_reason": "opinion_or_framing",
-  "categories": ["opinion_listicle"],
+  "categories": [],
   "category_fit": "poor",
   "suggested_category": "opinion_listicle",
   "tweet_summary": "A viral listicle/map of which nationality each European country supposedly finds most attractive (mostly Italy/Spain). No checkable factual claim is made beyond restating the viral map.",
@@ -13,8 +13,8 @@
   "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive: this is a subjective preference listicle, not a checkable factual claim. Reject any note that calls the map 'misleading' or 'unsourced' without acknowledging the documented GoEuro/Lovoo 2014 survey origin, and especially reject notes that simply restate the original failed note.",
   "reference_note": "",
   "original_unhelpful_note": {
-    "text": "Misleading: the list comes from a viral unlabeled map reposted without any cited survey. Online discussions and reposts note there's no credible source—it appears to be a stereotype-based meme, not representative data. https://www.reddit.com/r/MapPorn/comments/y7d4y5/which_country_has_the_most_attractive_people",
-    "failure_reason": "Note not needed — subjective opinion content; also the note's claim that no source exists is itself wrong (there's a 2014 GoEuro/Lovoo survey behind the viral map). Single Reddit thread is not a reliable source.",
+    "text": "Misleading: the list comes from a viral unlabeled map reposted without any cited survey. Online discussions and reposts note there's no credible source\u2014it appears to be a stereotype-based meme, not representative data. https://www.reddit.com/r/MapPorn/comments/y7d4y5/which_country_has_the_most_attractive_people",
+    "failure_reason": "Note not needed \u2014 subjective opinion content; also the note's claim that no source exists is itself wrong (there's a 2014 GoEuro/Lovoo survey behind the viral map). Single Reddit thread is not a reliable source.",
     "original_status": "NEEDS_MORE_RATINGS"
   },
   "fact_check": {

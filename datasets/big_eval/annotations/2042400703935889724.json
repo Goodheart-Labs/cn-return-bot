@@ -5,7 +5,10 @@
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["statistical_or_numerical_claim", "immigration_demographics"],
+  "categories": [
+    "statistical_or_numerical_claim",
+    "politics_and_policy"
+  ],
   "category_fit": "partial",
   "suggested_category": "immigration_demographics",
   "tweet_summary": "A viral video claims Texas went from 89% White in 1970 to 39% in 2025, and that the Black share rose from 3% in the 70s to 13% in 2025, framing it as demographic alarm ('America better wake up').",
@@ -16,7 +19,10 @@
   "fact_check": {
     "agrees_correction_needed": true,
     "claim_verdict": "misleading",
-    "sources_checked": ["https://en.wikipedia.org/wiki/Demographics_of_Texas", "https://texaspolitics.utexas.edu/archive/html/cult/features/0501_02/slide1.html"],
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Demographics_of_Texas",
+      "https://texaspolitics.utexas.edu/archive/html/cult/features/0501_02/slide1.html"
+    ],
     "notes": "Wikipedia's Demographics of Texas historical table gives 1970: total White 86.8%, non-Hispanic White 71.0%, Black 12.5%, Hispanic 16.4%. Confirms the note exactly. Tweet's '89% White' roughly matches total-White but is compared against modern non-Hispanic-White (39%), inflating the decline; tweet's '3% Black in the 70s' is false (12.5%)."
   },
   "media_reliability_flag": false,

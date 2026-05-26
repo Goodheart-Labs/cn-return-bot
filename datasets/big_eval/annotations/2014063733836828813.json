@@ -5,18 +5,24 @@
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "fabricated_event_claim"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "manipulated_or_fabricated_evidence"
+  ],
   "category_fit": "partial",
   "suggested_category": "fabricated_arrest_claim",
-  "tweet_summary": "Claims as an 'UPDATE' that Ohio nurse Chanda Petrey-Czaruk — who posted a video wishing harm on Press Secretary Karoline Leavitt during childbirth — 'has been taken into custody! FAFO!'",
-  "why_note_decision": "The tweet's headline claim — that the nurse 'has been taken into custody' — is false. Reporting confirms she lost her job (former VP of First Choice Home Health; no longer employed) and faced public backlash, but there is no indication she was arrested or detained; wishing harm in a video is generally protected speech, not a crime. Even a top reply notes she was NOT arrested. Asserting a fabricated arrest about a named private individual to ~800k viewers is exactly the kind of false, checkable claim a note should correct.",
+  "tweet_summary": "Claims as an 'UPDATE' that Ohio nurse Chanda Petrey-Czaruk \u2014 who posted a video wishing harm on Press Secretary Karoline Leavitt during childbirth \u2014 'has been taken into custody! FAFO!'",
+  "why_note_decision": "The tweet's headline claim \u2014 that the nurse 'has been taken into custody' \u2014 is false. Reporting confirms she lost her job (former VP of First Choice Home Health; no longer employed) and faced public backlash, but there is no indication she was arrested or detained; wishing harm in a video is generally protected speech, not a crime. Even a top reply notes she was NOT arrested. Asserting a fabricated arrest about a named private individual to ~800k viewers is exactly the kind of false, checkable claim a note should correct.",
   "judge_guidance": "PASS only if the note clearly states she was NOT taken into custody / arrested (no arrest occurred). It may add the accurate context that she lost her job / is a former employee of First Choice Home Health, but the indispensable correction is the false arrest claim. Must cite reliable reporting. FAIL if the note affirms or implies she was arrested/detained, or only quibbles about employment details while leaving the false 'taken into custody' claim unaddressed (that would be PARTIAL/insufficient).",
   "reference_note": "The nurse Chanda Petrey-Czaruk is a former employee of First Choice Home Health and was not taken into custody. https://www.timesnownews.com/world/us/us-news/chanda-petrey-czaruk-ohio-nurse-former-firstchoice-vice-president-viral-video-karoline-leavitt-pregnant-article-153480431 https://sundayguardianlive.com/world/who-is-chanda-petrey-czaruk-ohio-nurse-at-center-of-viral-controversy-after-wishing-injury-on-white-house-press-secretary-and-facing-backlash-165620",
   "original_unhelpful_note": null,
   "fact_check": {
     "agrees_correction_needed": true,
     "claim_verdict": "false",
-    "sources_checked": ["https://sundayguardianlive.com/world/who-is-chanda-petrey-czaruk-ohio-nurse-at-center-of-viral-controversy-after-wishing-injury-on-white-house-press-secretary-and-facing-backlash-165620/", "https://www.msn.com/en-in/news/other/who-is-chanda-petrey-czaruk-ohio-nurse-ex-firstchoice-vp-under-fire-over-viral-video-targeting-karoline-leavitt/ar-AA1UCmLC"],
+    "sources_checked": [
+      "https://sundayguardianlive.com/world/who-is-chanda-petrey-czaruk-ohio-nurse-at-center-of-viral-controversy-after-wishing-injury-on-white-house-press-secretary-and-facing-backlash-165620/",
+      "https://www.msn.com/en-in/news/other/who-is-chanda-petrey-czaruk-ohio-nurse-ex-firstchoice-vp-under-fire-over-viral-video-targeting-karoline-leavitt/ar-AA1UCmLC"
+    ],
     "notes": "She posted a video wishing a traumatic childbirth injury on Karoline Leavitt; lost her job (former VP, First Choice Home Health; no longer employed at Baptist Health). No source reports any arrest or custody. The tweet's 'taken into custody' claim is fabricated. A reply (@unhealthytruth) also says she was not arrested."
   },
   "media_reliability_flag": false,

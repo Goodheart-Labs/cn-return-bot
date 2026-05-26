@@ -1,11 +1,14 @@
 {
   "tweet_id": "2029976032799764557",
-  "role": "unhelpful_notHelpfulIncorrect",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Quote-tweet ('as close as we can get to a POV of being hit by a ballistic missile') amplifying a quoted video framed as an Iranian ballistic-missile strike on Prince Sultan Air Base in Al-Kharj, Saudi Arabia, hitting near US servicemembers with only minor injuries.",
@@ -14,7 +17,7 @@
   "reference_note": "This is old footage, not a 2026 Iranian strike on Saudi Arabia. Fact-checkers identified it as the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port. Iran did fire missiles toward Prince Sultan Air Base on March 6, 2026, but Saudi defenses intercepted them with no impact on the base. https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.politifact.com/factchecks/2026/mar/04/tweets/iran-strikes-airbase-yemen-explosion/",
   "original_unhelpful_note": {
     "text": "This video shows a July 2024 Israeli airstrike on Yemen's Hudaydah port, not an Iranian missile impact at Prince Sultan Air Base. Saudi defenses intercepted the missiles; no strikes hit the base and no injuries occurred.    https://factcheck.afp.com/doc.afp.com.99J43G3 https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.arabnews.com/node/2635432/saudi-arabia https://www.jpost.com/middle-east/iran-news/article-889040",
-    "failure_reason": "Rated notHelpfulIncorrect (6) plus notHelpfulIrrelevantSources (4). The video identification (July 2024 Yemen footage) is correct and well-sourced. The note was flagged 'incorrect' on its over-reaching second sentence — the absolute claims 'no strikes hit the base and no injuries occurred' were contested in the fog of war (a service member was reported injured/killed in 1 Mar attacks, and later strikes damaged aircraft), so the blanket no-impact/no-injury assertion overstated certainty even though the core debunk was right.",
+    "failure_reason": "Rated notHelpfulIncorrect (6) plus notHelpfulIrrelevantSources (4). The video identification (July 2024 Yemen footage) is correct and well-sourced. The note was flagged 'incorrect' on its over-reaching second sentence \u2014 the absolute claims 'no strikes hit the base and no injuries occurred' were contested in the fog of war (a service member was reported injured/killed in 1 Mar attacks, and later strikes damaged aircraft), so the blanket no-impact/no-injury assertion overstated certainty even though the core debunk was right.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

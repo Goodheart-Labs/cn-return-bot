@@ -1,16 +1,19 @@
 {
   "tweet_id": "2041676371127370152",
-  "role": "unhelpful_notHelpfulOpinionSpeculation",
-  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["breaking_news_and_war", "scams_fraud_finance"],
+  "categories": [
+    "breaking_news_and_war",
+    "scams_fraud_finance"
+  ],
   "category_fit": "good",
   "suggested_category": "",
-  "tweet_summary": "Post by geopolitical commentator Pepe Escobar (349k views) claims, as fact, that 'American ships crossing the Strait of Hormuz after paying their toll in YUAN' — framing it as poetic humiliation of the U.S. dollar.",
-  "why_note_decision": "A note is warranted because the specific claim is false. The toll regime is real: since mid-March 2026 the IRGC has charged ship operators (up to ~$2M/vessel) for Strait of Hormuz passage, payable in yuan or crypto, formalized in the March 30-31 'Strait of Hormuz Management Plan.' BUT Iran's nationality-tiered system DENIES transit entirely to U.S.- and Israel-linked vessels — they are not permitted through, so they are not paying yuan tolls. The image of 'American ships paying tolls in yuan' is unsupported; the U.S. has instead floated its own counter-tolls.",
-  "judge_guidance": "PASS only if the note corrects the specific false claim — there is no evidence American ships are paying Iranian yuan tolls to cross Hormuz; under Iran's tiered system U.S./Israel-linked vessels are denied passage entirely — while accurately acknowledging the toll regime is real for friendly-nation vessels (yuan/crypto). Source to a credible outlet (Bloomberg / Fortune / Chainalysis / TRM Labs / Time / The Hill). AVOID the original note's failure (rated notHelpfulOpinionSpeculation 5, NoteNotNeeded 5, SourcesMissingOrUnreliable 4, Incorrect 4): the original is essentially correct but reads as partly speculative ('there is no evidence American ships are paying') and leans on Time/Hill links about U.S. counter-tolls; a stronger note explicitly states U.S./Israel vessels are BARRED from transit (so paying is moot) and cites the toll mechanism directly. A note that affirms the tweet (American ships paying yuan tolls) or that denies the toll regime exists at all, fails.",
+  "tweet_summary": "Post by geopolitical commentator Pepe Escobar (349k views) claims, as fact, that 'American ships crossing the Strait of Hormuz after paying their toll in YUAN' \u2014 framing it as poetic humiliation of the U.S. dollar.",
+  "why_note_decision": "A note is warranted because the specific claim is false. The toll regime is real: since mid-March 2026 the IRGC has charged ship operators (up to ~$2M/vessel) for Strait of Hormuz passage, payable in yuan or crypto, formalized in the March 30-31 'Strait of Hormuz Management Plan.' BUT Iran's nationality-tiered system DENIES transit entirely to U.S.- and Israel-linked vessels \u2014 they are not permitted through, so they are not paying yuan tolls. The image of 'American ships paying tolls in yuan' is unsupported; the U.S. has instead floated its own counter-tolls.",
+  "judge_guidance": "PASS only if the note corrects the specific false claim \u2014 there is no evidence American ships are paying Iranian yuan tolls to cross Hormuz; under Iran's tiered system U.S./Israel-linked vessels are denied passage entirely \u2014 while accurately acknowledging the toll regime is real for friendly-nation vessels (yuan/crypto). Source to a credible outlet (Bloomberg / Fortune / Chainalysis / TRM Labs / Time / The Hill). AVOID the original note's failure (rated notHelpfulOpinionSpeculation 5, NoteNotNeeded 5, SourcesMissingOrUnreliable 4, Incorrect 4): the original is essentially correct but reads as partly speculative ('there is no evidence American ships are paying') and leans on Time/Hill links about U.S. counter-tolls; a stronger note explicitly states U.S./Israel vessels are BARRED from transit (so paying is moot) and cites the toll mechanism directly. A note that affirms the tweet (American ships paying yuan tolls) or that denies the toll regime exists at all, fails.",
   "reference_note": "No evidence supports American ships paying Iranian tolls in yuan to cross Hormuz. The IRGC toll regime (yuan or crypto, ~$0.50-1/barrel) is real for friendly-nation vessels, but Iran's tiered system bars U.S.- and Israel-linked ships from transit entirely, so they aren't paying these tolls; Washington has floated its own counter-tolls. https://www.bloomberg.com/news/articles/2026-04-01/strait-of-hormuz-ships-paying-iran-yuan-and-crypto-tolls-for-safe-passage https://fortune.com/2026/04/10/iran-strait-of-hormuz-crypto-tolls-stablecoins-bitcoin-oil-tankers/",
   "original_unhelpful_note": {
     "text": "While Iran has established a &quot;toll booth&quot; regime requiring payments in yuan or crypto for passage through the Strait of Hormuz, there is no evidence American ships are paying these fees. The U.S. has instead proposed its own counter-tolls on the waterway.  https://time.com/article/2026/04/07/strait-of-hormuz-countries-pass-deals-iran-us-war-trump  https://thehill.com/homenews/administration/5818431-trump-us-tolls-strait-of-hormuz",
@@ -26,7 +29,7 @@
       "https://www.trmlabs.com/resources/blog/iranian-crypto-tolls-in-strait-of-hormuz",
       "https://www.chainalysis.com/blog/iran-strait-of-hormuz-crypto-toll/"
     ],
-    "notes": "Real: since mid-March 2026 IRGC charges Hormuz transit fees (up to ~$2M/vessel; ~$0.50-1/barrel) payable in yuan (via Kunlun Bank/CIPS) or crypto (BTC/USDT), formalized March 30-31. Iran uses a five-tier nationality ranking; 'friendlier' nations get lower rates, while U.S.- and Israel-linked vessels are DENIED transit entirely. So American ships are not paying yuan tolls — the tweet's specific image is false, though the underlying toll regime exists. U.S. floated counter-tolls."
+    "notes": "Real: since mid-March 2026 IRGC charges Hormuz transit fees (up to ~$2M/vessel; ~$0.50-1/barrel) payable in yuan (via Kunlun Bank/CIPS) or crypto (BTC/USDT), formalized March 30-31. Iran uses a five-tier nationality ranking; 'friendlier' nations get lower rates, while U.S.- and Israel-linked vessels are DENIED transit entirely. So American ships are not paying yuan tolls \u2014 the tweet's specific image is false, though the underlying toll regime exists. U.S. floated counter-tolls."
   },
   "media_reliability_flag": false,
   "media_confidence": "high",

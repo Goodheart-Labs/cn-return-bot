@@ -1,11 +1,14 @@
 {
   "tweet_id": "1994761464851120432",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["ai_generated_media", "celebrity_entertainment_sports"],
+  "categories": [
+    "ai_generated_media",
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Reacting to a quoted 'Louis Vuitton' image of the Olsen twins, the poster mocks how 'old' and 'elderly' they look ('aged like fucking bananas'), treating the image as a real recent photo.",

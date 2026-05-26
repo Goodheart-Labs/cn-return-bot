@@ -1,20 +1,22 @@
 {
   "tweet_id": "2057589163004932198",
-  "role": "unhelpful_notHelpfulOpinionSpeculation",
-  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax"],
+  "categories": [
+    "conspiracy_and_viral_hoax"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Post by Blaire White (701k followers, 21M views) claims a Fox News guest is 'wearing a literal CIA mask,' fueling a viral conspiracy that retired Vice Adm. Robert Harward was an impostor/masked man during a May 19, 2026 Fox appearance. Replies push 'lizard people', 'fake Biden' and humiliation-ritual theories.",
-  "why_note_decision": "A note is warranted: a massively viral (21M views) checkable claim that a real person was wearing a prosthetic mask. Robert Harward is a verified retired U.S. Navy SEAL and frequent Fox guest; the clip is real and unedited (no AI/editing). The 'mask' is a shadow caused by lighting — Fox stated he appeared via a remote mobile camera in a van where lighting contrasted with his jacket, casting a shadow on his neck. Snopes and AFP/Lead-Stories-style fact-checks debunked the mask claim.",
-  "judge_guidance": "PASS only if the note establishes that there is no evidence of a mask/impostor: Robert Harward is a real retired U.S. Navy SEAL, the video is authentic and unedited, and the neck 'mask line' is a lighting/shadow artifact (Fox attributed it to a remote in-van camera with contrasting lighting) — sourced to a reliable fact-check (Snopes / Yahoo/AFP fact-check / Lead Stories / TMZ reporting). AVOID the original note's failure (rated notHelpfulOpinionSpeculation 19, SourcesMissingOrUnreliable 12, Incorrect 11, IrrelevantSources 11): do NOT pin the explanation solely on speculative causes like 'video compression artifacts from re-shared clips' (the clip's shadow exists in the original, not from compression) and do NOT rely only on low-tier outlets (meaww, ibtimes). Anchor on Snopes/AFP plus the official Fox lighting explanation. A note that hedges ('possibly a shadow') without the authoritative source, or that entertains the mask theory, fails.",
+  "why_note_decision": "A note is warranted: a massively viral (21M views) checkable claim that a real person was wearing a prosthetic mask. Robert Harward is a verified retired U.S. Navy SEAL and frequent Fox guest; the clip is real and unedited (no AI/editing). The 'mask' is a shadow caused by lighting \u2014 Fox stated he appeared via a remote mobile camera in a van where lighting contrasted with his jacket, casting a shadow on his neck. Snopes and AFP/Lead-Stories-style fact-checks debunked the mask claim.",
+  "judge_guidance": "PASS only if the note establishes that there is no evidence of a mask/impostor: Robert Harward is a real retired U.S. Navy SEAL, the video is authentic and unedited, and the neck 'mask line' is a lighting/shadow artifact (Fox attributed it to a remote in-van camera with contrasting lighting) \u2014 sourced to a reliable fact-check (Snopes / Yahoo/AFP fact-check / Lead Stories / TMZ reporting). AVOID the original note's failure (rated notHelpfulOpinionSpeculation 19, SourcesMissingOrUnreliable 12, Incorrect 11, IrrelevantSources 11): do NOT pin the explanation solely on speculative causes like 'video compression artifacts from re-shared clips' (the clip's shadow exists in the original, not from compression) and do NOT rely only on low-tier outlets (meaww, ibtimes). Anchor on Snopes/AFP plus the official Fox lighting explanation. A note that hedges ('possibly a shadow') without the authoritative source, or that entertains the mask theory, fails.",
   "reference_note": "There is no evidence of a mask. Robert Harward is a verified retired U.S. Navy SEAL and the Fox News clip is real and unedited. The apparent 'mask line' on his neck is a shadow: Fox said he appeared via a remote mobile camera in a van where lighting contrasted with his jacket, casting a shadow on his neck. https://www.snopes.com/news/2026/05/22/robert-harward-mask-fox-news/ https://www.yahoo.com/news/politics/articles/fact-check-video-fox-news-000229006.html",
   "original_unhelpful_note": {
     "text": "The visual anomaly is caused by studio lighting, shadows, and video compression artifacts from repeatedly re-shared clips. No credible evidence of a mask exists; Robert Harward is a verified retired U.S. Navy SEAL and real Fox News guest. https://news.meaww.com/fact-check-did-robert-harward-wear-a-mask-during-fox-news-appearance https://www.ibtimes.co.uk/fox-news-guest-mask-speculation-1798247",
-    "failure_reason": "Conclusion is correct but rated NOT_HELPFUL (38 ratings; dominant notHelpfulOpinionSpeculation 19, SourcesMissingOrUnreliable 12, Incorrect 11, IrrelevantSources 11). The note over-explains with a partly-wrong mechanism ('video compression artifacts from repeatedly re-shared clips' — the shadow is in the original feed, per Fox's own statement about in-van lighting), which invites the 'incorrect' flags, and cites two low-tier aggregators (meaww, ibtimes) instead of Snopes/AFP, drawing the sources-unreliable flags.",
+    "failure_reason": "Conclusion is correct but rated NOT_HELPFUL (38 ratings; dominant notHelpfulOpinionSpeculation 19, SourcesMissingOrUnreliable 12, Incorrect 11, IrrelevantSources 11). The note over-explains with a partly-wrong mechanism ('video compression artifacts from repeatedly re-shared clips' \u2014 the shadow is in the original feed, per Fox's own statement about in-van lighting), which invites the 'incorrect' flags, and cites two low-tier aggregators (meaww, ibtimes) instead of Snopes/AFP, drawing the sources-unreliable flags.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {
@@ -26,7 +28,7 @@
       "https://www.tmz.com/2026/05/22/robert-harward-has-internet-making-mask-theories/",
       "https://www.ibtimes.co.uk/fox-news-guest-mask-speculation-1798247"
     ],
-    "notes": "Harward (retired Vice Adm., Navy SEAL) appeared on Fox 'America's Newsroom' May 19, 2026. The clip is authentic and unedited (not AI). The neck shadow is a lighting artifact — Fox said he was on a remote mobile/van camera where lighting contrasted with his jacket. No prosthetic mask, no impostor. The shadow originates in the source feed, so 'compression from re-shares' (the original note's mechanism) is not the right explanation."
+    "notes": "Harward (retired Vice Adm., Navy SEAL) appeared on Fox 'America's Newsroom' May 19, 2026. The clip is authentic and unedited (not AI). The neck shadow is a lighting artifact \u2014 Fox said he was on a remote mobile/van camera where lighting contrasted with his jacket. No prosthetic mask, no impostor. The shadow originates in the source feed, so 'compression from re-shares' (the original note's mechanism) is not the right explanation."
   },
   "media_reliability_flag": true,
   "media_confidence": "medium",

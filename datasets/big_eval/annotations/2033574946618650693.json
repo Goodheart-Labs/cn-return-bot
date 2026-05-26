@@ -1,11 +1,14 @@
 {
   "tweet_id": "2033574946618650693",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Claims Netanyahu 'today has missed his 7th straight security cabinet meeting' with everyone else present, asking 'Where the hell is Bibi?' - fueling viral 'Netanyahu is dead/missing' conspiracy theories (replies say 'He is no more').",

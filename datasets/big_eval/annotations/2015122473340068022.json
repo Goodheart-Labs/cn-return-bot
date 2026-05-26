@@ -1,20 +1,24 @@
 {
   "tweet_id": "2015122473340068022",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["health_medical_science", "overhyped_research_or_product", "celebrity_entertainment_sports"],
+  "categories": [
+    "health_medical_science",
+    "overhyped_research_or_product",
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "partial",
   "suggested_category": "cultivated_meat_animal_welfare",
   "tweet_summary": "A repost clip shows MrBeast touring Upside Foods' ~$200M lab where cell-cultivated chicken is grown without slaughter, doing a blind taste test against conventional chicken and saying he couldn't tell them apart; framed as tech that could save billions of animals.",
-  "why_note_decision": "No note is warranted: the video is a real MrBeast segment. MrBeast genuinely visited Upside Foods and did the blind cultivated-vs-conventional chicken taste test in his Jan 24, 2026 video '$1 vs $1,000,000,000 Futuristic Tech!' (60-70M+ views), confirmed by FoodBev, VegNews, Cultivated X, Green Queen. The original note's claim that 'this video is not from MrBeast' and 'Upside lists no collaboration' is flatly false — the bot checked the wrong place. The tweet's gist (no chickens killed, ~$200M R&D, indistinguishable taste, potential to save animals) is accurate; 'genetically grown' is a loose-but-not-misleading phrasing for cell-cultivated.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note. The clip is authentic MrBeast content: he toured Upside Foods and tasted cultivated chicken in his Jan 2026 video (he actually mis-guessed which sandwich was cultivated). FAIL any note claiming 'this is not from MrBeast', 'no such video exists', or 'Upside has no MrBeast collaboration' — that is the original note's hallucinated error. A minor terminology nit ('genetically grown' vs 'cell-cultivated') does NOT justify a note: cultivated meat is grown from animal cells without slaughter, which is what the video and tweet convey. Only a note that flagged a genuinely false claim (none exists here) could pass, so in practice declining is correct.",
+  "why_note_decision": "No note is warranted: the video is a real MrBeast segment. MrBeast genuinely visited Upside Foods and did the blind cultivated-vs-conventional chicken taste test in his Jan 24, 2026 video '$1 vs $1,000,000,000 Futuristic Tech!' (60-70M+ views), confirmed by FoodBev, VegNews, Cultivated X, Green Queen. The original note's claim that 'this video is not from MrBeast' and 'Upside lists no collaboration' is flatly false \u2014 the bot checked the wrong place. The tweet's gist (no chickens killed, ~$200M R&D, indistinguishable taste, potential to save animals) is accurate; 'genetically grown' is a loose-but-not-misleading phrasing for cell-cultivated.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The clip is authentic MrBeast content: he toured Upside Foods and tasted cultivated chicken in his Jan 2026 video (he actually mis-guessed which sandwich was cultivated). FAIL any note claiming 'this is not from MrBeast', 'no such video exists', or 'Upside has no MrBeast collaboration' \u2014 that is the original note's hallucinated error. A minor terminology nit ('genetically grown' vs 'cell-cultivated') does NOT justify a note: cultivated meat is grown from animal cells without slaughter, which is what the video and tweet convey. Only a note that flagged a genuinely false claim (none exists here) could pass, so in practice declining is correct.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "This video is not from MrBeast; no such content appears on his YouTube channel, and Upside Foods lists no collaboration with him. https://www.youtube.com/@MrBeast/videos https://upsidefoods.com/",
-    "failure_reason": "Rated notHelpfulIncorrect (27 of 33). The note denies the existence of a real, hugely-viewed MrBeast video (his Jan 24, 2026 cultivated-meat segment with Upside Foods). The bot apparently scanned a video listing, didn't find it, and asserted it doesn't exist — a verification false negative that produced a false-positive note. Both linked sources (MrBeast's channel, Upside's homepage) in fact corroborate the collaboration.",
+    "failure_reason": "Rated notHelpfulIncorrect (27 of 33). The note denies the existence of a real, hugely-viewed MrBeast video (his Jan 24, 2026 cultivated-meat segment with Upside Foods). The bot apparently scanned a video listing, didn't find it, and asserted it doesn't exist \u2014 a verification false negative that produced a false-positive note. Both linked sources (MrBeast's channel, Upside's homepage) in fact corroborate the collaboration.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {
@@ -32,7 +36,7 @@
   "media_confidence": "high",
   "importance": {
     "prominence": "high",
-    "lens_rationale": "Animal-welfare-aligned: a 7M-impression repost of mainstream-positive cultivated-meat coverage that could shift attitudes on a technology with potential to spare billions of farmed animals. A wrongful 'this is fake' note would suppress accurate pro-cultivated-meat reporting — the opposite of the EA/animal-welfare goal."
+    "lens_rationale": "Animal-welfare-aligned: a 7M-impression repost of mainstream-positive cultivated-meat coverage that could shift attitudes on a technology with potential to spare billions of farmed animals. A wrongful 'this is fake' note would suppress accurate pro-cultivated-meat reporting \u2014 the opposite of the EA/animal-welfare goal."
   },
   "difficulty": "medium"
 }

@@ -5,16 +5,19 @@
   "disagrees_with_provisional": false,
   "needs_note": "no",
   "no_note_reason": "joke_or_meme",
-  "categories": ["humor_meme", "celebrity_entertainment_sports"],
+  "categories": [
+    "joke_or_satire",
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Tweet jokes that YouTuber Markiplier's self-financed horror film 'Iron Lung' opened to $23 worldwide, with a fabricated tearful quote.",
-  "why_note_decision": "Transparent joke — '$23 worldwide' is a deliberately absurd number, the fabricated quote is a comedic bit. 191K likes and the top reply 'This is real he told me' (6451 likes) confirm the audience reads it as a gag. Iron Lung actually opened to ~$21.7M globally (Variety / NBC News), but the tweet is a meme, not misinformation. Note-not-needed.",
-  "judge_guidance": "PASS only if the bot declines to write a note. The '$23' figure is obviously a joke (Iron Lung actually opened to ~$21.7M global; replies and likes treat the tweet as comedy). FAIL any note that earnestly 'corrects' the $23 figure or attributes the fake quote — the audience already gets that it's a bit. If the bot somehow writes a serious-but-correct note, that's still a false positive given how clearly the tweet reads as humor.",
+  "why_note_decision": "Transparent joke \u2014 '$23 worldwide' is a deliberately absurd number, the fabricated quote is a comedic bit. 191K likes and the top reply 'This is real he told me' (6451 likes) confirm the audience reads it as a gag. Iron Lung actually opened to ~$21.7M globally (Variety / NBC News), but the tweet is a meme, not misinformation. Note-not-needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The '$23' figure is obviously a joke (Iron Lung actually opened to ~$21.7M global; replies and likes treat the tweet as comedy). FAIL any note that earnestly 'corrects' the $23 figure or attributes the fake quote \u2014 the audience already gets that it's a bit. If the bot somehow writes a serious-but-correct note, that's still a false positive given how clearly the tweet reads as humor.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "This is false. \"Iron Lung\" opened to $21.7 million worldwide, not $23. The quote is fabricated - the film was a major success, quadrupling its budget in one day. https://www.pcgamer.com/movies-tv/what-the-f-k-iron-lung-creator-puzzled-as-markipliers-film-adaptation-quadruples-its-budget-in-one-day-beating-out-melania-and-send-help-at-the-box-office/",
-    "failure_reason": "Fact-checks an obvious joke. Note-not-needed at scale — 381 'not needed' tags on 687 raters.",
+    "failure_reason": "Fact-checks an obvious joke. Note-not-needed at scale \u2014 381 'not needed' tags on 687 raters.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

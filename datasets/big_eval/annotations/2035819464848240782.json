@@ -1,11 +1,14 @@
 {
   "tweet_id": "2035819464848240782",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Shares a TikTok-style 'breaking news' video arguing 'Palm Beach Pete' is secretly Jeffrey Epstein (teeth/face comparisons), captioning 'it's the perfect cover' - endorsing the conspiracy that Epstein is alive in Palm Beach.",

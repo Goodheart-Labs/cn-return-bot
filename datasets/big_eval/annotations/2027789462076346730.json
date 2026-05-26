@@ -1,11 +1,13 @@
 {
   "tweet_id": "2027789462076346730",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["breaking_news_and_war"],
+  "categories": [
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Breaking claim (Feb 28, 2026) that Iran's Jamaran frigate, lead ship of the Moudge class, had sunk in the Persian Gulf, with photos of the ship.",

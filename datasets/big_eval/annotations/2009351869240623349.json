@@ -1,11 +1,13 @@
 {
   "tweet_id": "2009351869240623349",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["breaking_news_and_war"],
+  "categories": [
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "An Iranian activist posts video of a nighttime crowd in Mashhad, captioning that a massacre is happening RIGHT NOW in Iran during the January 8 2026 protests, with the regime shutting down the internet and killing protesters.",

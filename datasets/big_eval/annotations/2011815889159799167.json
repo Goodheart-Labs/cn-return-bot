@@ -1,11 +1,14 @@
 {
   "tweet_id": "2011815889159799167",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "accurate_reporting_contested",
-  "categories": ["celebrity_entertainment_sports", "statistical_or_numerical_claim"],
+  "categories": [
+    "celebrity_entertainment_sports",
+    "statistical_or_numerical_claim"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "LiveScore graphic comparing 'G/A in last seven matches' for big No.10 signings -- Wirtz 5, Cherki 4, Xavi Simons 4, Eze 0 -- captioned that Wirtz leads on recent form.",

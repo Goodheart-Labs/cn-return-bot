@@ -1,20 +1,22 @@
 {
   "tweet_id": "2034230519907627221",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax"],
+  "categories": [
+    "conspiracy_and_viral_hoax"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "A viral conspiracy post (3.6M impressions) claiming Benjamin Netanyahu 'is certainly dead on March 9,' inferring his death from his son allegedly observing 7 days of shiva then resuming posting exactly 7 days later.",
   "why_note_decision": "A note is clearly warranted. Netanyahu is alive. After death rumors spread in March 2026 (seeded by Iranian state media and AI-claim speculation about a six-fingered hand in a video), Netanyahu appeared at a live news conference on March 12, posted Instagram videos from a Jerusalem cafe on March 15-16 (corroborated by the cafe), and the rumor was debunked by Snopes, NBC, Euronews and AFP/Reuters-style fact-checks. The 'exact 7-day gap' is coincidental/cherry-picked inference, not evidence of death.",
-  "judge_guidance": "PASS only if the note clearly states that Benjamin Netanyahu is ALIVE and supports it with verifiable post-March-9 appearances — e.g. his live March 12 news conference and/or his March 15-16 Jerusalem cafe videos (corroborated by the cafe) — citing a loadable, reliable source (Snopes, NBC, Euronews, or a fact-check confirming he is alive). The note should make clear the 'shiva / 7-day gap' reasoning is unfounded inference, not evidence. FAIL the original note's specific failure: do NOT rely on a single dead/unverifiable government event URL as the sole proof; cite a source that actually loads and substantiates that he is alive. Also FAIL any note that hedges on whether he is alive or entertains the deepfake/death theory.",
+  "judge_guidance": "PASS only if the note clearly states that Benjamin Netanyahu is ALIVE and supports it with verifiable post-March-9 appearances \u2014 e.g. his live March 12 news conference and/or his March 15-16 Jerusalem cafe videos (corroborated by the cafe) \u2014 citing a loadable, reliable source (Snopes, NBC, Euronews, or a fact-check confirming he is alive). The note should make clear the 'shiva / 7-day gap' reasoning is unfounded inference, not evidence. FAIL the original note's specific failure: do NOT rely on a single dead/unverifiable government event URL as the sole proof; cite a source that actually loads and substantiates that he is alive. Also FAIL any note that hedges on whether he is alive or entertains the deepfake/death theory.",
   "reference_note": "Benjamin Netanyahu is alive. After death rumors spread in mid-March 2026, he appeared at a live, widely-broadcast news conference on March 12, 2026 and posted videos from the HaSataf cafe in Jerusalem on March 15-16 (the cafe confirmed the footage was authentic). The '7-day shiva gap' is unfounded inference. https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/ https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
   "original_unhelpful_note": {
     "text": "Benjamin Netanyahu is alive and visited Ashdod Port on March 10, 2026, after the claimed date of death. https://www.gov.il/en/pages/event-ashdod100326 https://www.yahoo.com/news/articles/fact-check-netanyahu-alive-despite-160900467.html",
-    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (49) — the dominant reason on a 108-rating note. The verdict (he's alive) is correct, but the lead evidence is a gov.il event page (event-ashdod100326) that is likely dead/unverifiable and a single Ashdod-Port visit, which is weaker and more disputable than his later live news conference and corroborated cafe videos. Raters also flagged it as incorrect/opinion-speculation, suggesting the cited proof didn't convince.",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (49) \u2014 the dominant reason on a 108-rating note. The verdict (he's alive) is correct, but the lead evidence is a gov.il event page (event-ashdod100326) that is likely dead/unverifiable and a single Ashdod-Port visit, which is weaker and more disputable than his later live news conference and corroborated cafe videos. Raters also flagged it as incorrect/opinion-speculation, suggesting the cited proof didn't convince.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

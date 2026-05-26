@@ -1,20 +1,23 @@
 {
   "tweet_id": "2032528916817260817",
-  "role": "unhelpful_notHelpfulOpinionSpeculation",
-  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Speculates 'Netanyahu is dead!' by reading Scott Bessent's body language and 'upset voice' after he left an interview for the Situation Room during the March 2026 Iran conflict.",
   "why_note_decision": "The tweet asserts a false, checkable factual claim (Netanyahu is dead) inferred purely from a third party's demeanor. Netanyahu was demonstrably alive: he held a live press conference March 12, 2026 and posted videos March 15-17 dispelling the rumor. The 'Netanyahu is dead' narrative spread to 218k+ mentions and is a verified false conspiracy, so a corrective note is warranted even though the post frames it as the author's interpretation.",
-  "judge_guidance": "PASS only if the note plainly states Netanyahu is NOT dead and anchors it to verifiable public appearances (e.g., his live March 12, 2026 press conference; March 15-17 videos/cafe appearance). It must rebut the death claim itself, not engage with Bessent's body language. AVOID the original note's failure: do not phrase it as the author's own opinion/assertion with thin sourcing (that drew opinionSpeculation tags) — cite at least one solid source (AP/Reuters/Times of Israel/Snopes) confirming the appearances. A passing note treats 'is he dead' as the factual core and answers it decisively with evidence.",
+  "judge_guidance": "PASS only if the note plainly states Netanyahu is NOT dead and anchors it to verifiable public appearances (e.g., his live March 12, 2026 press conference; March 15-17 videos/cafe appearance). It must rebut the death claim itself, not engage with Bessent's body language. AVOID the original note's failure: do not phrase it as the author's own opinion/assertion with thin sourcing (that drew opinionSpeculation tags) \u2014 cite at least one solid source (AP/Reuters/Times of Israel/Snopes) confirming the appearances. A passing note treats 'is he dead' as the factual core and answers it decisively with evidence.",
   "reference_note": "Netanyahu is not dead. He held a live, broadcast press conference on March 12, 2026 and posted further videos on March 15-17 (including a Jerusalem cafe appearance) specifically to dispel these death rumors, which fact-checkers traced to Iranian media and rated false. https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/ https://www.aljazeera.com/news/2026/3/12/netanyahu-says-israel-stronger-than-ever-in-first-speech-since-iran-war",
   "original_unhelpful_note": {
     "text": "Israeli PM Benjamin Netanyahu is not dead. He held a press conference on March 12, 2026, addressing the Iran conflict. Rumors of his death are false. Sources: https://www.aljazeera.com/news/2026/3/12/netanyahu-says-israel-stronger-than-ever-in-first-speech-since-iran-war https://www.timesofisrael.com/liveblog_entry/watch-netanyahu-holding-his-first-press-conference-of-current-iran-war https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor https://www.youtube.com/watch?v=Cm0amGXkngs",
-    "failure_reason": "Opinion/speculation tags despite being factually correct — likely because the tweet is framed as the author's interpretation and raters on this charged topic read the note as taking a side; the note is actually solid. The dominant tag reflects the contested topic more than a real defect; a clean, well-sourced 'not dead, here's the proof' note is the right fix.",
+    "failure_reason": "Opinion/speculation tags despite being factually correct \u2014 likely because the tweet is framed as the author's interpretation and raters on this charged topic read the note as taking a side; the note is actually solid. The dominant tag reflects the contested topic more than a real defect; a clean, well-sourced 'not dead, here's the proof' note is the right fix.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

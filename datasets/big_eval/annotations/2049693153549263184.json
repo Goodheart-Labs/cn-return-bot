@@ -1,20 +1,23 @@
 {
   "tweet_id": "2049693153549263184",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["scams_fraud_finance", "platform_manipulation"],
+  "categories": [
+    "scams_fraud_finance",
+    "platform_manipulation"
+  ],
   "category_fit": "poor",
   "suggested_category": "self_promotional_payout_brag",
   "tweet_summary": "An Indian commentary account (@RakeshK32229480, ~12K followers) posts an X Monetization email screenshot showing a $1,000.15 X Creator Revenue Sharing payout, framing it as life-changing money for an Indian fresher and thanking supporters.",
-  "why_note_decision": "No note is warranted. The original note alleges the payout email is addressed to a different handle ('@RakeshK3229480') than the author ('@RakeshK32229480') — but the screenshot's OCR addresses the email to '@RakeshK32229480', which MATCHES the author. The note's central factual claim (a username mismatch) is false; it dropped a digit. Whether X really paid a 12K-follower account $1,000 is debatable (one commenter doubts it), but the tweet makes no harmful, checkable misleading claim and the note's stated basis is simply wrong, so no correct note is available on the grounds the original used.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note (or at minimum does NOT repeat the false username-mismatch claim). The payout email's recipient handle '@RakeshK32229480' matches the post author's handle; there is no mismatch. FAIL any note asserting the screenshot's username differs from the author's handle — that is the original note's error (it wrote '@RakeshK3229480', missing a digit). This is a low-stakes self-promotional payout brag with no verifiable, harmful misinformation, so writing a note (especially the mismatch claim) is a false positive.",
+  "why_note_decision": "No note is warranted. The original note alleges the payout email is addressed to a different handle ('@RakeshK3229480') than the author ('@RakeshK32229480') \u2014 but the screenshot's OCR addresses the email to '@RakeshK32229480', which MATCHES the author. The note's central factual claim (a username mismatch) is false; it dropped a digit. Whether X really paid a 12K-follower account $1,000 is debatable (one commenter doubts it), but the tweet makes no harmful, checkable misleading claim and the note's stated basis is simply wrong, so no correct note is available on the grounds the original used.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note (or at minimum does NOT repeat the false username-mismatch claim). The payout email's recipient handle '@RakeshK32229480' matches the post author's handle; there is no mismatch. FAIL any note asserting the screenshot's username differs from the author's handle \u2014 that is the original note's error (it wrote '@RakeshK3229480', missing a digit). This is a low-stakes self-promotional payout brag with no verifiable, harmful misinformation, so writing a note (especially the mismatch claim) is a false positive.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "The payout screenshot displays an incorrect username (@RakeshK3229480) that does not match the post author's handle (@RakeshK32229480). https://x.com/RakeshK32229480/status/2049693153549263184",
-    "failure_reason": "Rated notHelpfulIncorrect (15 of 17). The note claims a username mismatch, but the screenshot OCR shows the email addressed to '@RakeshK32229480' — identical to the author. The note itself introduced the discrepancy by mistyping the handle (dropping a '2'). It corrected a non-existent error, making a true-enough post look fraudulent on a false basis.",
+    "failure_reason": "Rated notHelpfulIncorrect (15 of 17). The note claims a username mismatch, but the screenshot OCR shows the email addressed to '@RakeshK32229480' \u2014 identical to the author. The note itself introduced the discrepancy by mistyping the handle (dropping a '2'). It corrected a non-existent error, making a true-enough post look fraudulent on a false basis.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {
@@ -24,13 +27,13 @@
       "https://help.x.com/en/using-x/creator-revenue-sharing",
       "https://www.xpayoutcalculator.com/how-it-works/"
     ],
-    "notes": "The cached OCR shows the X Monetization email addressed to '@RakeshK32229480', matching the author's handle — so the note's mismatch claim is false. X Creator Revenue Sharing payouts to engaged accounts are plausible (min payout $30, biweekly). The exact $1,000 figure is unverifiable from outside, but no harmful misleading claim is being made, and the note's specific factual basis is wrong."
+    "notes": "The cached OCR shows the X Monetization email addressed to '@RakeshK32229480', matching the author's handle \u2014 so the note's mismatch claim is false. X Creator Revenue Sharing payouts to engaged accounts are plausible (min payout $30, biweekly). The exact $1,000 figure is unverifiable from outside, but no harmful misleading claim is being made, and the note's specific factual basis is wrong."
   },
   "media_reliability_flag": false,
   "media_confidence": "medium",
   "importance": {
     "prominence": "low",
-    "lens_rationale": "Minor self-promotional post; value is as a false-positive trap showing the bot must verify OCR carefully before alleging a username/screenshot mismatch — here the 'mismatch' was the note-writer's own typo."
+    "lens_rationale": "Minor self-promotional post; value is as a false-positive trap showing the bot must verify OCR carefully before alleging a username/screenshot mismatch \u2014 here the 'mismatch' was the note-writer's own typo."
   },
   "difficulty": "easy"
 }

@@ -1,11 +1,13 @@
 {
   "tweet_id": "1990582306810310886",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["health_medical_science"],
+  "categories": [
+    "health_medical_science"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "A pundit posts a video labeled 'Mental Illness Crisis' of a masked person playing with food, captioned 'SIMPLE: If you're a furry, you are mentally ill. There is no other way to look at it.'",

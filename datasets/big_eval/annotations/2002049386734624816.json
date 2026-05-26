@@ -1,11 +1,13 @@
 {
   "tweet_id": "2002049386734624816",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media"],
+  "categories": [
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Security-cam footage of a woman in a hijab approaching and blowing out a lit menorah in an indoor mall, captioned 'She did this to a memorial of the Bondi Beach victims absolutely sick.'",

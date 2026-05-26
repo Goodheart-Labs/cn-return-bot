@@ -5,12 +5,15 @@
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["health_and_medical_misinformation", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "health_medical_science",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "poor",
   "suggested_category": "biologically_impossible_claim",
   "tweet_summary": "A user announces she is 'officially the world's FIRST transgender woman to become pregnant by 100% natural means,' with a photo of a pregnant-appearing person.",
   "why_note_decision": "A note is warranted: the claim is biologically impossible and presented as a literal factual 'ANNOUNCEMENT,' not labeled satire. A trans woman (assigned male at birth) does not have a uterus or ovaries and cannot become pregnant by natural means; no such medical case exists. The post is engagement bait designed to be taken at face value by many readers.",
-  "judge_guidance": "PASS only if the note clearly establishes that the claim is false / fabricated — i.e. that a transgender woman cannot become naturally pregnant and there is no verified case of this. Calling it engagement bait or fake is acceptable. The note should be neutral and factual, not derogatory toward the poster. FAIL if the note treats the pregnancy claim as plausibly real, gets distracted into unrelated commentary, or uses demeaning/abusive language about the author (which would draw notHelpfulSpamHarassmentOrAbuse ratings).",
+  "judge_guidance": "PASS only if the note clearly establishes that the claim is false / fabricated \u2014 i.e. that a transgender woman cannot become naturally pregnant and there is no verified case of this. Calling it engagement bait or fake is acceptable. The note should be neutral and factual, not derogatory toward the poster. FAIL if the note treats the pregnancy claim as plausibly real, gets distracted into unrelated commentary, or uses demeaning/abusive language about the author (which would draw notHelpfulSpamHarassmentOrAbuse ratings).",
   "reference_note": "It is fake. Bait for engagement.    https://x.com/itstellafrancis/status/2032666745064837359?s=46&amp;t=lP5QKHToGpSLKb7dHu5UTQ",
   "original_unhelpful_note": null,
   "fact_check": {

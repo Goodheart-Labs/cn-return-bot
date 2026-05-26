@@ -1,19 +1,22 @@
 {
   "tweet_id": "2055799072121090141",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "joke_or_meme",
-  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "partial",
   "suggested_category": "",
   "tweet_summary": "A football clip of Luka Modric reacting to a yellow card in an AC Milan Serie A match, captioned 'This is the American criminal justice system in action.' (6.9M views).",
-  "why_note_decision": "The caption is obvious ironic/sarcastic rage-bait, not a literal factual claim — an inflammatory label slapped on an unrelated soccer clip. No reasonable reader thinks a Serie A yellow card IS the US justice system; the top replies treat it as a joke (e.g. 'this is the British Criminal Justice System'). The X rating profile confirms this: notHelpfulNoteNotNeeded (52) nearly ties notHelpfulMissingKeyPoints (60). A note solemnly explaining 'this is actually Modric getting a yellow card' misses that there is no checkable factual misrepresentation to correct — it is humor/non-literal framing.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note (this is a meme / non-literal sarcastic caption, not a factual claim — any literal 'correction' is a false positive). The video genuinely is Luka Modric reacting to a yellow card in an AC Milan Serie A match; the caption 'American criminal justice system' is ironic, so there is nothing to fact-correct. If a note is written at all it FAILS; in particular a note that earnestly states 'this shows Modric, not a US criminal justice incident' repeats the original's MissingKeyPoints/NoteNotNeeded failure of treating a joke literally.",
+  "why_note_decision": "The caption is obvious ironic/sarcastic rage-bait, not a literal factual claim \u2014 an inflammatory label slapped on an unrelated soccer clip. No reasonable reader thinks a Serie A yellow card IS the US justice system; the top replies treat it as a joke (e.g. 'this is the British Criminal Justice System'). The X rating profile confirms this: notHelpfulNoteNotNeeded (52) nearly ties notHelpfulMissingKeyPoints (60). A note solemnly explaining 'this is actually Modric getting a yellow card' misses that there is no checkable factual misrepresentation to correct \u2014 it is humor/non-literal framing.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note (this is a meme / non-literal sarcastic caption, not a factual claim \u2014 any literal 'correction' is a false positive). The video genuinely is Luka Modric reacting to a yellow card in an AC Milan Serie A match; the caption 'American criminal justice system' is ironic, so there is nothing to fact-correct. If a note is written at all it FAILS; in particular a note that earnestly states 'this shows Modric, not a US criminal justice incident' repeats the original's MissingKeyPoints/NoteNotNeeded failure of treating a joke literally.",
   "reference_note": "",
   "original_unhelpful_note": {
-    "text": "This video shows Luka Modrić reacting after receiving a yellow card in a Serie A match, not any U.S. criminal justice incident. The footage is from AC Milan's match on March 8, 2026. https://supersport.com/football/match/19b90088-a6a2-4bfc-8b30-14fe9f5a4af0",
+    "text": "This video shows Luka Modri\u0107 reacting after receiving a yellow card in a Serie A match, not any U.S. criminal justice incident. The footage is from AC Milan's match on March 8, 2026. https://supersport.com/football/match/19b90088-a6a2-4bfc-8b30-14fe9f5a4af0",
     "failure_reason": "Treats an obvious sarcastic/meme caption as a literal factual claim; raters flagged NoteNotNeeded (52) and MissingKeyPoints (60). The 'correction' belabors a joke that no one took literally.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },

@@ -1,17 +1,20 @@
 {
   "tweet_id": "2017773957471211756",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax", "celebrity_entertainment_sports"],
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "partial",
   "suggested_category": "uncorroborated_allegation_as_fact",
   "tweet_summary": "Pop Crave post says an FBI report from the latest Epstein release states an anonymous victim woke up in a room with Jay-Z and Harvey Weinstein, with her memory clouded by drugging.",
   "why_note_decision": "The underlying fact is real: the named individuals appear in an FBI public-tip intake report released under the Epstein Files Transparency Act. But the tweet frames it as 'an FBI report states,' implying the FBI substantiated the claim, when it is an uncorroborated anonymous tip from a 2019 public hotline that DOJ explicitly says does not imply guilt or an investigation. Readers (see replies treating it as proven: 'Jay-Z is a pedo, lock him up') benefit from that distinction, so a note is warranted.",
   "judge_guidance": "PASS only if the note (1) confirms the names DO appear in the released Epstein files, (2) clarifies the source is an UNVERIFIED anonymous tip submitted to a public FBI hotline, NOT a corroborated FBI finding or investigation, and (3) states this does not imply guilt. It must NOT simply deny that the names appear (the tweet is factually correct that they do), and must NOT bury the clarification in jargon. The original note's failure was being too thin/legalistic ('raw intake data does not imply guilt') without first plainly acknowledging the names are genuinely in the files and explaining what an FBI intake tip is, so it read as a dodge; a passing note must lead with the concrete clarification a lay reader needs. Cite a credible outlet (e.g., Variety).",
-  "reference_note": "The names Jay-Z and Harvey Weinstein do appear in the latest Epstein document release, but only inside an FBI 'tip line' intake report — an unverified, anonymous accusation the public submitted to an FBI hotline in 2019. It was never investigated or corroborated, and the DOJ notes such tips can be fake and do not imply any wrongdoing. https://variety.com/2026/film/news/jay-z-harvey-weinstein-pusha-t-epstein-files-1236647297/",
+  "reference_note": "The names Jay-Z and Harvey Weinstein do appear in the latest Epstein document release, but only inside an FBI 'tip line' intake report \u2014 an unverified, anonymous accusation the public submitted to an FBI hotline in 2019. It was never investigated or corroborated, and the DOJ notes such tips can be fake and do not imply any wrongdoing. https://variety.com/2026/film/news/jay-z-harvey-weinstein-pusha-t-epstein-files-1236647297/",
   "original_unhelpful_note": {
     "text": "The claim stems from an unverified anonymous tip submitted to an FBI intake hotline, not a formal investigation or corroborated report. According to Variety, the file contains raw intake data that does not imply guilt or an ongoing case. https://variety.com/2026/film/news/jay-z-harvey-weinstein-pusha-t-epstein-files-1236647297/",
     "failure_reason": "Missing key points: never plainly acknowledges the names ARE in the released files, so readers/raters read it as denying the tweet (50 'incorrect', 66 'noteNotNeeded' tags); the useful clarification (unverified anonymous hotline tip) is present but framed defensively rather than informatively.",
@@ -30,7 +33,7 @@
   "media_confidence": "medium",
   "importance": {
     "prominence": "high",
-    "lens_rationale": "1M+ impressions; uncorroborated criminal allegations against named public figures spreading as fact erode epistemic norms and can cause real reputational/legal harm — distinguishing tip-line noise from evidence is a clear public-interest correction."
+    "lens_rationale": "1M+ impressions; uncorroborated criminal allegations against named public figures spreading as fact erode epistemic norms and can cause real reputational/legal harm \u2014 distinguishing tip-line noise from evidence is a clear public-interest correction."
   },
   "difficulty": "medium"
 }

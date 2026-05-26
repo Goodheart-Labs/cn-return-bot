@@ -1,11 +1,14 @@
 {
   "tweet_id": "2041504075968065999",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "breaking_news_and_war",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "fearmongering_unverified_prediction",
   "tweet_summary": "An Iran-themed 'news' account posts a missile-convoy + helicopter video captioned 'AMERICA IS GOING TO TEST SOMETHING BIG TONIGHT,' framed as an imminent major US weapons test/strike.",

@@ -5,13 +5,17 @@
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["breaking_news_and_war", "economic_or_market_claim", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "breaking_news_and_war",
+    "statistical_or_numerical_claim",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "exaggerated_or_doomscroll_framing",
   "tweet_summary": "Sweeping claim that 'THE LAST shipment of oil' just arrived in the U.S. and that this is catastrophic. No mention that the actual news story is specifically the last Persian Gulf shipment to California (~200k bpd) due to the Strait of Hormuz crisis.",
-  "why_note_decision": "The underlying event is real — a single Hong-Kong-flagged tanker (the New Corolla) carrying Iraqi crude is the last Persian-Gulf-origin shipment expected at Long Beach amid the Hormuz blockade. But the tweet drops every qualifier ('Persian Gulf', 'to California', '~200k bpd') and presents it as the last oil shipment to the entire United States. The US imports the bulk of its crude from Canada and Mexico, produces ~13M bpd domestically, and is a net petroleum exporter. The framing materially misleads ~2.3M readers; the reply thread shows many readers believed America is out of oil. A note is warranted.",
+  "why_note_decision": "The underlying event is real \u2014 a single Hong-Kong-flagged tanker (the New Corolla) carrying Iraqi crude is the last Persian-Gulf-origin shipment expected at Long Beach amid the Hormuz blockade. But the tweet drops every qualifier ('Persian Gulf', 'to California', '~200k bpd') and presents it as the last oil shipment to the entire United States. The US imports the bulk of its crude from Canada and Mexico, produces ~13M bpd domestically, and is a net petroleum exporter. The framing materially misleads ~2.3M readers; the reply thread shows many readers believed America is out of oil. A note is warranted.",
   "judge_guidance": "PASS if the note clarifies that the 'last shipment' refers specifically to the last Persian-Gulf-origin oil shipment to California (~200k bpd), not the last oil to enter the entire U.S.; that the U.S. produces ~13M bpd domestically and imports primarily from Canada and Mexico; and that the U.S. remains a net petroleum exporter. Sources from LA Times / Newsweek / EIA / similar are appropriate. REJECT if the note (a) repeats the tweet's framing that this is the last U.S. oil shipment, (b) denies the underlying Hormuz/California story entirely, or (c) is so vague the reader can't tell what actually happened.",
-  "reference_note": "This refers specifically to the last Persian-Gulf-origin oil shipment to California (about 200,000 barrels/day) amid the Strait of Hormuz blockade — not the last oil shipment to the entire U.S. The U.S. produces about 13M barrels/day domestically, imports the bulk of its crude from Canada and Mexico, and remains a net petroleum exporter. https://www.latimes.com/environment/story/2026-05-03/californias-last-oil-shipment https://www.newsweek.com/california-at-highest-risk-as-us-middle-eastern-oil-supply-dries-up-11767727",
+  "reference_note": "This refers specifically to the last Persian-Gulf-origin oil shipment to California (about 200,000 barrels/day) amid the Strait of Hormuz blockade \u2014 not the last oil shipment to the entire U.S. The U.S. produces about 13M barrels/day domestically, imports the bulk of its crude from Canada and Mexico, and remains a net petroleum exporter. https://www.latimes.com/environment/story/2026-05-03/californias-last-oil-shipment https://www.newsweek.com/california-at-highest-risk-as-us-middle-eastern-oil-supply-dries-up-11767727",
   "original_unhelpful_note": null,
   "fact_check": {
     "agrees_correction_needed": true,
@@ -21,7 +25,7 @@
       "https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis",
       "https://www.newsweek.com/california-at-highest-risk-as-us-middle-eastern-oil-supply-dries-up-11767727"
     ],
-    "notes": "Real news event (the New Corolla tanker, Long Beach, May 2026, Hormuz blockade context) was reported, but only ~200k bpd from the Persian Gulf to California is at stake — not US oil supply as a whole."
+    "notes": "Real news event (the New Corolla tanker, Long Beach, May 2026, Hormuz blockade context) was reported, but only ~200k bpd from the Persian Gulf to California is at stake \u2014 not US oil supply as a whole."
   },
   "media_reliability_flag": false,
   "media_confidence": "high",

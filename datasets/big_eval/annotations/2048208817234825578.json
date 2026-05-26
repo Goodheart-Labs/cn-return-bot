@@ -1,16 +1,19 @@
 {
   "tweet_id": "2048208817234825578",
-  "role": "unhelpful_notHelpfulIncorrect",
+  "role": "unhelpful_incorrect",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "partial",
   "suggested_category": "fan_war_concert_attendance",
   "tweet_summary": "A small 'fact-check' account claims black curtains on both sides of BTS's first US concert (Tampa, Raymond James Stadium) were used to hide thousands of unsold tickets, asserting the 'sold-out' claim is a lie, with a seating map supposedly proving the seats were on sale.",
   "why_note_decision": "The factual claim ('thousands of unsold tickets,' show not actually sold out) is checkable and false: all three Tampa shows sold out within hours, and the covered/curtained sections were closed for production tents and restricted-view reasons (the in-the-round stage with walkways), not because they went unsold. A note correcting the false 'not sold out' claim benefits readers, so a note IS warranted despite the provisional no-note.",
-  "judge_guidance": "PASS only if the note (1) corrects the specific false claim — the curtained sections were closed for production/filming tents and restricted views, not unsold inventory — and (2) states the Tampa shows sold out (a third date was added for demand). It must AVOID the original note's failure of unreliable sourcing: do not cite a random reply account as the authority; cite reporting (e.g. consequence.net / Tampa Bay Times / WUSF) on the sold-out status and the production-tent view obstruction. A note that merely says 'this is a fan dispute' or that asserts curtains = standard without tying it to THIS show's sellout is too weak. Do not endorse the 'unsold tickets' framing.",
+  "judge_guidance": "PASS only if the note (1) corrects the specific false claim \u2014 the curtained sections were closed for production/filming tents and restricted views, not unsold inventory \u2014 and (2) states the Tampa shows sold out (a third date was added for demand). It must AVOID the original note's failure of unreliable sourcing: do not cite a random reply account as the authority; cite reporting (e.g. consequence.net / Tampa Bay Times / WUSF) on the sold-out status and the production-tent view obstruction. A note that merely says 'this is a fan dispute' or that asserts curtains = standard without tying it to THIS show's sellout is too weak. Do not endorse the 'unsold tickets' framing.",
   "reference_note": "The covered sections were closed because production tents for the in-the-round stage block the view there, not because tickets went unsold. All three Tampa shows (Apr 25, 26, 28, 2026) sold out, with a third date added due to demand. https://consequence.net/2026/04/bts-tampa-arirang-tour-tickets/ https://www.tampabay.com/culture/entertainment/music/music-reviews/2026/04/26/bts-arirang-tampa-world-tour-review-tickets-kpop-raymond-james/",
   "original_unhelpful_note": {
     "text": "The covered sections are for front-of-house technical installations and tents obstructing views, which are standard and not sold to the public; the Tampa shows sold out within hours. https://x.com/AsianEAC/status/2048264468640223604 https://consequence.net/2026/04/bts-tampa-arirang-tour-tickets",

@@ -1,15 +1,18 @@
 {
   "tweet_id": "2012505667932754385",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "opinion_or_framing",
-  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "breaking_news_and_war",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "",
   "tweet_summary": "Caption 'This is why you don't stop' over genuine, current video of a truck driving into a crowd. The footage is the real Jan 11, 2026 Westwood, Los Angeles incident where a U-Haul truck drove through an anti-Iran-regime solidarity rally; the post is inflammatory commentary (replies invoke Reginald Denny, urge 'hit the gas').",
-  "why_note_decision": "No note is warranted. The video is authentic and current, and the post makes NO checkable false factual claim — it accurately (if implicitly) shows the real LA ramming and adds only an opinion/exhortation ('this is why you don't stop'). There is no misattribution by the poster, no false date/location asserted, and nothing factually correctable. The note that was written supplied accurate background but a note is not needed because the tweet itself isn't misleading about what the video is. (Note: the AI media description calling it 'Minneapolis' with a 'silver tanker' is itself WRONG — it was a U-Haul box truck in LA — so any bot relying on that description could mis-correct.)",
+  "why_note_decision": "No note is warranted. The video is authentic and current, and the post makes NO checkable false factual claim \u2014 it accurately (if implicitly) shows the real LA ramming and adds only an opinion/exhortation ('this is why you don't stop'). There is no misattribution by the poster, no false date/location asserted, and nothing factually correctable. The note that was written supplied accurate background but a note is not needed because the tweet itself isn't misleading about what the video is. (Note: the AI media description calling it 'Minneapolis' with a 'silver tanker' is itself WRONG \u2014 it was a U-Haul box truck in LA \u2014 so any bot relying on that description could mis-correct.)",
   "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap: the video is the genuine, correctly-contextualized Jan 11, 2026 Westwood/Los Angeles anti-Iran-regime rally truck-ramming, and the post adds only inflammatory opinion ('this is why you don't stop') with no false factual claim to correct. Any note here is a false positive. In particular, DO NOT trust the AI media description's 'Minneapolis'/'tanker truck' details (they are wrong); a bot that writes a note 'correcting' the location to Minneapolis, or labeling the real video as misattributed, must FAIL. A note merely restating accurate background also fails the no-note bar.",
   "reference_note": "",
   "original_unhelpful_note": {

@@ -5,12 +5,15 @@
   "disagrees_with_provisional": false,
   "needs_note": "no",
   "no_note_reason": "joke_or_meme",
-  "categories": ["government_politics", "humor_meme"],
+  "categories": [
+    "politics_and_policy",
+    "joke_or_satire"
+  ],
   "category_fit": "partial",
   "suggested_category": "april_fools_joke",
   "tweet_summary": "An Indonesian pop-culture aggregator account posts 'Prabowo Subianto has stepped down' on April 1, 2026.",
-  "why_note_decision": "Posted April 1 by 'Indonesian Pop Base' — this is an April Fools joke. Replies in Indonesian explicitly call it out ('LIAT TANGGAL' = 'look at the date', 'april mop' = April Fools, 'kirain mimpi basah jadi kenyataan' = 'thought my dream came true'). Prabowo did not step down — he remains president, per Wikipedia and Bloomberg coverage of his cabinet management through 2025-2026. The note is technically correct but unnecessary on a transparent April Fools post; raters correctly flagged note-not-needed. Community Notes shouldn't fact-check April 1 jokes from pop-culture accounts.",
-  "judge_guidance": "PASS only if the bot declines to write a note. Posted April 1, 2026 by a pop-culture aggregator; replies (in Indonesian) call out the April Fools framing. The factual claim is false — Prabowo remains president — but the format is recognizable satire. FAIL any note that earnestly corrects the resignation claim without acknowledging the April Fools context; even a note that does acknowledge it is unnecessary since replies already do the work. If you're unsure whether something is a joke, default to writing the note — but here the date + account type + reply consensus make it clear.",
+  "why_note_decision": "Posted April 1 by 'Indonesian Pop Base' \u2014 this is an April Fools joke. Replies in Indonesian explicitly call it out ('LIAT TANGGAL' = 'look at the date', 'april mop' = April Fools, 'kirain mimpi basah jadi kenyataan' = 'thought my dream came true'). Prabowo did not step down \u2014 he remains president, per Wikipedia and Bloomberg coverage of his cabinet management through 2025-2026. The note is technically correct but unnecessary on a transparent April Fools post; raters correctly flagged note-not-needed. Community Notes shouldn't fact-check April 1 jokes from pop-culture accounts.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Posted April 1, 2026 by a pop-culture aggregator; replies (in Indonesian) call out the April Fools framing. The factual claim is false \u2014 Prabowo remains president \u2014 but the format is recognizable satire. FAIL any note that earnestly corrects the resignation claim without acknowledging the April Fools context; even a note that does acknowledge it is unnecessary since replies already do the work. If you're unsure whether something is a joke, default to writing the note \u2014 but here the date + account type + reply consensus make it clear.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "Prabowo Subianto is the sitting president of Indonesia, inaugurated on October 20, 2024. He has not stepped down and continues to actively govern, including conducting a recent cabinet reshuffle. https://en.wikipedia.org/wiki/Prabowo_Subianto",

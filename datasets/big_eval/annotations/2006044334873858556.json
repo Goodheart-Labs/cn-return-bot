@@ -1,14 +1,17 @@
 {
   "tweet_id": "2006044334873858556",
-  "role": "unhelpful_notHelpfulIrrelevantSources",
-  "provisional_role": "unhelpful_notHelpfulIrrelevantSources",
+  "role": "unhelpful_irrelevant_sources",
+  "provisional_role": "unhelpful_irrelevant_sources",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["staged_or_scripted_content", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "staged_or_scripted_content",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "ai_generated_video",
-  "tweet_summary": "Posts a dramatic video captioned 'Did you see where she landed 😯 that was close' showing a person seemingly flung off a cliffside platform toward a suspended target far below, presented as a real near-miss stunt.",
+  "tweet_summary": "Posts a dramatic video captioned 'Did you see where she landed \ud83d\ude2f that was close' showing a person seemingly flung off a cliffside platform toward a suspended target far below, presented as a real near-miss stunt.",
   "why_note_decision": "The clip is presented as a real, jaw-dropping near-death moment but is not an authentic uncontrolled event. The strongest evidence (AI media description of physically implausible cantilevered-platform geometry; near-unanimous replies calling it AI/'AI slop' and noting it 'defies physics - she bounces higher than she fell') points to AI-generated or fabricated content, not a genuine accident. A note is warranted so viewers don't treat synthetic/fabricated footage as a real event. However, the verdict hinges on media that an AI description can misread and that I cannot independently source, so confidence is limited.",
   "judge_guidance": "A correct note must establish that the video is NOT an authentic, real-world uncontrolled fall/near-miss - it is fabricated or AI-generated content (the physics are impossible and the clip shows hallmarks of AI generation). PASS only if the note clearly tells viewers the footage is not a real accident/genuine event and is staged or AI-generated. CRITICALLY, the note must AVOID the original's specific failure: do NOT assert a confident, fabricated physical mechanism ('a man jumps on an inflatable mat to launch the woman into a safety net') sourced to unrelated Instagram reels that don't depict this clip - that invented explanation is why the original was tagged IrrelevantSources/Incorrect. A correct note may say the precise method is unclear but the clip is not real; FAIL if it confidently invents the staging mechanics or cites sources that don't actually show or substantiate this specific video.",
   "reference_note": "This is not real footage of an accident. The clip is fabricated/AI-generated: the depicted fall is physically impossible (the figure rebounds higher than it dropped) and the imagery shows hallmarks of AI-generated video. It is not a genuine stunt or near-miss.",

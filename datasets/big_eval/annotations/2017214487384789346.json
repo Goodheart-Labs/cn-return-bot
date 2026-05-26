@@ -1,17 +1,21 @@
 {
   "tweet_id": "2017214487384789346",
-  "role": "unhelpful_sources",
+  "role": "unhelpful_sources_missing_or_unreliable",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["real_media_falsely_called_ai", "celebrity_entertainment_sports", "manipulated_or_fabricated_evidence"],
+  "categories": [
+    "real_media_falsely_called_ai",
+    "celebrity_entertainment_sports",
+    "manipulated_or_fabricated_evidence"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Luiza Jarovsky tweet (2.5M views) claims 'The level of AI slopification is so high that Ariana Grande has 6 fingers on the cover of Vogue Japan and NOBODY noticed it before publishing it' over the Vogue Japan March 2024 cover.",
-  "why_note_decision": "This is a real_media_falsely_called_ai case. Per Variety, BuzzFeed, Stereogum, TMZ, the consensus (including from photo-retouching professionals) is that the extra finger is a Photoshop compositing error from blending two takes, NOT AI generation. AI image generators in this style typically don't produce this kind of clean fabric/pattern consistency, and Vogue cover photo workflows are heavily Photoshop-based. The tweet propagates a real misconception about what is and isn't AI, with significant reach (29K likes, 2.5M views). A note is warranted. The original note has the right verdict (Photoshop error, not AI) but cites three X posts as sources — X tweets are usually rated as unreliable sources by Community Notes raters, which is why this was rated NOT_HELPFUL despite being substantively correct. Need a better-sourced version.",
-  "judge_guidance": "PASS the note ONLY if it (a) says the extra-finger error is widely attributed to a Photoshop compositing/blending mistake (e.g. two takes stitched together), NOT AI generation, AND (b) cites at least one mainstream outlet (Variety, BuzzFeed, TMZ, Stereogum all covered it). FAIL notes that endorse the 'this is AI' framing. FAIL notes whose only sources are other X tweets — that's what sank the original.",
-  "reference_note": "Multiple outlets and retouching professionals attribute the extra finger on Ariana Grande's Vogue Japan cover to a Photoshop compositing/blending error (likely two takes stitched together), not AI generation — fabric patterns and other details are consistent with photo editing, not generative AI. Vogue Japan corrected the image on its website. https://variety.com/2026/digital/news/ariana-grande-vogue-cover-six-fingers-ai-1236646450/ https://www.buzzfeed.com/leylamohammed/ariana-grande-reacts-apparent-vogue-photoshop-fail",
+  "why_note_decision": "This is a real_media_falsely_called_ai case. Per Variety, BuzzFeed, Stereogum, TMZ, the consensus (including from photo-retouching professionals) is that the extra finger is a Photoshop compositing error from blending two takes, NOT AI generation. AI image generators in this style typically don't produce this kind of clean fabric/pattern consistency, and Vogue cover photo workflows are heavily Photoshop-based. The tweet propagates a real misconception about what is and isn't AI, with significant reach (29K likes, 2.5M views). A note is warranted. The original note has the right verdict (Photoshop error, not AI) but cites three X posts as sources \u2014 X tweets are usually rated as unreliable sources by Community Notes raters, which is why this was rated NOT_HELPFUL despite being substantively correct. Need a better-sourced version.",
+  "judge_guidance": "PASS the note ONLY if it (a) says the extra-finger error is widely attributed to a Photoshop compositing/blending mistake (e.g. two takes stitched together), NOT AI generation, AND (b) cites at least one mainstream outlet (Variety, BuzzFeed, TMZ, Stereogum all covered it). FAIL notes that endorse the 'this is AI' framing. FAIL notes whose only sources are other X tweets \u2014 that's what sank the original.",
+  "reference_note": "Multiple outlets and retouching professionals attribute the extra finger on Ariana Grande's Vogue Japan cover to a Photoshop compositing/blending error (likely two takes stitched together), not AI generation \u2014 fabric patterns and other details are consistent with photo editing, not generative AI. Vogue Japan corrected the image on its website. https://variety.com/2026/digital/news/ariana-grande-vogue-cover-six-fingers-ai-1236646450/ https://www.buzzfeed.com/leylamohammed/ariana-grande-reacts-apparent-vogue-photoshop-fail",
   "original_unhelpful_note": {
     "text": "Ariana Grande's Vogue Japan photoshoot image shows an extra finger due to a Photoshop compositing error (common in blending photos), not AI generation. Fabric patterns are consistent and no other typical AI artifacts appear. https://x.com/Pentagear/status/2017246210415833560 https://x.com/MOZZIEMUTANT/status/2017249686101356991 https://x.com/billybinion/status/2017271885348626731",
     "failure_reason": "Sources missing/unreliable: the note's verdict is correct but its only citations are three X posts from anonymous users, which raters consistently mark unreliable. Substance was fine; sourcing sank it.",

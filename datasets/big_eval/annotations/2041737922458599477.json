@@ -5,17 +5,35 @@
   "disagrees_with_provisional": false,
   "needs_note": "no",
   "no_note_reason": "accurate_reporting_contested",
-  "categories": ["scams_fraud_finance", "insider_reporting_framing"],
+  "categories": [
+    "scams_fraud_finance"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "NYT reporter John Carreyrou promotes his 18-month investigation into the identity of Satoshi Nakamoto, claiming the 17-year mystery is now solved (the NYT piece names Adam Back).",
-  "why_note_decision": "Carreyrou is accurately promoting a real, published NYT investigation. The phrasing 'not anymore' is reporter promotion of his own conclusion — assertive, but not a false factual claim about an external matter. The NYT piece itself argues Back is the most-likely candidate based on stylometry (67/325 shared hyphenation errors, shared obscure phrases like 'partial pre-image'). The NYT's own linguist (Florian Cafiero) called the stylometric results 'inconclusive' (Hal Finney nearly tied), and Back denies it — so the claim is contested, but that's a journalistic interpretation dispute, not misinformation. The original note correctly notes stylometry is inconclusive and Back denies it, but adds nothing the NYT article doesn't already concede; 95 raters tagged 'note not needed' because the tweet is reporter self-promo of a real article whose contested nature is plain on its face.",
-  "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately promotes a published NYT investigation; it does not state any false factual claim. Disputes about whether the NYT proved its case are journalistic-interpretation disputes appropriate for replies, not Community Notes. FAIL if the bot writes a note 'correcting' Carreyrou's conclusion (the original note's failure: it just re-litigates the NYT's evidence without identifying any false claim). FAIL if the bot writes 'Adam Back denies being Satoshi' as if that's a Community-Notes-worthy correction — it's openly acknowledged in the article. A correct response is no note.",
+  "why_note_decision": "Carreyrou is accurately promoting a real, published NYT investigation. The phrasing 'not anymore' is reporter promotion of his own conclusion \u2014 assertive, but not a false factual claim about an external matter. The NYT piece itself argues Back is the most-likely candidate based on stylometry (67/325 shared hyphenation errors, shared obscure phrases like 'partial pre-image'). The NYT's own linguist (Florian Cafiero) called the stylometric results 'inconclusive' (Hal Finney nearly tied), and Back denies it \u2014 so the claim is contested, but that's a journalistic interpretation dispute, not misinformation. The original note correctly notes stylometry is inconclusive and Back denies it, but adds nothing the NYT article doesn't already concede; 95 raters tagged 'note not needed' because the tweet is reporter self-promo of a real article whose contested nature is plain on its face.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately promotes a published NYT investigation; it does not state any false factual claim. Disputes about whether the NYT proved its case are journalistic-interpretation disputes appropriate for replies, not Community Notes. FAIL if the bot writes a note 'correcting' Carreyrou's conclusion (the original note's failure: it just re-litigates the NYT's evidence without identifying any false claim). FAIL if the bot writes 'Adam Back denies being Satoshi' as if that's a Community-Notes-worthy correction \u2014 it's openly acknowledged in the article. A correct response is no note.",
   "reference_note": "",
-  "original_unhelpful_note": {"text": "The stylometric analysis in the article is inconclusive, Adam Back denies being Satoshi Nakamoto, and no cryptographic proof exists. https://www.nytimes.com/2026/04/08/business/bitcoin-satoshi-nakamoto-identity-adam-back.html https://x.com/adam3us/status/2041809937748066445", "failure_reason": "Re-litigates a journalistic interpretation. Article itself acknowledges the linguist called results inconclusive; Back's denial is widely known. No false claim to correct. Dominant rater reason: notHelpfulNoteNotNeeded + notHelpfulMissingKeyPoints + notHelpfulOpinionSpeculation.", "original_status": "NEEDS_MORE_RATINGS"},
-  "fact_check": {"agrees_correction_needed": false, "claim_verdict": "accurate reporting promotion; conclusion contested but not misinfo", "sources_checked": ["https://www.coindesk.com/markets/2026/04/08/adam-back-denies-he-s-satoshi-nakamoto-after-nyt-report-claims-he-s-bitcoin-s-creator", "https://bravenewcoin.com/insights/new-york-times-names-adam-back-as-bitcoins-creator-but-the-evidence-falls-short", "https://www.blockhead.co/2026/04/09/ny-times-makes-its-case-adam-back-is-satoshi-nakamoto/"], "notes": "NYT investigation is real, 18 months long; based on 134K cypherpunk-list posts and stylometric analysis. NYT's own linguist called results inconclusive. Back publicly denies. Crypto community largely skeptical."},
+  "original_unhelpful_note": {
+    "text": "The stylometric analysis in the article is inconclusive, Adam Back denies being Satoshi Nakamoto, and no cryptographic proof exists. https://www.nytimes.com/2026/04/08/business/bitcoin-satoshi-nakamoto-identity-adam-back.html https://x.com/adam3us/status/2041809937748066445",
+    "failure_reason": "Re-litigates a journalistic interpretation. Article itself acknowledges the linguist called results inconclusive; Back's denial is widely known. No false claim to correct. Dominant rater reason: notHelpfulNoteNotNeeded + notHelpfulMissingKeyPoints + notHelpfulOpinionSpeculation.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "accurate reporting promotion; conclusion contested but not misinfo",
+    "sources_checked": [
+      "https://www.coindesk.com/markets/2026/04/08/adam-back-denies-he-s-satoshi-nakamoto-after-nyt-report-claims-he-s-bitcoin-s-creator",
+      "https://bravenewcoin.com/insights/new-york-times-names-adam-back-as-bitcoins-creator-but-the-evidence-falls-short",
+      "https://www.blockhead.co/2026/04/09/ny-times-makes-its-case-adam-back-is-satoshi-nakamoto/"
+    ],
+    "notes": "NYT investigation is real, 18 months long; based on 134K cypherpunk-list posts and stylometric analysis. NYT's own linguist called results inconclusive. Back publicly denies. Crypto community largely skeptical."
+  },
   "media_reliability_flag": false,
   "media_confidence": "high",
-  "importance": {"prominence": "high", "lens_rationale": "5.4M impressions on Bitcoin's founder mystery. But this is a 'reporter promotes his own contested theory' case — Community Notes shouldn't adjudicate journalist-vs-subject disputes."},
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "5.4M impressions on Bitcoin's founder mystery. But this is a 'reporter promotes his own contested theory' case \u2014 Community Notes shouldn't adjudicate journalist-vs-subject disputes."
+  },
   "difficulty": "medium"
 }

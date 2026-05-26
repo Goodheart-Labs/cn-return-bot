@@ -1,20 +1,23 @@
 {
   "tweet_id": "2029650340723773564",
-  "role": "unhelpful_notHelpfulIncorrect",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["statistical_or_numerical_claim", "breaking_news_and_war"],
+  "categories": [
+    "statistical_or_numerical_claim",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "BRICS News posts (no media) 'JUST IN: Israel currently loses $3.7 billion per week due to war with Iran.'",
-  "why_note_decision": "A note is warranted on the numbers, though it is a relatively soft case. Israel's Finance Ministry estimate (early March 2026) for weekly economic loss under wartime restrictions is about $3 billion/week (NIS 9.4B), reducible to ~NIS 4.3B under lighter 'orange' rules — confirmed by Times of Israel, Daily Sabah, Iran International. The tweet's '$3.7 billion per week' appears to conflate that with the unrelated CSIS figure of $3.7B for the US military's 'first 100 hours' against Iran. So the specific figure is wrong/misattributed and a reader benefits from the corrected ~$3B/week number. The original note actually states this correction reasonably well; its NOT_HELPFUL rating (low volume, 12) likely reflects the fuzzy, fast-moving estimate rather than a clear error.",
+  "why_note_decision": "A note is warranted on the numbers, though it is a relatively soft case. Israel's Finance Ministry estimate (early March 2026) for weekly economic loss under wartime restrictions is about $3 billion/week (NIS 9.4B), reducible to ~NIS 4.3B under lighter 'orange' rules \u2014 confirmed by Times of Israel, Daily Sabah, Iran International. The tweet's '$3.7 billion per week' appears to conflate that with the unrelated CSIS figure of $3.7B for the US military's 'first 100 hours' against Iran. So the specific figure is wrong/misattributed and a reader benefits from the corrected ~$3B/week number. The original note actually states this correction reasonably well; its NOT_HELPFUL rating (low volume, 12) likely reflects the fuzzy, fast-moving estimate rather than a clear error.",
   "judge_guidance": "PASS only if the note corrects the figure: Israel's estimated weekly war-related economic loss is about $3 billion/week (Israeli Finance Ministry, ~NIS 9.4B), NOT $3.7 billion, and ideally flags that $3.7B is a different, unrelated estimate (the US military's first-100-hours cost per CSIS). It must cite a credible source (Times of Israel / Daily Sabah / Iran International / CSIS). FAIL if the note disputes that any major economic loss occurred, conflates the two figures itself, or asserts a precise figure as undisputed fact without noting it is a government estimate under specified restrictions. A note that simply restates ~$3B/week with a source and distinguishes it from the $3.7B US-cost figure is correct.",
   "reference_note": "Israel's Finance Ministry estimates the economy loses about $3 billion (NIS 9.4B) per week under current wartime restrictions, not $3.7 billion. The $3.7B figure is a separate estimate of the US military's cost in the first ~100 hours of strikes on Iran (CSIS), not Israel's weekly loss. https://www.timesofisrael.com/war-set-to-cost-3-billion-a-week-if-current-limits-on-economy-persist-ministry-warns/ https://www.csis.org/analysis/37-billion-estimated-cost-epic-furys-first-100-hours",
   "original_unhelpful_note": {
     "text": "Israel's estimated weekly economic loss from war restrictions is about $3 billion, not $3.7 billion which refers to initial US military costs against Iran. https://www.timesofisrael.com/liveblog_entry/war-expected-to-cost-3-billion-per-week-if-current-limits-on-economy-persist-finance-ministry https://www.csis.org/analysis/37-billion-estimated-cost-epic-furys-first-100-hours",
-    "failure_reason": "Rated notHelpfulIncorrect (4) with low overall volume (12) and scattered tags. The correction is actually substantively right (Israel ~$3B/week; $3.7B is the CSIS US-100-hours figure). The NOT_HELPFUL outcome more plausibly reflects the soft, contested nature of fast-moving war-economics estimates and the precision of asserting 'about $3 billion' as the counter-figure, rather than a clear factual mistake — but raters tagged it incorrect, so it counts as a failure to make a correction land convincingly.",
+    "failure_reason": "Rated notHelpfulIncorrect (4) with low overall volume (12) and scattered tags. The correction is actually substantively right (Israel ~$3B/week; $3.7B is the CSIS US-100-hours figure). The NOT_HELPFUL outcome more plausibly reflects the soft, contested nature of fast-moving war-economics estimates and the precision of asserting 'about $3 billion' as the counter-figure, rather than a clear factual mistake \u2014 but raters tagged it incorrect, so it counts as a failure to make a correction land convincingly.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

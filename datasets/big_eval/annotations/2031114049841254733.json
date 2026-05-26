@@ -1,11 +1,14 @@
 {
   "tweet_id": "2031114049841254733",
-  "role": "unhelpful_notHelpfulIrrelevantSources",
-  "provisional_role": "unhelpful_notHelpfulIrrelevantSources",
+  "role": "unhelpful_irrelevant_sources",
+  "provisional_role": "unhelpful_irrelevant_sources",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Posts a video of nighttime missile/explosion activity captioned 'It's raining hell in Tel Aviv and there isn't ONE interceptor missile in sight!' - implying current (March 2026) Iranian missiles are hitting Tel Aviv unopposed by Israeli air defenses.",

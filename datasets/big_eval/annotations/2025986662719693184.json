@@ -1,11 +1,15 @@
 {
   "tweet_id": "2025986662719693184",
-  "role": "unhelpful_incorrect_numbers",
+  "role": "unhelpful_incorrect",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["scams_fraud_finance", "manipulated_or_fabricated_evidence", "statistical_or_numerical_claim"],
+  "categories": [
+    "scams_fraud_finance",
+    "manipulated_or_fabricated_evidence",
+    "statistical_or_numerical_claim"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Claims one of the oldest (Satoshi-era, 2009) Bitcoin whales 'just sold his entire $1.24 billion BTC stack', implying a bearish signal ('ask yourself why'), with a dashboard screenshot of transfers to Coinbase.",
@@ -29,6 +33,9 @@
   },
   "media_reliability_flag": true,
   "media_confidence": "medium",
-  "importance": {"prominence": "medium", "lens_rationale": "318K impressions; financial FUD that can move sentiment and harm retail investors; modest world-stakes but a clean factual correction."},
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "318K impressions; financial FUD that can move sentiment and harm retail investors; modest world-stakes but a clean factual correction."
+  },
   "difficulty": "hard"
 }

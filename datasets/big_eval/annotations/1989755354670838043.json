@@ -1,15 +1,18 @@
 {
   "tweet_id": "1989755354670838043",
-  "role": "unhelpful_notHelpfulOpinionSpeculation",
+  "role": "unhelpful_opinion_speculation",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["statistical_or_numerical_claim", "political_misinformation"],
+  "categories": [
+    "statistical_or_numerical_claim",
+    "politics_and_policy"
+  ],
   "category_fit": "partial",
   "suggested_category": "political_claim_factcheck",
   "tweet_summary": "Rep. Nancy Mace claims President Trump 'ended eight wars in eight months,' calling him the 'President of Peace.'",
-  "why_note_decision": "The 'eight wars in eight months' figure is a specific, checkable claim that major fact-checkers (CNN, AP/US News, Axios) have found to be a significant exaggeration: the list counts non-wars (e.g. the Egypt-Ethiopia dam dispute) and conflicts that did not actually end (DRC-Rwanda, Thailand-Cambodia flared again), and parties disputed US involvement (India-Pakistan). A clarifying note benefits the 193k+ readers, so a note IS warranted — contrary to the provisional no-note label.",
+  "why_note_decision": "The 'eight wars in eight months' figure is a specific, checkable claim that major fact-checkers (CNN, AP/US News, Axios) have found to be a significant exaggeration: the list counts non-wars (e.g. the Egypt-Ethiopia dam dispute) and conflicts that did not actually end (DRC-Rwanda, Thailand-Cambodia flared again), and parties disputed US involvement (India-Pakistan). A clarifying note benefits the 193k+ readers, so a note IS warranted \u2014 contrary to the provisional no-note label.",
   "judge_guidance": "PASS only if the note (1) addresses the specific 'eight wars in eight months' figure and explains it is an overstatement, citing concrete examples (e.g. the Egypt-Ethiopia matter is a diplomatic dam dispute not a war; the DRC-Rwanda and Thailand-Cambodia conflicts continued after the announced deals; India disputed US mediation), and (2) attributes this to named fact-checks (AP, CNN, Axios). It must AVOID the original note's failures: do not be vaguely argumentative ('multiple fact-checkers found no evidence...') without specifics, and do not cite a single possibly-wrong URL. It should be neutral and factual, not a partisan rebuttal of whether Trump deserves credit at all. A note that just says 'this is false/opinion' without enumerating the actual problems is too weak.",
   "reference_note": "The 'eight wars in eight months' figure is disputed by fact-checkers. The list counts a non-war (the Egypt-Ethiopia Nile dam diplomatic dispute) and conflicts that did not actually end: fighting in the DRC-Rwanda and Thailand-Cambodia conflicts resumed after the announced agreements, and India rejected US mediation of its Pakistan ceasefire. Trump played a diplomatic role in several, but 'ended eight wars' overstates both the count and the permanence. https://apnews.com/article/fact-check-trump-eight-wars-ended https://www.axios.com/2025/10/10/gaza-trump-wars-ended-israel-nobel-prize",
   "original_unhelpful_note": {

@@ -1,16 +1,18 @@
 {
   "tweet_id": "2036112497657180361",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["celebrity_entertainment_sports"],
+  "categories": [
+    "celebrity_entertainment_sports"
+  ],
   "category_fit": "partial",
   "suggested_category": "gaming_tech_news",
   "tweet_summary": "Major gaming-news account CharlieIntel (5M followers) reports 'Battlefield Hardline servers on consoles will be shut down on June 22, 2026', with the game's cover art. Replies all treat it as real, sad news.",
   "why_note_decision": "No note is warranted; the original note is false. EA officially announced via Battlefield's official X channel (covered by GameSpot, Pure Xbox, Dot Esports, MP1st and others, ~Mar 23 2026) that Battlefield Hardline's PS4/Xbox One online servers shut down June 22, 2026, with console delisting on May 22. The CharlieIntel report is accurate. There is nothing to correct.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap. EA really did announce that Battlefield Hardline console (PS4/Xbox One) servers shut down June 22, 2026 (with delisting May 22); the announcement came from Battlefield's official channel and was widely reported by reliable gaming outlets. The tweet from CharlieIntel is accurate. Any note is a false positive. SPECIFICALLY FAIL any note claiming 'no official EA announcement exists' or that the servers remain active — that repeats the original note's error and is verifiably wrong.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap. EA really did announce that Battlefield Hardline console (PS4/Xbox One) servers shut down June 22, 2026 (with delisting May 22); the announcement came from Battlefield's official channel and was widely reported by reliable gaming outlets. The tweet from CharlieIntel is accurate. Any note is a false positive. SPECIFICALLY FAIL any note claiming 'no official EA announcement exists' or that the servers remain active \u2014 that repeats the original note's error and is verifiably wrong.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "No official EA announcement exists for Battlefield Hardline console servers shutting down on June 22, 2026. Servers for current-gen consoles remain active as of March 2026.    https://www.ea.com/en-gb/legal/service-updates/a-h  https://www.youtube.com/watch?v=ZUTFe-UKwVA",

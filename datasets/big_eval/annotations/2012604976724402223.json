@@ -2,12 +2,15 @@
   "tweet_id": "2012604976724402223",
   "role": "no_note_needed",
   "needs_note": "no",
-  "categories": ["politics_and_policy", "breaking_news_and_war"],
+  "categories": [
+    "politics_and_policy",
+    "breaking_news_and_war"
+  ],
   "category_fit": "partial",
   "suggested_category": "accurate_reporting_contested_note",
   "tweet_summary": "Atlantic/MSNBC journalist Jonathan Lemire quotes an account of the Renee Good killing: as she 'attempted to drive away, Ross opened fire,' killing an American citizen on a residential street, with a voice 'reportedly Ross's' saying 'Fucking bitch.'",
   "why_note_decision": "No correction is warranted. The tweet is a sourced, substantially accurate quote about the January 2026 killing of Renee Good by ICE agent Jonathan Ross: she was a US citizen, she was fatally shot, the NYT identified the 'Fucking bitch' audio as Ross's, and the NYT analysis found 'Ross was not run over.' The original note injects the unsubstantiated DHS claim ('she struck him, causing internal bleeding') to imply the tweet is misleading, but that DHS claim lacks medical documentation and is contradicted/uncorroborated by the video analyses. Correcting an accurate quote with a contested counter-claim is not warranted.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet accurately quotes reporting: Renee Good (US citizen) was fatally shot by ICE agent Jonathan Ross; NYT attributed the 'Fucking bitch' audio to Ross; NYT found Ross 'was not run over' and crossed to the left of the vehicle; DHS's 'she struck him / internal bleeding' claim has no medical documentation. A note that presents the DHS 'she struck him, internal bleeding' narrative as established fact, or that frames Lemire's accurate quote as misleading, must FAIL (that is the original note's error — rated incorrect + argumentative/biased). The presence of strident replies defending the agent is not evidence the tweet is false.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet accurately quotes reporting: Renee Good (US citizen) was fatally shot by ICE agent Jonathan Ross; NYT attributed the 'Fucking bitch' audio to Ross; NYT found Ross 'was not run over' and crossed to the left of the vehicle; DHS's 'she struck him / internal bleeding' claim has no medical documentation. A note that presents the DHS 'she struck him, internal bleeding' narrative as established fact, or that frames Lemire's accurate quote as misleading, must FAIL (that is the original note's error \u2014 rated incorrect + argumentative/biased). The presence of strident replies defending the agent is not evidence the tweet is false.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "Videos show Renee Good's SUV reversing, turning right, and moving forward as ICE agent Jonathan Ross, outside its path, fired three shots. DHS claims she struck him, causing internal bleeding. A voice, reportedly Ross's, said \"Fucking bitch.\" https://www.nytimes.com/2026/01/15/video/ice-shooting-renee-good-minneapolis-videos.html https://www.foxnews.com/us/ice-agent-struck-renee-goods-vehicle-suffered-internal-bleeding-torso-dhs-says https://www.cnn.com/2026/01/17/us/ice-shooting-minneapolis-renee-good",
@@ -29,5 +32,9 @@
     "prominence": "high",
     "lens_rationale": "A fatal use of force by a federal agent against a US citizen, high public interest (124k impressions, credible-journalist author); accurate reporting on state violence is exactly the kind of true speech that should NOT be suppressed by an erroneous note."
   },
-  "difficulty": "hard"
+  "difficulty": "hard",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": true,
+  "no_note_reason": "",
+  "media_confidence": "high"
 }

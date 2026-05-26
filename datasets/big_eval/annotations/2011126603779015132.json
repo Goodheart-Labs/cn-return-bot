@@ -5,16 +5,19 @@
   "disagrees_with_provisional": false,
   "needs_note": "no",
   "no_note_reason": "opinion_or_framing",
-  "categories": ["misattributed_or_miscontextualized_media", "political_misinformation"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "politics_and_policy"
+  ],
   "category_fit": "partial",
   "suggested_category": "unverifiable_personal_anecdote",
   "tweet_summary": "A journalist posts a photo of a Shell pump reading $1.699/gal claiming she just paid $1.69 for gas in Austin, TX, with the partisan tag 'JOE BIDEN COULD NEVER!!'",
-  "why_note_decision": "The checkable core is an unverifiable personal anecdote (a single pump photo) wrapped in partisan opinion ('Joe Biden could never'). Presidents don't set retail gas prices, and the photo could be a real reward/loyalty price or recycled — but a note cannot disprove a specific receipt photo without provenance evidence, and the political attribution is opinion, not a falsifiable fact. The original note's specific claims (lowest Austin price was $1.99, photo is 'recycled') are unsubstantiated, and raters agreed a note was not needed.",
-  "judge_guidance": "PASS only if the bot declines to write a note. The image OCR genuinely shows $1.699, so a note asserting the price is fake/photoshopped is unsupported. A note asserting the photo is 'recycled from an earlier date' must NOT pass unless it provides actual provenance evidence (a reverse-image hit to an older posting) — the original note asserted this with none. A note arguing 'presidents don't control gas prices' is opinion/framing, not a factual correction. The safe and correct outcome is no note.",
+  "why_note_decision": "The checkable core is an unverifiable personal anecdote (a single pump photo) wrapped in partisan opinion ('Joe Biden could never'). Presidents don't set retail gas prices, and the photo could be a real reward/loyalty price or recycled \u2014 but a note cannot disprove a specific receipt photo without provenance evidence, and the political attribution is opinion, not a falsifiable fact. The original note's specific claims (lowest Austin price was $1.99, photo is 'recycled') are unsubstantiated, and raters agreed a note was not needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The image OCR genuinely shows $1.699, so a note asserting the price is fake/photoshopped is unsupported. A note asserting the photo is 'recycled from an earlier date' must NOT pass unless it provides actual provenance evidence (a reverse-image hit to an older posting) \u2014 the original note asserted this with none. A note arguing 'presidents don't control gas prices' is opinion/framing, not a factual correction. The safe and correct outcome is no note.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "The lowest reported gas price in Austin, TX on January 13, 2026 was $1.99 per gallon, not $1.69. The photo appears to be recycled from an earlier date when prices were lower.    https://gasprices.aaa.com/?state=TX    https://www.gasbuddy.com/gasprices/texas/austin",
-    "failure_reason": "Unsupported and not needed (dominant noteNotNeeded, 27): asserts a specific 'lowest was $1.99' figure and that the photo is 'recycled' without evidence — live AAA/GasBuddy links don't establish a historical single-station price on a given day, and reward-program prices can be real. Raters saw no need for a note on a personal-anecdote-plus-opinion post.",
+    "failure_reason": "Unsupported and not needed (dominant noteNotNeeded, 27): asserts a specific 'lowest was $1.99' figure and that the photo is 'recycled' without evidence \u2014 live AAA/GasBuddy links don't establish a historical single-station price on a given day, and reward-program prices can be real. Raters saw no need for a note on a personal-anecdote-plus-opinion post.",
     "original_status": "NEEDS_MORE_RATINGS"
   },
   "fact_check": {
@@ -25,7 +28,7 @@
       "https://www.politifact.com/factchecks/2025/apr/24/donald-trump/donald-trump-states-gas-prices-gallon/",
       "https://gasprices.aaa.com/state-gas-price-averages/"
     ],
-    "notes": "FactCheck/PolitiFact established sub-$2 gas was effectively nonexistent at the state-average level in 2025, and recycled gas-price photos circulate. But this is a specific pump photo (OCR confirms $1.699) and a first-person 'I just paid' claim — not refutable without reverse-image provenance, which neither I nor the original note established. The 'Joe Biden could never' attribution is opinion. Multiple in-thread commenters dispute it, but that's anecdote vs anecdote."
+    "notes": "FactCheck/PolitiFact established sub-$2 gas was effectively nonexistent at the state-average level in 2025, and recycled gas-price photos circulate. But this is a specific pump photo (OCR confirms $1.699) and a first-person 'I just paid' claim \u2014 not refutable without reverse-image provenance, which neither I nor the original note established. The 'Joe Biden could never' attribution is opinion. Multiple in-thread commenters dispute it, but that's anecdote vs anecdote."
   },
   "media_reliability_flag": true,
   "media_confidence": "low",

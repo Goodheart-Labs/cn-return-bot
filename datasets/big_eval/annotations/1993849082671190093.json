@@ -5,7 +5,10 @@
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["political_misframing_or_misleading_context", "breaking_news_and_war"],
+  "categories": [
+    "politics_and_policy",
+    "breaking_news_and_war"
+  ],
   "category_fit": "partial",
   "suggested_category": "political_misframing_or_misleading_context",
   "tweet_summary": "Rep. Byron Donalds blames Democrats for the DC National Guard shooting because the suspect entered the US from Afghanistan in 2021 under the Biden withdrawal; the tweet omits that the same suspect was granted asylum under the Trump administration in April 2025.",

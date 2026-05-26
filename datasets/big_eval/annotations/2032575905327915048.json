@@ -1,19 +1,24 @@
 {
   "tweet_id": "2032575905327915048",
-  "role": "unhelpful_notHelpfulOpinionSpeculation",
-  "provisional_role": "unhelpful_notHelpfulOpinionSpeculation",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war", "conspiracy_and_viral_hoax", "ai_generated_or_manipulated_media"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war",
+    "conspiracy_and_viral_hoax",
+    "ai_generated_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "ai_generated_or_manipulated_media",
   "tweet_summary": "Relays that 'Iranian media are reporting Netanyahu is dead,' adds that his recent video was 'likely generated using AI' (citing a '6 fingers' anomaly), and ties in Bessent being called away mid-interview.",
   "why_note_decision": "Two false checkable claims: (1) Netanyahu is dead, and (2) his recent video is AI-generated. Both are debunked: Netanyahu held a live March 12, 2026 press conference (forensic analysis by GetReal Security found no AI signs) and appeared March 15-17 (cafe video, with Huckabee) showing five fingers on each hand. The 'six fingers' was a video/compression artifact, not AI. The post amplifies a verified false conspiracy (218k+ mentions), so a note is warranted.",
-  "judge_guidance": "PASS only if the note rebuts BOTH claims: (1) Netanyahu is alive (anchor to his live March 12 press conference and March 15-17 appearances), and (2) the video is authentic, NOT AI-generated — the 'six fingers'/anomaly claims are video/camera artifacts, and forensic analysis found no signs of AI manipulation; he had five fingers throughout. It must AVOID the original note's failure of asserting 'the video is real & shows no six fingers' as the note's own say-so (which drew opinionSpeculation tags) — attribute the 'authentic, not AI' verdict to a fact-check/forensic source (Snopes/PolitiFact/Reuters). A note that only addresses the death OR only the AI claim, or that concedes the video might be AI, fails.",
+  "judge_guidance": "PASS only if the note rebuts BOTH claims: (1) Netanyahu is alive (anchor to his live March 12 press conference and March 15-17 appearances), and (2) the video is authentic, NOT AI-generated \u2014 the 'six fingers'/anomaly claims are video/camera artifacts, and forensic analysis found no signs of AI manipulation; he had five fingers throughout. It must AVOID the original note's failure of asserting 'the video is real & shows no six fingers' as the note's own say-so (which drew opinionSpeculation tags) \u2014 attribute the 'authentic, not AI' verdict to a fact-check/forensic source (Snopes/PolitiFact/Reuters). A note that only addresses the death OR only the AI claim, or that concedes the video might be AI, fails.",
   "reference_note": "Netanyahu is not dead and the video is not AI-generated. He held a live press conference on March 12, 2026 (forensic analysis found no signs of AI manipulation) and appeared publicly March 15-17 showing five fingers on each hand. The 'six fingers' and similar anomalies are video/compression artifacts, not AI; fact-checkers rated the death and AI claims false. https://www.politifact.com/article/2026/mar/17/netanyahu-dead-false-narrative/ https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/",
   "original_unhelpful_note": {
-    "text": "Netanyahu is not dead; his office dismissed Iranian media claims as fake news. Recent statements confirm he's alive. The video is real & shows no six fingers—claims of AI are false. https://www.reuters.com/world/middle-east/netanyahu-threatens-irans-new-supreme-leader-defends-joint-assault-with-us-2026-03-12 https://www.snopes.com/fact-check/netanyahu-6-fingers-ai https://www.aljazeera.com/news/2026/3/12/netanyahu-says-israel-stronger-than-ever-in-first-speech-since-iran-war",
+    "text": "Netanyahu is not dead; his office dismissed Iranian media claims as fake news. Recent statements confirm he's alive. The video is real & shows no six fingers\u2014claims of AI are false. https://www.reuters.com/world/middle-east/netanyahu-threatens-irans-new-supreme-leader-defends-joint-assault-with-us-2026-03-12 https://www.snopes.com/fact-check/netanyahu-6-fingers-ai https://www.aljazeera.com/news/2026/3/12/netanyahu-says-israel-stronger-than-ever-in-first-speech-since-iran-war",
     "failure_reason": "Opinion/speculation: phrases the rebuttal as the note's own assertions ('The video is real & shows no six fingers') rather than attributing the authentic/not-AI verdict to forensic analysis or a fact-check. On a charged topic this read as the annotator's opinion, drawing opinionSpeculation (12) tags despite being substantively correct.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },

@@ -1,11 +1,13 @@
 {
   "tweet_id": "2014630182796083580",
-  "role": "unhelpful_unreliable_sources",
+  "role": "unhelpful_sources_missing_or_unreliable",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["ai_generated_media"],
+  "categories": [
+    "ai_generated_media"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "Posts a gym mirror-selfie image captioned 'Sydney Sweeney & Ana de Armas', presented as a real candid photo of the two actresses.",
@@ -28,6 +30,9 @@
   },
   "media_reliability_flag": true,
   "media_confidence": "medium",
-  "importance": {"prominence": "low", "lens_rationale": "3M impressions but low-stakes glamour deepfake; value is mainly in normalizing AI-image disclosure of real people."},
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "3M impressions but low-stakes glamour deepfake; value is mainly in normalizing AI-image disclosure of real people."
+  },
   "difficulty": "medium"
 }

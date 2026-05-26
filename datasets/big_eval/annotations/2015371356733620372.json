@@ -1,11 +1,13 @@
 {
   "tweet_id": "2015371356733620372",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media"],
+  "categories": [
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "fabricated_statistic",
   "tweet_summary": "Claims (with a stern Trump photo + FIFA logo) that 'MORE THAN 38,700 HOTEL BOOKINGS FOR 2026 FIFA WORLD CUP RESERVATIONS IN THE USA HAVE BEEN CANCELLED,' tied to US-politics boycott sentiment in the replies.",

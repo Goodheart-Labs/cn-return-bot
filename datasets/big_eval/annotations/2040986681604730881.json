@@ -1,11 +1,14 @@
 {
   "tweet_id": "2040986681604730881",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["celebrity_entertainment_sports", "manipulated_or_fabricated_evidence"],
+  "categories": [
+    "celebrity_entertainment_sports",
+    "manipulated_or_fabricated_evidence"
+  ],
   "category_fit": "partial",
   "suggested_category": "miscontextualized_fiction_as_statement",
   "tweet_summary": "A still from Netflix's 'The Sandman' (S2E7) of two men in papal/cardinal attire kissing, captioned 'This is a scene from the new Netflix show... It depicts the Pope kissing a priest', with a list of Jewish-coded creators -- an antisemitic 'usual suspects' dog-whistle.",

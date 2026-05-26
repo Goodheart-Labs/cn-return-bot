@@ -1,20 +1,23 @@
 {
   "tweet_id": "2024612128422793276",
-  "role": "unhelpful_incorrect_detail",
+  "role": "unhelpful_incorrect",
   "provisional_role": "no_note_needed",
   "disagrees_with_provisional": true,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "staged_or_scripted_content"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "staged_or_scripted_content"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "A 'BREAKING NEWS'-captioned video shows a man telling a woman on a bus to stop eating because he is fasting; she refuses. Framed by the author as a real anti-Muslim/Ramadan culture-war confrontation.",
   "why_note_decision": "The clip is a scripted comedy skit by @thehalalham, a London-based Muslim comedy/skit account (~900K followers, scripted family/halal-culture content). The 'BREAKING NEWS' chyron is a fake overlay added by re-posters; this is not real news footage of a spontaneous confrontation. Presenting staged content as a genuine viral incident to fuel anti-Muslim sentiment misleads the ~380K viewers, so a note IS warranted. NOTE: the dialogue (fasting, 'I don't read the Bible', 'stay indoors') reads as Ramadan-themed, not Lent. The original note's claim that it depicts 'fasting for Lent' is itself an error imported from a Daily Mail headline and should NOT be repeated.",
-  "judge_guidance": "A correct note must establish that this video is a staged/scripted comedy skit (creator @thehalalham, a comedy account) and that the 'BREAKING NEWS' overlay is a fabricated edit, not a real news report. It must NOT repeat the original note's specific error of describing the fast as 'Lent' — the skit's own dialogue is Ramadan/Islamic-fasting themed, and asserting 'Lent' is an unsupported detail. PASS only if the note (1) identifies it as staged comedy / not a real spontaneous incident, and (2) avoids the false 'Lent' framing and avoids over-claiming a specific date it cannot verify. A note that calls it real, or that confidently labels it 'Lent', should FAIL.",
+  "judge_guidance": "A correct note must establish that this video is a staged/scripted comedy skit (creator @thehalalham, a comedy account) and that the 'BREAKING NEWS' overlay is a fabricated edit, not a real news report. It must NOT repeat the original note's specific error of describing the fast as 'Lent' \u2014 the skit's own dialogue is Ramadan/Islamic-fasting themed, and asserting 'Lent' is an unsupported detail. PASS only if the note (1) identifies it as staged comedy / not a real spontaneous incident, and (2) avoids the false 'Lent' framing and avoids over-claiming a specific date it cannot verify. A note that calls it real, or that confidently labels it 'Lent', should FAIL.",
   "reference_note": "This clip is a staged comedy skit from the account @thehalalham, a scripted comedy creator, not real news footage of a spontaneous confrontation. The 'BREAKING NEWS' banner is an added overlay. https://www.tiktok.com/@thehalalham",
   "original_unhelpful_note": {
     "text": "This video is a staged comedy skit from 2024 on TikTok (@thehalalham), depicting a prank about fasting for Lent, not a real confrontation involving a Muslim man during Ramadan. The \"BREAKING NEWS\" overlay is an added edit. https://www.dailymail.co.uk/lifestyle/article-14538315/Prankster-asks-woman-stop-eating-lunch-bus-hes-fasting-Lent-sparks-furious-debate-whos-right.html https://www.tiktok.com/@thehalalham",
-    "failure_reason": "Core claim (staged skit, fake BREAKING NEWS overlay) is correct, but it injects a wrong detail: the skit is Ramadan/Islamic-fasting themed, not 'Lent' — that label came from a Daily Mail headline and contradicts the clip's own dialogue ('I don't read the Bible'). Rated notHelpfulIncorrect / Argumentative / OpinionSpeculation, likely partly due to that contestable detail.",
+    "failure_reason": "Core claim (staged skit, fake BREAKING NEWS overlay) is correct, but it injects a wrong detail: the skit is Ramadan/Islamic-fasting themed, not 'Lent' \u2014 that label came from a Daily Mail headline and contradicts the clip's own dialogue ('I don't read the Bible'). Rated notHelpfulIncorrect / Argumentative / OpinionSpeculation, likely partly due to that contestable detail.",
     "original_status": "NEEDS_MORE_RATINGS"
   },
   "fact_check": {

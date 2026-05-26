@@ -1,11 +1,13 @@
 {
   "tweet_id": "2016313026161299803",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "opinion_or_framing",
-  "categories": ["politics_and_policy"],
+  "categories": [
+    "politics_and_policy"
+  ],
   "category_fit": "partial",
   "suggested_category": "partisan_rhetorical_comparison",
   "tweet_summary": "A MAGA commentator posts two portraits with the caption 'The Left said his name over and over again. The Left never said her name' -- a partisan rhetorical contrast (Alex Pretti, killed by federal agents, vs a female crime victim whose name the right amplified).",

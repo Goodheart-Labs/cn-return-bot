@@ -1,21 +1,38 @@
 {
   "tweet_id": "2037844679895515578",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "An anti-Zionist account posts a video of a US Army soldier in OCP uniform tearfully saying goodbye to his family at an airport, captioned 'Time to D!E for Israel,' implying US troops are being sent to die for Israel.",
-  "why_note_decision": "The video is a generic, sentimental 'soldier says goodbye to family' clip (US Army uniform, airport pick-up/drop-off, 'God Bless Our Soldiers' overlay) with no connection to Israel — no Israel deployment, destination, or unit is shown or stated. The 'Time to die for Israel' caption is an unsupported inference imposed on unrelated footage. A note is warranted to flag that nothing in the video indicates an Israel deployment. The original note's MissingKeyPoints failure: it asserts a specific provenance (a Mexican-American family / US Army recruit / a specific Instagram reel) that is hard to verify and not load-bearing; the verifiable point is simply that the clip shows no Israel connection. Overstating an unverifiable origin while a single Instagram link is the only source weakened it.",
-  "judge_guidance": "A correct note must establish that the video shows no evidence of any Israel deployment — it is an ordinary US Army farewell clip with no stated destination, unit, or mention of Israel — so the 'dying for Israel' framing is unsupported by the footage. PASS if it makes this no-Israel-evidence point clearly (optionally noting the clip predates/circulates independently of any Israel context). FAIL if it instead hangs the correction on an unverifiable specific backstory (exact family, recruit name) as the original did, OR if it overreaches by asserting facts about the soldier's actual deployment it cannot support. The key is: nothing in the media supports the Israel claim. Do not claim the video is AI/fake — it is a real farewell clip.",
+  "why_note_decision": "The video is a generic, sentimental 'soldier says goodbye to family' clip (US Army uniform, airport pick-up/drop-off, 'God Bless Our Soldiers' overlay) with no connection to Israel \u2014 no Israel deployment, destination, or unit is shown or stated. The 'Time to die for Israel' caption is an unsupported inference imposed on unrelated footage. A note is warranted to flag that nothing in the video indicates an Israel deployment. The original note's MissingKeyPoints failure: it asserts a specific provenance (a Mexican-American family / US Army recruit / a specific Instagram reel) that is hard to verify and not load-bearing; the verifiable point is simply that the clip shows no Israel connection. Overstating an unverifiable origin while a single Instagram link is the only source weakened it.",
+  "judge_guidance": "A correct note must establish that the video shows no evidence of any Israel deployment \u2014 it is an ordinary US Army farewell clip with no stated destination, unit, or mention of Israel \u2014 so the 'dying for Israel' framing is unsupported by the footage. PASS if it makes this no-Israel-evidence point clearly (optionally noting the clip predates/circulates independently of any Israel context). FAIL if it instead hangs the correction on an unverifiable specific backstory (exact family, recruit name) as the original did, OR if it overreaches by asserting facts about the soldier's actual deployment it cannot support. The key is: nothing in the media supports the Israel claim. Do not claim the video is AI/fake \u2014 it is a real farewell clip.",
   "reference_note": "Nothing in this video indicates a deployment to Israel. It is an ordinary clip of a US Army soldier saying goodbye to family at an airport, with a generic 'God Bless Our Soldiers' overlay and no stated destination, unit, or mention of Israel. The 'dying for Israel' caption is an inference added to unrelated footage.",
-  "original_unhelpful_note": {"text": "The video originates from an Instagram post of a Mexican-American family saying goodbye to their US Army recruit son, with no mention of Israel or specific deployment there. https://www.instagram.com/reel/DVX_Cw4lUpf", "failure_reason": "MissingKeyPoints: relies on a specific, hard-to-verify backstory (Mexican-American family / particular Instagram reel) rather than the simple verifiable point that the footage shows no Israel connection. Single Instagram source; the ethnicity/recruit detail is not load-bearing and invites disputes.", "original_status": "CURRENTLY_RATED_NOT_HELPFUL"},
-  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "Misleading caption: generic US Army farewell footage with no Israel deployment evidence.", "sources_checked": ["https://www.instagram.com/reel/DVX_Cw4lUpf"], "notes": "Could not independently load the Instagram reel, but the media (US Army OCP uniform, airport, 'God Bless Our Soldiers' overlay) contains nothing tying it to Israel; the Israel framing is purely the caption."},
+  "original_unhelpful_note": {
+    "text": "The video originates from an Instagram post of a Mexican-American family saying goodbye to their US Army recruit son, with no mention of Israel or specific deployment there. https://www.instagram.com/reel/DVX_Cw4lUpf",
+    "failure_reason": "MissingKeyPoints: relies on a specific, hard-to-verify backstory (Mexican-American family / particular Instagram reel) rather than the simple verifiable point that the footage shows no Israel connection. Single Instagram source; the ethnicity/recruit detail is not load-bearing and invites disputes.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading caption: generic US Army farewell footage with no Israel deployment evidence.",
+    "sources_checked": [
+      "https://www.instagram.com/reel/DVX_Cw4lUpf"
+    ],
+    "notes": "Could not independently load the Instagram reel, but the media (US Army OCP uniform, airport, 'God Bless Our Soldiers' overlay) contains nothing tying it to Israel; the Israel framing is purely the caption."
+  },
   "media_reliability_flag": true,
   "media_confidence": "medium",
-  "importance": {"prominence": "medium", "lens_rationale": "579K impressions amid charged US-Israel-deployment discourse; flagging captions that impose false war narratives on apolitical footage reduces inflammatory misinformation."},
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "579K impressions amid charged US-Israel-deployment discourse; flagging captions that impose false war narratives on apolitical footage reduces inflammatory misinformation."
+  },
   "difficulty": "medium"
 }

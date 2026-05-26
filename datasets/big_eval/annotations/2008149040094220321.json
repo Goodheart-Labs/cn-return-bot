@@ -5,11 +5,13 @@
   "disagrees_with_provisional": false,
   "needs_note": "no",
   "no_note_reason": "accurate_reporting_contested",
-  "categories": ["scams_fraud_finance", "data_breach_security"],
+  "categories": [
+    "scams_fraud_finance"
+  ],
   "category_fit": "partial",
   "suggested_category": "data_breach_security",
   "tweet_summary": "Coin Bureau warns that Ledger suffered 'a new data breach' via its payment processor Global-e, exposing customers' personal information including names and contact details, citing investigator ZachXBT.",
-  "why_note_decision": "The tweet is substantially accurate reporting from a credible account. It correctly attributes the breach to third-party processor Global-e (not Ledger's own systems) and correctly describes the exposed data as names and contact details. It does NOT claim that crypto assets, recovery phrases, or payment credentials were exposed. The proposed note adds the true reassurance that no payment/crypto data was accessed — useful context, but it corrects nothing the tweet actually said. Because the tweet is accurate and already names Global-e, a note is not needed; raters split between notHelpfulMissingKeyPoints and notHelpfulNoteNotNeeded.",
+  "why_note_decision": "The tweet is substantially accurate reporting from a credible account. It correctly attributes the breach to third-party processor Global-e (not Ledger's own systems) and correctly describes the exposed data as names and contact details. It does NOT claim that crypto assets, recovery phrases, or payment credentials were exposed. The proposed note adds the true reassurance that no payment/crypto data was accessed \u2014 useful context, but it corrects nothing the tweet actually said. Because the tweet is accurate and already names Global-e, a note is not needed; raters split between notHelpfulMissingKeyPoints and notHelpfulNoteNotNeeded.",
   "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet accurately reports the January 2026 Ledger/Global-e breach: it correctly attributes it to third-party Global-e and correctly limits exposed data to names/contact info, without overclaiming crypto/recovery-phrase exposure. A note is not warranted. IF a note is written, it is acceptable ONLY if it is purely clarifying and consistent with the facts (breach was at Global-e, not Ledger's systems; only names/contact info exposed; no payment details, credentials, recovery phrases, or crypto assets affected). FAIL any note that denies the breach occurred, claims crypto/recovery phrases WERE exposed, or contradicts the (accurate) attribution to Global-e.",
   "reference_note": "",
   "original_unhelpful_note": {
@@ -20,14 +22,18 @@
   "fact_check": {
     "agrees_correction_needed": false,
     "claim_verdict": "true",
-    "sources_checked": ["https://www.bleepingcomputer.com/news/security/ledger-customers-impacted-by-third-party-global-e-data-breach/", "https://www.coindesk.com/markets/2026/01/05/crypto-wallet-firm-ledger-faces-data-breach-through-global-e-partner", "https://support.ledger.com/article/Global-e-Incident-to-Order-Data---January-2026"],
-    "notes": "Jan 2026: third-party processor Global-e was breached; Ledger's own systems unaffected. Exposed: customer names, emails, postal addresses, phone numbers for Ledger.com buyers. NOT exposed: payment info, credentials, recovery phrases, crypto assets. Coin Bureau's tweet accurately attributes the breach to Global-e and describes the data — it is correct reporting."
+    "sources_checked": [
+      "https://www.bleepingcomputer.com/news/security/ledger-customers-impacted-by-third-party-global-e-data-breach/",
+      "https://www.coindesk.com/markets/2026/01/05/crypto-wallet-firm-ledger-faces-data-breach-through-global-e-partner",
+      "https://support.ledger.com/article/Global-e-Incident-to-Order-Data---January-2026"
+    ],
+    "notes": "Jan 2026: third-party processor Global-e was breached; Ledger's own systems unaffected. Exposed: customer names, emails, postal addresses, phone numbers for Ledger.com buyers. NOT exposed: payment info, credentials, recovery phrases, crypto assets. Coin Bureau's tweet accurately attributes the breach to Global-e and describes the data \u2014 it is correct reporting."
   },
   "media_reliability_flag": false,
   "media_confidence": "high",
   "importance": {
     "prominence": "medium",
-    "lens_rationale": "197k impressions; accurate security reporting that helps users guard against phishing. A note here risks suppressing a legitimate warning — low priority but mild value in NOT over-noting accurate journalism."
+    "lens_rationale": "197k impressions; accurate security reporting that helps users guard against phishing. A note here risks suppressing a legitimate warning \u2014 low priority but mild value in NOT over-noting accurate journalism."
   },
   "difficulty": "medium"
 }

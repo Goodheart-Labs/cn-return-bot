@@ -1,20 +1,24 @@
 {
   "tweet_id": "2038670145497764304",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["ai_generated_media", "conspiracy_and_viral_hoax", "political_domestic"],
+  "categories": [
+    "ai_generated_media",
+    "conspiracy_and_viral_hoax",
+    "politics_and_policy"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "A 736k-follower account posts images purportedly showing Trump and Epstein with children, captioned 'These images are verified and in the Epstein files,' urging readers to spread them.",
   "why_note_decision": "A note is warranted. Multiple fact-checkers (Snopes, DW, Lead Stories, AFP-style checks) determined these Trump-Epstein-with-children images are AI-generated fakes, NOT part of the DOJ Epstein files. Tells include extra/missing fingers, Epstein's hair color wrong vs. a real 1997 photo, and Trump appearing older than in a genuine contemporaneous photo; reverse-image search found no trace before the Jan 30 2026 DOJ release, and the images trace to a Nov 2025 Spanish-language TikTok. Even a top reply links the Snopes debunk. The 'verified and in the Epstein files' claim is false and the post explicitly asks people to amplify it.",
-  "judge_guidance": "PASS only if the note states these specific Trump/Epstein-with-children images are NOT part of the released Epstein files and have been identified by fact-checkers as AI-generated / digitally fabricated, citing a loadable, on-point source (Snopes, DW, Lead Stories, or PBS coverage of the actual released photos). Strong notes mention concrete tells (AI hand artifacts; the images don't appear before the Jan 30 2026 DOJ release; they trace to a Nov 2025 TikTok). FAIL the original note's specific failure: ensure the cited URLs actually load and substantiate the AI-fake verdict rather than just asserting it (the original was rated notHelpfulSourcesMissingOrUnreliable). FAIL any note that treats the images as authentic, and FAIL any note that debunks them solely by appeal to the AI media description without an external fact-check — but note here external fact-checks DO support the AI-fake verdict, so a sourced debunk is correct.",
+  "judge_guidance": "PASS only if the note states these specific Trump/Epstein-with-children images are NOT part of the released Epstein files and have been identified by fact-checkers as AI-generated / digitally fabricated, citing a loadable, on-point source (Snopes, DW, Lead Stories, or PBS coverage of the actual released photos). Strong notes mention concrete tells (AI hand artifacts; the images don't appear before the Jan 30 2026 DOJ release; they trace to a Nov 2025 TikTok). FAIL the original note's specific failure: ensure the cited URLs actually load and substantiate the AI-fake verdict rather than just asserting it (the original was rated notHelpfulSourcesMissingOrUnreliable). FAIL any note that treats the images as authentic, and FAIL any note that debunks them solely by appeal to the AI media description without an external fact-check \u2014 but note here external fact-checks DO support the AI-fake verdict, so a sourced debunk is correct.",
   "reference_note": "These images are not part of the released Epstein files. Fact-checkers (Snopes, DW, Lead Stories) identified them as AI-generated fakes: they show AI artifacts (e.g. wrong number of fingers), do not appear anywhere before the January 30, 2026 DOJ release, and trace to a November 2025 TikTok account. Epstein's hair color and Trump's apparent age also don't match genuine 1997 photos. https://www.snopes.com/fact-check/photo-trump-epstein-children/ https://leadstories.com/hoax-alert/2026/03/fact-check-ai-generated-images-of-trump-and-epstein-with-young-girls.html",
   "original_unhelpful_note": {
     "text": "These images are not part of the Epstein files and have been identified as digitally manipulated or AI-generated fakes. Actual released photos do not include these.    https://www.snopes.com/fact-check/photo-trump-epstein-children/  https://www.dw.com/en/fact-check-ai-fakes-distort-claims-on-epstein-files/a-75798290  https://www.pbs.org/newshour/show/what-we-know-about-the-epstein-photos-released-by-democrats",
-    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (5) on a low-volume (9) note — verdict is correct and the Snopes/DW citations are appropriate, but it was flagged on sourcing reliability (possibly the DW slug or PBS link not resolving as cited, and the small rating pool). The substance is solid; the failure is citation reliability rather than the conclusion.",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (5) on a low-volume (9) note \u2014 verdict is correct and the Snopes/DW citations are appropriate, but it was flagged on sourcing reliability (possibly the DW slug or PBS link not resolving as cited, and the small rating pool). The substance is solid; the failure is citation reliability rather than the conclusion.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

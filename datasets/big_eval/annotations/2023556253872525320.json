@@ -5,16 +5,16 @@
   "disagrees_with_provisional": false,
   "needs_note": "no",
   "no_note_reason": "trivial_pedantry",
-  "categories": ["tech_business", "consumer_anecdote"],
+  "categories": [],
   "category_fit": "partial",
   "suggested_category": "personal_anecdote",
   "tweet_summary": "User shares a personal anecdote: his neighbor bought a Cybertruck this week because Tesla is 'gonna stop selling Autopilot' and he wanted to avoid the subscription.",
-  "why_note_decision": "This is a low-engagement (1750 likes) personal anecdote/observation, not a news claim. The tweet loosely conflates 'Autopilot' with 'FSD'; what Tesla actually ended Feb 14, 2026 is the one-time FSD purchase (Autopilot is becoming subscription-coupled too — Autosteer moved into FSD per Autobody News). The neighbor's behavior — buying before the subscription cutover — is consistent with reality even if the user said Autopilot instead of FSD. Note-not-needed; this is the wrong kind of pedantic correction for a casual personal anecdote, and the neighbor's underlying strategy isn't actually wrong.",
-  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a casual anecdote and the conflation of 'Autopilot' with 'FSD' is loose-language, not a misleading factual claim — Tesla did end one-time FSD purchases Feb 14, 2026, and is also restructuring Autopilot so this matches the spirit of the anecdote. FAIL any note that drily corrects 'Autopilot → FSD' on a personal-anecdote tweet; that's exactly the pedantry raters rejected. If the bot writes anything, it should at minimum NOT contradict the basic premise that buying before Feb 14 secured a one-time license.",
+  "why_note_decision": "This is a low-engagement (1750 likes) personal anecdote/observation, not a news claim. The tweet loosely conflates 'Autopilot' with 'FSD'; what Tesla actually ended Feb 14, 2026 is the one-time FSD purchase (Autopilot is becoming subscription-coupled too \u2014 Autosteer moved into FSD per Autobody News). The neighbor's behavior \u2014 buying before the subscription cutover \u2014 is consistent with reality even if the user said Autopilot instead of FSD. Note-not-needed; this is the wrong kind of pedantic correction for a casual personal anecdote, and the neighbor's underlying strategy isn't actually wrong.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a casual anecdote and the conflation of 'Autopilot' with 'FSD' is loose-language, not a misleading factual claim \u2014 Tesla did end one-time FSD purchases Feb 14, 2026, and is also restructuring Autopilot so this matches the spirit of the anecdote. FAIL any note that drily corrects 'Autopilot \u2192 FSD' on a personal-anecdote tweet; that's exactly the pedantry raters rejected. If the bot writes anything, it should at minimum NOT contradict the basic premise that buying before Feb 14 secured a one-time license.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "Tesla ended one-time Full Self-Driving (FSD) purchases Feb 14, 2026, not Autopilot. Buying after that date requires $99/month subscription, so the \"just in time\" claim to avoid fees is false. https://www.businessinsider.com/tesla-pulls-plug-on-one-time-purchases-of-fsd-2026-2",
-    "failure_reason": "Pedantic Autopilot/FSD swap on a casual anecdote; the 'just in time' framing isn't actually false — buying before Feb 14 did lock in one-time FSD.",
+    "failure_reason": "Pedantic Autopilot/FSD swap on a casual anecdote; the 'just in time' framing isn't actually false \u2014 buying before Feb 14 did lock in one-time FSD.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

@@ -1,16 +1,18 @@
 {
   "tweet_id": "2036832012753875118",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulIncorrect",
+  "provisional_role": "unhelpful_incorrect",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["scams_fraud_finance"],
+  "categories": [
+    "scams_fraud_finance"
+  ],
   "category_fit": "poor",
   "suggested_category": "retail_investor_personal_post",
   "tweet_summary": "A small AMC retail-investor account ('AMC 8.01 vet') posts a Chase-app screenshot of buying 103 shares of AMC for $101.56 at $0.99/share, captioned 'First time buying some shares on chase app #amc'.",
-  "why_note_decision": "No note is warranted. The screenshot is a straightforward AMC purchase confirmation: ticker AMC, AMC logo, 103 shares at $0.99 — consistent with AMC Entertainment trading near $1 in 2026 after its decline and reverse splits. The original note's claim that the ticker is 'AMCC, a delisted ticker for a different company' is contradicted by the OCR, which plainly shows 'amc'/'AMC'. There is no misleading public claim here — it is a personal post about buying a real, correctly-identified stock.",
-  "judge_guidance": "PASS only if the bot DECLINES to write a note. The screenshot shows a genuine AMC Entertainment (ticker AMC) purchase at ~$0.99/share, a plausible 2026 price for the distressed stock. FAIL any note asserting the screenshot is actually 'AMCC' or some other/delisted ticker (that is the original note's fabrication, contradicted by the on-image 'AMC' logo and text), or any note treating a low share price as inherently deceptive. The tweet makes no checkable misleading claim — it is a personal 'I bought shares' post — so writing any note is a false positive.",
+  "why_note_decision": "No note is warranted. The screenshot is a straightforward AMC purchase confirmation: ticker AMC, AMC logo, 103 shares at $0.99 \u2014 consistent with AMC Entertainment trading near $1 in 2026 after its decline and reverse splits. The original note's claim that the ticker is 'AMCC, a delisted ticker for a different company' is contradicted by the OCR, which plainly shows 'amc'/'AMC'. There is no misleading public claim here \u2014 it is a personal post about buying a real, correctly-identified stock.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The screenshot shows a genuine AMC Entertainment (ticker AMC) purchase at ~$0.99/share, a plausible 2026 price for the distressed stock. FAIL any note asserting the screenshot is actually 'AMCC' or some other/delisted ticker (that is the original note's fabrication, contradicted by the on-image 'AMC' logo and text), or any note treating a low share price as inherently deceptive. The tweet makes no checkable misleading claim \u2014 it is a personal 'I bought shares' post \u2014 so writing any note is a false positive.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "The screenshot confirms a purchase of AMCC shares, not AMC Entertainment (ticker AMC); AMCC is a delisted ticker for a different company. https://finance.yahoo.com/quote/AMC https://www.gurufocus.com/stock/US0229/summary",

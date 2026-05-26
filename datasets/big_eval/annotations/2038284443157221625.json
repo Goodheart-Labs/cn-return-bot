@@ -1,21 +1,40 @@
 {
   "tweet_id": "2038284443157221625",
   "role": "no_note_needed",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": true,
   "needs_note": "no",
   "no_note_reason": "accurate_reporting_contested",
-  "categories": ["celebrity_entertainment_sports", "misattributed_or_miscontextualized_media"],
+  "categories": [
+    "celebrity_entertainment_sports",
+    "misattributed_or_miscontextualized_media"
+  ],
   "category_fit": "partial",
   "suggested_category": "historical_reenactment_account",
   "tweet_summary": "The account '2001 Live' (a known historical live-posting/reenactment account that narrates past events in present tense) posts that 12-year-old Star Wars actor Jake Lloyd is 'retiring from acting forever' due to nonstop harassment, death threats, and explicit messages from adult fans.",
-  "why_note_decision": "This is a historical-reenactment post (the account explicitly 'live-posts as a reporter embedded in history'; companions @50YearsAgoLive, @100YearsAgoLive) reporting Lloyd's ~2001 departure from acting in period voice. The harassment/death-threats framing reflects what Jake Lloyd HIMSELF stated (he attributed quitting to bullying and harassment over the role) and the death threats are documented as real. The original note 'corrects' this with his mother's 2024 account (family issues + later schizophrenia diagnosis), but that is a single, contested secondary perspective offered years later, not a debunking of a false claim — both narratives are reported. Correcting accurately-reported, era-appropriate content with a contested counter-narrative is a false positive. The near-tie of MissingKeyPoints (37) and NoteNotNeeded (35) supports declining.",
-  "judge_guidance": "PASS only if the bot declines to write a note. The post is from a historical-reenactment account narrating Jake Lloyd's circa-2001 retirement, and its harassment/death-threats framing matches Lloyd's own public statements and documented death threats. His mother's 2024 family-issues/schizophrenia account is a contested later perspective, not a debunk, so 'correcting' the post imposes one disputed narrative over another — a false positive. FAIL if the bot writes a note asserting the retirement was definitively due to family/schizophrenia and NOT harassment, since that overstates a contested secondary source. If a note is written at all, it could only be acceptable if it neutrally notes the account is a historical-reenactment account, but no factual correction is warranted.",
+  "why_note_decision": "This is a historical-reenactment post (the account explicitly 'live-posts as a reporter embedded in history'; companions @50YearsAgoLive, @100YearsAgoLive) reporting Lloyd's ~2001 departure from acting in period voice. The harassment/death-threats framing reflects what Jake Lloyd HIMSELF stated (he attributed quitting to bullying and harassment over the role) and the death threats are documented as real. The original note 'corrects' this with his mother's 2024 account (family issues + later schizophrenia diagnosis), but that is a single, contested secondary perspective offered years later, not a debunking of a false claim \u2014 both narratives are reported. Correcting accurately-reported, era-appropriate content with a contested counter-narrative is a false positive. The near-tie of MissingKeyPoints (37) and NoteNotNeeded (35) supports declining.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The post is from a historical-reenactment account narrating Jake Lloyd's circa-2001 retirement, and its harassment/death-threats framing matches Lloyd's own public statements and documented death threats. His mother's 2024 family-issues/schizophrenia account is a contested later perspective, not a debunk, so 'correcting' the post imposes one disputed narrative over another \u2014 a false positive. FAIL if the bot writes a note asserting the retirement was definitively due to family/schizophrenia and NOT harassment, since that overstates a contested secondary source. If a note is written at all, it could only be acceptable if it neutrally notes the account is a historical-reenactment account, but no factual correction is warranted.",
   "reference_note": "",
-  "original_unhelpful_note": {"text": "Jake Lloyd’s mother clarified in 2024 that his 2001 retirement was due to family issues and a later schizophrenia diagnosis, not fan harassment. She stated she shielded him from online backlash and he was unaware of the criticism at the time. https://deadline.com/2024/03/mother-star-wars-child-actor-jake-lloyd-update-health-quit-acting-the-phantom-menace-1235856879", "failure_reason": "NoteNotNeeded/contested: 'corrects' a historical-reenactment post with a single contested 2024 secondary account (the mother's), while Lloyd himself attributed quitting to harassment and the death threats are documented. Imposes one disputed narrative as fact.", "original_status": "CURRENTLY_RATED_NOT_HELPFUL"},
-  "fact_check": {"agrees_correction_needed": false, "claim_verdict": "Contested/largely accurate: Lloyd's retirement is real; he attributed it to bullying/harassment, death threats documented; mother's 2024 family-issues account is a disputed alternative, not a debunk.", "sources_checked": ["https://en.wikipedia.org/wiki/Jake_Lloyd", "https://www.avclub.com/jake-lloyd-anakin-quit-acting-over-star-wars-1851332829", "https://www.slashfilm.com/1537039/real-reason-star-wars-actor-jake-lloyd-quit-acting/"], "notes": "Account is a historical-reenactment LARP (@MannyMarotta). Lloyd (2012) cited bullying/harassment; mother (2024) cited family separation; both reported. No clear falsehood to correct."},
+  "original_unhelpful_note": {
+    "text": "Jake Lloyd\u2019s mother clarified in 2024 that his 2001 retirement was due to family issues and a later schizophrenia diagnosis, not fan harassment. She stated she shielded him from online backlash and he was unaware of the criticism at the time. https://deadline.com/2024/03/mother-star-wars-child-actor-jake-lloyd-update-health-quit-acting-the-phantom-menace-1235856879",
+    "failure_reason": "NoteNotNeeded/contested: 'corrects' a historical-reenactment post with a single contested 2024 secondary account (the mother's), while Lloyd himself attributed quitting to harassment and the death threats are documented. Imposes one disputed narrative as fact.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Contested/largely accurate: Lloyd's retirement is real; he attributed it to bullying/harassment, death threats documented; mother's 2024 family-issues account is a disputed alternative, not a debunk.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Jake_Lloyd",
+      "https://www.avclub.com/jake-lloyd-anakin-quit-acting-over-star-wars-1851332829",
+      "https://www.slashfilm.com/1537039/real-reason-star-wars-actor-jake-lloyd-quit-acting/"
+    ],
+    "notes": "Account is a historical-reenactment LARP (@MannyMarotta). Lloyd (2012) cited bullying/harassment; mother (2024) cited family separation; both reported. No clear falsehood to correct."
+  },
   "media_reliability_flag": false,
   "media_confidence": "high",
-  "importance": {"prominence": "medium", "lens_rationale": "265K impressions; low real-world stakes celebrity-history post, and noting an account is a reenactment/LARP is not a correction-worthy public-interest harm."},
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "265K impressions; low real-world stakes celebrity-history post, and noting an account is a reenactment/LARP is not a correction-worthy public-interest harm."
+  },
   "difficulty": "hard"
 }

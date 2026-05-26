@@ -5,16 +5,16 @@
   "disagrees_with_provisional": false,
   "needs_note": "no",
   "no_note_reason": "true_claim",
-  "categories": ["tech_business", "branding"],
+  "categories": [],
   "category_fit": "partial",
   "suggested_category": "tech_branding",
   "tweet_summary": "Tweet mocks Microsoft for renaming Microsoft Office to 'Microsoft 365 Copilot App', shown by a Microsoft promo graphic that literally says 'Microsoft 365 Copilot app (formerly Office)'.",
-  "why_note_decision": "The tweet's framing tracks Microsoft's own promotional copy, which explicitly reads 'Microsoft 365 Copilot app (formerly Office)'. Microsoft did rename the hub app and is using 'formerly Office' as the descriptor. The note's quibble — that the underlying Word/Excel/PowerPoint apps still individually carry the Office name — is technically true but doesn't make the tweet wrong; the tweet is reacting to Microsoft's own branding. With ~174 rating volume and 56 'note not needed' tags, raters were correct to dismiss the note. This is a branding/opinion area where there's no clean misinfo to correct.",
-  "judge_guidance": "PASS only if the bot declines to write a note. Microsoft's own product page reads 'Microsoft 365 Copilot app (formerly Office)' — the tweet is responding to Microsoft's branding, not fabricating it. FAIL any note that 'corrects' the tweet by saying Word/Excel/PowerPoint keep the Office name (true but doesn't refute the tweet, since the tweet is about the hub app Microsoft itself relabeled). FAIL any note claiming the rename didn't happen.",
+  "why_note_decision": "The tweet's framing tracks Microsoft's own promotional copy, which explicitly reads 'Microsoft 365 Copilot app (formerly Office)'. Microsoft did rename the hub app and is using 'formerly Office' as the descriptor. The note's quibble \u2014 that the underlying Word/Excel/PowerPoint apps still individually carry the Office name \u2014 is technically true but doesn't make the tweet wrong; the tweet is reacting to Microsoft's own branding. With ~174 rating volume and 56 'note not needed' tags, raters were correct to dismiss the note. This is a branding/opinion area where there's no clean misinfo to correct.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Microsoft's own product page reads 'Microsoft 365 Copilot app (formerly Office)' \u2014 the tweet is responding to Microsoft's branding, not fabricating it. FAIL any note that 'corrects' the tweet by saying Word/Excel/PowerPoint keep the Office name (true but doesn't refute the tweet, since the tweet is about the hub app Microsoft itself relabeled). FAIL any note claiming the rename didn't happen.",
   "reference_note": "",
   "original_unhelpful_note": {
     "text": "Microsoft renamed the \"Microsoft 365 app\" (a productivity hub) to \"Microsoft 365 Copilot App\" - not Microsoft Office itself. The core Office suite (Word, Excel, PowerPoint) keeps the Microsoft Office name. https://support.microsoft.com/en-us/office/the-microsoft-365-app-transition-to-the-microsoft-365-copilot-app-22eac811-08d6-4df3-92dd-77f193e354a5",
-    "failure_reason": "Technically-true pedantry — Microsoft's own promo says 'formerly Office', so the tweet's framing matches Microsoft's branding. Note is note-not-needed.",
+    "failure_reason": "Technically-true pedantry \u2014 Microsoft's own promo says 'formerly Office', so the tweet's framing matches Microsoft's branding. Note is note-not-needed.",
     "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
   },
   "fact_check": {

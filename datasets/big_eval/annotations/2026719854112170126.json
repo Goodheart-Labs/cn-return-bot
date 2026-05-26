@@ -1,11 +1,13 @@
 {
   "tweet_id": "2026719854112170126",
-  "role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
-  "provisional_role": "unhelpful_notHelpfulSourcesMissingOrUnreliable",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["conspiracy_and_viral_hoax"],
+  "categories": [
+    "conspiracy_and_viral_hoax"
+  ],
   "category_fit": "partial",
   "suggested_category": "viral_lifehack_misinformation",
   "tweet_summary": "Claims that if someone with Ray-Ban (Meta) smart glasses is recording you, holding up a picture of the ISIS flag to their glasses will 'permanently ban their account almost immediately.'",

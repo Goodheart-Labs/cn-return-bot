@@ -1,11 +1,14 @@
 {
   "tweet_id": "2053729192034943140",
-  "role": "unhelpful_notHelpfulMissingKeyPoints",
-  "provisional_role": "unhelpful_notHelpfulMissingKeyPoints",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
   "disagrees_with_provisional": false,
   "needs_note": "yes",
   "no_note_reason": "",
-  "categories": ["politics_and_policy", "breaking_news_and_war"],
+  "categories": [
+    "politics_and_policy",
+    "breaking_news_and_war"
+  ],
   "category_fit": "good",
   "suggested_category": "",
   "tweet_summary": "A clip (a Chelsea Handler roast bit) saying 'now that your favorite leader is making the draft mandatory, I assume all of you will be signing up to go fight in Iran,' reposted approvingly ('Brutal.') as a real political point.",
