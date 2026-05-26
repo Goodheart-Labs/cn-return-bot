@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2015108074080809189",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "use_of_force_law_enforcement",
+  "tweet_summary": "Border Patrol Union (NBPC) tweet defending Border Patrol agents in the Jan 24 2026 Minneapolis shooting of Alex Pretti, asserting he was a 'supposed peaceful protester' who brought a loaded handgun and 'brandished it,' justifying the shooting.",
+  "why_note_decision": "The brandishing claim is materially disputed. NPR, eyewitnesses, and the Minneapolis Wikipedia article report that videos do NOT clearly show Pretti holding or brandishing a firearm — they show him recording with a phone, being pepper-sprayed, and being wrestled to the ground by ~6 agents before being shot ~10 times; one agent removed a handgun from his waistband before shots were fired. Trump and DHS officials say he was armed; the videos and eyewitness accounts contradict the 'brandished' framing. So the tweet's factual core ('brandished') is contested by direct video evidence, and a correct note is warranted. The original note FAILS this: it parrots the DHS account ('DHS confirmed… which he brandished') without surfacing the contradicting video evidence, and adds the body count of shots — making it neither a useful correction nor a useful confirmation. Many raters tagged it Incorrect (111), SourcesMissingOrUnreliable (91), MissingKeyPoints (97) — the note doesn't pass the test from EITHER direction.",
+  "judge_guidance": "PASS the bot's note ONLY if it (a) flags that the 'brandished' framing is contested by available video and eyewitnesses (NPR coverage and the Wikipedia entry on the Jan 24 2026 Minneapolis ICE shooting are good anchors), (b) notes that an agent removed the holstered firearm from Pretti before shots were fired (per CNN/NPR/witness accounts), and (c) avoids endorsing either side as conclusively established. FAIL notes that simply restate DHS's claim that he 'brandished' a weapon (that's repeating the disputed assertion). FAIL notes that omit the video-contradiction entirely. FAIL notes that read as one-sided invective against Border Patrol. A correct note is bridging and source-anchored, not a re-litigation.",
+  "reference_note": "Multiple videos and eyewitnesses (per NPR, CNN) contradict the Border Patrol Union's claim that Alex Pretti, the 37-year-old VA nurse killed Jan 24 2026, 'brandished' his firearm. Witnesses describe him recording on a phone; an agent is shown removing the handgun from his waistband before shots were fired. The DOJ and DHS investigation is ongoing. https://www.npr.org/2026/01/25/nx-s1-5687875/minneapolis-shooting-minnesota-ice-alex-pretti-dhs-investigation https://en.wikipedia.org/wiki/January_24,_2026,_ICE_shooting_in_Minneapolis",
+  "original_unhelpful_note": {
+    "text": "DHS confirmed the man was armed with a gun and two magazines, which he brandished. Video shows agents wrestling him to the ground, an agent hitting him three times with a firearm, then firing over 10 shots. He died from his injuries. https://minnesotareformer.com/2026/01/24/another-minnesotan-shot-and-killed-by-feds https://www.foxnews.com/us/border-patrol-involved-shooting-reported-minneapolis https://wtip.org/third-shooting-by-ice-agents-in-as-many-weeks-leaves-man-dead-in-minneapolis https://nypost.com/2026/01/24/us-news/shots-fired-after-police-in-minneapolis-struggle-to-subdue-man-brandishing-gun-amid-protests-video-shows",
+    "failure_reason": "Missing key points / leans on disputed source: repeats DHS's contested 'brandished' claim as established fact, then adds graphic detail of shots without surfacing that video evidence and eyewitnesses contradict the brandishing narrative. Reads as both biased and incorrect to different raters — high split tagging across Incorrect/SourcesMissing/MissingKeyPoints/NoteNotNeeded.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "contested_use_of_force",
+    "sources_checked": [
+      "https://www.npr.org/2026/01/25/nx-s1-5687875/minneapolis-shooting-minnesota-ice-alex-pretti-dhs-investigation",
+      "https://en.wikipedia.org/wiki/January_24,_2026,_ICE_shooting_in_Minneapolis",
+      "https://www.cnn.com/us/live-news/ice-minneapolis-shooting-01-24-26"
+    ],
+    "notes": "NPR and Wikipedia: videos and eyewitnesses dispute the federal account; an agent removed a holstered handgun before shots; Pretti was recording. DHS/Trump assert he was armed. The Border Patrol Union's 'brandished' is the disputed framing."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Fatal use of force by federal agents on a US citizen during protests; matters for rule-of-law and accountability."
+  },
+  "difficulty": "hard"
+}

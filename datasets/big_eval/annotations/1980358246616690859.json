@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1980358246616690859",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tech YouTuber JerryRigEverything posts a photo of the White House East Wing being demolished (excavator visible) with the rhetorical caption 'Can you imagine if Biden or Obama started demolishing the Whitehouse? Wtf.'",
+  "why_note_decision": "The East Wing demolition for Trump's planned ballroom is real and well-documented (NPR, PBS, AP, ABC; began Oct 20 2025; $250M project funded by donors). The author is sharing a real event with a rhetorical/opinion framing ('imagine if'). It's not a false claim — it's a political opinion that the demolition is objectionable and would have been treated differently under a Democratic president. The original note tries to add context (it's not the Executive Residence, wasn't Biden/Obama) but the tweet doesn't actually say it was — it asks a counterfactual.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an opinion/rhetorical comparison about a real, undisputed event (the East Wing demolition for Trump's ballroom, which is widely covered and started Oct 20 2025). It makes no factual claim that needs correcting — the 'Biden or Obama' framing is a counterfactual rhetoric device, not an assertion of fact. Any note explaining the demolition is for a ballroom and not Biden/Obama-initiated is correcting a claim the tweet doesn't make.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "On Oct 20, 2025, crews began demolishing part of the White House East Wing to make way for a new ballroom proposed by President Trump and announced by the White House in July. It is not the Executive Residence and wasn't initiated by Biden or Obama.  https://apnews.com/article/a3efb2973d4d4e45f98b02e55210c538  https://www.whitehouse.gov/briefings-statements/2025/07/the-white-house-announces-white-house-ballroom-construction-to-begin/",
+    "failure_reason": "noteNotNeeded — adds context to an opinion/rhetorical tweet that doesn't make a false factual claim; the demolition is real, the author isn't disputing it.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is opinion/rhetoric on a real event (East Wing demolition for ballroom, Oct 20 2025).",
+    "sources_checked": [
+      "https://www.npr.org/2025/10/20/g-s1-94315/white-house-demolishing-east-wing-trump-ballroom",
+      "https://www.pbs.org/newshour/politics/photos-white-house-starts-east-wing-demolition-to-build-trumps-ballroom"
+    ],
+    "notes": "Real ongoing demolition; tweet is political commentary."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Author has 946k followers, 395k impressions; getting the 'don't add unrequested context to political opinion' instinct right matters for trust."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1974888277124812882",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "viral_clip_caption_accurate",
+  "tweet_summary": "Crime Net (1.28M-follower viral-video account) shares a 20-second video showing two women filming a mirror selfie in a Brooklyn mall restroom when an Orthodox Jewish man in shtreimel and long coat walks past them, washes his hands at the sink and exits. Caption: 'A man was caught using the woman's bathroom at a shopping center in Brooklyn.' 24M impressions, 113k likes.",
+  "why_note_decision": "Lead Stories/NewsBreak/Chicago Music Guide all confirm the underlying event: a viral TikTok shared by Brooklyn influencer @maria_violet_b on Sept 27 2025 showing an Orthodox Jewish man accidentally in a women's restroom. The original note's substantive facts (TikTok origin Sept 27 2025, Brooklyn, Orthodox Jewish attire) are correct, but two problems: (1) the claim 'he apologized and left immediately' is not in the linked NewsBreak source, which only describes him washing hands and leaving — adding 'apologized' is unsupported, (2) the tweet's caption is straightforwardly accurate; no correction is warranted. Community rating: 38 noteNotNeeded, 31 missingKeyPoints — overwhelmingly rejecting the note. The note also reads as defensive context that doesn't dispute the tweet.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the tweet's factual description ('a man was caught using the women's bathroom at a Brooklyn shopping center') matches what the video shows and what reporting confirms; there is no claim in the tweet that needs correcting. FAIL any note that: (a) introduces the 'he apologized and left immediately' framing without sourcing (the original note's NewsBreak source does not contain that detail and this is a hallucination/embellishment), (b) repeats the original failure of writing exculpatory context as if it were a correction, (c) lectures about not assuming malice — the bot's job is fact-checking, not moralizing about ambiguous viral clips. If the bot has no claim to refute, it must decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video was originally posted on TikTok on September 27, 2025. It shows a man in traditional Jewish attire using a women's restroom in Brooklyn. Upon being informed, he apologized and left immediately.    https://www.newsbreak.com/news/4260281923556-brooklyn-influencer-films-orthodox-jewish-man-walking-out-of-women-s-restroom-in-viral-clip    https://www.reddit.com/x/comments/1nq4jjb/ladies_how_would_you_react_to_this/",
+    "failure_reason": "note_not_needed — the tweet's caption is accurate; the only added 'context' is unsourced ('he apologized') and defensive in tone. Community correctly rated this NOT_HELPFUL.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_caption_matches_reporting",
+    "sources_checked": [
+      "https://www.newsbreak.com/news/4260281923556-brooklyn-influencer-films-orthodox-jewish-man-walking-out-of-women-s-restroom-in-viral-clip",
+      "https://thenerdstash.com/new-york-influencer-films-orthodox-jewish-man-in-ladies-restrooms"
+    ],
+    "notes": "Reporting confirms: Sept 27 2025 TikTok, Brooklyn mall, Orthodox Jewish man in shtreimel, walked into women's bathroom. Reporting does NOT confirm 'he apologized and left immediately' — sources only describe him washing his hands and leaving. The 'apology' detail in the original note appears to be embellishment/hallucination."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "24M impressions on viral incident that drew antisemitic top-comments. Bot's job here is restraint: not every viral clip needs a context note, especially when the original-tweet caption is factually accurate."
+  },
+  "difficulty": "medium"
+}

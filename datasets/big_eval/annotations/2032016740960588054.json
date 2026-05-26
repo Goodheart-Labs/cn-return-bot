@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2032016740960588054",
+  "role": "unhelpful_argumentative_or_biased",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "The official Iran Embassy in South Africa account claims the attack on Oman's oil facilities was 'a false flag operation' and 'Iran had no role in it.'",
+  "why_note_decision": "Multiple independent outlets — Reuters, Bloomberg, CNN, Al Jazeera, OilPrice, energy press — attribute the Mar 11 2026 Salalah port drone strike to Iranian Shahed-136 drones, with eyewitness video from a nearby Chinese cargo ship capturing the impact. The GCC secretary-general condemned Iran for it. The tweet is official-state denial of a well-evidenced attack and deserves a correction so readers see the corroborated attribution.",
+  "judge_guidance": "PASS if the note clearly states Iran has been identified by multiple independent sources (Reuters, Bloomberg, GCC) as the attacker, citing eyewitness video and Iranian Shahed-136 drone identification, and does NOT just say 'Iran denies it' as a both-sides framing. FAIL if the note hedges as the original did ('Iran denies and calls it a false flag' as the closing line) without contradicting the false-flag claim against the strong evidence trail. Must avoid the original's weakness of giving Iran's denial equal billing with documented attribution.",
+  "reference_note": "Reuters, Bloomberg and CNN report Iranian Shahed-136 drones struck Oman's Salalah port oil tanks on Mar 11 2026, with eyewitness footage from a nearby ship and the GCC condemning Iran. There is no published evidence supporting the 'false flag' claim. https://www.reuters.com/world/middle-east/oil-storage-facilities-hit-omans-salalah-port-ambrey-state-tv-say-2026-03-11 https://www.aljazeera.com/video/newsfeed/2026/3/11/ship-crew-film-drone-strike-on-oil-facility-at-omans-salalah-port",
+  "original_unhelpful_note": {
+    "text": "Drone strikes hit oil storage facilities at Oman's Salalah port on March 11, 2026, causing fires. Reports attribute the attack to Iranian drones amid the regional conflict. Iran denies involvement and calls it a false flag.    https://www.reuters.com/world/middle-east/oil-storage-facilities-hit-omans-salalah-port-ambrey-state-tv-say-2026-03-11    https://www.aljazeera.com/video/newsfeed/2026/3/11/oil-facilities-in-omans-salalah-port-ablaze-after-drone-strikes    https://www.jpost.com/middle-east/iran-news/article-889778",
+    "failure_reason": "argumentativeOrBiased / missingKeyPoints — gives Iran's denial equal billing and ends on it, instead of clearly correcting the false-flag claim with the eyewitness-video + GCC-condemnation evidence.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False. Multiple independent sources attribute the strike to Iranian Shahed-136 drones; eyewitness ship video captured the impact; GCC condemned Iran.",
+    "sources_checked": [
+      "https://www.aljazeera.com/video/newsfeed/2026/3/11/ship-crew-film-drone-strike-on-oil-facility-at-omans-salalah-port",
+      "https://oilprice.com/Latest-Energy-News/World-News/Iranian-Drone-Strike-Hits-Omans-Largest-Oil-Storage-Facility.html",
+      "https://www.bloomberg.com/news/articles/2026-03-11/operations-suspended-at-oman-port-as-drones-hit-fuel-tanks"
+    ],
+    "notes": "Iranian Shahed drones identified; ship-crew eyewitness footage published; GCC blamed Iran. The 'false flag' claim has no published supporting evidence."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "851k impressions on an official-state-account denial during active war; correcting Iranian state propaganda is exactly the high-stakes use case."
+  },
+  "difficulty": "medium"
+}

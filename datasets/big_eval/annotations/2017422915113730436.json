@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2017422915113730436",
+  "role": "unhelpful_hard_to_understand",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "manipulated_or_fabricated_evidence"],
+  "category_fit": "partial",
+  "suggested_category": "epstein_files",
+  "tweet_summary": "War Monitor (1.3M followers, 3.3M views) posts a screenshot of a 4/24/2009 email from Jeffrey Epstein to a redacted recipient saying 'where are you? are you ok, I loved the torture video,' captioned 'RELEASE THE NAME OF THIS SENDER!' — but the sender is already visible in the image (Epstein); the recipient is what's redacted.",
+  "why_note_decision": "The tweet is confused about which party is redacted, and the confusion is going viral. Top replies all say variants of 'the sender IS visible — it's Epstein. The recipient is redacted.' This is a checkable misframing on a high-impact Epstein-files thread, so a note is warranted. The original note correctly clarifies that the sender is Epstein and recipient is redacted — substantively right. It was rated NOT_HELPFUL likely because (a) it doesn't address that everyone already knows this from the comments and (b) raters thought 'release the name' might be shorthand for 'release the recipient's name,' making the note pedantic. As of the tweet date (Jan 31 2026) the recipient's identity had not been publicly confirmed; on Feb 9–12 2026 reporting (CNBC, Snopes, Newsweek) identified the recipient as Sultan Ahmed bin Sulayem of DP World. A correct note today should clarify which party is hidden AND name Sulayem.",
+  "judge_guidance": "PASS the note ONLY if it (a) clarifies that the visible sender in the screenshot IS Jeffrey Epstein and that the RECIPIENT is what is redacted (since the tweet implies the opposite), and (b) — for top marks — notes that the recipient was subsequently identified in February 2026 reporting (CNBC/Snopes/Newsweek/Yahoo) as Dubai-based businessman Sultan Ahmed bin Sulayem (DP World), per Rep. Thomas Massie and Deputy AG Todd Blanche. FAIL notes that endorse the tweet's framing as if the sender were hidden. FAIL notes that cite only courtlistener / documentcloud and don't engage the actual confusion. FAIL notes that speculate the recipient is some unverified figure (e.g. Podesta) — only Sulayem is the confirmed identification.",
+  "reference_note": "The screenshot shows the sender (Jeffrey Epstein) — it is the RECIPIENT that's redacted. Reporting from Feb 2026 identified the recipient as Sultan Ahmed bin Sulayem, chairman of Dubai-based DP World, per Rep. Thomas Massie and Deputy AG Todd Blanche. https://www.snopes.com/fact-check/epstein-torture-email-sultan/ https://www.cnbc.com/2026/02/12/epstein-files-sultan-ahmed-bin-sulayem-dp-world-email-dubai-uae-emirati.html",
+  "original_unhelpful_note": {
+    "text": "In the image from Epstein-related court filings, the sender is Jeffrey Epstein (visible in \"From:\"). The recipient is redacted and not identified in public versions of the document. Sources: https://www.courtlistener.com/docket/4355835/giuffre-v-maxwell/ https://www.documentcloud.org/documents/6250471-Epstein-Flight-Logs-Lolita-Express",
+    "failure_reason": "Hard to understand / missing key points: substantively correct at the time of writing, but the sources are unrelated dockets (Giuffre-v-Maxwell, flight logs) that don't show this specific email, and the note doesn't surface the later (Feb 2026) identification of Sulayem. NoteNotNeeded was the dominant tag because raters thought the clarification was obvious.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "real_email_misframed_by_tweet",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/epstein-torture-email-sultan/",
+      "https://www.cnbc.com/2026/02/12/epstein-files-sultan-ahmed-bin-sulayem-dp-world-email-dubai-uae-emirati.html",
+      "https://www.newsweek.com/sultan-ahmed-bin-sulayem-epstein-files-massie-torture-video-email-11494204",
+      "https://newrepublic.com/post/206396/justice-department-uae-sultan-epstein-email-torture-video"
+    ],
+    "notes": "Email is real; sender = Epstein (visible); redacted recipient was identified Feb 9–12 2026 as Sultan Ahmed bin Sulayem (DP World) — confirmed by Deputy AG Todd Blanche after Rep. Massie's identification."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Epstein-files reporting is high-attention; clarifying who said what to whom matters for the accuracy of public discourse about ongoing investigations."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1994804189479014911",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "PhD geneticist Ian Copeland warns 'Cancer is not treatable with natural remedies. If you are diagnosed with ANY cancer and refuse surgery, chemotherapy, radiation and/or immunotherapy YOU WILL DIE!!!' — quote-styled around a news headline about Kate Shemirani-influenced chemo refusal.",
+  "why_note_decision": "The tweet's core message — refusing evidence-based treatment for most cancers dramatically increases mortality — is well-supported by oncology literature. The CN note tries to add nuance ('some low-risk cancers like prostate can be managed with active surveillance under medical guidance') — but that's a minor caveat to a public-health message warning against herbalist quackery in the context of Paloma Shemirani's death. The author's heated phrasing ('YOU WILL DIE') is rhetorical overreach but the broader claim is true. Note Not Needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's core public-health message (refusing evidence-based cancer treatment massively raises mortality) is accurate and contextually responsive to a Paloma-Shemirani-style chemo-refusal tragedy. A note pedantically adding 'active surveillance is sometimes appropriate for prostate cancer' undermines a correct anti-quackery message during a moment when alt-med influencers are causing real deaths.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Natural remedies not proven to cure cancer. Refusing conventional treatments increases mortality risk for most cancers, but some low-risk types (e.g., prostate) can be managed with active surveillance under medical guidance.",
+    "failure_reason": "Note agrees with the tweet's main point and adds a minor caveat (active surveillance for low-risk prostate cancer) that's irrelevant to the tweet's anti-quackery message. Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's anti-quack public-health claim is correct in substance; rhetorical overstatement ('YOU WILL DIE') doesn't constitute misinformation.",
+    "sources_checked": [
+      "https://www.mayoclinic.org/tests-procedures/cancer-treatment/in-depth/cancer-treatment/art-20047246",
+      "https://www.cancer.org/cancer/types/prostate-cancer/treating/watchful-waiting.html",
+      "https://www.mskcc.org/news/truth-behind-three-natural-cures"
+    ],
+    "notes": "Headline in image refers to the Shemirani case (Paloma Shemirani died after refusing chemo, influenced by her conspiracy-theorist mother Kate)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Anti-quackery public-health message during a high-profile alt-med tragedy; aligns with epistemic-progress / harm-reduction concerns."
+  },
+  "difficulty": "medium"
+}

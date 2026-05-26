@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2027410240707166549",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "The Panthers' official account shares a Simulcam broadcast clip from the 2026 NFL Combine show on NFL Network comparing Jimmy Horn Jr.'s and Xavier Legette's past 40-yard-dash times, captioned 'Who you got in a race? 2026 combine on @nflnetwork'.",
+  "why_note_decision": "Nothing misleading. The 2026 Combine broadcast genuinely featured Simulcam segments using prospects' and current players' archived 40 times (confirmed by NFL.com Simulcam segments including Rich Eisen and a defensive drill simulcam during the 2026 Combine). Comments make clear viewers understand they're seeing Horn's 4.46 from 2025 and Legette's 4.39 from 2024 visualized on the 2026 broadcast. The note pedantically asserts these are not 'from' the 2026 Combine — technically true but the Panthers never claimed the runs themselves happened in 2026; they're pointing to the 2026 broadcast where the Simulcam aired.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive: the Panthers' tweet does not falsely claim the runs occurred at the 2026 Combine, only that the Simulcam aired on the 2026 Combine broadcast (which is true). A note explaining the prior combine years is unnecessary trivia and rated notHelpfulNoteNotNeeded by the community.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This footage is not from the 2026 NFL Combine, which is only for draft-eligible college players; Jimmy Horn Jr. and Xavier Legette are current NFL players who previously ran at the 2024 and 2025 Combines, respectively.",
+    "failure_reason": "trivial_pedantry: corrects an implied claim the tweet does not actually make; community labeled notHelpfulNoteNotNeeded",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet is accurate as posted; Simulcam segments comparing current/past players aired during the 2026 NFL Combine broadcast",
+    "sources_checked": [
+      "https://www.nfl.com/videos/simulcam-rich-eisen-s-40-yard-dash-vs-notable-prospects-from-2026-nfl-scouting-combine",
+      "https://www.nfl.com/videos/simulcam-best-moments-at-2026-combine",
+      "https://en.wikipedia.org/wiki/Jimmy_Horn_Jr."
+    ],
+    "notes": "Horn ran 4.46 at the 2025 Combine, Legette 4.39 at 2024. The Panthers' caption refers to the 2026 broadcast — viewers understand this."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "sports broadcast trivia; no EA/progress/safety stakes"},
+  "difficulty": "easy"
+}

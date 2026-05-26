@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1997402399212806495",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "QRT joke about a clip from the animated Madagascar film, in which (Adelie/Antarctic) penguins are being shipped in a crate labeled 'Kenya Wildlife Preserve, Africa.' The poster jokes 'they were gonna send penguins to fucking Africa lol.'",
+  "why_note_decision": "Pure joke about an animated movie. The QRT is humor reacting to a fictional cartoon scene, not a factual claim about real penguins or geography. Plenty of replies (including the top reply) already make the same well-actually point that African penguins exist in South Africa, and that the Madagascar movie penguins are stylized Adelies — but that 'well actually' itself is the textbook note-not-needed false positive the original note fell into. The tweet makes no checkable real-world claim that misleads readers.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive. In particular, FAIL any note that (a) explains the difference between Adelie/Antarctic penguins and African penguins, (b) lectures that 'there are penguins in Africa,' or (c) corrects the geography of a children's cartoon. The tweet is a joke about a fictional movie scene; no reader is misled.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The movie's Adelie penguins are from Antarctica and adapted to cold climates. African penguins are native to South Africa and Namibia and adapted to warmer climates. https://www.worldwildlife.org/species/adelie-penguin https://animals.sandiegozoo.org/animals/african-penguin",
+    "failure_reason": "Note-not-needed: pedantic correction of a joke about a cartoon. Tweet makes no checkable misleading claim; the original note reads as condescending well-actually-ism and was rated NOT_HELPFUL.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_about_fiction",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Madagascar_(2005_film)",
+      "https://en.wikipedia.org/wiki/Penguins_of_Madagascar"
+    ],
+    "notes": "Madagascar (2005) does indeed begin in Antarctica and the four penguins are loosely Adelies; in the film they're shipped from a NY zoo toward an African wildlife preserve. African penguins (Spheniscus demersus) really do live in southern Africa. None of that changes the fact that the tweet is a joke about a cartoon."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes pop-culture joke; no impact on truth-relevant priorities."
+  },
+  "difficulty": "easy"
+}

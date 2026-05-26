@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2011588923135603035",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "manipulated_or_fabricated_evidence"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "A Brave Software PM posts a screenshot of an alleged Microsoft Edge popup begging the user to 'stay on Windows' while visiting nobaraproject.org (a Linux distro site), captioned 'Type of thing that Micr*soft would do.'",
+  "why_note_decision": "Microsoft really has shipped Edge prompts urging users not to install Chrome on Windows 11 ('Browse securely now / stay with Edge'), so the *category* of behavior is real and well-documented. Whether *this specific* popup wording on the Nobara website ever shipped is unclear, but the tweet itself is framed as a joke/dig ('Type of thing that Micr*soft would do'), replies treat it as humor, and engagement is small (455 likes, 22k views). The original note flatly calls it 'fabricated' without strong evidence and was rated NoteNotNeeded (8). Even if the screenshot was a mock-up, the tweet's framing is closer to commentary than fraudulent claim.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Tweet is a low-engagement joke/commentary on real Microsoft dark-pattern behavior; readers are not being meaningfully misled. If a note IS written, it must NOT confidently declare 'this never happens' — Microsoft demonstrably has shipped similar anti-Chrome prompts in Edge on Windows 11, and the bot has no evidence the Nobara-specific screenshot is fake.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The screenshot shows a fabricated popup; Microsoft Edge does not display warnings urging users to stay on Windows when visiting the Nobara Project website.",
+    "failure_reason": "Asserts fabrication without evidence; ignores the documented broader pattern of Edge popups dissuading users from non-Microsoft alternatives. Community rated NoteNotNeeded (8/12).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "uncertain — Edge has shipped similar 'stay with us' popups, but no direct evidence this Nobara-specific dialog is real or fake; framed as a joke/dig either way",
+    "sources_checked": [
+      "https://www.aomeitech.com/windows-tips/edge-pop-up-dissuade-users-downloading-chrome.html"
+    ],
+    "notes": "Edge has documented anti-Chrome 'browse securely now' prompts on Windows 11. The specific Nobara wording in the screenshot couldn't be verified either way."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "22k impressions, niche developer-community in-joke; low EA/progress stakes."
+  },
+  "difficulty": "medium"
+}

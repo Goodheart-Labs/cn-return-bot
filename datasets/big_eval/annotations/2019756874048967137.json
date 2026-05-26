@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2019756874048967137",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "wholesome_repost",
+  "tweet_summary": "A 'Puppies' account reposts a 2019-era viral Shar-Pei bedtime video (Ava the Tapping Pei, @avathepei) and renames the dog 'Otis', framing it as if it's a recent adoption ritual.",
+  "why_note_decision": "The dog in the clip appears to be Ava the Shar-Pei (Anna/@avathepei), whose tucked-in-bed videos went viral in 2018-2019. The repost rebrands her as 'Otis' but this is a wholesome pet-content tweet making no consequential factual claim. NotHelpfulNoteNotNeeded=11 (dominant). A 'this video is from 2019' note on heartwarming dog content is the canonical pedantic-context false positive on low-stakes content.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Tweet is a fluff pet-content repost; misattribution to a different name is plausible but the tweet makes no factual claim a reader needs help with. Any note dating the video or calling out the rebranding is a NoteNotNeeded false positive on wholesome content.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The footage of the dog being tucked into bed was originally posted in 2019, not depicting a recent adoption.",
+    "failure_reason": "Pedantic dating of a wholesome pet repost; tweet makes no consequential claim. Community rated NotHelpfulNoteNotNeeded (11).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "low-stakes — video appears to be 2018-2019 era content from @avathepei (Ava the Shar-Pei), reposted with a different name",
+    "sources_checked": [
+      "https://www.waggingtonpost.com/sweet-shar-pei-politely-asks-to-be-tucked-into-bed-each-night-video/",
+      "https://www.inspiremore.com/polite-shar-pei-says-good-morning/"
+    ],
+    "notes": "Ava the Shar-Pei (@avathepei) became viral around 2018-2019 with bedtime tap-to-be-tucked-in videos; tweet's 'Otis' relabel is misattribution but the genre is wholesome low-stakes content."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.9M impressions but zero policy/safety stakes; wholesome content false-positive trap."
+  },
+  "difficulty": "easy"
+}

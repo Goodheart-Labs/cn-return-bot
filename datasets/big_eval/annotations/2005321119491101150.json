@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2005321119491101150",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "User posts a clip of three actors discussing a fictional 'fake terrorist attack to secure funding' scene with overlay text 'This movie was released 5 years before 9/11', captioned 'Predictive programming' — a conspiracy framing suggesting 9/11 was predicted/planned in a 1996 movie.",
+  "why_note_decision": "The clip IS from the 1996 film The Long Kiss Goodnight, a fictional thriller. The 'predictive programming' framing is conspiracy content suggesting 9/11 was foreshadowed/planned, getting 12K likes and 2,200 RTs — community rated 23 NNN but only because the original note was a thin movie-ID without addressing the conspiracy claim. A note IS warranted on the substantive misinfo (9/11 'predictive programming'/false-flag conspiracy), but the original failed to address that — it only identified the film. Hence missing_key_points.",
+  "judge_guidance": "PASS if the note (a) identifies the clip as the 1996 fiction film The Long Kiss Goodnight, (b) explains 'predictive programming' is a conspiracy trope and that a fictional thriller premise does not constitute evidence of foreknowledge of 9/11, and (c) cites the 9/11 Commission Report or a reputable source debunking the false-flag claim. FAIL if the note only IDs the movie (mirroring the original's failure) without addressing the underlying conspiracy claim, or if it appears to validate the predictive-programming framing.",
+  "reference_note": "The clip is from the 1996 fictional thriller The Long Kiss Goodnight, where the plotline involves a false-flag chemical attack premise; this is fiction, not foreknowledge. The 9/11 attacks were carried out by al-Qaeda hijackers per the 9/11 Commission Report; 'predictive programming' is an unfounded conspiracy trope. https://en.wikipedia.org/wiki/The_Long_Kiss_Goodnight https://www.9-11commission.gov/report/911Report.pdf",
+  "original_unhelpful_note": {
+    "text": "The video shows a scene from the 1996 film The Long Kiss Goodnight depicting a fictional false-flag chemical attack blamed on Islamic terrorists; the \"5 years before 9/11\" text was added to the clip.",
+    "failure_reason": "missing_key_points: identifies the film but doesn't address the actual conspiracy framing (9/11 false-flag/predictive programming) that the tweet promotes",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet promotes a debunked 9/11 conspiracy framing using a fictional 1996 movie clip",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/The_Long_Kiss_Goodnight",
+      "https://www.imdb.com/title/tt0116908/",
+      "https://www.9-11commission.gov/report/911Report.pdf"
+    ],
+    "notes": "Film confirmed; 'predictive programming' is a well-documented conspiracy trope without evidentiary basis."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "9/11 truther / false-flag conspiracy content degrades public epistemics; moderate stakes"},
+  "difficulty": "medium"
+}

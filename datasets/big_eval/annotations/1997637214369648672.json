@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1997637214369648672",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Massimo (4.4M followers) shares 'fun fact' that every phone has ~36 mg gold and that traditional mining requires removing 3 kg of earth per phone's worth of gold, with a video of an e-waste recycling/extraction process.",
+  "why_note_decision": "The 36 mg figure is accurate (industry sources cite 7-34 mg, average ~34 mg). The 3 kg ore figure is approximately right for high-grade gold mines (10+ g/t — to yield 36 mg gold from 3 kg ore requires 12 g/t ore, in the high-grade range) but understated for average open-pit mines (1-4 g/t). The CN note picks 1 g/t as canonical (yielding ~35 kg ore) — also a defensible figure but cites a Newmont reserves PR not an ore-grade source. The disagreement is over the assumed ore grade, which varies 30x across the industry. This is statistical pedantry on a 'fun fact' tweet — Note Not Needed (9).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a 'fun fact' with figures roughly in the right ballpark for high-grade ore; the precise ratio depends on which mine's grade you assume (industry range 1-20 g/t). A note that confidently picks a specific number (e.g. '35 kg') without acknowledging the wide range is pedantic and not clearly more accurate. FAIL if the bot writes a 'correction' that itself cherry-picks a single ore-grade figure.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The average phone contains 0.034 grams of gold. For accuracy, mining this amount typically requires processing about 35 kg of ore, not 3 kg.    https://learn.apmex.com/answers/how-much-gold-is-in-a-cell-phone/",
+    "failure_reason": "Pedantic correction that itself picks a single ore-grade assumption (~1 g/t) when industry grades range 1-20 g/t. The tweet's 3 kg figure is correct for high-grade ore. Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "36 mg/phone is accurate; ore tonnage figure depends on assumed grade (1-20 g/t industry range) — tweet's 3 kg implies ~12 g/t (high-grade), note's 35 kg implies ~1 g/t (low-grade). Both within plausible range.",
+    "sources_checked": [
+      "https://learn.apmex.com/answers/how-much-gold-is-in-a-cell-phone/",
+      "https://www.bcyukonmining.com/2024/07/05/making-sense-of-grams-per-tonne-g-t-a-friendly-guide-to-the-mining-investmentelementor-2278232/",
+      "https://goldexpressmines.com/gold-grade-concentration-of-gold-within-an-ore-body/"
+    ],
+    "notes": "Average global ore grade 1-4 g/t open-pit, 4-10 g/t underground. The tweet would be wrong if the implied 12 g/t is described as typical, but the post says 'traditional mining' generically. Pedantic dispute."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pop-science 'fun fact' from a mega-account; no public-interest stake — no values-aligned impact."
+  },
+  "difficulty": "medium"
+}

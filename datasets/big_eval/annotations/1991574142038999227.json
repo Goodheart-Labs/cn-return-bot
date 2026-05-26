@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1991574142038999227",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Bloomberg's Jordan Fabian quote-tweets reporting that the US Coast Guard's new draft policy reclassifies swastikas from 'hate symbols' (its 2019 wording) to 'potentially divisive.'",
+  "why_note_decision": "This was accurate reporting at time of posting (Nov 20, 2025): the Washington Post broke the story that a new Coast Guard policy memo downgraded swastikas/nooses to 'potentially divisive.' Multiple outlets confirmed. (The CG reversed the policy on Nov 21 after backlash, but Fabian's tweet describes the policy as drafted, which is accurate.) The note doesn't dispute the tweet — it explains how the new policy works ('Commanders investigate displays and can require removal'), which actually softens the tweet's framing without contradicting it. Raters chose Note Not Needed (163) — the tweet is accurate journalism with no misleading claim to correct.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a note that strictly UPDATES with the Nov 21 reversal (Coast Guard reverted the language back to 'hate symbols' after backlash) WITHOUT contradicting the original reporting. FAIL if the note disputes the underlying reporting (the policy DID briefly downgrade swastikas to 'potentially divisive'), or if it merely re-describes the same policy without adding the reversal.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Under the U.S. Coast Guard's new policy, symbols like the swastika are classified as 'potentially divisive' instead of 'hate symbols.' Commanders investigate displays and can require removal if they negatively impact unit cohesion or morale.    https://media.defense.gov/2025/Nov/14/2003820615/-1/-1/0/CI_5350_6A.PDF",
+    "failure_reason": "Note confirms rather than corrects the tweet — it merely explains the policy. No misleading claim was made. Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet accurately quotes WaPo reporting on the (now-reversed) Coast Guard policy reclassification. No misinformation.",
+    "sources_checked": [
+      "https://www.washingtonpost.com/national-security/2025/11/20/coast-guard-swastika-noose/",
+      "https://www.washingtonpost.com/national-security/2025/11/21/coast-guard-policy-hate-symbols-swastika/",
+      "https://www.snopes.com/news/2025/11/21/coast-guard-swastikas-hate-symbols/"
+    ],
+    "notes": "Policy was drafted Nov 14, reported Nov 20, reversed Nov 21. Fabian's tweet (Nov 20 18:27) was accurate at the moment of posting."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "8.8M-impression political reporting on a Nazi-symbols military policy; correct reporting on a high-salience issue."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2052951612801389005",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Argentine activist (Ismael Campos) posts a countdown graphic (200 days) accusing the Milei government of failing to apply the Ley de Financiamiento Universitario, calling people to a Tuesday protest.",
+  "why_note_decision": "The tweet is political advocacy/protest framing, not a checkable factual claim. The original note correctly states that the law is judicially suspended pending the Supreme Court — but that does not contradict the tweet's premise that the government refuses to apply it (it sought and obtained the suspension precisely to avoid applying it). The note injects partial context as if it were a refutation, which the community correctly flagged as opinion/missing-key-points. Many top replies actually argue the same point as the note (the law is suspended), so the framing dispute is in the discourse already.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the tweet is political mobilization for a march, not a checkable factual misstatement. FAIL any note that: (a) treats 'has not applied the law for 200 days' as misinformation that needs correcting (it is literally true that the law is not being applied — the government secured a judicial suspension), (b) repeats the original note's failure of presenting the judicial suspension as if it refuted the tweet (it actually confirms the underlying fact), or (c) injects partisan framing on either side. If the bot finds this politically contested but not factually false, declining is correct.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "La Ley de Financiamiento Universitario está suspendida judicialmente hasta que resuelva la Corte Suprema. https://www.perfil.com/noticias/judiciales/la-justicia-suspendio-la-cautelar-por-financiamiento-universitario-tras-un-recurso-del-gobierno.phtml https://es-us.noticias.yahoo.com/corte-suprema-definir%C3%A1-justicia-aval%C3%B3-192527097.html",
+    "failure_reason": "opinion_speculation / missing-key-points — the note's fact (law suspended pending Supreme Court ruling) does not actually refute the tweet's claim (the government has not been applying it). The tweet is political advocacy, not a misleading factual assertion.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_is_opinion_advocacy_not_misinformation",
+    "sources_checked": [
+      "https://www.lanacion.com.ar/sociedad/la-corte-suprema-definira-la-justicia-avalo-un-pedido-del-gobierno-y-la-ley-de-financiamiento-nid07052026/",
+      "https://www.infobae.com/politica/2026/05/20/el-gobierno-presento-un-proyecto-parlamentario-para-modificar-la-ley-de-financiamiento-universitario/",
+      "https://www.politicargentina.com/notas/202605/73531-la-justicia-freno-una-cautelar-por-el-financiamiento-universitario-y-le-dio-aire-al-ajuste-de-milei.html"
+    ],
+    "notes": "Law passed Aug 22 2025, vetoed, veto overridden. Courts ordered compliance Dec 2025 / Mar 2026; in May 2026 a chamber accepted the government's federal extraordinary remedy and suspended application pending Supreme Court. The tweet is dated May 9 2026 — same week as the suspension. Both 'Milei is not applying it for 200 days' (literally true) and 'law is judicially suspended' (true as of May 2026) can both be true. Political framing, no factual correction warranted."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "~99k impressions on a small-follower account; domestic Argentine policy advocacy. Low impact through the progress/EA lens; primary value is teaching the bot to decline political advocacy posts."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1988521853435212205",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Football account reports (citing The Sun) that José Mourinho left Fenerbahçe with a £656,000 four-month luxury hotel bill after his 16-month deal ended, with the club still paying for it.",
+  "why_note_decision": "The hotel-bill figure originates from Turkish newspaper Yeniçağ and has been reported across multiple credible outlets (The Sun, Goal.com, Record). The tweet attributes the story to The Sun, which did publish it. The CN note merely confirms the same sourcing — it offers no correction. Raters chose Note Not Needed (7).",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive — the tweet correctly attributes a story that multiple outlets ran. A note that simply re-cites the same Turkish/UK sources adds nothing; a note that disputes the figure without contradicting evidence is unsubstantiated.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The claim that Mourinho left Fenerbahçe with a £656,000 hotel bill originates from the Turkish newspaper Yeniçağ Gazetesi and has been widely reported by other media.  Sources: https://www.yenicaggazetesi.com.tr/havhavhav-ile-buyuyen-100-milyon-tllik-ekonomi-978564h.htm",
+    "failure_reason": "Note simply confirms the tweet's own sourcing — no correction provided. Raters chose Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet accurately summarizes widely-reported Turkish/UK tabloid story; no misleading claim.",
+    "sources_checked": [
+      "https://www.record.pt/internacional/paises/turquia/detalhe/mourinho-deixou-fenerbahce-com-conta-de-747-mil-euros-para-pagar-em-estadia-de-hotel-avancam-turcos",
+      "https://www.goal.com/en-us/lists/jose-mourinho-fenerbahce-eye-watering-bill-15-month-luxury-istanbul-four-seasons-hotel/blt88fac0b9c291c65c"
+    ],
+    "notes": "Story carried by The Sun, Goal, Record, and Yeniçağ. Figure is contested only in informal commentary, not in fact-check publications."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports tabloid news; no impact via EA / safety / animal-welfare lens."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2028286028071547270",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A rhetorical reply pushing back on claims that Iranians are 'celebrating' the strikes, attaching two photos of civilian suffering with the SNN TV (Iran Student News Network) logo and a Farsi newspaper logo, in the context of March 2026 Iran strikes.",
+  "why_note_decision": "The tweet is a rhetorical/opinion reply about how Iranian civilians experience the war, attached to media showing Tehran civilian-strike imagery. SNN = Iran's Student News Network (per Wikipedia); the photos plausibly show real March 2026 strike aftermath (e.g. Niloofar Square Mar 1-2, ~20 civilian deaths). Some replies (including a Grok analysis) speculate the photos are Syrian/AI but evidence is mixed and SNN is genuinely Iranian. The original note doesn't address the photos at all — it pivots to talk about celebrations of Khamenei's death, which is off-topic. Raters tagged it note-not-needed dominantly. The tweet's claim ('many Iranians are not celebrating, civilians are suffering') is well-supported by mainstream coverage of the March 2026 war.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Tweet is rhetorical opinion supported by mainstream reporting (Iranian civilians killed in March 2026 Tehran strikes; SNN is a real Iranian outlet). Any note arguing about whether Iranians celebrated elsewhere is off-topic and a false positive. If the bot writes a note specifically debunking the photos as AI/Syrian without strong sourcing, that is also a fail (evidence is mixed and the AI-generated description in our pipeline is unreliable here).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Coverage shows mixed reactions in Iran: many mourned or feared for children, but news outlets and videos also documented people celebrating Khamenei's death in some cities. https://www.nytimes.com/2026/02/28/world/middleeast/iran-khameni-celebrations.html",
+    "failure_reason": "Off-topic — tweet is about civilian suffering during strikes, not about whether anyone celebrated Khamenei's death; note pivots to a different conversation.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's rhetorical claim is well-supported by mainstream reporting; specific photo provenance is contested but SNN is a real Iranian outlet.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Student_News_Network",
+      "https://en.wikipedia.org/wiki/2026_Iran_war",
+      "https://www.npr.org/2026/03/01/g-s1-112094/iran-war-trump-israel-attack-photos-bahrain"
+    ],
+    "notes": "Iran civilian casualties from March 2026 strikes well documented. Photo provenance debated in replies but no decisive debunk."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "War-framing tweet — claim is opinion/rhetoric supported by mainstream reporting; the photo-provenance question is genuinely hard."
+  },
+  "difficulty": "hard"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1981231056293421305",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["staged_or_scripted_content", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet shares a clip captioned 'Gym trainer accidentally killed his client and made it look like a gym accident' — the clip is in fact a TikTok-summary repost of a scene from Peacock's Poker Face S2E10 'The Big Pump' (Method Man as gym owner Brick).",
+  "why_note_decision": "The video has a TikTok narration overlay describing the entire murder-mystery plot (sauna trap, distress-signal exercises, wife persuades him to turn himself in) and is visibly a scripted dramatization. Commenters recognize Method Man and call out the staged premise. Raters overwhelmingly chose notHelpfulNoteNotNeeded (7/10) — the clip is self-evidently fictional entertainment, not a real news claim a reader would be misled by.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive — the clip is obvious scripted TV content (Poker Face S2E10) with a narrator and TikTok-style storytelling overlay; correcting it as if a reader might think it real is over-fact-checking entertainment.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is a scripted scene from the TV show Poker Face (Season 2, Episode 10: 'The Big Pump'), not footage of a real gym incident.  https://www.imdb.com/title/tt34981283/  https://en.wikipedia.org/wiki/The_Big_Pump",
+    "failure_reason": "Note is factually correct but the underlying tweet is recognizable scripted/narrated entertainment — community rated it Note Not Needed (over-fact-checking).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet presents clip as a real crime; clip is factually a scene from Poker Face S2E10 'The Big Pump' (Method Man, dir. Clea DuVall) — but framing + overlay make it obviously fictional storytelling.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/The_Big_Pump",
+      "https://www.imdb.com/title/tt34981283/",
+      "https://variety.com/2025/tv/news/poker-face-episode-10-director-clea-duvall-discus-murder-1236439782/"
+    ],
+    "notes": "Confirmed the Poker Face episode plot matches the clip's narration exactly (barbell-to-neck staged as accident; sauna trap; wife stops him). The tweet's caption mimics typical TikTok 'crime story' framing rather than a sincere news claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "3M-impression entertainment clip; no values-aligned impact — correcting it neither advances EA / safety / animal-welfare nor reduces meaningful misinformation."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2012592974152991200",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["health_medical_science"],
+  "category_fit": "partial",
+  "suggested_category": "science_demo",
+  "tweet_summary": "Viral BBC clip of NASA's world-largest vacuum chamber dropping a bowling ball and feathers together to demonstrate Galileo's principle, captioned 'Galileo is proven right—400 years later'.",
+  "why_note_decision": "The video is a genuine BBC documentary segment from NASA's Space Power Facility vacuum chamber demonstrating Galileo's principle — it really does demonstrate the principle, this really is a famous vacuum-chamber experiment. The note's pedantic point that Apollo 15 did it on the Moon first is true but irrelevant — the tweet doesn't claim this was first, it claims it 'proves Galileo right', which it does. Massive ratio of NNN tags (175) indicates clear community consensus the note adds no value.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet promotes a famous, accurate science demo without claiming first-ness; pointing out Apollo 15 did it first is trivia, not a correction. The community gave this 175 notHelpfulNoteNotNeeded ratings — among the strongest signals in the dataset for false-positive suppression.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This experiment was previously conducted on the Moon during the Apollo 15 mission in 1971, confirming Galileo's principle over 50 years ago.",
+    "failure_reason": "trivial_pedantry: prior-art trivia where the tweet never claimed first-ness; community gave 175 notHelpfulNoteNotNeeded ratings",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet's substantive claim is accurate; note adds irrelevant prior-art trivia",
+    "sources_checked": [
+      "https://science.nasa.gov/resource/the-apollo-15-hammer-feather-drop",
+      "https://en.wikipedia.org/wiki/NASA_Space_Power_Facility"
+    ],
+    "notes": "Apollo 15 hammer-feather drop did happen in 1971 but the BBC vacuum-chamber demonstration is its own valid demonstration and the tweet never claimed primacy."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "viral science content; the note actually risks discouraging valid science demonstration sharing"},
+  "difficulty": "easy"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2023453339350950308",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "HustleBitch tweet (4.8M views) frames Kate Spade's 2018 suicide and her husband Andy's subsequent appearance in a mouse mask as 'strange' / 'sealed,' insinuating foul play. Comments amplify Epstein conspiracy theories, 'rat' symbolism, government cover-up claims.",
+  "why_note_decision": "The tweet uses scare quotes around 'suicide' and language like 'as the story gets sealed' to insinuate conspiracy without making one explicit checkable claim. The verified facts: Kate Spade's death was ruled suicide by hanging by the NYC ME; Andy Spade's mask was a Bernard-from-The-Rescuers cartoon-mouse mask he wore amid grief and media avoidance (per Inside Edition, NY Post, CNN); the case is NOT sealed and was publicly reported in detail. Comments are full of explicit conspiracy claims (Epstein emailed her the day she died — false; she was 'killed for being a rat' — no evidence), so a note is warranted to push back on the conspiratorial frame. The original note is substantively right and well-sourced (NYT, NY Post, CNN), but raters tagged it Opinion/Speculation (7), NoteNotNeeded (8), MissingKeyPoints (6) on only 19 ratings — likely because the tweet itself doesn't make a falsifiable claim, only a vibe, making the note feel like it's refuting straw-claims.",
+  "judge_guidance": "PASS the note ONLY if it (a) confirms the NYC ME ruling of suicide by hanging, (b) explains the mask as a Bernard-from-The-Rescuers prop linked to grief/avoiding press (per contemporary 2018 reporting), AND (c) explicitly states there is no credible evidence of foul play or a cover-up. FAIL notes that simply restate that she died by suicide without addressing the mask, since the tweet's vibe attack centers on the mask. FAIL notes that engage with Epstein-cover-up speculation as if it were substantive. FAIL notes that cite only X posts or unreliable conspiracy sites. The note must be bridging and source-anchored (NYT, NY Post, CNN, Wikipedia) — not dismissive.",
+  "reference_note": "Kate Spade's June 2018 death was ruled suicide by hanging by the NYC medical examiner; her husband Andy attributed it to depression in a public statement and contemporary reporting (NYT, CNN). The mouse mask Andy wore was modeled on Bernard from the 1977 Disney film 'The Rescuers' — he wore it to avoid press during acute grief, per Inside Edition / NY Post. The case is not sealed and there is no credible evidence of foul play. https://www.cnn.com/2018/06/07/us/andy-kate-spade-statement https://nypost.com/2018/06/07/why-andy-spade-was-photographed-wearing-a-mouse-mask/ https://en.wikipedia.org/wiki/Kate_Spade",
+  "original_unhelpful_note": {
+    "text": "Kate Spade's death was ruled suicide by hanging after NYC medical examiner investigation; family attributed it to depression. Andy Spade wore the mask amid grief/media avoidance, per contemporary reports. No evidence supports foul play or cover-up claims. https://www.nytimes.com/2018/06/05/fashion/kate-spade-dead.html https://nypost.com/2018/06/07/why-andy-spade-was-photographed-wearing-a-mouse-mask/ https://www.cnn.com/2018/06/06/us/kate-spade-death/index.html",
+    "failure_reason": "Opinion-speculation tagging: substantively correct but refuting an unstated insinuation rather than an explicit claim; could add the Bernard/Rescuers mask detail explicitly. Borderline — original is close to a good note; the vote sample (19) is small.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "conspiracy_insinuation_against_documented_suicide",
+    "sources_checked": [
+      "https://www.cnn.com/2018/06/07/us/andy-kate-spade-statement",
+      "https://nypost.com/2018/06/07/why-andy-spade-was-photographed-wearing-a-mouse-mask/",
+      "https://en.wikipedia.org/wiki/Kate_Spade",
+      "https://news.amomama.com/87203-kate-spades-husband-steps-bizarre-cartoo.html"
+    ],
+    "notes": "Confirmed: Kate Spade's death was ruled suicide by hanging; mask was Bernard from The Rescuers (cartoon); no credible evidence of foul play. The 'sealed story' framing in the tweet is false — the case was reported extensively in 2018."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Conspiracy theories about celebrity deaths weaponize grief and erode trust in legitimate reporting; correcting them is moderate value."
+  },
+  "difficulty": "medium"
+}

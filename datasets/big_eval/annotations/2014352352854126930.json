@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2014352352854126930",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["overhyped_research_or_product"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Massimo (large account known for science/tech curation) posts: 'A $20 trillion concept proposes a 3,400-mile underwater tunnel connecting London and New York, potentially reducing a 7-hour flight to a 1-hour train ride.' Attached video discusses the idea explicitly as a concept that probably won't materialize for decades.",
+  "why_note_decision": "The tweet uses the word 'concept' and 'proposes' — it does NOT claim the tunnel is under construction. The original note 'corrects' the tweet by saying 'No such tunnel is planned or under construction,' which is true but is not in dispute. This is the classic note-not-needed false positive: the tweet is honest about it being hypothetical, the attached video literally says '$20 trillion price tag… probably not going to see this project come to light for the next few decades,' yet the note treats it as if it claimed otherwise. Replies are mostly skeptical jokes ('the worst idea in history,' '$20 trillion?'), not people fooled. Raters tagged NoteNotNeeded (14) over MissingKeyPoints (8) on 25 votes.",
+  "judge_guidance": "PASS only if the bot declines to write a note. FAIL any note that says the tunnel is not real / not under construction / not planned — the tweet already labels it a $20 trillion 'concept.' Concept proposals for transatlantic tunnels are a real recurring engineering thought-experiment (covered by Newsweek, Time Out, Snopes etc.). Writing a debunk on something the tweet already labeled as hypothetical is the failure mode.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This post and video describe a hypothetical transatlantic tunnel. No such tunnel is planned or under construction. https://en.wikipedia.org/wiki/Transatlantic_tunnel https://www.cnn.com/2024/12/14/travel/travel-news-transatlantic-tunnel-new-york-london https://www.newsweek.com/tunnel-link-new-york-london-20-trillion-1997616",
+    "failure_reason": "Note-not-needed: tweet explicitly calls it a 'concept,' so 'no such tunnel is planned' isn't a correction. Restating the tweet's own framing as if it were a debunk.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_as_phrased",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Transatlantic_tunnel",
+      "https://www.newsweek.com/tunnel-link-new-york-london-20-trillion-1997616",
+      "https://www.snopes.com/news/2024/12/18/tunnel-london-new-york-city/"
+    ],
+    "notes": "$20T concept is a real, decades-old idea recently re-popularized; Musk publicly said Boring Company could do it cheaper. The tweet's wording ('concept proposes') is consistent with Newsweek/Snopes treatment."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Engineering curiosity post; correcting it wastes a note slot."
+  },
+  "difficulty": "easy"
+}

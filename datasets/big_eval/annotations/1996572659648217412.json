@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1996572659648217412",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A 21-year-old quote-tweets the viral 'man and parrot' math puzzle with the bit 'i have a PhD in maths from the university of cambridge and i can't solve this' — obvious self-deprecating joke.",
+  "why_note_decision": "Comments overwhelmingly recognize it as a joke ('Whenever I see an obvious joke tweet... I lose a little bit of remaining faith in humanity'). The puzzle is trivial (basic 2-equation system, parrot=15). The author's bio is '21 [...] occasionally sarcastic, antisocial commentary'. The original note pedantically 'corrects' the credentials with a link to author's profile and Cambridge program directory, which raters rejected as note-not-needed (22) and missing-key-points (14). Showed massive impressions (25.8M) because the joke went viral.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Tweet is an obvious self-deprecating joke from a 21-year-old quoting a trivial viral math puzzle; the 'I have a Cambridge PhD' framing is the punchline. Any earnest credentials-check note is a false positive on humor.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The author does not have a PhD in mathematics from the University of Cambridge. https://x.com/rainstormblue https://www.postgraduate.study.cam.ac.uk/courses/directory/mapmpdpms",
+    "failure_reason": "Treated obvious self-deprecating joke as a sincere credentials claim. Comments overwhelmingly identify it as humor.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Joke tweet; literal credential claim not the point.",
+    "sources_checked": [
+      "https://knowyourmeme.com/memes/the-risk-i-took-was-calculated"
+    ],
+    "notes": "Standard 'reply to viral math puzzle with fake-credential punchline' joke pattern."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pure joke at huge scale (25.8M impressions) — perfect false-positive trap; not impactful misinfo."
+  },
+  "difficulty": "easy"
+}

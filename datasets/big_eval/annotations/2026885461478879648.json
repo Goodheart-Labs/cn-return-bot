@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2026885461478879648",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Movie account posts Daniel Radcliffe's well-known 2024 Atlantic quote about being saddened by J.K. Rowling's anti-trans comments, with two head-shot photos of Radcliffe and Rowling.",
+  "why_note_decision": "The Radcliffe quote is real and accurate (Atlantic interview, May 2024, widely covered by Variety, CNN, Rolling Stone, Deadline). The tweet does not claim the quote is new. The original note pedantically points out the quote is from 2024, but a celebrity quote being republished without a date stamp is not a misleading claim warranting a note — this is a normal recurring-quote post on a movie aggregator account. Raters overwhelmingly tagged it note-not-needed (40 NMR) and missing-key-points (38).",
+  "judge_guidance": "PASS only if the bot declines to write a note. Quote is accurate and verifiable; tweet does not claim it is breaking news. Any note pointing out the quote is from 2024 is trivial pedantry on a normal celebrity-quote repost, and a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "These quotes are accurate but from a May 1, 2024 Atlantic interview — Radcliffe said then he'd cut contact with Rowling and reaffirmed support for trans rights. The post republishes those 2024 remarks without noting they're not new. https://www.theguardian.com/film/2024/may/01/daniel-radcliffe-says-rupture-with-jk-rowling-over-trans-rights-is-really-sad",
+    "failure_reason": "Trivial pedantry — quote is accurate, tweet doesn't claim it's new, no reader is being misled.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Quote is accurate. Tweet does not claim novelty.",
+    "sources_checked": [
+      "https://variety.com/2024/film/global/daniel-radcliffe-jk-rowling-anti-trans-makes-me-really-sad-1235988334/",
+      "https://www.cnn.com/2024/05/01/entertainment/daniel-radcliffe-j-k-rowling-anti-trans/index.html"
+    ],
+    "notes": "Quote verified across multiple outlets from May 2024 Atlantic interview."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Celebrity quote pedantry — low EA stakes, but a clean false-positive trap."
+  },
+  "difficulty": "easy"
+}

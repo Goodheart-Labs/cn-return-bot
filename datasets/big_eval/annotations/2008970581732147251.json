@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2008970581732147251",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports", "joke_or_satire"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "NFL reporter Ari Meirov tweets a video clip of Cowboys owner Jerry Jones at a press conference, who jokes 'Trump just said it. I'm running Venezuela' when asked about coach Schottenheimer hiring a DC.",
+  "why_note_decision": "Tweet accurately quotes Jones' actual joke, which was widely reported (Fox News, SI, Yahoo, WFAA). The 'Venezuela' line was an obvious quip riffing on Trump's recent remarks about Venezuela — the video itself shows Jones continuing to clarify 'Seriously, Schottie had everything to do with hiring Matt Eberflus.' The note's content (explaining the joke, that decisions will be collective) is accurate but unnecessary — readers and ESPN/Fox/SI all understood it was a quip. 12 NNN dominant tag confirms.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an accurate quote of a real, widely-reported joke; explaining the joke and the surrounding context is what the original note did and was rated notHelpfulNoteNotNeeded. The Trump 'running Venezuela' context is widely known and Jones' clarification appears later in the same video.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Jerry Jones was jokingly referencing a Donald Trump comment by saying \"I'm running Venezuela\" when asked if head coach Brian Schottenheimer can hire the next defensive coordinator. He clarified that it will be a group decision, similar to hiring Matt Eberflus.",
+    "failure_reason": "joke_or_meme: explains a joke that is obvious from the clip and surrounding context; widely covered by mainstream sports media",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet accurately quotes the actual joke; no misinformation",
+    "sources_checked": [
+      "https://www.foxnews.com/sports/jerry-jones-likens-cowboys-defensive-coordinator-search-trumps-remarks-venezuela",
+      "https://www.wfaa.com/article/sports/nfl/cowboys/dallas-cowboys-jerry-jones-end-of-season-press-conference/287-cc0cf2b6-d518-47a6-8381-3a092a1a75f3",
+      "https://www.si.com/nfl/cowboys/onsi/news/jerry-jones-drops-donald-trump-joke-discussing-dallas-cowboys-dc-search"
+    ],
+    "notes": "Quote is accurate and the joke context is widely known from the same press conference."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "sports press conference joke; no real-world stakes"},
+  "difficulty": "easy"
+}

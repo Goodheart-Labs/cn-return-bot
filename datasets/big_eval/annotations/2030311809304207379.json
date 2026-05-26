@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2030311809304207379",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "ai_generated_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet claims 'Iran is winning, here's their air force shooting down a US fighter' over a clearly AI-generated meme showing a person on a flying carpet shooting at a jet. Top replies all flag it as AI/joke ('This is what AI was meant for', 'flying carpet').",
+  "why_note_decision": "Image shows a magic-carpet-riding figure firing at a jet — an obviously fantastical AI/meme image, not a war video. The replies are uniformly mocking the absurdity. Treating this as a sincere claim to be corrected is the false-positive trap; sincere users already understand it's satire.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The image is a flying-carpet AI/meme; the tweet is sarcasm/mockery of pro-Iran propaganda. Any note that earnestly debunks 'Iran shot down a US fighter' against this absurd image is a false positive. (A pedantic note here was rated NOT_HELPFUL with 107 noteNotNeeded votes.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is AI-generated and does not show a real event. No US fighter jet has been shot down by Iran; CENTCOM denies such claims. Confirmed US losses were from friendly fire in Kuwait.    Sources:    https://www.centcom.mil    https://www.twz.com/news-features/u-s-denies-f-15e-strike-eagle-went-down-in-iran    https://www.bbc.com/news/articles/ckg8wvz427vo",
+    "failure_reason": "noteNotNeeded — the AI/joke nature is self-evident from a magic carpet image; replies are universally in on the joke.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Joke/AI meme; not a sincere claim. No real footage of US jet downed by Iran exists, but the tweet doesn't read as sincere.",
+    "sources_checked": [],
+    "notes": "Flying-carpet image + 'Thanks for watching' transcript + uniformly joking replies confirm satire."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "11M impressions during active war is non-trivial, but the visible absurdity (flying carpet) makes literal misinterpretation unlikely."
+  },
+  "difficulty": "easy"
+}

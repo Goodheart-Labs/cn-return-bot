@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2010799197650633083",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet by partisan/satire account 'Niqab Nancy' claims 'BREAKING: Greta Thunberg reportedly on a flotilla to Iran to provide aid to the Islamic regime' over an image of Thunberg waving with a Palestinian flag (in reality from her 2025 Gaza flotilla).",
+  "why_note_decision": "The post is obvious mockery from a parody/satire-coded account ('Niqab Nancy 🍉🍗', bio 'Harvard student. Pregnant. Journalist. Anti-dolphin.'). Top replies explicitly read it as a joke ('Probably fake for humor lol', 'I really want this to be true for some reason', '????'). 'Reportedly' + the absurd framing + the unrelated Gaza photo all signal satire mocking Thunberg's selective activism. There is no flotilla to Iran and the image is from her Gaza mission, but the note's literal debunk treats a joke as a sincere news claim — exactly the false-positive pattern the pipeline must avoid.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The post is transparent satire from a partisan/parody account mocking Greta Thunberg, not a sincere claim that she is going to Iran. Top replies confirm readers understand it as a joke. A literal 'this image is from Gaza 2025, not Iran' debunk (like the original) misreads humor as misinformation and should fail.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This claim is false. Greta Thunberg participated in aid flotillas to Gaza in 2025, not Iran. The image is from her Gaza mission.  https://www.bbc.com/news/articles/c0lk292jww4o  https://www.cnn.com/2025/10/01/middleeast/israel-gaza-flotilla-explainer-scli-intl",
+    "failure_reason": "note_not_needed_joke",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satirical_no_real_claim",
+    "sources_checked": [
+      "https://www.bbc.com/news/articles/c0lk292jww4o",
+      "https://www.jpost.com/opinion/article-883497",
+      "https://www.outono.net/elentir/2026/01/28/swedish-activist-greta-thunberg-refuses-to-comment-on-the-massacres-in-iran/"
+    ],
+    "notes": "Thunberg did the Gaza flotilla in mid-2025; no real Iran flotilla exists. The tweet is clearly a satirical jab at her selective activism on Iran protests."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes partisan in-joke about a public figure; ~430k impressions but no actionable misinformation. Pipeline learning: not every absurd 'breaking' line is a sincere claim."
+  },
+  "difficulty": "medium"
+}

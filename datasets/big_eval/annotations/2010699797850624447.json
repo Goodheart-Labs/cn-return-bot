@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2010699797850624447",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims 'millions' of Iranians are filling streets in support of the government during nationwide protests; replies and fact-checkers identify the footage as the 2020 Qasem Soleimani funeral procession in Kerman, not current pro-regime rallies.",
+  "why_note_decision": "Multiple top replies, including independent fact-checkers (Misbar) cited in comments, identify the video as Soleimani's January 2020 funeral procession in Kerman, not a January 2026 pro-government rally. Iran International also reported that Iran's January 12, 2026 pro-government rallies drew tens of thousands (not millions) and that recycled footage circulated. The right note is one that addresses the SPECIFIC misattributed footage (Soleimani 2020 funeral), which the original note completely misses — it just argues about scale (millions vs tens of thousands) without identifying that the video is old/unrelated.",
+  "judge_guidance": "A correct note must identify that the video is old/recycled footage — specifically the January 2020 Qasem Soleimani funeral procession in Kerman — and not a January 2026 pro-government rally. It may additionally note that Iran's actual January 2026 pro-government rallies drew tens of thousands, not millions. PASS only if the note clearly flags the media as misattributed/old footage; FAIL if it only argues about crowd-size numbers (as the original note did) without identifying that the video itself is from 2020.",
+  "reference_note": "The video shows the January 2020 funeral procession for Qasem Soleimani in Kerman, Iran, not current pro-government rallies. Fact-checkers including Misbar have identified the footage. Iran's January 2026 pro-government rallies drew tens of thousands. https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+  "original_unhelpful_note": {
+    "text": "Independent reporting indicates pro-government rallies are estimated in the tens of thousands, not millions. Current nationwide protests are primarily anti-government and have faced a deadly crackdown. https://www.cnn.com/world/live-news/iran-protests-01-12-26 https://www.dw.com/en/2026-iran-protests/t-75407674 https://www.bbc.com/news/articles/cm2jek15m8no",
+    "failure_reason": "Missed the key point: the video is old Soleimani 2020 funeral footage, not current pro-government rallies. Note only argues numbers, not the misattributed media.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Tweet is misleading — video is recycled 2020 Soleimani funeral footage being passed off as current pro-government rallies.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+      "https://www.iranintl.com/en/202601128783",
+      "https://www.cnn.com/world/live-news/iran-protests-01-12-26"
+    ],
+    "notes": "Many top replies cite Misbar fact-check matching the aerial shots to Kerman 2020. Iran International confirmed January 2026 rallies were tens of thousands and recycled footage was widely circulated."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Misattributed war/protest footage from a deadly crackdown — accurate framing of regime propaganda matters for global understanding of Iran."
+  },
+  "difficulty": "medium"
+}

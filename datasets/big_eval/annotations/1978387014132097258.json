@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1978387014132097258",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Jake Shields claims 'Israel rapes or tortures 83% of their child hostages' (quoting a tweet saying 83% of detained Palestinian children report being tortured).",
+  "why_note_decision": "Save the Children's research on Palestinian children in Israeli military detention reports ~86% beaten and 69% strip-searched, not '83% raped or tortured'. The quoted figure conflates beatings with rape and tortures the underlying statistic. The conflict + detention abuse allegations are real and serious, but the specific '83% raped or tortured' number is fabricated/misattributed. A note is warranted because the 'rape' framing is unsupported by the cited source and adds a specific allegation not in the research.",
+  "judge_guidance": "PASS only if the note (a) identifies that the cited Save the Children research documents ~86% beaten and 69% strip-searched, NOT 83% raped, and (b) acknowledges the underlying detention-abuse reporting is real (does not deny systemic abuse) while flagging that the specific 'rape' allegation in this tweet is unsupported by the source. FAIL any note that simply denies the underlying detention-abuse problem, OR any note that lets the '83% raped' framing stand uncorrected, OR any note that hedges so heavily it doesn't make clear the rape figure is unsupported. Must avoid both extremes (denialism vs. accepting the fabricated stat).",
+  "reference_note": "Save the Children's research found that ~86% of detained Palestinian children report being beaten and 69% strip-searched, not '83% raped or tortured.' The original report documents serious systemic abuse but does not support the specific rape figure in this tweet. https://www.savethechildren.net/news/stripped-beaten-and-blindfolded-new-research-reveals-ongoing-violence-and-abuse-palestinian",
+  "original_unhelpful_note": {
+    "text": "Human-rights groups document high rates of abuse among detained children (Save the Children found ~86% beaten), but there's no reliable source showing \"83% of child hostages\" were raped or tortured. https://legacy.savethechildren.net/news/palestinian-children-israeli-military-detention-report-increasingly-violent-conditions",
+    "failure_reason": "missingKeyPoints / argumentativeOrBiased — accurate that 83% rape stat is unsupported, but could be clearer about what the actual SaveTheChildren stats are and could frame less argumentatively.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading. SaveTheChildren reports ~86% beaten, 69% strip-searched. No 83% rape figure exists in cited research.",
+    "sources_checked": [
+      "https://www.savethechildren.net/news/stripped-beaten-and-blindfolded-new-research-reveals-ongoing-violence-and-abuse-palestinian",
+      "https://www.aljazeera.com/news/2023/7/10/palestinian-children-abused-in-israeli-detention-ngo"
+    ],
+    "notes": "Original tweet (and its quoted source) conflates 'tortured' with 'raped or tortured'. Underlying abuse reporting is real but the specific number+rape framing is not in the cited research."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Jake Shields has 912k followers, 633k impressions; specific rape allegations against a state are high-stakes; getting the calibration (acknowledge real abuse documentation, correct the fabricated specific figure) right is exactly the bridging-style note skill we want."
+  },
+  "difficulty": "hard"
+}

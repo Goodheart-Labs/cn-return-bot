@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2003497461319631289",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims 'massive anti-immigration protests in the Netherlands, overwhelming police forces' with a video; comments dispute the framing as recycled/exaggerated.",
+  "why_note_decision": "There WAS a real Dec 22, 2025 anti-immigration rally in Apeldoorn that clashed with a counter-protest and led to several detentions (confirmed by SMNI / Times Now World coverage). The original note pinpoints this and links the genuine event. However, the tweet's claim of crowds 'overwhelming police forces' is hyperbole — coverage describes detentions and clashes with counter-protesters, not a police-overwhelm scenario. The note's job here is to provide the actual event scale/context. The original note partially does this but raters tagged it note-not-needed dominantly — suggesting the note didn't add enough value over the actual reporting. There's also a comment ('@StanSmith_1971') alleging it's recycled 2021 footage, and another ('@JohDomne1') noting spring leaves indicate it's not December. Tweet IS misleading on scale and possibly on date; a stronger note pointing out 'video shows the relatively contained Apeldoorn clash, not a police-overwhelming protest' is warranted.",
+  "judge_guidance": "A correct note must establish that the tweet's framing of 'massive crowds overwhelming police' is misleading: the Dec 22, 2025 Apeldoorn anti-immigration rally was met by a counter-protest with several detentions (per SMNI / Times Now World), not a country-paralyzing protest movement. PASS if the note identifies the specific event and corrects the scale/framing. FAIL if it just lists the Apeldoorn event URLs without making the contextual correction the original note missed.",
+  "reference_note": "The video shows a Dec 22, 2025 anti-immigration rally in Apeldoorn that clashed with a counter-protest, leading to several detentions — not a 'massive' nationwide movement overwhelming police. https://smninewschannel.com/several-detained-as-anti-immigration-rally-clashes-with-counter-protest-in-netherlands/",
+  "original_unhelpful_note": {
+    "text": "The video depicts an anti-immigration rally in Apeldoorn on December 22, 2025, where police detained several people after clashes with counter-protesters. No massive protests overwhelming police have been reported in the Netherlands on December 23.    https://www.youtube.com/watch?v=Y08n3eszNGE    https://smninewschannel.com/several-detained-as-anti-immigration-rally-clashes-with-counter-protest-in-netherlands/",
+    "failure_reason": "Identifies the right event but the framing/scale correction is buried; raters voted note-not-needed, possibly because the wording reads as denial rather than clear contextualization.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Real event but tweet exaggerates scale ('overwhelming police forces' / 'massive crowds').",
+    "sources_checked": [
+      "https://www.youtube.com/watch?v=Y08n3eszNGE",
+      "https://smninewschannel.com/several-detained-as-anti-immigration-rally-clashes-with-counter-protest-in-netherlands/"
+    ],
+    "notes": "Apeldoorn Dec 22, 2025 rally is real; scale is overstated. Some comments suggest recycled footage but the event itself is verified."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Immigration narrative tweet with 450k impressions — exaggerated scale framing matters for political discourse."
+  },
+  "difficulty": "medium"
+}

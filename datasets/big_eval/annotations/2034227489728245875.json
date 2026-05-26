@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2034227489728245875",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["fabricated_quote", "celebrity_entertainment_sports", "manipulated_or_fabricated_evidence"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A satire-leaning account claims Nigeria's First Lady directly told Meghan Markle 'This is not the Met Gala' and 'We don't accept nakedness in our culture' during Meghan's 2024 Nigeria visit, with a photo of the two together.",
+  "why_note_decision": "Despite the author's '99% satire' bio, the tweet is widely shared as if literal (1,500 likes, hundreds of retweets, comments treat it as real — 'I remember her saying this in a speech'). Africa Check and AFP Fact Check have explicitly debunked these direct quotes: Tinubu's office stated she did not direct any remarks at Markle. A note IS warranted — the original note's content is correct, but it conflates a denied direct critique with a generic speech and is structured confusingly, which is why the community tagged it notHelpfulMissingKeyPoints/notHelpfulNoteNotNeeded.",
+  "judge_guidance": "PASS if the note clearly establishes that (1) the quoted lines 'This is not the Met Gala' and 'we don't accept nakedness' were NOT directed at Meghan Markle by Nigeria's First Lady Oluremi Tinubu, (2) Tinubu's office publicly denied the criticism and said her speech remarks about culture/dress were general, and (3) cites Africa Check or AFP Fact Check. FAIL if the note repeats the original's confusing structure, fails to clearly deny that Tinubu addressed Markle, or appears to validate the quoted framing.",
+  "reference_note": "Nigeria's First Lady Oluremi Tinubu did not direct these remarks at Meghan Markle. Her office said comments about 'nakedness' in a separate speech were general guidance to Nigerian women, not aimed at Markle's visit. https://africacheck.org/fact-checks/meta-programme-fact-checks/nigerias-first-lady-denies-criticising-meghan-markles https://factcheck.afp.com/doc.afp.com.34UC2XN",
+  "original_unhelpful_note": {
+    "text": "Nigeria's First Lady did not criticize Meghan Markle's attire, direct her to change, or say \"43% Nigerian my ass\" during the 2024 visit. Her office clarified that speech remarks on \"nakedness\" were general and not about Markle.",
+    "failure_reason": "missing_key_points / hard_to_understand: introduces a quote ('43% Nigerian my ass') not in the tweet, structure is confusing, fails to crisply state the core fact that the direct-address framing is fabricated",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false framing — Tinubu's quoted lines were not addressed to Markle; speech was general",
+    "sources_checked": [
+      "https://africacheck.org/fact-checks/meta-programme-fact-checks/nigerias-first-lady-denies-criticising-meghan-markles",
+      "https://www.newsweek.com/meghan-markle-nigeria-first-lady-debate-social-media-1904911"
+    ],
+    "notes": "Author bio claims satire but the tweet is shared and read literally; tagged as misinfo."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "celebrity/royal gossip; low real-world stakes"},
+  "difficulty": "medium"
+}

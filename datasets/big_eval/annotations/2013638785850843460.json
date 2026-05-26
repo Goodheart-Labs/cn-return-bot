@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2013638785850843460",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Headline-style tweet from @Remarks: 'Virginia Democrats introduce bill to end mandatory minimum sentences for rape, manslaughter, and child pornography.'",
+  "why_note_decision": "The tweet is literally accurate. Virginia HB 863 (2026 Regular Session, sponsored by Del. Rae Cousins, D) does eliminate mandatory minimum sentences for exactly those offenses — rape, manslaughter, possession/distribution of child pornography, assaulting a law enforcement officer, and several other felonies — while leaving maximum sentences intact. The original note essentially confirms this and adds 'maximum sentences remain in place,' which is true and useful context but is a value-laden softening, not a correction. Raters strongly tagged NoteNotNeeded (241) and MissingKeyPoints (232) on 394 ratings — the note both fails to add real correction AND misses the policy-debate context.",
+  "judge_guidance": "PASS only if the bot declines to write a note. FAIL any note that says the tweet is misleading, false, or incomplete because 'maximum sentences remain in place' or because the bill is about 'judicial discretion' — both can be true but the tweet's literal claim (Democrats introduced a bill that eliminates the mandatory minimums for these crimes) is verified. The original note was rated unhelpful precisely for adding spin without correcting a falsehood.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "HB 863 eliminates mandatory minimum sentences for certain crimes, including rape, manslaughter, and child pornography. Maximum sentences remain in place. https://lis.virginia.gov/cgi-bin/legp604.exe?261+ful+HB863 https://www.offthepress.com/virginia-dems-consider-ending-mandatory-minimums-for-attacking-cops-producing-child-porn",
+    "failure_reason": "Note-not-needed: confirms the tweet's claim and tacks on a softening clause. No factual error to fix; reads as partisan reframing. Voters tagged NoteNotNeeded (241) on the dominant axis.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://lis.virginia.gov/bill-details/20261/HB863/text/HB863",
+      "https://www.foxnews.com/us/virginia-democrats-frustrate-law-enforcement-bill-axing-prison-time-violent-crime-expert-warns",
+      "https://www.billtrack50.com/billdetail/1933018"
+    ],
+    "notes": "HB 863 (2026, VA Gen Assembly) explicitly removes mandatory minimums for rape, manslaughter, child pornography, assault on LEO, etc. Whether you call this 'ending sentences' (the tweet's framing) or 'restoring judicial discretion' (the sponsor's framing) is editorial — the underlying legislative fact is correct."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "State legislation around violent-crime sentencing — high political salience, moderate downstream impact. Not directly values-aligned but a clean false-positive trap for the bot."
+  },
+  "difficulty": "medium"
+}

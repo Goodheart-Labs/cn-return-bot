@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2013559515854078122",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "undated_real_event",
+  "tweet_summary": "Viral repost of the May 5, 2024 livestream footage of Bernard Polite attempting to shoot Pastor Glenn Germany during his sermon at Jesus' Dwelling Place Church in North Braddock, PA — the gun jammed. Tweet doesn't claim it's a current/new event.",
+  "why_note_decision": "The video is real, the description is accurate, and the tweet uses present tense without explicitly claiming it just happened. Date context is helpful but the tweet makes no false claim. Massive NotHelpfulNoteNotNeeded=62 confirms the rater consensus. A note merely adding 'this is from May 2024' is the classic NoteNotNeeded pedantic-context false positive on a true event.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The video is real and the tweet's description is accurate; nothing is misrepresented. If a note IS written, it must NOT repeat the original's failure of treating an undated repost of a true event as misinformation requiring a date stamp.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This incident occurred on May 5, 2024, when Bernard Polite attempted to shoot Pastor Glenn Germany during a service at Jesus' Dwelling Place Church in North Braddock, Pennsylvania, but the gun jammed.",
+    "failure_reason": "Adds true historical date context but the tweet itself made no false claim; community overwhelmingly rated NotHelpfulNoteNotNeeded (62).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true — Bernard Polite, May 5 2024, North Braddock PA, gun jammed; widely reported by NBC, CBS, ABC, Fox",
+    "sources_checked": [
+      "https://www.nbcphiladelphia.com/news/national-international/man-attempts-to-shoot-pennsylvania-church-paster-during-live-sermon/3851019/",
+      "https://www.cbsnews.com/pittsburgh/news/pittsburgh-area-man-arrested-allegedly-trying-to-shoot-church-pastor/"
+    ],
+    "notes": "Real event from May 5 2024 livestream; Pastor Glenn Germany at Jesus' Dwelling Place Church; Bernard Polite arrested."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "10M impressions; the tweet doesn't actively mislead so a note here would burn rater goodwill on a true event."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2018834624852509105",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["scams_fraud_finance"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "HustleBitch amplifies a Bexar County Sheriff Javier Salazar TikTok PSA telling people the jury-duty scam (calls threatening arrest and demanding gift cards / Bitcoin) is fraudulent, with the framing that the worst that happens for missing real jury duty is a letter.",
+  "why_note_decision": "The sheriff's core message — calls demanding Bitcoin/gift cards as 'jury duty fines' are scams; real LE never calls demanding payment — is unambiguously true and a useful PSA. The overbroad 'you will never be arrested for missing jury duty' line is technically wrong in some jurisdictions (Iowa, Georgia, Louisiana, etc. CAN issue bench warrants or contempt for missed jury duty per replies), but the original note doesn't even address that — it just restates the scam warning. That makes the original note redundant with the tweet, which is exactly note-not-needed: voters tagged NoteNotNeeded (12) dominantly on 16 ratings. Even if one wrote a 'better' note disputing the overbroad 'never arrested' line, that pedantic correction wouldn't serve readers either: the headline takeaway IS correct and protective.",
+  "judge_guidance": "PASS only if the bot declines to write a note. FAIL any note that just restates that jury-duty scam calls are scams — the tweet already says that. FAIL notes that pedantically point out that some jurisdictions do issue bench warrants for missed jury duty, since (a) it doesn't change the protective takeaway and (b) the original note that didn't even do this was already rated NoteNotNeeded. A useful note here would have to find something materially misleading that misleads readers; nothing in the sheriff's PSA does.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Sheriff Salazar's video correctly warns that jury duty scam calls — threatening arrest and demanding gift cards/Bitcoin — are fraudulent. Real law enforcement never calls demanding payment this way for missed jury duty. https://consumer.ftc.gov/consumer-alerts/2024/09/did-you-get-call-or-email-saying-you-missed-jury-duty-need-pay-its-scam https://www.thetexastrialattorney.com/blog/what-happens-if-i-miss-jury-duty https://www.legalmatch.com/law-library/article/what-happens-if-you-miss-jury-duty.html",
+    "failure_reason": "Note-not-needed: confirms the tweet's correct PSA without adding a correction. Pure redundancy.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "psa_substantively_true",
+    "sources_checked": [
+      "https://consumer.ftc.gov/consumer-alerts/2024/09/did-you-get-call-or-email-saying-you-missed-jury-duty-need-pay-its-scam"
+    ],
+    "notes": "FTC and many sheriff offices confirm: jury-duty scam calls are widespread; real LE never demands payment by gift card/crypto. The sheriff's framing is a PSA against a known scam pattern."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Useful PSA against scams targeting older/vulnerable people; not values-aligned but pro-social. Definitely not something to correct."
+  },
+  "difficulty": "easy"
+}
