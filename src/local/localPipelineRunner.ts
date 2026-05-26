@@ -39,6 +39,9 @@ export interface InputRow {
   url: string;
   needsNote?: string;
   groundTruthNote?: string;
+  judgeGuidance?: string;
+  originalNoteText?: string;
+  failureReason?: string;
 }
 
 export type PostFetcher = (input: InputRow) => Promise<{ post: Post; title: string }>;
@@ -75,6 +78,9 @@ export function parseInputCsv(filePath: string): InputRow[] {
 
   const needsNoteIdx = header.indexOf("needs_note");
   const groundTruthIdx = header.indexOf("ground_truth_note");
+  const judgeGuidanceIdx = header.indexOf("judge_guidance");
+  const originalNoteIdx = header.indexOf("original_note_text");
+  const failureReasonIdx = header.indexOf("failure_reason");
 
   const rows: InputRow[] = [];
   for (let i = 1; i < records.length; i++) {
@@ -86,6 +92,9 @@ export function parseInputCsv(filePath: string): InputRow[] {
       url,
       needsNote: needsNoteIdx >= 0 ? fields[needsNoteIdx]?.trim() : undefined,
       groundTruthNote: groundTruthIdx >= 0 ? fields[groundTruthIdx]?.trim() : undefined,
+      judgeGuidance: judgeGuidanceIdx >= 0 ? fields[judgeGuidanceIdx]?.trim() : undefined,
+      originalNoteText: originalNoteIdx >= 0 ? fields[originalNoteIdx]?.trim() : undefined,
+      failureReason: failureReasonIdx >= 0 ? fields[failureReasonIdx]?.trim() : undefined,
     });
   }
 
@@ -411,6 +420,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
           text: result.pipelineResult?.post?.text ?? "",
           needs_note: input.needsNote ?? "",
           ground_truth_note: input.groundTruthNote ?? "",
+          judge_guidance: input.judgeGuidance ?? "",
+          original_note_text: input.originalNoteText ?? "",
+          failure_reason: input.failureReason ?? "",
           bot_id: loggedBotId,
           note_status: result.noteStatus ?? "",
           outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,

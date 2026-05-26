@@ -66,6 +66,22 @@ const fetchPost: PostFetcher = async (input) => {
 };
 
 async function main() {
+  const args = process.argv.slice(2);
+  const finalFlag = args.includes("--final");
+  if (finalFlag) args.splice(args.indexOf("--final"), 1);
+  process.argv = ["bun", "tryoutNotes.ts", ...args];
+
+  const touchesSealedSet = args.some(
+    (a) => a.includes("datasets/big_eval/splits/test.csv") || a.endsWith("/test.csv"),
+  );
+  if (touchesSealedSet && !finalFlag) {
+    console.error(
+      "[tryoutNotes] datasets/big_eval/splits/test.csv is the sealed held-out set.\n" +
+      "             Pass --final to run on it (only do this at end-of-iteration handoff).",
+    );
+    process.exit(1);
+  }
+
   const parsed = parseCliArgs("tryoutNotes", { transformArg: tweetIdToUrl });
 
   await runPipeline({

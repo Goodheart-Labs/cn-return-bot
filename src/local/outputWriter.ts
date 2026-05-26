@@ -14,6 +14,9 @@ export const OUTPUT_HEADERS = [
   "text",
   "needs_note",
   "ground_truth_note",
+  "judge_guidance",
+  "original_note_text",
+  "failure_reason",
   "bot_id",
   "note_status",
   "outcome",
@@ -77,6 +80,9 @@ export interface CsvRowInput {
   url: string;
   needsNote?: string;
   groundTruthNote?: string;
+  judgeGuidance?: string;
+  originalNoteText?: string;
+  failureReason?: string;
 }
 
 export function resultToCsvRow(
@@ -94,6 +100,9 @@ export function resultToCsvRow(
     text: pr?.post?.text ?? "",
     needs_note: input.needsNote ?? "",
     ground_truth_note: input.groundTruthNote ?? "",
+    judge_guidance: input.judgeGuidance ?? "",
+    original_note_text: input.originalNoteText ?? "",
+    failure_reason: input.failureReason ?? "",
     bot_id: botId,
     note_status: result.noteStatus ?? "",
     outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
