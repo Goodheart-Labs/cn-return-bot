@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2038320515849375875",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Sen. Jack Reed claims '100 U.S. Senators in full agreement' and that all senators 'UNANIMOUSLY passed' a bipartisan DHS bill, blaming House GOP for refusing to vote.",
+  "why_note_decision": "Misleading framing of a procedural vote. The Senate DHS funding bill in March 2026 was passed by voice vote after 2 a.m. with only ~5 senators present using 'unanimous consent' (a procedural mechanism that just means no senator on the floor objected — not that all 100 were polled and agreed). The tweet's '100 U.S. Senators in full agreement' and 'every Senator from every state agreed' framing materially overstates what happened. Comments and Wikipedia/NPR/CNN coverage confirm the 5-senator voice vote. A note correcting the procedural framing is warranted.",
+  "judge_guidance": "PASS if the note clearly explains that 'unanimous consent' / the voice vote was conducted with only a handful of senators present (around 5, in the early morning) — NOT a roll-call vote of all 100 senators. Bonus credit for noting the bill excluded ICE funding (which is why the House rejected it). FAIL if the note (a) repeats the tweet's framing that all 100 senators were in agreement, (b) is partisan/argumentative rather than procedural, or (c) is unsourced. Sources should include reputable outlets (NPR, CNN, CBS, etc.).",
+  "reference_note": "The Senate passed this bill via 'unanimous consent' — a procedural device meaning no senator on the floor objected — not a roll-call vote of all 100 senators. Only ~5 senators were present for the voice vote after 2 a.m. The House rejected the bill because it excluded ICE funding. https://www.npr.org/2026/03/27/g-s1-115366/senate-dhs-tsa-deal",
+  "original_unhelpful_note": {
+    "text": "While passed via \"unanimous consent,\" the bill was approved by a voice vote with only five senators present. House Republicans rejected this version because it excluded funding for ICE, instead passing a different bill to fund the entire department.  https://www.cnn.com/2026/03/27/politics/senate-agreement-dhs-funding",
+    "failure_reason": "Note is factually accurate but received heavy 'missing key points' (13) and 'argumentative or biased' (9) ratings — likely because it leans into the GOP framing in the second sentence. A more neutral note that emphasizes the procedural reality of unanimous consent without taking sides on the ICE-funding dispute would rate better.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Tweet is misleading — 'unanimous consent' is a procedural mechanism, not 100-senator agreement; only ~5 senators were present.",
+    "sources_checked": [
+      "https://www.npr.org/2026/03/27/g-s1-115366/senate-dhs-tsa-deal",
+      "https://www.cnn.com/2026/04/30/politics/dhs-shutdown-funding-bill-house-vote"
+    ],
+    "notes": "Senate DHS bill passed by voice vote after 2 a.m. with a handful of senators present. Bill excluded ICE/Border Patrol funding. House rejected it; House passed alternative funding the full DHS for 8 weeks."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Sitting U.S. Senator with 109k followers misrepresenting how a Senate vote worked — this conflates 'unanimous consent' (procedural) with '100-0 agreement' (substantive), a confusion that systematically distorts public understanding of Senate procedure."
+  },
+  "difficulty": "medium"
+}

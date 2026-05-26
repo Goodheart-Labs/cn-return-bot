@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2035069444960244194",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Matt Wallace claims a video shows President Trump 'exiting the room' after hearing of Chuck Norris's death, framed as a deeply emotional reaction.",
+  "why_note_decision": "Chuck Norris died March 20, 2026. Trump's actual first reaction was given to White House reporters as he left for Mar-a-Lago on March 21 — he said he didn't know Norris had died, then called him 'a great supporter' / 'a tough cookie' (NY Post, USA Today, Deadline, TheWrap). The clip in the tweet shows generic White House footage of Trump with a Marine officer and reporters at a doorway — there is no on-camera Chuck-Norris-related departure. The 'exits the room because it got to him' framing is misleading and reached 2.1M views, so a note is warranted.",
+  "judge_guidance": "PASS if the note (a) makes clear the video is NOT of Trump reacting to Chuck Norris's death, and (b) describes Trump's actual reaction — that he was informed by reporters outside the White House on March 21, 2026 and called Norris a 'great supporter' / 'tough cookie'. Strong notes cite NY Post, USA Today, Deadline or TheWrap. FAIL if the note merely says 'no such reaction exists' without giving the real one (the original note's failure: it asserts the depicted event is fabricated but doesn't directly say the video itself is mis-captioned B-roll, and the missing-key-points raters flagged this). FAIL if the bot declines (claim is checkable and high-reach).",
+  "reference_note": "El video no muestra a Trump reaccionando a la muerte de Chuck Norris. Norris murió el 20 de marzo de 2026; la reacción real de Trump ocurrió al día siguiente, cuando reporteros le informaron mientras salía de la Casa Blanca rumbo a Mar-a-Lago — dijo que no sabía y lo llamó \"un gran apoyo\" y \"un tipo duro\". https://nypost.com/2026/03/20/us-news/trump-praises-great-supporter-chuck-norris-after-legendary-movie-stars-death-at-86-tough-cookie/ https://www.thewrap.com/media-platforms/politics/trump-learns-chuck-norris-death-white-house-reporters-video/",
+  "original_unhelpful_note": {
+    "text": "The video depicts a fabricated event; President Trump's actual reaction to Chuck Norris's death occurred while speaking to reporters outside the White House. https://nypost.com/2026/03/20/us-news/trump-praises-great-supporter-chuck-norris-after-legendary-movie-stars-death-at-86-tough-cookie/ https://www.usatoday.com/story/news/politics/2026/03/20/chuck-norris-death-trump-reacts/89253192007",
+    "failure_reason": "Calls the event 'fabricated' but doesn't clearly explain the simpler truth — the footage is generic White House B-roll mis-captioned, not a manipulated/deepfake video. Missing the key point that no on-camera 'exit the room because Norris died' moment occurred at all.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet_misleading_misattribution",
+    "sources_checked": [
+      "https://nypost.com/2026/03/20/us-news/trump-praises-great-supporter-chuck-norris-after-legendary-movie-stars-death-at-86-tough-cookie/",
+      "https://www.thewrap.com/media-platforms/politics/trump-learns-chuck-norris-death-white-house-reporters-video/",
+      "https://deadline.com/2026/03/trump-reacts-chuck-norris-death-1236762007/"
+    ],
+    "notes": "Trump's documented reaction was a verbal exchange with reporters outside the White House on March 21, 2026, not an emotional in-room exit. The video appears to be unrelated B-roll."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Celebrity-death misattribution by a high-reach political account (2.1M views); low EA stakes but typical of the 'misleading B-roll with emotional caption' pattern that erodes epistemic hygiene."
+  },
+  "difficulty": "medium"
+}

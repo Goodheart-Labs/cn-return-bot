@@ -1,0 +1,32 @@
+{
+  "tweet_id": "2047342818746900608",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "manipulated_or_fabricated_evidence", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An MSNBC infographic screenshot, posted by 'Why women get Ls', shows household-task percentages with the labels inverted: men supposedly do 58% of laundry vs women 13%, etc. Comments show readers taking it at face value.",
+  "why_note_decision": "The graphic inverts the actual 2019 Gallup poll: women, not men, were the 58%/51%/etc. Politifact has a direct debunk of this exact viral image. The post text is empty (just the image) but it functions as an endorsement of the inverted figures, and the reply thread shows people believing it. This is a concrete, checkable, viral statistical misinfo claim — a note is clearly warranted. The original CN note is accurate; the provisional 'no_note_needed' label is wrong.",
+  "judge_guidance": "PASS if the note establishes that the graphic inverts the 2019 Gallup figures — women (not men) are the 58% who do laundry, 51% who clean the house, etc. — and cites Gallup and/or Politifact's debunk of this specific viral image. REJECT if the note treats this as a real Gallup result, defends the graphic, or merely notes the image is 'unsourced' without identifying the inversion.",
+  "reference_note": "This graphic inverts the 2019 Gallup poll: women, not men, were 58% more likely to do laundry, 51% to clean the house, 50% to care for a child daily, 45% to grocery shop, and 42% to wash dishes. Politifact debunked this exact viral image in 2021. https://news.gallup.com/poll/283979/women-handle-main-household-tasks.aspx https://www.politifact.com/factchecks/2021/may/19/viral-image/no-poll-didnt-find-men-are-more-likely-do-chores-w/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "image_inverts_real_poll_data",
+    "sources_checked": [
+      "https://news.gallup.com/poll/283979/women-handle-main-household-tasks.aspx",
+      "https://www.politifact.com/factchecks/2021/may/19/viral-image/no-poll-didnt-find-men-are-more-likely-do-chores-w/"
+    ],
+    "notes": "Gallup's actual 2019 numbers: women 58%/51%/50%/45%/42% across laundry/cleaning/childcare/groceries/dishes; men 13%/9%/7%/18%/19%. The graphic in the tweet swaps the column headers."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "~77k impressions; corrects a politically-charged manipulated stat but low overall reach and limited EA/safety impact."
+  },
+  "difficulty": "easy"
+}

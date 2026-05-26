@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2043479634851835937",
+  "role": "unhelpful_needs_more_ratings",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "manipulated_or_fabricated_evidence", "misattributed_or_miscontextualized_media"],
+  "category_fit": "poor",
+  "suggested_category": "space_fakery_conspiracy",
+  "tweet_summary": "Spanish-language post claims an ISS astronaut demo proves spaceflight is faked because a blue globe the astronaut held did not float; reads the astronauts' faces as 'panic'.",
+  "why_note_decision": "This is the well-known 'NASA dropped the ball' clip. The full source video (NASA ISS Expedition educational downlink) shows the astronaut pushed the globe downward and seconds later it floats back up; a microphone is visibly floating throughout. AFP, PolitiFact, Newschecker and others all debunk this exact viral edit. The tweet pushes a clear conspiracy claim (ISS / spaceflight is fake) to ~3M views — a correction is warranted. The original note states the correct facts (cropped clip, ball pushed down, full video shows it returning) and cites NASA, AFP and a physics source; it just hasn't accumulated rater consensus, likely because conspiracy-aligned readers downvote correct corrections.",
+  "judge_guidance": "PASS if the note (a) clearly states the viral clip is cropped/edited, (b) explains the astronaut pushed/threw the globe downward so it followed that trajectory (Newton's 1st law), and (c) ideally notes that in the full uncut NASA video the globe floats back up shortly after, and/or that microphones and other objects are seen floating. Strong notes cite AFP, PolitiFact, or the NASA ISS Expedition source video. FAIL if the bot writes a note that endorses or hedges the 'space is fake' framing, fails to mention the cropping/edit, or merely says 'physics is real' without addressing the specific clip. FAIL if the bot declines to write a note (the claim is a checkable, high-reach conspiracy).",
+  "reference_note": "El video está recortado. En la grabación completa de NASA, el astronauta empuja el globo hacia abajo y segundos después este vuelve a flotar; un micrófono también se ve flotando. Las leyes físicas (1ª ley de Newton) se cumplen: el globo sigue la dirección de la fuerza aplicada. https://www.politifact.com/factchecks/2023/may/08/instagram-posts/nasa-astronaut-dropped-the-ball-but-video-shows-on/ https://factcheck.afp.com/doc.afp.com.33DT6F6",
+  "original_unhelpful_note": {
+    "text": "Contexto: Este clip está recortado. En el video completo de NASA, se ve que el globo fue empujado hacia abajo y luego flota de regreso, consistente con la microgravedad en la EEI.    Fuentes:  https://youtu.be/kg5uxKK-7lI?t=1133  https://openbooks.lib.msu.edu/collegephysics1/chapter/newtons-universal-law-of-gravitation-2  https://factcheck.afp.com/doc.afp.com.33DT6F6",
+    "failure_reason": "Note is substantively correct but accumulated 'incorrect' ratings (likely brigaded by conspiracy-aligned raters) and never reached HELPFUL; failure mode here is rating-volume / persuasion rather than accuracy. Could be slightly clearer by explicitly stating the microphone floats throughout.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet_false_conspiracy",
+    "sources_checked": [
+      "https://www.politifact.com/factchecks/2023/may/08/instagram-posts/nasa-astronaut-dropped-the-ball-but-video-shows-on/",
+      "https://newschecker.in/fact-check/space-travel-faked-heres-the-truth-behind-viral-video",
+      "https://newsmeter.in/fact-check/did-nasa-astronaut-drop-the-ball-and-expose-nasas-fake-international-space-station-718761",
+      "https://factcheck.afp.com/doc.afp.com.33DT6F6"
+    ],
+    "notes": "Multiple fact-checkers confirm the full uncut NASA ISS downlink shows the globe floating back up; microphone floats throughout; the astronaut applied a downward push so the globe followed that vector before drifting back."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Anti-science conspiracy with ~3M views; erosion of trust in space-program reality has spillover into broader institutional / scientific epistemics relevant to progress and AGI-era public reasoning."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2022540911629222110",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "false_political_framing",
+  "tweet_summary": "Utah College Republicans rhetorically asks 'Wasn't Charlie Kirk just canvassing a Dem area when a Dem shot him?', quoting a tweet that frames Dems as scared to canvass Republican areas.",
+  "why_note_decision": "Both factual premises are false: (a) Kirk was speaking at a Turning Point USA event at Utah Valley University in Orem, in Utah County — one of the most Republican-leaning counties in Utah (Trump won ~68% in 2024), not a 'Dem area'; (b) the shooter Tyler Robinson is a registered unaffiliated voter (not declared as Democrat), hadn't voted in the last two general elections, and was reportedly anti-fascist but not affiliated with the Democratic party. Both factual checkable claims in the tweet are wrong; a corrective note is appropriate. Provisional 'no note needed' likely reflected the rhetorical-question framing (raters thought 'it's just a question'), but the rhetorical form still asserts both factual premises and the tweet is widely shared (479K impressions).",
+  "judge_guidance": "PASS if the note establishes BOTH: (1) Kirk was shot at Utah Valley University in Utah County, a strongly Republican area (Trump won ~68% in 2024), NOT a 'Dem area' — and (2) the shooter Tyler Robinson was registered to vote as unaffiliated/no-party, not as a Democrat. Citing CNN/NBC/ABC on the suspect and Wikipedia / a county-level vote source on Utah County partisanship is the bar. FAIL if the note: (a) only addresses one of the two false premises; (b) calls Robinson a Republican or claims his ideology firmly (the evidence is messier — anti-fascist messages on ammo, but inactive/unaffiliated voter); (c) repeats the framing 'Dem area' as if accurate. Must avoid the original note's structure that the reference note essentially nails — so the original is actually a good model here.",
+  "reference_note": "Charlie Kirk was speaking at a Turning Point USA event at Utah Valley University in Utah County, one of Utah's most Republican counties (Trump won ~68% there in 2024), not a Democratic area. The suspect, Tyler Robinson, was registered to vote as unaffiliated (no party). https://www.cnn.com/2025/09/12/us/tyler-robinson-charlie-kirk-shooting-suspect-invs https://en.wikipedia.org/wiki/Assassination_of_Charlie_Kirk",
+  "original_unhelpful_note": null,
+  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "both premises false", "sources_checked": ["https://www.cnn.com/2025/09/12/us/tyler-robinson-charlie-kirk-shooting-suspect-invs", "https://www.nbcnews.com/news/us-news/suspect-charlie-kirk-shooting-tyler-robinson-rcna230504", "https://en.wikipedia.org/wiki/2024_United_States_presidential_election_in_Utah"], "notes": "UVU is in Orem, Utah County, ~68% Trump in 2024. Robinson registered with no party affiliation, had not voted in two prior elections, family said he had become 'more political' and anti-fascist messages were engraved on ammo — but he is not a registered Democrat."},
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "High-salience political violence narrative; misframing the assassin's affiliation feeds escalating partisan misinformation and political polarization. Worth getting right."},
+  "difficulty": "medium"
+}

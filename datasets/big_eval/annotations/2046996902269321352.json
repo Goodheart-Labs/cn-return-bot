@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2046996902269321352",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "conspiracy_and_viral_hoax", "overhyped_research_or_product"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Liz Churchill (conspiracy-themed account) frames an alleged 'boxes of ticks dumped in farm fields' rumor as deliberate sabotage by 'the Vaccine Cartel' to sell Pfizer's new 'Tick Vaccine', concluding 'this is NOT A COINCIDENCE… an EVIL PROFIT SCHEME'. Video is a TikTok of a man asking 'why are people finding boxes of ticks?'.",
+  "why_note_decision": "Per Snopes (April 2026), NBC Chicago, Cap Times, and Grist: (1) NO evidence supports the 'boxes of ticks dumped in fields' rumor — Snopes contacted >36 Missouri county officials and none confirmed any reports; (2) the objects sometimes seen in fields are commercial tick bait boxes (rodent-bait devices for tick control), not boxes of live ticks; (3) Pfizer/Valneva's Lyme disease vaccine VLA15/VALOR is still in Phase 3 / planned FDA filing in H2 2026 — it has NOT 'just been launched' and is targeting Lyme disease, not generic 'ticks'; (4) the recent rise in tick populations is driven by climate change, not a corporate plot. The original note covers (1)-(3) and cites Snopes, Consumer Reports, and Pfizer's own release. Raters: only 4 ratings (3 opinion-speculation, 2 missing key points, 2 note-not-needed, 1 each others) — the note is good but rated thinly. CN is warranted because the tweet pushes a viral health-conspiracy framing to nearly 900k followers.",
+  "judge_guidance": "PASS if the note (a) states there is no evidence farmers are finding 'boxes of ticks' dumped in fields (cite Snopes April 2026 and/or NBC Chicago, which confirmed no Missouri/Midwest county had received such reports), (b) identifies 'tick boxes' / tick bait boxes as commercial rodent-bait devices for tick control — likely conflated with the rumor, (c) clarifies Pfizer/Valneva's Lyme vaccine (VLA15/VALOR) is a CANDIDATE in Phase 3 with FDA filing planned for H2 2026, NOT launched, and (d) cites at least two of: Snopes, NBC Chicago, Cap Times/Grist, Pfizer release, Consumer Reports. FAIL the note if it (a) only addresses the vaccine-status point without rebutting the 'boxes of ticks' rumor, (b) treats the rumor as plausibly true (does not explicitly say no evidence), or (c) cites only one source. The original note covers a-c on the minimum bar; ideally also flags climate change as the actual driver of rising tick populations.",
+  "reference_note": "No evidence supports claims of 'boxes of ticks' dumped in farm fields: Snopes contacted dozens of Missouri/Midwest county officials in April 2026 and none confirmed any reports. Objects sometimes seen are commercial 'tick bait boxes' (rodent-bait devices for tick control), not boxes of live ticks. Pfizer/Valneva's Lyme disease vaccine (VLA15/VALOR) is a candidate currently in Phase 3 with FDA filing planned for H2 2026 — it has not 'just been launched' and is targeted at Lyme disease specifically. Rising tick populations are driven by climate change. https://www.snopes.com/news/2026/04/02/farmers-boxes-ticks/ https://www.nbcchicago.com/news/local/are-farmers-actually-finding-boxes-of-ticks-in-the-midwest-the-viral-social-media-claim-explained/3929662/ https://www.pfizer.com/news/press-release/press-release-detail/pfizer-and-valneva-announce-lyme-disease-vaccine-candidate",
+  "original_unhelpful_note": {
+    "text": "No evidence supports claims of boxes of ticks being dumped in fields. This rumor may confuse \"tick boxes,\" which are rodent bait devices for tick control. Pfizer's Lyme vaccine is seeking approval, not launched. https://www.snopes.com/news/2026/04/02/farmers-boxes-ticks https://www.consumerreports.org/pest-control/bait-boxes-are-a-safe-way-to-keep-ticks-out-of-your-yard https://www.pfizer.com/news/press-release/press-release-detail/pfizer-and-valneva-announce-lyme-disease-vaccine-candidate",
+    "failure_reason": "missing_key_points / under-rated — note is correct and well-sourced but didn't accumulate enough HELPFUL ratings (only 4 total rating events). Could be improved by adding NBC Chicago/Cap Times and mentioning climate change as the actual driver of rising tick populations.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_conspiracy",
+    "sources_checked": [
+      "https://www.snopes.com/news/2026/04/02/farmers-boxes-ticks/",
+      "https://www.nbcchicago.com/news/local/are-farmers-actually-finding-boxes-of-ticks-in-the-midwest-the-viral-social-media-claim-explained/3929662/",
+      "https://www.pfizer.com/news/press-release/press-release-detail/pfizer-and-valneva-announce-lyme-disease-vaccine-candidate",
+      "https://captimes.com/news/health/as-tick-bites-surge-conspiracy-theories-follow/article_032b203a-66a0-4291-bd7e-ce4fbce04ec8.html",
+      "https://grist.org/health/as-tick-bites-surge-conspiracy-theories-follow/",
+      "https://valneva.com/press-release/pfizer-and-valneva-announce-lyme-disease-vaccine-candidate-demonstrates-strong-efficacy-in-phase-3-valor-trial/"
+    ],
+    "notes": "Pfizer/Valneva Phase 3 VALOR topline results announced March 2026 (73.2% efficacy at day 28 post-dose-4); FDA filing planned H2 2026; potential launch 2027. Snopes' investigation: no county officials confirmed boxes-of-ticks reports. Tick boxes are rodent-bait devices."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Anti-vaccine conspiracy framing from a 887k-follower account undermines public-health uptake of an effective Lyme vaccine and feeds broader anti-pharma conspiracy ecosystems — health/EA-relevant."
+  },
+  "difficulty": "easy"
+}

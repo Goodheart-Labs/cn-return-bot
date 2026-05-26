@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2052999491662320103",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": [],
+  "category_fit": "good",
+  "suggested_category": "anecdote_seeking_legal_advice",
+  "tweet_summary": "A Nigerian cement seller (or someone quoting one) shares an anecdote: a customer paid in full for 150 bags of cement, took the receipt, disappeared for 4 months due to illness, then returned to collect — but cement prices have since risen. The post implicitly invites discussion about whether the seller can charge more. No factual claim about the world is made.",
+  "why_note_decision": "Tweet is a personal anecdote that invites legal/ethical debate; the replies are filled with people offering competing legal opinions. There is no false or misleading factual claim that a reader benefits from having corrected. The original AI note tries to lecture about Nigerian sale-of-goods law, which is (a) a legal opinion, not a fact-check of the tweet, and (b) does not contradict anything the tweet itself asserts.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a personal anecdote inviting community discussion, not a misinformation claim. Any note here is a false positive — including notes that opine on Nigerian contract law, sale-of-goods rules, storage fees, or what the seller 'should' do. The tweet makes no specific false claim about the law or the world. A note that lectures the seller on the law is opinion/legal-advice, not a community correction.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Once full payment for goods is made and a receipt issued, a seller cannot unilaterally increase the price due to market changes under Nigerian Sale of Goods law, though the buyer may be liable for reasonable storage fees for undue delay in pickup. https://www.linkedin.com/pulse/unilateral-price-hikes-vendors-after-consumation-py55f https://djetlawyer.com/rules-delivery-contract-sale https://www.mondaq.com/nigeria/contracts-and-commercial-law/1491794/an-overview-of-the-liabilities-arising-from-contracts-for-the-sale-of-goods-1",
+    "failure_reason": "Note offers legal commentary on a personal anecdote that contains no false claim. Even if legally accurate, this is unsolicited legal opinion, not a correction of misinformation.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "no checkable factual claim to verify",
+    "sources_checked": [],
+    "notes": "Tweet is an anecdote/discussion-starter. Even the legal points the note raises (sale-of-goods, storage fees) are merely one view of a contested legal/ethical situation, not a fact-correction."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Personal commerce anecdote; no relevance to progress, AI safety, EA causes, or animal welfare. ~1M impressions but informational stakes are negligible."
+  },
+  "difficulty": "easy"
+}

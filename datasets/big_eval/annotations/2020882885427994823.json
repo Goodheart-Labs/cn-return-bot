@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2020882885427994823",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "paraphrased_quote_as_mockery",
+  "tweet_summary": "Jackson Hinkle posts a CBS News clip of Erika Kirk (Charlie Kirk's widow) emotionally condemning antisemitism — saying things like 'Jew hate is brain rot' and asking 'how could you hate the Jewish people'. Hinkle attaches a sneering caricature paraphrase in quotes: 'The assassination of my husband was heavy but what really upsets me is when people don't like Israel.' followed by clown emojis.",
+  "why_note_decision": "Hinkle is using quotation marks for a paraphrase/mockery, not a real quote. Erika Kirk did not say that exact sentence in the attached CBS clip or elsewhere on the record — fact-checkers confirmed similar viral attributions to her are misattributed. So in a strict sense there IS a misquote. BUT: (a) the attached video plays Kirk's actual words right under the fake quote, so any honest viewer sees what she actually said; (b) the comments overwhelmingly read the tweet as Hinkle's editorial framing/mockery rather than a literal claim that this is a verbatim quote; (c) the dominant rater verdict is 'Note Not Needed' with very high volume (173 ratings), supported by 'Missing Key Points' (the original note didn't engage with what Kirk actually said). The original note's narrow 'this quote does not appear in the video' is technically true but misses the genre — it's mockery framing, not impersonation. A correct system should treat this as opinion/framing rather than write a literalist correction.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a partisan commentator paraphrasing/mocking a public figure in quote form while attaching the actual video of what she said; the audience treats it as editorial framing, not as a literal verbatim quote. A literalist 'this exact sentence does not appear in the video' note is what the original wrote and raters rejected it as Note Not Needed (29) and Missing Key Points (26). FAIL any note that simply asserts 'this quote was fabricated' without engaging with the fact that Kirk's real words are right there in the clip, or that reads as taking partisan sides. The correct behavior is to abstain.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The quoted statement does not appear in the video or Erika Kirk's CBS interview. https://x.com/jacksonhinklle/status/2020882885427994823 https://www.cbsnews.com/news/erika-kirk-cbs-news-town-hall-highlights",
+    "failure_reason": "Literalist correction misses the genre (mockery paraphrase with the real clip attached). Raters dominated by Note Not Needed (29) and Missing Key Points (26).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Quote is a hostile paraphrase by Hinkle, not a real Kirk quote; but it's clearly framed as mockery with the actual clip attached, so a literalist note is unhelpful.",
+    "sources_checked": [
+      "https://www.ibtimes.co.uk/viral-post-misattributed-quotes-erika-kirk-antisemitism-israel-1797743",
+      "https://www.jpost.com/diaspora/antisemitism/article-880245",
+      "https://combatantisemitism.org/cam-news/calling-jew-hatred-brain-rot-erika-kirk-vows-to-take-on-antisemitism-on-the-right/"
+    ],
+    "notes": "Fact-checkers confirm the precise 'really upsets me when people don't like Israel' wording is not what Kirk said; her actual line is the 'Jew hate is brain rot / how could you hate the Jewish people' material played in the attached video."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.88M impressions on a politically charged Kirk-assassination-aftermath post; topic matters but this particular tweet is editorializing, not novel misinformation."
+  },
+  "difficulty": "hard"
+}

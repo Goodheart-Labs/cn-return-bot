@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2048712783483879812",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "scams_fraud_finance"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Online ivermectin pharmacy account claims 'horse paste' ivermectin cures Parkinson's, cancer, COVID and other ailments — and that Big Pharma suppressed this to protect profits. Promotes a video showing veterinary-form ivermectin paste with text 'It can change your life'.",
+  "why_note_decision": "Dangerously false health misinformation from an account that profits from selling the product. Ivermectin is NOT approved to cure or treat Parkinson's, cancer, or COVID-19. FDA explicitly warns against using veterinary ivermectin in humans. Multi-source consensus (FDA, American Cancer Society, peer-reviewed reviews) confirms there is no high-quality clinical evidence ivermectin treats these conditions; some lab/animal/preliminary studies exist but nothing approaching 'cure'. Veterinary paste formulations are unsafe for human use (wrong concentration, excipients not for human consumption). A corrective note is clearly warranted on harm-reduction grounds. The original note covers the key points correctly and cites strong sources (FDA, PMC, FDA stakeholder letter). 'Note not needed' is only the dominant rater reason because rating volume was low (14 ratings); the underlying public-health stakes are high.",
+  "judge_guidance": "PASS if the note establishes ALL of: (1) ivermectin is NOT approved/proven to cure Parkinson's, cancer, or COVID-19 in humans; (2) the FDA explicitly warns against using veterinary ivermectin in humans (the 'horse paste' in the video); (3) cites at least one authoritative source — FDA, NIH/PMC, American Cancer Society, or a peer-reviewed review. May acknowledge that early-stage / lab research exists but must be clear it is not evidence of cure. FAIL if the note: (a) softens to 'effectiveness is debated' without naming the safety issue with veterinary paste; (b) repeats the conspiracy framing; (c) writes only about COVID without addressing the Parkinson's/cancer claims that are the tweet's headline. Must not endorse Big-Pharma-suppression framing.",
+  "reference_note": "Ivermectin is not approved or proven to cure Parkinson's, cancer, or COVID-19 in humans. FDA explicitly warns against using veterinary ivermectin paste (the product in this video) in humans — it is formulated for animals and unsafe at those concentrations. Some lab/animal/early-stage human studies exist but none demonstrate cure. https://www.fda.gov/consumers/consumer-updates/ivermectin-and-covid-19 https://www.cancer.org/cancer/latest-news/what-to-know-about-ivermectin.html https://www.fda.gov/safety/medical-product-safety-information/ivermectin-intended-animals-letter-stakeholders-do-not-use-humans-treatment-covid-19",
+  "original_unhelpful_note": null,
+  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "false health claim; dangerous veterinary-form promotion", "sources_checked": ["https://www.fda.gov/consumers/consumer-updates/ivermectin-and-covid-19", "https://www.cancer.org/cancer/latest-news/what-to-know-about-ivermectin.html", "https://www.fda.gov/safety/medical-product-safety-information/ivermectin-intended-animals-letter-stakeholders-do-not-use-humans-treatment-covid-19"], "notes": "FDA + ACS + peer-reviewed reviews: no high-quality clinical evidence for cancer/Parkinson's/COVID cure. Veterinary forms unsafe for humans. Account is a commercial seller (skymeds), conflict of interest."},
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "Only 70K impressions but commercial health-misinfo from a seller targeting vulnerable users with cancer/Parkinson's. High welfare stakes per impression; correcting health misinfo from sellers prevents direct harm."},
+  "difficulty": "easy"
+}

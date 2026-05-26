@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2049832117010383284",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["breaking_news_and_war", "scams_fraud_finance"],
+  "category_fit": "partial",
+  "suggested_category": "sanctions_crypto_enforcement",
+  "tweet_summary": "Kalshi (prediction-market account, ~395k followers) tweets 'JUST IN: US seized $450 million in Iranian crypto'.",
+  "why_note_decision": "The $450M figure comes directly from Treasury Secretary Scott Bessent's own public statement (widely reported by Fox Business, Kobeissi Letter, DNA India, etc.). The fuller picture is: ~$344M was a Tether-cooperated freeze of USDT on April 23, plus ~$100M+ in additional seizures, with Bessent characterizing the total as ~$450M to ~$500M. Calling the tweet wrong because the most-detailed reported component is $344M is trivial pedantry — Kalshi is faithfully reporting an official government figure. Multiple major outlets used the $450M number from Bessent. The original CN note nitpicks a real official figure and is itself somewhat misleading by implying only $344M was seized.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a clarifying note that acknowledges the $450M is Treasury Secretary Bessent's announced cumulative figure (which includes the $344M Tether USDT freeze plus additional seizures) — not a fabrication. FAIL any note that flatly says the figure is $344M and the tweet is wrong, because that ignores the official $450M cumulative figure. FAIL notes that cite only the Tether/CNN $344M figure without acknowledging Bessent's broader announcement.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The U.S. froze $344 million in cryptocurrency linked to Iran on April 24, 2026, not $450 million. This was done with Tether's cooperation to target sanctioned networks.    https://www.cnn.com/2026/04/24/politics/us-freezes-cryptocurrency-iran  https://www.foxbusiness.com/politics/treasury-freezes-344m-crypto-operation-economic-fury-pushes-iran-industrial-breaking-point  https://finance.yahoo.com/markets/crypto/articles/us-freezes-344-million-cryptocurrency-201957599.html",
+    "failure_reason": "Note treats the $450M figure as wrong, but Treasury Secretary Bessent himself publicly announced ~$450M as the cumulative seizure across Operation Economic Fury (Tether $344M USDT freeze + additional ~$100M+). The note conflates one component with the total and would mislead readers into thinking the tweet was inaccurate when it's reporting an official figure.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is consistent with official Treasury Secretary Bessent statements; the $450M figure is an announced cumulative total.",
+    "sources_checked": [
+      "https://www.foxbusiness.com/media/bessent-says-us-seized-nearly-500m-iranian-crypto-operation-economic-fury-sends-regime-crisis",
+      "https://www.cnn.com/2026/04/24/politics/us-freezes-cryptocurrency-iran",
+      "https://www.dnaindia.com/world/report-iran-crypto-crackdown-us-seizes-450-million-under-operation-economic-fury-3208393/amp",
+      "https://x.com/KobeissiLetter/status/2049702745783882104"
+    ],
+    "notes": "Tether-cooperated freeze: $344M USDT on April 23. Bessent's later statement: ~$450M total (some reports: 'nearly $500M'). Both numbers refer to different scopes (single freeze vs. cumulative operation)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Number-precision dispute on a real sanctions story. Not high-impact to correct."
+  },
+  "difficulty": "medium"
+}

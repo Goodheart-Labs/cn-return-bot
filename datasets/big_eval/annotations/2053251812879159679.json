@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2053251812879159679",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A small joke account posts a fake 'David Attenborough is dating Alysa Liu' headline, with one photo that is actually Michael Caine and a second photo of a woman in 1970s-inspired styling. The tweet text adds an absurdist 'age gap world record' line and references TMZ to make the joke obvious.",
+  "why_note_decision": "Transparent satirical joke — the 'age gap world record' phrasing, the meme-account voice, and a top reply ('That's Michael Caine wtf') with 140 likes all show that the audience reads it as a bit. Attenborough is 99 and was widowed in 1997; no reader is taking this as actual celebrity news.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note 'correcting' that the photo is Michael Caine, or that Attenborough isn't dating Alysa Liu, FAILS — it's a transparent joke from a small humor account, and writing a note treats satire as a sincere claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The man in the photo is actor Michael Caine, not David Attenborough, who is widowed and not dating Alysa Liu. https://en.wikipedia.org/wiki/Michael_Caine https://en.wikipedia.org/wiki/David_Attenborough https://en.wikipedia.org/wiki/Alysa_Liu",
+    "failure_reason": "Treats an obvious joke as a sincere misidentification. The absurdist 'age gap world record' line and the meme-account voice make the satire transparent; readers in comments already get it.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Joke — no real factual claim. David Attenborough (b. 1926) is widowed, Alysa Liu is a real Olympic figure skater, but the tweet's framing is obviously satirical.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/David_Attenborough",
+      "https://en.wikipedia.org/wiki/Michael_Caine",
+      "https://en.wikipedia.org/wiki/Alysa_Liu"
+    ],
+    "notes": "Both photos appear to be unrelated celebrity images; the gag is obvious from text and comments."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "A small joke account's celebrity gag — no policy, science, or safety stakes."
+  },
+  "difficulty": "easy"
+}

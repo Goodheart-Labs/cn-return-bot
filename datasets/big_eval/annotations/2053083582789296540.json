@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2053083582789296540",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["staged_or_scripted_content", "misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quote-tweet using a black-and-white photo of 'Jews playing football during the German Holocaust' to argue today's Gazans (who hold marathons) haven't 'inherited their dignity, resilience and pride' — implying the Gaza situation isn't a real genocide.",
+  "why_note_decision": "The photo is from the September 1944 Nazi propaganda film at Theresienstadt (Terezin) — a 'soccer match' staged for the Red Cross visit and Kurt Gerron's propaganda film 'The Führer Gives a City to the Jews'. After filming, Gerron and most of the cast (including the soccer players and spectators) were deported to Auschwitz and murdered. Using this image as evidence that Jews were 'living normally' in the Holocaust is exactly the misuse the Nazis designed the propaganda for. The misuse-of-Nazi-propaganda-photo IS the misinfo that warrants a note. Provisional 'no note needed' is wrong — 34K likes, 858K impressions, and multiple top replies explicitly call out the Nazi-propaganda origin (one reply even quotes the original note verbatim and is highly liked). The original note is concise and accurate; raters tagged it 'missing key points' (44) likely because it could have made the propaganda-purpose more explicit (Red Cross visit + Gerron film + post-filming murder).",
+  "judge_guidance": "PASS if the note establishes (1) the photo is from a STAGED Nazi propaganda film/event at Theresienstadt/Terezin ghetto in September 1944; (2) it was made to deceive the International Red Cross visitors and international observers about conditions; (3) most participants — players and spectators — were deported to Auschwitz and murdered shortly after filming. Strong sources: USHMM (Holocaust Encyclopedia), BBC, Times of Israel, Tablet, or footballmakeshistory.eu. FAIL if the note: (a) presents the match as evidence of 'normal life' in Terezin; (b) misses the post-filming deportation/murder; (c) only debunks the Gaza comparison without anchoring the actual photo's propaganda origin (the propaganda-origin IS the load-bearing point); (d) is so terse it doesn't communicate the staged-for-Red-Cross-visit context.",
+  "reference_note": "The photo is from a soccer match staged by the Nazis at the Terezin (Theresienstadt) ghetto in September 1944 for a propaganda film ('The Führer Gives a City to the Jews') and a Red Cross delegation visit, designed to deceive international observers about conditions. Director Kurt Gerron and most of the cast — players and spectators alike — were deported to Auschwitz and murdered shortly after filming. https://encyclopedia.ushmm.org/content/en/article/theresienstadt-red-cross-visit https://www.bbc.com/news/magazine-17761717",
+  "original_unhelpful_note": null,
+  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "photo is Nazi propaganda; participants murdered shortly after", "sources_checked": ["https://encyclopedia.ushmm.org/content/en/article/theresienstadt-red-cross-visit", "https://footballmakeshistory.eu/match-of-inhumanity/", "https://www.timesofisrael.com/football-in-the-ghetto-a-struggle-for-survival-in-the-holocaust/", "https://www.bbc.com/news/magazine-17761717"], "notes": "September 1944 propaganda match in Theresienstadt for Gerron's film + Red Cross visit. Gerron and cast deported to Auschwitz and murdered immediately after."},
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "858K impressions, 34K likes on a Holocaust-denial-adjacent misuse of Nazi propaganda imagery to delegitimize claims about the present Gaza conflict. Correcting this matters for both historical truth and current discourse around an active war."},
+  "difficulty": "easy"
+}

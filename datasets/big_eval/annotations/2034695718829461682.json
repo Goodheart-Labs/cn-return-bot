@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2034695718829461682",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["statistical_or_numerical_claim", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "DiscussingFilm posts that the Spider-Man: Brand New Day trailer launch (718.6M 24-hour views) was bigger than the GTA 6 trailer launch (475M). Compares two pop-culture trailer numbers.",
+  "why_note_decision": "The tweet's two numbers are correct as reported by Hollywood Reporter, Variety, Nerdist, Deadline, GameSpot etc.: Spider-Man: Brand New Day trailer hit 718.6M views in 24 hours, surpassing GTA 6 — and the 475M figure for GTA 6 is the widely-cited number for the second/most-recent GTA 6 trailer (also widely referred to simply as 'the GTA 6 trailer' since it was the latest big launch). The original note quibbles that GTA 6's FIRST trailer had only 93M and that Spider-Man's was '~500M not 718.6M', citing thegamer.com and gamesradar — but its 718.6M correction contradicts the documented 718.6M record reported across HR/Variety/Nerdist/Yahoo and itself confirms 475M for GTA 6's trailer (the comparison the tweet makes). So the note is internally inconsistent and asserts a false figure for Spider-Man. Raters dominated by 'notHelpfulIncorrect' (34) — they correctly flagged the note as wrong. The tweet itself is accurate.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's numbers (Spider-Man: Brand New Day 718.6M 24-hour trailer views, GTA 6 475M) are both well-documented in major outlets (Hollywood Reporter, Variety, Nerdist, Deadline, GameSpot). FAIL any note that (a) repeats the original note's false claim that Spider-Man had ~500M instead of 718.6M, or (b) corrects the GTA 6 number to 93M (which is the first-trailer figure, not the comparison being made). A correct system either abstains or, if forced to write, must affirm both numbers as documented.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The first GTA 6 trailer had 93 million views in its first 24 hours, not 475 million (that's the second trailer's 24-hour count). Spider-Man: Brand New Day had ~500 million 24-hour views, not 718.6 million.     https://www.thegamer.com/grand-theft-auto-gta-6-trailer-475-million-views-first-24-hours   https://www.gamesradar.com/entertainment/superhero-movies/spider-man-brand-new-day-dethrones-gta-6-by-having-the-first-trailer-in-history-to-surpass-500-million-views-in-one-day",
+    "failure_reason": "Factually wrong: the Spider-Man: Brand New Day trailer is widely reported at 718.6M in 24 hours (HR/Variety/Nerdist/Deadline). Note also picks a pedantic 'first vs latest GTA 6 trailer' framing the tweet didn't make. Raters: 34 notHelpfulIncorrect.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's numbers (718.6M Spider-Man, 475M GTA 6) are accurate per multiple major outlets.",
+    "sources_checked": [
+      "https://www.hollywoodreporter.com/movies/movie-news/spider-man-brand-new-day-sets-24-hour-trailer-record-1236172758/",
+      "https://variety.com/2026/film/news/spider-man-brand-new-day-trailer-biggest-ever-break-record-1236694163/",
+      "https://www.gamespot.com/articles/gta-6s-trailer-record-finally-beaten-by-spider-man/1100-6538898/",
+      "https://nerdist.com/article/spider-man-brand-new-day-trailer-24-hour-record-most-viewed/"
+    ],
+    "notes": "HR/Variety/Nerdist/Deadline all report 718.6M for Spider-Man: Brand New Day; GameSpot reports the trailer beat GTA 6's 475M record. The original note's '~500M' figure for Spider-Man is wrong."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.7M impressions but on entertainment trivia; low EA significance — included to test that the bot doesn't manufacture corrections to true tweets."
+  },
+  "difficulty": "easy"
+}

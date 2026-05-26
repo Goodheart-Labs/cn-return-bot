@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2014765449058427315",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "out_of_context_quote"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_or_distorted_quote",
+  "tweet_summary": "Dov Kleiman claims Jemele Hill said the Falcons 'should have hired Deion Sanders' because he is Black and not Stefanski because he is white. The screenshot of Hill's actual tweet is included in the post.",
+  "why_note_decision": "The tweet's lede ('Jemele Hill says the Falcons should have hired Deion Sanders because he is Black') is not what Hill said in the screenshot shown — and is not what she said in her own clarification posts. Hill said Falcons fans she knows dislike the Stefanski hire due to his Cleveland record and his handling of Shedeur Sanders, in a city that loves Deion. She did not say the Falcons should have hired Deion or that they should have done so because of race. This is a checkable mischaracterization of an embedded quote, on a high-impressions tweet — exactly the kind of distortion a note helps with.",
+  "judge_guidance": "PASS if the note states that Jemele Hill did not say the Falcons should have hired Deion Sanders because he is Black; she said Atlanta fans she knows are skeptical of the Stefanski hire because of his losing record in Cleveland and his handling of Shedeur Sanders, in a city that loves Deion. The note should cite Hill's own posts (her embedded tweet in the screenshot and/or her follow-up clarifications). REJECT if the note instead defends the tweet's framing, claims Hill did say what Kleiman alleges, or only quibbles about peripheral details.",
+  "reference_note": "Jemele Hill did not say the Falcons should have hired Deion Sanders because he is Black. In the tweet shown, she said Falcons fans she knows dislike the Stefanski hire because of his losing record in Cleveland and his handling of Shedeur Sanders, in a city that loves Deion. She later explicitly clarified she was not saying Deion should have been hired. https://x.com/jemelehill/status/2014714550088826901",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet_misrepresents_quoted_source",
+    "sources_checked": [
+      "https://www.foxnews.com/sports/ex-espn-star-battles-social-media-after-saying-falcons-fans-she-knows-quizzical-head-coach-hire",
+      "https://sports.yahoo.com/articles/jemele-hill-suggests-atlanta-falcons-000000642.html",
+      "https://collegefootballnetwork.com/nfl/jemele-hill-deion-sanders-kevin-stefanski/"
+    ],
+    "notes": "Hill's actual tweet (shown in the screenshot inside this very post) does not advocate hiring Deion or invoke race as a hiring criterion. Multiple outlets reporting on the controversy quote Hill's own follow-up clarification confirming this."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "~1.5M impressions on a fabricated-framing tweet attributable to a well-known journalist; corrects race-baiting distortion that fuels polarization but limited EA/safety impact."
+  },
+  "difficulty": "easy"
+}

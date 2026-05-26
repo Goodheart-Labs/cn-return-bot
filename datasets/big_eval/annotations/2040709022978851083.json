@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2040709022978851083",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["staged_or_scripted_content", "satire_or_joke"],
+  "category_fit": "poor",
+  "suggested_category": "satire_or_joke",
+  "tweet_summary": "Tradeit posts a satirical mock CS2 'update' video showing absurd 'realistic' grenade mechanics — pull a grenade pin and you can't swap weapons without blowing yourself up. Caption sarcastically tells Valve to 'stop making realistic updates'.",
+  "why_note_decision": "The video is obviously a joke/parody mock-up, not a claim that Valve actually shipped this update. Tradeit is a CS skins trading site that posts comedic CS2 content; replies treat it as a joke. The original note literally explains the joke ('video shows edited gameplay, not an official CS2 update') — adding context to satire. No reasonable viewer is misled.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is clearly satirical/joke content with no checkable factual claim. Any note that 'corrects' the implicit claim that this is a real CS2 update is a false positive (explains the joke to no one). Specifically FAIL if the bot writes a note resembling 'this video shows edited gameplay, not an official CS2 update'.",
+  "reference_note": "",
+  "original_unhelpful_note": {"text": "The video shows edited gameplay, not an official CS2 update; grenades do not drop and explode when switching weapons after pulling the pin. https://blog.counter-strike.net/ https://store.steampowered.com/news/app/730", "failure_reason": "Explains an obvious joke; no one was misled. Dominant rater reason: notHelpfulNoteNotNeeded.", "original_status": "NEEDS_MORE_RATINGS"},
+  "fact_check": {"agrees_correction_needed": false, "claim_verdict": "satire — no checkable claim", "sources_checked": ["https://x.com/tradeit_gg", "https://tradeit.gg/blog/cs2-updates/"], "notes": "Tradeit is a CS2 skin trading site known for joke CS2 content. Replies treat the video as humor. No real CS2 update has this mechanic."},
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "Gaming satire on a niche skins-trading account; no EA/progress/AGI/welfare stakes; correcting this matters ~zero."},
+  "difficulty": "easy"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2002619793271037957",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["manipulated_or_fabricated_evidence", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "unverifiable_deleted_screenshot",
+  "tweet_summary": "Sulaiman Ahmed shares a screenshot of an alleged Gad Saad poll dated 4 Dec 2022 asking which religious group is responsible for the majority of today's global issues, showing Jews 61%, Hindus 25%, Muslims 11%, Christians 3% out of 3,316,014 votes, with the caption 'He deleted this after 3.3M votes…'.",
+  "why_note_decision": "The original note asserts the screenshot is doctored and Gad Saad confirmed it, but raters overwhelmingly flagged the note as incorrect (52 'incorrect' tags). Web search and archive checks neither confirm an authentic poll matching these exact numbers nor any clear authoritative debunking; the cited 'confirmation' tweet from Saad is paywalled / not independently verifiable. The poll-vote total (3.3M) is implausibly high for a typical Saad poll, suggesting fabrication is likely — but a community note that asserts as fact 'this is doctored and Saad confirmed it' without verifiable independent evidence is itself unverifiable. The right move is to decline rather than write a note that may itself be misleading. If a bot can find rock-solid proof (Wayback snapshots of Saad's 2022 timeline showing no such poll AND a direct Saad denial), a note could be warranted; absent that, decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes one that (a) does NOT assert Saad personally denied/confirmed without a verifiable, public, dated source for that denial, (b) does NOT call the image 'doctored' or 'fabricated' as a flat fact unless it cites contemporaneous archives (Wayback snapshots of @GadSaad's Dec 2022 timeline) showing no such poll existed, and (c) does NOT cite Grok or other LLM-generated 'verifications'. The original note FAILED by asserting 'Gad Saad did not post this poll. The screenshot is doctored. He confirmed it' with weak sources (a Saad tweet that may or may not say what is claimed, a Wayback URL of his profile root which won't capture individual deleted posts, and a Grok response). A correct note here must avoid these failures — preferred outcome: decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Gad Saad did not post this poll. The screenshot is doctored. He confirmed it, and archives and searches show no such post in 2022. Sources: 1. https://x.com/GadSaad/status/2002125023142924794 2. https://web.archive.org/web/20221222000000/https://twitter.com/GadSaad 3. https://x.com/grok/status/2002139554375946319",
+    "failure_reason": "incorrect_or_unverifiable_assertion — note flatly states image is doctored and that Saad confirmed it, citing a Wayback snapshot of Saad's profile root (which doesn't index individual deleted posts), an unverified Saad reply tweet, and a Grok LLM response. Raters tagged it 52x 'incorrect' and 33x 'irrelevant sources'. The claim may be correct but the sources cannot establish it.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "unverified_either_way",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Gad_Saad",
+      "https://x.com/GadSaad (web search of Saad's poll history)",
+      "WebSearch for the specific poll text — no mainstream fact-check or archived hit"
+    ],
+    "notes": "Saad does run inflammatory polls (e.g. June 2024 'Islamophobic poll results' tweet) but no independent fact-check or archive confirms the specific Dec 2022 poll asked here. Raters' 'incorrect' tag count (52) suggests the community didn't accept the note's confident debunk. Best evidence stance is 'unverifiable in either direction' — therefore a note that confidently says 'doctored' is overclaiming."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Antisemitic conspiracy framing being amplified to 500k+ impressions matters for social cohesion, but the right intervention is sourceable evidence — a confidently-wrong correction can make things worse."
+  },
+  "difficulty": "hard"
+}

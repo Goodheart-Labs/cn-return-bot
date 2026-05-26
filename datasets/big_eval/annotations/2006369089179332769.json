@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2006369089179332769",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "manipulated_or_fabricated_evidence", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Small account 'NovaSilence' (1,377 followers) tweets 'Promotional photos of Doctor Doom, Steve Rogers, Yelena Belova and Reed Richards in AVENGERS DOOMSDAY have just leaked!' with four images that are heavily watermarked with '@lakersspammer'. Tweet has 2.7M impressions despite small account. Top replies overwhelmingly call the images AI-generated.",
+  "why_note_decision": "Per ComicBook.com and MovieWeb (and the broader trade press), there has been a wave of AI-generated 'Avengers: Doomsday' leak images circulating online — looking 'too clean', with full studio lighting, finished costumes, and obvious finished-render qualities rather than rough behind-the-scenes shots. Marvel has not confirmed any. The top replies on THIS tweet all call the images AI ('Thats completely AI', 'idk looks ai to me', 'the fact these haven't been taken down means they're fake'). However, the broader landscape is genuinely mixed: trade outlets like ComicBookMovie.com have reported on the same leak wave as plausibly authentic for some images, and there's no definitive Marvel debunk yet of THESE four images specifically. The most defensible CN is one that flags 'these are likely AI-generated; Marvel has not confirmed; trade press has warned of an ongoing AI-leak wave' rather than asserting fabrication as fact. The original note does roughly this and cites both MovieWeb and ComicBook.com — that's solid. Raters tagged 'opinion/speculation' (9), 'incorrect' (6), 'sources missing/unreliable' (8) — likely because the note hedges ('appear to be AI-generated') AND because the leak landscape is genuinely uncertain. A CN is warranted because the tweet asserts these are confirmed 'leaks' to a 2.7M-impression audience.",
+  "judge_guidance": "PASS if the note (a) states that the images APPEAR to be AI-generated and have NOT been confirmed by Marvel/Disney, (b) cites at least two of: ComicBook.com, MovieWeb, ComicBookMovie.com, Cosmic Book News covering the AI-leak wave, and (c) hedges appropriately ('appear to be', 'no official confirmation') rather than asserting outright fabrication. FAIL the note if it (a) categorically declares the images definitely AI-generated as proven fact without sources, (b) cites only Reddit/Twitter/Discord, (c) confuses these with confirmed-real leaks elsewhere, or (d) simply restates 'these are fake' without explaining the AI-fake-leak context. The original note hedges with 'appear to be' and cites two trade outlets — passes minimum bar; could be strengthened with a quote from the cited articles or by noting that Marvel has not confirmed.",
+  "reference_note": "These images appear to be AI-generated and have not been confirmed as official by Marvel. Trade outlets including ComicBook.com and MovieWeb have flagged an ongoing wave of AI-generated 'Avengers: Doomsday' fake leaks — the finished costumes, studio lighting and clean posing in these images match that pattern rather than typical behind-the-scenes leaks. https://movieweb.com/avengers-doomsday-leaked-downey-xmen-images-fake-ai/ https://comicbook.com/movies/news/avengers-doomsday-ai-leaks-are-flooding-social-media-but-dont-be-fooled/",
+  "original_unhelpful_note": {
+    "text": "These images appear to be AI-generated and not authentic leaked promotional photos for Avengers: Doomsday, as similar fabricated \"leaks\" featuring Doctor Doom and other characters have been widely debunked. https://movieweb.com/avengers-doomsday-leaked-downey-xmen-images-fake-ai/ https://comicbook.com/movies/news/avengers-doomsday-ai-leaks-are-flooding-social-media-but-dont-be-fooled/",
+    "failure_reason": "missing_key_points / opinion_speculation — note correctly says 'appear to be AI-generated' but raters tagged it speculation; would be stronger with explicit 'Marvel has not confirmed' framing and a direct quote/specific tell from the cited articles.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "likely_ai_generated_unconfirmed",
+    "sources_checked": [
+      "https://movieweb.com/avengers-doomsday-leaked-downey-xmen-images-fake-ai/",
+      "https://comicbook.com/movies/news/avengers-doomsday-ai-leaks-are-flooding-social-media-but-dont-be-fooled/",
+      "https://comicbookmovie.com/avengers/avengers-doomsday/update-avengers-doomsday-leaked-photos-reveal-doctor-doom-steve-rogers-x-men-fantastic-four-more-a227561"
+    ],
+    "notes": "Trade press confirms a sustained wave of AI-generated 'Doomsday' leaks since late 2025. Images here have the finished-render signature (studio lighting, full costumes, clean posing) trade press flagged as red flags. Marvel has not confirmed authenticity."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Entertainment/celebrity content with 2.7M impressions — corrects an AI-generated 'leak' that's polluting fandom discourse, modest stakes but a clean media-literacy intervention."
+  },
+  "difficulty": "medium"
+}

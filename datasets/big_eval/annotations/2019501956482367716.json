@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2019501956482367716",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "conspiracy_and_viral_hoax", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Dan Collins posts a coyly-captioned image ('Spotted in Tel Aviv. Has some major security around him. I wonder who that could be') showing an older man with white beard/long gray hair, implying it's a still-alive Jeffrey Epstein.",
+  "why_note_decision": "Politifact, Lead Stories, Misbar and Yahoo confirm this exact viral image is AI-generated (Gemini), with a Gemini Sparkle watermark visible in the uncropped original first posted to Reddit on Feb 1 2026. Hive Moderation rates it 99.9% AI; the Hebrew road sign translations are nonsense and the street 'Haangus Ev.' doesn't exist. Epstein died by suicide in 2019 (NY Medical Examiner ruling). 3.37M impressions and a surge of ~400k posts across ~224k accounts make this high-impact misinformation; a note is clearly warranted.",
+  "judge_guidance": "PASS if the note (a) identifies the image as AI-generated, ideally citing the Gemini Sparkle watermark on the uncropped original and at least one independent fact-check (Politifact, Lead Stories, Misbar, Reuters); and (b) reaffirms that Epstein died in 2019 (ruled suicide by the NY Medical Examiner). REJECT if the note entertains the 'still alive' theory, omits the AI-generation finding, or relies only on partisan/unreliable sources.",
+  "reference_note": "This image is AI-generated. The uncropped original (first posted to Reddit on Feb 1 2026) carries a Gemini AI Sparkle watermark; the Hebrew road-sign text is nonsensical and the street name doesn't exist in Tel Aviv. Hive Moderation rates it 99.9% AI. Jeffrey Epstein died by suicide in his Manhattan jail cell in August 2019. https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/ https://hoax-alert.leadstories.com/2026/02/fact-check-jeffrey-epstein-was-not-photographed-walking-in-tel-aviv-ai-generated-image.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "ai_generated_image_misrepresented_as_real",
+    "sources_checked": [
+      "https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/",
+      "https://hoax-alert.leadstories.com/2026/02/fact-check-jeffrey-epstein-was-not-photographed-walking-in-tel-aviv-ai-generated-image.html",
+      "https://www.misbar.com/en/factcheck/2026/02/08/viral-image-claiming-show-jeffrey-epstein-tel-aviv-ai-generated"
+    ],
+    "notes": "Gemini-generated, watermark on the original Reddit post, broken Hebrew signage, non-existent street name; Epstein's 2019 death is documented in multiple primary sources."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "3.37M impressions on an AI-fabricated conspiracy image; epistemic-integrity / AI-misuse case directly relevant to AI-safety and information-integrity goals."
+  },
+  "difficulty": "easy"
+}

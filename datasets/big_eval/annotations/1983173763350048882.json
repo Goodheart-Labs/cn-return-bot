@@ -1,0 +1,21 @@
+{
+  "tweet_id": "1983173763350048882",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Polymarket's own account says Mamdani's NYC mayoral odds 'collapse' and that 'if he continues falling at this rate, Cuomo would be the projected winner' — over a screenshot showing Mamdani at 90%/87% to Cuomo's 9-14%.",
+  "why_note_decision": "The 'BREAKING / collapse' framing is hyperbolic clickbait — Polymarket's own screenshot shows Mamdani still at ~87-90% and Cuomo at ~9-14%. The conditional 'IF he continues falling at this rate' is technically true (any monotonic decline eventually crosses), but it's reductio-ad-absurdum trivially true. Replies overwhelmingly mock the framing. Mamdani did go on to win the November 4 2025 election with 50.78% defeating Cuomo, confirming the 'collapse' framing was wrong. But the tweet does not state a checkable false claim — it states the current odds (correctly per its own screenshot) and offers a conditional projection. This is opinion/framing, not fact-misinformation. The original note literally just restates the screenshot's numbers — that's why 104 raters said 'note not needed'.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet contains no false factual claim — the screenshot is accurate and the projection is a hypothetical. The hyperbolic 'collapse' framing is opinion, not misinfo. FAIL if the bot writes a note that just restates Mamdani's current lead (that's the original note's failure — it adds no info beyond what the screenshot already shows). FAIL also if the bot uses post-hoc knowledge of the November 4 2025 result to claim the tweet was 'wrong' — at the time of writing (Oct 28 2025), the projection was speculative but not refutable.",
+  "reference_note": "",
+  "original_unhelpful_note": {"text": "Polymarket odds dipped in the past day, but Mamdani remains a heavy favorite (~89%) vs. Cuomo (~10%). The latest Suffolk Univ. poll reported by CBS shows Mamdani leading 44%-34%. Current market and polling do not project Cuomo as the winner. https://polymarket.com/event/new-york-city-mayoral-election https://www.cbsnews.com/newyork/news/andrew-cuomo-zohran-mamdani-nyc-mayoral-election-poll/", "failure_reason": "Restates numbers already visible in the tweet's screenshot; argues against a hyperbolic framing rather than a checkable false claim. 104 raters tagged notHelpfulNoteNotNeeded.", "original_status": "NEEDS_MORE_RATINGS"},
+  "fact_check": {"agrees_correction_needed": false, "claim_verdict": "framing hyperbole, no factual misinfo at time of posting", "sources_checked": ["https://en.wikipedia.org/wiki/2025_New_York_City_mayoral_election", "https://www.cbsnews.com/newyork/live-updates/nyc-election-results-2025/"], "notes": "Mamdani won 50.78% on Nov 4 2025 — confirming the 'collapse' framing was off, but the tweet itself doesn't state a falsifiable claim. Speculation, not misinfo."},
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "31M impressions on a politically charged race; framing-hype is noisy but not the kind of thing notes should target."},
+  "difficulty": "medium"
+}

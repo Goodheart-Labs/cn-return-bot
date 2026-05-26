@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2000583478971351203",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "ai_disaster_compilation",
+  "tweet_summary": "An account branded 'RussiaNews 🇷🇺' (379k followers) shares a 36s 720x720 video titled 'Beware of Winter Break Accidents — Mass Accidents.. This is what the cameras documented this year' showing snowy highway pile-ups; the clip went to 1.7M views and 2.2M impressions.",
+  "why_note_decision": "A note is warranted. Multiple commenters and fact-checkers identify Russia winter-accident compilations like this as AI-generated or AI-modified: tell-tale signs include cars that 'repair themselves' between frames, physics-breaking impacts, and stationary bystanders standing dangerously close. Lead Stories, RFE/RL, AccuWeather, and Mythdetector have documented AI-generated Russian winter-weather content circulating between Dec 2025 and Jan 2026 alongside real Kamchatka snowfall. The original note hedges ('this specific clip is unverified') but raters dinged it on 'missing key points' (3) — the note's strongest fact (multiple commenters point out impossible physics on screen) and the broader Russia-winter AI wave aren't anchored. The cited 'xlcountry.com' source is also a weak local outlet.",
+  "judge_guidance": "PASS a note that (a) flags concrete AI/manipulation evidence visible in the clip (cars reverting to undamaged state between cuts, impossible motion, bystander placement) OR (b) ties this clip into the documented Dec 2025 / Jan 2026 wave of AI-generated Russia winter-disaster content with at least one reputable fact-check source (Lead Stories, RFE/RL, AccuWeather, Mythdetector). The note should NOT assert with full certainty unless per-clip evidence is presented — partial uncertainty is acceptable, but the bot must clearly raise the AI/manipulation possibility rather than treat the footage as straight reporting. FAIL if the note treats the compilation as authentic documented accidents, FAIL if it relies solely on weak/local sources without naming the broader AI-winter-disaster trend.",
+  "reference_note": "The compilation has hallmarks of AI-generated or manipulated content — including vehicles appearing intact in later frames after major impacts, which top commenters and fact-checkers flag. AI-generated Russian winter-weather and accident videos circulated heavily in late 2025 / early 2026 alongside real Kamchatka snowfall; reputable outlets (RFE/RL, AccuWeather, Lead Stories) have debunked similar clips. Treat as unverified pending per-clip provenance. https://www.rferl.org/a/record-snowfall-paralyzes-russia-s-kamchatka-as-ai-videos-circulate-online/33655830.html https://www.accuweather.com/en/winter-weather/snow-buries-russias-kamchatka-peninsula-but-dont-believe-the-ai-videos/1854685 https://mythdetector.com/en/heavy-snowfall-in-kamchatk/",
+  "original_unhelpful_note": {
+    "text": "Misleading — similar viral 'whiteout' highway pile-up clips have been shown to be AI/simulations and flagged for unnatural motion and editing: https://xlcountry.com/ai-news-montana/ Russia did report many winter crashes Dec 13–15, but this specific clip is unverified: https://en.iz.ru/en/2008567/2025-12-15/483-road-accidents-occurred-russia-over-weekend",
+    "failure_reason": "Right direction but weak sourcing (a Montana radio site) and doesn't cite the strongest evidence (in-clip physics anomalies multiple commenters noticed). Missing key points = stronger fact-check sources (RFE/RL, AccuWeather, Lead Stories) exist for the broader AI Russia-winter wave.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "likely AI-generated / manipulated compilation, presented as real accident footage",
+    "sources_checked": [
+      "https://www.rferl.org/a/record-snowfall-paralyzes-russia-s-kamchatka-as-ai-videos-circulate-online/33655830.html",
+      "https://www.accuweather.com/en/winter-weather/snow-buries-russias-kamchatka-peninsula-but-dont-believe-the-ai-videos/1854685",
+      "https://mythdetector.com/en/heavy-snowfall-in-kamchatk/",
+      "https://factually.co/fact-checks/science/viral-russia-snowfall-images-ai-generated-fact-check-de0d79"
+    ],
+    "notes": "There is real heavy snowfall and real accidents in Russia in the Dec 2025 / Jan 2026 window, but reputable outlets have documented an accompanying wave of AI/simulated viral content. Multiple commenters on this specific tweet flag impossible physics ('5 times smashed white MB which repaired itself')."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2.2M impressions on an account branded with a national flag pushing AI-style disaster content; identifying AI media in news contexts matters for information ecosystem resilience as generative video improves."
+  },
+  "difficulty": "medium"
+}

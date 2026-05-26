@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1983342920729256063",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "stale_quote_recycled_as_recent",
+  "tweet_summary": "Daily Loud claims Jay-Z 'recently' said no rapper can do a Verzuz with him because no one is on his level.",
+  "why_note_decision": "The Jay-Z Verzuz quote is real — it was said during a December 21, 2021 Twitter Spaces with Alicia Keys / Rob Markman, where Jay-Z said 'ain't nobody can stand on that stage with me' (Billboard, Rap-Up, TMZ, HollywoodLife, Revolt). The only inaccuracy is the word 'recently' for a 4-year-old quote — a low-stakes news-aggregator framing tic, not a checkable factual misclaim that meaningfully misleads readers. Many replies already note the date themselves. This sits in trivial_pedantry / framing territory and Community Notes rates it 'note not needed'.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The underlying quote and its meaning are accurate; only the word 'recently' is loose, and that is a low-stakes framing tic typical of entertainment aggregators (and already corrected by the reply thread). Any note that 'corrects' this by adding the 2021 date is a false-positive nitpick. FAIL if the bot writes a note re-dating the quote, since this is not the kind of misleading claim Community Notes is for.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The quote from Jay-Z about no rapper being able to do a Verzuz with him is from December 2021, during a live audio conversation on Twitter (now X), though it has resurfaced in 2025. https://www.rap-up.com/2021/12/22/jay-z-says-no-one-can-compete-with-him-on-verzuz https://www.youtube.com/watch?v=NB13cBjg3D0",
+    "failure_reason": "Note is technically true but pedantically 're-dates' a real quote whose substance is accurate; raters overwhelmingly flagged it as 'note not needed' (4 of 5 categories).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_substantively_accurate_with_loose_framing",
+    "sources_checked": [
+      "https://www.billboard.com/music/rb-hip-hop/jay-z-talks-verzuz-battle-opponents-lil-mama-1235013624/",
+      "https://www.rap-up.com/article/2021/12/22/jay-z-no-competition-verzuz",
+      "https://www.tmz.com/2021/12/22/jay-z-verzuz-battle-no-match-rap/"
+    ],
+    "notes": "Quote sourced to Dec 21, 2021 Twitter Spaces with Alicia Keys & Rob Markman; meaning faithfully represented. Only 'recently' is loose."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Entertainment aggregator post about a rapper's Verzuz comment; near-zero EA/progress/safety relevance."
+  },
+  "difficulty": "easy"
+}

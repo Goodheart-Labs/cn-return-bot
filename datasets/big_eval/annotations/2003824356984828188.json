@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2003824356984828188",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "MAGA account (210k followers) posts a video titled 'The archeologist who discovered the blood of Jesus' featuring Ron Wyatt claiming he had Jesus' blood analyzed and it had only 24 chromosomes (23 from Mary + 1 Y from God). 282k impressions, 10.5k likes.",
+  "why_note_decision": "Materially false pseudoscientific claim from a discredited amateur archaeologist (Ron Wyatt is debunked by Bible Archaeology Report, ScienceBlogs, Wikipedia, and even creationist organizations like Answers in Genesis). The 24-chromosome story has no laboratory verification, no peer review, and no Israeli lab record. The biological claim is also impossible — a 24-chromosome cell would be haploid and could not sustain human development. Multiple comments in-thread already call this out ('Total fraud — you cannot see chromosomes in blood under a microscope'). At 282k impressions and a credulous audience, a note IS warranted.",
+  "judge_guidance": "PASS if the note (a) identifies Ron Wyatt as an amateur, widely-discredited claimant whose work has been rejected by archaeologists, scientists, and major Christian/creationist organizations, AND (b) notes there is no laboratory or peer-reviewed evidence supporting the 24-chromosome claim. Bonus credit for noting that chromosomes cannot be observed in dried blood under a microscope as described. Sources should include reputable references (Wikipedia for Wyatt, Answers in Genesis or Christian Research Institute critiques, peer-reviewed biology). FAIL if the note (a) accepts the claim, (b) only debates Christian theology rather than the empirical falsehood, or (c) cites only one weak source.",
+  "reference_note": "Ron Wyatt was an amateur with no archaeological or scientific training; his claims (including the 'blood of Jesus' chromosome story) have been rejected by professional archaeologists, scientists, and major Christian and creationist organizations including Answers in Genesis. No laboratory record, peer-reviewed publication, or Israeli lab corroborates the 24-chromosome claim, and chromosomes cannot be visualized in dried blood under a standard microscope as described. https://en.wikipedia.org/wiki/Ron_Wyatt https://christiancourier.com/articles/ron-wyatt-the-indiana-jones-of-the-sda-church https://biblearchaeologyreport.com/2018/10/11/fake-news-in-biblical-archaeology/",
+  "original_unhelpful_note": {
+    "text": "The video features claims by Ron Wyatt that he discovered and tested the blood of Jesus, finding it to contain only 24 chromosomes, which lack scientific verification and have been widely debunked as pseudoscience by archaeologists and experts.    https://biblearchaeologyreport.com/2018/10/11/fake-news-in-biblical-archaeology/    https://christiancourier.com/articles/ron-wyatt-the-indiana-jones-of-the-sda-church",
+    "failure_reason": "Note is substantively correct but received very few ratings (13 total). Could be slightly sharper — e.g., noting the biological impossibility (chromosomes aren't visible in blood under a microscope) and that even creationist organizations like Answers in Genesis have distanced themselves from Wyatt. Sources are appropriate but could include Wikipedia/AiG for broader credibility.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Ron Wyatt's 24-chromosome claim is pseudoscience, debunked by archaeologists, scientists, and Christian/creationist organizations alike.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Ron_Wyatt",
+      "https://biblearchaeologyreport.com/2018/10/11/fake-news-in-biblical-archaeology/",
+      "https://christiancourier.com/articles/ron-wyatt-the-indiana-jones-of-the-sda-church",
+      "https://scienceblogs.com/dispatches/2006/06/30/ron-wyatt-collosal-fraud"
+    ],
+    "notes": "Wyatt was an amateur with no scientific or archaeological training; his other claims (Noah's Ark, Ark of the Covenant, Red Sea crossing) are similarly rejected. The 24-chromosome story has no lab record. Biologically, 24 chromosomes would mean a haploid cell — non-viable for sustaining a person."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Pseudoscientific religious-archaeology claim reaching 282k impressions and 10.5k likes — modest but real reach for medical/scientific misinformation. Correcting pseudoscience that masquerades as laboratory evidence is valuable for epistemic hygiene."
+  },
+  "difficulty": "easy"
+}

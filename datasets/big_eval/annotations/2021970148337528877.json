@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2021970148337528877",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["scams_fraud_finance", "humor_meme"],
+  "category_fit": "partial",
+  "suggested_category": "shitpost_quote_in_quotes",
+  "tweet_summary": "Crypto-Twitter user 'Wara' (bio: 'never take this account seriously') posts a sarcastic 'JUST IN:' headline-format tweet inside quote marks claiming CZ was sentenced to 10 years for market manipulation, accompanied by a Jürgen Klopp celebration GIF, with the caption 'CT:' (= what Crypto Twitter would look like). Replies treat it entirely as a joke ('No, CT will be like whos Changpeng Zhao').",
+  "why_note_decision": "This is a hypothetical/shitpost — the author bio literally says 'never take this account seriously', the headline is in quotes (signalling 'imagine if'), the video is a Klopp celebration GIF (clearly meme content, not news footage), and the caption 'CT:' frames it as 'how Crypto Twitter would react'. Top replies confirm everyone reads it as a hypothetical. CZ is in fact free as of 2026 (4-month sentence served in 2024, pardoned by Trump in Oct 2025 — Wikipedia, The Block, Business Insider, PBS) — but no reader is being misled here. The original note is a flat factual correction of a joke, which is exactly the 'note not needed' failure pattern. Raters tagged it 4× 'note not needed' on only 6 ratings.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a hypothetical/shitpost: author bio says 'never take this account seriously', the 'JUST IN' headline is in quotes as a counterfactual, the video is a football-celebration GIF unrelated to crypto, and the caption frames it as 'how Crypto Twitter would react'. Top replies all read it as a joke. Specifically FAIL any note that earnestly states 'CZ was sentenced to 4 months in 2024, pardoned in 2025, no new sentencing' — that's the original failure: correcting a joke as if it were a news claim. Even though those facts are true, supplying them is a false-positive note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This claim is false. Changpeng Zhao served 4 months in prison in 2024 for anti-money laundering violations, was pardoned in 2025, and remains free as of Feb 12, 2026, with no new sentencing reported. https://en.wikipedia.org/wiki/Changpeng_Zhao https://www.theblock.co/post/386854/binance-founder-cz-reflects-prison-politics-potential-bitcoin-supercycle-pardon https://www.businessinsider.com/binance-cofounder-cz-changpeng-zhao-prison-experience-trump-pardon-2026-1 https://x.com/cz_binance/status/2021985508386385926",
+    "failure_reason": "note_not_needed_joke — author's bio explicitly disclaims seriousness; headline is in quotes; video is a Klopp celebration GIF; replies treat it as a hypothetical. Correcting a shitpost as if it were a real news claim is a false-positive.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_or_meme",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Changpeng_Zhao",
+      "https://www.pbs.org/newshour/economy/binance-founder-changpeng-zhao-sentenced-to-4-months-in-prison-for-allowing-money-laundering",
+      "https://fortune.com/crypto/2024/09/26/cz-changpeng-zhao-crypto-release-date-binance-founder/",
+      "https://blockworks.co/news/changpeng-zhao-sentencing-verdict"
+    ],
+    "notes": "CZ pleaded guilty in 2023, served 4 months in 2024, pardoned by Trump Oct 2025. So the underlying 'fact' (no 10-year sentence) is correct — but the tweet itself is a clearly-signalled shitpost, not a sincere news claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Niche crypto-Twitter inside-joke with low impressions; no real-world stakes."
+  },
+  "difficulty": "easy"
+}

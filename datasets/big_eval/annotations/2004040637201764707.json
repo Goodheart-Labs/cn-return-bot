@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2004040637201764707",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire"],
+  "category_fit": "poor",
+  "suggested_category": "christmas_santa_joke",
+  "tweet_summary": "OSINTdefender posts on Christmas Day morning that NORAD has detected an 'unidentified high-altitude hypersonic contact' approaching U.S. airspace and F-22s are being scrambled — an obvious tongue-in-cheek reference to the NORAD Santa Tracker.",
+  "why_note_decision": "Posted at 04:04 UTC on Christmas Day by an OSINT account known for serious reporting, deliberately framed in tracking-vocabulary to invoke the NORAD Santa Tracker. Reply thread universally reads it as a Christmas/Santa joke (top replies: 'You just made me piss myself Merry Christmas', 'Pretty sure that's Santa'). The community rated the original CN note CURRENTLY_RATED_NOT_HELPFUL, confirming readers did not want a literal debunk of a holiday joke. Treating this as misinformation is the false positive.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a holiday joke from a known OSINT account riffing on NORAD's Santa Tracker; the reply thread confirms readers understand it as such. Any note that earnestly debunks the 'hypersonic contact' or warns readers there is no real threat is a false positive. The community already rated the original note not helpful — do not repeat that failure.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading: NORAD's annual Santa Tracker is a long-running holiday simulation, not a real aerospace threat. NORAD's official tracker and 70th-anniversary press release describe a festive Santa-tracking event and do not report any hypersonic contacts or F-22 scrambles. https://www.noradsanta.org/ https://www.norad.mil/Newsroom/Press-Releases/Article/4344350/norad-ready-to-track-santas-flight-for-70th-anniversary-year/",
+    "failure_reason": "Note not needed — earnestly debunking a clearly understood Christmas/Santa joke. Reader sentiment in replies and the CURRENTLY_RATED_NOT_HELPFUL status confirm the joke read.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "humor_no_correction_warranted",
+    "sources_checked": [
+      "https://www.noradsanta.org/"
+    ],
+    "notes": "Tweet timestamp (Christmas morning), playful framing, and unanimous joke-recognition in replies indicate this is humor, not a serious aerospace claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "1.4M impressions but on a Christmas joke. Mislabelling jokes as misinformation undermines CN credibility — not zero impact, but no real-world harm being corrected."
+  },
+  "difficulty": "easy"
+}

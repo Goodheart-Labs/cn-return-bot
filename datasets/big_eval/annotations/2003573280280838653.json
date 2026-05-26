@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2003573280280838653",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "User shares a screenshot purportedly from @Cobratate (Andrew Tate) claiming Tate bet $10M on himself to lose at +780 odds and made $88M after losing his fight, and speculates this would be cheating/fraud.",
+  "why_note_decision": "The screenshot is fabricated — Andrew Tate did not actually post that he bet $10M on himself to lose. Primetimer, Yahoo Sports, and other fact-checks confirm no such post exists on his real account; Tate publicly said he 'lost fair and square'. The image circulating is a fake. A note correcting the fabricated screenshot IS warranted. Provisional label 'no note needed' likely reflected raters who assumed the screenshot was authentic and just disliked the framing — but the underlying premise (the screenshot) is false, so a note is appropriate.",
+  "judge_guidance": "PASS if the bot's note clearly states that the @Cobratate screenshot in the image is fabricated / not a real Andrew Tate post, AND cites Tate's actual public statement after the fight (e.g. that he said he 'lost fair and square'). FAIL if the note takes the screenshot at face value and only argues about the legality/morality of betting against oneself, or if it conflates the fake screenshot with a real claim by Tate. A correct note must establish: (1) the screenshot is not from Tate's authentic posts; (2) his real post after the fight contradicts the bet-to-lose narrative. Sources should be primary (Tate's actual account, or a fact-check like Primetimer/Yahoo Sports).",
+  "reference_note": "The screenshot attributed to @Cobratate is fabricated. Andrew Tate did not post that he bet $10M on himself to lose; his actual post after the fight said he 'lost fair and square'. https://x.com/Cobratate/status/2002584329080467587 https://sports.yahoo.com/videos/did-andrew-tate-suffer-largest-020653927.html",
+  "original_unhelpful_note": null,
+  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "screenshot fabricated; Tate made no such post", "sources_checked": ["https://www.primetimer.com/features/did-andrew-tate-bet-on-himself-to-lose-viral-88-million-profit-claim-debunked", "https://sports.yahoo.com/videos/did-andrew-tate-suffer-largest-020653927.html"], "notes": "Multiple outlets confirm the $88M bet-to-lose claim is unsubstantiated; no betting records, no authentic Tate post matches the screenshot text."},
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "medium", "lens_rationale": "1.4M impressions on a tweet built around a fabricated screenshot from a high-profile figure with a large online following; correcting fake screenshots of public figures matters for information integrity even if the topic itself is celebrity gossip."},
+  "difficulty": "medium"
+}

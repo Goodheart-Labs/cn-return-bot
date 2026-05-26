@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2039760320357392757",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy", "election_misinformation"],
+  "category_fit": "partial",
+  "suggested_category": "campaign_attack_meme",
+  "tweet_summary": "A political attack meme contrasting GOP candidate Ed Gallrein with incumbent Thomas Massie ahead of the May 2026 Kentucky KY-4 primary, mixing flattering and unflattering bullet points across both columns.",
+  "why_note_decision": "This is a partisan campaign meme using a comparison-list format with rhetorical exaggerations on both sides ('1 bill passed in 14 years', 'endorsed by IPAC (DSA-aligned)', etc.). The 'endorsed by IPAC (DSA-aligned)' line is a clear satirical jab, not a sincere factual claim — AIPAC in reality spent ~$4.1M opposing Massie (Al Jazeera, Times of Israel, The Intercept). 'Navy SEAL / Army Ranger / Trump-endorsed' for Gallrein is broadly accurate. The '1 bill passed in 14 years' is close to true for Massie's enacted original-sponsorship record. None of the claims are clear, unambiguous factual misinfo a reader is being deceived by — it reads as partisan framing in a known campaign-attack format. Raters dominantly voted 'note not needed' (7 of 18).",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a partisan campaign-attack meme: contested framings, sarcastic labels (e.g. 'endorsed by IPAC (DSA-aligned)') and rough-but-not-deceptive figures about a politician's record. Any note that 'corrects' the meme's framing or AIPAC labeling is a false positive on opinion/satire. FAIL if the bot writes a note re-litigating the AIPAC labeling or Massie's enacted-bill count — these are political-framing disputes, not factual misinformation. FAIL if the bot copies the original note's pattern of nitpicking enacted-bill counts and AIPAC scores.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The meme contains inaccuracies regarding Thomas Massie's record and Ed Gallrein's background. GovTrack shows Massie has sponsored 4 enacted bills, not 1. AIPAC has given Massie a failing score, while Gallrein has received over $1.5M from pro-Israel groups.     https://www.govtrack.us/congress/members/thomas_massie/412503   https://www.trackaipac.com/states/kentucky   https://ballotpedia.org/Ed_Gallrein",
+    "failure_reason": "Tries to fact-check a partisan campaign-attack meme on minor numerical and framing points; raters overwhelmingly tagged 'note not needed' (7) and 'opinion/speculation' (5). The note also conflates 'enacted as original sponsor' with 'all bills passed', and AIPAC ratings are not how the org evaluates Massie (it spent ~$4.1M against him).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_is_partisan_framing_not_misinfo",
+    "sources_checked": [
+      "https://www.aljazeera.com/news/2026/5/18/massie-race-breaks-spending-record-as-pro-israel-groups-target-trump-critic",
+      "https://theintercept.com/2026/05/19/thomas-massie-loses-election-results-trump-aipac-kentucky/",
+      "https://www.govtrack.us/congress/members/thomas_massie/412503",
+      "https://kentuckylantern.com/2026/05/19/trump-endorsed-gallrein-wins-heated-northern-kentucky-republican-primary-against-incumbent-massie/"
+    ],
+    "notes": "AIPAC's UDP spent ~$4.1M opposing Massie in the 2026 primary; Massie famously votes against Israel funding. Gallrein is a real Navy SEAL / Army Ranger / Trump-endorsed candidate who defeated Massie 55-45 on May 19, 2026. Meme's bullet points are partisan-framing exaggerations rather than discrete factual misinformation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Real congressional primary with major foreign-policy stakes (AIPAC vs anti-interventionist Republican); fact-checking this specific meme adds little, but the broader race is meaningful."
+  },
+  "difficulty": "medium"
+}

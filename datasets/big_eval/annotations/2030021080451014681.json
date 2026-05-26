@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2030021080451014681",
+  "role": "unhelpful_irrelevant_sources",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A pro-Iran caption ('Iranian missiles have a free sky without that iron scrap in Tel Aviv') over a video purporting to show dozens of missiles falling on Tel Aviv. The video has been widely confirmed AI-generated (likely Sora) — NewsGuard's False Claim of the Week.",
+  "why_note_decision": "Multiple fact-checks (Lead Stories, NewsGuard, Algemeiner, BOOM, Tribune, Haaretz, Euronews) confirm this exact video is AI-generated, with Hive Moderation rating 98.3% AI and Sightengine 98% AI. Visual inconsistencies (duplicate rooftops, deformed cars, unnatural orange smoke, no sirens) corroborate. Reply thread shows several users questioning authenticity, but the post still pulled 1.05M video views, 1.76M impressions and 29k likes. A clarifying note is high value during an active war.",
+  "judge_guidance": "PASS if the note (a) identifies the video as AI-generated, citing at least one independent fact-check (NewsGuard, Lead Stories, Algemeiner, BOOM, Haaretz, Euronews, or similar); and (b) makes clear that while real Iranian strikes on central Israel did occur around March 3 2026, the specific video shown here is fabricated. REJECT if the note treats the video as genuine, only quotes Israeli interception statistics without addressing the AI provenance, or sources only to general war-coverage articles that don't address this video.",
+  "reference_note": "This video is AI-generated, not real footage of Iranian missiles over Tel Aviv. Multiple fact-checkers confirmed it (Hive Moderation ~98% AI, Sightengine ~98% AI) with telltale artifacts including duplicate rooftops, deformed cars and unnatural orange smoke; NewsGuard listed it as its False Claim of the Week. Real Iranian strikes on central Israel did occur around March 3 2026, but this clip is fabricated. https://leadstories.com/hoax-alert/2026/03/fact-check-video-does-not-show-real-bombing-of-tel-aviv-in-march-2026.html https://www.newsguardrealitycheck.com/p/dozens-of-missiles-struck-tel-aviv https://www.algemeiner.com/2026/03/06/tel-aviv-destroyed-viral-video-proves-the-dangers-of-ai-during-israel-iran-war/",
+  "original_unhelpful_note": {
+    "text": "The video is AI-generated, not real footage of Iranian missiles over Tel Aviv. Verified reports show Israel's defenses intercepted most projectiles in recent attacks, with visible interceptions and debris—not a \"free sky.\"    https://www.timesofisrael.com/liveblog_entry/idf-says-most-of-iranian-missiles-intercepted-in-latest-attack/  https://www.reuters.com/world/middle-east/israel-says-it-intercepted-most-iranian-missiles-2025-10-01/  https://www.bbc.com/news/articles/c3rkje0l3z9o",
+    "failure_reason": "Right on the AI verdict but the cited sources don't actually establish the AI-generated provenance of this specific clip — they discuss interception rates and unrelated October 2025 attacks. Reader cannot verify the AI claim from these sources.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "ai_generated_video_misrepresented_as_real",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/03/fact-check-video-does-not-show-real-bombing-of-tel-aviv-in-march-2026.html",
+      "https://www.newsguardrealitycheck.com/p/dozens-of-missiles-struck-tel-aviv",
+      "https://www.algemeiner.com/2026/03/06/tel-aviv-destroyed-viral-video-proves-the-dangers-of-ai-during-israel-iran-war/",
+      "https://www.haaretz.com/israel-news/israel-security/2026-03-04/ty-article/.premium/ai-generated-video-of-missiles-raining-on-tel-aviv-reaches-tens-of-millions/0000019c-b957-d66d-a3dc-b9f783050000"
+    ],
+    "notes": "AI detectors and visual analysis converge on AI-generated (likely Sora). NewsGuard's False Claim of the Week."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.76M impressions, 1.05M video views during a hot Israel-Iran war; AI-generated war footage materially distorts public perception and is a core EA-safety concern for AI risk and information integrity."
+  },
+  "difficulty": "easy"
+}

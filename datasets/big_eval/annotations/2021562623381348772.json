@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2021562623381348772",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["opinion_listicle"],
+  "category_fit": "poor",
+  "suggested_category": "opinion_listicle",
+  "tweet_summary": "A viral listicle/map of which nationality each European country supposedly finds most attractive (mostly Italy/Spain). No checkable factual claim is made beyond restating the viral map.",
+  "why_note_decision": "The tweet is presenting a viral subjective-preference ranking. Even if the underlying survey is dubious, this is opinion/entertainment content, not a falsifiable factual claim about the world. A 2014 GoEuro/Lovoo survey of 50k people across 7 countries is a plausible source, so the original note's claim 'no credible source' is itself questionable. Either way, attractiveness rankings aren't the kind of thing that warrants a corrective note.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive: this is a subjective preference listicle, not a checkable factual claim. Reject any note that calls the map 'misleading' or 'unsourced' without acknowledging the documented GoEuro/Lovoo 2014 survey origin, and especially reject notes that simply restate the original failed note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading: the list comes from a viral unlabeled map reposted without any cited survey. Online discussions and reposts note there's no credible source—it appears to be a stereotype-based meme, not representative data. https://www.reddit.com/r/MapPorn/comments/y7d4y5/which_country_has_the_most_attractive_people",
+    "failure_reason": "Note not needed — subjective opinion content; also the note's claim that no source exists is itself wrong (there's a 2014 GoEuro/Lovoo survey behind the viral map). Single Reddit thread is not a reliable source.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "subjective_opinion_no_correction_warranted",
+    "sources_checked": [
+      "https://grokipedia.com/page/Europes_Most_Attractive_Men_Map",
+      "https://theweek.com/people/59617/where-will-you-find-europes-sexiest-men-and-women",
+      "https://www.joe.ie/life-style/map-europe-shows-attractive-people-583830"
+    ],
+    "notes": "The viral map traces to a 2014 GoEuro/Lovoo survey of ~50k 18-35-year-olds across 7 European countries. Even apart from sourcing, attractiveness preference is subjective and not the kind of claim CN should adjudicate."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "3.5M impressions but no real-world consequence; correcting opinion listicles has near-zero EA/safety value."
+  },
+  "difficulty": "easy"
+}

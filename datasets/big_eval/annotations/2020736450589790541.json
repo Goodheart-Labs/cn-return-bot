@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2020736450589790541",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "conspiracy_and_viral_hoax"],
+  "category_fit": "partial",
+  "suggested_category": "missing_intermediary_context",
+  "tweet_summary": "An account called 'The Saviour' (445k followers) claims Epstein placed the 'sacred Kiswah of the Kaaba' on the floor after it was 'shipped to him directly from Saudi Arabia' — framing this as a Saudi-state action and a deliberate desecration. Image shows Epstein and another man (identified by Middle East Eye as Sultan Ahmed bin Sulayem, CEO of DP World — an Emirati) looking at the cloth on the floor.",
+  "why_note_decision": "The tweet's 'shipped directly from Saudi Arabia' framing is misleading. Per unsealed DOJ documents (Feb 2026 reporting, Middle East Eye, Roya News, 5Pillars, India.com): the Kiswah pieces themselves originate in Mecca/Saudi Arabia, but the shipment to Epstein was organized by UAE-based businesswoman Aziza al-Ahmadi and Abdullah al-Maari in 2017 — not by the Saudi government. The other man in the photo is an Emirati executive (Sultan Ahmed bin Sulayem). The relevant correction is that the shipment was UAE-organized, not a direct Saudi-state gesture. Notes are warranted because the 'directly from Saudi Arabia' framing materially shifts the blame and the story.",
+  "judge_guidance": "A correct note must (1) clarify that the Kiswah shipment to Epstein was organized by UAE-based contacts (specifically Emirati businesswoman Aziza al-Ahmadi per unsealed DOJ documents), NOT a direct shipment from the Saudi government, AND (2) identify the man in the photo as an Emirati (Sultan Ahmed bin Sulayem, CEO of DP World) per Middle East Eye reporting. Bonus: noting that pieces of the old Kiswah are traditionally distributed annually to various Muslim states/dignitaries as gifts (this is the legitimate-channel context). The note should cite credible sources (Middle East Eye, Roya News, India.com, or other reporting on the DOJ documents). PASS notes that correctly identify the UAE-organized shipment. FAIL notes that (a) deny the underlying event (the photo and shipment are real per DOJ documents), or (b) endorse 'directly from Saudi Arabia' framing, or (c) claim the original Kiswah does not come from Mecca at all (it does).",
+  "reference_note": "Per unsealed DOJ documents (reported by Middle East Eye, Roya News, India.com), the Kiswah pieces shipped to Epstein in 2017 were organized by UAE-based businesswoman Aziza al-Ahmadi and Abdullah al-Maari — not directly by the Saudi government. The man pictured with Epstein is Sultan Ahmed bin Sulayem, CEO of Emirati firm DP World. Pieces of the old Kiswah are traditionally distributed each year as gifts to Muslim states/dignitaries; this piece reached Epstein via UAE contacts, not a Saudi state shipment. https://www.middleeasteye.net/news/epstein-files-show-kaaba-cloth-pieces-makkah-shipped-epstein-uae-contacts",
+  "original_unhelpful_note": {
+    "text": "The Kiswah piece was not shipped directly from Saudi Arabia to Epstein. Saudi authorities annually gift pieces of the old Kaaba covering to Muslim countries/leaders as tradition. This one went to the UAE first, then to Epstein via an Emirati official. https://x.com/ii3snd/status/2020829316783767769 https://x.com/Dr_Ebtesam_/status/2020800505409044923 https://x.com/man3sh3/status/2020764116630020578 https://x.com/ii3snd/status/2020829316783767769 https://x.com/Dr_Ebtesam_/status/2020800505409044923 https://x.com/man3sh3/status/2020764116630020578",
+    "failure_reason": "Note's direction is correct but it cites only other X posts (with the same URLs duplicated), not authoritative sources — rated 'incorrect' (5) and 'irrelevant sources' (4). Also misses the key detail from unsealed DOJ documents: the shipment was specifically organized by UAE-based businesswoman Aziza al-Ahmadi in 2017, and the man in the photo is Sultan Ahmed bin Sulayem of DP World. Citing Middle East Eye, Roya News, or India.com would be much stronger.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — shipment was UAE-organized, not a Saudi state action; the Kiswah itself does originate in Mecca but routing matters",
+    "sources_checked": [
+      "https://www.middleeasteye.net/news/epstein-files-show-kaaba-cloth-pieces-makkah-shipped-epstein-uae-contacts",
+      "https://en.royanews.tv/news/67304/Documents-reveal-Jeffrey-Epstein-received-piece-of-Kaaba%E2%80%99s-Kiswah",
+      "https://www.india.com/news/world/jeffrey-epstein-received-pieces-of-holy-cloth-covering-kaaba-sent-from-saudi-arabia-by-emirati-businesswoman-what-could-be-the-consequences-epstein-files-kiswah-aziza-al-ahmadi-florida-uae-8291813/"
+    ],
+    "notes": "Unsealed DOJ emails (Feb-Mar 2017) name Emirati businesswoman Aziza al-Ahmadi and Abdullah al-Maari as organizing the shipment of three Kiswah fragments to Epstein's St. Thomas residence via Miami. Shipment was labeled 'artwork' for customs. The man in the photo is Sultan Ahmed bin Sulayem (Emirati, CEO DP World). Saudi state was not the direct shipper, though the cloth originated in Mecca."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "449k impressions on a religiously-charged conspiracy framing that inflates Saudi-state involvement. Correcting attribution (UAE-orchestrated, not Saudi state) has modest information-integrity value, particularly for inter-state political relations."
+  },
+  "difficulty": "medium"
+}

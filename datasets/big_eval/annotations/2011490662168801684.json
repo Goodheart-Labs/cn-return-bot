@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2011490662168801684",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Speaker Mike Johnson posts a Fox News clip accusing Democrats of 'attacking ICE for simply enforcing the laws' and of 'playing dangerous political games with national security' over an effort to cut ICE funding amid a government shutdown threat after a fatal ICE shooting in Minneapolis.",
+  "why_note_decision": "The tweet is partisan political framing/opinion. The underlying factual reference — Democrats pushing accountability measures (body cameras, judicial warrants, unmasking, oversight) and threatening to block DHS funding after a fatal Minneapolis ICE shooting — is broadly accurate per PBS, Government Executive, Washington Examiner reporting. The original note paraphrases that reporting but the tweet itself is rhetoric ('dangerous political games', 'attacking ICE', 'enforcing the laws'); no specific checkable factual claim is being misrepresented in a way Community Notes is intended to correct. Raters tagged the note 'note not needed' (15) and 'missing key points' (15) — they see it as political commentary rather than misinformation.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a Speaker's political opinion characterizing Democrats' ICE-oversight push as 'dangerous political games' and 'attacking ICE'. Both sides have factually supportable framings; CN should not be used to add a counter-opinion. Specifically FAIL any note that (a) merely contextualizes the Democratic proposals (body cams, judicial warrants) as if that disproves Johnson — he didn't deny those proposals exist; (b) repeats Johnson's framing approvingly; (c) characterizes either side's motives. A note would only be warranted if Johnson made a specific verifiable false claim (e.g. wrong shooting facts, wrong bill text) — he doesn't here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Democratic lawmakers are proposing constraints on ICE funding and operations, such as body camera mandates, in response to a fatal ICE shooting in Minneapolis. Proposals focus on accountability and oversight rather than a total defunding of the agency. https://www.nbcnews.com/politics/congress/democrats-push-fight-dhs-funds-ice-shooting-minneapolis-rcna253799",
+    "failure_reason": "opinion_or_framing_dispute — Johnson's tweet is rhetoric (he never claimed Dems want 'total defunding'); the note rebuts a strawman by clarifying Dems want 'accountability not defunding', which is itself a political reframing rather than a correction of a factual error.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "opinion_or_framing",
+    "sources_checked": [
+      "https://www.pbs.org/newshour/politics/democrats-demand-dramatic-changes-for-ice-on-masks-cameras-and-judicial-warrants",
+      "https://www.govexec.com/management/2026/01/senate-dems-demand-immigration-agents-unmask-wear-body-cameras-and-carry-ids-shutdown-looms/411050/",
+      "https://www.washingtonexaminer.com/policy/immigration/4426783/congress-bill-cuts-ice-funding-body-cameras-amid-protests/"
+    ],
+    "notes": "The bill includes $20M for body cameras for ICE, $20M for independent detention-facility oversight, and a $1B cut to CBP — clearly oversight-and-cuts rather than abolition. But Johnson never explicitly claimed Dems were abolishing ICE; he called it 'dangerous political games' and accused Dems of 'attacking ICE'. That's argumentative characterization, not a factual claim ripe for CN."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Politics-and-policy tweet by the Speaker of the House on a live shutdown/ICE-oversight fight after fatal shootings — high-stakes, but CN intervention requires a factual hook this tweet doesn't provide."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2045291622737616904",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "energy_environment_policy",
+  "tweet_summary": "Gov. Gavin Newsom touts a Santa Barbara court ruling rejecting the Trump administration's attempt (via Energy Secretary Wright's Defense Production Act order) to restart the Sable Offshore oil pipeline. The attached image is an editorial graphic citing a real Politico/E&E News headline.",
+  "why_note_decision": "Both the tweet and the headline in the image are substantially accurate. The Politico/E&E News article 'California judge restricts offshore oil company despite Trump administration intervention' is a real April 2026 publication. Santa Barbara Superior Court Judge Donna Geck ruled that the Defense Production Act order from Energy Secretary Chris Wright does not nullify her preliminary injunction against Sable's pipeline restart. The original CN note's claim that the Politico headline is 'fabricated' is FALSE — it's a real story on E&E News by Politico. The CN note is the misinformation here, not the tweet.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's central claim (a court rejected Trump's pipeline-restart effort) is verified by multiple sources including Politico/E&E News, CalMatters, the Center for Biological Diversity, and the SB Independent. Any note that asserts the headline is fabricated, fake, or non-existent FAILS — the article is real. Any note that adds nitpicks (e.g., 'technically it was a preliminary injunction, not a full rejection') without correcting a meaningful inaccuracy also FAILS as note-not-needed.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The image depicts a fabricated Politico headline; no article with that title exists on Politico. https://www.politico.com/news/2026/03/13/trump-administration-invokes-emergency-powers-to-restart-oil-operations-off-california-coast-00828164 https://www.independent.com/2026/04/17/sable-offshores-federal-defense-falls-flat-in-santa-barbara-court",
+    "failure_reason": "Factually incorrect — the Politico/E&E News article 'California judge restricts offshore oil company despite Trump administration intervention' is real (eenews.net, politicopro.com). The note inverts the truth and would itself be the misleading correction.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is accurate; the cited Politico headline is real; the original CN note is itself wrong.",
+    "sources_checked": [
+      "https://www.eenews.net/articles/california-judge-restricts-offshore-oil-company-despite-trump-administration-intervention/",
+      "https://www.gov.ca.gov/2026/04/17/governor-newsom-exposes-trumps-sable-offshore-pipeline-lie-one-month-of-oil-prices-have-only-gone-up/",
+      "https://calmatters.org/environment/2026/03/bonta-sable-defense-production-oil/",
+      "https://biologicaldiversity.org/w/news/press-releases/judge-sable-in-noncompliance-with-preliminary-injunction-blocking-santa-barbara-oil-pipeline-restart-2026-04-17/"
+    ],
+    "notes": "Energy Secretary Chris Wright issued a Defense Production Act order in March 2026 to override state restrictions on the Sable pipeline. SB Superior Court Judge Donna Geck ruled in April that the DPA order does not nullify her preliminary injunction. Tweet and image headline are correct; the original CN note is the misinfo."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Energy/climate policy and federalism — a major Governor pushing back on an executive-branch DPA invocation matters for institutional checks. Correcting a false 'fake headline' allegation also matters for trust in real journalism."
+  },
+  "difficulty": "medium"
+}

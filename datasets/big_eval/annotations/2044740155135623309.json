@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2044740155135623309",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "scaremongering_chemical_claim", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "chemical_scaremongering",
+  "tweet_summary": "Claims Dairy Queen 'no longer' meets the FDA criteria for real ice cream and frames polysorbate 80 as a sinister 'chemotherapy chemical'. Embedded TikTok-style video reinforces the framing.",
+  "why_note_decision": "Two checkable misleading claims. (1) DQ soft serve never qualified as 'ice cream' under FDA's 10% milkfat rule — it has always been ~5% milkfat, marketed as soft serve. 'No longer' implies a recent change that didn't happen. (2) Polysorbate 80 is an FDA-approved emulsifier widely used in food at safe levels; its incidental use in some chemotherapy formulations does not make food containing it dangerous. The video and replies show the framing is moving people toward health-panic conclusions. A correction is genuinely useful.",
+  "judge_guidance": "PASS if the note establishes BOTH: (a) DQ soft serve has always contained ~5% milkfat and never qualified as FDA 'ice cream' (which requires ≥10% milkfat) — this is not a recent change; AND (b) polysorbate 80 is an FDA-approved food emulsifier used at safe levels; its use in some drug formulations doesn't make food dangerous. Sources from FDA/eCFR/Snopes/Lead Stories acceptable. REJECT if the note endorses the 'chemo chemical' framing, agrees this is a recent FDA change, or fails to address either prong.",
+  "reference_note": "Dairy Queen soft serve has always contained about 5% milkfat and never qualified as FDA 'ice cream' (which requires at least 10% milkfat) — this is not a recent change. Polysorbate 80 is an FDA-approved emulsifier used in frozen desserts at safe levels; its incidental use in some chemotherapy formulations does not make food containing it dangerous. https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-135/subpart-B/section-135.110 https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-172/subpart-I/section-172.840 https://leadstories.com/hoax-alert/2022/07/fact-check-food-additives-found-in-dairy-queen-soft-serve-are-not-enough-to-cause-cancer-heart-disease.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_framing_of_unchanged_facts",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/dairy-queen-dairy-free/",
+      "https://leadstories.com/hoax-alert/2022/07/fact-check-food-additives-found-in-dairy-queen-soft-serve-are-not-enough-to-cause-cancer-heart-disease.html",
+      "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-135/subpart-B/section-135.110"
+    ],
+    "notes": "Soft serve at DQ has been 5% milkfat for ~80 years; FDA emulsifier rules permit polysorbate 80 in frozen desserts; the 'chemo chemical' framing is a common scare tactic — chemotherapy uses polysorbate 80 as a drug vehicle, not as an active toxin."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "~74k impressions; chemical-scaremongering content is mildly harmful (drives distrust of food regulators) but limited reach and modest EA stakes."
+  },
+  "difficulty": "easy"
+}

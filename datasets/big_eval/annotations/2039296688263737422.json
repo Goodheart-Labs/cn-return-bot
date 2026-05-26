@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2039296688263737422",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["staged_or_scripted_content"],
+  "category_fit": "partial",
+  "suggested_category": "staged_or_scripted_relationship_content",
+  "tweet_summary": "An account that posts 'masculinity / exposing female nature' rage-bait shares a 1m 43s video of a husband confronting his wife about selling her wedding rings because he claims she was cheating (he says he found her on Tinder, tracked her location). Framed as real footage of a 'man selling his wife's wedding ring'.",
+  "why_note_decision": "The video has every hallmark of a staged/scripted relationship-confrontation skit (clean two-shot with no other reaction, polished dialogue, conveniently exposition-heavy lines, kitchen-set production, and there is a known ecosystem of these going viral as undisclosed CheaterBuster ads). Raters still voted Note Not Needed (dominant tag), which is reasonable: viewers overwhelmingly treat these as entertainment / parable, the engagement comments mostly use it as a jumping-off point for opinions about gender, and there is no specific real-world person, event, or product being misrepresented in a way that a reader is meaningfully harmed by. The original note adds an under-sourced 'this is an ad for CheaterBuster' claim that goes beyond the evidence (the brand is not visible in the clip itself and no source ties this specific video to CheaterBuster). On balance a note is not warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a viral staged-relationship video posted by a rage-bait account; there is no specific person being defamed, no political/health/financial claim, and the genre is widely understood by audiences. A note is a false positive. In particular, FAIL any note that (a) confidently asserts this specific clip is a CheaterBuster ad without a source actually linking THIS video to that brand, (b) lectures the audience that 'this is staged' without any sourcing beyond the writer's intuition, or (c) reads as moralizing about the relationship content. If a note IS written, it must cite a source that identifies this specific clip (not 'similar' clips) — and even then 'staged skit' is borderline note-not-needed.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is a staged skit presented as real; similar viral \"cheating confrontation\" videos, including those about selling wedding rings after discovering Tinder profiles, are undisclosed ads for CheaterBuster. https://www.cosmopolitan.com/relationships/a70159764/tiktok-fake-cheaters https://www.youtube.com/watch?v=QM4i6A67Zzc",
+    "failure_reason": "Overreaches by labeling this specific clip a CheaterBuster ad based only on similarity to other staged videos; raters tagged Note Not Needed and Opinion/Speculation.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Likely staged content (genre is well documented) but no source ties this specific video to a particular brand or hoax; not a clear-cut correction case.",
+    "sources_checked": [
+      "https://www.tiktok.com/discover/cheater-buster-ai-app-is-fake",
+      "https://www.cosmopolitan.com/relationships/a70159764/tiktok-fake-cheaters"
+    ],
+    "notes": "Genre of fake confrontation videos as undisclosed CheaterBuster marketing is real and documented in TikTok discussion and Cosmopolitan piece, but linking this specific clip requires evidence not present in inputs."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "3.3M impressions on rage-bait gender content — annoying noise but low EA/safety stakes. Misclassifying as 'needs correction' would burn rater trust."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2048796043949551663",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["ai_generated_media", "misattributed_or_miscontextualized_media"],
+  "category_fit": "poor",
+  "suggested_category": "rival_community_banter",
+  "tweet_summary": "Bitcoin-affiliated account Gary Cardone (115k followers) posts a 10s video purportedly of 'the XRP team teeing off' at the Bitcoin conference in Las Vegas — a golf cart doing a wheelie/donuts on a road, tagging various crypto influencers. 42k impressions, 380 likes.",
+  "why_note_decision": "This is rival-crypto-community banter, not a factual claim worth correcting. The post is a tongue-in-cheek jab at the XRP marketing presence around Bitcoin 2026 in Las Vegas (a real, well-documented April 27–29 2026 event at The Venetian with extensive XRP billboard/ad takeover — see MEXC, Bitget, Bitcoinist, Crypto Basic). The XRP-army comments treat it as banter, not as a literal report. The original note's claim that the video is 'AI-generated' relies on a single cited fact-check URL (Total Pro Sports) that is about a different viral 'women driving golf carts' video and does not establish this specific clip is AI. Rating volume is tiny (5) and split between 'note not needed' and 'missing key points'. A literal note here would be a false positive on a quip.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The post is intra-crypto-community banter (Bitcoiner ribbing XRP holders); not a factual claim worth correcting. The original note's 'AI-generated' attribution is unsupported by its cited source (a Total Pro Sports article about a different golf-cart video). FAIL any note asserting the clip is AI without per-clip evidence; FAIL any note treating the post as a sincere news claim about XRP staff. If the bot writes a note tying the post to documented real XRP marketing at Bitcoin 2026, that would also fail the bar of necessity — the joke doesn't require explanation.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video depicts an AI-generated clip unrelated to the Bitcoin conference in Las Vegas. https://www.totalprosports.com/general/fact-check-viral-video-multiple-women-driving-golf-carts-road-real/",
+    "failure_reason": "The cited fact-check is about a different viral video (women driving golf carts on a road), not this clip. No per-clip evidence the wheelie/donut footage is AI. Note attacks a joke post that didn't claim factual reportage.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke — rival-community banter, not a sincere factual claim about XRP staff",
+    "sources_checked": [
+      "https://www.mexc.com/news/1059692",
+      "https://bitcoinist.com/xrp-takes-over-vegas-as-massive-ad-blitz-kicks-off-ahead-of-xrp-las-vegas-2026/",
+      "https://www.totalprosports.com/general/fact-check-viral-video-multiple-women-driving-golf-carts-road-real/"
+    ],
+    "notes": "Bitcoin 2026 (Apr 27–29 at The Venetian) and XRP Las Vegas 2026 (Apr 30–May 1 at Paris Las Vegas) are both real events with significant XRP marketing presence; the joke depends on that real context. The original note's cited URL doesn't match this clip."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "42k impressions, niche crypto rival banter; minimal real-world stake."
+  },
+  "difficulty": "medium"
+}

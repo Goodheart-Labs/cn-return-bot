@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2023505751915065493",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["ai_generated_media"],
+  "category_fit": "poor",
+  "suggested_category": "snarky_reply_no_claim",
+  "tweet_summary": "A 241-follower account replies '@caydeplanet Nice! what AI model do you use?' under what appears to be a Logan Cayde McDonnell (@cayde.wav) oil-painting post; the reply is sarcastic/dismissive, treating the original painting as if it were AI-generated.",
+  "why_note_decision": "The reply contains no checkable factual claim — it's a sarcastic rhetorical question implying the painting is AI. Top comments call it out as ragebait ('It's called talent', 'two hands and a working brain', 'Immaculate ragebait. 10/10'). McDonnell is a documented oil painter with a substantial body of work and process videos on Instagram (@cayde.wav, 150k followers) and press coverage; the painting IS real and hand-made. But responding with a community note to a snarky reply is a category error: there is no false assertion to correct, only an insinuation that the community has already pushed back on with 1k+ likes on rebuttals. Rating volume is tiny (small note vote total) and dominated by 'noteNotNeeded' (8).",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The reply is a sarcastic rhetorical jab ('what AI model do you use?') with no factual claim to correct — community replies already provide pushback. FAIL any note asserting the painting is real / not AI, even though that is true: there is no checkable claim in the reply to attach the correction to, and notes on rhetorical questions are false positives. Bot must recognize 'this is sarcasm/snark, not a misinformation claim.' If the bot would only note this in response to a sincere AI-vs-real claim, it should pass on this reply.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The image in the original post is a physical oil painting by artist Logan Cayde McDonnell (@cayde.wav), not AI-generated. The artist shares process videos proving their traditional oil painting technique.    https://www.tiktok.com/@cayde.wav/video/7467260910885883182  https://www.collater.al/en/logan-cayde-mcdonnell-painting-art",
+    "failure_reason": "Substantively true but unnecessary — the reply is a sarcastic jab, not a sincere factual claim. Notes on rhetorical questions confuse readers about what is being corrected.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "no factual claim to fact-check; reply is rhetorical snark",
+    "sources_checked": [
+      "https://www.instagram.com/cayde.wav/",
+      "https://www.collater.al/en/logan-cayde-mcdonnell-painting-art/"
+    ],
+    "notes": "McDonnell is a real, documented oil painter with extensive Instagram process videos and editorial coverage. But the reply itself contains no claim — it's sarcasm aimed at downplaying skilled work."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "858k impressions but the reply itself is a tiny snark; no policy/safety/EA stake."
+  },
+  "difficulty": "medium"
+}
