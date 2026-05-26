@@ -67,12 +67,55 @@ The 6 `note_worthy_incorrect` rows are also worth diagnosing — these are
 cases where the bot DID propose a note but it was wrong. Likely query-writer
 or writer-stage issues.
 
-### Next step
+### Diagnosis (4 parallel Sonnet subagents over 51 failure rows)
 
-Diagnosis subagents (using `failure_analysis_instructions.md`) over the
-40 `note_worthy_not_proposed` rows + the 6 `note_worthy_incorrect` rows +
-the 5 `non_note_worthy_incorrect` rows. Deferred to next session — this
-session is hitting its $40 budget cap. The data is durable in the run folder,
-the scaffolding is in place, the next session can pick up directly from
-the failure JSONs at
-`dataset_runs/tryout-baseline-cheap-bot-v0-2026-05-26-1937/`.
+Dispatched via [`09_prep_failure_batches.py`](../../src/scripts_jim/2026_05_25_big_eval_dataset/09_prep_failure_batches.py) + [`failure_analysis_instructions.md`](../../src/scripts_jim/2026_05_25_big_eval_dataset/failure_analysis_instructions.md). Trimmed per-row JSONs went into `_failure_batches/` under the run folder.
+
+**Big surprise:** searXNG appears to have been **rate-limited mid-run**. Batches
+`missed_1` and `missed_2` (26 rows) show "No results" on all 3 queries in
+21 of 26 rows. Batch `missed_0` (14 rows) only had 1 zero-result row. The
+smoke test before the run produced real results. Likely: Docker searXNG +
+Google engine hit a rate limit partway through the 100-row run.
+
+**Three real pipeline failures independent of search:**
+
+1. **Source verifier over-rejection** (~7 rows). Blocks valid notes citing
+   stable authority sources — AFP, Snopes, Reuters, FDA, BLS, UEFA, NPR —
+   because the live fetch returns 4xx / times out. The note-needed judge
+   approved these same notes on the same evidence. Fix: allowlist for
+   canonical authority domains (skip live fetch), or treat
+   "trusted-domain-unfetchable" as accepted-with-warning instead of rejected.
+
+2. **Writer hallucinates when search returns nothing** (3+ rows). With no
+   findings, writer fabricates plausible-sounding notes ("a local Quebec
+   resident publicly stated…") and cites the tweet's own URL as a source.
+   Fix: writer guard — if findings empty, return no_correction instead.
+
+3. **Note-needed judge has two opposite calibration issues.** Over-permissive
+   on satire / predictions / editorial framing (all 5 FPs fall here — judge
+   treats "some commenters take it as real" as sufficient). Over-conservative
+   on absence-of-evidence cases (fabricated quotes, non-events): demands a
+   primary source disconfirming the non-event, which by definition doesn't
+   exist.
+
+Full subagent reports preserved in the transcript and at
+`dataset_runs/tryout-baseline-cheap-bot-v0-2026-05-26-1937/_failure_batches/`.
+
+### Proposed iteration 1 (awaiting user approval)
+
+Three changes in one commit, then re-run val.csv:
+
+1. **Investigate + fix the searXNG rate-limit issue.** Hand-test a few
+   zero-result queries to confirm rate-limiting. If confirmed, add per-query
+   backoff + a fallback engine (Bing / DuckDuckGo) in the searXNG settings.
+
+2. **No-findings writer guard.** If cumulative searXNG findings are
+   suspiciously empty (e.g., < ~200 chars across all queries), the orchestrator
+   short-circuits to `no_correction` with reason `no_evidence_found`. Stops
+   the writer from hallucinating.
+
+3. **Judge prompt clauses.** Add explicit handling for predictions / satire /
+   editorial framing (return false) and for fabricated-quote / non-event
+   claims where absence-of-evidence is the evidence (return true).
+
+Expected: PASS 49 → ~60, FP rate 10% → ~5%, cost roughly flat.
