@@ -18,9 +18,9 @@ import {
   calculateGrokCost, extractOpenRouterCost,
   type TokenCost,
 } from "../cost-tracking/pricing";
-
-const SEARXNG_URL = process.env.SEARXNG_URL ?? "http://localhost:8080";
-const SEARXNG_MAX_RESULTS = 10;
+import { fetchSearxngResults, formatSearxngResults, type SearxngResult } from "./searxng";
+export { fetchSearxngResults, formatSearxngResults };
+export type { SearxngResult };
 
 const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced" });
 
@@ -239,70 +239,6 @@ export async function handlePerplexitySearch(prompt: string): Promise<ToolResult
   return { output: { results: content, citations }, isTerminal: false, cost };
 }
 
-export interface SearxngResult {
-  title: string;
-  url: string;
-  content: string;
-  publishedDate: string | null;
-}
-
-// Fan out across multiple engines so a single engine's rate-limit (Google
-// in particular) doesn't return zero results for the whole pipeline. The
-// existing simple-bot tool-calling loop still hits "engines=google" via
-// handleGoogleSearchRaw; this exported helper for cheap-bot uses all
-// configured engines and returns the union of results.
-const SEARXNG_ENGINES = "google,bing,duckduckgo,brave";
-
-export async function fetchSearxngResults(query: string): Promise<SearxngResult[]> {
-  const endpoint = `${SEARXNG_URL}/search?q=${encodeURIComponent(query)}&format=json&engines=${SEARXNG_ENGINES}`;
-
-  // One retry on transient failure (rate-limit, network blip). The first
-  // baseline run revealed silent zero-result rate-limiting partway through;
-  // the retry + fallback engines together substantially reduce that hole.
-  let lastErr: Error | null = null;
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    try {
-      const response = await fetch(endpoint, {
-        headers: { "User-Agent": "Mozilla/5.0 (compatible; CommunityNotesBot/1.0)" },
-        signal: AbortSignal.timeout(15000),
-      });
-      if (!response.ok) throw new Error(`SearXNG HTTP ${response.status}`);
-      const data: any = await response.json();
-      const results: any[] = data?.results ?? [];
-      // De-duplicate by URL — the same source often appears from multiple
-      // engines. Preserve order (first hit wins, which approximates rank).
-      const seen = new Set<string>();
-      const deduped: SearxngResult[] = [];
-      for (const r of results) {
-        const url = r.url ?? "";
-        if (!url || seen.has(url)) continue;
-        seen.add(url);
-        deduped.push({
-          title: r.title ?? "",
-          url,
-          content: r.content ?? "",
-          publishedDate: r.publishedDate ?? null,
-        });
-        if (deduped.length >= SEARXNG_MAX_RESULTS) break;
-      }
-      return deduped;
-    } catch (err: any) {
-      lastErr = err;
-      if (attempt < 2) await new Promise((res) => setTimeout(res, 750));
-    }
-  }
-  throw lastErr ?? new Error("SearXNG: unknown failure after retries");
-}
-
-export function formatSearxngResults(results: SearxngResult[]): string {
-  if (results.length === 0) return "No results.";
-  return results
-    .map((r, i) => {
-      const dateLine = r.publishedDate ? `\n   Published: ${r.publishedDate}` : "";
-      return `${i + 1}. ${r.title}${dateLine}\n   ${r.url}\n   ${r.content}`;
-    })
-    .join("\n\n");
-}
 
 export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> {
   try {

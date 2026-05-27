@@ -9,14 +9,3 @@ search:
   formats:
     - html
     - json
-
-# Enable a second + third general engine so a single engine's rate-limit
-# (Google in particular) doesn't return zero results for the whole pipeline.
-# Brave is on by default; explicitly enabling here is idempotent.
-engines:
-  - name: bing
-    disabled: false
-  - name: duckduckgo
-    disabled: false
-  - name: brave
-    disabled: false

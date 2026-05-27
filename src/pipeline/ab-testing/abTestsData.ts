@@ -62,6 +62,11 @@ export const BOT_TEST: ABTest = {
       note_needed_judge: true,
       note_judge_model: "deepseek/deepseek-v4-flash",
       verifier_model: "deepseek/deepseek-v4-flash",
+      // Source verifier runs Gemini media analysis on TikTok / Instagram /
+      // YouTube / image URLs and treats the analysis as the source's content.
+      // Text-LLM verifier stays on DeepSeek; only the media-description sub-
+      // system uses Gemini (since DeepSeek has no vision).
+      verifier_accepts_media_sources: true,
       web_search: "searxng",
     }}, weight: 0 },
     { variant: { name: "multi-agent", overrides: {

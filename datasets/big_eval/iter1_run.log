@@ -1,0 +1,976 @@
+✅ Test "Post 0" passed for goal "search context"
+✅ Test "Post 1" passed for goal "search context"
+✅ Test "Post 2" passed for goal "search context"
+✅ Test "Post 3" passed for goal "search context"
+✅ Test "Post 4" passed for goal "search context"
+✅ Test "Post 5" passed for goal "search context"
+✅ Test "Post 6" passed for goal "search context"
+✅ Test "Post 7" passed for goal "search context"
+✅ Test "Post 8" passed for goal "search context"
+✅ Test "Post 9" passed for goal "search context"
+✅ Test "Post 10" passed for goal "search context"
+📝 Registering implementation "version one" for goal "search context"
+✅ Defined implementation "version one" for goal "search context"
+🔗 Creating derived tests for goal "write note with search" from implementation "version one" of goal "search context"
+✅ Successfully created derived tests for goal "write note with search" from "search context.version one"
+📝 Registering implementation "write note with search v1" for goal "write note with search"
+✅ Defined implementation "write note with search v1" for goal "write note with search"
+🔗 Creating derived tests for goal "write note with search" from implementation "version one" of goal "search context"
+✅ Successfully created derived tests for goal "write note with search" from "search context.version one"
+📝 Registering implementation "write note v1" for goal "write note with search"
+✅ Defined implementation "write note v1" for goal "write note with search"
+📝 Registering implementation "check" for goal "check source"
+✅ Defined implementation "check" for goal "check source"
+🔗 Creating derived tests for goal "check source" from implementation "write note v1" of goal "write note with search"
+✅ Successfully created derived tests for goal "check source" from "write note with search.write note v1"
+[tryoutNotes] Using X API credentials: X_JIMMAAR1
+[tryoutNotes] Connected to Supabase at http://127.0.0.1:54321
+[tryoutNotes] Processing 100 item(s)
+[tryoutNotes] Output folder: /Users/jimmaar/Github/cn-return-bot/dataset_runs/tryout-iter1-2026-05-26-2237
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 1/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2038078622590779632
+  🇺🇦🧐💪The Ukrainian Armed Forces managed to break through on the front; unexpe
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 2/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2007357044328976752
+  The US is now bombing Caracas, Venezuela. Not. What. I. Voted. For. https://t.co
+  note:  
+
+--- 3/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2055719221812666428
+  We’re watching it happen. https://t.co/OJ0CSPORqI
+  note: The Ronald Reagan quote is authentic from a 1975 "60 Minutes" interview, but the Churchill quote has no reliable source 
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 4/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2020882885427994823
+  “The assassination of my husband was heavy but what really upsets me is when peo
+  note: The video shows Erika Kirk speaking during a CBS News town hall in December 2025, where she condemned antisemitism and d
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 5/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2009219530300731596
+  Astonishing.
+
+According to Labour’s own analysis, just 0.8% of those benefitting
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 6/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2016176528531267592
+  When you see videos of anti-ICE agitators swarming our officers and agents in Mi
+  note:  
+
+--- 7/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/1996831133414363186
+  This is the moment a judge in the Netherlands handed the migrant killer of a lit
+  note: This video is from a 2014 Dutch courtroom where a driver was sentenced to 120 hours of community service for a traffic a
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 8/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2039118807692968130
+  Ben Stiller Turns on Zohran Mamdani
+
+Just months after endorsing and voting for 
+  note: Ben Stiller has not criticized or turned on Zohran Mamdani. There is no record of Ben Stiller ever endorsing or voting f
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 9/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2052363800750305773
+  David Attenborough spent over 70 years teaching humanity about earth; he just tu
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 10/100 ---
+✅ (correct) | candidate
+  https://x.com/i/status/2047745135526428683
+  WATCH: Graph shows H-1B visa holders legally migrating to the United States.
+
+ht
+  note: Only 85,000 H-1B visas are issued each year (65,000 regular cap + 20,000 master's cap), valid for up to 6 years, so acti
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 11/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2012592974152991200
+  This experiment breaks your brain 🤯 
+
+Remove air in the world’s largest vacuum 
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 12/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2038670145497764304
+  These images are verified and in the Epstein files
+
+Every time the WH, trump or 
+  note: This image is AI-generated, not a verified photo from the Epstein files. Snopes and other fact-checkers determined it wa
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 13/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2016932474081657121
+  A Spanish scientist have cured pancreatic cancer in mice. The most deadly cancer
+  note:  
+
+--- 14/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2049464880520888535
+  US Treasury Secretary Scott Bessent stated at a press conference today:
+
+"We wil
+  note: Bessent's warning about 100% tariffs on Chinese goods for buying Iranian oil was made in July 2025, not at a press confe
+
+--- 15/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2047978936311918600
+  クルーズ船などの汚水処理システムが凄い！ https://t.co/5jHKzCa3p3
+  note: This video is AI-generated, not real footage. Japanese and international fact-checkers have identified clear AI artifact
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 16/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2028333038547927472
+  Democrats avoiding giving Trump credit for literally anything https://t.co/Anlqw
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 17/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2048230103994515524
+  Trees per person in India vs Rest of the world… If it isn’t alarming right now, 
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 18/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2048796043949551663
+  XRP team teeing off at Bitcoin conference in Las Vegas.  @scottmelker08  @GrantC
+  note:  
+
+--- 19/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2029976032799764557
+  As close as we can get to a pov of being hit my a ballistic missile without the 
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 20/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2043783331540578439
+  🚨 A new CBS poll shows Republican approval of Donald Trump jumping 3 points to 
+  note: No such CBS News poll exists. A CBS News/YouGov poll from April 8-10, 2026, found Trump's overall approval rating at 37%
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 21/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2010079950800617648
+  Why the C-17 will never take off from an aircraft carrier—it’s not about power, 
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 22/100 ---
+✅ (correct) | candidate
+  https://x.com/i/status/2034574905858040263
+  Just a reminder, Manchester United haven’t played a Champions League knockout ga
+  note: Manchester United played a Champions League round of 16 knockout tie against Atlético Madrid in March 2022. https://www.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 23/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2015520423820083697
+  The U.S. military is expected to carry out a military operation against Iran tod
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 24/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2037889000514392308
+  Brutal Teslacam footage https://t.co/GjjQov1nzo
+  note:  
+
+--- 25/100 ---
+✅ (correct) | candidate
+  https://x.com/i/status/1999999737379143950
+  Russia has announced a major medical breakthrough after confirming that a cancer
+  note: Russian officials announced plans to make a domestic cancer vaccine available **free to Russian patients starting in ear
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 26/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2000145480823472204
+  How water heaters cause electrocution and how to find the solution
+
+[🎞️ Zero-Ha
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 27/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2013709637363630273
+  O’KEEFE INFILTRATES DAVOS WORLD ECONOMIC FORUM:
+
+Climate executives spill SECRET
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 28/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2020736450589790541
+  🚨🇺🇸🇸🇦Jeffrey Epstein placed the sacred Kiswah of the Kaaba on the floor aft
+  note: The piece of the Kiswah was not shipped directly from Saudi Arabia to Epstein. It was part of the annual distribution of
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 29/100 ---
+✅ (correct) | candidate
+  https://x.com/i/status/2043729676795879601
+  Zelensky was reportedly close with Jeffrey Epstein.
+Newly surfaced security came
+  note: The images were generated by AI. Zelensky did not have a beard in 2019 when Epstein died, and no credible sources have r
+
+--- 30/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2036557734410076512
+  An older relative is a retired Hollywood producer. We were watching the original
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 31/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2036903878726131807
+  Israel, United States and Argentina vote against U.N. resolution to condemn slav
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 32/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2057319768294896022
+  BREAKING: Vishal Sikka has joined Anthropic https://t.co/wyj76Liklf
+  note: No official announcement from Anthropic or Vishal Sikka confirms this. His LinkedIn profile and news sources show no suc
+
+--- 33/100 ---
+✅ (correct) | candidate
+  https://x.com/i/status/2039395207213670691
+  Old video. She was killed by an Iranian missile in March. A family member inheri
+  note: The video shows TikTok user blossomt_ dancing in a home she said she moved into with the Army's help. There are no credi
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[processTweet] Bot pipeline failed for 2051895061877870735: 236 |   ].join("\n");
+237 | 
+238 |   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+239 | 
+240 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+241 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:241:11)
+
+
+--- 34/100 ---
+❌ (missed) | failed (unfetchable_sources)
+  https://x.com/i/status/2051895061877870735
+  Custom mask created for Katy Perry’s Met Gala appearance sees massive demand amo
+
+--- 35/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/1995257156879401238
+  The wait is over, Missouri. 🏆
+@DKSportsbook is LIVE! Time to fire off your firs
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 36/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2048488494243176855
+  Venci o câncer! Estou muito feliz! https://t.co/rbjSGtotNh
+  note: This image of a bald child in a hospital bed is a stock photo commonly used in online posts and is not a specific recent
+
+--- 37/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2052054023264772324
+  Miley Cyrus’s boyfriend Max revealed that after marriage, he plans to take her l
+  note: This is a satirical post from an account labeled as a parody. There is no news or statement from Miley Cyrus or Maxx Mor
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 38/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2018455684661338294
+  Epstein and Maxwell bury 2 foreign kids who were strangled to death during rough
+  note: The screenshot shows an unsolicited 2019 email from an anonymous sender demanding 1 bitcoin for alleged Epstein videos—n
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 39/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/1988041452493172783
+  Anthony Davis 👀👀 https://t.co/pQN7oWy7t6
+  note:  
+
+--- 40/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2024612128422793276
+  A Muslim man confronted a woman on the bus for eating her lunch while he was fas
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 41/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2052825590319690191
+  Iran is willing to tell us more about Charlie Kirk than our FBI https://t.co/KYI
+  note:  
+[processTweet] Bot pipeline failed for 2046782070840586266: 236 |   ].join("\n");
+237 | 
+238 |   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+239 | 
+240 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+241 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:241:11)
+
+
+--- 42/100 ---
+❌ (missed) | failed (unfetchable_sources)
+  https://x.com/i/status/2046782070840586266
+  Are we surprised that this dude took a quarter mil from the SPLC? https://t.co/m
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 43/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2002086396576887148
+  Can you believe this stunning visual was created by Ai https://t.co/2w67vl6QsP
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 44/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/1991574142038999227
+  "The U.S. Coast Guard will no longer classify the swastika, an emblem of fascism
+  note:  
+
+--- 45/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2049702745783882104
+  BREAKING: US Treasury Secretary Bessent says the US has seized $450 million in I
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 46/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/1979373591767531959
+  A russian flag tie. At the White House. To meet Zelensky. American politicians l
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 47/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2004909604052889910
+  Minnesota Voter Fraud 
+
+Did you know that a registered voter in MN can vouch for
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 48/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/1985675392586264946
+  Tech YouTuber 'Enderman' says AI wrongly shut down his 350k subscriber channel a
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 49/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2041676371127370152
+  American ships crossing the Strait of Hormuz after paying their toll in YUAN - h
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 50/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2023868808386277835
+  Super North Korea 64 is a trip https://t.co/0hoT6WzTfY
+  note:  
+
+--- 51/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2001327023839735928
+  This is horrendous to see. God save Gaza.
+To donate 👇👇
+https://t.co/zZKcCYg3bQ
+  note: This video is AI-generated and does not depict a real event in Gaza. No major news organizations have reported such a fl
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[processTweet] Bot pipeline failed for 2036122449536811392: 236 |   ].join("\n");
+237 | 
+238 |   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+239 | 
+240 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+241 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:241:11)
+
+
+--- 52/100 ---
+❌ (missed) | failed (unfetchable_sources)
+  https://x.com/i/status/2036122449536811392
+  I never knew this !!! Everyday is a school day https://t.co/trEkBFxDtO
+[processTweet] Bot pipeline failed for 2020558648716521763:  7 | import { logLlmCall } from "../utils/tweetLog";
+ 8 | /**
+ 9 |  * Count note length treating URLs as 1 character each (X shortens URLs via t.co)
+10 |  */
+11 | export function countNoteLength(note: string): number {
+12 |   return note.replace(/https?:\/\/\S+/g, "X").length;
+              ^
+TypeError: undefined is not an object (evaluating 'note.replace')
+      at countNoteLength (/Users/jimmaar/Github/cn-return-bot/src/pipeline/write/writeNote.ts:12:10)
+      at runWriter (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/writer.ts:93:23)
+
+
+--- 53/100 ---
+❌ (missed) | failed (bot_error)
+  https://x.com/i/status/2020558648716521763
+  🚨LEAKED EMAIL REVEALS KING CHARLES AIDE OVERSAW ROYAL PROTECTION AT EPSTEIN ISL
+
+--- 54/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2028943273042100353
+  RAJU: Why shouldn't Congress assert its constitutional role and actually vote to
+  note:  
+[processTweet] Bot pipeline failed for 2013638785850843460: 236 |   ].join("\n");
+237 | 
+238 |   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+239 | 
+240 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+241 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:241:11)
+
+
+--- 55/100 ---
+✅ (correct) | failed (unfetchable_sources)
+  https://x.com/i/status/2013638785850843460
+  JUST IN: 🇺🇸 Virginia Democrats introduce bill to end mandatory minimum sentenc
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 56/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2017296241898467383
+  Michael Rapaport gets hit by a snowball in the streets of New York https://t.co/
+  note: This video is from February 2022, not 2026. Michael Rapaport was hit by a snowball while filming an Instagram Live rant 
+[processTweet] Bot pipeline failed for 2002014744727728582: 236 |   ].join("\n");
+237 | 
+238 |   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+239 | 
+240 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+241 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:241:11)
+
+
+--- 57/100 ---
+✅ (correct) | failed (unfetchable_sources)
+  https://x.com/i/status/2002014744727728582
+  Lets remember to support Karmelo Anthony! The young brother in Texas who defende
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 58/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/1994449046916731187
+  As Trump craters — Epstein files, spiking cost of living, people losing health c
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 59/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2025496691588104274
+  FUN BREAK: This is the account of the new Xbox head, Asha Sharma.
+
+The strange t
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 60/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2032514777663021439
+  That Friday feeling when wages are going up and prices are coming down for Ameri
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 61/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2033436730251264262
+  🚨According to my reliable sources, Benjamin Netanyahu actually died 7 days ago.
+  note:  
+
+--- 62/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2025357414841663677
+  Earlier I posted a video that looked like Ghislaine Maxwell, I’m told “ITS NOT H
+  note: Ghislaine Maxwell is currently serving a 20-year federal prison sentence and has been incarcerated since 2021, making it
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 63/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2052999491662320103
+  I sell cement at the market here in Abeokuta. A customer came to pay for 150 bag
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 64/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2039707797244215475
+  Donald Trump's approval rating drops to 29%, lowest for any U.S. president.
+
+But
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 65/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/1983548029786362181
+  Why you let #Browns Andrew Berry keep his job:
+
+Mason Graham: ✅
+Carson Schwesing
+  note:  
+
+--- 66/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2041891972512936030
+  Cry me a River. https://t.co/GwuSl7qnA2
+  note:  
+[processTweet] Bot pipeline failed for 2031539160700313846: 236 |   ].join("\n");
+237 | 
+238 |   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+239 | 
+240 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+241 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:241:11)
+
+
+--- 67/100 ---
+❌ (missed) | failed (unfetchable_sources)
+  https://x.com/i/status/2031539160700313846
+  BREAKING🚨: A group of Islamists brutally attacked and beat a Jewish person who 
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 68/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2022722314941665369
+  🚨 THE TIP SCREEN IS LYING - AND IT KNOWS YOU WON’T CHECK
+
+"They're trying to tr
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 69/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2018031751541526698
+  Elon trying to get invited to Epstein's island:
+
+Video by @munchy_monk /TikTok h
+  note: The emails shown in this video are a satirical parody, not real correspondence. The full original TikTok video is labele
+
+--- 70/100 ---
+❌ (missed) | rejected (no_correction_needed)
+  https://x.com/i/status/2011406203851833461
+  800k voters found to be improperly registered to vote in Oregon https://t.co/d9j
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 71/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2051695790519726347
+  Marcus Jordan, son of the NBA legend Michael Jordan, has been spotted snorting a
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 72/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2013924875757371711
+  💥BREAKING:
+
+🇺🇸🇨🇳 China is dumping U.S. treasuries and instead buying gold o
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 73/100 ---
+✅ (correct) | rejected (check_failed)
+  https://x.com/i/status/2015588241315950990
+  BREAKING: The first official Like a Dragon 9 story trailer has seemingly leaked 
+  note: This is a fan-made edit, not an actual Like a Dragon 9 trailer. RGG Studio has not announced a sequel to Like a Dragon: 
+
+--- 74/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2018514781641298403
+  This isn't AI, this is just a normal day at Walmart. https://t.co/c6RfYWZOal
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 75/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2037248148448444442
+  LEAK: New music kit found in CS2 gamefiles! 😱 https://t.co/rv9ml9PYQh
+  note:  
+
+--- 76/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2014063733836828813
+  🚨🚨UPDATE🚨🚨
+The nurse, Chanda Petrey Czaruck, who wished Karoline Leavitt har
+  note: Chanda Petrey Czaruck has not been taken into custody. No arrest has been reported by local law enforcement in Ohio. The
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 77/100 ---
+✅ (correct) | rejected (check_failed)
+  https://x.com/i/status/2012170476554944553
+  BREAKING: The IRGC is flooding streets with forces, as they institute full marti
+  note: This video shows a police convoy in Azerbaijan, not IRGC forces in Iran. The Farsi text on the banner translates: 'Deplo
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 78/100 ---
+❌ (missed) | rejected (check_failed)
+  https://x.com/i/status/2012558410122670331
+  Here are Zelensky and Macron before they became presidents.
+It feels like we’re 
+  note: The video shows real performances by Volodymyr Zelenskyy from his career as a comedian and actor before he became presid
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 79/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2037606034978583022
+  The last Magic Tree House, “Revolutionary War on Wednesday,” was released on Sep
+  note: The Magic Tree House series continued long after book #22. By 2026, Mary Pope Osborne had written over 70 books in the f
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 80/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2055854792191385800
+  Did all this injury drama to play County Cricket. 💔 https://t.co/GMVevuFlvr
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 81/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2017354263647658448
+  WHO SENT THIS EMAIL? https://t.co/n1LMjkcfwI
+  note: This email is from Jeffrey Epstein, not from a recipient. The sender's name is 'Jeffrey Epstein' at the top of the heade
+
+--- 82/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2046250034262647232
+  This is what many Service People come back to.😢 The sacrifice is real and many 
+  note: The video shows a son experiencing a panic attack being coached through breathing exercises by his father and a friend. 
+[processTweet] Bot pipeline failed for 2016313026161299803: 236 |   ].join("\n");
+237 | 
+238 |   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+239 | 
+240 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+241 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:241:11)
+
+
+--- 83/100 ---
+✅ (correct) | failed (unfetchable_sources)
+  https://x.com/i/status/2016313026161299803
+  The Left said his name over and over again. 
+
+The Left never said her name. http
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 84/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2049194715262623940
+  You're staring at another world right now.
+
+That rusty, rocky landscape? Not a d
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 85/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2030077895658401996
+  “Iran is winning this war, our government is lying to us. This is Tel Aviv right
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 86/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2034073867401240608
+  Benjamin Netanyahu died on March 9. In the same attack, his younger brother, Idd
+  note: Benjamin Netanyahu, Iddo Netanyahu, and Mossad chief David Barnea are all alive and active. Netanyahu gave a public spee
+
+--- 87/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2020297543721312361
+  LIONEL MESSI IS BACK! HE SCORES AGAINST BARCELONA! UNBELIEVABLE DRIBBLE, THE BES
+  note: This video shows Lionel Messi scoring for Inter Miami against Barcelona SC (a team from Ecuador, not FC Barcelona). http
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 88/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2048712783483879812
+  Who knew the “Horse paste” ivermectin cured among many things, Parkinson’s. I’ll
+  note: Ivermectin is an FDA-approved antiparasitic drug for treating infections caused by parasites such as roundworms, scabies
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 89/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2006395901426737233
+  The Man Who Refused To Bathe For 60 Years 😨 https://t.co/bqvPUGVwCj
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 90/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2013735544660852870
+  I went into a Somali Walmart in Minneapolis to buy one item.
+
+Somali worker come
+  note: There are no Walmart stores located within the Minneapolis city limits. The nearest Walmart is in the suburb of Richfiel
+
+--- 91/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2044830697127321794
+  👍🏿 Countries with the most Africans:
+
+1. 🇧🇷 Brazil: 112,739,744
+2. 🇺🇸 Unit
+  note: Brazil's 2022 census recorded 20.7 million people identifying as Black (pretos) and 92.1 million as mixed-race (pardos),
+
+--- 92/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2027927901329314061
+  Dubai is done.
+
+It will be nearly impossible for UAE to sell a secure lifestyle 
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 93/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2004901730430189831
+  French TV show Affronter Votre Pire Cauchemar ('Face Your Worst Nightmare') conf
+  note: The video is actually from a 1980s French TV show where singer Serge Gainsbourg performed with children. It has nothing 
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 94/100 ---
+✅ (correct) | rejected (check_failed)
+  https://x.com/i/status/2017441660578254936
+  Druski and RaKai gets excited after pulling over a girl with a BBL 💀 https://t.
+  note: This is a comedy skit by Druski and RaKai, not a real police encounter. Druski is a well-known comedian and online creat
+
+--- 95/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2019501956482367716
+  Spotted in Tel Aviv. Has some major security around him. I wonder who that could
+  note: Jeffrey Epstein died by suicide in August 2019 at the Metropolitan Correctional Center in New York City, as confirmed by
+[processTweet] Bot pipeline failed for 2014434985046921417: 236 |   ].join("\n");
+237 | 
+238 |   log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+239 | 
+240 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+241 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:241:11)
+
+
+--- 96/100 ---
+❌ (missed) | failed (unfetchable_sources)
+  https://x.com/i/status/2014434985046921417
+  Keepin' it real! 🤣🤣🤣 https://t.co/uKTc1yg0wW
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 97/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2027825363460473205
+  This war has nothing to do with nuclear weapons, terrorism, or dead protesters.
+
+  note: There is no credible evidence that Israel orchestrated the wars in Iraq, Syria, or Iran. The 2003 Iraq War was a US-led 
+
+--- 98/100 ---
+✅ (correct) | rejected (no_correction_needed)
+  https://x.com/i/status/2010758934366507334
+  Russian military are testing some unknown technology. By the looks of it, this i
+  note:  
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 99/100 ---
+❌ (incorrect) | candidate
+  https://x.com/i/status/2013275340064395642
+  A video said to be from Iran shows a teacher sitting alone in an empty classroom
+  note: This video dates from around a month earlier and shows a teacher crying over a single student who had passed away, not m
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping check: Request failed with status code 403
+
+--- 100/100 ---
+❌ (false positive) | candidate
+  https://x.com/i/status/2011412920903872766
+  Both Miley Cyrus and Ariana Grande ignored Selena Gomez's story even though she 
+  note: Ariana Grande responded to the post, commenting "our girl" with heart emojis, and Miley Cyrus shared the story on her ow
+
+============================================================
+RESULTS: 100 processed, 0 errors
+Output: /Users/jimmaar/Github/cn-return-bot/dataset_runs/tryout-iter1-2026-05-26-2237
+
+  NOTEWORTHY (ground truth = yes): 50 tweets
+    correct:      5/50 (10%)       AI judge confirmed note is good
+    incorrect:    13/50 (26%)      note proposed but wrong
+    not proposed: 32/50 (64%)      missed entirely
+
+  NON-NOTEWORTHY (ground truth = no): 50 tweets
+    correct:      41/50 (82%)      correctly no note
+    incorrect:    9/50 (18%)       false positive
+
+  OVERALL: 46/100 (46%)
+============================================================
+[dashboard] uploaded iter1 → 3b1195a2-d645-49df-9699-2a416f0e8f9a
+[dashboard] opening http://localhost:8001/?upload=3b1195a2-d645-49df-9699-2a416f0e8f9a
