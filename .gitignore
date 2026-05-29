@@ -102,3 +102,12 @@ code-reviews/
 
 # Phase 0 raw API dumps — production note content, do not commit
 src/scripts_jim/2026_05_05_rating_endpoint/raw_notes.jsonl
+
+# big_eval / query_writer_eval regeneratable artifacts (caches, run dumps, logs)
+datasets/big_eval/_search_cache/
+datasets/big_eval/_writer_cache/
+datasets/big_eval/_cache/
+datasets/big_eval/*.log
+datasets/big_eval/splits/val_remaining_*.csv
+datasets/query_writer_eval/_search_cache/
+datasets/query_writer_eval/runs/
