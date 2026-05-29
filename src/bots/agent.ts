@@ -67,10 +67,9 @@ export const agentBot: Bot = {
   name: "Agent",
   description: "Agentic bot with tool calling",
   async runPipeline(post): Promise<PipelineResult | null> {
-    const config = getBotConfig();
     const input = await createBotInput(post, this.id);
     const outcome = await runAgent(post, input);
-    const result = outcomeToResult(post, this.id, outcome, config.scoreFilters);
+    const result = outcomeToResult(post, this.id, outcome);
     if (input.warnings.length) {
       result.warnings = [...(result.warnings ?? []), ...input.warnings];
     }
