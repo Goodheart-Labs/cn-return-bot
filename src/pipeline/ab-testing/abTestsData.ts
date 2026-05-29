@@ -7,7 +7,7 @@
  * declaration order.
  */
 
-import type { BotConfig, ScoreFilter } from "./botConfig";
+import type { BotConfig } from "./botConfig";
 
 // --- Types ---
 
@@ -46,10 +46,6 @@ export interface ABTest {
 
 // --- AB_TESTS data ---
 
-const AGENT_FAMILY_SCORE_FILTERS: ScoreFilter[] = [
-  { score: "noteNotNeeded", op: "gte", threshold: 0.7 },
-];
-
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
@@ -78,12 +74,10 @@ export const BOT_TEST: ABTest = {
     { variant: { name: "multi-agent", overrides: {
       botId: "multi-agent",
       model: "google/gemini-3-flash-preview",
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     }}, weight: 0 },
     { variant: { name: "agent", overrides: {
       botId: "agent",
       model: "google/gemini-3-flash-preview",
-      scoreFilters: AGENT_FAMILY_SCORE_FILTERS,
     }}, weight: 0 },
     { variant: { name: "opus-main",                  overrides: { botId: "opus-main" }},                 weight: 0 },
     { variant: { name: "opus-main-v2",               overrides: { botId: "opus-main-v2" }},              weight: 0 },

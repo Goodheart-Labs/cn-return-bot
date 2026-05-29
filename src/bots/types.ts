@@ -4,8 +4,6 @@
  * Defines the interface that all bots must implement.
  */
 
-import type { ScoreFilter } from "../pipeline/ab-testing/botConfig";
-
 export interface PipelineResult {
   post: any;
   botId: string;
@@ -21,9 +19,6 @@ export interface PipelineResult {
     status: string;
   };
   checkResult?: string;
-  /** Score filters copied from the bot's config. processTweet applies them
-   * against the scores it computes and rejects notes that fail. */
-  scoreFilters?: ScoreFilter[];
   /** Non-fatal warnings (e.g. media analysis failed but pipeline continued) */
   warnings?: string[];
 }
@@ -37,14 +32,12 @@ export function outcomeToResult(
   post: any,
   botId: string,
   outcome: PipelineOutcome,
-  scoreFilters: ScoreFilter[],
 ): PipelineResult {
   const base = {
     post,
     botId,
     searchContextResult: { text: "", searchResults: "" },
     noteResult: { note: "", url: "", status: "NO MISSING CONTEXT" },
-    scoreFilters,
   };
   switch (outcome.type) {
     case "note":

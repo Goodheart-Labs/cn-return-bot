@@ -1,5 +1,4 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { AllNoteScores } from "../score/noteScores";
 
 // --- Config type ---
 
@@ -7,12 +6,6 @@ export type VideoDescriptionStrategy = "full_video" | "frames";
 
 /** Feed sizes accepted by X's eligible-posts API. */
 export type FeedSize = "small" | "large" | "xl" | "xxl";
-
-export interface ScoreFilter {
-  score: keyof AllNoteScores;
-  op: "gte" | "lte";
-  threshold: number;
-}
 
 export interface BotConfig {
   /** Which bot to run. Set by the BOT_TEST A/B test (or forced via withForcedPicks). */
@@ -59,7 +52,6 @@ export interface BotConfig {
     | "searxng"            // tool-calling loop: model calls google_search (raw SearXNG)
     | "searxng_summarized";// tool-calling loop: model calls google_search (SearXNG → Gemini summary)
   video_description_strategy: VideoDescriptionStrategy;
-  scoreFilters: ScoreFilter[];
   parallel_research: boolean;
   /** When true, an LLM step between search and writer distills raw search
    *  snippets into a structured research brief. Defaults to false. */
@@ -87,7 +79,6 @@ export const DEFAULT_CONFIG: BotConfig = {
   verifier_model: "google/gemini-3-flash-preview", // simple-bot has always verified with gemini-flash
   web_search: "perplexity",
   video_description_strategy: "frames",
-  scoreFilters: [],
   parallel_research: false,
   feed_size: "small",
 };
