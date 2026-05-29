@@ -11,7 +11,6 @@
  */
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
-import { getBotConfig } from "../pipeline/ab-testing/botConfig";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runSimpleBotPipeline } from "../pipeline/simple-bot/orchestrator";
 
@@ -20,10 +19,9 @@ export const simpleBot: Bot = {
   name: "Simple Bot",
   description: "Search → notewriter → verifier; multi-provider search step",
   async runPipeline(post): Promise<PipelineResult | null> {
-    const config = getBotConfig();
     const input = await createBotInput(post, this.id);
     const outcome = await runSimpleBotPipeline(post, input);
-    const result = outcomeToResult(post, this.id, outcome, config.scoreFilters);
+    const result = outcomeToResult(post, this.id, outcome);
     if (input.warnings.length) {
       result.warnings = [...(result.warnings ?? []), ...input.warnings];
     }
