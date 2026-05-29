@@ -1,0 +1,95 @@
+[
+  {
+    "tweet_id": "2049464880520888535",
+    "url": "https://x.com/i/status/2049464880520888535",
+    "post_text": "US Treasury Secretary Scott Bessent stated at a press conference today:\n\n\"We will impose 100% tariffs on Chinese goods if they continue to buy Iranian energy products.\"\n\nChinese Foreign Minister Wang Yi stated:\n\n\"We will continue to buy from Iran, whether you impose 100% or even",
+    "proposed_note_text": "This viral claim of 100% tariffs over Iran oil is false, per Twitter’s trending system.",
+    "proposed_note_sources": [
+      "https://x.com/i/trending/2049089431655882906"
+    ],
+    "ground_truth_note": "The quoted statements attributed to Treasury Secretary Bessent and Chinese FM Wang Yi do not appear in the official record. US actions targeted sanctions on specific entities buying Iranian oil and pressed China over the Strait of Hormuz, not a blanket 100% tariff on all Chinese goods announced at a press conference. https://home.treasury.gov/news/press-releases/sb0476 https://home.treasury.gov/news/press-releases/sb0472",
+    "judge_guidance": "PASS only if the note establishes that the specific quoted statements do not appear in the official record / are unverified, and ideally clarifies the accurate context: US measures targeted sanctions on specific entities buying Iranian oil, not a blanket 100% tariff on all Chinese goods announced at a press conference, and there is no record of the quoted Wang Yi defiant reply. The note must NOT repeat the fabricated quotes as if genuine, and must NOT merely debate whether 100% tariffs would be wise. Cite official Treasury releases or credible reporting (Fortune, ABC, CNBC). A note that just says 'no source' is acceptable if it makes clear the quotes are unsubstantiated; stronger if it states what the actual policy posture was.",
+    "failure_reason": "",
+    "original_note_text": ""
+  },
+  {
+    "tweet_id": "2024612128422793276",
+    "url": "https://x.com/i/status/2024612128422793276",
+    "post_text": "A Muslim man confronted a woman on the bus for eating her lunch while he was fasting.\n\nShe weren’t having none of that … https://t.co/jRUkTjmi77",
+    "proposed_note_text": "This video originally went viral in March 2025, nearly a year before this post — it is not a recent incident.",
+    "proposed_note_sources": [
+      "https://www.intelregion.com/entertainment/muslim-man-confronts-woman-in-bus-for-eating-while-he-is-fasting-tells-her-to-stop-video",
+      "https://www.youtube.com/watch?v=Qoa8zx9h1s4"
+    ],
+    "ground_truth_note": "This clip is a staged comedy skit from the account @thehalalham, a scripted comedy creator, not real news footage of a spontaneous confrontation. The 'BREAKING NEWS' banner is an added overlay. https://www.tiktok.com/@thehalalham",
+    "judge_guidance": "A correct note must establish that this video is a staged/scripted comedy skit (creator @thehalalham, a comedy account) and that the 'BREAKING NEWS' overlay is a fabricated edit, not a real news report. It must NOT repeat the original note's specific error of describing the fast as 'Lent' — the skit's own dialogue is Ramadan/Islamic-fasting themed, and asserting 'Lent' is an unsupported detail. PASS only if the note (1) identifies it as staged comedy / not a real spontaneous incident, and (2) avoids the false 'Lent' framing and avoids over-claiming a specific date it cannot verify. A note that calls it real, or that confidently labels it 'Lent', should FAIL.",
+    "failure_reason": "Core claim (staged skit, fake BREAKING NEWS overlay) is correct, but it injects a wrong detail: the skit is Ramadan/Islamic-fasting themed, not 'Lent' — that label came from a Daily Mail headline and contradicts the clip's own dialogue ('I don't read the Bible'). Rated notHelpfulIncorrect / Argumentative / OpinionSpeculation, likely partly due to that contestable detail.",
+    "original_note_text": "This video is a staged comedy skit from 2024 on TikTok (@thehalalham), depicting a prank about fasting for Lent, not a real confrontation involving a Muslim man during Ramadan. The \"BREAKING NEWS\" overlay is an added edit. https://www.dailymail.co.uk/lifestyle/article-14538315/Prankster-asks-woman-stop-eating-lunch-bus-hes-fasting-Lent-sparks-furious-debate-whos-right.html https://www.tiktok.com/@thehalalham"
+  },
+  {
+    "tweet_id": "2025496691588104274",
+    "url": "https://x.com/i/status/2025496691588104274",
+    "post_text": "FUN BREAK: This is the account of the new Xbox head, Asha Sharma.\n\nThe strange thing is that her first achievement is on January 16, 2026, and all the achievements are from different games with the same dates!\n\nIt seems the account was pre-set by Microsoft (a PR account) to show https://t.co/mWLJUVDzQR https://t.co/3Zd0rsDcbd",
+    "proposed_note_text": "Asha Sharma's Xbox account has achievements spread across multiple dates from January 15 to February 2026 across about 30 games, not all on the same date.",
+    "proposed_note_sources": [
+      "https://www.ign.com/articles/beep-boop-beep-boop-new-xbox-boss-asha-sharma-hits-back-at-claim-her-social-media-account-is-run-by-ai-and-posts-her-gamertag",
+      "https://www.polygon.com/xbox-new-ceo-asha-sharma-gaming-profile/",
+      "https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter"
+    ],
+    "ground_truth_note": "This is Asha Sharma's real Xbox gamertag, which she shared publicly; it is not a fabricated 'PR bot' account. The achievements span many games over weeks with genuine playtimes (e.g., narrative titles played at length), not a single pre-set date. Sharma explained the high gamerscore was because her family had been sharing the account, which she has since limited to herself. https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter",
+    "judge_guidance": "PASS only if the note establishes that the account is authentic (Sharma's real, publicly shared gamertag) and rebuts the 'fake PR bot' / 'all achievements same date' premise with the key fact the original note OMITTED: the elevated gamerscore came from family members sharing the account, which Sharma herself publicly acknowledged and then limited to just herself. A passing note should also note the activity is spread across many games/dates with real playtimes. It must NOT merely quibble over 'Jan 15 not 16' without addressing the substance, and must NOT concede the PR-bot framing. Cite a credible gaming outlet (Windows Central, Pure Xbox, TrueAchievements).",
+    "failure_reason": "Missing key points: leads with a pedantic 'Jan 15 not 16' correction and isolated playtime stats but omits the single most decisive, publicly-documented rebuttal — that Sharma explained the apparent anomalies as her family sharing the account. Reads as an unsourced-feeling spot-check rather than the clear authenticity explanation a reader needs.",
+    "original_note_text": "Sharma's first achievement was Jan 15 (not 16), with varied dates & playtimes (13+ hrs in Halo, 100% Firewatch completed Jan 20). The account shows authentic gaming activity, not a pre-set \"PR bot\" profile as claimed. https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter"
+  },
+  {
+    "tweet_id": "2032514777663021439",
+    "url": "https://x.com/i/status/2032514777663021439",
+    "post_text": "That Friday feeling when wages are going up and prices are coming down for American workers 💸🇺🇸 https://t.co/4RjG69J2ia",
+    "proposed_note_text": "Consumer prices continue to rise — the CPI shows no decline. Real average hourly earnings also fell 0.3% over the past year, meaning workers' purchasing power decreased.",
+    "proposed_note_sources": [
+      "https://www.bls.gov/news.release/cpi.nr0.htm",
+      "https://www.bls.gov/news.release/realer.nr0.htm"
+    ],
+    "ground_truth_note": "Per the BLS, prices did not come down: the CPI rose 0.3% in February 2026 and annual inflation was 2.4% (prices rose). Real average hourly earnings did rise (~1.4% over the year), so wages outpaced inflation, but prices increased rather than fell.    https://www.bls.gov/news.release/cpi.nr0.htm    https://www.bls.gov/news.release/realer.nr0.htm",
+    "judge_guidance": "PASS only if the note corrects the specific false claim that prices are 'coming down': per BLS CPI data, consumer prices ROSE (0.3% in February 2026; ~2.4% year-over-year), i.e. inflation continued, prices did not fall. It is fine (and accurate) to acknowledge that real wages did rise over the year — do NOT 'correct' the wages claim, which is true. The strongest note pairs the price-rise correction with the BLS source. A note that denies wages rose, or that endorses 'prices coming down,' or that vaguely calls the post a lie without the CPI figure, should FAIL. Cite BLS CPI / real earnings releases.",
+    "failure_reason": "",
+    "original_note_text": ""
+  },
+  {
+    "tweet_id": "2046250034262647232",
+    "url": "https://x.com/i/status/2046250034262647232",
+    "post_text": "This is what many Service People come back to.😢 The sacrifice is real and many go through this alone. https://t.co/PtRJaQIFkm",
+    "proposed_note_text": "This video has not been verified to show a military service member or veteran. The subjects' identities have not been confirmed, and the post's implication is unsupported.",
+    "proposed_note_sources": [],
+    "ground_truth_note": "This video is a produced PTSD-awareness skit by 'Westcoast Creators of Network Media' — not real footage of service members. The people shown are actors, not active or former military personnel. The original Facebook post identifies it as 'produced by' the creators. https://www.facebook.com/WestcoastCreatorsofNetworkMedia/videos/ptsd-is-real-and-takes-our-strongets-loved-onesreels-this-video-was-produced-by-/26810848825185953",
+    "judge_guidance": "PASS if the note (a) identifies the video as a produced/scripted PTSD-awareness skit, not real footage of a veteran's panic attack, (b) attributes it to its creator (Westcoast Creators of Network Media, originally published on Facebook), and (c) cites the original Facebook post or another reputable trace. FAIL the note if it (a) doesn't establish the video is scripted, (b) attacks the creators as malicious without acknowledging the stated awareness purpose, (c) cites only random Reddit/Twitter accusations, or (d) leaves ambiguous whether the people depicted are actual service members (they are not). The original note is acceptable on minimum bar; a stronger note explicitly states 'the people shown are not actual service members'.",
+    "failure_reason": "under-rated / missing_key_points — note is correct and well-sourced but only 2 rating events, both 'not needed'. Likely under-noticed because tweet is emotional content and replies polarized.",
+    "original_note_text": "The video depicts a produced skit for PTSD awareness, not real footage of service members. https://www.facebook.com/WestcoastCreatorsofNetworkMedia/videos/ptsd-is-real-and-takes-our-strongets-loved-onesreels-this-video-was-produced-by-/26810848825185953"
+  },
+  {
+    "tweet_id": "2048712783483879812",
+    "url": "https://x.com/i/status/2048712783483879812",
+    "post_text": "Who knew the “Horse paste” ivermectin cured among many things, Parkinson’s. I’ll tell u who knew… BIG PHARMA! They couldn’t have people taking it for Covid and curing other ailments. No that would cut into profits and save lives! Can’t have that. Cures cancer very quickly too! https://t.co/teRaJgqz9c",
+    "proposed_note_text": "The FDA has not approved ivermectin for the treatment of any viral infection, including COVID-19.",
+    "proposed_note_sources": [
+      "https://www.covid19treatmentguidelines.nih.gov/therapies/miscellaneous-drugs/ivermectin/"
+    ],
+    "ground_truth_note": "Ivermectin is not approved or proven to cure Parkinson's, cancer, or COVID-19 in humans. FDA explicitly warns against using veterinary ivermectin paste (the product in this video) in humans — it is formulated for animals and unsafe at those concentrations. Some lab/animal/early-stage human studies exist but none demonstrate cure. https://www.fda.gov/consumers/consumer-updates/ivermectin-and-covid-19 https://www.cancer.org/cancer/latest-news/what-to-know-about-ivermectin.html https://www.fda.gov/safety/medical-product-safety-information/ivermectin-intended-animals-letter-stakeholders-do-not-use-humans-treatment-covid-19",
+    "judge_guidance": "PASS if the note establishes ALL of: (1) ivermectin is NOT approved/proven to cure Parkinson's, cancer, or COVID-19 in humans; (2) the FDA explicitly warns against using veterinary ivermectin in humans (the 'horse paste' in the video); (3) cites at least one authoritative source — FDA, NIH/PMC, American Cancer Society, or a peer-reviewed review. May acknowledge that early-stage / lab research exists but must be clear it is not evidence of cure. FAIL if the note: (a) softens to 'effectiveness is debated' without naming the safety issue with veterinary paste; (b) repeats the conspiracy framing; (c) writes only about COVID without addressing the Parkinson's/cancer claims that are the tweet's headline. Must not endorse Big-Pharma-suppression framing.",
+    "failure_reason": "",
+    "original_note_text": ""
+  },
+  {
+    "tweet_id": "2027825363460473205",
+    "url": "https://x.com/i/status/2027825363460473205",
+    "post_text": "This war has nothing to do with nuclear weapons, terrorism, or dead protesters.\n\nFor decades, Israel has openly pursued an agenda to topple Iraq, Syria, and Iran.\n\nThey orchestrated all of these wars in order to eliminate their rivals and gain total hegemony over the Middle East.",
+    "proposed_note_text": "The U.S. and Israel explicitly justified the 2026 Iran war as a response to Iran's nuclear threat and support for terrorism. Wikipedia states that Trump and Netanyahu",
+    "proposed_note_sources": [
+      "https://en.wikipedia.org/wiki/2026_Iran_war"
+    ],
+    "ground_truth_note": "Israel's 1996 'A Clean Break' memo did urge weakening regional rivals (https://en.wikipedia.org/wiki/A_Clean_Break:_A_New_Strategy_for_Securing_the_Realm), but mainstream historians attribute the Iraq War, Syrian civil war, and US–Iran conflict mainly to US decision-making and regional/local drivers — not Israeli orchestration. https://en.wikipedia.org/wiki/Iraq_War",
+    "judge_guidance": "A correct note must (1) NOT endorse the conspiracy framing, (2) acknowledge that 'A Clean Break' (1996) is a real document advocating weakening Iraq/Syria/Iran, (3) state that mainstream historians/declassified records attribute the Iraq War, Syrian civil war, and US-Iran conflict primarily to US, regional, and domestic Iraqi/Syrian/Iranian drivers — not to Israeli orchestration, (4) cite at least one neutral mainstream source (e.g. Wikipedia on the Iraq War, CFR/RAND, or major newspapers). MUST NOT repeat the original note's specific failures: do not editorialize ('disputed/debunked'), do not stack ideologically slanted opinion sites as primary sources, keep tone neutral. PASS if the note clearly contests the 'orchestrated all these wars' claim with neutral sources and stays under 280 chars; FAIL if it (a) is argumentative/biased, (b) cites only opinion/advocacy sites, or (c) accepts the conspiracy framing.",
+    "failure_reason": "Argumentative/biased framing ('disputed/debunked'), and key source is an advocacy site (Progressive Israel) rather than neutral historiography; reads as taking a side rather than neutrally citing mainstream consensus. Raters heavily tagged 'argumentative or biased', 'opinion/speculation', 'sources missing/unreliable', 'incorrect'.",
+    "original_note_text": "1996's \"A Clean Break\" urged weakening regional rivals https://en.wikipedia.org/wiki/A_Clean_Break:_A_New_Strategy_for_Securing_the_Realm. But historians and analysts say Iraq/Syria conflicts were mainly U.S.-led or locally driven, and \"Greater Israel\" domination is a disputed/debunked claim https://www.progressiveisrael.org/iraq-war-pro-israel-conspiracy."
+  }
+]

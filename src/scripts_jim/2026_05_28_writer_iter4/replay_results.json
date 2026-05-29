@@ -1,0 +1,1207 @@
+[
+  {
+    "url": "https://x.com/i/status/2009219530300731596",
+    "needsNote": "yes",
+    "iter4Note": "",
+    "iter4Result": "missed",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2038078622590779632",
+    "needsNote": "yes",
+    "iter4Note": "ISW's March 29, 2026 assessment reported that Russian forces made tactical gains in eastern Ukraine, not a Ukrainian breakthrough or collapse of Russian defenses.",
+    "iter4Result": "incorrect",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2055719221812666428",
+    "needsNote": "yes",
+    "iter4Note": "The quote attributed to Winston Churchill—\"The fascists of the future will call themselves anti-fascists\"—is not authentic. There is no record of Churchill ever saying this, and the Churchill Project at Hillsdale College has found no credible source linking it to him.",
+    "iter4Result": "incorrect",
+    "newNote": "The quote attributed to Winston Churchill — 'The fascists of the future will call themselves anti-fascists' — is not authentic. There is no record of him ever saying it, and fact-checkers have debunked it.",
+    "newSources": [
+      "https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote/",
+      "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note by only debunking the Churchill quote while completely ignoring the equally prominent and also unverified Reagan attribution in the same image."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2007357044328976752",
+    "needsNote": "no",
+    "iter4Note": "The U.S. did conduct military strikes in Caracas on January 3, 2026, resulting in the capture of Nicolás Maduro. Multiple news outlets reported the operation as a large-scale strike, not a full-scale invasion with special forces on the ground as claimed in a reply.",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/1996831133414363186",
+    "needsNote": "yes",
+    "iter4Note": "The driver in this case was later sentenced to 15 months in prison on appeal after the initial 120-hour community service sentence was overturned. This video is from a 2014 court case, not a recent one.",
+    "iter4Result": "correct",
+    "newNote": "This video is from a 2014 court case in the Netherlands. The driver was originally sentenced to 120 hours community service, but was later sentenced to 15 months in prison on appeal.",
+    "newSources": [
+      "https://nltimes.nl/2017/05/15/polish-driver-killed-toddler-grandparents-crash-released-early-mps-angered"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The proposed note satisfies the two core pass criteria — it correctly identifies the video as being from a 2014 case and clarifies that the 120-hour sentence was overturned on appeal in favor of 15 months in prison — though it omits the extradition detail, lacks sources, and doesn't address the misleading 'migrant killer' framing (Polish EU national), making it weaker than the reference note but still factually correct and not misleading."
+    },
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2020882885427994823",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "In the CBS News town hall, Erika Kirk did not say 'what really upsets me is when people don't like Israel.' She condemned antisemitism and asked 'How could you hate that place?' referring to Israel.",
+    "newSources": [
+      "https://www.cbsnews.com/news/erika-kirk-cbs-news-town-hall-highlights/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "This note commits the same literalist error as the prior rejected note—it fact-checks the paraphrase as if it were a verbatim quote while ignoring that the actual clip is attached and the tweet is clearly framed as satirical mockery, which is exactly why raters previously marked such a note as Not Needed and Missing Key Points; the correct behavior is to abstain."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2039118807692968130",
+    "needsNote": "yes",
+    "iter4Note": "",
+    "iter4Result": "missed",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2016176528531267592",
+    "needsNote": "no",
+    "iter4Note": "Operation Metro Surge in Minnesota has arrested over 400 — and later more than 4,000 — criminal illegal aliens, many with convictions for violent crimes including child rape and murder.",
+    "iter4Result": "correct",
+    "newNote": "The majority of arrests made by federal agents during the Minnesota enforcement surge were of people without criminal records, not the 'worst of the worst' criminals claimed here.",
+    "newSources": [
+      "https://theintercept.com/2026/03/30/ice-minnesota-criminal-records-data-arrests/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The proposed note passes by adding meaningful corrective context — that the tweet's 'worst of the worst' framing implies ICE's Minnesota surge primarily targeted violent criminals, when in fact the majority of the 3,000+ Operation Metro Surge arrests were of individuals without violent criminal records, making the highlighted cases a small and unrepresentative fraction."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2047978936311918600",
+    "needsNote": "yes",
+    "iter4Note": "Modern cruise ships are required to treat sewage and do not discharge untreated waste anywhere during normal operations. This video's depiction of raw sewage being dumped directly into the ocean is not representative of actual cruise ship wastewater systems.",
+    "iter4Result": "missed",
+    "newNote": "Multiple commenters note that this video appears to be AI-generated, and modern cruise ships are prohibited under international law (MARPOL Annex IV) from discharging untreated sewage. Real waste treatment systems use advanced filtration, not raw pipe outflow as depicted.",
+    "newSources": [
+      "https://www.imo.org/en/ourwork/environment/pages/sewage-default.aspx"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note uses weak, unsourced language ('appears to be AI-generated,' attributed only to 'multiple commenters') instead of definitively stating the video is AI-generated and citing authoritative fact-checkers like Full Fact or Lead Stories, which is required to meet the standard."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2047745135526428683",
+    "needsNote": "yes",
+    "iter4Note": "This graph shows the cumulative number of Labor Condition Application (LCA) filings certified by the Department of Labor, not the number of unique H-1B visa holders. Each worker can have multiple LCAs over time (e.g., for job changes or extensions), so these totals overstate the actual visa holder population.",
+    "iter4Result": "missed",
+    "newNote": "This graph is based on H-1B LCA (Labor Condition Application) filings, not actual H-1B visa holders. The video's own text states it uses 'H-1B LCA filings,' which are job certifications and can include multiple filings for the same worker.",
+    "newSources": [
+      "https://www.dol.gov/agencies/eta/foreign-labor/performance"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note correctly identifies the LCA vs. actual visa holders conflation but fails to anchor reality with any concrete number (e.g., 85,000/year new H-1B cap or ~730,000 active H-1B workers), which the judgment criteria requires, and it also provides no supporting citations."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2049464880520888535",
+    "needsNote": "yes",
+    "iter4Note": "Bessent's warning about 100% tariffs was in response to Chinese purchases of Russian oil, not Iranian energy.",
+    "iter4Result": "missed",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2052363800750305773",
+    "needsNote": "no",
+    "iter4Note": "Sir David Attenborough's 100th birthday is on 8 May 2026. This post was published on 7 May, one day before his actual birthday.",
+    "iter4Result": "correct",
+    "newNote": "David Attenborough's 100th birthday is on 8 May 2026 — one day after this post was published.",
+    "newSources": [
+      "https://www.bbc.com/news/articles/c1l7m7j6lzjo"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same pedantic one-day birthday correction that was already rated NOT HELPFUL, violating the explicit guidance to fail any note correcting 'he turns 100 tomorrow' on what is a harmless tribute tweet."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2016932474081657121",
+    "needsNote": "yes",
+    "iter4Note": "",
+    "iter4Result": "missed",
+    "newNote": "The photo of a man with a port-wine stain birthmark is not Dr. Mariano Barbacid. Dr. Barbacid does not have this prominent facial marking. The actual researcher leading the CNIO team is pictured without it in professional portraits.",
+    "newSources": [
+      "https://www.cnio.es/en/news/the-group-led-by-barbacid-at-cnio-completely-eliminates-pancreatic-tumours-in-mice-with-no-resistance-developing/",
+      "https://www.ourcancerstories.com/cancer-news/mariano-barbacid"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note addresses only the irrelevant image/identity point and completely fails to mention either that this is a preclinical mouse-model result (not a human cure) or that the underlying PNAS study was retracted in April 2026 over undisclosed conflicts of interest — the only context that actually matters."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2012592974152991200",
+    "needsNote": "no",
+    "iter4Note": "This video was recorded in 2014 during the BBC series 'Human Universe' with physicist Brian Cox at NASA's Space Power Facility in Ohio.",
+    "iter4Result": "correct",
+    "newNote": "Galileo's principle was proven on the Moon in 1971, when Apollo 15 commander David Scott dropped a hammer and a feather during the lunar EVA.",
+    "newSources": [
+      "https://www.reddit.com/r/interesting/comments/1lgsq5g/worlds_largest_vacuum_chamber_experiment_bowling/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same prior-art trivia about Apollo 15 that already received 175 notHelpfulNoteNotNeeded ratings, since the tweet never claimed first-ness and the note adds no meaningful correction to an accurate science demonstration."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2038670145497764304",
+    "needsNote": "yes",
+    "iter4Note": "Fact-checkers have determined that this image of Donald Trump with Jeffrey Epstein and children is AI-generated and not a verified photograph from the Epstein files.",
+    "iter4Result": "correct",
+    "newNote": "Write a community note that disputes the claim that the images are verified.",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note is not an actual community note at all — it is merely a meta-instruction ('Write a community note…') with no substantive content, fact-check citations, or concrete evidence identifying the images as AI-generated fakes, so it fails every criterion for a passing note."
+    },
+    "classification": "LOSS_NOW_BAD_NOTE"
+  },
+  {
+    "url": "https://x.com/i/status/2048230103994515524",
+    "needsNote": "no",
+    "iter4Note": "Tree cover is typically measured by total forest area or percentage of land area, not trees per person, which primarily reflects population density. India ranks 9th globally in total forest area and 3rd in net annual forest gain per the FAO Global Forest Resources Assessment 2025.",
+    "iter4Result": "correct",
+    "newNote": "Trees per person is a misleading metric that primarily reflects population density, not tree cover. Standard measures show India ranks 9th globally in total forest area and 3rd in net annual forest gain (FAO GFRA 2025).",
+    "newSources": [
+      "https://en.wikipedia.org/wiki/List_of_countries_by_forest_area"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failures of the prior rejected note — it labels the per-capita metric 'misleading' without disputing the underlying numbers, and pivots to total forest area/ranking (a different metric) rather than fact-checking the tweet's actual claim, which is a defensible framing rather than misinformation."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2048796043949551663",
+    "needsNote": "no",
+    "iter4Note": "This video shows an attendee driving a golf cart through the Bitcoin 2026 conference. That same day, a person named Ray Fuentes was recorded chanting \"XRP\" while entering the conference. Neither the tweet nor the available sources show an \"XRP team\" teeing off—just a lone attendee briefly drawing attention.",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2043783331540578439",
+    "needsNote": "yes",
+    "iter4Note": "CBS News polls from April 2026 cited by CBS's own Face the Nation showed Trump's approval rating hitting new lows, not the 92.5% figure claimed in this post.",
+    "iter4Result": "missed",
+    "newNote": "This video is from a satirical Instagram account, not from CBS News. Actual CBS News polls in early 2026 show President Trump's overall approval rating at 37%, with Republican support slipping, not surging to 92.5%.",
+    "newSources": [
+      "https://www.instagram.com/reel/DYe3S0rypGw/?hl=de",
+      "https://www.instagram.com/p/DVKcvwmEcc9/?hl=de"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note fails criterion (b) — it cites only an overall 37% approval figure without providing specific Republican-approval numbers from credible polls (e.g., CNN/SSRS ~80%, Pew ~68%), and it includes no supporting links to CBS's polls archive or any outside fact-check, repeating the sourcing weakness that sank the prior note."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2015520423820083697",
+    "needsNote": "no",
+    "iter4Note": "The U.S.-Israeli joint military campaign against Iran began on February 28, 2026, not on January 25, 2026.",
+    "iter4Result": "correct",
+    "newNote": "The U.S.-Israeli joint military campaign against Iran, Operation Epic Fury, began on February 28, 2026 — over a month after this post. On January 25, no such operation was expected that day.",
+    "newSources": [
+      "https://en.wikipedia.org/wiki/2026_Iran_war",
+      "https://www.britannica.com/event/2026-Iran-war"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note uses hindsight information (Operation Epic Fury, Feb 28, 2026) unavailable at posting time and asserts a definitive verdict ('no such operation was expected that day'), both of which the judge guidance explicitly prohibits; the correct action was to decline to write a note at all."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2029976032799764557",
+    "needsNote": "yes",
+    "iter4Note": "This video is actually a March 2026 Iranian strike on Prince Sultan Air Base that resulted in wounded US service members, not a near-miss with minor injuries as the quoted post suggests.",
+    "iter4Result": "missed",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2013709637363630273",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2010079950800617648",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "This clip is not an actual C-17 crashing off a carrier deck. A C-17 cannot take off from an aircraft carrier, and the video depicts a different context or test.",
+    "newSources": [
+      "https://www.instagram.com/reel/DVspIqWE5J8/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The tweet's core claim is factually correct and the clip is clearly illustrative, so any note — including this one pointing out the video is not real footage — is an unnecessary false positive that the prior rating already identified as NoteNotNeeded."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2034574905858040263",
+    "needsNote": "yes",
+    "iter4Note": "Manchester United played a Champions League round-of-16 tie against Atlético Madrid in February–March 2022, about 4 years ago.",
+    "iter4Result": "missed",
+    "newNote": "Manchester United played a Champions League round of 16 knockout match against Atlético Madrid in February 2022 — less than 5 years before this post.",
+    "newSources": [
+      "https://www.alamy.com/madrid-spain-february-23-2022-fred-of-manchester-united-during-the-uefa-champions-league-round-of-16-1st-leg-football-match-between-atletico-de-madrid-and-manchester-united-on-february-23-2022-in-madrid-spain-photo-oscar-barrosodppilivemedia-image461583596.html"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The note correctly identifies Manchester United's Round of 16 knockout match against Atlético Madrid in February 2022 and explicitly states it was less than 5 years ago, directly refuting the '10 years' claim — though it would be stronger with a source link."
+    },
+    "classification": "WIN_RECOVERED_MISS"
+  },
+  {
+    "url": "https://x.com/i/status/1999999737379143950",
+    "needsNote": "yes",
+    "iter4Note": "No peer-reviewed trial data has been published, and the vaccine (Enteromix) has only passed preclinical trials — it has not yet completed the human clinical trials required to confirm safety and efficacy for widespread use.",
+    "iter4Result": "missed",
+    "newNote": "The claim that Russia's cancer vaccine will be offered 'free to patients around the world' is not supported. Official Russian announcements refer to free access within Russia; the vaccine has only passed preclinical trials, not global rollout.",
+    "newSources": [
+      "https://cedmohub.eu/exaggerated-claims-about-russias-cancer-vaccine-enteromix-sweep-across-africa/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The note correctly identifies and refutes the central falsehood — that the vaccine will be free 'around the world' — by clarifying it only applies to Russia domestically, and notes it has only passed preclinical trials; however, it lacks citations to credible sources (Snopes, Newsweek, etc.), which weakens it but does not invalidate its core correction."
+    },
+    "classification": "WIN_RECOVERED_MISS"
+  },
+  {
+    "url": "https://x.com/i/status/2036903878726131807",
+    "needsNote": "yes",
+    "iter4Note": "",
+    "iter4Result": "missed",
+    "newNote": "The resolution did not condemn slavery in general. It specifically addressed the transatlantic slave trade and called for reparations. Countries voting 'no' said they opposed its narrow focus and legal language.",
+    "newSources": [
+      "https://www.bbc.com/news/articles/cvg06q36052o",
+      "https://news.un.org/en/story/2026/03/1167199"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note mentions reparations but omits the critical element that the resolution declared transatlantic slavery the gravest/worst crime against humanity, which is a key reason for the 'no' votes and is explicitly required by the judge guidance for a passing note."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2037889000514392308",
+    "needsNote": "no",
+    "iter4Note": "This video shows a motorcyclist intentionally smashing a Tesla's side mirror, not a fatal crash involving a passenger.",
+    "iter4Result": "correct",
+    "newNote": "The viral Teslacam footage shows road rage between a Tesla driver and motorcyclists, but no evidence indicates that a passenger was killed. News reports describe the incident as involving a smashed mirror but do not mention any fatalities.",
+    "newSources": [
+      "https://www.yahoo.com/news/articles/viral-teslacam-footage-captures-terrifying-164504961.html"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note neither declines to add context (the preferred outcome, since the tweet's claim of real Teslacam footage is accurate) nor clarifies the actual SoCal freeway origin of the incident; instead it introduces claims about fatalities not present in the tweet, adding misleading new context without proper sourcing."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2000145480823472204",
+    "needsNote": "no",
+    "iter4Note": "The standard and code-required solution to prevent water heater electrocution is proper grounding (earthing) combined with a residual current device (RCD/GFCI). Anti-electric wall devices are not a substitute for these essential safety measures.",
+    "iter4Result": "correct",
+    "newNote": "Electrocution is caused by faulty wiring or missing grounding, not by water. Standard prevention is proper grounding and a residual current device (RCD/ELCB), not just insulation nipples.",
+    "newSources": [
+      "https://forums.mikeholt.com/threads/water-heater-shocking-customer.2554758/",
+      "https://www.youtube.com/watch?v=FrhAHYE0GBk"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note falsely implies the tweet's electrocution mechanism is wrong ('not by water') and dismisses the patented insulation nipple device, which is exactly the type of misleading 'correction' the judge guidance says should fail outright, since the tweet is a substantially accurate safety explainer requiring no correction."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2043729676795879601",
+    "needsNote": "yes",
+    "iter4Note": "These images have been identified as AI-generated by multiple fact-checkers and news outlets. Investigators have found no credible evidence that President Zelensky had any relationship with Jeffrey Epstein or ever visited his properties.",
+    "iter4Result": "correct",
+    "newNote": "These images are AI-generated, not authentic security footage. Fact-checkers at Euronews and others have confirmed they are fabricated and show no real connection between Zelensky and Epstein.",
+    "newSources": [
+      "https://www.euronews.com/my-europe/2026/04/20/fake-footage-allegedly-shows-zelenskyys-friendship-with-jeffrey-epstein"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "While the note correctly identifies the images as AI-generated, it omits the key corroborating detail (Zelensky's beard timeline vs. Epstein's 2019 death), provides no actual hyperlinks to verifiable sources, and the vague attribution to 'Euronews and others' is weaker than the already-failed prior note's citations, making it unlikely to persuade skeptical raters."
+    },
+    "classification": "LOSS_NOW_BAD_NOTE"
+  },
+  {
+    "url": "https://x.com/i/status/2036557734410076512",
+    "needsNote": "no",
+    "iter4Note": "The original Harry Potter movies took 10 years to produce 8 films, from 2001 to 2011. HBO's Casey Bloys said the upcoming TV series won't have annual seasons because it's \"too big and too massive,\" not because the industry has lost the knowledge to produce adaptations quickly.",
+    "iter4Result": "correct",
+    "newNote": "HBO's CEO explained that the Harry Potter TV series won't have annual seasons because 'the show is too big and too massive' — a decision based on production scale, not a loss of knowledge.",
+    "newSources": [
+      "https://www.hollywoodreporter.com/tv/tv-features/casey-bloys-interview-harry-potter-series-hbo-max-uk-launch-1236544999/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note still attempts to rebut what is a casual personal anecdote and opinion riff about Hollywood productivity rather than declining to write a note, which is the only passing outcome per the judge guidance."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/1995257156879401238",
+    "needsNote": "no",
+    "iter4Note": "DraftKings Sportsbook launched in Missouri on December 1, 2025. This post announcing that its Missouri launch was live on November 30, 2025 was accurate at the time.",
+    "iter4Result": "correct",
+    "newNote": "DraftKings' current welcome offer in Missouri is Bet $5, Get $100 in Bonus Bets. The $300 bonus was a launch promotion that is no longer available.",
+    "newSources": [
+      "https://www.betmissouri.com/draftkings"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note frames the $300 promotional bonus offer as misleading or outdated without credible evidence that the offer terms were deceptive at the time of posting, which the judge guidance explicitly requires a FAIL for."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2020736450589790541",
+    "needsNote": "yes",
+    "iter4Note": "The Kiswah piece was not shipped directly from Saudi Arabia to Epstein. Newly released files show it was sent to him through UAE-linked contacts, including a businesswoman and an Emirati official, as part of the annual distribution of old Kiswah pieces to Muslim countries.",
+    "iter4Result": "correct",
+    "newNote": "Pieces of the Kiswa are annually replaced and distributed as gifts to Muslim countries. The cloth shown here was gifted to the United Arab Emirates, not shipped directly from Saudi Arabia to Epstein. Emirati officials then gave it to him.",
+    "newSources": [
+      "https://www.middleeasteye.net/news/epstein-files-show-kaaba-cloth-pieces-makkah-shipped-epstein-uae-contacts"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note correctly disputes the 'directly from Saudi Arabia' framing and notes the traditional annual distribution, but it fails to identify the man in the photo as Sultan Ahmed bin Sulayem (CEO of DP World) — a required element per the criteria — and provides no credible source citations (e.g., Middle East Eye, DOJ documents) to substantiate its claims."
+    },
+    "classification": "LOSS_NOW_BAD_NOTE"
+  },
+  {
+    "url": "https://x.com/i/status/2057319768294896022",
+    "needsNote": "yes",
+    "iter4Note": "Vishal Sikka is the Founder and CEO of Vianai Systems, a human-centered AI company he launched in 2019. There is no evidence he has joined Anthropic.",
+    "iter4Result": "missed",
+    "newNote": "Vishal Sikka is currently the Founder and CEO of Vianai Systems, a human-centered AI company launched in 2019. Recent news and interviews quote him as Vianai's CEO, with no announcement of joining Anthropic.",
+    "newSources": [
+      "https://www.vian.ai/who-we-are-vishal"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The proposed note explicitly states 'with no announcement of joining Anthropic,' directly rebutting the unsubstantiated claim rather than only restating Sikka's Vianai role, thereby avoiding the prior note's defect of leaving the correction implicit."
+    },
+    "classification": "WIN_RECOVERED_MISS"
+  },
+  {
+    "url": "https://x.com/i/status/2051895061877870735",
+    "needsNote": "yes",
+    "iter4Note": "Katy Perry wore a custom Stella McCartney gown and a Miodrag Guberinic mask at the 2026 Met Gala. While the mask generated memes on TikTok, there are no credible reports from Stella McCartney or news outlets confirming a surge in orders for the headpiece.",
+    "iter4Result": "missed",
+    "newNote": "There is no evidence that Stella McCartney received a surge of orders for Katy Perry’s Met Gala mask. The mask was designed by Miodrag Guberinic, not Stella McCartney, and no source reports any such order surge.",
+    "newSources": [
+      "https://wwd.com/pop-culture/celebrity-news/katy-perry-met-gala-2026-dress-stella-mccartney-1238937808/",
+      "https://www.celebitchy.com/975459/katy_perry_wore_stella_mccartney_a_miodrag_guberinic_mask_to_the_met_gala/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note correctly identifies both errors (wrong designer attribution and fabricated order surge) but fails to cite any credible Met Gala or fashion source, which is a required element for a well-supported Community Note."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2018455684661338294",
+    "needsNote": "yes",
+    "iter4Note": "This email is an unverified 2019 extortion attempt from an anonymous sender demanding 1 bitcoin for alleged Epstein videos. No bodies have been found, and New Mexico authorities are investigating the claim, which remains unsubstantiated.",
+    "iter4Result": "missed",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2048488494243176855",
+    "needsNote": "yes",
+    "iter4Note": "A foto usada neste post é de uma criança norte-americana e foi retirada de contexto. Ela já foi utilizada em várias campanhas falsas no Brasil, e não representa uma história real de superação do câncer.",
+    "iter4Result": "incorrect",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2052054023264772324",
+    "needsNote": "yes",
+    "iter4Note": "",
+    "iter4Result": "missed",
+    "newNote": "No known interview or statement from Maxx Morando says he plans to take Miley Cyrus's last name.",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note fails to mention that the account is a self-declared parody account, does not provide any supporting sources, and does not correct the 'boyfriend' error (Morando is Cyrus's fiancé as of December 2025), making it far too thin to pass the required criteria."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2052825590319690191",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2002086396576887148",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2039395207213670691",
+    "needsNote": "yes",
+    "iter4Note": "The four US soldiers killed by an Iranian drone strike in Kuwait on March 1 were identified as Cody Khork, Noah Tietjens, Declan Coady, and Nicole Amor. The woman in the video is not among them.",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "LOSS_NOW_EMPTY"
+  },
+  {
+    "url": "https://x.com/i/status/2024612128422793276",
+    "needsNote": "yes",
+    "iter4Note": "This video is a staged prank, not a genuine confrontation. The man was a prankster fasting for Lent (a Christian observance), not a Muslim fasting for Ramadan.",
+    "iter4Result": "incorrect",
+    "newNote": "This video first went viral in March 2025, when the man claimed he was fasting for Lent — a Christian observance — not Ramadan. The same footage has been reused with conflicting religious framing.",
+    "newSources": [
+      "https://www.dailymail.co.uk/lifestyle/article-14538315/Prankster-asks-woman-stop-eating-lunch-bus-hes-fasting-Lent-sparks-furious-debate-whos-right.html"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note fails on both required criteria: it does not identify the video as a staged comedy skit by @thehalalham or flag the fabricated 'BREAKING NEWS' overlay, and it explicitly repeats the disqualifying 'Lent' framing that contradicts the skit's own dialogue ('I don't read the Bible'), which indicates an Islamic/Ramadan context."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/1985675392586264946",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2001327023839735928",
+    "needsNote": "yes",
+    "iter4Note": "This video was flagged as 99.9% likely AI-generated by detection tools, with signs including distorted hands and faces. Real Gaza floods did occur in December 2025 but this specific clip is not authentic footage.",
+    "iter4Result": "correct",
+    "newNote": "This video has been found to be AI-generated. AFP's detection tool rates it 99.9% likely deepfake, with signs like distorted faces and hands. Real Gaza flooding did occur in December 2025, but this clip is not authentic.",
+    "newSources": [
+      "https://factcheck.afp.com/doc.afp.com.87W89G3"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The note clearly establishes that the video is AI-generated (citing AFP's 99.9% deepfake rating and visible artifacts), correctly notes that real Gaza flooding did occur in December 2025, and explicitly states this clip is not authentic footage."
+    },
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2046782070840586266",
+    "needsNote": "yes",
+    "iter4Note": "Nick Fuentes has not received any funds from the SPLC. The SPLC's own website tracks him as a white nationalist figure, not as a recipient of payments.",
+    "iter4Result": "incorrect",
+    "newNote": "Nick Fuentes has not received any funds from the SPLC. The SPLC tracks and lists him as a hate group leader on its website, and the Washington Post reported the SPLC was indicted for payments to Klan leaders, not Fuentes.",
+    "newSources": [
+      "https://x.com/grok/status/2047013502250872937",
+      "https://www.splcenter.org/resources/extremist-files/nick-fuentes/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note fails to identify Laurent Bachelier as the actual source of the ~$250k Bitcoin donation and the SPLC's role as a reporter (not funder) of that donation, and it introduces a potentially inaccurate and irrelevant claim about the SPLC being 'indicted for payments to Klan leaders' without credible citation, which muddies rather than clarifies the correction."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2049702745783882104",
+    "needsNote": "yes",
+    "iter4Note": "US Treasury Secretary Bessent said the total seized was nearly $500 million — roughly $350 million in crypto assets plus an additional $100 million seized separately.",
+    "iter4Result": "missed",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2023868808386277835",
+    "needsNote": "no",
+    "iter4Note": "This video was created using AI video generation tools like OpenAI's Sora, not an actual Nintendo 64 game from 1998. Videos of it carry tags such as #sora, #ai, and #sora2.",
+    "iter4Result": "correct",
+    "newNote": "This video was generated by OpenAI's Sora AI model in 2025, not a real 1990s video game. The 'Shofar Interactive' credit is fictional and not a licensed Nintendo product.",
+    "newSources": [
+      "https://www.youtube.com/shorts/i7PhLWmMnmw",
+      "https://www.youtube.com/shorts/9a3SFYKP78c"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same pedantic failure as the prior rejected note, solemnly fact-checking obviously satirical content that no reasonable viewer would mistake for a real 1998 N64 game."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2004909604052889910",
+    "needsNote": "yes",
+    "iter4Note": "Minnesota law requires the registered voter to personally accompany the person to the polling place and sign an oath in front of an election judge verifying that the person resides in the same precinct. The voter cannot vouch for others if they themselves were vouched for.",
+    "iter4Result": "missed",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2028943273042100353",
+    "needsNote": "yes",
+    "iter4Note": "Sen. Fetterman is correct: the last formal declaration of war by Congress was World War II. The conflicts in Iraq and Afghanistan were authorized by Authorizations for Use of Military Force (AUMFs), not formal declarations of war.",
+    "iter4Result": "correct",
+    "newNote": "Congress has not issued a formal declaration of war since World War II. The wars in Iraq and Afghanistan were authorized by Congress through Authorizations for Use of Military Force (AUMFs), not declarations of war.",
+    "newSources": [
+      "https://www.senate.gov/about/powers-procedures/declarations-of-war.htm"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The note correctly establishes the AUMF-vs-declaration distinction, confirms the last formal declaration of war was WWII, and implicitly validates Fetterman's factually correct underlying claim without mocking him."
+    },
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2041676371127370152",
+    "needsNote": "yes",
+    "iter4Note": "Toll payments are being reported for some vessels transiting the Strait of Hormuz, but there is no evidence that American ships have paid any toll, in yuan or otherwise. The claim that \"American ships\" are paying a toll in yuan is unsupported by any of the reporting on this issue.",
+    "iter4Result": "missed",
+    "newNote": "No U.S. ship has paid a yuan toll in the Strait of Hormuz. Some tankers from other countries have, but the U.S. Navy blockaded Iranian ports in April 2026, making payments by American ships highly unlikely.",
+    "newSources": [
+      "https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis",
+      "https://www.bloomberg.com/news/articles/2026-04-01/strait-of-hormuz-ships-paying-iran-yuan-and-crypto-tolls-for-safe-passage"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note fails on multiple counts: it never states the critical fact that U.S./Israel-linked vessels are categorically barred from transit under Iran's tiered system (making 'paying' moot), it introduces an unsupported claim about a 'U.S. Navy blockade of Iranian ports in April 2026' not found in the reference sources, its 'highly unlikely' phrasing remains speculative like the prior rejected note, and it cites no credible sources (Bloomberg, Fortune, etc.)."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2036122449536811392",
+    "needsNote": "yes",
+    "iter4Note": "The raised bumps on a steering wheel are tactile markers to help all drivers locate the horn without looking away from the road. They are not Braille, and blind people are not permitted to drive.",
+    "iter4Result": "correct",
+    "newNote": "The raised bumps on steering wheels are tactile markers to help any driver locate the horn without looking away from the road. They are not Braille and are not designed specifically for blind drivers. The National Federation of the Blind confirmed this.",
+    "newSources": [
+      "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note omits the legally required fact that blind people are not permitted to drive, and cites only the National Federation of the Blind rather than the required Reuters, USA Today, or Snopes fact-checks."
+    },
+    "classification": "LOSS_NOW_BAD_NOTE"
+  },
+  {
+    "url": "https://x.com/i/status/1991574142038999227",
+    "needsNote": "no",
+    "iter4Note": "The Coast Guard refuted this claim the same day, stating that these symbols \"have been and remain prohibited\" as hate symbols.",
+    "iter4Result": "false positive",
+    "newNote": "Within hours of the initial report, the Coast Guard released an updated policy that explicitly prohibits 'Divisive or hate symbols and flags,' including the swastika and noose, and called descriptions of a policy change 'categorically false.'",
+    "newSources": [
+      "https://www.pbs.org/newshour/politics/the-coast-guard-planned-to-change-how-it-described-swastikas-and-nooses-then-came-the-outcry-and-an-updated-policy",
+      "https://x.com/USCG/status/1991597087595851904"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note includes the Coast Guard's claim that reports of a policy change were 'categorically false,' which disputes the underlying reporting that the policy DID briefly downgrade the swastika to 'potentially divisive' — rather than simply adding the reversal update without contradicting the original facts."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/1979373591767531959",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "No evidence found that Hegseth's tie was a Russian flag tie. The same striped tie design has been worn by him at other official events and is a common pattern that predates this controversy.",
+    "newSources": [
+      "https://www.yahoo.com/news/articles/pete-hegseth-tie-causes-diplomatic-163609695.html",
+      "https://www.thedailybeast.com/pete-hegseths-tie-ignites-diplomatic-firestorm/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The guidance requires declining to write any note, since the tweet makes a contested political-symbolic interpretation (color symbolism → Kremlin allegiance) rather than a checkable factual claim; any note attempting to refute that interpretation is a false positive."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2020558648716521763",
+    "needsNote": "yes",
+    "iter4Note": "",
+    "iter4Result": "missed",
+    "newNote": "Available public records show no evidence that King Charles III flew on Epstein's planes, visited his Caribbean island, or was a guest at his homes. The Epstein files repeatedly name Prince Andrew, not Charles, in connection with Epstein-related activities.",
+    "newSources": [
+      "https://factually.co/fact-checks/politics/king-charles-jeffrey-epstein-links-b5fddf"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note fails the key criteria: it never names the correct location (Epstein's Manhattan townhouse on East 71st Street, NYC, not Little St. James/'Epstein Island'), cites no credible sources, misframes the issue by focusing on Charles personally rather than his aide Peter Loughborough, and ignores the confirmed underlying story that Met officers did stay at Epstein's NYC townhouse during Andrew's 2010 trip — effectively falling into the 'no evidence' dismissal that the judge guidance explicitly says FAILS."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/1994449046916731187",
+    "needsNote": "no",
+    "iter4Note": "Trump’s Thanksgiving Truth Social post proposed pausing all migration from third-world countries, not a whites-only immigration policy. He wrote: “I will permanently pause migration from all Third World Countries.”",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2013638785850843460",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2025496691588104274",
+    "needsNote": "yes",
+    "iter4Note": "Asha Sharma publicly shared her own gamertag in response to these claims, and the account shows genuine gameplay activity since January 15, 2026 — not a pre-set PR account.",
+    "iter4Result": "incorrect",
+    "newNote": "Asha Sharma publicly shared this gamertag herself and defended it as her real account, stating the account was not run by AI or PR.",
+    "newSources": [
+      "https://www.ign.com/articles/beep-boop-beep-boop-new-xbox-boss-asha-sharma-hits-back-at-claim-her-social-media-account-is-run-by-ai-and-posts-her-gamertag"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note omits the decisive rebuttal — that Sharma publicly explained the anomalies by disclosing her family had been sharing the account, which she then restricted to herself — and provides no citation to a credible outlet, leaving the 'fake PR bot' premise inadequately countered."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2002014744727728582",
+    "needsNote": "no",
+    "iter4Note": "Karmelo Anthony is charged with first-degree murder for stabbing Austin Metcalf, a fellow 17-year-old student, at a high school track meet in April 2025 — not for defending himself against unnamed attackers at a separate incident.",
+    "iter4Result": "false positive",
+    "newNote": "Austin Metcalf died at the scene of the April 2025 track meet stabbing. No other attackers have been publicly identified.",
+    "newSources": [
+      "https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note subtly disputes the self-defense framing by implying no 'attackers' existed, which is inappropriate before adjudication, and the judge guidance specifies the only acceptable outcome is declining to write a note at all."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2039707797244215475",
+    "needsNote": "yes",
+    "iter4Note": "The 29% figure is from a state-level approval breakdown, not a national poll. Harry Truman holds the record for the lowest presidential approval rating at 22%.",
+    "iter4Result": "missed",
+    "newNote": "Polls from May 2026 show Trump's overall approval rating around 34-37%, not 29%. And Harry Truman holds the lowest presidential approval rating on record at 22%.",
+    "newSources": [
+      "https://www.pewresearch.org/politics/2026/05/01/trump-loses-ground-on-several-personal-traits-as-approval-rating-slips/",
+      "https://www.citizen-times.com/story/news/politics/2026/05/06/trump-approval-rating-president-with-lowest-highest-approval-rating/89932703007/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note fails criterion (a) because it never explains that the 29% figure comes from the Harvard Youth Poll's 18-29 age demographic—it only states that overall approval is 34-37%, leaving readers without the key context that the tweet conflated a youth-demographic figure with an overall approval rating."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2017296241898467383",
+    "needsNote": "no",
+    "iter4Note": "This video dates from 2022, not January 2026. The same clip of Michael Rapaport being hit by a snowball was widely shared in February 2022.",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2033436730251264262",
+    "needsNote": "yes",
+    "iter4Note": "Benjamin Netanyahu is alive. News organizations including Reuters, CBC, and the New York Times have confirmed his March 2026 public appearances are authentic, not AI-generated.",
+    "iter4Result": "correct",
+    "newNote": "Video and press conference footage from March 2026 showing Benjamin Netanyahu has been verified as authentic by multiple news organizations, including CBC, Reuters, and the New York Times. The rumor that he died is false.",
+    "newSources": [
+      "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+      "https://www.cbc.ca/news/world/netanyahu-video-proof-of-life-iran-israel-9.7132558"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note provides no clickable URLs to verify its claims, merely naming CBC, Reuters, and NYT without links — leaving it vulnerable to the same 'notHelpfulSourcesMissingOrUnreliable' failure as the prior note, and it lacks the specific anchors (March 12 press conference, March 15-16 café videos) and loadable sources (Snopes, NBC, Euronews) required to pass the judge criteria."
+    },
+    "classification": "LOSS_NOW_BAD_NOTE"
+  },
+  {
+    "url": "https://x.com/i/status/2025357414841663677",
+    "needsNote": "yes",
+    "iter4Note": "",
+    "iter4Result": "missed",
+    "newNote": "This video was created with AI face-swap technology and does not show Ghislaine Maxwell. The creator admitted to using face-swapping software to fake the video.",
+    "newSources": [
+      "https://www.snopes.com/fact-check/video-ghislaine-maxwell-quebec/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note correctly cites the creator's admission of AI face-swapping and avoids the hedging/opinion framing of the prior note, but it fails to confirm that Maxwell remains incarcerated at FPC Bryan in Texas and provides no citations (CBC/Snopes/AFP) to substantiate the AI-fake claim, making it insufficiently sourced to pass."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2032514777663021439",
+    "needsNote": "yes",
+    "iter4Note": "Adjusted for inflation, real average hourly earnings decreased 0.2 percent from April 2025 to April 2026, the most recent full year of data available at the time of the post.",
+    "iter4Result": "missed",
+    "newNote": "From April 2025 to April 2026, real average hourly earnings decreased 0.2%, as nominal wage growth of 3.6% trailed inflation of 3.8%. Overall consumer prices continued rising, with CPI up 0.9% year-over-year in March 2026.",
+    "newSources": [
+      "https://www.bls.gov/news.release/realer.nr0.htm",
+      "https://www.bls.gov/news.release/archives/cpi_04102026.htm",
+      "https://usafacts.org/answers/are-wages-keeping-up-with-inflation/country/united-states/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note incorrectly claims real wages decreased (−0.2%) when BLS data shows real average hourly earnings actually rose (~1.4% year-over-year), and the CPI figures cited (0.9% YoY in March 2026) do not match the BLS reference data (2.4% annual inflation in February 2026); per judge guidance, a note that falsely denies the true wages claim should fail."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2052999491662320103",
+    "needsNote": "no",
+    "iter4Note": "Under Nigerian contract law, once a buyer pays in full and receives a receipt, title to the goods transfers to the buyer, and the seller must deliver as agreed — unless a collection deadline was stated on the receipt.",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2031539160700313846",
+    "needsNote": "yes",
+    "iter4Note": "This attack happened in San Jose, California, at Santana Row — not in San Francisco. Police are investigating it as a possible antisemitic hate crime against two Israeli-American men.",
+    "iter4Result": "incorrect",
+    "newNote": "This attack occurred in San Jose, not San Francisco. The assault happened on March 8, 2026, outside Cafe Augustine at Santana Row in San Jose, and is being investigated as a possible hate crime by the San Jose Police Department.",
+    "newSources": [
+      "https://www.timesofisrael.com/dont-mess-with-iran-f-the-jews-2-israeli-american-men-beaten-in-california/",
+      "https://www.sfchronicle.com/crime/article/san-jose-santana-row-antisemitic-attack-22069748.php"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note correctly fixes the location to San Jose/Santana Row but fails to address the unsubstantiated 'Islamist' framing in the tweet — it does not state that the suspects' religion has not been publicly established or confirmed by authorities."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/1983548029786362181",
+    "needsNote": "no",
+    "iter4Note": "The Browns did not draft Dylan Sampson or Shedeur Sanders in 2025. Cleveland's 2025 draft class included Mason Graham, Carson Schwesinger, Quinshon Judkins, and Harold Fannin Jr.",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2041891972512936030",
+    "needsNote": "yes",
+    "iter4Note": "Ellen DeGeneres remains a US citizen and has not renounced her citizenship. Claims that she was denied a passport or listed as an Antifa supporter are fabricated.",
+    "iter4Result": "incorrect",
+    "newNote": "The image is labeled 'NOTHING on this page is REAL' — it's a fabricated satirical meme. Ellen DeGeneres has not renounced her U.S. citizenship and remains a citizen while living in the UK. Claims about a passport denial or Antifa ties are false.",
+    "newSources": [
+      "https://www.primetimer.com/features/did-ellen-degeneres-give-up-her-us-citizenship-passport-denial-over-antifa-links-claim-debunked",
+      "https://news.meaww.com/fact-check-did-marco-rubio-deny-ellen-de-generes-application-for-repatriation-to-usa"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The proposed note satisfies both requirements: it clearly states the claims are false/fabricated and directly quotes the satire page's own disclaimer ('NOTHING on this page is REAL'), identifying it as a fabricated satirical source."
+    },
+    "classification": "WIN_FIXED_BAD_NOTE"
+  },
+  {
+    "url": "https://x.com/i/status/2051695790519726347",
+    "needsNote": "no",
+    "iter4Note": "These photos were first published in August 2024, not May 2026, and show the same incident that multiple outlets reported on at that time.",
+    "iter4Result": "correct",
+    "newNote": "These photos were taken in August 2024. The post implies the event is recent, but it is about 21 months old.",
+    "newSources": [
+      "https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-appears-to-snort-white-powder-substance-while-enjoying-poolside-lunch-with-girlfriend-ashley-stevenson-in-south-of-france.html"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same pedantic recency correction that the prior note was already rated NOT HELPFUL for — the underlying claim about Marcus Jordan being photographed apparently snorting a white substance in France is true and documented, so no one is materially misled by the lack of a precise date."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2022722314941665369",
+    "needsNote": "no",
+    "iter4Note": "The Ziosk screen explicitly states 'Tip is calculated after tax and before discounts.' The tip shown is calculated on the pre-discount total, not the post-discount amount displayed. The machine is not lying — it is following its stated formula.",
+    "iter4Result": "correct",
+    "newNote": "Ziosk calculates tips 'after tax and before discounts,' which can make the suggested tip appear much higher than expected if discounts were applied to the bill. The screen explicitly states this policy. There is no evidence the machine is 'lying' about the calculation method.",
+    "newSources": [
+      "https://www.ziosk.com/faqs",
+      "https://www.dailymail.com/yourmoney/article-14038603/chilis-glitch-customers-pay-enormous-tips.html"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": true,
+      "reason": "The proposed note factually explains Ziosk's pre-discount tip calculation configuration without invoking 'standard etiquette' framing, without asserting the math is correct relative to the final bill, and without flatly calling the woman wrong—meeting the pass criteria."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2018031751541526698",
+    "needsNote": "no",
+    "iter4Note": "The video's dialogue is fictional. DOJ-released emails show Musk asked Epstein about visiting his island but contain none of the crude exchanges or 'UN' reference shown here. The actual emails quote Epstein saying 'no one over 25 and all very cute.'",
+    "iter4Result": "false positive",
+    "newNote": "This is a dramatized parody video. The real DOJ emails show Musk writing about UN diplomats and Epstein replying 'there is no one over 25 and all very cute.' The dialogue in this video, including the 'Are you fucking stupid? I'm talking about children' exchange, is fabricated.",
+    "newSources": [
+      "https://www.independent.co.uk/news/world/americas/us-politics/elon-musk-epstein-files-island-party-b2911563.html"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same failure as the prior NOT HELPFUL note by treating an openly attributed TikTok parody as needing debunking, while also introducing the false-binary 'fabricated dialogue vs. real emails' framing that the judge guidance explicitly prohibits — the correct action is to decline writing a note at all."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2011406203851833461",
+    "needsNote": "yes",
+    "iter4Note": "These are inactive voter registration records that are kept separate from active voters and do not receive ballots — not improperly registered voters. Oregon's Secretary of State said this is routine cleanup of outdated records, not evidence of fraud.",
+    "iter4Result": "incorrect",
+    "newNote": "These are inactive registrations, kept separate from the active voter list. Inactive voters do not receive ballots, and the records are being cleaned up as routine maintenance required by state law. They are not fraudulent entries or currently voting.",
+    "newSources": [
+      "https://factually.co/fact-checks/politics/oregon-remove-800000-voters-rolls-196a62",
+      "https://apps.oregon.gov/oregon-newsroom/OR/SOS/Posts/Post/resume-routine-cleanup-outdated-inactive-voter-registration-records-directives-tobias-read"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The note omits two required elements: it does not explain that these are real people who moved or missed multiple federal elections (criterion 2), and crucially it does not mention that the cleanup resulted from a settlement with Judicial Watch under federal voter-roll-maintenance law (criterion 4), instead vaguely attributing it to 'state law' — missing context that would rebut the 'improperly registered' framing more precisely."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2013924875757371711",
+    "needsNote": "no",
+    "iter4Note": "China's holdings of U.S. Treasuries have fallen from nearly $1.2 trillion to $652.3 billion, the lowest level since 2008, and the People's Bank of China has been adding modest amounts of gold to its reserves, such as 8 tons in its largest monthly purchase in 15 months. This is better described as a gradual, multi-year diversification rather than a sudden \"massive dump.\"",
+    "iter4Result": "correct",
+    "newNote": "China has been buying gold, but the scale is modest. The central bank added 8 tonnes in April 2026, the largest monthly increase in 15 months. This is small compared to China's total gold reserves of 2,313 tonnes and its holdings of over $650 billion in U.S. Treasuries.",
+    "newSources": [
+      "https://www.gold.org/goldhub/gold-focus/2026/05/china-gold-market-update-notable-rise-gold-reserves"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same failure as the prior note by characterizing China's gold buying as 'modest' and 'small'—injecting a contested counter-narrative rather than correcting a factual error—when the correct action was to decline writing a note, since the tweet's claims align with mainstream reporting on record gold accumulation and historically low Treasury holdings."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2037248148448444442",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2012170476554944553",
+    "needsNote": "no",
+    "iter4Note": "This video has circulated since January 2022 and shows a funeral procession in Khuzestan province, not IRGC forces enforcing martial law in January 2026.",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2015588241315950990",
+    "needsNote": "no",
+    "iter4Note": "The trailer in the post was released in December 2024 for \"Like a Dragon: Pirate Yakuza in Hawaii,\" not \"Like a Dragon 9\" — no official \"Like a Dragon 9\" story trailer has been released or leaked.",
+    "iter4Result": "correct",
+    "newNote": "This video shows content from 'Like a Dragon: Pirate Yakuza in Hawaii', a spin-off game released in February 2025, not a 'Like a Dragon 9' story trailer. No official Like a Dragon 9 trailer has been announced or leaked.",
+    "newSources": [
+      "https://gamerant.com/like-a-dragon-news-2025-games-pirate-yakuza-hawaii-anniversary/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same failure mode as the prior NOT HELPFUL note — it literally debunks what is clearly niche-community satire from a Yakuza-fan parody account, when the correct action is to decline to write a note at all."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2037606034978583022",
+    "needsNote": "no",
+    "iter4Note": "The Magic Tree House series continued long after book #22. Dozens more books were published after 2000, with 44 total released as of 2022.",
+    "iter4Result": "correct",
+    "newNote": "The Magic Tree House series continued long after book #22. As of 2022, 44 books had been published, with #23 \"Twister on Tuesday\" released in 2001.",
+    "newSources": [
+      "https://en.wikipedia.org/wiki/Magic_Tree_House",
+      "https://www.fantasticfiction.com/o/mary-pope-osborne/magic-tree-house/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the prior note's failure by 'correcting' a period-roleplay account that is intentionally posting in-character as of 2001, when #22 was indeed the most recent Magic Tree House book; a correct note would decline to correct the tweet at all."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2014063733836828813",
+    "needsNote": "yes",
+    "iter4Note": "Chanda Petrey-Czaruk was fired from her job, but the arrest mentioned in the video is of a different nurse, Lexie Lawler. No reports show Chanda was taken into custody.",
+    "iter4Result": "incorrect",
+    "newNote": "No news reports show Chanda Petrey-Czaruk was arrested. She lost her job and faced backlash, but was not taken into custody. A similar incident involving a different nurse in Florida led to an arrest, which may have caused confusion.",
+    "newSources": [
+      "https://sundayguardianlive.com/world/who-is-chanda-petrey-czaruk-ohio-nurse-at-center-of-viral-controversy-after-wishing-injury-on-white-house-press-secretary-and-facing-backlash-165620/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note correctly states she was not taken into custody and adds useful context, but it fails to cite any reliable sources, which is a required criterion for a valid Community Note."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2055854792191385800",
+    "needsNote": "no",
+    "iter4Note": "The video shows Craig Overton, not his twin brother Jamie Overton. Jamie Overton withdrew from IPL 2026 due to a thigh injury, while Craig has been playing County Championship.",
+    "iter4Result": "correct",
+    "newNote": "The video shows Craig Overton scoring a century for Somerset in the County Championship. It was his twin brother Jamie Overton who withdrew from the IPL due to a thigh injury — not the player shown here.",
+    "newSources": [
+      "https://www.wisden.com/series/county-championship-2026/cricket-news/141-off-180-england-capped-all-rounder-craig-overton-blasts-innings-saving-century-from-no7-in-county-championship-knock",
+      "https://www.bbc.com/sport/cricket/articles/czr26xl36deo"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior NOT HELPFUL note by clarifying the Craig/Jamie twin identity in response to what is clearly sarcastic meme-style engagement bait, where the top replies already make the correction — no note is needed here."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2012558410122670331",
+    "needsNote": "yes",
+    "iter4Note": "The clip of Macron in this video is digitally altered. Fact-checkers found his face was added to 1980s nightclub footage of other people dancing, so it does not show him before becoming president.",
+    "iter4Result": "missed",
+    "newNote": "The clip of Emmanuel Macron dancing in a green tank top is a deepfake. The original footage is from a California nightclub in the 1980s, with Macron's face added.",
+    "newSources": [
+      "https://www.reuters.com/fact-check/macron-dancing-clip-is-altered-80s-nightclub-footage-2024-03-21/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note correctly identifies the Macron deepfake clearly and simply, but it omits any citation to a reputable fact-check, which the judge guidance explicitly requires, and it also fails to address the Zelensky portion of the tweet at all, leaving half the claim uncorrected."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2046250034262647232",
+    "needsNote": "yes",
+    "iter4Note": "This video was produced as a fictional dramatization, not a recording of a real military service member experiencing a PTSD episode.",
+    "iter4Result": "missed",
+    "newNote": "Multiple commenters on this video — including users who say the people in it are not in the military — point out that it does not show a service member. There is no evidence the individuals depicted are veterans or that their interaction is related to military service.",
+    "newSources": [
+      "https://x.com/i/status/2046250034262647232"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note fails all three required criteria: it does not identify the video as a scripted/produced PTSD-awareness skit, it does not attribute it to 'Westcoast Creators of Network Media,' and it cites only vague 'commenters' rather than the original Facebook post or any reputable source—making it less authoritative than even the prior note that was rated not helpful."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2017354263647658448",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "The recipient of this April 2009 email from Jeffrey Epstein has been publicly identified by U.S. lawmakers as Sultan Ahmed bin Sulayem, an Emirati billionaire. His name was redacted in early document releases but has since been confirmed.",
+    "newSources": [
+      "https://www.snopes.com/fact-check/epstein-torture-email-sultan/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note attempts to identify the redacted recipient without providing verifiable sources, which the judge guidance explicitly flags as a FAIL, and it does not decline to write a note, which is the only passing condition."
+    },
+    "classification": "LOSS_NEW_FP"
+  },
+  {
+    "url": "https://x.com/i/status/2034073867401240608",
+    "needsNote": "yes",
+    "iter4Note": "",
+    "iter4Result": "missed",
+    "newNote": "Benjamin Netanyahu appeared before reporters on March 19, 2026, and was visibly alive. Multiple news outlets and fact-checkers have confirmed the death rumors are false.",
+    "newSources": [
+      "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/"
+    ],
+    "newClaimsAnalysis": [],
+    "newVerdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the prior note's failure by only addressing Netanyahu's survival without correcting the additional fabrications — that Iddo Netanyahu and Mossad chief David Barnea were killed, and that the attached Trump clip depicts mourning for Netanyahu."
+    },
+    "classification": "BOTH_WRONG"
+  },
+  {
+    "url": "https://x.com/i/status/2049194715262623940",
+    "needsNote": "no",
+    "iter4Note": "",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  },
+  {
+    "url": "https://x.com/i/status/2016313026161299803",
+    "needsNote": "no",
+    "iter4Note": "Both names received extensive coverage in mainstream media and from Democratic leaders. President Biden spoke about Laken Riley multiple times, and Vice President Harris, Senator Schumer, and other Democratic officials publicly expressed condolences and called for justice in her case. The claim that the Left \"never said her name\" is not accurate.",
+    "iter4Result": "correct",
+    "newNote": "",
+    "newSources": [],
+    "newClaimsAnalysis": [],
+    "newVerdict": null,
+    "classification": "BOTH_CORRECT"
+  }
+]

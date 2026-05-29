@@ -1,0 +1,87 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Netanyahu dead March 2026",
+        "Scott Bessent Situation Room March 13 2026",
+        "Netanyahu alive status March 13 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Multiple high-authority fact-checks (Snopes, Poynter, NBC News, Yahoo/AP) confirming Netanyahu is alive and debunking death rumors. Newsweek and Mirror articles explaining Scott Bessent was pulled into the Situation Room on March 13 to discuss Iran war, not Netanyahu's death.",
+      "lesson": "The tweet's core claim (Netanyahu dead) is a well-documented piece of misinformation from March 2026. Round 1 immediately surfaced definitive debunks. Bessent's Situation Room meeting was about Iran operations, not Netanyahu's death."
+    },
+    {
+      "queries": [
+        "Netanyahu alive video coffee cafe March 15 2026"
+      ],
+      "purpose": "targeted — verify Netanyahu's proof-of-life evidence specifically",
+      "what_returned": "Times of Israel, Snopes, WION, CBC, Euronews, YouTube coverage of Netanyahu's March 15 coffee cafe video where he jokes 'I am dying for a coffee' and holds up both hands to show five fingers each.",
+      "lesson": "Netanyahu himself recorded a video specifically to mock the death conspiracy theories. The coffee shop also published corroborating photos. This is strong primary+secondary evidence of life."
+    },
+    {
+      "queries": [],
+      "purpose": "WebFetch verification — fetched Newsweek (Bessent), Poynter (Netanyahu death rumor spread), attempted Snopes/ToI/CBC (all paywalled/403)",
+      "what_returned": "Newsweek confirmed Bessent was pulled to discuss Iran war progress, returned with shaken voice and said 'the Iranian mission is proceeding well ahead of schedule' and mentioned his teenager considering military service. Poynter confirmed Netanyahu posted multiple proof-of-life videos March 15-17 including Huckabee video where he says 'Yes, I'm alive'.",
+      "lesson": "Bessent's shaken demeanor and teenager comment are fully explained by a tense ongoing Iran military operation — not Netanyahu's death. Tweet's inference is unfounded."
+    }
+  ],
+  "gold_queries": [
+    "Netanyahu dead March 2026 fact check",
+    "Scott Bessent Situation Room March 13 2026 Iran",
+    "Netanyahu alive video March 15 2026",
+    "Netanyahu death rumors debunked snopes reuters",
+    "Benjamin Netanyahu proof of life March 2026"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.newsweek.com/scott-bessent-interview-situation-room-donald-trump-iran-11676786",
+      "title": "What Scott Bessent Said After Interview Interrupted for Trump Situation Room Talk",
+      "found_via_query": "Scott Bessent Situation Room March 13 2026",
+      "authority_reason": "Mainstream US news outlet covering the actual event with direct quotes from Bessent",
+      "what_it_establishes": "Bessent was pulled into the Situation Room on March 13, 2026 to discuss the ongoing Iran war/military operations. He returned shaken and said 'the Iranian mission is proceeding well ahead of schedule.' His mention of his teenager and military service was about the ongoing Iran conflict, not Netanyahu's death."
+    },
+    {
+      "url": "https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/",
+      "title": "Was Netanyahu killed in Iranian missile attack? Debunking claim",
+      "found_via_query": "Netanyahu dead March 2026",
+      "authority_reason": "Snopes is a top-tier dedicated fact-checking outlet",
+      "what_it_establishes": "Netanyahu is alive. He gave a live press conference on March 12 broadcast on X and by multiple media outlets. Death rumor originated from a viral 'six fingers' claim about his video, which was debunked as a trick of light."
+    },
+    {
+      "url": "https://www.poynter.org/fact-checking/2026/is-benjamin-netanyahu-dead-alive/",
+      "title": "A wave of posts claimed Benjamin Netanyahu was dead. Here's how it spread.",
+      "found_via_query": "Netanyahu alive status March 13 2026",
+      "authority_reason": "Poynter is a respected journalism/fact-checking institution",
+      "what_it_establishes": "Netanyahu posted multiple proof-of-life videos March 15-17, including a coffee shop video where he holds up both hands showing five fingers each, and a video with US Ambassador Huckabee where he says 'Yes, I'm alive.' Coffee shop corroborated authenticity with behind-the-scenes photos."
+    },
+    {
+      "url": "https://www.yahoo.com/news/articles/fact-check-netanyahu-alive-despite-160900467.html",
+      "title": "Fact Check: Netanyahu is alive, despite rumors he was killed by Iranian missile",
+      "found_via_query": "Netanyahu dead March 2026",
+      "authority_reason": "Yahoo News aggregating AP/mainstream fact-check",
+      "what_it_establishes": "Comprehensive debunk: Netanyahu spoke at a live press conference March 12, posted coffee cafe video March 15, posted Huckabee video where he says 'Yes, I'm alive'. No credible evidence of death."
+    },
+    {
+      "url": "https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+      "title": "Benjamin Netanyahu tried to dispel viral rumors of his death. Some social media users aren't convinced.",
+      "found_via_query": "Netanyahu alive status March 13 2026",
+      "authority_reason": "NBC News mainstream US outlet, misinformation/tech desk coverage",
+      "what_it_establishes": "Covers how the death rumors spread and how Netanyahu actively debunked them. Confirms he is alive and the AI 'six fingers' claim was false."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching 'Netanyahu dead March 2026' immediately surfaced multiple fact-checks — the rumor was well-documented",
+      "Searching Bessent + Situation Room directly revealed the real reason for his shaken demeanor (Iran war operations), completely undermining the tweet's inference",
+      "Adding 'coffee cafe March 15' retrieved Netanyahu's own proof-of-life video coverage",
+      "Fact-check brand domains (snopes, poynter, nbcnews) returned high-authority content in Round 1"
+    ],
+    "what_hurt": [
+      "Snopes, Times of Israel, NBC News, and CBC all returned 402/403 paywalls — had to rely on search summaries and Poynter/Newsweek for fetched content",
+      "The tweet's link is truncated (t.co URL) so the actual linked video couldn't be evaluated directly"
+    ],
+    "would_multipass_help": "no — Round 1 returned definitive debunks from multiple top-tier fact-checkers. The claim is thoroughly documented misinformation and sources were found immediately.",
+    "deepseek_advice": "For tweets making vivid claims about a public figure's death or dramatic event based on behavioral inference (e.g. 'X's body language proves Y is dead'), search the direct factual claim first ('Netanyahu dead March 2026 fact check') AND the event used as evidence ('Scott Bessent Situation Room March 13 2026') — the behavioral inference often has a mundane explanation that directly disproves the tweet's logic."
+  }
+}

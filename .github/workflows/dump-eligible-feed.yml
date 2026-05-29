@@ -1,0 +1,57 @@
+name: Dump Eligible-Posts Feed
+
+# Manual run only. Uses the admitted production note-writer secrets (xl/xxl access)
+# to dump the entire eligible-posts feed, then uploads it as a downloadable artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      feed_size:
+        description: "Feed size (auto = try xxl->xl->large->small)"
+        type: choice
+        default: auto
+        options: [auto, xxl, xl, large, small]
+      max_pages:
+        description: "Max pages to paginate (100 posts/page)"
+        type: string
+        default: "1000"
+
+jobs:
+  dump-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      X_API_KEY: ${{ secrets.X_API_KEY }}
+      X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+      OUT_DIR: feed-dump
+      MAX_PAGES: ${{ inputs.max_pages }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Dump feed
+        run: |
+          if [ "${{ inputs.feed_size }}" != "auto" ]; then
+            export FEED_SIZE="${{ inputs.feed_size }}"
+          fi
+          bun run src/scripts_jim/2026_05_29_xxl_feed_monitor/dumpFeed.ts
+
+      - name: Show summary
+        if: always()
+        run: cat feed-dump/feed_dump.summary.json || echo "no summary produced"
+
+      - name: Upload feed dump
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eligible-feed-dump
+          path: feed-dump/
+          if-no-files-found: warn

@@ -32,6 +32,11 @@ to the table and a prose section below. Strategic plan:
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | 0 | baseline-cheap-bot-v0 | 49 | — | 4 | 40 | 45 | 10% (5/50) | — | — | — |
 | 1 | iter1 | 46 | −3 | 5 | 32 | 41 | 18% (9/50) | — | 11 | 8 |
+| 2 | iter-02-cheap-bot | 42 | −7 | 6 | 37 | 36 | 28% (14/50) | — | FP↑, PASS↓ | NW correct +1 |
+| 3 | iter-03-cheap-bot (merged, 98 scored) | 50 | +1 | 7 | 37 | 43 | 12% (6/50) | — | — | FP↓ 28→12, NNW↑ |
+| 4 | iter-04-cheap-bot (merged) | 56 | +7 | 9 | 31 | 47 | 6% (3/50) | — | — | best complete run: FP↓ to 6%, NW correct↑ |
+| 5 | iter-05 (search-analyzer / analyzer-v2 / judge-high-reasoning) | — | — | — | — | — | — | — | partial subset runs on val_remaining_* (32/0/33 scored); never merged to full 100 | — |
+| 6 | iter-06-cheap-bot | 52 | +3 | 23 | 11 | 29 | 36% (18/50) | — | **FP 6%→36% (3→18), NNW correct 47→29, PASS 56→52** | **NW correct 9→23, NW missed 31→11** |
 
 ## Iteration 0 — baseline
 
@@ -195,3 +200,55 @@ Three changes in one commit, then re-run val.csv:
    claims where absence-of-evidence is the evidence (return true).
 
 Expected: PASS 49 → ~60, FP rate 10% → ~5%, cost roughly flat.
+
+## Iteration 6 — recall surge, precision collapse
+
+**Run name:** `iter-06-cheap-bot` · folder: `dataset_runs/tryout-iter-06-cheap-bot-2026-05-28-1918/`
+**Status:** complete (100/100 processed, 0 errors). First full-100 run since iter-4
+(iter-5 was three partial subset runs on `val_remaining_*`, never merged).
+**Config:** current working tree — `reasoning_effort: high` on query writer / writer /
+judge (DeepSeek v4 Flash); search-analyzer stage ON; query writer rewritten to
+decompose into event + framing/identity + primary-source queries (2-5 queries);
+writer prompt hard "must DISPUTE or return empty, never fabricate"; **judge prompt
+dropped the two "strong evidence required" clauses**. Ran with `--pick
+verifier_media_sources=accept` (deterministic; the 50/50 A/B test otherwise overrides
+cheap-bot's intended `verifier_accepts_media_sources: true` on ~half the rows).
+Input cache used (no X re-fetch); search live (no `--search-cache`).
+
+### Headline numbers
+
+- **PASS: 52/100** (−4 vs iter-4's 56)
+- **False-pos rate: 36% (18/50 published FPs)** — REGRESSION, 6× iter-4's 6% (3/50).
+  Runner also reports 42% if the 3 `eval_disagrees` rows are counted.
+- **NW success: 9 → 23** (huge recall win), **NW missed: 31 → 11** (miss rate 62%→22%)
+- **NNW correct: 47 → 29** (precision regression), NW published bad: 10 → 16
+
+### Read
+
+The recall changes worked spectacularly — the bot finally proposes notes and lands
+many (NW success more than doubled, misses cut to a third). But it now writes notes on
+non-noteworthy tweets indiscriminately: published FPs jumped 3 → 18. Net PASS is
+slightly down because the precision loss cancels the recall gain.
+
+The FP rows are exactly the failure classes the iter-5 proposal flagged for Theme 5 /
+Theme 1 guards — **none of which are implemented in this tree**: Karmelo Anthony
+(pending litigation), "Super North Korea 64" + Iron Man clip (labeled/obvious satire),
+"military operation expected today" (prediction), Erika Kirk mockery-paraphrase with
+the real clip attached (satire-with-corrective-context), trees-per-person (opinion
+framing; note switches to a different metric). The judge-loosening (removing "strong
+evidence required" / "findings must strongly contradict") is the dominant cause: it was
+landed without the compensating FP guards, so the iter-1 lesson repeated at larger scale.
+
+### Proposed iteration 7
+
+Keep the iter-6 recall machinery (decomposed queries, reasoning=high, writer dispute
+rule, search analyzer). Add the iter-5 proposal's FP guards that were never implemented,
+in priority order:
+1. **Judge FP guards** (Theme 5): source-quality gate, reversal-vs-original-falsity test,
+   pending-litigation decline.
+2. **Writer DECLINE modes** (Theme 5): `DECLINE_SATIRE`, `DECLINE_PENDING_LEGAL`.
+3. **Prediction guard** in the judge (reject notes that "fact-check" a future-tense claim).
+4. **Mandatory URL citation** (Theme 1).
+
+Expected: hold NW success ~20+ while pulling FP back toward ≤10%, lifting PASS into the
+60s. Re-run full val.csv.

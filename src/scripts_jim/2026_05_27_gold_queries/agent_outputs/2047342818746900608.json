@@ -1,0 +1,65 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "MSNBC Gallup household chores men women percentages graphic error",
+        "Gallup poll household roles men women laundry cleaning childcare percentages"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Politifact fact-check directly addressing this viral image (rated False). Gallup primary source showing actual data. UPI and CBS also covered the Gallup 2020 results. The Politifact piece confirmed the graphic had MEN/WOMEN column labels swapped.",
+      "lesson": "The first query (graphic + error) immediately surfaced the Politifact fact-check. The second Gallup query confirmed the actual underlying numbers. Both were highly productive in Round 1."
+    },
+    {
+      "queries": [
+        "MSNBC swapped gender labels household chores graphic correction 2021"
+      ],
+      "purpose": "targeted — verify MSNBC correction/acknowledgement",
+      "what_returned": "Politifact surfaced again as top result. No evidence MSNBC publicly corrected. The viral image circulated on social media; MSNBC did not immediately respond when contacted.",
+      "lesson": "Anti-hindsight check: I only knew the labels looked suspicious from the image description. Query for 'swapped labels' was slightly hindsight-biased (I suspected this from the numbers), but querying 'error' in Round 1 was justified from seeing the numbers looked implausible without assuming the answer."
+    }
+  ],
+  "gold_queries": [
+    "MSNBC Gallup household chores men women percentages graphic error",
+    "Gallup poll household roles men women laundry cleaning childcare percentages",
+    "Gallup women do more household chores laundry 58 percent 2019 2020",
+    "MSNBC gender label swap household chores viral image fact check",
+    "Gallup \"roles of men and women\" US households who does laundry"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.politifact.com/factchecks/2021/may/19/viral-image/no-poll-didnt-find-men-are-more-likely-do-chores-w/",
+      "title": "A Gallup poll found that women are more likely to do chores than men in U.S. households — not the other way around.",
+      "found_via_query": "MSNBC Gallup household chores men women percentages graphic error",
+      "authority_reason": "Politifact is a Pulitzer Prize-winning fact-checking outlet; this is a direct fact-check of the exact viral image shown in the tweet",
+      "what_it_establishes": "The MSNBC graphic has the MEN and WOMEN column labels swapped. The actual 2019 Gallup data shows 58% of WOMEN do laundry vs 13% of men, 51% of WOMEN clean the house vs 9% of men, 50% of WOMEN handle childcare daily vs 7% of men. Rated FALSE."
+    },
+    {
+      "url": "https://news.gallup.com/poll/283979/women-handle-main-household-tasks.aspx",
+      "title": "Women Still Handle Main Household Tasks in U.S.",
+      "found_via_query": "Gallup poll household roles men women laundry cleaning childcare percentages",
+      "authority_reason": "Gallup is the primary source — the organization that conducted the original survey the MSNBC graphic purports to display",
+      "what_it_establishes": "Women are responsible for laundry in 58% of households, cleaning in 51%, and the majority of other household tasks. Directly contradicts what the graphic in the tweet claims."
+    },
+    {
+      "url": "https://www.upi.com/Top_News/US/2020/01/29/Gallup-poll-Women-still-do-more-household-chores-than-men/3241580322174/",
+      "title": "Gallup poll: Women still do more household chores than men",
+      "found_via_query": "Gallup poll household roles men women laundry cleaning childcare percentages",
+      "authority_reason": "UPI is a mainstream wire news service; corroborating secondary coverage of the Gallup findings",
+      "what_it_establishes": "Corroborates that the actual Gallup data shows women do more household chores, reinforcing that the MSNBC graphic has inverted labels."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Querying for 'graphic error' alongside the outlet name (MSNBC) and data source (Gallup) immediately surfaced the Politifact fact-check in position 1",
+      "The specific numbers in the image description (58%, 13%, 51%, 9%) are distinctive enough that searching for them alongside 'Gallup' and 'household' would also work",
+      "Gallup as a primary source query confirmed the actual data independently of the fact-check"
+    ],
+    "what_hurt": [
+      "Querying for 'MSNBC correction 2021' did not surface an MSNBC acknowledgment — likely because they never publicly corrected it",
+      "The tweet image description uses unusual framing (men doing more chores) which is counterintuitive; a query framed as 'MSNBC men do more chores' might have also worked but risks anchoring on the false claim"
+    ],
+    "would_multipass_help": "no — Round 1 returned the definitive Politifact fact-check and Gallup primary source. The core claim (swapped labels) was fully confirmed in one round. No additional passes needed.",
+    "deepseek_advice": "When a graphic shows statistics that seem counterintuitive or implausible (e.g., men doing 58% of laundry vs women 13%), search for the cited source directly (e.g., 'Gallup household chores men women percentages') AND include 'error' or 'fact check' to surface corrections. For any named poll/survey graphic, always query the original source by name to get the ground-truth numbers."
+  }
+}

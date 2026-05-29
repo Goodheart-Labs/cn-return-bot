@@ -1,0 +1,88 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Charlie Kirk shot canvassing Utah 2026",
+        "Charlie Kirk shooting incident 2025 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Wikipedia article on 'Assassination of Charlie Kirk', NBC, CNBC, FBI press releases, CNN — all confirming Kirk was shot at Utah Valley University on Sept 10, 2025, during a Turning Point USA campus debate event, not a canvassing event. Shooter was Tyler James Robinson, 22, from Washington, Utah.",
+      "lesson": "The tweet's framing of 'canvassing a Dem area' is doubly wrong: it was a campus debate/speech event, not canvassing, and UVU/Utah County is a heavily Republican area. Multiple mainstream sources immediately found."
+    },
+    {
+      "queries": [
+        "Tyler Robinson Charlie Kirk shooter political affiliation Democrat Republican",
+        "Utah Valley University Orem Utah County political lean Republican Democrat voting"
+      ],
+      "purpose": "targeted — verifying the two specific claims: (1) shooter was a Democrat, (2) the area was a Dem area",
+      "what_returned": "WRAL fact-check found Robinson was an 'unaffiliated, inactive voter' with no confirmed partisan affiliation. DSA denied membership. NPR, Al Jazeera confirmed. Utah County / UVU is ranked among most conservative areas — UVU is #3 most conservative college in Utah per Niche. Utah went for Trump by 21.6% in 2024.",
+      "lesson": "Both core claims in the tweet are refuted by authoritative sources. The shooter had no confirmed Democratic affiliation (unaffiliated voter); the area is a Republican stronghold."
+    },
+    {
+      "queries": [
+        "Utah County 2024 election results Republican Democrat presidential vote"
+      ],
+      "purpose": "brand-suffix / confirm political lean of area with voting data",
+      "what_returned": "Utah went for Trump by 21.6% in 2024. Utah County Elections office has certified results. State-level confirmation strongly supports the Republican lean of Utah County where UVU is located.",
+      "lesson": "Even without county-level breakdown, statewide data and UVU's conservative campus ranking confirm this is not a 'Dem area.'"
+    }
+  ],
+  "gold_queries": [
+    "Charlie Kirk shooting Utah Valley University September 2025",
+    "Tyler Robinson Charlie Kirk shooter political affiliation fact check",
+    "Utah County Utah political lean Republican Democrat",
+    "Charlie Kirk assassination fact check Democrat area canvassing",
+    "Tyler Robinson registered voter party affiliation"
+  ],
+  "found_sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Assassination_of_Charlie_Kirk",
+      "title": "Assassination of Charlie Kirk - Wikipedia",
+      "found_via_query": "Charlie Kirk shooting incident 2025 2026",
+      "authority_reason": "Comprehensive Wikipedia article aggregating mainstream sources; covers location, event type, shooter identity and motives",
+      "what_it_establishes": "The event was a Turning Point USA campus debate at Utah Valley University in Orem, Utah — not canvassing. Kirk was speaking/debating, not canvassing a neighborhood. Shooter was Tyler Robinson, not affiliated with any party."
+    },
+    {
+      "url": "https://www.wral.com/story/fact-check-is-charlie-kirk-s-shooting-suspect-a-registered-republican-who-donated-to-trump/22166136/",
+      "title": "Fact-check: Is Charlie Kirk's shooting suspect a registered Republican who donated to Trump?",
+      "found_via_query": "Tyler Robinson Charlie Kirk shooter political affiliation Democrat Republican",
+      "authority_reason": "WRAL is a major TV/digital news outlet with fact-check unit; directly investigates Robinson's voter registration and party affiliation",
+      "what_it_establishes": "Robinson was an 'unaffiliated, inactive voter' — not a registered Democrat. DSA explicitly denied he was a member. No credible evidence of partisan affiliation."
+    },
+    {
+      "url": "https://www.npr.org/2025/09/16/nx-s1-5542189/what-we-know-about-the-accused-shooter-of-charlie-kirk",
+      "title": "What we know about the accused shooter of Charlie Kirk : NPR",
+      "found_via_query": "Tyler Robinson Charlie Kirk shooter political affiliation Democrat Republican",
+      "authority_reason": "NPR is a major national news organization with strong editorial standards",
+      "what_it_establishes": "Background on Robinson: unaffiliated voter, no confirmed Democratic membership, grew up in conservative family, motives described as political but disputed."
+    },
+    {
+      "url": "https://www.fbi.gov/news/press-releases/utah-valley-shooting-updates",
+      "title": "Utah Valley Shooting Updates | Federal Bureau of Investigation",
+      "found_via_query": "Charlie Kirk shooting incident 2025 2026",
+      "authority_reason": "FBI official press release — highest government authority on the shooting investigation",
+      "what_it_establishes": "Official government confirmation of the shooting at Utah Valley University; corroborates location (Republican area, not Dem area)."
+    },
+    {
+      "url": "https://www.niche.com/colleges/search/most-conservative-colleges/s/utah/",
+      "title": "Most Conservative Colleges in Utah - Niche",
+      "found_via_query": "Utah Valley University Orem Utah County political lean Republican Democrat voting",
+      "authority_reason": "Niche is a well-known college ranking site that aggregates student survey data on campus political leanings",
+      "what_it_establishes": "UVU is ranked #3 most conservative college in Utah — directly refuting the 'Dem area' claim."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching 'Charlie Kirk shot Utah 2025' immediately surfaced Wikipedia and FBI sources with full factual record",
+      "Adding 'fact check' + shooter name surfaced WRAL fact-check that directly addressed the Democrat affiliation claim",
+      "Searching 'Utah County political lean Republican' plus Niche for campus conservatism quickly confirmed the area's Republican lean"
+    ],
+    "what_hurt": [
+      "The tweet is vague — 'canvassing a Dem area' requires knowing both the event type and the area's political lean; both needed separate queries",
+      "Initial queries returned mostly the shooting facts, not the specific 'was it a Dem area / was shooter a Dem' angle — needed a second round"
+    ],
+    "would_multipass_help": "yes — the tweet makes two distinct false claims (canvassing vs. speech event; Dem area vs. Republican stronghold; Dem shooter vs. unaffiliated). A one-shot model might catch one but miss the other without iterating.",
+    "deepseek_advice": "For tweets making implicit causal claims about political violence ('a Dem shot him in a Dem area'), search both the event facts AND the specific identity/affiliation claims separately. Use fact-check suffixes ('fact check', 'voter registration', 'party affiliation') for the identity claim, and location + 'political lean' or 'voting results' for the geography claim."
+  }
+}

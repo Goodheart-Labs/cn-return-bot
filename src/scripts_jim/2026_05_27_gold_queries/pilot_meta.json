@@ -1,0 +1,122 @@
+[
+  {
+    "tweet_id": "2031539160700313846",
+    "primary_category": "misattributed_or_miscontextualized_media",
+    "user_message_chars": 3419,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2031539160700313846.txt"
+  },
+  {
+    "tweet_id": "2022922489727250486",
+    "primary_category": "misattributed_or_miscontextualized_media",
+    "user_message_chars": 2376,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2022922489727250486.txt"
+  },
+  {
+    "tweet_id": "2016452047525261502",
+    "primary_category": "misattributed_or_miscontextualized_media",
+    "user_message_chars": 2792,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2016452047525261502.txt"
+  },
+  {
+    "tweet_id": "2040693419945980280",
+    "primary_category": "misattributed_or_miscontextualized_media",
+    "user_message_chars": 2934,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2040693419945980280.txt"
+  },
+  {
+    "tweet_id": "2047342818746900608",
+    "primary_category": "misattributed_or_miscontextualized_media",
+    "user_message_chars": 3277,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2047342818746900608.txt"
+  },
+  {
+    "tweet_id": "2039118807692968130",
+    "primary_category": "conspiracy_and_viral_hoax",
+    "user_message_chars": 3068,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2039118807692968130.txt"
+  },
+  {
+    "tweet_id": "2041891972512936030",
+    "primary_category": "conspiracy_and_viral_hoax",
+    "user_message_chars": 2685,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2041891972512936030.txt"
+  },
+  {
+    "tweet_id": "2032528916817260817",
+    "primary_category": "conspiracy_and_viral_hoax",
+    "user_message_chars": 2897,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2032528916817260817.txt"
+  },
+  {
+    "tweet_id": "2022540911629222110",
+    "primary_category": "politics_and_policy",
+    "user_message_chars": 2982,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2022540911629222110.txt"
+  },
+  {
+    "tweet_id": "2031884438553182633",
+    "primary_category": "politics_and_policy",
+    "user_message_chars": 2881,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2031884438553182633.txt"
+  },
+  {
+    "tweet_id": "2040655295106503130",
+    "primary_category": "ai_generated_media",
+    "user_message_chars": 12072,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2040655295106503130.txt"
+  },
+  {
+    "tweet_id": "2009963728167678195",
+    "primary_category": "ai_generated_media",
+    "user_message_chars": 2161,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2009963728167678195.txt"
+  },
+  {
+    "tweet_id": "2039870854058713281",
+    "primary_category": "breaking_news_and_war",
+    "user_message_chars": 3536,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2039870854058713281.txt"
+  },
+  {
+    "tweet_id": "2032016740960588054",
+    "primary_category": "breaking_news_and_war",
+    "user_message_chars": 1654,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2032016740960588054.txt"
+  },
+  {
+    "tweet_id": "1980300084601585961",
+    "primary_category": "statistical_or_numerical_claim",
+    "user_message_chars": 3554,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/1980300084601585961.txt"
+  },
+  {
+    "tweet_id": "2037822335609094487",
+    "primary_category": "statistical_or_numerical_claim",
+    "user_message_chars": 2319,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2037822335609094487.txt"
+  },
+  {
+    "tweet_id": "2038393465361379589",
+    "primary_category": "manipulated_or_fabricated_evidence",
+    "user_message_chars": 2563,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2038393465361379589.txt"
+  },
+  {
+    "tweet_id": "2052347768673571129",
+    "primary_category": "health_medical_science",
+    "user_message_chars": 7849,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2052347768673571129.txt"
+  },
+  {
+    "tweet_id": "2035280398305935514",
+    "primary_category": "celebrity_entertainment_sports",
+    "user_message_chars": 2073,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2035280398305935514.txt"
+  },
+  {
+    "tweet_id": "2025986662719693184",
+    "primary_category": "scams_fraud_finance",
+    "user_message_chars": 4285,
+    "user_message_file": "src/scripts_jim/2026_05_27_gold_queries/user_messages/2025986662719693184.txt"
+  }
+]

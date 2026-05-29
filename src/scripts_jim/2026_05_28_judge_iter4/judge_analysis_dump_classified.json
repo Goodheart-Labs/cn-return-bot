@@ -1,0 +1,840 @@
+{
+  "summary": {
+    "bucket_a_split": {
+      "judge": 3,
+      "writer": 16,
+      "both": 2,
+      "total": 21
+    },
+    "bucket_b_split": {
+      "judge": 0,
+      "writer": 10,
+      "both": 2,
+      "total": 12
+    }
+  },
+  "bucket_a_current_judge_mistakes_split": {
+    "judge_mistakes": [
+      {
+        "url": "https://x.com/i/status/2034574905858040263",
+        "needs_note": "yes",
+        "ground_truth_note": "Manchester United played Champions League knockout rounds in 2021/22, losing to Atletico Madrid in the Round of 16 on March 15, 2022 — less than 4 years ago. They also reached the quarter-finals in 2018/19. https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/ https://en.wikipedia.org/wiki/2021%E2%80%9322_UEFA_Champions_League_knockout_phase",
+        "judge_guidance": "PASS if the note states Manchester United played Champions League knockout rounds in 2021/22 (R16 vs Atletico Madrid, Feb/Mar 2022) — clearly less than 10 years before March 2026. The note must give at least one specific, recent knockout fixture (Atletico Madrid 2022 is the strongest). FAIL if the note: (a) accepts the '10 years' claim; (b) only mentions much older fixtures (e.g. 2018/19 alone) without the more-recent 2021/22 tie; (c) writes a non-corrective note about the author's joke disclaimer. Sources should be UEFA or a reputable football outlet (UEFA.com, ESPN, Sky Sports, Wikipedia).",
+        "original_failed_note": "",
+        "failure_reason": "",
+        "tweet_text": "Just a reminder, Manchester United haven’t played a Champions League knockout game in over 10 years https://t.co/EpPAZDwhy6",
+        "iter4_writer_note": "Manchester United played a Champions League round-of-16 tie against Atlético Madrid in February–March 2022, about 4 years ago.",
+        "iter4_writer_sources": [
+          "https://www.uefa.com/uefachampionsleague/history/clubs/52682--man-utd/"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: post asserts that Manchester United haven't played a Champions League knockout game in over 10 years. Step 2: note disputes that, says they played 4 years ago. Step 2 halt — the author's bio explicitly states 'Everything I post is made up.' This is a substantive falsehood about account's credibility; replies are confused, but the bio disclaims the post. The note doesn't dispute the claim's factual basis because the bio already makes the claim's truth value irrelevant.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "The single claim passes all three checks. The note addresses the claim, disputes it substantively (different time frame), and evidence supports the correction.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": true,
+          "primary_blame": "judge",
+          "reasoning": "The writer's note meets all criteria from the judge guidance: it specifically identifies the R16 tie against Atlético Madrid in February–March 2022 (about 4 years ago), clearly contradicting the '10 years' claim, and cites a UEFA source. The judge wrongly rejected it by reasoning that the author's bio disclaimer ('Everything I post is made up') made the factual correction irrelevant — but judge guidance explicitly warns against failing a note that 'writes a non-corrective note about the author's joke disclaimer,' and a corrective note about a false claim remains valuable regardless of satirical intent since the tweet can mislead readers who miss the bio."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2057319768294896022",
+        "needs_note": "yes",
+        "ground_truth_note": "There is no announcement from Anthropic or credible reporting that Vishal Sikka has joined the company. Sikka is the founder and CEO of Vianai Systems and former CEO of Infosys. https://en.wikipedia.org/wiki/Vishal_Sikka https://www.vian.ai/who-we-are-vishal",
+        "judge_guidance": "A correct note must explicitly state that the claim is unsubstantiated/false: there is no announcement from Anthropic or credible reporting that Vishal Sikka joined Anthropic, and he is the founder/CEO of Vianai Systems (former Infosys CEO). PASS only if it directly says the 'joined Anthropic' claim is unconfirmed/false, not merely that Sikka leads Vianai. FAIL if it only restates his Vianai role without rebutting the joining claim (the original note's defect), and FAIL if it asserts as fact that he did NOT join in some absolute way it can't support — 'no evidence/announcement' framing is correct. If the bot instead declines as a transparent joke that is acceptable only if it explicitly judges it non-misleading, but given the 'BREAKING' framing and sincere replies, writing the corrective note is the preferred outcome.",
+        "original_failed_note": "Vishal Sikka is the founder and CEO of Vianai Systems, not Anthropic. https://en.wikipedia.org/wiki/Vishal_Sikka https://www.vian.ai/who-we-are-vishal https://anthropic.com/company",
+        "failure_reason": "MissingKeyPoints: states Sikka's real role but never explicitly says the 'joined Anthropic' claim is unconfirmed/false; the correction is left implicit, and a corporate 'about' page is a weak source for a negative.",
+        "tweet_text": "BREAKING: Vishal Sikka has joined Anthropic https://t.co/wyj76Liklf",
+        "iter4_writer_note": "Vishal Sikka is the Founder and CEO of Vianai Systems, a human-centered AI company he launched in 2019. There is no evidence he has joined Anthropic.",
+        "iter4_writer_sources": [
+          "https://www.vian.ai/who-we-are-vishal"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post asserts that Vishal Sikka has joined Anthropic. Step 2: The note claims there is no evidence he joined Anthropic and states he is still CEO of Vianai. Step 3: Substantive — different factual claim about his employment. Step 4: The research findings show his Vianai founder/CEO status and mention Anthropic's Bengaluru office but do not provide evidence he did not join Anthropic; the cited source (Vianai homepage) shows his current role but does not disprove a recent hiring. The findings lack a direct negative-claim source (e.g., Anthropic or Sikka denying the hire, or a fact-checker addressing the claim). Therefore the dispute is unsupported.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "The single claim 'Vishal Sikka has joined Anthropic' passes all three steps: note addresses it, dispute is substantive (different employer/role matters), and the findings provide evidence of his actual CEO role plus no evidence of joining Anthropic. Note_needed = true.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": true,
+          "primary_blame": "judge",
+          "reasoning": "The writer's note explicitly says 'There is no evidence he has joined Anthropic,' which directly fixes the prior note's defect of leaving the rebuttal implicit — the judge_guidance explicitly approves 'no evidence/announcement' framing as correct. The judge rejected by demanding a source that affirmatively disproves the hire, but this is an impossible standard for a negative claim and contradicts the guidance's explicit approval of 'no evidence' language. The judge effectively reapplied the same overly strict logic that was already flagged as wrong in the prior-note critique, making this a judge-stage failure."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2051895061877870735",
+        "needs_note": "yes",
+        "ground_truth_note": "The mask was designed by Miodrag Guberinic, not Stella McCartney (McCartney designed Perry's gown); the plaque visible in the tweet's own photo confirms this. The mask is a one-off custom piece — no reporting of any surge in orders or that it is available for sale. https://www.eonline.com/news/1431636/met-gala-2026-katy-perry-wears-astronaut-mask",
+        "judge_guidance": "PASS criteria: the note must establish that (a) the mask was designed by Miodrag Guberinic, NOT Stella McCartney (McCartney designed the gown; the plaque in the tweet's own photo says this), and (b) there is no reporting of any surge in orders or consumer demand — the mask is a custom one-off art piece, not a retail product. Cite a credible Met Gala / fashion source. FAIL any note that (a) accepts the Stella McCartney mask attribution, (b) accepts the 'surge in orders' claim, or (c) misreads the plaque the way the tweet did. Bonus if the note quotes the plaque text directly. Be concise — the original was on-point in one sentence.",
+        "original_failed_note": "The mask worn by Katy Perry at the Met Gala was a custom design by Miodrag Guberinic, not Stella McCartney, and there are no reports of it being available for purchase or any surge in orders. https://www.vogue.com/article/katy-perry-met-gala-2026-stella-mccartney",
+        "failure_reason": "Note is substantively correct; failure signal is only 2x noteNotNeeded out of 4 ratings — extremely low sample. Borderline; including as a failure row because the underlying tweet IS misleading on two checkable points and the bot should still write a good note here.",
+        "tweet_text": "Custom mask created for Katy Perry’s Met Gala appearance sees massive demand among Gen Z and introverts, with Stella McCartney reportedly receiving a surge of orders. https://t.co/inSLQLjLuG",
+        "iter4_writer_note": "Katy Perry wore a custom Stella McCartney gown and a Miodrag Guberinic mask at the 2026 Met Gala. While the mask generated memes on TikTok, there are no credible reports from Stella McCartney or news outlets confirming a surge in orders for the headpiece.",
+        "iter4_writer_sources": [
+          "https://www.forbes.com/sites/danidiplacido/2026/05/05/2026-met-gala-katy-perrys-viral-outfit-was-made-for-memes/",
+          "https://www.vogue.com/article/katy-perry-met-gala-2026-stella-mccartney"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: post claims 'custom mask for Katy Perry's Met Gala appearance sees massive demand among Gen Z and introverts, with Stella McCartney reportedly receiving a surge of orders.' Step 2: note disputes the claim about a surge in orders. Step 3 halt — the research findings do not support the note's negative claim: no source indicates a surge or lack thereof. The research shows the mask went viral and memes circulated, but there is no credible report actually confirming or denying a 'surge in orders.' The note's assertion that 'there are no credible reports confirming a surge' is unsupported by the findings — absence of evidence is not evidence of absence, and no fact-checker has addressed this specific sales claim. Pipeline halts at Step 4.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "The only claim the note disputes substantively (claim 3) lacks evidence in the cited sources. Claims 1 and 2 are either undisputed or stylistic. Per the rules, note_needed requires at least one claim with all three flags true; none qualify.",
+        "classification": "MISS_STILL_BLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": true,
+          "primary_blame": "judge",
+          "reasoning": "The writer's note satisfies both PASS criteria in judge_guidance: it correctly attributes the mask to Miodrag Guberinic (not Stella McCartney), correctly identifies McCartney as the gown designer, and explicitly states there are no credible reports of a surge in orders — which is exactly what judge_guidance requires for criterion (b). The judge rejected it by invoking 'absence of evidence is not evidence of absence,' but this standard contradicts the explicit judge_guidance, which literally defines PASS as noting 'there is no reporting of any surge in orders or consumer demand.' The judge misapplied an epistemological objection that the guidance did not call for, turning a substantively correct and on-criteria note into a wrongful rejection."
+        }
+      }
+    ],
+    "writer_mistakes": [
+      {
+        "url": "https://x.com/i/status/2047978936311918600",
+        "needs_note": "yes",
+        "ground_truth_note": "動画のクルーズ船から茶色い液体排出映像はAI生成であり、実際の処理済み排水は透明です。https://fullfact.org/environment/cruise-ship-sewage-sea-ai-generated https://www.telugupost.com/english-factcheck/viral-video-showing-cruise-ships-dumping-raw-sewage-into-ocean-is-ai-generated-1578090",
+        "judge_guidance": "PASS only if the note establishes that the video showing cruise ships pumping brown waste/sewage is AI-generated, not real cruise-ship footage. Strong signals to cite: Full Fact debunk (cruise-ship-sewage-sea-ai-generated), Lead Stories, PesaCheck. Note can optionally add that real cruise-ship wastewater discharge under IMO/MARPOL rules must be treated and is not visible brown sludge. FAIL any note that: (a) treats the video as authentic, (b) endorses the sarcastic tweet's literal framing as a real environmental scandal, (c) is too long/uses unsourced specifics. A note in Japanese matching the tweet's language is preferred but not required.",
+        "original_failed_note": "",
+        "failure_reason": "",
+        "tweet_text": "クルーズ船などの汚水処理システムが凄い！ https://t.co/5jHKzCa3p3",
+        "iter4_writer_note": "Modern cruise ships are required to treat sewage and do not discharge untreated waste anywhere during normal operations. This video's depiction of raw sewage being dumped directly into the ocean is not representative of actual cruise ship wastewater systems.",
+        "iter4_writer_sources": [
+          "https://cruising.org/wastewater"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post makes a factual claim that the video is showing an impressive cruise ship wastewater treatment system, but the video actually depicts dark, brown liquids being discharged directly into the ocean. Step 2: The proposed note does not contradict the claim that the video is about cruise ship wastewater; instead, it adds context that modern ships treat sewage and the depiction is not representative. The note does not dispute the post's claim but rather appends adjacent information. Step 2 halt: note does not dispute the Step-1 claim; it adds context.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "no_checkable_claims: The post's text ('クルーズ船などの汚水処理システムが凄い！' = 'The sewage treatment systems on cruise ships are amazing!') is a positive evaluation, not a factual claim. The video is accompanied by a frame description but the post doesn't assert it shows a real system—the top commenters point out it may be AI-generated or exaggerated, and the author's views are editorial/sensational. There is no checkable factual claim that a reader could carry away as true or false.",
+        "classification": "MISS_STILL_BLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance is explicit: the note must establish that the video is AI-generated, not real footage, citing sources like Full Fact's debunk. The writer's note never mentions AI generation at all — it instead treats the video as plausibly real footage that is merely 'not representative' of actual cruise ship operations. This directly violates the judge guidance criterion: 'FAIL any note that (a) treats the video as authentic.' The writer also sourced cruising.org rather than the required Full Fact/Lead Stories/PesaCheck debunks. The judge's stated reasoning is imprecise (framing it as a 'disputation' issue), but the rejection outcome was correct because the writer's note fundamentally missed the core requirement of identifying the video as AI-generated."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2047745135526428683",
+        "needs_note": "yes",
+        "ground_truth_note": "This animation shows cumulative Labor Condition Application (LCA) filings for potential H-1B positions from 2015-2025, not actual H-1B visa holders migrating. New H-1B visas are capped at 85,000/year; total active H-1B workers ~730,000.    https://www.uscis.gov/working-in-the-united-states/h-1b-specialty-occupations    https://layoffhedge.com/h1b    https://www.pewresearch.org/short-reads/2025/03/04/what-we-know-about-the-us-h-1b-visa-program",
+        "judge_guidance": "PASS only if the note corrects the core conflation: the figures are cumulative LCA filings (potential H-1B positions), NOT actual H-1B workers who migrated, AND it anchors reality with at least one concrete number (new H-1B visas capped at 85,000/year, or total active H-1B workers ~600K-730K). It must NOT simply call the post 'racist' or argue the merits of immigration (the original raters penalized argumentative notes). A note that accepts the ~5-7M 'visa holders' framing fails. Cite USCIS/Pew or the cap statute.",
+        "original_failed_note": "",
+        "failure_reason": "",
+        "tweet_text": "WATCH: Graph shows H-1B visa holders legally migrating to the United States.\n\nhttps://t.co/wHaPWyQtLD",
+        "iter4_writer_note": "This graph shows the cumulative number of Labor Condition Application (LCA) filings certified by the Department of Labor, not the number of unique H-1B visa holders. Each worker can have multiple LCAs over time (e.g., for job changes or extensions), so these totals overstate the actual visa holder population.",
+        "iter4_writer_sources": [
+          "https://www.dol.gov/agencies/eta/foreign-labor/performance"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: post claims the video shows 'H-1B visa holders legally migrating to the United States' with cumulative counts. Step 2: note disputes the data source interpretation — says it's LCA filings, not unique holders, and overstates. Step 3: substantive — the post's framing conflates filings with individuals, potentially misleading. Step 4 halt: research findings include the DOL page on LCA filings but provide no source stating the specific numbers in the video (6.9M cumulative by 2025) are wrong or how many unique holders there actually are. The note's claim is unsupported by the cited evidence.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "No claim has both note_addresses_claim=true AND dispute_substantive=true. The sole potentially addressed claim (1) is a stylistic framing dispute (mislabeling metric), not a substantive factual error.",
+        "classification": "MISS_STILL_BLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer correctly identifies that the figures represent cumulative LCA filings rather than unique H-1B visa holders, satisfying the first criterion. However, the judge guidance explicitly requires the note to 'anchor reality with at least one concrete number' (85,000/year cap or ~600K-730K active workers), and the writer's note provides no such anchoring figure. Without this quantitative anchor, the note leaves readers without a sense of the true scale of H-1B holders, making the correction incomplete per the strict criteria. The judge's reasoning was imprecise, but the rejection outcome was defensible given the note's failure to include the required concrete numbers from USCIS/Pew or the cap statute."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2049464880520888535",
+        "needs_note": "yes",
+        "ground_truth_note": "The quoted statements attributed to Treasury Secretary Bessent and Chinese FM Wang Yi do not appear in the official record. US actions targeted sanctions on specific entities buying Iranian oil and pressed China over the Strait of Hormuz, not a blanket 100% tariff on all Chinese goods announced at a press conference. https://home.treasury.gov/news/press-releases/sb0476 https://home.treasury.gov/news/press-releases/sb0472",
+        "judge_guidance": "PASS only if the note establishes that the specific quoted statements do not appear in the official record / are unverified, and ideally clarifies the accurate context: US measures targeted sanctions on specific entities buying Iranian oil, not a blanket 100% tariff on all Chinese goods announced at a press conference, and there is no record of the quoted Wang Yi defiant reply. The note must NOT repeat the fabricated quotes as if genuine, and must NOT merely debate whether 100% tariffs would be wise. Cite official Treasury releases or credible reporting (Fortune, ABC, CNBC). A note that just says 'no source' is acceptable if it makes clear the quotes are unsubstantiated; stronger if it states what the actual policy posture was.",
+        "original_failed_note": "",
+        "failure_reason": "",
+        "tweet_text": "US Treasury Secretary Scott Bessent stated at a press conference today:\n\n\"We will impose 100% tariffs on Chinese goods if they continue to buy Iranian energy products.\"\n\nChinese Foreign Minister Wang Yi stated:\n\n\"We will continue to buy from Iran, whether you impose 100% or even",
+        "iter4_writer_note": "Bessent's warning about 100% tariffs was in response to Chinese purchases of Russian oil, not Iranian energy.",
+        "iter4_writer_sources": [
+          "https://www.reuters.com/business/energy/bessent-warns-china-russian-oil-purchases-that-could-bring-100-tariffs-2025-07-29/"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post quotes Treasury Secretary Bessent as threatening 100% tariffs on Chinese goods if they buy Iranian energy products, and Chinese Foreign Minister Wang Yi as vowing to continue buying from Iran. Step 2: The note claims Bessent's warning actually targeted Russian oil, not Iranian energy — a specific factual correction. Step 3: The dispute appears substantive; it changes the target of the tariff threat. However, Step 4 halt: The cited Reuters article is from July 29, 2025 — nearly a year before the post's April 29, 2026 timestamp — and addresses a different statement about Russian oil. The research findings show multiple sources (including another X post and Instagram posts from April 2026) repeating the exact Iran-tariff attribution in the post, and no direct source supports the note's claim that Bessent's April 29, 2026 statement was actually about Russian oil. The note's evidence describes a separate, older event, so the dispute is unsupported by the research findings.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 1 passes all three checks: the note directly disputes it (contradicts the target and date of the tariff threat), the dispute is substantive (different event/target changes reader understanding), and the Reuters source provides evidence. Even though claim 2 is not addressed, one strong claim-dispute is enough to publish.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note fails the core requirement in judge_guidance: instead of establishing 'that the specific quoted statements do not appear in the official record / are unverified,' the note implicitly accepts the fabricated quotes as authentic and merely corrects a detail (Russian vs. Iranian oil). This directly violates the guidance that the note 'must NOT repeat the fabricated quotes as if genuine.' The note also cites a July 2025 Reuters article about a real Bessent statement on Russia, conflating a separate event with the alleged April 2026 press conference described in the tweet, leaving the fabricated Wang Yi quote entirely unaddressed. The judge's rejection was therefore correct, and the root failure lies with the writer producing a note that partially validates the misinformation rather than challenging the authenticity of the quotes."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2043783331540578439",
+        "needs_note": "yes",
+        "ground_truth_note": "No CBS News poll shows Republican approval of Trump at 92.5%. The figure does not appear in CBS's poll archive. Recent credible polls of Republicans show much lower numbers — CNN/SSRS ~80% and Pew Research ~68% Republican approval; CBS News/YouGov's own data has Trump's net approval underwater overall. https://www.cbsnews.com/feature/cbs-news-polls/ https://www.cnn.com/2026/05/06/politics/fact-check-trump-approval-rating",
+        "judge_guidance": "PASS if the note (a) clearly states no such CBS poll exists / CBS has not released a poll with that figure, and (b) gives actual recent Republican-approval numbers from credible polling (e.g. CNN/SSRS ~80%, Pew ~68%, or CBS/YouGov's actual numbers). Strong notes cite CBS News polls archive plus a real outside fact-check (CNN, AP, Reuters) or Pew/Gallup/Quinnipiac numbers. FAIL if the bot just says 'CBS hasn't released this' with only Wikipedia/Rasmussen as supporting links (this is the original note's weakness — raters flagged sources as unreliable). FAIL if the bot declines (the figure is fabricated, high-confidence). FAIL if the bot accepts the 92.5% figure.",
+        "original_failed_note": "CBS has not released a poll showing Republican approval of Trump jumping to 92.5%. No such poll appears on their official polls page, which lists all recent surveys (latest on Iran war, not approval).    https://www.cbsnews.com/feature/cbs-news-polls    Recent approval polls show lower overall ratings:    https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency    https://www.rasmussenreports.com/public_content/politics/trump_administration_second_term/trump_approval_index_history_second_term",
+        "failure_reason": "Substance is correct (no such poll exists), but supporting links lean on Wikipedia and Rasmussen — which raters flagged as missing/unreliable (notHelpfulSourcesMissingOrUnreliable=3). Stronger note would cite CBS's own data, CNN/Pew Republican-approval numbers, and a direct fact-check.",
+        "tweet_text": "🚨 A new CBS poll shows Republican approval of Donald Trump jumping 3 points to 92.5%.\n\nAre you among the 92.5%?\n\nA. Hell yeah\nB. No\n\nIF Yes, Give me a THUMBS-UP👍!!\n\nMAKE THIS GO VIRAL ON 𝕏. LET’S GO 👏 https://t.co/GHhV0XDGNV",
+        "iter4_writer_note": "CBS News polls from April 2026 cited by CBS's own Face the Nation showed Trump's approval rating hitting new lows, not the 92.5% figure claimed in this post.",
+        "iter4_writer_sources": [
+          "https://www.facebook.com/FaceTheNation/posts/according-to-a-new-cbs-news-poll-there-is-increasing-concern-about-president-tru/1422737916562550/"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: the post claims a CBS poll shows Republican approval of Trump at 92.5%. Step 2: the note disputes this, saying CBS polls show Trump's approval at new lows. Step 2 halt — the note disputes a different claim (overall approval) than the post's claim (Republican approval). These are distinct metrics; the note does not contradict the specific Republican-only figure asserted in the post. The research findings show multiple Instagram and Facebook posts referencing the 92.5% Republican approval figure, including from CBS News-affiliated accounts, but no source from CBS's official poll page is provided that debunks the Republican-only figure. The note's cited source is a Facebook post referencing The Hill about overall approval, which doesn't address the party-breakdown number. The note fails to contradict the Step 1 claim directly.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "The note points to a different metric (overall approval vs. GOP-only approval) and doesn't dispute the exact claim. Since note_addresses_claim is false for the only claim, note_needed is false.",
+        "classification": "MISS_STILL_BLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note fails both required criteria in the judge_guidance. First, it does not clearly state 'no such CBS poll exists / CBS has not released a poll with that figure'; instead it pivots to saying overall approval hit 'new lows,' which is a different claim. Second, it provides zero actual Republican-approval numbers from credible polling (no CNN/SSRS ~80%, no Pew ~68%, nothing). The sole source is a Facebook post rather than CBS's own polls archive or a credible fact-check outlet. The judge's rejection is reasonable: the note addresses overall approval trends rather than the specific Republican-only 92.5% figure, exactly the kind of weak, off-target rebuttal the judge_guidance warned against."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2029976032799764557",
+        "needs_note": "yes",
+        "ground_truth_note": "This is old footage, not a 2026 Iranian strike on Saudi Arabia. Fact-checkers identified it as the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port. Iran did fire missiles toward Prince Sultan Air Base on March 6, 2026, but Saudi defenses intercepted them with no impact on the base. https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.politifact.com/factchecks/2026/mar/04/tweets/iran-strikes-airbase-yemen-explosion/",
+        "judge_guidance": "PASS only if the note (a) tells the reader the video does NOT show a 2026 Iranian missile strike on Prince Sultan Air Base, and (b) identifies it as recycled/old footage (the July 2024 Israeli airstrike on Yemen's Hodeidah/Hudaydah port) OR otherwise establishes misattribution, backed by a verifiable fact-check (Full Fact / PolitiFact / AFP). The note may add that the 6 Mar 2026 missiles fired at the base were intercepted with no impact, but MUST NOT assert as flat permanent fact that no Iranian missile ever struck the base (a later strike damaged US aircraft) and MUST NOT just concede the Prince-Sultan framing. FAIL if it repeats the false premise that this clip shows the base being hit, cites sources about a different clip, or makes an absolute claim that later became incorrect.",
+        "original_failed_note": "This video shows a July 2024 Israeli airstrike on Yemen's Hudaydah port, not an Iranian missile impact at Prince Sultan Air Base. Saudi defenses intercepted the missiles; no strikes hit the base and no injuries occurred.    https://factcheck.afp.com/doc.afp.com.99J43G3 https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.arabnews.com/node/2635432/saudi-arabia https://www.jpost.com/middle-east/iran-news/article-889040",
+        "failure_reason": "Rated notHelpfulIncorrect (6) plus notHelpfulIrrelevantSources (4). The video identification (July 2024 Yemen footage) is correct and well-sourced. The note was flagged 'incorrect' on its over-reaching second sentence — the absolute claims 'no strikes hit the base and no injuries occurred' were contested in the fog of war (a service member was reported injured/killed in 1 Mar attacks, and later strikes damaged aircraft), so the blanket no-impact/no-injury assertion overstated certainty even though the core debunk was right.",
+        "tweet_text": "As close as we can get to a pov of being hit my a ballistic missile without the person recording being toasted. https://t.co/H4ak52w9jn",
+        "iter4_writer_note": "This video is actually a March 2026 Iranian strike on Prince Sultan Air Base that resulted in wounded US service members, not a near-miss with minor injuries as the quoted post suggests.",
+        "iter4_writer_sources": [
+          "https://www.nytimes.com/2026/03/27/us/politics/strike-us-air-base-injuries.html",
+          "https://www.foxnews.com/live-news/us-israel-iran-war-strait-hormuz-03-28-2026"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: the post embeds a video and claims it shows a near-miss ballistic missile strike with only minor injuries. Step 2: the note asserts the strike actually caused wounded US service members. Step 3: substantive — different severity of outcome that changes reader understanding. Step 4 halt: the note's sources (NYT, Fox News) confirm a strike on Prince Sultan Air Base on March 27, 2026, and that 12 US troops were wounded. However, the note claims the video depicts that specific March 27 strike — yet the research findings show there were multiple strikes on the base across March. The Instagram post and other sources from March 6 (before the March 27 strike) describe the same or similar video and note 'only minor injuries.' The note needs to show the *video itself* matches the March 27 event, not just that a strike with injuries occurred on a different date. Without a direct source tying the specific video footage to the March 27 strike (e.g., a fact-check or news report analyzing the footage as from that date), the note's claim about the video is unsupported by the cited sources—they describe a different day's strike.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "No extracted claim is directly disputed by the note. The note corrects the framing of the event (injuries vs. near-miss) but does not contradict either claim's factual assertions. Both claims fail Step 2 (note_addresses_claim=false).",
+        "classification": "MISS_STILL_BLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note does the exact opposite of what the judge guidance requires: instead of telling readers the video does NOT show a 2026 Iranian strike on Prince Sultan Air Base, it asserts the video IS a 2026 Iranian strike on the base (just a more severe one than the tweet claimed). The judge guidance explicitly states 'FAIL if it repeats the false premise that this clip shows the base being hit,' and the writer's note does precisely that. Additionally, the note makes no mention of the video being recycled July 2024 footage from Yemen's Hodeidah port, which the guidance requires as part of establishing misattribution. The judge's rejection was entirely correct; the writer fundamentally misunderstood the debunking task."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/1999999737379143950",
+        "needs_note": "yes",
+        "ground_truth_note": "Russian officials said this vaccine (Enteromix) would be offered free to cancer patients in Russia upon approval, not free to patients worldwide. It is still in early trials, has not been approved by international regulators (FDA/EMA), is unavailable outside Russia, and targets specific cancers rather than all types. https://www.snopes.com/fact-check/russia-enteromix-mrna-cancer-vaccine/ https://www.newsweek.com/russia-cancer-vaccine-enteromix-claims-trials-2126451",
+        "judge_guidance": "PASS only if the note corrects the central falsehood — the vaccine is not going to be free 'to patients all over the world'; Russia announced free availability only domestically (in Russia) upon approval. Strong notes also flag that it remains in trials (not proven, not approved internationally, targeting specific cancers like colorectal/melanoma), and is not available outside Russia. The note must NOT endorse the 'free worldwide' or 'reshape global cancer care' framing as accurate, and must NOT simply call the entire vaccine fake (the program is real but early-stage). Cite credible fact-checks/reporting (Snopes, Newsweek, AFP, Reuters). Avoid relying solely on Russian state media.",
+        "original_failed_note": "",
+        "failure_reason": "",
+        "tweet_text": "Russia has announced a major medical breakthrough after confirming that a cancer vaccine will soon be offered free to patients around the world, a move that could reshape global cancer care. The vaccine targets the molecular markers found on tumor cells and trains the immune https://t.co/pTyFSIRUax",
+        "iter4_writer_note": "No peer-reviewed trial data has been published, and the vaccine (Enteromix) has only passed preclinical trials — it has not yet completed the human clinical trials required to confirm safety and efficacy for widespread use.",
+        "iter4_writer_sources": [
+          "https://factcheck.afp.com/doc.afp.com.76UX8KE"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: post claims Russia announced a major medical breakthrough — a cancer vaccine will soon be offered free to patients worldwide. Step 2: note disputes that — says no peer-reviewed trial data, only preclinical trials. Step 3: substantive — this contradicts the post's core claim that the vaccine is ready for free global distribution. Step 4 halt: The cited source, an AFP fact-check, says the vaccine Enteromix has passed preclinical trials but does not state that it 'has not yet completed human clinical trials.' The source is about exaggerated claims in Africa and does not directly support the note's assertion that human trials are incomplete. The research findings show multiple sources saying the vaccine was announced as ready/preclinical, but none of the provided excerpts explicitly say human trials are unfinished. Without clear evidence for the note's specific claim, this fails Step 4.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "The single extracted claim passes all three checks: the note directly addresses the claim's implication of a proven breakthrough ready for global free distribution, the dispute is substantive (misleading claim about clinical readiness), and the AFP source provides supporting evidence that only preclinical trials have been completed.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly states the note must PASS 'only if the note corrects the central falsehood — the vaccine is not going to be free to patients all over the world; Russia announced free availability only domestically.' The writer's note says nothing about the 'free worldwide' vs. 'free in Russia only' distinction — it focuses entirely on trial status. While mentioning that the vaccine has only passed preclinical trials is relevant, the writer completely omits the single most required correction per judge guidance. Even if the judge had passed this note, it would not satisfy the strict criteria because it fails to address the geographic scope falsehood at all. The judge's specific technical objection about source support is relatively pedantic, but the writer's note was fundamentally insufficient on the central requirement before the judge even evaluated it."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2049702745783882104",
+        "needs_note": "yes",
+        "ground_truth_note": "Treasury Secretary Bessent announced $344 million (not $450 million) in cryptocurrency tied to Iran on April 24, 2026, as part of 'Operation Economic Fury.' The funds were frozen at the stablecoin issuer (Tether USDT blacklist) rather than seized by Treasury. https://www.reuters.com/world/middle-east/us-sanctions-wallets-tied-iran-freezing-344-million-cryptocurrency-bessent-says-2026-04-24 https://www.cnn.com/2026/04/24/politics/us-freezes-cryptocurrency-iran",
+        "judge_guidance": "PASS criteria: the note must establish that (a) the correct amount is $344 million (not $450 million), as announced by Treasury Secretary Bessent on April 24 2026 in connection with Operation Economic Fury, and (b) the funds were FROZEN (Tether USDT blacklisted at the issuer) not 'seized' by the US Treasury — these are different actions. Cite Reuters, CNN, or US Treasury. FAIL any note that (a) accepts $450M as accurate, (b) ignores the frozen-vs-seized distinction, or (c) cites unrelated Iran crypto stories. Bonus if note mentions Operation Economic Fury and Tether's role.",
+        "original_failed_note": "The US Treasury Department froze $344 million in cryptocurrency linked to Iran via sanctions on April 24, not $450 million as claimed. https://www.reuters.com/world/middle-east/us-sanctions-wallets-tied-iran-freezing-344-million-cryptocurrency-bessent-says-2026-04-24 https://www.thestreet.com/crypto/markets/treasury-secretary-unveils-economic-fury-to-freeze-344m",
+        "failure_reason": "Substantively right on the $344M figure but raters dominated 'noteNotNeeded' (14) and 'Missing Key Points' (8) — likely because note doesn't address frozen-vs-seized and reads as pure number-quibble. Borderline pass; classified as failure-row because audience signal says note is not landing.",
+        "tweet_text": "BREAKING: US Treasury Secretary Bessent says the US has seized $450 million in Iranian cryptocurrency.",
+        "iter4_writer_note": "US Treasury Secretary Bessent said the total seized was nearly $500 million — roughly $350 million in crypto assets plus an additional $100 million seized separately.",
+        "iter4_writer_sources": [
+          "https://www.foxbusiness.com/media/bessent-says-us-seized-nearly-500m-iranian-crypto-operation-economic-fury-sends-regime-crisis",
+          "https://www.dnaindia.com/world/report-iran-crypto-crackdown-us-seizes-450-million-under-operation-economic-fury-3208393/amp"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post claims 'US Treasury Secretary Bessent says the US has seized $450 million in Iranian cryptocurrency.' Step 2 halt: The proposed note does not contradict this claim — Bessent said the seized total was 'nearly $500 million,' and multiple sources (Fox Business, DNA India, CNBC TV18) confirm that $450 million is a sub-component of that figure, with $350 million crypto plus $100 million separately totaling close to $500 million. The note simply provides a different breakdown of the same fact rather than disputing the core factual assertion.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "The single claim fails dispute_substantive — the note offers a slightly different breakdown but doesn't contradict the post on any material factual point. Bessent's statements have been reported as both $450M and nearly $500M, so the discrepancy is rounding/style, not a substantive falsity.",
+        "classification": "MISS_STILL_BLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note fails every mandatory criterion in the judge guidance: (1) it never establishes the correct $344 million figure — instead it introduces a fabricated '$500 million' breakdown ($350M crypto + $100M separate) that contradicts the ground truth; (2) it repeatedly uses 'seized' language, completely ignoring the critical frozen-vs-seized distinction the guidance requires; (3) it cites Fox Business and DNA India rather than the required Reuters, CNN, or US Treasury sources. The note is not a borderline case — it hallucinated new figures and deepened misinformation rather than correcting it. The judge's REJECT was the right outcome, even if the judge's stated reasoning was somewhat charitable (treating the note as 'adding context' rather than recognizing it as fabricated); the root failure is entirely the writer's bad output."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2004909604052889910",
+        "needs_note": "yes",
+        "ground_truth_note": "Minnesota law (Minn. Stat. 201.061) lets a registered precinct voter vouch for up to eight others, but ONLY as proof of residency. The voter still must supply a MN ID/driver's license number or last 4 of SSN for identity verification, and the voucher signs an oath under penalty of perjury. Vouching has existed for 50+ years. https://www.revisor.mn.gov/statutes/cite/201.061 https://www.sos.mn.gov/elections-voting/register-to-vote/register-on-election-day/",
+        "judge_guidance": "PASS only if the note (1) confirms vouching is real and lets a registered voter vouch for up to eight others, AND (2) explicitly corrects the tweet's 'No ID required' claim — the registrant must still provide a MN ID/driver's-license number or last 4 of SSN for identity verification; vouching substitutes only for proof of residency. FAIL notes that just restate the law without addressing the 'no ID' misframing. Bonus: note that the law is 50+ years old, and that the voucher signs an oath under penalty of perjury.",
+        "original_failed_note": "Vouching is a legal same-day registration process in Minnesota where a registered precinct voter can vouch for up to eight others per election day by signing an oath attesting to their residency. https://www.revisor.mn.gov/statutes/cite/201.061 https://www.sos.mn.gov/elections-voting/register-to-vote/register-on-election-day/",
+        "failure_reason": "missing_key_points: restates the law without correcting the tweet's 'No ID required' misframing — the registrant still must provide MN ID/SSN for identity, vouching substitutes only for residency proof",
+        "tweet_text": "Minnesota Voter Fraud \n\nDid you know that a registered voter in MN can vouch for up to 👉EIGHT👈 other voters in their precinct? \n\nNo ID required. No proof of residency. \n\n1 voter can vouch for 8 others. \n\nYes, this is the law &amp; it’s directly on the MN SOS website https://t.co/q7aK9goo7T",
+        "iter4_writer_note": "Minnesota law requires the registered voter to personally accompany the person to the polling place and sign an oath in front of an election judge verifying that the person resides in the same precinct. The voter cannot vouch for others if they themselves were vouched for.",
+        "iter4_writer_sources": [
+          "https://www.revisor.mn.gov/statutes/cite/201.061",
+          "https://sos.mn.gov/elections-voting/register-to-vote/register-on-election-day/"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post claims that a registered voter in MN can \"vouch for up to 👉EIGHT👈 other voters in their precinct\" with \"No ID required. No proof of residency.\" This is a factual claim about the law. Step 2: The note adds contextual details about the vouching process (must accompany the person, sign oath in front of judge, cannot vouch if vouched for) but does not dispute that a registered voter can vouch for up to eight others. Step 2 halt: The note does not contradict the Step-1 claim; it merely appends adjacent procedural information that is already partially visible in the post's own media screenshot (which mentions the eight-voter limit and the restriction on being vouched-for voters vouching). The note restates and elaborates on the post's claim rather than correcting it.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "No claim passes note_addresses_claim. The note provides additional context about the procedure but does not contradict any of the three extracted claims. The community note is informative but not needed to correct the post's factual assertions.",
+        "classification": "MISS_STILL_BLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note fails both required criteria from judge_guidance: it never confirms that vouching allows up to eight others, and — most critically — it completely omits the explicit correction of the tweet's 'No ID required' claim, never mentioning that the registrant must still provide a MN ID/driver's-license number or last 4 of SSN for identity verification. The writer was explicitly warned not to repeat the prior note's failure of 'restating the law without correcting the No ID misframing,' yet the produced note focuses only on procedural details (accompaniment, oath, chain-vouching restriction) and still entirely ignores the identity-verification requirement. The judge's rejection was correct given that the note lacked the core correction mandated by the guidance."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2041676371127370152",
+        "needs_note": "yes",
+        "ground_truth_note": "No evidence supports American ships paying Iranian tolls in yuan to cross Hormuz. The IRGC toll regime (yuan or crypto, ~$0.50-1/barrel) is real for friendly-nation vessels, but Iran's tiered system bars U.S.- and Israel-linked ships from transit entirely, so they aren't paying these tolls; Washington has floated its own counter-tolls. https://www.bloomberg.com/news/articles/2026-04-01/strait-of-hormuz-ships-paying-iran-yuan-and-crypto-tolls-for-safe-passage https://fortune.com/2026/04/10/iran-strait-of-hormuz-crypto-tolls-stablecoins-bitcoin-oil-tankers/",
+        "judge_guidance": "PASS only if the note corrects the specific false claim — there is no evidence American ships are paying Iranian yuan tolls to cross Hormuz; under Iran's tiered system U.S./Israel-linked vessels are denied passage entirely — while accurately acknowledging the toll regime is real for friendly-nation vessels (yuan/crypto). Source to a credible outlet (Bloomberg / Fortune / Chainalysis / TRM Labs / Time / The Hill). AVOID the original note's failure (rated notHelpfulOpinionSpeculation 5, NoteNotNeeded 5, SourcesMissingOrUnreliable 4, Incorrect 4): the original is essentially correct but reads as partly speculative ('there is no evidence American ships are paying') and leans on Time/Hill links about U.S. counter-tolls; a stronger note explicitly states U.S./Israel vessels are BARRED from transit (so paying is moot) and cites the toll mechanism directly. A note that affirms the tweet (American ships paying yuan tolls) or that denies the toll regime exists at all, fails.",
+        "original_failed_note": "While Iran has established a &quot;toll booth&quot; regime requiring payments in yuan or crypto for passage through the Strait of Hormuz, there is no evidence American ships are paying these fees. The U.S. has instead proposed its own counter-tolls on the waterway.  https://time.com/article/2026/04/07/strait-of-hormuz-countries-pass-deals-iran-us-war-trump  https://thehill.com/homenews/administration/5818431-trump-us-tolls-strait-of-hormuz",
+        "failure_reason": "Substantively correct but rated NOT_HELPFUL (15 ratings; dominant notHelpfulOpinionSpeculation 5, NoteNotNeeded 5, SourcesMissingOrUnreliable 4, Incorrect 4). The 'there is no evidence American ships are paying' phrasing proves a negative and reads as speculative; it misses the cleaner, stronger fact that U.S./Israel-linked vessels are categorically BARRED from transit under Iran's tiered system, so the premise of 'American ships paying' is moot. Sources are about U.S. counter-tolls rather than the bar on U.S. vessels.",
+        "tweet_text": "American ships crossing the Strait of Hormuz after paying their toll in YUAN - how poetically intoxicating is that?",
+        "iter4_writer_note": "Toll payments are being reported for some vessels transiting the Strait of Hormuz, but there is no evidence that American ships have paid any toll, in yuan or otherwise. The claim that \"American ships\" are paying a toll in yuan is unsupported by any of the reporting on this issue.",
+        "iter4_writer_sources": [
+          "https://www.bloomberg.com/news/articles/2026-04-01/strait-of-hormuz-ships-paying-iran-yuan-and-crypto-tolls-for-safe-passage",
+          "https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: post asserts that American ships are crossing the Strait of Hormuz after paying a toll in yuan. Step 2: note disputes that — claims no evidence American ships have paid tolls. Step 4 halt: research findings show tolls paid by some vessels (Chinese, Indian) but include no investigation into US Navy or American-flagged ships. The note's sources (Bloomberg, Wikipedia) cover the toll system generally but do not address American ships specifically, failing the evidence threshold for a negative claim about a specific nationality.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "The single claim passes all three checks: note_addresses_claim, dispute_substantive, and evidence_supports_dispute. Publishing.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note repeats the exact failure the judge_guidance explicitly warned against: using speculative 'no evidence' phrasing ('there is no evidence that American ships have paid any toll') instead of the stronger, factual claim that U.S./Israel-linked vessels are categorically BARRED from transit under Iran's tiered system. The guidance states 'a stronger note explicitly states U.S./Israel vessels are BARRED from transit (so paying is moot)' — the writer omits this entirely. Additionally, the writer cites Wikipedia as a source rather than the approved credible outlets (Bloomberg/Fortune/Chainalysis/TRM Labs/Time/The Hill), repeating the SourcesMissingOrUnreliable failure pattern. The judge's rejection reasoning is imperfect, but the writer's note is substantively deficient for failing to include the categorical bar on U.S. vessel transit — the core differentiating fact the guidance required."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/1991574142038999227",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note OR writes a note that strictly UPDATES with the Nov 21 reversal (Coast Guard reverted the language back to 'hate symbols' after backlash) WITHOUT contradicting the original reporting. FAIL if the note disputes the underlying reporting (the policy DID briefly downgrade swastikas to 'potentially divisive'), or if it merely re-describes the same policy without adding the reversal.",
+        "original_failed_note": "Under the U.S. Coast Guard's new policy, symbols like the swastika are classified as 'potentially divisive' instead of 'hate symbols.' Commanders investigate displays and can require removal if they negatively impact unit cohesion or morale.    https://media.defense.gov/2025/Nov/14/2003820615/-1/-1/0/CI_5350_6A.PDF",
+        "failure_reason": "Note confirms rather than corrects the tweet — it merely explains the policy. No misleading claim was made. Note Not Needed.",
+        "tweet_text": "\"The U.S. Coast Guard will no longer classify the swastika, an emblem of fascism and white supremacy inextricably linked to the murder of millions of Jews and that more than 400,000 U.S. troops died fighting against in World War II, as a hate symbol, according to a new policy",
+        "iter4_writer_note": "The Coast Guard refuted this claim the same day, stating that these symbols \"have been and remain prohibited\" as hate symbols.",
+        "iter4_writer_sources": [
+          "https://x.com/USCG/status/1991597087595851904"
+        ],
+        "iter4_judge_verdict": true,
+        "iter4_judge_reasoning": "Step 1: post asserts the Coast Guard will no longer classify the swastika as a hate symbol per a new policy. Step 2: note disputes this, citing the Coast Guard's official denial. Step 3: substantive — different factual outcome (policy changed vs policy unchanged). Step 4: The research findings show the Coast Guard posted an official denial on X and multiple news outlets (ABC News, Washington Post, PBS, Military Times) reported that the Coast Guard reversed course or refuted the claim. The note's cited source is the Coast Guard's own X post directly contradicting the claim. Acceptable evidence is present.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 1 passes all three checks (note addresses it, substantive, and evidence supports). Therefore, a note is needed.",
+        "classification": "FP_KEPT",
+        "why_in_bucket": "iter-4 judge passed a note on a non-noteworthy tweet (FP)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly states the note should FAIL 'if the note disputes the underlying reporting (the policy DID briefly downgrade swastikas to \"potentially divisive\").' The writer's note says the Coast Guard 'refuted this claim the same day,' which directly disputes the accurate underlying reporting rather than strictly updating with the Nov 21 reversal as required. This is the same failure mode warned against — framing the tweet as false rather than noting the subsequent reversal. The judge compounded the error by publishing, but the writer's note was the root cause: it violated the explicit 'do not contradict original reporting' criterion and therefore should never have been submitted for publication."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/1994449046916731187",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately reflects a real Trump Truth Social post (shown in the image): the 53M foreign-population figure, mass-deportation/denaturalization/'reverse migration' plans are all genuinely his. The author's gloss ('whites-only', 'Reichstag Fire', 'declares them all criminals') is political opinion about a real document, not a fabricated fact. Any note that (a) treats the 53M figure as the author's own invention to be debunked, or (b) 'corrects' Wiener's characterization of real Trump statements, is a false positive. The original note's specific failure was citing a 2024 FactCheck.org article about a different Trump chart and implying the tweet fabricated the claim — a correct response must avoid that and recognize the post is contested opinion on accurate reporting.",
+        "original_failed_note": "Misleading: Trump's \"53M\" mixes legal and unauthorized foreign-born and wrongly implies they're all criminals; FactCheck has debunked similar claims. Media report his migration pause and denaturalization plans, but denaturalization is reported as targeted, not a blanket purge. https://www.factcheck.org/2024/04/trumps-misleading-chart-on-illegal-immigration/",
+        "failure_reason": "Note treats the tweet as if it fabricated the 53M claim and 'corrects' the author, but the figure and policies are Trump's own real Thanksgiving post; cites an unrelated 2024 FactCheck article. Rated notHelpfulIncorrect / NoteNotNeeded — it argues against an accurate characterization of a public official's statements (opinion target).",
+        "tweet_text": "",
+        "iter4_writer_note": "Trump’s Thanksgiving Truth Social post proposed pausing all migration from third-world countries, not a whites-only immigration policy. He wrote: “I will permanently pause migration from all Third World Countries.”",
+        "iter4_writer_sources": [
+          "https://www.pbs.org/newshour/politics/trump-says-he-wants-to-permanently-pause-migration-to-the-u-s-from-poorer-countries"
+        ],
+        "iter4_judge_verdict": true,
+        "iter4_judge_reasoning": "Step 1: post claims Trump announced 'whites-only immigration' in his Thanksgiving Truth Social post. Step 2: note disputes that, stating Trump proposed pausing migration from third-world countries, not a whites-only policy. Step 3: substantive — it's a factual disagreement about what Trump's post actually said. Step 4: research findings (TIME, Reuters, NPR, PBS) all quote Trump's post as pausing third-world migration; none describe a whites-only policy, and the cited PBS article directly supports the note. All four steps pass.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "Claim 3's dispute is stylistic — note replaces the 'whites-only' characterization with 'third-world pause,' but the underlying policies (reverse migration, denaturalization) are confirmed by all sources. The debate is over labeling, not fact. No substantive disputed-and-supported claim exists. Verdict: note not needed.",
+        "classification": "FP_FIXED",
+        "why_in_bucket": "iter-4 judge passed a note on a non-noteworthy tweet (FP)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly states 'PASS only if the bot declines to write a note,' and the writer produced a note anyway — that alone is disqualifying. More critically, the guidance warns that any note which 'corrects Wiener's characterization of real Trump statements is a false positive,' yet the writer's note does exactly that: it reframes the 'whites-only' label (the author's political opinion on real Trump statements) as a factual error requiring correction. The note is a textbook instance of the failure pattern the guidance describes. The judge compounded the error by publishing it, but the root cause is the writer generating a note that targets contested political opinion on accurate reporting rather than recognizing the tweet warrants no note at all."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2002014744727728582",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. The tweet's factual claim ('trial coming up in 2026') is true — June 1, 2026 in Collin County. Any note that nitpicks the phrase 'coming up' is a false positive. A note disputing the self-defense framing or characterizing Anthony as a murderer (rather than defendant) is also wrong — guilt has not been adjudicated. The only marginally noteworthy fact (Metcalf died of a single stab wound; Anthony claims self-defense) is already heavily represented in the replies and doesn't require correction by Community Notes.",
+        "original_failed_note": "The post states the trial is \"coming up in 2026\" but the trial date is specifically set for June 1, 2026, which is over a year away, not \"coming up\" as implied. https://www.cbsnews.com/texas/news/trial-date-set-karmelo-anthony-charged-in-fatal-stabbing-austin-metcalf-frisco-track-meet/",
+        "failure_reason": "Pedantic — 'coming up in 2026' is accurate. At time of writing the trial was ~6 months away; the note manufactures a discrepancy where none exists.",
+        "tweet_text": "Lets remember to support Karmelo Anthony! The young brother in Texas who defended himself against attackers and is now being charged with murder. His trial is coming up in 2026 and he needs our support. https://t.co/nDVoTS06HU https://t.co/VtM2ZYinf3",
+        "iter4_writer_note": "Karmelo Anthony is charged with first-degree murder for stabbing Austin Metcalf, a fellow 17-year-old student, at a high school track meet in April 2025 — not for defending himself against unnamed attackers at a separate incident.",
+        "iter4_writer_sources": [
+          "https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf",
+          "https://www.cbsnews.com/texas/news/trial-date-set-karmelo-anthony-charged-in-fatal-stabbing-austin-metcalf-frisco-track-meet/",
+          "https://capitalbnews.org/karmelo-anthony-murder-case-texas/"
+        ],
+        "iter4_judge_verdict": true,
+        "iter4_judge_reasoning": "Step 1: the post makes the factual claim that Karmelo Anthony \"defended himself against attackers and is now being charged with murder,\" framing the incident as self-defense against unnamed assailants. Step 2: the proposed note directly contradicts the post's framing by stating the victim was a named 17-year-old student at a track meet and that Anthony is charged with murder in that specific event. Step 3: the dispute is substantive because it changes the factual understanding of the event—the post suggests Anthony was attacked by unknown persons, while the note identifies a specific named victim and location. Step 4: the cited Wikipedia article, CBS News report, and Capital B News article all confirm the note's claim. All four steps pass.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 1 ('Karmelo Anthony defended himself against attackers') passes all three checks: the note directly disputes it, the dispute is substantive (misidentifying the victim/context), and the sources support the correction. Therefore, note_needed is true.",
+        "classification": "FP_KEPT",
+        "why_in_bucket": "iter-4 judge passed a note on a non-noteworthy tweet (FP)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly states that 'a note disputing the self-defense framing or characterizing Anthony as a murderer (rather than defendant) is also wrong — guilt has not been adjudicated.' The writer's note does exactly this: the phrase 'not for defending himself against unnamed attackers' directly disputes the self-defense framing before the trial has concluded. The writer should have declined to write a note entirely, as the guidance specifies 'PASS only if the bot declines to write a note.' While the judge compounded the error by publishing, the root cause is the writer producing a note that violates the explicit guidance prohibiting notes that challenge the self-defense framing of an unadjudicated case."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2039707797244215475",
+        "needs_note": "yes",
+        "ground_truth_note": "The 29% figure refers to Trump's approval among 18-29-year-olds in the Harvard Youth Poll (Fall 2025), not overall approval, which averages around 40%. It is also not the lowest in US presidential history — Harry Truman hit 22% and George W. Bush 25%. https://iop.harvard.edu/youth-poll/51st-edition-fall-2025 https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency https://ropercenter.cornell.edu/presidential-approval/highslows",
+        "judge_guidance": "PASS only if the note (a) clarifies that the 29% figure is from the Harvard Youth Poll (18-29 demographic), not overall approval, and notes that overall Trump approval is around 40%, AND (b) corrects the 'lowest in history' claim by citing a lower historical figure (Truman 22%, or Bush ~25%). Strong sources: Harvard IOP Youth Poll page, Roper Center presidential approval database, Wikipedia opinion-polling-on-Trump article. A note that only addresses one of the two errors should partially pass (acceptable) but ideally addresses both. Notes that endorse the 'lowest in history' claim should FAIL. Notes that quibble with the Harvard Youth Poll methodology while missing the demographic-confusion point should FAIL.",
+        "original_failed_note": "The 29% figure refers to Trump's approval among voters aged 18-29 in a Harvard Youth Poll, not overall approval which averages around 40%. It is also not the lowest in US presidential history, as Harry Truman reached 22%. https://iop.harvard.edu/youth-poll/51st-edition-fall-2025 https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency https://ropercenter.cornell.edu/presidential-approval/highslows",
+        "failure_reason": "Note is well-sourced and substantively correct. The 'missing key points' (19) and 'note not needed' (16) tags from raters likely reflect partisan rating dynamics on a Trump-related note rather than substantive failure. Provisional 'no_note_needed' is wrong: this is a clearly false dual factual claim worth correcting.",
+        "tweet_text": "Donald Trump's approval rating drops to 29%, lowest for any U.S. president.\n\nBut please, haters....Tell me more about how its \"just me.\"",
+        "iter4_writer_note": "The 29% figure is from a state-level approval breakdown, not a national poll. Harry Truman holds the record for the lowest presidential approval rating at 22%.",
+        "iter4_writer_sources": [
+          "https://thelistwire.usatoday.com/story/life/2026/04/23/trump-approval-rating-april-2026/89761361007/",
+          "https://www.citizen-times.com/story/news/politics/2026/05/05/trump-approval-rating-president-with-lowest-highest-approval-rating/89932703007/"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post claims 'Donald Trump's approval rating drops to 29%, lowest for any U.S. president.' Step 2: The proposed note disputes the claim by stating the 29% figure is state-level (not national) and that Truman holds the lowest-ever at 22%. Step 3: The first part of the note (state vs. national) is substantive if it changes what readers understand—but the dispute is actually over two separable claims: (a) whether 29% is a national rating, and (b) whether this is the lowest for any president. Step 3 halt: The note's first claim—that 29% is state-level—is stylistic; the post says 'drops to 29%' without specifying state or national, and the research shows multiple national polls in the 34-37% range, meaning a reader would reasonably infer a low national figure, not a state-level one. However, the second part (historical record) is also stylistic—the post says 'lowest for any U.S. president,' which the note corrects with Truman's 22%. This is a matter of historical record, not a claim about the current poll's methodology. The note doesn't actually disprove the post's central factual claim (that Trump's rating is 29% and historically low); it provides adjacent context. The dispute is not about a false fact in the post but about framing and completeness. Therefore, the pipeline halts at Step 3 (stylistic), and the verdict is note_needed=false.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "The single claim passes all three checks (note_addresses_claim, dispute_substantive, evidence_supports_dispute). The note correctly identifies that the 29% figure is from a state-level breakdown (not national) and that Truman holds the record for lowest approval at 22%, contradicting the post's 'lowest for any U.S. president' claim. Verdict: publish.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note fails judge_guidance criterion (a) entirely: instead of identifying the 29% as being from the Harvard Youth Poll (18-29 demographic) and noting that overall approval is ~40%, the writer incorrectly attributes the figure to a 'state-level approval breakdown' — a factual hallucination. The note also omits the ~40% overall approval comparison required by the guidance. While the writer correctly cites Truman's 22% for criterion (b), the misidentification of the data source is a substantive, independent writer error that invalidates the note's core correction. The judge's reasoning is flawed (dismissing the Truman historical correction as 'stylistic'), but the writer's note was already disqualified because it got the source of the 29% figure wrong and missed the demographic-confusion point — the central correction the guidance requires."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2032514777663021439",
+        "needs_note": "yes",
+        "ground_truth_note": "Per the BLS, prices did not come down: the CPI rose 0.3% in February 2026 and annual inflation was 2.4% (prices rose). Real average hourly earnings did rise (~1.4% over the year), so wages outpaced inflation, but prices increased rather than fell.    https://www.bls.gov/news.release/cpi.nr0.htm    https://www.bls.gov/news.release/realer.nr0.htm",
+        "judge_guidance": "PASS only if the note corrects the specific false claim that prices are 'coming down': per BLS CPI data, consumer prices ROSE (0.3% in February 2026; ~2.4% year-over-year), i.e. inflation continued, prices did not fall. It is fine (and accurate) to acknowledge that real wages did rise over the year — do NOT 'correct' the wages claim, which is true. The strongest note pairs the price-rise correction with the BLS source. A note that denies wages rose, or that endorses 'prices coming down,' or that vaguely calls the post a lie without the CPI figure, should FAIL. Cite BLS CPI / real earnings releases.",
+        "original_failed_note": "",
+        "failure_reason": "",
+        "tweet_text": "That Friday feeling when wages are going up and prices are coming down for American workers 💸🇺🇸 https://t.co/4RjG69J2ia",
+        "iter4_writer_note": "Adjusted for inflation, real average hourly earnings decreased 0.2 percent from April 2025 to April 2026, the most recent full year of data available at the time of the post.",
+        "iter4_writer_sources": [
+          "https://www.bls.gov/news.release/realer.nr0.htm"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post says 'wages are going up and prices are coming down' — a broad, non-quantitative claim about recent trends. Step 3 halt: the dispute is purely about framing and the choice of metric (nominal vs. real); the note offers a different inflation-adjusted metric but doesn't identify a false specific number, date, or event in the post. This is a stylistic framing rebuttal, not a substantive factual disagreement.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 1 passes all three checks (addressed, substantive dispute about real vs nominal wages, supported by BLS data). One strong claim is enough to publish the note.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note completely ignores the key false claim the judge guidance requires addressing: that 'prices are coming down.' The guidance explicitly states the note must correct the price claim using BLS CPI data (prices rose 0.3% in February 2026; ~2.4% YoY). Instead, the writer attacked the wages portion of the tweet, claiming real earnings fell — but the judge guidance explicitly states 'do NOT correct the wages claim, which is true' and that 'a note that denies wages rose... should FAIL.' The writer's note not only misses the required CPI correction but also violates the specific prohibition against contesting the wage claim. The judge's rejection, while imprecisely reasoned, was ultimately correct given this fundamentally misdirected note."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2012558410122670331",
+        "needs_note": "yes",
+        "ground_truth_note": "This video is digitally manipulated, not authentic footage. Macron's face was superimposed onto 1980s nightclub dancers, and the Zelensky clip is a deepfake; neither shows them actually dancing 'before becoming presidents'. https://www.politifact.com/factchecks/2024/mar/22/instagram-posts/these-clips-of-emmanuel-macron-and-volodymyr-zelen",
+        "judge_guidance": "PASS only if the note (a) states the video is digitally manipulated / deepfaked — NOT authentic footage of Macron or Zelensky dancing — with Macron's face superimposed onto unrelated archival dancers, AND (b) is clearly worded and easy to parse. It must AVOID the original note's failure of being hard to understand: do NOT bury the point in a confusing clause like 'most originating from his pre-presidency comedy sketches'. It is fine to briefly note Zelensky was a pre-presidency entertainer, but the core message — the footage is fake/manipulated — must be unambiguous. Cite a reputable fact-check. FAIL if the note treats the dancing footage as real, or is so convoluted a reader cannot tell what is being corrected.",
+        "original_failed_note": "This video is a manipulated compilation. The Macron dancing clips are deepfakes created by superimposing his face onto unrelated footage, while some Zelensky clips are altered despite most originating from his pre-presidency comedy sketches.    https://www.politifact.com/factchecks/2024/mar/22/instagram-posts/these-clips-of-emmanuel-macron-and-volodymyr-zelen  https://www.thecanadianpressnews.ca/fact_checking/video-showing-leaders-of-ukraine-france-dancing-is-mostly-fake-digitally-manipulated/article_9feb613f-0906-5efe-922f-631532f813a3.html",
+        "failure_reason": "Accurate but hard to understand: the clause 'some Zelensky clips are altered despite most originating from his pre-presidency comedy sketches' muddies the core point and partly undercuts the 'fake' message. Raters tagged it notHelpfulHardToUnderstand (5) and notHelpfulNoteNotNeeded (16).",
+        "tweet_text": "Here are Zelensky and Macron before they became presidents.\nIt feels like we’re all part of one big show, doesn’t it? https://t.co/qtj90VlQSv",
+        "iter4_writer_note": "The clip of Macron in this video is digitally altered. Fact-checkers found his face was added to 1980s nightclub footage of other people dancing, so it does not show him before becoming president.",
+        "iter4_writer_sources": [
+          "https://www.reuters.com/fact-check/macron-dancing-clip-is-altered-80s-nightclub-footage-2024-03-21/"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: the post claims the video shows Zelensky and Macron before they became presidents. Step 2: the note disputes only the Macron portion, saying that clip is a deepfake. Step 2 halt: the post includes Zelensky footage that is real per research findings, and responses treat the post as making a claim about both leaders; however, the note only addresses Macron, leaving the Zelensky claim (which is based on real footage, even if some clips may be digitally altered) unaddressed. The note does not contradict the core claim that the video shows them before presidency — it partially concedes it by omission. Since the note does not fully dispute the post's central claim and instead adds partial context, it fails to meet the requirement of directly contradicting the Step 1 claim.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "The note only disputes Macron's portion while ignoring the claim about Zelensky. Since a partial dispute doesn't qualify as genuinely addressing the claim, per the strict 'note_addresses_claim' criteria in the instructions, no claim triggers note_needed=true.",
+        "classification": "MISS_STILL_BLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly requires the note to state the video is 'NOT authentic footage of Macron or Zelensky dancing,' meaning both figures must be addressed since the tweet presents both as real. The writer's note only covers Macron ('The clip of Macron in this video is digitally altered') and says nothing about the Zelensky deepfake, leaving the tweet's central claim about Zelensky entirely unchallenged. Although the judge's reasoning contains a factual error (incorrectly treating Zelensky's footage as real), the judge correctly identified that the note failed to address Zelensky — which is a genuine and independent deficiency in the writer's note. The writer produced an incomplete note that omits half of what the guidance mandates."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2046250034262647232",
+        "needs_note": "yes",
+        "ground_truth_note": "This video is a produced PTSD-awareness skit by 'Westcoast Creators of Network Media' — not real footage of service members. The people shown are actors, not active or former military personnel. The original Facebook post identifies it as 'produced by' the creators. https://www.facebook.com/WestcoastCreatorsofNetworkMedia/videos/ptsd-is-real-and-takes-our-strongets-loved-onesreels-this-video-was-produced-by-/26810848825185953",
+        "judge_guidance": "PASS if the note (a) identifies the video as a produced/scripted PTSD-awareness skit, not real footage of a veteran's panic attack, (b) attributes it to its creator (Westcoast Creators of Network Media, originally published on Facebook), and (c) cites the original Facebook post or another reputable trace. FAIL the note if it (a) doesn't establish the video is scripted, (b) attacks the creators as malicious without acknowledging the stated awareness purpose, (c) cites only random Reddit/Twitter accusations, or (d) leaves ambiguous whether the people depicted are actual service members (they are not). The original note is acceptable on minimum bar; a stronger note explicitly states 'the people shown are not actual service members'.",
+        "original_failed_note": "The video depicts a produced skit for PTSD awareness, not real footage of service members. https://www.facebook.com/WestcoastCreatorsofNetworkMedia/videos/ptsd-is-real-and-takes-our-strongets-loved-onesreels-this-video-was-produced-by-/26810848825185953",
+        "failure_reason": "under-rated / missing_key_points — note is correct and well-sourced but only 2 rating events, both 'not needed'. Likely under-noticed because tweet is emotional content and replies polarized.",
+        "tweet_text": "This is what many Service People come back to.😢 The sacrifice is real and many go through this alone. https://t.co/PtRJaQIFkm",
+        "iter4_writer_note": "This video was produced as a fictional dramatization, not a recording of a real military service member experiencing a PTSD episode.",
+        "iter4_writer_sources": [
+          "https://www.politifact.com/article/2026/apr/16/US-military-iran-videos-AI-crying/"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: post claims the video shows a military service member experiencing a genuine PTSD panic attack after returning home. Step 2: note disputes that, asserting it's a fictional dramatization. Step 3: substantive — the post presents the video as real, and several top comments treat it as real. However, Step 4 halt: the Politifact article cited by the note addresses AI-generated videos of soldiers crying, not this specific video of a man being pulled through a window. None of the research findings confirm this video is staged or fictional. The finding that the video is staged is unsupported, so the note cannot be published.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 1 passes all three checks (note_addresses, substantive, evidence_supports). Even though claim 2 is not addressed, the presence of one qualifying claim is sufficient to require the note.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note fails criteria (b) and (c) from the judge guidance: it does not attribute the video to 'Westcoast Creators of Network Media' or mention Facebook, and the cited Politifact source (about AI-generated videos of soldiers crying) is unrelated to this specific PTSD-awareness skit. The judge correctly identified that the cited evidence doesn't support the claim, making the rejection valid. The writer used an irrelevant or fabricated source instead of the actual Facebook post from the original creator, which is the root cause of the failure."
+        }
+      }
+    ],
+    "both": [
+      {
+        "url": "https://x.com/i/status/2018455684661338294",
+        "needs_note": "yes",
+        "ground_truth_note": "The 'buried girls' claim comes from a single unverified Nov 2019 email to Eddy Aragon offering a USB of alleged Epstein evidence for 1 bitcoin. No bodies have been found; New Mexico authorities conducted a first-ever search of Zorro Ranch in March 2026 but recovered no remains. https://www.aljazeera.com/news/2026/3/17/tipster-claims-to-have-seen-grave-like-plots-at-epsteins-zorro-ranch https://time.com/article/2026/03/10/epstein-zorro-ranch-investigation-search-new-mexico/",
+        "judge_guidance": "PASS only if the note (a) makes clear the 'buried girls' claim originates from a single unverified 2019 email asking for 1 BTC for a USB of alleged evidence, (b) states no bodies have been found and no remains were recovered in the 2026 Zorro Ranch search to date, and (c) cites a reliable source (Al Jazeera, Time, NBC News, or DOJ filing). AVOID stating definitively 'the FBI never searched the property' — New Mexico/state authorities DID conduct a first-ever search at Zorro Ranch in March 2026 (the original note's blanket 'FBI never searched' is now outdated). FAIL any note that endorses the buried-bodies claim as fact, or that simply waves away the email without explaining its provenance.",
+        "original_failed_note": "The claim that Epstein and Maxwell buried two girls near Zorro Ranch originates from an unverified email in DOJ files offering videos for sale; no bodies have been found, and the FBI never searched the property. https://www.justice.gov/epstein/files/DataSet%209/EFTA00067066.pdf https://en.wikipedia.org/wiki/Zorro_Ranch",
+        "failure_reason": "notHelpfulNoteNotNeeded dominant (56) but also notHelpfulMissingKeyPoints (54), notHelpfulOpinionSpeculation (36), notHelpfulIncorrect (24). The 'FBI never searched the property' line is now outdated — state authorities DID search Zorro Ranch in March 2026. Reliance on the raw DOJ PDF (which is the email itself, not a fact-check) reads as circular sourcing.",
+        "tweet_text": "Epstein and Maxwell bury 2 foreign kids who were strangled to death during rough, fetish sex. https://t.co/rDnWO1i8ju",
+        "iter4_writer_note": "This email is an unverified 2019 extortion attempt from an anonymous sender demanding 1 bitcoin for alleged Epstein videos. No bodies have been found, and New Mexico authorities are investigating the claim, which remains unsubstantiated.",
+        "iter4_writer_sources": [
+          "https://www.reuters.com/world/us/new-mexico-probes-allegation-bodies-buried-near-epstein-ranch-2026-02-19/",
+          "https://www.santafenewmexican.com/news/local_news/new-mexico-official-urges-probe-into-claim-of-bodies-near-epstein-ranch/article_21a2e0e8-ebb6-4281-919f-7ba45e3805e9.html"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post asserts that Epstein and Maxwell buried two foreign children after strangling them during sex. Step 2: The note disputes the post by calling the email an unverified 2019 extortion attempt with no bodies found and an ongoing investigation. Step 2 halt: The post is simply repeating the contents of the email as a claim, not asserting it as a confirmed fact; the note's correction is essentially restating what the email itself discloses—the extortion demand and lack of confirmation—which is already evident from the post's own media. The note does not contradict the post's factual claim; it adds context about the source's verifiability.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "The single extracted claim passes all three checks: note_addresses_claim, dispute_substantive, and evidence_supports_dispute. The note correctly identifies the claim as an unproven extortion attempt, and the research sources confirm the allegation remains unsubstantiated.",
+        "classification": "MISS_UNBLOCKED",
+        "why_in_bucket": "iter-4 judge rejected a noteworthy tweet (missed publish)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "both",
+          "reasoning": "The writer's note fails criterion (b) of the judge_guidance: it says 'New Mexico authorities are investigating the claim,' implying the search is still pending, when in fact a first-ever search was conducted at Zorro Ranch in March 2026 and recovered no remains — the note omits this crucial negative result. However, the judge's reasoning is independently and fundamentally flawed: the judge claims the note 'does not contradict the post's factual claim,' which is demonstrably wrong — calling the source an unverified 2019 extortion attempt demanding 1 BTC is direct, relevant context that contradicts the tweet's presentation of buried-girls as fact. The judge applied no substantive analysis of whether the note met the provenance/search-result criteria and instead invented a rationale ('restating what the email discloses') that would reject even a well-sourced correction."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2018031751541526698",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. The tweet explicitly credits a TikTok comedy creator; the format (costume + caricatured dialogue) is openly satirical. Any note debunking the literal email content as 'not authentic' is a satire/parody false positive. The bot must not insert the false-binary 'either authentic OR completely fake' framing — separate underlying news exists about Musk and Epstein's island but the tweet isn't claiming the comedy clip *is* that news.",
+        "original_failed_note": "The video is a satirical TikTok parody, not authentic footage or direct quotes from Epstein files. Real emails show Musk expressing interest in island parties but contain no references to \"young babes,\" \"UN\" codes, or underage individuals. https://www.nbcnews.com/tech/elon-musk/expressed-interest-visiting-jeffrey-epstein-island-emails-show-doj-rcna256784 https://www.bbc.com/news/articles/cevnmxyy4wjo https://www.businessinsider.com/elon-musk-emails-plans-to-visit-jeffrey-epstein-island-2026-1",
+        "failure_reason": "noteNotNeeded — the tweet itself credits the TikTok parody source, format is overtly comedic. Adding 'this is parody, not real' is pedantic on an already-attributed satire share.",
+        "tweet_text": "Elon trying to get invited to Epstein's island:\n\nVideo by @munchy_monk /TikTok https://t.co/s4VroEFcHT",
+        "iter4_writer_note": "The video's dialogue is fictional. DOJ-released emails show Musk asked Epstein about visiting his island but contain none of the crude exchanges or 'UN' reference shown here. The actual emails quote Epstein saying 'no one over 25 and all very cute.'",
+        "iter4_writer_sources": [
+          "https://www.independent.co.uk/news/world/americas/us-politics/elon-musk-epstein-files-island-party-b2911563.html"
+        ],
+        "iter4_judge_verdict": true,
+        "iter4_judge_reasoning": "Step 1: The post claims the video depicts real emails in which Elon Musk asked Epstein about visiting his island, with a specific transcript implying Musk used the phrase 'U.N.' as code for 'underage nubiles' — a specific verifiable factual claim about the content of the emails. Step 2: The note disputes the authenticity of the video's dialogue, stating the actual DOJ emails contain none of the crude exchanges or 'UN' reference shown in the video. Step 3: Substantive — misattribution of fabricated dialogue to real DOJ-released emails; this changes reader understanding of what Musk actually wrote. Step 4: The Independent article directly quotes the real emails and confirms the video's dialogue is fictional; no source shows the 'UN' reference or crude exchanges. Epistemic support via credible news source + absence of affirming evidence. All 4 steps pass.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 2 passes all three checks: the note directly addresses it (fabricated email content), the dispute is substantive (fabricated quotes vs. real quotes), and the evidence (Independent article with actual email text) supports the note. Even if claim 1 is only partially addressed, one strong claim is enough to publish.",
+        "classification": "FP_KEPT",
+        "why_in_bucket": "iter-4 judge passed a note on a non-noteworthy tweet (FP)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "both",
+          "reasoning": "The writer failed first and most clearly: judge_guidance explicitly states 'PASS only if the bot declines to write a note' and warned the writer not to repeat the prior failed note's approach of debunking fictional dialogue in an overtly attributed satire — yet the writer produced an almost identical note framing the parody's dialogue as a verifiable factual claim about real DOJ emails. The judge compounded the failure by accepting the false-binary framing that the 'video claims to show real emails,' treating a TikTok comedy sketch explicitly credited to @munchy_monk as a news authenticity dispute, precisely the 'satire/parody false positive' the guidance warned against. Both stages independently failed, but the writer's unauthorized note creation was the root trigger."
+        }
+      }
+    ],
+    "unclassified": []
+  },
+  "bucket_b_regressions_vs_new_split": {
+    "judge_mistakes": [],
+    "writer_mistakes": [
+      {
+        "url": "https://x.com/i/status/2055719221812666428",
+        "needs_note": "yes",
+        "ground_truth_note": "Neither quote is reliably authentic. Churchill never said 'the fascists of the future will call themselves anti-fascists' — it's a long-debunked misattribution (the Hillsdale Churchill Project finds no record of it). The Reagan line ('fascism...in the name of liberalism') is also unverified and widely misattributed, echoing a Sinclair Lewis-style maxim. https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote/ https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/ https://www.snopes.com/fact-check/ronald-reagan-fascism-liberalism/",
+        "judge_guidance": "PASS only if the note establishes that the Churchill quote is fabricated (Churchill never said it). A strong note ALSO flags that the Reagan attribution is unverified/commonly misattributed. It must AVOID the original note's failure of addressing only one quote: the original note debunked just the Churchill line and ignored the equally prominent Reagan line, so a note that names BOTH is the bar. Must cite a credible source for the Churchill debunk (Snopes / Hillsdale Churchill Project / PolitiFact). Do NOT pass a note that treats either quote as genuine.",
+        "original_failed_note": "The quote attributed to Winston Churchill is not authentic; he never said it. https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote https://winstonchurchill.hillsdale.edu/fascists-anti-fascists",
+        "failure_reason": "Correct but incomplete: the meme features TWO attributed quotes and the note only debunks the Churchill one, leaving the Reagan quote (also unverified/misattributed) unaddressed — a MissingKeyPoints failure for a two-quote image.",
+        "tweet_text": "We’re watching it happen. https://t.co/OJ0CSPORqI",
+        "iter4_writer_note": "The quote attributed to Winston Churchill—\"The fascists of the future will call themselves anti-fascists\"—is not authentic. There is no record of Churchill ever saying this, and the Churchill Project at Hillsdale College has found no credible source linking it to him.",
+        "iter4_writer_sources": [
+          "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/",
+          "https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote/"
+        ],
+        "iter4_judge_verdict": true,
+        "iter4_judge_reasoning": "Step 1: post asserts Ronald Reagan and Winston Churchill said the displayed quotes. Step 2: note disputes the Churchill quote's authenticity. Step 3: substantive — fabricated quote attributed to a named real public figure. Step 4: Snopes and Hillsdale College confirm the Churchill quote is not genuine. All 4 steps pass.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "no_checkable_claims: The post 'We’re watching it happen' with a meme shows attributed quotes from Reagan and Churchill. No checkable factual claim—just shared political opinion/meme.",
+        "classification": "TP_LOST",
+        "why_in_bucket": "iter-4 correctly passed; new judge incorrectly rejects (TP lost)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge_guidance explicitly states that 'a note that names BOTH is the bar' and that the note 'must AVOID the original note's failure of addressing only one quote.' The writer's note addresses only the Churchill fabrication and completely ignores the equally prominent Reagan misattribution — repeating exactly the defect flagged in the prior NOT HELPFUL note. The writer's output therefore does not meet the strict criteria. The judge compounded the error by approving an incomplete note, but the root cause is the writer's failure to include the required Reagan debunk, which was a clearly articulated requirement."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2015520423820083697",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an unverifiable future PREDICTION ('expected to... today') from a parody/commentary account, not a checkable claim about a past or present fact; at posting time it cannot be fact-checked (a same-day note can only say 'unconfirmed,' which is itself speculative). FAIL any note that asserts a definitive verdict about whether a strike will/won't happen. Acknowledging the account is a commentary/parody account would be marginally relevant, but declining is correct. (For reference, no US strike occurred on Jan 25, 2026; the US-Israel operation began Feb 28, 2026 — but that is hindsight unavailable to a same-day note.)",
+        "original_failed_note": "No U.S. military operation against Iran is confirmed or expected on January 25, 2026. While U.S. forces are deploying to the region amid heightened tensions, official reports indicate no imminent strikes or actions today.  https://www.reuters.com/world/middle-east/us-military-assets-heading-middle-east-even-trump-backs-off-toughest-iran-2026-01-22  https://apnews.com/article/us-military-middle-east-iran-protests-b7a56659d708f2f11f66a18135f44c40",
+        "failure_reason": "note_not_needed_fact_checking_a_prediction",
+        "tweet_text": "The U.S. military is expected to carry out a military operation against Iran today\n\n And tonight is being seen as a decisive moment for the country. https://t.co/lUBMJXuw8A",
+        "iter4_writer_note": "The U.S.-Israeli joint military campaign against Iran began on February 28, 2026, not on January 25, 2026.",
+        "iter4_writer_sources": [
+          "https://en.wikipedia.org/wiki/2026_Iran_war"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: the post claims the U.S. military is *expected to carry out an operation today* (January 25, 2026) — a prediction about an unresolved future event, not a claim that an operation occurred on that date. Step 1 halt — the post makes no factual assertion that can be checked against reality; it is speculation or reporting of expectations.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Single claim passes all three checks: note_addresses_claim=true, dispute_substantive=true (different date), evidence_supports_dispute=true (multiple sources confirm Feb 28 start).",
+        "classification": "FP_REGRESSION",
+        "why_in_bucket": "iter-4 correctly rejected; new judge incorrectly passes (FP regression)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly states 'PASS only if the bot declines to write a note' and calls out that the Feb 28, 2026 date is 'hindsight unavailable to a same-day note.' The writer did exactly what the guidance warned against: it asserted a definitive verdict using hindsight (citing 'February 28, 2026'), which violates the instruction to FAIL 'any note that asserts a definitive verdict.' The judge correctly rejected the note, identifying that the tweet is a prediction about an unresolved future event rather than a checkable factual claim. The root cause of the failure is the writer producing a note at all — and compounding the error by using temporally unavailable information."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2037889000514392308",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note (or writes a note clarifying the incident is real Tesla dashcam from a Southern California freeway on June 6, 2024, NOT Sacramento). It must NOT repeat the original false claim that aggregator overlays prove the footage is fake or that 'no real incident matches'. A correct response either declines (preferred — tweet's claim that this is Teslacam footage is true) or specifies the SoCal freeway origin with sources like MotorBiscuit / Yahoo coverage.",
+        "original_failed_note": "The footage includes overlays (\"Dang\", karctic.com) not present in genuine Tesla Dashcam recordings. The incident mismatches official reports of a single motorcycle crash on June 6, 2024, with moderate injuries, a small grass fire, and no road rage or Tesla involvement. https://x.com/SacFirePIO/status/1798926744763945100",
+        "failure_reason": "notHelpfulIncorrect — wrongly debunks real Tesla dashcam footage. The watermark/overlay was added by an aggregator (karctic), not the original Tesla file; the Sacramento Fire report cited is for an unrelated different crash. The actual incident occurred on a Southern California freeway and is documented by motoring outlets.",
+        "tweet_text": "Brutal Teslacam footage https://t.co/GjjQov1nzo",
+        "iter4_writer_note": "This video shows a motorcyclist intentionally smashing a Tesla's side mirror, not a fatal crash involving a passenger.",
+        "iter4_writer_sources": [
+          "https://www.yahoo.com/news/articles/viral-teslacam-footage-captures-terrifying-164504961.html"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post says 'Brutal Teslacam footage' and links a video of motorcyclists speeding. The top-rated reply says 'that idiot killed that girl on the back' and other replies treat it as a fatal crash — so the implicit claim is that the video shows a motorcyclist killing a passenger. Step 2: The note says the video shows a mirror smash, not a fatality. Step 3: The dispute is substantive — different event outcome. However, Step 4 fails: the cited source (Yahoo News article) covers a February 2025 Tesla mirror-smash incident, but the video in the post has a timestamp of June 6, 2024, matching other Instagram reposts of the same clip. The Yahoo article is about a different—earlier—incident, and the research findings do not provide evidence about *this specific video's* outcome. No fact-checker directly addresses whether this clip shows a death or a mirror smash. Since the note's claim is unsupported by the findings, the pipeline halts at Step 4.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 1 passes all three checks: the note directly and substantively contradicts the claim of a fatal crash, and the cited Yahoo News article provides evidence that the video depicts mirror-smashing instead. This one valid claim-dispute is sufficient for publication.",
+        "classification": "FP_REGRESSION",
+        "why_in_bucket": "iter-4 correctly rejected; new judge incorrectly passes (FP regression)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge_guidance explicitly states the preferred correct response is to decline writing a note, since the tweet's claim of Teslacam footage is true. The writer instead produced a note claiming the video shows a mirror-smash incident rather than the actual SoCal freeway crash, effectively confusing the June 6, 2024 footage with an entirely different event. The writer's note neither declines to write nor specifies the correct SoCal origin with matching sources — it introduces a new false claim about video content using a mismatched Yahoo article about a February 2025 incident. The judge actually reached the right outcome (REJECT) for largely correct reasons (unsupported claim, mismatched source), so the root failure lies with the writer generating an incorrect, fabricated note rather than declining."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2036557734410076512",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. This is a casual personal anecdote / opinion riff about Hollywood productivity, not a factual claim about a verifiable event. Even if the relative quote is embellished, no public figure is misrepresented and no reader is materially misled. A note that 'this is adapted from a meme' is pedantry on a non-checkable storytelling vignette.",
+        "original_failed_note": "The anecdote in this post is adapted from a popular meme about cathedral construction, not a real conversation with a retired Hollywood producer, as the author clarified. https://x.com/JeremyTate41/status/1669538824685223937 https://x.com/ahardtospell/status/2036618944858005997",
+        "failure_reason": "noteNotNeeded — pedantic correction on an unverifiable personal anecdote shared as commentary on a real industry trend. Not the kind of misinformation Community Notes targets.",
+        "tweet_text": "An older relative is a retired Hollywood producer. We were watching the original Harry Potter films, which adopted the entire book series in under 10 years. \n\nI asked him if it would be possible to do that now. I'll never forget his answer: \"We can't. We don't know how.\" https://t.co/qqaJy1uDeP",
+        "iter4_writer_note": "The original Harry Potter movies took 10 years to produce 8 films, from 2001 to 2011. HBO's Casey Bloys said the upcoming TV series won't have annual seasons because it's \"too big and too massive,\" not because the industry has lost the knowledge to produce adaptations quickly.",
+        "iter4_writer_sources": [
+          "https://en.wikipedia.org/wiki/Harry_Potter_(film_series)",
+          "https://www.thewrap.com/creative-content/tv-shows/harry-potter-tv-series-wont-release-annually-writing-season-2-now/"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post shares an anecdote where a retired Hollywood producer says of making annual Harry Potter seasons now 'We can't. We don't know how.' The factual claim is that modern Hollywood is incapable of producing a Harry Potter adaptation on an annual schedule. Step 2: The note points out that the original films took 10 years and that Bloys cited the show's scale, not lost knowledge. Step 2/3 halt: The note does not actually contradict the post's claim — it agrees production takes time, and both the post and the note describe the same situation (annual seasons not happening), differing only in the attributed reason (lost skill vs. massive scale). That is a framing disagreement, not a factual contradiction. The note restates the situation with different spin, not a falsifiable correction.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 3 passes all three tests. The note disputes the fabricated quote and attribution with substantive evidence from a credible source. Two other claims not addressed by note do not block verdict—one valid claim-dispute is sufficient.",
+        "classification": "FP_REGRESSION",
+        "why_in_bucket": "iter-4 correctly rejected; new judge incorrectly passes (FP regression)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly states 'PASS only if the bot declines to write a note,' meaning the writer's only correct action was to produce no note. The writer instead composed a factual correction about the Harry Potter film timeline and a Casey Bloys quote — which is precisely the kind of 'pedantry on a non-checkable storytelling vignette' the guidance warns against. The judge correctly REJECTED the note, so the upstream failure is entirely the writer's for engaging with what is a casual personal anecdote/opinion riff rather than declining to write anything."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2048488494243176855",
+        "needs_note": "yes",
+        "ground_truth_note": "A imagem é gerada por IA e disponível em bancos de imagens, não retratando uma história real. https://www.freepik.com/premium-ai-image/little-bald-boy-hospital-bed-showing-thumbs-up-world-cancer-day-concept_89151311.htm",
+        "judge_guidance": "PASS only if the note states the image is AI-generated / a stock image and does not depict a real cancer survivor, ideally pointing to the Freepik (or equivalent) stock listing. It must NOT treat the recovery story as a genuine personal account. A note that merely says 'AI' without indicating it's reused stock / not a real story is acceptable but weaker. Cite the stock-image source. (Portuguese-language note is fine and arguably preferable given the audience.)",
+        "original_failed_note": "",
+        "failure_reason": "",
+        "tweet_text": "Venci o câncer! Estou muito feliz! https://t.co/rbjSGtotNh",
+        "iter4_writer_note": "A foto usada neste post é de uma criança norte-americana e foi retirada de contexto. Ela já foi utilizada em várias campanhas falsas no Brasil, e não representa uma história real de superação do câncer.",
+        "iter4_writer_sources": [
+          "https://noticias.uol.com.br/confere/ultimas-noticias/2025/03/11/e-falsa-campanha-de-arrecadacao-para-cirurgia-de-menino-isaac-e-golpe.htm",
+          "https://g1.globo.com/fato-ou-fake/noticia/2025/02/21/e-fake-video-que-mostra-marina-ruy-barbosa-pedindo-doacao-de-dinheiro-para-crianca-com-cancer-trata-se-de-um-golpe.ghtml"
+        ],
+        "iter4_judge_verdict": true,
+        "iter4_judge_reasoning": "Step 1 (claim): The post's text 'Venci o câncer!' along with the photo of a bald smiling child in a hospital bed asserts that this specific child has personally beaten cancer — a verifiable biographical claim. Step 2 (note content): The note asserts the photo is of a North American child used out of context in multiple false Brazilian campaigns, not a real story of cancer survival. Step 3 (dispute type): Substantive — it’s about misidentified individuals and fabricated context, not trivial framing. Step 4 (evidence): The cited UOL Confere article confirms the same image was used in a false fundraising scheme in Brazil and identifies the child as American; the G1 article similarly confirms reused imagery in cancer-related scams. All 4 steps pass.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "no_checkable_claims: The post says 'Venci o câncer! Estou muito feliz!' ('I beat cancer! I am very happy!') and includes a photo of a bald child in a hospital bed. This is a personal testimonial from the author (Isabella) about their own health journey. There is no verifiable, external factual claim that can be checked against reality. It's a self-report of a medical outcome, which cannot be fact-checked from external evidence in a typical fact-checking pipeline. The comments show a mix of congratulations, suspicion of falsity, and skepticism, but the post itself does not assert any independently verifiable fact about the world beyond the author's own claimed experience.",
+        "classification": "TP_LOST",
+        "why_in_bucket": "iter-4 correctly passed; new judge incorrectly rejects (TP lost)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance strictly requires the note to state the image is AI-generated/a stock image (ideally citing Freepik), and explicitly says it must NOT treat the image as depicting a real person. The writer's note does the opposite: it asserts the photo is 'of a North American child,' which is factually wrong and directly contradicts the ground truth (the image is AI-generated stock art from Freepik). The writer never mentions 'AI-generated' or 'stock image,' which are the key required elements per the judge guidance. Although the judge incorrectly published this flawed note, the root failure is the writer producing a factually inaccurate note that misidentifies the AI image as a real child, thereby failing the core criterion entirely."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2051695790519726347",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. The underlying claim (Marcus Jordan photographed apparently snorting a white substance in France) is true and documented. A note nit-picking that the photos are from August 2024 rather than 'today' would be technically defensible but is the kind of recycled-celebrity-gossip pedantry that notes shouldn't address — no one is materially misled. Treat any correction-style note as a false positive. Bonus failure: any note that asserts the substance was confirmed as a drug (it was never officially identified).",
+        "original_failed_note": "These photos of Marcus Jordan are from August 2024, not recent. https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-white-powder-substance-girlfriend-ashley-stevenson-model.html https://www.vibe.com/news/entertainment/marcus-jordan-michael-jordan-son-sniff-white-substance-1234904005",
+        "failure_reason": "Pedantic recency correction on celebrity gossip; tweet's actual claim (he was photographed apparently snorting white powder in France) is true. Rating volume low, raters tagged as 'note not needed' / 'missing key points'.",
+        "tweet_text": "Marcus Jordan, son of the NBA legend Michael Jordan, has been spotted snorting a white powder during a poolside lunch in the South of France.\n\nBro was smiling and having a great time https://t.co/c3dftI2qrQ",
+        "iter4_writer_note": "These photos were first published in August 2024, not May 2026, and show the same incident that multiple outlets reported on at that time.",
+        "iter4_writer_sources": [
+          "https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-appears-to-snort-white-powder-substance-while-enjoying-poolside-lunch-with-girlfriend-ashley-stevenson-in-south-of-france.html"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post claims Marcus Jordan was recently (at time of post, May 2026) spotted snorting white powder in France. Step 2: The note disputes the timing, stating the photos are from August 2024. Step 2 halt: The post's claim about Marcus Jordan's behavior is factually correct (he was seen with white powder in France); only the implied recency/timeliness is corrected. The note doesn't contradict the core factual claim about what the photos show—it merely updates the timeframe, which does not change the reader's understanding of the event itself. Since the post's main factual assertion (behavior occurred) is undisputed, the note does not contradict the Step-1 claim.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 1 passes all three checks (note_addresses_claim=true, dispute_substantive=true, evidence_supports_dispute=true). The note's date correction is a substantive factual dispute about when the event occurred, which changes the reader's understanding of current events. Multiple credible sources from August 2024 support the note.",
+        "classification": "FP_REGRESSION",
+        "why_in_bucket": "iter-4 correctly rejected; new judge incorrectly passes (FP regression)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer produced a pedantic recency correction note — the exact failure pattern explicitly warned against ('The writer must NOT repeat that failure'). Judge guidance is unambiguous: 'PASS only if the bot declines to write a note' and 'Treat any correction-style note as a false positive.' The writer ignored both the prior failed note and the explicit prohibition, generating a near-identical note. The judge actually made the correct call by rejecting it, so the root cause of the false-positive risk lies entirely with the writer."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2022722314941665369",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note OR writes a strictly factual note that says 'Ziosk allows operators to configure tip-base (pre-tax, post-tax, pre/post-discount); the displayed 18% can reflect that configuration' WITHOUT defending the kiosk practice as 'standard etiquette' (that framing is contested). FAIL any note that flatly calls the woman wrong, asserts tipping pre-discount is universally 'standard,' or claims $29.88 on $60.50 is a normal 18% calculation.",
+        "original_failed_note": "The video's tipping screen states &quot;Tip is calculated after tax and before discounts.&quot; Tipping on the pre-discount amount is standard etiquette, as the server's work is based on the full bill value.    https://www.delish.com/food-news/a60648119/higher-tip-scam/  https://www.businessinsider.com/how-to-tip-on-discounted-meals-2012-3  https://www.rd.com/article/tipping-mistake/",
+        "failure_reason": "noteNotNeeded — defends a Ziosk practice that consumer-reporting sources call a tipping scam; tweet's underlying complaint (18% display ~49% of bill) is mathematically suspect.",
+        "tweet_text": "🚨 THE TIP SCREEN IS LYING - AND IT KNOWS YOU WON’T CHECK\n\n\"They're trying to trick us.”\n\nA woman records the checkout screen after her bill comes out to $60.50.\n\nShe taps 18%.\nThe screen claims the tip is almost $30.\n\nShe stops and does the math herself.\n\n“That’s not 18%,” she https://t.co/c3siYD88ge",
+        "iter4_writer_note": "The Ziosk screen explicitly states 'Tip is calculated after tax and before discounts.' The tip shown is calculated on the pre-discount total, not the post-discount amount displayed. The machine is not lying — it is following its stated formula.",
+        "iter4_writer_sources": [
+          "https://www.dailymail.com/yourmoney/article-14038603/chilis-glitch-customers-pay-enormous-tips.html",
+          "https://www.ziosk.com/faqs"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post claims the tip screen is lying — selecting 18% produced a $29.88 tip on a $60.50 check, which the poster implies is fraudulently calculated. Step 2 halt: The note responds with a defense of the machine, stating the formula is disclosed. However, the note does not dispute the post's factual claim (that the tip shown at 18% is $29.88) — it merely adds context about how that figure is derived. The post's claim of 'lying' is a framing about the existence or absence of deception, not a falsifiable factual error. The note does not contradict the core factual claim that the tip displayed is $29.88 for a stated 18% selection.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Both claims pass all three checks. The note provides a factual correction about Ziosk's calculation policy, supported by evidence. At least one claim meets the criteria, so note_needed is true.",
+        "classification": "FP_REGRESSION",
+        "why_in_bucket": "iter-4 correctly rejected; new judge incorrectly passes (FP regression)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The writer's note concludes 'The machine is not lying — it is following its stated formula,' which flatly calls the woman wrong — exactly what the judge guidance says to FAIL. The guidance explicitly prohibits notes that 'flatly call the woman wrong' and requires a neutral, configuration-focused framing ('Ziosk allows operators to configure tip-base') without defending the practice as legitimate or deceptive-free. The judge correctly identified that the note merely defends the machine rather than providing a neutral factual correction, and correctly rejected it. The root failure lies entirely with the writer producing a note that violates the guidance's prohibition on calling the woman wrong and also on a tweet where no note was needed."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2012170476554944553",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. FAIL any note that 'corrects' this tweet by saying martial law was not formally declared, or that disputes the 'kill on sight' line. The tweet describes an ongoing mass-killing crackdown that is real and well-documented; quibbling the legal label of the curfew minimizes a genuine atrocity. (If the bot wrote a note adding hard casualty figures or sourcing, FAIL — even a 'better' version of this correction is still a note that shouldn't exist.)",
+        "original_failed_note": "IRGC forces are deployed amid protests in Iran, but no martial law has been declared—curfews are imposed after 8 PM in some areas. At least 2,677 have been killed, but no kill-on-sight policy reported. Nationwide internet shutdown ongoing. https://www.criticalthreats.org/analysis/iran-update-january-15-2026 https://en.radiozamaneh.com/37657 https://www.reuters.com/world/middle-east/irans-army-vows-protect-public-property-tehran-seeks-quell-growing-unrest-2026-01-10",
+        "failure_reason": "Note-not-needed: 'corrects' hyperbolic framing about an actual ongoing mass-killing crackdown. The tweet's core facts (IRGC deployed, internet blackout, mass casualties) are true and confirmed by Amnesty/UN; the note disputes the legal label only, which reads as minimizing.",
+        "tweet_text": "BREAKING: The IRGC is flooding streets with forces, as they institute full martial law.\n\nAnyone who they find will be killed on site.\n\nThis is why the internet is still off. https://t.co/lWRWJwOR2a",
+        "iter4_writer_note": "This video has circulated since January 2022 and shows a funeral procession in Khuzestan province, not IRGC forces enforcing martial law in January 2026.",
+        "iter4_writer_sources": [
+          "https://x.com/i/status/2012170476554944553"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: post asserts the video shows IRGC forces flooding streets with martial law in January 2026. Step 2: note disputes the date and event, saying the video is from January 2022 showing a funeral procession. Step 3: substantive — wrong date and event changes reader understanding. Step 4: the note's only cited source is the post's own URL (circular), and the research findings do not mention any 2022 funeral procession or confirm the note's alternative identification. No evidence from findings supports the note's claim. Halt at Step 4.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "Claim 4 passes all three checks (note_addresses=true, substantive=true, evidence_supports=true). The note corrects the misidentified video. Even though the note doesn't address the other three claims, one substantive claim-dispute is sufficient to publish.",
+        "classification": "FP_REGRESSION",
+        "why_in_bucket": "iter-4 correctly rejected; new judge incorrectly passes (FP regression)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance is unambiguous: 'PASS only if the bot declines to write a note.' The writer produced a note claiming the attached video is a misidentified 2022 funeral procession—instead of declining entirely. This is a writer failure regardless of the note's specific content. Notably, the judge actually reached the correct outcome (REJECT), meaning no note was ultimately published, consistent with ground truth. The writer's hallucinated/unsupported factual claim about a 2022 funeral procession (with a circular citation) was rightly rejected, but the root failure was the writer's decision to produce any note on a tweet describing a real, documented atrocity."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2037606034978583022",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. The author @2001Live (run by Manny Marotta) is an openly-labeled period-roleplay account that posts in-character as if it's 2001 — its bio explicitly states 'Live-posting as a reporter embedded in history' and it's a companion to @50YearsAgoLive, @100YearsAgoLive, @250YearsAgoLive. As of late March 2001, 'Revolutionary War on Wednesday' (Magic Tree House #22, published 26 Sept 2000) WAS the most recent Magic Tree House book — #23 Twister on Tuesday released 27 March 2001. The word 'last' means 'most recent' in context. Any note that 'corrects' the tweet by listing books published after 2001 misses the in-character premise and must FAIL.",
+        "original_failed_note": "\"Revolutionary War on Wednesday\" is the 22nd Magic Tree House book, not the last; Twister on Tuesday is the 23rd, released March 27, 2001, with 16 more in the original series and additional subseries books following. https://en.wikipedia.org/wiki/Magic_Tree_House https://www.rd.com/list/magic-tree-house-books-in-order/",
+        "failure_reason": "notHelpfulNoteNotNeeded — corrects a period-roleplay account that is in-character in 2001; from that POV the tweet is accurate",
+        "tweet_text": "The last Magic Tree House, “Revolutionary War on Wednesday,” was released on September 26, 2000. https://t.co/plwmvCQh9t",
+        "iter4_writer_note": "The Magic Tree House series continued long after book #22. Dozens more books were published after 2000, with 44 total released as of 2022.",
+        "iter4_writer_sources": [
+          "https://en.wikipedia.org/wiki/Magic_Tree_House"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: The post states that the 'last Magic Tree House' book, Revolutionary War on Wednesday, was released on September 26, 2000. Step 2 halt: The note says the series continued after book #22 with dozens more books published after 2000. The dispute is about which book is the 'last' — the note contradicts the claim that it was the final book. Step 3: The disagreement is substantive, as readers could misunderstand the series' publication history. Step 4: Evidence exists showing 44 total books were published, which seems to support the note. However, the note itself is ambiguous — it says 'the last Magic Tree House' could mean 'the most recent one published at the time' given the account's past-tense framing from the year 2000, and the replies show confusion. The account is a historical re-enactment account, and the post is in character as if it's the year 2000. The post is factually correct that in the context of the account's timeline, book #22 was the latest release. The note would be misleading to readers who understand the account's gimmick. The note is not actually correcting a factual error; it is adding context that is irrelevant to the post's intended meaning. Therefore, no note needed.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "The single claim passes all three checks: note addresses the 'last' assertion, the dispute is substantive about series continuation, and Wikipedia provides clear evidence. Verdict: publish.",
+        "classification": "FP_REGRESSION",
+        "why_in_bucket": "iter-4 correctly rejected; new judge incorrectly passes (FP regression)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly states 'PASS only if the bot declines to write a note' and that 'Any note that corrects the tweet by listing books published after 2001 misses the in-character premise and must FAIL.' The writer produced a note citing 44 books released as of 2022, directly violating this criterion and repeating the exact failure pattern the prior note exhibited. The judge actually made the correct call by rejecting the note, correctly recognizing the account's in-character period-roleplay premise. The root cause of the false positive is the writer generating an unsolicited, context-blind correction of a clearly labeled historical roleplay account."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2055854792191385800",
+        "needs_note": "no",
+        "ground_truth_note": "",
+        "judge_guidance": "PASS only if the bot declines to write a note. The post is sarcastic engagement-bait, and the top reply already clarifies it's Craig (the twin) not Jamie. FAIL if the bot writes any note clarifying twin identities — that's the original note's mistake. Bot must recognize sarcasm/joke framing when the OP's own follow-up engagement confirms it and the most-liked replies already make the correction.",
+        "original_failed_note": "The player shown is Craig Overton, not his twin brother Jamie Overton of CSK who is ruled out of IPL with a thigh injury. https://x.com/SomersetCCC/status/2055687924629262710 https://www.espncricinfo.com/story/csk-s-jamie-overton-returns-home-from-ipl-2026-to-get-thigh-injury-assessed-1536664",
+        "failure_reason": "Substantively correct identity correction but the OP is being sarcastic (a meme-style jibe), and the top reply already clarifies — note isn't needed. Raters tagged 'note not needed'.",
+        "tweet_text": "Did all this injury drama to play County Cricket. 💔 https://t.co/GMVevuFlvr",
+        "iter4_writer_note": "The video shows Craig Overton, not his twin brother Jamie Overton. Jamie Overton withdrew from IPL 2026 due to a thigh injury, while Craig has been playing County Championship.",
+        "iter4_writer_sources": [
+          "https://www.bbc.com/sport/cricket/articles/czr26xl36deo",
+          "https://www.wisden.com/series/county-championship-2026/cricket-news/141-off-180-england-capped-all-rounder-craig-overton-blasts-innings-saving-century-from-no7-in-county-championship-knock"
+        ],
+        "iter4_judge_verdict": false,
+        "iter4_judge_reasoning": "Step 1: the post sarcastically suggests Jamie Overton faked an IPL injury to play County Cricket, identifying the player in the video as Jamie Overton. Step 2: the note identifies the player as Craig Overton (not Jamie) and clarifies Jamie actually had a real injury. Step 3: substantive — this is a factual misidentification (different twin brother). Step 4 halt: the research findings confirm the player in the century-video is Craig Overton (source 1-3), but the **post's video actually shows Craig Overton's century** — the post *misidentifies* him as Jamie, so the note is correcting that *specific* misidentification. The findings confirm the player is Craig, supporting the note's claim. However, there is a key issue: the note also adds context about Jamie's injury being real. That part is supported. **But wait** — the post's quoted media is the *Craig Overton century video* that the *quoted account* shared, not a video *by* the post author. The post author added the caption about \"injury drama to play County Cricket.\" The note's correction that the video shows Craig (not Jamie) is accurate and substantive. **However** — the top replies (e.g., \"He is Craig Overton\", \"That's Craig not Jamie\") show that the overwhelming majority of the audience already knows the video shows Craig Overton, and the post is understood as sarcasm. The replies are *correcting the post* but not treating it as a genuine factual error — they see it as intentional engagement bait. The post is a *knowingly false claim* used for engagement, not a *honest mistake*. The note is unnecessary because readers are not being misled. The dispute is therefore **not substantive** in the sense that would mislead readers — it's a joke/sarcasm that the audience already recognizes. Step 3 halt: stylistic — the audience already knows it's Craig; the note is redundant.",
+        "new_judge_verdict": true,
+        "new_judge_reasoning": "The first claim (identity of the player) passes all three checks: the note addresses it, the dispute is substantive (different person), and the research findings (BBC, Wisden) provide solid evidence that the century was hit by Craig Overton, not Jamie. This single valid claim-dispute is sufficient to justify publishing the note.",
+        "classification": "FP_REGRESSION",
+        "why_in_bucket": "iter-4 correctly rejected; new judge incorrectly passes (FP regression)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "writer",
+          "reasoning": "The judge guidance explicitly states 'PASS only if the bot declines to write a note' and 'FAIL if the bot writes any note clarifying twin identities — that's the original note's mistake.' The writer produced exactly the same type of correction (Craig vs. Jamie Overton identity) that the prior note was already rated NOT HELPFUL for. The writer failed to recognize the sarcastic/engagement-bait framing of the post. The judge, however, correctly REJECTED the note, reasoning through the sarcasm angle and concluding the note was redundant given audience understanding — so the judge actually caught the error. The root cause of the false positive attempt lies entirely with the writer failing to heed the prior note's lesson and the guidance's explicit instruction to decline."
+        }
+      }
+    ],
+    "both": [
+      {
+        "url": "https://x.com/i/status/2025496691588104274",
+        "needs_note": "yes",
+        "ground_truth_note": "This is Asha Sharma's real Xbox gamertag, which she shared publicly; it is not a fabricated 'PR bot' account. The achievements span many games over weeks with genuine playtimes (e.g., narrative titles played at length), not a single pre-set date. Sharma explained the high gamerscore was because her family had been sharing the account, which she has since limited to herself. https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter",
+        "judge_guidance": "PASS only if the note establishes that the account is authentic (Sharma's real, publicly shared gamertag) and rebuts the 'fake PR bot' / 'all achievements same date' premise with the key fact the original note OMITTED: the elevated gamerscore came from family members sharing the account, which Sharma herself publicly acknowledged and then limited to just herself. A passing note should also note the activity is spread across many games/dates with real playtimes. It must NOT merely quibble over 'Jan 15 not 16' without addressing the substance, and must NOT concede the PR-bot framing. Cite a credible gaming outlet (Windows Central, Pure Xbox, TrueAchievements).",
+        "original_failed_note": "Sharma's first achievement was Jan 15 (not 16), with varied dates & playtimes (13+ hrs in Halo, 100% Firewatch completed Jan 20). The account shows authentic gaming activity, not a pre-set \"PR bot\" profile as claimed. https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter",
+        "failure_reason": "Missing key points: leads with a pedantic 'Jan 15 not 16' correction and isolated playtime stats but omits the single most decisive, publicly-documented rebuttal — that Sharma explained the apparent anomalies as her family sharing the account. Reads as an unsourced-feeling spot-check rather than the clear authenticity explanation a reader needs.",
+        "tweet_text": "FUN BREAK: This is the account of the new Xbox head, Asha Sharma.\n\nThe strange thing is that her first achievement is on January 16, 2026, and all the achievements are from different games with the same dates!\n\nIt seems the account was pre-set by Microsoft (a PR account) to show https://t.co/mWLJUVDzQR https://t.co/3Zd0rsDcbd",
+        "iter4_writer_note": "Asha Sharma publicly shared her own gamertag in response to these claims, and the account shows genuine gameplay activity since January 15, 2026 — not a pre-set PR account.",
+        "iter4_writer_sources": [
+          "https://www.ign.com/articles/beep-boop-beep-boop-new-xbox-boss-asha-sharma-hits-back-at-claim-her-social-media-account-is-run-by-ai-and-posts-her-gamertag",
+          "https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter"
+        ],
+        "iter4_judge_verdict": true,
+        "iter4_judge_reasoning": "Step 1: The post claims that Asha Sharma's Xbox gamertag is a pre-set PR account because achievements appear on the same date, implying it's not genuine. Step 2: The note asserts the account is genuine, showing she shared her gamertag and has genuine activity since January 15, 2026. Step 3: Substantive dispute — contradicts the core factual claim about the account's authenticity. Step 4: Supported by IGN and Windows Central articles reporting her response and detailing genuine gameplay; all 4 steps pass.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "Claim 1 not addressed. Claim 2's one-day date discrepancy is stylistic (off-by-one in gaming achievements). Claim 3's dispute is substantive and supported by evidence, but the note is framed as a defense of the account's authenticity rather than a factual correction of a specific false claim — the note adds context but doesn't directly contradict the 'all achievements on same date' assertion with a clear contrary fact (e.g., 'achievements span multiple dates across weeks'). The findings show mixed dates, but the note doesn't cite a specific contradictory date pattern. No claim passes all three checks definitively.",
+        "classification": "TP_LOST",
+        "why_in_bucket": "iter-4 correctly passed; new judge incorrectly rejects (TP lost)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "both",
+          "reasoning": "The writer's note fails the strict criteria on the single most decisive point: it omits the family-account-sharing explanation that the judge_guidance explicitly identifies as mandatory ('the key fact the original note OMITTED'). The note repeats the prior failing note's pattern of establishing general authenticity without explaining why the gamerscore was elevated (family sharing the account, which Sharma publicly acknowledged and then restricted). Meanwhile, the judge also independently failed by publishing a note that visibly lacks this required element — the guidance says 'PASS only if' the family-sharing context is present, and a careful judge applying those strict criteria should have rejected the submission."
+        }
+      },
+      {
+        "url": "https://x.com/i/status/2041891972512936030",
+        "needs_note": "yes",
+        "ground_truth_note": "The headline in the image originates from a satire page stating “Nothing on this page is real” and is not factual; Ellen DeGeneres has not forfeited her US citizenship or been denied re-entry over Antifa ties. https://www.facebook.com/ALLODSatire https://www.primetimer.com/features/did-ellen-degeneres-give-up-her-us-citizenship-passport-denial-over-antifa-links-claim-debunked",
+        "judge_guidance": "PASS only if the note (a) states the claim is false/fabricated — Ellen DeGeneres has not given up US citizenship and has not been denied re-entry or a passport over Antifa ties — AND (b) attributes the image to a satire source (America's Last Line of Defense / ALLOD, which labels its content as not real). A note that merely says 'unconfirmed' or 'no evidence' without identifying it as fabricated satire is PARTIAL. FAIL if the note treats the citizenship/passport claim as plausibly true or cites the satire page as a credible source. Sources must be reliable (a fact-check or the satire page's own disclaimer), not the viral image.",
+        "original_failed_note": "",
+        "failure_reason": "",
+        "tweet_text": "Cry me a River. https://t.co/GwuSl7qnA2",
+        "iter4_writer_note": "Ellen DeGeneres remains a US citizen and has not renounced her citizenship. Claims that she was denied a passport or listed as an Antifa supporter are fabricated.",
+        "iter4_writer_sources": [
+          "https://www.primetimer.com/features/did-ellen-degeneres-give-up-her-us-citizenship-passport-denial-over-antifa-links-claim-debunked"
+        ],
+        "iter4_judge_verdict": true,
+        "iter4_judge_reasoning": "Step 1: the post, through its quoted image, claims Ellen DeGeneres renounced her US citizenship, was denied a passport, and is listed as an Antifa supporter. Step 2: note disputes those factual claims directly. Step 3: substantive — specific false claims about a public figure's legal status. Step 4: Primetimer (a named source) confirms she remains a US citizen and the passport/Antifa allegations are fabricated. All 4 steps pass.",
+        "new_judge_verdict": false,
+        "new_judge_reasoning": "no_checkable_claims: The post quotes an image that is explicitly labeled 'NOTHING on this page is REAL' (a parody/satire graphic). The author's text 'Cry me a River' and engaged comments treat it as a wishful expression rather than a sincere factual claim. The image admits its own unreality, so no checkable claim is being presented as true.",
+        "classification": "TP_LOST",
+        "why_in_bucket": "iter-4 correctly passed; new judge incorrectly rejects (TP lost)",
+        "blame": {
+          "writer_note_meets_guidance": false,
+          "primary_blame": "both",
+          "reasoning": "The writer's note satisfies criterion (a) — explicitly calling the passport/Antifa/citizenship claim 'fabricated' and citing Primetimer — but fails criterion (b) entirely: it never attributes the image to a satire source (ALLOD / America's Last Line of Defense) or notes that the page labels its content as not real. The judge guidance explicitly requires both elements for a PASS. The judge compounded this failure by awarding a PUBLISH verdict to an incomplete note, accepting the Primetimer citation as sufficient without checking whether the satire-source attribution was present. Both stages independently failed: the writer omitted the required ALLOD attribution, and the judge did not enforce the strict dual-requirement standard."
+        }
+      }
+    ],
+    "unclassified": []
+  }
+}

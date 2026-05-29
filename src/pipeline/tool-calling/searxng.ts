@@ -1,45 +1,81 @@
 /**
- * Shared SearXNG client with state-aware retry on engine suspensions.
+ * Shared search client — global-queue multi-provider priority cycle.
  *
- * Background: SearXNG's `google` (and other) engines transparently get blocked
- * by upstream — Google issues 403 / CAPTCHA when query rate is too high.
- * SearXNG catches that and suspends the engine for `suspended_time` seconds
- * (default 180s on HTTP 429/403, 3600s on CAPTCHA, 604800s on reCAPTCHA).
- * While suspended the engine returns zero results, which is indistinguishable
- * from "the query genuinely has no hits" unless the caller knows.
+ * All search requests flow through a single global queue with a 4s gap
+ * between any two searches (GLOBAL_INTERVAL_MS). SearXNG-backed engines
+ * (google, brave) have an additional per-engine cooldown of 8s
+ * (SEARXNG_ENGINE_COOLDOWN_MS) so they're hit at most once per 8s each,
+ * naturally producing google→brave→google→brave alternation at the 4s
+ * slot cadence. brave-api only obeys the global 4s gap and sits at the
+ * bottom of the priority list, so it is only used as a fallback when
+ * BOTH google and brave have failed (returned 0 results / been suspended)
+ * for the current query — never as part of the steady-state cycle.
  *
- * This module makes that state observable:
- *   1. Every search hits `GET /search?engines=…`.
- *   2. If zero results came back, we ask `GET /stats/errors?format=json` and
- *      parse any `suspended_time=N` in the engine's recent errors.
- *   3. Per-engine "suspended until" is stored in a process-wide map so every
- *      caller (cheap-bot, simple-bot's tool-loop, future bots) shares the
- *      knowledge and waits exactly that long before retrying.
- *   4. Subsequent calls check the map BEFORE issuing the query, so a bot
- *      doesn't fire 50 doomed queries while the engine is cooling down.
+ * Typical cadence with default providers [google, brave, brave-api]:
+ *   t=0:  google (SearXNG)
+ *   t=4:  brave  (SearXNG)
+ *   t=8:  google (SearXNG)  — 8s since last google
+ *   t=12: brave  (SearXNG)  — 8s since last brave
+ *   t=16: google (SearXNG)
+ *   ...
+ * brave-api is picked only inside a single fetchSearxngResults call after
+ * google and brave have both already returned 0 for that query (see the
+ * `triedThisQuery` skip set + priority order below).
  *
- * One retry per query — if the post-wait retry still returns zero, treat it
- * as a real no-hits result. The caller (cheap-bot orchestrator) has its own
- * no-findings guard for that case.
+ * The 4s / 8s defaults come from the binary-search probe in
+ * `src/scripts_jim/2026_05_27_google_rate_limit_bsearch/FINDINGS.md`:
+ * google quietly blocks past ~10 req/min, so 8s/engine (7.5 req/min)
+ * sits safely below.
+ *
+ * On per-provider suspension, mark it and skip — do NOT wait. The cycle
+ * falls to the next provider. WAIT only when EVERY provider is in
+ * cool-down (rare).
+ *
+ * Config:
+ *   SEARXNG_PROVIDERS — comma-separated priority list. Default
+ *     "google,brave,brave-api".
+ *   SEARCH_GLOBAL_INTERVAL_MS — minimum gap between any two searches. Default 4000.
+ *   SEARXNG_ENGINE_COOLDOWN_MS — per-engine gap for SearXNG engines. Default 8000.
+ *   BRAVE_API_KEY — required when "brave-api" is in the provider list.
  */
 
-const SEARXNG_URL = process.env.SEARXNG_URL ?? "http://localhost:8080";
-const DEFAULT_MAX_RESULTS = 10;
-const DEFAULT_ENGINES = "google";
-const SUSPENSION_BUFFER_MS = 5_000; // slop on top of the engine's suspended_time
-// Default suspension when we detect a block but SearXNG hasn't reported a
-// specific suspended_time (e.g. /stats/errors hasn't aggregated yet). 180s
-// matches SearXNG's default for HTTP 429/403 from upstream search engines.
-const DEFAULT_SUSPENSION_SECONDS = 180;
-// Canary query — short, generic, guaranteed-to-match. If a regular query
-// returns 0 results we fire this; if the canary ALSO returns 0, the engine
-// is suspended (not the original query being genuinely empty).
-const CANARY_QUERY = "wikipedia";
+import PQueue from "p-queue";
 
-// Per-engine, when can we resume hitting it (ms since epoch). Shared across
-// every caller in the process — when one query triggers a suspension every
-// other in-flight bot sees and respects it.
-const engineSuspendedUntil = new Map<string, number>();
+const SEARXNG_URL = process.env.SEARXNG_URL ?? "http://localhost:8080";
+const PROVIDERS = (process.env.SEARXNG_PROVIDERS ?? "google,brave,brave-api")
+  .split(",").map((s) => s.trim()).filter(Boolean);
+const GLOBAL_INTERVAL_MS = Number(process.env.SEARCH_GLOBAL_INTERVAL_MS) || 4_000;
+const SEARXNG_ENGINE_COOLDOWN_MS = Number(process.env.SEARXNG_ENGINE_COOLDOWN_MS) || 8_000;
+const DEFAULT_MAX_RESULTS = 10;
+const SUSPENSION_BUFFER_MS = 5_000;
+// Used when a SearXNG-backed provider reports a /stats/errors suspended_time
+// but it's missing or unparseable. Matches SearXNG's typical 180s suspension.
+const HTTP_BLOCK_COOLDOWN_S = 185;
+// Cooldown when a provider returns 0 results for a normal-looking query —
+// treat empty as "provider currently failing for our traffic" (likely captcha
+// / rate-limit blocking results upstream). Shorter than HTTP_BLOCK_COOLDOWN_S
+// because the provider may recover quickly; we just want to stop hammering it
+// with subsequent queries that would hit the same wall.
+const EMPTY_RESULT_COOLDOWN_S = 30;
+// brave-api free-tier rate limit is ~1 req/sec. Honor Retry-After when given;
+// fall back to this if the header is missing.
+const BRAVE_API_RETRY_AFTER_DEFAULT_S = 2;
+const BRAVE_API_MAX_INTRA_CALL_RETRIES = 3;
+// Cap on how long a single 429 Retry-After we'll wait in-place before
+// surfacing as BraveApiRateLimitError. Higher than the per-row pipeline can
+// reasonably absorb (10min row budget, 3 queries → keep individual waits
+// modest). 60s is generous: we'd rather sit and wait for the paid provider
+// than fall through to captcha-prone scraped engines.
+const BRAVE_API_MAX_RETRY_AFTER_WAIT_S = 60;
+// Backoff schedule for retrying brave-api on transient failures (5xx, network
+// errors, timeouts). Brave's API is the paid, high-availability path — if a
+// call here fails when the API is actually up, that's our bug. Try hard before
+// giving up. Total budget ~15s, well within the per-row 10-min timeout.
+const BRAVE_API_TRANSIENT_BACKOFF_MS = [1_000, 2_000, 4_000, 8_000];
+const FETCH_TIMEOUT_MS = 15_000;
+const STATS_TIMEOUT_MS = 5_000;
+const BRAVE_API_URL = "https://api.search.brave.com/res/v1/web/search";
+const BRAVE_API_PROVIDER = "brave-api";
 
 export interface SearxngResult {
   title: string;
@@ -59,85 +95,67 @@ interface RawSearchResponse {
   unresponsive_engines: unknown[];
 }
 
-const sleep = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
+interface EngineState {
+  suspendedUntil: number;
+  lastHitAt: number;
+  inflightSuspensionCheck: Promise<void> | null;
+}
+
+const engineStates = new Map<string, EngineState>();
+
+function getEngineState(engine: string): EngineState {
+  let s = engineStates.get(engine);
+  if (!s) {
+    s = { suspendedUntil: 0, lastHitAt: 0, inflightSuspensionCheck: null };
+    engineStates.set(engine, s);
+  }
+  return s;
+}
+
+// Global slot mutex: serializes provider selection so concurrent callers
+// can't race on the same engine. The actual fetch runs OUTSIDE the mutex.
+const slotMutex = new PQueue({ concurrency: 1 });
+let nextSlotAt = 0;
+
+function engineCooldownMs(engine: string): number {
+  return engine === BRAVE_API_PROVIDER ? 0 : SEARXNG_ENGINE_COOLDOWN_MS;
+}
+
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 function parseSuspendedTimeSeconds(errs: SearxngStatsError[]): number {
-  // Pick the largest suspended_time across recent errors for this engine.
-  // Mixed exception classes (429 / CAPTCHA / AccessDenied) all carry the
-  // same `suspended_time=N` pattern in log_parameters.
-  let maxSecs = 0;
+  let max = 0;
   for (const e of errs) {
     for (const p of e.log_parameters ?? []) {
       const m = /suspended_time=(\d+)/.exec(p);
-      if (m) maxSecs = Math.max(maxSecs, parseInt(m[1]!, 10));
+      if (m) max = Math.max(max, parseInt(m[1]!, 10));
     }
   }
-  return maxSecs;
+  return max;
 }
 
 async function getEngineSuspensions(): Promise<Map<string, number>> {
-  // Returns a per-engine "suspended_time in seconds" map from SearXNG's
-  // /stats/errors endpoint. Engines not currently in trouble are absent.
-  // Note: this endpoint is only populated after SearXNG has aggregated
-  // errors — empirically it's reliable for sustained / repeated suspensions
-  // but can be empty during a fresh burst. Treat as one signal among several.
   try {
-    const resp = await fetch(`${SEARXNG_URL}/stats/errors`, {
-      signal: AbortSignal.timeout(5_000),
-    });
+    const resp = await fetch(`${SEARXNG_URL}/stats/errors`, { signal: AbortSignal.timeout(STATS_TIMEOUT_MS) });
     if (!resp.ok) return new Map();
     const data: Record<string, SearxngStatsError[]> = await resp.json();
     const out = new Map<string, number>();
-    for (const [engine, errs] of Object.entries(data)) {
+    for (const [eng, errs] of Object.entries(data)) {
       const secs = parseSuspendedTimeSeconds(errs);
-      if (secs > 0) out.set(engine, secs);
+      if (secs > 0) out.set(eng, secs);
     }
     return out;
-  } catch {
-    return new Map();
-  }
+  } catch { return new Map(); }
 }
 
-async function canaryProbeReturnsZero(engines: string): Promise<boolean> {
-  // Returns true iff a known-good generic query also yields zero — strong
-  // signal the engine is suspended rather than the original query being a
-  // genuine miss. False on errors so we don't over-classify.
-  try {
-    const results = await rawFetch(CANARY_QUERY, engines);
-    return results.length === 0;
-  } catch {
-    return false;
-  }
-}
-
-async function waitForEngines(engines: string[]): Promise<void> {
-  // Block until every engine we care about has come out of suspension.
-  // Engines we've never seen suspended (not in the map) are skipped.
-  const now = Date.now();
-  let maxWait = 0;
-  for (const eng of engines) {
-    const until = engineSuspendedUntil.get(eng);
-    if (until && until > now) maxWait = Math.max(maxWait, until - now);
-  }
-  if (maxWait > 0) {
-    // Visible signal — without this, sustained pipeline runs look mysteriously
-    // slow. Cap the log to once per ~5s to avoid flooding parallel workers.
-    console.log(`[searxng] waiting ${(maxWait / 1000).toFixed(1)}s for ${engines.join(",")} suspension to lift`);
-    await sleep(maxWait);
-  }
-}
-
-async function rawFetch(query: string, engines: string): Promise<SearxngResult[]> {
-  const endpoint = `${SEARXNG_URL}/search?q=${encodeURIComponent(query)}&format=json&engines=${engines}`;
+async function rawFetch(query: string, engine: string): Promise<SearxngResult[]> {
+  const endpoint = `${SEARXNG_URL}/search?q=${encodeURIComponent(query)}&format=json&engines=${engine}`;
   const response = await fetch(endpoint, {
     headers: { "User-Agent": "Mozilla/5.0 (compatible; CommunityNotesBot/1.0)" },
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   if (!response.ok) throw new Error(`SearXNG HTTP ${response.status}`);
   const data: RawSearchResponse = await response.json();
-  // De-dupe by URL (multi-engine fan-out may return the same URL from
-  // several backends) and cap at the result limit. Order preserved — first
-  // hit wins, which approximates the SearXNG-side rank.
   const seen = new Set<string>();
   const out: SearxngResult[] = [];
   for (const r of data.results ?? []) {
@@ -154,62 +172,260 @@ async function rawFetch(query: string, engines: string): Promise<SearxngResult[]
   return out;
 }
 
-/**
- * Suspension-aware SearXNG fetch. Other modules should call this instead of
- * hitting SearXNG directly so they share the engine-state map.
+/** Sentinel error: thrown by braveApiFetch when a 429 with Retry-After
+ *  exhausted our intra-call retry budget. Carries the seconds-to-wait so the
+ *  cycle can mark a precise cool-down rather than guessing. */
+class BraveApiRateLimitError extends Error {
+  constructor(public retryAfterSeconds: number) {
+    super(`Brave API 429 — retry after ${retryAfterSeconds}s`);
+  }
+}
+
+/** Sentinel error: brave-api returned HTTP 402 Usage Limit Exceeded — the
+ *  monthly billing cap is hit, no amount of retrying helps. Cycle treats this
+ *  as "brave-api is out for the rest of this run" and suspends it for a long
+ *  cool-down so we don't waste request budget hammering it. */
+class BraveApiQuotaExceededError extends Error {
+  constructor(public detail: string) {
+    super(`Brave API 402 USAGE_LIMIT_EXCEEDED — ${detail}`);
+  }
+}
+
+// When brave-api reports billing-quota exceeded, suspend it for the rest of
+// the run (1h is enough — the cap resets monthly so it won't recover sooner).
+const BRAVE_API_QUOTA_COOLDOWN_S = 3_600;
+
+function parseRetryAfter(header: string | null): number {
+  if (!header) return BRAVE_API_RETRY_AFTER_DEFAULT_S;
+  const n = parseInt(header, 10);
+  if (Number.isFinite(n) && n > 0) return n;
+  // Some servers send an HTTP-date instead of seconds; if so, parse it.
+  const t = Date.parse(header);
+  if (Number.isFinite(t)) return Math.max(1, Math.ceil((t - Date.now()) / 1000));
+  return BRAVE_API_RETRY_AFTER_DEFAULT_S;
+}
+
+async function braveApiFetch(query: string): Promise<SearxngResult[]> {
+  const key = process.env.BRAVE_API_KEY;
+  if (!key) throw new Error("BRAVE_API_KEY missing");
+  const endpoint = `${BRAVE_API_URL}?q=${encodeURIComponent(query)}&count=${DEFAULT_MAX_RESULTS}`;
+
+  // Two independent retry budgets:
+  //   - 429 (rate limit): up to BRAVE_API_MAX_INTRA_CALL_RETRIES, honoring
+  //     Retry-After. If Retry-After is huge (>30s), surface as
+  //     BraveApiRateLimitError so the cycle can mark brave-api suspended for
+  //     that long rather than burning the per-row budget.
+  //   - 5xx / network / timeout: walk BRAVE_API_TRANSIENT_BACKOFF_MS. Brave is
+  //     the paid, near-always-up path; transient failures here are almost
+  //     certainly recoverable, so try hard before giving up.
+  // 4xx other than 429 (e.g. 400 bad query, 401 auth) is a real error — throw
+  // immediately. The cycle's catch-all will suspend brave-api for 185s, which
+  // is appropriate for "we're broken" but not for "Brave hiccupped."
+  let rateLimitAttempts = 0;
+  let transientAttempts = 0;
+  while (true) {
+    let response: Response;
+    try {
+      response = await fetch(endpoint, {
+        headers: { "Accept": "application/json", "X-Subscription-Token": key },
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+    } catch (err) {
+      // Network error or AbortError (timeout) — treat as transient.
+      if (transientAttempts >= BRAVE_API_TRANSIENT_BACKOFF_MS.length) throw err;
+      await sleep(BRAVE_API_TRANSIENT_BACKOFF_MS[transientAttempts]!);
+      transientAttempts++;
+      continue;
+    }
+    if (response.status === 402) {
+      // Monthly billing cap exceeded. Read the JSON body for diagnostics so
+      // the suspension log makes the cause obvious. Suspend brave-api for an
+      // hour — no point retrying until the user tops up / upgrades the plan.
+      let detail = "Usage limit exceeded";
+      try {
+        const body: any = await response.json();
+        detail = body?.error?.detail ?? detail;
+      } catch {}
+      throw new BraveApiQuotaExceededError(detail);
+    }
+    if (response.status === 429) {
+      const wait = parseRetryAfter(response.headers.get("Retry-After"));
+      // Only give up if (a) we've exhausted the in-call retry budget or
+      // (b) Retry-After is pathologically large. Otherwise wait it out — the
+      // paid API is more reliable than scraped fallbacks, so prefer waiting
+      // over falling through.
+      if (rateLimitAttempts >= BRAVE_API_MAX_INTRA_CALL_RETRIES || wait > BRAVE_API_MAX_RETRY_AFTER_WAIT_S) {
+        throw new BraveApiRateLimitError(wait);
+      }
+      await sleep(wait * 1000);
+      rateLimitAttempts++;
+      continue;
+    }
+    if (response.status >= 500 && response.status < 600) {
+      if (transientAttempts >= BRAVE_API_TRANSIENT_BACKOFF_MS.length) {
+        throw new Error(`Brave API HTTP ${response.status} after ${transientAttempts} retries`);
+      }
+      await sleep(BRAVE_API_TRANSIENT_BACKOFF_MS[transientAttempts]!);
+      transientAttempts++;
+      continue;
+    }
+    if (!response.ok) throw new Error(`Brave API HTTP ${response.status}`);
+    const data: any = await response.json();
+    const seen = new Set<string>();
+    const out: SearxngResult[] = [];
+    for (const r of data?.web?.results ?? []) {
+      if (!r.url || seen.has(r.url)) continue;
+      seen.add(r.url);
+      out.push({
+        title: r.title ?? "",
+        url: r.url,
+        content: r.description ?? "",
+        publishedDate: r.page_age ?? null,
+      });
+      if (out.length >= DEFAULT_MAX_RESULTS) break;
+    }
+    return out;
+  }
+}
+
+function fetchOneProvider(query: string, provider: string): Promise<SearxngResult[]> {
+  if (provider === BRAVE_API_PROVIDER) return braveApiFetch(query);
+  return rawFetch(query, provider);
+}
+
+function markSuspended(provider: string, secs: number): void {
+  const state = getEngineState(provider);
+  const until = Date.now() + secs * 1000 + SUSPENSION_BUFFER_MS;
+  if (until > state.suspendedUntil) {
+    state.suspendedUntil = until;
+    console.log(`[searxng] provider=${provider} suspended for ${secs}s; cycle will skip it until cool-down`);
+  }
+}
+
+/** Suspend a SearXNG-backed provider after a 0-result return.
  *
- * Behavior:
- *   1. Wait if any requested engine is currently suspended.
- *   2. Fire the query.
- *   3. On zero results, look up the engine's suspension state via
- *      /stats/errors. If suspended, record the resume time in the shared
- *      map, wait that long, retry once.
- *   4. Return whatever the second attempt produced.
- */
+ * Previously we ran a canary "is this engine healthy" probe and only marked
+ * suspended if the canary also returned 0. That created a tight loop: when
+ * the engine was healthy but our specific query had 0 hits (or the engine was
+ * captcha-blocked but its canary happened to slip through), the cycle picked
+ * the same provider again with the same query and got the same 0 results
+ * forever. We now treat 0 as a definite failure signal: suspend the provider
+ * for EMPTY_RESULT_COOLDOWN_S so subsequent queries skip it, *or* for the
+ * engine's reported suspended_time when /stats/errors gives us one. */
+async function markProviderFailedAfterEmpty(provider: string): Promise<void> {
+  // brave-api is the paid, authenticated path. If it returns 0 results, that
+  // almost always means "Brave's index doesn't have this exact query" (often
+  // an over-quoted phrase or a non-English term), NOT that the provider is
+  // failing. Don't suspend it — let the cycle try other providers for THIS
+  // query, but keep brave-api fully available for the next query in the run.
+  // Earlier this was the dominant cause of "blackout" rows where one quoted-
+  // phrase query exhausted brave-api for the whole row.
+  if (provider === BRAVE_API_PROVIDER) return;
+  const state = getEngineState(provider);
+  if (state.inflightSuspensionCheck) return state.inflightSuspensionCheck;
+  const p = (async () => {
+    try {
+      const suspensions = await getEngineSuspensions();
+      const reported = suspensions.get(provider) ?? 0;
+      markSuspended(provider, reported > 0 ? reported : EMPTY_RESULT_COOLDOWN_S);
+    } finally { state.inflightSuspensionCheck = null; }
+  })();
+  state.inflightSuspensionCheck = p;
+  return p;
+}
+
+function pickAvailableEngine(providers: string[], skip: Set<string>): string | null {
+  const now = Date.now();
+  for (const e of providers) {
+    if (skip.has(e)) continue;
+    const state = getEngineState(e);
+    if (state.suspendedUntil > now) continue;
+    const cooldown = engineCooldownMs(e);
+    if (cooldown > 0 && now - state.lastHitAt < cooldown) continue;
+    return e;
+  }
+  return null;
+}
+
+function soonestRecoveryMs(providers: string[]): number {
+  const now = Date.now();
+  let soonest = Infinity;
+  for (const e of providers) {
+    const state = getEngineState(e);
+    // Earliest this engine becomes available: max of suspension and cooldown
+    const suspensionEnd = state.suspendedUntil;
+    const cooldownEnd = state.lastHitAt + engineCooldownMs(e);
+    const availableAt = Math.max(suspensionEnd, cooldownEnd);
+    if (availableAt > now) soonest = Math.min(soonest, availableAt - now);
+  }
+  return soonest === Infinity ? 0 : soonest;
+}
+
+/** See module-level comment for the global-queue cadence. */
+export class SearxngExhaustedError extends Error {
+  constructor(query: string, providers: string[]) {
+    super(`SearXNG exhausted: query=${JSON.stringify(query)} providers=[${providers.join(",")}]`);
+    this.name = "SearxngExhaustedError";
+  }
+}
+
 export async function fetchSearxngResults(
   query: string,
   opts: { engines?: string } = {},
 ): Promise<SearxngResult[]> {
-  const engines = opts.engines ?? DEFAULT_ENGINES;
-  const engineList = engines.split(",").map((s) => s.trim()).filter(Boolean);
+  const providers = opts.engines
+    ? opts.engines.split(",").map((s) => s.trim()).filter(Boolean)
+    : PROVIDERS;
 
-  await waitForEngines(engineList);
-  let results = await rawFetch(query, engines);
+  // Cap the per-query "all providers cool-down" wait so that one query can't
+  // monopolize the per-row pipeline timeout. With brave-searxng's typical 180s
+  // suspension, an uncapped wait + 2 passes could burn 6+ minutes on a single
+  // query; multiply by 3 queries per row and you blow the 10-min per-row
+  // deadline. 30s gives slow recoveries a fair shot without holding the row
+  // hostage; if nothing recovers, throw SearxngExhaustedError so the
+  // orchestrator can mark this query failed and move on.
+  const MAX_COOL_DOWN_WAIT_MS = 30_000;
 
-  if (results.length === 0) {
-    // Two-stage detection. /stats/errors is the precise source (it carries
-    // the actual suspended_time), but it can be empty during a fresh burst.
-    // A canary query catches that case — if "wikipedia" also returns nothing,
-    // the engine is definitely suspended and we fall back to the 180s default.
-    const suspensions = await getEngineSuspensions();
-    let detected = false;
-    for (const eng of engineList) {
-      const reported = suspensions.get(eng);
-      if (reported && reported > 0) {
-        markSuspended(eng, reported);
-        detected = true;
+  const triedThisQuery = new Set<string>();
+  for (let pass = 0; pass < 2; pass++) {
+    while (true) {
+      // Claim a global slot: serialized so concurrent callers can't race on
+      // the same engine. The slot enforces GLOBAL_INTERVAL_MS between starts.
+      const claimed = await slotMutex.add(async () => {
+        const waitMs = nextSlotAt - Date.now();
+        if (waitMs > 0) await sleep(waitMs);
+        const provider = pickAvailableEngine(providers, triedThisQuery);
+        if (!provider) return null;
+        getEngineState(provider).lastHitAt = Date.now();
+        nextSlotAt = Date.now() + GLOBAL_INTERVAL_MS;
+        return provider;
+      });
+      if (!claimed) break;
+      let results: SearxngResult[];
+      try {
+        results = await fetchOneProvider(query, claimed);
+      } catch (err) {
+        if (err instanceof BraveApiRateLimitError) {
+          markSuspended(claimed, err.retryAfterSeconds);
+        } else if (err instanceof BraveApiQuotaExceededError) {
+          console.log(`[searxng] brave-api over monthly billing cap: ${err.detail}`);
+          markSuspended(claimed, BRAVE_API_QUOTA_COOLDOWN_S);
+        } else {
+          markSuspended(claimed, HTTP_BLOCK_COOLDOWN_S);
+        }
+        results = [];
       }
+      if (results.length > 0) return results;
+      triedThisQuery.add(claimed);
+      await markProviderFailedAfterEmpty(claimed);
     }
-    if (!detected && (await canaryProbeReturnsZero(engines))) {
-      for (const eng of engineList) markSuspended(eng, DEFAULT_SUSPENSION_SECONDS);
-      detected = true;
-    }
-    if (detected) {
-      await waitForEngines(engineList);
-      results = await rawFetch(query, engines);
-    }
+    const waitMs = soonestRecoveryMs(providers);
+    if (waitMs <= 0) break;
+    const cappedWait = Math.min(waitMs, MAX_COOL_DOWN_WAIT_MS);
+    console.log(`[searxng] all providers in cool-down; waiting ${(cappedWait / 1000).toFixed(0)}s (uncapped would be ${(waitMs / 1000).toFixed(0)}s)`);
+    await sleep(cappedWait);
   }
-
-  return results;
-}
-
-function markSuspended(engine: string, secs: number): void {
-  const until = Date.now() + secs * 1000 + SUSPENSION_BUFFER_MS;
-  const prev = engineSuspendedUntil.get(engine) ?? 0;
-  if (until > prev) {
-    engineSuspendedUntil.set(engine, until);
-    console.log(`[searxng] engine=${engine} suspended; will retry in ${secs}s`);
-  }
+  throw new SearxngExhaustedError(query, providers);
 }
 
 export function formatSearxngResults(results: SearxngResult[]): string {
@@ -221,4 +437,3 @@ export function formatSearxngResults(results: SearxngResult[]): string {
     })
     .join("\n\n");
 }
-

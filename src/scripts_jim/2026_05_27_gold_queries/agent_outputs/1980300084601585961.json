@@ -1,0 +1,97 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Illinois schools zero students proficient reading IAR SAT 2024 Illinois Report Card",
+        "YCCS schools Illinois alternative credit recovery at-risk students",
+        "Illinois 24 schools zero reading proficiency 2024 ISBE fact check"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Wirepoints article confirmed the 24-school count is real, sourced directly from ISBE Illinois Report Card 2024. YCCS confirmed to be alternative credit-recovery charter network serving dropouts ages 16-21. No dedicated fact-check article found.",
+      "lesson": "The core data is real — 24 schools, zero IAR/SAT reading proficiency in 2024. The misleading element is the tweet's framing ('not a single child can read') which conflates 'below proficiency benchmark' with 'illiterate'. Also: 8 of 24 schools are YCCS alternative schools for at-risk/dropout youth, which the tweet does not mention."
+    },
+    {
+      "queries": [
+        "IAR SAT Illinois proficiency test grade 11 only high school reading assessment explained",
+        "Illinois 'IAR' 'SAT' proficiency zero schools context alternative schools 'not tested' participation rate"
+      ],
+      "purpose": "targeted — understanding test scope and what 'zero proficient' actually means",
+      "what_returned": "IAR tests grades 3-8; SAT tests grade 11. YCCS schools serve grades 9-12 and specifically target at-risk/dropout youth. ESSA requires 95% participation. Some alternative schools may have very low test participation.",
+      "lesson": "The test framework is important context: 'zero proficient' does not mean students cannot read — it means no students scored at the proficiency cutoff on a standardized test. YCCS students in particular are over-age, credit-deficient students who face much greater challenges."
+    },
+    {
+      "queries": [
+        "'proficient' reading test Illinois meaning grade level benchmark what does proficient mean standardized test"
+      ],
+      "purpose": "refine — clarifying what 'proficient' means vs. 'can read'",
+      "what_returned": "Proficiency means on-track at grade level per state benchmark. ELA proficiency tests reading comprehension, critical thinking, writing — more than just basic literacy. Illinois' proficiency standard has historically been higher than most states (now being lowered in 2025).",
+      "lesson": "Critical distinction: 'zero proficient' ≠ 'zero can read'. Students can have basic reading ability without meeting the grade-level proficiency standard on standardized tests."
+    },
+    {
+      "queries": [
+        "YCCS Chicago 'Youth Connection Charter School' students served 'over-age' 'credit recovery' dropout reengagement"
+      ],
+      "purpose": "brand-suffix / context — understanding YCCS student population",
+      "what_returned": "YCCS confirmed as the only Illinois charter school targeting dropouts. Serves ages 16-21. 17 campuses, 3,500+ students. Mission is second-chance education for students who have already failed or left traditional schools.",
+      "lesson": "YCCS schools serving 8 of the 24 zero-proficiency schools are a very specific population — these are already-struggling youth who dropped out of traditional schools. Presenting them alongside traditional schools without context is misleading."
+    }
+  ],
+  "gold_queries": [
+    "Illinois schools zero students proficient reading IAR SAT 2024 Illinois Report Card",
+    "Illinois 24 schools zero reading proficiency 2024 ISBE Wirepoints",
+    "YCCS Youth Connection Charter School Chicago alternative dropout at-risk students",
+    "what does proficient mean Illinois standardized test IAR reading grade level",
+    "Illinois IAR grades 3-8 SAT grade 11 reading assessment explained"
+  ],
+  "found_sources": [
+    {
+      "url": "https://wirepoints.org/2024-education-fail-not-a-single-child-tested-proficient-in-math-in-80-illinois-schools-for-reading-its-24-schools-wirepoints/",
+      "title": "2024 data: Not a single child tested proficient in math in 80 Illinois schools. For reading, it was 24 schools. – Wirepoints",
+      "found_via_query": "Illinois schools zero students proficient reading IAR SAT 2024 Illinois Report Card",
+      "authority_reason": "Policy research outlet that directly analyzed ISBE Illinois Report Card 2024 raw data; article explicitly states count is sourced from ISBE",
+      "what_it_establishes": "The 24-school count is accurate per ISBE 2024 data. Article itself notes that some of the 24 schools are YCCS schools 'that target dropouts and other at-risk students.' Tests used are IAR (grades 3-8) and SAT (grade 11 only)."
+    },
+    {
+      "url": "https://www.illinoisreportcard.com/state.aspx?source2=iar&Stateid=IL",
+      "title": "Illinois Report Card — ISBE official",
+      "found_via_query": "Illinois schools zero students proficient reading IAR SAT 2024 Illinois Report Card",
+      "authority_reason": "Official Illinois State Board of Education data portal — primary source the tweet's image claims to use",
+      "what_it_establishes": "Official primary source for all ISBE proficiency data; the image in the tweet directly cites this source."
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Youth_Connection_Charter_School",
+      "title": "Youth Connection Charter School — Wikipedia",
+      "found_via_query": "YCCS Chicago 'Youth Connection Charter School' students served 'over-age' 'credit recovery' dropout reengagement",
+      "authority_reason": "Neutral encyclopedic source summarizing YCCS mission and student population",
+      "what_it_establishes": "YCCS is 'the only charter school in Illinois that targets dropouts and other at-risk students,' serving ages 16-21 across 17 campuses. 8 of the 24 zero-proficiency schools in the tweet's data are YCCS campuses."
+    },
+    {
+      "url": "https://www.yccs.us/",
+      "title": "Youth Connection Charter School (YCCS) — official site",
+      "found_via_query": "YCCS schools Illinois alternative credit recovery at-risk students",
+      "authority_reason": "Official YCCS website describing their mission and student population",
+      "what_it_establishes": "YCCS serves students 'ages 16-21 who have faced challenges in traditional school settings' — specifically dropouts, over-age students, and those needing credit recovery. These are not typical schools with typical student populations."
+    },
+    {
+      "url": "https://www.chalkbeat.org/chicago/2024/10/30/illinois-2024-report-card-shows-math-reading-test-scores-improve-sat-drops/",
+      "title": "Illinois 2024 report card: elementary school students' scores rebounding from pandemic, high school students' drop — Chalkbeat",
+      "found_via_query": "Illinois 24 schools zero reading proficiency 2024 ISBE fact check",
+      "authority_reason": "Chalkbeat is a well-regarded nonprofit education news outlet covering Illinois schools",
+      "what_it_establishes": "IAR tests grades 3-8 for reading/math; SAT tests grade 11. High school SAT scores dropped in 2024 while elementary scores improved. Provides mainstream news context for the data."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching for the specific data source (ISBE Illinois Report Card 2024) immediately surfaced the Wirepoints article that analyzed the raw data",
+      "Knowing the school names in the image (YCCS prefix) allowed targeted search for alternative-school context",
+      "Searching for what 'proficient' means in Illinois testing context revealed the key distinction between 'zero proficient' and 'cannot read'"
+    ],
+    "what_hurt": [
+      "No dedicated mainstream fact-check (Snopes, PolitiFact, Reuters) existed for this specific claim — had to rely on Wirepoints (ideologically conservative) as primary analyst",
+      "The tweet's claim is technically rooted in real data, so a simple 'true/false' fact-check framing does not capture the nuance"
+    ],
+    "would_multipass_help": "maybe — a second pass could verify participation rates at YCCS schools (whether they have very low test-taking participation that would make 'zero proficient' less meaningful) and find official ISBE explanation of what 'proficient' means vs. basic literacy",
+    "deepseek_advice": "When a tweet cites real government data but frames it with a strong conclusion ('cannot read'), search for both the primary data source AND the context about the specific institutions named (e.g., YCCS). The key correction angle is usually the gap between 'below proficiency benchmark' and the tweet's stronger claim ('cannot read at all'), plus missing context about specialized school populations."
+  }
+}

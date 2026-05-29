@@ -1,0 +1,708 @@
+[
+ {
+  "tweet_id": "1978216840003567985",
+  "url": "https://x.com/i/status/1978216840003567985",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "politics_and_policy",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "A US citizen was fined $130 for not having their papers on them. Tell me this isn’t Germany again. https://t.co/GQvdpjrcXc",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/1978216725301886976/pu/vid/avc1/576x1024/O-IlFbxP-tQas_9A.mp4?tag=12",
+    "description": {
+     "description": "A short video featuring a man talking to the camera about a news story regarding ICE and a Chicago man.",
+     "ocrText": "SCARY NEWS:\nICE TICKETS CHICAGO MAN FOR NOT\nCARRYING HIS \"PAPERS\" EVEN THOUGH\nHE'S HERE LEGALLY\n\nTik Tok\n@jerrod.zisser\n\nYOU HEAR\n\nTO YOUR MIND\n\nTHE NEWS IN CHICAGO\n\nTHE UNITED STATES"
+    },
+    "transcription": "So here's some news, but first, when you hear, let's say, show me your papers, or papers, what word comes to your mind? I think I know, and it's the same with me, okay? So with that in mind, let's get to the news. In Chicago, a 60-year-old man named Ruben Antonio Cruz, a legal and permanent resident of the United States, was stopped by ICE agents and given a ticket for one simple reason. He didn't have his immigration papers on him. He was sitting with a friend when ICE approached, asked for his proof of status, and when he said his documents were at home, they put him in a vehicle, drove around to verify his identity, and then issued him a $130 fine before letting him go. Now, guys, this isn't about immigration at this point. It's about a man who lives here legally in a sanctuary city being penalized for not carrying a piece of paper from a law written in 1940 during the World War II alien registration era, okay? And under that law, any non-citizen over 18 is technically required to carry their papers at all times. And it's rarely enforced, I mean, I guess until now. And that's the real story, guys. If ICE can't ticket a legal resident in Chicago for not having his papers, they can do it again anywhere and basically to anyone. Because once this kind of enforcement starts, it doesn't stay limited to one person or city. It's going to spread nationwide. something to keep an eye on"
+   }
+  ],
+  "tweet_summary": "Tweet says 'A US citizen was fined $130 for not having their papers on them. Tell me this isn't Germany again', over a video about Chicago man Ruben Cruz being fined by ICE for not carrying his immigration documents.",
+  "bad_note_text": "The man fined is identified in reports and the video as a legal permanent resident, not a U.S. citizen. Federal law requires permanent residents (green card holders) to carry their green card or registration at all times, but U.S. citizens are not required to do so. https://www.newsbreak.com/nbc-chicago-509956/4290426798501-chicago-man-fined-130-by-ice-agents-for-not-carrying-identification https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title8-section1304&num=0&edition=prelim",
+  "failure_reason": "Substance is correct (LPR not citizen; carry requirement), but it cited a newsbreak.com re-host instead of the primary NBC Chicago report — heavily downrated SourcesMissingOrUnreliable (4) and MissingKeyPoints (8). A correct note keeps the same facts but cites the primary outlet and the U.S. Code directly.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 70,
+  "why_note_decision": "The tweet's headline claim is false in a specific, checkable way: the man fined (Ruben Antonio Cruz, ~60, from El Salvador) is a lawful PERMANENT RESIDENT (green-card holder), NOT a U.S. citizen. This distinction is legally material: federal law (8 USC 1304(e)) requires non-citizens 18+ to carry their registration/green card at all times, while U.S. citizens have no such requirement. The tweet's own video correctly identifies Cruz as a legal permanent resident; the tweet text mislabels him 'a US citizen', which inverts the legal facts and inflates the claim. A note correcting the citizen-vs-LP…",
+  "reference_note": "The man fined was a lawful permanent resident (green-card holder), not a U.S. citizen. Federal law (8 USC 1304(e)) requires non-citizens 18+ to carry their registration document; U.S. citizens are not required to carry papers. https://www.nbcchicago.com/news/local/chicago-man-fined-130-by-ice-agents-for-not-carrying-identification/3838101/ https://uscode.house.gov/view.xhtml?req=granuleid:USC-prel…"
+ },
+ {
+  "tweet_id": "2002340981287629001",
+  "url": "https://x.com/i/status/2002340981287629001",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "politics_and_policy",
+   "statistical_or_numerical_claim"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Biden won Georgia by 11,779 votes. Now, over 5 years later, they admit 315,000 votes in Georgia were actually counted illegally. https://t.co/PZjM4ixbym",
+  "media_description": [],
+  "tweet_summary": "Mike Benz says Biden won Georgia by 11,779 votes in 2020 and that 'over 5 years later, they admit 315,000 votes in Georgia were actually counted illegally', quote-tweeting a post about Fulton County admitting ~315K early votes lacked poll-worker signatures.",
+  "bad_note_text": "While Fulton County admitted violating rules in 2020 by not signing tabulator tapes for ~315k early votes, officials say this error doesn't invalidate lawful votes. GA results confirmed by recounts. https://www.youtube.com/watch?v=AK_JF-Eh4gc https://www.npr.org/sections/live-updates-2020-election-results/2020/11/19/936647882/georgia-releases-hand-recount-results-affirming-bidens-lead",
+  "failure_reason": "Note is technically correct but weak — leads with the concession ('admitted violating rules') without immediately framing what the rule was (signatures, not vote validity). YouTube source is poor. Raters tagged notHelpfulMissingKeyPoints (766), notHelpfulIncorrect (512), notHelpfulNoteNotNeeded (607).",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 1794,
+  "why_note_decision": "This IS misleading and a note is warranted. The 11,779 margin is correct. But the 315K votes were NOT 'counted illegally' — they were valid early votes with photo-ID verification at casting; the clerical error was that 134 tabulator tapes lacked poll-worker signatures at the END of the counting day. SoS Brad Raffensperger explicitly said: 'A clerical error at the end of the day does not erase valid, legal votes.' Two recounts (including a hand recount) verified the result. Lead Stories and other fact-checkers have called the 'illegally counted' framing misleading. The original note half-acknow…",
+  "reference_note": "The 315,000 Fulton County votes were validly cast early ballots verified by photo ID; the violation was poll workers failing to sign tabulator tapes at end of count — a clerical/procedural error. Both a hand recount and machine recount confirmed Biden's Georgia win. https://www.atlantanewsfirst.com/2025/12/23/fulton-county-admits-verifying-315000-votes-2020-without-poll-worker-signatures/ https://…"
+ },
+ {
+  "tweet_id": "2009063298927644861",
+  "url": "https://x.com/i/status/2009063298927644861",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Oh lookie here! \n\nAn ICE agent ran a woman over with his car and didn’t even stop. \n\nWould she have been justified if she stood up and blew his brains out? https://t.co/PFdWQny47G",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2009063247228342272/vid/avc1/886x478/mDLhOhacu4SxAU1J.mp4",
+    "description": {
+     "description": "A figure in dark clothing is shown bent over or perhaps falling in front of a silver SUV parked on a snowy road with other vehicles visible in the background.",
+     "ocrText": "status COUP"
+    },
+    "transcription": "."
+   }
+  ],
+  "tweet_summary": "Anti-ICE post claims 'An ICE agent ran a woman over with his car and didn't even stop', over a short clip from the Jan 7, 2026 Minneapolis incident where ICE agent Jonathan Ross fatally SHOT Renée Good as her SUV moved past him.",
+  "bad_note_text": "This video is of the Jan. 7, 2026, Minneapolis incident where ICE agent Jonathan Ross shot and killed Renee Nicole Good, 37, after her SUV moved toward him. Officials claim she tried to run him over. The post falsely claims the agent ran her over.  https://www.aljazeera.com/news/2026/1/8/who-is-renee-nicole-good-the-woman-killed-in-the-ice-minneapolis-shooting  https://www.nbcnews.com/news/us-news/ice-officer-fatally-shot-minnesota-woman-was-dragged-car-june-immigrat-rcna252992  https://www.reuters.com/world/us/can-ice-agent-who-shot-minneapolis-woman-be-prosecuted-2026-01-08/",
+  "failure_reason": "Rated notHelpfulIncorrect (12) and notHelpfulMissingKeyPoints (6). The core correction (she was shot, not run over by a car) is right, but the note injects the contested official framing as if neutral fact: 'after her SUV moved toward him' is stated affirmatively, and it foregrounds 'Officials claim she tried to run him over' without the equally-sourced video finding that Ross was never struck and the SUV's wheels pointed away. Raters in a politically charged thread read the note as endorsing th…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 16,
+  "why_note_decision": "A note is warranted: the post's factual claim — that the agent 'ran a woman over with his car' — is false. Renée Good was shot (three rounds) by agent Jonathan Ross; she was not run over by his car. The mechanism of death is materially misstated. However, the note must be careful NOT to swing to the opposite false claim (that SHE ran HIM over), which is the disputed official/Trump narrative the video contradicts.",
+  "reference_note": "Renée Good, 37, was fatally shot (not run over by a car) by ICE agent Jonathan Ross in Minneapolis on Jan 7, 2026 as her SUV moved past him. Officials say she drove at him, but NYT/WaPo video analysis found Ross stayed on his feet and the wheels were turned away from him. https://en.wikipedia.org/wiki/Killing_of_Renee_Good https://www.cnn.com/2026/01/17/us/ice-shooting-minneapolis-renee-good"
+ },
+ {
+  "tweet_id": "2009963728167678195",
+  "url": "https://x.com/i/status/2009963728167678195",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "ai_generated_media"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "🇮🇹 Italian American deals with ICE https://t.co/4z9X52vm8h",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2009761176826040320/pu/vid/avc1/720x1280/pfkoETC7PGpQkYy2.mp4?tag=12",
+    "description": {
+     "description": "A short video sequence shows a man in a white shirt and black apron, presumably a deli owner, behind a glass counter filled with food. He is animatedly shouting and gesturing with his hand and a white cloth at a law enforcement officer who is standing outside the shop or by the entrance. The officer is wearing a dark uniform with 'ICE' on the cap and 'PICF' on a tactical vest, along with a black face mask. Cured meats hang from the ceiling in the background, and small Italian flags are visible in the food display.",
+     "ocrText": "ICE\nPICF\nITALIA"
+    },
+    "transcription": "Hey! Basta! You two don't belong in here. Get out of my shop, capiche? Sir, we just need to ask a few questions. Questions? For who? For the normal buying more for them? Finito! You're coming here with your mask on and my customers making trouble in my neighborhood. Vap-vap! Get the hell out! Sir, we have authority to... Authority? You got no guts. That's what you got. Cowards. Hiding behind a..."
+   }
+  ],
+  "tweet_summary": "Robin Monotti posts a 15s video captioned 'Italian American deals with ICE' showing a deli owner angrily ordering masked 'ICE'/'PICF' agents out of his shop, presented as a real confrontation; it racked up 1.1M+ views.",
+  "bad_note_text": "This video depicts a comedic skit by Italian-American comedian Johnny Charley parodying immigration encounters, not a real incident.  https://www.tiktok.com/@johnny.charley/video/7467611870615047470  https://www.instagram.com/reel/DFvPrlOAt3g/?hl=en",
+  "failure_reason": "Rated notHelpfulIncorrect (10) and notHelpfulSourcesMissingOrUnreliable (6). The note correctly says it's 'not a real incident' but misidentifies the cause: it calls the clip a filmed comedy skit by real comedian Johnny Charley, when the video is AI-generated (part of the documented AI ICE-video trend; insignia reads 'PICF/PICE', commenters flag AI). Attributing AI slop to a human performer is the wrong correction and misses the reader-relevant point that the footage is synthetic.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 30,
+  "why_note_decision": "A note IS warranted: the clip is AI-generated, part of the well-documented wave of viral AI 'deli owner vs ICE' videos (404 Media, HuffPost, Inquisitr, Boston Globe), and it is presented as a real incident. Tells: garbled insignia ('PICF'/'PICE' not 'ICE'), too-perfect staging, AI-flat lighting; commenters repeatedly call it AI. The reader benefit is knowing it's synthetic, not footage of a real ICE encounter. The original note got this materially wrong — it claimed the video is a real comedy 'skit by Italian-American comedian Johnny Charley', attributing AI slop to a human performer and misla…",
+  "reference_note": "This video is AI-generated, not footage of a real ICE encounter. It is part of a viral wave of synthetic 'deli owner confronts ICE' clips; note the garbled agency insignia (\"PICF\"/\"PICE\") and AI artifacts. https://www.404media.co/ai-generated-videos-of-ice-raids-are-wildly-viral-on-facebook/ https://www.huffpost.com/entry/viral-ai-ice-raid-videos_l_69163baee4b0df3e16be4163"
+ },
+ {
+  "tweet_id": "2015470423413047597",
+  "url": "https://x.com/i/status/2015470423413047597",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "politics_and_policy",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "🚨🚨 Here is the entire TRAINING MANUAL for domestic terrorist patrols chasing ICE agents in Minneapolis. \n\nKeep in mind, this is the watered down opsec version. \n\nMUST READ ⬇️ https://t.co/rUMAJPOxUG",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2015470063562772480/vid/avc1/1774x3840/tJ93Bo7qu09Cqujw.mp4",
+    "description": {
+     "description": "A series of four screenshots of a smartphone displaying a PDF document titled 'Patrolling/Commuting' from a Proton Drive link. The document provides instructions for community 'patrols' monitoring ICE (Immigration and Customs Enforcement) activity. It includes guidelines for mobile and foot patrols, a list of items to bring (like PPE and chargers) and not to bring (like weapons or children), information on using whistles as an alert system, tips for identifying 'abductor' vehicles, and protocols for communicating with dispatchers and documenting interactions while staying safe. The document repeatedly refers to ICE agents as 'abductors' or 'Federal Agents.'",
+     "ocrText": "10:57 Signal . Proton Drive: Cloud Storage Secure files & photos storage Get In-App Purchases X Patrol ... te.pdf < 1 of 1 > 2 Patrolling/Commuting . Because of their speed, Mobile Patrols and Stationed Monitors are the most useful roles right now and have contributed to stopping abductions that happen fast. Try it out! . Abductors are circling back to a lot to the places that they want to be, so a combination of Mobile Patrol and Stationary Monitoring is extra-helpful. . Pick an area and dedicate yourself to it. You will be best able to respond in neighborhoods and on streets that you know and are familiar with. . Not everyone needs to respond to everything that happens everywhere. Consider staying put if it seems like others are responding. Even when there are big raid mobilizations it does not mean that other teams aren't operating in other places. . If in doubt, ask dispatch on the call or in the chat if you're needed vs doing your own thing. . It can be helpful to review this marshall/deescalation training to help keep yourself grounded and safe while on patrols. . It can also be helpful to review Monarca training for rapid response if you've not had any formal trainings yet or if it's been awhile. . Download Ready Now and add Kevin Riach, 612-203-8555 attorney to the legal notification field. He is the primary contact for detained observers. . If you are commuting in a car, we strongly advise that you make sure your license and registration are current, all of your lights are working and your vehicle is in safe operating condition before heading out. Commuters have been pulled over for these things as well as for traffic violations. A. Mobile Patrol 1. Join the group call (push the camera button at the top or bottom of the chat) and stay on mute when not communicating. 2. Being on the call is a hands-free way to communicate that keeps chat clear. 3. Download the READY NOW app to alert your emergency contacts in the case of a detainment. 4. When documenting, do it with the phone locked if there's any risk they might grab the phone. 5. You should not be patrolling and dispatching at the same time - this is not safe! 6. Do not bring pets, children, or vulnerable people. 7. If something upsetting happens, it's okay to ask for aftercare and support! That's what we're here for as a community. . Lay on your horn when you confirm abductor presence to warn others and to chase them off drive.proton.me ... • Throwaway jacket (in case of tear gas) • Warm clothing/gloves/hats/hand warmers • Face mask/bandana/face covering, etc. • Sunglasses or goggles • Water (a lot of it) • Cheap towels • Phone chargers and power banks • Wired earbuds • Ear protection for whistle fatigue • Extra umbrellas • Disposable PPE • Basic first-aid supplies • Pepper spray PPE and treatment supplies including a sport tip water bottle (see chemical weapons section for more information) • Food/water • Notebook, pen Everything you carry is for comforting, protecting, or stabilizing someone in distress. Items/Things/People To Not Bring or Considerations: • Weapons (even a pocket knife or utility knife) • Valuables • Pets, children or vulnerable/high risk people • Alcohol C. Foot Patrol 1. Foot patrols are a little harder to see moving vehicles with, but can still be great for hyperlocal observation, exercise, and being in the right place at the right time. 2. Have a cheap pair of binoculars or a monocular with you for spotting things easily at a distance. 3. If possible, go in pairs, especially at night. Try to be covert - hide whistles but keep them accessible - you're just going for a walk around the neighborhood. If other neighbors seem concerned, give a friendly wave. 3. Information for all patrol types A. Patrol Decision Tree Unverified - Patrol/Daily Chat Patrol See something suspicious ! Tip ! Information from a different chat or community drive.proton.me ... • Night/Evening operations/patrols • Losing contact with partner/phone • Exposing name and address via plate scanners • Local Police Department arrives to support ICE • ICE pointing firearms at unarmed civilians In Red, always have a partner, you stay visible, avoid isolation, contact dispatch, get ready for a READY NOW alert on your phone, and rely on your partner. WHISTLES! INSTANT ALERT SYSTEM SIMPLE. EFFECTIVE. FASTER THAN SOCIAL MEDIA TOGETHER. WE KEEP OUR COMMUNITY SAFE C. Whistles Whistle graphic: congrats you're now whistle trained! Find more whistle information for MN here: https://linktr.ee/mspwhistles HOW WHISTLES WORK WEAR A WHISTLE IF YOU SPOT ICE, BLOW YOUR WHISTLE WHEN YOU HEAR A WHISTLE, EITHER: • GET TO SAFETY • FOLLOW THE SOUND, FORM A CROWD, STAY LOUD WHISTLE CODE #1: ICE NEARBY IF ICE IS DRIVING OR LURKING: BLOW IN SHORT BLASTS PRE--PRE--PRE--PRE WHISTLE CODE #2: ABDUCTION IF ICE IS ABDUCTING SOMEONE: BLOW CONTINUOUSLY PREEEEEEE-PREEEEEEE D. Identifying Abductors/Vehicles Look for some combination of these potential factors that make it more likely: . Occupants: . People inside are mostly in pairs (though sometimes 1, sometimes 3+) . Driver and passenger wearing neck gaiters or buffs that they pull up over their faces to mask their identities . Wearing vests or have tactical gear . ICE agents in or out of their vehicle drive.proton.me ... abducted by Federal Agents. • Do not post anything from a chat to social media, only post what you have seen yourself. • Do not go live on social media: live cannot be controlled, remember that - anything that happened is now public and can be used against you or any other people responding/commuting/observing. • When you can, try to remain as calm as possible. Steady your hands. • Follow up with the family or friend contacts to try to let them know what happened. • If there are loved ones or children left behind when the person was abducted, check in with them and do what you can to help them connect with resources and support. See some support numbers here under \"Immigrant Legal Know Your Rights, Support after an Abduction, and Family Planning\" • MN Emergency Legal Guide During/After an ICE Arrest - Gu\u0007\u0006\u0005a de Emergencia Legal durante/tras una Detenci\u0007\u0006\u0005n por ICE - Minnesota • This is a Google document. Be sure you are not signed into Google, or signed into Google Docs on a mobile device when clicking this link. • Inform the Monarca line with your documentation when you have time. 612-441-2881. • Report unlawful ICE conduct or racial profiling, warrantless stops, or detention by federal law enforcement to the ACLU on this page H. Communicating with Dispatchers • Be sure to add your emoji and join the call in your RR group before you head out • Verbally dictate plates to be checked to the dispatchers • Stay on mute when you're not talking • Participate in each role call if you can safely • Be sure to update your username and inform dispatch when you are ending a shift I. ICE Tactics/Police Abductor intimidation of Responders: • Responders commuting behind abductors will have sometimes find that they have led them to their own homes. If this happens you can drive to a place you feel comfortable with that is public and has cameras. • To report ICE rights violations, or police harassment to the ACLU: https://www.aclu-mn.org/ice-feds-form/ ICE box-ins: • Some responders have been deliberately boxed in by agent vehicles, surrounded, and trapped by abductors. • Abductors may yell and hit the window of the car and some have waved and pointed guns. • If you are pulled over, ensure that your doors are locked and your windows are rolled all drive.proton.me ..."
+    },
+    "transcription": "you"
+   }
+  ],
+  "tweet_summary": "Conservative reporter Cam Higby shares video screenshots of a PDF titled 'Patrolling/Commuting,' calling it 'the entire TRAINING MANUAL for domestic terrorist patrols chasing ICE agents in Minneapolis.' Got 6M impressions and an Elon Musk reply.",
+  "bad_note_text": "The document is a \"De-Arrest Primer\" from the Minnesota ICE Watch activist group, which provides tactics for interfering with arrests by law enforcement, including ICE, during protests. It is not a manual for \"domestic terrorist patrols chasing ICE agents.\"  https://nypost.com/2026/01/12/us-news/minnesota-ice-watch-group-shared-de-arresting-manual-comparing-tactics-for-fighting-cops-to-a-micro-intifada",
+  "failure_reason": "incorrect: misidentifies the document — the video shows the 'Patrolling/Commuting' observation guide, not the separately-published 'De-Arrest Primer' the NY Post reported on",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 1608,
+  "why_note_decision": "The document shown in the video is the MN ICE Watch 'Patrolling/Commuting' observation guide. On its face it instructs OBSERVATION: explicitly bans weapons (even pocket/utility knives), children, pets, alcohol, and going live; tells patrollers to stay safe, document, contact dispatch and ACLU, and avoid confrontation. Calling it a manual for 'domestic terrorist patrols chasing ICE agents' is a substantive mischaracterization of the document on screen. The original (NEEDS_MORE_RATINGS) note is also wrong: it calls this document the 'De-Arrest Primer' — but the De-Arrest Primer is a SEPARATE doc…",
+  "reference_note": "The document shown is MN ICE Watch's 'Patrolling/Commuting' observation guide — it explicitly bans weapons (incl. pocket knives), children, pets, and going live, and instructs observers to document, alert dispatch, and contact the ACLU. It is distinct from a separate Spring-2024 'De-Arrest Primer' MN ICE Watch reposted, which contains the 'micro-intifada' language. https://nypost.com/2026/01/12/us…"
+ },
+ {
+  "tweet_id": "2020625440361332833",
+  "url": "https://x.com/i/status/2020625440361332833",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "celebrity_entertainment_sports"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Here’s Erika Kirk entrance at the @TPUSA All-American Halftime Show tonight: \n\n#SuperBowl \n https://t.co/xg74FmLBV8",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2020624296960561152/vid/avc1/1180x650/cFIXcBxyAFxNE3DR.mp4",
+    "description": {
+     "description": "A sequence of four frames showing a female wrestler, Charlotte Flair, making her grand entrance at WrestleMania. In the first frame, she walks confidently down the long entrance ramp wearing an elaborate green and gold feathered robe over matching ring gear. The second frame shows her closer to the camera as she continues her walk towards the ring, with the large WrestleMania stage lights and structures visible in the background. In the third frame, she stops and throws her arms wide as a massive pyrotechnics display of white and gold fireworks explodes behind her against the dark night sky. The final frame shows her from behind, looking toward the stage as the fireworks reach their peak while she stands poised at the end of the ramp.",
+     "ocrText": "WRESTLEMANIA"
+    },
+    "transcription": "Музыка"
+   }
+  ],
+  "tweet_summary": "An account posts a video of a dramatic, feathered-robe stage entrance with fireworks, claiming 'Here's Erika Kirk['s] entrance at the @TPUSA All-American Halftime Show tonight' during Super Bowl weekend.",
+  "bad_note_text": "The video in this post is from Britney Spears' performance at the 2002 Macy's 4th of July event, not Erika Kirk's entrance at the TPUSA All-American Halftime Show. Kirk was not present at the show. https://nypost.com/2026/02/08/us-news/tpusas-all-american-halftime-show-draws-millions-to-rival-nfl-super-bowl https://www.youtube.com/watch?v=1rpnI_FWrKo",
+  "failure_reason": "Rated notHelpfulIncorrect (107) at very high volume (189 ratings) with heavy irrelevant/unreliable-sources tags (115 combined). The conclusion (not Erika Kirk) is correct, but the note gives the WRONG true source: it claims the clip is Britney Spears (2002 Macy's 4th of July) when it is actually Charlotte Flair at WrestleMania 33 (2017). The misattributed-source claim is false and the cited links don't support it.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 189,
+  "why_note_decision": "A note is warranted: the video is misattributed. It is NOT Erika Kirk; it is pro-wrestler Charlotte Flair's entrance at WrestleMania 33 (April 2, 2017), and Erika Kirk did not appear on stage at the TPUSA halftime show. The post misleads 7.6M viewers about a public figure.",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2020927508171063715",
+  "url": "https://x.com/i/status/2020927508171063715",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Stealing from a Turkish man was a bad idea for that immigrant \n\nGod damn he whooped him\n\nhttps://t.co/2yFixaJqTQ",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/1989218739187769344/pu/vid/avc1/720x842/3nAo4z-QamTR3hbL.mp4?tag=12",
+    "description": {
+     "description": "A man wearing a black shirt with 'SECURITY' printed on the back and camouflage shorts is seen physically restraining and forcibly removing another man in a grey sweatshirt from an indoor dining establishment. The security guard holds the individual firmly by the arms and torso, maneuvering him toward the exit through a narrow aisle between wooden tables and chairs. The setting appears to be a cafe or restaurant with flags on the walls and warm lighting. A watermark with the crescent and star of the Turkish flag is centrally overlaid on the frames.",
+     "ocrText": "SECURITY BEYOGLU SON DAKIKA"
+    },
+    "transcription": "درسته ویلا مردم مردم مردم مردم دارو باز کن دارو باز کن مردم خواهید گشت چه چیزی خواهید گشت اوی اوی اوی چیزی خواهید گشت چوژین پایین نتونم دارم تون داریم آخ، افشت چونی نیست؟"
+   }
+  ],
+  "tweet_summary": "Post celebrates a video as 'Stealing from a Turkish man was a bad idea for that immigrant... he whooped him', framing a beating as deserved justice against an immigrant thief. Video OCR shows 'SECURITY / BEYOGLU / SON DAKIKA' and a Turkish-flag watermark.",
+  "bad_note_text": "This video is from a December 2020 incident in Bursa, Turkey, where a business owner fought off a thief caught robbing his establishment. No reports indicate the thief was an immigrant.    https://en.yenisafak.com/video-gallery/life/fight-club-brawl-breaks-out-between-thief-and-business-owner-in-turkey-2205578  https://www.facebook.com/YeniSafakEnglish/videos/848519785911212",
+  "failure_reason": "Rated notHelpfulIncorrect (20) plus heavy MissingKeyPoints (14), IrrelevantSources (10), NoteNotNeeded (13). The note appears to misidentify the clip as a Dec 2020 Bursa 'business owner vs thief' brawl, while the OCR ('BEYOGLU'), the clip's Nov 2025 origin, and converging community/Grok identification point to the Nov 13 2025 Beyoğlu, Istanbul case of actor Bahadır Ünlü beating his Iranian migrant employee with a bat (Ünlü arrested for intentional wounding). The note's flat 'no reports indicate …",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 50,
+  "why_note_decision": "A note is warranted because the celebratory 'immigrant thief got justly whooped' framing omits decisive context: the most-supported identification (Grok, Middle East 24, multiple commenters, the Nov-2025 origin of the clip, and the 'BEYOGLU' OCR) is the November 13, 2025 Beyoğlu, Istanbul assault by Turkish actor Bahadır Ünlü on his IRANIAN MIGRANT EMPLOYEE İsmail N. — beaten with a baseball bat over alleged accounting irregularities. Ünlü was ARRESTED and charged with intentional wounding and his (unlicensed) restaurant was sealed. So the 'beating' was a crime the assailant was jailed for, an…",
+  "reference_note": "This video shows the Nov 13, 2025 assault in Beyoğlu, Istanbul, in which Turkish actor Bahadır Ünlü beat his Iranian employee İsmail N. with a baseball bat over alleged accounting theft. Ünlü was arrested and charged with intentional wounding; his restaurant was sealed. The theft is the attacker's unproven claim. https://www.albawaba.com/entertainment/violent-attack-video-sparks-outrage-1616798 ht…"
+ },
+ {
+  "tweet_id": "2020960946295013802",
+  "url": "https://x.com/i/status/2020960946295013802",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "staged_or_scripted_content",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "🚨🚨THIS IS INSANE🚨🚨\n\nA #PATRIOTS FAN WENT CRAZY DURING THE GAME, THROWING HIS CHAIR SMASHING A TV AT A #SEAHAWKS WATCH PARTY.\n\nThe Seattle fans were not happy with him and took him throwing him through a table and pouring food on top of him.\n\nWOW 😳😳😳\nhttps://t.co/ondfpS9aET",
+  "media_description": [],
+  "tweet_summary": "MLFootball (456k followers, 'credentialed media') shares a viral clip presented as a real incident: a Patriots fan supposedly threw a chair and smashed a TV at a Seahawks Super Bowl watch party and was thrown through a table by Seattle fans.",
+  "bad_note_text": "The video depicts a staged skit by content creator FunnyMike, who admits in the full clip to lying about placing the bet. https://www.youtube.com/shorts/XpH_GK4cUNo",
+  "failure_reason": "Likely incorrect/mismatched attribution: the note's explanation references 'lying about placing the bet', but this post is about a chair-throwing watch-party fight with no bet — the cited clip and creator appear to belong to a different skit, so the specific claim is unverifiable and probably wrong.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 8,
+  "why_note_decision": "The clip is presented by a media-styled account as a genuine breaking incident ('THIS IS INSANE', 'WOW'), but it is staged content. Strong corroborating signals: a sports journalist (Sean Pendergast) publicly asked 'These are all staged right?', and the overwhelming majority of top replies identify it as staged for views ('perfect camera angle', '2k YouTuber', 'Staged af'). Passing a staged stunt off as real news misleads viewers, so a note is warranted. However, the verdict rests on the video, which I cannot watch — confidence is medium and a no-note verdict (low-stakes entertainment stunt) i…",
+  "reference_note": "This is staged content, not a spontaneous incident: the clip was produced by a social-media creator and presented as real news. Multiple observers, including sports media, flagged the setup (scripted action, ideal camera angle)."
+ },
+ {
+  "tweet_id": "2025986662719693184",
+  "url": "https://x.com/i/status/2025986662719693184",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "scams_fraud_finance",
+   "manipulated_or_fabricated_evidence",
+   "statistical_or_numerical_claim"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "One of the oldest recorded Bitcoin whales just sold his entire $1.24 billion BTC stack.\n\nHe’s held through every market cycle since Bitcoin was created in 2009.\n\nNow he’s cashing out. \n\nAsk yourself why. https://t.co/T8tfHvcFG8",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HB3AIORW4AAlVuz.jpg",
+    "description": {
+     "description": "A financial dashboard showing the token balance history of a cryptocurrency wallet. The top section displays an area chart with a sharp decline in Bitcoin (BTC) balance starting in February. Below the chart is a table listing recent transactions from a sender labeled 'SATOSHI WHALE (1KFYo)' to 'Coinbase (352zz)', with each transaction valued at approximately 40.647 BTC, or roughly $2.64 million.",
+     "ocrText": "BALANCES HISTORY TOKEN BALANCES HISTORY PROFIT & LOSS COIN BTC Choose a token 14K 12K 10K 8K 6K 4K 2K 0 Dec 13 Jan 13 Feb 13 TIME FROM TO VALUE TOKEN USD 32 minutes ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.64M 57 minutes ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.65M 1 hour ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.63M 1 hour ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.63M 2 hours ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.64M"
+    }
+   }
+  ],
+  "tweet_summary": "Claims one of the oldest (Satoshi-era, 2009) Bitcoin whales 'just sold his entire $1.24 billion BTC stack', implying a bearish signal ('ask yourself why'), with a dashboard screenshot of transfers to Coinbase.",
+  "bad_note_text": "The post misattributes a $1.24B figure from aggregate short-term holder losses to a single old whale's sale. A Satoshi-era wallet transferred ~9K BTC (~$600M) to Coinbase in small batches over weeks, not $1.24B in one go. Transfers to exchanges don't confirm sales. https://www.coindesk.com/markets/2026/02/23/bitcoin-slides-4-to-usd65-000-as-whale-selling-grows-and-recent-buyers-lock-in-losses https://yellow.com/news/satoshi-whale-wallet-drains-80-of-holdings-in-weeks-routing-thousands-of-btc-to-coinbase",
+  "failure_reason": "Right thesis (transfers != sale, $1.24B unsupported) but overstates the move as ~9K BTC/~$600M; mainstream reporting puts the weekend move at ~2,000 BTC (~$180M). The inflated counter-figure undermines the correction's reliability.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 12,
+  "why_note_decision": "The claim is misleading: the whale did not sell a $1.24B stack in one go. Reporting shows a Satoshi-era wallet moved only ~2,000 BTC (~$180M) to Coinbase in small ~50 BTC tranches over the weekend, and transfers to an exchange do not confirm a sale (could be hedging/OTC/collateral). The $1.24B figure and 'sold entire stack' framing are not supported. A correction is warranted; I disagree with the provisional no-note because the tweet (527K-follower finance account) asserts a specific false magnitude and a false bearish conclusion.",
+  "reference_note": "A Satoshi-era wallet moved roughly 2,000 BTC (~$180M) to Coinbase in small ~50 BTC batches, not a single $1.24B sale of an 'entire stack'. Transfers to an exchange don't confirm a sale (could be hedging/OTC/collateral). https://decrypt.co/354240/satoshi-era-bitcoin-whale-moves-180m-in-btc-to-coinbase"
+ },
+ {
+  "tweet_id": "2029650340723773564",
+  "url": "https://x.com/i/status/2029650340723773564",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "statistical_or_numerical_claim",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "JUST IN: 🇮🇱🇮🇷 Israel currently loses $3.7 billion per week due to war with Iran.",
+  "media_description": [],
+  "tweet_summary": "BRICS News posts (no media) 'JUST IN: Israel currently loses $3.7 billion per week due to war with Iran.'",
+  "bad_note_text": "Israel's estimated weekly economic loss from war restrictions is about $3 billion, not $3.7 billion which refers to initial US military costs against Iran. https://www.timesofisrael.com/liveblog_entry/war-expected-to-cost-3-billion-per-week-if-current-limits-on-economy-persist-finance-ministry https://www.csis.org/analysis/37-billion-estimated-cost-epic-furys-first-100-hours",
+  "failure_reason": "Rated notHelpfulIncorrect (4) with low overall volume (12) and scattered tags. The correction is actually substantively right (Israel ~$3B/week; $3.7B is the CSIS US-100-hours figure). The NOT_HELPFUL outcome more plausibly reflects the soft, contested nature of fast-moving war-economics estimates and the precision of asserting 'about $3 billion' as the counter-figure, rather than a clear factual mistake — but raters tagged it incorrect, so it counts as a failure to make a correction land convin…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 12,
+  "why_note_decision": "A note is warranted on the numbers, though it is a relatively soft case. Israel's Finance Ministry estimate (early March 2026) for weekly economic loss under wartime restrictions is about $3 billion/week (NIS 9.4B), reducible to ~NIS 4.3B under lighter 'orange' rules — confirmed by Times of Israel, Daily Sabah, Iran International. The tweet's '$3.7 billion per week' appears to conflate that with the unrelated CSIS figure of $3.7B for the US military's 'first 100 hours' against Iran. So the specific figure is wrong/misattributed and a reader benefits from the corrected ~$3B/week number. The ori…",
+  "reference_note": "Israel's Finance Ministry estimates the economy loses about $3 billion (NIS 9.4B) per week under current wartime restrictions, not $3.7 billion. The $3.7B figure is a separate estimate of the US military's cost in the first ~100 hours of strikes on Iran (CSIS), not Israel's weekly loss. https://www.timesofisrael.com/war-set-to-cost-3-billion-a-week-if-current-limits-on-economy-persist-ministry-war…"
+ },
+ {
+  "tweet_id": "2029667760557432837",
+  "url": "https://x.com/i/status/2029667760557432837",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "ai_generated_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "#BREAKING \nCluster warheads over Tel Aviv https://t.co/vO920wSCtZ",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2029667735861665793/pu/vid/avc1/480x848/JD4CBAghnWIzWwll.mp4?tag=12",
+    "description": {
+     "description": "A series of frames from a nighttime video showing an object or projectile exploding or disintegrating in the dark sky. The first frame displays a bright flash with a cross-shaped glare, surrounded by small orange embers. Subsequent frames show these glowing fragments dispersing and fading as they fall toward the horizon. The final frame reveals the ground perspective from a rooftop, showing buildings with water tanks and a fence, with the sky now mostly clear of the debris.",
+     "ocrText": ""
+    },
+    "transcription": "Thank you for watching!"
+   }
+  ],
+  "tweet_summary": "Tehran Times posts a nighttime video captioned '#BREAKING Cluster warheads over Tel Aviv', framing dispersing glowing objects in the sky as an Iranian cluster-munition strike on Tel Aviv during the March 2026 Iran-Israel war.",
+  "bad_note_text": "The video depicts AI-generated footage, not real cluster warheads over Tel Aviv. https://www.timesnownews.com/world/middle-east/did-iran-bomb-tel-aviv-viral-video-showing-cluster-bomb-strikes-in-israel-fact-checked-article-153745669 https://www.yahoo.com/news/articles/fact-check-video-does-not-014949987.html",
+  "failure_reason": "Rated notHelpfulIncorrect (7) + irrelevant/unreliable sources (8 combined). The conclusion ('not real cluster warheads') is directionally right, but the cited fact-checks describe a different viral Tel Aviv clip (skyline with buildings exploding) rather than this dispersing-embers/'shooting stars' video, so the AI-generation claim is not clearly substantiated for THIS specific clip and raters flagged the sources as irrelevant.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 9,
+  "why_note_decision": "A note is warranted: the post makes a specific, checkable, present-tense war claim ('cluster warheads over Tel Aviv') that misleads viewers about a real conflict. The 'Tel Aviv strike' video genre from this week was overwhelmingly AI-generated propaganda (multiple detectors >90%, X demonetized undisclosed AI war content on 3 Mar 2026), and commenters themselves doubt it ('Why do they seem to disappear?', 'glitter memorial', 'like shooting stars').",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2029971128974766461",
+  "url": "https://x.com/i/status/2029971128974766461",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "BREAKING: Footage from Prince Sultan Air Base in Saudi Arabia shows Iranian ballistic missile exploding right near U.S. troops. https://t.co/g5g0EOg2QE",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2029971045159927808/vid/avc1/352x640/VXmjhhM5hbw4bU6X.mp4",
+    "description": {
+     "description": "A very blurry, out-of-focus close-up shot showing shades of yellow and orange, suggesting movement or a lens being obstructed by a brightly colored object.",
+     "ocrText": ""
+    },
+    "transcription": "."
+   }
+  ],
+  "tweet_summary": "Large pro-Iran account (846k followers) posts 'BREAKING: Footage from Prince Sultan Air Base in Saudi Arabia shows Iranian ballistic missile exploding right near U.S. troops', attaching the viral clip.",
+  "bad_note_text": "The missiles targeting Prince Sultan Air Base were intercepted and destroyed by Saudi air defenses before reaching the base, with no impacts or damage reported. https://www.timesofisrael.com/liveblog_entry/3770447 https://www.kurdistan24.net/en/story/898358/saudi-arabia-announces-interception-of-three-ballistic-missiles-targeting-prince-sultan-air-base",
+  "failure_reason": "Rated notHelpfulIncorrect (8) with notHelpfulIrrelevantSources (4) and notHelpfulOpinionSpeculation (4). The fatal flaw: the note never addresses that the VIDEO is recycled July 2024 Yemen footage. By only stating 'the missiles were intercepted with no impact', it implicitly accepts the false premise that this is genuine Prince Sultan footage and just argues the outcome — leaving the central misinformation (misattributed video) unchallenged. The absolute 'no impacts or damage' clause was also co…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 14,
+  "why_note_decision": "A note is warranted: the attached video is recycled footage. Full Fact (3 Mar) and PolitiFact (4 Mar) confirm it is the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port, not a 2026 Saudi strike; a top commenter says 'Old video stop posting bs'. The post's whole premise ('footage from Prince Sultan shows a missile exploding near US troops') is false on the footage, so the misleading core is the misattributed video, not just the interception outcome.",
+  "reference_note": "This is old footage, not Prince Sultan Air Base. Fact-checkers identified the clip as the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port. Iranian missiles fired toward the base on March 6, 2026 were intercepted by Saudi defenses with no impact reported that day. https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.politifact.com/factchecks/20…"
+ },
+ {
+  "tweet_id": "2029990637898977346",
+  "url": "https://x.com/i/status/2029990637898977346",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Naw the nigga recording this is insane, he dead saw the missile coming right at him and didn’t move an inch😭😭😭😭 https://t.co/kR1unim1Cr",
+  "media_description": [],
+  "tweet_summary": "Quote-tweet amused at a cameraman who 'didn't move an inch' as a missile flew at him, amplifying a quoted video framed as a March 2026 Iranian ballistic-missile impact at Saudi Arabia's Prince Sultan Air Base near US troops.",
+  "bad_note_text": "This video shows an Israeli airstrike on Yemen's Hodeida port from July 2024, not a 2026 Iranian missile impact at Saudi Arabia's Prince Sultan Airbase. Saudi defenses intercepted the missiles with no reported ground impacts.    https://factcheck.afp.com/doc.afp.com.99J43G3  https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false  https://www.arabnews.com/node/2635432/saudi-arabia",
+  "failure_reason": "Rated notHelpfulIncorrect (9), with notHelpfulIrrelevantSources (6) and notHelpfulNoteNotNeeded (8). The video identification (old Yemen footage) is actually correct and well-sourced. The note was likely flagged 'incorrect' on its second, absolute clause 'no reported ground impacts' — in the fog of the active war, real later strikes did damage US aircraft at the base, so the blanket impact claim was contested by raters even though it held for the specific 6 Mar interception. The note tried to ma…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 23,
+  "why_note_decision": "A note is warranted: the underlying viral video is reused old footage being passed off as a current war event during the March 2026 Iran-Saudi strikes. Full Fact, PolitiFact and AFP all confirm the clip is the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port, not any 2026 Saudi strike; commenters on the quoted post ('This is an old video and NOT in Saudi Arabia') flag it too. Context as of the 6 Mar tweet date: Iran did fire missiles toward Prince Sultan Air Base but Saudi defenses intercepted them with no impact that day (a separate later strike ~14/27 Mar damaged US aircra…",
+  "reference_note": "This is old footage, not a 2026 Iranian strike on Saudi Arabia. Fact-checkers identified it as the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port. Iran did fire missiles toward Prince Sultan Air Base on March 6, 2026, but Saudi defenses intercepted them with no impact on the base. https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.politifac…"
+ },
+ {
+  "tweet_id": "2036282057958236363",
+  "url": "https://x.com/i/status/2036282057958236363",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "politics_and_policy"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Arrested in America for pointing out that a sheriff is jewish https://t.co/YrrBzVqImq",
+  "media_description": [],
+  "tweet_summary": "Jake Shields quotes a clip of Oakland County (MI) Sheriff Mike Bouchard discussing a man arrested after circulating a meme that edited a Star of David onto Bouchard's forehead, and captions it 'Arrested in America for pointing out that a sheriff is jewish.'",
+  "bad_note_text": "Sheriff Mike Bouchard is not Jewish. A man was arrested in Wisconsin for allegedly sending threats, including an edited image adding a Star of David and other Jewish symbols to the sheriff's photo to intimidate him, not for \"pointing out that a sheriff is jewish.\" https://vinnews.com/2026/03/19/edited-photo-targeting-sheriff-leads-to-arrest-bouchard-warns-of-rising-antisemitism https://www.fox2detroit.com/news/osco-update https://en.wikipedia.org/wiki/Mike_Bouchard",
+  "failure_reason": "Incorrect: gets 'Bouchard isn't Jewish' right but states he was arrested 'for allegedly sending threats, including an edited image' — the Oakland County Sheriff's Office later clarified the arrest was on a separate felony aggravated-stalking warrant, NOT for the meme/threats. The note repeats the retracted framing.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 20,
+  "why_note_decision": "Two checkable claims in the tweet are false. (1) The meme did not 'point out that a sheriff is Jewish' — Bouchard is NOT Jewish; the image edited Jewish symbols onto his photo to harass/intimidate him. (2) More importantly, the man was NOT arrested for the meme: the Oakland County Sheriff's Office explicitly CLARIFIED he was arrested in Wisconsin on a felony aggravated-stalking warrant (allegedly terrorizing two women), not for the image or the speech. A note is warranted. I reclassify the role from MissingKeyPoints to Incorrect because the ORIGINAL note repeats the sheriff's initial framing —…",
+  "reference_note": "Sheriff Mike Bouchard (Oakland County, Michigan) is not Jewish; the meme edited a Star of David onto his photo to harass him. He was not arrested for that meme: the Oakland County Sheriff's Office clarified the man was arrested in Wisconsin on a pre-existing felony aggravated-stalking warrant, unrelated to the image. https://www.cbsnews.com/detroit/news/oakland-county-sheriffs-office-clarifies-arr…"
+ },
+ {
+  "tweet_id": "2036452727082066005",
+  "url": "https://x.com/i/status/2036452727082066005",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "politics_and_policy"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "WARNING: 🇺🇸 DOJ admitted 47,635 Epstein files including Trump allegations, were deleted after the war with Iran started. https://t.co/iA5b8ubIms",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HDxIIywWkAEb1FV.jpg",
+    "description": {
+     "description": "A close-up, high-angle portrait of Donald Trump looking towards the upper right. He has light-colored hair and wears a blue suit jacket, a white collared shirt, and a purple patterned tie. The background is blurred with hints of yellow and dark tones.",
+     "ocrText": ""
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HDxIJfKWYAASOtA.jpg",
+    "description": {
+     "description": "The official seal of the United States Department of Justice centered on a blue circular background. The seal features a bald eagle clutching an olive branch and arrows, superimposed over a shield with red and white stripes. Around the border is a gold rope motif, and the name of the department is written in gold letters. At the bottom of the seal are three gold stars. A Latin motto is inscribed in the inner circle.",
+     "ocrText": "DEPARTMENT OF JUSTICE QUI PRO DOMINA JUSTITIA SEQUITUR"
+    }
+   }
+  ],
+  "tweet_summary": "Viral claim that the DOJ 'admitted' 47,635 Epstein files (including Trump allegations) were deleted after the US-Iran war started, implying intentional cover-up via destruction of evidence.",
+  "bad_note_text": "The DOJ did not admit to deleting 47,635 Epstein files. It stated they were temporarily taken offline for review and redaction after the US-Iran war began on Feb. 28, 2026—not permanently deleted. Many have been republished.    https://www.usatoday.com/story/news/politics/2026/03/05/epstein-files-removed-for-redaction-back/89005511007  https://nypost.com/2026/03/05/us-news/doj-to-release-more-than-47000-withheld-jefferey-epstein-files-by-end-of-week  https://www.npr.org/2026/02/24/nx-s1-5723968/epstein-files-trump-accusation-maxwell",
+  "failure_reason": "Invents/contests the timeline (links takedown to a 'US-Iran war' that started Feb 28 2026, which is not the documented reason — redaction errors are) and accepts the tweet's '47,635' number rather than the actual ~several thousand. The core point (not deleted, redaction-related) is correct but the supporting framing is wrong.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 7,
+  "why_note_decision": "The tweet makes a checkable, misleading claim ('files deleted' = permanent destruction). In reality the DOJ temporarily took down 'several thousand' (not 47,635) Epstein documents in early February 2026 to fix faulty redactions that exposed victim identities — they were not deleted, and the takedown was unrelated to any Iran war. A correction is warranted, but the original note misframes the timeline (claims removal was 'after the US-Iran war began on Feb 28 2026', which is itself a contested/unverified linkage) and inflates the number to match the tweet's 47,635.",
+  "reference_note": "DOJ did not delete these files. In early Feb 2026, DOJ temporarily took down several thousand Epstein documents from its public site after faulty redactions exposed identifying information for ~100 victims. The files are being re-redacted, not destroyed. https://www.npr.org/2026/02/06/nx-s1-5702692/epstein-files-doj-trump-clinton-oversight https://www.pbs.org/newshour/politics/government-says-its-…"
+ },
+ {
+  "tweet_id": "2039505600292204566",
+  "url": "https://x.com/i/status/2039505600292204566",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "antisemitic_conspiracy",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "I was told this was an antisemitic conspiracy - a blood libel even. https://t.co/qMPlmJMKqB",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HE3HiLvXgAAOjzD.jpg",
+    "description": {
+     "description": "An image featuring a portrait of a man with glasses in the foreground, set against a background showing the flag of Israel and a depiction of the 9/11 attacks on the World Trade Center. In the top right corner, there is a circular inset of an older man with his head in his hands. Large text at the bottom makes a claim about the family of a 9/11 hijacker.",
+     "ocrText": "FAMILY OF 9/11 HIJACKER ZIAD JARRAH WERE JUST CONFIRMED TO BE ISRAELI SPIES."
+    }
+   }
+  ],
+  "tweet_summary": "An account labeled 'pure satire' (Leonarda Jonie) shares an image with text 'FAMILY OF 9/11 HIJACKER ZIAD JARRAH WERE JUST CONFIRMED TO BE ISRAELI SPIES,' captioned 'I was told this was an antisemitic conspiracy — a blood libel even.' Replies amplify overt antisemitic framing.",
+  "bad_note_text": "Ali Jarrah and 9/11 hijacker Ziad Jarrah were cousins separated by 20 years who did not know each other well. https://www.nytimes.com/2009/02/19/world/middleeast/19lebanon.html",
+  "failure_reason": "Too narrow — only addresses the family-relation framing and the 'not close' detail; doesn't push back on the 'just confirmed' (it's old news) framing or the implied 9/11-Israel conspiracy. Also uses 'cousins' where reporting describes Ali as Ziad's uncle. Raters tagged 'note not needed', 'missing key points', 'argumentative'.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 22,
+  "why_note_decision": "The image's claim is misleading on multiple counts: (1) the 'just confirmed' framing is false — the Jarrah/Mossad story refers to events from 2008–2009, when Lebanese authorities arrested Ali al-Jarrah and his brother Yousef for allegedly spying for Israel; (2) Ali al-Jarrah was Ziad Jarrah's UNCLE, not 'family' in the immediate-family sense the meme implies, and reporting at the time (NYT) noted the two were ~20 years apart and not close; (3) the implication that this implicates Israel in 9/11 is a conspiracy leap unsupported by the 9/11 Commission or any mainstream investigation. The author'…",
+  "reference_note": "The Jarrah/Mossad story is from 2008–2009, not 'just confirmed': Lebanese authorities arrested Ali al-Jarrah — Ziad Jarrah's uncle, ~20 years older and not close to him — for allegedly spying for Israel. The 9/11 Commission and US investigations attribute 9/11 to al-Qaeda; no mainstream evidence links Israel to the attacks. https://www.nytimes.com/2009/02/19/world/middleeast/19lebanon.html"
+ },
+ {
+  "tweet_id": "2040693419945980280",
+  "url": "https://x.com/i/status/2040693419945980280",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "🚨 URGENT: 🇺🇸 U.S. Pilot Reportedly Captured in 🇮🇶 Iraq https://t.co/wSx5xNhDNR",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2040640106479194112/vid/avc1/1080x1920/Wi4KuLLlFInW87NM.mp4",
+    "description": {
+     "description": "Each frame depicts a still image of a man in a military-style jacket against a plain white wall with a large shadow behind him. The man appears to be the same in all four frames, which are presented with identical text overlays. The overlay claims he is a 'USA Pilot Was Caught In Iraq' with a date of '4.4.2026', implying a future or fictional scenario, often associated with misinformation or 'what-if' social media content creators.",
+     "ocrText": "@WORLDWAR_3_ USA Pilot Was Caught In Iraq 4.4.2026"
+    },
+    "transcription": "Can you give your name and drive, please? Colonel David William Iberly Ismi Al-Aqid David William Iberly What's your nationality, David? United States Al-Walaik Mutahidah Jinsiyat Al-Ambrikiyah What's the kind of your plane and which squadron? F-15 from the 4th Tactical Fighter Wing I lead a F-15 plane back to the 4th Tactical Fighter Wing. Where is the base of that squadron? In Al-Kharj. The base of that squadron is in Kharj. And where is that? In Central Saudi Arabia. It is a base in the middle of Saudi Arabia. What was your target in Iraq? Scud missiles and associated chemical facilities. My target in Iraq was to hit scud bases and attached chemical facilities. And how were you shot down? I don't know. I don't know how our plane was shot down. David, how were you injured in the neck, please? I believe it was during the ejection or when I hit the ground."
+   }
+  ],
+  "tweet_summary": "A 'World War 3' breaking-news account posts a video captioned 'URGENT: U.S. Pilot Reportedly Captured in Iraq' with an on-screen date '4.4.2026', showing a captured airman being interrogated.",
+  "bad_note_text": "**Geographic error:** The incident occurred in **Iran**, not Iraq. A U.S. F-15E was struck in Iranian airspace. U.S. officials denied capture, stating they had \"no information indicating that the pilot has been taken prisoner.\" https://www.kurdistan24.net/en/story/905585",
+  "failure_reason": "Rated notHelpfulIncorrect (5 of 6, low volume). The note treats decades-old footage as a genuine 2026 event and only 'corrects' the country from Iraq to Iran, asserting a current F-15E was struck in Iranian airspace. In reality the clip is the 1991 Gulf War capture of Col. David Eberly. By accepting the fake premise and relocating it, the note amplifies the misinformation rather than exposing the old-footage reuse that commenters and fact-checkers identified.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 6,
+  "why_note_decision": "A note IS warranted: this is old footage presented as a current 2026 event. The video is the 1991 Gulf War POW interrogation of Col. David Eberly (F-15E shot down Jan 1991, paraded on Iraqi TV / shown on CNN), confirmed by AFP/Lead Stories fact-checks and POW records. His transcribed answers (F-15, 4th Tactical Fighter Wing, base in Al-Kharj Saudi Arabia, targets 'Scud missiles and chemical facilities') are textbook Desert Storm, not 2026. Commenters uniformly say '1991'. The original note got the correction wrong: it accepted the clip as a real recent event and merely 'fixed' the location fro…",
+  "reference_note": "This is 1991 Gulf War footage, not a 2026 event. The video shows captured U.S. pilot Col. David Eberly, whose F-15E was shot down over Iraq in January 1991; he was paraded on Iraqi TV and shown on CNN. The clip's details (4th Tactical Fighter Wing, Al-Kharj base, Scud/chemical targets) are Desert Storm. https://www.yahoo.com/news/articles/fact-check-video-does-not-235446725.html https://www.pownet…"
+ },
+ {
+  "tweet_id": "2041839264372068435",
+  "url": "https://x.com/i/status/2041839264372068435",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "ai_generated_media",
+   "conspiracy_and_viral_hoax",
+   "manipulated_or_fabricated_evidence"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "It’s a remarkable coincidence that the Earth was exactly the same orientation to the moon with exactly the same cloud coverage when these two pictures were taken 68 years apart. Am I now a coincidence theorist ? https://t.co/BzxpS8y3M6",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HFYR_PIboAA8AbO.jpg",
+    "description": {
+     "description": "A split-screen image comparing two views of Earth rising over the lunar horizon. The left side shows the historic 'Earthrise' photo from the Apollo 8 mission in 1968, appearing somewhat grainier and smaller. The right side shows a modern, high-resolution simulation or mock-up of the same view for the upcoming Artemis 2 mission in 2026, where the Earth appears much larger and more detailed.",
+     "ocrText": "Apollo 8, December 24, 1968 Artemis 2, April 6, 2026"
+    }
+   }
+  ],
+  "tweet_summary": "Andrew Bridgen posts a side-by-side captioned 'Apollo 8, December 24, 1968' vs 'Artemis 2, April 6, 2026', sneering at the 'remarkable coincidence' of identical Earth orientation and cloud cover 68 years apart, insinuating the space program is faked ('Am I now a coincidence theorist?').",
+  "bad_note_text": "The similarity isn't coincidental—NASA's LRO deliberately recreated Apollo 8's 1968 Earthrise using original mission data to match the exact orbital position and viewing angle. The match is engineered, not random chance. https://science.nasa.gov/resource/the-story-behind-apollo-8s-famous-earthrise-photo/",
+  "failure_reason": "Rated notHelpfulIncorrect (62) and notHelpfulMissingKeyPoints (32). The note fabricates an explanation — that NASA's Lunar Reconnaissance Orbiter 'deliberately recreated' the Earthrise to match — which is not what the image is. The right-hand image is AI-generated slop (SynthID watermark) labeled 'Artemis 2', not an LRO product. By calling the match 'engineered' from 'real mission data', the note validates the fake image and fails to tell readers it's AI, leaving the hoax insinuation standing.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 117,
+  "why_note_decision": "A note IS warranted: the post pushes a moon-hoax insinuation built on a fake. The right-hand 'Artemis 2, April 6, 2026' image is AI-generated (carries a Google SynthID watermark; debunked by Lead Stories, Snopes, ITV, The Poke) and is not a real Artemis II photo — it was derived from the 1968 Apollo 8 'Earthrise', which is exactly why the clouds/orientation match. So there is no genuine NASA coincidence to explain; the 'coincidence' is an artifact of AI-copying. The original note is itself incorrect: it invents that 'NASA's LRO deliberately recreated Apollo 8's Earthrise', treating the fake ri…",
+  "reference_note": "The right-hand 'Artemis 2, April 6, 2026' image is not a real Artemis II photo — it is AI-generated (it carries a Google SynthID watermark) and was made from the 1968 Apollo 8 'Earthrise', which is why the Earth's orientation and clouds match. There is no genuine coincidence. https://leadstories.com/hoax-alert/2026/04/fact-check-fake-artemis-ii-photo-shows-earth-with-identical-cloud-patterns-to-ap…"
+ },
+ {
+  "tweet_id": "2048208817234825578",
+  "url": "https://x.com/i/status/2048208817234825578",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "celebrity_entertainment_sports"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Black curtains are been used at bts first concert in usa, ON BOTH SIDES OF THE PLACE to cover up thousands of unsold tickets\n\nThey said it's \"sold-out\" 😂 \n\nAnd before they lie and say these seats weren't on sale... Here is the seating map, they were on sale lool https://t.co/V2h3rVGXFA https://t.co/ZTjvAWkyW7",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HGyzEDMaUAAz-zi.jpg",
+    "description": {
+     "description": "A split-view image showing a large outdoor concert venue from two different high-angle perspectives. The top image is a close-up angle over the heads of spectators, looking down onto a walkway area with security personnel and staff near white temporary structures. The bottom image provides a wider view from the stands, showing red seating sections and a vast crowd gathered on the floor area near the stage and equipment structures.",
+     "ocrText": ""
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HGyzD-bakAAuISV.png",
+    "description": {
+     "description": "A seating chart for the Raymond James Stadium specifically configured for a BTS concert stage. The map shows a central stage with four extended walkways into the floor seating area labeled with letters A-Q. The surrounding stadium seating is divided into numbered sections spanning 100, 200, and 300 levels in a greyscale color scheme.",
+     "ocrText": "BTS STAGE FOR RAYMOND JAMES STADIUM, STAGE, A, B, C, D, E, F, G, H, J, K, L, M, N, P, Q, 103, 107, 108, 109, 110, 111, 112, 113, 114, 115, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 201, 202, 203, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 218, 219, 220, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 243, 244, 245, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, N"
+    }
+   }
+  ],
+  "tweet_summary": "A small 'fact-check' account claims black curtains on both sides of BTS's first US concert (Tampa, Raymond James Stadium) were used to hide thousands of unsold tickets, asserting the 'sold-out' claim is a lie, with a seating map supposedly proving the seats were on sale.",
+  "bad_note_text": "The covered sections are for front-of-house technical installations and tents obstructing views, which are standard and not sold to the public; the Tampa shows sold out within hours. https://x.com/AsianEAC/status/2048264468640223604 https://consequence.net/2026/04/bts-tampa-arirang-tour-tickets",
+  "failure_reason": "The substance is correct, but it leads with an X reply account as a source (SourcesMissingOrUnreliable / IrrelevantSources tags) and was rated Incorrect by some, likely because 'standard...not sold to the public' overstates (the seats WERE initially on sale then closed for the tents, per fan replies). Cleaner sourcing and precise wording would fix it.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 218,
+  "why_note_decision": "The factual claim ('thousands of unsold tickets,' show not actually sold out) is checkable and false: all three Tampa shows sold out within hours, and the covered/curtained sections were closed for production tents and restricted-view reasons (the in-the-round stage with walkways), not because they went unsold. A note correcting the false 'not sold out' claim benefits readers, so a note IS warranted despite the provisional no-note.",
+  "reference_note": "The covered sections were closed because production tents for the in-the-round stage block the view there, not because tickets went unsold. All three Tampa shows (Apr 25, 26, 28, 2026) sold out, with a third date added due to demand. https://consequence.net/2026/04/bts-tampa-arirang-tour-tickets/ https://www.tampabay.com/culture/entertainment/music/music-reviews/2026/04/26/bts-arirang-tampa-world-…"
+ },
+ {
+  "tweet_id": "2051145725828841572",
+  "url": "https://x.com/i/status/2051145725828841572",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "celebrity_entertainment_sports",
+   "politics_and_policy"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "The VIN Number on the Arrest report matches the VIN number on the RAM 1500 TRX involved in the DUI as is documented on the arrest report. \n\nI’ve attached a photo of the totaled vehicle and the VIN number. A quick search of the VIN number for those who know where to look will show https://t.co/5mGlSv1J2q https://t.co/9ZxtHhjhW7",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HHciKjyWkAAe69I.jpg",
+    "description": {
+     "description": "A close-up photograph of a vehicle certification label from FCA US LLC, typically found on the driver-side door jamb. The label contains manufacturing data, VIN, weight ratings, tire information, and a barcode. The image has multiple translucent watermarks reading '@LauraLoomer' overlaid on it.",
+     "ocrText": "@LauraLoomer @LauraLoomer @LauraLoomer @LauraLoomer @LauraLoomer MFD BY: FCA US LLC DATE OF MFR (BUILT): 3-21 GVWR: 7800 LB / 3539 KG VIN: 1C6SRFU98MN702626 GAWR FRONT: 4300 LB / 1951 KG WITH GAWR REAR: 4200 LB / 1906 KG WITH 18X9.0 RIMS 18X9.0 RIMS VEHICLE MADE IN: U.S.A. LT325/65R180 121 TIRES LT325/65R18D 121 TIRES AT 260 kPa / 38 PSI COLD AT 260 kPa / 38 PSI COLD TYPE: TRUCK PAINT: PXJ MDH: 030921 MKT: 875 THIS VEHICLE CONFORMS TO ALL APPLICABLE U.S.A. FEDERAL MOTOR VEHICLE SAFETY STANDARDS IN EFFECT ON THE DATE OF MANUFACTURE SHOWN ABOVE."
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HHciKjyXUAA6KVf.jpg",
+    "description": {
+     "description": "A black pickup truck, appearing to be a RAM 1500 TRX, showing significant front-end damage including a crumpled hood, smashed headlight, and missing bumper parts. The truck is parked on a gravel lot under a bright sky, with a yellow car partially visible in the background. The interior airbags appear to have deployed. Multiple translucent watermarks cover the image.",
+     "ocrText": "@LauraLoomer @LauraLoomer @LauraLoomer @LauraLoomer RAM"
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HHciKjxXIAAbttW.jpg",
+    "description": {
+     "description": "A digitised copy of a formal Metropolitan Police Department Arrest Report from Nashville, Tennessee. The document details the arrest of George T. Farmer on August 10, 2023, for charges including DUI, weapon possession while under influence, and leaving the scene of an accident. The form includes personal details like height, weight, and DOB, along with vehicle information for a 2021 Black RAM 1500.",
+     "ocrText": "M.P.D. FORM 106 (REV 04-07) CALEA 82.2.1 82.3.7 Arrest Report Metropolitan Police Department Nashville Tennessee 1. M.P.D. Incident Number 20230471289 Juvenile Booking Type Adult Custodial Juvenile Custodial Bindover Tap Out 2. Related Incident Number N/A 3. I.D. / O.C.A. Number 618997 4. Arrest Number 230020602 5. Arrest Date / Time 08/10/2023 21:22 6. Day of Week Thursday 7. Charge Which Precipitated Arrest DUI 8. Reason Arrested (Offense / Classification) DUI 9 Social Security Number UNK 10. Driver License No. State TN UNK 11. Defendant's Name (Last, First, Middle) FARMER, GEORGE, T 12. Nickname / Alias None 13. Defendant's Address (Apt No.) City NASHVILLE State TN Zip Code 37204 14. Place of Employment / School UNKNOWN None 15. Home Phone 16. Work Phone 17. County Resident? 18. Occupation CEO 20. Sex MALE 21. Race WHITE 19. Is Arrestee a College Student? YES NO UNK 22. Ethnicity NOT HISPANIC OR 24. DOB 7/5/1990 23. Age 33 25. Place of Birth NASHVILLE TENNESSEE 26. Domestic Violence Yes No Officer Victim 27. Height 6'02\" 28. Weight 180 29. Hair BLACK 30. Eyes BLUE 32. Type of Arrest ON-VIEW 33. Resisted Arrest? N 31. Location of Arrest (Street Address) 2010 ROSA L PARKS BLVD City NASHVILLE State TN Zip Code 37208 34. Assaulted Officer? N 35. Chemical Agent Used? N 36. Arrestee Armed With: (Second Box if Automatic) Unarmed Firearm Handgun Rifle Shotgun Other Firearm Lethal Cutting Instrument (e.g. Switchblade knife) Club, Blackjack, Brass Knuckles Injury/Sick N/A See Incident Rpt 37. Injury Apparent Broken Bones Possible Internal Injury Severe Laceration Apparent Minor Injury Other Major Injury Loss of Teeth Unconsciousness Gunshot 38. Medical Treatment 39. Transported By 40. Describe Illness or Injury 41. Examining Physician N/A 42. Medical Treatment Status Admitted Released N/A N/A VEHICLE See Incident 43. License Number State TN Year 2024 44. Year 2021 45. Make RAM TRUCKS 46. Model RAM 1500 47. Style PICKUP 48. Color BLACK 49. V.I.N. 1C6SRFU98MN702626 None Altered UNK 50. VTR No. 333011 N/A 51. Vehicle Towed To: Tow-in Lot Other N/A Tow-in Lot 52. Vehicle Towed By: WEST NASHVILLE N/A Warrant # GS1007252 Typ S Inc Num 20230471289 NCIC Qual 5245 TCA 39-17-1321 Sev M Class A Charge Description WEAPON- POSSESSION WHILE UNDER Warrant # GS1007254 Typ S Inc Num 20230471289 NCIC Qual 5405 TCA 55-10-401*1 Sev M Class A Charge Description DRIVING UNDER THE INFLUENCE Warrant # GS1007253 Typ S Inc Num 20230471289 NCIC Qual 6470 TCA 55-10-102*4 Sev M Class A Charge Description LEAVING SCENE OF ACCIDENT- DAMAGE"
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HHciKjzWYAATZMN.jpg",
+    "description": {
+     "description": "A close-up mugshot of a young male with strawberry-blonde, fluffy hair. He is looking directly at the camera with a neutral-to-stern expression. A repeated watermark containing a social media handle is superimposed across the image diagonally from bottom-left to top-right.",
+     "ocrText": "@LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER"
+    }
+   }
+  ],
+  "tweet_summary": "Laura Loomer posts photos of a Nashville Metro Police arrest report (DUI/weapon/leaving-scene, 8/10/2023) naming GEORGE T. FARMER, a totaled RAM 1500 TRX, the VIN on its certification label (1C6SRFU98MN702626), and a mugshot — claiming this is Candace Owens' husband George Farmer. Quoted tweet calls the documents fake/manipulated.",
+  "bad_note_text": "The arrest report shown identifies a subject born in Nashville on 7/5/1990. Candace Owens' husband, George Farmer, was born in London on 12/15/1989 https://en.wikipedia.org/wiki/George_Farmer_(businessman) and has no verified criminal history https://people.com/all-about-george-farmer-candace-owens-husband-11778204",
+  "failure_reason": "States Farmer's DOB as 12/15/1989, but Wikipedia (which it cites) says 5 July 1990 — and the report's DOB of 7/5/1990 actually matches. The note's headline 'mismatch' is wrong. Raters tagged 'incorrect', 'sources missing/unreliable', 'irrelevant sources'.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 6,
+  "why_note_decision": "The original note tries to debunk Loomer by stating George Farmer (Candace Owens' husband) was born 12/15/1989 in London — but his actual DOB per Wikipedia is 7/5/1990 in London, which MATCHES the arrest report's DOB of 7/5/1990. The original note's DOB claim is itself factually wrong, which is why raters flagged it (notHelpfulIncorrect, notHelpfulSourcesMissingOrUnreliable). The genuine discrepancies remain: the report says place of birth Nashville TN (Wikipedia says London), and the spelling 'Tennesse' is unusual on a real Nashville Metro form (commenters note this); independent court/bookin…",
+  "reference_note": "Per Wikipedia, George Farmer (Candace Owens' husband) was born 5 July 1990 in London — the report's DOB (7/5/1990) matches, but its 'place of birth: Nashville, TN' contradicts Farmer's London birthplace, and no independent Davidson County court/booking record corroborating a 2023 DUI against him has surfaced in public reporting. The documents remain unverified. https://en.wikipedia.org/wiki/George…"
+ },
+ {
+  "tweet_id": "2052736022254068203",
+  "url": "https://x.com/i/status/2052736022254068203",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "health_medical_science"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "A never-before-seen owl has been found in the USA.\n\nWhile snowy  owls are known for their white feathers, this owl, nicknamed \"Rusty\" by locals, has an unexplained reddish-orange appearance. https://t.co/NUnEITZoyN",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HHy_GtzX0AA4pPf.jpg",
+    "description": {
+     "description": "A close-up photograph of an owl perched atop a weathered wooden post against a clear, light blue sky. The owl features a striking color pattern with a bright orange-red head and similar highlights on its wings and tail feathers. Its body is covered in white feathers with dark brown scalloped patterns. The owl's eyes are yellow and facing towards the camera.",
+     "ocrText": ""
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HHy_Hm1XsAAavQ8.jpg",
+    "description": {
+     "description": "A close-up photograph of a bird of prey, possibly a hawk or falcon, captured in flight against a solid white background. The bird's plumage is uniquely colored with bright orange and white feathers, accented by black spots and barring. It is banking to the left with its wings spread wide to reveal the intricate patterns on its underwings and tail.",
+     "ocrText": ""
+    }
+   }
+  ],
+  "tweet_summary": "Pubity claims 'a never-before-seen owl has been found in the USA,' a snowy owl nicknamed 'Rusty' with an unexplained reddish-orange appearance.",
+  "bad_note_text": "Eastern Screech Owls can exhibit erythrism, a documented genetic mutation causing reddish-orange feathers. The second image in this post is digitally altered, and no new owl species has been discovered or announced by wildlife authorities. https://x.com/HookandPine",
+  "failure_reason": "Incorrect: discusses EASTERN SCREECH OWL erythrism though the bird/tweet is a SNOWY owl; asserts 'the second image is digitally altered' without support; cites only an X handle. Only the 'no new species' clause is right; it omits the actual story (Michigan snowy owl, likely contamination).",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 65,
+  "why_note_decision": "A note is warranted because the headline claim — a 'never-before-seen owl' / new species — is false. But the original note is largely INCORRECT, so I flip the role from MissingKeyPoints to Incorrect. The real story: 'Rusty' is a SNOWY owl photographed in Huron County, Michigan in Jan 2025 (confirmed real by the Michigan DNR). It is NOT a new species; the leading explanations for its orange color are contamination (airport de-icing fluid or fire retardant), with a genetic-mutation hypothesis considered unlikely by most experts. The original note instead talks about EASTERN SCREECH OWLS exhibiti…",
+  "reference_note": "This is not a new species. It is a snowy owl ('Rusty') photographed in Huron County, Michigan in early 2025 and confirmed real by the Michigan DNR. Experts say the orange coloring is unexplained but most likely external contamination — airport de-icing fluid or fire retardant — rather than a genetic mutation. https://www.snopes.com/fact-check/reddish-orange-snowy-owl/ https://www.cbc.ca/radio/asit…"
+ },
+ {
+  "tweet_id": "2053153106796671426",
+  "url": "https://x.com/i/status/2053153106796671426",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "health_medical_science",
+   "staged_or_scripted_content",
+   "ai_generated_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Something needs to be done about this! 😡\nThis video is a wake-up call on what Big Food is feeding us in America vs. what’s allowed in Europe:\n\nAmerican strawberries go in salt water… and worms start crawling out. Pesticides banned in every European country couldn’t even kill https://t.co/SDnWyNWiIe",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2053152940043743232/vid/avc1/720x1280/jN8ze9YoqLIOeQK0.mp4",
+    "description": {
+     "description": "A man with a goatee in a yard is comparing two strawberries while holding them above a glass tank of water. Later in the sequence, multiple strawberries are shown inside the tank, and small white worms or larvae are emerging from the fruit and moving on its surface.",
+     "ocrText": "(@HERBAL.HEALTH.TIPS EUROPEAN STRAWBERRY EVERY COUNTRY AND THESE ARE THINGS AND YOU PROBABLY NEVER"
+    },
+    "transcription": "This is what is living inside your fruit and you probably never realized it. This is an American strawberry and this is a European strawberry. The American ones are sprayed with pesticides that are banned in every country in Europe because they destroy your hormones. Put them in salt water and wait. And these are things living inside your fruit that the pesticides could not even kill. This is American white bread and this is European white bread. The American one contains potassium bromate, a chemical that causes cancer and is completely banned in Europe. I put it in water and it does not break down. It floats like styrofoam because your body cannot digest it either. This is American cheese and this is European cheese. The American one is so processed that in Europe it is not even allowed to be called cheese. Real cheese melts. Watch what this does. It burns like plastic because that is what it is. These are American gummy bears and these are European gummy bears. The American ones are full of artificial dyes linked to behavior problems in children. In Europe, they use beet juice and carrot extract instead. Look what comes off. That is not food coloring. That is industrial dye, and your children swallow it every day."
+   }
+  ],
+  "tweet_summary": "Health-influencer post sharing an 'Herbal Health Tips' video that uses dramatized side-by-side experiments to claim U.S. strawberries are full of pesticide-resistant worms, U.S. white bread floats like styrofoam, U.S. cheese 'burns like plastic', and U.S. gummy bears use industrial dyes — all framed as proof Big Food is poisoning Americans.",
+  "bad_note_text": "The video's experiments are misleading or staged; large worms do not emerge from U.S. strawberries soaked in salt water due to pesticides, and processed American cheese melts during normal cooking rather than burning like plastic. https://en.teyit.org/fact-check/does-the-video-show-that-bugs-come-out-of-strawberries-soaked-in-salt-water https://www.snopes.com/fact-check/soaking-strawberries-in-saltwater/ https://www.snopes.com/fact-check/thing-cheese-incident",
+  "failure_reason": "Strawberry rebuttal is itself wrong: SWD larvae DO emerge from strawberries in salt water — the right correction is that this is a harmless real infestation, NOT pesticide-driven. The note's flat denial gives readers a false impression and contradicts the very Snopes / Teyit sources it cites. Cheese point is closer to correct but glosses over the emulsifier explanation.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 21,
+  "why_note_decision": "The video mixes a kernel of truth with multiple misleading attributions and likely AI / staged demonstrations. (1) Strawberries DO sometimes release small spotted-wing-drosophila (SWD) larvae in salt water — Snopes, OSU and Oregon State confirm this is a real, harmless infestation, NOT pesticide-driven. The video's pesticide framing is wrong. (2) American cheese does melt during normal cooking; under direct flame it resists melting and chars due to emulsifiers, not because it is plastic (Snopes). (3) Several commenters and visible artifacts (strawberries suspended mid-tank) suggest the demos a…",
+  "reference_note": "Las demostraciones del video son engañosas o están en escena. Los \"gusanos\" en fresas remojadas en agua salada son larvas reales de Drosophila suzukii (mosca del vinagre de alas manchadas), inofensivas y NO causadas por pesticidas (Snopes, Oregon State). El queso americano sí se derrite al cocinarse normalmente; bajo llama directa se chamusca por sus emulsionantes, no por ser plástico (Snopes). ht…"
+ },
+ {
+  "tweet_id": "2056058915121766400",
+  "url": "https://x.com/i/status/2056058915121766400",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+   "manipulated_or_fabricated_evidence",
+   "statistical_or_numerical_claim",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Democrats are calling for Pete Hegseth to be removed—and the polls around this issue are getting a lot of attention \n\n What do YOU think ?\nShould Pete Hegseth be removed from his position ?\n\nA. Yes, it’s time for him to go\nB. No, he should stay in his role \n\nVote now and make https://t.co/Kwwn0zfJYD",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HIiWr74a4AAMxDb.jpg",
+    "description": {
+     "description": "A man in a blue suit, identified as Pete Hegseth, is shown walking forward with a serious expression. A black graphic overlay with red siren emojis features text claiming a poll shows most Americans want him removed from office.",
+     "ocrText": "🚨 NEW POLL: 🚨 75% of Americans say Pete Hegseth should be removed from office."
+    }
+   }
+  ],
+  "tweet_summary": "An engagement-poll post about removing Pete Hegseth shows a graphic claiming '🚨 NEW POLL: 75% of Americans say Pete Hegseth should be removed from office.'",
+  "bad_note_text": "The graphic depicts a fabricated poll; no credible survey shows 75% of Americans want Pete Hegseth removed from office. A J.L. Partners/Daily Mail poll found 54% of voters support his resignation. https://thehill.com/policy/defense/5220560-hegseth-resign-poll-waltz-vance-signalgate-atlantic-goldberg https://www.theguardian.com/us-news/2025/mar/31/pete-hegseth-republican-voters",
+  "failure_reason": "Substance is correct (75% fabricated; real poll 54% resign) but rated notHelpfulIncorrect(3)/OpinionSpeculation(2)/Argumentative(2). Low rating volume (6); calling it 'fabricated' without showing the graphic is literally a fake number vs a misreported real poll may have read as overreach to some raters. A correct note states the real number plainly and labels 75% unsupported.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 6,
+  "why_note_decision": "The '75%' figure in the graphic is fabricated — no credible poll shows 75% of Americans wanting Hegseth removed. The real, identifiable poll on this question is a J.L. Partners/Daily Mail survey (Mar 25-27, 1,001 registered voters) showing 54% backing his resignation and 22% saying he should stay. The graphic inflates that to a fake '75% of Americans / removed from office' statistic with a 'NEW POLL' siren framing, which is a checkable false numerical claim being spread as fact. A note correcting the fabricated number is warranted. Provisional 'no_note' is wrong.",
+  "reference_note": "The '75%' figure is fabricated; no credible poll shows 75% of Americans want Hegseth removed. The actual poll on this question, by J.L. Partners/Daily Mail (Mar 25-27, 1,001 registered voters), found 54% support his resignation and 22% say he should stay. https://thehill.com/policy/defense/5220560-hegseth-resign-poll-waltz-vance-signalgate-atlantic-goldberg"
+ }
+]

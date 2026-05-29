@@ -1,0 +1,96 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "UK GDP per capita growth by Prime Minister real terms Churchill Attlee Macmillan Wilson",
+        "Academic Agent GDP per capita Prime Minister chart UK 2026",
+        "UK real terms GDP per capita by prime minister historical data ONS"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "General UK GDP per capita data sources (ONS, World Bank, macrotrends, measuringworth). No direct fact-check of this specific chart. Found that ONS IHXW series covers real GDP per capita from 1955. No pre-compiled PM breakdown found in search results.",
+      "lesson": "The tweet's specific figures are not matched against any authoritative pre-compiled source in search results. Need to check methodology angle (the top comment disputes the metric used) and look for direct fact-checks."
+    },
+    {
+      "queries": [
+        "\"GDP per capita\" \"prime minister\" UK chart misleading selective Thatcher omitted fact check",
+        "UK GDP per capita growth per prime minister \"real terms\" chart viral misleading incomplete",
+        "site:fullfact.org OR site:channel4.com/news OR site:reuters.com UK GDP prime minister growth chart misleading"
+      ],
+      "purpose": "targeted + brand-suffix",
+      "what_returned": "Full Fact articles on GDP-related PM claims (Sunak, Johnson) but none specifically checking this chart. Found that 'current US$' GDP figures are highly sensitive to £:$ exchange rate, which is the core criticism the top commenter makes. Full Fact confirmed: UK GDP per capita rose in every parliament since 1955 except 2005-10 and 2019-24.",
+      "lesson": "No direct fact-check of this viral chart exists. The methodological dispute (nominal US$ vs real terms vs PPP) is the key issue. The tweet claims 'real terms' but the commenter Warspite says it actually uses current US$ figures which are exchange-rate distorted, and provides PPP World Bank data showing much more uniform growth across PMs."
+    },
+    {
+      "queries": [
+        "UK GDP per capita prime minister \"current US$\" exchange rate distortion comparison historical misleading pound dollar",
+        "full fact UK GDP per capita growth by prime minister party Conservative Labour economic performance",
+        "UK GDP per capita World Bank constant 2015 USD annual data 1960 1970 1975 prime minister Wilson Callaghan Heath Macmillan"
+      ],
+      "purpose": "refine — methodology angle",
+      "what_returned": "Sheffield Hallam academic paper on Labour vs Conservative GDP growth. Found that World Bank PPP data exists (1960-present). Key finding: between 2000-2007 nominal UK GDP per capita nearly doubled due to strong pound — showing how exchange rates distort nominal figures. Academic research shows annual GDP growth very similar under both parties (~2.4-2.5%) contrary to the dramatic variation the tweet implies.",
+      "lesson": "The PPP data from the World Bank (cited by Warspite in the tweet comments) is the authoritative counter-source. The tweet's labeling of figures as 'real-terms' appears disputed — if using current US$, exchange rate movements heavily distort the figures, particularly in periods when the pound appreciated or depreciated sharply."
+    },
+    {
+      "queries": [
+        "UK real GDP per capita growth total percentage per prime minister Attlee Churchill Macmillan Wilson Heath Callaghan authoritative source",
+        "UK GDP per capita prime minister chart stops before Thatcher selective data Labour bias viral Twitter X 2025 2026"
+      ],
+      "purpose": "refine — completeness/selectivity angle",
+      "what_returned": "No direct fact-check found. Found that chart format stopping before Thatcher is a recurring pattern in UK political discourse. Sheffield Hallam paper confirms Labour and Conservative GDP growth rates are very similar when measured properly. Wikipedia Economy of UK has no PM-by-PM breakdown.",
+      "lesson": "The tweet is missing data for Thatcher onwards — the chart cuts off at Callaghan with no figure shown, omitting Thatcher entirely. This selective presentation (stopping just before Conservative Thatcher's term) combined with disputed methodology is the key fact-check angle."
+    }
+  ],
+  "gold_queries": [
+    "UK GDP per capita growth by prime minister real terms ONS data",
+    "UK GDP per capita PPP World Bank Churchill Attlee Macmillan Wilson Heath Callaghan",
+    "UK nominal GDP per capita current US dollars exchange rate distortion prime minister comparison",
+    "UK GDP per capita growth per prime minister Thatcher omitted chart selective data",
+    "full fact UK economy growth Conservative Labour prime minister historical comparison"
+  ],
+  "found_sources": [
+    {
+      "url": "https://fullfact.org/economy/gdp-per-capita-growth/",
+      "title": "Overall GDP hasn't had 'seven consecutive quarters of no growth' – Full Fact",
+      "found_via_query": "UK GDP per capita growth per prime minister \"real terms\" chart viral misleading incomplete",
+      "authority_reason": "Full Fact is the UK's leading independent fact-checking charity, cited regularly in parliamentary debate",
+      "what_it_establishes": "UK GDP per capita has risen in every parliament since 1955 except 2005-10 and 2019-24; confirms GDP per capita is the right metric but that confusing it with total GDP is common and misleading"
+    },
+    {
+      "url": "https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.CD?locations=GB",
+      "title": "GDP per capita, PPP (current international $) - United Kingdom | Data",
+      "found_via_query": "UK GDP per capita prime minister \"current US$\" exchange rate distortion comparison historical misleading pound dollar",
+      "authority_reason": "World Bank is one of the most authoritative sources for international GDP PPP data; this is the same source cited by the top comment on the tweet (Warspite) which disputes the methodology",
+      "what_it_establishes": "PPP-adjusted GDP per capita data for UK shows much more uniform growth across PM tenures (~2.0-2.7% per year) compared to the extreme variation in the tweet's figures, suggesting the tweet uses nominal/exchange-rate-sensitive figures rather than true real-terms PPP"
+    },
+    {
+      "url": "https://shura.shu.ac.uk/27982/8/Algarhi-DoesUKEconomy(VoR).pdf",
+      "title": "Does the UK Economy Grow Faster Under a Conservative or Labour Government?",
+      "found_via_query": "full fact UK GDP per capita growth by prime minister party Conservative Labour economic performance",
+      "authority_reason": "Peer-reviewed academic paper from Sheffield Hallam University",
+      "what_it_establishes": "Real GDP growth is very similar under Conservative (2.5%) and Labour (2.26%) governments since 1955, contradicting the tweet's implied narrative of dramatic differences between PMs"
+    },
+    {
+      "url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ihxw/pn2",
+      "title": "Gross domestic product (Average) per head, CVM market prices (reference year = 2023) £: SA – ONS",
+      "found_via_query": "UK real terms GDP per capita by prime minister historical data ONS",
+      "authority_reason": "Office for National Statistics is the official UK statistics body — this is the definitive source for UK real GDP per capita in sterling terms",
+      "what_it_establishes": "ONS IHXW series is the authoritative real-terms GDP per capita in pounds sterling, which would allow direct verification of the tweet's per-PM figures; multiple tweet commenters cited this as showing the tweet's figures are wrong"
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching for the methodology dispute (PPP vs nominal vs real terms) rather than just the figures directly — this uncovered the core factual problem: the tweet claims 'real terms' but the metric appears to use current US dollar figures distorted by exchange rates",
+      "Reading the tweet comments carefully: the top comment from Warspite explicitly identifies the methodology problem and provides World Bank PPP data as the counter-source",
+      "Searching for 'full fact UK GDP prime minister' to find existing fact-checks on related claims",
+      "Identifying that the chart is selective (stops before Thatcher) as a searchable angle"
+    ],
+    "what_hurt": [
+      "No pre-compiled authoritative source breaks down UK GDP per capita by individual PM tenure — the raw data exists (ONS, World Bank) but requires manual calculation",
+      "The specific chart was not directly fact-checked by any mainstream outlet, making it hard to find a single authoritative debunking",
+      "Macrotrends returned 402 and FRED returned 403, blocking direct access to historical annual figures"
+    ],
+    "would_multipass_help": "yes — a second pass could download the ONS time series CSV (series IHXW) and the World Bank PPP data, then calculate actual per-PM growth figures to directly compare against the tweet's claims. The current search confirms the methodology dispute but cannot numerically verify whether the specific figures (e.g. Attlee +3.2%, Macmillan +14.3%) are correct under any consistent methodology.",
+    "deepseek_advice": "For charts claiming to show 'real-terms' economic data by political leader, always query both the specific figures AND the methodology (real vs nominal vs PPP) — the most common source of error is using current US dollar figures that inflate/deflate with exchange rates rather than true purchasing-power-parity measures. Also flag when a chart visibly stops before a politically significant data point (here: Thatcher), as selective truncation is a common misleading framing technique."
+  }
+}

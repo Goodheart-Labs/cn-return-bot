@@ -1,0 +1,80 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Hegseth fires generals David Hodne William Green Randy George April 2026",
+        "generals fired refusing troops Iran April 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Strong results confirming the three firings. Second query surfaced a direct Snopes fact-check (April 7, 2026) and MEAWW fact-check on the 'refusing Iran orders' claim. Snopes found no evidence the Iran refusal was the reason. Multiple major outlets (CNN, WaPo, NBC, Axios) confirmed the firings but cited personality clashes and officer promotion disputes as reasons.",
+      "lesson": "The core factual claim in the tweet ('refusing to put troops in Iran') was directly fact-checked by Snopes within days of the event — the brand-suffix approach wasn't even needed; a plain query with the claim surfaced it. The firings themselves are confirmed; the stated reason is not."
+    },
+    {
+      "queries": [
+        "Randy George fired reason 'Army transformation' OR 'culture' OR 'Iran' Hegseth April 2026 site:reuters.com OR site:apnews.com OR site:nbcnews.com",
+        "Hegseth Randy George fired reason explanation Pentagon statement April 2026"
+      ],
+      "purpose": "targeted — verify official/reported reasons for the firings",
+      "what_returned": "Pentagon gave no official reason. Two U.S. officials told Axios the firing was due to 'clashing personalities, not disagreements over where the Army is headed.' NYT reported clashes over Hegseth blocking four officer promotions (two Black, two women). CBS: Hegseth wanted someone to implement his and Trump's vision. No source confirmed Iran ground troop refusal.",
+      "lesson": "Searching for the official reason surfaces well-sourced contradictions to the tweet's causal claim. The Iran refusal narrative is purely speculative/viral, not from any named official."
+    }
+  ],
+  "gold_queries": [
+    "generals fired refusing troops Iran April 2026",
+    "Hegseth fires Randy George David Hodne William Green reason April 2026",
+    "snopes generals refuse orders Iran Hegseth firings",
+    "Randy George fired reason Pentagon statement Hegseth April 2026",
+    "fact check generals refused Iran ground invasion orders Hegseth"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.snopes.com/news/2026/04/07/generals-refuse-orders-iran/",
+      "title": "Inspecting claims ousted US generals, other military leaders refused Iran invasion orders | Snopes.com",
+      "found_via_query": "generals fired refusing troops Iran April 2026",
+      "authority_reason": "Snopes is a well-established fact-checking outlet; this is a direct fact-check of the specific claim in the tweet",
+      "what_it_establishes": "Snopes could not locate evidence that Hegseth dismissed the three generals over refusal of orders to invade Iran; could not confirm a mass refusal/purge narrative; verdict implies the 'refusing Iran orders' claim is unsubstantiated"
+    },
+    {
+      "url": "https://news.meaww.com/fact-check-did-us-generals-refuse-trump-orders-for-iran-ground-troops-after-hegseth-firings",
+      "title": "Fact Check: Did US generals refuse Trump orders for Iran ground troops after Hegseth firings?",
+      "found_via_query": "generals fired refusing troops Iran April 2026",
+      "authority_reason": "Direct fact-check article on the specific claim; cites Grok analysis and notes absence of mainstream coverage",
+      "what_it_establishes": "No credible evidence generals were fired for refusing Iran ground invasion orders; mainstream outlets did not confirm this; some sources cited 'strategic clashes over potential ground operations' but this remained unconfirmed speculation"
+    },
+    {
+      "url": "https://www.axios.com/2026/04/03/hegseth-george-hodne-army-fired-iran",
+      "title": "Hegseth's wartime firing of top generals stuns officials: 'It's insane'",
+      "found_via_query": "Hegseth Randy George fired reason explanation Pentagon statement April 2026",
+      "authority_reason": "Axios national security reporting citing two U.S. officials on record about the reasons",
+      "what_it_establishes": "Two U.S. officials said George's dismissal was motivated by 'clashing personalities and not disagreements over where the Army is headed' — directly contradicting the tweet's Iran refusal claim"
+    },
+    {
+      "url": "https://www.nbcnews.com/politics/national-security/pete-hegseth-forces-army-chief-staff-randy-george-rcna266491",
+      "title": "Pete Hegseth forces out Army's top officer and two other generals",
+      "found_via_query": "Hegseth fires generals David Hodne William Green Randy George April 2026",
+      "authority_reason": "NBC News national security reporting",
+      "what_it_establishes": "Confirms the three firings; Pentagon gave no official reason; reported reasons relate to Hegseth wanting leaders aligned with his vision and officer promotion clashes"
+    },
+    {
+      "url": "https://abcnews.com/Politics/army-secretary-calls-fired-general-transformational-after-hegseth/story?id=132109951",
+      "title": "Army secretary calls fired general 'transformational' after Hegseth ousted him - ABC News",
+      "found_via_query": "Randy George fired reason 'Army transformation' OR 'culture' OR 'Iran' Hegseth April 2026",
+      "authority_reason": "ABC News reporting on Army Secretary's own characterization of George after the firing",
+      "what_it_establishes": "Army Secretary Dan Driscoll called George 'transformational,' suggesting no substantive misconduct or insubordination was the basis for the firing"
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching the specific claim ('generals fired refusing troops Iran') immediately surfaced the Snopes fact-check — the viral claim had already been investigated",
+      "Searching for 'reason' and 'Pentagon statement' alongside the generals' names uncovered official/reported reasons that contradicted the tweet's causal claim",
+      "The Axios article with named U.S. officials provided the strongest sourced contradiction to the Iran refusal narrative"
+    ],
+    "what_hurt": [
+      "Most premium outlets (WaPo, NYT, CNN, NBC) returned 402/403/451 errors, limiting direct verification",
+      "The Pentagon gave no official reason, making it harder to definitively disprove the tweet's claim rather than merely show it's unsubstantiated"
+    ],
+    "would_multipass_help": "no — the core fact-check was found in round 1; additional passes would only add redundant sources. The claim is a clear case of asserting an unverified cause for a verified event.",
+    "deepseek_advice": "For tweets that assert a specific motivation/cause for a real event (e.g., 'fired because they refused X'), search both the event itself AND a query combining the alleged cause with 'fact check' or 'snopes' — viral causal claims about real events are frequently pre-debunked within days. Also search for official statements on the actual reasons, which often contradict the viral narrative."
+  }
+}

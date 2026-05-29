@@ -9,9 +9,10 @@
  * Activated when config.note_needed_judge is true.
  */
 
-import { getBotConfig } from "../ab-testing/botConfig";
+import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
+import { STEP } from "../utils/noteWriterSteps";
 import { ModelOutputInvalidError } from "../utils/errors";
 
 export interface JudgeResult {
@@ -19,51 +20,62 @@ export interface JudgeResult {
   reasoning: string;
 }
 
-const SYSTEM_PROMPT = `You are a Community Notes quality judge for X/Twitter. You receive an original post, research findings, and a proposed community note. Your job: decide whether the note should actually be published.
+/**
+ * The note-needed judge is shared by simple-bot and cheap-bot. When
+ * `satireFilteredUpstream` is true (cheap-bot's pre-search satire detector is
+ * on), the heavy satire/comedy guidance is trimmed to a one-line backstop —
+ * overt satire is already filtered before the writer runs, so the judge only
+ * needs to catch the borderline cases the high-precision detector missed.
+ * When false (simple-bot), the full satire guidance stays.
+ */
+function buildSystemPrompt(satireFilteredUpstream: boolean, hasFindings: boolean): string {
+  const precondition3 = satireFilteredUpstream
+    ? `3. **Sincere, not satire** — the post presents the claim as sincere fact, not obvious satire/parody/joke (judged from the post itself, not a bio label). Overt satire is already filtered upstream, so abstain here only for clear jokes it missed. This is NOT a reason to abstain on a sincere false claim just because some replies correct it — replies don't travel with the post.`
+    : `3. **Sincere, not satire** — the post presents the claim as sincere fact, not obvious satire, parody, or a recognizable joke/meme (judged from the post itself, not a bio label). The "a reasonable reader would not be deceived" test exists ONLY to spot satire/jokes — it is NOT a reason to abstain on a sincerely-asserted false claim just because some replies or quote-tweets correct it. Replies do not travel with the post and most viewers never read them, so a note is still needed.`;
 
-A community note SHOULD be published only if ALL of:
-- The post makes a clear, verifiable factual claim (not just opinion or hyperbole).
-- The proposed note directly addresses the post's main misleading claim — not a tangential or pedantic detail.
-- The note is supported by strong, direct evidence in the research findings (not absence of evidence, not vibes).
-- A typical reader of the post would benefit from seeing the correction.
+  const satireAbstainCase = satireFilteredUpstream
+    ? ``
+    : `\n- **Self-evident non-factual intent** — obvious satire, parody, mockery, or a recognizable joke/meme format, judged from the post itself rather than a bio label. This includes a comedic performance or stand-up set: when the transcript shows a comedian doing a bit (punchlines, audience laughter, absurd escalating premises), the "claim" is the setup of a joke, not a sincere factual assertion — do NOT fact-check the joke's premise as if it were real, even if a literal version of it would be false.`;
 
-A community note should NOT be published if ANY of:
-- The post is opinion, hyperbole, or rhetorical with no factual claim attached.
-- The post is factually correct.
-- The research findings do not strongly contradict the post.
-- The "error" is minor, pedantic, or hair-splitting.
-- The note corrects a tangential detail while the main misleading claim is untouched.
-- The note is uncertain, hedged, or relies on "no evidence found" — **except** when the note is correcting a **fabricated quote** or a **non-event** ("X never said Y", "Z did not happen") attributed to a real public figure with NO in-tweet disambiguation. For those, the absence of the quote / event in credible sources IS sufficient evidence: a primary source explicitly disconfirming the non-event is impossible by definition, so don't require one. **This exception does NOT apply** when the tweet itself contains the corrective context: an attached video that IS the evidence, a credit to a named parody / comedy creator, an account bio that labels the source as roleplay / parody / satire, or an explicit self-disclaiming caption like "NOTHING on this page is REAL". In those cases the reader already has the signal they need; a note adds nothing.
-- The post is a **prediction about a future event** ("This will happen", "Watch this fail") that cannot be fact-checked at posting time.
-- The post is **editorial framing using a defensible metric** ("Country X has the most Y per capita") where the metric is real and the choice of framing is opinion.
-- The post is **satire / parody with clear in-joke signals** in the replies (the audience overwhelmingly recognizes it as a joke). Some commenters being confused is not enough — the threshold is overwhelming-as-joke, not unanimous.
+  const readingComments = satireFilteredUpstream
+    ? `## Reading the comments
 
-## Satire, parody, and "obvious joke" posts
+Replies that CORRECT a sincere false claim do NOT remove the need for a note — the note serves the majority of viewers who never read the replies. A post built to imitate real media (a fake news headline, official statement, or screenshot) is sincere-by-imitation and still needs a note.`
+    : `## Reading the comments
 
-Do NOT auto-reject based on labels like "parody account" in the bio, "satire" tags, or the post sounding joke-like. What matters is whether readers are actually being misled. Read the comments and replies carefully and classify each one:
+Replies are a signal only about whether the post is satire vs sincere — never a reason to abstain on a sincere false claim. Commenters reacting as if the claim is real point to a sincere post; commenters flagging it as fake/satire/a joke point to satire. A few confused replies on an obvious joke do not override precondition #3. Crucially, replies that CORRECT a sincere false claim do NOT remove the need for a note — the note serves the majority of viewers who never read the replies. A post built to imitate real media (a fake news headline, official statement, or screenshot) is sincere-by-imitation and still needs a note.`;
 
-**"Taking it as real"** — commenter reacts to the underlying claim *as if it were true*. Even if they're joking, sarcastic, or mean about it, they treat the event as having happened. Examples:
-- "Congrats! You dodged a bullet" (joking about the breakup, but assumes it happened)
-- "RIP", "shocking", "no way", "called it"
-- Repeating the claim as fact ("they were just on a double date", "another short Hollywood relationship")
-- Snarky jokes about the topic ("celebrity relationships last shorter than free trials") that only land if the event happened
-- Asking sincere follow-up questions ("when did this happen?", "wait what")
+  const inputsDescription = hasFindings
+    ? `an original post, research findings, and a proposed community note (with its cited sources)`
+    : `an original post and a proposed community note (with its cited sources)`;
 
-**"Recognizing the post as fake"** — commenter explicitly flags that the post is fabricated, photoshopped, AI-generated, satire, or not real. Examples:
-- "fake news", "this is photoshopped", "bro made this in Notes app"
-- "lmao this didn't happen", "obvious bait", "ragebait"
-- "[parody account] strikes again"
-- Pointing out the screenshot doesn't match the real account
+  return `You are a Community Notes quality judge for X/Twitter. You receive ${inputsDescription}. Your job: decide whether the note should actually be published.
 
-Rules for the judgement:
-- A note is needed if a meaningful fraction of commenters are in the "taking it as real" bucket. Even 1-2 confused commenters out of 10 on a post with millions of impressions means many silent readers are also confused.
-- A note is NOT needed only if commenters overwhelmingly (≈80%+) recognize the post as fake.
-- "Snarky" or "jokey" tone is not the same as "recognizing it's fake." Reactions that joke about the topic as if it happened count as "taking it as real."
-- A screenshot designed to imitate a real Instagram story / news headline / official statement raises the prior that readers will be misled.
+Publish a note ONLY if all three hold:
+1. **Falsifiable fact** — the post asserts a specific, checkable claim about a past or present state of the world. NOT a prediction, opinion, value judgment, or rhetorical generalization.
+2. **Materially false** — that claim is actually false or materially misleading against the evidence; not merely reframed, incomplete, or pedantic.
+${precondition3}
+
+If any fails, return note_needed=false. The note must address a claim the post actually makes, not a tangential detail — but a false superlative or absolute the post asserts ("lowest ever", "the first", "no ID required", "none") IS such a claim, not a tangential detail, even when the post's headline subject is otherwise accurate.
+
+## Common abstain cases (illustrative, not exhaustive)
+
+- **Predictions / unresolved matters** — the claim is about a future event, or a contested matter not yet settled. Don't grade a prediction with hindsight or assert facts that aren't yet established.
+- **Accurate but reframed** — the underlying claim is true and the note only re-spins it (a softer synonym, a different metric, added context that contradicts nothing). If the findings say the claim is essentially accurate, abstain.
+- **Author already disclosed** — the author truthfully states the content's nature (AI-generated, satire, fiction). Don't correct a subclaim they never made.
+- **Pedantic** — a recency or detail nitpick that doesn't change the claim's meaning, or fact-checking the stylistic compression of an obvious explainer/animation whose headline is true. (A false superlative or absolute the post states outright is NOT pedantic — it is a checkable claim of its own.)${satireAbstainCase}
+- **Self-disambiguating post** — the post's OWN media or caption already reveals its non-serious nature (satire/parody/AI/fiction) or is itself the corrective evidence. Corrective *replies* do NOT count: they don't travel with the post and most viewers never see them, so a sincerely-asserted false claim still needs a note.
+
+${readingComments}
+
+## Exception — hedged evidence on fabricated quotes / non-events
+
+A note may rely on "no evidence found" only when correcting a fabricated quote or a non-event ("X never said Y", "Z did not happen") attributed to a real public figure with no in-tweet disambiguation — there the absence of the claim in credible sources is itself sufficient. This does NOT apply when the post already carries the corrective signal: a video that IS the evidence, a credit to a parody creator, a bio labeling the source as parody, or a self-disclaiming caption.
 
 Return JSON with two fields:
-- note_needed: boolean. True only if the note clearly should be published.
-- reasoning: one or two sentences explaining the decision. If the post is on a parody/satire account, explicitly note what the comments suggest about whether readers are misled.`;
+- note_needed: boolean. True only if all three preconditions hold.
+- reasoning: one or two sentences. If you abstain, name which precondition failed.`;
+}
 
 const RESPONSE_FORMAT = {
   type: "json_schema" as const,
@@ -73,10 +85,10 @@ const RESPONSE_FORMAT = {
     schema: {
       type: "object",
       properties: {
+        reasoning: { type: "string", description: "One or two sentences of analysis, written BEFORE the verdict so the decision is conditioned on it." },
         note_needed: { type: "boolean", description: "True iff the proposed note should be published." },
-        reasoning: { type: "string", description: "One or two sentences explaining the decision." },
       },
-      required: ["note_needed", "reasoning"],
+      required: ["reasoning", "note_needed"],
       additionalProperties: false,
     },
   },
@@ -84,7 +96,7 @@ const RESPONSE_FORMAT = {
 
 export async function runNoteNeededJudge(params: {
   postContext: string;
-  researcherFindings: string;
+  researcherFindings?: string;
   noteText: string;
   sources: string[];
 }): Promise<JudgeResult> {
@@ -92,29 +104,34 @@ export async function runNoteNeededJudge(params: {
   const config = getBotConfig();
   const model = config.note_judge_model ?? config.model;
 
-  const userMessage = [
+  const sections = [
     `## Original post`,
     params.postContext,
-    ``,
-    `## Research findings`,
-    params.researcherFindings,
+  ];
+  if (params.researcherFindings) {
+    sections.push(``, `## Research findings`, params.researcherFindings);
+  }
+  sections.push(
     ``,
     `## Proposed community note`,
     params.noteText,
     ``,
     `## Note's cited sources`,
     params.sources.length ? params.sources.join("\n") : "(none)",
-  ].join("\n");
+  );
+  const userMessage = sections.join("\n");
 
-  log?.set("simpleBot.judge.messages.0", { systemPrompt: SYSTEM_PROMPT, userMessage, model });
+  const systemPrompt = buildSystemPrompt(!!config.satire_detector, !!params.researcherFindings);
+  log?.set(`${STEP.noteNeededJudge}.messages.0`, { systemPrompt, userMessage, model });
 
   const { response, costEntry } = await trackedLlmCreate("simpleBot.judge", {
     model,
     messages: [
-      { role: "system" as const, content: SYSTEM_PROMPT },
+      { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
     response_format: RESPONSE_FORMAT,
+    ...llmTuningParams(config),
   } as any);
   trackLlmCall(costEntry);
 
@@ -127,7 +144,7 @@ export async function runNoteNeededJudge(params: {
       `simpleBot.judge: model output was not valid JSON. content="${content.slice(0, 200)}"`,
     );
   }
-  log?.set("simpleBot.judge.messages.1", { content: parsed });
+  log?.set(`${STEP.noteNeededJudge}.messages.1`, { content: parsed });
 
   return { noteNeeded: !!parsed.note_needed, reasoning: parsed.reasoning ?? "" };
 }

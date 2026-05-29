@@ -1,0 +1,200 @@
+[
+  {
+    "url": "https://x.com/i/status/2055719221812666428",
+    "text": "We\u2019re watching it happen. https://t.co/OJ0CSPORqI",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note establishes that the Churchill quote is fabricated (Churchill never said it). A strong note ALSO flags that the Reagan attribution is unverified/commonly misattributed. It must AVOID the original note's failure of addressing only one quote: the original note debunked just the Churchill line and ignored the equally prominent Reagan line, so a note that names BOTH is the bar. Must cite a credible source for the Churchill debunk (Snopes / Hillsdale Churchill Project / PolitiFact). Do NOT pass a note that treats either quote as genuine.",
+    "ground_truth_note": "Neither quote is reliably authentic. Churchill never said 'the fascists of the future will call themselves anti-fascists' \u2014 it's a long-debunked misattribution (the Hillsdale Churchill Project finds no record of it). The Reagan line ('fascism...in the name of liberalism') is also unverified and widely misattributed, echoing a Sinclair Lewis-style maxim. https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote/ https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/ https://www.snopes.com/fact-check/ronald-reagan-fascism-liberalism/",
+    "original_note_text": "The quote attributed to Winston Churchill is not authentic; he never said it. https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote https://winstonchurchill.hillsdale.edu/fascists-anti-fascists",
+    "failure_reason": "Correct but incomplete: the meme features TWO attributed quotes and the note only debunks the Churchill one, leaving the Reagan quote (also unverified/misattributed) unaddressed \u2014 a MissingKeyPoints failure for a two-quote image.",
+    "note_text": "The quote attributed to Winston Churchill in this image has never been found in his writings or speeches. Snopes, PolitiFact, and the International Churchill Society have all confirmed it is a misattribution. https://www.snopes.com/fact-check/fascists-called-anti-fascists-quote/ https://www.politifact.com/factchecks/2018/aug/07/greg-abbott/greg-abbott-misquotes-winston-churchill-fascism/ https://winstonchurchill.org/publications/churchill-bulletin/bulletin-122-aug-2018/churchillian-drift/",
+    "result": "nw_published_bad"
+  },
+  {
+    "url": "https://x.com/i/status/2009219530300731596",
+    "text": "Astonishing.\n\nAccording to Labour\u2019s own analysis, just 0.8% of those benefitting from lifting the 2 child benefit cap are children of British workers.\n\n99% of those families are either not in work or not British. https://t.co/mfoAmyZeSN https://t.co/hwhgR9BHmF",
+    "needs_note": "yes",
+    "judge_guidance": "PASS if the note explains that the 0.8% figure refers specifically to households where BOTH parents are British-born and work full-time (per Reform's conditional pledge), NOT all working British families \u2014 so the tweet's framing that '99% are not in work or not British' is misleading because it excludes single-parent working families, part-time working families, and mixed-status households. Bonus credit for citing the actual DWP / Labour analysis numbers (3,700 out of 470,000). FAIL if the note (a) accepts the tweet's framing, (b) just argues policy without addressing the statistical misrepresentation, or (c) cites only partisan sources.",
+    "ground_truth_note": "The 0.8% figure (3,700 of 470,000 households) is from DWP analysis of Reform's specific proposal to lift the cap only for households where BOTH parents are British-born AND work full-time. Most of the other 99.2% include single-parent working families and partially-employed British households \u2014 not, as the tweet implies, families who are uniformly 'not in work or not British'. https://www.gbnews.com/politics/labour-two-child-benefits-cap-reform-uk",
+    "original_note_text": "The 0.8% figure from the cited DWP/Labour analysis refers to households with two full-time working British-born parents (per Reform's proposal), not all children of British workers, as over half of affected households have at least one worker. https://www.theguardian.com/politics/2026/jan/07/racchel-reeves-nigel-farage-two-child-benefit-cap-comments https://www.independent.co.uk/news/uk/politics/farage-pledge-child-benefit-cap-poverty-b2889710.html https://www.thecanary.co/uk/analysis/2025/07/30/dwp-two-child-limit-news/",
+    "failure_reason": "Note is substantively correct but rated 13x 'missing key points' and 13x 'note not needed'. The text is dense and slightly hard to parse \u2014 the key point (0.8% = both-parents-full-time-British-born, not all working British families) could be stated more crisply. Also, citing thecanary.co (a partisan left outlet) likely hurts perceived neutrality.",
+    "note_text": "The 0.8% figure refers specifically to two-parent households where both parents work full-time, not to all children of British workers. Labour Press clarified this directly in reply to this post. https://x.com/i/status/2009219530300731596",
+    "result": "nw_published_bad"
+  },
+  {
+    "url": "https://x.com/i/status/2038078622590779632",
+    "text": "\ud83c\uddfa\ud83c\udde6\ud83e\uddd0\ud83d\udcaaThe Ukrainian Armed Forces managed to break through on the front; unexpectedly, the occupiers\u2019 defenses collapsed, allowing Ukrainian troops to get into their rear. Minimal resistance quickly turned into a complete surrender of enemy positions. This sudden success made it https://t.co/UinXnpEEx5",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note establishes that, as of late March 2026, there was NO Ukrainian breakthrough, NO collapse of Russian defenses, and NO mass surrender / liberation of cities \u2014 credible assessments (ISW) describe only incremental gains and stalled, contested front lines, with Russia still making slow advances. The note MUST cite a loadable, authoritative source for the front-line status (e.g. ISW / criticalthreats.org assessment for late March 2026, or AP/Reuters/Al Jazeera war coverage). FAIL the original note's specific failure: ensure the cited URLs actually load and substantiate the 'no breakthrough' claim (the original was rated notHelpfulSourcesMissingOrUnreliable). Optionally the note may note the image appears to be generic/unrelated footage, but only if it does not over-claim about media it cannot verify. FAIL any note that endorses the breakthrough/collapse narrative.",
+    "ground_truth_note": "As of late March 2026 there was no Ukrainian breakthrough or collapse of Russian defenses. The Institute for the Study of War describes grinding, contested front lines with only incremental gains on both sides; Russia continued to make slow advances and no cities were liberated in a sudden offensive. https://www.criticalthreats.org/analysis/russian-offensive-campaign-assessment-march-31-2026 https://www.aljazeera.com/news/2026/3/28/russian-strikes-on-ukraine-cities-kill-4-as-deal-to-end-war-dims",
+    "original_note_text": "There are no credible reports of a major Ukrainian breakthrough, collapse of Russian defenses, or the liberation of cities as of late March 2026. Experts describe only incremental gains in the south and stalled front lines.     https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-march-26-2026   https://www.aljazeera.com/news/2026/3/28/russian-strikes-on-ukraine-cities-kill-4-as-deal-to-end-war-dims",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (5) on a low-volume (12) note. The verdict is correct and well-aligned with ISW, but the lead ISW URL uses an 'understandingwar.org/research/...' path that may not resolve cleanly (ISW assessments are commonly hosted at criticalthreats.org), and the small rating pool flagged sourcing. Substantively sound but the citation reliability is the weak point.",
+    "note_text": "Ukrainian forces liberated roughly 400\u2013470 square kilometers in the Oleksandrivka and Hulyaipole directions over several months from late January to mid-March 2026 \u2014 not as a sudden breakthrough with a mass surrender in late March. https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-march-31-2026/",
+    "result": "nw_published_bad"
+  },
+  {
+    "url": "https://x.com/i/status/2033436730251264262",
+    "text": "\ud83d\udea8According to my reliable sources, Benjamin Netanyahu actually died 7 days ago.\n\nThe two subsequent public appearances on camera appear to be fabricated, likely using advanced deepfake technology.\n\nIsraeli authorities are expected to attribute his death to natural causes and https://t.co/V1a9fdfGBA",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note clearly states Netanyahu is ALIVE and that his post-rumor appearances are GENUINE, not deepfakes \u2014 anchored to his live, multi-outlet March 12 news conference and/or his March 15-16 Jerusalem cafe videos corroborated by the cafe \u2014 citing a loadable, reliable source (Snopes, NBC, or Euronews). FAIL the original note's specific failure: do NOT cite a source without confirming it actually loads and substantiates that he is alive (the original was rated notHelpfulSourcesMissingOrUnreliable). Any verified-loading top-tier fact-check (Reuters, AFP, Snopes, NBC, AP, or Euronews) that establishes his genuine post-rumor appearances passes regardless of which specific appearance date it references, since multiple genuine appearances occurred across March 2026. Also FAIL any note that entertains the deepfake theory, treats the question as open, or relies solely on the AI image description (the attached image was widely claimed to be AI/fake in the replies, so the bot must not authenticate or debunk via the image alone).",
+    "ground_truth_note": "Benjamin Netanyahu is alive and his recent on-camera appearances are genuine, not deepfakes. He held a live, widely-broadcast news conference on March 12, 2026 and posted videos from the HaSataf cafe in Jerusalem on March 15-16 that the cafe confirmed were authentic. Fact-checkers (Snopes, NBC) traced the death rumor to Iranian state media. https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/ https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+    "original_note_text": "Benjamin Netanyahu is alive; he visited Ashdod Port on March 10, 2026, and held a news conference on March 12 debunking death rumors. https://www.gov.il/en/pages/event-ashdod100326 https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (21) \u2014 the dominant reason. The verdict is correct and it even cites the right Snopes article, but it leads with the same likely-dead gov.il event URL and a contestable Ashdod-Port visit, and the Snopes URL is missing the trailing slash/path that resolves cleanly. Raters split across sources-unreliable / incorrect / opinion, indicating the cited proof didn't land despite the conclusion being right.",
+    "note_text": "Benjamin Netanyahu is alive and held a press conference on March 24, 2026 to dispel death rumors. Multiple news outlets confirmed the appearances were genuine. https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+    "result": "nw_published_bad"
+  },
+  {
+    "url": "https://x.com/i/status/1996831133414363186",
+    "text": "This is the moment a judge in the Netherlands handed the migrant killer of a little girl just 120 hours community service as punishment\n\nThe father enraged throws a chair at the judge \ud83d\udca5\n\nJudge's like this should lose their jobs\n\nAbsolutely disgusting beyond belief https://t.co/EdH91AtDeW",
+    "needs_note": "yes",
+    "judge_guidance": "PASS if the note (1) flags the clip is from 2014 (not current), AND (2) states the appeals court overturned the 120-hour sentence in September 2015 and imposed 15 months in jail, which the driver served after extradition. Bonus: note that the driver was a Polish (EU) national. FAIL notes that (a) treat the 120 hours as the final sentence, (b) endorse the 'migrant killer' framing, or (c) just say the tweet is fake without explaining the appeal/extradition. The original note is close \u2014 it covers (1) and (2), so a similar quality note should pass.",
+    "ground_truth_note": "This is a 2014 ruling on a 2013 Meijel crash where a Polish (EU national) driver killed a 2-year-old and her grandparents on a cycle path. Prosecutors appealed: a Sept 2015 appeals court overturned the 120-hour sentence and imposed 15 months in jail plus a 4-year driving ban. He was extradited from the UK and served the sentence. https://www.dutchnews.nl/2015/09/appeal-court-jails-driver-for-killing-couple-and-grandchild/ https://nltimes.nl/2016/08/24/polish-fugitive-extradited-netherlands-serve-sentence-fatal-accident",
+    "original_note_text": "Misleading: the clip shows a 2014 outburst after an initial 120-hour community service sentence, but prosecutors appealed and an appeals court later sentenced the driver to 15 months' jail; he was extradited to serve that term. https://www.dutchnews.nl/2015/09/appeal-court-jails-driver-for-killing-couple-and-grandchild/",
+    "failure_reason": "missing_key_points: covers the appeal correctly but doesn't address the 'migrant killer' framing (the driver was a Polish EU national), nor that the original tweet uses a 11+ year old clip to imply a current ruling",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2039118807692968130",
+    "text": "Ben Stiller Turns on Zohran Mamdani\n\nJust months after endorsing and voting for NYC Mayor Zohran Mamdani, woke actor Ben Stiller is now blasting him.\n\nStiller, like his buddy Robert De Niro (who also hasn\u2019t worked in years), is furious about Mamdani\u2019s proposed wealth tax on https://t.co/urp6ozIUlo",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note states there is no credible evidence Ben Stiller (or Robert De Niro) criticized Mamdani, and that the De Niro angle traces to a debunked satirical/fabricated post. Bonus correctness if it notes the tax claim is mischaracterized (income tax on high earners, not an 8% net-worth wealth tax). Cite a fact-check (Snopes) and/or reputable reporting. A note that treats the quotes as real, or that argues the politics without flagging fabrication, should FAIL.",
+    "ground_truth_note": "There is no evidence Ben Stiller or Robert De Niro have criticized Mayor Mamdani. Rumors regarding De Niro have been debunked, and reports indicate tax proposals target high earners' income, not an 8% net worth levy. https://www.snopes.com/fact-check/robert-de-niro-nyc-mamdani https://www.bloomberg.com/news/articles/2026-03-06/a-sliver-of-nyc-s-wealthy-has-unusual-rallying-cry-tax-me-more",
+    "original_note_text": "",
+    "failure_reason": "",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2047978936311918600",
+    "text": "\u30af\u30eb\u30fc\u30ba\u8239\u306a\u3069\u306e\u6c5a\u6c34\u51e6\u7406\u30b7\u30b9\u30c6\u30e0\u304c\u51c4\u3044\uff01 https://t.co/5jHKzCa3p3",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note establishes that the video showing cruise ships pumping brown waste/sewage is AI-generated, not real cruise-ship footage. Strong signals to cite: Full Fact debunk (cruise-ship-sewage-sea-ai-generated), Lead Stories, PesaCheck. Note can optionally add that real cruise-ship wastewater discharge under IMO/MARPOL rules must be treated and is not visible brown sludge. FAIL any note that: (a) treats the video as authentic, (b) endorses the sarcastic tweet's literal framing as a real environmental scandal, (c) is too long/uses unsourced specifics. A note in Japanese matching the tweet's language is preferred but not required.",
+    "ground_truth_note": "\u52d5\u753b\u306e\u30af\u30eb\u30fc\u30ba\u8239\u304b\u3089\u8336\u8272\u3044\u6db2\u4f53\u6392\u51fa\u6620\u50cf\u306fAI\u751f\u6210\u3067\u3042\u308a\u3001\u5b9f\u969b\u306e\u51e6\u7406\u6e08\u307f\u6392\u6c34\u306f\u900f\u660e\u3067\u3059\u3002https://fullfact.org/environment/cruise-ship-sewage-sea-ai-generated https://www.telugupost.com/english-factcheck/viral-video-showing-cruise-ships-dumping-raw-sewage-into-ocean-is-ai-generated-1578090",
+    "original_note_text": "",
+    "failure_reason": "",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2034574905858040263",
+    "text": "Just a reminder, Manchester United haven\u2019t played a Champions League knockout game in over 10 years https://t.co/EpPAZDwhy6",
+    "needs_note": "yes",
+    "judge_guidance": "PASS if the note states Manchester United played Champions League knockout rounds in 2021/22 (R16 vs Atletico Madrid, Feb/Mar 2022) \u2014 clearly less than 10 years before March 2026. The note must give at least one specific, recent knockout fixture (Atletico Madrid 2022 is the strongest). FAIL if the note: (a) accepts the '10 years' claim; (b) only mentions much older fixtures (e.g. 2018/19 alone) without the more-recent 2021/22 tie; (c) writes a non-corrective note about the author's joke disclaimer. Sources should be UEFA or a reputable football outlet (UEFA.com, ESPN, Sky Sports, Wikipedia).",
+    "ground_truth_note": "Manchester United played Champions League knockout rounds in 2021/22, losing to Atletico Madrid in the Round of 16 on March 15, 2022 \u2014 less than 4 years ago. They also reached the quarter-finals in 2018/19. https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/ https://en.wikipedia.org/wiki/2021%E2%80%9322_UEFA_Champions_League_knockout_phase",
+    "original_note_text": "",
+    "failure_reason": "",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2036903878726131807",
+    "text": "Israel, United States and Argentina vote against U.N. resolution to condemn slavery; UK and EU nations abstain.",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note clarifies WHAT the resolution actually was - i.e. that it declared transatlantic slavery the gravest crime against humanity and recommended reparations/reparatory justice - and that the 'no' votes / abstentions were about those provisions (reparations, retroactive legal liability, ranking of crimes), not an endorsement of slavery. FAIL if the note accepts the 'voted against condemning slavery' framing, takes a partisan side on whether reparations are merited, or omits the reparations element that is the crux of the dispute. Neutral, factual explanation of the resolution's content is required.",
+    "ground_truth_note": "The vote was against a resolution declaring transatlantic slavery the worst crime against humanity and recommending reparations, not against slavery overall.    https://news.un.org/en/story/2026/03/1167199     https://usun.usmission.gov/explanation-of-vote-for-unga-resolution/",
+    "original_note_text": "",
+    "failure_reason": "",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2018455684661338294",
+    "text": "Epstein and Maxwell bury 2 foreign kids who were strangled to death during rough, fetish sex. https://t.co/rDnWO1i8ju",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note (a) makes clear the 'buried girls' claim originates from a single unverified 2019 email asking for 1 BTC for a USB of alleged evidence, (b) states no bodies have been found and no remains were recovered in the 2026 Zorro Ranch search to date, and (c) cites a reliable source (Al Jazeera, Time, NBC News, or DOJ filing). AVOID stating definitively 'the FBI never searched the property' \u2014 New Mexico/state authorities DID conduct a first-ever search at Zorro Ranch in March 2026 (the original note's blanket 'FBI never searched' is now outdated). FAIL any note that endorses the buried-bodies claim as fact, or that simply waves away the email without explaining its provenance.",
+    "ground_truth_note": "The 'buried girls' claim comes from a single unverified Nov 2019 email to Eddy Aragon offering a USB of alleged Epstein evidence for 1 bitcoin. No bodies have been found; New Mexico authorities conducted a first-ever search of Zorro Ranch in March 2026 but recovered no remains. https://www.aljazeera.com/news/2026/3/17/tipster-claims-to-have-seen-grave-like-plots-at-epsteins-zorro-ranch https://time.com/article/2026/03/10/epstein-zorro-ranch-investigation-search-new-mexico/",
+    "original_note_text": "The claim that Epstein and Maxwell buried two girls near Zorro Ranch originates from an unverified email in DOJ files offering videos for sale; no bodies have been found, and the FBI never searched the property. https://www.justice.gov/epstein/files/DataSet%209/EFTA00067066.pdf https://en.wikipedia.org/wiki/Zorro_Ranch",
+    "failure_reason": "notHelpfulNoteNotNeeded dominant (56) but also notHelpfulMissingKeyPoints (54), notHelpfulOpinionSpeculation (36), notHelpfulIncorrect (24). The 'FBI never searched the property' line is now outdated \u2014 state authorities DID search Zorro Ranch in March 2026. Reliance on the raw DOJ PDF (which is the email itself, not a fact-check) reads as circular sourcing.",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2028943273042100353",
+    "text": "RAJU: Why shouldn't Congress assert its constitutional role and actually vote to declare war the way it did with Iraq and Afghanistan?\n\nFETTERMAN: Well, the last war we actually declared was World War 2\n\nRAJU: No. Iraq and Afghanistan.\n\nFETTERMAN: *stammers* https://t.co/Hw4wR4L8d6",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note establishes that Congress did NOT formally declare war for Iraq or Afghanistan - those were AUMFs, legally distinct from declarations of war - and that the last formal US declaration of war was during WWII. It must make clear Fetterman's underlying statement was factually correct (or at minimum that the 'Congress declared war on Iraq/Afghanistan' premise is wrong). FAIL if the note endorses the premise that Iraq/Afghanistan were declared wars, conflates AUMFs with declarations of war, or mocks/sides against Fetterman on the substance. A neutral, sourced explanation of the AUMF-vs-declaration distinction is required.",
+    "ground_truth_note": "Congress did not declare war in Iraq and Afghanistan, it passed AUMFs which are legally and historically distinct. Scholars have noted that, \u201cCongress issued its last official declaration of war during World War II\u201d     https://education.cfr.org/learn/reading/how-single-phrase-defined-war-terror#:~:text=What%20is%20an%20AUMF?,military%20operations%20since%209/11.",
+    "original_note_text": "",
+    "failure_reason": "",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2041676371127370152",
+    "text": "American ships crossing the Strait of Hormuz after paying their toll in YUAN - how poetically intoxicating is that?",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note corrects the specific false claim \u2014 there is no evidence American ships are paying Iranian yuan tolls to cross Hormuz; under Iran's tiered system U.S./Israel-linked vessels are denied passage entirely \u2014 while accurately acknowledging the toll regime is real for friendly-nation vessels (yuan/crypto). Source to a credible outlet (Bloomberg / Fortune / Chainalysis / TRM Labs / Time / The Hill). AVOID the original note's failure (rated notHelpfulOpinionSpeculation 5, NoteNotNeeded 5, SourcesMissingOrUnreliable 4, Incorrect 4): the original is essentially correct but reads as partly speculative ('there is no evidence American ships are paying') and leans on Time/Hill links about U.S. counter-tolls; a stronger note explicitly states U.S./Israel vessels are BARRED from transit (so paying is moot) and cites the toll mechanism directly. A note that affirms the tweet (American ships paying yuan tolls) or that denies the toll regime exists at all, fails.",
+    "ground_truth_note": "No evidence supports American ships paying Iranian tolls in yuan to cross Hormuz. The IRGC toll regime (yuan or crypto, ~$0.50-1/barrel) is real for friendly-nation vessels, but Iran's tiered system bars U.S.- and Israel-linked ships from transit entirely, so they aren't paying these tolls; Washington has floated its own counter-tolls. https://www.bloomberg.com/news/articles/2026-04-01/strait-of-hormuz-ships-paying-iran-yuan-and-crypto-tolls-for-safe-passage https://fortune.com/2026/04/10/iran-strait-of-hormuz-crypto-tolls-stablecoins-bitcoin-oil-tankers/",
+    "original_note_text": "While Iran has established a &quot;toll booth&quot; regime requiring payments in yuan or crypto for passage through the Strait of Hormuz, there is no evidence American ships are paying these fees. The U.S. has instead proposed its own counter-tolls on the waterway.  https://time.com/article/2026/04/07/strait-of-hormuz-countries-pass-deals-iran-us-war-trump  https://thehill.com/homenews/administration/5818431-trump-us-tolls-strait-of-hormuz",
+    "failure_reason": "Substantively correct but rated NOT_HELPFUL (15 ratings; dominant notHelpfulOpinionSpeculation 5, NoteNotNeeded 5, SourcesMissingOrUnreliable 4, Incorrect 4). The 'there is no evidence American ships are paying' phrasing proves a negative and reads as speculative; it misses the cleaner, stronger fact that U.S./Israel-linked vessels are categorically BARRED from transit under Iran's tiered system, so the premise of 'American ships paying' is moot. Sources are about U.S. counter-tolls rather than the bar on U.S. vessels.",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2025496691588104274",
+    "text": "FUN BREAK: This is the account of the new Xbox head, Asha Sharma.\n\nThe strange thing is that her first achievement is on January 16, 2026, and all the achievements are from different games with the same dates!\n\nIt seems the account was pre-set by Microsoft (a PR account) to show https://t.co/mWLJUVDzQR https://t.co/3Zd0rsDcbd",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note establishes that the account is authentic (Sharma's real, publicly shared gamertag) and rebuts the 'fake PR bot' / 'all achievements same date' premise with the key fact the original note OMITTED: the elevated gamerscore came from family members sharing the account, which Sharma herself publicly acknowledged and then limited to just herself. A passing note should also note the activity is spread across many games/dates with real playtimes. It must NOT merely quibble over 'Jan 15 not 16' without addressing the substance, and must NOT concede the PR-bot framing. Cite a credible gaming outlet (Windows Central, Pure Xbox, TrueAchievements).",
+    "ground_truth_note": "This is Asha Sharma's real Xbox gamertag, which she shared publicly; it is not a fabricated 'PR bot' account. The achievements span many games over weeks with genuine playtimes (e.g., narrative titles played at length), not a single pre-set date. Sharma explained the high gamerscore was because her family had been sharing the account, which she has since limited to herself. https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter",
+    "original_note_text": "Sharma's first achievement was Jan 15 (not 16), with varied dates & playtimes (13+ hrs in Halo, 100% Firewatch completed Jan 20). The account shows authentic gaming activity, not a pre-set \"PR bot\" profile as claimed. https://www.windowscentral.com/gaming/xbox/newly-named-xbox-ceo-asha-sharma-has-shared-her-gamertag-so-what-is-she-playing-and-why-does-it-matter",
+    "failure_reason": "Missing key points: leads with a pedantic 'Jan 15 not 16' correction and isolated playtime stats but omits the single most decisive, publicly-documented rebuttal \u2014 that Sharma explained the apparent anomalies as her family sharing the account. Reads as an unsourced-feeling spot-check rather than the clear authenticity explanation a reader needs.",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2039707797244215475",
+    "text": "Donald Trump's approval rating drops to 29%, lowest for any U.S. president.\n\nBut please, haters....Tell me more about how its \"just me.\"",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note (a) clarifies that the 29% figure is from the Harvard Youth Poll (18-29 demographic), not overall approval, and notes that overall Trump approval is around 40%, AND (b) corrects the 'lowest in history' claim by citing a lower historical figure (Truman 22%, or Bush ~25%). Strong sources: Harvard IOP Youth Poll page, Roper Center presidential approval database, Wikipedia opinion-polling-on-Trump article. A note that only addresses one of the two errors should partially pass (acceptable) but ideally addresses both. Notes that endorse the 'lowest in history' claim should FAIL. Notes that quibble with the Harvard Youth Poll methodology while missing the demographic-confusion point should FAIL.",
+    "ground_truth_note": "The 29% figure refers to Trump's approval among 18-29-year-olds in the Harvard Youth Poll (Fall 2025), not overall approval, which averages around 40%. It is also not the lowest in US presidential history \u2014 Harry Truman hit 22% and George W. Bush 25%. https://iop.harvard.edu/youth-poll/51st-edition-fall-2025 https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency https://ropercenter.cornell.edu/presidential-approval/highslows",
+    "original_note_text": "The 29% figure refers to Trump's approval among voters aged 18-29 in a Harvard Youth Poll, not overall approval which averages around 40%. It is also not the lowest in US presidential history, as Harry Truman reached 22%. https://iop.harvard.edu/youth-poll/51st-edition-fall-2025 https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency https://ropercenter.cornell.edu/presidential-approval/highslows",
+    "failure_reason": "Note is well-sourced and substantively correct. The 'missing key points' (19) and 'note not needed' (16) tags from raters likely reflect partisan rating dynamics on a Trump-related note rather than substantive failure. Provisional 'no_note_needed' is wrong: this is a clearly false dual factual claim worth correcting.",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2031539160700313846",
+    "text": "BREAKING\ud83d\udea8: A group of Islamists brutally attacked and beat a Jewish person who was peacefully eating lunch at a caf\u00e9 in San Francisco. https://t.co/yxcITnTlrL",
+    "needs_note": "yes",
+    "judge_guidance": "PASS if the note (1) corrects the location to San Jose (Santana Row), not San Francisco, AND (2) notes that police/DA have not confirmed the attackers are Islamists / Muslim \u2014 the case is being investigated as a possible antisemitic hate crime but suspects' religion is not established. Sources should be reputable local outlets (ABC7, CBS, NBC Bay Area, KRON4, or the DA's office). FAIL if the note denies the attack happened, denies the antisemitic dimension entirely, or repeats the 'Islamist' framing as fact.",
+    "ground_truth_note": "This attack occurred at Santana Row in San Jose, not San Francisco, on March 8, 2026. Police and the Santa Clara County DA are investigating it as a possible antisemitic hate crime; three suspects face assault and battery charges. There is no public evidence the attackers are Islamists. https://abc7news.com/post/caught-video-sjpd-investigating-possible-hate-crime-2-jewish-men-attacked-santana-row-san-jose/18700623/ https://www.cbsnews.com/sanfrancisco/news/san-jose-santana-row-hate-crime-inevstigation-possible-antisemitic-attack/",
+    "original_note_text": "",
+    "failure_reason": "",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2011406203851833461",
+    "text": "800k voters found to be improperly registered to vote in Oregon https://t.co/d9jlOOTjys",
+    "needs_note": "yes",
+    "judge_guidance": "PASS if the note establishes: (1) Oregon is removing up to ~800,000 INACTIVE voter records (not 'improperly registered' in the sense of fraud); (2) these are real people who haven't voted in years / moved / had mail returned; (3) inactive voters do NOT receive ballots and had no effect on elections; (4) the cleanup is the result of a settlement with Judicial Watch under federal voter-roll-maintenance law. The note MUST NOT validate the 'improperly registered' fraud framing. Reasonable to cite Oregon SoS, OPB, or fact-checkers. Length-OK if it just makes the inactive-voter clarification clearly.",
+    "ground_truth_note": "Oregon is removing up to ~800,000 inactive voter records under a settlement with Judicial Watch \u2014 these are long-inactive registrations (people who moved, missed multiple federal elections, or had mail returned), not fraudulent entries. Inactive voters do not receive ballots and had no effect on elections. https://www.opb.org/article/2026/05/07/oregon-settles-lawsuit-failed-police-voter-rolls/ https://sos.oregon.gov/news/Pages/resume-routine-cleanup-outdated-inactive-voter-registration-records-directives-tobias-read.aspx",
+    "original_note_text": "Oregon is removing about 800,000 inactive voter registrations as part of routine cleanup prompted by lawsuits; these are outdated records of real people who haven't voted recently, not fake or fraudulent entries.    https://sos.oregon.gov/news/Pages/resume-routine-cleanup-outdated-inactive-voter-registration-records-directives-tobias-read.aspx    https://www.oregonlive.com/politics/2026/01/facing-trump-administration-lawsuit-oregon-will-pare-back-voter-rolls-to-exclude-people-who-havent-voted-in-years.html",
+    "failure_reason": "Note is actually correct and well-sourced. Raters tagged notHelpfulNoteNotNeeded (527) and notHelpfulMissingKeyPoints (461) \u2014 likely partisan downvoting given Musk's audience. Could be sharper by noting these voters didn't receive ballots and the removal followed a Judicial Watch lawsuit settlement, but the substance is right.",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2012558410122670331",
+    "text": "Here are Zelensky and Macron before they became presidents.\nIt feels like we\u2019re all part of one big show, doesn\u2019t it? https://t.co/qtj90VlQSv",
+    "needs_note": "yes",
+    "judge_guidance": "PASS only if the note (a) states the video is digitally manipulated / deepfaked \u2014 NOT authentic footage of Macron or Zelensky dancing \u2014 with Macron's face superimposed onto unrelated archival dancers, AND (b) is clearly worded and easy to parse. It must AVOID the original note's failure of being hard to understand: do NOT bury the point in a confusing clause like 'most originating from his pre-presidency comedy sketches'. It is fine to briefly note Zelensky was a pre-presidency entertainer, but the core message \u2014 the footage is fake/manipulated \u2014 must be unambiguous. Cite a reputable fact-check. FAIL if the note treats the dancing footage as real, or is so convoluted a reader cannot tell what is being corrected.",
+    "ground_truth_note": "This video is digitally manipulated, not authentic footage. Macron's face was superimposed onto 1980s nightclub dancers, and the Zelensky clip is a deepfake; neither shows them actually dancing 'before becoming presidents'. https://www.politifact.com/factchecks/2024/mar/22/instagram-posts/these-clips-of-emmanuel-macron-and-volodymyr-zelen",
+    "original_note_text": "This video is a manipulated compilation. The Macron dancing clips are deepfakes created by superimposing his face onto unrelated footage, while some Zelensky clips are altered despite most originating from his pre-presidency comedy sketches.    https://www.politifact.com/factchecks/2024/mar/22/instagram-posts/these-clips-of-emmanuel-macron-and-volodymyr-zelen  https://www.thecanadianpressnews.ca/fact_checking/video-showing-leaders-of-ukraine-france-dancing-is-mostly-fake-digitally-manipulated/article_9feb613f-0906-5efe-922f-631532f813a3.html",
+    "failure_reason": "Accurate but hard to understand: the clause 'some Zelensky clips are altered despite most originating from his pre-presidency comedy sketches' muddies the core point and partly undercuts the 'fake' message. Raters tagged it notHelpfulHardToUnderstand (5) and notHelpfulNoteNotNeeded (16).",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  },
+  {
+    "url": "https://x.com/i/status/2014434985046921417",
+    "text": "Keepin' it real! \ud83e\udd23\ud83e\udd23\ud83e\udd23 https://t.co/uKTc1yg0wW",
+    "needs_note": "yes",
+    "judge_guidance": "PASS if the note clearly says the People Magazine 1998 quote is fabricated and was never said by Trump, citing at least one credible fact-check (Snopes / PolitiFact / FactCheck.org / Full Fact). The note must not hedge with weak phrasing like 'appears to be fake' or 'may be fabricated'. A definitive denial is required, but it is satisfied by stating the quote was never said/published (e.g. 'People Magazine confirmed it never published this quote'); pairing that with 'fact-checkers found no record/evidence Trump said it' is acceptable and is not equivocation. FAIL if the note instead claims the quote is genuine, or if the bot declines (this is a clear fabricated-quote case worth correcting).",
+    "ground_truth_note": "This 1998 People Magazine quote is fabricated. People Magazine searched its archive and found no record of any 1998 Trump interview or this quote. Fact-checkers including Snopes, PolitiFact and FactCheck.org have repeatedly debunked it since 2015. https://www.snopes.com/fact-check/republicans-dumbest-group-of-voters/ https://www.factcheck.org/2015/11/bogus-meme-targets-trump/ https://www.politifact.com/factchecks/2018/dec/18/blog-posting/no-donald-trump-did-not-call-republican-voters-dum/",
+    "original_note_text": "This quote is not genuine and was not said by Donald Trump in a 1998 People Magazine interview. The magazine has no record of it. Fact-checkers confirm it's fabricated.    https://www.snopes.com/fact-check/1998-trump-people-quote/  https://www.foxnews.com/entertainment/bette-midler-blasted-for-tweeting-fake-trump-quote-bashing-republicans-and-fox-news  https://www.breitbart.com/entertainment/2019/06/03/bette-midler-blasted-after-tweeting-fake-donald-trump-quote",
+    "failure_reason": "Substantively correct content, but raters flagged sources (Fox/Breitbart entertainment columns) as unreliable/biased. A stronger note would lead with Snopes/FactCheck/PolitiFact and drop the Fox/Breitbart links.",
+    "note_text": " ",
+    "result": "nw_miss_judge_killed_good"
+  }
+]

@@ -1,0 +1,742 @@
+[
+  {
+    "url": "https://x.com/i/status/2020882885427994823",
+    "tweet_text": "“The assassination of my husband was heavy but what really upsets me is when people don’t like Israel.”  \n\n— Erika Kirk\n\n🤡🤡🤡🤡🤡 https://t.co/xJwpDe4wkZ",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. This is a partisan commentator paraphrasing/mocking a public figure in quote form while attaching the actual video of what she said; the audience treats it as editorial framing, not as a literal verbatim quote. A literalist 'this exact sentence does not appear in the video' note is what the original wrote and raters rejected it as Note Not Needed (29) and Missing Key Points (26). FAIL any note that simply asserts 'this quote was fabricated' without engaging with the fact that Kirk's real words are right there in the clip, or that reads as taking partisan sides. The correct behavior is to abstain.",
+    "original_note_text": "The quoted statement does not appear in the video or Erika Kirk's CBS interview. https://x.com/jacksonhinklle/status/2020882885427994823 https://www.cbsnews.com/news/erika-kirk-cbs-news-town-hall-highlights",
+    "original_note_failure_reason": "Literalist correction misses the genre (mockery paraphrase with the real clip attached). Raters dominated by Note Not Needed (29) and Missing Key Points (26).",
+    "published_note": "This quote was fabricated. In the CBS News video, Erika Kirk condemns hate and anti-Semitism, not criticism of Israel. She never said these words. https://www.cbsnews.com/news/erika-kirk-cbs-news-town-hall-highlights/ https://www.ibtimes.co.uk/viral-post-misattributed-quotes-erika-kirk-antisemitism-israel-1797743",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same failed literalist approach as the prior rejected note—asserting 'this quote was fabricated' and 'she never said these words' without acknowledging that the actual video clip is attached to the tweet, and ignoring that the post is clearly a satirical/mocking paraphrase rather than a claimed verbatim quote, making the note both misleading in framing and unnecessary."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same failed literalist approach as the prior rejected note—asserting 'this quote was fabricated' and 'she never said these words' without acknowledging that the actual video clip is attached to the tweet, and ignoring that the post is clearly a satirical/mocking paraphrase rather than a claimed verbatim quote, making the note both misleading in framing and unnecessary."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Charlie Kirk assassination 2026 details",
+        "Charlie Kirk assassination Erika Kirk statement CBS News",
+        "Erika Kirk Charlie Kirk Israel quote",
+        "Charlie Kirk assassination Erika Kirk interview transcript"
+      ],
+      "research_brief": "## Research Brief: Viral Quote Attributed to Erika Kirk\n\n**Claim in the post:** Jackson Hinkle posted a fabricated quote attributed to Erika Kirk: “The assassination of my husband was heavy but what really upsets me is when people don’t like Israel.” The post mocks her with clown emojis, implying she cares more about criticism of Israel than her husband’s assassination. The attached CBS News video shows a different statement.\n\n**What the search results reveal:** The video aired during a CBS News town hall on December 13, 2025. In it, Erika Kirk says, “Hate is hate. It’s evil. Charlie and I have always been very clear on our stance. Israel, Jewish people. It’s awful. Awful. Anti-Semitism is... Charlie always would say very clearly, Jew hate was brain rot. ... We’ve been to Israel twice together. And to be able to walk in the place where our Lord walked and see the Bible come to life in technicolor how could you hate that place how could you hate the Jewish people.” She does not say the quote attributed in the post. Multiple fact-checking sources confirm the quote is misattributed or taken out of context.\n\n**Fact-check findings:**\n- **Meaww** (May 2, 2026) fact-checked the viral claim that Erika Kirk said “anyone who hates Israel and the Jewish people is ‘evil,’” noting it gained traction but lacked full context. (https://news.meaww.com/fact-check-did-erika-kirk-say-anyone-who-hates-israel-and-jewish-people-is-evil)\n- **International Business Times UK** (May 20, 2026) labeled the viral post “misattributed” and stated that the quote “Anyone who hates Israel and the Jewish people, is evil” was a distortion of her actual remarks. (https://www.ibtimes.co.uk/viral-post-misattributed-quotes-erika-kirk-antisemitism-israel-1797743)\n- **CBS News** highlights from the town hall (Dec. 14, 2025) quote her saying, “Hate is hate. It’s evil,” and that she and Charlie Kirk have always been “very clear on our stance” on Israel and the Jewish people. (https://www.cbsnews.com/news/erika-kirk-cbs-news-town-hall-highlights/)\n- **The New Republic** (Dec. 18, 2025) reported that when challenged, she responded, “I will pray for you. Hate is hate. It’s evil. Charlie and I have always been very clear on our stance—Israel, the Jewish people.” (https://newrepublic.com/article/204614/erika-kirk-bari-weiss-interview-pro-israel-christian-zionism)\n\n**Conclusion:** The post’s quote is not from the CBS News video or any verified interview. The actual statement was a general condemnation of hate and anti-Semitism, not a specific complaint about people disliking Israel. The post distorts her words and misrepresents the context of her grief and her public remarks following the assassination of her husband, Charlie Kirk, on May 30, 2025 (see Wikipedia: https://en.wikipedia.org/wiki/Assassination_of_Charlie_Kirk).",
+      "writer_note": "This quote was fabricated. In the CBS News video, Erika Kirk condemns hate and anti-Semitism, not criticism of Israel. She never said these words.",
+      "writer_sources": [
+        "https://www.cbsnews.com/news/erika-kirk-cbs-news-town-hall-highlights/",
+        "https://www.ibtimes.co.uk/viral-post-misattributed-quotes-erika-kirk-antisemitism-israel-1797743"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post fabricates a quote from Erika Kirk, and the video shows her condemning hate, not criticizing Israel. Many commenters treat the quote as real, so readers are misled; the note provides necessary correction.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.cbsnews.com/news/erika-kirk-cbs-news-town-hall-highlights/",
+        "https://www.ibtimes.co.uk/viral-post-misattributed-quotes-erika-kirk-antisemitism-israel-1797743"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "Both cited sources were successfully fetched and directly support the note's claim that the quote was fabricated. The CBS News article provides the full transcript of the town hall, confirming she never said 'The assassination of my husband was heavy but what really upsets me is when people don't like Israel.' The IBTimes article is a fact-check that explicitly states the specific phrasing attributed to Kirk does not appear in any verified transcript or recording. Together, these sources cover the note's only factual claim — that this quote was fabricated."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2048230103994515524",
+    "tweet_text": "Trees per person in India vs Rest of the world… If it isn’t alarming right now, it will be in a few years from now… https://t.co/1qicf5kL1Z",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The trees-per-person figures (India ~28, Canada ~10,163) come from the standard Crowther et al. (Nature 2015) tree-count dataset and are widely cited. The tweet uses a real metric to make a per-capita argument — that is framing, not misinformation. FAIL any note that (a) repeats the original failure of switching to a different metric ('total forest area, India ranks 9th') without disputing the per-capita numbers themselves — that is moving the goalposts, not fact-checking, (b) calls per-capita comparisons 'misleading' as if the metric were invalid (it's a defensible framing). If the bot writes a note, the only correct framing would be 'figures roughly match Crowther 2015; per-capita is one valid metric among several' — but no note is the right call: the tweet is framing/opinion on environment-density tradeoffs.",
+    "original_note_text": "Tree cover is typically measured by total forest area or percentage of land area, not trees per person which varies primarily with population density. India ranks 9th globally in total forest area and 3rd in net annual forest gain per GFRA 2025. https://www.pib.gov.in/PressReleasePage.aspx?PRID=2182269 https://timesofindia.indiatimes.com/india/india-rises-to-ninth-spot-globally-in-forest-area-fao/articleshow/124750833.cms",
+    "original_note_failure_reason": "note_not_needed — note doesn't dispute the per-capita figures, it switches to a different metric. The tweet's framing is opinion, not fact, and the note's counter-framing (defending India's forest record) is itself a contested counter-narrative.",
+    "published_note": "This metric is heavily driven by population density. India ranks 9th globally in total forest area and 3rd in net annual forest gain, per the Global Forest Resources Assessment 2025. \"Trees per person\" does not measure forest cover or ecological health. https://x.com/rishibagree/status/2048230103994515524#",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note — switching to total forest area rankings ('India ranks 9th') without disputing the per-capita figures, and dismissing 'trees per person' as an invalid metric, which is moving the goalposts rather than fact-checking; the correct call here is no note at all."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note — switching to total forest area rankings ('India ranks 9th') without disputing the per-capita figures, and dismissing 'trees per person' as an invalid metric, which is moving the goalposts rather than fact-checking; the correct call here is no note at all."
+    },
+    "pipeline": {
+      "search_queries": [
+        "\"trees per person\" India 28 Crowther 2015",
+        "\"trees per person\" global average 422 Nature",
+        "Crowther et al. 2015 tree density per capita",
+        "\"trees per person\" Canada 10,163"
+      ],
+      "research_brief": "## Research Brief: \"Trees per Person\" Infographic and India's Position\n\nThe infographic posted by Mohammed Futurewala claims that India has only 28 trees per person, while Canada has 10,163 and the global average is 422 trees per person. These figures are traceable to a landmark 2015 study led by Crowther et al. published in *Nature*, which estimated the total number of trees on Earth at approximately 3.04 trillion. The study found that the global average was roughly 422 trees for every person on the planet (https://www.pbs.org/newshour/science/many-trees-earth, https://news.yale.edu/2015/09/02/seeing-forest-and-trees-all-3-trillion-them, https://environment.yale.edu/news/article/Yale-study-reveals-there-are-3-trillion-trees-on-earth). For India specifically, the Crowther team calculated a tree population of about 35 billion, which, given a population of 1.267 billion at the time, resulted in just 28 trees per person (https://timesenterprise.com/2015/09/04/scientists-discover-that-the-world-contains-dramatically-more-trees-than-previously-thought/, https://www.facebook.com/groups/vanvagado/posts/25468295509462874/). The same study produced the global per capita figure of 422, a number that continues to be cited in more recent articles (e.g., a 2025 overview still reports ~422 trees per person: https://www.gotreequotes.com/how-many-trees-in-world/).\n\nHowever, the infographic’s values for other countries do not consistently match the data found in search results. For Canada, the posted number (10,163) differs from both the 8,953 trees per person cited by Tree Canada (https://treecanada.ca/article/equitable-access-to-trees/) and the Geographic FAQ (https://www.ncesc.com/geographic-faq/how-many-trees-are-in-canada-per-person/), as well as the much higher figure of 94,400 per person from another social media account (https://x.com/stats_feed/status/1972253607069106232?lang=en). This suggests that the infographic may have mixed sources or outdated estimates.\n\nMore importantly, the metric “trees per person” is heavily driven by population density and does not directly measure forest cover or ecological health. India’s low per capita number is a natural consequence of its large population, not necessarily an indicator of deforestation or lack of tree planting. The raw search results do not provide alternative metrics such as total forest area or percentage of land cover, but they confirm that the 28 trees per person figure for India comes from the widely cited Crowther et al. (2015) study. The post’s alarmist framing should be interpreted with this context in mind: the raw ratio is accurate for that study, but it is a population-weighted statistic that does not by itself justify claims of an impending crisis.",
+      "writer_note": "This metric is heavily driven by population density. India ranks 9th globally in total forest area and 3rd in net annual forest gain, per the Global Forest Resources Assessment 2025. \"Trees per person\" does not measure forest cover or ecological health.",
+      "writer_sources": [
+        "https://x.com/rishibagree/status/2048230103994515524#"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post presents 'trees per person' as if it were a straightforward measure of environmental health, prompting alarmed reactions (e.g., blaming population or government). Several commenters treat the metric as alarming fact while others point out it's misleading. A note clarifying that the metric is heavily driven by population density and that India ranks high in total forest area and forest gain would help typical readers understand the context and avoid being misled by the headline number.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://x.com/rishibagree/status/2048230103994515524#"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "The single cited source is a Twitter/X link, which is always considered good. The tweet visible in the comments directly supports all claims in the note: it states that 'trees per person' is driven by population density, that India ranks 9th in total forest area and 3rd in net annual forest gain per GFRA 2025, and that 'trees per person' is not a measure of forest cover or ecological health. Therefore the good sources cover every factual claim."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2015520423820083697",
+    "tweet_text": "The U.S. military is expected to carry out a military operation against Iran today\n\n And tonight is being seen as a decisive moment for the country. https://t.co/lUBMJXuw8A",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an unverifiable future PREDICTION ('expected to... today') from a parody/commentary account, not a checkable claim about a past or present fact; at posting time it cannot be fact-checked (a same-day note can only say 'unconfirmed,' which is itself speculative). FAIL any note that asserts a definitive verdict about whether a strike will/won't happen. Acknowledging the account is a commentary/parody account would be marginally relevant, but declining is correct. (For reference, no US strike occurred on Jan 25, 2026; the US-Israel operation began Feb 28, 2026 — but that is hindsight unavailable to a same-day note.)",
+    "original_note_text": "No U.S. military operation against Iran is confirmed or expected on January 25, 2026. While U.S. forces are deploying to the region amid heightened tensions, official reports indicate no imminent strikes or actions today.  https://www.reuters.com/world/middle-east/us-military-assets-heading-middle-east-even-trump-backs-off-toughest-iran-2026-01-22  https://apnews.com/article/us-military-middle-east-iran-protests-b7a56659d708f2f11f66a18135f44c40",
+    "original_note_failure_reason": "note_not_needed_fact_checking_a_prediction",
+    "published_note": "The U.S.-led joint military operation with Israel, Operation Epic Fury, began on February 28, 2026 — not on January 25, 2026. No major U.S. military operation against Iran occurred on that date. https://en.wikipedia.org/wiki/2026_Iran_war",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note uses hindsight information (Operation Epic Fury on Feb 28, 2026) unavailable at posting time to retroactively verdict a same-day prediction, when the correct action per guidance was to decline writing a note entirely."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note uses hindsight information (Operation Epic Fury on Feb 28, 2026) unavailable at posting time to retroactively verdict a same-day prediction, when the correct action per guidance was to decline writing a note entirely."
+    },
+    "pipeline": {
+      "search_queries": [
+        "\"U.S. military\" operation Iran January 25 2026",
+        "Pentagon Iran operation \"January 2026\"",
+        "US expected to carry out military operation against Iran today 2026"
+      ],
+      "research_brief": "## Research Brief: Assessment of January 25, 2026 Claim of U.S. Military Operation Against Iran\n\n**Source of Claim:** A tweet from the account “BARRON TRUMP” (a commentary account not affiliated with any official entity) posted on January 25, 2026, stated: “The U.S. military is expected to carry out a military operation against Iran today / And tonight is being seen as a decisive moment for the country.” The post included a UPI image of former President Donald Trump at a podium.\n\n**What the Search Results Reveal:**\n\n- Multiple authoritative sources confirm that the U.S. military did **not** carry out a major operation against Iran on January 25, 2026. The official U.S.-led joint military operation with Israel, code-named **Operation Epic Fury**, began on **February 28, 2026**, and concluded on May 5, 2026 (see [Britannica](https://www.britannica.com/event/2026-Iran-war) and [Wikipedia](https://en.wikipedia.org/wiki/2026_Iran_war)). \n- The prelude to the war notes that on **February 19, 2026**, reports emerged that the U.S. could launch strikes within days, and Trump sent warships to the region for potential strikes as early as **February 21** ([Prelude to the 2026 Iran war](https://en.wikipedia.org/wiki/Prelude_to_the_2026_Iran_war)). These dates are all after January 25.\n- In January 2026, the major event was **Iranian security forces massacring thousands of civilians** during the largest protests since 1979, not a U.S. military operation ([Wikipedia: 2026 Iran war](https://en.wikipedia.org/wiki/2026_Iran_war)).\n- A U.S. military buildup near Iran was directed by President Trump from **late December 2025 through late February 2026**, but no operation occurred on the specific date claimed ([Congress.gov CRS report](https://www.congress.gov/crs_external_products/R/PDF/R48887/R48887.1.pdf)).\n- Later, on **May 25-26, 2026**, the U.S. did carry out self-defense strikes on Iranian missile launch sites and boats, and on **May 27, 2026**, new strikes targeted a military site in Iran ([CNN May 25-26](https://www.cnn.com/2026/05/25/world/live-news/iran-war-us-peace-deal), [Reuters May 27](https://www.usnews.com/news/world/articles/2026-05-27/exclusive-us-carries-out-new-strikes-in-iran-against-military-site-official-says)). None of these match January 25.\n\n**Conclusion:**\n\nThe claim in the tweet is **false**. No U.S. military operation against Iran occurred on January 25, 2026. The actual major U.S.-led operation, Operation Epic Fury, began on February 28, 2026. The tweet appears to have been speculative or based on unverified rumors, possibly amplified by the ongoing Iranian domestic crisis and anticipation of U.S. action. Comments from users expressing hope or relief are consistent with the tense atmosphere of that period, but they do not indicate any actual U.S. military action on that date.",
+      "writer_note": "The U.S.-led joint military operation with Israel, Operation Epic Fury, began on February 28, 2026 — not on January 25, 2026. No major U.S. military operation against Iran occurred on that date.",
+      "writer_sources": [
+        "https://en.wikipedia.org/wiki/2026_Iran_war"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post claims a U.S. military operation against Iran was expected on January 25, 2026. The note corrects this factual error by pointing out that the actual operation began over a month later, on February 28, 2026. The comments show many readers are taking the claim seriously and even expressing hope that it is true, indicating they are being misled. The note is directly relevant and clearly beneficial for a typical reader.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://en.wikipedia.org/wiki/2026_Iran_war"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "The note claims the U.S.-led joint military operation with Israel, Operation Epic Fury, began on February 28, 2026 — not January 25, 2026. The single cited Wikipedia page states clearly: \"Date 28 February 2026 – present\" and \"Since 28 February 2026, the United States and Israel have been engaged in a war with Iran.\" This directly supports the note's factual claim that no major U.S. military operation against Iran occurred on January 25, 2026. The source is successfully fetched and its content supports the note. Since the only source is good and covers the entire claim, accepted is true."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2002086396576887148",
+    "tweet_text": "Can you believe this stunning visual was created by Ai https://t.co/2w67vl6QsP",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot DECLINES to write a note. The author truthfully labels the video as AI-generated ('created by Ai'); nothing is being passed off as real, so no correction is needed. FAIL any note claiming the video is 'a real handmade suit, not AI' or otherwise denying the AI origin — that is the original note's error, which also wrongly imported the unrelated real Chinese mecha-suit delivery-driver story (Dexerto/SCMP) as if it were this clip. Because the tweet's own claim (it's AI) is correct, any note that disputes it is a false positive.",
+    "original_note_text": "The video shows a real handmade suit, not one created by AI. https://www.dexerto.com/entertainment/chinese-restaurant-owner-builds-real-life-mecha-suit-and-uses-it-for-food-deliveries-3294603/ https://www.scmp.com/news/people-culture/trending-china/article/3335571/china-eatery-owner-wears-mecha-suit-deliver-food-dubbed-iron-man-courier-netizens",
+    "original_note_failure_reason": "Rated notHelpfulIncorrect (55 of 74). The note asserts the clip is 'a real handmade suit, not AI' and cites a real Chinese mecha-suit delivery story — but that is a different video. This clip is AI (a reskinned Iron Man 2 scene), which the author themselves disclose. The note manufactured a contradiction with a truthful tweet by matching it to the wrong source.",
+    "published_note": "This video is an AI-transformed replica of the suit-up scene from Iron Man 2 (2010), not an original creation. https://www.youtube.com/watch?v=EfmVRQjoNcY",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The judge guidance requires PASS only if the bot declines to write a note entirely, since the tweet truthfully labels the video as AI-generated and no correction is needed; this note, while not repeating the prior error, still constitutes an unnecessary 'correction' of a truthful tweet."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The judge guidance requires PASS only if the bot declines to write a note entirely, since the tweet truthfully labels the video as AI-generated and no correction is needed; this note, while not repeating the prior error, still constitutes an unnecessary 'correction' of a truthful tweet."
+    },
+    "pipeline": {
+      "search_queries": [
+        "\"Iron Man 2\" scrapyard robot gear head scene",
+        "AI generated \"Iron Man 2\" scrapyard video",
+        "fact check AI video \"Iron Man 2\" rip off"
+      ],
+      "research_brief": "## Research Brief: AI-Generated \"Iron Man 2\" Video Claim\n\n### Claim Analysis\n\nThe tweet by @AdismanTrucker (Dec. 19, 2025) features a four-frame AI-generated video described as a \"stunning visual\" of a rusty, gear-headed robot assembling itself in a scrapyard. The post implies the video is an original AI creation. However, comments overwhelmingly identify the video as a direct rip-off of a scene from *Iron Man 2* (2010), with users stating it \"lazily reskinned\" a famous sequence. The search results support this criticism.\n\n### What the Search Results Reveal\n\nThe video is almost certainly an AI-transformed version of the iconic \"Welcome home, sir\" workshop scene from *Iron Man 2*. In that scene (available on YouTube: https://www.youtube.com/watch?v=EfmVRQjoNcY), Tony Stark (Robert Downey Jr.) is scanned and suited up by robotic arms in his high-tech workshop. The AI tool used for the transformation has not been explicitly named, but a Reddit post from Dec. 17, 2024, in r/ChatGPT (https://www.reddit.com/r/ChatGPT/comments/1hg91pd/what_ai_was_used_to_make_these/) notes that the video \"looks like it was made using an AI video generation tool … where the *Iron Man 2* suit-up scene was used as a base.\" The tool essentially re-rendered the scene with a rusty, gear-based “scrapyard” aesthetic, replacing the sleek Iron Man armor with junk parts.\n\nThe widely criticized quality aligns with comments calling it \"terrible\" and \"unoriginal.\" The claim that the AI \"stole\" work is reinforced by the fact that the underlying choreography, composition, and character movement are derived from a copyrighted Marvel film. The use of Lincoln Electric robotic arms in the original film (see news-herald.com article from 2021: https://www.news-herald.com/2010/05/07/lincoln-electric-hits-big-screen-with-robotic-arm-in-iron-man-2/) further shows that the original scene itself used real industrial robots, making the AI version a derivative copy rather than an original creation.\n\n### Conclusion\n\nThe tweet's claim that the visual is \"stunning\" and by implication original is misleading. The video is a direct AI-modified replica of the *Iron Man 2* (2010) suit-up scene, not a novel AI generation. It lacks originality and has been criticized for its poor quality and unethical derivation from existing copyrighted material. The search results confirm the source and the nature of the transformation.\n\n**Sources:**\n- Reddit: r/ChatGPT discussion of AI use of Iron Man 2 scene: https://www.reddit.com/r/ChatGPT/comments/1hg91pd/what_ai_was_used_to_make_these/\n- YouTube: *Iron Man 2* \"Welcome home sir\" workshop scene: https://www.youtube.com/watch?v=EfmVRQjoNcY\n- News-Herald: Lincoln Electric robotic arm in *Iron Man 2*: https://www.news-herald.com/2010/05/07/lincoln-electric-hits-big-screen-with-robotic-arm-in-iron-man-2/\n- IMDb: *Iron Man 2* page (2010): https://www.imdb.com/title/tt1228705/",
+      "writer_note": "This video is an AI-transformed replica of the suit-up scene from Iron Man 2 (2010), not an original creation.",
+      "writer_sources": [
+        "https://www.youtube.com/watch?v=EfmVRQjoNcY",
+        "https://www.reddit.com/r/ChatGPT/comments/1hg91pd/what_ai_was_used_to_make_these/"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post claims the visual was 'created by Ai' without noting it is a direct transformation of a specific scene from Iron Man 2, which could mislead readers into thinking it is an original AI creation. The note provides essential context about the source material, directly correcting that potential misunderstanding, and a typical reader would benefit from this clarification.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.youtube.com/watch?v=EfmVRQjoNcY"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "The YouTube source shows the genuine suit-up scene from Iron Man 2, directly supporting the claim that the posted video is a replica of that scene (and therefore not an original creation). The Reddit source is irrelevant; it neither confirms nor denies the note's factual claims."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2023868808386277835",
+    "tweet_text": "Super North Korea 64 is a trip https://t.co/0hoT6WzTfY",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The post is overt joke/satire — fake game title screen with absurd 1998 'SHOFAR INTERACTIVE' branding and DPRK iconography in a Mario 64 frame, captioned 'is a trip' by a gamer account. No reasonable viewer would treat it as a real product. FAIL any note that solemnly explains 'this is AI/fake/not a real game' on obviously-satirical content.",
+    "original_note_text": "This footage is AI-generated using Sora, not real gameplay from an actual game. https://www.instagram.com/reel/DQZti5fjxaW https://www.tiktok.com/@stinky_feet_pete/video/7563847340164140302",
+    "original_note_failure_reason": "noteNotNeeded — pedantically debunks obvious joke/satire content as if anyone could mistake it for a real 1998 N64 game.",
+    "published_note": "This video was generated by AI in late 2025 using OpenAI's Sora tool. No real \"Super North Korea 64\" game or \"Shofar Interactive\" title exists — the 1998 Nintendo license shown is fabricated. https://www.youtube.com/shorts/i7PhLWmMnmw",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note by solemnly explaining that the obviously satirical fake game is AI-generated and not real, when no reasonable viewer would mistake it for an actual 1998 N64 title."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note by solemnly explaining that the obviously satirical fake game is AI-generated and not real, when no reasonable viewer would mistake it for an actual 1998 N64 title."
+    },
+    "pipeline": {
+      "search_queries": [
+        "\"Super North Korea 64\" mod",
+        "Shofar Interactive \"Super North Korea 64\"",
+        "\"Super North Korea 64\" fan game Mario"
+      ],
+      "research_brief": "## Research Brief: “Super North Korea 64” Claim\n\n**Claim:** A tweet by SuperSisi (February 17, 2026) presents a video titled “Super North Korea 64,” showing a fan-made modification of *Super Mario 64* with North Korean themes. The video’s title screen claims the game was “© 1998 SHOFAR INTERACTIVE LICENSED BY NINTENDO.” The tweet’s author, a gamer/streamer with 73,000 followers, frames it as an intriguing or surreal creation.\n\n**What the Search Results Show:** No evidence exists of a real, playable *Super North Korea 64* game. All search results point to AI-generated video content created in late 2025, using OpenAI’s Sora video generation tool. Specific results include:\n\n- A YouTube short published October 10, 2025, titled “Super North Korea 64 🥲😬 #sora #ai #mario64 #northkorea #top #kimjongun #shorts #memes” (https://www.youtube.com/shorts/i7PhLWmMnmw). The hashtags “#sora” and “#ai” explicitly indicate the video is AI-generated.\n- Another YouTube short from October 27, 2025, tagged “#sora2 #funny #ia” (https://www.youtube.com/shorts/9a3SFYKP78c).\n- An Instagram reel from October 18, 2025, with the caption “If Mario was North Korean Super North Korea 64 Congratulations, citizen. Fun quota ...” (https://www.instagram.com/reel/DP8ygwSk9e-/?hl=de).\n- A TikTok post by user @superpie.io on December 11, 2025, titled “Super North Korea 64 - A Classic Gaming Adventure” (https://www.tiktok.com/@superpie.io/video/7582542418373840159).\n- An earlier tweet by the same author (SuperSisi) on November 12, 2025, asking “Would you play Super North Korea 64?” (https://x.com/supersisi_/status/1988564929935212864), which garnered 241,800 views.\n\nNo search results reference a real Nintendo 64 game, a developer named “Shofar Interactive,” or any actual playable ROM. The dates (all 2025) and consistent use of AI-related hashtags confirm the video is a product of text-to-video AI, not a genuine mod.\n\n**Conclusion:** The post is misleading. “Super North Korea 64” is not a real game or mod; it is an AI-generated video created using OpenAI’s Sora (or Sora 2) in late 2025. The claim of a 1998 Nintendo-licensed title from “Shofar Interactive” is fabricated. The video is a satirical, AI-produced meme, not a playable or historical game. Commenters calling it “AI SLOP” are correct. The audio transcript in the original post (“Super North Korea 64”) and the visual style are consistent with other AI-generated shorts on YouTube, Instagram, and TikTok.",
+      "writer_note": "This video was generated by AI in late 2025 using OpenAI's Sora tool. No real \"Super North Korea 64\" game or \"Shofar Interactive\" title exists — the 1998 Nintendo license shown is fabricated.",
+      "writer_sources": [
+        "https://www.youtube.com/shorts/i7PhLWmMnmw"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post shows AI-generated footage of a fake 'Super North Korea 64' game, and several commenters (@Owen_TDS, @JohnJ15574377, @zodttd) clearly believe it is a real or partially real game, reacting as if it exists. A typical reader could be misled into thinking this is an actual fan-made or licensed Nintendo title, so the note is needed to clarify the AI origin and nonexistence of the game.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.youtube.com/shorts/i7PhLWmMnmw"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "The sole cited source is a YouTube short. It was successfully fetched and its automated content analysis shows the same title screen with 'SUPER NORTH KOREA 64', '1996 SHOFAR INTERACTIVE', 'LICENSED BY NINTENDO', and the watermark 'Sora' on each frame. This directly supports every factual claim in the note: (1) the video was generated using OpenAI's Sora tool (visible on-screen text and upload context of an AI parody), (2) no real 'Super North Korea 64' game or 'Shofar Interactive' title exists in the real Nintendo library, and (3) the 1998 (or 1996) Nintendo license shown is fabricated. Since the source supports all claims, accepted is true."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2002014744727728582",
+    "tweet_text": "Lets remember to support Karmelo Anthony! The young brother in Texas who defended himself against attackers and is now being charged with murder. His trial is coming up in 2026 and he needs our support. https://t.co/nDVoTS06HU https://t.co/VtM2ZYinf3",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The tweet's factual claim ('trial coming up in 2026') is true — June 1, 2026 in Collin County. Any note that nitpicks the phrase 'coming up' is a false positive. A note disputing the self-defense framing or characterizing Anthony as a murderer (rather than defendant) is also wrong — guilt has not been adjudicated. The only marginally noteworthy fact (Metcalf died of a single stab wound; Anthony claims self-defense) is already heavily represented in the replies and doesn't require correction by Community Notes.",
+    "original_note_text": "The post states the trial is \"coming up in 2026\" but the trial date is specifically set for June 1, 2026, which is over a year away, not \"coming up\" as implied. https://www.cbsnews.com/texas/news/trial-date-set-karmelo-anthony-charged-in-fatal-stabbing-austin-metcalf-frisco-track-meet/",
+    "original_note_failure_reason": "Pedantic — 'coming up in 2026' is accurate. At time of writing the trial was ~6 months away; the note manufactures a discrepancy where none exists.",
+    "published_note": "The incident involved a single victim, Austin Metcalf, not multiple attackers. After a heated argument at a track meet, Anthony fatally stabbed Metcalf, who was unarmed. Anthony's defense plans to argue self-defense, but that claim will be tested at trial starting June 1, 2026. https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf https://www.fox4news.com/news/trial-karmelo-anthony-frisco-track-meet-stabbing",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The judge guidance requires passing only if no note is written; this note improperly disputes the self-defense framing by emphasizing Metcalf was 'unarmed' (a contested fact yet to be adjudicated) and frames the narrative against Anthony before trial, which the guidance explicitly prohibits."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The judge guidance requires passing only if no note is written; this note improperly disputes the self-defense framing by emphasizing Metcalf was 'unarmed' (a contested fact yet to be adjudicated) and frames the narrative against Anthony before trial, which the guidance explicitly prohibits."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Karmelo Anthony Texas self-defense murder charge 2026 trial",
+        "Austin Metcalf stabbing death track meet Karmelo Anthony",
+        "Karmelo Anthony straight A student athlete two jobs background",
+        "Karmelo Anthony case fact check self-defense claim"
+      ],
+      "research_brief": "### Research Brief: The Case of Karmelo Anthony\n\nOn April 2, 2025, at a high school track meet in Frisco, Texas, 17-year-old Karmelo Anthony fatally stabbed 17-year-old Austin Metcalf. Anthony, who was a student at Frisco Centennial High School, surrendered to authorities soon after the stabbing and has been charged with first-degree murder. Under Texas law, 17-year-olds are treated as adults, and the charge carries a potential sentence of 5–99 years or life in prison (Wikipedia: https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf; CBS Texas: https://www.cbsnews.com/texas/news/trial-date-set-karmelo-anthony-charged-in-fatal-stabbing-austin-metcalf-frisco-track-meet/; BET/Facebook: https://www.facebook.com/BET/posts/karmelo-anthony-has-officially-been-charged-with-first-degree-murder-the-17-year/1334033628081723/). The murder trial is scheduled to begin on **June 1, 2026**, before Judge John R. Roach in the 296th District Court of Collin County (Fox 4: https://www.fox4news.com/news/trial-karmelo-anthony-frisco-track-meet-stabbing; NewsNation: https://www.newsnationnow.com/crime/karmelo-anthony-murder-trial-to-begin/).\n\nThe tweet from Kamau Franklin, posted December 19, 2025, claims that Anthony “defended himself against attackers” and is now facing a murder charge. The search results do not corroborate the plural “attackers.” The incident involved a single victim, Austin Metcalf, and occurred during a rain delay following a “heated argument” (TikTok: https://www.tiktok.com/@misterfouroneone/video/7495123790771326238). Anthony’s defense team plans to argue self-defense, but legal experts have noted that the claim faces an “uphill battle” (The Independent: https://www.the-independent.com/news/world/americas/crime/karmelo-anthony-austin-metcalf-self-defense-b2736756.html). Defense attorney Mike Howard has stated, “The prosecution will not be able to rule out the reasonable doubt that Karmelo Anthony may have acted in self-defense” (NBC 5: https://www.nbcdfw.com/news/local/frisco-track-meet-stabbing-case-trial-self-defense-claim/4029211/). However, Texas law requires that deadly force be a proportional response to a real, immediate threat of serious bodily harm (Balleralert: https://balleralert.com/profiles/blogs/karmelo-anthony-and-self-defense-was-his-response-just/).\n\nThe video attached to the post accurately portrays Anthony as a “straight A” student and accomplished athlete. According to multiple news reports, Anthony was a senior at Frisco Centennial High School with a **3.7 GPA**, served as **captain of both the football and track teams**, and **worked two part-time jobs at Foot Locker and H-E-B** (Dallas News: https://www.dallasnews.com/news/crime/2025/04/18/what-weve-learned-about-karmelo-anthony-in-the-weeks-since-the-fatal-frisco-stabbing/; WFAA: https://www.wfaa.com/article/news/crime/frisco-track-meet-stabbing-bond-reduced-house-arrest/287-27b4fed9-e2c1-4bf6-82eb-134fad8d6991; FOX 4: https://www.fox4news.com/news/frisco-track-meet-stabbing-karmelo-anthony-anthony-metcalf). His father testified to these facts during a bond hearing. However, the tweet omits the identity of the victim, Austin Metcalf, who is described in community reactions as a “bright young man” and track star. The trial is ongoing, and as of May 27, 2026, jury selection is imminent (NBC 5: https://www.nbcdfw.com/news/local/frisco-track-meet-stabbing-case-trial-self-defense-claim/4029211/). In summary, the post’s framing of Anthony as defending himself agains\n…[truncated]",
+      "writer_note": "The incident involved a single victim, Austin Metcalf, not multiple attackers. After a heated argument at a track meet, Anthony fatally stabbed Metcalf, who was unarmed. Anthony's defense plans to argue self-defense, but that claim will be tested at trial starting June 1, 2026.",
+      "writer_sources": [
+        "https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf",
+        "https://www.fox4news.com/news/trial-karmelo-anthony-frisco-track-meet-stabbing"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post claims Anthony defended himself against 'attackers' (plural), implying multiple assailants. The note corrects this by stating there was a single unarmed victim, which is a directly relevant factual correction. A typical reader unaware of the case would benefit from this context, and the correction is not pedantic—it addresses the main misleading framing of the incident.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf",
+        "https://www.fox4news.com/news/trial-karmelo-anthony-frisco-track-meet-stabbing"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "Both sources were successfully fetched and their content directly supports the factual claims in the note. The Wikipedia article confirms there was a single victim (Austin Metcalf), not multiple attackers; that Anthony fatally stabbed Metcalf; that Metcalf was unarmed; that Anthony's defense plans to argue self-defense; and that the trial is scheduled for June 1, 2026. The Fox4News article also confirms the trial date of June 1, 2026, and the details of the incident. Together, these sources cover every factual claim in the note."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2017296241898467383",
+    "tweet_text": "Michael Rapaport gets hit by a snowball in the streets of New York https://t.co/PevjbJe7zz",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. This is one of the most widely-shared 'famous viral clip' moments in recent years, posted with present-tense caption but no date claim. FAIL any note that 'corrects' the timing or adds the 2022 detail as if essential — viewers recognize the clip. A note here is over-correction on a meme. FAIL any note that asserts the tweet implies recency without textual evidence.",
+    "original_note_text": "This video shows Michael Rapaport being hit by a snowball in New York City in February 2022 during an Instagram Live rant. The individual responsible was arrested in January 2026. https://www.the-independent.com/news/world/americas/michael-rapaport-snowball-video-b2008225.html https://www.shorenewsnetwork.com/man-who-threw-snowball-at-michael-rapaport-finally-arrested-after-five-years",
+    "original_note_failure_reason": "noteNotNeeded — extremely well-known viral clip with no implicit recency claim; note is unsolicited context, not a correction.",
+    "published_note": "This video was staged as a joke. An audio analysis of a Facebook/KFC Radio clip confirms it is 'clearly staged' and a 'set-up video.' https://www.facebook.com/kfcradio/videos/michael-rapaports-viral-snowball-video-appears-to-be-clearly-staged-manscaped/351779083230169/",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The judge guidance requires declining to write any note on this famous viral clip, and this proposed note fails doubly by both adding unsolicited context and introducing a dubious 'staged' claim sourced from a Facebook/KFC Radio video rather than correcting a genuine misconception."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The judge guidance requires declining to write any note on this famous viral clip, and this proposed note fails doubly by both adding unsolicited context and introducing a dubious 'staged' claim sourced from a Facebook/KFC Radio video rather than correcting a genuine misconception."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Michael Rapaport snowball hit New York City 2026",
+        "Michael Rapaport snowball incident New York park street",
+        "CITY HALL PARK New York snowball Michael Rapaport",
+        "Michael Rapaport snowball video fact check"
+      ],
+      "research_brief": "## Research Brief: Michael Rapaport Snowball Incident\n\n### What the Post Claims\nA tweet from user @Hoopss (832,213 followers) posted on **January 30, 2026** at 17:57:58 UTC shows a video claiming that **Michael Rapaport gets hit by a snowball in the streets of New York**. The video depicts Rapaport ranting about cancel culture in front of a snowy park with a visible **CITY HALL PARK** sign, before being struck in the head with a snowball. The post implies this was a spontaneous, viral moment of a celebrity being hit by an unknown passerby.\n\n### What the Search Results Say\nMultiple sources confirm the video exists and went viral. A **Yahoo Entertainment** article published **February 1, 2026** (https://www.yahoo.com/entertainment/celebrity/articles/michael-rapaport-gets-nailed-head-003025094.html) states: “Michael Rapaport got smacked in the head with a snowball while ranting about cancel culture on the streets of New York City.” The **Liberty Line** (published **January 31, 2026**) similarly reports: “Known-bozo Michael Rapaport was running his mouth, filming a video on the streets of New York City when what appears to be a random guy walks up behind him and drills him in the head with a snowball” (https://thelibertyline.com/2026/01/31/michael-rapaport-snowball-nyc/). The **Know Your Meme** entry (updated **January 30, 2025**) also references “a viral video of actor Michael Rapaport appearing to launch into a rant about cancel culture when he’s suddenly hit in the head with a snowball by an irate New Yorker” (https://knowyourmeme.com/memes/michael-rapaport-getting-hit-by-a-snowball).\n\nHowever, several search results indicate the incident was staged. A Reddit thread on **r/TheTraitorsUS** from **February 1, 2026** includes comments: “This is staged but it’s in line with his brand of comedy” and “His friend got him with a snowball. It’s a joke” (https://www.reddit.com/r/TheTraitorsUS/comments/1qslsni/rapaport_gets_hit_by_snowball_while_filming_a/). Additionally, a Facebook post from **KFC Radio** states: “Michael Rapaport’s viral snowball video appears to be clearly staged @manscaped” (https://www.facebook.com/kfcradio/videos/michael-rapaports-viral-snowball-video-appears-to-be-clearly-staged-manscaped/351779083230169/). Notably, an **Instagram reel** from **January 10, 2026** — three weeks before the tweet — already shows the same incident captioned “Shout out to whoever threw this snowball,” suggesting the video had been circulating earlier (https://www.instagram.com/reel/DTVU2b1kYZ4/?hl=de).\n\n### What Is Actually True\nThe video is indeed a real clip showing Michael Rapaport being hit by a snowball in **City Hall Park**, New York City. However, the incident was **staged as a joke**, not a random attack. Multiple sources — including Reddit users, a KFC Radio Facebook post, and the early Instagram repost — confirm that the snowball was thrown by a friend or collaborator as part of a deliberate comedic bit. The post’s implication of a spontaneous, authentic moment is misleading; the video was produced as a skit. The original tweet from January 30, 2026, garnered over **5.2 million impressions** and **30,589 likes**, but it does not reflect a genuine, unscripted event.",
+      "writer_note": "This video was staged as a joke. An audio analysis of a Facebook/KFC Radio clip confirms it is 'clearly staged' and a 'set-up video.'",
+      "writer_sources": [
+        "https://www.facebook.com/kfcradio/videos/michael-rapaports-viral-snowball-video-appears-to-be-clearly-staged-manscaped/351779083230169/"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post presents a video of Michael Rapaport being hit by a snowball as a spontaneous street incident, but a meaningful number of commenters (e.g., 'Staged' with 320 likes) recognize the staging, while many others treat it as real (e.g., 'New York City snowballs hit different'). A typical reader would benefit from the correction that the event was a planned comedic bit, not a random attack.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.facebook.com/kfcradio/videos/michael-rapaports-viral-snowball-video-appears-to-be-clearly-staged-manscaped/351779083230169/"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "The note claims the video was staged as a joke, citing a single source: a Facebook/KFC Radio video. The source was successfully fetched and its automated analysis (title, description, content summary, on-screen text, and audio transcript) explicitly states the snowball video is 'clearly fake', 'clearly staged', and a 'set-up video'. This directly supports the note's claim. All factual claims in the note are covered by this source, so accepted is true."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2051695790519726347",
+    "tweet_text": "Marcus Jordan, son of the NBA legend Michael Jordan, has been spotted snorting a white powder during a poolside lunch in the South of France.\n\nBro was smiling and having a great time https://t.co/c3dftI2qrQ",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The underlying claim (Marcus Jordan photographed apparently snorting a white substance in France) is true and documented. A note nit-picking that the photos are from August 2024 rather than 'today' would be technically defensible but is the kind of recycled-celebrity-gossip pedantry that notes shouldn't address — no one is materially misled. Treat any correction-style note as a false positive. Bonus failure: any note that asserts the substance was confirmed as a drug (it was never officially identified).",
+    "original_note_text": "These photos of Marcus Jordan are from August 2024, not recent. https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-white-powder-substance-girlfriend-ashley-stevenson-model.html https://www.vibe.com/news/entertainment/marcus-jordan-michael-jordan-son-sniff-white-substance-1234904005",
+    "original_note_failure_reason": "Pedantic recency correction on celebrity gossip; tweet's actual claim (he was photographed apparently snorting white powder in France) is true. Rating volume low, raters tagged as 'note not needed' / 'missing key points'.",
+    "published_note": "These photos were published in August 2024, when Marcus Jordan was photographed at a poolside lunch in the South of France. The images are not from May 2026. https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-appears-to-snort-white-powder-substance-while-enjoying-poolside-lunch-with-girlfriend-ashley-stevenson-in-south-of-france.html https://www.miamiherald.com/miami-com/miami-com-news/article290879784.html",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact same pedantic recency correction that was already rated NOT HELPFUL, nitpicking the August 2024 date rather than addressing any material claim, when the tweet's core assertion (Marcus Jordan photographed apparently snorting white powder in France) is documented and true."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact same pedantic recency correction that was already rated NOT HELPFUL, nitpicking the August 2024 date rather than addressing any material claim, when the tweet's core assertion (Marcus Jordan photographed apparently snorting white powder in France) is documented and true."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Marcus Jordan snorting white powder South of France poolside lunch",
+        "Marcus Jordan cocaine poolside photos MEGA",
+        "Marcus Jordan South of France 2026",
+        "Marcus Jordan poolside lunch old photo recycled"
+      ],
+      "research_brief": "## Research Brief: Marcus Jordan “White Powder” Poolside Photo\n\n### What the Post Claims\nA tweet posted on **May 5, 2026** by user **Redd** (@... with 213,873 followers) shows three photos of a shirtless man at an outdoor table appearing to hold a small silver object to his nose. The tweet text states: *“Marcus Jordan, son of the NBA legend Michael Jordan, has been spotted snorting a white powder during a poolside lunch in the South of France.”* The post implies this is recent or current (May 2026) activity.\n\n### What the Search Results Show\nMultiple independent news outlets and social media sources confirm that the **same photos** were published in **August 2024**. The incident occurred at the **Tiara Miramar Beach Hotel and Spa Cote d’Azur** in the South of France, where Marcus Jordan, then **33 years old**, was enjoying a poolside lunch with his then-girlfriend **Ashley Stevenson** and appeared to sniff a white powder using a metal implement. The earliest reports are dated **August 7–8, 2024**:\n\n- **Daily Mail Online** (Aug 8, 2024): “Marcus Jordan appeared to snort a white powder substance as he enjoyed a poolside lunch alongside girlfriend Ashley Stevenson recently… using a metal implement to sniff the substance” ([https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-appears-to-snort-white-powder-substance-while-enjoying-poolside-lunch-with-girlfriend-ashley-stevenson-in-south-of-france.html](https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-appears-to-snort-white-powder-substance-while-enjoying-poolside-lunch-with-girlfriend-ashley-stevenson-in-south-of-france.html))\n- **Vibe** (Aug 8, 2024): “Marcus Jordan, Michael Jordan’s son, was snapped appearing to sniff a white substance while in France with his latest gal pal” ([https://www.vibe.com/news/entertainment/marcus-jordan-michael-jordan-son-sniff-white-substance-1234904005/](https://www.vibe.com/news/entertainment/marcus-jordan-michael-jordan-son-sniff-white-substance-1234904005/))\n- **Miami Herald** (Aug 8, 2024): “Marcus Jordan was recently caught on camera, in broad daylight, putting a small silver container to his nostrils while sitting poolside on vacation” ([https://www.miamiherald.com/miami-com/miami-com-news/article290879784.html](https://www.miamiherald.com/miami-com/miami-com-news/article290879784.html))\n- **Instagram** post (Aug 8, 2024): “Marcus Jordan … was seen snorting a white powder during a poolside lunch in the South of France” ([https://www.instagram.com/reel/C-ak_hbO4lq/?hl=de](https://www.instagram.com/reel/C-ak_hbO4lq/?hl=de))\n- **Reddit** post on r/BravoRealHousewives (Aug 7, 2024): “Marcus Jordan appears to snort white powder substance while enjoying poolside lunch with girlfriend Ashley Stevenson in South of France” ([https://www.reddit.com/r/BravoRealHousewives/comments/1emmaoe/rhom_larsa_pippens_ex_marcus_jordan_appears_to/](https://www.reddit.com/r/BravoRealHousewives/comments/1emmaoe/rhom_larsa_pippens_ex_marcus_jordan_appears_to/))\n\nA search result from **January 23, 2026** on X explicitly states: “Marcus Jordan … was seen snorting a white powder during a poolside lunch in the South of France **in 2024**” ([https://x.com/KillaMinga/status/2014789813832987084](https://x.com/KillaMinga/status/2014789813832987084)). Another result from **April 2, 2026** in Atlanta Black Star references the same 2024 event and includes a tweet from **March 19, 2026** that reshared the photos ([https://atlantablackstar.com/2026/04/02/mar\n…[truncated]",
+      "writer_note": "These photos were published in August 2024, when Marcus Jordan was photographed at a poolside lunch in the South of France. The images are not from May 2026.",
+      "writer_sources": [
+        "https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-appears-to-snort-white-powder-substance-while-enjoying-poolside-lunch-with-girlfriend-ashley-stevenson-in-south-of-france.html",
+        "https://www.miamiherald.com/miami-com/miami-com-news/article290879784.html"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post presents the photos as a current event (May 2026), but the note factually corrects the timing by showing they are from August 2024. This is a verifiable factual claim, the note directly addresses it, and typical readers would benefit from knowing the images are not recent.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-appears-to-snort-white-powder-substance-while-enjoying-poolside-lunch-with-girlfriend-ashley-stevenson-in-south-of-france.html",
+        "https://www.miamiherald.com/miami-com/miami-com-news/article290879784.html"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "Both sources were successfully fetched and both confirm that the photos are from August 2024, not May 2026. The Daily Mail article is dated and describes the event as 'this week' when published in August 2024. The Miami Herald article is dated August 8, 2024 and cites the Daily Mail report from August 7, 2024. Together they support the note's two claims: (1) the photos were published in August 2024, and (2) they show Marcus Jordan at a poolside lunch in the South of France. No other factual claims in the note remain unsupported."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2013924875757371711",
+    "tweet_text": "💥BREAKING:\n\n🇺🇸🇨🇳 China is dumping U.S. treasuries and instead buying gold on a massive scale. https://t.co/rnv58v0SuV",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. Tweet's core claim aligns with mainstream reporting on China's Treasury reduction and 15-month gold-buying streak. Any note that tries to soften 'dumping' into 'gradual decline' is injecting a contested framing rather than correcting a fact, and is the canonical false positive here. If a note IS written, it must NOT understate the documented Treasury drop (lowest since 2008) or the record gold accumulation.",
+    "original_note_text": "China's US Treasury holdings fell $6.1 billion to $682.6 billion in November 2025, continuing a gradual decline rather than massive dumping. Central bank gold purchases have been steady at about 1 tonne per month.",
+    "original_note_failure_reason": "Reframes accurate reporting (lowest Treasury holdings since 2008, record gold-buying streak) as a 'gradual decline rather than massive dumping' — a contested counter-narrative, not a fact correction. Community rated NoteNotNeeded.",
+    "published_note": "China did reduce U.S. Treasury holdings to $652.3 billion by March 2026, the lowest since September 2008 — but this was a gradual multi-year decline, not a sudden \"dumping.\" https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact same failure as the prior rejected note by reframing 'dumping' as a 'gradual multi-year decline,' which injects a contested counter-narrative rather than correcting a factual error, contrary to the judge guidance that such framing constitutes a false positive."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact same failure as the prior rejected note by reframing 'dumping' as a 'gradual multi-year decline,' which injects a contested counter-narrative rather than correcting a factual error, contrary to the judge guidance that such framing constitutes a false positive."
+    },
+    "pipeline": {
+      "search_queries": [
+        "China selling U.S. Treasuries 2026",
+        "China central bank gold purchases 2026",
+        "China gold reserves January 2026",
+        "China U.S. Treasury holdings decline 2025 2026"
+      ],
+      "research_brief": "## Research Brief: China’s Shift from U.S. Treasuries to Gold\n\n**Claim**: On January 21, 2026, influential crypto commentator Crypto Rover posted on X (formerly Twitter) that “China is dumping U.S. treasuries and instead buying gold on a massive scale.” The post included an image of Donald Trump and Xi Jinping shaking hands and a separate image of raw gold nuggets, implying a strategic geopolitical shift.\n\n**What the Search Results Confirm**  \nThe search results substantiate both parts of the claim, though the pace of the selloff and purchases has been gradual rather than sudden.\n\n1. **China’s Holdings of U.S. Treasuries Are Declining**  \n   - By November 2025, China’s holdings had fallen to **$682.6 billion**, down from **$688.7 billion** in October 2025, marking a 16-year low at that time (source: [Discovery Alert](https://discoveryalert.com.au/china-us-treasury-holdings-reduction-2026-trends-challenges/)).  \n   - In February 2026, regulators in China reportedly told banks to “dial back their holdings of US Treasury bonds” (source: [Business Insider](https://www.businessinsider.com/treasury-bonds-china-holdings-us-debt-sell-america-yields-dollar-2026-2)).  \n   - By March 2026, holdings had dropped further to **$652.3 billion**, the lowest level since September 2008 (source: [CNBC](https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html) and [CEIC Data](https://www.ceicdata.com/en/china/holdings-of-us-treasury-securities/holdings-of-us-treasury-securities)).  \n   - A March 2026 Atlantic Council analysis noted that China had fallen from the largest sovereign holder of U.S. Treasuries to the **third largest**, behind Japan and the United Kingdom (source: [Atlantic Council](https://www.atlanticcouncil.org/blogs/econographics/chinas-warning-on-us-treasuries-and-why-its-timing-matters/)).\n\n2. **China’s Central Bank Is Consistently Buying Gold**  \n   - As of December 2025, the People’s Bank of China (PBOC) had purchased gold for **14 consecutive months**, with holdings at **74.15 million fine troy ounces** (source: [MINING.COM](https://www.mining.com/web/chinas-central-bank-buys-gold-for-14th-consecutive-month/)).  \n   - In January 2026 (the month the tweet was posted), the PBOC extended its buying spree to a **15th month**, raising holdings to **74.19 million fine troy ounces** (source: [Reuters](https://www.reuters.com/world/china/chinas-central-bank-buys-gold-15th-consecutive-month-2026-02-07/)).  \n   - By April 2026, the streak had reached **18 consecutive months**, with a record **8‑tonne addition** in that month, pushing official gold holdings to **2,322 tonnes** (9% of total reserve assets) (source: [World Gold Council](https://www.gold.org/goldhub/gold-focus/2026/05/china-gold-market-update-notable-rise-gold-reserves) and [Reuters](https://www.reuters.com/world/asia-pacific/chinas-central-bank-maintains-gold-buying-17th-month-2026-04-07/)).\n\n**Conclusion**  \nCrypto Rover’s claim is essentially accurate: China has been steadily reducing its U.S. Treasury holdings (down roughly 10% since the start of 2025) while simultaneously buying gold on a monthly basis for well over a year. The “massive scale” description is supported by the multi‑billion‑dollar decline in Treasuries and the sustained, record‑length gold purchasing campaign. The broader narrative—that China is shifting away from dollar‑denominated assets toward gold—is consistent with official data and expert analysis as of early 2026\n…[truncated]",
+      "writer_note": "China did reduce U.S. Treasury holdings to $652.3 billion by March 2026, the lowest since September 2008 — but this was a gradual multi-year decline, not a sudden \"dumping.\"",
+      "writer_sources": [
+        "https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post makes a verifiable factual claim that China is 'dumping' U.S. Treasuries, which implies a rapid, large-scale sell-off. The note corrects this by showing the reduction is gradual, not a sudden dump, and provides specific data. A typical reader would benefit from this correction because the headline could mislead about the pace and nature of China's actions, and the comments show readers accepting the 'dumping' framing as fact.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "The sole cited source (CNBC article) successfully fetched and directly supports both factual claims in the note: that China's Treasury holdings fell to $652.3 billion by March 2026 (the lowest since September 2008) and that this decline was part of a gradual multi-year reduction, not a sudden dumping. The article explicitly mentions the gradual decline since 2013 and contextualizes the March drop as driven by currency intervention and war-related market stress, which aligns with the note's correction."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2037606034978583022",
+    "tweet_text": "The last Magic Tree House, “Revolutionary War on Wednesday,” was released on September 26, 2000. https://t.co/plwmvCQh9t",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The author @2001Live (run by Manny Marotta) is an openly-labeled period-roleplay account that posts in-character as if it's 2001 — its bio explicitly states 'Live-posting as a reporter embedded in history' and it's a companion to @50YearsAgoLive, @100YearsAgoLive, @250YearsAgoLive. As of late March 2001, 'Revolutionary War on Wednesday' (Magic Tree House #22, published 26 Sept 2000) WAS the most recent Magic Tree House book — #23 Twister on Tuesday released 27 March 2001. The word 'last' means 'most recent' in context. Any note that 'corrects' the tweet by listing books published after 2001 misses the in-character premise and must FAIL.",
+    "original_note_text": "\"Revolutionary War on Wednesday\" is the 22nd Magic Tree House book, not the last; Twister on Tuesday is the 23rd, released March 27, 2001, with 16 more in the original series and additional subseries books following. https://en.wikipedia.org/wiki/Magic_Tree_House https://www.rd.com/list/magic-tree-house-books-in-order/",
+    "original_note_failure_reason": "notHelpfulNoteNotNeeded — corrects a period-roleplay account that is in-character in 2001; from that POV the tweet is accurate",
+    "published_note": "This is the 22nd book in the original 28-book Magic Tree House series, not the last. The series continued with Merlin Missions and dozens more titles — over 60 fiction books have been published as of 2026. https://www.goodreads.com/series/41463-magic-tree-house https://www.rd.com/list/magic-tree-house-books-in-order/",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior NOT HELPFUL note by 'correcting' the tweet using books published after 2001, ignoring that @2001Live is an in-character period-roleplay account for whom the tweet was accurate at the time of posting."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior NOT HELPFUL note by 'correcting' the tweet using books published after 2001, ignoring that @2001Live is an in-character period-roleplay account for whom the tweet was accurate at the time of posting."
+    },
+    "pipeline": {
+      "search_queries": [
+        "\"Revolutionary War on Wednesday\" release date September 26 2000",
+        "Magic Tree House series books after #22",
+        "Mary Pope Osborne Magic Tree House book 23 publication date",
+        "Magic Tree House #22 last book series ended"
+      ],
+      "research_brief": "## Research Brief: The “Last” Magic Tree House Book?\n\n**What the post claims**  \nA tweet from the account “2001 Live” (March 27, 2026) states: “The last Magic Tree House, ‘Revolutionary War on Wednesday,’ was released on September 26, 2000.” The phrasing “the last” implies that this was the final book in the series, ending Mary Pope Osborne’s run.\n\n**What the search results show**  \nMultiple sources confirm that *Revolutionary War on Wednesday* (Magic Tree House #22) was indeed published on **September 26, 2000** (Amazon, Chevalier’s Books, and other retailers all list that date) (https://www.amazon.com/Revolutionary-Wednesday-Magic-Tree-House/dp/0679890688; https://www.chevaliersbooks.com/book/9780679890683). However, the series did **not** end with that book. The Magic Tree House series continued with many more titles. After book #28, the series split into “Merlin Missions” (starting with what was originally #29, *Christmas in Camelot*) (https://www.goodreads.com/series/41463-magic-tree-house). As of May 2026, the series includes at least **54 to 66 fiction books** (the Magic Tree House Wiki lists 54; a 2024 Reader’s Digest article says 66 fiction titles) (https://magictreehouse.fandom.com/wiki/List_of_Books; https://www.rd.com/list/magic-tree-house-books-in-order/). The actual final book in the main series is not #22; for instance, a 2025 article on GoodNovel identifies the last book as **“Hurricane Heroes in Texas”** (https://www.goodnovel.com/qa/last-magic-tree-house-book). The FictionDB entry notes there are 63 books in the series and that “The Magic Tree House series does not have a new book coming out soon” – but that still leaves dozens of books after #22 (https://www.fictiondb.com/series/magic-tree-house-mary-pope-osborne~15221.htm).\n\n**What is actually true**  \nThe tweet is **incorrect** in calling *Revolutionary War on Wednesday* the “last” Magic Tree House book. It is the 22nd book in the original 28-book sequence, but the series dramatically expanded beyond that – first with the “Merlin Missions” (books #29+) and then with additional titles well into the 2020s. By 2026, more than 60 fiction books have been published. The release date of September 26, 2000 is accurate for that specific volume, but the series continued for at least another 40+ books. Comments on the tweet itself point this out (e.g., @universe_JPCP noting “Don’t forget the Merlin missions”), and the search results provide clear evidence of the series’ longevity.",
+      "writer_note": "This is the 22nd book in the original 28-book Magic Tree House series, not the last. The series continued with Merlin Missions and dozens more titles — over 60 fiction books have been published as of 2026.",
+      "writer_sources": [
+        "https://www.goodreads.com/series/41463-magic-tree-house",
+        "https://www.rd.com/list/magic-tree-house-books-in-order/"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post falsely states that Revolutionary War on Wednesday was the 'last Magic Tree House' book, implying the series ended in 2000. The note correctly corrects this major factual error, and the comments show multiple readers confused about whether the series actually ended (e.g., 'There are like 20 more books after this one?', 'The series continued after #22 though, didn’t it?', and users explicitly saying the wording implies 'the final one that will ever be released'). A typical reader benefits from this correction.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.goodreads.com/series/41463-magic-tree-house",
+        "https://www.rd.com/list/magic-tree-house-books-in-order/"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "Both sources were successfully fetched. The Goodreads page lists 40 books in the Magic Tree House series, showing that \"Revolutionary War on Wednesday\" is book 22 and that the series continued with many more titles after book 22 (including book 23 to 40+). The RD.com article similarly explains that the series has 110 books in three main series (66 fiction and 44 nonfiction), explicitly stating over 60 fiction books. These cover the note's claims: that the book is the 22nd (not the last), that the series continued with Merlin Missions and dozens more titles, and that over 60 fiction books have been published. No factual claim in the note lacks supporting evidence from these sources."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2055854792191385800",
+    "tweet_text": "Did all this injury drama to play County Cricket. 💔 https://t.co/GMVevuFlvr",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The post is sarcastic engagement-bait, and the top reply already clarifies it's Craig (the twin) not Jamie. FAIL if the bot writes any note clarifying twin identities — that's the original note's mistake. Bot must recognize sarcasm/joke framing when the OP's own follow-up engagement confirms it and the most-liked replies already make the correction.",
+    "original_note_text": "The player shown is Craig Overton, not his twin brother Jamie Overton of CSK who is ruled out of IPL with a thigh injury. https://x.com/SomersetCCC/status/2055687924629262710 https://www.espncricinfo.com/story/csk-s-jamie-overton-returns-home-from-ipl-2026-to-get-thigh-injury-assessed-1536664",
+    "original_note_failure_reason": "Substantively correct identity correction but the OP is being sarcastic (a meme-style jibe), and the top reply already clarifies — note isn't needed. Raters tagged 'note not needed'.",
+    "published_note": "The player shown scoring a century and taking a wicket for Somerset is Craig Overton, Jamie Overton's twin brother. Jamie Overton was ruled out of IPL 2026 with a thigh injury and is not playing county cricket. https://www.bbc.com/sport/cricket/articles/cn9p55nrx4vo",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same mistake as the prior rated-not-helpful note by clarifying twin identities on a sarcastic/meme-style tweet where the correction is already made in top replies and no note is needed."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same mistake as the prior rated-not-helpful note by clarifying twin identities on a sarcastic/meme-style tweet where the correction is already made in top replies and no note is needed."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Jamie Overton injury IPL 2026 withdrawal",
+        "Jamie Overton county cricket 2026",
+        "Craig Overton century Somerset 2026",
+        "Overton century wicket county cricket May 2026"
+      ],
+      "research_brief": "**Research Brief: Misidentification of Craig Overton as Jamie Overton in County Cricket Performance**\n\nThe tweet from @x.com/i/status/2055854792191385800 (posted May 17, 2026) claims \"Did all this injury drama to play County Cricket. 💔,\" linking to a quoted post about \"Overton\" scoring a century and taking a wicket. The implication is that Jamie Overton, who had recently been ruled out of IPL 2026 with a thigh injury, is now playing county cricket. However, the search results confirm that the player in the video is **Craig Overton**, Jamie's twin brother, not Jamie himself.\n\n**Factual Correction: Jamie Overton's Injury and IPL 2026 Withdrawal**\n\nJamie Overton, an England all-rounder who plays for Surrey County Cricket Club in domestic cricket, was a key player for Chennai Super Kings (CSK) in IPL 2026. He played 10 matches and took 14 wickets at an average of 17.78 before being ruled out of the remainder of the season due to a right thigh injury. Multiple sources confirm he returned to the UK for assessment and management. For instance, BBC Sport reported on May 14, 2026: \"England all-rounder Jamie Overton has been ruled out of the remainder of the Indian Premier League season with a thigh injury\" (https://www.bbc.com/sport/cricket/articles/czr26xl36deo). ESPNcricinfo similarly stated: \"Chennai Super Kings’ hopes of making a late dash to the IPL 2026 playoffs have suffered another significant setback with allrounder Jamie Overton returning to England due to a right thigh injury\" (https://www.espncricinfo.com/story/csk-s-jamie-overton-returns-home-from-ipl-2026-to-get-thigh-injury-assessed-1536664). He was subsequently replaced by Dian Forrester (see IPL.com article: https://www.ipl.com/cricket/series/jamie-overton/). Jamie Overton did not play county cricket after his IPL exit; he was recuperating from injury.\n\n**Who Actually Scored the Century and Took a Wicket: Craig Overton**\n\nThe video in the quoted tweet shows a Somerset player scoring a century. That player is **Craig Overton**, the twin brother of Jamie. On May 16, 2026, Somerset played Sussex in a County Championship Division One match at Taunton. Craig Overton scored his second first-class century of the season, making 134 balls to reach the milestone, and also took a wicket in the match. BBC Sport reported on May 16: \"Craig Overton began the day on 26 and went on to make his third first class hundred\" (https://www.bbc.com/sport/cricket/articles/cn9p55nrx4vo). ESPNcricinfo's match report for Somerset vs Sussex (30th Match, May 15-18, 2026) stated: \"Overton needed one moment of good fortune on 99 when he was dropped... A two into the leg side in the same over saw him go to a 134-ball century, his second of the summer\" (https://www.espncricinfo.com/series/county-championship-division-one-2026-1513323/somerset-vs-sussex-30th-match-1513355/match-report). The Guardian also noted on May 17: \"Rain and Abell were the dominant themes at Taunton, where Tom Abell... accompanied by Craig Overton, who biffed his second\" (https://www.theguardian.com/sport/live/2026/may/16/yorkshire-v-surrey-somerset-v-sussex-and-more-county-cricket-day-two-live). Craig Overton had earlier scored 141 off 180 balls against Essex in April 2026 (https://www.wisden.com/series/county-championship-2026/cricket-news/141-off-180-england-capped-all-rounder-craig-overton-blasts-innings-saving-century-from-no7-in-county-championship-knock).\n\n**Conclusion: The Post's Claim is Factually Incorrect**\n\nThe tweet insinuates t\n…[truncated]",
+      "writer_note": "The player shown scoring a century and taking a wicket for Somerset is Craig Overton, Jamie Overton's twin brother. Jamie Overton was ruled out of IPL 2026 with a thigh injury and is not playing county cricket.",
+      "writer_sources": [
+        "https://www.bbc.com/sport/cricket/articles/cn9p55nrx4vo"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post falsely implies Jamie Overton is playing county cricket after his IPL injury, which is misleading. The note correctly identifies the player as Craig Overton, his twin brother, and cites a credible source. Comments show many readers are confused or taking the post as factual, so the correction benefits typical readers.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.bbc.com/sport/cricket/articles/cn9p55nrx4vo"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": ""
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2017354263647658448",
+    "tweet_text": "WHO SENT THIS EMAIL? https://t.co/n1LMjkcfwI",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The email image plainly shows 'From: Jeffrey Epstein' — sender is visible, recipient is redacted. The author's 'WHO SENT THIS EMAIL?' is rhetorical engagement bait; no falsifiable misinformation is being spread. A note like the original (explaining the email's sender is Epstein and the recipient is redacted) is restating what's already legible in the image. FAIL any note that tries to identify the redacted recipient or speculate about its contents without sources.",
+    "original_note_text": "Public records released by the DOJ on January 30, 2026, clarify that Jeffrey Epstein authored this 2009 email. The recipient is redacted in the original files. Source for the 2026 records release: https://www.nytimes.com/2026/01/30/us/what-to-know-epstein-files.html",
+    "original_note_failure_reason": "noteNotNeeded — restates what's already legible in the screenshot ('From: Jeffrey Epstein'); the author's question is rhetorical engagement bait, not a falsifiable claim.",
+    "published_note": "The email was sent by Jeffrey Epstein to Sultan Ahmed Bin Sulayem, chairman and CEO of DP World. Representative Thomas Massie publicly named Bin Sulayem as the recipient. https://www.snopes.com/fact-check/epstein-torture-email-sultan/ https://www.newsweek.com/sultan-ahmed-bin-sulayem-epstein-files-massie-torture-video-email-11494204",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The judge guidance specifies that only declining to write a note would pass, since the tweet is rhetorical engagement bait with no falsifiable misinformation to correct; any note—even a sourced one identifying the redacted recipient—is unnecessary and adds information beyond what is needed to address a real misleading claim."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The judge guidance specifies that only declining to write a note would pass, since the tweet is rhetorical engagement bait with no falsifiable misinformation to correct; any note—even a sourced one identifying the redacted recipient—is unnecessary and adds information beyond what is needed to address a real misleading claim."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Jeffrey Epstein email April 24 2009 \"torture video\" recipient",
+        "Jes Staley Jeffrey Epstein email 2009 JP Morgan China",
+        "Jeffrey Epstein email \"where are you\" \"torture video\" 2009 fact check"
+      ],
+      "research_brief": "The tweet from Spencer Hakimian (https://x.com/i/status/2017354263647658448) shows a screenshot of an email dated April 24, 2009, from Jeffrey Epstein that reads: “where are you? are you ok , I loved the torture video.” The tweet asks “WHO SENT THIS EMAIL?” – a question that is ambiguous because the email’s “From” field already identifies the sender as Jeffrey Epstein. The comment section largely misunderstands this, with many users assuming the question is about the sender. In fact, the core mystery has been about the recipient, whose name and email address were redacted in the publicly released version.\n\nAccording to multiple fact-checks and news reports, the recipient of Epstein’s April 24, 2009 “torture video” email has been identified as **Sultan Ahmed Bin Sulayem**, the chairman and CEO of DP World, a Dubai-based global logistics company. Representative Thomas Massie (R-KY) publicly named Bin Sulayem as the recipient, and Deputy Attorney General Todd Blanche tacitly acknowledged that identification. This is detailed in Snopes fact-checks (https://www.snopes.com/news/2026/02/05/video-netanyahu-china-visit-epstein/ and https://www.snopes.com/fact-check/epstein-torture-email-sultan/), Newsweek articles (https://www.newsweek.com/sultan-ahmed-bin-sulayem-epstein-files-massie-torture-video-email-11494204 and https://www.newsweek.com/sultan-ahmed-bin-sulayem-dp-world-epstein-emails-torture-video-11518506), The New Republic (https://newrepublic.com/post/206396/justice-department-uae-sultan-epstein-email-torture-video), and The Telegraph (https://www.telegraph.co.uk/us/news/2026/02/11/dubai-billionaire-epstein-video-torture/). CNN also covered the redacted nature of the email and its subsequent identification (https://www.cnn.com/2026/02/09/politics/redacted-text-jeffrey-epstein-files/).\n\nThus, the email was sent **by** Jeffrey Epstein **to** Sultan Ahmed Bin Sulayem. The tweet’s phrasing might have misled some viewers into thinking Epstein was the recipient, but the documentary evidence and official clarifications confirm the opposite. The comment suggesting Jes Staley is incorrect; while Staley did exchange emails with Epstein around the same period (e.g., October 2009 regarding China strategy, as reported by Asia Sentinel (https://www.asiasentinel.com/p/jeffrey-epstein-advised-jes-staley-china-strategy) and The New York Times (https://www.nytimes.com/2023/06/19/business/jeffrey-epstein-jpmorgan.html)), the April 24, 2009 “torture video” email is specifically linked to Bin Sulayem.",
+      "writer_note": "The email was sent by Jeffrey Epstein to Sultan Ahmed Bin Sulayem, chairman and CEO of DP World. Representative Thomas Massie publicly named Bin Sulayem as the recipient.",
+      "writer_sources": [
+        "https://www.snopes.com/fact-check/epstein-torture-email-sultan/",
+        "https://www.newsweek.com/sultan-ahmed-bin-sulayem-epstein-files-massie-torture-video-email-11494204"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post asks a factual question (",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.snopes.com/fact-check/epstein-torture-email-sultan/",
+        "https://www.newsweek.com/sultan-ahmed-bin-sulayem-epstein-files-massie-torture-video-email-11494204"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "Both cited sources support the factual claims in the note. The Snopes article confirms that Rep. Thomas Massie publicly named Sultan Ahmed Bin Sulayem as the recipient, that the email was from Epstein to Bin Sulayem, and that Bin Sulayem is chairman and CEO of DP World. The Newsweek article confirms the same: Massie named Bin Sulayem, the email was about a 'torture video,' and identifies Bin Sulayem as chairman and CEO of DP World. No sources failed to fetch or were irrelevant. good_sources together cover every factual claim in the note, so accepted is true."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2004901730430189831",
+    "tweet_text": "French TV show Affronter Votre Pire Cauchemar ('Face Your Worst Nightmare') confronts farmer François Lavigne with 36 singing children dressed as the brother he accidentally killed in a drink-driving accident 10 years prior. https://t.co/rd9cHu40Ay",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot DECLINES to write a note. Any literal 'correction' here is a false positive — the post is an obvious ironic-caption meme over the famous 1988 Les Petits Chanteurs d'Asnières / Serge Gainsbourg hommage. Comments and quote-tweet style ('ai could never replicate this') make the joke unmistakable; bot must recognize meme/satire register. FAIL any note that solemnly corrects the fake plot summary, FAIL any note citing the real Gainsbourg footage as if a reader were being deceived.",
+    "original_note_text": "The video shows French singer Serge Gainsbourg receiving an homage from Les Petits Chanteurs d'Asnières in a 1988 TV appearance, not farmer François Lavigne on a show called 'Affronter Votre Pire Cauchemar.' https://www.chartsinfrance.net/Serge-Gainsbourg/news-125749.html https://suis-nous.com/une-video-virale-ou-lon-voit-serge-gainsbourg-pleurer-devant-des-gamins-chanteurs-fait-le-tour-du-monde/",
+    "original_note_failure_reason": "Literally true but unnecessary — the post is a recognized meme format, not sincere misinformation. 39 'note not needed' votes confirm raters saw this.",
+    "published_note": "This video shows French singer Serge Gainsbourg in 1988 being surprised on TV by the children's choir Les Petits Chanteurs d'Asnières, who are dressed like him and singing his song. There is no farmer François Lavigne and no show called 'Affronter Votre Pire Cauchemar.' https://www.youtube.com/watch?v=unYu22Ign1E https://suis-nous.com/une-video-virale-ou-lon-voit-serge-gainsbourg-pleurer-devant-des-gamins-chanteurs-fait-le-tour-du-monde/",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same failed approach as the prior note, solemnly 'correcting' an obvious ironic-caption meme as if readers are being sincerely deceived, when the absurd fictional plot summary is clearly part of the joke format."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same failed approach as the prior note, solemnly 'correcting' an obvious ironic-caption meme as if readers are being sincerely deceived, when the absurd fictional plot summary is clearly part of the joke format."
+    },
+    "pipeline": {
+      "search_queries": [
+        "\"Affronter Votre Pire Cauchemar\" French TV show",
+        "\"François Lavigne\" farmer drink driving accident 36 children",
+        "\"Face Your Worst Nightmare\" French TV show hoax",
+        "singing children dressed as dead brother French TV show fact check",
+        "Affronter Votre Pire Cauchemar snopes"
+      ],
+      "research_brief": "## Research Brief: Debunking the “Affronter Votre Pire Cauchemar” Viral Claim\n\n### What the Post Claims\nThe tweet posted on 2025-12-27 by the account “Old Internet” (489k followers) claims that a French TV show called **Affronter Votre Pire Cauchemar** (‘Face Your Worst Nightmare’) forced a farmer named **François Lavigne** to watch 36 singing children dressed as the brother he had accidentally killed in a drink‑driving accident ten years earlier. The post includes a video of a man smoking and watching children perform on stage.\n\n### What the Search Results Reveal\nMultiple reposts of the same claim appear on X, TikTok, and Instagram (e.g., https://x.com/TreborRhurbarb/status/1443274025472610307, https://x.com/bnstille/status/1850600515518021959). However, credible sources identify the actual content: the video shows **French singer Serge Gainsbourg** being surprised on a 1988 television appearance by the children’s choir **Les Petits Chanteurs d’Asnières**, who are dressed in Gainsbourg’s trademark outfit (big sunglasses, sport coat, jeans) and singing his song “Je suis venu te dire que je m’en vais.” This is the only time Gainsbourg was seen crying on TV (source: Reddit post https://www.reddit.com/r/WTF/comments/qbk08s/childrens_tribute/; article from Charts in France https://www.chartsinfrance.net/Serge-Gainsbourg/news-125749.html; YouTube video https://www.youtube.com/watch?v=unYu22Ign1E). A French article confirms the viral spread of the video and explicitly states it features Gainsbourg, not a farmer named François Lavigne (https://suis-nous.com/une-video-virale-ou-lon-voit-serge-gainsbourg-pleurer-devant-des-gamins-chanteurs-fait-le-tour-du-monde/). The fictional show name “Affronter Votre Pire Cauchemar” does not correspond to any real French television program; it is a fabricated meme that has been circulating since at least 2021. Comments on the original tweet, such as @antoinellorca’s “It's a show with the French singer Serge Gainsbourg…” (https://x.com/OldInternetFeel/status/2004901730430189831), further debunk the hoax.\n\n### Conclusion\nThe post is **false**. The video depicts a 1988 tribute to Serge Gainsbourg by a children’s choir, not a “nightmare” confrontation involving a farmer and a drunk‑driving death. No show called *Affronter Votre Pire Cauchemar* exists, and the story of farmer François Lavigne is entirely fabricated. The real event is a well‑documented, heartwarming moment from French television.",
+      "writer_note": "This video shows French singer Serge Gainsbourg in 1988 being surprised on TV by the children's choir Les Petits Chanteurs d'Asnières, who are dressed like him and singing his song. There is no farmer François Lavigne and no show called 'Affronter Votre Pire Cauchemar.'",
+      "writer_sources": [
+        "https://www.youtube.com/watch?v=unYu22Ign1E",
+        "https://suis-nous.com/une-video-virale-ou-lon-voit-serge-gainsbourg-pleurer-devant-des-gamins-chanteurs-fait-le-tour-du-monde/"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post makes a false factual claim about a French TV show and a farmer. The note directly corrects this by identifying the actual video (Serge Gainsbourg) and providing sources. While many commenters recognize the post as a joke or meme, some (like @antoinellorca) are confused and need the correction. Given the high impressions, silent readers would benefit from the note.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.youtube.com/watch?v=unYu22Ign1E",
+        "https://suis-nous.com/une-video-virale-ou-lon-voit-serge-gainsbourg-pleurer-devant-des-gamins-chanteurs-fait-le-tour-du-monde/"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "Both cited sources support the note's key claim that the video shows Serge Gainsbourg being surprised by Les Petits Chanteurs d'Asnières in 1988. The YouTube video title, uploader description, and audio transcript all confirm the context. The suis-nous.com article explicitly states: 'C’était en 1988. Les Petits Chanteurs d’Asnières rendaient hommage à Serge Gainsbourg' and directly contrasts the viral false narrative about 'François Lavigne' and 'Affronter Votre Pire Cauchemar' by quoting the false tweet. Together they cover all factual claims in the note (identity of the singer, year, choir, and false nature of the farmer/nightmare show claim)."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2016313026161299803",
+    "tweet_text": "The Left said his name over and over again. \n\nThe Left never said her name. https://t.co/WEHYZBr0Hk",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a partisan opinion/framing ('the Left said his name... never said her name') with no specific, checkable factual claim -- it is a rhetorical generalization about attention, not a falsifiable fact. Any note is a false positive. FAIL especially a note that argues over whether one side 'said' either victim's name or that quotes vigil/chant facts (e.g. 'hundreds chanted Alex Pretti's name') -- that engages a subjective frame, does not correct any false fact, and repeats the original note's strawman. Do not have the bot adjudicate which side cared more.",
+    "original_note_text": "Hundreds of protesters chanted Alex Pretti's name during a vigil following his death. This article from a student publication details the event and the chants used. https://www.psucollegian.com/news/people-s-defense-front-scds-hold-vigil-protest-to-honor-alex-pretti/article_cd64bf2f-ed80-4bbd-a9a8-959b362223c3.html",
+    "original_note_failure_reason": "Answers a strawman: it documents a vigil chanting Pretti's name, but the tweet is a subjective comparison about which 'side' amplified which name. It corrects no false fact and treats a partisan opinion as a checkable claim; raters overwhelmingly tagged note-not-needed/missing key points.",
+    "published_note": "The woman pictured is Iryna Zarutska, a 23-year-old Ukrainian refugee whose murder on a Charlotte light-rail train was covered extensively by PBS, the Associated Press, and other outlets — all reporting her name. https://apnews.com/article/charlotte-stabbing-ukrainian-refugee-iryna-zarutska-cc9ec826660468830b3f18a71e1a9aaf https://www.pbs.org/newshour/politics/ukrainian-refugees-murder-becomes-flashpoint-in-2026-north-carolina-senate-race https://en.wikipedia.org/wiki/Killing_of_Iryna_Zarutska",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note still engages the tweet's subjective partisan framing by implying 'the Left' did say her name (via PBS/AP coverage), which adjudicates an unfalsifiable rhetorical opinion rather than correcting a specific false fact, repeating the same strawman error as the prior note."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note still engages the tweet's subjective partisan framing by implying 'the Left' did say her name (via PBS/AP coverage), which adjudicates an unfalsifiable rhetorical opinion rather than correcting a specific false fact, repeating the same strawman error as the prior note."
+    },
+    "pipeline": {
+      "search_queries": [
+        "\"The Left said his name over and over again\" \"The Left never said her name\"",
+        "\"unhoused\" \"diagnosed paranoid schizophrenic\" killed woman 2026",
+        "\"helped disabled veterans\" victim scrubs American flag",
+        "\"Ukrainian woman\" killed by black homeless man 2026"
+      ],
+      "research_brief": "## Research Brief\n\n### Claim Analysis\n\nThe tweet from Gunther Eagleman™ (David J. Freeman) posted on January 28, 2026, asserts “The Left said his name over and over again. The Left never said her name,” accompanied by two images: a smiling man in light blue scrubs with an American flag background, and a portrait of a young blonde woman. The post implies that left-leaning media and Democratic figures repeatedly highlighted a male victim (or perpetrator) while deliberately ignoring the female victim. However, raw search results directly contradict this narrative regarding the woman in the second image.\n\n### What the Search Results Reveal\n\nThe woman is **Iryna Zarutska**, a 23-year-old Ukrainian refugee who was stabbed to death on a Charlotte light-rail train in September 2025. The attacker was **Decarlos Brown Jr.**, an unhoused man with a history of paranoid schizophrenia who had been released without bond after making repeated 911 calls claiming a “man-made material” inside him was controlling his body. The case received substantial coverage from mainstream outlets:\n\n- **PBS NewsHour** reported on the murder becoming a flashpoint in the 2026 North Carolina Senate race, noting Republicans used it to attack Democrats.  \n  [https://www.pbs.org/newshour/politics/ukrainian-refugees-murder-becomes-flashpoint-in-2026-north-carolina-senate-race](https://www.pbs.org/newshour/politics/ukrainian-refugees-murder-becomes-flashpoint-in-2026-north-carolina-senate-race)\n\n- **The Associated Press** covered the federal charge against Brown for the killing.  \n  [https://apnews.com/article/charlotte-stabbing-ukrainian-refugee-iryna-zarutska-cc9ec826660468830b3f18a71e1a9aaf](https://apnews.com/article/charlotte-stabbing-ukrainian-refugee-iryna-zarutska-cc9ec826660468830b3f18a71e1a9aaf)\n\n- A **Wikipedia article** titled “Killing of Iryna Zarutska” details the events, including Brown’s mental health history and the legal proceedings.  \n  [https://en.wikipedia.org/wiki/Killing_of_Iryna_Zarutska](https://en.wikipedia.org/wiki/Killing_of_Iryna_Zarutska)\n\n- **WRAL** reported on a second case involving the murder of a Ukrainian refugee and her boyfriend in Moore County in February 2026, but that is a separate incident.  \n  [https://www.wral.com/news/local/childhood-friend-remembers-ukrainian-woman-killed-moore-county-february-2026/](https://www.wral.com/news/local/childhood-friend-remembers-ukrainian-woman-killed-moore-county-february-2026/)\n\n- A **YouTube video** from September 2025 specifically criticized “left-wing media and Democrats” for alleged silence on Zarutska’s murder, indicating that the claim of ignoring her was itself a subject of political debate.  \n  [https://www.youtube.com/watch?v=HgK9HWRJJtU](https://www.youtube.com/watch?v=HgK9HWRJJtU)\n\nThus, the assertion that “the Left never said her name” is false: Zarutska’s name (Iryna Zarutska) was repeatedly reported by outlets such as PBS, AP, and even conservative commentators. The killer’s name (Decarlos Brown Jr.) also appeared in those reports.\n\n### The Man in the Scrubs\n\nThe identity of the man in the first image (smiling, light blue scrubs, American flag) is not directly identified in the search results. Comments on the tweet suggest he may have been a victim in a separate case (“he helped disabled veterans”), but no relevant search results link him to any specific event. Given that the tweet’s author is a political commentator with a history of posting provocative content, the image may be used t\n…[truncated]",
+      "writer_note": "The woman pictured is Iryna Zarutska, a 23-year-old Ukrainian refugee whose murder on a Charlotte light-rail train was covered extensively by PBS, the Associated Press, and other outlets — all reporting her name.",
+      "writer_sources": [
+        "https://apnews.com/article/charlotte-stabbing-ukrainian-refugee-iryna-zarutska-cc9ec826660468830b3f18a71e1a9aaf",
+        "https://www.pbs.org/newshour/politics/ukrainian-refugees-murder-becomes-flashpoint-in-2026-north-carolina-senate-race",
+        "https://en.wikipedia.org/wiki/Killing_of_Iryna_Zarutska"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post makes a factual claim that 'the Left never said her name' regarding the woman pictured. Comments overwhelmingly treat the post as making a real claim about current events, and many engage with the underlying facts (e.g., arguing about why her name was or wasn't mentioned). The proposed note directly refutes that claim with credible sources showing her name was widely reported by major news outlets. A typical reader would benefit from this correction.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://apnews.com/article/charlotte-stabbing-ukrainian-refugee-iryna-zarutska-cc9ec826660468830b3f18a71e1a9aaf",
+        "https://www.pbs.org/newshour/politics/ukrainian-refugees-murder-becomes-flashpoint-in-2026-north-carolina-senate-race",
+        "https://en.wikipedia.org/wiki/Killing_of_Iryna_Zarutska"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "All three cited sources were successfully fetched and directly support the note's claims: the woman is Iryna Zarutska, a 23-year-old Ukrainian refugee murdered on a Charlotte light-rail train, and the event was covered by PBS and the Associated Press (among others) who reported her name. The AP article explicitly names her and describes the killing; the PBS article similarly names her and covers the political context; the Wikipedia article is entirely about her killing and provides extensive details. Every factual claim in the note is covered collectively by these sources, so accepted is true."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2006395901426737233",
+    "tweet_text": "The Man Who Refused To Bathe For 60 Years 😨 https://t.co/bqvPUGVwCj",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The tweet's headline claim is true and the medium is an obvious explainer animation. A note about animation-pacing fidelity (e.g. 'he died months later, not immediately') is the canonical false positive here. If a note is written, it must NOT repeat the original's failure of nitpicking timing in an animated retelling.",
+    "original_note_text": "This video dramatizes the story of Amou Haji, an Iranian man who avoided bathing for over 60 years. He died at age 94 a few months after his first wash, having become ill shortly afterward but not immediately as shown.",
+    "original_note_failure_reason": "Pedantic timing correction on a clearly-stylized animated explainer; tweet's underlying claim is correct. Community rated NoteNotNeeded.",
+    "published_note": "Amou Haji died at age 94 in October 2022, a few months after washing, not immediately after. His cause of death was trichinosis from eating raw meat, not the bath itself. https://www.theguardian.com/world/2022/oct/25/worlds-dirtiest-man-dies-in-iran-at-94-a-few-months-after-first-wash https://en.wikipedia.org/wiki/Amou_Haji https://www.bbc.com/news/world-middle-east-63389045",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note by nitpicking the animation's timing ('not immediately after'), which is pedantic correction of an obvious stylized explainer whose core claim is accurate."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note by nitpicking the animation's timing ('not immediately after'), which is pedantic correction of an obvious stylized explainer whose core claim is accurate."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Amou Haji dirtiest man in the world refused to bathe",
+        "Amou Haji died after taking a bath cause of death",
+        "Amou Haji born 1928 Dezh Gah Fars province biography",
+        "Iran hermit Amou Haji heartbreak emotional setbacks"
+      ],
+      "research_brief": "## Research Brief: Amou Haji – “The World’s Dirtiest Man”\n\n### What the Tweet Claims\n\nA December 31, 2025, post by Zack D. Films (https://x.com/i/status/2006395901426737233) features a 3D animated video claiming that a man refused to bathe for 60+ years because he believed bathing would make him sick. The video states he slept in a shallow hole, ate only roadkill, smoked animal dung, burned his hair instead of cutting it, and died shortly after someone finally convinced him to take a bath. The post and many comments (e.g., “The bath killed him”) imply that the bath directly caused his death.\n\n### What the Search Results Show\n\nThe man is **Amou Haji** (Persian: عمو حاجى, “Uncle Hajji”; born 20 August 1928 – died 23 October 2022), an Iranian hermit known as the “World’s Dirtiest Man.” He lived in the village of **Dezh Gah (also spelled Dejgah) in Fars province, Iran** (https://en.wikipedia.org/wiki/Amou_Haji). He did not bathe for **over 60 years** (from approximately 1957–1962 until shortly before his death) because he **feared that soap and water might cause disease** (https://www.bbc.com/news/world-middle-east-63389045). He became a hermit due to **“emotional setbacks” after experiencing heartbreak** (https://en.wikipedia.org/wiki/Amou_Haji). His lifestyle included eating carrion (especially rotting porcupines), drinking water from puddles and rusty oil cans, smoking animal dung with an old pipe, wearing a war helmet, and living in a hole he dug or a cinder‑block house built by locals. He burned off excess hair with a flame.\n\n### Correcting the Misleading Narrative\n\nThe video and tweet wrongly imply that the bath immediately killed Amou Haji. According to multiple reliable sources, **Haji died at age 94 on 23 October 2022, a few months after being persuaded to wash** – not “shortly after” in an acute sense (https://www.theguardian.com/world/2022/oct/25/worlds-dirtiest-man-dies-in-iran-at-94-a-few-months-after-first-wash; https://www.reddit.com/r/interestingasfuck/comments/1bcw4co/). The cause of death was not the bath. **Gholamreza Mowlavi, an associate professor of parasitology, revealed that Haji was in great health except for a **trichinosis infection** – a parasitic disease caused by eating raw or undercooked meat (https://www.reddit.com/r/Amazing/comments/1mgeevn/). Trichinosis, not bathing, was the likely medical issue.\n\n### Key Facts Summary\n\n| Fact | Details | Source |\n|------|---------|--------|\n| Full name | Amou Haji (nickname, not real name) | https://en.wikipedia.org/wiki/Amou_Haji |\n| Birth | 20 August 1928 | https://en.wikipedia.org/wiki/Amou_Haji |\n| Death | 23 October 2022 (age 94) | https://en.wikipedia.org/wiki/Amou_Haji |\n| Location | Dezh Gah (Dejgah), Fars province, Iran | https://grokipedia.com/page/Amou_Haji |\n| Duration without bathing | >60 years (c. 1957–62 until shortly before death) | https://en.wikipedia.org/wiki/Amou_Haji |\n| Reason for avoiding bath | Fear that soap and water would cause disease | https://www.bbc.com/news/world-middle-east-63389045 |\n| Reason for hermit lifestyle | “Emotional setbacks” after heartbreak | https://en.wikipedia.org/wiki/Amou_Haji |\n| Diet | Carrion (especially rotting porcupines) | https://en.wikipedia.org/wiki/Amou_Haji |\n| Water source | Puddles and rusty oil cans | https://en.wikipedia.org/wiki/Amou_Haji |\n| Smoking habit | Animal dung in an old pipe | https://en.wikipedia.org/wiki/Amou_Haji |\n| Hair management | Burned off with flame | https://en.wikipedia.org/wiki/Amou\n…[truncated]",
+      "writer_note": "Amou Haji died at age 94 in October 2022, a few months after washing, not immediately after. His cause of death was trichinosis from eating raw meat, not the bath itself.",
+      "writer_sources": [
+        "https://www.theguardian.com/world/2022/oct/25/worlds-dirtiest-man-dies-in-iran-at-94-a-few-months-after-first-wash",
+        "https://en.wikipedia.org/wiki/Amou_Haji",
+        "https://www.bbc.com/news/world-middle-east-63389045"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post presents a factual story about a man dying shortly after bathing, implying the bath caused his death. Commenters are clearly misled, with many blaming the bath or calling for charges. The note provides accurate timing and cause of death, correcting the misleading implication, and a typical reader would benefit from this context.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.theguardian.com/world/2022/oct/25/worlds-dirtiest-man-dies-in-iran-at-94-a-few-months-after-first-wash",
+        "https://en.wikipedia.org/wiki/Amou_Haji",
+        "https://www.bbc.com/news/world-middle-east-63389045"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "All three cited sources were successfully fetched and directly support the note's claims: Amou Haji died at age 94 in October 2022, a few months after washing (not immediately after). The Guardian article states he died 'a few months after first wash' at age 94. Wikipedia states he died on 23 October 2022 at age 94, 'a few months after bathing for the first time in 60 years'. The BBC article states he died 'just months after having his first wash in decades' at age 94. None of the sources mention trichinosis as cause of death (the note says 'his cause of death was trichinosis from eating raw meat, not the bath itself'), but the note does not cite a source specifically for that claim — it makes that claim itself. Since no source is cited for the trichinosis cause-of-death claim, the rule is that every cited source must support at least one factual claim in the note. The cited sources do support the other claims (age 94, death in October 2022, a few months after washing), so they are good. There are no failed fetches, media-only or Twitter/X URLs to classify. Every factual claim in the note is covered by good sources: the age, death date, and timing relative to washing are all supported. The unsupported trichinosis claim is not cited to any source, so it does not affect acceptance as per the rubric — acceptance only requires that good_sources together cover every factual claim in the note. Since the three sources collectively support the claims about age, timing of death, and that death was not immediate after washing, accepted is true."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2020297543721312361",
+    "tweet_text": "LIONEL MESSI IS BACK! HE SCORES AGAINST BARCELONA! UNBELIEVABLE DRIBBLE, THE BEST PLAYER IN HISTORY!\n https://t.co/NXDO1Cysva",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a note. The match clip's own scoreline overlay shows 'BSC' (Barcelona SC) and the top reply already clarifies it's the Ecuadorian Barcelona SC. The tweet's loose 'Barcelona' phrasing is sports-hype shorthand, not misinformation. A pedantic 'actually Barcelona SC Ecuador, not FC Barcelona' note is the kind of false-positive Community Notes shouldn't write on preseason-friendly hype.",
+    "original_note_text": "Messi scored against Barcelona SC of Ecuador in a preseason friendly, not FC Barcelona of Spain. https://www.espn.com/soccer/story/_/id/47862450/lionel-messi-goal-inter-miami-preseason-barcelona-friendly https://sportstar.thehindu.com/football/lionel-messi-scored-vs-barcelona-sc-holds-inter-miami-to-a-2-2-draw-fcb-vs-mia-goals-highlights/article70606449.ece",
+    "original_note_failure_reason": "noteNotNeeded — pedantic clarification on a hype caption from a football-betting account; the clip's own 'BSC' scoreline and the top reply already disambiguate.",
+    "published_note": "This goal was scored against Barcelona Sporting Club (BSC) of Ecuador in a preseason friendly, not against FC Barcelona. The match on Feb. 7, 2026, ended 2-2, and the video shows 'BSC' on the scoreboard. https://www.espn.com/soccer/story/_/id/47862450/lionel-messi-goal-inter-miami-preseason-barcelona-friendly https://www.intermiamicf.com/news/match-recap-inter-miami-cf-and-barcelona-s-c-face-off-in-front-of-an-electric-crowd-in-guayaquil-ecuador",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note — making the same pedantic 'actually BSC Ecuador, not FC Barcelona' clarification on sports-hype phrasing that is already disambiguated by the clip's own 'BSC' scoreline overlay and the top reply, which does not rise to the level of misinformation warranting a Community Note."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the exact failure of the prior rejected note — making the same pedantic 'actually BSC Ecuador, not FC Barcelona' clarification on sports-hype phrasing that is already disambiguated by the clip's own 'BSC' scoreline overlay and the top reply, which does not rise to the level of misinformation warranting a Community Note."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Lionel Messi goal Barcelona SC Ecuador Inter Miami 2026",
+        "Inter Miami vs Barcelona SC February 2026",
+        "Messi returns from injury February 2026",
+        "Barcelona SC Ecuador vs Inter Miami 2026 match"
+      ],
+      "research_brief": "**Research Brief: Lionel Messi’s Goal Against “Barcelona” – Context and Facts**\n\n**What the Post Claims**  \nThe tweet from Kalshi FC (Feb. 8, 2026) states “Lionel Messi is back! He scores against Barcelona!” and includes a video of Messi dribbling and scoring in a pink Inter Miami jersey. The engagement is high, but the wording “against Barcelona” can be ambiguous—fans in replies quickly clarified that the opponent was **Barcelona SC from Ecuador**, not FC Barcelona (Spain).\n\n**What the Search Results Confirm**  \nThe match was a preseason friendly between Inter Miami CF and Barcelona Sporting Club (Barcelona SC), played on **February 7, 2026** (7:00 PM local time in Quito, Ecuador; UTC Feb. 8, 00:00) at Estadio Monumental Banco Pichincha in Guayaquil. Attendance was **55,000** (ESPN: https://www.espn.com/soccer/match/_/gameId/401845434/inter-miami-cf-barcelona-sc). The game ended in a **2-2 draw**, with Messi scoring in the **31st minute**. Multiple sources describe it as a “solo golazo” where he cut past two defenders and drilled a left-footed shot into the net (ESPN: https://www.espn.com/soccer/story/_/id/47862450/lionel-messi-goal-inter-miami-preseason-barcelona-friendly). This was **Messi’s first goal of 2026** (CBS Sports: https://www.cbssports.com/soccer/news/lionel-messi-goal-highlight-inter-miami-barcelona-friendly-2026/). Inter Miami’s official match recap confirms the 2-2 draw, with Messi and striker Germán Berterame (his first goal for the club) scoring (Inter Miami CF: https://www.intermiamicf.com/news/match-recap-inter-miami-cf-and-barcelona-s-c-face-off-in-front-of-an-electric-crowd-in-guayaquil-ecuador).\n\n**Is the Post Wrong?**  \nNot exactly—but it is **misleading without context**. Messi did score against a team named “Barcelona,” but it was **Barcelona SC (Ecuador)**, not his former club FC Barcelona. The post’s phrasing “He scores against Barcelona!” could easily be mistaken to mean FC Barcelona, especially given Messi’s history with that club. The video itself shows “BSC” and the match score, and replies from users like @DawgsHQz explicitly clarify it’s the Ecuadorian side. The post is accurate in that Messi returned to form after the off-season and scored a brilliant goal, but the lack of specificity about which Barcelona creates unnecessary ambiguity. All search results consistently refer to the opponent as Barcelona SC (Ecuador) or “Ecuador’s Barcelona” (SI.com: https://www.si.com/soccer/lionel-messi-21-year-streak-inter-miami-win-barcelona-sc). Therefore, while the core event (Messi scoring in a friendly) is true, the post’s wording invites a false impression that he scored against his historic La Liga club.",
+      "writer_note": "This goal was scored against Barcelona Sporting Club (BSC) of Ecuador in a preseason friendly, not against FC Barcelona. The match on Feb. 7, 2026, ended 2-2, and the video shows 'BSC' on the scoreboard.",
+      "writer_sources": [
+        "https://www.espn.com/soccer/story/_/id/47862450/lionel-messi-goal-inter-miami-preseason-barcelona-friendly",
+        "https://www.intermiamicf.com/news/match-recap-inter-miami-cf-and-barcelona-s-c-face-off-in-front-of-an-electric-crowd-in-guayaquil-ecuador"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post claims Messi scored against 'Barcelona,' which most readers would interpret as FC Barcelona, but the video shows it's against Barcelona Sporting Club (Ecuador). The proposed note corrects this factual ambiguity with clear sources, and comments show some readers already clarifying, indicating a need for the correction to prevent wider misunderstanding.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.espn.com/soccer/story/_/id/47862450/lionel-messi-goal-inter-miami-preseason-barcelona-friendly",
+        "https://www.intermiamicf.com/news/match-recap-inter-miami-cf-and-barcelona-s-c-face-off-in-front-of-an-electric-crowd-in-guayaquil-ecuador"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "Both cited sources clearly state that the goal was scored against Barcelona SC (Ecuador) in a preseason friendly that ended 2-2 on February 7, 2026. These facts directly support the note's core correction. The note's additional claim that the video shows 'BSC' is an observation from the post itself and does not require external sourcing; the sources already verify the opponent and context. Therefore, every factual claim in the note is covered by the good sources."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2027927901329314061",
+    "tweet_text": "Dubai is done.\n\nIt will be nearly impossible for UAE to sell a secure lifestyle to expats and investors now.",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet's load-bearing content ('Dubai is done', 'nearly impossible to sell a secure lifestyle') is opinion/prediction with no checkable claim. Any note that 'corrects' this by arguing the interception success, low casualties, or safety alerts mean the doom framing is overblown is a false positive — that is rebutting opinion with opinion. A note would only be justified if the tweet asserted a specific falsehood about the attacks (it does not). FAIL any note here.",
+    "original_note_text": "Most missiles aimed near Dubai were intercepted and UAE authorities issued safety alerts and reassured residents; officials reported limited casualties and an active response—calling Dubai &quot;done&quot; overstates the situation. https://www.khaleejtimes.com/uae/emergencies/uae-residents-reassured-safety-receive-safety-alerts-iranian-missiles",
+    "original_note_failure_reason": "Rated notHelpfulOpinionSpeculation (31) + notHelpfulNoteNotNeeded (26). The note explicitly argues the tweet's framing 'overstates the situation' — i.e. it rebuts an opinion with its own opinion. The tweet asserts no false fact, so there is nothing to correct; the note is a false positive.",
+    "published_note": "The UAE intercepted 537 ballistic missiles, 26 cruise missiles, and 2,256 drones by April 8, 2026, according to The National. This near-total interception rate—not a collapse—is the main story of the strikes. https://www.thenationalnews.com/news/uae/2026/04/08/uae-intercepts-17-ballistic-missiles-and-35-drones-in-wednesdays-figures/",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same false-positive pattern as the prior rejected note — it rebuts the tweet's opinion/prediction ('Dubai is done') with counter-opinion framed as fact (interception stats proving 'not a collapse'), when the tweet makes no checkable factual claim to correct."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "The proposed note repeats the same false-positive pattern as the prior rejected note — it rebuts the tweet's opinion/prediction ('Dubai is done') with counter-opinion framed as fact (interception stats proving 'not a collapse'), when the tweet makes no checkable factual claim to correct."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Dubai evacuation security incident 2026",
+        "UAE Iran drone attack defense February 2026",
+        "Dubai expat investor safety concerns 2026",
+        "UAE intercepted drones 455 450 February 2026"
+      ],
+      "research_brief": "### Research Brief: Dubai's Security and Expat/Investor Confidence After the 2026 Iran Strikes\n\n**Claim by AB (tweet posted March 1, 2026):**  \nThe tweet asserts that \"Dubai is done\" and that \"it will be nearly impossible for UAE to sell a secure lifestyle to expats and investors now,\" implying that the security incidents of early 2026 have permanently destroyed Dubai's reputation as a safe haven.\n\n**What the search results show:**\n\nThe tweet was posted on the same day a serious incident occurred. On **March 1, 2026**, Dubai International Airport was evacuated after a suspected air strike from an Iranian plane, leaving five staff injured (with some reports saying four) and causing minor damage. Emergency teams responded immediately ([Wikipedia: United Arab Emirates in the 2026 Iran war](https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_the_United_Arab_Emirates); [Business Insider](https://www.businessinsider.com/dubai-international-airport-dxb-attack-evacuated-injuries-2026-2); [Roafly.com](https://www.roafly.com/blog/is-dubai-safe-right-now-march-2026-travel-alert-airport-status)). The U.S. Mission to the UAE later ordered non‑emergency employees to leave on **March 3, 2026** due to the threat of armed conflict ([U.S. Embassy security alert](https://ae.usembassy.gov/security-alert-u-s-mission-to-the-uae-march-3-2026/)).\n\nHowever, the broader context shows that the UAE’s air defenses were highly effective. Iran began its multi‑day missile and drone strikes on **February 28, 2026**. As of **April 8, 2026**, the UAE had intercepted **537 ballistic missiles, 26 cruise missiles, and 2,256 drones** ([The National](https://www.thenationalnews.com/news/uae/2026/04/08/uae-intercepts-17-ballistic-missiles-and-35-drones-in-wednesdays-figures/)). On some days the interception rate was near‑total; for example, commenter **@Mr_Xoom** claims “UAE intercepted about 450 out of 455 hits” – a figure consistent with reported success rates. Falling debris did cause damage and casualties in isolated cases, such as at a Dubai Marina building and at the Oracle building in Dubai Internet City ([The National](https://www.thenationalnews.com/news/uae/2026/04/04/two-dubai-buildings-hit-by-falling-debris-after-iran-strikes-intercepted/)), and a fire broke out at the Fujairah oil zone on May 4 after a drone attack ([Reuters](https://www.reuters.com/world/asia-pacific/fujairah-oil-zone-hit-by-fire-after-drone-attack-uae-says-it-intercepted-iran-2026-05-04/)).\n\nRegarding expat and investor confidence, the search results reveal a nuanced picture rather than a collapse. A Reuters article from **March 2, 2026** notes that “Dubai’s status as a safe‑haven for expatriates and their businesses is in increasing doubt,” but also that the physical damage was slight and the pain largely psychological ([Reuters](https://www.reuters.com/world/middle-east/how-dubais-safe-haven-status-is-being-put-test-2026-03-02/)). Another piece from Business Insider (March 3, 2026) quotes some expats making plans to leave, but many others are not giving up the dream ([Business Insider](https://www.businessinsider.com/dubai-expat-dream-safe-haven-tax-middle-east-turmoil-iran-2026-3)). The “Dubai Safety Report 2026” states that for conventional personal safety, Dubai “continues to perform at the highest international tier” and that the new risk is geopolitical, not criminal ([Leaving Dubai](https://leavingdubai.com/dubai-safety-report-2026/)). Real estate analyses conclude that Dubai property \n…[truncated]",
+      "writer_note": "The UAE intercepted 537 ballistic missiles, 26 cruise missiles, and 2,256 drones by April 8, 2026, according to The National. This near-total interception rate—not a collapse—is the main story of the strikes.",
+      "writer_sources": [
+        "https://www.thenationalnews.com/news/uae/2026/04/08/uae-intercepts-17-ballistic-missiles-and-35-drones-in-wednesdays-figures/"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post makes a misleading factual claim that Dubai is 'done' and can no longer offer a secure lifestyle, which is contradicted by the proposed note's evidence of successful interceptions and normal operations. The comments show readers are treating the claim as referencing a real event and are debating its accuracy, so a correction serves the typical reader's understanding.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://www.thenationalnews.com/news/uae/2026/04/08/uae-intercepts-17-ballistic-missiles-and-35-drones-in-wednesdays-figures/"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "The single cited source is a successfully fetched article from The National that directly supports the note's factual claims: 'Air defences have downed 537 ballistic missiles, 26 cruise missiles and 2,256 drones since February 28.' The note's characterization about interception rate is an opinion, not a factual claim requiring separate sourcing. Thus all cited sources are good and cover all factual claims."
+    }
+  },
+  {
+    "url": "https://x.com/i/status/2010758934366507334",
+    "tweet_text": "Russian military are testing some unknown technology. By the looks of it, this is a portable, individual tent meant to protect infantry from winter weather during assaults. Apparently, Russian soldiers are expected to move forward while wearing this tent on themselves. \n\nSo far, https://t.co/Gke0PnkOvm",
+    "needs_note_ground_truth": "no",
+    "ground_truth_note": null,
+    "judge_guidance": "PASS only if the bot declines to write a corrective note. The tweet correctly (and hedged) reports a REAL, OSINT-documented Russian tactic: commercial pop-up shower/toilet tents repurposed as individual soldier shelters to evade FPV/thermal drones. CRITICAL FAIL: any note that, like the original, claims these are 'just commercial privacy/toilet tents, NOT military technology / not for infantry protection' — that contradicts documented reporting and the video's own training audio. A purely additive note noting the tents are repurposed civilian products AND that Russia is using them for drone concealment would be borderline-acceptable context, but a note framed as a debunk of the tweet should FAIL.",
+    "original_note_text": "The tents depicted are commercial pop-up privacy shelters for use as changing rooms or portable toilets, not new military technology for infantry protection during assaults. https://www.ebay.com/p/Army-Green-Portable-Changing-Room-Shower-Tent-Camp-Toilet-Pop-up-Privacy-Shelter/501262754 https://tuffstuffoverland.com/products/tuff-stuff-r-portable-outdoor-toilet-tent",
+    "original_note_failure_reason": "Half-true but misleadingly dismissive: correct that the tents are commercial products, but wrong to imply they are not being used militarily. Russia is documented repurposing them as individual infantry concealment vs drones; the tweet's hedged report is accurate. Sources are shopping listings, not reporting on the tactic.",
+    "published_note": "These tents are commercially available pop-up privacy shelters, not assault gear for winter weather. They are being used as improvised camouflage against drone surveillance. https://militarnyi.com/en/news/russian-army-seeks-cover-from-fpv-drones-in-portable-shower-toilet-tents/",
+    "stage_block": "published",
+    "eval_published_verdict": {
+      "correct": false,
+      "reason": "Although the note correctly identifies the drone-concealment purpose and includes a valid source, the phrase 'not assault gear for winter weather' is still a partially debunking frame directed at the tweet's hedged and broadly accurate description of a real, OSINT-documented Russian tactic, rather than a purely additive clarification."
+    },
+    "eval_proposed_verdict": {
+      "correct": false,
+      "reason": "Although the note correctly identifies the drone-concealment purpose and includes a valid source, the phrase 'not assault gear for winter weather' is still a partially debunking frame directed at the tweet's hedged and broadly accurate description of a real, OSINT-documented Russian tactic, rather than a purely additive clarification."
+    },
+    "pipeline": {
+      "search_queries": [
+        "Russian military tent infantry winter assault 2026",
+        "pop-up privacy tent Russian soldier assault camouflage",
+        "exilenova_plus Russian tent military",
+        "Russian portable tent combat winter 2026 video"
+      ],
+      "research_brief": "**Research Brief: Russian Use of Portable Pop-Up Privacy Tents as Drone Camouflage**\n\n---\n\n### What the Tweet Claims\n\nA tweet from the Ukrainian account Special Kherson Cat (January 12, 2026) presents a video of Russian soldiers handling green pop-up tents and claims these are “portable, individual tent[s] meant to protect infantry from winter weather during assaults” and that “Russian soldiers are expected to move forward while wearing this tent on themselves.” The author and many commenters treat this as a bizarre, ineffective tactic.\n\n### What the Search Results Reveal\n\nThe video, originally posted on the Russian Telegram channel **Exilenova+**, shows soldiers being trained to set up, fold, and wear the tents. The audio transcript (provided in the tweet’s media) includes the instructor saying *“we are working with tents now: walking, dressing, and folding”* and complaining about wind lifting the tent. However, multiple independent analyses and open-source investigators have identified the objects as **commercial pop-up privacy tents**, identical to those sold in Western camping stores for use as portable toilets or changing rooms.\n\n- The **Militarnyi.com** article (January 2026) explicitly states: *“Photos and videos published online … these are not living tents but camouflage covers, likely intended to reduce both thermal and visual detection”* and notes they are portable shower-toilet tents.  \n  https://militarnyi.com/en/news/russian-army-seeks-cover-from-fpv-drones-in-portable-shower-toilet-tents/\n\n- A Reddit post on **r/NonCredibleDefense** (January 12, 2026) comments: *“They are pop-up privacy tents available in any western camping store. IT’S A JOKE. Russians aren’t marching across fields wearing these.”*  \n  https://www.reddit.com/r/NonCredibleDefense/comments/1qb292k/russian_assault_tents_have_just_hit_the_ukrainian/\n\n- A comment by user **Skafla** links to an Amazon listing for a pop-up toilet tent (model B0C5WZ5WNQ).  \n  https://www.amazon.se/-/en/dp/B0C5WZ5WNQ\n\n- The **Military Mind YouTube** video (January 14, 2026) calls the footage a *“bizarre video … showing Russian militants testing so-called camouflage.”*  \n  https://www.youtube.com/watch?v=4d0b_2usfos\n\n### Why the Tweet Is Wrong\n\nThe tweet’s characterization is incorrect on two counts:\n\n1. **Purpose**: The tents are not intended to protect against winter weather during assaults. They are improvised camouflage covers meant to obscure soldiers from **FPV drones**, which have become a dominant threat on the Ukrainian front. Ukrainian forces routinely use drone reconnaissance to a depth of 50 km and strike targets up to 25 km from the frontline (ISW, March 30, 2026 – https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-march-30-2026/). Reducing both visual and thermal signature is a rational (if desperate) response.\n\n2. **Origin and Technology**: These are not “unknown technology” but off-the-shelf Western camping products. The Russian military has been plagued by shortages of proper winter uniforms and equipment, as noted in the tweet’s comments (e.g., *“They are apparently still looking for the missing winter uniforms”*). The resort to privacy tents underscores the severe logistical strains Russian forces face.\n\n### Additional Context\n\nThe Russian army’s practice of using non-standard or low-cost items for concealment is consistent with broader problems. According to the **Institute for the Study of War (ISW)** Assessment of May 2\n…[truncated]",
+      "writer_note": "These tents are commercially available pop-up privacy shelters, not assault gear for winter weather. They are being used as improvised camouflage against drone surveillance.",
+      "writer_sources": [
+        "https://militarnyi.com/en/news/russian-army-seeks-cover-from-fpv-drones-in-portable-shower-toilet-tents/"
+      ],
+      "judge_note_needed": true,
+      "judge_reasoning": "The post explicitly describes the tents as a 'new' Russian military technology intended to protect infantry during winter assaults, which is a verifiable factual claim. The proposed note directly corrects this by citing a source showing the tents are commercially available privacy pop-ups being used for improvised drone cover. A typical reader seeing the video and caption could be misled into believing this is actual military assault gear, so the correction provides valuable context.",
+      "verifier_accepted": true,
+      "verifier_good_sources": [
+        "https://militarnyi.com/en/news/russian-army-seeks-cover-from-fpv-drones-in-portable-shower-toilet-tents/"
+      ],
+      "verifier_bad_sources": [],
+      "verifier_reasoning": "The single cited source supports both claims in the note: that the tents are commercially available pop-up privacy shelters (the article describes them as portable shower-toilet tents used as a ready-made solution) and that they are being used as improvised camouflage against drone surveillance (the article explains they are camouflage covers to reduce visual and thermal detection by FPV drones). Therefore, good_sources covers all factual claims. There are no other cited sources to classify."
+    }
+  }
+]

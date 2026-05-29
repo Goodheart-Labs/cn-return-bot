@@ -1,0 +1,74 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Ellen DeGeneres renounced US citizenship moved to England",
+        "Ellen DeGeneres denied passport United States fact check"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Immediately found Primetimer debunk article and MEAWW fact-check. Results confirmed the image originated from 'America's Last Line of Defense' (ALLOD) satirical Facebook page, which explicitly marks all content as fake. Ellen is still a US citizen, has moved to Cotswolds UK but not renounced citizenship.",
+      "lesson": "The claims are well-known enough that direct phrasing from the image text returns fact-check articles immediately. Primetimer has a dedicated debunk piece. ALLOD satire is the origin."
+    },
+    {
+      "queries": [
+        "Ellen DeGeneres citizenship satire ALLOD \"America's Last Line of Defense\" fake",
+        "Ellen DeGeneres Antifa no-fly list passport snopes leadstories"
+      ],
+      "purpose": "brand-suffix + source identification",
+      "what_returned": "Confirmed ALLOD (America's Last Line of Defense) as origin - a known satirical troll page run by Christopher Blair. Snopes tag page exists for Ellen DeGeneres. Lead Stories has separate fact-checks on related Ellen hoaxes. MEAWW fact-check on a parallel 'Marco Rubio denied repatriation' variant also confirmed false.",
+      "lesson": "ALLOD is a well-documented satire factory. Adding brand suffixes (snopes, leadstories) surfaces fact-checks quickly. Multiple variant hoaxes exist about this same topic (citizenship, passport, Rubio denying reentry)."
+    }
+  ],
+  "gold_queries": [
+    "Ellen DeGeneres renounced US citizenship moved to England fact check",
+    "Ellen DeGeneres denied passport Antifa fact check",
+    "\"America's Last Line of Defense\" Ellen DeGeneres citizenship satire",
+    "Ellen DeGeneres still US citizen UK move 2024 2025"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.primetimer.com/features/did-ellen-degeneres-give-up-her-us-citizenship-passport-denial-over-antifa-links-claim-debunked",
+      "title": "Did Ellen DeGeneres give up her US citizenship? Passport denial over Antifa links claim debunked - PRIMETIMER",
+      "found_via_query": "Ellen DeGeneres renounced US citizenship moved to England",
+      "authority_reason": "Entertainment news outlet with dedicated fact-check/debunk article on exactly this claim",
+      "what_it_establishes": "The citizenship forfeiture and passport denial claims are false; originated from ALLOD satirical Facebook page which explicitly marks all posts as fake"
+    },
+    {
+      "url": "https://news.meaww.com/fact-check-did-marco-rubio-deny-ellen-de-generes-application-for-repatriation-to-usa",
+      "title": "Fact Check: Did Marco Rubio deny Ellen DeGeneres' application for repatriation to USA?",
+      "found_via_query": "Ellen DeGeneres denied passport United States fact check",
+      "authority_reason": "Dedicated fact-check outlet article; no credible news reports support the claim",
+      "what_it_establishes": "No credible evidence exists that any US official denied DeGeneres repatriation; the fabricated screenshot attributed quotes to an invented State Department spokesman"
+    },
+    {
+      "url": "https://news.meaww.com/fact-check-did-state-department-tell-rosie-o-donnell-and-ellen-de-generes-to-migrate-legally-to-us",
+      "title": "Fact Check: Did State Department tell Rosie O'Donnell and Ellen DeGeneres to migrate legally to US?",
+      "found_via_query": "Ellen DeGeneres citizenship satire ALLOD \"America's Last Line of Defense\" fake",
+      "authority_reason": "Fact-check article confirming the 'America's Last Line of Defense' satire origin",
+      "what_it_establishes": "Claims originated as ALLOD satire with explicit 'Satire' overlay; no credible evidence DeGeneres renounced citizenship or requested to return"
+    },
+    {
+      "url": "https://www.wecumedia.com/post/stop-falling-for-fake-news-the-hidden-agenda-behind-the-satire-of-america-s-last-line-of-defense",
+      "title": "Stop Falling for Fake News - The Hidden Agenda Behind the 'Satire' of America's Last Line of Defense",
+      "found_via_query": "Ellen DeGeneres citizenship satire ALLOD \"America's Last Line of Defense\" fake",
+      "authority_reason": "Detailed analysis of the ALLOD satire network and its creator Christopher Blair",
+      "what_it_establishes": "ALLOD is a known troll satire factory run by Christopher Blair that deliberately creates fake conservative-rage content with a 'NOTHING on this page is REAL' watermark"
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Quoting exact claim language from the image text ('renounced US citizenship', 'moved to England', 'denied passport') returned fact-checks immediately",
+      "Adding 'fact check' suffix to queries surfaced dedicated debunk articles",
+      "Searching for the origin source name ('America's Last Line of Defense', 'ALLOD') confirmed the satirical nature",
+      "The image itself contains a self-refuting watermark: 'NOTHING on this page is REAL' — noting this is a strong signal the tweet is spreading known satire"
+    ],
+    "what_hurt": [
+      "Primetimer returned HTTP 405 (couldn't fetch full article text directly)",
+      "Snopes tag page returned HTTP 402 (paywall/auth required)",
+      "No single canonical Snopes article specifically on this exact image — only related variants"
+    ],
+    "would_multipass_help": "no — Round 1 returned strong fact-check sources immediately; the claims are well-documented satire with multiple debunks already published",
+    "deepseek_advice": "For tweets sharing viral celebrity-bashing claims (citizenship forfeiture, passport denial, government blacklisting), search the exact claim text + 'fact check' first — these generate dedicated debunk articles quickly. Also check whether the source image has a self-refuting disclaimer visible in its text (like 'NOTHING on this page is REAL'), as that alone is Community Notes-worthy evidence that the tweet is spreading known satire as if real."
+  }
+}

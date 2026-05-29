@@ -60,7 +60,9 @@ export const BOT_TEST: ABTest = {
       search_model: "deepseek/deepseek-v4-flash",
       writer_model: "deepseek/deepseek-v4-flash",
       note_needed_judge: true,
-      note_judge_model: "deepseek/deepseek-v4-flash",
+      // gemini-3-flash judge: big_eval val swap from deepseek-v4-flash roughly
+      // halved the hard-FP rate (35%→14%) while gaining coverage (57%→68% PASS).
+      note_judge_model: "google/gemini-3-flash-preview",
       verifier_model: "deepseek/deepseek-v4-flash",
       // Source verifier runs Gemini media analysis on TikTok / Instagram /
       // YouTube / image URLs and treats the analysis as the source's content.
@@ -68,6 +70,10 @@ export const BOT_TEST: ABTest = {
       // system uses Gemini (since DeepSeek has no vision).
       verifier_accepts_media_sources: true,
       web_search: "searxng",
+      // Enable test-time reasoning on deepseek-v4-flash. Cheap, and improves
+      // the judge's "is this dispute substantive" classification + the writer's
+      // "find a dispute or return nothing" decision-making.
+      reasoning_effort: "high",
     }}, weight: 0 },
     { variant: { name: "multi-agent", overrides: {
       botId: "multi-agent",
@@ -146,6 +152,26 @@ const NOTE_NEEDED_JUDGE_TEST: ABTest = {
   ],
 };
 
+// Model used for cheap-bot's note-needed judge (the primary FP guard). The
+// BOT_TEST cheap-bot variant sets the baseline (gemini-3-flash); this test
+// swaps just the judge model, holding writer/verifier/search constant so a
+// cached writer-output replay isolates the judge model as the only variable.
+// gemini3flash won the big_eval val A/B (lowest hard-FP at 14%, 68% PASS) over
+// deepseek-v4flash (35% FP), deepseek-v4pro (16% FP, over-rejects good notes),
+// and sonnet46 (18% FP). Prereq-gated to cheap-bot, so no defaultVariant
+// (resolvePicks can't evaluate prereqs; a missing pick already falls back to
+// BOT_TEST's note_judge_model).
+const CHEAP_BOT_JUDGE_MODEL_TEST: ABTest = {
+  name: "cheap_bot_judge_model",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "gemini3flash",     overrides: { note_judge_model: "google/gemini-3-flash-preview" } }, weight: 100 },
+    { variant: { name: "deepseek-v4flash", overrides: { note_judge_model: "deepseek/deepseek-v4-flash"   } }, weight: 0 },
+    { variant: { name: "deepseek-v4pro",   overrides: { note_judge_model: "deepseek/deepseek-v4-pro"     } }, weight: 0 },
+    { variant: { name: "sonnet46",         overrides: { note_judge_model: "anthropic/claude-sonnet-4.6"  } }, weight: 0 },
+  ],
+};
+
 const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   name: "verifier_media_sources",
   variants: [
@@ -187,12 +213,50 @@ const FEED_SIZE_TEST: ABTest = {
   ],
 };
 
+const SEARCH_ANALYZER_TEST: ABTest = {
+  name: "search_analyzer",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_analyzer: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { search_analyzer: true  } }, weight: 100 },
+  ],
+};
+
+// Pre-search satire gate: reads post + comments + profile (no note), early-exits
+// before the query writer when the post is overt satire the audience is in on.
+// High-precision; the note-needed judge keeps a lighter satire backstop.
+const SATIRE_DETECTOR_TEST: ABTest = {
+  name: "satire_detector",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { satire_detector: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { satire_detector: true  } }, weight: 100 },
+  ],
+};
+
+// Pin every cheap-bot LLM call to temperature 0. At the model's default
+// temperature the judge/verifier are so non-deterministic that ~58% of eval
+// rows flipped run-to-run, swamping any prompt-change signal. Prereq-gated to
+// cheap-bot so the other bots keep their default sampling.
+const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
+  name: "cheap_bot_temperature",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "default", overrides: {} },               weight: 0 },
+    { variant: { name: "zero",    overrides: { temperature: 0 } }, weight: 100 },
+  ],
+};
+
 export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   NOTE_NEEDED_JUDGE_TEST,
+  CHEAP_BOT_JUDGE_MODEL_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
+  SEARCH_ANALYZER_TEST,
+  SATIRE_DETECTOR_TEST,
+  CHEAP_BOT_TEMPERATURE_TEST,
   AGENT_SEARCH_TEST,
   AGENT_PARALLEL_TEST,
   FEED_SIZE_TEST,

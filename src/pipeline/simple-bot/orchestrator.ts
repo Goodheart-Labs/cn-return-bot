@@ -10,6 +10,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import type { BotInput } from "../input/createBotInput";
 import { buildUserMessage } from "../input/prompt";
 import { getTweetLog } from "../utils/tweetLog";
+import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
 import { runNoteNeededJudge } from "./judge";
 import { runSearch } from "./search";
@@ -76,5 +77,5 @@ export async function runSimpleBotPipeline(
 
 function logFinal(startMs: number): void {
   const log = getTweetLog();
-  log?.set("simpleBot.totalDurationMs", Date.now() - startMs);
+  log?.set(`${STEP.root}.totalDurationMs`, Date.now() - startMs);
 }

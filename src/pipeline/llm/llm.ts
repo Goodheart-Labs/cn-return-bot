@@ -58,9 +58,26 @@ async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/** A 200 OK with empty content is a silent provider failure — OpenRouter
+ * sometimes returns no message body when an upstream provider misbehaves.
+ * Treat as retryable so every caller (query writer, judge, pipeline) gets
+ * the fix automatically. Tool-call responses are NOT empty (they have
+ * tool_calls), so this won't false-trigger on those. */
+function hasEmptyContent(result: OpenAI.Chat.Completions.ChatCompletion): boolean {
+  const choice = result.choices?.[0];
+  if (!choice) return true;
+  const msg = choice.message;
+  const hasToolCalls = Array.isArray((msg as any)?.tool_calls) && (msg as any).tool_calls.length > 0;
+  if (hasToolCalls) return false;
+  const content = msg?.content ?? "";
+  return typeof content === "string" && content.trim().length === 0;
+}
+
 /**
  * Wrap an LLM create call with retry + exponential backoff.
- * Retries on OpenRouter "400 Provider returned error", 429, 502, 503, and network errors.
+ * Retries on OpenRouter "400 Provider returned error", 429, 502, 503, network
+ * errors, and on a 200 OK that comes back with empty content (silent provider
+ * failure).
  */
 async function callWithRetry(
   params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
@@ -68,7 +85,16 @@ async function callWithRetry(
   let lastError: any;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      return await getClient().chat.completions.create(params);
+      const result = await getClient().chat.completions.create(params);
+      if (hasEmptyContent(result) && attempt < MAX_RETRIES) {
+        const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
+        console.warn(
+          `[llm] Empty content (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}). Retrying in ${backoff}ms...`
+        );
+        await sleep(backoff);
+        continue;
+      }
+      return result;
     } catch (err: any) {
       lastError = err;
       if (attempt < MAX_RETRIES && isRetryableError(err)) {

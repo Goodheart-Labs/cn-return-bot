@@ -1,0 +1,462 @@
+[
+  {
+    "url": "https://x.com/i/status/2038078622590779632",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The post is a vague, unsourced claim of a Ukrainian breakthrough without a specific time, location, or verifiable factual detail. The research findings show local Ukrainian successes but no general collapse of Russian defenses, and the proposed note cites a source that describes Russian advances and limited Ukrainian gains, which is a contradictory framing rather than a direct debunking of any specific claim. A typical reader would not benefit from this note because the post is too generalized to be clearly false or misleading.",
+    "newDecision": false,
+    "newReasoning": "The post describes a specific tactical event (a breakthrough into enemy rear areas causing surrender), but the cited source is a high-level weekly report card showing net territorial changes, which does not contradict the post's claim. The post's claim could be true locally even if net territorial gains are limited; the note provides a different framing, not a direct factual refutation based on strong evidence (Rule 7).",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2009219530300731596",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The research findings do not contain strong, direct evidence that contradicts the post's claim about the 0.8% figure. The sources cited in the note (a DWP statistics page and a Labour Press tweet) are not present in the provided research findings, so the note lacks sufficient support from the evidence given.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: The post's literal claim about '0.8% of those benefitting from lifting the 2 child benefit cap are children of British workers' is not directly contradicted by the research—the cited DWP data does not contain that specific statistic, and the note instead reinterprets the figure using a different definition ('two-parent households where both work full-time'), which is editorial framing rather than a factual correction of a false assertion.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/1996831133414363186",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post falsely labels the driver a 'migrant killer' of a 'little girl' and frames the sentence as a final, lenient outcome. The note corrects this by stating the incident occurred in 2014, the original charge was dangerous driving (not murder or intentional killing), and the sentence was later increased to 2.5 years in prison on appeal. This directly addresses the misleading claim that a judge let a child murderer off with trivial community service, and a typical reader would benefit from the correction. The majority of commenters are treating the post as real, expressing outrage at the judge and the system, with no one in the replies identifying the video as outdated or pointing out the appeal outcome.",
+    "newDecision": true,
+    "newReasoning": "The post asserts a judge handed 120 hours community service to a 'migrant killer of a little girl,' but the research shows the incident was a 2014 dangerous driving case (not murder) in which the driver was later sentenced to 2.5 years on appeal. A typical reader would be misled by the framing of the original sentence as the final outcome, and no in-tweet disclosure corrects this.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2047745135526428683",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post shows a graph claiming ~5 million H-1B visa workers by 2023 and ~7 million by 2025, which is a clear factual claim. The note directly addresses this by explaining the graph uses LCA filings (applications) rather than actual approved visas. Strong evidence from Pew Research and an estimate of 600,000–800,000 active workers contradicts the inflated numbers. Commenters show confusion: @bhanubonu correctly notes the cap would yield far fewer, but others react as if the numbers are real, indicating the note would benefit typical readers.",
+    "newDecision": true,
+    "newReasoning": "The post presents a graph as showing H-1B visa holders 'legally migrating to the United States,' but the research confirms the graph is based on DOL LCA filings (applications), not actual visa approvals or active workers. The actual number of active H-1B workers is roughly 600,000–800,000, not the millions depicted. The note directly disputes a clear factual claim (the graph's implied tally of actual visa holders) with strong evidence, and without it a typical reader would be meaningfully misled by the imprecise framing and inflated numbers.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2039118807692968130",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a verifiable factual claim that Ben Stiller criticized Zohran Mamdani over a wealth tax, but the research findings and multiple commenters identify the story as fabricated with no evidence from credible sources. A typical reader would benefit from the correction since many comments treat the claim as real, showing the post is misleading.",
+    "newDecision": true,
+    "newReasoning": "The post alleges Ben Stiller has 'turned on' Zohran Mamdani and is 'blasting' a wealth tax, which is a clear, verifiable factual claim. The research shows this claim is fabricated — not a single credible source or Stiller's own accounts support it. Many commenters are treating it as real while others flag it as made up, indicating a meaningful fraction would be misled. The note directly disputes the post's core assertion and relies on strong evidence of fabrication, not just absence of evidence.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2047978936311918600",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post presents an AI-generated video as if it shows a real cruise ship waste discharge, with the caption 'amazing sewage treatment system.' Comments reveal some readers are misled into believing it's authentic, while fact-checking sources (FactCheckCenter.jp, Full Fact, etc.) confirm the video is AI-generated. A note clarifying this corrects the main misleading claim and benefits typical readers.",
+    "newDecision": true,
+    "newReasoning": "The attached claim about cruise ship waste systems is presented as factual, but the video is AI-generated (confirmed by multiple fact-checkers). Multiple commenters identify it as AI while others take it at face value, making the note necessary. A note is needed if at least 20% of commenters are in the 'taking it as real' bucket and no in-tweet self-disclosure is present.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2049464880520888535",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post presents two specific quotes from Scott Bessent and Wang Yi as fact. The research findings contain no record of Bessent making that exact threat at a press conference, and the Wang Yi quote is unverifiable from official Chinese sources. The comments overwhelmingly treat the post as real (arguing about the policy, criticizing Bessent, etc.), with none calling it fabricated. A typical reader would benefit from knowing these are fabricated quotes, and the absence of direct evidence in credible sources is sufficient for this type of correction.",
+    "newDecision": true,
+    "newReasoning": "Fabricated quote attributed to two named public figures with no in-tweet disambiguation. The research shows Bessent's actual remarks that day were on a different topic, and no official Chinese source carries the quoted Wang Yi statement. Absence-of-evidence exception applies for fabricated quotes.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2016932474081657121",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The post already accurately describes the mouse study as 'a cure in animal models' and 'a huge step closer to a possible cancer treatment in humans,' which is consistent with the cited source. The proposed note adds only a minor clarification of 'preclinical result, not yet a cure tested in humans' that is already implied by the post's own phrasing ('in animal models,' 'closer to a possible cancer treatment'). This is a pedantic hair-splitting correction rather than addressing a clear misleading claim.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: the post accurately reports that the team cured pancreatic cancer in mice — which is exactly what the CNIO press release states. The proposed note merely adds the qualification 'not yet tested in humans,' which is adjacent context rather than disputing a false claim. No reader was misled by the post's factual assertion.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2016176528531267592",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post frames anti-ICE protests as merely protecting dangerous criminals, omitting that the protests were sparked by an ICE agent fatally shooting an observer (Renée Good). The note directly corrects this misleading factual omission with a strong source (Wikipedia: Operation Metro Surge). A typical reader would benefit from this context.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: the post asserts that the anti-ICE agitators shown are 'trying to protect' dangerous criminals. The proposed note does not dispute that factual claim — it adds adjacent context about a different motive for the protests. The literal claim that these protestors were protecting the worst-of-the-worst arrestees is not contradicted by the research.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2048230103994515524",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post uses a 'trees per person' metric to imply India has a dire forest situation, but this metric is highly misleading — it simply reflects India's large population, not poor forest cover. The note directly corrects this by citing India's actual strong global rankings in total forest area (#9) and net annual gain (#3) from the authoritative GFRA 2025 report. Multiple commenters (Rishi Bagree, Neeraj, ALLU) explicitly point out the misleading nature of the metric, confirming that real readers are being confused. The evidence strongly supports the note, and a typical reader would benefit from understanding the more meaningful alternative metrics.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: The post's literal claim — the 'trees per person' infographic numbers (India 28, Canada ~10k, world avg 422) — is factually accurate per the research findings. The proposed note does not dispute those numbers; it instead appends adjacent information (India's GFRA rank) and argues the metric is misleading. That is adding context, not correcting a falsehood, and readers seeing the infographic are not misled by what the post actually says.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2028333038547927472",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post presents a video clip as evidence of a real military achievement (a fighter jet surviving a missile strike), implicitly praising Trump. Several commenters treat it as authentic (e.g., 'Wow this footage is amazing', 'God protect our troops'), while the research findings confirm the clip is from the video game DCS World. A typical reader viewing without comment context would be misled into thinking it shows a real combat event, so the note directly corrects the misleading factual claim.",
+    "newDecision": true,
+    "newReasoning": "The post presents video-game footage as real combat video, embedding it in a partisan political frame. Multiple commenters are taking it as real (e.g., 'Wow, this footage is amazing!', 'God protect our troops'), while at least two flag it as fake ('That’s not even close to real', 'FAKE VIDEO GAME CLIP'). The research includes a specific fact-check confirming the clip is from DCS World. A typical reader would be misled about the nature of the footage.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2029976032799764557",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The post does not make a clear verifiable factual claim on its own — it says 'As close as we can get to a pov of being hit by a ballistic missile' with a video link. The actual factual claim about the location, date, and injuries is in the quoted post (from another account), which is not what the note is attached to. The proposed note provides background on the incident but does not correct a misleading claim in the original tweet; it adds context that the original post does not assert or deny. Since the note corrects a tangential detail (the quoted post's framing) rather than a misleading claim in the original post, it does not meet the criteria for publication.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: The post accurately claims the video shows a close ballistic missile impact on Prince Sultan Air Base — the same event the note describes. The note merely adds injury details, and each publicly vetted source in the research confirms both the event and the original OPSEC framing. No disputed factual claim is corrected.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2043783331540578439",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a clear factual claim — that a new CBS poll shows Trump's approval at 92.5%. The research findings directly contradict this: the actual CBS News/YouGov poll from April 8-10, 2026 shows 39% overall approval, and no credible source reports a 92.5% figure. The comments show supporters treating the claim as real (voting 'A', praising Trump), while a few call it false/lies, confirming that many readers are misled. The note provides strong direct evidence and corrects the main misleading claim, so a typical reader would benefit.",
+    "newDecision": true,
+    "newReasoning": "The post asserts as a factual news report that a new CBS poll shows Trump approval at 92.5%, which is directly contradicted by the actual CBS/YouGov poll of the same period showing 39%. The note matches the post's own epistemic frame ('a new CBS poll') and corrects a verifiable falsehood; commenters already call it out as lies.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2015520423820083697",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post claims that the U.S. military is expected to carry out an operation against Iran on January 25, 2026. Research findings confirm that no such operation occurred on that date; airstrikes began on February 28, 2026. The post is presented as a factual news update with a UPI image of Trump at a podium, lending credibility. Commenters overwhelmingly take the claim seriously—praising Trump, expressing hope, and urging action—with none recognizing the post as false. A typical reader would benefit from correction because the post misstates a specific verifiable event, and the evidence directly contradicts it.",
+    "newDecision": false,
+    "newReasoning": "Rule 4: the post is a prediction about a future event ('is expected to carry out a military operation today'). At posting time, no fact-check can confirm or deny what will happen; a same-day note can only say 'unconfirmed', which is speculative. The eventual war starting on Feb 28 does not retroactively make the post's prediction false.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2034574905858040263",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post claims Manchester United haven't played a Champions League knockout game in over 10 years, which is a clear factual claim contradicted by evidence that they faced Atlético Madrid in the round of 16 in March 2022 (just over 4 years ago). Multiple commenters point out the error, showing readers are being misled, so a note correcting the timeline is warranted.",
+    "newDecision": true,
+    "newReasoning": "The post asserts Manchester United hasn't played a Champions League knockout game in 'over 10 years,' which is contradicted by the verified March 2022 round-of-16 match against Atlético Madrid (just over 4 years ago). The author's bio 'Everything I post is made up' does not override this, as it's a generic joke tag that no reasonable reader would interpret as a blanket disclaimer on every individual claim — especially one typed in 2026 about a 10-year cutoff. Without that bio, the post is an objective false claim that would materially mislead a typical football fan.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2036903878726131807",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post omits that the resolution also called for reparations, creating a misleading impression that the US, Israel, and Argentina voted against simply condemning slavery. The note adds crucial context backed by a direct UN source, and comments show readers are interpreting the post as a straightforward anti-slavery vote, so a correction benefits the audience.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: The post's claim — that the US, Israel, and Argentina voted against a UN resolution 'to condemn slavery' — is factually accurate. The note adds adjacent context about reparations language, but does not dispute any assertion the post made. The reader was not misled about the vote tally or which countries voted no.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/1999999737379143950",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post claims Russia has confirmed a cancer vaccine will soon be offered free to patients worldwide, which is a clear factual claim. The research findings, including AFP fact-check and Snopes, show the vaccine (Enteromix) has only passed preclinical trials and has not received regulatory approval for general use, contradicting the suggestion it is imminent or available. Commenters largely treat the post as real (e.g., expressing hope, conspiracy theories about pharma), with only a few recognizing it as propaganda, so a note would benefit typical readers.",
+    "newDecision": true,
+    "newReasoning": "The post asserts as fact that a cancer vaccine 'will soon be offered free to patients around the world,' but the research confirms the vaccine has only passed preclinical trials and lacks regulatory approval. A meaningful fraction of commenters are taking the claim at face value (e.g., 'Only Russian vaccine exists,' 'Good that it is found in Russia,' 'Hope Indian oncology department closely work with Russia'), so readers would be misled without correction.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2052054023264772324",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The post is from a clearly labeled parody account and the comments overwhelmingly treat the quote as real (debating the merits of the claim rather than questioning its authenticity), but the note — which simply points out the bio's parody label — is unnecessary because the bio already provides that context to any reader who looks for it, and the claim is the kind of heartwarming fan-fiction parody that the account's explicit disclaimer already covers.",
+    "newDecision": false,
+    "newReasoning": "Rule 3 applies: the author's bio explicitly states 'PARODY ACCOUNT. Don't take the posts seriously,' which is in-tweet self-disclosure. None of the 506 replies exhibit confusion (all comments treat the claim as real in a joking/supportive tone, but none say 'I thought this was real' — they engage with the premise as fans do with any fan account content). The note would restate what the bio already tells readers.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2002086396576887148",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post presents the AI-generated video as an original 'stunning visual' without acknowledging it is a direct copy of a scene from Iron Man 2. Many commenters are clearly 'taking it as real' in the sense that they believe the AI independently created this imagery, while others note the plagiarism but still treat it as a real AI output. The research findings confirm the video matches a known Iron Man 2 scene frame-by-frame, which directly contradicts the post's implicit claim of AI-originality. A typical reader unaware of the source would benefit from this correction.",
+    "newDecision": false,
+    "newReasoning": "The post asks a rhetorical question about whether a visual was created by AI and states it is AI-generated. The post itself identifies the source as AI. The proposed note asserts that the video is a frame-by-frame recreation of a scene from Iron Man 2 with a rusted texture. However, this note provides adjacent context about the source of the composition rather than correcting a false factual claim made by the post. The post's claim that it was created by AI is accurate, and the note does not dispute that claim. Therefore, this falls under Rule 2: the note adds context rather than disputing a claim, and a typical reader would not be meaningfully misled by the post without this additional detail about the specific source material.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2024612128422793276",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The research findings do not provide strong, direct evidence that this specific video is staged; they only show that similar prank scenarios exist. Since nearly all commenters are treating the incident as real, a note would be helpful if the claim were debunked, but the cited sources are insufficient to confirm the video is fabricated. The note relies on weak circumstantial similarity rather than a clear, authoritative debunking.",
+    "newDecision": false,
+    "newReasoning": "No in-tweet self-disclosure, but research only shows the same scenario was recreated in 2025 for a Lent prank, not that this specific 2026 video is staged. The note's sources are Facebook groups with unclear provenance, not strong evidence. Also, a significant fraction of commenters treat it as real, so misleadingness is plausible, but the evidence is too weak to meet 'strong, direct evidence' standard.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/1991574142038999227",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The original post claims that the Coast Guard 'will no longer classify the swastika as a hate symbol' without mentioning the rapid reversal the same day. Research findings confirm the Coast Guard issued a new order on November 20 explicitly prohibiting swastikas and nooses, calling them 'hate symbols' with no place in the service. The note directly corrects this omission, and the comments show many readers were misled into believing the policy was finalized and permanent, so a typical reader would benefit from the update.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: the post's literal claim (the Coast Guard will no longer classify the swastika as a hate symbol per a new policy) was accurate at the time of posting on November 20, 2025. The proposed note adds adjacent context about a later reversal, but does not dispute anything the post asserted. A reader was not misled by what the post actually said.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2049702745783882104",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The proposed note corrects a minor, pedantic discrepancy between '$450 million' and 'nearly $500 million' that does not change the substance of the post's main factual claim — that the US seized Iranian cryptocurrency assets. The difference is a rounding-level nuance; a typical reader would not be misled by the $450 million figure, and the note splits hairs rather than addressing a meaningful error.",
+    "newDecision": false,
+    "newReasoning": "Rule 6: The post says \"$450 million\" while the cited source says \"nearly $500 million\" — a rounding-level discrepancy in a breaking news figure. Multiple other sources use both figures. This is trivial pedantry that no typical reader would be meaningfully misled by.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/1985675392586264946",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post reports that Enderman's channel was wrongly shut down by AI, which is a factual claim. The proposed note adds crucial context that the channel was restored the next day, which a typical reader would benefit from knowing to avoid the impression that the channel is permanently gone. Research findings confirm the AI error and restoration, and commenters largely treat the post as real without recognizing any corrective context, so the note is warranted.",
+    "newDecision": false,
+    "newReasoning": "The note fails because it appends adjacent context (the channel was restored the next day) rather than disputing any claim in the post. The post's assertion—that YouTube AI wrongly terminated the channel after linking it to a banned non-English account—is factually accurate per the research.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2046782070840586266",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a clear factual claim that Nick Fuentes took $250,000 from the SPLC. Research shows he received that amount in cryptocurrency, not from the SPLC—which actually opposes him. The note directly corrects the misleading claim with strong evidence, and many commenters treat the claim as real, indicating readers are being misled.",
+    "newDecision": true,
+    "newReasoning": "The post asserts that an unnamed person (clearly Nick Fuentes from context) 'took a quarter mil from the SPLC,' which is a direct factual claim that the SPLC paid him. The note directly disputes this, citing multiple sources confirming the $250k was a cryptocurrency donation from supporters, not from the SPLC — an organization that actively tracks and opposes him. The research provides strong direct evidence, and a typical reader would be misled without this correction.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2001327023839735928",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post presents a video of children in a flooded tent as real footage from Gaza (\"This is horrendous to see. God save Gaza\") and uses it to solicit donations. The AFP Fact Check article directly confirms the video is AI-generated (99.9% likely). Many top comments already accuse the account of posting fake/AI content, but the volume of positive engagement (thousands of likes/retweets) and the fact that the account is actively fundraising means a meaningful fraction of readers are likely being misled; a note would significantly reduce harm.",
+    "newDecision": true,
+    "newReasoning": "The post asserts a real, verifiable event (flooded tent with distressed children in Gaza) and solicits donations based on it. The AFP fact-check confirms the video is 99.9% likely AI-generated, directly disputing the post's implied claim of authentic footage. Without the note, readers would be materially misled about the nature of the media and the legitimacy of the donation call.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2004909604052889910",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The original post accurately states Minnesota's same-day voter registration vouching rules (limit of eight, no ID required). The proposed note adds context about penalties for false oaths but does not correct any factual error in the post. Since the post is factually correct and the note is an addition rather than a correction, it does not meet the criteria for publication.",
+    "newDecision": false,
+    "newReasoning": "The post's claim — that the vouching law allows up to eight voters per registered voter without ID or proof of residency — is factually accurate (verified by multiple official MN SOS and news sources). The note does not dispute the post's factual assertion; instead it adds adjacent context about penalties. This is 'adds context rather than disputing a claim' per Rule 2.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2023868808386277835",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post shows a fan-made mod of Super Mario 64 themed around North Korea, but many commenters react as if it is a real or playable game (e.g., 'Inject this game into my veins,' 'I'd...actually play this,' 'Kim Jong Un approved'). The proposed note clarifies that it is a fan-made mod, not an official product, which directly corrects the misleading impression. The cited YouTube short and research findings confirm the mod's unofficial nature, providing strong evidence.",
+    "newDecision": false,
+    "newReasoning": "The post is clearly a fan-made mod, not presented as an official or real item — the video title screen shows 'SUPER NORTH KOREA 64 © 1998 SHOFAR INTERACTIVE LICENSED BY NINTENDO,' which is obviously satirical and not a real 1998 Nintendo license. Commenters are treating it as a fun mod, not being misled into thinking it's an official game. The note would add no correction of any actual misleading claim.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2028943273042100353",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post selectively edits the video to make Fetterman appear confused about a basic fact, when his initial claim—that the last declared war was WWII—is correct and Raju's interruption conflates AUMFs with formal declarations. The proposed note clarifies the factual distinction, is directly supported by the research evidence, and would help a typical reader understand that Fetterman was factually right on the narrow point, contrary to the post's misleading framing.",
+    "newDecision": false,
+    "newReasoning": "Rule 1: Fetterman's statement that the last declared war was World War II is factually accurate — Congress has not formally declared war since then. Raju's interjection ('No, Iraq and Afghanistan') is itself mistaken; those were AUMFs, not declarations of war. The proposed note corrects a correct assertion with true-but-adjacent context, which falls under Rule 2 ('post is accurate; note adds context rather than disputing a claim').",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2036122449536811392",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post presents a fabricated factual claim (steering wheel bumps are Braille for blind drivers) that is likely to mislead readers. The proposed note directly refutes this with strong evidence from Reuters and Snopes, and the comments show many readers reacting as if the claim is real (e.g., 'Blind people going to work', 'What are blind people doing behind the wheel?'). A typical reader would benefit from the correction.",
+    "newDecision": true,
+    "newReasoning": "The post presents a false factual claim—that bumps on a steering wheel are Braille for blind drivers—which is an easily debunkable viral myth. The proposed note directly disputes that claim with strong direct evidence from Reuters and Snopes. The comments show many readers taking the post seriously, treating the \"blind drivers\" premise as real, while none recognize it as a joke in a way that would satisfy the 'recognizing as fake' threshold (the comments are all riffing on the claim as if it were true). A typical reader would be meaningfully misled.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2041676371127370152",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": false,
+    "iter2Reasoning": "The post does not make a clear, verifiable factual claim; it is rhetorical and hyperbolic with 'how poetically intoxicating is that?' The underlying suggestion that American ships are paying tolls in yuan is speculative, but the post frames it as a poetic observation rather than a hard claim. The proposed note addresses a tangential detail about a US blockade rather than the post's main questionable implication, and the research shows some ships have paid in yuan (including reportedly some US ships), so the evidence does not strongly contradict the post's core assertion.",
+    "newDecision": false,
+    "newReasoning": "The note violates Rule 2: the post's core factual claim — that Iran is imposing yuan-based tolls on ships in the Strait, and that American ships are paying them — is substantially supported by multiple credible news sources (Lloyd's List, AP, Bloomberg, Newsweek, Fortune) reporting that the IRGC has implemented a yuan-based toll system and that at least some vessels have paid. The note does not dispute a false claim but instead adds its own speculation and shift: that the U.S. blockade makes it 'unlikely' American ships are paying. That is editorial hedging, not a direct factual correction of a clearly false assertion in the post.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2002014744727728582",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post frames Karmelo Anthony sympathetically as someone who 'defended himself against attackers' and implies public support is needed, while the research findings confirm he is charged with first-degree murder for stabbing another teenager to death at a track meet, with no evidence of self-defense being established. The note directly addresses this misleading factual claim, is supported by strong evidence from multiple credible sources, and a typical reader would benefit from understanding the actual charges context, as seen in many replies that treat the stabbing as real and argue over the case.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: The note does not dispute a false claim — the post accurately states that Anthony is charged with murder and has a trial in 2026, and that the post is asking for support for his self-defense claim. The note merely adds the victim's name and more specific charges and date, which is adjacent context, not a correction of a false claim.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2039707797244215475",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a clear factual claim that Trump's approval rating dropped to 29%, the lowest for any U.S. president. The research findings show this claim is misleading: a May 2026 poll puts Trump at 31%, not 29%, and the lowest recorded approval for any U.S. president is Harry Truman's 32% (or lower historical ratings like 22% for Truman in Gallup's series). The proposed note directly corrects both the specific number and the historical comparison, is well-supported by the cited sources, and would benefit readers who might otherwise believe the inflated claim.",
+    "newDecision": false,
+    "newReasoning": "Rule 1 applies: the post asserts a factual claim that 'Trump's approval rating drops to 29%, lowest for any US president.' Research confirms a 29% figure does appear in at least one April/May 2026 poll (likely American Research Group's 31% for May and possibly another showing 29%). The 'lowest ever' framing is an editorial characterization, not a verifiably false fact — multiple historical presidents had lower ratings, but the post's phrasing is ambiguous (lowest for this presidency? lowest ever?). Research shows other polls at 31%, but does not definitively disprove a 29% figure. The note cites a different poll (31%) and a different 'lowest ever' (Truman 22%), neither of which directly contradicts the post's specific claim. The post is a mix of a real poll number and hyperbolic framing, so the note would be disputing framing, not a clear falsehood.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2033436730251264262",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a clear, verifiable factual claim — that Netanyahu died 7 days ago and subsequent appearances are deepfakes. This is directly contradicted by multiple credible sources (Reuters, BBC, Euronews, AFP) confirming he is alive and gave public appearances including a March 19 press conference. A meaningful fraction of commenters take the claim seriously (e.g., @IamPuneetX, @JenCommon, @TheAsifReyaz), indicating readers are being misled. The note is well-supported by direct evidence.",
+    "newDecision": true,
+    "newReasoning": "The post makes an unverifiable claim that relies on anonymous sources, but it asserts a clear factual claim (Netanyahu died 7 days ago, subsequent appearances are deepfakes) that the proposed note directly disputes with strong evidence from Reuters, Euronews, and multiple fact-checkers. The comments show a significant fraction of users taking the claim seriously (e.g., 'I think he died,' 'he has not tweeted,' 'sitting Shiva'), meeting the 20% threshold for misleadingness. The note should be published.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2025357414841663677",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post insinuates that a viral video might show Ghislaine Maxwell out of prison, but multiple credible sources confirm it is an AI face-swap and Maxwell remains incarcerated. The comments show many readers are genuinely confused or believe the conspiracy, so a correction is needed.",
+    "newDecision": true,
+    "newReasoning": "The post insinuates the video may show Ghislaine Maxwell out of prison, a clear verifiable factual claim. The research confirms the video is an AI face-swap and Maxwell remains incarcerated. Many commenters are treating the video as real. The note concisely debunks the claim with strong evidence from multiple reputable sources. There is no self-disclosure in the original tweet's media.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2032514777663021439",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post claims 'prices are coming down,' which is a factual claim that is contradicted by the research: March 2026 CPI rose 3.3% year-over-year. The note directly corrects this with authoritative BLS sources showing prices are still rising and real wage growth is minimal. There is no satire or parody element — this is an official government account, and the comments show many readers treat the claim as a false statement from the administration, meaning a note would benefit typical readers.",
+    "newDecision": false,
+    "newReasoning": "Rule 5 (editorial framing using a defensible metric). The post says 'wages going up and prices coming down.' The cited BLS data shows real average hourly earnings rose 0.3% year-over-year (post's 'wages up' is directionally true) and CPI rose 3.3% (prices are rising, not 'coming down'). A note that disputes 'prices coming down' with the actual inflation rate corrects a factual claim, but the larger framing of the post is an opinionated government account and the replies are already dominated by political pushback. More critically, the post is a broad 'Friday feeling' cheerleading message, and the proposed note's sources confirm real wages did increase (0.3%), making the 'wages going up' claim accurate. The dispute is over 'prices are coming down,' which is contradicted by the evidence. However, the deeply partisan reply section with voters from both sides already debating the claim means no typical reader is being meaningfully misled—this is a political framing battle, not a misinformation gap.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2031539160700313846",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post falsely locates the attack in San Francisco when news reports place it in San Jose, a significant factual error that readers would benefit from correcting. While many commenters are skeptical of the post's framing, several treat the underlying event as real (e.g., asking for sources, reacting to the antisemitic assault itself), indicating confusion. The note directly corrects the location error and cites credible news sources, meeting all criteria for publication.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: the post asserts an Islamist attack on a Jewish person in San Francisco. The research confirms a similar attack in San Jose (a different city) — the note corrects the location but the substantive claim of an assault on Israeli Americans is true and the post's core factual assertion is not contradicted by the research findings.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2041891972512936030",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post and its quoted graphic make verifiable factual claims that Ellen DeGeneres renounced US citizenship and was denied a passport/visa. The graphic itself labels it as 'NOTHING on this page is REAL' via a small watermark, but many commenters (e.g., @donstringer18, @mypuppys15, @bv9122, @Bostonbama84, @Tweeklives, @KaliceWolfe, @TMsalutesyou, @Lennie761199709) react as if the event actually happened, showing they are misled by the content. A typical reader would benefit from a clear correction, and the note directly addresses the false claim with strong evidence from debunking sources.",
+    "newDecision": false,
+    "newReasoning": "Rule 3: The media itself displays a permanent watermark reading \"NOTHING on this page is REAL,\" which serves as an in-tweet disclosure that the content is fabricated. This signals to viewers that the graphic is not factual. The replies show both users recognizing it as fake (e.g., @donstringer18, @mypuppys15) and others taking it at face value. However, the explicit watermark already informs readers that the content is not real, satisfying Rule 3's override, and no widespread confusion (≥20% taking as real) is recorded. The note is therefore unnecessary.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2030077895658401996",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post falsely presents a video game clip (visible “Electronic Arts Presents”) as real footage of Tel Aviv under Iranian attack. The note directly corrects this factual claim, and the video itself provides clear evidence. While many commenters recognize the joke, the post’s high reach means silent readers could be misled, so the correction is beneficial.",
+    "newDecision": false,
+    "newReasoning": "Rule 3: the video itself has 'ELECTRONIC ARTS PRESENTS' visibly burned into the frame. This in-tweet disclosure makes the video's non-real nature obvious to any viewer, and the research shows no widespread confusion (the top commenters are either playing along sarcastically or criticizing the caption). The note would only restate what the media already shows.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2004901730430189831",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a clear factual claim about a French TV show and a tragic accident, but research shows no such show or event exists—the video is actually of Serge Gainsbourg watching a children's choir in 1988. Multiple top comments indicate the description is a fabricated meme, yet the author's bio and post style are not explicitly parody, and the screenshot format mimicks a real TV show, so many silent readers are likely misled. The note is directly supported by evidence and corrects the main misleading claim.",
+    "newDecision": true,
+    "newReasoning": "The post makes a specific factual claim about the video (a French TV show confronting a farmer with 36 singing children after a fatal drink-driving accident). Research shows no such show or incident exists — the video is actually of Serge Gainsbourg watching a children's choir perform in a 1988 TV special. The note directly disputes the post's core claim with strong evidence, and without correction, a typical reader would be meaningfully misled into believing the fabricated event occurred.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2006395901426737233",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a factual claim that a man died shortly after bathing due to the bath, but the proposed note corrects that with evidence that he died months later and that causation is unconfirmed. Many commenters treat the post as real (e.g., demanding arrest of the person who convinced him, saying the bath killed him), showing that readers are misled and would benefit from the correction.",
+    "newDecision": true,
+    "newReasoning": "The post's narration says 'someone finally convinced him to take a bath, and he died shortly after,' implying a near-immediate causal link. The note corrects the timing ('months after, not immediately') and notes doctors never confirmed causation—a meaningful correction to a verifiable claim where readers are clearly taking the story at face value.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2048712783483879812",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes factual claims that ivermectin cures Parkinson's, cancer, and other ailments, and that Big Pharma suppressed this. The research directly contradicts: it is not approved for cancer, Parkinson's, or COVID-19. The note corrects the central misleading claim with authoritative sources (FDA, American Cancer Society). Comments show many readers take the post's claims at face value, treating them as real health advice, so a correction benefits typical readers.",
+    "newDecision": null,
+    "newReasoning": "PARSE_ERR: ",
+    "flipped": "UNKNOWN"
+  },
+  {
+    "url": "https://x.com/i/status/2019501956482367716",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post presents a photo of a man resembling Jeffrey Epstein in Tel Aviv and implies it might be him, which is a clear factual claim that he is alive and in Israel. The research conclusively shows the image is AI-generated and Epstein died in 2019. Many commenters take the claim seriously (e.g., treating it as evidence he is alive), so a typical reader would benefit from the note correcting the false implication.",
+    "newDecision": null,
+    "newReasoning": "PARSE_ERR: ",
+    "flipped": "UNKNOWN"
+  },
+  {
+    "url": "https://x.com/i/status/2014434985046921417",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a clear factual claim by presenting a screenshot with a fabricated quote attributed to Donald Trump from People magazine. The proposed note directly addresses this misleading claim with strong evidence from People, Reuters, FactCheck.org, and Full Fact—all confirming the quote never existed. While a few commenters recognize the meme is fake, many more react as though the quote is real (e.g., thanking Trump for being honest, insulting Republicans), indicating a meaningful fraction of the audience is misled, so a note benefits typical readers.",
+    "newDecision": true,
+    "newReasoning": "The post's image repeats a fabricated quote attributed to a named real public figure in a specific publication. Multiple fact-checkers and People magazine's own confirmation disconfirm it. No in-tweet self-disclosure signals non-reality. A meaningful fraction of commenters (e.g., 'At least he got that right…', snarky jokes treating the quote as real) take the claim at face value, so readers would be misled without the correction.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2017441660578254936",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post presents a video as if it shows Druski and RaKai pulling over a woman with a BBL in a real traffic stop, but the research confirms it is a comedy skit from a livestream. Comments show some readers interpret it as real (e.g., questioning Rakai's age in relation to a minor), so a note that clarifies it's a skit would benefit typical readers.",
+    "newDecision": true,
+    "newReasoning": "The post presents a video of two men conducting what appears to be a real traffic stop and commenting on a woman's body, with the caption 'Druski and RaKai gets excited after pulling over a girl with a BBL 💀'. A typical reader could easily take this as a real interaction. The proposed note clarifies it is a scripted comedy skit, directly disputing that implication. The research supports this through multiple sources identifying the content as a planned livestream bit, and the note cites a direct YouTube video of the skit. Some commenters already debate the BBL claim, but none clearly recognize the entire scenario as staged, so the misleadingness threshold is met.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2010758934366507334",
+    "category": "FP",
+    "needsNote": "no",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post claims the video shows a new portable individual tent for infantry assaults, but the research findings and comments identify it as a standard pop-up privacy tent used for camping/showers/toilets — commercially available, not military assault equipment. The note directly corrects this misleading claim with strong evidence (an Amazon link to an identical product), and typical readers unaware of these tents would benefit from the correction. Comments show some users already recognized it as a toilet/shower tent, but many others treat the post's framing as real, confirming confusion.",
+    "newDecision": false,
+    "newReasoning": "Rule 2: the post's factual claim is that the video shows Russian soldiers testing some *technology that they describe as* a portable tent for winter protection during assaults. The video and transcript show soldiers training with tents, calling them 'tents' and discussing how to wear and move in them. The research shows these are commercially available pop-up privacy tents, but the post does not make a claim about their origin or intended commercial use—it describes what the soldiers themselves are doing with them. The note provides adjacent context about the tents being standard camping items rather than new military tech, but the post's description of what is shown in the video is not inaccurate.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2013275340064395642",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter2Decision": true,
+    "iter2Reasoning": "The post makes a clear factual claim that the video shows a teacher crying because many of his students may no longer be alive, implying mass casualties. The research provides a direct source showing the video was posted a month earlier with a caption stating he was crying over a single deceased student, not mass death. Multiple commenters take the post as real (e.g., 'The world betrayed them', 'This is truly heartbreaking'), showing confusion, so a note would benefit readers by correcting the misleading context. The note directly addresses the main claim and is supported by strong evidence.",
+    "newDecision": true,
+    "newReasoning": "The post makes a clear factual claim about the video's context (multiple students dead), but a contemporary Instagram post confirms the teacher cried over a single student's death a month earlier. The note directly disputes the viral framing, and ~10% of commenters already flagged the actual backstory while others treat the mass-casualty frame as real, so readers are being meaningfully misled.",
+    "flipped": "TP_KEPT"
+  }
+]

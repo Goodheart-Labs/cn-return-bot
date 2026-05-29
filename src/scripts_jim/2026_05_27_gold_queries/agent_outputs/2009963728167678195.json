@@ -1,0 +1,83 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Italian American deli owner confronts ICE agents video viral",
+        "Italian deli owner yells at ICE \"get out of my shop\" video 2025",
+        "Robin Monotti ICE Italian deli video AI generated fake"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Multiple results immediately flagging the video as AI-generated. Inquisitr article directly covering this specific viral deli video. Boston Globe piece on anti-ICE AI slop videos mentioning 'a deli owner ordering masked agents off his premises'. HuffPost, Euronews, and Yahoo pieces on the broader wave of AI ICE fakes.",
+      "lesson": "The queries based purely on the tweet claim surfaced strong results in Round 1. The 'AI generated' angle wasn't needed in the initial query — mainstream coverage of the real claim immediately returned fact-check results. The PICF/PICE misspelling visible in the tweet comments was a strong corroborating signal."
+    },
+    {
+      "queries": [
+        "AI video ICE deli owner \"PICF\" OR \"PICE\" uniform misspelling fake",
+        "AI generated ICE videos fact check \"deli\" 2026 snopes leadstories"
+      ],
+      "purpose": "targeted + brand-suffix",
+      "what_returned": "Confirmed: multiple sources note the 'PICF' / 'PICE' misspelling on the uniform as a known AI artifact. Snopes has a collection page covering 20 ICE video claims. StartTribune and NBC News also cover the AI fake ICE video wave. No specific Snopes article exclusively on the deli video found, but Snopes collection and Inquisitr article cover it.",
+      "lesson": "The PICF uniform misspelling query was effective — it's an intrinsic artifact of the video visible even in the tweet's media description. The Snopes brand-suffix query surfaced a collection page but not a dedicated deli fact-check. Inquisitr article appears to be the most direct source."
+    }
+  ],
+  "gold_queries": [
+    "Italian American deli owner confronts ICE agents video viral AI generated",
+    "Italian deli owner yells at ICE \"get out of my shop\" video fake",
+    "AI video ICE deli owner PICF uniform misspelling",
+    "viral AI ICE raid videos deli 2026 fact check",
+    "anti-ICE AI slop videos deli owner fake 2026"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.inquisitr.com/viral-ai-video-of-deli-owner-refusing-to-serve-ice-agents-leaves-internet-divided-were-all-doomed",
+      "title": "Viral AI Video of Deli Owner Refusing to Serve ICE Agents Leaves Internet Divided — \"We're All Doomed\"",
+      "found_via_query": "Italian American deli owner confronts ICE agents video viral",
+      "authority_reason": "Mainstream entertainment/news outlet directly covering this specific viral video",
+      "what_it_establishes": "Confirms the video is AI-generated. Notes the viral spread and public division. Quotes the exact dialogue ('You do not belong here. Get out of my shop!'). Confirms agent uniform badge is misspelled as 'PICEF'/'PICE' rather than 'ICE' — a hallmark AI error."
+    },
+    {
+      "url": "https://www.bostonglobe.com/2026/02/05/arts/ai-slop-ice-video/",
+      "title": "Anti-ICE AI slop videos fulfill fantasy — and distract from reality",
+      "found_via_query": "Robin Monotti ICE Italian deli video AI generated fake",
+      "authority_reason": "Major regional newspaper (The Boston Globe), originally published Feb 5 2026",
+      "what_it_establishes": "Explicitly mentions 'One showed a deli owner ordering masked agents off his premises' as an example of AI-generated fake ICE videos. Identifies AI markers: flat images, off shadows, actorly mannerisms, scenarios 'too perfect'. Argues these fakes distract from real accountability footage."
+    },
+    {
+      "url": "https://www.euronews.com/my-europe/2026/03/02/flood-of-ai-generated-ice-videos-risks-undermining-trust-in-real-footage-experts-warn",
+      "title": "Flood of AI-generated ICE videos risks undermining trust in real footage, experts warn",
+      "found_via_query": "Robin Monotti ICE Italian deli video AI generated fake",
+      "authority_reason": "Euronews — pan-European broadcast news outlet",
+      "what_it_establishes": "Documents the broader phenomenon of nearly 200 AI-generated ICE clips gaining millions of views. Experts warn that the volume of fakes undermines trust in authentic footage documenting real ICE activity."
+    },
+    {
+      "url": "https://www.huffpost.com/entry/viral-ai-ice-raid-videos_l_69163baee4b0df3e16be4163",
+      "title": "These AI ICE Videos Are All Over Facebook. The Fact That So Many Are Falling For Them Should Scare You.",
+      "found_via_query": "Robin Monotti ICE Italian deli video AI generated fake",
+      "authority_reason": "HuffPost — major US news outlet",
+      "what_it_establishes": "Documents AI artifacts in viral ICE videos including misspelled text on signage ('CERS', 'POICE'), unnatural gait, and uncanny valley effect. Confirms the video genre is AI-generated propaganda-adjacent content, not real footage."
+    },
+    {
+      "url": "https://www.snopes.com/collections/ice-videos-images-claims/",
+      "title": "20 claims about videos and images related to ICE, investigated",
+      "found_via_query": "AI generated ICE videos fact check \"deli\" 2026 snopes leadstories",
+      "authority_reason": "Snopes — leading fact-checking organization",
+      "what_it_establishes": "Snopes has investigated 20 claims about ICE-related videos and images, establishing that AI-generated content in this category is widespread and has been systematically fact-checked."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching the literal tweet claim ('Italian deli owner confronts ICE') immediately returned fact-check coverage — no need to pre-assume it was fake",
+      "The visible AI artifact in the tweet's own media description (officer vest reads 'PICF' not 'ICE') provided a strong targeted query term",
+      "Searching for the broader pattern ('AI ICE videos') surfaced multiple authoritative outlets (Boston Globe, Euronews, HuffPost) that independently corroborate the fake nature of this specific video",
+      "Comments in the tweet itself (multiple users calling it AI) were a strong prior for query framing"
+    ],
+    "what_hurt": [
+      "Inquisitr article (most directly relevant) returned 403 and could not be fetched; MSN mirror also failed to return content",
+      "No dedicated Snopes or Lead Stories article specifically on the deli video was found — Snopes covers the category but not this exact video",
+      "Robin Monotti's name as the poster did not add signal — the video predates his tweet and was shared widely before he posted it"
+    ],
+    "would_multipass_help": "no — Round 1 queries surfaced the key sources. The core verdict (AI-generated video) was established immediately from the plain-claim search. Additional passes only confirmed details already found.",
+    "deepseek_advice": "For tweets posting a dramatic video clip as if real, first search the literal claim as stated, then add 'AI generated' or 'fake' as a second query variant. Look for telltale AI artifacts mentioned in the media description (misspelled text like 'PICF' instead of 'ICE', unnatural props). When multiple reply comments call it AI, weight that heavily as a prior and include 'AI' or 'deepfake' in at least one query."
+  }
+}
