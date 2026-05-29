@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2006367522879054193",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:25.851Z",
+  "post": {
+    "id": "2006367522879054193",
+    "author_id": "1388819128052506627",
+    "created_at": "2025-12-31T14:11:08.000Z",
+    "text": "Immediately after Russians hastily posted photos of the \"Ukrainian drone that attacked Putin’s residence” this morning, open source investigators already noted that the drone appears to be a black-painted Russian Gerbera, also featuring a battery and cellular modem module from a https://t.co/qKRs0v69cs",
+    "media": [
+      {
+        "media_key": "3_2006367519645339649",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G9gMoQFXkAEewnH.jpg",
+        "height": 1258,
+        "width": 2048
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1364,
+      "reply_count": 162,
+      "like_count": 3742,
+      "quote_count": 139,
+      "bookmark_count": 305,
+      "impression_count": 442412
+    },
+    "author_followers": 82173,
+    "author_name": "SPRAVDI — Stratcom Centre",
+    "author_description": "We spread the truth, counter fakes and hostile propaganda, and amplify the voice of society.\nCenter for Strategic Communications - SPRAVDI.",
+    "author_tweet_count": 14240
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G9gMoQFXkAEewnH.jpg",
+          "description": {
+            "description": "The image is a compilation of several photos showing the wreckage of drones, along with diagrams and electronic components. The upper photos show a black, crashed drone in the snow, revealing its internal engine and wiring. The middle photos show a white fixed-wing drone and a close-up of a motor with a wooden propeller. Technical components like a Savox servo and a SIM800C module are also featured. An infographic at the bottom right identifies a 'RUSSIAN DRONE ORLAN-10' and lists various foreign-sourced components including Swiss GPS, Japanese engines, and Chinese electronics.",
+            "ocrText": "ONLINE.UA The element base for electronic circuits is produced in Malaysia, Korea, Japan, and China. Servo drives manufactured by Savox (Sweden-China). Scorpion engines (USA-China). Radio channels (except Russian and their own) are produced by RFDesign (Australia). Engine regulators (except for Russian and our own) are manufactured by Scorpion (USA-China) and Hobbyking (China). SAVOX 202107 SIM800C IMEI: 869531071889707 FCC ID: UDV-SIM800C S2-10685-Z1L1E CE CCC RUSSIAN DRONE ORLAN-10 Deployed for Armenia with foreign model hobby RC electronics MANUFACTURER RUSSIA SPECIAL TECHNOLOGY CENTER (STC) Positioning System SWITZERLAND Ublox Neo-M8 CHINA Simcom Mobile IMEI Engine SWITZERLAND Saito 40 CC Servo Actuator CHINA Hyporian Atlas Communication System USA 900 MHz Telemetry 2.3-2.5 Ghz Video USA Axis Communication Video Decoder Analog Devices RF Transceiver Motorola Sensors An Orlan-10 crashed after being shot"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **J. like JJ 🇫🇷 🇪🇺 🇺🇸 🇺🇦 (@HeliosRunner)**: this level of amateurism and idiocy will never cease to make me laughs.  \n  Likes: 372 | Reposts: 0 | Replies: 0 | Views: 18917\n\n- **Thorsten (@KTHTraveller)**: (image attached)  \n  Likes: 199 | Reposts: 0 | Replies: 0 | Views: 7052\n\n- **Manu (@Erdbeerdampfe)**: So, they use their own drones for pics of the ukrainian attack? They are so fucking stupid. Yet ruzzian war criminal supporters probably gonna use it as evidence because their brain is a useless mass?  \n  Likes: 182 | Reposts: 0 | Replies: 0 | Views: 2706\n\n- **SmellOfMonkey (@SmellOfMonkey)**: Russia doesn't have to fool clever people, they just have to fool all their fucking idiot supporters  \n  Likes: 104 | Reposts: 0 | Replies: 0 | Views: 3543\n\n- **Kiwi_as 🇳🇿🇺🇦 (@grieve_grant)**: The ruZZians also used this obvious AI generated video as proof. Cars don't drive through fountains and ruZZian CCTV doesn't use english titles. Fucking amateurs.  \n  Likes: 97 | Reposts: 0 | Replies: 0 | Views: 3230\n\n- **NAFOfellalotte🇩🇰🇺🇦🇬🇪🇬🇱 (@NAFOfellaLotte)**: So stupid! 🤣🤣🤣 One would think that russia would be better at lying since they lie nonstop, but obviously not 😂  \n  Likes: 66 | Reposts: 0 | Replies: 0 | Views: 4546\n\n- **Howitzer “Triple 7” Marv (@HowitzerApprec1)**: Just the one? What happened to the other 90?  \n  Likes: 61 | Reposts: 0 | Replies: 0 | Views: 2633\n\n- **Bird Fountain (@bird_fountain99)**: Remember the Sim Cards ... This is just another chapter in that same playbook!  \n  Likes: 56 | Reposts: 0 | Replies: 0 | Views: 5299\n\n- **Manel Alvarez (@pequeninbcn)**: As I wrote yesterday, satellite imagery would allow US secret services to easily confirm or disconfirm such an attack. But the yellow wig has no interest in revealing the bunker midget's feedle lie because his own entire presidency is built on exactly that: a big heap of lies.  \n  Likes: 51 | Reposts: 0 | Replies: 0 | Views: 1383\n\n- **RealBlackbolder (@RBlackbolder)**: Oh dear.. russia has tradition of lying for hundreds of years, they have whole departments only for lies and disinformation.  \n  And this is the result... 🙈🤡  \n  Likes: 46 | Reposts: 0 | Replies: 0 | Views: 1203",
+    "warnings": []
+  }
+}

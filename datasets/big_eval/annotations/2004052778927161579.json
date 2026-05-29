@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2004052778927161579",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "manipulated_or_fabricated_evidence"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A video presents a dramatic 'real incident' of a white husband shocked that his newborn twins are black, accusing his wife of cheating in a gynecology clinic.",
+  "why_note_decision": "The clip is AI-generated entertainment/comedy, not a real event. Multiple fact-checkers (FACTLY, BOOM, The Quint, LatestLY, Yahoo) confirm it is AI-generated, originating from an 'entertainment' account; AI detectors score it ~98-100% synthetic. The post text frames it as a genuine hospital incident ('tension suddenly fills the room... his voice trembles with anger'), which is misleading given 7M+ impressions and the inflammatory racial premise. A note clarifying it is fabricated AI content is warranted. Many replies already call it AI, but the high-reach framing as real justifies a note.",
+  "judge_guidance": "PASS only if the note states the video is AI-generated / fabricated (a comedy or 'social experiment' skit), not a real hospital incident. It must NOT treat the event as real or speculate about genetics as if a real birth occurred. A note that merely says 'AI' without making clear it's not a documented real event is acceptable but weaker; the core required element is denying it depicts a real incident. Cite a fact-check (FACTLY / BOOM / The Quint) or note the source account is labeled entertainment.",
+  "reference_note": "This post presents an AI-generated/fabricated video as if it depicts a real incident. Fact-checkers have investigated this viral clip and confirmed it is artificially generated content, not documentation of an actual hospital event. https://factly.in/video-of-a-white-woman-giving-birth-to-black-twins-is-ai-generated-and-not-a-real-incident/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/fabricated: the video is AI-generated comedy/entertainment, not a real hospital incident.",
+    "sources_checked": [
+      "https://factly.in/video-of-a-white-woman-giving-birth-to-black-twins-is-ai-generated-and-not-a-real-incident/",
+      "https://www.boomlive.in/fact-check/fake-news-viral-video-white-couple-with-two-black-babies-video-ai-generated-factcheck-29917",
+      "https://www.thequint.com/news/webqoof/ai-generated-clip-white-woman-dark-skin-babies-fact-check"
+    ],
+    "notes": "Origin traced to AI/entertainment TikTok account (@br_ai_ded per fact-checks); detectors ~98.6-100% AI. The author's wall is full of similar AI videos (noted by a replier). The transcription's closing line 'Genetics can be surprising' confirms scripted skit content."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "7M+ impressions, 5M video views; an AI clip weaponizing a racialized infidelity trope spreads as 'real.' Correcting widely-believed inflammatory synthetic media has real value for the information ecosystem."
+  },
+  "difficulty": "easy"
+}

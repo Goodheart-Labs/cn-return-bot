@@ -1,0 +1,83 @@
+{
+  "tweet_id": "2052347768673571129",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:47.268Z",
+  "post": {
+    "id": "2052347768673571129",
+    "author_id": "1303353999953768450",
+    "created_at": "2026-05-07T11:20:13.000Z",
+    "text": "コロナワクチンの副作用にハンタウィルス肺感染があった‼️ https://t.co/MF695faFqd https://t.co/4LrDBppS50",
+    "media": [
+      {
+        "media_key": "3_2052347761304252416",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHtnakQbsAACNd7.jpg",
+        "height": 1277,
+        "width": 890
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2052285282657927336"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2052285282657927336",
+      "author_id": "1141855591104753672",
+      "created_at": "2026-05-07T07:11:55.000Z",
+      "text": "When you realise the new 'Fear Virus' being pushed by the media (Hantavirus) was also listed as an adverse side effect of the covid vaccines... https://t.co/AIyvC95qfw",
+      "media": [
+        {
+          "media_key": "3_2052284838921572358",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HHsuMAHXEAYd6PL.jpg",
+          "height": 1024,
+          "width": 751
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 3718,
+      "reply_count": 78,
+      "like_count": 8630,
+      "quote_count": 180,
+      "bookmark_count": 2118,
+      "impression_count": 428883
+    },
+    "author_followers": 27072,
+    "author_name": "まるこまる",
+    "author_description": "コロナ💉長期副反応\n２０２２年8月末車椅子寝たきり状態に\n9月急性腎不全  貧血 低栄養\nME/CFS\n\n一時期言語障害、記憶障害あり。\n\nEATで自律神経関連解消\n\n食事療法(日本食中心発酵食品摂取)、鍼治療、呼吸法、サプリ、漢方、湯治\n\n梅干し最強🌟🥳\nhttps://t.co/0PshUaxwSM",
+    "author_tweet_count": 241684
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHtnakQbsAACNd7.jpg",
+          "description": {
+            "description": "A Japanese document listing various medical terms and conditions, appearing to be an adverse event report related to pharmacological studies. The text consists of a dense list of symptoms, diseases, and medical jargon separated by semicolons, highlighted in light grey sections.",
+            "ocrText": "BNT162b2\n5.3.6 承認後の有害事象報告の累積分析\n筋膜炎;好酸球性多発血管炎性肉芽腫症;好酸球性\n食道炎;表皮剥離;てんかん;てんかん手術;ミオクローヌス・アトニー\n発作を伴うてんかん;てんかん前兆;てんかん性精神病;紅斑;\n硬結性紅斑;多形紅斑;結節性紅斑;エバンス症候群;突発性発疹;\n拡張障害状態尺度スコアの低下;拡張障害状態尺度スコアの増加;\n感染症への曝露;SARS-CoV-2への曝露;眼浮腫;眼掻痒;眼\n腫脹;眼鏡浮腫;顔面浮腫;顔面麻痺;顔面不全麻痺;顔面上肢ジストニア\n発作;脂肪塞栓症;熱性けいれん;熱性感染関連てんかん症候群;\n熱性好中球減少症;フェルティ症候群;大腿動脈塞栓\n症;線維性糸球体腎炎;線維筋痛症;潮紅;口からの泡;局所皮膚\n切除;局所認知障害発作;胎児ジストレス症候群;胎児胎盤血栓\n症;肝臭;異物塞栓症;前頭葉てんかん;劇症型1型糖尿病;\nガラクトース除去能検査異常;ガラクトース除去能検査低下;y-グルタミル\nトランスフェラーゼ異常;y-グルタミルトランスフェラーゼ増加;\n胃ヘルペス;胃腸アミロイドーシス;笑い発作;全般発症非運動発作;\n全般強直間代発作;性器ヘルペス;単純性性器ヘルペス;帯状\n疱疹性性器ヘルペス;巨細胞性動脈炎;糸球体腎炎;膜性増殖性糸\n球体腎炎;膜性糸球体腎炎;急速進行性糸球体腎炎;舌咽神経麻痺;\nグルコーストランスポーター1型欠損症候群;グルタミン酸\nデヒドロゲナーゼ増加;グリココール酸増加;GM2ガングリオシドーシス;\nグッドパスチャー症候群;移植\n血栓症;顆粒球減少症;新生児顆粒球減少症;多発血管炎性\n肉芽腫症;肉芽腫性皮膚炎;灰白質異所性;グアナーゼ増加;ギラン・\nバレー症候群;溶血性貧血;血球貪食性\nリンパ組織球症;出血;出血性腹水;出血性\n疾患;出血性肺炎;出血性水痘症候群;出血性血管炎;\nハンタウイルス肺感染症;橋本病\n脳症;橋本中毒症;片側巨大脳症;ヘノッホ・シェーンライン紫斑\n病;ヘノッホ・シェーンライン紫斑病腎炎;ヘパプラスチン異常;ヘパ\nプラスチン減少;ヘパリン誘発性血小板減少症;肝アミロイドーシス;\n肝動脈塞栓症;肝動脈血流減少;肝動脈血栓症;肝\n酵素異常;肝酵素減少;肝酵素増加;肝線維化マーカー異常;\n肝線維化マーカー増加;肝機能異常;肝性胸水;肝肥大;\n肝灌流低下;肝リンパ球浸潤;肝腫瘍;肝痛;肝隔離;肝血管抵抗\n增加;肝血管血栓症;肝静脈塞栓症;肝静脈血栓症;肝静脈圧\n勾配異常;肝静脈圧勾配増加;肝炎;肝胆道スキャン異常;肝腫大;\n肝脾腫;Clエステラーゼ阻害因子欠損を伴う遺伝性血管性浮腫;\nヘルペス皮膚炎;妊娠性ヘルペス;食道ヘルペス;眼ヘルペス;咽頭\nヘルペス;ヘルペス敗血症;単純ヘルペス;単純ヘルペス子宮\n頸管炎;単純ヘルペス大腸炎;単純ヘルペス脳炎;単純\nヘルペス胃炎;単純ヘルペス肝炎;単純ヘルペス髄膜炎;単純ヘルペス\n髄膜脳炎;単純ヘルペス髄膜脊髄炎;単純ヘルペス壊死性網膜\n症;単純ヘルペス食道炎;単純ヘルペス外耳炎;単純ヘルペス\n咽頭炎;単純ヘルペス肺炎;単純ヘルペス再活性化;単純\nヘルペス敗血症;単純ヘルペスウイルス血症;新生児単純\nヘルペスウイルス結膜炎;単純ヘルペス内臓;ヘルペスウイルス"
+          }
+        }
+      ],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHsuMAHXEAYd6PL.jpg",
+          "description": {
+            "description": "A document titled BNT162b2, Section 5.3.6 Cumulative Analysis of Post-authorization Adverse Event Reports. The page contains a long, alphabetical list of medical conditions, mostly ranging from 'fasciitis' to 'Herpes virus'. The footer marks it as CONFIDENTIAL Page 4, with an FDA identification number FDA-CBER-2021-5683-0000086 and a secondary page number 33.",
+            "ocrText": "BNT162b2\n5.3.6 Cumulative Analysis of Post-authorization Adverse Event Reports\n\nfasciitis;Eosinophilic granulomatosis with polyangiitis;Eosinophilic\noesophagitis;Epidermolysis;Epilepsy;Epilepsy surgery;Epilepsy with myoclonic-atonic\nseizures;Epileptic aura;Epileptic psychosis;Erythema;Erythema induratum;Erythema\nmultiforme;Erythema nodosum;Evans syndrome;Exanthema subitum;Expanded disability\nstatus scale score decreased;Expanded disability status scale score increased;Exposure to\ncommunicable disease;Exposure to SARS-CoV-2;Eye oedema;Eye pruritus;Eye\nswelling;Eyelid oedema;Face oedema;Facial paralysis;Facial paresis;Faciobrachial dystonic\nseizure;Fat embolism;Febrile convulsion;Febrile infection-related epilepsy syndrome;Febrile\nneutropenia;Felty's syndrome;Femoral artery embolism;Fibrillary\nglomerulonephritis;Fibromyalgia;Flushing;Foaming at mouth;Focal cortical resection;Focal\ndyscognitive seizures;Foetal distress syndrome;Foetal placental thrombosis;Foetor\nhepaticus;Foreign body embolism;Frontal lobe epilepsy;Fulminant type 1 diabetes\nmellitus;Galactose elimination capacity test abnormal;Galactose elimination capacity test\ndecreased;Gamma-glutamyltransferase abnormal;Gamma-glutamyltransferase\nincreased;Gastritis herpes;Gastrointestinal amyloidosis;Gelastic seizure;Generalised onset\nnon-motor seizure;Generalised tonic-clonic seizure;Genital herpes;Genital herpes\nsimplex;Genital herpes zoster;Giant cell arteritis;Glomerulonephritis;Glomerulonephritis\nmembranoproliferative;Glomerulonephritis membranous;Glomerulonephritis rapidly\nprogressive;Glossopharyngeal nerve paralysis;Glucose transporter type 1 deficiency\nsyndrome;Glutamate dehydrogenase increased;Glycocholic acid increased;GM2\ngangliosidosis;Goodpasture's syndrome;Graft\nthrombosis;Granulocytopenia;Granulocytopenia neonatal;Granulomatosis with\npolyangiitis;Granulomatous dermatitis;Grey matter heterotopia;Guanase increased;Guillain-\nBarre syndrome;Haemolytic anaemia;Haemophagocytic\nlymphohistiocytosis;Haemorrhage;Haemorrhagic ascites;Haemorrhagic\ndisorder;Haemorrhagic pneumonia;Haemorrhagic varicella syndrome;Haemorrhagic\nvasculitis;Hantavirus pulmonary infection;Hashimoto's\nencephalopathy;Hashitoxicosis;Hemimegalencephaly;Henoch-Schonlein purpura;Henoch-\nSchonlein purpura nephritis;Hepaplastin abnormal;Hepaplastin decreased;Heparin-induced\nthrombocytopenia;Hepatic amyloidosis;Hepatic artery embolism;Hepatic artery flow\ndecreased;Hepatic artery thrombosis;Hepatic enzyme abnormal;Hepatic enzyme\ndecreased;Hepatic enzyme increased;Hepatic fibrosis marker abnormal;Hepatic fibrosis\nmarker increased;Hepatic function abnormal;Hepatic hydrothorax;Hepatic\nhypertrophy;Hepatic hypoperfusion;Hepatic lymphocytic infiltration;Hepatic mass;Hepatic\npain;Hepatic sequestration;Hepatic vascular resistance increased;Hepatic vascular\nthrombosis;Hepatic vein embolism;Hepatic vein thrombosis;Hepatic venous pressure\ngradient abnormal;Hepatic venous pressure gradient increased;Hepatitis;Hepatobiliary scan\nabnormal;Hepatomegaly;Hepatosplenomegaly;Hereditary angioedema with C1 esterase\ninhibitor deficiency;Herpes dermatitis;Herpes gestationis;Herpes oesophagitis;Herpes\nophthalmic;Herpes pharyngitis;Herpes sepsis;Herpes simplex;Herpes simplex\ncervicitis;Herpes simplex colitis;Herpes simplex encephalitis;Herpes simplex gastritis;Herpes\nsimplex hepatitis;Herpes simplex meningitis;Herpes simplex meningoencephalitis;Herpes\nsimplex meningomyclitis;Herpes simplex necrotising retinopathy;Herpes simplex\noesophagitis;Herpes simplex otitis externa;Herpes simplex pharyngitis;Herpes simplex\npneumonia;Herpes simplex reactivation;Herpes simplex sepsis;Herpes simplex\nviraemia;Herpes simplex virus conjunctivitis neonatal;Herpes simplex visceral;Herpes virus\n\nCONFIDENTIAL\nPage 4\nFDA-CBER-2021-5683-0000086\nPage 33"
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@soreyan (ジェイ)**: 一年前の2025年4月に、 ハンタウイルスmRNA「ワクチン」の特許取得👇 (Likes=77, Reposts=35, Views=8767)\n- **@zFgGd05ahaZi6wH (冩楽)**: 河野太郎に責任取らせないと！ (Likes=74, Reposts=0, Views=5876)\n- **@ynOJjvSCih70hQp (ミルミル)**: 最近この症状はシェディングなのかって検索すると 報告されていますと存在を認めている。 だんだん色々バレてきている。 (Likes=68, Reposts=0, Views=5937)\n- **@wtnk8cc (たぬき)**: 通りすがりに失礼しまっす ワクチン2回接種したんですが 30歳で帯状疱疹になったり もともと遊びすぎると口唇ヘルペスできていましたが異常な回数できます笑 今は乾癬という皮膚病です(自己免疫系) 一概にワクチンとは言えないでしょうが 少し投稿見て納得しました 末長く付き合っていきます🤮 (Likes=57, Reposts=0, Views=5500)\n- **@0gc387460c02882 (ちーちゃん@肉球新党 補欠メンバ〜 国会カフェもやりたいゾッと ♪)**: なるほどね…遅効性の毒と言ってたから ジワジワと色んな症状出して 都度ワクチン作って儲けたいと😂卑しくすぎて… 長々と儲けたいから、ワクチン工場日本に造って稼ぎまッせとウホウホしてたんだ😂あさましい。 (Likes=47, Reposts=0, Views=2785)\n- **@kiminonaha_h (🌸立場無🇯🇵選挙に行こう日本人社会を取り戻そう🍣🍔)**: ビル・ゲイツとエプスタインは処刑しても足りない (Likes=34, Reposts=0, Views=1694)\n- **@Eje8ccz5xGIgfnN (Jomonbear)**: ハンタウィルスまで混ぜてたってことですかねぇ〜👎💢😎😣 (Likes=30, Reposts=0, Views=3494)\n- **@ksk34031550 (Ｋ太郎)**: これから流行る病気はまずコロナワクチンの副作用疑った方がいいみたいですね！ (Likes=29, Reposts=0, Views=1919)\n- **@natuzora17 (猫マニア　花よりにゃん子)**: そうにゃんだ。 ぜんぶ、繋がってますね (Likes=27, Reposts=0, Views=4602)\n- **@Japan_Liberty (日本解放戦線)**: 免疫力が下がるからだろうね (Likes=26, Reposts=0, Views=3435)",
+    "warnings": []
+  }
+}

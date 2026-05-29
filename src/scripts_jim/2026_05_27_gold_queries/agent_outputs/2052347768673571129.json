@@ -1,0 +1,78 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Pfizer BNT162b2 5.3.6 adverse event list hantavirus \"monitoring list\" explained",
+        "hantavirus COVID vaccine side effect claim fact check",
+        "Pfizer \"5.3.6\" adverse event report what does it mean listed conditions"
+      ],
+      "purpose": "exploratory + brand-suffix",
+      "what_returned": "Immediately returned Snopes, Full Fact, Lead Stories, and Politifact fact-checks directly addressing this exact claim. All four major fact-checkers rate the claim false. Also returned the original Pfizer document on archive.org and phmpt.org.",
+      "lesson": "The claim is a recurring one — first went viral in 2022 and resurfaced in May 2026 with hantavirus as the hook. Searching 'hantavirus COVID vaccine side effect fact check' surfaces the most relevant results instantly. The 'monitoring list explained' angle also works well."
+    },
+    {
+      "queries": [],
+      "purpose": "verification via WebFetch",
+      "what_returned": "Snopes returned 402 (paywalled). Lead Stories confirmed: hantavirus appears in the 'adverse events of special interest' (AESI) list — conditions compiled by Brighton Collaboration, EMA, CDC, and UK regulators to monitor during rollout, not confirmed side effects. Full Fact confirmed: False verdict, AESI ≠ side effects. Politifact confirmed: False, 'inclusion does not necessarily signal causality', document explicitly says so.",
+      "lesson": "Full Fact and Lead Stories are the most reliably fetchable. Politifact also fully accessible. Snopes paywalled but its verdict was clear from the search snippet."
+    }
+  ],
+  "gold_queries": [
+    "hantavirus COVID vaccine side effect fact check",
+    "Pfizer BNT162b2 5.3.6 hantavirus adverse events of special interest",
+    "Pfizer document hantavirus listed side effect monitoring surveillance explained",
+    "BNT162b2 5.3.6 adverse event special interest list what does listed mean"
+  ],
+  "found_sources": [
+    {
+      "url": "https://leadstories.com/hoax-alert/2026/05/fact-check-document-does-not-show-hantavirus-as-side-effect-of-covid-19-vaccines.html",
+      "title": "Fact Check: Document Does NOT Show Hantavirus As A COVID-19 Vaccine Side Effect -- It Lists Health Conditions To Report IF They Happen",
+      "found_via_query": "Pfizer BNT162b2 5.3.6 adverse event list hantavirus \"monitoring list\" explained",
+      "authority_reason": "Lead Stories is a major US fact-checking outlet with IFCN certification, directly addresses this exact viral claim from May 2026",
+      "what_it_establishes": "Hantavirus appears in the AESI (adverse events of special interest) surveillance list — conditions that Brighton Collaboration, EMA, CDC, and MHRA required Pfizer to monitor. It does not appear in the list of events that actually occurred in vaccinated people. The document itself states 'inclusion does not necessarily signal causality.'"
+    },
+    {
+      "url": "https://fullfact.org/health/hantavirus-not-listed-side-effect-pfizer-covid-19-vaccine/",
+      "title": "Hantavirus is not listed as a side effect of Pfizer's Covid-19 vaccine – Full Fact",
+      "found_via_query": "hantavirus COVID vaccine side effect claim fact check",
+      "authority_reason": "Full Fact is the UK's leading independent fact-checking charity, IFCN certified",
+      "what_it_establishes": "Verdict: False. AESIs are conditions to monitor during trials, not conditions with confirmed causal relationship to vaccination. Misleading viral claim could cause health decisions based on false information."
+    },
+    {
+      "url": "https://www.snopes.com/fact-check/hantavirus-covid-vaccine-side-effects/",
+      "title": "Pfizer didn't say hantavirus is side effect of its COVID-19 vaccine, contrary to online claims",
+      "found_via_query": "hantavirus COVID vaccine side effect claim fact check",
+      "authority_reason": "Snopes is one of the longest-running and most widely cited fact-checking organizations",
+      "what_it_establishes": "Directly rates the claim false. The 5.3.6 document appendix is a pre-specified surveillance list, not a record of vaccine-caused conditions."
+    },
+    {
+      "url": "https://www.politifact.com/factchecks/2022/mar/23/blog-posting/fact-checking-false-claims-pfizers-covid-19-vaccin/",
+      "title": "Fact-checking false claims about Pfizer's COVID-19 vaccine safety data",
+      "found_via_query": "Pfizer \"5.3.6\" adverse event report what does it mean listed conditions",
+      "authority_reason": "PolitiFact is a Pulitzer Prize-winning fact-checking outlet",
+      "what_it_establishes": "Rates claims about the 5.3.6 document False. Distinguishes adverse events (conditions monitored) from adverse reactions (conditions caused by vaccine). The document explicitly states inclusion does not imply causality. Also clarifies the 'confidential' marking was standard commercial protection, not a cover-up."
+    },
+    {
+      "url": "https://phmpt.org/wp-content/uploads/2021/11/5.3.6-postmarketing-experience.pdf",
+      "title": "BNT162b2 5.3.6 Cumulative Analysis of Post-authorization Adverse Event Reports (primary source)",
+      "found_via_query": "Pfizer BNT162b2 5.3.6 adverse event list hantavirus \"monitoring list\" explained",
+      "authority_reason": "Primary source document released via FOIA from the FDA (PHMPT - Public Health and Medical Professionals for Transparency)",
+      "what_it_establishes": "The actual document from which the image in the tweet is taken. Appendix 1 is a pre-specified list of adverse events of special interest for monitoring purposes — not a list of confirmed side effects."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching 'hantavirus COVID vaccine side effect fact check' directly — this surfaces the exact fact-checks because the claim went viral and was covered by all major fact-checkers",
+      "Including the document section number '5.3.6' in queries helped find both the primary source and contextual explanations",
+      "Adding 'monitoring list explained' as a modifier helped surface explanatory content about what AESI lists mean",
+      "The claim is not new — it first circulated in 2022 and resurfaced in May 2026, so fact-checkers have extensive coverage"
+    ],
+    "what_hurt": [
+      "Snopes is paywalled (402 error on WebFetch), reducing direct verification — but verdict was clear from search snippet",
+      "Searching in Japanese would not have helped here since the claim originates from English-language content the tweet is quoting"
+    ],
+    "would_multipass_help": "no — Round 1 queries immediately surfaced 4+ authoritative fact-checkers. This is a well-documented false claim with abundant fact-check coverage. A second pass would add no meaningful sources.",
+    "deepseek_advice": "For tweets showing a list of medical conditions from an official-looking document and claiming the list = vaccine side effects, the gold query pattern is: '[condition name] COVID vaccine side effect fact check'. The 5.3.6 document claim is a recurring one — searching the document section number plus 'adverse events of special interest' also works well. Always distinguish between surveillance/monitoring lists (AESI) and confirmed adverse reactions in the correction."
+  }
+}

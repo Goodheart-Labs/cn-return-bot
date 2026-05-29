@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2056292005047672971",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["ai_generated_media"],
+  "category_fit": "partial",
+  "suggested_category": "accurate_reporting_of_ai_image",
+  "tweet_summary": "Daily Loud reports that 'Trump posts a picture of him walking with an alien' — accurately describing an AI-generated image Trump shared to Truth Social on May 17/18, 2026 showing him with a shackled grey alien.",
+  "why_note_decision": "The tweet just reports what Trump posted. Multiple outlets (Newsweek, Snopes, Yahoo, IBTimes) confirm Trump shared this AI image on Truth Social. The reposting account doesn't claim the image is real; the comments and audience clearly treat it as the absurd meme it is, and one top reply even calls it AI. A note saying 'this is AI-generated, aliens aren't real' is redundant and patronizing — exactly why raters voted noteNotNeeded.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Adding any note debunking the alien image as 'AI / not real' on a tweet that simply reports Trump posted it is a false positive. The bot must recognize that 'X celebrity posted an obviously fake image' is news, not misinfo, and decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This image is AI-generated and was shared by Donald Trump on Truth Social. It is not an authentic photograph of a real-life event. No evidence exists showing the discovery or detention of extra-terrestrial life. https://www.newsweek.com/donald-trump-shares-ai-photo-of-handcuffed-alien-walking-next-to-him-11961685 https://www.themirror.com/news/weird-news/donald-trump-posts-ai-alien-1842252",
+    "failure_reason": "Note-not-needed: the image is obviously AI-generated and the tweet is accurate reporting of a real Trump post; the note states the obvious.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Trump did post this AI image; tweet is accurate reporting.",
+    "sources_checked": [
+      "https://www.newsweek.com/donald-trump-shares-ai-photo-of-handcuffed-alien-walking-next-to-him-11961685",
+      "https://www.snopes.com/fact-check/trump-alien-post/",
+      "https://www.ibtimes.co.uk/trump-ai-alien-image-mocked-1797509"
+    ],
+    "notes": "Image confirmed AI-generated (detection tool: 98.8% likelihood AI), posted by Trump to Truth Social on May 17, 2026."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Politically-charged but obviously satirical. Notes treating obvious memes as misinfo waste the system's signal capacity."
+  },
+  "difficulty": "easy"
+}

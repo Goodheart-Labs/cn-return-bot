@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2021144625382293760",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["platform_manipulation"],
+  "category_fit": "partial",
+  "suggested_category": "user_call_to_action_opinion",
+  "tweet_summary": "Artist 'SYDUS SENSEI' tells followers to cancel Discord Nitro and spam support tickets to protest Discord's age-verification rollout, ending with 'There are reports they're walking things back.'",
+  "why_note_decision": "The tweet is primarily a call-to-action / opinion post urging protest of Discord's age verification. The note targets the trailing sentence 'There are reports they're walking things back' and claims this is false because no such reports existed as of Feb 9 sources. However: Discord DID in fact delay the global rollout to H2 2026 on Feb 24, 2026 (TechCrunch, NBC News, The Register) explicitly citing user backlash — so the tweet's speculative 'walking things back' framing turned out essentially correct, and even at the time of the tweet (Feb 10) user pressure was building toward exactly that outcome. The rest of the tweet is opinion/advocacy, not a checkable factual claim. Note misreads opinion as factual misinformation and is now contradicted by events.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The tweet is opinion/call-to-action; the only factual-flavored phrase ('reports they're walking things back') is speculative framing that subsequently proved correct — Discord delayed the global age-verification rollout to H2 2026 on Feb 24, 2026 after user backlash (TechCrunch, NBC, The Register). A bot must not write a note disputing a speculative line that later proved true, and must recognize advocacy/opinion as non-checkable.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "There are no reports of Discord walking back its age verification policy, which is scheduled to roll out globally in early March. https://discord.com/press-releases/discord-launches-teen-by-default-settings-globally https://techcrunch.com/2026/02/09/discord-to-roll-out-age-verification-next-month-for-full-access-to-its-platform",
+    "failure_reason": "incorrect_in_hindsight_and_targets_opinion",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_speculation_proved_correct",
+    "sources_checked": [
+      "https://techcrunch.com/2026/02/24/discord-delays-global-rollout-of-age-verification-after-backlash/",
+      "https://www.nbcnews.com/tech/tech-news/discord-pushes-back-age-verification-rollout-backlash-rcna260604",
+      "https://www.theregister.com/2026/02/24/discord_drama_delays_age_verification/",
+      "https://discord.com/blog/getting-global-age-assurance-right-what-we-got-wrong-and-whats-changing"
+    ],
+    "notes": "Discord delayed global rollout to H2 2026 on Feb 24, 2026 — exactly what the tweet's 'walking things back' line speculated about."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "~187k impressions; minor consumer-tech advocacy. Pipeline learning: don't write notes disputing soft 'reports say' framing on issues that are actively moving, especially when the speculation proves correct."
+  },
+  "difficulty": "medium"
+}

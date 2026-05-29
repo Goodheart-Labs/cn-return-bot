@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2044830697127321794",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An infographic ranks 'Countries with the most Africans,' listing Brazil 112,739,744; US 46,936,733; Colombia 15,000,000; France 10,000,000; UK 4,871,916; etc.",
+  "why_note_decision": "Several figures are substantially overstated and the methodology is misleading. Brazil's 112.7M (#1) counts all 'pardo' (mixed-race) Brazilians as 'African' — the 2022 census recorded ~20.7M Black (preto) plus ~92.1M pardo, so labeling ~112M as 'Africans' conflates mixed-race with Black/African. France's figure is ~3.8-6M (not 10M; France doesn't officially track race), Colombia's Afro-descendant population is ~4.9M (not 15M), and the UK's is ~2.4-2.5M (not 4.9M). A note clarifying the inflation/methodology is warranted.",
+  "judge_guidance": "PASS only if the note flags that the figures are overstated and/or the methodology is misleading. Strongest points to make: Brazil's 112.7M conflates mixed-race ('pardo', ~92M) with Black/African (~20.7M Black per the 2022 census), so it overstates the 'African' count; Colombia's Afro-descendant population is ~4.9M (not 15M); France's is ~3.8-6M and not officially counted by race (not 10M); the UK's is ~2.4-2.5M (not 4.9M). A correct note should at minimum challenge the inflated figures (ideally including the Brazil conflation, the single biggest distortion) rather than only nitpicking one country. FAIL a note that endorses the chart's totals as accurate.",
+  "reference_note": "Several figures here are overstated and conflate mixed-race with Black/African. Brazil's 112.7M counts all 'pardo' (mixed) people; the 2022 census recorded ~20.7M Black (preto), with ~92.1M pardo. Colombia's Afro-descendant population is ~4.9M (not 15M), France's is ~3.8-6M (race isn't officially counted; not 10M), and the UK's is ~2.4-2.5M (not 4.9M). https://en.wikipedia.org/wiki/Afro-Brazilians https://worldpopulationreview.com/country-rankings/african-diaspora-countries",
+  "original_unhelpful_note": {
+    "text": "Several figures are significantly overstated. France's Black population is estimated at 3-4 million, not 10 million. Colombia's Afro-descendant population is approximately 4.9 million, not 15 million. The UK figure is around 2.5-3 million, not 4.9 million. https://worldpopulationreview.com/country-rankings/african-diaspora-countries",
+    "failure_reason": "Corrects France/Colombia/UK but omits the single biggest distortion — Brazil's #1 figure of 112.7M, which counts all mixed-race 'pardo' as African.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading/overstated: figures inflate Black/African populations (esp. Brazil via pardo conflation; France, Colombia, UK overstated).",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Afro-Brazilians",
+      "https://worldpopulationreview.com/country-rankings/african-diaspora-countries",
+      "https://travelnoire.com/countries-outside-africa-highest-black-population"
+    ],
+    "notes": "Brazil 2022 census: 20.7M preto + 92.1M pardo; calling 112.7M 'Africans' conflates mixed-race. Colombia Afro-descendant ~4.9M; France ~3.8-6M (no official race data); UK ~2.4-2.5M. The original note's France/Colombia/UK corrections are sound but it skips Brazil's headline distortion, which in-thread replies (citing the Brazilian census) emphasize. Provisional no_note; I flip to yes — misleading statistical infographic."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "468k impressions; a race-baiting demographic infographic with inflated/methodologically dubious figures — moderate value in correcting numerical misinformation."
+  },
+  "difficulty": "medium"
+}

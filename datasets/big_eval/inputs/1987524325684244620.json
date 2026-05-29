@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1987524325684244620",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:36.792Z",
+  "post": {
+    "id": "1987524325684244620",
+    "author_id": "1290079468455895043",
+    "created_at": "2025-11-09T14:15:00.000Z",
+    "text": "NG Booster \"Never Tell Me The Odds\" coming down for a landing. https://t.co/eEOgXjRoqn",
+    "media": [
+      {
+        "media_key": "3_1987484481100357632",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G5T2mvyWoAA1zCF.jpg",
+        "height": 1440,
+        "width": 2560
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3,
+      "reply_count": 5,
+      "like_count": 83,
+      "quote_count": 0,
+      "bookmark_count": 4,
+      "impression_count": 2361
+    },
+    "author_followers": 23841,
+    "author_name": "Truthful🛰️",
+    "author_description": "Kerbal Space Program content creator, Cinematic KSP Videos can be found on my YouTube at Truthful KSP ▶︎\n\nModlist and YT link in Linktree below",
+    "author_tweet_count": 139190
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G5T2mvyWoAA1zCF.jpg",
+          "description": {
+            "description": "A 3D digital rendering of a spacecraft or rocket stage traveling through a dark blue space environment. The vehicle has a white cylindrical body, small maneuvering fins at the top, and larger fins near the base. It is propelled by multiple engine nozzles at the rear that are emitting bright purple plumes of light.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- AdrianDogmeat (@adrianthe402nd): lol some dumbass is trying to community note this post (Likes=7, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=125)\n- BradyWx (@wx_brady): I absolutely love the way we’ve been naming boosters (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=81)\n- *முத்து*@solarman™ (@MuthuAqua): Booster design perfect (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=17)\n- Remington (@CollectPanda33): Goated engine config for landing (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=57)\n- Fuggy (@CEOofFuggy): Next one should be please tell me the odds since never tell me didn't work 💔 (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=23)",
+    "warnings": []
+  }
+}

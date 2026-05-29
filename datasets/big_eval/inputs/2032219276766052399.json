@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2032219276766052399",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:02.265Z",
+  "post": {
+    "id": "2032219276766052399",
+    "author_id": "1128337957289697281",
+    "created_at": "2026-03-12T22:16:47.000Z",
+    "text": "An American F/A-18F crashed while attempting to land on the aircraft carrier USS Abraham Lincoln after returning from bombing Iran.\nThe arresting gear failed to deploy, causing the plane to fall into the water. The pilot was rescued. https://t.co/GuTk9MU37L",
+    "media": [
+      {
+        "media_key": "7_2032219255861641216",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2032219255861641216/pu/img/DNzAnIV3zDK8NXuu.jpg",
+        "height": 640,
+        "width": 352,
+        "duration_ms": 14038,
+        "view_count": 160959,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2032219255861641216/pu/vid/avc1/320x580/y7T4Zge9C9wTU5E_.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2032219255861641216/pu/vid/avc1/352x640/Ig5lJeOo3bQ7wRsh.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2032219255861641216/pu/pl/aPja3AXzJgm9pooA.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 581,
+      "reply_count": 145,
+      "like_count": 1789,
+      "quote_count": 64,
+      "bookmark_count": 178,
+      "impression_count": 328114
+    },
+    "author_followers": 803247,
+    "author_name": "Sprinter Press Agency",
+    "author_description": "Geopolitics || Wars || Daily Events || Daily updates || Trends || Quick news 24/7 ||",
+    "author_tweet_count": 372016
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2032219255861641216/pu/vid/avc1/352x640/Ig5lJeOo3bQ7wRsh.mp4",
+          "description": {
+            "description": "A military jet makes an emergency or rough landing on the deck of an aircraft carrier.",
+            "ocrText": "[{\"description\": \"The video starts with a fighter jet in the distance, approaching the deck of an aircraft carrier from the left.\", \"ocr_text\": \"@AryJeay\"}, {\"description\": \"The jet hits the flight deck with speed, its landing gear bouncing visibly as it slides across the surface.\", \"ocr_text\": \"@AryJeay\"}, {\"description\": \"The jet goes off the edge of the flight deck, leaving behind a plume of white smoke or spray over the ocean as deck crew look on.\", \"ocr_text\": \"@AryJeay\"}]"
+          },
+          "transcription": "Продолжение следует..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Craig Marcoux (@MichaelMarcou19)**  \n🤣🤣🤣Millions of US dollars at the bottom of the sea.  \nLikes: 65 | Replies: 0 | Reposts: 0\n\n**MadManMarius (@MadManMarius3)**  \nThis is AI generated  \nLikes: 32 | Replies: 0 | Reposts: 0\n\n**Jeron 🐭 (@J_Cerveza_Spain)**  \nAI dude. You're better than this.  \nLikes: 18 | Replies: 0 | Reposts: 0\n\n**CaptCalhoun the UFO Commie 🛸 (@capt_calhoun)**  \nYeah that’s a fake  \nLikes: 4 | Replies: 0 | Reposts: 0\n\n**caballo (@Naturalbees01)**  \nThats an old video  \nLikes: 4 | Replies: 0 | Reposts: 0\n\n**Jonathan Rivera (@OfficialJrivera)**  \nThis video is AI-generated and does not show a real F/A-18F crash on USS Abraham Lincoln. No such incident occurred or was reported. The user who first shared it confirmed it's AI-altered from old footage and deleted their post.  \nhttps://www.navaltoday.com/2026/03/07/us-shares-photos-of-uss-abraham-lincoln-at-sea-after-irans-claims-it-was-struck-by-missile/  \nhttps://t.co/Yndi3urR1T  \nLikes: 4 | Replies: 0 | Reposts: 0\n\n**Nathan (@ClockDying)**  \nHey @grok why doe this guy post AI videos and old videos ?  \nLikes: 3 | Replies: 0 | Reposts: 0\n\n**Oladele. A 🇳🇬 🇬🇧 (@dele003)**  \n@grok confirmed?  \nLikes: 2 | Replies: 0 | Reposts: 0\n\n**Incredulous Monkey (@french_bud88503)**  \nDon't let your disdain for the US make you so desperate you lose your own credibility.  \nLikes: 2 | Replies: 0 | Reposts: 0\n\n**foivos apostolopoulo (@lykios10)**  \nThe arresting gear deployed. It is visible. The cable arrest system failed  \nLikes: 2 | Replies: 0 | Reposts: 0",
+    "warnings": []
+  }
+}

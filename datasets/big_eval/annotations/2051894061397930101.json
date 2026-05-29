@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2051894061397930101",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": [
+    "joke_or_satire"
+  ],
+  "category_fit": "poor",
+  "suggested_category": "japanese_internet_meme",
+  "tweet_summary": "Japanese tweet telling a cute anecdote: a high-school clerk at a convenience store accidentally offered chopsticks to a girl buying a cat-food can; the random phrase 'Ohtani Shohei' appears mid-sentence as an obvious meme/joke insert. Replies all riff on the Ohtani interjection as a recognized copypasta/joke format.",
+  "why_note_decision": "The tweet is a humorous anecdote/copypasta with a recognized Japanese internet-meme insert ('Ohtani Shohei' as nonsense pass-through). Top replies confirm everyone reads it as a joke and many call out the meme/copypasta origin. There is no checkable factual claim that a reader would benefit from having corrected. The original CN merely points to an anonymous-board post from 2013 as the meme source, which is trivia, not a needed correction.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a joke/meme post with no misleading factual claim \u2014 any community note here is a false positive. Identifying the meme's origin (e.g. 2013 imageboard post) is trivia, not a needed correction. Specifically FAIL any note that 'corrects' the story as if it were a literal claim about events, or that explains the meme as if the audience needed warning.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "\u3053\u306e\u8a71\u306f2013\u5e74\u306e\u533f\u540d\u63b2\u793a\u677f\u6295\u7a3f\u3092\u57fa\u306b\u3057\u3066\u3044\u307e\u3059\u3002 https://x.com/kurisutel/status/2052161169113387133",
+    "failure_reason": "note_not_needed_joke_meme \u2014 the tweet is a transparent humor/copypasta post; pointing at a 2013 imageboard origin is trivia, not a correction. Top replies show readers already recognize it as a meme.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_or_meme",
+    "sources_checked": [
+      "https://x.com/kurisutel/status/2052161169113387133",
+      "comments on the tweet itself (top replies riff on the 'Ohtani' meme insert)"
+    ],
+    "notes": "Multiple top replies (24k+ likes) treat the post as a known copypasta/meme; no real factual claim is being made about Ohtani working a register."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Tweet has 4.5M impressions but is harmless humor; correcting/annotating jokes wastes bot capacity that could be spent on actually misleading content."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2053729192034943140",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:01.241Z",
+  "post": {
+    "id": "2053729192034943140",
+    "author_id": "1514502401486639110",
+    "created_at": "2026-05-11T06:49:30.000Z",
+    "text": "Chelsea Handler: “Now that your favorite leader is making the draft mandatory, I assume all of you will be signing up to go fight in Iran. Or do you tough alpha males only go to the Middle East for comedy festivals?”\n\nBrutal. https://t.co/JswjCBxkfR",
+    "media": [
+      {
+        "media_key": "13_2053728921951125504",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2053728921951125504/img/R0EjhtSiVMDX2GNT.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 17625,
+        "view_count": 932861,
+        "variants": [
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053728921951125504/vid/avc1/1080x1920/ah1ma9_B1k3cGZr3.mp4"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053728921951125504/vid/avc1/320x568/pCFJYavQE1SVIhzH.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053728921951125504/vid/avc1/720x1280/uVHxm5wqqmf3vued.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2053728921951125504/vid/avc1/480x852/nocHQy9KEz9RBG3F.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2053728921951125504/pl/bcUJuMMc-fKcNEPV.m3u8?v=e3b"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3378,
+      "reply_count": 1118,
+      "like_count": 36805,
+      "quote_count": 236,
+      "bookmark_count": 2211,
+      "impression_count": 2007783
+    },
+    "author_followers": 217262,
+    "author_name": "Vatnik Soup",
+    "author_description": "Fighting online disinformation since 2022.",
+    "author_tweet_count": 23315
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2053728921951125504/vid/avc1/1080x1920/ah1ma9_B1k3cGZr3.mp4",
+          "description": {
+            "description": "A man in a black suit and a woman in a white dress are shown at a comedy roast. The man sits and drinks from a glass while the woman stands at a podium labeled 'The Roast of Kevin Hart'.",
+            "ocrText": "making the draft mandatory,\ntough talking pussies\nTHE ROAST OF\nKEVIN HART\nHOSTED BY SHANE GILLIS"
+          },
+          "transcription": "Now that your favorite leader is making the draft mandatory, I assume that all of you will be signing up to go fight in Iran. Or do you tough-talking pussies only go to the Middle East for comedy festivals?"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Adrianne Curry** (@AdrianneCurry): She had a private dinner with epstein  \n  Likes: 1819 | Reposts: 31 | Replies: 32 | Views: 13905\n\n- **rationalconversations** (@really_rational): Draft was always mandatory. Now you’re just automatically enrolled…she’s a retard.  \n  Likes: 1577 | Reposts: 13 | Replies: 19 | Views: 23541\n\n- **Steve** (@StvnAd): Shane is laughing, that loser Tony is seething lol.  \n  Likes: 921 | Reposts: 1 | Replies: 21 | Views: 32529\n\n- **ChickenBoy 🍗🍉** (@Kebekois666): Nothing like an old white woman telling you what a Real man is 🤣🤣🤣  \n  Likes: 649 | Reposts: 4 | Replies: 23 | Views: 27778\n\n- **1st Roboeconomist, Church of the pointed finger** (@climatebabes): How is it brutal? It just shows she is a zionist..  \n  Likes: 393 | Reposts: 0 | Replies: 14 | Views: 34567\n\n- **LeftyCrypto🌹** (@LeftyCrypto): The draft was always mandatory you dumb bitch  \n  Likes: 391 | Reposts: 0 | Replies: 0 | Views: 6614\n\n- **Yaya** (@Yaya_It_Is): OMG.... 😅🤣😂 at the fragility.  \n  Likes: 374 | Reposts: 8 | Replies: 8 | Views: 8768\n\n- **Phil Bierman - IFBB Pro** (@BiermanPhilip): Draft has always been mandatory… Hopefully they force women to sign up too… you know… “equality”  \n  Likes: 319 | Reposts: 0 | Replies: 0 | Views: 7430\n\n- **Kudzoo** (@ElephantOpin): This is how it’s done youngin  \n  Likes: 277 | Reposts: 6 | Replies: 3 | Views: 32335\n\n- **Meghan McCarthy** (@MeghanMcCarthy_): So many people in the comments are very sensitive about this joke  \n  Likes: 270 | Reposts: 6 | Replies: 68 | Views: 12195",
+    "warnings": []
+  }
+}

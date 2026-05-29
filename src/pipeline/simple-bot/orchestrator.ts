@@ -6,10 +6,13 @@
 
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
+import { getBotConfig } from "../ab-testing/botConfig";
 import type { BotInput } from "../input/createBotInput";
 import { buildUserMessage } from "../input/prompt";
 import { getTweetLog } from "../utils/tweetLog";
+import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
+import { runNoteNeededJudge } from "./judge";
 import { runSearch } from "./search";
 import { runWriter } from "./writer";
 
@@ -34,6 +37,19 @@ export async function runSimpleBotPipeline(
   }
 
   const note = await runWriter(userMessage, search.findings);
+
+  if (getBotConfig().note_needed_judge) {
+    const judge = await runNoteNeededJudge({
+      postContext: userMessage,
+      researcherFindings: search.findings,
+      noteText: note.noteText,
+      sources: note.sources,
+    });
+    if (!judge.noteNeeded) {
+      logFinal(startMs);
+      return { type: "no_correction", reason: judge.reasoning };
+    }
+  }
 
   const verification = await verifySources({
     noteText: note.noteText,
@@ -61,5 +77,5 @@ export async function runSimpleBotPipeline(
 
 function logFinal(startMs: number): void {
   const log = getTweetLog();
-  log?.set("simpleBot.totalDurationMs", Date.now() - startMs);
+  log?.set(`${STEP.root}.totalDurationMs`, Date.now() - startMs);
 }

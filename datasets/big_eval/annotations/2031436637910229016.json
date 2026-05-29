@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2031436637910229016",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["ai_generated_media", "staged_or_scripted_content"],
+  "category_fit": "poor",
+  "suggested_category": "wholesome_anecdote_unverifiable",
+  "tweet_summary": "Heatherheather007 (193k followers, 4.9M views) shares a heartwarming story-format post about 'Marcus, an Afghanistan veteran' whose inherited dog 'Gunner' acts as an untrained PTSD service dog, with a night-vision clip purportedly showing the dog comforting Marcus during a nightmare. Story-style storytelling, no named verifiable subject, no claim of being a documentary.",
+  "why_note_decision": "A note is not warranted. This is a wholesome, anecdotal, no-named-real-person story; even if the specific 'Marcus' is composite/fictionalized or AI-assisted, the underlying claim (untrained dogs sometimes alert/comfort during PTSD episodes) is well-documented and not harmful. The note tries to debunk an emotionally-resonant story as 'made-up' with weak evidence (a Reddit 'isthisAI' speculation thread, two Facebook posts that just repost the same content). There is no verified fact-check from Snopes/Lead Stories/AFP/Reuters labelling this specific clip AI-generated. Raters overwhelmingly tagged NoteNotNeeded (71) and OpinionSpeculation (69) — they're right. Note's accusation of AI fabrication on a wholesome unverifiable anecdote is a classic Community-Notes false positive.",
+  "judge_guidance": "PASS only if the bot declines to write a note (any note is a false positive). The tweet is an emotionally-formatted wholesome anecdote — there is no public-figure, no checkable claim, no verifiable harm, and no authoritative fact-check confirming the clip is AI-generated. A bot that writes a note calling this 'made-up', 'AI-generated', 'staged', or 'fictional' based only on Reddit speculation or pattern-matching FAILS. A bot that argues 'service dogs can't actually do this without training' FAILS (untrained dogs DO sometimes alert/comfort during nightmares — multiple credible accounts in the replies, and the VA acknowledges this is real). Bot should treat this as an opinion/anecdote category and abstain.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The story and video resemble AI-generated fictional content shared online for entertainment, often with disclaimers. While service dogs can help with PTSD, this depicts a made-up scenario.    https://www.facebook.com/61562009816141/videos/1750195883021936  https://www.reddit.com/r/isthisAI/comments/1rns19j/ptsd_veteran_and_service_animal_youtube_short_dad  https://www.facebook.com/CliftonReynolds63/posts/dogs-are-amazing/10234756698036193",
+    "failure_reason": "Note hedges ('resemble', 'often with disclaimers') yet concludes with the strong claim 'this depicts a made-up scenario'. Sources are weak: a Facebook video repost, a Reddit 'isthisAI' speculation thread (not a fact-check), and another Facebook post. No authoritative fact-check (Snopes, Lead Stories, AFP, Reuters) confirms the clip is AI. The post is a wholesome anecdote with no named verifiable subject — there's no factual claim to debunk. Raters massively rejected this: NoteNotNeeded (71), OpinionSpeculation (69), MissingKeyPoints (39), SourcesMissingOrUnreliable (35) over 210 ratings.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "unverifiable_anecdote",
+    "sources_checked": [
+      "https://www.facebook.com/davebrownlive/posts/this-is-marcus-and-his-accidental-service-dog-gunnermarcus-served-3-deployments-/1471947727930455/",
+      "https://www.ptsd.va.gov/gethelp/dogs_ptsd.asp"
+    ],
+    "notes": "Could not find a Snopes/Lead Stories/AFP/Reuters fact-check labelling this video AI-generated. The narrative is in the recycled-internet-story format (no last names, generic details, dramatic structure) and likely is embellished/fictionalized, but that's an inference, not a confirmed fact. The behavior described (untrained dog alerting during nightmares) is documented in real cases — the replies include multiple firsthand accounts. This is a low-stakes wholesome post; a Community Note debunk based on vibes is a false positive."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "4.9M views but on a low-stakes wholesome anecdote; no policy/health/safety harm even if fabricated. From an info-integrity lens, prosecuting wholesome anecdotes as 'AI-generated' without authoritative fact-checks corrodes Community Notes' credibility more than the original story corrodes truth."
+  },
+  "difficulty": "medium"
+}

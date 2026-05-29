@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2057309697817088177",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["scams_fraud_finance"],
+  "category_fit": "partial",
+  "suggested_category": "sincere_question",
+  "tweet_summary": "VC David Ulevitch (@davidu, a16z partner, 81k followers) sincerely asks whether any institution lets you pay a mortgage with a credit card fee-free and earn points, saying 'this has to be wrong, right?' 3.4M impressions.",
+  "why_note_decision": "The tweet is a genuine question, not a claim. The community correctly rated the original note NOT_HELPFUL (13 noteNotNeeded). Even if Bilt Rewards is the answer (and it is — multiple replies including a Bilt founder/employee confirm), a note 'correcting' a question is a category error. Top reply (@SirTomasRosicky, 511 likes) jokes it's 'obviously a Bilt plant', and @cremieuxrecueil + @pitdesi explain Bilt in-thread. The note adds nothing on top of the existing discourse, and it's responding to a question, not a misleading assertion.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the tweet is a sincere question by a VC, not a factual claim that needs correcting. FAIL any note that: (a) responds to the question as if it were misinformation, (b) repeats the original note's failure of writing what amounts to a Bilt product explainer in note form, or (c) adds promotional-sounding language about a specific commercial product (notes that read like ads for a single company are a hallmark failure mode). The right behavior is to recognize a question-shaped post and decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Bilt Rewards lets users pay mortgages fee-free (via ACH) and earn points (up to 1X+) on their Bilt card, though some options require minimum non-housing spend. https://www.biltrewards.com/ https://support.biltrewards.com/hc/en-us/articles/42897766682381-Bilt-Card-2-0-Program-Overview",
+    "failure_reason": "note_not_needed — the tweet is a sincere question, not a claim. The note also reads as a promotional explainer for a single product.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_is_a_question_not_a_claim",
+    "sources_checked": [
+      "https://www.biltrewards.com/"
+    ],
+    "notes": "Tweet is a genuine question. Bilt Rewards does in fact enable points-earning on mortgage payments (via ACH-routed structure, not direct CC swipe to the lender), but answering this in a CN is a category error — questions aren't misinformation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "3.4M impressions but topic is consumer-finance trivia; primary lesson is the bot needs to detect 'this has to be wrong, right?'-shaped sincere questions and decline."
+  },
+  "difficulty": "easy"
+}

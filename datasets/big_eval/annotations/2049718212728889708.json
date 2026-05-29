@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2049718212728889708",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["staged_or_scripted_content", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "folklore_retelling",
+  "tweet_summary": "Retells the 2017 story of 7-year-old Matilda Jones finding a 4-foot sword in Cornwall's Dozmary Pool, the lake legend associates with King Arthur's Excalibur.",
+  "why_note_decision": "The tweet recounts a real, well-documented 2017 event and only invokes the Excalibur connection as 'according to legend' — i.e. a framing flourish, not a factual claim that the sword is Excalibur. Mark Wilkins's reenactment-sword origin (1980s) is a charming side fact but the tweet doesn't assert otherwise. The original note debunks a claim the tweet didn't make and the Plymouth/Cornwall Live links it cites confirm the underlying find is genuine.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet retells a real 2017 news story and uses 'according to legend' framing about Excalibur, not a sincere factual claim. Any note that 'corrects' the legend framing, that says the sword isn't Excalibur, or that surfaces the Mark Wilkins reenactment-sword origin as if it contradicts the tweet, is a false positive. The presence of the sword, the girl, and the discovery are all true.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The sword's owner, Mark Wilkins, identified it as his \"Flambard Fantasy\" reenactment blade that he threw into the pool in the 1980s as an offering, not a film prop. https://www.plymouthherald.co.uk/news/local-news/king-arthur-sword-found-lake-438667 https://www.cornwalllive.com/news/cornwall-news/the-king-arthur-sword-not-443411",
+    "failure_reason": "Note 'corrects' a claim (that it's a film prop / that it's Excalibur) the tweet never makes; tweet only invokes the Arthurian lake as legend. Note adds trivia but no correction is warranted.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_substantively_accurate",
+    "sources_checked": [
+      "https://allthatsinteresting.com/truth-behind-excalibur",
+      "https://mutually.com/trending/2017/10/09/girl-finds-sword-in-lake-where-king-arthurs-excalibur-was-thrown-then-figures-out-the-true-origin"
+    ],
+    "notes": "2017 Matilda Jones find at Dozmary Pool is real. Sword was a modern reenactment piece thrown in by Mark Wilkins in the 1980s; tweet doesn't claim it is Excalibur, only that the lake is the legendary Excalibur location, which matches Cornish folklore."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Light folklore retelling on a non-political topic; little EA/progress/safety relevance. Mainly informs taxonomy of false-positive notes."
+  },
+  "difficulty": "easy"
+}

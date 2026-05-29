@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2047489331346960839",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["manipulated_or_fabricated_evidence"],
+  "category_fit": "partial",
+  "suggested_category": "in_jokes_and_callouts",
+  "tweet_summary": "A small account ('TaxedBrass') gloating 'Take a seat everyone. We won.' attached to a screenshot of what appears to be a Chibi Reviews post saying 'important.. i'm done' with a YouTube link. The screenshot is a fabricated/AI-made meme about anime YouTuber Chibi Reviews; the real linked YouTube video is Chibi saying he is NOT quitting.",
+  "why_note_decision": "The screenshot is fabricated (the meme circulated as harassment of Chibi Reviews) and the actual video Chibi posted around the same time was him saying he's not quitting. But the social context here is a tiny troll/harassment account celebrating in front of an audience that already knows the meme is fake — comments explicitly call it 'an AI meme that wasn't real' and 'fake and gay'. The original note 'depicts a fabricated tweet' was rated NOT_HELPFUL — dominated by 'notHelpfulIncorrect' (7), 'Note Not Needed' (3) and 'Irrelevant Sources' (3). Raters appear to be reading this as in-community trolling among an audience that knows the screenshot is fake. Treating it as serious misinformation requiring a note is mismatched with the genre.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a tiny troll-account harassment meme circulating among an audience that already understands the screenshot is a fake AI meme; the linked YouTube video is Chibi himself saying he isn't quitting. FAIL any note that flatly asserts the screenshot is real OR that writes a serious factual correction treating this as misinformation aimed at a general audience. If a note IS written, it must (a) clearly state the screenshot is fabricated and (b) cite Chibi's actual same-day post / video confirming he is not quitting; even then it duplicates context already present in the thread.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The image depicts a fabricated tweet; the real post by @ChibiReviews links to a video where he states he is not quitting YouTube. https://x.com/ChibiReviews/status/2047472773392466055 https://www.youtube.com/watch?v=o-crBBKrfvA",
+    "failure_reason": "Treats in-community trolling as serious misinformation; rated dominated by 'notHelpfulIncorrect' (7) suggesting raters disputed the framing — likely the 'fabricated tweet' framing is itself contested by an audience that knows the meme.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Screenshot is a fabricated/AI meme; underlying YouTuber is not actually quitting; but this is harassment-meme context, not general-audience misinformation.",
+    "sources_checked": [
+      "https://x.com/ChibiReviews/status/2055340842785583375",
+      "https://www.sportskeeda.com/us/streamers/who-chibi-reviews-controversies-surrounding-anime-youtuber-explored"
+    ],
+    "notes": "Limited dedicated reporting on the specific April 24 incident, but ChibiReviews's own X account has multiple posts complaining about fake tweets being made about him; comments under THIS tweet repeatedly state it is an AI meme."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "264k impressions on a niche YouTuber-harassment meme; low EA stakes — flagged mostly because writing a note here would be a false positive on misinformation that the audience already understands."
+  },
+  "difficulty": "hard"
+}

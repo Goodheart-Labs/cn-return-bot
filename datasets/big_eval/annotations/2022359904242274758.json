@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2022359904242274758",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "manipulated_or_fabricated_evidence", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post about 'bombshell' Epstein-files revelations shares a collage of explicit photos purporting to show Trump and Epstein with women/girls, captioned 'this is absolutely sickening'.",
+  "why_note_decision": "The collage contains AI-generated/fabricated images. The most prominent image (two shirtless men resembling Trump and Epstein with a woman touching the man's feet) is a known fake; another is an AI-altered version of a real Diego Maradona photo with Trump's face swapped in, debunked by AP/Reuters/Snopes. A study (France24, Feb 2026) documented a surge of AI-fabricated Epstein images. Presenting fabricated images as authentic Epstein-files evidence to 600K+ viewers is a clear case where a note is warranted — even though the broader Epstein investigations are real, the specific photos shown are fake. Multiple commenters already flag the images as AI. Provisional 'no_note' is wrong: this is fabricated evidence, not mere opinion.",
+  "judge_guidance": "A correct note must establish that the images in this collage are AI-generated/fabricated, not authentic Epstein-files material — specifically that at least one image is a face-swapped edit of an unrelated real photo (the Maradona/Mavys Alvarez image with Trump's face), confirmed fake by AP/Reuters/Snopes. It should NOT deny that real Epstein investigations/resignations exist (the original note's tone hedged but stayed on point here). The original note's specific failures were vague sourcing and being seen as 'not needed'/'irrelevant sources'; a correct note must pin the fabrication to the concrete images and cite a recognizable fact-check. PASS if the note clearly labels the images as AI-fabricated with a credible source; FAIL if it merely opines, attacks the poster, debates Trump's guilt, or claims no note is needed.",
+  "reference_note": "The images in this collage are AI-generated/fabricated, not authentic Epstein-files material. One is an AI face-swap placing Trump's face onto a real photo of Diego Maradona, debunked by AP, Reuters and Snopes. Real Epstein investigations exist, but these specific photos are fake. https://www.snopes.com/collections/fake-epstein-images/",
+  "original_unhelpful_note": {
+    "text": "The images in this post are AI-generated fakes, not from the 2026 Epstein files. The files have led to real international investigations and resignations, but these specific photos have been debunked as inauthentic. https://www.france24.com/en/live-news/20260206-ai-tools-fabricate-epstein-images-in-seconds-study-says https://www.dw.com/en/fact-check-ai-fakes-distort-claims-on-epstein-files/a-75798290 https://www.ischool.berkeley.edu/news/2025/prof-hany-farid-debunks-photo-donald-trump-teenage-girl",
+    "failure_reason": "Substance is correct (images are AI fakes), but heavily downrated (notHelpfulNoteNotNeeded 11, MissingKeyPoints 9, IrrelevantSources 7, OpinionSpeculation 8). Sources are about AI-Epstein-fakes generally rather than nailing the specific images shown; raters apparently felt it didn't clearly tie the cited debunks to THIS collage. A better note names the specific fabricated image (Maradona face-swap) and uses a fact-check matching it.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Images are AI-generated/fabricated; real Epstein investigations exist but these specific photos are fake.",
+    "sources_checked": [
+      "https://www.snopes.com/collections/fake-epstein-images/",
+      "https://www.france24.com/en/live-news/20260206-ai-tools-fabricate-epstein-images-in-seconds-study-says",
+      "https://openmeasures.io/ai-images-epstein-files"
+    ],
+    "notes": "A commenter (@StrangeMussel03) correctly notes the photo is originally Diego Maradona with Mavys Alvarez, AI-altered to feature Trump's face — matches AP/Reuters/Snopes debunks. France24 reports a study showing AI tools fabricate convincing Epstein-with-leaders images en masse."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Fabricated images of a sitting president with minors, viewed 600K+ times, are high-harm disinformation that degrades the epistemic commons and can provoke real-world reactions; correcting fabricated evidence here matters."
+  },
+  "difficulty": "medium"
+}

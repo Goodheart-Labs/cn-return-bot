@@ -1,0 +1,32 @@
+{
+  "tweet_id": "2032087624899338409",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A 'BOMBSHELL' post by Conservative Brief claims VP JD Vance has a constitutional right to replace John Thune as Senate Majority Leader and ram through Trump's agenda before the midterms.",
+  "why_note_decision": "Factually false. The Vice President is constitutionally President of the Senate but holds only a ceremonial presiding role and a tie-breaking vote. The Majority Leader is a 20th-century party position chosen by the majority caucus — the VP has no power to appoint or remove the Majority Leader. The 'John Adams precedent' floating in these claims is fake: 'Senate Majority Leader' didn't exist in Adams's time. Newsweek and other outlets have explicitly addressed this claim. The original note is concise and correct; needs higher visibility. Note: a 25% slice of raters tagged it 'incorrect' — likely partisan downvoting, since the legal point is clear-cut.",
+  "judge_guidance": "PASS if the note states that the Vice President's constitutional Senate role is limited to presiding and casting tie-breaking votes (Article I, Section 3) AND that the Majority Leader is chosen by the majority party's caucus, not appointed by the VP. The note must clearly contradict the 'constitutional right to replace Thune' claim. FAIL if the note hedges ('it's complicated', 'historically ambiguous') or only critiques the policy aim without addressing the constitutional claim. Sources should include senate.gov or constitutional text; Newsweek or similar reporting is a plus.",
+  "reference_note": "Under the Constitution the Vice President is President of the Senate with only ceremonial and tie-breaking duties and has no power to appoint or remove the Senate Majority Leader. The Majority Leader is chosen by the majority party's caucus. See https://www.senate.gov/about/officers-staff/vice-president.htm",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false — VP has no constitutional power to replace the Majority Leader",
+    "sources_checked": [
+      "https://www.newsweek.com/jd-vance-vice-president-senate-majority-leader-charlie-kirk-1983232",
+      "https://www.senate.gov/about/officers-staff/vice-president.htm"
+    ],
+    "notes": "Senate Majority Leader is a 20th-century party caucus position; VP's role per Article I, Sec 3 is presiding officer with tie-breaking vote only. Multiple commenters and Newsweek have debunked this."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "211K impressions on a constitutional-misinformation claim with real downstream policy implications; correcting helps protect basic civic literacy about Senate procedure."
+  },
+  "difficulty": "easy"
+}

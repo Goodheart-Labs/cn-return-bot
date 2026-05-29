@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1982311377126527372",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "video_game_mechanics_complaint",
+  "tweet_summary": "A Halo fan complains that Master Chief 'loads' the Magnum pistol every time you switch weapons in Halo, calling the mechanic nonsensical for a striker-fired pistol.",
+  "why_note_decision": "This is a subjective opinion / gripe about a video-game animation. The author isn't claiming a falsifiable real-world fact — they're criticizing a game design choice. The note pedantically corrects the terminology ('it's a press check, not loading') in a way that doesn't address any misinformation; commenters mostly debate game-design preferences ('rule of cool'). Raters chose Note Not Needed (7) — there is no checkable misleading claim to correct.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive — the tweet is an opinion/aesthetic critique of a video-game animation. A note explaining firearm terminology (press check vs reload) is technically-true pedantry on a non-falsifiable gripe.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The animation does delay switching, but it is a press check rather than loading the magazine. A press check is pulling the slide slightly to confirm a round is chambered, a common practice for handguns, including striker-fired ones like the Halo Magnum.  https://www.halopedia.org/M6G_magnum",
+    "failure_reason": "Trivial pedantry on a subjective video-game complaint — no misleading factual claim to correct. Raters chose Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is opinion/critique of a game mechanic; not a misleading factual claim. The 'press check vs reload' point is a terminological nitpick, not misinformation correction.",
+    "sources_checked": [
+      "https://www.halopedia.org/M6G_magnum"
+    ],
+    "notes": "Halo Magnum animation behavior is correctly described as a press check by fans, but this is irrelevant to whether the OP's opinion is misinformation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Niche video-game opinion; no broader public-interest stake."
+  },
+  "difficulty": "easy"
+}

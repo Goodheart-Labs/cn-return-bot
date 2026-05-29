@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2041839264372068435",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:03.226Z",
+  "post": {
+    "id": "2041839264372068435",
+    "author_id": "309587728",
+    "created_at": "2026-04-08T11:23:10.000Z",
+    "text": "It’s a remarkable coincidence that the Earth was exactly the same orientation to the moon with exactly the same cloud coverage when these two pictures were taken 68 years apart. Am I now a coincidence theorist ? https://t.co/BzxpS8y3M6",
+    "media": [
+      {
+        "media_key": "3_2041839259150426112",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFYR_PIboAA8AbO.jpg",
+        "height": 1098,
+        "width": 1290
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3786,
+      "reply_count": 2438,
+      "like_count": 17442,
+      "quote_count": 515,
+      "bookmark_count": 2984,
+      "impression_count": 2106855
+    },
+    "author_followers": 370743,
+    "author_name": "Andrew Bridgen",
+    "author_description": "Independent minded.",
+    "author_tweet_count": 14849
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFYR_PIboAA8AbO.jpg",
+          "description": {
+            "description": "A split-screen image comparing two views of Earth rising over the lunar horizon. The left side shows the historic 'Earthrise' photo from the Apollo 8 mission in 1968, appearing somewhat grainier and smaller. The right side shows a modern, high-resolution simulation or mock-up of the same view for the upcoming Artemis 2 mission in 2026, where the Earth appears much larger and more detailed.",
+            "ocrText": "Apollo 8, December 24, 1968 Artemis 2, April 6, 2026"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @atriskute (The Kitty Man): (image reply) (Likes: 952, Reposts: 55, Replies: 12)\n- @NordicHobbit (Exposing Islam): They're literally mocking the public while laundering 93 billion dollars, and another 21 Billion each year, it's ludacris, but people are too brainwashed to believe it, that their minds just make excuses all the time. (Likes: 539, Reposts: 0, Replies: 0)\n- @dizzy_thinks ((╯°□°）╯︵ ┻━┻)): No. You're a lying fucking idiot on the Internet that used to be an MP. Hope this helps. (Likes: 530, Reposts: 0, Replies: 0)\n- @adoggzz (Alex): I never would have thought you'd buy into this 😔 They're the exact same picture. Where did you come across it? I guarantee that's not a NASA release People are grabbing pics, altering them and claiming shit like this (Likes: 517, Reposts: 6, Replies: 11)\n- @TakeThatClouds (Take That, Clouds): The reality: both photos are the same image, from Apollo 11 in 1969, and Andrew Bridgen is a faker. (Likes: 511, Reposts: 22, Replies: 6)\n- @MckeeganDave (Dave McKeegan): Some might call you a 'coincidence theorist' ... The rest of us would just call you wrong Because this is the photo from Artemis 2 (Likes: 508, Reposts: 0, Replies: 0)\n- @RussAppleby (Russ Appleby): It’s a remarkable coincidence that this sack of poo was photographed looking exactly as gormless so many decades apart & with a police officer over the same shoulder…. Am I doing conspiracy theory right? (Likes: 456, Reposts: 0, Replies: 0)\n- @FatTiredDad (Fat, Tired Dad): Well, it's less of a coincidence when you realize that the picture on the right was not taken by artemis, and is in fact the same as the picture on the left. (Likes: 435, Reposts: 0, Replies: 0)\n- @TotalSeasons (Four Seasons Total Landscaping): No, still a moron. (Likes: 325, Reposts: 0, Replies: 0)\n- @WessexWy (Wessex Wyvern): This was one of only 2 colour photos taken by the Apollo 8 crew, the 2nd was higher above the horizon. The only other one is black and white. Perhaps ask yourself why are people making bad fakes of moon to make people doubt this space flight. (Likes: 277, Reposts: 0, Replies: 0)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2041504075968065999",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:59.245Z",
+  "post": {
+    "id": "2041504075968065999",
+    "author_id": "1936264319433633792",
+    "created_at": "2026-04-07T13:11:15.000Z",
+    "text": "AMERICA IS GOING TO TEST SOMETHING BIG TONIGHT.\n\nSOURCE  NF-7C... See more https://t.co/J4a1imfzs2",
+    "media": [
+      {
+        "media_key": "7_2041503980787040256",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2041503980787040256/pu/img/lrD5PZbtncvYaETo.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 15062,
+        "view_count": 1259337,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2041503980787040256/pu/vid/avc1/320x568/K0hweR7eK28Hhcs5.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2041503980787040256/pu/vid/avc1/480x852/l7hu_BUDuGnB-RjC.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2041503980787040256/pu/vid/avc1/720x1280/vpmLYYrlWSp4Bbow.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2041503980787040256/pu/pl/uT07-5-9C02-I5zZ.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 755,
+      "reply_count": 398,
+      "like_count": 5252,
+      "quote_count": 26,
+      "bookmark_count": 376,
+      "impression_count": 3473128
+    },
+    "author_followers": 47166,
+    "author_name": "IRAN-FAN'S🇮🇷",
+    "author_description": "Global News Network 🌐\nLive Updates • Military Insights • World Events\nYour Window to the World",
+    "author_tweet_count": 751
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2041503980787040256/pu/vid/avc1/720x1280/vpmLYYrlWSp4Bbow.mp4",
+          "description": {
+            "description": "A military convoy of heavy trucks carrying large missiles moves along a wet, two-lane road in a misty or rainy landscape. Several trucks are visible in a line, many flying the American flag. In the sky above the convoy, a formation of five Black Hawk helicopters flies in the same direction. The sequence captures the vehicles and aircraft moving forward through the frame on a overcast day.",
+            "ocrText": ""
+          },
+          "transcription": "danger Cut of Fear Berger, vegetation"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Muhib Ansar - @mouhibkhan: (No text content) | Likes=111, Reposts=14, Views=27001\n- Abba bashir umar Sallu alan nabiyil kareem - @bashiruumar11: Allah is sufficient for the oppressed | Likes=78, Reposts=0, Views=26122\n- Jesúsf. 😃 - @Jesusf_Malaka: You're a disgrace in human terms; a medieval theocratic dictatorship which is slaying its own People, I mean. You're a bunch of suckers on the verge of disappearing at this point. God Bless the Noble Persian People Living in Captivity. God Bless America. | Likes=39, Reposts=0, Views=19158\n- Chaunce Hayden - @ChaunceHayden: (No text content) | Likes=32, Reposts=0, Views=15235\n- Leftcoast American - @jtamuw: No this is Business as Usual for US Haji, no testing involved! It's not like Iranian IRGC Members where Kuwaiti ADA Girls... Then we might have a bit of Trouble! | Likes=30, Reposts=0, Views=42689\n- black John Kennedy - @blackJohnKenn: What are we fighting for?👨🏽‍🚒😟😌 | Likes=24, Reposts=1, Views=52181\n- Lee Pen - @Bible_Scientist: FAEs made from 50k gal of propane. Rivals a nuclear blast with no rads. | Likes=19, Reposts=1, Views=30854\n- Billy Boneyard - @billyboneyard: Uncle Laser | Likes=18, Reposts=0, Views=20668\n- ADITYA SHEORAN - @adi_sheoran99: @grok is this real or AI | Likes=14, Reposts=0, Views=104502\n- Isaro Olga - @Memes2608: There’s no confirmed official announcement from the U.S. government about any “big test tonight. | Likes=13, Reposts=0, Views=38348",
+    "warnings": []
+  }
+}

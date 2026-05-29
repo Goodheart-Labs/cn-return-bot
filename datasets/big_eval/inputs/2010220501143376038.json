@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2010220501143376038",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:42.465Z",
+  "post": {
+    "id": "2010220501143376038",
+    "author_id": "1229600073295618048",
+    "created_at": "2026-01-11T05:21:30.000Z",
+    "text": "🚨🎙️Jurgen Klopp : \n\n\"Cristiano has achieved everything, he can retire anytime. Messi still has a lot to win in football. \" https://t.co/pL1hlNWWyo",
+    "media": [
+      {
+        "media_key": "3_2010179932555718656",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-WX_46aMAAedpn.jpg",
+        "height": 1200,
+        "width": 1200
+      },
+      {
+        "media_key": "3_2010179932450902017",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-WX_4ha0AEvHV3.jpg",
+        "height": 688,
+        "width": 688
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 332,
+      "reply_count": 325,
+      "like_count": 13668,
+      "quote_count": 44,
+      "bookmark_count": 336,
+      "impression_count": 2188821
+    },
+    "author_followers": 313655,
+    "author_name": "CristianoXtra",
+    "author_description": "Everything you need to know about the Portuguese genius Cristiano Ronaldo #CR7𓃵. DM for Enquiries.",
+    "author_tweet_count": 44086
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-WX_46aMAAedpn.jpg",
+          "description": {
+            "description": "A close-up photograph of Jürgen Klopp, the former manager of Liverpool FC, looking pensively to the side. He is wearing a dark blue New Balance training shirt with the Liverpool club crest and the AXA sponsor logo. A circular logo for 'ANFIELD WATCH' is visible in the top right corner.",
+            "ocrText": "ANFIELD WATCH ****** L.F.C. AXA"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-WX_4ha0AEvHV3.jpg",
+          "description": {
+            "description": "A medium shot of professional soccer player Cristiano Ronaldo wearing a black and white striped Juventus jersey. He has a focused, slightly pained expression on his face while looking toward the side. The background shows a blurred stadium setting with another player partially visible.",
+            "ocrText": "adidas Juventus Jeep"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Jquinny_wuinnne: Fake quotes fc (Likes: 434)\n- @Sparxonchain: Limitless sarcasm by Klopp (Likes: 262)\n- @FcbstrikerX: @grok  Debunk this nonsense (Likes: 253)\n- @afcRusell: Penaldo has no fifa world cup (Likes: 181)\n- @imsirdabbanasa: it’s sunday ffs😂You don’t fear lying on a sabath? (Likes: 108)\n- @Pablo11LR: 🤡 🤡 🤡 🤡 🤡 (Likes: 64)\n- @Samxvirat: 😭pajeetXtra (Likes: 45)\n- @FcbstrikerX: Fake news all the time (Likes: 44)\n- @TheLegendofArc: Did he whisper this to ur mom yesterday in bed? (Likes: 26)\n- @cryptodeadline: He's definitely right (Likes: 16)",
+    "warnings": []
+  }
+}

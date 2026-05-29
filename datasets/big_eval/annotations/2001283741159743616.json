@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2001283741159743616",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["breaking_news_and_war", "ai_generated_media", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "real_footage_falsely_called_ai",
+  "tweet_summary": "Jackson Hinkle shares a video of a boy in a flooded tent in Gaza captioned 'THIS IS LIFE IN GAZA', urging continued attention to Palestine.",
+  "why_note_decision": "Real heavy rains did flood thousands of displaced Palestinians' tents in Gaza in December 2025 (Al Jazeera, Euronews, Reuters coverage). The Lead Stories fact-check the note cites only flags specific AI videos from a different account (@yafi_gaza), not this @abdallah_naem clip. The AI media description shows mundane, realistic details (boy with broom, bucket, dishes, plastic-sheet walls) with no telltale AI artifacts. Note appears to over-generalize the Lead Stories debunk to all Gaza-flood videos.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The flooded-tent footage is consistent with widely-documented real flooding of displaced-Palestinian camps in Gaza in December 2025 (storm Byron; Al Jazeera, Euronews). Without strong, specific AI-artifact evidence about THIS clip, any note asserting the video is AI-generated, or that this is not real life in Gaza, is a false positive. A note that merely says 'some Gaza flood videos circulating are AI' without showing THIS one is AI also fails. FAIL if the bot repeats the original note's overreach that the video is AI-generated.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video does not show real flooding in Gaza; it is AI-generated.    https://leadstories.com/hoax-alert/2025/12/fact-check-ai-videos-do-not-show-real-flooded-tents-in-gaza.html    https://www.bbc.com/news/live/cjrjjd4gz9et",
+    "failure_reason": "Generalizes a fact-check of a different account's AI videos to this realistic clip without evidence; ignores extensive reporting on real December 2025 flooding in Gaza tent camps.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_substantively_accurate",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2025/12/fact-check-ai-videos-do-not-show-real-flooded-tents-in-gaza.html",
+      "https://www.aljazeera.com/gallery/2025/12/10/heavy-rains-flood-tents-sheltering-the-displaced-heaping-misery-on-gaza",
+      "https://www.aljazeera.com/news/2025/12/27/palestinians-suffer-flooded-tents-and-debris-as-cold-and-rain-lash-gaza",
+      "https://www.euronews.com/video/2025/12/16/gazas-displaced-struggle-with-heavy-rain-and-cold-weather-in-fragile-tents"
+    ],
+    "notes": "Real December 2025 flooding of Gaza tent camps documented by Al Jazeera, Euronews, and others; at least 15 people including 3 babies died of hypothermia. Lead Stories debunk targets @yafi_gaza AI videos, not this @abdallah_naem clip. No AI artifacts identified in the AI media description here."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "War/humanitarian-crisis coverage with high reach; falsely flagging real suffering as AI undermines moral seriousness and accurate public perception of ongoing harm."
+  },
+  "difficulty": "medium"
+}

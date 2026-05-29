@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2027789462076346730",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": [
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Breaking claim (Feb 28, 2026) that Iran's Jamaran frigate, lead ship of the Moudge class, had sunk in the Persian Gulf, with photos of the ship.",
+  "why_note_decision": "The claim turned out to be TRUE. U.S. Central Command confirmed on/around Mar 1, 2026 that U.S. forces struck and sank an Iranian Jamaran-class corvette during the opening of Operation Epic Fury (campaign began Feb 28). The original note, written in the fog of the first hours, denied the sinking ('No credible sources confirm... appears to be an unverified rumor') -- it is the note, not the tweet, that is now the misinformation. No corrective note is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note (or, if it must act, only if it affirms the sinking with sourcing). The tweet's claim that the Iranian frigate Jamaran sank on/around Feb 28, 2026 is TRUE: U.S. CENTCOM confirmed U.S. forces sank an Iranian Jamaran-class warship during Operation Epic Fury. FAIL any note that denies, casts doubt on, or labels the sinking an 'unverified rumor', or that claims the attached photos merely show the ship afloat from prior years -- that repeats the original note's specific factual error. This is a 'true_claim' false positive: the note, not the tweet, is wrong.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No credible sources confirm that Iran's Jamaran frigate has sunk. Recent reports (Dec 2025) show it active on patrol after refit. This appears to be an unverified rumor; attached images show the ship afloat from prior years. https://maritime-executive.com/article/iranian-naval-forces-spurred-into-action https://en.wikipedia.org/wiki/Iranian_frigate_Jamaran https://www.criticalthreats.org/analysis/iran-update-morning-special-report-february-28-2026",
+    "failure_reason": "Confidently incorrect: it denied a sinking that U.S. CENTCOM subsequently confirmed. Written in the first hours of the event, it treated a true breaking claim as a hoax and dismissed the photos as old footage.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.navalnews.com/naval-news/2026/03/us-forces-sink-iranian-jamaran-class-corvette-centcom-confirms/",
+      "https://www.facebook.com/CENTCOM/posts/an-iranian-jamaran-class-corvette-was-struck-by-us-forces-during-the-start-of-op/1305019545006356/",
+      "https://www.zona-militar.com/en/2026/03/03/operation-epic-fury-an-iranian-navy-jamaran-class-light-frigate-was-sunk-in-one-of-the-us-most-recent-attacks/",
+      "https://en.wikipedia.org/wiki/IRIS_Jamaran_(76)"
+    ],
+    "notes": "CENTCOM confirmed the strike/sinking of an Iranian Jamaran-class warship at the start of Operation Epic Fury (campaign opened Feb 28, 2026). The tweet was an early-but-correct breaking report. Classic fog-of-war false positive where the corrective note was the actual error."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Major US-Iran military escalation (1M+ views); accurate war reporting matters, and wrongly debunking real strikes erodes trust in notes during a conflict."
+  },
+  "difficulty": "medium"
+}

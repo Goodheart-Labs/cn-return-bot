@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2012505667932754385",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:47.723Z",
+  "post": {
+    "id": "2012505667932754385",
+    "author_id": "1497628932773924864",
+    "created_at": "2026-01-17T12:41:56.000Z",
+    "text": "This is why you don’t stop. https://t.co/D9dEVtQHFz",
+    "media": [
+      {
+        "media_key": "13_2012505498688364544",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2012505498688364544/img/sV9IaOkiYus_NEun.jpg",
+        "height": 1122,
+        "width": 1290,
+        "duration_ms": 77745,
+        "view_count": 11750476,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012505498688364544/vid/avc1/412x360/8qD9tztqoa-QISPZ.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2012505498688364544/pl/3Zxj8IDet0-dllbd.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012505498688364544/vid/avc1/826x720/NELxJGUXVTVMPIXm.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012505498688364544/vid/avc1/1290x1122/fux6hh16kzCptedE.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012505498688364544/vid/avc1/310x270/-ZrX94lcwQvEhFot.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4301,
+      "reply_count": 2691,
+      "like_count": 71627,
+      "quote_count": 457,
+      "bookmark_count": 9736,
+      "impression_count": 14362604
+    },
+    "author_followers": 126350,
+    "author_name": "Cloud",
+    "author_description": "Homeschool Dad • Rural Life • MAHA\n12 Years Sober | Pro Freedom | 2A & 1A\nMemes & Videos | Political & Cultural Commentary\nTN",
+    "author_tweet_count": 480480
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2012505498688364544/vid/avc1/1290x1122/fux6hh16kzCptedE.mp4",
+          "description": {
+            "description": "An aerial view showing a massive crowd of protesters gathered on a multi-lane highway in Minneapolis, Minnesota. A red semi-truck with a silver tanker trailer is seen driving into the middle of the crowd, causing people to scramble and eventually surround the vehicle. The footage tracks the movement of the truck as it comes to a stop amidst the dense gathering of people.",
+            "ocrText": ""
+          },
+          "transcription": "🎵🎵🎵 🎵🎵🎵 Sampai jumpa. Terima kasih telah menonton."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@McChillian: \"Nope hit the gas remember as kids don’t play in the street\" (Likes: 543)\n@deni23psalm: \"If anyone is old enough to remember Reginald Denny, you know not to stop.\" (Likes: 488)\n@A_Nationalist12: \"Looks like something you would see in a zombie movie\" (Likes: 316)\n@BananaSava11738: \"Don't end up like Reginald Denny, keep going.\" (Likes: 236)\n@Hunter_Eagleman: \"Exactly!!\" (Likes: 226)\n@ASchwarz9839: \"And it's why you NEED.. this pair\" (Likes: 216)\n@JJVibe: \"That would be really scary for me.\" (Likes: 136)\n@Ken_Lee_of_MT: \"Remember Reginald Denny. Do not stop under any circumstances.\" (Likes: 122)\n@DebbieE25661: \"Should have learned from way back, and Reginald Denny. I’m not stopping. Oh no.\" (Likes: 115)\n@Elizabe91133297: \"I've seen this very thing in Project Zomboid...it never ends well\" (Likes: 113)",
+    "warnings": []
+  }
+}

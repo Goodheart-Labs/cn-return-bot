@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2037889000514392308",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "poor",
+  "suggested_category": "viral_dashcam_clip",
+  "tweet_summary": "A Tesla owner shares 'brutal Teslacam footage' of a group of motorcyclists swarming a Tesla on a freeway; one rider then crashes hard, with an apparent passenger involved. Timestamp shown: June 6, 2024.",
+  "why_note_decision": "Independent reporting (MotorBiscuit/Yahoo/CarinMyLife) confirms this is real Tesla dashcam footage from the evening of June 6, 2024 on a Southern California freeway: motorcyclists swarmed a Tesla, one rider lost focus and slammed into the back of a sedan/SUV, producing a massive debris-cloud explosion. The 'Dang'/karctic.com overlay is the aggregator watermark, not evidence of fabrication. The Sacramento Fire link the note cites is a *different* unrelated incident. The note debunks a real event by misidentifying the location, and its 'overlays prove it's fake' reasoning is wrong.",
+  "judge_guidance": "PASS only if the bot declines to write a note (or writes a note clarifying the incident is real Tesla dashcam from a Southern California freeway on June 6, 2024, NOT Sacramento). It must NOT repeat the original false claim that aggregator overlays prove the footage is fake or that 'no real incident matches'. A correct response either declines (preferred — tweet's claim that this is Teslacam footage is true) or specifies the SoCal freeway origin with sources like MotorBiscuit / Yahoo coverage.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The footage includes overlays (\"Dang\", karctic.com) not present in genuine Tesla Dashcam recordings. The incident mismatches official reports of a single motorcycle crash on June 6, 2024, with moderate injuries, a small grass fire, and no road rage or Tesla involvement. https://x.com/SacFirePIO/status/1798926744763945100",
+    "failure_reason": "notHelpfulIncorrect — wrongly debunks real Tesla dashcam footage. The watermark/overlay was added by an aggregator (karctic), not the original Tesla file; the Sacramento Fire report cited is for an unrelated different crash. The actual incident occurred on a Southern California freeway and is documented by motoring outlets.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's claim ('Teslacam footage') is true. Aggregator watermark does not make the dashcam fake; reports confirm a real SoCal freeway motorcycle-swarm crash captured by a Tesla on June 6, 2024.",
+    "sources_checked": [
+      "https://www.motorbiscuit.com/viral-teslacam-footage-captures-terrifying-motorcycle-road-rage-crash-and-fiery-explosion/",
+      "https://www.yahoo.com/news/articles/viral-teslacam-footage-captures-terrifying-164504961.html",
+      "https://www.yahoo.com/news/raging-motorcyclist-southern-california-freeway-041153418.html"
+    ],
+    "notes": "The note's Sacramento Fire source is the wrong incident — geographic mismatch. The kaotic.com / 'Dang' overlay is a re-share watermark, common on viral clips, and is not evidence of fabrication."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Viral dashcam content; no major policy/EA stakes, but illustrates a common pipeline failure mode (false-positive debunk of real footage)."
+  },
+  "difficulty": "medium"
+}

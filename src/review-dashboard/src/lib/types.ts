@@ -45,6 +45,9 @@ export interface ReviewItem {
   groundTruthNote?: string;
   needsNote?: string;
   evaluationScore?: number;
+  judgeGuidance?: string;
+  originalNoteText?: string;
+  failureReason?: string;
 
   // Annotation state
   annotation?: Annotation;
@@ -71,15 +74,36 @@ export interface Annotation {
   comment?: string;
 }
 
-export type FailureType =
+// Production failure types (derived from CN status)
+export type ProductionFailureType =
   | "rated_helpful"
   | "rated_unhelpful"
   | "lost_to_competitor"
   | "missed_opportunity"
-  | "false_positive"
-  | "correct_rejection"
-  | "needs_more_ratings"
-  | "uncategorized";
+  | "needs_more_ratings";
+
+// V2 dataset run categories (from evaluateResults categorizeRowV2)
+export type DatasetCategoryV2 =
+  | "nw_success"
+  | "nw_published_directional"
+  | "nw_published_bad"
+  | "nw_miss_judge_killed_good"
+  | "nw_miss_judge_killed_bad"
+  | "nw_miss_verifier_killed_good"
+  | "nw_miss_verifier_killed_bad"
+  | "nw_miss_writer_abstained"
+  | "nw_miss_search_exhausted"
+  | "nw_miss_satire_killed"
+  | "nnw_correct_writer_abstained"
+  | "nnw_correct_judge_rejected"
+  | "nnw_correct_verifier_rejected"
+  | "nnw_correct_search_exhausted"
+  | "nnw_correct_satire_rejected"
+  | "nnw_fp_harmless"
+  | "nnw_fp_published"
+  | "nnw_eval_disagrees";
+
+export type FailureType = ProductionFailureType | DatasetCategoryV2 | "uncategorized";
 
 export interface FilterState {
   seen: "all" | "seen" | "unseen";
@@ -87,28 +111,71 @@ export interface FilterState {
   failureModes: Set<string>;
 }
 
-export const FAILURE_TYPE_CONFIG: Record<
-  FailureType,
-  { label: string; defaultOn: boolean; production: boolean; datasetRun: boolean; color: string }
-> = {
-  rated_helpful: { label: "Rated Helpful", defaultOn: true, production: true, datasetRun: true, color: "bg-green-100 text-green-800" },
-  rated_unhelpful: { label: "Rated Unhelpful", defaultOn: true, production: true, datasetRun: true, color: "bg-red-100 text-red-800" },
+export interface FailureTypeConfig {
+  label: string;
+  defaultOn: boolean;
+  production: boolean;
+  datasetRun: boolean;
+  color: string;
+  group?: "noteworthy" | "non_noteworthy";
+}
+
+export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
+  // --- Production types ---
+  rated_helpful: { label: "Rated Helpful", defaultOn: true, production: true, datasetRun: false, color: "bg-green-100 text-green-800" },
+  rated_unhelpful: { label: "Rated Unhelpful", defaultOn: true, production: true, datasetRun: false, color: "bg-red-100 text-red-800" },
   lost_to_competitor: { label: "Lost to competitor", defaultOn: false, production: true, datasetRun: false, color: "bg-orange-100 text-orange-800" },
-  missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: true, color: "bg-yellow-100 text-yellow-800" },
-  false_positive: { label: "False positive", defaultOn: true, production: false, datasetRun: true, color: "bg-pink-100 text-pink-800" },
-  correct_rejection: { label: "Correct rejection", defaultOn: false, production: false, datasetRun: true, color: "bg-gray-100 text-gray-600" },
+  missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: false, color: "bg-yellow-100 text-yellow-800" },
   needs_more_ratings: { label: "Needs More Ratings", defaultOn: false, production: true, datasetRun: false, color: "bg-blue-100 text-blue-800" },
+
+  // --- V2 dataset categories: noteworthy ---
+  nw_success:                   { label: "Success",              defaultOn: true,  production: false, datasetRun: true, color: "bg-green-100 text-green-800",  group: "noteworthy" },
+  nw_published_directional:     { label: "Published directional",defaultOn: true,  production: false, datasetRun: true, color: "bg-lime-100 text-lime-800",    group: "noteworthy" },
+  nw_published_bad:             { label: "Published bad",        defaultOn: true,  production: false, datasetRun: true, color: "bg-red-100 text-red-800",      group: "noteworthy" },
+  nw_miss_judge_killed_good:    { label: "Judge killed good",    defaultOn: true,  production: false, datasetRun: true, color: "bg-orange-100 text-orange-800", group: "noteworthy" },
+  nw_miss_judge_killed_bad:     { label: "Judge killed bad",     defaultOn: false, production: false, datasetRun: true, color: "bg-yellow-100 text-yellow-800", group: "noteworthy" },
+  nw_miss_verifier_killed_good: { label: "Verifier killed good", defaultOn: true,  production: false, datasetRun: true, color: "bg-orange-100 text-orange-800", group: "noteworthy" },
+  nw_miss_verifier_killed_bad:  { label: "Verifier killed bad",  defaultOn: false, production: false, datasetRun: true, color: "bg-yellow-100 text-yellow-800", group: "noteworthy" },
+  nw_miss_writer_abstained:     { label: "Writer abstained",     defaultOn: true,  production: false, datasetRun: true, color: "bg-red-100 text-red-800",      group: "noteworthy" },
+  nw_miss_search_exhausted:     { label: "Search exhausted",     defaultOn: true,  production: false, datasetRun: true, color: "bg-red-100 text-red-800",      group: "noteworthy" },
+  nw_miss_satire_killed:        { label: "Satire killed good",   defaultOn: true,  production: false, datasetRun: true, color: "bg-orange-100 text-orange-800", group: "noteworthy" },
+
+  // --- V2 dataset categories: non-noteworthy ---
+  nnw_correct_writer_abstained:   { label: "Writer abstained",   defaultOn: false, production: false, datasetRun: true, color: "bg-gray-100 text-gray-600",   group: "non_noteworthy" },
+  nnw_correct_judge_rejected:     { label: "Judge rejected",     defaultOn: false, production: false, datasetRun: true, color: "bg-gray-100 text-gray-600",   group: "non_noteworthy" },
+  nnw_correct_verifier_rejected:  { label: "Verifier rejected",  defaultOn: false, production: false, datasetRun: true, color: "bg-gray-100 text-gray-600",   group: "non_noteworthy" },
+  nnw_correct_search_exhausted:   { label: "Search exhausted",   defaultOn: false, production: false, datasetRun: true, color: "bg-gray-100 text-gray-600",   group: "non_noteworthy" },
+  nnw_correct_satire_rejected:    { label: "Satire rejected",    defaultOn: false, production: false, datasetRun: true, color: "bg-gray-100 text-gray-600",   group: "non_noteworthy" },
+  nnw_fp_harmless:                { label: "FP harmless",        defaultOn: true,  production: false, datasetRun: true, color: "bg-amber-100 text-amber-800", group: "non_noteworthy" },
+  nnw_fp_published:               { label: "FP published",       defaultOn: true,  production: false, datasetRun: true, color: "bg-pink-100 text-pink-800",   group: "non_noteworthy" },
+  nnw_eval_disagrees:             { label: "Eval disagrees",     defaultOn: true,  production: false, datasetRun: true, color: "bg-purple-100 text-purple-800", group: "non_noteworthy" },
+
+  // --- Shared ---
   uncategorized: { label: "Uncategorized", defaultOn: false, production: true, datasetRun: true, color: "bg-gray-100 text-gray-500" },
 };
 
-// Map the `result` column from the AI judge to dashboard failure types
+// V2 category strings that map directly to FailureType
+const V2_CATEGORIES: Set<string> = new Set([
+  "nw_success", "nw_published_directional", "nw_published_bad",
+  "nw_miss_judge_killed_good", "nw_miss_judge_killed_bad",
+  "nw_miss_verifier_killed_good", "nw_miss_verifier_killed_bad",
+  "nw_miss_writer_abstained", "nw_miss_search_exhausted", "nw_miss_satire_killed",
+  "nnw_correct_writer_abstained", "nnw_correct_judge_rejected",
+  "nnw_correct_verifier_rejected", "nnw_correct_search_exhausted", "nnw_correct_satire_rejected",
+  "nnw_fp_harmless", "nnw_fp_published", "nnw_eval_disagrees",
+]);
+
+// Map the `result` column from the AI judge to dashboard failure types.
+// Handles both V1 labels ("correct", "missed", ...) and V2 category strings.
 export function resultToFailureType(result: string | undefined | null): FailureType {
+  if (!result) return "uncategorized";
+  if (V2_CATEGORIES.has(result)) return result as DatasetCategoryV2;
   switch (result) {
-    case "correct": return "rated_helpful";
-    case "incorrect": return "rated_unhelpful";
-    case "missed": return "missed_opportunity";
-    case "false positive": return "false_positive";
-    case "correct_rejection": return "correct_rejection";
+    case "correct": return "nw_success";
+    case "incorrect": return "nw_published_bad";
+    case "missed": return "nw_miss_writer_abstained";
+    case "false positive": return "nnw_fp_published";
+    case "correct_rejection": return "nnw_correct_judge_rejected";
     case "error": return "uncategorized";
     default: return "uncategorized";
   }

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2056617715352084531",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["platform_manipulation"],
+  "category_fit": "partial",
+  "suggested_category": "personal_anecdote_engagement_bait",
+  "tweet_summary": "A storytelling/'thread' account posts a first-person anecdote about a grandmother's AirTag leading them to a child's stolen 'baby jacket' that turned up with a gym teacher's daughter, with the principal calling a meeting.",
+  "why_note_decision": "This is an unverifiable personal anecdote / engagement-bait story, not a checkable public claim a reader is harmed by believing. The note's own claim (near-identical copies exist with the jacket brand swapped, e.g. 'Dior') is supported by the cited Facebook URL, but recycled feel-good/karma story-bait is not the kind of misleading factual claim Community Notes corrects. There is no real-world fact being distorted; the replies already call it engagement farming. A note pointing out 'this story is fake' on every recycled anecdote is a false-positive pattern.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is an unverifiable personal anecdote / recycled engagement-bait story with no checkable, harmful public claim. Any note asserting the story is 'fabricated' or 'engagement bait' is a false positive: it is non-falsifiable opinion about a private anecdote, and Community Notes does not correct unverifiable personal stories. If a note is written, it must be scored FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Nearly identical versions of this story, varying only the jacket brand (e.g., Dior instead of North Face), have been posted on Facebook, indicating it is fabricated engagement bait. https://www.facebook.com/mattion1329/photos/someone-stole-my-baby-dior-jacket-from-school-yesterday-didnt-know-her-gg-put-a-/855514244150837",
+    "failure_reason": "note_not_needed",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Unverifiable personal anecdote; likely recycled engagement bait (a near-identical Facebook copy with a 'Dior' jacket exists, per the cited URL slug), but not a harmful, checkable public claim.",
+    "sources_checked": [
+      "https://www.facebook.com/mattion1329/photos/someone-stole-my-baby-dior-jacket-from-school-yesterday-didnt-know-her-gg-put-a-/855514244150837",
+      "https://www.boredpanda.com/ex-planted-airtag-jacket/"
+    ],
+    "notes": "The cited Facebook URL slug confirms a brand-swapped duplicate of the same story exists, so the note's factual basis is real. But the post is an unverifiable private anecdote, not a misleading factual claim about the world. Replies (@KenBuck, @JaeBaexParty) already flag it as engagement farming. No note warranted."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "219k impressions of a harmless recycled karma story; correcting it has no EA/progress/safety stakes. Noting it would only train false positives on unverifiable personal anecdotes."
+  },
+  "difficulty": "easy"
+}

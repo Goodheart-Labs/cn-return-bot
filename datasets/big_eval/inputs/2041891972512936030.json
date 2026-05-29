@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2041891972512936030",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:02.681Z",
+  "post": {
+    "id": "2041891972512936030",
+    "author_id": "177584156",
+    "created_at": "2026-04-08T14:52:37.000Z",
+    "text": "Cry me a River. https://t.co/GwuSl7qnA2",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2041880158068732228"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2041880158068732228",
+      "author_id": "43797101",
+      "created_at": "2026-04-08T14:05:40.000Z",
+      "text": "Well look at that 🤣🤪 https://t.co/kVcvCQFXyT",
+      "media": [
+        {
+          "media_key": "3_2041880154084143109",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HFY3Looa8AUxjO0.jpg",
+          "height": 1106,
+          "width": 1875
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 3568,
+      "reply_count": 2405,
+      "like_count": 21410,
+      "quote_count": 522,
+      "bookmark_count": 401,
+      "impression_count": 800431
+    },
+    "author_followers": 250258,
+    "author_name": "Janie Johnson - America is Exceptional",
+    "author_description": "THINK AMERICA GREAT! Conservatism. Patriotism. Optimism. Don't Take My Lemonade Stand, Uncommon Sense,0 Slogans. God. Country. Family. 🇺🇸  https://t.co/j92pcSV8fv",
+    "author_tweet_count": 2087965
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFY3Looa8AUxjO0.jpg",
+          "description": {
+            "description": "A split-screen image showing a headshot of Ellen DeGeneres on the right and a text-heavy graphic on the left. The text makes several unsubstantiated claims about her renouncing her US citizenship and being unable to return to the United States. A small watermark at the bottom right corner of the celebrity photo reads 'NOTHING on this page is REAL'.",
+            "ocrText": "Ellen DeGeneres, who forfeited her US citizenship and moved to England, says she regrets the decision. \"I miss Hollywood, and Seattle,\" she told UK Today's JoJo Barron, \"I didn't really think this through.\" DeGeneres has been denied a new passport to return to the States, and she doesn't qualify for a travel visa after being listed as a supporter of the domestic terror group Antifa. \"I doubt I'll ever see home again.\" NOTHING on this page is REAL"
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@donstringer18**  \nThis isn’t true, I wish it was… But no.. fake news  \nLikes: 207 | Reposts: 0 | Replies: 0 | Views: 15484\n\n**@mypuppys15**  \nI hate this crap and I’m MAGA. Makes us look like idiots.  \nLikes: 40 | Reposts: 0 | Replies: 0 | Views: 2188\n\n**@bv9122**  \nHell awaits her kind...  \nLikes: 29 | Reposts: 11 | Replies: 3 | Views: 1695\n\n**@Beerasore**  \n(No text content)  \nLikes: 20 | Reposts: 0 | Replies: 0 | Views: 1227\n\n**@Bostonbama84**  \nWe don’t want that murderous baby eating pedophile in this country!! She’s a demon from hell!!  \nLikes: 19 | Reposts: 0 | Replies: 0 | Views: 488\n\n**@Chris_Wickk_21**  \nIt's not just a river in Ukraine.  \nLikes: 18 | Reposts: 0 | Replies: 0 | Views: 876\n\n**@Tweeklives**  \nBest news of the day. Now she can just dry up like a prune and wither away  \nLikes: 15 | Reposts: 0 | Replies: 0 | Views: 573\n\n**@KaliceWolfe**  \nI don’t miss her one bit. She belongs in jail.  \nLikes: 13 | Reposts: 0 | Replies: 0 | Views: 509\n\n**@TMsalutesyou**  \nI hope her prediction of not coming home is correct  \nLikes: 11 | Reposts: 0 | Replies: 0 | Views: 918\n\n**@Lennie761199709**  \nIf only.  \nLikes: 11 | Reposts: 0 | Replies: 0 | Views: 560",
+    "warnings": []
+  }
+}

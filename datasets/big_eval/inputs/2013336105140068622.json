@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2013336105140068622",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:21.052Z",
+  "post": {
+    "id": "2013336105140068622",
+    "author_id": "405526687",
+    "created_at": "2026-01-19T19:41:48.000Z",
+    "text": "Victoria hijacking the first dance at Brooklyn Beckham's wedding. https://t.co/55noRMj4Ji",
+    "media": [
+      {
+        "media_key": "13_1999632869933699073",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1999632869933699073/img/3dIbDgaLg3No41Db.jpg",
+        "height": 1280,
+        "width": 668,
+        "duration_ms": 6800,
+        "view_count": 1477812,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1999632869933699073/vid/avc1/320x612/q1L-k-wWgD_Y2EB_.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1999632869933699073/vid/avc1/480x918/sKdDTdqjifW4Gfvn.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1999632869933699073/vid/avc1/668x1280/5ir8y0YkKmLEsWAL.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1999632869933699073/pl/p9izjVkQmfnXMrHR.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3874,
+      "reply_count": 187,
+      "like_count": 43453,
+      "quote_count": 256,
+      "bookmark_count": 1757,
+      "impression_count": 1153477
+    },
+    "author_followers": 1505,
+    "author_name": "Sheridan",
+    "author_description": "Partial to an alfresco munchiette.",
+    "author_tweet_count": 11262
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1999632869933699073/vid/avc1/668x1280/5ir8y0YkKmLEsWAL.mp4",
+          "description": {
+            "description": "A close-up of a blurred table with a red and white checkered tablecloth and a few glasses in a dimly lit bar or restaurant filled with people.",
+            "ocrText": ""
+          },
+          "transcription": "Namo Amitabha!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Representative comments (replies):**\n\n- **Jay** (@Jayy_Hardyy252): \"Victoria\"  \n  Likes: 198 | Reposts: 0 | Views: 7413\n\n- **Bekah 🌸** (@bekahbuyz): \"Live footage\"  \n  Likes: 111 | Reposts: 0 | Views: 6800\n\n- **Josef** (@xjosef69): (GIF, no text)  \n  Likes: 89 | Reposts: 0 | Views: 12876\n\n- **Helen** (@Scribberlings): \"I could totally believe this lol\"  \n  Likes: 58 | Reposts: 0 | Views: 8958\n\n- **leighmani** (@leighmani12): \"And probably ate up Nicola in the process\"  \n  Likes: 44 | Reposts: 0 | Views: 2198\n\n- **🍒** (@sarsnook): \"victoria at her son wedding\"  \n  Likes: 24 | Reposts: 0 | Views: 2080\n\n- **Yappiana 🇧🇧🇯🇲♈️** (@poppy4161): \"Y'all are quick loooool\"  \n  Likes: 20 | Reposts: 0 | Views: 2669\n\n- **Tracy E** (@tabbs78): \"Victoria is a funny women, I’m sure she thought the intention of her first born son having dance was not in the way Brooklyn has spewed about it .. it’s his wife that had the problem with it. Without a doubt.\"  \n  Likes: 17 | Reposts: 0 | Views: 3207\n\n- **Cheryl The Queen 👑** (@cheryldragqueen): \"😂😂😂😂\"  \n  Likes: 16 | Reposts: 0 | Views: 9031\n\n- **jen ˚✧˖** (@jenbeanic): \"Where’d you getw actual footage?\"  \n  Likes: 14 | Reposts: 0 | Views: 1934",
+    "warnings": []
+  }
+}

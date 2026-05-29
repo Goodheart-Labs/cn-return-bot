@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2056116841769291987",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:55.141Z",
+  "post": {
+    "id": "2056116841769291987",
+    "author_id": "1852499847133143040",
+    "created_at": "2026-05-17T20:57:10.000Z",
+    "text": "JUST IN: 🇺🇸 President Trump posts image appearing to depict a nuclear strike. https://t.co/Xj1NtMcmzW",
+    "media": [
+      {
+        "media_key": "3_2056116820265046016",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIjLWrCakAAW4E5.jpg",
+        "height": 1311,
+        "width": 783
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 390,
+      "reply_count": 407,
+      "like_count": 2641,
+      "quote_count": 257,
+      "bookmark_count": 418,
+      "impression_count": 762773
+    },
+    "author_followers": 130174,
+    "author_name": "Remarks",
+    "author_description": "Bringing you the latest, fastest, unbiased & unparalleled remarks in real-time | Focusing on US news | Brought to you by @WatcherGuru & @BRICSinfo",
+    "author_tweet_count": 4030
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIjLWrCakAAW4E5.jpg",
+          "description": {
+            "description": "A digital illustration featuring Donald Trump seated in a futuristic command center in space. He is pressing a large glowing red button. Multiple screens show orbital explosions and targets being destroyed by lasers. The background features a viewed Earth from orbit, satellites, and a nebula. Various military personnel are seated at consoles around him, and holographic symbols resembling the Space Force logo are visible.",
+            "ocrText": "TARGET DESTROYED TARGET DESTROYED"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Nathan Vargas (@NVG_MEDIA): MAGA voters okay with nuclear weapons now. (Likes: 399, Reposts: 6, Replies: 4, Views: 8608)\n- 😈 Texas Diablo 👿 (@LosTexasDiablo): WHAT DID TEXAS DO???!? 😭 (Likes: 334, Reposts: 6, Quotes: 3, Replies: 13, Bookmarks: 9, Views: 19917)\n- I CAN TOO (@davidcantu14600): This is disturbing! All because of the Epstein files? (Likes: 154, Reposts: 0, Replies: 0, Views: 7416)\n- AfterTheNoise (@AfterTheNoise_x): He isn’t going to do shit. Except rob the American people and make us all starve and fucking go crazy. (Likes: 73, Reposts: 0, Replies: 0, Views: 3908)\n- Mario (@PawlowskiMario): Traitor 😡 (Likes: 66, Reposts: 4, Replies: 1, Views: 6440)\n- Chinga tu..racista (@Fascistviolator): [image only, no text] (Likes: 58, Reposts: 9, Views: 3764)\n- Capybara (Rich Rich) (@RichRic94920580): It’s so over for Trump. His days are numbered. (Likes: 35, Reposts: 0, Replies: 1, Views: 1842)\n- Í̵̛̛͂̀̋̇͆̂̐̓̏͐͆̃̍̋̀͋͂͑͛̐̀̄̉̂́͆̀͐͑̆̓͊̍̎̀̒̍͆̅̋̕̕̚̕͘ (@Some_random256): Same nigga who cried because he didn't get the nobel peace prize \n\nI wonder why he didn't get it (Likes: 32, Reposts: 0, Views: 1336)\n- toldyou (@CindyontheBay): He loves to cause chaos (Likes: 30, Reposts: 0, Views: 2339)\n- J.Logan.McCorkle (@JLoganMcCorkle): 👀 is it still low IQ to ask if the 25th is necessary? (Likes: 25, Reposts: 0, Views: 4756)",
+    "warnings": []
+  }
+}

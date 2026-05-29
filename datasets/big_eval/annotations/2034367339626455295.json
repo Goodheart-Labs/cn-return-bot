@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2034367339626455295",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A viral post (3.8M views) claims 'American jews are now OCCUPYING land in Patagonia, Argentina' and 'putting up gates to mark their territory,' attaching a photo of a gate blocking a rural road and a video of a truck crashing a metal-beam structure.",
+  "why_note_decision": "A note is clearly warranted. This advances the debunked, antisemitic Andinia Plan conspiracy theory \u2014 the claim that Jews/Zionists are seizing Patagonia to build a Jewish state. There has never been any evidence of such a plan or of mass 'occupation,' and ADL, Chequeado and multiple fact-checkers classify it as a hoax that resurged in 2026 around the Chubut wildfires (with AI-generated 'Israeli saboteur' videos circulating). The attached gate is an ordinary rural-road gate presented as 'territory marking' with no provenance. The original note correctly named the conspiracy but was rated opinion/speculation because it argued the framing in the abstract ('no evidence supports mass occupation') without grounding the rebuttal in what the specific media actually shows or in a verifiable fact about Patagonian land.",
+  "judge_guidance": "PASS only if the note (1) identifies the post as the debunked/antisemitic Andinia Plan conspiracy theory (no evidence of any Jewish plan to seize or 'occupy' Patagonia), citing a credible source (ADL, Chequeado, Wikipedia, or a 2026 fact-check), AND (2) does not merely editorialize \u2014 it should ground the rebuttal concretely (e.g. a roadside gate is not evidence of ethnic land seizure; the surrounding wildfire-era claims relied on AI-generated/misattributed videos). The note must AVOID the original's failure of asserting 'no evidence supports mass occupation' purely as an abstract counter-claim that reads as opinion; it must anchor to the named conspiracy and a source. FAIL if it endorses the claim, stays vague/argumentative without a source, or treats the gate media as genuine evidence of occupation.",
+  "reference_note": "This revives the Andinia Plan, a long-debunked antisemitic conspiracy theory alleging Jews/Zionists are seizing Patagonia for a Jewish state; the ADL and Argentine fact-checkers (Chequeado) find no evidence such a plan or 'occupation' exists. A roadside gate is not evidence of ethnic land seizure, and the 2026 wave of 'Israelis in Patagonia' claims relied on AI-generated and misattributed videos. https://en.wikipedia.org/wiki/Andinia_Plan https://combatantisemitism.org/cam-news/antisemitic-wildfire-conspiracy-theories-spread-in-argentina-targeting-israelis/",
+  "original_unhelpful_note": {
+    "text": "This claim promotes the debunked Andinia Plan conspiracy theory alleging a Jewish plot to seize Patagonia; no evidence supports mass occupation by American Jews or similar activity. https://en.wikipedia.org/wiki/Andinia_Plan https://combatantisemitism.org/cam-news/antisemitic-wildfire-conspiracy-theories-spread-in-argentina-targeting-israelis https://www.batimes.com.ar/news/argentina/patagonias-wildfires-become-weapons-of-disinformation.phtml",
+    "failure_reason": "Rated notHelpfulOpinionSpeculation (26) + notHelpfulNoteNotNeeded (23) + incorrect (19). The note correctly names the Andinia Plan but rebuts the claim abstractly ('no evidence supports mass occupation') without addressing the specific gate/video media or a concrete fact, so to skeptical raters it read as asserting a conclusion (opinion) rather than demonstrating it. The word 'promotes' also reads as editorializing about intent.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false (antisemitic conspiracy theory)",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Andinia_Plan",
+      "https://southwest.adl.org/resources/backgrounder/allegation-andinia-plan",
+      "https://combatantisemitism.org/cam-news/antisemitic-wildfire-conspiracy-theories-spread-in-argentina-targeting-israelis/"
+    ],
+    "notes": "The Andinia Plan is a classic antisemitic hoax with no evidentiary basis (ADL, Chequeado). It resurged in 2026 around the Chubut wildfires, with AI-generated videos of 'Israeli saboteurs' and false claims of Jews-only Patagonian land sales. The post's gate photo has no provenance tying it to any Jewish 'occupation.' Correction firmly warranted."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "A 3.8M-view antisemitic conspiracy that can incite real-world hostility toward Jewish people in Argentina; correcting hate-driven disinformation has clear value."
+  },
+  "difficulty": "medium"
+}

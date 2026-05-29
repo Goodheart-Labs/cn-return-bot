@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2013336105140068622",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A user (@Sheridan, 1.5k followers) posts a 6.8-second video clip of a blurred bar/restaurant scene (red-checkered tablecloth, dim lighting, with the audio 'Namo Amitabha!') captioned 'Victoria hijacking the first dance at Brooklyn Beckham's wedding.' The 'video' is obviously NOT actual wedding footage — it's a random unrelated clip used as a joke about Beckham family drama. 1.15M impressions, 43k likes.",
+  "why_note_decision": "This is an obvious joke tweet — the video is clearly not wedding footage (blurry bar, checkered tablecloth, Buddhist chant audio), and the comments confirm everyone gets it ('Live footage', 'I could totally believe this lol', 'Where'd you get actual footage?'). The tweet is a meme using random video as fake 'evidence' for ongoing Beckham-family-drama gossip. The original note plays the explainer role — 'this isn't actually their wedding, here are the real wedding facts' — which is exactly the kind of pedantic over-correction the community rejects (38 noteNotNeeded vs 22 missingKeyPoints). Underlying gossip about Victoria leaving Nicola in tears at the 2022 Palm Beach wedding is real reporting; the tweet is just a humorous reaction-meme on top of that.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The 'video' in the tweet is plainly not actual Beckham wedding footage (it's a blurry, dim bar scene with Buddhist chant audio) and the joke is universally understood in the comments (top reply: 'Live footage', second: 'I could totally believe this lol'). FAIL any note that (a) repeats the original failure of solemnly explaining the wedding's real venue/song as if anyone was misled, (b) explains that the video isn't from the wedding — that's the joke; the explainer-tone note IS the false positive. Pedantically debunking obvious gossip-jokes is the exact pipeline failure to avoid.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The attached video is not from Brooklyn Beckham's 2022 wedding, which was held at an oceanfront estate in Palm Beach where the couple's first dance was to \"Only Fools Rush In\". https://www.vogue.com/article/nicola-peltz-marries-brooklyn-beckham-palm-beach-wedding https://people.com/victoria-beckham-left-nicola-peltz-in-tears-at-wedding-to-brooklyn-beckham-exclusive-11744279",
+    "failure_reason": "note_not_needed — pedantically explains an obvious gossip-joke. Community overwhelmingly downrated (38 noteNotNeeded).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious_joke_no_real_claim",
+    "sources_checked": [
+      "Comment thread (top replies treat tweet as joke: 'Live footage', 'I could totally believe this lol')",
+      "Video itself: blurred bar interior with checkered tablecloth and Buddhist chant audio — clearly not wedding footage"
+    ],
+    "notes": "The 'video' is unrelated bar footage used jokingly. No serious viewer interprets it as actual wedding evidence. The underlying Beckham family drama (Victoria/Nicola tension at the 2022 Palm Beach wedding) is reported by People/Vogue."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Celebrity gossip joke. Important only as a false-positive trap — the bot must learn that obvious meme/joke tweets using clearly-mismatched video as bait don't need solemn corrections."
+  },
+  "difficulty": "easy"
+}

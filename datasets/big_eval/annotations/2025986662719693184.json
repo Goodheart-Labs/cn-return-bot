@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2025986662719693184",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "scams_fraud_finance",
+    "manipulated_or_fabricated_evidence",
+    "statistical_or_numerical_claim"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims one of the oldest (Satoshi-era, 2009) Bitcoin whales 'just sold his entire $1.24 billion BTC stack', implying a bearish signal ('ask yourself why'), with a dashboard screenshot of transfers to Coinbase.",
+  "why_note_decision": "The claim is misleading: the whale did not sell a $1.24B stack in one go. Reporting shows a Satoshi-era wallet moved only ~2,000 BTC (~$180M) to Coinbase in small ~50 BTC tranches over the weekend, and transfers to an exchange do not confirm a sale (could be hedging/OTC/collateral). The $1.24B figure and 'sold entire stack' framing are not supported. A correction is warranted; I disagree with the provisional no-note because the tweet (527K-follower finance account) asserts a specific false magnitude and a false bearish conclusion.",
+  "judge_guidance": "PASS only if the note (1) corrects the magnitude/event: the wallet moved roughly ~2,000 BTC (~$180M) in small batches over time, not a single $1.24B sale of the 'entire stack', AND (2) notes that transfers to an exchange (Coinbase) do not by themselves confirm a sale. Cite reputable crypto reporting (Decrypt/CoinDesk). It must NOT itself assert a wrong figure (the original failed by citing ~9K BTC/~$600M, which overstates the move) and must NOT endorse the 'oldest whale dumped $1.24B' framing. A note repeating the $1.24B sale, or claiming a confirmed bearish sell-off, should FAIL.",
+  "reference_note": "A Satoshi-era wallet moved roughly 2,000 BTC (~$180M) to Coinbase in small ~50 BTC batches, not a single $1.24B sale of an 'entire stack'. Transfers to an exchange don't confirm a sale (could be hedging/OTC/collateral). https://decrypt.co/354240/satoshi-era-bitcoin-whale-moves-180m-in-btc-to-coinbase",
+  "original_unhelpful_note": {
+    "text": "The post misattributes a $1.24B figure from aggregate short-term holder losses to a single old whale's sale. A Satoshi-era wallet transferred ~9K BTC (~$600M) to Coinbase in small batches over weeks, not $1.24B in one go. Transfers to exchanges don't confirm sales. https://www.coindesk.com/markets/2026/02/23/bitcoin-slides-4-to-usd65-000-as-whale-selling-grows-and-recent-buyers-lock-in-losses https://yellow.com/news/satoshi-whale-wallet-drains-80-of-holdings-in-weeks-routing-thousands-of-btc-to-coinbase",
+    "failure_reason": "Right thesis (transfers != sale, $1.24B unsupported) but overstates the move as ~9K BTC/~$600M; mainstream reporting puts the weekend move at ~2,000 BTC (~$180M). The inflated counter-figure undermines the correction's reliability.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading - no single $1.24B sale; ~2,000 BTC (~$180M) moved in tranches, transfers != confirmed sale",
+    "sources_checked": [
+      "https://decrypt.co/354240/satoshi-era-bitcoin-whale-moves-180m-in-btc-to-coinbase",
+      "https://www.ccn.com/news/crypto/bitcoins-2009-whale-1-24b-btc-aprice-below-65000-traders-worrying/",
+      "https://www.fxleaders.com/news/2026/02/24/the-truth-about-oldest-bitcoin-whale-cashing-out/"
+    ],
+    "notes": "Decrypt: ~2,000 BTC (~$182M) moved in 50-BTC tranches; experts say exchange transfers don't equal a sell-off. CCN/FXLeaders frame the $1.24B 'entire stack sold' claim as based on a misread/fake screenshot of routine activity."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "318K impressions; financial FUD that can move sentiment and harm retail investors; modest world-stakes but a clean factual correction."
+  },
+  "difficulty": "hard"
+}

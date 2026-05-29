@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2002321154556543188",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "conspiracy_and_viral_hoax"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Account 'Dispropaganda' (bio: 'The truth shall set you laughing!') posts a 2000 US Open photo of Trump, Kylie Bax, and Bill Clinton with Trump's face covered by a black redaction box, captioned 'The Epstein files.' — a joke mocking the redactions in the released Epstein files.",
+  "why_note_decision": "The post is overt visual satire — the joke is that Trump's face has been 'redacted' (Epstein-files style) but is obviously identifiable. Comments and replies all engage with it as a joke ('trump files be like', 'You can't see me', 'We can still see the orange guy'). The author is a known satire account. The note literally explains the joke — that the photo is from 2000 US Open with Trump's face edited black — but raters dominantly tagged note-not-needed (421) because no reasonable viewer is misled into thinking this redacted-face photo is a leaked Epstein document.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a visual meme/joke from a self-described satire account — the black redaction over Trump's face IS the punchline, and replies all engage with it as humor. Any note that 'corrects' the post by explaining the photo is from the 2000 US Open and Trump's face was edited black is explaining the joke, which is a false positive. FAIL any note. Bonus FAIL if the note treats the post as a sincere misinformation claim about Epstein documents.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The posted image is a meme based on a 2000 US Open skybox photo of Donald Trump, Bill Clinton, Melania Trump, and model Kylie Bax, with Trump's face edited black; it is not from the Epstein files. https://www.snopes.com/fact-check/trump-bill-clinton-photo/ https://www.politico.com/story/2016/09/new-photos-bill-clinton-trump-melania-227945",
+    "failure_reason": "Explains an obvious visual joke from a satire account. The redaction IS the punchline. Dominantly tagged note-not-needed.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "The post is satire/meme; no factual claim is sincerely made.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/trump-bill-clinton-photo/",
+      "https://www.cbsnews.com/news/photos-show-bill-clinton-smiling-laughing-with-trump-melania-and-model/"
+    ],
+    "notes": "Snopes confirms the underlying photo is a real 2000 US Open photo of Trump, Clinton, Melania, and Kylie Bax released by the Clinton Library in 2016. The tweet's modification (blacking Trump's face) is an obvious visual joke about Epstein-file redactions — author is a self-declared satire account 'Dispropaganda'."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "13.7M impressions, 223K likes — large reach but the post is satire. Through a progress/civic-trust lens, suppressing notes on obvious memes matters: notewriters wasting attention on satire weakens the institution and trains the bot the wrong direction."
+  },
+  "difficulty": "easy"
+}

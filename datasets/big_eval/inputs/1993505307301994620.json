@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1993505307301994620",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:10.985Z",
+  "post": {
+    "id": "1993505307301994620",
+    "author_id": "31439580",
+    "created_at": "2025-11-26T02:21:17.000Z",
+    "text": "Find someone who looks at you the way Tucker looks at a loaf of bread that costs the average Russian worker 3 days wages https://t.co/pyrTgV7WFc",
+    "media": [
+      {
+        "media_key": "3_1993505303980134401",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G6pagw2X0AEieur.jpg",
+        "height": 1179,
+        "width": 1718
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 363,
+      "reply_count": 310,
+      "like_count": 4120,
+      "quote_count": 38,
+      "bookmark_count": 82,
+      "impression_count": 128362
+    },
+    "author_followers": 176597,
+    "author_name": "Joel Berry",
+    "author_description": "Writer, speaker, former @TheBabylonBee, bestselling author of Postmodern Pilgrim’s Progress, USMC vet, grumpy dad",
+    "author_tweet_count": 47530
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G6pagw2X0AEieur.jpg",
+          "description": {
+            "description": "A political commentator in a blue puffer jacket holding up a large loaf of bread while grocery shopping in a supermarket setting. He appears to be talking or reacting with an open mouth while looking at the bread.",
+            "ocrText": "TC"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Ceviche Supreme (@CevicheNZ)**: You still crying about Tucker? What a queer  \n  Likes: 118 | Reposts: 0 | Views: 759\n\n- **CEO of Exporting (@ToupeeCostanza)**: how is anybody alive in russia if this is true  \n  Likes: 102 | Reposts: 0 | Views: 1378\n\n- **Ælþemplær (@Aelthemplaer)**: It was pretty cheap when I visited Moscow. They have this internal passport system and grant select farmers access to sell in city markets. It's fresh and very tasty. Much cheaper than Manhattan  \n  Likes: 93 | Reposts: 0 | Views: 1635\n\n- **Double Entendre (@DoubleEntendre0)**: [image attached]  \n  Likes: 84 | Reposts: 0 | Views: 693\n\n- **TheDailyChad (@BasedChadDaily)**: Is that how you look at rabbi shmuley ?  \n  Likes: 82 | Reposts: 0 | Views: 692\n\n- **John (Anarcho Cat) (@anarcho_cat)**: Shut up demon [image attached]  \n  Likes: 67 | Reposts: 0 | Views: 645\n\n- **hØly handgrenade✝️帝福🎸 (@phdcornbread)**: No, that's made up. They have cheaper. Better quality groceries than we do  \n  We have poison food and nobody does anything about it  \n  Likes: 53 | Reposts: 0 | Views: 796\n\n- **Nathan Livingstone (MilkBarTV) (@TheMilkBarTV)**: At a FRENCH supermarket chain - where he sniffed French baked bread.  \n  Likes: 52 | Reposts: 0 | Views: 2566\n\n- **Peter Spina ⚒ GoldSeek | SilverSeek (@goldseek)**: Average Russian worker 3 days.!?!  \n  You must have a phd in stupidity to believe this.  \n  Likes: 50 | Reposts: 0 | Views: 1436\n\n- **TorontoRaccoon (@TO_Raccoon416)**: A loaf of bread in Russia on average costs 57 rubles.  \n  An average salary in Russia is about 3000 rubels a day.  \n  Even if we take a minimum wage in Russia, it's still 900 rubels per day.  \n  Wtf you talking about?  \n  Likes: 43 | Reposts: 0 | Views: 746",
+    "warnings": []
+  }
+}

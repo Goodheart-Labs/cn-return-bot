@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2038768239040168302",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Account 'Out of Context Human Race' (4.3M followers) shares a 15-second video of what appears to be a matchstick sculpture of Goku being lit on fire, the flames rising up the figure like a Super Saiyan aura. Caption: 'This is what happens when creativity meets fandom' — framing it as a real handcrafted sculpture.",
+  "why_note_decision": "The video is part of a well-documented viral AI-generated content trend: 'matchstick animal/figure burning' videos created with AI image + video generation tools (no physical sculpture exists). The trend has generated tens of millions of views across TikTok/Instagram and has been documented by design blogs and AI-tutorial sites. The tweet frames the video as 'creativity meets fandom' — i.e., real handcrafted artistry — which materially misleads readers. Multiple commenters already recognize it as AI ('of all the things that were ever AI, this was AI the most'). A note clarifying it is AI-generated would help the majority of viewers who take it at face value.",
+  "judge_guidance": "A correct note must (1) state that the video is AI-generated (or strongly likely AI-generated) and is part of a well-known viral 'matchstick figure burning' AI-video trend, AND (2) note that no verifiable real-world matchstick Goku sculpture matching this video has been documented. The note should ideally cite an explainer of the AI matchstick-video trend (Inspiration Grid, Mangidik tutorial, or similar) or a credible AI-detection source. PASS the original-style note that flags AI generation. FAIL any note that endorses the 'real creativity' framing, or that earnestly debates the craftsmanship without addressing the AI question.",
+  "reference_note": "The video is part of a viral AI-generated content trend ('matchstick figure/animal burning' videos created with AI image and video generation tools). No verifiable real-world matchstick Goku sculpture matching this video has been documented. https://theinspirationgrid.com/burning-precision-matchstick-art-by-john-ret/",
+  "original_unhelpful_note": {
+    "text": "This video depicts an AI-generated scene of a burning matchstick Goku figure. Similar videos are commonly created with AI tools, and no real-world matchstick Goku sculptures have been reported burned. https://www.youtube.com/watch?v=ylElmpyKkhs https://www.instagram.com/reel/DWa0L1ykZ3M",
+    "failure_reason": "Note is substantively correct but rated 'note not needed' (3) likely because (a) the cited sources are individual videos rather than an explainer of the broader AI trend, weakening the case, and (b) low rating volume (only 4 ratings) — note didn't get traction. A stronger source (Inspiration Grid feature, mainstream coverage of the AI matchstick-video trend) would help.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "video is AI-generated; framing as real handcraft is misleading",
+    "sources_checked": [
+      "https://theinspirationgrid.com/burning-precision-matchstick-art-by-john-ret/",
+      "https://www.mangidik.com/2026/03/ai-burning-matchstick-videos.html"
+    ],
+    "notes": "Multiple sources document the 'AI matchstick burning sculpture' as a known viral genre. Inspiration Grid specifically notes John Ret-attributed work was updated after concerns it was AI-generated rather than handmade, with no evidence the physical sculptures exist. Comments on the tweet itself include several viewers identifying it as AI."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Harmless AI-art genre but the framing misleads ~135k viewers about whether real craft is involved. Low EA stakes but contributes to baseline AI-media literacy."
+  },
+  "difficulty": "easy"
+}

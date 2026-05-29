@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2017773957471211756",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:39.283Z",
+  "post": {
+    "id": "2017773957471211756",
+    "author_id": "4429003533",
+    "created_at": "2026-02-01T01:36:14.000Z",
+    "text": "An FBI report from the latest Epstein release states that an anonymous victim said she woke up in a room with Jay-Z and Harvey Weinstein. \n\nThe victim stated her memory was clouded due to being drugged. https://t.co/yhaOaqml60",
+    "media": [
+      {
+        "media_key": "3_2017773855805423616",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HACSoZhaQAAjREJ.jpg",
+        "height": 729,
+        "width": 1295
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2929,
+      "reply_count": 499,
+      "like_count": 25216,
+      "quote_count": 398,
+      "bookmark_count": 1409,
+      "impression_count": 1037313
+    },
+    "author_followers": 4052664,
+    "author_name": "Pop Crave",
+    "author_description": "Craving Pop Culture.",
+    "author_tweet_count": 156438
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HACSoZhaQAAjREJ.jpg",
+          "description": {
+            "description": "A medium shot of Harvey Weinstein and Jay-Z sitting next to each other and laughing. Weinstein is on the left wearing a black blazer over a black t-shirt and blue jeans. Jay-Z is on the right, wearing a black beanie, a grey hoodie under a black jacket, and black trousers. He is clapping his hands and wearing a gold watch.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @statsofminaj: meanwhile beyonce and her fans are sitting here defending him smfh. (Likes: 1279)\n- @Joelyn45205201: Jay-Z is a pedo. Lock him up. (Likes: 918)\n- @swiftism100: what is the point of releasing the names on the epstein's files if nothing is going to be done? is it rich people parading their crimes in our faces? (Likes: 728)\n- @LangmanVince: Barrack Obama's best friend is a pedophile Birds of a feather! (Likes: 640)\n- @glindaupland: this really isn’t looking good for Jay-Z… but for anyone making jokes about this, this isn’t a funny situation or something to turn into a stan war. these were real victims, remember that. (Likes: 495)\n- @onminaa: Don’t delete this either!! (Likes: 441)\n- @holahovitaaa: Stop spreading misinformation!! 🚨It’s not a \"FBI report\", it’s an UNCLASSIFIED tip! (Likes: 311)\n- @notpopbase: y’all finally woke up… #JAYZISOVERPARTY (Likes: 289)\n- @xominajs: ewwwww smh jay-z and beyonce are disgusting!!! (Likes: 256)\n- @hexminaj: WE BEEN KNEW ABOUT PEDO Z IT WAS ABOUT TIME THO POP CRAVE (Likes: 219)",
+    "warnings": []
+  }
+}

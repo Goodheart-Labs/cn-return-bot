@@ -1,0 +1,83 @@
+{
+  "tweet_id": "2052363800750305773",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:46.500Z",
+  "post": {
+    "id": "2052363800750305773",
+    "author_id": "279390084",
+    "created_at": "2026-05-07T12:23:55.000Z",
+    "text": "David Attenborough spent over 70 years teaching humanity about earth; he just turned 100. \nThank you David, you're a light amongst the darkness. https://t.co/hJpIJjlZ4C",
+    "media": [
+      {
+        "media_key": "3_2052363501851541509",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHt1uyXWgAUsJbM.jpg",
+        "height": 720,
+        "width": 1080
+      },
+      {
+        "media_key": "3_2052363526266605569",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHt1wNUW0AEAXnh.png",
+        "height": 404,
+        "width": 635
+      },
+      {
+        "media_key": "3_2052363548446109696",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHt1xf8XMAAcv6j.jpg",
+        "height": 549,
+        "width": 976
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8656,
+      "reply_count": 345,
+      "like_count": 57484,
+      "quote_count": 289,
+      "bookmark_count": 1034,
+      "impression_count": 724088
+    },
+    "author_followers": 7591598,
+    "author_name": "Anonymous",
+    "author_description": "We are Anonymous, we are legion, we do not forgive, we do not forget. Expect us. \n\nHere to counter propaganda and un-fuck your mind!",
+    "author_tweet_count": 218148
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHt1uyXWgAUsJbM.jpg",
+          "description": {
+            "description": "A close-up photograph of Sir David Attenborough in a sunny meadow filled with yellow buttercups. He is smiling warmly while holding a tiny harvest mouse on his fingers, carefully observing the small creature as it explores a plant stem. He is wearing a light blue button-down shirt.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHt1wNUW0AEAXnh.png",
+          "description": {
+            "description": "A close-up portrait of Sir David Attenborough. He has white hair and is smiling gently at the camera. He is wearing a blue jacket over a light blue sweater and a white collared shirt. The background is a soft-focus outdoor setting with greens and tans.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHt1xf8XMAAcv6j.jpg",
+          "description": {
+            "description": "A portrait of Sir David Attenborough, an elderly man with white hair, wearing a light blue button-down shirt and a greyish-blue blazer. He is looking directly at the camera with a slight smile. The background is slightly out of focus, showing a decorative wall or screen with geometric patterns and red accents.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Matthew Todd 🌏🔥 (@MrMatthewTodd)**: Shame we haven’t listened to him  \n  Likes: 314 | Reposts: 75 | Replies: 4 | Views: 12151\n\n- **Logotyper (@logotypercom)**: 100 years old tomorrow. The man documented the planet longer than most species last on it.  \n  Likes: 142 | Reposts: 1 | Replies: 3 | Views: 3352\n\n- **deepa 🏴‍☠️ (@deeparocks)**: I’ve learned so much about our planet thanks to him  \n  Likes: 56 | Reposts: 0 | Replies: 0 | Views: 2514\n\n- **🗜๑яก้้้้้้้้Ħ⚙Ŀī0 (@cornholio74)**: You mean David Attenborough who together with the BBC lied about climate change and who attended many WEF meetings with known global elite climate scammers such as Al Gore? Right.. 🤡  \n  Likes: 40 | Reposts: 0 | Replies: 0 | Views: 2129\n\n- **Janie Pintobeans™️ 🇺🇸🇺🇦🌎 (@JanieChuckles)**: A true gift and hero to our planet and ecosystems everywhere. I wish his words distilled down.  \n  Likes: 34 | Reposts: 0 | Replies: 0 | Views: 907\n\n- **Elan Durham (@europabridge1)**: World Soul, thank you! #DavidAttenborough  \n  Likes: 25 | Reposts: 0 | Replies: 0 | Views: 2058\n\n- **DebPowell59 (@DebPowell59)**: His latest,Gorilla Story, is fantastic! Happy birthday and thank you for all the wonderful knowledge!  \n  Likes: 24 | Reposts: 0 | Replies: 0 | Views: 896\n\n- **Wildlife Uncovered (@IamSunnita)**: 100 years old. 70 years of making humanity stop, look, and actually care about the planet we're destroying. No screen time. No algorithm. Just a quiet voice that made the whole world listen. There will never be another David Attenborough.  \n  Likes: 24 | Reposts: 0 | Replies: 0 | Views: 738\n\n- **Addy D. (@addy_147)**: He also brought snooker to color television. not to be forgotten.  \n  Likes: 20 | Reposts: 0 | Replies: 1 | Views: 1104\n\n- **Yashilou (@yashilou)**: Totally agree, although his birthday is tomorrow (8th May). Total legend nonetheless  \n  Likes: 19 | Reposts: 1 | Replies: 1 | Views: 1404",
+    "warnings": []
+  }
+}

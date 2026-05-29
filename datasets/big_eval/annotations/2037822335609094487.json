@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2037822335609094487",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "misleading_methodology_or_metric",
+  "tweet_summary": "A viral list claims real-terms GDP-per-capita growth for each UK Prime Minister, with suspiciously low/uneven figures (e.g. tiny growth for big-reform PMs) implying decline under recent leaders and during mass immigration.",
+  "why_note_decision": "The per-PM figures do not match the standard ONS chained-volume-measure of real GDP per capita; multiple commenters (and ONS/World Bank data) show much higher cumulative growth for pre-2010 PMs (e.g. Thatcher's ~11yr term at ~2%/yr compounds to roughly +25-29%, not single-digit). The post presents a non-standard/incorrect calculation as authoritative economic fact, so a sourced correction is warranted.",
+  "judge_guidance": "PASS only if the note (1) states the post's per-PM figures do not use the standard ONS chained-volume-measure of real GDP per capita and are materially wrong/understated for most pre-2010 PMs, (2) gives at least one concrete corrected figure with the right order of magnitude (e.g. Thatcher cumulative real GDP-per-capita growth ~+25% to +29%, NOT ~+2-3%), and (3) cites an authoritative source (ONS time series IHXW or World Bank NY.GDP.PCAP.KD for GB). Do NOT pass a note that merely calls the post 'opinion', that endorses the post's numbers, or that argues immigration/political points without correcting the methodology.",
+  "reference_note": "The figures do not use the standard chained volume measure of real GDP per capita; official ONS and World Bank data show much higher growth for most pre-2010 PMs, e.g. +29% under Thatcher (not +2.7%). https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ihxw/pn2 https://data.worldbank.org/indicator/NY.GDP.PCAP.KD?locations=GB",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading - figures use a non-standard/incorrect measure that understates real GDP-per-capita growth for most pre-2010 PMs",
+    "sources_checked": [
+      "https://www.ons.gov.uk/economy/grossdomesticproductgdp",
+      "https://www.adamsmith.org/blog/economics/thatcherism-did-actually-make-britain-richer-compared-to-everyone-else",
+      "https://data.worldbank.org/indicator/NY.GDP.PCAP.KD?locations=GB"
+    ],
+    "notes": "UK trend real growth post-1980 ~2%/yr; over Thatcher's 11+ years that compounds to roughly +25-29% cumulative, consistent with the note. Standard metric is ONS chained volume measure (CVM). The post's figures are internally inconsistent with that measure."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "1.2M impressions on an economic-decline narrative tied to immigration politics; correcting fabricated macro statistics supports informed public reasoning (progress lens)."},
+  "difficulty": "medium"
+}

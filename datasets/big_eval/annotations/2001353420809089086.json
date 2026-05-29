@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2001353420809089086",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["staged_or_scripted_content", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "film_clip_shared_as_reaction",
+  "tweet_summary": "A 'New fear unlocked: 😨' reaction tweet over a viral water-park clip from the 2021 Polish thriller Small World, in which a shirtless man at the top of a slide asks a little girl 'may I go first?' — used as creepy-vibe content. Audio/visuals are cinematic and the clip is widely circulated as a film snippet.",
+  "why_note_decision": "The tweet is a one-line emotional reaction, not a factual claim that a real predator was filmed. The video is a known scene from Patryk Vega's Small World (2021), surfaced repeatedly on TikTok with that attribution. Comments mostly read it as a creepy vignette without asserting it's real footage of a crime; a few warn parents not to let kids go alone, but no checkable misleading claim is being made by the author. A note clarifying 'this is from a movie' has some informational value but the dominant rater verdict was 'note not needed,' and the original note also drew 'missing key points' tags (the source-of-clip context is borderline-trivia for a reaction post). Net: do not write.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a vague reaction caption over a movie scene; the author makes no claim it is real footage. A note explaining the clip comes from Patryk Vega's 2021 film Small World is informational but not a correction — most raters tagged 'note not needed.' Any note must avoid sounding like it is correcting a non-existent claim, and writing one at all should be treated as a false positive here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading — the clip is a scripted scene from the 2021 Polish thriller Small World (Światło), shown in the film's trailer and documented on IMDb. It's cinematic fiction, not a real-life predator incident. Evidence: https://www.imdb.com/title/tt14319068/ https://www.youtube.com/watch?v=8dlnYQLbRg8",
+    "failure_reason": "Corrects a claim the tweet didn't quite make; readers already treat it as a clip, not breaking news. Raters tagged 'note not needed' and 'missing key points'. Also gets the Polish title slightly wrong (the film's Polish title is 'Small World', not 'Światło').",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "clip is genuinely from Patryk Vega's 2021 Polish film Small World; tweet makes no false factual claim",
+    "sources_checked": [
+      "https://www.imdb.com/title/tt14319068/",
+      "https://pl.wikipedia.org/wiki/Small_World_(film)",
+      "https://www.youtube.com/watch?v=8dlnYQLbRg8"
+    ],
+    "notes": "Film is real, scene is real, attribution is correct. The tweet itself doesn't claim it is real footage — it just expresses unease. Polish title is 'Small World' (not 'Światło' as the note states)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Viral reaction clip; misattribution would matter mildly for moral-panic dynamics, but no high-stakes EA/AGI/welfare angle."
+  },
+  "difficulty": "medium"
+}

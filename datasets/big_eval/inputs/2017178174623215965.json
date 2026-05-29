@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2017178174623215965",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:20.141Z",
+  "post": {
+    "id": "2017178174623215965",
+    "author_id": "26677189",
+    "created_at": "2026-01-30T10:08:48.000Z",
+    "text": "Alcaraz was about to retire, then at the last second makes the switch. In his mind, Carlos said nah, I’m fighting. And then he won.\n\nThat’s a competitor. https://t.co/ikx6SidTGn",
+    "media": [
+      {
+        "media_key": "13_2017171799042351105",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2017171799042351105/img/z7lEu85OfjVJY185.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 43498,
+        "view_count": 1210247,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2017171799042351105/vid/avc1/480x270/3HTsPl22mtbeDGbk.mp4?tag=14"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2017171799042351105/vid/avc1/640x360/BEbI42xCVn10BTN-.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2017171799042351105/vid/avc1/1280x720/EM5ZMKgFrUBNay9y.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2017171799042351105/pl/Q_2HMSgM-MoWNuj8.m3u8?tag=14&v=9f5"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 393,
+      "reply_count": 150,
+      "like_count": 10792,
+      "quote_count": 58,
+      "bookmark_count": 875,
+      "impression_count": 1036519
+    },
+    "author_followers": 53672,
+    "author_name": "Pamela Maldonado",
+    "author_description": "Predictive storytelling @ ESPN",
+    "author_tweet_count": 63159
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2017171799042351105/vid/avc1/1280x720/EM5ZMKgFrUBNay9y.mp4?tag=14",
+          "description": {
+            "description": "A series of frames depicting a professional tennis match at the Australian Open in Rod Laver Arena. Carlos Alcaraz, wearing a neon green sleeveless top and matching shorts, is seen walking on the court during a break in play. In the first frame, he is in a close-up profile. Subsequent frames show him walking past ball boys and sponsorship logos for Emirates and Mastercard.",
+            "ocrText": "AO LIVE ESPN ROD LAVER ARENA ALCARAZ (1) 6 7^7 6^1 1 ZVEREV (3) 4 6^3 7^7 1 MELBOURNE Emirates ANZ mastercard KIA"
+          },
+          "transcription": "And it looked like when they walked to change sides that maybe Alcaraz was thinking about retiring, Chris. What did you think from down there, courtside? I thought the same thing, Patrick. When that racket changed his hands and he's walking to the net, immediately my mind went to, it could be, he could be about to retire. But he immediately kind of pivoted left, turned left, changed his whole kind of stride. And you can see Zverev, he's been a bit confused there. Alcaraz gave Zverev a bit of an apology. wave because I think he understood that Zverev assumed that maybe the handshake was coming. So we're going to see if Alcaraz is able to turn this around. Zverev absolutely thought he was going to stop."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@jeffbuff73**  \nhe got a lot of help from the referee in this one, which was wrong to begin with. Rules are rules and Z had every right to be upset. Hate to see players get special treatment regardless of their ranking  \n**Engagement:** 101 likes  \n\n**@mushbetscom**  \nDo you think he did it to get in opponent head?  \n**Engagement:** 84 likes  \n\n**@QuentinMoynet**  \nNice story. Only problem is, it's not what happened. At all.  \n**Engagement:** 67 likes  \n\n**@BreakpointBando**  \nI understand that’s how this can be perceived. But truth be told, Carlos was NEVER retiring in this moment. Cut off his own path to avoid walking around the net at the same time as his opponent. Zverev also cut off his route. Creating awkward moment leading to the hand motion.  \n**Engagement:** 42 likes  \n\n**@mromanell**  \nI’ve never been a big Alcaraz guy…no idea why.  \nPulling for Joker to win the title.  \n**Engagement:** 29 likes  \n\n**@TheRealTennisIQ**  \nI don’t think he was going to retire, they just have the mania (especially Zverev) to go after the rival on their way to the break. Just that.  \n**Engagement:** 26 likes  \n\n**@skylardarel**  \nThis is not true lol he just got confused about who would cross the net first  \n**Engagement:** 25 likes  \n\n**@cryptohuntz**  \n1) what?  \nhe was never going to retire lmao  \nhe cheated with a fake medical timeout for a cramp due to LACK OF FITNESS  \n**Engagement:** 24 likes  \n\n**@TimmBrocks**  \nHe decided to cramp…clever, still not a sportsman and as well a form of cheating.  \n**Engagement:** 23 likes  \n\n**@OnePuttAJR**  \nThat’s a cheater  \n**Engagement:** 21 likes",
+    "warnings": []
+  }
+}

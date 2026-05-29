@@ -1,0 +1,73 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Jewish man attacked cafe San Francisco 2026",
+        "antisemitic attack San Francisco restaurant 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Results immediately surfaced an incident matching the video (Augustine restaurant, blue patio umbrellas, Santana Row) — but located in San Jose, not San Francisco. Two Israeli-American victims, three suspects. No 'Islamist' framing in any mainstream coverage.",
+      "lesson": "The incident is real but the tweet has at least two factual errors: city (San Jose vs San Francisco) and attacker characterization (Islamists). Multiple mainstream sources (ABC7, NBC, CBS, KTVU, JTA) confirmed San Jose."
+    },
+    {
+      "queries": [
+        "Santana Row attack San Jose \"Islamist\" OR \"Muslim\" suspects arrested 2026",
+        "Akoyans Chamaki Santana Row background ethnicity religion"
+      ],
+      "purpose": "targeted — checking 'Islamist' claim specifically",
+      "what_returned": "No source identifies suspects as Islamist or Muslim. One source (bronx.com / search summary) identifies them as Assyrian heritage, with Chamaki being Assyrian-American (a Christian community). Akoyans is an Armenian-pattern surname. Hate crime charges were NOT filed — DA said evidence did not support it.",
+      "lesson": "The 'Islamists' label is entirely unsupported by any reporting. Suspects are Assyrian/Armenian background. Also confirmed: two victims, not one."
+    }
+  ],
+  "gold_queries": [
+    "Jewish men attacked San Jose Santana Row 2026",
+    "Santana Row antisemitic attack suspects arrested San Jose",
+    "Bruneil Chamaki Akoyans Santana Row assault charges",
+    "Santana Row attack San Jose hate crime charges declined"
+  ],
+  "found_sources": [
+    {
+      "url": "https://abc7news.com/post/caught-video-sjpd-investigating-possible-hate-crime-2-jewish-men-attacked-santana-row-san-jose/18700623/",
+      "title": "Caught on video: SJPD investigating possible hate crime after 2 Jewish men attacked at Santana Row in San Jose - ABC7 San Francisco",
+      "found_via_query": "Jewish man attacked cafe San Francisco 2026",
+      "authority_reason": "Major local TV news (ABC affiliate), on-the-ground coverage",
+      "what_it_establishes": "Attack happened in San Jose (not San Francisco), two victims (not one), attackers described as 'three young men' with no religious/ideological label"
+    },
+    {
+      "url": "https://www.ktvu.com/news/santana-row-attck-no-hate-crime-charges",
+      "title": "Attorney among 3 charged in Santana Row attack outside restaurant - KTVU",
+      "found_via_query": "antisemitic attack San Francisco restaurant 2026",
+      "authority_reason": "Major local TV news (Fox affiliate Bay Area), named suspects with official charges",
+      "what_it_establishes": "Suspects are Bruneil Henry Chamaki, Roma Akoyans, Ramon Akoyans. No hate crime charges filed. No 'Islamist' identification anywhere. DA said evidence did not support hate crime allegation."
+    },
+    {
+      "url": "https://www.jta.org/2026/03/11/united-states/assault-of-hebrew-speaking-israelis-in-san-jose-calif-spurs-outcry-and-investigation",
+      "title": "Assault of Hebrew-speaking Israelis in San Jose, Calif., spurs outcry and investigation - Jewish Telegraphic Agency",
+      "found_via_query": "Jewish man attacked cafe San Francisco 2026",
+      "authority_reason": "Jewish Telegraphic Agency — authoritative Jewish news wire",
+      "what_it_establishes": "San Jose location confirmed, two victims, attack triggered by Hebrew speech, no Islamist framing"
+    },
+    {
+      "url": "https://www.assyriapost.com/court-dismisses-alleged-hate-crime-in-high-profile-santana-row-assault-case/",
+      "title": "Court dismisses alleged hate crime in high-profile Santana Row assault case - Assyria Post",
+      "found_via_query": "Akoyans Chamaki Santana Row background ethnicity religion",
+      "authority_reason": "Assyrian community outlet, directly relevant to suspect community background",
+      "what_it_establishes": "Chamaki is Assyrian-American. Hate crime charge dismissed. Charges are felony assault and misdemeanor battery only."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching for the underlying incident (Jewish attack + San Francisco + 2026) immediately surfaced the real story despite the city being wrong in the tweet",
+      "The Augustine restaurant name visible in the video provided a distinctive cross-check signal",
+      "Searching suspect names + ethnicity/religion directly confirmed the 'Islamist' claim was false",
+      "Checking whether hate crime charges were filed was a strong signal on the ideological framing claim"
+    ],
+    "what_hurt": [
+      "The tweet's wrong city (San Francisco vs San Jose) could have led a one-shot model to discard results or try harder for non-existent SF coverage",
+      "The 'Islamist' framing is not directly contradicted in one place — it requires combining: (a) no source uses that label, (b) suspects have Christian/Assyrian-Armenian background"
+    ],
+    "would_multipass_help": "yes — a one-shot model might stop after finding the incident (confirming an attack occurred) without then checking the 'Islamist' label. A second pass specifically targeting suspect identity/religion is needed to catch the most important falsehood in the tweet.",
+    "deepseek_advice": "For tweets with strong ideological labels ('Islamists,' 'white supremacist,' 'antifa'), always run a second query explicitly targeting the suspect's identity/religion — the first search confirms the event happened, the second checks whether the characterization matches. Also watch for city/location errors: bay area tweets often conflate San Francisco with nearby cities like San Jose or Oakland."
+  }
+}

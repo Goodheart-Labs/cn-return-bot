@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2004965810805293223",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports", "joke_or_satire"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Game reviewer jokes that 'our first bit of new info on The Elder Scrolls 6 in over 7 years' is Todd Howard confirming TES6 will have 'MORE TREES than Skyrim' — accurate framing of a real but trivial AnyAustin YouTube cameo.",
+  "why_note_decision": "Multiple outlets (ScreenRant, TheGamer, OpenCritic, GamesRadar, GamingBible, The Game Awards) confirm Todd Howard appeared in AnyAustin's tree-counting Skyrim video and DID say TES6 'most definitely' has more trees than Skyrim. The framing ('first new info in 7 years') is gentle gaming-news humor — every reply treats it as comedy. The original note pedantically notes 'casual cameo, not an official Bethesda update', but the tweet doesn't claim it's an official Bethesda press release; raters dominantly voted note-not-needed (17). The note is technically true but completely unnecessary.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Todd Howard genuinely confirmed in AnyAustin's video that TES6 has more trees than Skyrim — every major gaming outlet reported it. The tweet's framing as 'new info' is accurate jokey gaming-news commentary. Any note pedantically labelling it 'casual cameo not official' is a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The clip is from a YouTube video where Todd Howard made a casual cameo in a tree-counting challenge for Skyrim, not an official Bethesda update on The Elder Scrolls 6. https://www.youtube.com/watch?v=35yfu2wXmto https://screenrant.com/elder-scrolls-6-update-todd-howard-trees/",
+    "failure_reason": "Pedantic — Howard genuinely confirmed the claim; the 'casual cameo' framing isn't material to whether the info is real.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Howard genuinely said TES6 has more trees than Skyrim in AnyAustin's YouTube video; tweet is accurate.",
+    "sources_checked": [
+      "https://screenrant.com/elder-scrolls-6-update-todd-howard-trees/",
+      "https://www.thegamer.com/the-elder-scrolls-6-trees-todd-howard/",
+      "https://www.gamesradar.com/games/the-elder-scrolls/todd-howard-says-elder-scrolls-6-most-definitely-has-more-trees-than-skyrim-and-now-im-pinning-valenwood-to-the-location-conspiracy-board/"
+    ],
+    "notes": "Confirmed by 6+ outlets including The Game Awards' official account."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Trivial gaming news — useful false-positive trap for pedantic-correction failure mode."
+  },
+  "difficulty": "easy"
+}

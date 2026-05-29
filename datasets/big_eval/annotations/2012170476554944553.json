@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2012170476554944553",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Eyal Yakoby posts a video of an IRGC convoy with a Farsi protest banner overlay, claiming the IRGC is 'flooding streets with forces, as they institute full martial law' and that 'anyone who they find will be killed on site,' framed as the reason the internet is off.",
+  "why_note_decision": "Substantively the tweet describes a real and widely-reported event: in Jan 2026 the IRGC and FARAJA were deployed against nationwide protests in Iran, nightly curfews were imposed, the country had a multi-day internet blackout, and the death toll runs into the thousands (Iran officially 3,117, UN Special Rapporteur citing up to 20,000). The original note actually CONFIRMS most of this (IRGC deployed, internet shutdown ongoing, 2,677+ killed) and only quibbles two things: (1) no de jure 'martial law' has been declared, just curfews, and (2) no 'kill-on-sight' policy is officially declared. That is correcting framing/hyperbole on a tweet about a genuine atrocity in progress — a textbook accurate-reporting-contested no-note case, and raters agreed (NoteNotNeeded dominant, with notHelpfulOpinionSpeculation high).",
+  "judge_guidance": "PASS only if the bot declines to write a note. FAIL any note that 'corrects' this tweet by saying martial law was not formally declared, or that disputes the 'kill on sight' line. The tweet describes an ongoing mass-killing crackdown that is real and well-documented; quibbling the legal label of the curfew minimizes a genuine atrocity. (If the bot wrote a note adding hard casualty figures or sourcing, FAIL — even a 'better' version of this correction is still a note that shouldn't exist.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "IRGC forces are deployed amid protests in Iran, but no martial law has been declared—curfews are imposed after 8 PM in some areas. At least 2,677 have been killed, but no kill-on-sight policy reported. Nationwide internet shutdown ongoing. https://www.criticalthreats.org/analysis/iran-update-january-15-2026 https://en.radiozamaneh.com/37657 https://www.reuters.com/world/middle-east/irans-army-vows-protect-public-property-tehran-seeks-quell-growing-unrest-2026-01-10",
+    "failure_reason": "Note-not-needed: 'corrects' hyperbolic framing about an actual ongoing mass-killing crackdown. The tweet's core facts (IRGC deployed, internet blackout, mass casualties) are true and confirmed by Amnesty/UN; the note disputes the legal label only, which reads as minimizing.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "substantively_true_with_some_hyperbole",
+    "sources_checked": [
+      "https://www.amnesty.org/en/latest/news/2026/01/iran-authorities-unleash-heavily-militarized-clampdown-to-hide-protest-massacres/",
+      "https://en.wikipedia.org/wiki/2026_Internet_blackout_in_Iran",
+      "https://commonslibrary.parliament.uk/research-briefings/cbp-10462/",
+      "https://www.criticalthreats.org/analysis/iran-update-january-9-2026"
+    ],
+    "notes": "IRGC + Basij + FARAJA are deployed; total internet blackout since 8 Jan 2026; official Iranian count 3,117 killed, UN Special Rapporteur citing possibly 20,000; nighttime curfews in cities. The 'no formal martial law / no announced kill-on-sight' qualifications are technically true but pedantic given the crackdown is exactly what the tweet describes substantively."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Mass-casualty event affecting millions; documenting state violence is high-value, and writing a downplaying 'correction' on it would be the bot causing actual harm."
+  },
+  "difficulty": "hard"
+}

@@ -1,0 +1,80 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "man caught mining cryptocurrency school building crawlspace",
+        "Nadeam Nahas crypto mining school Cohasset Massachusetts"
+      ],
+      "purpose": "exploratory + targeted",
+      "what_returned": "Multiple mainstream news sources (ABC News, CBS Boston, NBC Boston, Fox News, Gizmodo, Entrepreneur) all covering the same verified event: Nadeam Nahas, 39, former assistant facilities director at Cohasset Middle/High School in Massachusetts, charged with fraudulent use of electricity and vandalism for running a crypto mining operation in a school crawlspace. No source describes him as Indian.",
+      "lesson": "Query 1 (generic) immediately surfaced the real story. Query 2 (with the defendant's name from the video description) confirmed identity. The surname 'Nahas' is of Arabic/Lebanese origin — mainstream sources describe him only as a 'Massachusetts man', never as Indian."
+    },
+    {
+      "queries": [
+        "Nadeam Nahas background ethnicity nationality Cohasset Massachusetts"
+      ],
+      "purpose": "targeted — verify ethnicity claim",
+      "what_returned": "Surname lookup sources confirm 'Nahas' is of Arabic/Lebanese origin. News sources consistently describe him only as a Massachusetts man. No source identifies him as Indian.",
+      "lesson": "No source corroborates the 'Indian' characterization. The surname and name 'Nadeam' (Arabic variant of Nadeem) are consistent with Arab/Lebanese heritage, contradicting the tweet's framing."
+    },
+    {
+      "queries": [
+        "Nadeam Nahas NOT Indian Arab Lebanese Cohasset school crypto mining misidentified"
+      ],
+      "purpose": "brand-suffix / misidentification angle",
+      "what_returned": "No dedicated fact-check page on the misidentification. But all mainstream sources (ABC, CBS, NBC, Fox News) describe him as a 'Massachusetts man' with no Indian connection. The NBC Boston article adds detail: he was a former HVAC coordinator for Plymouth Public Schools.",
+      "lesson": "No standalone fact-check article exists debunking the 'Indian' claim, but the totality of mainstream coverage — none of which mentions Indian heritage — is sufficient to establish the misidentification."
+    }
+  ],
+  "gold_queries": [
+    "Nadeam Nahas crypto mining school Cohasset Massachusetts",
+    "man caught mining cryptocurrency school crawlspace Massachusetts charged",
+    "Cohasset school cryptocurrency mining crawl space arrest 2023",
+    "Nadeam Nahas Cohasset assistant facilities director charges"
+  ],
+  "found_sources": [
+    {
+      "url": "https://abcnews.go.com/US/massachusetts-man-charged-after-hiding-cryptocurrency-mining-rig/story?id=97440173",
+      "title": "Massachusetts man charged after hiding cryptocurrency mining rig in school crawl space",
+      "found_via_query": "man caught mining cryptocurrency school building crawlspace",
+      "authority_reason": "ABC News national outlet; also linked to WCVB (ABC Boston affiliate) which produced the original report shown in the tweet's video",
+      "what_it_establishes": "Suspect is Nadeam Nahas, 39, former assistant facilities director at Cohasset school in Massachusetts — described as 'Massachusetts man', not Indian"
+    },
+    {
+      "url": "https://www.cbsnews.com/boston/news/nadeam-nahas-arrest-cohasset-cryptocurrency-mining-operation-high-school-crawl-space/",
+      "title": "Former Cohasset worker charged with running cryptocurrency 'mining operation' under high school",
+      "found_via_query": "Nadeam Nahas crypto mining school Cohasset Massachusetts",
+      "authority_reason": "CBS Boston local news — primary market for this story; direct coverage of the arrest",
+      "what_it_establishes": "Nahas is a Massachusetts man, former town employee. No Indian identity mentioned. Charges: fraudulent use of electricity, vandalizing school."
+    },
+    {
+      "url": "https://www.nbcboston.com/news/local/cryptocurrency-mining-operation-discovered-inside-crawl-space-of-cohasset-school-police-say/2980773/",
+      "title": "Cryptocurrency Mining Operation Discovered Inside Crawl Space of Cohasset School",
+      "found_via_query": "Nadeam Nahas NOT Indian Arab Lebanese Cohasset school crypto mining misidentified",
+      "authority_reason": "NBC Boston — another major Boston local news outlet with independent reporting",
+      "what_it_establishes": "Nahas was also a former HVAC coordinator for Plymouth Public Schools; consistently described as a Massachusetts man, no Indian background"
+    },
+    {
+      "url": "https://www.foxnews.com/us/massachusetts-man-allegedly-set-up-illegal-cryptocurrency-mining-outpost-inside-public-school",
+      "title": "Massachusetts man allegedly set up illegal cryptocurrency mining outpost inside public school",
+      "found_via_query": "Nadeam Nahas background ethnicity nationality Cohasset Massachusetts",
+      "authority_reason": "Fox News national outlet; national wire-level coverage of the story",
+      "what_it_establishes": "Described as 'Massachusetts man' — no mention of Indian ethnicity or background"
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "The video description included the defendant's name (Nadeam Nahas) and 'Cohasset Police' — using these in a direct query immediately returned all relevant sources",
+      "The generic query 'man caught mining cryptocurrency school building crawlspace' also worked well as a first-pass exploration without needing the name",
+      "Multiple mainstream outlets (ABC, CBS, NBC, Fox) all covered this, making it easy to cross-verify",
+      "Surname origin search ('Nahas' = Arabic/Lebanese) helped confirm the ethnic misidentification angle"
+    ],
+    "what_hurt": [
+      "No single fact-check article explicitly debunking the 'Indian' claim exists — had to infer from absence across all mainstream sources",
+      "ABC News redirected, requiring a second fetch call"
+    ],
+    "would_multipass_help": "no — Round 1 already surfaced all necessary authoritative sources; the story is well-documented in mainstream news",
+    "deepseek_advice": "When a tweet video shows a criminal docket or news chyron with a defendant name, extract that name and search it directly alongside any visible location (e.g. 'Nadeam Nahas Cohasset school'). The ethnic/national characterization in viral tweets is often the claim to verify — check whether any mainstream source corroborates the stated ethnicity, and note when all sources describe the person differently."
+  }
+}

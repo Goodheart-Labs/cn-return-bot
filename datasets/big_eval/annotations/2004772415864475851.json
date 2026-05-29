@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2004772415864475851",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "political_xenophobic_invective",
+  "tweet_summary": "Eyal Yakoby calls for Myron Gaines (Amrou Fudl) to be deported as an 'Islamist', implying he is a foreign immigrant.",
+  "why_note_decision": "The tweet is mostly an opinion/insult ('zero reason this pos is in our country', 'Deport Islamists') that smuggles in a false implication that the subject is an immigrant. The factual underpinning — Myron Gaines was born in Brooklyn and is a US citizen — is true and worth noting in principle, but the tweet's primary content is name-calling/political invective, and replies overwhelmingly already make the citizenship point clear. Raters flagged dominant NotHelpfulNoteNotNeeded; the call to deport a citizen is opinion/policy framing, not a clean check-the-claim target, and the cited Wikipedia source doesn't directly state birthplace.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is dominated by opinion/invective; a note 'fact-checking' that Myron Gaines was born in Brooklyn (true per multiple bios) addresses only an implicit subtext while leaving the bulk of the tweet (opinion, slur) untouched. If a note IS written, it must (a) cite a reliable bio source that explicitly states US birth/citizenship — not just a Wikipedia page about the podcast — and (b) avoid editorializing on the deportation call.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Amrou Fudl (Myron Gaines) was born in Brooklyn, New York, and is a U.S. citizen.",
+    "failure_reason": "Single Wikipedia source (about the podcast, not his bio) doesn't explicitly back the claim; community judged the underlying tweet too opinion-driven for a note. NotHelpfulNoteNotNeeded dominant.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet is opinion/invective; embedded implication that he's an immigrant is false (born Brooklyn 1990)",
+    "sources_checked": [
+      "https://www.bbntimes.com/society/meet-amrou-fudl-known-as-myron-gaines-discover-his-net-worth-ethnicity-as-well-as-his-viral-fresh-and-fit-podcast",
+      "https://americanbazaaronline.com/2025/11/25/who-is-myron-gaines-controversial-podcaster-at-center-of-akaash-singh-viral-feud-470562/"
+    ],
+    "notes": "Multiple bios confirm born in Brooklyn, NY on Feb 1 1990; ex-DHS special agent until 2020. Tweet itself doesn't assert he's an immigrant — only implies it via 'came to America' phrasing."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "31k impressions, partisan back-and-forth between two public figures; low EA/progress stakes."
+  },
+  "difficulty": "medium"
+}

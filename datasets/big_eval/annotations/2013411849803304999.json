@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2013411849803304999",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Syria analyst Charles Lister quotes a screenshot from X user @EgidSerzan threatening to 'erase' Arab tribes in Qamishli, attributing the statement to an 'SDF commander' during the Hasakah/Qamishli fighting.",
+  "why_note_decision": "Multiple credible voices in the reply thread, including Kurdish journalist/analyst Frederike Geerdink, Kurdish analyst Kamal Chomani (cited in the original note), and others, say @EgidSerzan is not an SDF/YPG commander — just a private X user. No reputable English-language source identifies him as a commander, and there is no corroboration in the major outlets covering the Hasakah/Qamishli clashes. On a 263K-impression post by a 219K-follower Syria analyst, an attribution-correction note is warranted.",
+  "judge_guidance": "PASS if the note (1) states the 'SDF commander' attribution for the @EgidSerzan post is unverified / disputed, AND (2) cites at least one credible Kurdish journalist/analyst or outlet noting he is not a known SDF commander (e.g., Kamal Chomani's post, Frederike Geerdink reply, Al Jazeera reporting that does not corroborate). FAIL if the note: asserts the threat itself is fabricated (the post exists), defends Lister's attribution, or denies the Syria-government / SDF context entirely.",
+  "reference_note": "Attributing an 'erase you' threat to an SDF commander is unverified. Kurdish analysts including Kamal Chomani say the post comes from a private/non-SDF account, and major outlets covering the Hasakah/Qamishli fighting do not corroborate the quote as coming from any SDF commander. https://x.com/KamalChomani/status/2013507206046417292 https://www.aljazeera.com/news/2026/2/3/syrian-forces-enter-qamishli-under-ceasefire-deal-with-sdf-state-media",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misattributed_source",
+    "sources_checked": [
+      "https://x.com/KamalChomani/status/2013507206046417292",
+      "https://www.aljazeera.com/news/2026/2/3/syrian-forces-enter-qamishli-under-ceasefire-deal-with-sdf-state-media",
+      "https://en.wikipedia.org/wiki/SDF%E2%80%93Syrian_transitional_government_clashes_(2025%E2%80%93present)"
+    ],
+    "notes": "EgidSerzan does not appear in any reputable English source as an SDF commander. Multiple Kurdish observers in the thread reject the attribution; Lister has not provided corroborating evidence."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "War-zone misattribution from a prominent Syria analyst risks inflaming inter-ethnic violence. Correcting it is valuable for accurate conflict reporting standards."
+  },
+  "difficulty": "hard"
+}

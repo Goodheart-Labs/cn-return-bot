@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2003612899714171039",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:23.501Z",
+  "post": {
+    "id": "2003612899714171039",
+    "author_id": "3271184538",
+    "created_at": "2025-12-23T23:45:15.000Z",
+    "text": "Two of the three measles deaths in 2025 were previously healthy, unvaccinated school-aged children. \n\nThe third was an immunocompromised adult who couldn’t safely receive the live vaccine and was relying on the rest of us to protect him. Measles killed healthy kids this year. The https://t.co/jnJNn9Mjo9",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2003607442937249859"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2003607442937249859",
+      "author_id": "2546065954",
+      "created_at": "2025-12-23T23:23:34.000Z",
+      "text": "@jakescottMD What is the number of measles deaths in “healthy” people? \nYou are comparing apples to oranges. \nHow many measles vaccine deaths in non healthy people?  \n3 deaths seems super low in a population of 300M. Maybe we can skip this vaccine.",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 604,
+      "reply_count": 69,
+      "like_count": 2455,
+      "quote_count": 25,
+      "bookmark_count": 157,
+      "impression_count": 248018
+    },
+    "author_followers": 17792,
+    "author_name": "Jake Scott, MD",
+    "author_description": "Infectious diseases doctor, Clinical Assoc. Prof @StanfordDeptMed | @cidrap writer | views mine | no conflicts of interest",
+    "author_tweet_count": 6737
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Stephen Griffin** (@SGriffin_Lab): Maybe also point out to these eejits that measles kills ~100k every year, mainly CYP in countries without access to vaccines... (33 likes, 0 reposts)\n\n**Anita White. 😷** (@RealAnitaWhite): I was chatting to someone yesterday about measles whose knowledge was from The Brady Bunch, and they were quite shocked about the immune amnesia aspect, they said, \"I didn't know viruses could do that.\" Then I mentioned SSPE. Again, they did not know. (32 likes, 0 reposts)\n\n**Tristan Tristano** (@dinot1932): You look like a douche and your avatar is retarded. (28 likes, 0 reposts)\n\n**JEM** (@trixster001): No you dumb asshat. Texan here. it is bc of millions of unvetted illegals. Now STFU (26 likes, 0 reposts)\n\n**Mimi in NZ** (@MimiinNZ): Didn’t they vaccinated those 2 kids while they had the measles? (22 likes, 0 reposts)\n\n**-.-- --- ..- / .- .-. . / -... --- .-. . -** (@bitchimlying): And the risk of other adverse side effects is what exactly? (13 likes, 0 reposts)\n\n**eebie 🍁 🌎😷 💉 8 Pfizer club 💉😷 🌎 🍁** (@eebie4): The anti-vaxxers don't focus on the community needs in disease prevention and control. Which is incredibly frustrating. It's so selfish to think in those terms. I have good reasons why I shouldn't have risked the covid vaccines. But I did, so I would be safe to people @ me. (10 likes, 0 reposts)\n\n**-.-- --- ..- / .- .-. . / -... --- .-. . -** (@bitchimlying): [image attached] (10 likes, 0 reposts)\n\n**ZPOT on** (@ZPOTonCOM): HAHA the community noteis trying to correct you .... using a substacks as source :D of course its voted not helpfull. (5 likes, 0 reposts)\n\n**Charles Muscoplat, PhD Immunology (views my own)** (@cmuscop): If we skipped the vaccine 3 deaths would become 300,000. The reason it’s only 3 is due to vaccines (3 likes, 0 reposts)",
+    "warnings": []
+  }
+}

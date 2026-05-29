@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2032110843635089792",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "breaking_news_and_war",
+    "conspiracy_and_viral_hoax"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A breaking-news account claims as confirmed fact that Iran's new supreme leader Mojtaba Khamenei is in a coma and had his leg amputated.",
+  "why_note_decision": "A note is warranted: the tweet presents unverified rumors ('#BREAKING confirmed') about a head of state's medical condition as established fact, to 7.8M+ impressions. The coma/amputation claim traces to anonymous-sourced tabloid reporting (The Sun); it is NOT confirmed. That said, the situation is genuinely murky \u2014 Mojtaba did not appear publicly, a cardboard cutout was used at the succession rally, and state media labeled him 'janbaz' (disabled war veteran). International reporting indicated a fractured foot and minor facial injuries, and a statement was issued in his name via state TV (read by a presenter). So the correct note should flag the coma/amputation as unverified rather than assert a competing certainty.",
+  "judge_guidance": "PASS only if the note states that the coma-and-amputation claim is UNVERIFIED / not confirmed (traceable to anonymous tabloid sources), and ideally notes that Iran acknowledged he was injured and issued a statement in his name via state media. The note must NOT itself over-claim the opposite as settled fact \u2014 e.g. flatly asserting 'reliable sources report only minor injuries' as if his condition were clearly known is itself questionable given he made no public appearance and a cardboard cutout was used; the original note's overconfidence here is what drew opinion/speculation + incorrect ratings. A correct note acknowledges uncertainty on both sides: the specific coma/amputation claim is unconfirmed, while officials say he is injured but alive. FAIL if it endorses the coma/amputation as confirmed, or if it has no source.",
+  "reference_note": "This is not confirmed. The coma-and-leg-amputation claim comes from anonymous-sourced tabloid reports and has not been verified. Iran acknowledged Mojtaba Khamenei was injured in the strike that killed his father and issued a statement in his name via state media; his exact condition remains unclear amid an information blackout. https://www.euronews.com/2026/03/12/missing-in-action-what-we-know-about-mojtaba-khameneis-condition",
+  "original_unhelpful_note": {
+    "text": "The claim that Iran's Supreme Leader Mojtaba Khamenei is confirmed to be in a coma and had his leg amputated is inaccurate. These are unverified rumors; reliable sources report only minor injuries, and he issued a statement via state media.    https://www.reuters.com/world/middle-east/irans-new-supreme-leader-lightly-injured-still-active-iranian-official-tells-2026-03-11  https://www.cnn.com/2026/03/11/middleeast/mojtaba-khamenei-injuries-iran-supreme-leader-latam-intl",
+    "failure_reason": "Rated notHelpfulOpinionSpeculation (23) + notHelpfulNoteNotNeeded (21) + sources/incorrect. The note correctly calls the claim unverified, but then over-asserts the opposite ('reliable sources report only minor injuries') as settled \u2014 contestable given he made no public appearance and a cardboard cutout was used at the succession rally. Leaning on a single Iranian-official-sourced framing ('lightly injured, still active') without acknowledging the genuine uncertainty made the note read as taking a side.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "unverified (presented as confirmed; actually unconfirmed)",
+    "sources_checked": [
+      "https://www.euronews.com/2026/03/12/missing-in-action-what-we-know-about-mojtaba-khameneis-condition",
+      "https://www.gbnews.com/news/world/iran-news-ayatollah-mojtaba-khamenei-statement-coma",
+      "https://freebeacon.com/latest-news/iran-displays-taped-together-cardboard-cutout-of-mojtaba-khamenei-as-new-supreme-leader-remains-out-of-sight-report/"
+    ],
+    "notes": "Mojtaba Khamenei was injured in the strike that killed his father. Coma + amputation claims come from The Sun's anonymous sources and are not confirmed; international media reported a fractured foot and minor facial injuries. He made no public appearance (a cardboard cutout was used at the succession rally) and state media labeled him 'janbaz'/disabled war vet, so his true condition is genuinely uncertain. A statement was issued in his name, read by a TV presenter. Bottom line: the tweet's 'confirmed coma + amputation' is unverified; the opposite is also not cleanly established."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Wartime claims about the medical status of a nuclear-armed adversary's head of state can shape escalation dynamics; reducing unverified rumor here has real geopolitical value."
+  },
+  "difficulty": "hard"
+}

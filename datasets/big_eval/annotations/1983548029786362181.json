@@ -1,0 +1,39 @@
+{
+  "tweet_id": "1983548029786362181",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": [
+    "celebrity_entertainment_sports"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Sports pundit grades Browns GM Andrew Berry's recent draft, marking Mason Graham, Carson Schwesinger, Quinshon Judkins, Harold Fannin Jr. with check marks (good picks), Dillon Gabriel with an X, and Dylan Sampson / Shedeur Sanders as TBD (question marks). It's an opinion/grading post, not a roster claim.",
+  "why_note_decision": "No note is warranted, and the original note is itself false. The Browns DID draft all four checkmarked players in the 2025 NFL Draft (Graham R1, Schwesinger R2, Judkins R2, Fannin R3; Gabriel R3, Sampson R4, Sanders R5). The checkmarks are the pundit's good/bad GRADE of each pick, not a claim about whether they were drafted. There is nothing misleading to correct; the post is accurate sports commentary.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap. The check marks are an opinion grade ('good pick / bad pick'), and every named player really was drafted by the Cleveland Browns in 2025 (Mason Graham R1, Carson Schwesinger R2, Quinshon Judkins R2, Harold Fannin Jr. R3, Dillon Gabriel R3, Dylan Sampson R4, Shedeur Sanders R5). Any note is a false positive. SPECIFICALLY FAIL any note that claims Schwesinger, Judkins, or Fannin were not drafted/signed by Cleveland, or that 'only Mason Graham is confirmed' \u2014 that is factually wrong and repeats the original note's error. Also fail notes that treat the check marks as literal roster confirmations.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Only Mason Graham is confirmed as a Browns acquisition. No evidence exists that Carson Schwesinger, Quinshon Judkins, or Harold Fannin Jr. have been drafted/signed by Cleveland, despite being marked with checkmarks. https://www.clevelandbrowns.com/news/andrew-berry-highlights-no-5-pick-mason-graham-s-addition-to-the-browns-he-is-a-dna-match-for-our-defense",
+    "failure_reason": "Rated notHelpfulIncorrect (14). The note is factually false: Schwesinger (R2), Judkins (R2), and Fannin Jr. (R3) were all drafted by the Browns in 2025, alongside Graham (R1). The note misread an opinion grading post (check marks = the pundit's approval of each pick) as a roster claim, then 'corrected' a real fact. The tweet, not the note, is accurate.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.clevelandbrowns.com/news/cleveland-browns-2025-draft-class",
+      "https://www.pro-football-reference.com/teams/cle/2025_draft.htm",
+      "https://www.espn.com/nfl/draft/teams/_/name/cle/season/2025/cleveland-browns"
+    ],
+    "notes": "Official Browns 2025 draft class includes Mason Graham, Carson Schwesinger, Quinshon Judkins, Harold Fannin Jr., Dillon Gabriel, Dylan Sampson, and Shedeur Sanders. All checkmarked players were genuinely drafted by Cleveland. The post is opinion-grading of the GM's draft, not a misleading factual claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes NFL fan commentary (202k impressions). No EA/progress relevance; value is purely as a clean false-positive example where the note contradicts an easily-verified true fact."
+  },
+  "difficulty": "easy"
+}

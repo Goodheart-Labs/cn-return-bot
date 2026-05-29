@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2037261605117845741",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "false_flag_conspiracy",
+  "tweet_summary": "A text post claims UK police, after arrests, found the arson attack on Jewish (Hatzola) ambulances in London was carried out by 'their own citizens who are Jews,' and that the case was therefore 'downgraded' from a terrorist attack to an 'arson attack.'",
+  "why_note_decision": "The tweet is a false 'Jewish false-flag' conspiracy and warrants a note. In reality, the suspects arrested over the 23 March 2026 arson of Hatzola ambulances in Golders Green are NOT Jewish: police identified British nationals Hamza Iqbal (20) and Rehan Khan (19) plus a 17-year-old UK-Pakistani dual national, among five Muslim men arrested. Counter-terror police are investigating it as an antisemitic hate crime; a group claiming potential Iran links claimed responsibility. The case was not 'downgraded' because the perpetrators were Jews. The original note correctly says no reliable source confirms the suspects are Jewish and the investigation hasn't been downgraded, but it hedges ('no reliable sources confirm... are Jewish') and MISSES the key affirmative facts: the named suspects are Muslim and the attack is being treated as antisemitic with an alleged Iran-linked claim of responsibility.",
+  "judge_guidance": "A correct note must directly rebut the false 'Jewish false-flag' claim with the affirmative facts: the suspects arrested over the 23 March 2026 Hatzola ambulance arson in London are NOT Jewish \u2014 police named British nationals Hamza Iqbal and Rehan Khan and a 17-year-old UK-Pakistani dual national (five Muslim men arrested) \u2014 and counter-terror police are investigating it as an antisemitic hate crime, with an alleged Iran-linked group claiming responsibility. PASS requires the note to state the suspects are not Jewish AND that the case was not downgraded for that reason (it is still being treated as an antisemitic attack). FAIL if the note merely hedges ('no source confirms they are Jewish') without supplying the actual suspect identities / hate-crime framing, or if it accepts the 'downgraded because Jewish' premise.",
+  "reference_note": "False. The suspects arrested over the 23 March 2026 arson of Hatzola ambulances in London are not Jewish: police identified British nationals Hamza Iqbal (20) and Rehan Khan (19) and a 17-year-old UK-Pakistani dual national, among five Muslim men arrested. Counter-terror police are investigating it as an antisemitic hate crime; a group claiming Iran links claimed responsibility. The case was not downgraded because perpetrators were Jewish. https://www.pbs.org/newshour/world/london-police-arrest-3-more-suspects-over-arson-attack-on-jewish-owned-ambulances https://en.wikipedia.org/wiki/2026_Hatzola_arson_attack",
+  "original_unhelpful_note": {
+    "text": "Clarification: No reliable sources confirm that the arrested suspects in the Hatzola ambulances arson attack are Jewish. The investigation is ongoing by counter-terrorism police as a potential antisemitic hate crime and has not been downgraded.    https://www.reuters.com/world/uk/uk-police-arrest-two-men-over-arson-attack-jewish-community-ambulances-2026-03-25  https://www.bbc.com/news/articles/cwyj1p49gdpo  https://www.clevelandjewishnews.com/jta/two-men-arrested-after-hatzola-ambulance-arson-attack-in-london/article_ba8fbc64-9d5f-53af-a72a-fde96ae48d9f.html",
+    "failure_reason": "Directionally right but too hedged: 'no reliable sources confirm they are Jewish' understates that the named suspects are in fact Muslim and the attack is treated as antisemitic with an alleged Iran-linked claim. Misses the affirmative key facts that fully debunk the false-flag claim.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Hatzola_arson_attack",
+      "https://www.pbs.org/newshour/world/london-police-arrest-3-more-suspects-over-arson-attack-on-jewish-owned-ambulances",
+      "https://www.jta.org/2026/03/25/global/two-men-arrested-after-hatzola-ambulance-arson-attack-in-london",
+      "https://www.aljazeera.com/news/2026/4/4/three-suspects-ordered-to-stay-in-uk-custody-over-jewish-charity-attack"
+    ],
+    "notes": "23 Mar 2026 arson of 4 Hatzola ambulances in Golders Green. Five Muslim men arrested; named: Hamza Iqbal (20, British), Rehan Khan (19, British), 17-year-old UK-Pakistani dual national. Investigated as antisemitic hate crime; Iran-linked group claimed responsibility. Not downgraded due to Jewish perpetrators (they are not Jewish)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "309k views spreading an antisemitic false-flag conspiracy about a real hate crime; correcting minority-targeting disinformation has clear EA/social-harm value."
+  },
+  "difficulty": "medium"
+}

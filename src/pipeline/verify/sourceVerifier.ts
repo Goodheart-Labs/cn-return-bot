@@ -6,9 +6,10 @@
  */
 
 import { handleWebFetch } from "../tool-calling/tools";
-import { getBotConfig } from "../ab-testing/botConfig";
+import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
+import { STEP } from "../utils/noteWriterSteps";
 import { UnfetchableSourcesError, ModelOutputInvalidError } from "../utils/errors";
 import {
   describeMediaFromUrl,
@@ -122,11 +123,21 @@ interface FetchedSource {
 async function fetchSourceContent(
   sources: string[],
   costPrefix: string,
+  logPrefix: string,
   acceptMediaSources: boolean,
+  snippetsByUrl?: Map<string, { title: string; snippet: string }>,
 ): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number }> {
   const results: FetchedSource[] = [];
   for (let i = 0; i < sources.length; i++) {
-    results.push(await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, acceptMediaSources));
+    const fetched = await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, `${logPrefix}.source.${i}`, acceptMediaSources);
+    // Fallback: if the full fetch failed but we have a search snippet for this
+    // URL, use it so the verifier has something to evaluate rather than nothing.
+    if (!fetched.fetched && snippetsByUrl?.has(fetched.url)) {
+      const { title, snippet } = snippetsByUrl.get(fetched.url)!;
+      fetched.content = `### ${fetched.url}\n[from search snippet — full page could not be fetched]\n**${title}**\n${snippet}`;
+      fetched.fetched = true;
+    }
+    results.push(fetched);
   }
   const sections = results.map((r) => r.content).join("\n\n");
   const nonTwitter = results.filter((r) => !isTwitterUrl(r.url));
@@ -140,20 +151,21 @@ async function fetchSourceContent(
 async function fetchOneSource(
   url: string,
   costName: string,
+  logKey: string,
   acceptMediaSources: boolean,
 ): Promise<FetchedSource> {
   if (isTwitterUrl(url)) {
     return { url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true };
   }
   if (acceptMediaSources) {
-    const media = await tryMediaDescription(url, costName);
+    const media = await tryMediaDescription(url, costName, logKey);
     if (media) return media;
   }
   return fetchAsWebPage(url);
 }
 
 /** Returns null when the URL isn't a media host or the cascade failed (caller falls through to handleWebFetch). */
-async function tryMediaDescription(url: string, costName: string): Promise<FetchedSource | null> {
+async function tryMediaDescription(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   if (!isMediaHost(url)) return null;
   try {
     const media = await describeMediaFromUrl(url, costName);
@@ -161,7 +173,7 @@ async function tryMediaDescription(url: string, costName: string): Promise<Fetch
   } catch (err: any) {
     // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
     // removed content, private account, or host not yet supported).
-    getTweetLog()?.set(`${costName}.media_error`, err?.message ?? "unknown error");
+    getTweetLog()?.set(`${logKey}.media_error`, err?.message ?? "unknown error");
     return null;
   }
 }
@@ -185,7 +197,8 @@ function buildSystemPrompt(acceptsMediaSources: boolean): string {
 
 Scope — what to ignore:
 - Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.
-- The "Research findings" section is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under "Note's cited sources".
+- If a "Research findings" section is present, it is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under "Note's cited sources".
+- Sources marked "[from search snippet]" were not fully fetched; evaluate them based on the available title and snippet text.
 
 Classification rules for each cited source:
 - Twitter/X links (x.com, twitter.com) → always good.
@@ -203,22 +216,27 @@ export async function verifySources(params: {
   noteText: string;
   sources: string[];
   postContext: string;
-  researcherFindings: string;
+  researcherFindings?: string;
+  snippetsByUrl?: Map<string, { title: string; snippet: string }>;
   turnNumber: number;
 }): Promise<SourceVerification> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const logPrefix = `sourceVerifier.turn.${params.turnNumber}.messages`;
+  const costPrefix = `sourceVerifier.turn.${params.turnNumber}`;
+  const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
+  const messagesLogPrefix = `${logPrefix}.messages`;
 
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
   const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(
     params.sources,
-    `sourceVerifier.turn.${params.turnNumber}`,
+    costPrefix,
+    logPrefix,
     acceptMediaSources,
+    params.snippetsByUrl,
   );
   const systemPrompt = buildSystemPrompt(acceptMediaSources);
 
-  const userMessage = [
+  const messageParts = [
     `## Context`,
     `Current date (UTC): ${new Date().toISOString()}`,
     ``,
@@ -230,12 +248,13 @@ export async function verifySources(params: {
     ``,
     `## Original post (background — not a source)`,
     params.postContext,
-    ``,
-    `## Research findings (background — not a source)`,
-    params.researcherFindings,
-  ].join("\n");
+  ];
+  if (params.researcherFindings) {
+    messageParts.push(``, `## Research findings (background — not a source)`, params.researcherFindings);
+  }
+  const userMessage = messageParts.join("\n");
 
-  log?.set(`${logPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+  log?.set(`${messagesLogPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
 
   if (totalNonTwitter > 0 && fetchedCount === 0) {
     throw new UnfetchableSourcesError(
@@ -243,13 +262,14 @@ export async function verifySources(params: {
     );
   }
 
-  const { response, costEntry } = await trackedLlmCreate(`sourceVerifier.turn.${params.turnNumber}`, {
+  const { response, costEntry } = await trackedLlmCreate(costPrefix, {
     model: config.verifier_model ?? config.model,
     messages: [
       { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
     response_format: RESPONSE_FORMAT,
+    ...llmTuningParams(config),
   } as any);
   trackLlmCall(costEntry);
 
@@ -275,6 +295,6 @@ export async function verifySources(params: {
     reasoning: parsed.reasoning ?? "",
   };
 
-  log?.set(`${logPrefix}.1`, { content: result });
+  log?.set(`${messagesLogPrefix}.1`, { content: result });
   return result;
 }

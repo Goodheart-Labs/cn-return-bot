@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2049460824113139781",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["statistical_or_numerical_claim", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "rhetorical_hyperbole",
+  "tweet_summary": "A triumphalist post saying '2 billion Arabs lost a war to 8 million Israelis,' referencing the 1967 Six-Day War with deliberately exaggerated round numbers.",
+  "why_note_decision": "The numbers are factually wrong (1967 Israel ~2.7M not 8M; the world Arab population was ~110-120M in 1967 and is ~450-480M today, never 2 billion), but they are obvious rhetorical hyperbole in a boast, not a checkable claim a reasonable reader takes literally. The underlying gist (a small Israel defeated numerically larger Arab armies in 1967) is true. A literal-numbers correction is pedantic and the crowd is already correcting it in replies.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is rhetorical hyperbole ('2 billion', '8 million') in a boast about the 1967 Six-Day War, not a literal factual claim; the core point (small Israel beat larger Arab forces) is historically accurate. A note that solemnly 'corrects' the figures (Israel was 2.7M, Arabs were ~110M, not 2 billion) is a pedantic false positive on obvious hyperbole and should FAIL. Any note here fails.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This references the 1967 Six-Day War. Israel's 1967 population was ~2.8 million, not 8 million. Global Arab population is ~450 million, not 2 billion. The war was vs. Egypt, Jordan, Syria, and allies, not all Arabs. https://www.britannica.com/event/Six-Day-War https://worldpopulationreview.com/country-rankings/arab-countries https://www.macrotrends.net/global-metrics/countries/isr/israel/population",
+    "failure_reason": "Pedantic literal correction of obvious rhetorical hyperbole; the figures were never meant literally and the gist of the boast is true.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Hyperbole. Literal figures wrong (Israel ~2.7M in 1967; world Arabs ~110-120M then, ~450-480M now), but the substantive point about the Six-Day War outcome is accurate.",
+    "sources_checked": [
+      "https://www.britannica.com/event/Six-Day-War",
+      "https://en.wikipedia.org/wiki/Demographics_of_the_Arab_world",
+      "https://fred.stlouisfed.org/series/SPPOPTOTLARB"
+    ],
+    "notes": "Israel's 1967 population was ~2.5-2.7M (Britannica/contemporary sources). The Arab world was ~110-120M in 1967, rising to ~480M today; '2 billion' conflates with Muslims worldwide. Replies already flag the exaggeration, confirming readers don't take the numbers literally."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "50k impressions on a politically charged topic, but it's a boast using hyperbole, not load-bearing misinformation; low value to correct through any world-improvement lens."
+  },
+  "difficulty": "medium"
+}

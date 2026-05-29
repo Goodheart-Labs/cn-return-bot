@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1983342920729256063",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:54.253Z",
+  "post": {
+    "id": "1983342920729256063",
+    "author_id": "452540168",
+    "created_at": "2025-10-29T01:19:35.000Z",
+    "text": "Jay-Z recently said no rapper can do a Verzuz with him because no one is on his level 👀 https://t.co/zprCRxiSKb",
+    "media": [
+      {
+        "media_key": "3_1983342916979380224",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G4Y_3_JX0AAbo9I.jpg",
+        "height": 600,
+        "width": 1000
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 258,
+      "reply_count": 704,
+      "like_count": 3930,
+      "quote_count": 293,
+      "bookmark_count": 100,
+      "impression_count": 468744
+    },
+    "author_followers": 4544200,
+    "author_name": "Daily Loud",
+    "author_description": "#1 Source For Hip-Hop/Viral News Across The Planet | Follow Us Now & Stay Updated | For Business Or Promo TheDailyLoud@gmail.com | Turn On Notifications 🔥🔔",
+    "author_tweet_count": 115767
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G4Y_3_JX0AAbo9I.jpg",
+          "description": {
+            "description": "A close-up photograph of rapper Jay-Z smiling while sitting outdoors on a gray sofa with pink and red pillows. He is wearing a light pink suit jacket over a white collared shirt and holds a champagne flute in his right hand, which also features a large gold and black ring. In the background, there is green shrubbery and a stone wall.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@iam_prodigy01: Wayne would smoke Jay z  \nLikes: 250\n\n@suayrez: Jay-Z talking like Lil Wayne, Kanye West, Nas and Eminem don’t exist… That billionaire confidence different  \nLikes: 222\n\n@Ceo_Branding: Selective amnesia much? ⬇️  \nLikes: 205\n\n@808Gangster: Em literally murdered him on his own shit😂😂  \nLikes: 151\n\n@Nobodyypapi: (image)  \nLikes: 125\n\n@30problemz: Nas, Lil Wayne, Drake, Eminem are all above him.  \nLikes: 99\n\n@suayrez: What he say? 💀  \nLikes: 75\n\n@DanAl1276: 😂  \nLikes: 67\n\n@rabbitSZN2: (image)  \nLikes: 63\n\n@FMaverick27: \"Recently\"? You mean in 2021?  \nLikes: 28",
+    "warnings": []
+  }
+}

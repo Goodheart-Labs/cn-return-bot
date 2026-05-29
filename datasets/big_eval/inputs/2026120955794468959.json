@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2026120955794468959",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:19.758Z",
+  "post": {
+    "id": "2026120955794468959",
+    "author_id": "183675164",
+    "created_at": "2026-02-24T02:24:14.000Z",
+    "text": "X removes Kalshi badges under updated paid partnerships policy https://t.co/wQGLxqWnA0 https://t.co/nGe4EBqNGf",
+    "media": [
+      {
+        "media_key": "3_2026120953156317184",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HB46RaTbsAA5X42.jpg",
+        "height": 806,
+        "width": 1500
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 43,
+      "reply_count": 23,
+      "like_count": 985,
+      "quote_count": 78,
+      "bookmark_count": 56,
+      "impression_count": 412406
+    },
+    "author_followers": 416534,
+    "author_name": "Awful Announcing",
+    "author_description": "All things sports media. Part of @thecomeback network. Sign up for our newsletter https://t.co/ckn8TeyWVb. Don't leave shitty comments.",
+    "author_tweet_count": 164769
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HB46RaTbsAA5X42.jpg",
+          "description": {
+            "description": "A split image containing two logos side-by-side. The left half has a bright green background with the word 'Kalshi' in black sans-serif font. The right half has a black background with a large white 'X' logo, featuring a double-lined diagonal stroke.",
+            "ocrText": "Kalshi X"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@PopeBy90**: That’s a shame. It was a good way to see if the person tweeting is a dumbass or not. (Likes: 606)\n- **@MGN_SG**: That was the easiest way to recognize terrible accounts. Now we gotta do it the old fashioned way. (Likes: 242)\n- **@KalshiNewsroom**: This is 100% false. We removed the badges ourselves, the X team was not involved in the decision. \n\nIn the future, please refrain from posting fake news about Kalshi without contacting us first. (Likes: 52)\n- **@bebeckhardt**: This is false (Likes: 26)\n- **@DickMilly69**: DEATH TO KALSHI (Likes: 16)\n- **@GabrielIdowu_**: Fuck! I used to as a sign of who to insta-block (Likes: 10)\n- **@decemberhunting**: Put those back chile (Likes: 3)\n- **@Headqarters_69**: @nikitabier what is even the theory behind this? \n\nOther than corruption (Likes: 2)\n- **@WotinWot**: Extremely rare Elon W (Likes: 1)\n- **@touchback_sport**: WE DID IT, FUCK KALSHI (Likes: 0)",
+    "warnings": []
+  }
+}

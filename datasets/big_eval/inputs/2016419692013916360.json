@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2016419692013916360",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:51.595Z",
+  "post": {
+    "id": "2016419692013916360",
+    "author_id": "1314159555127971840",
+    "created_at": "2026-01-28T07:54:52.000Z",
+    "text": "Red Velvet's Yeri reveals she broke her neck during Pilates. https://t.co/l06dqYqPI2",
+    "media": [
+      {
+        "media_key": "3_2016419658241310720",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_vC_ueWgAA_-XS.png",
+        "height": 550,
+        "width": 488
+      },
+      {
+        "media_key": "3_2016419665572962305",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_vDAJyWoAEVx9H.png",
+        "height": 854,
+        "width": 633
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3638,
+      "reply_count": 681,
+      "like_count": 64946,
+      "quote_count": 3849,
+      "bookmark_count": 2472,
+      "impression_count": 4533989
+    },
+    "author_followers": 487922,
+    "author_name": "About Music",
+    "author_description": "Your main source for everything about pop, kpop and your favorite artists. News, updates, sales, charts. turn on notifications | DM for business inquiries",
+    "author_tweet_count": 36802
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_vC_ueWgAA_-XS.png",
+          "description": {
+            "description": "A close-up studio portrait of a young woman with long black hair, wearing a bright pink off-the-shoulder top. She is posing with her index finger placed against her chin and a slight smile. She is wearing pink beaded earrings and has a mole on her nose and another below her eye.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_vDAJyWoAEVx9H.png",
+          "description": {
+            "description": "A close-up selfie of a young woman with dark, slightly messy hair. She is wearing a grey athletic shirt and a wide blue elastic band or brace wrapped around her neck. She has a neutral expression and is looking directly at the camera.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **venamans (@bhaddidea)**: what the actual fuck was she doing 😭😭  \n  Likes: 7004 | Reposts: 35 | Replies: 19\n\n- **Samudri Daaku ✨🌷🤍 (@Inashi127)**: Is this a sign to not join pilates 💀  \n  Likes: 1722 | Reposts: 13 | Replies: 3\n\n- **rebecca (@roseannesstrap)**: how the fuck did she not die 😭  \n  Likes: 594 | Reposts: 0 | Replies: 0\n\n- **Naomi (@Naomibilll)**: I wonder if she did this move  \n  Likes: 527 | Reposts: 0 | Replies: 0\n\n- **미주 (MiJu) (@nasdaqdailynews)**: If Pilates can break necks, I’ll happily stay on the couch too. Safety first, right? 🛋️💀  \n  Likes: 292 | Reposts: 0 | Replies: 0\n\n- **waaaaa (@ExauA80237)**: What kind of pilates  \n  Likes: 237 | Reposts: 0 | Replies: 0\n\n- **Hung Pham (@HungPhamRewards)**: God pls take all her pain away, triple it and give it to ICE.  \n  Likes: 214 | Reposts: 0 | Replies: 0\n\n- **vespera (@vesperamyst)**: i hope she recovers soon  \n  Likes: 205 | Reposts: 0 | Replies: 0\n\n- **🤍 (@mviyok)**: that is so scary omg?? i hope shes okay but how tf did she manage to do that 😭  \n  Likes: 191 | Reposts: 0 | Replies: 0\n\n- **mary ♡ (@j3llysandw1ch)**: I'm very sorry for her but how did she do that. Pilates??  \n  Likes: 120 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

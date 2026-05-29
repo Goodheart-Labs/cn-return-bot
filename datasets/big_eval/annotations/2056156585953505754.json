@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2056156585953505754",
+  "role": "no_note_needed",
+  "needs_note": "no",
+  "categories": [
+    "celebrity_entertainment_sports"
+  ],
+  "category_fit": "good",
+  "suggested_category": "joke_or_meme_no_correction_needed",
+  "tweet_summary": "NFL Memes posts a cropped NFL rookie group photo with the caption 'Of course Fernando Mendoza is the only dude smiling \ud83d\ude02' \u2014 a lighthearted joke about the Raiders' #1 overall pick.",
+  "why_note_decision": "No correction is warranted. This is an obvious joke from a parody/meme account ('NFL Memes', 'We make fun of your favorite football team'). Fernando Mendoza is a real player (Raiders #1 overall pick, 2026 draft) and commenters treat him as present in the photo \u2014 they point out the joke works only because OTHER smiling players were cropped out, confirming Mendoza IS in the image. The post makes no misleading factual claim; the humor is the point. Any note 'correcting' it is a false positive.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a self-evident sports meme/joke ('\ud83d\ude02') from a meme account, with no checkable misleading claim. Any note asserting that Mendoza 'is not in this photo' / 'no evidence Mendoza appears' must FAIL: that contradicts the commenters (who note he's the cropped-in smiling player) and treats a joke as a factual claim. A note pedantically pointing out the photo was cropped would also be a false positive \u2014 that is not misinformation, it is comedy. Treat the AI media description ('2024 draft class') skeptically: it is likely wrong about the year, and is not a basis for a note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Fernando Mendoza was selected #1 overall by the Las Vegas Raiders in the 2026 NFL Draft and has no affiliation with the Ravens, Broncos, Eagles, or Dolphins shown in this image. There is no evidence Mendoza appears in this photo. https://www.raiders.com/team/players-roster/fernando-mendoza/",
+    "failure_reason": "Rated notHelpfulIncorrect (11) + notHelpfulNoteNotNeeded (5) + missing-key-points (8). The note treats an obvious joke as a factual claim, and asserts 'no evidence Mendoza appears in this photo' \u2014 which the commenters contradict (the joke premise is that he's the smiling player who was kept in frame). It also mistakes scoreboard-overlay team names for a claim about Mendoza's team. Note-not-needed; the 'not in the photo' claim is likely false.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.nfl.com/news/fernando-mendoza-raiders-no-1-overall-pick-2026-nfl-draft",
+      "https://www.raiders.com/news/fernando-mendoza-no-1-overall-pick-raiders-quarterback-2026-nfl-draft-indiana-football"
+    ],
+    "notes": "Fernando Mendoza was the #1 overall pick (Raiders) in the 2026 NFL Draft, a real player. The tweet is a joke about him being the only one smiling in a rookie group photo; commenters confirm the photo was cropped to remove other smiling players, implying Mendoza is genuinely in it. No misleading factual claim is made. I could not view the image to confirm exactly which rookies appear, but the joke framing and reply consensus make this clearly note-not-needed."
+  },
+  "media_reliability_flag": true,
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Lighthearted sports meme; zero real-world stakes. Valuable only as a false-positive trap (a notewriter was tempted to 'correct' a joke)."
+  },
+  "difficulty": "medium",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": true,
+  "no_note_reason": "",
+  "media_confidence": "high"
+}

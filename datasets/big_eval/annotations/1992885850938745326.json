@@ -1,0 +1,38 @@
+{
+  "tweet_id": "1992885850938745326",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "identity_misattribution",
+  "tweet_summary": "RadioGenoa (1.5M followers) posts a 17s video of a man being told 'go back to Islamic country' on a UK street, headlined as 'Turkish Muslim Ali Dawah humiliated by British patriots' with the claim 'British patriots have had enough.'",
+  "why_note_decision": "A note is warranted. Ali Dawah (real name Erdi Kilic) is British-born — he grew up in London — to a Kurdish Alevi family from Turkey. He is not 'Turkish' in a meaningful national sense; he holds himself out as British and has publicly said he is 'more Kurdish than Turkish.' Turkish commenters in the replies are particularly insistent he is not Turkish (top 4 replies dispute this with 358–1180 likes). Calling him 'Turkish Muslim' in a 'go back to your country' framing is a factual misattribution that materially changes the post's narrative. The original note documents this correctly but raters dinged it heavily on 'missing key points' (10) and 'noteNotNeeded' (9) — likely because the note buries the lede (he is a British citizen, born and raised in London) and the cited Instagram source is a single old post. Note also: 'health_medical_science' is a clearly wrong category for this datapoint.",
+  "judge_guidance": "PASS a note that establishes (a) Ali Dawah / Erdi Kilic was born and raised in London (UK), and (b) his family is Kurdish Alevi from Turkey — he is British, not 'Turkish' in nationality, and has publicly said he is more Kurdish than Turkish. Sources: a biographical source (Wikitubia/Wikipedia/Wikitia/Conspiracy Watch profile) plus his own statement (older X post or interview). FAIL if the note leaves the 'Turkish' framing unchallenged, FAIL if it tries to defend or attack his religious/political views (the issue is identity misattribution, not his ideology), and FAIL if the note relies on a single non-authoritative source. Bonus credit for noting Turkish commenters' pushback (top reply has 1.1k+ likes).",
+  "reference_note": "Ali Dawah (real name Erdi Kilic) was born and raised in London, UK, to a Kurdish Alevi family from Turkey. He is British by birth and nationality, not 'Turkish' — he has publicly stated he is 'more Kurdish than Turkish.' Top Turkish replies on this post also dispute the 'Turkish Muslim' framing. https://youtube.fandom.com/wiki/Ali_Dawah https://x.com/AliDawow/status/505731015147413504 https://www.conspiracywatch.info/en/ali-dawah-from-islamist-proselytizer-to-conspiracy-amplifier/",
+  "original_unhelpful_note": {
+    "text": "Multiple profiles and his own posts describe him as a British/English da'wah activist of Kurdish origin who grew up in London and has said he's 'more Kurdish than Turkish.' Sources: https://youtube.fandom.com/wiki/Ali_Dawah https://www.instagram.com/p/sU5s-eSike/?hl=en",
+    "failure_reason": "Right verdict but the lede is buried — the central counterfact (he is British, born/raised in London) should lead. Single Instagram URL and a fandom wiki are weak sourcing. Provisional category 'health_medical_science' is clearly miscategorized.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — Ali Dawah is British (born/raised in London) of Kurdish Alevi origin from Turkey, not 'Turkish Muslim'",
+    "sources_checked": [
+      "https://youtube.fandom.com/wiki/Ali_Dawah",
+      "https://www.conspiracywatch.info/en/ali-dawah-from-islamist-proselytizer-to-conspiracy-amplifier/",
+      "https://x.com/AliDawow/status/505731015147413504",
+      "https://wikitia.com/wiki/Ali_Dawah"
+    ],
+    "notes": "Multiple sources converge: born 1989 in London, Kurdish Alevi family from Turkey, became Sunni Muslim in 2012, runs the 'Ali Dawah' YouTube channel. He himself stated 'I'm actually more Kurdish than Turkish.' Turkish commenters reject the 'Turkish' framing with 1k+ likes."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "353k impressions on a 1.5M-follower account pushing anti-immigrant framing tied to a misidentified subject; correcting misidentification matters for civic discourse around UK immigration debates."
+  },
+  "difficulty": "easy"
+}

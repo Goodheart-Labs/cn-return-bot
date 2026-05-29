@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2020625440361332833",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:33.015Z",
+  "post": {
+    "id": "2020625440361332833",
+    "author_id": "1375864198417223683",
+    "created_at": "2026-02-08T22:27:01.000Z",
+    "text": "Here’s Erika Kirk entrance at the @TPUSA All-American Halftime Show tonight: \n\n#SuperBowl \n https://t.co/xg74FmLBV8",
+    "media": [
+      {
+        "media_key": "13_2020624296960561152",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2020624296960561152/img/_ii6G2954jHw2g6W.jpg",
+        "height": 650,
+        "width": 1180,
+        "duration_ms": 29666,
+        "view_count": 7413086,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020624296960561152/vid/avc1/490x270/mNu-TC6wEoYiYOP7.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020624296960561152/vid/avc1/652x360/4fr8R3LX3Y2R-iKN.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020624296960561152/vid/avc1/1180x650/cFIXcBxyAFxNE3DR.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2020624296960561152/pl/AA9DI8CljodJ_q_a.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 479,
+      "reply_count": 2833,
+      "like_count": 5134,
+      "quote_count": 1148,
+      "bookmark_count": 1027,
+      "impression_count": 7619867
+    },
+    "author_followers": 66943,
+    "author_name": "Lucas Sanders 👊🏽🔥🇺🇸",
+    "author_description": "25 years old/ASD(Autism)/#VoteBlue💙#ImpeachTrump #Project2026",
+    "author_tweet_count": 84738
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2020624296960561152/vid/avc1/1180x650/cFIXcBxyAFxNE3DR.mp4",
+          "description": {
+            "description": "A sequence of four frames showing a female wrestler, Charlotte Flair, making her grand entrance at WrestleMania. In the first frame, she walks confidently down the long entrance ramp wearing an elaborate green and gold feathered robe over matching ring gear. The second frame shows her closer to the camera as she continues her walk towards the ring, with the large WrestleMania stage lights and structures visible in the background. In the third frame, she stops and throws her arms wide as a massive pyrotechnics display of white and gold fireworks explodes behind her against the dark night sky. The final frame shows her from behind, looking toward the stage as the fireworks reach their peak while she stands poised at the end of the ramp.",
+            "ocrText": "WRESTLEMANIA"
+          },
+          "transcription": "Музыка"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Bridget D 🐝🌷🪻⚘️🦋 (@ZoeyCatBell)**: \"WTF????\" (Likes: 1466)\n- **Ed T. (@EdTNYC820)**: \"Grieving widow\" (Likes: 1338)\n- **Gail Dow (@GailDow12)**: \"So this is what Christians are wearing these days?\" (Likes: 784)\n- **Olli (@OlliM888)**: \"A wrestling match😅💪🏼\" (Likes: 611)\n- **Bri (@OGChauffeur)**: \"What’s her drag name?\" (Likes: 541)\n- **No Kings (@Stop_Project25)**: \"Poor sad widow\" (Likes: 213)\n- **Marj 🌻🌻🌻 (@margeholmes6162)**: \"Glad to see she's recovered from her trauma of losing her soulmate. 🤨\" (Likes: 195)\n- **PeterBMeme (@PeterBMeme)**: \"Aryan Nation halftime\" (Likes: 193)\n- **Gigs 🇺🇸🇺🇦🌈 🏈 ⛳️🦮 (@SirBucky27)**: \"Where’s her kids? Thought that was the most important thing? Lying, grifting twatwaffle!!\" (Likes: 179)\n- **Jim Hagman, Ph.D. 🇺🇸🇺🇦🌈 (@HagmanDr)**: \"There's nothing as sympathetic as a grieving widow.\" (Likes: 178)",
+    "warnings": []
+  }
+}

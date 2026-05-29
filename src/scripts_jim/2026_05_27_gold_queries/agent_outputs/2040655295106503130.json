@@ -1,0 +1,90 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "US F-15E shot down Iran April 2026",
+        "F-15E Strike Eagle downed Iran rescue mission 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Confirmed real event: F-15E shot down April 3 2026 over western Iran; both crew rescued; A-10 also damaged during rescue. Multiple mainstream sources (NBC, CNN, Al Jazeera, Military Times, TWZ, Wikipedia).",
+      "lesson": "Event is real and well-documented. Now need to verify specific factual claims in the tweet's AI-generated video narrative: Mach 2.8 speed, missile types (TOR-M1, Chinese MANPADS), A-10 crash location (tweet says Strait of Hormuz)."
+    },
+    {
+      "queries": [
+        "F-15E Iran shot down what missile TOR-M1 A-10 crashed Kuwait official",
+        "A-10 Warthog crashed Kuwait \"Strait of Hormuz\" Iran F-15E rescue April 2026",
+        "F-15E Iran \"Mach 2.8\" speed maximum speed incorrect"
+      ],
+      "purpose": "targeted — verify specific claims",
+      "what_returned": "A-10 crashed near Strait of Hormuz (Military Times, Newsweek, Aviationist confirm). Trump stated F-15E hit by MANPADS (shoulder-fired), not a TOR-M1 SAM. F-15E maximum speed is ~Mach 2.5, not 2.8 — Mach 2.8 claim is false per multiple sources including Warrior Maven. Specific weapon systems (TOR-M1, Chinese MANPADS, Soviet Su-23 gun) NOT officially confirmed — AI-fabricated details.",
+      "lesson": "The Mach 2.8 speed claim is clearly wrong (F-15E tops out at ~Mach 2.5). The specific missile system details (TOR-M1, Chinese shoulder missiles, Soviet Su-23 AA gun) are unverified fabrications presented as fact. Trump confirmed only that a shoulder-fired missile (MANPADS) was used."
+    },
+    {
+      "queries": [
+        "McDonnell Douglas F-15E Strike Eagle maximum speed Wikipedia"
+      ],
+      "purpose": "brand-suffix / authoritative spec check",
+      "what_returned": "Wikipedia F-15E article confirmed two-seat crew configuration and other specs, but speed spec not prominently listed. Warrior Maven and others consistently cite Mach 2.5 as max speed.",
+      "lesson": "For aircraft specs, dedicated aviation sources (TWZ, Warrior Maven, Air and Space Forces) are more useful than Wikipedia for performance numbers."
+    }
+  ],
+  "gold_queries": [
+    "US F-15E shot down Iran April 2026",
+    "F-15E Strike Eagle maximum speed Mach",
+    "A-10 Warthog crashed Strait of Hormuz Iran rescue April 2026",
+    "F-15E Iran what missile shot down MANPADS TOR-M1 confirmed",
+    "Mario Nawfal F-15E Iran AI generated video misinformation"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.militarytimes.com/news/your-military/2026/04/03/a-10-warthog-crashes-near-strait-of-hormuz/",
+      "title": "A-10 Warthog crashes near Strait of Hormuz",
+      "found_via_query": "A-10 Warthog crashed Kuwait \"Strait of Hormuz\" Iran F-15E rescue April 2026",
+      "authority_reason": "Military Times is a primary defense journalism outlet covering US military affairs",
+      "what_it_establishes": "A-10 crashed near Strait of Hormuz (not Kuwait as some early reports said), pilot ejected and was rescued"
+    },
+    {
+      "url": "https://www.twz.com/news-features/everything-we-now-know-about-the-operation-to-rescue-the-f-15e-wso",
+      "title": "Everything We Now Know About The Operation To Rescue The F-15E WSO",
+      "found_via_query": "F-15E Strike Eagle downed Iran rescue mission 2026",
+      "authority_reason": "The War Zone (TWZ) is the authoritative defense/aviation journalism source with primary source access",
+      "what_it_establishes": "Trump stated F-15E was shot down by a MANPADS (shoulder-fired missile). No official confirmation of TOR-M1, Chinese MANPADS, or Soviet Su-23 gun involvement. The specific weapon systems in the tweet's AI video are not confirmed."
+    },
+    {
+      "url": "https://warriormaven.com/news/air/how-did-a-mach-2-5-f-15-get-hit-by-iranians",
+      "title": "How Did a Mach 2.5 F-15 Get \"Hit\" by Iranians?",
+      "found_via_query": "F-15E Iran \"Mach 2.8\" speed maximum speed incorrect",
+      "authority_reason": "Warrior Maven is a defense news outlet; headline itself directly addresses the Mach 2.5 specification vs the incident",
+      "what_it_establishes": "F-15E maximum speed is Mach 2.5, not Mach 2.8 as claimed in tweet's audio. The Mach 2.8 figure is incorrect."
+    },
+    {
+      "url": "https://www.nbcnews.com/news/military/us-fighter-jet-went-iran-search-rescue-mission-underway-officials-say-rcna266523",
+      "title": "U.S. F-15E fighter jet shot down over Iran, search and rescue mission underway, officials say",
+      "found_via_query": "US F-15E shot down Iran April 2026",
+      "authority_reason": "NBC News is a major US national news outlet",
+      "what_it_establishes": "Baseline confirmation that the F-15E shootdown event occurred; both crew members rescued"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/2026_United_States_F-15E_rescue_operation_in_Iran",
+      "title": "2026 United States F-15E rescue operation in Iran - Wikipedia",
+      "found_via_query": "F-15E Strike Eagle downed Iran rescue mission 2026",
+      "authority_reason": "Wikipedia aggregates sourced reporting; useful for confirmed facts vs unconfirmed claims",
+      "what_it_establishes": "A-10 pilot ejected over the Strait of Hormuz. No confirmation of specific missile systems (TOR-M1, Chinese MANPADS) as claimed in tweet's AI video."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching event name + date + year immediately found the real event and authoritative sources",
+      "Searching aircraft specs (Mach speed) found direct contradiction of the Mach 2.8 claim",
+      "The Warrior Maven headline ('Mach 2.5 F-15') was a gold find — it directly addresses the wrong speed in the tweet",
+      "Checking multiple outlet names for A-10 crash location resolved the Kuwait vs Strait of Hormuz discrepancy"
+    ],
+    "what_hurt": [
+      "Early NBC/Fox reports said Kuwait for A-10 crash — required cross-checking with Military Times to get the correct Strait of Hormuz location",
+      "The tweet's AI video is the main source of misinformation, but the tweet's text itself is relatively sparse — had to parse the media transcript carefully"
+    ],
+    "would_multipass_help": "yes — a second pass specifically targeting the unconfirmed weapon systems (TOR-M1, Chinese MANPADS, Soviet Su-23) with queries like 'Iran F-15E missile type confirmed TOR-M1 false' would strengthen the finding that these are AI fabrications",
+    "deepseek_advice": "For tweets presenting AI-generated video content as factual reporting on a real military event, first verify the event exists, then target specific technical claims (aircraft speeds, weapon system names, crash locations) against authoritative defense sources — aviation specs are easy to fact-check and AI often confuses numbers like Mach 2.5 vs 2.8. Use 'what missile shot down [aircraft]' + 'official confirmed' to surface whether claimed weapon system details are verified or fabricated."
+  }
+}

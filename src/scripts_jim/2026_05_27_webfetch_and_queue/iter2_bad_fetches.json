@@ -1,0 +1,170 @@
+[
+  {
+    "tweet_url": "https://x.com/i/status/2039118807692968130",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.facebook.com/photo.php?fbid=982113224486408&set=a.850196581011407&id=100080632194001",
+    "classification": "very_short_body",
+    "body_head": "Facebook"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2039118807692968130",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/",
+    "classification": "very_short_body",
+    "body_head": "Reddit - Please wait for verification"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2049464880520888535",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/business/energy/bessent-urges-china-step-up-diplomacy-iran-ahead-trump-xi-summit-2026-05-04/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2034574905858040263",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/lineups/",
+    "classification": "fetch_error_network",
+    "body_head": "Fetch error: The operation timed out."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1999999737379143950",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://factcheck.afp.com/doc.afp.com.76UX8KE",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2001327023839735928",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://factcheck.afp.com/doc.afp.com.87W89G3",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2028943273042100353",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://www.senate.gov/about/powers-procedures/declarations-of-war.htm",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2028943273042100353",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://constitution.congress.gov/browse/essay/artI-S8-C11-2-3/ALDE_00013914/",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2036122449536811392",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2036122449536811392",
+    "outcome": "rejected (check_failed)",
+    "source_url": "[By Bethania Palma](/author/bethania/)",
+    "classification": "very_short_body",
+    "body_head": "Bethania Palma is a journalist from the Los Angeles area who has been working in the news industry since 2006."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2039707797244215475",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.instagram.com/p/DUWHli8gTpK/",
+    "classification": "very_short_body",
+    "body_head": "Instagram"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2033436730251264262",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2031539160700313846",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.facebook.com/NBCBayArea/videos/police-investigating-santana-row-attack-as-possible-hate-crime/2384729795331069/",
+    "classification": "very_short_body",
+    "body_head": "A brutal attack outside a restaurant on Santana Row is being investigated as a possible hate crime, police say: http://nbcbay.com/mR4qvXL | NBC Bay Area"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2019501956482367716",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/fact-check/image-depicting-jeffrey-epstein-tel-aviv-was-created-with-ai-2026-02-26/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2019501956482367716",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/",
+    "classification": "very_short_body",
+    "body_head": "# Image of Jeffrey Epstein in Tel Aviv is AI-generated"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2019501956482367716",
+    "outcome": "rejected (check_failed)",
+    "source_url": "Stand up for the facts!",
+    "classification": "very_short_body",
+    "body_head": "Our only agenda is to publish the truth so you can be an informed participant in democracy.  \nWe need your help.\n\n[More Info](/membership/)"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2014434985046921417",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/article/world/fact-check-trump-did-not-call-republicans-the-dumbest-group-of-voters-idUSKBN2342DH/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "[By Bethania Palma](/author/bethania/)",
+    "classification": "very_short_body",
+    "body_head": "Bethania Palma is a journalist from the Los Angeles area who has been working in the news industry since 2006."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/",
+    "classification": "very_short_body",
+    "body_head": "# \u201cThe fascists of the future will call themselves anti-fascists.\u201d Not WSC."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2025496691588104274",
+    "outcome": "candidate",
+    "source_url": "https://www.trueachievements.com/news/asha-sharma-xbox-gamertag",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2028333038547927472",
+    "outcome": "candidate",
+    "source_url": "https://www.facebook.com/pressoneph/posts/factcheck-a-facebook-reel-racking-up-over-400000-views-falsely-depicts-us-missil/1425155566297826/",
+    "classification": "very_short_body",
+    "body_head": "Facebook This browser isn&#039;t supported Use Facebook app tap to use a supported browser Safari Chrome"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2002086396576887148",
+    "outcome": "candidate",
+    "source_url": "https://www.instagram.com/reel/DToWOookcl4/?hl=de",
+    "classification": "very_short_body",
+    "body_head": "Instagram"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2036903878726131807",
+    "outcome": "candidate",
+    "source_url": "https://news.un.org/en/story/2026/03/1167199",
+    "classification": "very_short_body",
+    "body_head": "# UN resolution urges reparations for slavery\u2019s \u2018historical wrongs\u2019"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2032514777663021439",
+    "outcome": "candidate",
+    "source_url": "https://www.bls.gov/news.release/pdf/cpi.pdf",
+    "classification": "very_short_body",
+    "body_head": "[fetched via Wayback Machine snapshot]\n\n# Wayback Machine\n\nThe Wayback Machine - http://web.archive.org/web/20260526162442/https://www.bls.gov/news.release/pdf/cpi.pdf"
+  }
+]

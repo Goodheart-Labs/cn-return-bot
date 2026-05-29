@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2048230103994515524",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:11.634Z",
+  "post": {
+    "id": "2048230103994515524",
+    "author_id": "2556188838",
+    "created_at": "2026-04-26T02:38:05.000Z",
+    "text": "Trees per person in India vs Rest of the world… If it isn’t alarming right now, it will be in a few years from now… https://t.co/1qicf5kL1Z",
+    "media": [
+      {
+        "media_key": "3_2048230097375903745",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGzGa-xawAEDPIo.jpg",
+        "height": 546,
+        "width": 561
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1711,
+      "reply_count": 262,
+      "like_count": 5676,
+      "quote_count": 135,
+      "bookmark_count": 381,
+      "impression_count": 198026
+    },
+    "author_followers": 9739,
+    "author_name": "Mohammed Futurewala",
+    "author_description": "I just talk sense covered in non sense...Human and Indian first😅😅😅",
+    "author_tweet_count": 113195
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGzGa-xawAEDPIo.jpg",
+          "description": {
+            "description": "An infographic titled 'Trees per person :' depicting an illustration of a tree where different branches represent various countries. The size of the leaves on each branch corresponds to the number of trees per person in that country. Canada has the largest leaf, while India has the smallest. The bottom of the image includes a global average.",
+            "ocrText": "Trees per person : United States 699 France 203 Ethiopia 143 China 130 Australia 3,266 Greenland 4,964 UK 47 India 28 Canada 10,163 World has 422 Trees for every person"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Hand_of_blood** (@NoExistence6): India was naturally blessed with such a perfect climate and highly fertile soil ... It literally takes 1% of effort to grow a tree here compared to rest of countries like Canada,UAE etc but what did we do? Concrete concrete concrete concrete. (Likes: 1825, Reposts: 399, Views: 32269)\n- **Rishi Bagree** (@rishibagree): Tree cover is typically measured by total forest area or percentage of land area, not trees per person which varies primarily with population density. India ranks 9th globally in total forest area and 3rd in net annual forest gain per GFRA 2025 (Likes: 864, Reposts: 117, Views: 29784)\n- **anjaligangoli** (@passerbyview): Less people more trees. The only way ahead if we are to survive the onslaught of changing weather patterns. (Likes: 69, Reposts: 0, Views: 3945)\n- **Sandatlo Sademiya** (@SanduloSandhadi): What the fuck is this metric. No.1 stupidity. (Likes: 24, Reposts: 0, Views: 730)\n- **Maneesh Solanki** (@ManeeshSol84): People need to stop breeding like pigs. (Likes: 8, Reposts: 0, Views: 472)\n- **suresh** (@iamcoolindian82): But muslims still produce babies like pigs, 1 become 100 in 5 decades (Likes: 8, Reposts: 0, Views: 468)\n- **Harsh Shah 🇮🇳** (@Harry21059): Population jihad band karo fir baat karege bsdk (Likes: 6, Reposts: 0, Views: 448)\n- **Abhijag7** (@unsaturated_guy): Modi ko hatao yr 😭, kl maine ek muslim chacha ki reel dekhi , 15 bacche the , bol rahe the ki per child ke hisab se atta aur chawal milta hai, free mai madarsa padne jate hai 😓 (tax funded btw), and they reproduce like hellllllllllll, aur bol rahe the unke gaav mai aese bahut. (Likes: 7, Reposts: 0, Views: 956)\n- **Neeraj** (@drnmark): Not the right way to compare tree cover. This is dishonest comparison. (Likes: 10, Reposts: 0, Views: 2390)\n- **ALLU🐍** (@ind_Cyborg): While the chart looks alarming, 'trees per person' is a misleading metric that mostly just reflects our high population density. If you look at standard metrics like total forest area, India actually ranks 9th globally and 3rd in net annual forest gain (per GFRA 2025). 🌳🇮🇳 (Likes: 4, Reposts: 0, Views: 146)",
+    "warnings": []
+  }
+}

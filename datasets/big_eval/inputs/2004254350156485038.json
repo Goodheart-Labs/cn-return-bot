@@ -1,0 +1,59 @@
+{
+  "tweet_id": "2004254350156485038",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:07.998Z",
+  "post": {
+    "id": "2004254350156485038",
+    "author_id": "1810752781055315969",
+    "created_at": "2025-12-25T18:14:08.000Z",
+    "text": "@0hour1 Here’s Ruby Freeman’s confession before deleting her social media accounts 👇🏼👇🏼 https://t.co/hOzJHWJdPt",
+    "media": [
+      {
+        "media_key": "3_2004254346473537536",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G9CKtYkWgAAFnAe.jpg",
+        "height": 971,
+        "width": 545
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "2004254042667843923"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 337,
+      "reply_count": 52,
+      "like_count": 1158,
+      "quote_count": 17,
+      "bookmark_count": 184,
+      "impression_count": 43157
+    },
+    "author_followers": 4638,
+    "author_name": "ArleneL",
+    "author_description": "I’m a Conservative 🇺🇸 Married 🇺🇸 Mother. IFBAP. Starting over. MAHA,MAGA, America 🇺🇸 First 🚫DMS 🚫porn #TrumpWon #Trump2024",
+    "author_tweet_count": 55216
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G9CKtYkWgAAFnAe.jpg",
+          "description": {
+            "description": "",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@ArhimedB: Is this real? (Likes=58)\n@kevskins: How are she & her daughter not in prison For life? They completely admit Guilt…! (Likes=49)\n@oklahomakitty: Wow. Is this real? Why didn’t someone go to jail? Except Republicans?? Freaking awful!! (Likes=16)\n@DLaibstain: STFU-it’s fake. (Likes=4)\n@Turbo_trans_am: I dont think RF could use that many words. I call fake. But this is real: https://www.georgiarecord.com/elections/2022/12/25/ruby-freeman-body-cam-admissions-revealed-in-the-georgia-ballot-scanning-scandal/ (Likes=3)\n@MHarr1050: Trump needs to see this if it’s real (Likes=3)\n@Emily5656: This is fake. All you have to do is like…. The slightest bit of research (Likes=2)\n@Letfreedom16385: Wow. (Likes=1)\n@JoshuaFitBattl1: That’s debunked, and from a parody site, but maybe not too far from the truth. (Likes=1)\n@boivin_luke: @POTUS @FBIDirectorKash @FBI @TheJusticeDept @TheLeoTerrell @PamBondi (Likes=1)",
+    "warnings": []
+  }
+}

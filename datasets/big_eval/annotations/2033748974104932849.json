@@ -1,0 +1,32 @@
+{
+  "tweet_id": "2033748974104932849",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "partial",
+  "suggested_category": "false_factual_trivia_claim",
+  "tweet_summary": "Logan Paul posts a (widely-mocked, apparently AI-generated) essay praising Gengar as 'the perfect Pokémon,' including the claim that Gengar is immune to Normal, Fighting and Ground moves and effectively can't be killed.",
+  "why_note_decision": "The post makes a specific, checkable factual claim about Pokémon game mechanics that is false: Gengar's Ground-type immunity came from the Levitate ability, which was removed in Generation VII (Pokémon Sun & Moon, 2016) and replaced with Cursed Body. So Gengar has not been immune to Ground-type moves for ~10 years, contradicting the tweet (and commenters point this out repeatedly). Because a prominent account is stating false game facts authoritatively to 8M viewers, a concise factual-correction note is reasonable, even though stakes are low.",
+  "judge_guidance": "PASS only if the note corrects the specific false mechanic: Gengar is NOT immune to Ground-type moves — its Ground immunity (the Levitate ability) was removed in Generation VII (Sun & Moon, ~2016) and replaced with Cursed Body, so it has not had that immunity for roughly a decade. It should be accurate and concise; citing Bulbapedia (Gengar or Levitate page) strengthens it. A note that affirms the 'immune to Ground' claim, or that conflates Mega Gengar's Shadow Tag with Ground immunity, should FAIL. Correcting only one of several errors (Ground immunity) is acceptable since that is the cleanest verifiable falsehood.",
+  "reference_note": "Gengar has not been immune to Ground-type moves for almost 10 years. Its Ground immunity came from the Levitate ability, removed in Generation VII (Pokémon Sun & Moon, 2016) and replaced with Cursed Body.  https://bulbapedia.bulbagarden.net/wiki/Gengar_(Pok%C3%A9mon)",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: Gengar lost its Ground-type immunity when the Levitate ability was removed in Generation VII (Sun & Moon, 2016) and replaced by Cursed Body; it has not been Ground-immune for ~10 years.",
+    "sources_checked": [
+      "https://bulbapedia.bulbagarden.net/wiki/Levitate_(Ability)",
+      "https://bulbapedia.bulbagarden.net/wiki/Gengar_(Pok%C3%A9mon)"
+    ],
+    "notes": "Bulbapedia confirms Levitate (which grants Ground immunity) was replaced with Cursed Body on Gengar starting Gen VII; Mega Gengar had Shadow Tag, not Levitate, so no Ground immunity. Many top comments make the same point. Low-stakes trivia but a clear, verifiable falsehood from a high-reach account."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "8M impressions but trivial subject (game mechanics); negligible real-world stakes. Value to the dataset is as a clean low-importance factual-correction example and a test of whether the bot proportionally handles low-stakes trivia."
+  },
+  "difficulty": "easy"
+}

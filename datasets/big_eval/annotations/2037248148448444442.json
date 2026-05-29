@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2037248148448444442",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "edgy_ingame_joke",
+  "tweet_summary": "Small CS2 player/lecturer 'Oehoe de Uil' posts an in-game CS2 round result captioned 'LEAK: New music kit found in CS2 gamefiles' — an edgy joke about suicide-bombing tropes / antisemitic imagery in the game's bomb-plant context.",
+  "why_note_decision": "Obvious tasteless-joke / shitpost: the 'music kit' is in fact just a normal CS2 bomb-plant + round-result screen, framed as if it were a leaked 'Israeli-themed' music kit (a known antisemitic 4chan-style joke). Commenters universally read it as a joke ('We must get this in the game to combat antisemitism', 'Jew york'). 8/10 raters flagged noteNotNeeded. No reasonable viewer believes there's a literal Israeli-themed CS2 music kit. The note's solemn 'no such kit exists' over-explains an obvious shitpost — and engaging at all dignifies the edgy framing.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The post is an edgy in-game joke / shitpost from a tiny account (2k followers), captioned to imply an antisemitic 'music kit' that doesn't exist; the video is just a normal CS2 bomb-plant clip. Solemnly listing CS2 music-kit databases to debunk an obvious joke gives the joke unwarranted oxygen and is the wrong move. FAIL any note that fact-checks the existence of the fictional 'music kit.'",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No such Israeli-themed music kit exists in CS2 game files or official lists. https://counterstrike.fandom.com/wiki/Music_Kit https://csgoskins.gg/categories/music-kit https://stash.clash.gg/music",
+    "failure_reason": "noteNotNeeded — fact-checks an obvious tasteless joke; engaging dignifies the bait.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Edgy joke; no claim worth correcting.",
+    "sources_checked": [],
+    "notes": "Comments confirm joke reading; small account; no real misinformation risk."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "128k impressions; low-stakes gaming community joke; calibration test for not-noting-tasteless-but-obvious-jokes."
+  },
+  "difficulty": "easy"
+}

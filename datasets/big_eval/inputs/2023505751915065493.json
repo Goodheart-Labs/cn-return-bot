@@ -1,0 +1,42 @@
+{
+  "tweet_id": "2023505751915065493",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:11.208Z",
+  "post": {
+    "id": "2023505751915065493",
+    "author_id": "2000251821605199873",
+    "created_at": "2026-02-16T21:12:20.000Z",
+    "text": "@caydeplanet Nice! what AI model do you use?",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "2023465442527064375"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2,
+      "reply_count": 106,
+      "like_count": 190,
+      "quote_count": 5,
+      "bookmark_count": 18,
+      "impression_count": 858319
+    },
+    "author_followers": 241,
+    "author_name": "Steiner_Gorgon",
+    "author_description": "",
+    "author_tweet_count": 8482
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- •☽°❀•allie•❀°☾• (@AllieTheEditor): it's called \"talent\" you've probably never heard of it (Likes=1072)\n- Koncept_kiwi (@Koncept_Kiwi): Weak (Likes=435)\n- Space Guy 🏳️‍🌈 (@Space_Guy_e7g): It's called \"Gun to your head GPT\" (Likes=135)\n- Steel (@ErwinHugger): It's just that easy, huh (Likes=109)\n- lo NATTY CHAMPS hoosier (@SMcdooder): Two hands and a working brain, the latter you don’t have (Likes=103)\n- Chris (@Chrisgpt): The fact that everyone took you seriously 😭 (Likes=73)\n- Lovhes (@genius_eu): The one that pleasured ur mum (Likes=63)\n- Sleepy ✖ (@TheDiamondHit): are you retarded (Likes=36)\n- Rhamphorhynchus (@RhamphyLJ): You're not going to believe this, but some people are actually skilled at things and can do them themselves (Likes=5)\n- LeDoge (@LeDoge3375): Immaculate ragebait. 10/10. You’ve caused quite a spectacle here in the comments (Likes=11)",
+    "warnings": []
+  }
+}

@@ -6,10 +6,12 @@
  * does not re-check that here.
  */
 
-import { getBotConfig } from "../ab-testing/botConfig";
+import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
+import { STEP } from "../utils/noteWriterSteps";
 import { countNoteLength } from "../write/writeNote";
+import { ModelOutputInvalidError } from "../utils/errors";
 
 export interface WriterResult {
   noteText: string;
@@ -19,7 +21,17 @@ export interface WriterResult {
 const MAX_WRITER_ATTEMPTS = 3;
 const MAX_NOTE_CHARS = 280;
 
-const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You receive the original post context and research findings from a prior search step, and you write exactly one community note.
+const SYSTEM_PROMPT = `You are a Community Notes writer for X/Twitter. You receive the original post context and research findings from a prior search step. Your job: write exactly one community note that disputes a specific factual claim in the post — or return an empty note if you cannot find one to dispute.
+
+## The one rule
+
+**Your note must DISPUTE something the tweet asserts.** If the research findings do not contain evidence that contradicts a specific claim in the tweet, return an empty note — do NOT write a note that:
+- Restates the tweet's claim in different words
+- Adds adjacent context that doesn't contradict anything (e.g. tweet says X happened, you say X was later partially reversed — that's not a dispute)
+- Cites a source that *agrees* with the tweet as if you're correcting it
+- Asserts specifics (locations, dates, who-said-what, URLs) that don't appear verbatim in the findings — never fabricate
+
+Empty note means: \`note_text\` = "" and \`sources\` = []. The downstream judge will record "no_correction_needed" and we move on. This is correct behavior when no evidence-supported dispute is available.
 
 ## Note style
 - Lead with what IS true, not "The post claims..." or "This is false"
@@ -78,18 +90,26 @@ export async function runWriter(userMessage: string, findings: string): Promise<
   ];
 
   for (let attempt = 1; attempt <= MAX_WRITER_ATTEMPTS; attempt++) {
-    const logPrefix = `simpleBot.writer.attempts.${attempt - 1}`;
+    const logPrefix = `${STEP.noteWriter}.attempts.${attempt - 1}`;
     log?.set(`${logPrefix}.messages`, messages);
 
     const { response, costEntry } = await trackedLlmCreate(`simpleBot.writer.${attempt}`, {
       model: config.writer_model ?? config.model,
       messages,
       response_format: RESPONSE_FORMAT,
+      ...llmTuningParams(config),
     } as any);
     trackLlmCall(costEntry);
 
     const content = response.choices?.[0]?.message?.content ?? "{}";
-    const parsed = JSON.parse(content) as { note_text: string; sources: string[] };
+    let parsed: { note_text: string; sources: string[] };
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      throw new ModelOutputInvalidError(
+        `simpleBot.writer: model output was not valid JSON. content="${content.slice(0, 200)}"`,
+      );
+    }
     const charCount = countNoteLength(parsed.note_text);
 
     log?.set(`${logPrefix}.response`, parsed);

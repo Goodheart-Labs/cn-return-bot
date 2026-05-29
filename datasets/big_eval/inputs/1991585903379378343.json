@@ -1,0 +1,68 @@
+{
+  "tweet_id": "1991585903379378343",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:11.840Z",
+  "post": {
+    "id": "1991585903379378343",
+    "author_id": "1268223690480615424",
+    "created_at": "2025-11-20T19:14:15.000Z",
+    "text": "The Trump administration has declared that swastikas and nooses are no longer classified as hate symbols. https://t.co/MXS43gqTtR",
+    "media": [
+      {
+        "media_key": "3_1991585762211405824",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G6OIsuhWIAAjmCK.jpg",
+        "height": 1242,
+        "width": 960
+      },
+      {
+        "media_key": "3_1991585839625711616",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G6OIxO6WsAAvahl.jpg",
+        "height": 900,
+        "width": 1200
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2541,
+      "reply_count": 1010,
+      "like_count": 16955,
+      "quote_count": 892,
+      "bookmark_count": 1735,
+      "impression_count": 1653771
+    },
+    "author_followers": 435322,
+    "author_name": "No Lie with Brian Tyler Cohen",
+    "author_description": "Podcast covering the top stories & interviews with the biggest names in politics. Hosted by @briantylercohen",
+    "author_tweet_count": 12454
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G6OIsuhWIAAjmCK.jpg",
+          "description": {
+            "description": "A close-up portrait of Donald Trump looking directly at the camera with a stern, focused expression. He is wearing a blue suit, a white dress shirt, and a blue tie, with a small American flag pin on his lapel. The background features a portion of the United States flag on the left and a dark, ornate wooden texture on the right.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G6OIxO6WsAAvahl.jpg",
+          "description": {
+            "description": "A close-up photograph displays a length of orange and yellow patterned climbing rope tied into a slipknot or noose shape against a textured white wall. The standing end of the rope extends upward out of the frame.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Titleist1x**  \n(No text content)  \nLikes: 3869 | Reposts: 217 | Replies: 10 | Views: 43305\n\n**@ac_hhz**  \nno hate 👍  \nLikes: 1564 | Reposts: 0 | Replies: 0 | Views: 14545\n\n**@Noformsok**  \nWell actually.....  \nLikes: 916 | Reposts: 0 | Replies: 0 | Views: 10800\n\n**@BusterSwordUser**  \n\"Don't call us Nazis\" they said.  \nLikes: 675 | Reposts: 0 | Replies: 0 | Views: 9126\n\n**@NoLieWithBTC**  \nSource: https://www.washingtonpost.com/national-security/2025/11/20/coast-guard-swastika-noose/  \nLikes: 569 | Reposts: 92 | Replies: 0 | Views: 88472\n\n**@Joexor**  \nRight after finding someone who was lynched inside of an ICE holding facility. This is insanity.  \nLikes: 236 | Reposts: 0 | Replies: 0 | Views: 24627\n\n**@RudiGeerts**  \nNo hate symbols? So how come they knew?  \n\"Get it all on record now - get the films - get the witnesses - because somewhere down the road of history some bastard will get up and say that this never happened.\"  \nDwight D. Eisenhower, Ohrdruf camp, 1945  \nLikes: 233 | Reposts: 53 | Replies: 1 | Views: 6799\n\n**@russianspybot**  \nLETS FUCKING GOOOOOO  \nLikes: 212 | Reposts: 0 | Replies: 0 | Views: 3993\n\n**@RedheadW3563**  \nWhat about punching Nazis?  \nLikes: 154 | Reposts: 0 | Replies: 0 | Views: 3930\n\n**@raven_c_couch**  \nHow about guillotines? I understand those might be making a comeback.  \nLikes: 123 | Reposts: 0 | Replies: 0 | Views: 3153",
+    "warnings": []
+  }
+}

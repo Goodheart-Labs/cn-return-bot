@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2014429721233076503",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["fabricated_quote", "platform_manipulation"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "User posts a screenshot showing Polymarket's fabricated quote attributing 'work at McDonalds or Palantir before starting a business' advice to Jeff Bezos, with Bezos's direct reply: 'Nope. Not sure why polymarket made this up.' The user captions: 'Jeff Bezos just community noted Polymarket LMFAOOO'.",
+  "why_note_decision": "The Polymarket-fabricated Bezos quote and Bezos's denial reply are both genuine and widely reported (Newsweek, Inc., AOL, Readwrite, Lookonchain). The 'community noted' phrase is colloquial Twitter slang meaning 'publicly corrected' — used routinely when high-profile figures debunk false claims about themselves. The user is sharing the actual screenshots; everyone reading understands the meme/figure-of-speech. The note's pedantic 'he replied directly but did not add a Community Note' is exactly the kind of literal misreading of a figure of speech that raters flagged as noteNotNeeded.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The phrase 'community noted' is well-established Twitter slang for 'publicly corrected' and the tweet shows the genuine Bezos reply denying Polymarket's fabricated quote. FAIL any note that literally interprets 'community noted' and points out Bezos didn't add a Community Note — pedantic on slang. FAIL any note that asserts the Polymarket quote was real (it wasn't — Bezos denied it and Newsweek/Inc/AOL covered it as fabrication).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Jeff Bezos replied directly to the Polymarket post denying the quote attributed to him, but did not add a Community Note as claimed. https://x.com/Polymarket/status/2014343821841113474 https://x.com/JeffBezos/status/2014422973781049586",
+    "failure_reason": "noteNotNeeded — literal interpretation of slang; 'community noted' = 'publicly corrected', not a literal Community Note submission.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Polymarket DID fabricate the Bezos quote; Bezos DID reply 'Nope. Not sure why polymarket made this up.' The user's 'community noted' phrasing is standard X slang for being publicly corrected.",
+    "sources_checked": [
+      "https://www.newsweek.com/no-bezos-did-not-advise-people-work-mcdonalds-11406087",
+      "https://www.inc.com/ava-levinson/polymarket-jeff-bezos-false-quote/91291855",
+      "https://www.aol.com/articles/jeff-bezos-accuses-polymarket-fabricating-155209198.html",
+      "https://readwrite.com/jeff-bezos-denies-polymarket-post-alleged-advice/"
+    ],
+    "notes": "If anything, Polymarket should have had a note added; the user's tweet is documenting that fact, not creating misinformation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "207k impressions on a meta-platform-trust topic (Polymarket's fake-news problem). Bot must learn that 'community noted' is slang, not a literal protocol claim."
+  },
+  "difficulty": "medium"
+}

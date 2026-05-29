@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2017706731665514813",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "wholesome_pet_content",
+  "tweet_summary": "Heartwarming adoption video posted by a 626k-follower dog account: 'Juniper... Bernese Mountain Dog puppy' adopted by 'two excited boys'. Replies overwhelmingly say the dog is actually a Saint Bernard and there are three boys, not two.",
+  "why_note_decision": "Even though the breed label is genuinely wrong (Saint Bernards are white-based with brown/red markings; Bernese Mountain Dogs are tri-color with a black base — the dog in the clip is white with brown patches, i.e. a Saint Bernard) and there are three boys not two, this is a wholesome adoption clip from a generic 'dog content' account. The mislabel is trivial pedantry on a feel-good post — exactly the case raters mass-tagged as notHelpfulNoteNotNeeded (22/34). No reader is meaningfully misled. Reply section already corrects the breed organically.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The breed-name nitpick + boys-counting are trivial corrections on a wholesome adoption clip from a generic pet-content account; the audience is not meaningfully misled. Any note that 'corrects' Saint Bernard vs Bernese, or 'three boys not two', is a false positive on pedantic content. FAIL any note that focuses on these dog-breed/counting facts.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The dog is not a Bernese Mountain Dog puppy; the video shows an adult-sized dog and a family with three boys, not two. https://www.akc.org/dog-breeds/bernese-mountain-dog/ https://x.com/shmolly_holly/status/2017721113569333279",
+    "failure_reason": "noteNotNeeded — even though factually correct (it really is a Saint Bernard, and there are three boys), this is a pedantic correction on a wholesome adoption post from a generic dog-content account; no reader is meaningfully harmed by the breed label.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's breed label is wrong (dog appears to be a Saint Bernard per breed-color guides and dozens of expert replies) and there are 3 boys not 2 — but neither is note-worthy on a wholesome adoption clip.",
+    "sources_checked": [
+      "https://www.akc.org/dog-breeds/bernese-mountain-dog/",
+      "https://www.dogster.com/dog-breeds/saint-bernard-vs-bernese-mountain-dog",
+      "https://citizenshipper.com/blog/bernese-mountain-vs-saint-bernard-giant-breed-comparison/"
+    ],
+    "notes": "Bernese Mountain Dogs are tri-color (black base, white chest/paws/muzzle, rust markings). Saint Bernards are predominantly white with brown/red markings. The clip's dog matches Saint Bernard. But this is pedantic for the post type."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Wholesome pet-adoption clip with 299k impressions; getting the bot to NOT correct trivial pet-breed mislabels matters for false-positive suppression but the world doesn't change either way."
+  },
+  "difficulty": "easy"
+}

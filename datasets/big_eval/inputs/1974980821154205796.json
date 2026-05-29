@@ -1,0 +1,66 @@
+{
+  "tweet_id": "1974980821154205796",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:07.379Z",
+  "post": {
+    "id": "1974980821154205796",
+    "author_id": "1290079468455895043",
+    "created_at": "2025-10-05T23:31:35.000Z",
+    "text": "Yawn https://t.co/CISQTxfMFW https://t.co/DIuXk8VLQz",
+    "media": [
+      {
+        "media_key": "3_1974980816951287808",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G2iKltCXoAAdx6B.jpg",
+        "height": 1468,
+        "width": 2014
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "1974977625685922146"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "1974977625685922146",
+      "author_id": "1112568672021676033",
+      "created_at": "2025-10-05T23:18:53.000Z",
+      "text": "Never. https://t.co/Dpb44zdT8X",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 314,
+      "reply_count": 129,
+      "like_count": 7687,
+      "quote_count": 36,
+      "bookmark_count": 590,
+      "impression_count": 440180
+    },
+    "author_followers": 23841,
+    "author_name": "Truthful🛰️",
+    "author_description": "Kerbal Space Program content creator, Cinematic KSP Videos can be found on my YouTube at Truthful KSP ▶︎\n\nModlist and YT link in Linktree below",
+    "author_tweet_count": 139190
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G2iKltCXoAAdx6B.jpg",
+          "description": {
+            "description": "A digital reproduction of a The New York Times masthead dated December 8, 1903, followed by a bold headline and a quote predicting that human flight would not be achieved for millions of years.",
+            "ocrText": "The New York Times\nDecember 8, 1903\nMan won't fly for a million years—\nTo build a flying machine would require \"the\ncombined and continuous efforts of\nmathematicians and mechanics for\none million to ten million years.\""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- moaw (@_bowl1): \"the combined and continuous efforts of mathematicians and mechanics for one million to ten million years\" two bicycle mechanics literally 9 days later: (Likes=183)\n- Blaze (@Blaze_R935): Good to know that every generation had their own doomers. (Likes=38)\n- namonai hito (@sometingOrWtEvr): I don't think its the same. The planet doesn't retain an atmosphere, its core has cooled so there's no magnetosphere. We have neither enough nukes nor enough time to enact any sort of plan to restart Mars' heart. Putting a man on Mars is more comparable to this feat. (Likes=36)\n- KimJonPuddin (@MP5433224293419): The article is 100% accurate. Man still can't fly. You are not flying, the plane is. (Likes=28)\n- Magnifico (@the_mule_97): lmao, classic NYT rule of thumb - whatever the NYT says, the opposite is very likely true (Likes=12)\n- Abyssaltech (@abyssaltech): My single, greatest desire, is to live long enough to hear the first cries of a child in the air of another world. (Likes=7)\n- Joe88718 (@Joe88718): to be fair, Wilbur Wright himself told his brother in 1901 that man would never fly for another thousand years. Then he himself accomplished it in two years. Let's just say that if it was up to New York Times editorialists, it would indeed have taken ten million years. (Likes=5)\n- Space Arc (@WaywardWestern1): Nothing ever happens until it eventually happens (Likes=4)\n- Peter Salisbury (@peterbsalisbury): So glad this sign exists to tap on (Likes=3)\n- MancerAI (@MancerAI_): Gotta love the optimism. Ugh how can people be so negative all the time? Nevermind that he's wrong, it must be tiring to just be so pessimistic (Likes=3)",
+    "warnings": []
+  }
+}

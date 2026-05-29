@@ -7,8 +7,9 @@ import type {
   UploadInfo,
   FailureModeInfo,
 } from "./types";
-import { resultToFailureType } from "./types";
+import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
+import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
@@ -365,18 +366,11 @@ export function buildDashboardItems(data: {
 // ─── Production counts ───────────────────────────────────────────────────────
 
 export function countsFromItems(items: ReviewItem[]): Record<FailureType, number> {
-  const counts: Record<FailureType, number> = {
-    rated_helpful: 0,
-    rated_unhelpful: 0,
-    lost_to_competitor: 0,
-    missed_opportunity: 0,
-    false_positive: 0,
-    correct_rejection: 0,
-    needs_more_ratings: 0,
-    uncategorized: 0,
-  };
+  const counts = Object.fromEntries(
+    Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
+  ) as Record<FailureType, number>;
   for (const item of items) {
-    if (item.failureType) counts[item.failureType]++;
+    if (item.failureType && item.failureType in counts) counts[item.failureType]++;
   }
   return counts;
 }
@@ -438,6 +432,9 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
     result: row.result,
     needsNote: row.needs_note,
     groundTruthNote: row.ground_truth_note,
+    judgeGuidance: row.judge_guidance ?? undefined,
+    originalNoteText: row.original_note_text ?? undefined,
+    failureReason: row.failure_reason ?? undefined,
     evaluationScore: row.evaluation_score ? Number(row.evaluation_score) : undefined,
     logs: row.logs,
     comparisonNotes: row.ground_truth_note
@@ -449,16 +446,9 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
 }
 
 export async function fetchDatasetRunCounts(uploadId: string): Promise<Record<FailureType, number>> {
-  const counts: Record<FailureType, number> = {
-    rated_helpful: 0,
-    rated_unhelpful: 0,
-    lost_to_competitor: 0,
-    missed_opportunity: 0,
-    false_positive: 0,
-    correct_rejection: 0,
-    needs_more_ratings: 0,
-    uncategorized: 0,
-  };
+  const counts = Object.fromEntries(
+    Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
+  ) as Record<FailureType, number>;
 
   const { data } = await supabase
     .from("review_dashboard_items")
@@ -593,21 +583,7 @@ export async function uploadDatasetRun(
   // Batch insert items in chunks of 50
   const CHUNK = 50;
   for (let i = 0; i < rows.length; i += CHUNK) {
-    const chunk = rows.slice(i, i + CHUNK).map((r) => ({
-      upload_id: upload.id,
-      url: r.url ?? "",
-      tweet_text: r.text ?? null,
-      needs_note: r.needs_note ?? null,
-      ground_truth_note: r.ground_truth_note ?? null,
-      bot_id: r.bot_id ?? null,
-      note_status: r.note_status ?? null,
-      outcome: r.outcome ?? null,
-      result: r.result ?? null,
-      note_text: r.note_text ?? null,
-      source_verification: r.source_verification ?? null,
-      evaluation_score: r.evaluation_score ? Number(r.evaluation_score) : null,
-      logs: r.logs ? (typeof r.logs === "string" ? JSON.parse(r.logs) : r.logs) : null,
-    }));
+    const chunk = rows.slice(i, i + CHUNK).map((r) => csvRowToReviewItemInsert(upload.id, r));
 
     const { error } = await supabase.from("review_dashboard_items").insert(chunk);
     if (error) throw error;

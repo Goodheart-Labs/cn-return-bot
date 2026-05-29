@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1981483727130628143",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["misattributed_or_miscontextualized_media", "joke_or_satire"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Tweet jokingly captions an old Simpsons 'Treehouse of Horror XXIII' (2012) clip showing a Fortnite-style black-hole sucking up Springfield as a 'leak' of the 2025 Fortnite x Simpsons live event.",
+  "why_note_decision": "The clip is obviously The Simpsons (animation style, Milhouse, recognizable Springfield) and the post style ('got leaked.. 💀') is the classic 'old clip predicts new thing' joke format. Top replies engage with it as a joke ('Wait a minute!', 'So they predicted the black hole in Fortnite too', 'didn't get a Maggie skin?'). No reasonable viewer thinks Fortnite leaked a real live-event clip via a Simpsons cartoon — 15 notHelpfulNoteNotNeeded ratings agree.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive — the tweet is an obvious 'Simpsons predicted it' meme joke. A correction explaining the clip is from Treehouse of Horror XXIII reads as humorless over-fact-checking.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "For context, this clip is from The Simpsons 'Treehouse of Horror XXIII' (2012). It shows a black hole in Springfield and pre-dates Fortnite's 2019 black hole event. It's not a leak of the 2025 Fortnite Simpsons crossover or its live event.  https://simpsons.fandom.com/wiki/Treehouse_of_Horror_XXIII",
+    "failure_reason": "Note is factually accurate but the tweet is a meme/joke that no one is being misled by. Raters chose Note Not Needed (15) — over-fact-checking humor.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Clip is genuinely from Treehouse of Horror XXIII (2012), not a Fortnite leak — but the tweet's framing is a joke, not a sincere claim.",
+    "sources_checked": [
+      "https://simpsons.fandom.com/wiki/Treehouse_of_Horror_XXIII"
+    ],
+    "notes": "Simpsons crossover with Fortnite is a real 2025 event; the 'leak' framing is the standard 'Simpsons predicted it' meme."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Gaming/meme humor; no public-interest impact through any of the EA / progress / safety / animal-welfare lenses."
+  },
+  "difficulty": "easy"
+}

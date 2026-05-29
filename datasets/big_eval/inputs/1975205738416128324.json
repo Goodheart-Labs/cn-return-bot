@@ -1,0 +1,68 @@
+{
+  "tweet_id": "1975205738416128324",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:55.193Z",
+  "post": {
+    "id": "1975205738416128324",
+    "author_id": "1662684105157246981",
+    "created_at": "2025-10-06T14:25:20.000Z",
+    "text": "Jared Leto had Sex with ChatGPT to prepare for his role as an AI in 'TRON: ARES'.\n\n(Source: https://t.co/pX7LomBOhA) https://t.co/8SjEGgX3PN",
+    "media": [
+      {
+        "media_key": "3_1975205732120240128",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G2lXJfVXoAAEnEq.jpg",
+        "height": 1153,
+        "width": 2048
+      },
+      {
+        "media_key": "3_1975205732124348416",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G2lXJfWWUAAj8aq.jpg",
+        "height": 623,
+        "width": 1024
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3662,
+      "reply_count": 989,
+      "like_count": 74360,
+      "quote_count": 2132,
+      "bookmark_count": 4905,
+      "impression_count": 3351719
+    },
+    "author_followers": 58228,
+    "author_name": "DiscussingFish",
+    "author_description": "parody satire fake news page",
+    "author_tweet_count": 1207
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G2lXJfVXoAAEnEq.jpg",
+          "description": {
+            "description": "A medium shot of a man with long, slicked-back dark hair and a beard, identified appearing as a character in futuristic black armor with glowing red accents. He is standing in a dimly lit indoor setting with a neon sign glowing in the background that resembles stylized lettering. The lighting is dramatic, highlighting the textures of his suit and his facial features.",
+            "ocrText": "COLD WAR"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G2lXJfWWUAAj8aq.jpg",
+          "description": {
+            "description": "The image shows the logo for ChatGPT. It features a teal background with a white, stylized interlocking loop icon resembling a flower or a geometric swirl. Below the icon, the word 'ChatGPT' is written in a black, bold, sans-serif font.",
+            "ocrText": "ChatGPT"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @REDACTEDSpider: He does know he doesn't have to do these things right? (Likes=2165, Reposts=0, Quotes=0, Replies=0, Views=177871)\n- @RaspBTea: (No text content, media) (Likes=1906, Reposts=21, Quotes=0, Replies=0, Views=31536)\n- @AtlasDeus: So, the plot to Her? (Likes=366, Reposts=0, Quotes=0, Replies=0, Views=7762)\n- @KillinPostponed: …none of those words are in the Bible (Likes=244, Reposts=0, Quotes=0, Replies=0, Views=16173)\n- @SPhantoms9000: I beg your pardon? (Likes=162, Reposts=0, Quotes=0, Replies=0, Views=3133)\n- @CrazyRuckusN64: He's reportedly cheated on chatgpt and had sex with grok \n\nSources say chatgpt is angry and is going to marry gemini (Likes=128, Reposts=4, Quotes=0, Replies=2, Views=10582)\n- @screamnhorror: hate this timeline (Likes=50, Reposts=0, Quotes=0, Replies=0, Views=22782)\n- @CatastropiClara: So 14 year old girls and AI aren't safe from this predator. (Likes=41, Reposts=0, Quotes=0, Replies=0, Views=3044)\n- @runksterthepeak: So what was it like exactly.. (Likes=16, Reposts=0, Quotes=0, Replies=0, Views=1549)\n- @spider6843: The real DiscussingFilm could’ve posted this and I would’ve believed it (Likes=14, Reposts=0, Quotes=0, Replies=0, Views=1334)",
+    "warnings": []
+  }
+}

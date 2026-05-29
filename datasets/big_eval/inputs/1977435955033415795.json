@@ -1,0 +1,83 @@
+{
+  "tweet_id": "1977435955033415795",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:11.836Z",
+  "post": {
+    "id": "1977435955033415795",
+    "author_id": "745757399194034177",
+    "created_at": "2025-10-12T18:07:25.000Z",
+    "text": "@Awk20000 NEW CLIP OF HASAN SHOCKING HIS DOG https://t.co/IjeRS6omin",
+    "media": [
+      {
+        "media_key": "13_1977435839958515712",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1977435839958515712/img/blr0FDOObZ69DBLa.jpg",
+        "height": 576,
+        "width": 1280,
+        "duration_ms": 10177,
+        "view_count": 815982,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1977435839958515712/vid/avc1/600x270/TR9A9WG7cfF263p0.mp4?tag=14"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1977435839958515712/vid/avc1/800x360/jtu1bIq2cgkLv2Ve.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1977435839958515712/vid/avc1/1280x576/2jKPUz1SPJeP91vV.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1977435839958515712/pl/epNXY6IesrqXPpHe.m3u8?tag=14&v=694"
+          }
+        ]
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "1977435142772941038"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 138,
+      "reply_count": 98,
+      "like_count": 3679,
+      "quote_count": 130,
+      "bookmark_count": 539,
+      "impression_count": 2506208
+    },
+    "author_followers": 742,
+    "author_name": "PARKINGTIGERS",
+    "author_description": "",
+    "author_tweet_count": 9799
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1977435839958515712/vid/avc1/1280x576/2jKPUz1SPJeP91vV.mp4?tag=14",
+          "description": {
+            "description": "A man with a mustache and glasses sits in front of a microphone streaming. In the first frame, he is looking down at a cat that has just jumped up behind him on his left. In the second frame, as he continues to look down, the cat walks along the surface behind him.",
+            "ocrText": "HASAN HASAN HASANABI HASANABI HASANTHEHUN HASANDPIKER HASANDPIKER"
+          },
+          "transcription": "a commemorative mug i got from england commemorative mug i got from england specifically for"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @KaHouGiaBao: wait this one kinda crazy good. Its fucking trained to be sit in that perfect photogenic corner. (Likes: 1474)\n- @ToddHoddd: ..... she literally just adjusted herself what the fuck are you talking about? (Likes: 1380)\n- @sillypilly5: are you people just hallucinating ? (Likes: 816)\n- @muadcartney: The dog adjusted itself? You guys are legitimately hallucinating now (Likes: 690)\n- @realsuperduper_: Dog's like \"I'm gonna go move around a bit because I'm not a lethargic dying animal\" *gets up* *gets shocked* \"Nvm just gonna stay put\" Animals don't just walk away just to sit the fuck back down in the same place. That is trained behavior (likely trained through punishment). (Likes: 449)\n- @GHETTOGR1NCH: This dude is nasty. (Likes: 330)\n- @KeltarDevir: (No text content) (Likes: 287)\n- @ollieszn: why tf is it perfectly trained to sit like a decoration (Likes: 218)\n- @FKAsocks: hey man you're a psycho (Likes: 199)\n- @PlainStrawberry: I expected her to yelp, but this one seems like a good piece of evidence (Likes: 140)",
+    "warnings": []
+  }
+}

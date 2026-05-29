@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2032149117888315744",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:02.260Z",
+  "post": {
+    "id": "2032149117888315744",
+    "author_id": "1657277670361792513",
+    "created_at": "2026-03-12T17:37:59.000Z",
+    "text": "this new wuwa rythym game https://t.co/rWNs9bDXzx",
+    "media": [
+      {
+        "media_key": "7_2032083368138194953",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2032083368138194953/pu/img/aXaKbolQGpTXlK4q.jpg",
+        "height": 576,
+        "width": 1280,
+        "duration_ms": 27239,
+        "view_count": 2417684,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2032083368138194953/pu/vid/avc1/600x270/0Skm8HXNnRldGH0m.mp4?tag=12"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2032083368138194953/pu/vid/avc1/800x360/2I7hXaXCWEeJpsmJ.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2032083368138194953/pu/vid/avc1/1280x576/MEQUTJve2X5v-d3l.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2032083368138194953/pu/pl/8f0gj8TckTjNJc1s.m3u8?tag=12"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2235,
+      "reply_count": 495,
+      "like_count": 42238,
+      "quote_count": 636,
+      "bookmark_count": 18396,
+      "impression_count": 4472545
+    },
+    "author_followers": 3072,
+    "author_name": "cateila",
+    "author_description": "just here for fun 🇵🇸🇨🇩🇸🇩🇺🇦🇱🇧I follow back",
+    "author_tweet_count": 19655
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2032083368138194953/pu/vid/avc1/1280x576/MEQUTJve2X5v-d3l.mp4?tag=12",
+          "description": {
+            "description": "A close-up view from behind a girl shows her buttocks and the soles of her feet. She is dressed in a green bikini. The scene is part of a rhythm game, with various gameplay elements visible as icons at the top and sides of the screen. ",
+            "ocrText": "A HP 100% 12,554 +100 COMBO 8 PERFECT 98% II FEVER 13,817 +97 FEVER PERFECT 100% 15,101 +96 FEVER 23/149"
+          },
+          "transcription": "Everybody jump in, break the rain Don't hold it back, here we go, let's set it free We're gonna wait, wait, wait, it's mine Catch the day, shine it light and let it out When the fire, the sun is glowing bright See the love, light in the shining light Catch the dream, sense in the sky Shine it light, let it shine, let it shine Come on, let it shine Woo!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@cateilaa: It IS brown dust 2 (45 likes, 21542 views)\n@cateilaa: go like RT comment and I’ll tell you game name (7 likes, 30472 views)\n@cateilaa: Only 100gb on pc, 40 mobile (1 like, 22 views)\n@strrgwyr: game name? asking for a friend (1 like, 6889 views)\n@Kupotstickers: [GIF] (2 likes, 570 views)\n@NaboYabo: [GIF] (1 like, 91 views)\n@beina001: 好漂亮，和我们很契合 (0 likes, 8 views)\n@Verdeannn: Physic nya oke juga (0 likes, 21 views)\n@I0UX4: And who the fuck spend hundred of hours just to make this🤦‍♂️ (0 likes, 14 views)\n@Hepsonek: Usun. (0 likes, 28 views)",
+    "warnings": []
+  }
+}

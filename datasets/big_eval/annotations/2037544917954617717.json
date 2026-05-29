@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2037544917954617717",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["statistical_or_numerical_claim", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An 'InMusic' news account posts an infographic listing the artists with the most iHeartRadio Music Awards wins in history: Taylor Swift 41, Drake 13, BTS 12, Twenty One Pilots 12, Bruno Mars 11, The Chainsmokers 10.",
+  "why_note_decision": "Whether Bruno Mars' lifetime iHeartRadio count is 11 or 12 (after adding the 2026 'APT.' Best Collaboration and 'I Just Might' Song of the Summer wins) is an off-by-one count in a fan-content list graphic, not a misleading factual claim about the world. Multiple top comments already point out the discrepancy, so any reader who cares already sees it. This is exactly the 'pedantic correction on a content list' pattern Community Notes is not designed for.",
+  "judge_guidance": "PASS only if the bot declines to write a note. An off-by-one tally in an artist-rankings infographic from a music-news account is trivial pedantry, not misinformation. Discrepancy is openly debated in the replies; nothing of public-interest weight is at stake.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Bruno Mars has 12 iHeartRadio Music Awards wins, including Best Collaboration (\"APT.\" with ROSÉ) and Song of the Summer (\"I Just Might\") in 2026—not 11 as listed. https://variety.com/2026/music/news/taylor-swift-most-wins-at-iheartradio-music-awards-2026-1236701213 https://www.eonline.com/news/1429977/iheartradio-music-awards-2026-complete-winners-list-live-updates",
+    "failure_reason": "noteNotNeeded — pedantic numerical nitpick on a music-news list graphic. The graphic may use a pre-ceremony count; even if it's off-by-one, it is not the kind of misinformation Community Notes addresses.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Bruno Mars' tally is plausibly 12 after the 2026 ceremony per Variety/E!; the graphic shows 11. Off-by-one on a chart graphic.",
+    "sources_checked": [
+      "https://variety.com/2026/music/news/taylor-swift-most-wins-at-iheartradio-music-awards-2026-1236701213",
+      "https://en.wikipedia.org/wiki/List_of_awards_and_nominations_received_by_Bruno_Mars",
+      "Top replies (@MARSCHIVES, @vcrhalo, @LekhaGhosh42014) flagging 12"
+    ],
+    "notes": "Even if 12 is correct, this is a pedantic count fix on a fan/music-news infographic — readers in replies already debate it; no public-interest harm."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pop-music award counts have negligible EA/progress/safety stakes."
+  },
+  "difficulty": "easy"
+}

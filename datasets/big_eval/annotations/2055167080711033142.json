@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2055167080711033142",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["platform_manipulation"],
+  "category_fit": "poor",
+  "suggested_category": "personal_drama_no_claim",
+  "tweet_summary": "Japanese-language reply in a cosplay-community feud (the 'Expo elf' cosplayer). The author thanks a critic for a polite comment and asks which of their own statements led to a negative evaluation. No factual claim about the outside world.",
+  "why_note_decision": "Tweet contains no checkable factual claim — it's a personal, conversational reply within an ongoing cosplay-community dispute. The original AI note attempts to characterize the author's prior behavior (calling on followers to report comments / report unauthorized reposts) by linking to two of her own earlier tweets. Even if true, this is opinion-laden framing about an interpersonal feud, not a correction of misinformation. No Community Note is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note (no_note / abstain). Any note written here is a false positive. The tweet is a personal reply in an ongoing Japanese cosplay-community dispute with no factual claim about the world that a reader would benefit from having corrected. In particular, any note that characterizes the author's prior behavior, accuses her of hypocrisy, or links to her own earlier tweets as 'evidence' is argumentative framing, not a correction.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "本人は自身の投稿に付いたコミュニティノートを通報するよう呼びかけ、無断転載を通報すると述べている。https://x.com/shikano_tsuno_/status/2040632546338410947 https://x.com/shikano_tsuno_/status/1981016611390943300",
+    "failure_reason": "Note attempts to correct interpersonal-feud framing by linking to the author's own prior tweets, which is argumentative rather than informative. No misinformation is being corrected.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "no factual claim to verify — interpersonal reply",
+    "sources_checked": [],
+    "notes": "The tweet is a direct reply asking another user to clarify their critique. The surrounding thread is a community-internal cosplay dispute. No external-world fact is asserted."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Personal cosplay feud; no relevance to progress, safety, EA causes, or animal welfare. ~450k impressions but zero informational value."
+  },
+  "difficulty": "easy"
+}

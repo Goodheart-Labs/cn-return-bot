@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2044518446143041575",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:53.212Z",
+  "post": {
+    "id": "2044518446143041575",
+    "author_id": "1830302921789259776",
+    "created_at": "2026-04-15T20:49:17.000Z",
+    "text": "Not gonna lie…. My grandson will be trying this soon! 😎 https://t.co/XDiBtZuXxG",
+    "media": [
+      {
+        "media_key": "13_2044518394167496706",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2044518394167496706/img/oe6H0IjiyCrLR89o.jpg",
+        "height": 928,
+        "width": 626,
+        "duration_ms": 9923,
+        "view_count": 25830,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2044518394167496706/vid/avc1/320x474/n8J_xS9IIpOxl70C.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2044518394167496706/vid/avc1/480x710/jFN8pQmCeKBbTazu.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2044518394167496706/vid/avc1/626x928/E47DwUwg0ul-E_aC.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2044518394167496706/pl/78BJQiqfHFyldC4a.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 543,
+      "reply_count": 368,
+      "like_count": 2912,
+      "quote_count": 33,
+      "bookmark_count": 184,
+      "impression_count": 54469
+    },
+    "author_followers": 242537,
+    "author_name": "Hunter Eagleman™",
+    "author_description": "America First - @GuntherEagleman’s Twin Brother - 30 year LEO -  Retired Homicide Detective - Let’s do this!",
+    "author_tweet_count": 288812
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2044518394167496706/vid/avc1/626x928/E47DwUwg0ul-E_aC.mp4",
+          "description": {
+            "description": "A baby in a blue baby carrier is strapped onto the back of a large golden retriever dog as it walks through a home. The camera follows the dog and baby from the side and behind as they move through the living area and into a hallway.",
+            "ocrText": "@BIZV.ERSE"
+          },
+          "transcription": "Oh my gosh, look at him! Baby boy, you hanging on? He's over the gate! He's loving it so much!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@redheadranting**: This baby only has one leg! I love that his parents treat him like all the able bodied babies.  \n(Likes: 26)\n\n**@QueenAnitaDBS**: lol  \n(Likes: 25)\n\n**@carmattmom**: That’s the freakiest AI vid I have seen yet. Is the baby in the dog, half a baby or just missing a leg??  \n(Likes: 16)\n\n**@RealSpitfire**: NO DOUBT😂😂😂  \n(Likes: 10)\n\n**@OneLastBark**: Dog’s spine isn’t designed to carry load of weight. Please don’t do this.  \n(Likes: 10)\n\n**@jess_X**: What if the dog escapes down the block 😳😂 bye baby  \n(Likes: 10)\n\n**@FireBeardViking**: It's AI. It's cute but I wouldn't recommend this with a baby. Imagine the whiplash that could happen with the neck.  \n(Likes: 10)\n\n**@Deborah39533585**: Thats adorable!  \n(Likes: 2)\n\n**@nancijeanw**: Great idea  \n(Likes: 1)\n\n**@stump54jumper**: that's great!  \n(Likes: 0)",
+    "warnings": []
+  }
+}

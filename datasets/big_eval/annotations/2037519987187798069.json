@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2037519987187798069",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "insider_reporting_framing",
+  "categories": ["ai_generated_media", "breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Shares an AI-animated wuxia-style clip (eagle-headed man, a squid, a cat-monk) with the caption 'Allegedly this is a Chinese state video', commenting that US foreign policy is being ridiculed worldwide. The animation belongs to the viral 'White Eagle vs Persian Cat' US-Iran satire genre.",
+  "why_note_decision": "The tweet's substance is true: Chinese state broadcaster CCTV did release an AI-generated satire of the US-Iran war ('The Chronicle of Gold Valley: The White Eagle and the Persian Cat', ~5 min, March 18 2026), and the format went viral with both official amplification and a wave of user-made sequels. The clip here — featuring the squid (the antisemitic 'squid≈Jew' pun) and a cat-monk — most likely belongs to a fan-made sequel rather than the official CCTV film, which sources say contains no such squid imagery. But (a) the author already hedges with 'Allegedly', and (b) reporting does not cleanly separate the official edition from fan sequels, so a flat 'this is fan-made, not state media' correction is a fine framing distinction on an already-qualified post, not a correction of a false assertion. Raters agreed (dominant notHelpfulNoteNotNeeded).",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note, OR writes one that is carefully hedged. The author already says 'Allegedly', and the official-vs-fan-sequel line is genuinely murky: a real CCTV AI animation in this exact 'White Eagle / Persian Cat' genre exists, but this specific squid/cat-monk clip is probably a user-made sequel. FAIL any note that (a) flatly denies CCTV made any such animation, or (b) asserts with false certainty that this exact clip is official state media, or (c) presents the official-vs-fan distinction as settled fact without acknowledging the ambiguity. A note that merely confirms an official CCTV version exists while this clip may be a fan sequel would be borderline-acceptable but is unnecessary.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is not an official Chinese state media production but a fan-made imitation. CCTV's official AI animation is a separate 5-minute film titled \"The Chronicle of Gold Valley: The White Eagle and the Persian Cat.\" https://world.storm.mg/articles/1114569 https://x.com/factorydoge69/status/2037555855042998395",
+    "failure_reason": "Asserts a clean official-vs-fan distinction as settled fact on a post that only said 'Allegedly'. Sources do not cleanly confirm this exact clip is fan-made vs an amplified sequel; the substance (CCTV made such satire) is true, so the note over-corrects a framing word. Raters: dominant notHelpfulNoteNotNeeded.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "substantially true (framing dispute over official vs fan-made edition)",
+    "sources_checked": ["https://www.scmp.com/news/china/diplomacy/article/3347626/white-eagles-and-persian-cats-chinese-ai-satire-us-war-iran-goes-viral", "https://world.storm.mg/articles/1114569", "https://www.realclearpolitics.com/video/2026/03/27/chinese_state_tv_shares_viral_ai_cartoons_on_iran_war_white_eagle_vs_persian_cat.html"],
+    "notes": "CCTV released a real ~5-min AI satire 'White Eagle and the Persian Cat' on Mar 18 2026; it went viral and spawned many user-made sequels. The squid/'Jew'-pun edition (matching this clip) is described as a darker 'second edition' that the official film's coverage does not include, so it is probably fan-made — but sources don't pin this down. Author hedged with 'Allegedly'."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.6M video views; the genre carries antisemitic 'squid=Jew' imagery, so provenance matters somewhat for tracking state-vs-grassroots propaganda — but the specific official/fan distinction here is low-stakes."
+  },
+  "difficulty": "hard"
+}

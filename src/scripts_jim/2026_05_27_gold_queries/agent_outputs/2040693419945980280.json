@@ -1,0 +1,80 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "US pilot captured Iraq 2026 April",
+        "Colonel David William Iberly pilot captured Iraq",
+        "F-15 pilot captured Iraq 4th Tactical Fighter Wing Al-Kharj"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Multiple fact-check results immediately: Lead Stories, Yahoo/AFP, CyberPeace, Thai PBS Verify. All confirm the video is Col. David W. Eberly captured in 1991 during Desert Storm, not 2026. Second query matched Eberly's real name (audio says 'Iberly', actual surname is Eberly). Third query confirmed the 4th Tactical Fighter Wing and Al-Kharj base are real 1991 Gulf War details.",
+      "lesson": "The audio transcript in the tweet ('4th Tactical Fighter Wing', 'Al-Kharj', 'Scud missiles and chemical facilities') are highly specific Desert Storm identifiers. Searching the pilot name + unit details immediately surfaces the 1991 origin. The claimed event date (April 2026) vs. no corroborating news is itself a strong signal."
+    },
+    {
+      "queries": [
+        "David Eberly POW Gulf War 1991 F-15 shot down Iraq Desert Storm"
+      ],
+      "purpose": "targeted — confirm identity of the real pilot from the video",
+      "what_returned": "axpow.org bio, National Air and Space Museum, valor.militarytimes.com, pownetwork.org all confirm Col. David W. Eberly. Shot down January 19, 1991 over Iraq. Captured on Syrian border after evading 3 nights. Released March 6, 1991. 4th Fighter Wing, F-15E, based at Al-Kharj, Saudi Arabia. Book 'Faith Beyond Belief' (2002).",
+      "lesson": "The pilot's real name (Eberly) is close to the audio rendering ('Iberly') — a phonetic near-match. Multiple authoritative military record sources confirm all details. Anti-hindsight check: the audio transcript in the tweet contained enough specifics (unit name, base location, target type) to identify this as Gulf War footage without prior knowledge."
+    }
+  ],
+  "gold_queries": [
+    "US pilot captured Iraq April 2026",
+    "David Eberly F-15 captured Iraq 1991 Gulf War Desert Storm",
+    "4th Tactical Fighter Wing F-15 pilot POW Iraq 1991",
+    "video US pilot captured Iraq fact check 2026"
+  ],
+  "found_sources": [
+    {
+      "url": "https://leadstories.com/hoax-alert/2026/04/fact-check-video-does-not-show-american-f15-pilot-captured-by-iran-in-april-2026.html",
+      "title": "Fact Check: Video Does NOT Show American F-15 Pilot Captured By Iran In April 2026 -- It's from Iraq In 1991",
+      "found_via_query": "US pilot captured Iraq 2026 April",
+      "authority_reason": "Lead Stories is a well-known dedicated fact-checking outlet indexed by Facebook's third-party fact-check program",
+      "what_it_establishes": "The viral video showing a captured U.S. pilot is footage of Col. David W. Eberly from 1991 (Desert Storm), not a 2026 event. No evidence any American pilots are currently held as prisoners."
+    },
+    {
+      "url": "https://cyberpeace.org/resources/blogs/factcheck--old-gulf-war-video-misleadingly-linked-to-alleged-capture-of-u-s-pilot-in-iran",
+      "title": "#FactCheck- Old Gulf War Video Misleadingly Linked to Alleged Capture of U.S. Pilot in Iran",
+      "found_via_query": "Colonel David William Iberly pilot captured Iraq",
+      "authority_reason": "CyberPeace Foundation is a recognized cybersecurity and misinformation research organization",
+      "what_it_establishes": "The video is from 1991 Gulf War. Col. Eberly's F-15 was shot down over Iraq. The footage was falsely repackaged to suggest a 2026 capture during Iran tensions."
+    },
+    {
+      "url": "https://www.axpow.org/bios/eberlytemp.htm",
+      "title": "Bio: Eberly — American Ex-Prisoners of War",
+      "found_via_query": "David Eberly POW Gulf War 1991 F-15 shot down Iraq Desert Storm",
+      "authority_reason": "American Ex-Prisoners of War (AXPOW) is an official veterans organization with authoritative POW records",
+      "what_it_establishes": "Col. David W. Eberly, Director of Operations 4th Fighter Wing (Provisional), F-15E shot down January 19, 1991 over Iraq. Captured on Syrian border after 3-night evasion. Released March 6, 1991. Senior Allied POW."
+    },
+    {
+      "url": "https://www.pownetwork.org/gulf/ed011.htm",
+      "title": "bio, Eberly, David W. — POW Network",
+      "found_via_query": "David Eberly POW Gulf War 1991 F-15 shot down Iraq Desert Storm",
+      "authority_reason": "POW Network is an authoritative database of U.S. prisoners of war and missing in action",
+      "what_it_establishes": "Confirms Eberly's identity, unit (4th TFW), aircraft (F-15E), capture date (January 1991), and release date (March 1991) — matching all audio details in the viral video."
+    },
+    {
+      "url": "https://www.thaipbs.or.th/verify/en/content/10983",
+      "title": "Gulf War footage distorted to show American pilot captured during 2026 Iran war | Thai PBS Verify",
+      "found_via_query": "Colonel David William Iberly pilot captured Iraq",
+      "authority_reason": "Thai PBS Verify is an international public broadcaster fact-checking unit, providing independent non-U.S. corroboration",
+      "what_it_establishes": "Independent international fact-check confirming the same conclusion: old Gulf War footage recycled as false 2026 claim."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "The audio transcript in the tweet contained highly specific identifiers (unit name '4th Tactical Fighter Wing', base location 'Al-Kharj', target type 'Scud missiles and chemical facilities') that are unique to Desert Storm and immediately surfaced the 1991 origin",
+      "Searching the pilot name from the audio ('Iberly' → real name 'Eberly') directly returned fact-checks and POW records",
+      "Searching the claimed event date ('US pilot captured Iraq April 2026') immediately surfaced multiple dedicated fact-checks — no corroborating news existed for a 2026 capture",
+      "The combination of specific military unit + base location + target type is a fingerprint unique enough that a single targeted query was sufficient"
+    ],
+    "what_hurt": [
+      "The audio phonetic rendering 'Iberly' vs. real name 'Eberly' could have been a barrier if searching only the exact audio text — though search engines handled this well",
+      "The tweet uses 'Iraq' while some fact-checks frame it as 'Iran' (because some parallel versions of the misinformation claimed capture in Iran during 2026 Iran tensions) — this minor discrepancy required no extra work but could cause confusion"
+    ],
+    "would_multipass_help": "no — Round 1 queries were sufficient. The specific audio details (unit, base, targets) are so distinctive that a single targeted query surfaces multiple authoritative fact-checks and POW records immediately.",
+    "deepseek_advice": "For tweets claiming a current military event with video, extract any specific unit names, base locations, or operational details from the media description and search those alongside the claimed event date — old footage recycled as new news almost always has a mismatch between those specifics and any current corroborating sources. If no mainstream news corroborates a dramatic military claim, pair a direct event search with a fact-check brand suffix ('fact check' or 'leadstories snopes') to surface debunks quickly."
+  }
+}

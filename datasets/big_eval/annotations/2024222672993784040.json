@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2024222672993784040",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "insider_reporting_framing",
+  "categories": ["breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "contested_framing_celebrity_dispute",
+  "tweet_summary": "Laura Loomer asserts Tucker Carlson 'made the whole story up' about being detained in Israel after his Mike Huckabee interview and concludes he has 'no credibility left'; attached image is a Daily Mail screenshot of the US embassy/Israel denial.",
+  "why_note_decision": "This is a contested he-said/she-said framing dispute, not a clean factual misstatement. Carlson publicly described being detained and having his passport seized; Israel, the IAA, the US embassy, and leaked airport video all dispute his characterization. Loomer is taking a side in that dispute, and the tweet's specific claim ('he made the whole story up') is itself opinion/spin around contested framing of what counts as 'detention.' Any note that simply restates Israel's denial (as the original did) is one-sided and unnecessary on an already opinion-coded tweet — readers can see the embassy statement embedded in the image. Adding a note here injects a contested counter-narrative rather than correcting a checkable falsehood.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet repeats one side of a publicly contested framing dispute (was Carlson 'detained' or just routinely questioned?). The Israeli/US denial is already visible in the attached image, so a note that just repeats it is redundant. A note that takes Carlson's side ('he was detained') is equally one-sided. The correct answer is no note — any note that picks a side fails.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading: Israeli officials and the U.S. embassy deny Carlson was detained or interrogated, saying he faced routine passport questions and no unusual delay. https://www.dailymail.co.uk/news/article-15571619/Tucker-Carlson-DETAINED-Israel-interrogation.html",
+    "failure_reason": "Restates a denial already shown in the tweet's own embedded image; doesn't add information, takes a side in a contested framing dispute, and reads as argumentative rather than corrective. Raters tagged 'note not needed' and 'missing key points.'",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "contested — Israel/US/airport video dispute Carlson's 'detained' framing; Carlson and Middle East Eye/Al Jazeera report it as detention/interrogation. Both sides are publicly on the record.",
+    "sources_checked": [
+      "https://www.timesofisrael.com/israel-us-envoy-reject-tucker-carlsons-claim-he-was-detained-and-interrogated-at-airport/",
+      "https://www.aljazeera.com/news/2026/2/20/tucker-carlson-says-passport-seized-staff-interrogated-at-israeli-airport",
+      "https://www.jpost.com/israel-news/article-887311",
+      "https://www.ynetnews.com/article/hyorpyrozg"
+    ],
+    "notes": "Leaked video shows Carlson smiling and hugging staff, supporting Israel's account, but his crew's 'passport-taken, separate-room questioning' description is partially corroborated — they were taken to a separate room. The disagreement is over whether that counts as 'detention/interrogation,' i.e. a framing dispute, not a falsifiable fact."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Media-credibility / political-framing fight with limited bearing on EA/AGI/animal-welfare priorities; matters mildly for information-environment health."
+  },
+  "difficulty": "medium"
+}

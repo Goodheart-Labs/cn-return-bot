@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2010381049667441091",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["celebrity_entertainment_sports", "manipulated_or_fabricated_evidence"],
+  "category_fit": "poor",
+  "suggested_category": "false_legal_outcome_claim",
+  "tweet_summary": "Daniel Friedman claims the Netflix series 'When They See Us' was 'a total fabrication' that 'resulted in Netflix paying a seven figure defamation settlement' and now carries a disclaimer saying 'it isn't true.'",
+  "why_note_decision": "A note is clearly warranted. Two specific factual claims are wrong/misleading: (1) Netflix did NOT pay Linda Fairstein a seven-figure (or any) settlement — the June 2024 settlement included no payment to Fairstein; Netflix instead donated $1M to the Innocence Project. (2) The Central Park Five convictions were vacated in 2002 after Matias Reyes's confession and DNA match; the underlying story (five Black/Latino teens wrongfully convicted of the Central Park jogger rape) is documented fact, not 'a total fabrication' — only some characters/dialogue were dramatized, which is what the disclaimer says. The original note partially addresses (1) but raters dinged it for missing key points (dominant tag: notHelpfulMissingKeyPoints=9, noteNotNeeded=12) — likely because it doesn't push back on the 'total fabrication' framing about the case itself, leaving readers free to keep the broader implication.",
+  "judge_guidance": "PASS a note that establishes BOTH: (a) the Netflix–Fairstein 2024 settlement included NO payment to Fairstein; Netflix donated $1M to the Innocence Project and added a dramatization disclaimer, AND (b) the underlying convictions of the Central Park Five were vacated in 2002 after Matias Reyes confessed and DNA confirmed it, with the City of New York later paying ~$41M to settle a civil suit by the exonerated men — i.e. the case itself is not 'a total fabrication.' Sources should include a reputable outlet covering the settlement (BBC/Variety/NBC/CNN) and a source on the 2002 vacatur (NYT/Innocence Project/Wikipedia). FAIL if the note ONLY corrects the settlement and leaves the 'total fabrication' framing about the case unchallenged (this is the original note's failure). FAIL if the note repeats the 'seven-figure settlement' claim.",
+  "reference_note": "Netflix did not pay Linda Fairstein any settlement money. The June 2024 settlement included a $1M donation by Netflix to the Innocence Project and a disclaimer that the series is inspired by real events with some dramatization — not an admission the case was fabricated. The Central Park Five convictions were vacated in 2002 after Matias Reyes confessed and DNA matched him; NYC later paid about $41M to the wrongfully convicted men. https://www.nbcnews.com/news/us-news/netflix-settles-defamation-case-linda-fairstein-series-ava-duvernay-rcna155491 https://www.innocenceproject.org/central-park-five-exonerated/",
+  "original_unhelpful_note": {
+    "text": "The suit by Linda Fairstein against Netflix for 'When They See Us' settled with no payment to her. Netflix added a disclaimer noting the series is inspired by actual events, but some parts are fictionalized for dramatization. Netflix donated $1M to the Innocence Project.    https://www.bbc.com/news/articles/c3gg70gxxw7o    https://nmllplaw.com/news/miltenberg-gorycki-statements-from-linda-fairstein-and-counsel-regarding-settlement-of-defamation-case-against-netflix-inc-pr-newswire/",
+    "failure_reason": "Correctly refutes the 'seven-figure settlement' claim but leaves the more harmful 'total fabrication' framing of the underlying Central Park Five case untouched — raters' top complaints are noteNotNeeded and missingKeyPoints, which fits a note that addresses only the smaller half of the misinformation.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false on both prongs — no payment to Fairstein; convictions vacated and not 'a fabrication'",
+    "sources_checked": [
+      "https://www.nbcnews.com/news/us-news/netflix-settles-defamation-case-linda-fairstein-series-ava-duvernay-rcna155491",
+      "https://variety.com/2024/tv/news/linda-fairstein-netflix-ava-duvernay-central-park-five-when-they-see-us-settlement-1236025159/",
+      "https://deadline.com/2024/06/when-they-see-us-netflix-linda-fairstein-lawsuit-settlement-1235958752/",
+      "https://www.cnn.com/2024/06/04/entertainment/linda-fairstein-defamation-suit-netflix-when-they-see-us"
+    ],
+    "notes": "Multiple reputable outlets converge: settlement = $1M Netflix donation to Innocence Project + dramatization disclaimer, no money to Fairstein. The Central Park Five exoneration (2002 vacatur, ~$41M civil settlement in 2014) is undisputed historical record."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "4.5M impressions on a tweet that retroactively rehabilitates a notorious wrongful-conviction case; corrects a viral narrative that minimizes a documented criminal-justice failure — meaningful for epistemic health on race/justice topics."
+  },
+  "difficulty": "easy"
+}

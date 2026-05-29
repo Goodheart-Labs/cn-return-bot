@@ -1,0 +1,72 @@
+{
+  "tweet_id": "1978902184109461527",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:22.731Z",
+  "post": {
+    "id": "1978902184109461527",
+    "author_id": "1457888459574681608",
+    "created_at": "2025-10-16T19:13:41.000Z",
+    "text": "🚨Footage of Israeli airstrike in southern Lebanon an hour ago…\n\nHoly fuck https://t.co/vCDfmjUb9g",
+    "media": [
+      {
+        "media_key": "13_1978902126232272896",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1978902126232272896/img/kbcv0RPMICA0fbUW.jpg",
+        "height": 360,
+        "width": 640,
+        "duration_ms": 31366,
+        "view_count": 325064,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1978902126232272896/vid/avc1/480x270/P8ZMX6gG6jLz-_nu.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1978902126232272896/vid/avc1/640x360/kxpCfjttEujLl5rH.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1978902126232272896/pl/X_J02OOW59px_WjD.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 768,
+      "reply_count": 189,
+      "like_count": 2529,
+      "quote_count": 184,
+      "bookmark_count": 380,
+      "impression_count": 1197871
+    },
+    "author_followers": 104084,
+    "author_name": "👑 Royal Intel",
+    "author_description": "Open-Source Intelligence | Account run by Palestinian Christians 🇵🇸✝️",
+    "author_tweet_count": 42464
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1978902126232272896/vid/avc1/640x360/kxpCfjttEujLl5rH.mp4",
+          "description": {
+            "description": "A nighttime sequence shows a large, orange-hued mushroom cloud rising against the sky. The initial frame captures the cloud ascending behind a silhouetted skyline. In the second frame, a brilliant burst of light occurs at the cloud's base. The third frame depicts a second, luminous explosion emerging from the central cloud. Finally, the fourth frame illustrates the cloud's upward expansion, glowing with an intense orange light and emitting fragments into the dark sky.",
+            "ocrText": ""
+          },
+          "transcription": "Caba d'Ishola Terima kasih telah menonton!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@tinfoilPsyop** (tinf0ilPsy0p): so basically, Israeli refuse the pardon, netenyahu starts another front war. \n\njews are evil.\nEngagement: Likes=333\n\n**@issyali22** (.): Bear in mind Hezbollah isn’t active\nEngagement: Likes=116\n\n**@MukhtiBondu** (Alif | الف 🍉): At this point Hezbollah needs to invade northern israel\nEngagement: Likes=89\n\n**@JoeAiello161906** (Joe Aiello): really fuck israel\nEngagement: Likes=77\n\n**@Ansel_libert** (Ansel): Very obvious, a nuclear explosion\nEngagement: Likes=54\n\n**@SwampyUniparty** (SwampyUniparty): They are addicted to violence and terrorism\nEngagement: Likes=44\n\n**@RKT213** (RKT): why can't we move this zionist cancer to India? we should give Israel one of the Indian states, so they can live hapily ever after, and everyone wins this way as they both love each other.\nEngagement: Likes=34\n\n**@AmIsraelChai30** (🇮🇱 עם ישראל חי 🇮🇱): Game over for Hezbollah's weapon bases\nEngagement: Likes=27\n\n**@coinerkurt** (Kurt Pretorius): Lovely. Deep penetration bomb hitting underground weapons storage bunker.\n\nSuccess 👍🏻🇮🇱\nEngagement: Likes=26\n\n**@Conquistadur** (RR): They have itchy fingers addicted to death and destruction\nEngagement: Likes=23",
+    "warnings": []
+  }
+}

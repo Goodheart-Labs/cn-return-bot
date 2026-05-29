@@ -1,0 +1,107 @@
+{
+  "tweet_id": "2053450976615682087",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:08.902Z",
+  "post": {
+    "id": "2053450976615682087",
+    "author_id": "1360285968578670594",
+    "created_at": "2026-05-10T12:23:58.000Z",
+    "text": "Team NCM at Kirti Nagar Police Station to demand the arrest of Dog Woman who abused and assaulted a security guard at the gate of the police station. Violence cannot be tolerated for any reason against anyone. https://t.co/88TQITlWV2 https://t.co/llfYC6du5t",
+    "media": [
+      {
+        "media_key": "3_2053450966872281088",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HH9SxlQa0AASi4m.jpg",
+        "height": 1280,
+        "width": 581
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2053087963580596554"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2053087963580596554",
+      "author_id": "1360285968578670594",
+      "created_at": "2026-05-09T12:21:29.000Z",
+      "text": "Dog Woman is beating a Man in front of @DelhiPolice and Police is standing like a hijra. Shame on you Delhi Police!  Sending you Bangles. Pls wear them.\nhttps://t.co/Cu1XSODiHM",
+      "media": [
+        {
+          "media_key": "7_2053071253960085504",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2053071253960085504/pu/img/ssQyANhmogzID7Vj.jpg",
+          "height": 1024,
+          "width": 576,
+          "duration_ms": 34645,
+          "view_count": 124555,
+          "variants": [
+            {
+              "bit_rate": 632000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/2053071253960085504/pu/vid/avc1/320x568/hQsd-4vNd7QWnE-6.mp4"
+            },
+            {
+              "bit_rate": 950000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/2053071253960085504/pu/vid/avc1/480x852/9sI7IrW0ISPKx3qZ.mp4"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/2053071253960085504/pu/vid/avc1/576x1024/U8Z6-r4Uc6L6Wa-V.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/ext_tw_video/2053071253960085504/pu/pl/7tOLa-tqjWte4IXH.m3u8?v=b81"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 356,
+      "reply_count": 92,
+      "like_count": 976,
+      "quote_count": 7,
+      "bookmark_count": 14,
+      "impression_count": 15401
+    },
+    "author_followers": 146042,
+    "author_name": "NCMIndia Council For Men Affairs",
+    "author_description": "We Demand Gender Neutral Laws. We demand National Commission For Men.#MenToo #InternationalMensDay\nIf you like to contribute our UPI ID is ncmindia@ibl",
+    "author_tweet_count": 10252
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HH9SxlQa0AASi4m.jpg",
+          "description": {
+            "description": "A vertical outdoor shot shows five men standing side-by-side in front of an entrance sign for the Kirti Nagar Police Station in West District Delhi. The men are dressed in casual attire, including t-shirts and jeans or trousers. Above them, a large white sign with blue and red borders displays the police station's name in both Hindi and English. Lush green trees and a multi-story building are visible in the background.",
+            "ocrText": "पुलिस थाना कीर्ति नगर पश्चिमी जिला, दिल्ली POLICE STATION KIRTI NAGAR WEST DISTRICT DELHI D.O ROOM M: 8800262403 UNTD YOUTH"
+          }
+        }
+      ],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2053071253960085504/pu/vid/avc1/576x1024/U8Z6-r4Uc6L6Wa-V.mp4",
+          "description": {
+            "description": "The sequence depicts a heated physical confrontation in an outdoor setting in India. In the first frame, a woman in a grey tunic stands facing a security guard in a light blue uniform. In the second frame, the woman lunges forward and grabs the guard by his shirt collar/front, as onlookers and a police officer watch in the background. By the third frame, they are scuffling; the woman has pushed the guard back, and his foot is stepping on a yellow bag that has fallen to the ground. In the final frame, the woman physically strikes the guard near his head/neck area with her hands while he tries to block the blows.",
+            "ocrText": "कीर्ति नगर, पश्चिमी जिला, दिल्ली, 75, ALERT, शांति सेवा न्याय"
+          },
+          "transcription": "कि गाइस आज किर्पी नगर का फेस आईए तो तू मामा लगे उसका एक टॉक को मार दिया तो जिसमीत आंटी ने बहुत अच्छा रिस्कॉंस लिया एक्शन लिया जो पुलिस वाले कुछ नहीं कर सकते थे वह जिसमीत आंटी ने किया वह भी देखने के बाद यह पूरा ऐसा ही होना चाहिए जो डॉक्स के साथ करेगा वह ऐसी हो जाएगा और अपने पूरी नहीं लगते हैं लुट लगते हैं राम जरा"
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@law_ninja**  \nDefending a murderer - what a fall.  \nLikes: 24\n\n**@SusruthiVempati**  \nThe dog which was killed was a mom of 20 days old pups 😢 and you shameless people are defending heinous crime!  \nLikes: 19\n\n**@XStrayDogMumbai**  \nWow! Kudos and thank you!  \nLikes: 12\n\n**@DholiaMeha30392**  \n@delhipolice ARREST THE MURDERER, and all those who encouraged him to kill the dog. THAT IS AGAINST THE LAW IF YOU DONT WANT INCIDENTS LIKE REPEATED #amendpca  \nLikes: 11\n\n**@SnowPrince077**  \nFor all to know the truth on what happened:  \nLikes: 9\n\n**@VJ_Vittal**  \nHey did that Guy Kill it or something publicly? If he just shood them away or scared them or maybe even beat them, That women deserves to be slapped the fuck back. That Karen can go fuck herself in her 1 BHK. how dare her man, Just coz that security guy is poor and probably a Migrant ?  \nLikes: 9\n\n**@meenakshibhanja**  \nBut bunch of you losers, anti Hindu jihadi mentality men are alright w/ a sadist guard killing an innocent dog nursing her pups? Which is a horrible crime as per Hindu shastras @HMOIndia @CPDelhi plz arrest these 👆men for sowing discord in society along w/ the security guard  \nLikes: 8\n\n**@CHIRAG_1_**  \nFight a legal battle against these Pseudo Animal lovers, and remove these dogs from Indian streets. It's a menace. Becoz of dogs, children , adult and old people have reduced walking on roads and thus is impacting thier health,which ultimately leads to diabetes.  \nLikes: 6\n\n**@ajay_ajay2135**  \nGreat job team @NCMIndiaa 👏👍  \nLikes: 6\n\n**@Snehal_Sinha001**  \nThese so called abusive dog lovers should be taught a lesson if they take law into their own hands...Even if that guard had killed a dog or done something wrong, law should take action...Who the hell gave right to that women to slap him...🙏🙏  \nLikes: 5",
+    "warnings": []
+  }
+}

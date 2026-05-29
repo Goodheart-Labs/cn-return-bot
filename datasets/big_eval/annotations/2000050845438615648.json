@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2000050845438615648",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "User jokes 'This is what won Game of the Year???' over footage that is obviously from the meme indie game 'Pih' (a pig physics shooter), not from Clair Obscur: Expedition 33 (the actual 2025 GOTY winner). The setup riffs on a popular TikTok meme where Pih gameplay is mislabeled as other games.",
+  "why_note_decision": "This is a transparent bit. Every top reply is in on the joke ('Hey game of the year and they are pihs', 'dawg what the fuck are you playing', 'Pih was snubbed'), and 'Pih' as a viral misidentification meme is widely known. The original note literally explains the meme to people who don't need it explained — classic note-not-needed (NoteNotNeeded was the dominant tag, 31 votes).",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive. In particular FAIL notes that explain Pih vs Expedition 33, that 'this is from a different game,' or that lecture about The Game Awards 2025 winner. The audience clearly understands the joke; sources are not needed.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "For context, the video is from the game 'Pih' (a fun pig-themed shooter), not Clair Obscur: Expedition 33 (a turn-based RPG that won Game of the Year 2025). https://www.youtube.com/watch?v=uXPA2BWilIY https://store.steampowered.com/app/2870710/Pih/",
+    "failure_reason": "Note-not-needed: explains a meme to readers who are obviously in on it. The tweet is a joke, replies confirm it; rated NOT_HELPFUL with NoteNotNeeded dominant.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_about_known_meme",
+    "sources_checked": [
+      "https://store.steampowered.com/app/2870710/Pih/",
+      "https://knowyourmeme.com/memes/subcultures/pih-video-game",
+      "https://en.wikipedia.org/wiki/Clair_Obscur:_Expedition_33"
+    ],
+    "notes": "Pih is a real indie game (released Aug 2024, viral mid-2025 as the 'dawg what the fuck are you playing' meme); Clair Obscur: Expedition 33 really did sweep The Game Awards 2025. The mismatch IS the joke."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes gaming meme; correcting it would be the note-bot tripping on humor it should ignore."
+  },
+  "difficulty": "easy"
+}

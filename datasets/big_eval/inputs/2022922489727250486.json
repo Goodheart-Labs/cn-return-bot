@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2022922489727250486",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:21.417Z",
+  "post": {
+    "id": "2022922489727250486",
+    "author_id": "3041305312",
+    "created_at": "2026-02-15T06:34:40.000Z",
+    "text": "Ishow speed proposed on Valentine's day to the love of his life....wow 🙌 https://t.co/KFkypDqhAI",
+    "media": [
+      {
+        "media_key": "3_2022922474615148544",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HBLdRdOXEAAWYFg.jpg",
+        "height": 1431,
+        "width": 1178
+      },
+      {
+        "media_key": "3_2022922474648657921",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HBLdRdWWYAEC8ws.jpg",
+        "height": 1330,
+        "width": 1178
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 396,
+      "reply_count": 719,
+      "like_count": 14147,
+      "quote_count": 109,
+      "bookmark_count": 1270,
+      "impression_count": 5215338
+    },
+    "author_followers": 439538,
+    "author_name": "THE ÁĹĹÀŃ ĆÓÚÑŤÝ 🇺🇬",
+    "author_description": "The most funny Manchester United Chemical Engineer who  loves Scooby-Doo cartoons.😂 Digital Marketing Guru 💯",
+    "author_tweet_count": 213037
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HBLdRdOXEAAWYFg.jpg",
+          "description": {
+            "description": "The image shows a man, IShowSpeed, kneeling on a city sidewalk at night and offering a large bouquet of red roses to a woman who is covering her face with her hands. They are surrounded by a crowd of people taking photos with their phones and several men who appear to be security guards in suits. A black Hummer H2 is parked on the street next to them. The setting is an urban street lined with multi-story apartment buildings.",
+            "ocrText": "1/4 R75"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HBLdRdWWYAEC8ws.jpg",
+          "description": {
+            "description": "A photograph taken inside the back of a moving vehicle at night. On the left, a woman with long black hair, light-colored eyes, and dark skin takes a selfie while sticking her tongue out. On the right, iShowSpeed is smiling while wearing a blue suit and white shirt, holding an open bottle of champagne and sitting next to a large bouquet of red roses. Lights from a city street are visible through the back and side windows.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @John03473544: \"Why she look like a white person in black face😂\" (2,899 likes)\n- @danseyka: \"Even the security guard is shocked\" (457 likes)\n- @DigDuel: \"Nope, he didn't and this is AI slop but nice engagement bait\" (387 likes)\n- @CheddarGoblin96: \"How does the real one look fake ?\" (259 likes)\n- @Baddism140979: \"Why are you lying ???\" (236 likes)\n- @velv47: \"Grok said, \"It's not true.\" so it's not true🚨😂\" (231 likes)\n- @MvelohEnhleh: \"What? No he didn’t\" (94 likes)\n- @SMARTpro_: \"Worst mistake a young man can do. 🤦. He is going to regret that soon\" (82 likes)\n- @Exiel2020: \"Are you sure\" (42 likes)\n- @deepacharity: \"This looks like pure engagement bait, doesn't it? 😂 IShowSpeed proposed on Valentine's Day? It seems AI-generated or just edited. But if it's real, congratulations to him... but why does the girl look like she's in blackface? 🤔\" (18 likes)",
+    "warnings": []
+  }
+}

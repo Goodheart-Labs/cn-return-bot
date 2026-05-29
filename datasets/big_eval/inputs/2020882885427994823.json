@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2020882885427994823",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:15.524Z",
+  "post": {
+    "id": "2020882885427994823",
+    "author_id": "1151913018936053760",
+    "created_at": "2026-02-09T15:30:00.000Z",
+    "text": "“The assassination of my husband was heavy but what really upsets me is when people don’t like Israel.”  \n\n— Erika Kirk\n\n🤡🤡🤡🤡🤡 https://t.co/xJwpDe4wkZ",
+    "media": [
+      {
+        "media_key": "13_2020782154138185728",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2020782154138185728/img/aOiQt1y-80d3pFSv.jpg",
+        "height": 710,
+        "width": 1280,
+        "duration_ms": 67523,
+        "view_count": 824907,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020782154138185728/vid/avc1/486x270/-88dSJ0yPPmiWBFA.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020782154138185728/vid/avc1/648x360/5PuP-xpRcuXHTYEI.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020782154138185728/vid/avc1/1280x710/WUBaL4x22O2i3mae.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2020782154138185728/pl/vPu6tu-M82hiPIqk.m3u8?v=66e"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4199,
+      "reply_count": 2421,
+      "like_count": 32387,
+      "quote_count": 515,
+      "bookmark_count": 3128,
+      "impression_count": 1882115
+    },
+    "author_followers": 3867254,
+    "author_name": "Jackson Hinkle 🇺🇸",
+    "author_description": "Follow: @LegitTargets & @ACPMain thedivewithjackson@gmail.com",
+    "author_tweet_count": 47967
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2020782154138185728/vid/avc1/1280x710/WUBaL4x22O2i3mae.mp4",
+          "description": {
+            "description": "A video sequence from CBS News featuring a blonde woman in a black blazer and cross necklace who is visibly distressed and emotional, eventually wiping her eyes.",
+            "ocrText": "CBS NEWS"
+          },
+          "transcription": "Hate is hate. It's evil. Charlie and I have always been very clear on our stance. Israel, Jewish people. It's awful. Awful. Anti-Semitism is... What healing factor comes out of hating Jewish people? What healing factor comes out of hating Christians? What healing factor comes out? hate in general. Nothing. Nothing. Charlie always would say very clearly, Jew hate was brain rot. He would always say it. We've been to Israel twice together. And to be able to walk in the place where our Lord walked and see the Bible come to life in technicolor how could you hate that place how could you hate the Jewish people"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Ashraf (@ASHRAFH58203689)**: Because Israel is not a country, it is terrorism.  \n  Engagement: 468 likes\n\n- **MR 360 News (@MR_KG)**: Criticizing a state is not hatred. Hatred is raining bombs on civilians and still claiming moral superiority. Israel must learn that power does not place anyone above accountability.  \n  Engagement: 349 likes\n\n- **Rapaz do Charuto | Cigar Guy (@RapazdoCharuto)**: Honey, we hate Israel's government and their genocide politics... not the place nor the people!!!  \n  Engagement: 211 likes\n\n- **Uncle Buckus (@UncleBuckuss)**: She knows bad things happen when people start to dislike Israel.🙁Just look at what happened to Charlie for proof.🤯  \n  Engagement: 205 likes\n\n- **The Situation … (@TheSituationZA)**: At this point I don’t know if she is mentally unstable or she is just trolling us😭  \n  Engagement: 176 likes\n\n- **J (@JayTC53)**: What the hell is wrong with you?  \n\n  Laughing at a crying widow whose husband was assassinated in front of the world?  \n\n  There's a special place in hell where you're going.  \n  Engagement: 158 likes\n\n- **Memory Bearer (@hodgkinson80545)**: When the 'Tower' becomes more precious than the 'Husband,' you know the Hive has taken over. 🏰💔  \n  Engagement: 131 likes\n\n- **Power Unfiltered (@Anonymous313786)**: She's a great actor I'll give her that  \n  Engagement: 125 likes\n\n- **Deborah (@DeborahBHint)**: You’re a cowardly man trashing a widow with your bias. God warns against this.  \n  Engagement: 113 likes\n\n- **ỉɀꪖꫝꫀꫀꪹ (@michelleo2112)**: She was laughing on a vc a week after the death.  Why she crying on tv  \n  Engagement: 88 likes",
+    "warnings": []
+  }
+}

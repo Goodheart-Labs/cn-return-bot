@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2050512937668804782",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": [
+    "celebrity_entertainment_sports",
+    "joke_or_satire"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A wrestling-fan account posts a 2x4 grid asking 'Which one you like the most?' of female WWE wrestlers in casual/no-makeup looks. The bottom-right slot, labeled 'Jade Cargill', humorously substitutes a photo of R-Truth in a blonde wig from his 24/7 Championship segments \u2014 clearly a joke, as the OCR even says 'JADE CARGILL WANTED \u2014 R-TRUTH 24/7 CHAMPION'.",
+  "why_note_decision": "Reply thread shows the audience reads it as a deliberate joke (top replies: 'Disrespectful asf. Jade is beautiful.', 'Don't know why you fools be playing with Jade Cargill', etc.). The image itself is captioned to flag the swap. No reader is actually being deceived into thinking R-Truth-in-a-wig is Jade Cargill. The original note pedantically explains the joke \u2014 exactly the 'note_not_needed' failure pattern.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a wrestling-fan in-joke explicitly labeled in the image ('R-TRUTH 24/7 CHAMPION' under the 'Jade Cargill' slot). Top replies confirm the audience understands the gag. Any note that earnestly 'corrects' viewers that the bottom-right is R-Truth, not Jade Cargill, is explaining the joke and is a false-positive note. Specifically FAIL the original-style note that names R-Truth and cites the 24/7 title backstory as if the audience were being misled.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The bottom-right image labeled \"Jade Cargill\" is actually WWE wrestler R-Truth in a disguise from 24/7 Championship segments, not Jade Cargill. https://www.wrestlezone.com/news/1094375-r-truth-cross-dresses-his-way-to-keeping-his-wwe-24-7-title https://www.reddit.com/r/SantiZapVideos/comments/1t1krhh/superstars_without_makeup",
+    "failure_reason": "note_not_needed_joke_meme \u2014 the image itself labels the swap ('R-TRUTH 24/7 CHAMPION') and replies show readers get the gag; explaining the joke is unnecessary.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_or_meme",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Jade_Cargill",
+      "OCR of the image itself which labels the bottom-right as 'R-TRUTH 24/7 CHAMPION'",
+      "Top reply thread on the tweet"
+    ],
+    "notes": "R-Truth has a long history of crossdressing comedy bits for the 24/7 title; the image acknowledges the swap explicitly."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports/wrestling humor with no public-interest stakes."
+  },
+  "difficulty": "easy"
+}

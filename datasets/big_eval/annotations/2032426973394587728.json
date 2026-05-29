@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2032426973394587728",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "'Syrian Girl' (566k followers) posts a video claiming the US 'just bombed' Cafe Downtism, a Tehran cafe employing autistic and Down syndrome workers, framing it as breaking news of a US strike on disabled workers.",
+  "why_note_decision": "The video is misattributed: it shows the aftermath of a fire at the Tehran cafe (footage online from 3 Feb 2026), not a US/Israeli airstrike (which post-dated the footage). The 'US just bombed' framing is false and emotionally charged; a note giving the real cause and timeline is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the video does NOT show a US (or US-Israeli) bombing — it shows the aftermath of a fire at the Tehran cafe, with the footage appearing online weeks BEFORE the relevant military escalation (early Feb 2026). Strong note cites a fact-check (Lead Stories / AP-Yahoo) or the cafe's own attribution. It must AVOID vague hedging; the key point is fire (not airstrike) and that the cafe is in Tehran, Iran. A note that only says 'unverified' without giving the fire cause/timeline is too weak. Do NOT accept the 'US bombed it' claim.",
+  "reference_note": "The cafe is in Tehran, Iran, and the video shows local firefighters responding to a fire there, not a US bombing. https://www.middleeasteye.net/features/tehrans-little-secret-cafe-where-disability-no-barrier-talent https://www.yahoo.com/news/articles/massive-fire-breaks-tehran-shopping-095502324.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: video shows aftermath of a fire at the Tehran cafe (footage from ~3 Feb 2026), not a US/Israeli airstrike.",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/03/fact-check-video-does-not-show-airstrike-on-tehrans-downtism-cafe-staffed-by-autistic-down-syndrome-workers.html",
+      "https://www.yahoo.com/news/articles/fact-check-video-does-not-041920183.html",
+      "https://factually.co/fact-checks/military/cafe-downtism-iran-bombing-report-1282da"
+    ],
+    "notes": "Lead Stories / AP-Yahoo: the footage first appeared online 3 Feb 2026, shared by the cafe's own Instagram, showing fire damage — 25 days before the escalation. The cafe (Downtism, opened 2018, employs autistic/Down syndrome staff) is marked 'permanently closed' on Google Maps with comments citing fire, not a strike. AI media description ('fireman working on a fire scene', OCR 'TEHRAN FIGHTER' i.e. firefighter) corroborates the fire reading. In-thread comment also flags the video predates 'Epic Fury' (Feb 28)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "952k impressions on emotionally charged war misinformation (atrocity falsely attributed to the US bombing disabled people); correcting wartime atrocity-misattribution has clear value for public understanding and animal/human-welfare-adjacent compassion exploitation."
+  },
+  "difficulty": "medium"
+}

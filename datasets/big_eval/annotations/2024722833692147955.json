@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2024722833692147955",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet (posted Feb 2026) shows video of a man being pulled out of a crowd after shouting 'Andrew, you're a sick old man' near ceremonial guards, framed as 'a young man get[ting] assaulted by the British public for calling Prince Andrew a Sick man'. Author implies a recent UK news event.",
+  "why_note_decision": "The footage is from 12 September 2022 during Queen Elizabeth II's funeral procession in Edinburgh — not a current/recent event. The man (22 years old) was tackled out of the crowd by another onlooker and arrested by police for breach of the peace; charges were later dropped. The tweet's framing as a current-day incident is misleading miscontextualization, and a CN is warranted to date the footage and supply context. The original note states all of this correctly and cites BBC + Guardian — that IS a good note. But raters left it at 'needs more ratings' with 20 'note not needed' tags + 17 'missing key points' tags. The likely friction: the tweet author didn't explicitly say 'today', so 'misattribution' is implicit. Still, the implication that this is recent UK news is strong enough that a dated-footage note is warranted.",
+  "judge_guidance": "PASS if the note (a) identifies the footage as from Queen Elizabeth II's funeral procession in Edinburgh on 12 September 2022, (b) notes the heckler (then 22) was pulled from the crowd by another member of the public and arrested by police for breach of the peace, and (c) cites a reputable source (BBC, Guardian, TMZ, Edinburgh News). The original note is fine but barely cleared the bar; a stronger note also notes charges were ultimately dropped. FAIL the note if it (a) characterizes the heckler's claim about Prince Andrew (the Epstein allegations) as the 'real' issue rather than dating the footage, (b) calls the heckler's actions assault by the public when he was arrested by police and pulled out by a bystander, or (c) cites only social-media archives.",
+  "reference_note": "This video is from 12 September 2022 during Queen Elizabeth II's funeral procession in Edinburgh, not a current event. A 22-year-old who shouted 'Andrew, you're a sick old man' was pulled from the crowd by an onlooker and arrested by police for breach of the peace; charges were later dropped. https://www.bbc.com/news/uk-scotland-edinburgh-east-fife-63107556 https://www.theguardian.com/uk-news/video/2022/sep/12/andrew-youre-a-sick-man-police-drag-heckler-from-crowd-during-queens-procession-video",
+  "original_unhelpful_note": {
+    "text": "This video shows a 2022 incident during Queen Elizabeth II's funeral procession in Edinburgh, not a recent event. A man heckled Prince Andrew as a \"sick old man\" and was pulled from the crowd by onlookers before police arrested him. Two men were charged with assault. https://www.bbc.com/news/uk-scotland-edinburgh-east-fife-63107556 https://www.theguardian.com/uk-news/video/2022/sep/12/andrew-youre-a-sick-man-police-drag-heckler-from-crowd-during-queens-procession-video",
+    "failure_reason": "missing_key_points / borderline — note is mostly correct but doesn't note charges were later dropped; the 'two men charged with assault' line is partially right but not the most important takeaway. Raters apparently didn't think the miscontextualization was clearly bad enough either.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "miscontextualized_dated_footage",
+    "sources_checked": [
+      "https://www.tmz.com/2022/09/12/prince-andrew-heckled-sick-old-man-queen-elizabeth-funeral-arrest/",
+      "https://www.scottishdailyexpress.co.uk/news/scottish-news/prince-andrew-heckler-queens-edinburgh-28543427",
+      "https://www.edinburghnews.scotsman.com/news/queen-death-edinburgh-man-who-tackled-prince-andrew-heckler-says-he-feared-for-king-charles-safety-3942043"
+    ],
+    "notes": "All sources confirm the incident occurred on 12 Sep 2022 in Edinburgh during the Queen's funeral procession. Charges later dropped."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Recirculation of dated political/royal footage as 'now' contributes to general epistemic decay; correcting these helps preserve the value of seeing real-time UK events."
+  },
+  "difficulty": "easy"
+}

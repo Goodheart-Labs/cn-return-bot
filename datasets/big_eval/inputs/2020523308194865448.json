@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2020523308194865448",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:57.175Z",
+  "post": {
+    "id": "2020523308194865448",
+    "author_id": "1393193445246660611",
+    "created_at": "2026-02-08T15:41:10.000Z",
+    "text": "Kid Rock is dumber than he looks! 🤣😂🤣 https://t.co/WOADBQ9CiH",
+    "media": [
+      {
+        "media_key": "3_2020523304046751744",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HApXPWYa8AAGrES.jpg",
+        "height": 1444,
+        "width": 1206
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1996,
+      "reply_count": 3349,
+      "like_count": 8398,
+      "quote_count": 416,
+      "bookmark_count": 88,
+      "impression_count": 371723
+    },
+    "author_followers": 143129,
+    "author_name": "Annie",
+    "author_description": "RN, marathon runner, animal lover, rescues dogs, women/children advocate, No DM’s #Felon47 #SaveOurDemocracy #VoteBlue #ClimateChange #PayItForward 💙💙",
+    "author_tweet_count": 114346
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HApXPWYa8AAGrES.jpg",
+          "description": {
+            "description": "A satirical meme featuring a photograph of the musician Kid Rock wearing a fedora and a scarf with an American flag pattern. Above the image is text lampooning geographical ignorance by suggesting that moving to Alaska would involve leaving the country.",
+            "ocrText": "IF AMERICA ALLOWS A PUERTO RICAN TO PERFORM IN THE SUPER BOWL, I WILL MOVE OUT OF THIS COUNTRY AND GO LIVE IN ALASKA."
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Corey_Feldman** - Corey Feldman  \nThat’s not a real quote…..right?  \nLikes: 166 | Reposts: 2 | Replies: 58 | Views: 9202\n\n**@Nomodistraction** - beyondthedistraction  \nIt’s a shame that MAGA would rather listen to Epstein’s greatest hits!  \nLikes: 116 | Reposts: 0 | Replies: 0 | Views: 2301\n\n**@AndersBjorkman5** - Anders Bjorkman  \nCan move to Epstein Island in Caribbean > KID Rock! God Bless 🇺🇸  \nLikes: 94 | Reposts: 0 | Replies: 0 | Views: 1741\n\n**@DebMcD007** - Deb McD. aka Towanda  \nWhat a POS. I hope he’s packing his bags now.  \nLikes: 73 | Reposts: 0 | Replies: 0 | Views: 1199\n\n**@Frank_TIHZHO** - Frank James - Tweeterer  \nAnd is a PEDO too  \nLikes: 64 | Reposts: 0 | Replies: 0 | Views: 787\n\n**@vandashner** - Van Dashner  \nDon’t let the screen door hit ya where the good Lord split ya, Kid!  \n(BTW, Kid, If you started today and worked around the clock for the rest of your life for free, you still couldn’t match what Bad Bunny has given back to everyday, poor Americans!—and that includes Puerta Ricans, who ARE American citizens!)  \nLikes: 59 | Reposts: 0 | Replies: 0 | Views: 1512\n\n**@lisapease** - Lisa Pease  \nNote to the other dumbies:  \nPuerto Ricans ARE Americans. Puerto Rico is part of the US. Not a state, but a U.S. Territory. Here's a list of the major ones:  \nLikes: 41 | Reposts: 0 | Replies: 0 | Views: 550\n\n**@Krptguy** - Matt  \nHe looks like a dementia riddles back woods cousin fucker.  \nLikes: 40 | Reposts: 0 | Replies: 0 | Views: 623\n\n**@SlpSpec** - MR 🟧 🇺🇦  \nKid Rock probably also needs to be reminded that people from Puerto Rico are American citizens! His level of ignorance astounds!  \nLikes: 38 | Reposts: 0 | Replies: 0 | Views: 650\n\n**@CryptoniteK** - Cryptonite ⚜️  \nHe have poor knowledge of geography...Alaska is in America anyway lol  \nPlus Puerto Rico is an american state too  \nLikes: 38 | Reposts: 0 | Replies: 0 | Views: 1782",
+    "warnings": []
+  }
+}

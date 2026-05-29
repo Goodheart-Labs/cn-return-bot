@@ -1,0 +1,55 @@
+{
+  "low": 4,
+  "high": 6,
+  "phase2_candidate": 6,
+  "phase2_passed": true,
+  "history": [
+    {
+      "phase": 1,
+      "iter": 1,
+      "interval_s": 18,
+      "ok": true,
+      "hits": 20,
+      "suspended_s": null,
+      "reason": ""
+    },
+    {
+      "phase": 1,
+      "iter": 2,
+      "interval_s": 12,
+      "ok": true,
+      "hits": 20,
+      "suspended_s": null,
+      "reason": ""
+    },
+    {
+      "phase": 1,
+      "iter": 3,
+      "interval_s": 8,
+      "ok": true,
+      "hits": 20,
+      "suspended_s": null,
+      "reason": ""
+    },
+    {
+      "phase": 1,
+      "iter": 4,
+      "interval_s": 6,
+      "ok": true,
+      "hits": 20,
+      "suspended_s": null,
+      "reason": ""
+    },
+    {
+      "phase": 2,
+      "attempt": 1,
+      "interval_s": 6,
+      "ok": true,
+      "hits": 50,
+      "suspended_s": null,
+      "reason": ""
+    }
+  ],
+  "status": "done",
+  "answer_seconds": 6
+}

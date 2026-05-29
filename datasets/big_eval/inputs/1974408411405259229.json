@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1974408411405259229",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:07.297Z",
+  "post": {
+    "id": "1974408411405259229",
+    "author_id": "156563457",
+    "created_at": "2025-10-04T09:37:02.000Z",
+    "text": "He went to steal cables from a transformer and this happened to him 😲😱 https://t.co/LsksfRvgjw",
+    "media": [
+      {
+        "media_key": "7_1974408354916130816",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1974408354916130816/pu/img/ZkL0J0PHDscgkWeW.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 13699,
+        "view_count": 7205021,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1974408354916130816/pu/vid/avc1/320x568/nXHcwQoKfeBZi29k.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1974408354916130816/pu/vid/avc1/480x852/lzDOerLUz0hZB37g.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1974408354916130816/pu/vid/avc1/720x1280/ogHBGA2_GMZ-7OgX.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1974408354916130816/pu/pl/be2xbdOR8S4h6H5w.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5644,
+      "reply_count": 3019,
+      "like_count": 77747,
+      "quote_count": 789,
+      "bookmark_count": 12849,
+      "impression_count": 10074007
+    },
+    "author_followers": 947288,
+    "author_name": "Dami’ Adenuga",
+    "author_description": "Media & Entertainment Executive • PR Strategist\nFounder, DAW Empire\nPulse Of The Culture\nShaping Culture & Influence\nGod is Able 🙏🏽",
+    "author_tweet_count": 265811
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1974408354916130816/pu/vid/avc1/720x1280/ogHBGA2_GMZ-7OgX.mp4?tag=12",
+          "description": {
+            "description": "A set of frames from a video showing an individual engaging with an electrical utility box at night. In the first frame, a person is seen from the back, leaning into an open, damaged utility box with a backpack lying on the ground. In the second frame, the view is from a different angle, showing the internal components like meters and wiring inside the box. In the third frame, a light from the person's phone or a flashlight illuminates the box, which has signs on it for 'NATIONWIDE DEBT COLLECTORS' and 'QUICK CASH LOAN'.",
+            "ocrText": "NATIONWIDE DEBT COLLECTORS 011 681 6065 QUICK CASH LOAN 083 485 9118 071 897 5987"
+          },
+          "transcription": "Ma Sanji? Niyo? Niyo. Niyo? Jante de kuse. Jante de kuse. Jante de kuse."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @user1: \"This is crazy! 😱\" (Likes: 1200, Reposts: 300, Replies: 50)\n- @user2: \"Natural selection at its finest\" (Likes: 850, Reposts: 200, Replies: 30)\n- @user3: \"Don't steal, kids\" (Likes: 600, Reposts: 150, Replies: 20)\n- @user4: \"The video is wild\" (Likes: 450, Reposts: 100, Replies: 15)\n- @user5: \"Justice served\" (Likes: 380, Reposts: 80, Replies: 10)",
+    "warnings": []
+  }
+}

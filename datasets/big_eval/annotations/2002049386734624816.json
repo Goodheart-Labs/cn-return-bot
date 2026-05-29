@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2002049386734624816",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Security-cam footage of a woman in a hijab approaching and blowing out a lit menorah in an indoor mall, captioned 'She did this to a memorial of the Bondi Beach victims absolutely sick.'",
+  "why_note_decision": "The footage is real but completely miscontextualized. It shows the Dec 2025 incident at the Weizmann (Ichilov) Mall in Tel Aviv where a woman blew out Hanukkah menorah candles, prompting an Israeli police investigation -- it is NOT a 'memorial of the Bondi Beach victims' (the Bondi Beach shooting memorial was an outdoor floral tribute in Sydney). A note correcting the false 'Bondi memorial' framing is warranted. The original note correctly says it is not the Bondi memorial, but it under-identifies the clip (frames it only as 'indoor mall vs outdoor tribute') instead of naming the actual Tel Aviv menorah incident, which is why it reads as incomplete.",
+  "judge_guidance": "PASS only if the note establishes that this footage is NOT from a Bondi Beach victims' memorial: it shows a Dec 2025 incident at a Tel Aviv shopping mall (the Weizmann/Ichilov Mall) where a woman blew out Hanukkah menorah candles, which Israeli police investigated -- a separate event in a different country. Best notes name the real incident (Tel Aviv mall menorah) rather than only contrasting 'indoor vs outdoor.' FAIL if the note accepts the 'Bondi memorial' framing, claims the video is fake/AI (it is real CCTV), or only vaguely says 'this isn't Bondi' without identifying what it actually is (the original note's gap). Stay factual; do not editorialize about the act itself.",
+  "reference_note": "This is not a Bondi Beach memorial. The CCTV shows a December 2025 incident at a Tel Aviv shopping mall (Weizmann/Ichilov Mall) where a woman blew out the candles of a Hanukkah menorah, which Israeli police investigated -- a separate event in Israel, not Sydney. https://www.timesofisrael.com/police-open-investigation-after-woman-blows-out-hanukkah-candles-in-tel-aviv-mall/ https://www.jpost.com/israel-news/article-880791",
+  "original_unhelpful_note": {
+    "text": "The video is not from the memorial for the Bondi Beach shooting victims. The shooting occurred outdoors at Bondi Beach, and the memorial is an outdoor floral tribute at Bondi Pavilion, not the indoor mall shown here. https://www.reuters.com/world/asia-pacific/sydney-mourns-15-killed-australias-worst-mass-shooting-nearly-30-years-2025-12-15/ https://abcnews.go.com/International/wireStory/sunrise-crowd-gathers-bondi-beach-solace-defiance-after-128548303 https://www.npr.org/2025/12/17/g-s1-102571/gunman-bondi-beach-charged-murder https://www.bbc.com/news/articles/cm2v10jn378o",
+    "failure_reason": "Correctly says it is not the Bondi memorial but only via an 'indoor mall vs outdoor tribute' inference and Bondi-only sources; it never identifies the actual clip (Tel Aviv mall menorah incident), so it leaves the real context unestablished -- a missing-key-points gap.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "real_footage_false_context",
+    "sources_checked": [
+      "https://www.timesofisrael.com/police-open-investigation-after-woman-blows-out-hanukkah-candles-in-tel-aviv-mall/",
+      "https://www.jpost.com/israel-news/article-880791",
+      "https://www.jns.org/police-open-probe-after-woman-blows-out-tel-aviv-mall-chanukah-candles/",
+      "https://www.cnn.com/2025/12/21/australia/bondi-beach-mourning-victims-intl"
+    ],
+    "notes": "Clip is the Dec 2025 Weizmann/Ichilov Mall (Tel Aviv) menorah-extinguishing incident under Israeli police investigation. (CCTV clock reads 2023-12-18, almost certainly a miscalibrated camera; the incident itself is Dec 2025, Hanukkah.) The Bondi Beach memorial was an outdoor floral tribute in Sydney. No connection between the two events."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "752k views with an inflammatory anti-Muslim comment section; correcting cross-event miscontextualization curbs ethnic/religious hatred amplification."
+  },
+  "difficulty": "medium"
+}

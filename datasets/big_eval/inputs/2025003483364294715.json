@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2025003483364294715",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:12.707Z",
+  "post": {
+    "id": "2025003483364294715",
+    "author_id": "1689645242142834688",
+    "created_at": "2026-02-21T00:23:47.000Z",
+    "text": "GOLD 🥇⛸️ https://t.co/QIelPrQTOv",
+    "media": [
+      {
+        "media_key": "13_2025003406075764736",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2025003406075764736/img/6eQzwGt8Yz4h8dks.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 15348,
+        "view_count": 1593987,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2025003406075764736/vid/avc1/320x568/TVf-vz3v2cUx6u-S.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2025003406075764736/vid/avc1/480x852/TSJmG2tKyfZWSfBW.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2025003406075764736/vid/avc1/720x1280/XFh_mIIBwN0nSpYj.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2025003406075764736/pl/Idj3dYpE_VDmDRSX.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 832,
+      "reply_count": 86,
+      "like_count": 14046,
+      "quote_count": 73,
+      "bookmark_count": 1008,
+      "impression_count": 717976
+    },
+    "author_followers": 445430,
+    "author_name": "𝗧𝗶𝗺𝗲𝗹𝗲𝘀𝘀 𝗠𝘂𝘀𝗶𝗰 ✨🎵",
+    "author_description": "🎶 💥Classic music & 50s-90s | 📽️ Retro movies | 🎨 Vintage art #TimelessMusic #movie #paint #art #70sVibes #80sVibes #VintageVibes #ClassicHits #RetroMusic",
+    "author_tweet_count": 12533
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2025003406075764736/vid/avc1/720x1280/XFh_mIIBwN0nSpYj.mp4",
+          "description": {
+            "description": "The sequence follows a person, likely a gymnast or dancer named Liu wearing jersey number 26, performing a series of turns or a dynamic routine on a baseball field. In the first frame, they are in mid-rotation on the infield grass in front of spectators and a padded outfield wall. The second frame shows them seen through a protective netting, continuing the rotation with arms tucked in. The third frame shows them completing a rotation with arms extended for balance behind the netting.",
+            "ocrText": "F ES 26 mmunity merica LIN 26 LIU 26"
+          },
+          "transcription": "Oh yeah, look at that. Wow. And then throws a nice one in there. Thank you, Alyssa. That was dazzling."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Daniel 🇺🇸** (@dreynolds520IN): I literally thought you could only do they on ice. Looks just as impressive on the infield!  \nEngagement: 38 likes\n\n**Coach K** (@coachtjk): Alsya Liu is a National Treasure! With a love and joy like that that she can light up the whole world!  \nEngagement: 36 likes\n\n**Michael Oxford - AKA The Santa Cruz Mountain Goat** (@SCMountainGoat): That’s a balk.  \nEngagement: 35 likes\n\n**Andrew Thiel** (@AndrewThiel14): she seems genuine still a kid unspoiled  \nEngagement: 22 likes\n\n**Athena Lane** (@AthenaLane84): She is full of light, I’ve, and joy. God bless her. She radiates sunshine. She makes me smile.  \nEngagement: 8 likes\n\n**SPIDEY🕷️🕸️** (@Spidey_RM15): She went like:  \nEngagement: 8 likes\n\n**シケモク スッ太** (@U7y5gqMaaSL7C33): 大回転魔球が見えるとはおじさんびっくり(＠_＠;)  \nEngagement: 8 likes\n\n**Ellie Jo & Romeo** (@RomeoEllie): Absolutely priceless. 😁  \nEngagement: 6 likes\n\n**Markovian Pureblood** (@BigDaddy_YY): She only has one flaw and that is that she is not left handed! :-)  \nEngagement: 5 likes\n\n**Daniel Heneghan** (@dpheneghan1): Wonderful athlete, strong, graceful, superbly fit, but she still throws a baseball like a girl, ha, ha, ha. (It's a joke, dammit, it's a joke).  \nEngagement: 4 likes",
+    "warnings": []
+  }
+}

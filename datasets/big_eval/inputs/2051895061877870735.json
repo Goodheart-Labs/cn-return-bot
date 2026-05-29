@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2051895061877870735",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:27.145Z",
+  "post": {
+    "id": "2051895061877870735",
+    "author_id": "1000952667860959232",
+    "created_at": "2026-05-06T05:21:19.000Z",
+    "text": "Custom mask created for Katy Perry’s Met Gala appearance sees massive demand among Gen Z and introverts, with Stella McCartney reportedly receiving a surge of orders. https://t.co/inSLQLjLuG",
+    "media": [
+      {
+        "media_key": "3_2051895046371487745",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHnLrFtbMAEKfN-.jpg",
+        "height": 1152,
+        "width": 928
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 174,
+      "reply_count": 25,
+      "like_count": 2221,
+      "quote_count": 7,
+      "bookmark_count": 82,
+      "impression_count": 82814
+    },
+    "author_followers": 23802,
+    "author_name": "kanishk",
+    "author_description": "FAN ACCOUNT | 2010s POP CULTURE",
+    "author_tweet_count": 21519
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHnLrFtbMAEKfN-.jpg",
+          "description": {
+            "description": "A futuristic white headpiece with a reflective silver visor and a latticed texture, displayed on a mannequin bust inside a glass case at an exhibition. A metal plaque on the pedestal identifies the designer and wearer.",
+            "ocrText": "Worn by Katy Perry Stella McCartney by Miodrag Guberinic"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @erenfromtargets: ain’t nobody said a damn thing about this mask why you lying 😭😭😭😭 (Likes: 2339, Reposts: 98)\n- @nickisfortune_: [image reply] (Likes: 213, Reposts: 0)\n- @bloomthisway: >Custom mask \n>Surge in orders \n\nY’all do anything for the Twitter vibes but just leave the thinking out of it 😭 (Likes: 185, Reposts: 0)\n- @caius_7sss: No one said anything about Katy’s outfit at all😭😭😭😭😭 (Likes: 85, Reposts: 0)\n- @shapirois48: Indian scammer lying for attention (Likes: 42, Reposts: 0)\n- @brunoxfonseca: waiting for the community note to pop up (Likes: 33, Reposts: 0)\n- @godtyperrypop: HER IMPACT OMG [image] (Likes: 29, Reposts: 0)\n- @agusconsdeswift: how desperate y’all are trying to revive her career😭😭😭 (Likes: 22, Reposts: 0)\n- @itboybops: Halloween this year will be insane. (Likes: 46, Reposts: 0)\n- @TheDutchessNJ: Bullshit (Likes: 7, Reposts: 0)",
+    "warnings": []
+  }
+}

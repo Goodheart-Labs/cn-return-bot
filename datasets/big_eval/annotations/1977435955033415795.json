@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1977435955033415795",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "contested_interpretation_of_clip",
+  "tweet_summary": "Small account (PARKINGTIGERS, 742 followers) reply-tweets a 10-second clip captioned 'NEW CLIP OF HASAN SHOCKING HIS DOG' as part of the October 2025 Hasan Piker dog-collar controversy. 2.5M impressions, 3.7k likes.",
+  "why_note_decision": "The Hasan Piker shock-collar controversy is genuinely contested: Piker says the collar vibrates only (showed it on stream, contains an AirTag + flashlight + vibration motor, no shock function), backed by some commentators including dog trainer Tom Davis; critics dispute this based on the dog's body language. The original note presents only Piker's denial as resolution, but multiple top comments (1474+ likes) and journalistic coverage describe it as unresolved/contested. The community correctly identified this as opinion/contested interpretation (5 incorrect, 5 opinionSpeculation, 6 noteNotNeeded) — a note that adjudicates a contested behavior interpretation as 'denied → resolved' is opinion. A correct bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: this is a contested interpretation of an ambiguous clip in an ongoing public dispute (Piker says vibration collar with no shock function; critics dispute via dog body language). FAIL any note that: (a) repeats the original failure of asserting Piker's denial as if it settled the question, (b) asserts the clip definitively shows or doesn't show shocking, (c) cites only pro-Piker sources (Forbes coverage, Times of India, dog trainer Tom Davis) without acknowledging the dispute, (d) takes a side on whether the collar was a shock collar. The defensible note would just be 'this is a contested interpretation' — but that isn't useful enough to warrant a note. Decline is correct.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This clip has led to debate over whether Hasan Piker used a shock collar on his dog, with critics arguing the model supports it. Piker denied the claim, demonstrating a vibration-only collar, confirmed by dog trainer Tom Davis as non-shock.  https://www.forbes.com/sites/danidiplacido/2025/10/08/hasan-pikers-dog-shock-collar-controversy-explained/  https://www.youtube.com/watch?v=R2smNd9FBHc  https://timesofindia.indiatimes.com/technology/tech-news/hasan-piker-responds-to-petas-dog-collar-claims-yes-i-am-incredibly-to-the-most-spoiled-dog-on-the-planet/articleshow/124442787.cms",
+    "failure_reason": "opinion_speculation — presents Piker's denial as settled, but the underlying interpretation of the clip (dog yelp = shock?) is contested. Note functions as celebrity-PR defense rather than fact-check.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "contested_interpretation_no_resolved_fact",
+    "sources_checked": [
+      "https://www.forbes.com/sites/danidiplacido/2025/10/08/hasan-pikers-dog-shock-collar-controversy-explained/",
+      "https://www.tmz.com/2025/10/16/hasan-piker-denies-dog-shock-collar-claims/",
+      "https://factually.co/fact-checks/entertainment/hasan-piker-dog-shocking-allegation-3e8474"
+    ],
+    "notes": "Coverage frames as contested. Piker's denial + on-stream demonstration of the (non-shock) collar is the strongest evidence for his side; critics dispute via dog body-language analysis. No conclusive public evidence either way."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "2.5M impressions but small-stakes celebrity discourse. Useful pipeline signal: bot must learn that not all 'controversies' have a fact-checkable resolution and that one-sided notes on contested interpretations are unhelpful."
+  },
+  "difficulty": "hard"
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2035280398305935514",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:28.855Z",
+  "post": {
+    "id": "2035280398305935514",
+    "author_id": "980055132699324416",
+    "created_at": "2026-03-21T09:00:35.000Z",
+    "text": "📌 Paris Saint-Germain yönetimi, Noa Langın sakatlığının ardından Anfield için UEFA'dan inceleme talep etti ve stadyum zaaflarının giderilmesini istedi. https://t.co/fVaWIyINOX",
+    "media": [
+      {
+        "media_key": "3_2035280388428382210",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HD7EutqXwAILk3V.jpg",
+        "height": 4096,
+        "width": 2732
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 695,
+      "reply_count": 173,
+      "like_count": 16502,
+      "quote_count": 51,
+      "bookmark_count": 214,
+      "impression_count": 476055
+    },
+    "author_followers": 19506,
+    "author_name": "PSG Türkiye",
+    "author_description": "Paris Saint-Germain Türkiye taraftar topluluğu. Resmi değildir. Fan Account. Reklam ve işbirliği için turkiyepsg@gmail.com yedek hesabımız @yedekturkcepsg",
+    "author_tweet_count": 8681
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HD7EutqXwAILk3V.jpg",
+          "description": {
+            "description": "A close-up photograph of a person wearing a dark blue Paris Saint-Germain football jersey, featuring a red and white stripe, the team's circular crest, and a gold star above it. A hand is pointing toward the crest.",
+            "ocrText": "PARIS SAINT-GERMAIN TAR WAYS"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Solo IL Gala (@SuperCimbombom)**: Anfield'de futbol oynamak için gerekli ekipmanlar. (1829 likes)\n- **nope #Hedef27 #HedefÜstÜste5 (@baris_karagoz)**: içeride dışarıda slot’un kel kafasını tokatlayın istiyorum ya (816 likes)\n- **Baron_Silbi (@yuksevy)**: Bence oynamak icin daha güvenli bir stad talep edin, M.United veya M. Cty starları çok daha güvenli ve futbola uygun. Yoksa oyuncumuzun parmağı kopar ve ırkçılık yaptınız diye suçlamalarda bulunurlar bu çingeneler. (375 likes)\n- **Ultraslan34 (@swoz7777)**: [video] (325 likes)\n- **Gaddar Kerim (@_Gaddar__Kerim_)**: @PSG_inside, @LFC'ye bu anı yaşatacak!!! (319 likes)\n- **Ultraslan34 (@swoz7777)**: Haddii skin bu ingilizleri pleri (318 likes)\n- **Baba Muhittin 🇹🇷🦁💛❤️⭐⭐⭐⭐⭐ (@zmir353519)**: Liverpool sahası kapatılmalı 👎 (136 likes)\n- **Mahir Sancak💛♥️(F&S) (@mhrsnck)**: Hakem ataması içinde işi sıkı tutsunlar son dakika tetikçi atayıp herşeyi yapabilecek bir kulüp bunlar (73 likes)\n- **Tuncay COBANOGLU (@GsTunco)**: Bu @UEFA ' dan mı..? Dikkatli Olun...!!! (55 likes)\n- **kadir (@the7kadir)**: siz napacaksınız bu salaklara (47 likes)",
+    "warnings": []
+  }
+}

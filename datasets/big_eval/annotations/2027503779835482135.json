@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2027503779835482135",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "California Governor Gavin Newsom captions a video of his own remarks at the Temple Emanu-El cultural center, accusing Trump of conducting 'every foreign trip, every deal, every tariff' for personal portfolio enrichment.",
+  "why_note_decision": "Tweet is political-rhetoric opinion ('every', 'billions') framed as crony-capitalism allegations. The original note even acknowledges that documented conflicts and reporting on Trump-business overlap exist (NPR), but objects to the universal quantifier 'every' and the specific 'billions' figure. That's pedantic rhetoric-policing on opinion speech. Newsom is a politician making campaign-style criticism in his own voice with attached video of his own remarks. No falsifiable factual claim is being smuggled past readers.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is political rhetoric/opinion by an elected official in his own voice (attached video of his own speech at Temple Emanu-El) using broad characterizations ('every trip, every deal, every tariff', 'billions') — standard political-criticism framing, not falsifiable misinformation. The original NOT_HELPFUL note attempted to pedantically constrain the rhetoric; a correct response declines. FAIL any note that attempts to fact-check 'every' or quantify exact gains.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Watchdogs and reporting document repeated conflicts — visits to his properties, taxpayer-funded trips, and policies favoring his businesses — but they don't verify that &quot;every&quot; trip, deal or tariff is tied to his portfolio or that gains total &quot;billions.&quot; https://www.npr.org/transcripts/nx-s1-5682237",
+    "failure_reason": "noteNotNeeded — pedantically polices rhetorical 'every' and 'billions' in obvious political-criticism speech from an elected official.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Political opinion / rhetoric; not falsifiable misinformation.",
+    "sources_checked": [],
+    "notes": "Newsom in his own video voicing partisan criticism; documented conflicts exist (per the original note's own NPR citation)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Newsom has 3M followers; 436k impressions; getting calibration on 'don't note rhetorical opinion from politicians' right matters for political balance."
+  },
+  "difficulty": "medium"
+}

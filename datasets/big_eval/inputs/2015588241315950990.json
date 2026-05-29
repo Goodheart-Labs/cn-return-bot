@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2015588241315950990",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:56.163Z",
+  "post": {
+    "id": "2015588241315950990",
+    "author_id": "1591928217056808963",
+    "created_at": "2026-01-26T00:50:59.000Z",
+    "text": "BREAKING: The first official Like a Dragon 9 story trailer has seemingly leaked online.\n\n(Via: @IGN) https://t.co/tYTt0o2lsB",
+    "media": [
+      {
+        "media_key": "13_2015586686541942784",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2015586686541942784/img/yQklNrKH3bJqAhjV.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 24190,
+        "view_count": 92276,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2015586686541942784/vid/avc1/480x270/7wWUFDjXAfbhM73b.mp4?tag=14"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2015586686541942784/vid/avc1/640x360/_oG8zpTAqBZVC0oU.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2015586686541942784/vid/avc1/1280x720/W9P2cQ_s3WOq6l_P.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2015586686541942784/pl/sFg_mLAJ8vnETTnp.m3u8?tag=14&v=5cc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 440,
+      "reply_count": 28,
+      "like_count": 4788,
+      "quote_count": 20,
+      "bookmark_count": 687,
+      "impression_count": 178112
+    },
+    "author_followers": 3686,
+    "author_name": "Judgement Kazzer",
+    "author_description": "repeating the same jokes since 2022 | niche Yakuza content creator | most miserable Yakuza fan | slop sommelier | #REMOVEKAGAWA",
+    "author_tweet_count": 2040
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2015586686541942784/vid/avc1/1280x720/W9P2cQ_s3WOq6l_P.mp4?tag=14",
+          "description": {
+            "description": "A set of four frames featuring characters from a video game in a cinematic setting. The first frame shows a man in a pirate costume with an eye patch, looking over his shoulder against a backdrop of palm trees and a tall building under a sky with falling light streaks. The second frame shows a man in a dark trench coat with another person behind him, under the same sky. The third frame is a low-angle shot of skyscrapers as multiple streaks of light fall through the sky. The final frame shows a character standing alone in the middle of a city crosswalk with cars driving in the background.",
+            "ocrText": "LANE\nBUS"
+          },
+          "transcription": "Oh my, my love What the heck is that? You're taking me out of the ordinary Oh my god Why won't you lay me down? Everybody, take cover! You're telling me we can touch When love is our mirror 118, brace for impact! We're getting close up to the stars We're getting close, we're bound"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Jhrino (@Jhrinoo):** Pre-order Like a Dragon 9: The Rise of Yakuza to get the legendary Ichiban Kasuga Manager DLC for Kiryu's Orphanage Builder Minigame! (271 likes)\n\n**Dastanovich (@Dastanovich_):** No Ichiban in sight #Yep #ItsReal (257 likes)\n\n**thebloopermax (@tbpm312):** Ichi not even being here despite being the new protagonist of the series is the cherry on top (90 likes)\n\n**Beto Syndarin (@Syndarin):** Don’t worry, in Yakuza 10 they will retcon the story and make all of then rubber meteors (8 likes)\n\n**DeadDaedalus (@DeadDaedalus):** Didn't it leak a year ago? (7 likes)\n\n**AXC (@lyleaxc):** No community note must be real (6 likes)\n\n**Bodziek (@bodziek666):** Very Helpful Search Result: (5 likes)\n\n**Tea After Dark (@KPopPapi):** It unironically is actually gonna end up being as ungrounded as this lmao (3 likes)\n\n**RavenMurcìelago (@RavenMurcielago):** (3 likes)\n\n**9millimeter (@Yung_Wooloo):** REFEREE DO SOMETHING (2 likes)",
+    "warnings": []
+  }
+}

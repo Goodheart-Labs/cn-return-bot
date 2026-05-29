@@ -1,0 +1,33 @@
+{
+  "tweet_id": "1979929304415826217",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Right-leaning author sarcastically posts a 1985 Live Aid Wembley photo (Freddie Mercury with arm raised, huge stadium crowd) with the caption 'The No Kings crowds were crazy!' — obvious mockery of the protest size, not a sincere claim.",
+  "why_note_decision": "All top replies are in on the joke ('My favorite part was when Gov Tim Walz took the stage', 'No Kingsstock was wild man', 'historic photo of the last time the same group got together'). The image is the iconic Live Aid 1985 Wembley shot — instantly recognizable. The tweet is clearly sarcasm mocking the anti-Trump No Kings rallies, not a sincere claim that this is a 2025 protest crowd. Earnestly correcting the photo's date is the false-positive trap (76 noteNotNeeded votes).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The image is the iconic 1985 Live Aid Wembley/Freddie Mercury photo used sarcastically to mock anti-Trump 'No Kings' rallies; all comment threads are in on the joke. Any note that earnestly identifies the photo as Live Aid 1985 and explains 'this isn't really No Kings crowds' is a false positive — the author and the audience already know.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The photo doesn't show 2025 \"No Kings\" crowds. It's a widely circulated image from the 1985 Live Aid concert at Wembley. \"No Kings\" refers to U.S. protests in Oct. 2025, not a stadium concert. https://www.theguardian.com/music/2024/sep/28/elton-john-stormzy-madonna-britney-41-era-defining-music-photos https://www.theguardian.com/us-news/live/2025/oct/18/anti-trump-no-kings-protests-updates",
+    "failure_reason": "noteNotNeeded — earnestly debunks an iconic-photo sarcasm meme that all repliers recognize.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Sarcastic political mockery; image is iconic 1985 Live Aid photo used as a joke about protest size.",
+    "sources_checked": [],
+    "notes": "Replies confirm the joke is universally understood."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "425k impressions on partisan-meme content; non-serious."
+  },
+  "difficulty": "easy"
+}

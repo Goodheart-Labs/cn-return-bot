@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2057105681707409412",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:31.012Z",
+  "post": {
+    "id": "2057105681707409412",
+    "author_id": "44196397",
+    "created_at": "2026-05-20T14:26:28.000Z",
+    "text": "This poor boy was running away from someone who stabbed him &amp; stole his phone, but the police in the UK attacked him instead of his murderer! https://t.co/SwnHHYec1d",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2057065885949481336"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2057065885949481336",
+      "author_id": "1849500209488752640",
+      "created_at": "2026-05-20T11:48:20.000Z",
+      "text": "He wasn't a career criminal. He was a Russel group university student.\n\nState authorities assisted a foreigner in stabbing him to death.\n\nThis is 100x worse than George Floyd. https://t.co/kEaIAbqAbI",
+      "media": [
+        {
+          "media_key": "3_2057065881583198208",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HIwqhT9XoAA3G4t.jpg",
+          "height": 694,
+          "width": 951
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 110168,
+      "reply_count": 12939,
+      "like_count": 569516,
+      "quote_count": 2006,
+      "bookmark_count": 29622,
+      "impression_count": 58721304
+    },
+    "author_followers": 240140247,
+    "author_name": "Elon Musk",
+    "author_description": "https://t.co/dDtDyVssfm",
+    "author_tweet_count": 103236
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIwqhT9XoAA3G4t.jpg",
+          "description": {
+            "description": "A high-angle surveillance camera still showing a young man with dark, slicked-back hair inside an elevator. He is wearing a dark quarter-zip sweater over a white collared shirt and tie. He is looking off to the left of the frame while holding something small in his hands. The text 'Block F Lift' is superimposed at the bottom right of the image.",
+            "ocrText": "Block F Lift"
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Tina22_2**  \nThank you, Elon for stepping in after police mocked this dying teen instead of helping. 🖤  \nLikes: 5421 | Reposts: 351 | Replies: 42\n\n**@RadioGenoa**  \nThe British police are a joke.  \nLikes: 4136 | Reposts: 86 | Replies: 53\n\n**@NevadaLiberty64**  \n[Image]  \nLikes: 3938 | Reposts: 293 | Replies: 71\n\n**@Proper_Memes**  \n[Image]  \nLikes: 2855 | Reposts: 130 | Replies: 14\n\n**@danwootton**  \nThis shames our country. And the MSM are just ignoring this story.  \nLikes: 2628 | Reposts: 193 | Replies: 35\n\n**@GodandCountryy**  \n[Image]  \nLikes: 2253 | Reposts: 190 | Replies: 26\n\n**@RealShahir**  \nYou exploiting the tragic death of Henry Nowak to push his racist “two-tier policing” fantasy is vile you pedo!! A young British student was stabbed to death... allegedly by Vikrum Digwa. Police fu**ed up by handcuffing the bleeding victim while the attacker claimed “racism.” That deserves accountability. But turning one horrific crime into “the state assists foreigners to stab natives” is the same grift Musk and the far-right always run after every stabbing. Fact: The vast majority of UK knife crime and murders are committed by British-born citizens, not “foreigners.” Gang violence, drugs, and poverty drive it... problems that existed long before recent migration. Musk doesn’t care about the victim. He uses dead kids to stoke hatred and justify his imported chaos on X. A billionaire profiting from fear while Britain bleeds. Disgusting.  \nLikes: 1704 | Reposts: 84 | Replies: 648\n\n**@GuntherEagleman**  \nThe UK is done.  \nLikes: 1667 | Reposts: 58 | Replies: 40\n\n**@T0N3N3**  \n[Image]  \nLikes: 1362 | Reposts: 126 | Replies: 19\n\n**@TradBritGroup**  \n[Image]  \nLikes: 1308 | Reposts: 263 | Replies: 15",
+    "warnings": []
+  }
+}

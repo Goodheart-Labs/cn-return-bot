@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2019492651804865005",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "subjective_generational_economics_take",
+  "tweet_summary": "A nostalgia/grievance take claiming that until 2020 it was 'totally financially feasible' to afford a 2-bedroom apartment solo, with no roommates, in most major US cities on a 'very mid' job.",
+  "why_note_decision": "This is a vague, subjective generalization ('totally feasible', 'very mid job', 'most major cities') with no precise, falsifiable threshold to check. Affordability varied enormously by city and income, and the claim is a contested vibes-based generational argument, not a discrete false fact. The replies themselves split sharply — some corroborate cheap pre-2020 rents, others ('no it really wasn't, everyone had roommates') reject it. A note picking one side of a fuzzy nostalgia debate is editorial counter-argument, not a factual correction. The original note's hedged 'often exceeded... many workers needing roommates' is itself an opinion-laden rebuttal.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The claim is subjective/imprecise generational-economics framing ('totally feasible... most major cities... very mid job') with no checkable threshold; reasonable data supports both 'cheaper then' and 'still needed roommates,' so any note is a contestable counter-opinion, not a factual correction. FAIL any note that picks a side of this affordability debate. There is no specific falsehood to fix.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The claim overstates pre-2020 affordability. In many major U.S. cities (e.g. NYC, SF, LA, DC), median 2-bedroom rents often exceeded what a typical mid-level job (~$50k/year in 2019) could comfortably cover solo, with many workers needing roommates well before 2020.    https://www.cnbc.com/2019/07/11/americans-spend-more-of-their-income-on-rent-than-ever-before.html    https://www.pewresearch.org/short-reads/2019/09/25/the-share-of-americans-living-in-a-home-they-own-is-falling-especially-for-young-adults/    https://www.jchs.harvard.edu/sites/default/files/reports/files/Harvard_JCHS_Americas_Rental_Housing_2019_Report.pdf",
+    "failure_reason": "note_not_needed_subjective_claim",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Subjective/opinion. Pre-2020 affordability varied wildly by city; the sweeping 'totally feasible in most major cities on a mid job' is contestable framing, not a discrete checkable fact.",
+    "sources_checked": [
+      "https://www.apartmentlist.com/research/national-rent-data",
+      "https://fortune.com/2025/10/29/us-cities-affordable-for-single-people-one-income/"
+    ],
+    "notes": "Both 'rents were far cheaper pre-2020' and 'high-COL cities still required roommates' have data support, and the claim's terms ('mid job', 'most major cities') are undefined. This is a generational-affordability opinion, not a falsifiable claim. The thread itself is divided, confirming it's a debate, not a correctable error."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "1.6M impressions but it's a subjective nostalgia take on housing costs; no discrete misinformation and no EA/progress/safety angle a note would serve."
+  },
+  "difficulty": "easy"
+}

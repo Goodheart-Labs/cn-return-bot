@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2029816019913433583",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["ai_generated_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Account 'Mo Hamzeh' posts an AI-generated video of falling glowing 'cluster bombs' with Rihanna's 'Diamonds' playing. Caption: 'WHO ELSE IS A SUCKER FOR THEM CLUSTERS? 🍿🎆'. OCR shows 'ZACK FILMS' watermark. 105k impressions.",
+  "why_note_decision": "The video IS AI-generated (Lead Stories/Yahoo confirmed via Hive Moderation 98.3% / Sightengine 98% — likely Sora). HOWEVER the tweet's framing makes no factual claim that this is real footage: it's an aesthetic 'pretty boom' meme with popcorn emoji, the Rihanna song overlay, and a 'ZACK FILMS' watermark identifying it as AI-art content. Commenters engage with it as aesthetics ('beautiful piece of art', 'PERFECT SONG'), not as evidence of an actual strike. The note's framing of 'this is AI, not genuine' is correct but unnecessary on a clearly-presented art/meme post — exactly the noteNotNeeded false-positive pattern. (Distinguished from cases where the same clip is reposted as 'real Iran strike' — there a note WOULD be needed.)",
+  "judge_guidance": "PASS only if the bot declines to write a note. The clip is genuinely AI (Lead Stories/Yahoo confirmed) but the tweet itself presents it as visual entertainment ('WHO ELSE IS A SUCKER FOR THEM CLUSTERS 🍿🎆' + Rihanna soundtrack + 'ZACK FILMS' watermark), not as evidence of a real strike. Any note 'this is AI' is a false positive when the source tweet treats it as art. FAIL any note that addresses it as a factual claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video uses AI-generated imagery and does not show real Iranian cluster bombs over Tel Aviv. It was made for entertainment. Iran did attack Israel with missiles in March 2026, but this footage is not genuine.    https://www.yahoo.com/news/articles/fact-check-video-does-not-014949987.html  https://www.aljazeera.com/video/newsfeed/2026/3/2/video-shows-iranian-missile-strike-hit-beersheba-israel  https://www.criticalthreats.org/analysis/iran-update-evening-special-report-march-3-2026",
+    "failure_reason": "noteNotNeeded dominant (22). Substance is correct (clip IS AI per Lead Stories/Yahoo) but the tweet itself frames the content as aesthetic 'fireworks' meme with 'ZACK FILMS' watermark + Rihanna soundtrack — not a real-event claim. Note over-corrects entertainment content.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Clip is AI-generated, but the tweet doesn't claim it is real footage — it's meme/art framing.",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/fact-check-video-does-not-014949987.html",
+      "https://leadstories.com/hoax-alert/2026/03/fact-check-video-does-not-show-real-bombing-of-tel-aviv-in-march-2026.html",
+      "https://en.wikipedia.org/wiki/Misinformation_during_the_2026_Iran_war"
+    ],
+    "notes": "Hive Moderation 98.3% AI, Sightengine 98% AI. Likely Sora. Original 'ZACK FILMS' watermark IDs it as AI-content creator output."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "105k impressions on Iran-war-themed AI content; the false-positive 'this is AI' note on what is clearly art/meme is a distinctive trap, but if the same clip were posted as 'real Iran strike' it would matter much more."
+  },
+  "difficulty": "medium"
+}

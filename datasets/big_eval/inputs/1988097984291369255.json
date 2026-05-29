@@ -1,0 +1,81 @@
+{
+  "tweet_id": "1988097984291369255",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:11.586Z",
+  "post": {
+    "id": "1988097984291369255",
+    "author_id": "1356434353623093249",
+    "created_at": "2025-11-11T04:14:31.000Z",
+    "text": "Be careful out there. The McRib usually comes back right before a major world event. https://t.co/hyCmzCjPuV",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "1987998157330866256"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "1987998157330866256",
+      "author_id": "76766018",
+      "created_at": "2025-11-10T21:37:50.000Z",
+      "text": "McDonald's is bringing back the McRib for a limited time on November 11 in the US https://t.co/k03E4VQBm7",
+      "media": [
+        {
+          "media_key": "3_1987998151303733248",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/G5bJySaXoAARHnL.jpg",
+          "height": 1600,
+          "width": 1400
+        },
+        {
+          "media_key": "3_1987998154508111873",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/G5bJyeWWkAEMU3T.jpg",
+          "height": 1600,
+          "width": 1400
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 2283,
+      "reply_count": 701,
+      "like_count": 35365,
+      "quote_count": 168,
+      "bookmark_count": 1342,
+      "impression_count": 2160650
+    },
+    "author_followers": 1628989,
+    "author_name": "greg",
+    "author_description": "im greg I like football and stocks and my birthday im from kentuckey. I'm a investor. I like to golf at the golf course. subscribe for just 10¢ a day ⤴️",
+    "author_tweet_count": 61058
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G5bJySaXoAARHnL.jpg",
+          "description": {
+            "description": "The image displays the McDonald's logo, which consists of two large yellow arches forming a rounded 'M' shape on a solid red background.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G5bJyeWWkAEMU3T.jpg",
+          "description": {
+            "description": "A close-up studio shot of a McRib sandwich from McDonald's. It features a seasoned, boneless pork patty shaped like a rack of ribs, slathered in tangy barbecue sauce. The patty is layered with slivered onions and dill pickles on a toasted homestyle bun sprinkled with cornmeal. The entire sandwich is set against a plain white background.",
+            "ocrText": ""
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Liberty Pill Memes (@LibertyPillMeme)**: 🤣 (736 likes, 49k views)\n- **Blue Falcon (@BlueFalcon7509)**: [image] (400 likes, 15k views)\n- **88 ☻️ (@WhoKnows2030)**: [image] (290 likes, 6k views)\n- **uɐɥdǝʇS (@StephanSturges)**: weeeeell…. (232 likes, 26k views)\n- **Chop City² (@chopcity_da_2nd)**: [image] (206 likes, 14k views)\n- **Merk (@JaxsonDartMVP1)**: The major event is I eat one and then shit water for 72 hours (177 likes, 11k views)\n- **Drewski (@SeekingAnon)**: Christ has returned and world peace is coming. That major enough? (141 likes, 9k views)\n- **LilHumansBigImpact (@BigImpactHumans)**: Maybe it’ll be a really good major world event (116 likes, 21k views)\n- **Wellmax (@x0xheart)**: [images] (80 likes, 14k views)\n- **shaolinchad.pls🛡 (@shaolinchad)**: Keep them entertained and fill them with bread and they will never rise up against you. (71 likes, 11k views)",
+    "warnings": []
+  }
+}

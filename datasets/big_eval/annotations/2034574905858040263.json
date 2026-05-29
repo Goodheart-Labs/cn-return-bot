@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2034574905858040263",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["celebrity_entertainment_sports", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A poster claims Manchester United have not played a Champions League knockout game in over 10 years, mocking another user who thinks United could beat most remaining CL teams.",
+  "why_note_decision": "False. United played Champions League knockout rounds in 2018/19 (R16 vs PSG and QF vs Barcelona) and 2021/22 (R16 vs Atletico Madrid, March 2022 — less than 4 years before the March 2026 tweet). The 'over 10 years' claim is plainly wrong. Author's bio literally says 'Everything I post is made up' but the post is widely shared (15K likes, 814K impressions) and the top reply pushback confirms many readers were misled or just outraged. A note IS warranted to give passing readers the correct facts. Provisional 'no note needed' is wrong — the rater label likely reflects 'it's obvious he's joking / author admits posts are made up', but the impressions and replies show the false claim is propagating.",
+  "judge_guidance": "PASS if the note states Manchester United played Champions League knockout rounds in 2021/22 (R16 vs Atletico Madrid, Feb/Mar 2022) — clearly less than 10 years before March 2026. The note must give at least one specific, recent knockout fixture (Atletico Madrid 2022 is the strongest). FAIL if the note: (a) accepts the '10 years' claim; (b) only mentions much older fixtures (e.g. 2018/19 alone) without the more-recent 2021/22 tie; (c) writes a non-corrective note about the author's joke disclaimer. Sources should be UEFA or a reputable football outlet (UEFA.com, ESPN, Sky Sports, Wikipedia).",
+  "reference_note": "Manchester United played Champions League knockout rounds in 2021/22, losing to Atletico Madrid in the Round of 16 on March 15, 2022 — less than 4 years ago. They also reached the quarter-finals in 2018/19. https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/ https://en.wikipedia.org/wiki/2021%E2%80%9322_UEFA_Champions_League_knockout_phase",
+  "original_unhelpful_note": null,
+  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "false — United played CL knockout games in 2021/22", "sources_checked": ["https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/", "https://en.wikipedia.org/wiki/2021%E2%80%9322_UEFA_Champions_League_knockout_phase", "https://www.espn.com/soccer/report/_/gameId/622986"], "notes": "Atletico Madrid eliminated United 2-1 on aggregate in March 2022 R16. United also played CL knockouts in 2018/19 (lost QF to Barcelona; beat PSG R16)."},
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "Sports trivia; no EA/progress/welfare stakes. Worth correcting only for general info-integrity hygiene on widely-shared false stats."},
+  "difficulty": "easy"
+}

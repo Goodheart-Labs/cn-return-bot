@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1998347694922768506",
+  "role": "unhelpful_hard_to_understand",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Anti-vax video claims 'In 1994 Japan ceased all mandatory vaccines for children under 24 months,' implying this is why Japan has one of the world's lowest infant mortality rates while the US has one of the highest.",
+  "why_note_decision": "The claim is false/misleading. In 1994 Japan made childhood vaccination voluntary rather than mandatory — it did not 'cease all vaccines'; coverage stayed very high (~99% DTaP). Japan's low infant mortality is not caused by ending mandates, and the US-vs-Japan comparison is driven by other factors (reporting definitions, healthcare). Snopes, AP, and Full Fact all rate this false. From an 846k-follower account at 323k impressions, this anti-vax health misinformation warrants a clear correction.",
+  "judge_guidance": "PASS only if the note makes clear the implied claim is false: in 1994 Japan made childhood vaccination VOLUNTARY (not mandatory) rather than ceasing all vaccines, childhood vaccination coverage remained very high (~99% for DTaP), and Japan's low infant mortality is NOT attributable to ending mandates (the US-Japan gap reflects reporting definitions and healthcare factors, not vaccine policy). The note must rebut the causal anti-vax implication clearly and be easy to read. FAIL a note that concedes 'Japan did end vaccine mandates in 1994' as a headline without immediately clarifying coverage stayed high and there is no causal link, or that is so dense/hedged it's hard to parse (the original note's failure). Cite AP/Snopes/Full Fact.",
+  "reference_note": "Misleading. In 1994 Japan made childhood vaccines voluntary, not mandatory — it did not stop vaccinating under-2s; coverage remains very high (~99% for DTaP). Japan's low infant mortality is not caused by this change, and the US-Japan gap reflects reporting and healthcare differences, not vaccine policy. https://www.snopes.com/fact-check/japan-1994-children-vaccines/ https://apnews.com/article/fact-check-japan-us-infant-mortality-data-vaccines-958016270455",
+  "original_unhelpful_note": {
+    "text": "Japan did end vaccine mandates in 1994, making them recommended. For context, infants under 2 still receive routine vaccines with &gt;95% coverage. Infant mortality declined steadily before 1994; no link to policy change. US has higher IMR among developed countries.    https://fred.stlouisfed.org/series/SPDYNIMRTINJPN    https://www.sciencedirect.com/science/article/pii/S0264410X23002827    https://www.jpeds.or.jp/uploads/files/English%20version%20Japanese%20Immunization%20Schedule.pdf",
+    "failure_reason": "Leads by conceding 'Japan did end vaccine mandates in 1994,' partly validating the misleading framing, and is choppy/hard to parse with an unescaped '&gt;'; the rebuttal of the causal anti-vax implication is buried.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/misleading: Japan made vaccines voluntary (not ceased), kept ~99% coverage, and its low infant mortality is unrelated to the policy change.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/japan-1994-children-vaccines/",
+      "https://fullfact.org/health/Japan-US-vaccine-comparisons/",
+      "https://apnews.com/article/fact-check-japan-us-infant-mortality-data-vaccines-958016270455"
+    ],
+    "notes": "Snopes: 'No, Japan did not stop vaccinating children under 24 months old in 1994' — the 1994 law made vaccination voluntary, coverage stayed high (~99% DTaP in 2022), and infant mortality fell gradually, not due to the policy. AP/Full Fact concur the US-Japan comparison is not vaccine-driven. Provisional was no_note (dominated by 'note not needed' ratings, likely from sympathetic audience); I flip to yes — clear health misinfo. Original note exists but is weak/hard to parse, so this is a failure-style row warranting a cleaner note."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "846k-follower account, 323k impressions; anti-vaccine misinformation that can reduce childhood immunization is a clear public-health harm worth correcting."
+  },
+  "difficulty": "medium"
+}

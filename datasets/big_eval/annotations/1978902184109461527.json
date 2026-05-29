@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1978902184109461527",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Pro-Palestinian OSINT account 'Royal Intel' (104k followers) shares a 31-second video of a large orange mushroom-cloud explosion at night, captioned 'Footage of Israeli airstrike in southern Lebanon an hour ago… Holy fuck'. 1.2M impressions.",
+  "why_note_decision": "The tweet's factual caption ('Israeli airstrike in southern Lebanon') matches reality: the IDF confirmed multiple Oct 16 2025 airstrikes near Ansar/Aadloun in South Lebanon targeting Hezbollah-linked construction infrastructure (FDD Long War Journal, Xinhua, AA, Al Arab News — all corroborate). The large mushroom cloud is consistent with secondary detonations of stored materials at the target site. The original note correctly says this is an airstrike not a nuclear weapon, but: (a) the tweet doesn't claim it's nuclear, (b) only one fringe reply does ('Very obvious, a nuclear explosion', 54 likes — heavily outnumbered by sober reactions). The community overwhelmingly rejected the note (35 noteNotNeeded, 26 missingKeyPoints, 16 opinionSpeculation) because the tweet's caption is accurate. A correct bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the tweet's factual caption is accurate — Israel did conduct airstrikes in southern Lebanon (Ansar area, Oct 16 2025), and the large explosion is consistent with secondary detonations at a cement-mixer/construction site the IDF was targeting. FAIL any note that: (a) repeats the original failure of debunking a 'nuclear' claim the tweet never made (only a fringe reply made it), (b) inserts editorializing about Hezbollah-vs-civilians, (c) adds unsourced specifics about 'follow-on blasts from materials at the site'. If the tweet is just a factual caption of real footage that matches reality, no note is warranted.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This footage shows an Israeli airstrike near Ansar, Lebanon, on October 16, 2025, targeting Hezbollah infrastructure. While dramatic, the large explosion was due to follow-on blasts from materials at the site, not a nuclear weapon.  https://www.aa.com.tr/en/middle-east/1-killed-7-injured-as-israeli-warplanes-launch-12-airstrikes-in-lebanon-despite-ceasefire/3719095  https://today.lorientlejour.com/article/1481521/series-of-israeli-strikes-across-south-lebanon-israel-claims-hezbollah-targets.html  https://www.arabnews.com/node/2619171/middle-east",
+    "failure_reason": "note_not_needed — the tweet says exactly what the note confirms (Israeli airstrike in S. Lebanon). The 'not a nuclear weapon' framing rebuts a fringe reply, not the OP. Community correctly rejected.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_caption_matches_reality",
+    "sources_checked": [
+      "https://www.longwarjournal.org/archives/2025/10/israeli-operations-in-lebanon-against-hezbollah-october-13-19-2025.php",
+      "https://english.news.cn/20251017/d34e3b7597794ad18358303437dce3b4/c.html",
+      "https://www.aa.com.tr/en/middle-east/1-killed-7-injured-as-israeli-warplanes-launch-12-airstrikes-in-lebanon-despite-ceasefire/3719095"
+    ],
+    "notes": "Oct 16 2025 IDF airstrikes near Ansar/Aadloun confirmed; targeted Hezbollah-linked construction (cement mixers, crusher) per IDF. Casualties: 1 killed, 7 wounded. Large explosion plausibly from stored materials. Tweet caption is correct."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.2M impressions on Israel/Lebanon war footage; high-context-cost territory but no actual misinformation here — bot must learn that 'dramatic explosion footage with factually-correct caption' does not need a note."
+  },
+  "difficulty": "medium"
+}

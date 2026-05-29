@@ -1,0 +1,83 @@
+{
+  "tweet_id": "2020267243398185393",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:05.462Z",
+  "post": {
+    "id": "2020267243398185393",
+    "author_id": "901190902680563712",
+    "created_at": "2026-02-07T22:43:40.000Z",
+    "text": "In the UK you can be held for 18 months without a trial and they can re-try you in perpetuity until they get the result they want. https://t.co/ZElz9EKwrO https://t.co/Bx02864MuN",
+    "media": [
+      {
+        "media_key": "3_2020267239589531648",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HAluWb8X0AAFkCv.jpg",
+        "height": 859,
+        "width": 1098
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2020067533353541825"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2020067533353541825",
+      "author_id": "80588808",
+      "created_at": "2026-02-07T09:30:05.000Z",
+      "text": "A CPS spokesperson said: “Prosecutors are now considering the precise basis on which that retrial would proceed, including the form of the indictment, in accordance with CPS legal guidance.\" https://t.co/oauNsFTMct",
+      "media": [
+        {
+          "media_key": "3_2020067528051970048",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HAi4tsfW0AAhMrs.jpg",
+          "height": 1800,
+          "width": 1440
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 1758,
+      "reply_count": 133,
+      "like_count": 12026,
+      "quote_count": 24,
+      "bookmark_count": 659,
+      "impression_count": 332585
+    },
+    "author_followers": 4275,
+    "author_name": "Thomas \"Lesley\" Crocwell",
+    "author_description": "Killing the flowers will not delay the coming of spring",
+    "author_tweet_count": 34292
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HAluWb8X0AAFkCv.jpg",
+          "description": {
+            "description": "A headshot-style image of Yeonmi Park wearing a white turtleneck and black over-ear headphones, speaking into a professional studio microphone during a podcast recording, with a dark red curtain backdrop.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HAi4tsfW0AAhMrs.jpg",
+          "description": {
+            "description": "A digital graphic from the Crown Prosecution Service (CPS) featuring white and black text on a dark blue background with branding elements. The top right corner includes the CPS logo showing scales of justice. A light blue banner on the left contains the word 'Statement', and the main body text announces the intention to seek a retrial in a specific case.",
+            "ocrText": "Crown Prosecution Service. Statement. The CPS will seek a retrial in the Elbit Systems case, we indicated to the court on Wednesday. We will confirm the indictment at a hearing on Feb 18."
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @korvicon (Korvicon): \"They're just going to keep doing this until the government forces every criminal case into bench trials so a judge who's already made up his mind will convict them\" (Likes: 314)\n- @humng392546 (Ben): \"In this case, they're talking about a retrial of the cases for which the jury returned no verdict. That's a normal, ancient part of the jury system\" (Likes: 155)\n- @ProLogic963720 (ProLogic): \"Because the first verdict was a blatant sham. They filmed themselves diving a van into the premises smashing things and police officers with sledgehammers for crying out loud.\" (Likes: 80)\n- @spaghetti_joee (Lymecyline): \"the re-trial would be for the charges that the jury didn’t reach a verdict on, not the ones they were found not guilty of.\" (Likes: 54)\n- @s_charlene (despairing at humanity.): \"That is just nonsense The crown get to go again. Once more save for exceptional circumstances. They can’t keep trying someone “in perpetuity” Why are you spreading misinformation?\" (Likes: 40)\n- @Baptist25352979 (Pedro Sanchez stan): \"the US also allows retrials where there is a hung jury\" (Likes: 36)\n- @podcastandrei (Podcast Andrei): \"what's been happening is very clear, a corrupt judge tried to release these terrorists and that caused outrage. that's what's happening. things will be done again and this time they wil be judged properly. Sledgehammer wielding terrorists should not be on the streets any time soon.\" (Likes: 31)\n- @r0b0t_sp1der (🕷️): \"I mean, if you watch \"Making a Murderer\", that's essentially what the state did to the dude in that case. They're present a theory of the crime, defense would disprove it, then the state would circle back and present a new theory.\" (Likes: 27)\n- @ConditorCancri (Potentially Trevor Walker): \"What do you want them to do? Prosecute pedophiles? That would destroy the entire fabric of Britain!\" (Likes: 25)\n- @Skelm1968 (Skelm68): \"In the UK you can be tried and jailed based on the opinion of the judge as to what is or is not offensive\" (Likes: 24)",
+    "warnings": []
+  }
+}

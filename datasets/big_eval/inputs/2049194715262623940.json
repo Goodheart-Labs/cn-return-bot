@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2049194715262623940",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:26.061Z",
+  "post": {
+    "id": "2049194715262623940",
+    "author_id": "750683331260321792",
+    "created_at": "2026-04-28T18:31:06.000Z",
+    "text": "You're staring at another world right now.\n\nThat rusty, rocky landscape? Not a desert in Arizona.\nNot a movie set.\n\nThat's Mars.\n\nA planet sitting 140 million miles from where you're sitting.\n\nLet that sink in. Every grain of red dust, every shadow stretching across those dunes, https://t.co/tmqP1cgTfh",
+    "media": [
+      {
+        "media_key": "13_2049193775558459392",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2049193775558459392/img/wBkGpPixhBz7WtdS.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 22000,
+        "view_count": 21622,
+        "variants": [
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2049193775558459392/vid/avc1/1080x1920/I5D8UgKES_NLTVYs.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2049193775558459392/vid/avc1/480x852/ub2NdpCPOY3VbYiw.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2049193775558459392/pl/k54JgM2dhqgs1BId.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2049193775558459392/vid/avc1/320x568/tPX1Q85X5CBFw6aE.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2049193775558459392/vid/avc1/720x1280/ca9RMSVRd7itkmaL.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 160,
+      "reply_count": 72,
+      "like_count": 1158,
+      "quote_count": 5,
+      "bookmark_count": 82,
+      "impression_count": 53624
+    },
+    "author_followers": 1548432,
+    "author_name": "Curiosity",
+    "author_description": "Curiosity-driven content across science, history, and culture. Sharing knowledge and stories that spark curiosity.\nct: curiosityonx@gmail.com\nSub for only $3⤴️.",
+    "author_tweet_count": 17887
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2049193775558459392/vid/avc1/1080x1920/I5D8UgKES_NLTVYs.mp4",
+          "description": {
+            "description": "A sequence of four frames showing a 360-degree panoramic view of the Martian landscape as captured by a rover. The terrain consists of light-colored, rocky ground with rolling hills and a hazy, salmon-colored sky. In the first frame, a small, white cylindrical component is visible in the foreground. By the fourth frame, the rover's robotic arm and instrument turret are visible, extending into the frame over the rocky surface.",
+            "ocrText": ""
+          },
+          "transcription": "Halt Den ekstra viante påstående Plån Den nette Hida Den egge Og Den Inderste Den Ødeløse En"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@RockHoundRick**: \"Those flat layered rocks in the foreground get me every time - that's ancient sedimentary stratigraphy. Something deposited those layers one by one, probably water. Mars had geology happening long before anything was walking around on Earth.\" (Likes: 4, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 405)\n- **@eridanus2007SV**: \"Cool but it's desolate and dead. Nothing compared to our Earth.\" (Likes: 4, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 295)\n- **@TimTaylor7777**: \"Lol\" (Likes: 3, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 54)\n- **@FVE1234**: \"More like 140 miles away.\" (Likes: 3, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 13)\n- **@mzsheena_**: \"Science is the closest thing we have to real-life magic. Imagine showing this to someone 100 years ago! 🤯\" (Likes: 3, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 175)\n- **@mikaxfantasy**: \"mars is fake, i'm the only real thing here 😉\" (Likes: 2, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 55)\n- **@599Dark18097**: \"really mars 🤡\" (Likes: 2, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 23)\n- **@theegoodestboys**: \"Actually, this sound stage may be located in Arizona\" (Likes: 2, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 218)\n- **@rushmoon2396681**: \"No actually here is mars DUMBASS\" (Likes: 1, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 53)",
+    "warnings": []
+  }
+}

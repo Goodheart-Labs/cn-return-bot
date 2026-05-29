@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2037606034978583022",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "period_roleplay_account",
+  "tweet_summary": "@2001Live is an in-character period-roleplay account ('Live-posting as a reporter embedded in history') by Manny Marotta that posts as if it were 2001. Its tweet says 'Revolutionary War on Wednesday' was the latest Magic Tree House book, released 26 September 2000. From the account's 2001 in-character perspective, this is correct.",
+  "why_note_decision": "@2001Live is a clearly-labeled period-roleplay account by Manny Marotta (companion to @50YearsAgoLive, @100YearsAgoLive, @250YearsAgoLive). The bio explicitly says 'Live-posting as a reporter embedded in history.' In 2001, 'Revolutionary War on Wednesday' (Magic Tree House #22, published Sept 2000) WAS the latest book; #23 Twister on Tuesday came out March 2001, post-tweet date. The tweet's word 'last' means 'most recent.' The note misses that this is in-character period roleplay and treats it as if it's a present-day claim. Multiple replies show readers understand the bit. 8 NNN on 21 raters.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The author @2001Live (run by Manny Marotta) is an openly-labeled period-roleplay account that posts in-character as if it's 2001 — its bio explicitly states 'Live-posting as a reporter embedded in history' and it's a companion to @50YearsAgoLive, @100YearsAgoLive, @250YearsAgoLive. As of late March 2001, 'Revolutionary War on Wednesday' (Magic Tree House #22, published 26 Sept 2000) WAS the most recent Magic Tree House book — #23 Twister on Tuesday released 27 March 2001. The word 'last' means 'most recent' in context. Any note that 'corrects' the tweet by listing books published after 2001 misses the in-character premise and must FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "\"Revolutionary War on Wednesday\" is the 22nd Magic Tree House book, not the last; Twister on Tuesday is the 23rd, released March 27, 2001, with 16 more in the original series and additional subseries books following. https://en.wikipedia.org/wiki/Magic_Tree_House https://www.rd.com/list/magic-tree-house-books-in-order/",
+    "failure_reason": "notHelpfulNoteNotNeeded — corrects a period-roleplay account that is in-character in 2001; from that POV the tweet is accurate",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "in_character_period_roleplay_accurate",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Magic_Tree_House",
+      "https://x.com/mannymarotta",
+      "https://ralphworld.substack.com/p/coming-to-you-live-from-the-past"
+    ],
+    "notes": "Marotta runs the Live History project: parallel accounts that post as if they're in 1776, 1926, 1976, 2001. The 2001 account is explicitly in-character. RWoW was indeed the latest Magic Tree House book in March 2001."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.7M impressions on a period-roleplay account with growing audience; the false-positive risk is the bot misreading every period-roleplay tweet as anachronistic misinformation."
+  },
+  "difficulty": "medium"
+}

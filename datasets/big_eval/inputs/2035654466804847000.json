@@ -1,0 +1,80 @@
+{
+  "tweet_id": "2035654466804847000",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:13.347Z",
+  "post": {
+    "id": "2035654466804847000",
+    "author_id": "1319287761048723458",
+    "created_at": "2026-03-22T09:47:00.000Z",
+    "text": "🚨🇮🇷 Iranian air defenses engaging with an F-15 near Hormuz island.\n\nhttps://t.co/aU9qOkmUIR https://t.co/yNjjjNCg3D",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2035653460528386500"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2035653460528386500",
+      "author_id": "1319287761048723458",
+      "created_at": "2026-03-22T09:43:00.000Z",
+      "text": "🚨🇮🇱🇮🇷 Multiple airstrikes slam Iranian airbase in Isfahan.\n\nIsrael seems to be keeping its promise to step up airstrikes today.\n\nhttps://t.co/9cG4MYaHZ4 https://t.co/d6TQ29SiHN",
+      "media": [
+        {
+          "media_key": "7_2035635102089166848",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2035635102089166848/pu/img/lJn6-8h7n-wSlStZ.jpg",
+          "height": 270,
+          "width": 744,
+          "duration_ms": 8219,
+          "view_count": 34441,
+          "variants": [
+            {
+              "bit_rate": 256000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/2035635102089166848/pu/vid/avc1/744x270/fLE_tvonhVJrToBO.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/ext_tw_video/2035635102089166848/pu/pl/pr2Ud_nsCjlyzRh6.m3u8"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 166,
+      "reply_count": 72,
+      "like_count": 1321,
+      "quote_count": 6,
+      "bookmark_count": 51,
+      "impression_count": 194331
+    },
+    "author_followers": 3525328,
+    "author_name": "Mario Nawfal",
+    "author_description": "Largest Show on X | 24x7 News | Investor 700+ Startups | Founder @ibcgroupio , https://t.co/sw7OQ5KgAW",
+    "author_tweet_count": 233327
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2035635102089166848/pu/vid/avc1/744x270/fLE_tvonhVJrToBO.mp4",
+          "description": {
+            "description": "A grainy image shows dense grey and black smoke rising after an explosion among what appears to be a residential area. Several buildings and objects that look like water tanks are visible in the foreground. In the distance, two dark specks can be seen in the sky, resembling aircraft or drones.",
+            "ocrText": ""
+          },
+          "transcription": "Thank you."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Richard09493179: (image attached) (Likes:13, Reposts:0, Quotes:0, Replies:0, Views:1674)\n@FlashWireNews: 🔥🇮🇱 Message to Israel: Don’t start a war you can’t finish. Conflicts may begin with power, but they end with consequences no one can control. #Israel #MiddleEast #Geopolitics #WarWarning #GlobalTensions #BreakingNews (Likes:9, Reposts:0, Quotes:0, Replies:0, Views:1430)\n@klimonchain: bro this is intense sometimes i forget how serious things are out there (Likes:6, Reposts:0, Quotes:0, Replies:0, Views:1542)\n@Morgan113703: It's great to see the Iranians putting up a defense against the terrorist forces! I doubt they'll ever win this war, but they can make this painful enough that the US and her Israeli puppet master will think twice before starting anymore wars of aggression. (Likes:4, Reposts:0, Quotes:0, Replies:0, Views:538)\n@cndyhaha: Every time something like this happens, the line between ‘incident’ and ‘escalation’ gets thinner. (Likes:2, Reposts:0, Quotes:0, Replies:0, Views:430)\n@Pie_Opinion: This war is entering the next phase Who will control the Hormuz is now the next phase (Likes:2, Reposts:0, Quotes:0, Replies:0, Views:597)\n@Mapago9: Is this new footage of a reported second or third aircraft? (Likes:2, Reposts:0, Quotes:0, Replies:0, Views:1209)\n@insanecopium: Ai (Likes:1, Reposts:0, Quotes:0, Replies:0, Views:13)\n@govindrkannan: @grok Iranian air defenses engaging an F-15 Eagle near Hormuz Island, does this signal a new escalation threshold??? (Likes:1, Reposts:0, Quotes:0, Replies:0, Views:3061)\n@Tk_ksa_002: Hey @grok Iran shut down F-15 (Likes:1, Reposts:0, Quotes:0, Replies:0, Views:68)",
+    "warnings": []
+  }
+}

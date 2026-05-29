@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2047348343932694659",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:21.397Z",
+  "post": {
+    "id": "2047348343932694659",
+    "author_id": "1526915574793641985",
+    "created_at": "2026-04-23T16:14:17.000Z",
+    "text": "This guy literally hacked Polymarket with a hair dryer 💀\n\nHappened in Paris.\n\nOn Polymarket, temperature bets were settled using a single sensor near Charles de Gaulle Airport.\n\nHe figured out the exact location, showed up in person, and placed a bet on an “impossible” outcome https://t.co/ykzOJ13Uik",
+    "media": [
+      {
+        "media_key": "3_2047348337469239296",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGmkdzJXMAApnjy.jpg",
+        "height": 989,
+        "width": 1236
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 787,
+      "reply_count": 290,
+      "like_count": 14292,
+      "quote_count": 140,
+      "bookmark_count": 2048,
+      "impression_count": 1800202
+    },
+    "author_followers": 89786,
+    "author_name": "UxG",
+    "author_description": "tracking ecosystems | stacking bags | farming DeFi | studying charts",
+    "author_tweet_count": 112722
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGmkdzJXMAApnjy.jpg",
+          "description": {
+            "description": "A person is holding a black hair dryer branded with the Polymarket logo and blowing air towards a digital kiosk in an airport terminal. The kiosk display shows a thermometer icon, a temperature of 24°C and 75°F, an airplane icon, and text indicating 'Terminal A Gate 3'. In the background, airport directional signs point toward Gates 1-8 and Terminal B, with blurred passengers in a seating area.",
+            "ocrText": "Gates 1-8 Terminal B Polymarket 24°C 75°F Terminal A Gate 3"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@KlausAlerts (Klaus ⚔️)**: Wolf of polymarket  \nLikes: 535 | Reposts: 0 | Quotes: 0 | Replies: 2 | Views: 85993\n\n**@basedbtc_ (⬣ Pulsechain.com ⬣)**: I said it before poly market was even popular.  \nThese prediction markets are absolutely infested with rigged bets and insiders.  \nAverage joes would have better luck gambling in Vegas or buying lottery tickets.  \nLikes: 143 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 13991\n\n**@adam3us (Adam Back)**: \"code is law\". need to be a bit smarter about the integrity of the data feeds fellas.  \nLikes: 119 | Reposts: 2 | Quotes: 0 | Replies: 10 | Views: 7169\n\n**@itskurtisb (Kurtis Brisbois)**: Politicians have been doing this for years. Seems everyone is slow about it though.  \nLikes: 69 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 11870\n\n**@JakeOnChain69 (Jake)**: Honestly can’t hate the game. Dude just figured out how to win. Winners win.  \nLikes: 33 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 5258\n\n**@Firstname12224 (Henry the hyena)**: He also got arrested and charged.  \nHe could have gotten away with it the first time but got greedy and did it a second time which raised flags.  \nLikes: 30 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 11282\n\n**@0xZenoUsman (Zeno || 👨‍💻)**: I don't think is it means polymarket connected to this sensor  \nLikes: 23 | Reposts: 0 | Quotes: 0 | Replies: 2 | Views: 82237\n\n**@lgcoelho21 (Mr. Rabbit)**: It’s amazing how people now treat illegal shit like it’s the new cool flex. Honesty means nothing anymore. The only goal is to get ahead by any means necessary. If you want to be an outlaw, at least do it like a man and stop pretending you’re playing fair. Go to hell with that $34k — and everyone cheering this kind of scam. Nobody wants to be honest these days. Of course not… just look at our leaders. A bunch of scumbags. People don’t even know what’s wrong and what’s right anymore. What a time to be alive.  \nLikes: 19 | Reposts: 1 | Quotes: 0 | Replies: 0 | Views: 12273\n\n**@cryptcourt (Court)**: this story seems to me to be made up, but the author did it nicely lol  \nLikes: 11 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 11806\n\n**@iyemikEdge (IyemikEdge)**: The market said “data-driven” and bro said “bet, I’ll drive the data” 😭  \nLikes: 10 | Reposts: 0 | Quotes: 0 | Replies: 1 | Views: 3623",
+    "warnings": []
+  }
+}

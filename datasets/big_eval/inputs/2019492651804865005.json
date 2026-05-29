@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2019492651804865005",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:14.822Z",
+  "post": {
+    "id": "2019492651804865005",
+    "author_id": "1215077597798916102",
+    "created_at": "2026-02-05T19:25:43.000Z",
+    "text": "zoomers dont realize that until 2020 it was totally financially feasible to afford a 2 bedroom to yourself with no roommates in most major cities on a very mid job https://t.co/CYN9LQSiph",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2019425792300839205"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2019425792300839205",
+      "author_id": "298491091",
+      "created_at": "2026-02-05T15:00:02.000Z",
+      "text": "Gen Z does not understand that the economy used to be so good that if you had a roommate people genuinely thought you might be gay.",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 1387,
+      "reply_count": 543,
+      "like_count": 29001,
+      "quote_count": 327,
+      "bookmark_count": 1242,
+      "impression_count": 1608218
+    },
+    "author_followers": 180600,
+    "author_name": "doomer",
+    "author_description": "do not post gently into that good night",
+    "author_tweet_count": 45511
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@SustainableSlop: The lockdown was a power grab by the richest 0,00001% and the state (483 likes)\n@surlygopher: As someone who lived in 6 different big U.S. cities between 1995 & 2020, no it really wasn’t. I think you’re just trying to rile up Gen Z populist anger or doing rage bait for clicks. But it really isn’t true. (343 likes)\n@Mintplayio: The concept of generational wealth is now just does your family own a fucking place you can live in (290 likes)\n@TheCAThomas: You've got to be kidding. I can probably count the number of people I know that lived alone before 28 or so on one hand. Most of us had roommates. A lot of us went directly from roommates to a two-income marriage or long-term live-in romantic relationship. (230 likes)\n@koopaaron: In 2004 my rent on a studio apartment was $250. (223 likes)\n@ArfTard: mos def zoomers don't realize, back in 2018 this was my apartment working part-time as a server for Applebee's (211 likes)\n@alienooooo: 2 bedroom apartments were $800 bro it makes me want to throw up everytime I think about the current prices (143 likes)\n@Vincentinacab: Made about 67k annually 2019, had a two bedroom for $1075 in Queens. That same apartment now goes for $2100. (78 likes)\n@Atomic_Ferret: Even in a high COL area it was still somewhat doable. Had a fairly nice 1 bedroom apartment with 2 balconies, in unit washer/dryer, walk in closet and garage for $750/mo from ~96 to 2000. That same apartment is now $2650/mo. (69 likes)\n@groovyfinds: Gen X here...no it wasn't. Everyone had roommates. (50 likes)",
+    "warnings": []
+  }
+}

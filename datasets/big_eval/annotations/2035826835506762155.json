@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2035826835506762155",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quote-tweeting a highlight reel of Jayson Tatum at Duke, a sports account jokingly asks 'Tatum went to Duke? I thought he went to Kentucky'.",
+  "why_note_decision": "This is engagement-bait/trolling, not a sincere factual assertion. Tatum did attend Duke (2016-17, one season), so the only 'claim' is a rhetorical question the author and audience both understand to be a joke — the replies overwhelmingly treat it as trolling ('engagement bait', 'U trolling?', 'Hoodgenius not knowing ball'). There is no misleading claim a reader benefits from correcting; a literal correction would be trivial pedantry against a meme. The original note (correctly stating Tatum went to Duke) was rated CURRENTLY_RATED_NOT_HELPFUL, dominant NoteNotNeeded — the community agrees no note is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a joke/engagement-bait rhetorical question, not a sincere false claim, and the surrounding replies make the trolling obvious. Tatum did go to Duke, so there is no live misconception to correct. Any note (even a technically-correct 'Tatum attended Duke, not Kentucky') is a false positive here — it answers a question nobody sincerely asked and was itself rated Not Helpful. FAIL any note; the correct behavior is to recognize low-stakes humor/bait and decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Jayson Tatum attended Duke University and played one season for the Blue Devils; he did not attend the University of Kentucky. https://en.wikipedia.org/wiki/Jayson_Tatum https://goduke.com/sports/mens-basketball/roster/jayson-tatum/4423",
+    "failure_reason": "Factually correct but unnecessary: 'corrects' an obvious joke/engagement-bait rhetorical question. Rated CURRENTLY_RATED_NOT_HELPFUL, dominant NoteNotNeeded — a textbook false positive on humor.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Joke/bait. (For the record: Tatum did attend Duke, 2016-17.)",
+    "sources_checked": [
+      "https://goduke.com/sports/mens-basketball/roster/jayson-tatum/4423",
+      "https://en.wikipedia.org/wiki/Jayson_Tatum"
+    ],
+    "notes": "Tatum played one season at Duke (2016-17), drafted 3rd overall in 2017. The quoted video is Duke highlights, making the 'thought he went to Kentucky' line plainly tongue-in-cheek; replies confirm it's trolling."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Trivial sports banter with no real-world stakes; correcting it has no EA/progress/safety relevance and would clutter a joke."
+  },
+  "difficulty": "easy"
+}

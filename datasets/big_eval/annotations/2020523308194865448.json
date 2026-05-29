@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2020523308194865448",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["manipulated_or_fabricated_evidence", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "A poster mocks Kid Rock ('dumber than he looks') with a meme image attributing to him a quote that if a Puerto Rican performs at the Super Bowl he'll 'move out of this country and go live in Alaska.'",
+  "why_note_decision": "The quote is fabricated (no record Kid Rock said it), but the image is a self-evident satirical meme whose entire joke is geographic ignorance — Alaska IS in the United States, so 'leave the country and move to Alaska' is the punchline. The tweet's purpose is mockery, not to assert a genuine news quote, and top replies already treat it as obviously not real. A literal 'this quote is fabricated' note misreads transparent satire as a factual assertion.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The image is a satirical meme: its whole joke is that 'move out of the country and go live in Alaska' is geographically absurd (Alaska is in the US), signaling the quote is invented for mockery, not presented as real news. Top replies recognize it isn't real. A note solemnly stating 'this quote is fabricated; Kid Rock made no such comment' treats obvious satire as a factual claim and is a false positive — FAIL it. Any note here fails.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The quoted statement attributed to Kid Rock is fabricated; he has made no such comment about moving to Alaska. https://x.com/KidRock https://www.usmagazine.com/entertainment/news/kid-rock-addresses-facing-off-with-bad-bunny-during-super-bowl-halftime/ https://www.yahoo.com/news/articles/fact-check-kid-rock-did-061548865.html",
+    "failure_reason": "Treats a transparent satirical meme (the Alaska-is-in-the-US joke) as a literal factual quote claim; pedantic false positive on obvious satire.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Quote is fabricated, but the post is satire — an obvious meme mocking Kid Rock, not a real attributed statement; readers recognize the Alaska joke.",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/fact-check-kid-rock-did-061548865.html",
+      "https://thehill.com/blogs/in-the-know/5731002-kid-rock-bad-bunny-super-bowl-show-spanish/"
+    ],
+    "notes": "Lead Stories found no record of Kid Rock making Super Bowl/Bad Bunny remarks before the show; viral attributed quotes are fabricated. But the media here is explicitly a satirical meme whose joke depends on Alaska being part of the US; commenters (e.g. Corey Feldman: 'That's not a real quote…right?') flag it as not real."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "371k impressions but it's low-stakes celebrity satire; no meaningful world-improvement value in correcting a joke meme."
+  },
+  "difficulty": "medium"
+}

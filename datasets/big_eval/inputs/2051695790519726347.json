@@ -1,0 +1,83 @@
+{
+  "tweet_id": "2051695790519726347",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:45.417Z",
+  "post": {
+    "id": "2051695790519726347",
+    "author_id": "873724542706962432",
+    "created_at": "2026-05-05T16:09:29.000Z",
+    "text": "Marcus Jordan, son of the NBA legend Michael Jordan, has been spotted snorting a white powder during a poolside lunch in the South of France.\n\nBro was smiling and having a great time https://t.co/c3dftI2qrQ",
+    "media": [
+      {
+        "media_key": "3_2051695787403255808",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHkWcsNWIAA_Oja.jpg",
+        "height": 642,
+        "width": 633
+      },
+      {
+        "media_key": "3_2051695787394977802",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHkWcsLX0AoIfs7.jpg",
+        "height": 812,
+        "width": 633
+      },
+      {
+        "media_key": "3_2051695787390693379",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHkWcsKWcAMzAMT.jpg",
+        "height": 773,
+        "width": 633
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 40,
+      "reply_count": 69,
+      "like_count": 685,
+      "quote_count": 47,
+      "bookmark_count": 82,
+      "impression_count": 817330
+    },
+    "author_followers": 213834,
+    "author_name": "Redd",
+    "author_description": "𝔦 𝔧𝔲𝔰𝔱 𝔟𝔢 𝔱𝔴𝔢𝔢𝔱𝔦𝔫𝔤",
+    "author_tweet_count": 263195
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHkWcsNWIAA_Oja.jpg",
+          "description": {
+            "description": "A high-angle medium shot shows a shirtless Black man leaning over a table outdoors, smoking what appears to be a small pipe or cigarette. He is seated in a dark wicker chair. In front of him on the table are several plates of food, including sliced watermelon, a bowl of yellow food items, and white goblets. Another person is visible in the lower-left foreground, looking down at a mobile phone.",
+            "ocrText": " @ MEGA"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHkWcsLX0AoIfs7.jpg",
+          "description": {
+            "description": "A shirtless man is sitting at an outdoor table and holding a small silver object to his nose. In front of him is a large platter of food including watermelon slices, pineapple, and other dishes alongside white wine-style glasses. Another person sits in the foreground holding a smartphone.",
+            "ocrText": "© MEGA"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHkWcsKWcAMzAMT.jpg",
+          "description": {
+            "description": "A close-up photograph of a shirtless Black man with a beard sitting at an outdoor table, looking down at his smartphone. In his other hand, he holds a lit cigarette or small cigar. A table in front of him is spread with several plates of food, including sliced watermelon, pineapple, and other snacks, as well as white stemmed glasses. Another person's arm holding a phone is visible in the lower-left corner.",
+            "ocrText": "© MEGA"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **BigDaps - @__daps**: Okay!! Let’s all call it “white powder”  \n  Likes=333\n\n- **ArmLegLegArmHead - @EQUIPTsmif**: This is from years ago. Why is everything on twitter these days recycled??  \n  Likes=165\n\n- **Doflanegro - @Henn_rai_cho**: Breaking news: Billionaires kid does drugs  \n  Likes=20\n\n- **Joe - @JoeyboiiWTM**: He deffo won’t be eating them fries after that  \n  Likes=18\n\n- **Blue ✊🏾 - @EyemOverIt**: Ha! This light work compared to the heinous shit they’d catch me doing if my father was a billionaire  \n  Likes=17\n\n- **Doug - @DougGambles**: Let a man crack out in peace.  \n  Likes=15\n\n- **Trafalgar D. Smith 🏴‍☠️ - @ked_smith**: Y’all all in this nigga’s business 💀💀  \n  Likes=6\n\n- **☆ ♛ - @HEATSportsOG**: this is old internet explorer ahhh post  \n  Likes=5\n\n- **sean - @agroveinbohemia**: Good for him. It's nice to know some people still know how to have a proper good time.  \n  Likes=4\n\n- **Babaaje231 - @Babaaje231**: Son of a billionaire is doing son of a billionaire shit in France.  \n  Likes=3",
+    "warnings": []
+  }
+}

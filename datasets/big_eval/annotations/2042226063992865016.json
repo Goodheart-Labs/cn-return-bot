@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2042226063992865016",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "ai_generated_media", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "unverified_anonymous_leak",
+  "tweet_summary": "A UFO researcher posts a 'newly leaked' image, said to come from a now-deleted Indonesian military Facebook forum, claiming it resembles the 'Chandelier' UFO popularized by Jeremy Corbell.",
+  "why_note_decision": "The image is presented as an authentic leaked military sensor capture, but it is unverified anonymous content and, per the original HELPFUL note, contains a SynthID watermark indicating it was AI-generated/edited with Google's tools. Independent reporting on the broader 'Chandelier' imagery notes there is no original file, no metadata, and that such star-shaped 'UFO' captures are likely IR-sensor diffraction artifacts; one fact analysis attributes the genre to sensor artifacts/fabrication. Either way the post asserts authenticity it cannot support. A note flagging it as AI-generated and/or unverified is warranted. I could not independently confirm the SynthID watermark from public sources, so confidence in that specific mechanism is low — but the authenticity claim is clearly unsupported.",
+  "judge_guidance": "PASS if the note establishes that the image is not verified authentic military footage — either (a) evidence it is AI-generated/edited (SynthID watermark or AI detection), or (b) that it is an unverified anonymous 'leak' with no original file/metadata and bears hallmarks of known sensor-artifact/hoax 'UFO' imagery. It must NOT endorse the image as genuine alien/UAP evidence. A note relying solely on an unsubstantiated SynthID claim is acceptable only if presented as the basis; a note that broadly flags it as unverified anonymous content is also acceptable. Cite the SynthID/detection evidence or reporting on the image's unverified provenance.",
+  "reference_note": "The featured image is not verified authentic military footage: it is an unverified anonymous 'leak' with no original file or metadata, and analyses indicate it was AI-generated/edited (a SynthID watermark from Google's AI tools was reported). Such star-shaped 'UFO' sensor images are commonly diffraction artifacts or fabrications. https://deepmind.google/models/synthid https://www.metabunk.org/threads/the-chandelier-ufo.13307/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Unverified / likely fabricated: presented as a leaked Indonesian-military image but has no verifiable provenance; reported to contain a SynthID (Google AI) watermark, and the broader 'Chandelier' genre is attributed to IR sensor artifacts. Not authenticated UAP evidence.",
+    "sources_checked": [
+      "https://www.metabunk.org/threads/the-chandelier-ufo.13307/",
+      "https://www.westernjournal.com/breathtaking-chandelier-ufo-video-goes-viral-simple-explanation/",
+      "https://unidentifiedphenomena.com/topics/multi-pointed-star-shaped-ufos/"
+    ],
+    "notes": "Reporting describes the April 2026 'Indonesian military' image as having no official confirmation, no original file, and no metadata. Could not independently verify the SynthID watermark claim from public sources (the original note's x.com SynthID-detection link wouldn't load), so the AI-watermark mechanism is low-confidence; the unverified-provenance point is solid. Mike West (Metabunk) attributes 'Chandelier' imagery to IR diffraction artifacts."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "358K impressions in the UFO/UAP space, which is a persistent fountain of unverifiable viral hoaxes; flagging unverified 'leaks' as such has general epistemic value, though the topic is low-stakes for welfare/safety."
+  },
+  "difficulty": "hard"
+}

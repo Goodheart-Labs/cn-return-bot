@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1974980821154205796",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["statistical_or_numerical_claim", "manipulated_or_fabricated_evidence"],
+  "category_fit": "partial",
+  "suggested_category": "doomer_quote_meme",
+  "tweet_summary": "@Truthful (KSP-content creator, 24k followers) quote-tweets 'Never.' with a meme image styled as a New York Times masthead dated 'December 8, 1903' featuring the doomer prediction 'Man won't fly for a million years — would require the combined and continuous efforts of mathematicians and mechanics for one million to ten million years.' The point is rhetorical: the NYT was famously wrong about flight 9 days before the Wright brothers. 440k impressions.",
+  "why_note_decision": "The original note's only correction is a date-pedantry: the article was October 9, 1903, not December 8, 1903 (December 8 is the date of Langley's failed aerodrome test the article responded to). This is true (confirmed by Wikipedia, Snopes, Wright-Brothers.org) — but the meme's substantive point ('NYT predicted flight was a million years away, then Wrights flew shortly after') is correct in spirit, and the exact date is a minor detail of a famous-bad-prediction meme. The community overwhelmingly rated this NOT_HELPFUL (16 noteNotNeeded, 11 missingKeyPoints) because correcting the date doesn't change the meme's point and reads as pedantic. A correct bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the substantive claim of the meme ('NYT confidently predicted flight wouldn't happen for millions of years, then was famously wrong within weeks') is verifiably true; correcting the date from Dec 8 to Oct 9 is pedantic and doesn't change the rhetorical point. FAIL any note that: (a) leads with the date correction (repeats the original failure mode), (b) attempts to debunk the meme's substantive point about NYT being wrong (because it isn't wrong — the article exists and the Wrights flew 69 days later), or (c) gets distracted into Langley aerodrome trivia. The right behavior is to recognize a famous internet meme that's substantively true and decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This anecdote often misdates the NYT editorial to December 8, but it was published October 9, 1903, 69 days before the Wright brothers' first flight on December 17. December 8 was the date of Samuel Langley's second unsuccessful aerodrome test.  https://www.nytimes.com/1903/10/09/archives/flying-machines-which-do-not-fly.html  https://wright-brothers.org/History_Wing/Aviations_Attic/Flying_Machines_Which_Do_Not_Fly/Flying_Machines_Which_Do_Not_Fly.htm",
+    "failure_reason": "trivial_pedantry — corrects the date in a meme without disputing the meme's substantive point. Adds no useful context for a reader.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "meme_substantively_true_date_pedantically_wrong",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Flying_Machines_Which_Do_Not_Fly",
+      "https://www.snopes.com/fact-check/wright-brothers-first-flight/",
+      "https://bigthink.com/pessimists-archive/air-space-flight-impossible/"
+    ],
+    "notes": "Article = Oct 9 1903, 69 days before Dec 17 Wright flight. Dec 8 = Langley's second failed aerodrome test (the article's prompt). Meme conflates the date but keeps the substantive (correct) point about NYT being famously wrong."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "440k impressions on a famous historical meme; low-stakes for the world but useful pipeline signal: bot must learn to leave substantively-true memes alone when the only correction available is pedantic."
+  },
+  "difficulty": "medium"
+}

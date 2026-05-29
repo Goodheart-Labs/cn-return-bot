@@ -1,0 +1,83 @@
+{
+  "tweet_id": "2026808910368154098",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:49.573Z",
+  "post": {
+    "id": "2026808910368154098",
+    "author_id": "1460988696912617479",
+    "created_at": "2026-02-25T23:57:55.000Z",
+    "text": "Tasha &amp; Tommy got married 💍 https://t.co/2IBJW7667D",
+    "media": [
+      {
+        "media_key": "3_2026808898762534912",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCCr9HZXcAAQorz.jpg",
+        "height": 1200,
+        "width": 966
+      },
+      {
+        "media_key": "3_2026808898812841984",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCCr9HlXEAA-pgh.jpg",
+        "height": 720,
+        "width": 607
+      },
+      {
+        "media_key": "3_2026808898775113728",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCCr9HcXYAAMKoe.jpg",
+        "height": 720,
+        "width": 585
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2555,
+      "reply_count": 1911,
+      "like_count": 45611,
+      "quote_count": 1300,
+      "bookmark_count": 3668,
+      "impression_count": 6309601
+    },
+    "author_followers": 70806,
+    "author_name": "✨𝐓𝐈𝐍𝐘 The INSPIRATION 💫",
+    "author_description": "They be real silent on your wins but loud in your business DM FOR PAID PROMOTION DEALS",
+    "author_tweet_count": 92246
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCCr9HZXcAAQorz.jpg",
+          "description": {
+            "description": "A man and a woman are posing for a photograph. The woman is holding up her hand towards the camera, showcasing a butterfly-shaped diamond ring on her finger. She is wearing a black halter-style top and a diamond tennis bracelet. The man is wearing a white collared shirt under a black leather jacket and is looking at the camera from behind the woman's hand. They appear to be in an indoor setting with high ceilings and white architectural details.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCCr9HlXEAA-pgh.jpg",
+          "description": {
+            "description": "A close-up selfie of a man and a woman in an indoor sports arena, likely a basketball stadium, given the seat logos and tiered red seating in the background. The man is wearing a camouflage baseball cap and a black t-shirt. The woman is wearing a tan leather jacket, black turtleneck, and large hoop earrings. She is leaning in and making a kissing face towards the man. The background is filled with a crowd of people in the stands.",
+            "ocrText": "T-MOBILE"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCCr9HcXYAAMKoe.jpg",
+          "description": {
+            "description": "A photograph of two people posing in front of a customized pink Nissan GT-R. The woman on the left is wearing a black tank top, leather pants, several gold necklaces and rings, and holds a small pink handbag. The man on the right wears a white and black Nike v-neck t-shirt, a white Nike headband, chains, and rings. The car features a large rear wing and a 'NISSAN ZILLA' decal on the rear quarter window.",
+            "ocrText": "NISSAN ZILLA"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Xo_JaNiaa: AINT NOBODY TELL ME NOTHINGGGGGGGG (Likes: 3015, Reposts: 65, Replies: 16)\n- @selorm__a: Let me tell you this🤣😂 (Likes: 987, Reposts: 17, Replies: 0)\n- @NoHoeLeft4Dead_: The games y’all play on this app I swear — (Likes: 867, Reposts: 0, Replies: 0)\n- @SonOfGod65: How does Ghost feel about that.? 😭 (Likes: 803, Reposts: 0, Replies: 0)\n- @GoldMineProduc1: This is not real. If y’all don’t leave this fuckery on Facebook (Likes: 374, Reposts: 0, Replies: 0)\n- @thebadass: tasha and tommy wayback in power series (Likes: 297, Reposts: 0, Replies: 0)\n- @Naijagist02: Real lovers still loving the real way. Congratulations 🎉 (Likes: 293, Reposts: 0, Replies: 0)\n- @elonboe: Ghost right now (Likes: 254, Reposts: 0, Replies: 0)\n- @Sahibbassey: The lies on this App (Likes: 233, Reposts: 0, Replies: 0)\n- @Nova_GOAT567: lol why are people saying “congratulations” in the comments? Like??? Are y’all that dumb ? (Likes: 112, Reposts: 1, Replies: 2)",
+    "warnings": []
+  }
+}

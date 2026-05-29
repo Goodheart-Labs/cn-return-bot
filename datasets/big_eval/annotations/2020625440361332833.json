@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2020625440361332833",
+  "role": "unhelpful_incorrect",
+  "needs_note": "yes",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "celebrity_entertainment_sports"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An account posts a video of a dramatic, feathered-robe stage entrance with fireworks, claiming 'Here's Erika Kirk['s] entrance at the @TPUSA All-American Halftime Show tonight' during Super Bowl weekend.",
+  "why_note_decision": "A note is warranted: the video is misattributed. It is NOT Erika Kirk; it is pro-wrestler Charlotte Flair's entrance at WrestleMania 33 (April 2, 2017), and Erika Kirk did not appear on stage at the TPUSA halftime show. The post misleads 7.6M viewers about a public figure.",
+  "judge_guidance": "PASS only if the note establishes that (a) the video is NOT Erika Kirk at the TPUSA halftime show, and (b) Erika Kirk did not make this entrance / was not present in this clip \u2014 ideally identifying the true source as Charlotte Flair's WrestleMania 33 (2017) entrance. CRITICAL: the note must NOT misattribute the clip to 'Britney Spears' 2002 Macy's 4th of July event' \u2014 that was the original note's specific factual error. A note that gives the wrong true-source (anything other than Charlotte Flair / WrestleMania, or that asserts an unverified origin) should FAIL. The AI media description here is RELIABLE and correctly identifies Charlotte Flair / WrestleMania.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video in this post is from Britney Spears' performance at the 2002 Macy's 4th of July event, not Erika Kirk's entrance at the TPUSA All-American Halftime Show. Kirk was not present at the show. https://nypost.com/2026/02/08/us-news/tpusas-all-american-halftime-show-draws-millions-to-rival-nfl-super-bowl https://www.youtube.com/watch?v=1rpnI_FWrKo",
+    "failure_reason": "Rated notHelpfulIncorrect (107) at very high volume (189 ratings) with heavy irrelevant/unreliable-sources tags (115 combined). The conclusion (not Erika Kirk) is correct, but the note gives the WRONG true source: it claims the clip is Britney Spears (2002 Macy's 4th of July) when it is actually Charlotte Flair at WrestleMania 33 (2017). The misattributed-source claim is false and the cited links don't support it.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/02/fact-check-video-does-not-show-erika-kirks-entrance-at-tpusa-halftime-show-its-pro-wrestler-charlotte-flair.html",
+      "https://www.snopes.com/fact-check/erika-kirk-appearance-halftime-show/",
+      "https://www.yahoo.com/news/articles/fact-check-video-does-not-033613319.html"
+    ],
+    "notes": "Reverse-image search and WWE's own footage confirm the clip is Charlotte Flair's WrestleMania 33 entrance (April 2, 2017), wearing her green peacock robe. Erika Kirk did not take the stage at the Feb 8, 2026 TPUSA halftime show; she posted a separate memorial tribute to Charlie Kirk. No fact-check connects the clip to Britney Spears or a 2002 Macy's event."
+  },
+  "media_reliability_flag": false,
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Very high reach (7.6M impressions) misattributed celebrity/political clip mocking a public figure; lower-stakes content topic but the scale of misleading views makes correction worthwhile."
+  },
+  "difficulty": "medium",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": false,
+  "no_note_reason": "",
+  "media_confidence": "high"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2019521557236768955",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["staged_or_scripted_content", "scams_fraud_finance"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post titled 'MAGA CRIES ABOUT BITCOIN' shows a man in a MAGA hat ranting that Trump's crypto/meme coin lost him money, presented as a genuine supporter's meltdown.",
+  "why_note_decision": "The video is a scripted comedy skit by creator @Chilearmy123, not a spontaneous reaction from a real MAGA supporter. The creator commented in-thread confirming it was filmed 'a couple months ago' with a borrowed MAGA hat that was returned afterward, and the monologue is overtly absurdist satire ('the only person I would trust is Barron Trump because he's 8 feet tall'). Replies recognize it as 'a poorly scripted skit.' It's transparent satire, so a fact-check note isn't needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The clip is a scripted satirical skit by @Chilearmy123 (who confirmed in replies it was filmed months earlier with a borrowed/returned MAGA hat), and the content is overtly absurdist ('Barron is 8 feet tall'); commenters call it a skit. A note labeling it 'staged satire, not a real MAGA supporter' is technically accurate but unnecessary for obvious parody, and risks being a pedantic false positive — FAIL such a note. Any note here fails.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video depicts staged satire by @Chilearmy123, not a real MAGA supporter complaining about Bitcoin. The creator confirmed it was filmed months ago with a borrowed MAGA hat that was returned afterward. https://x.com/chilearmy123/status/2019523260376031670 https://x.com/chilearmy123/status/1995515534356730362",
+    "failure_reason": "Pedantic correction on transparent satire; the absurdist scripted content and the creator's own in-thread admission make it obvious parody, so no note is needed.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Staged satire: a scripted comedy skit by @Chilearmy123, not a genuine MAGA supporter's reaction; creator confirmed it in-thread.",
+    "sources_checked": [
+      "https://x.com/Chilearmy123/status/2019523260376031670",
+      "https://www.axios.com/2026/02/09/crypto-bitcoin-trump-backlash"
+    ],
+    "notes": "The creator @Chilearmy123 replied: 'This video is from a couple months ago... Also we returned the maga hat after making the vid.' The monologue is overt absurdist satire. Reply @ajoenamedjoe: 'a poorly scripted skit with horrible camera work.' Could not load the source X post directly (402), but the in-thread creator admission and content are decisive that it's parody."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "121k impressions of low-stakes political comedy; no meaningful world-improvement value in fact-checking an obvious satirical skit."
+  },
+  "difficulty": "medium"
+}

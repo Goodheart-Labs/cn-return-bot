@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2016313026161299803",
+  "role": "helpful_reference",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "partisan_rhetorical_comparison",
+  "tweet_summary": "A MAGA commentator posts two portraits with the caption 'The Left said his name over and over again. The Left never said her name' -- a partisan rhetorical contrast (Alex Pretti, killed by federal agents, vs Iryna Zarutska, a crime victim whose name the right amplified).",
+  "why_note_decision": "The tweet contains one falsifiable sub-claim embedded in otherwise-subjective framing: 'The Left never said her name.' The pictured woman is Iryna Zarutska, and mainstream/left-leaning outlets (PBS, AP, NPR) did report her name, so the literal 'never said her name' is materially false and a note correcting it is warranted. A passing note must refute that literal claim with named-coverage citations; it must NOT adjudicate which side amplified which victim more (that part is subjective framing). The original note ('hundreds chanted Alex Pretti's name at a vigil') answers a strawman and stays a failing example.",
+  "judge_guidance": "PASS if the note (1) identifies the woman by name (Iryna Zarutska), (2) cites at least two mainstream outlets -- including at least one associated with 'the Left' by the tweet's implied framing (e.g. PBS, AP, NPR) -- that reported her name, and (3) does NOT adjudicate which side 'cared more' or make comparative victim-attention claims. Such a note refutes the literal 'never said her name' and is a PASS (a clean refutation is 'good'; one that names her and cites coverage but is thin is 'directional'). FAIL any note that only documents a vigil or protest chanting a DIFFERENT victim's name (e.g. 'hundreds chanted Alex Pretti's name'), that characterizes either political side as generally indifferent to either victim, or that does not directly refute the 'never said her name' claim with named-coverage citations.",
+  "reference_note": "The woman pictured is Iryna Zarutska, a 23-year-old Ukrainian refugee killed in Charlotte, NC in 2025. Her name and killing were reported by mainstream and left-leaning outlets including PBS, the Associated Press, and NPR -- so the claim that 'the Left never said her name' is false.",
+  "original_unhelpful_note": {
+    "text": "Hundreds of protesters chanted Alex Pretti's name during a vigil following his death. This article from a student publication details the event and the chants used. https://www.psucollegian.com/news/people-s-defense-front-scds-hold-vigil-protest-to-honor-alex-pretti/article_cd64bf2f-ed80-4bbd-a9a8-959b362223c3.html",
+    "failure_reason": "Answers a strawman: it documents a vigil chanting Pretti's name, but the tweet is a subjective comparison about which 'side' amplified which name. It corrects no false fact and treats a partisan opinion as a checkable claim; raters overwhelmingly tagged note-not-needed/missing key points.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Killing_of_Alex_Pretti",
+      "https://www.wsna.org/news/2026/alex-pretti-killing-prompts-protests-and-memorials"
+    ],
+    "notes": "Alex Pretti (ICU nurse) was killed by federal agents Jan 24, 2026 and was widely mourned by the left; the contrasted woman is Iryna Zarutska, amplified by the right. The broad 'said his name over and over / cared more' contrast is subjective, but the literal sub-claim 'The Left never said her name' is falsifiable and false: PBS, AP, and NPR all reported Zarutska's name. A note refuting that literal claim is warranted; adjudicating relative amplification is not."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "13M views on a politically charged death; but it is opinion -- a note would be the bot wading into partisan framing, exactly the false positive to avoid."
+  },
+  "difficulty": "medium"
+}

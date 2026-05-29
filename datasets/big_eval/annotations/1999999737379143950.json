@@ -1,0 +1,30 @@
+{
+  "tweet_id": "1999999737379143950",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "overhyped_research_or_product"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims Russia confirmed a cancer vaccine that 'will soon be offered free to patients around the world,' reshaping global cancer care; image shows Putin holding a 'CANCER VACCINE' vial with the headline 'free to patients all over the world.'",
+  "why_note_decision": "The 'free to patients all over the world' claim is false/misleading. Russian officials (including Putin) said the vaccine (Enteromix) would be offered free to cancer patients in Russia upon approval (~late 2025) — there is no plan, financing, or regulatory pathway to provide it free worldwide; it has not been submitted to the FDA, EMA, or other regulators and is unavailable outside Russia. Efficacy claims are also overstated: it is in early trials targeting specific cancers, with no published proof of broad effectiveness. This is a checkable, high-reach health-misinformation claim, so a note is warranted.",
+  "judge_guidance": "PASS only if the note corrects the central falsehood — the vaccine is not going to be free 'to patients all over the world'; Russia announced free availability only domestically (in Russia) upon approval. Strong notes also flag that it remains in trials (not proven, not approved internationally, targeting specific cancers like colorectal/melanoma), and is not available outside Russia. The note must NOT endorse the 'free worldwide' or 'reshape global cancer care' framing as accurate, and must NOT simply call the entire vaccine fake (the program is real but early-stage). Cite credible fact-checks/reporting (Snopes, Newsweek, AFP, Reuters). Avoid relying solely on Russian state media.",
+  "reference_note": "Russian officials said this vaccine (Enteromix) would be offered free to cancer patients in Russia upon approval, not free to patients worldwide. It is still in early trials, has not been approved by international regulators (FDA/EMA), is unavailable outside Russia, and targets specific cancers rather than all types. https://www.snopes.com/fact-check/russia-enteromix-mrna-cancer-vaccine/ https://www.newsweek.com/russia-cancer-vaccine-enteromix-claims-trials-2126451",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading - free distribution announced only for Russia (not worldwide); vaccine is early-stage, unapproved internationally, and targets specific cancers",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/russia-enteromix-mrna-cancer-vaccine/",
+      "https://www.newsweek.com/russia-cancer-vaccine-enteromix-claims-trials-2126451",
+      "https://cedmohub.eu/exaggerated-claims-about-russias-cancer-vaccine-enteromix-sweep-across-africa/"
+    ],
+    "notes": "Snopes/Newsweek/AFP/CEDMO all confirm: Russia announced free availability domestically upon approval, not worldwide; Enteromix is in early trials, not internationally approved, unavailable abroad, and efficacy is unproven/cancer-specific. The 'free all over the world' headline in the image is the core falsehood. Original CN note's verdict is sound; reference note re-sourced away from TASS (Russian state media) to independent fact-checks for credibility."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "576k impressions on a health-misinformation claim about a cancer 'cure'; false hope about free worldwide cancer vaccines can distort patient expectations and decisions — high value to correct from a public-health lens."},
+  "difficulty": "medium"
+}

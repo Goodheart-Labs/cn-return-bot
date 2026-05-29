@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2049693153549263184",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:52.327Z",
+  "post": {
+    "id": "2049693153549263184",
+    "author_id": "1952001883381387265",
+    "created_at": "2026-04-30T03:31:43.000Z",
+    "text": "Damn x just paid me a bonus of 1000 usd dollars that is more many freshers make in 5-6 months in india \nThat is enough money to do an internship in every tier 1 city of India with ease (mumbai, kolkata, chennai, benguluru, hyderabad, ahmedabad) \nThanks for all who have supported https://t.co/WvNenMW0Lv",
+    "media": [
+      {
+        "media_key": "3_2049693149812113408",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHH5D10aQAAgFWP.jpg",
+        "height": 972,
+        "width": 1071
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 72,
+      "reply_count": 87,
+      "like_count": 1645,
+      "quote_count": 6,
+      "bookmark_count": 100,
+      "impression_count": 61425
+    },
+    "author_followers": 11794,
+    "author_name": "biased indian",
+    "author_description": "sometime  Blackpilled sometime whitepilled",
+    "author_tweet_count": 5071
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHH5D10aQAAgFWP.jpg",
+          "description": {
+            "description": "A screenshot of an email notification from 'X Monetization' informing a user named @RakeshK32229480 that a payment of $1000.15 has been deposited into their account from the X Creator Revenue Sharing program.",
+            "ocrText": "X Monetization 6:47 am\nto me\nX\nHey @RakeshK32229480,\n$1000.15 has been deposited into your account from X Creator Revenue Sharing.\nThank you for creating on X.\nX Monetization"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Ashu** (@landsofdreams1): You have done more work than those 1000 $ by helping raise awareness against Babus and government complacency.  \n  (Likes: 149)\n\n- **Piyush Bodaa** (@piyushbodaa): Thank you for your service 🙏  \n  You have inspired a lot of Indians to do watchdog activism on all the babus and netas and to be vocal about the issues of their city  \n  (Likes: 15)\n\n- **gaurav** (@Itstheanurag): Congratulations bro, I hope it turns into a streak.  \n  (Likes: 14)\n\n- **The opportunistinvestor** (@sudheep8531): Fekuuuuuuuu.  \n  11k followers won't get u 1000 dollars  \n  (Likes: 14)\n\n- **यश शर्मा** (@YashSha98556471): This is nothing infront of what u r doing this for us for the society,  \n  U deserve this  \n  But as a dead Indian society these babus and politicians can't do anything  \n  I wish you should become nightmare of PMO  \n  (Likes: 12)\n\n- **Zerion** (@zerion0): Why i am seeing this community note  \n  (Likes: 11)\n\n- **NR** (@aeternus_shadow): You deserve it bhai, honestly do the internship in every city, expose this babuism filth and corruption that is pushing the country 100 years backwards instead of progressing ahead  \n  (Likes: 10)\n\n- **kalavaram** (@vimalprince7): Do it full time dude. Spread your footprint to youtube and other platforms too.  \n  (Likes: 8)\n\n- **Fcuk Sarkari Babus🇮🇳** (@sigmoid300): Congratulations 🎉 But don't lose sight of your purpose, it is why people supported you. Keep the fight on, people will join your cause.  \n  (Likes: 7)\n\n- **Kunal Binjewar** (@kunalbinjewar09): Crazy how building a personal brand has more ROI than a traditional entry-level job now. $1000 just for expressing thoughts is peak leverage. The creator economy is literally fixing the broken fresher compensation model. Huge W!  \n  (Likes: 6)",
+    "warnings": []
+  }
+}

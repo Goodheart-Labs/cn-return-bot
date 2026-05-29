@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2025296268746993694",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "ai_generated_media",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A large science/curiosity account posts a starfield image captioned 'New data from the Chandra X-ray Observatory shows a massive 230-light-year fracture in a galactic filament.'",
+  "why_note_decision": "The underlying discovery is real (NASA Chandra found a fracture in the ~230-light-year galactic 'bone' G359.13, caused by a fast pulsar), but the attached image does NOT depict it. The posted image is an AI-generated Milky Way starfield (independent fact-check found a Google SynthID watermark), not the actual Chandra X-ray/MeerKAT image, which looks like a thin bone-like filament. So a true headline is paired with a fabricated, misattributed image; readers benefit from being shown the real Chandra image and told the posted one is AI.",
+  "judge_guidance": "PASS only if the note (a) makes clear the attached image is AI-generated / not the real Chandra observation, and (b) ideally points to or describes the genuine NASA Chandra 'galactic bone' (G359.13) image, WITHOUT denying that the real 230-light-year fracture discovery exists. The correct note must thread the needle: the science is real, the picture is fake. FAIL if it claims the whole discovery is fake/nonexistent, treats the starfield image as the authentic Chandra image, or simply calls the post true. Evidence of AI (SynthID watermark, mismatch with the real X-ray image) strengthens it.",
+  "reference_note": "This image is AI-generated (contains a Google SynthID watermark) and does not depict the astronomical event mentioned. The real 230-light-year fracture observed by NASA can be seen here: https://www.nasa.gov/missions/chandra/nasas-chandra-diagnoses-cause-of-fracture-in-galactic-bone/.     Sources:  - https://chandra.harvard.edu/photo/2025/bone/  - https://www.nasa.gov/missions/chandra/nasas-chandra-diagnoses-cause-of-fracture-in-galactic-bone/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.nasa.gov/missions/chandra/nasas-chandra-diagnoses-cause-of-fracture-in-galactic-bone/",
+      "https://chandra.harvard.edu/photo/2025/bone/",
+      "https://srilanka.factcrescendo.com/english/nasa-cosmic-crack-fact-check-ai-generated-image/"
+    ],
+    "notes": "The real discovery (galactic bone G359.13, ~230 light-years, fractured by a pulsar) is genuine NASA Chandra science. The viral 'cosmic crack' starfield image is independently confirmed AI-generated (SynthID watermark) and is not the real Chandra image, which depicts a thin X-ray/radio filament. The post's claim text is accurate; only the image is fake/misattributed."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.1M impressions; AI-fabricated 'science' imagery erodes trust in real astronomy. Low direct harm but a clean example of AI slop laundered through a true-sounding headline, relevant to information-integrity goals."
+  },
+  "difficulty": "hard"
+}

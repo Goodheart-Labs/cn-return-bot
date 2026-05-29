@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2037649826054131736",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "breaking_news_and_war",
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "court_case_legal_claim",
+  "tweet_summary": "Quoting news that a man (JDL offshoot member) was arrested for an alleged plot to firebomb pro-Palestinian activist Nerdeen Kiswani's home, the author claims point-blank that 'Nothing in the indictment said this criminal was going to flee to Israel,' that Israel is nearly unreachable, and that Israel would arrest/extradite him.",
+  "why_note_decision": "The tweet's central factual claim is FALSE. The criminal complaint reporting (JTA, Al Jazeera, Spokesman) states the suspect, Alexander Heifler, told an undercover officer he planned to flee to Israel after the attack. So 'Nothing in the indictment/complaint said he was going to flee to Israel' is contradicted by the court filing. A note is warranted to correct this. The original note actually gets the core fact RIGHT (sources confirm he planned to flee to Israel) but earns MissingKeyPoints/argumentative tags because it (a) hedges ('the complaint does not name a destination') muddying its own correction, and (b) piles on tangential, contested geopolitical claims (airspace restrictions, the existence of a US-Israel extradition treaty) that aren't necessary and read as taking a side.",
+  "judge_guidance": "A correct note must crisply correct the tweet's specific false claim: per the criminal complaint, the suspect (Alexander Heifler) told an undercover officer he planned to flee to Israel after the planned firebombing \u2014 so the assertion that 'nothing said he was going to flee to Israel' is false. PASS only if it cites the complaint/law-enforcement reporting and stays focused on that single correction. FAIL if it (a) repeats the original note's hedge that 'the complaint does not name a destination' (which undercuts the correction), or (b) wanders into the tangential, argumentative extradition-treaty / airspace-status claims that got the original tagged argumentative. Keep it to the verifiable plot-to-flee-to-Israel fact.",
+  "reference_note": "Per the criminal complaint, the suspect (Alexander Heifler, of a JDL offshoot) told an undercover officer he planned to flee to Israel after firebombing Nerdeen Kiswani's home \u2014 so this post's claim that 'nothing said he was going to flee to Israel' is incorrect. https://www.jta.org/2026/03/27/ny/man-arrested-over-alleged-firebomb-plot-targeting-pro-palestinian-activist-nerdeen-kiswani https://www.aljazeera.com/news/2026/3/27/us-palestinian-activist-says-fbi-foiled-assassination-plot-against-her",
+  "original_unhelpful_note": {
+    "text": "While the criminal complaint does not name a destination, law enforcement sources and FBI filings confirm the suspect planned to flee to Israel. Although Israeli airspace was heavily restricted in March 2026, an extradition treaty exists between the US and Israel. https://apnews.com/article/fbi-nypd-nerdeen-kiswani-e8fa38819b4f65f830b26b640d44cd72 https://il.usembassy.gov/security-alert-u-s-embassy-jerusalem-march-26-2026 https://treaties.un.org/doc/Publication/UNTS/Volume%20484/volume-484-I-7038-English.pdf",
+    "failure_reason": "MissingKeyPoints/argumentative: the core correction (suspect planned to flee to Israel) is right, but it self-undermines with the hedge 'complaint does not name a destination' and then adds tangential, side-taking points (airspace restrictions, extradition-treaty existence) that dilute and politicize the correction.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Tweet false: court filing reporting confirms suspect Heifler said he planned to flee to Israel after the attack.",
+    "sources_checked": [
+      "https://www.jta.org/2026/03/27/ny/man-arrested-over-alleged-firebomb-plot-targeting-pro-palestinian-activist-nerdeen-kiswani",
+      "https://www.aljazeera.com/news/2026/3/27/us-palestinian-activist-says-fbi-foiled-assassination-plot-against-her",
+      "https://www.spokesman.com/stories/2026/mar/27/nypd-fbi-thwart-plot-to-assassinate-palestinian-ac/"
+    ],
+    "notes": "Heifler (JDL 613 Brotherhood) discussed Molotovs on a video call with an undercover officer; complaint says he planned to flee to Israel afterward."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "385K impressions on a politically charged extremism/terrorism case; correcting a false denial about a documented assassination plot supports factual public discourse on political violence."
+  },
+  "difficulty": "medium"
+}

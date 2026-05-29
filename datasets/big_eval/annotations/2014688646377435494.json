@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2014688646377435494",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Conspiracy account ('HustleBitch') posts a clip allegedly showing Angelina Jolie 'making strange hand movements', framing it as 'SOMETHING ISN'T RIGHT' — implying clone/AI/illuminati narrative. Got 10.6M views.",
+  "why_note_decision": "The footage is genuine Angelina Jolie at the Maleficent: Mistress of Evil Tokyo premiere (Oct 3, 2019), adjusting the long crystal/pearl fringe of her Ralph & Russo dress — the apparent 'finger elongation' is the dangling beaded fringe, not her hand. Mainstream fashion coverage extensively documented this dress. The conspiracy framing has 10.6M views — a note IS warranted. The original note correctly identifies the event/dress but is rated NNN (17) because many readers think the joke/clone-meme replies are sufficient debunk, and the note doesn't directly address WHAT the 'strange hand movement' is (the fringe being adjusted). Score as missing_key_points.",
+  "judge_guidance": "PASS if the note (a) identifies the clip as Jolie at the Oct 2019 Maleficent: Mistress of Evil Tokyo premiere, (b) explains the apparent 'finger elongation' is the long crystal/pearl fringe of her Ralph & Russo dress that she is adjusting, NOT her hand, and (c) cites mainstream fashion coverage (Harper's Bazaar, Hello!, Tom + Lorenzo, or Ralph & Russo official). FAIL if the note only IDs the event without explaining what the viewer is actually seeing (the fringe), or appears to validate the 'something isn't right' framing.",
+  "reference_note": "The video shows Angelina Jolie at the October 2019 Tokyo premiere of Maleficent: Mistress of Evil adjusting the long crystal/pearl fringe of her Ralph & Russo couture dress — the dangling beaded fringe is what looks like elongated fingers, not her hand. https://www.harpersbazaar.com/celebrity/latest/a29351521/angelina-jolie-ralph-russo-metallic-fringe-dress https://tomandlorenzo.com/2019/10/angelina-jolie-in-ralph-russo-couture-at-the-maleficent-mistress-of-evil-japan-premiere",
+  "original_unhelpful_note": {
+    "text": "The video shows Angelina Jolie adjusting the long fringe on her Ralph & Russo dress at the 2019 Maleficent: Mistress of Evil premiere in Tokyo.",
+    "failure_reason": "missing_key_points: correct event ID but doesn't explicitly explain that the 'elongated fingers' visual is the dress's beaded fringe, leaving viewers free to maintain the conspiracy framing",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet's conspiratorial framing is false; footage is real Jolie at 2019 premiere adjusting dress fringe",
+    "sources_checked": [
+      "https://www.harpersbazaar.com/celebrity/latest/a29351521/angelina-jolie-ralph-russo-metallic-fringe-dress",
+      "https://tomandlorenzo.com/2019/10/angelina-jolie-in-ralph-russo-couture-at-the-maleficent-mistress-of-evil-japan-premiere/",
+      "https://www.hellomagazine.com/fashion/celebrity-style/2019100878769/angelina-jolie-dresses-maleficent-premiere/"
+    ],
+    "notes": "Multiple fashion outlets and Ralph & Russo confirm dress details — silver Autumn-Winter 2019/20 cocktail dress with hand-embroidered metallic glass beads and tiers of silver crystal fringe."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "medium", "lens_rationale": "10.6M-view conspiracy content degrading public epistemics about AI/clones/celebrities feeds broader AI-skepticism confusion"},
+  "difficulty": "medium"
+}

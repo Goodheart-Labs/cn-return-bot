@@ -1,0 +1,90 @@
+{
+  "tweet_id": "2016209072454783484",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:25.045Z",
+  "post": {
+    "id": "2016209072454783484",
+    "author_id": "3197063113",
+    "created_at": "2026-01-27T17:57:56.000Z",
+    "text": "If I see my son guarding a 6’5 10 year old i’m checking in the game and we doubling that grown man https://t.co/Hy67JI4BGr",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2016205234758943141"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2016205234758943141",
+      "author_id": "1692779925210595328",
+      "created_at": "2026-01-27T17:42:41.000Z",
+      "text": "10 YEAR OLD Archange Railey Lemovou is already 6’5 https://t.co/9WtGz6dxN3",
+      "media": [
+        {
+          "media_key": "13_2016205173769510914",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2016205173769510914/img/cjcwfx0tD1-qIGu-.jpg",
+          "height": 900,
+          "width": 720,
+          "duration_ms": 44210,
+          "view_count": 562586,
+          "variants": [
+            {
+              "bit_rate": 632000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2016205173769510914/vid/avc1/320x400/VZNMfxr1-T8vb8e9.mp4"
+            },
+            {
+              "bit_rate": 950000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2016205173769510914/vid/avc1/480x600/JBgfKmk2hbH1XrPA.mp4"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2016205173769510914/vid/avc1/720x900/7JeujXB2bl57IUhu.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/2016205173769510914/pl/Cr9qneqZYJsp70Sd.m3u8?v=cfc"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 2945,
+      "reply_count": 257,
+      "like_count": 49785,
+      "quote_count": 61,
+      "bookmark_count": 1397,
+      "impression_count": 2113673
+    },
+    "author_followers": 311503,
+    "author_name": "choppa 🛝",
+    "author_description": "pop culture . hoops . memes.",
+    "author_tweet_count": 457
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2016205173769510914/vid/avc1/720x900/7JeujXB2bl57IUhu.mp4",
+          "description": {
+            "description": "A youth basketball game sequence. In the first frame, a player in a neon green and purple jersey dribbles the ball towards the basket while being pursued by a defender in red shoes. The second frame shows the same player in the neon green jersey navigating through multiple defenders on the court. In the third frame, a player in a black jersey with a colorful pattern and the number 595 is seen running towards the basket. The final frame shows the basketball net just as a shot reaches the rim, with an electronic scoreboard visible in the background showing a score of 15 to 14.",
+            "ocrText": "T3TV. 595. PRACTICE SHOULDN'T STOP THE HEART. ELITE SPORT. HOME 15. 14."
+          },
+          "transcription": "3, 2, 1, GO! Shoot it! Thank you."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Unky (alter ego) (@Keepit10Squared): That nigga 10 months from obtaining his bachelor’s degree wtf (1844 likes)\n- Apollo (ML) (@MyESpirit): Absolutely not I'm demanding to see his birth certificate (1193 likes)\n- ☘️☘️ 813 Casual (@813Casual): 😭😭 Buddy ain't deserve all this LMAO (849 likes)\n- Vezo (@88FingerzLouie): When both of us get cooked (804 likes)\n- LX (@LXR1DR): As soon as you see those jerseys and the numbers you know some fuck shit is going on (746 likes)\n- 44 (@MOBBIN44): 😭😭😭😭😭 (539 likes)\n- Zach (@ZDS_22): I’m pulling this move out on his big ass (434 likes)\n- Mike (@mikebattleborn): He looks insanely coordinated and agile for a 6-5 10 year old. Is this one of those situations where he’s from an African country that lost his birth certificate (216 likes)\n- PAPPY (@old_as_oxygen): Dress out and guard the lane like the 1989 Pistons (153 likes)\n- zane (@Inspireonly_): With a strap on my side they got me fucked up doing my kid like that (132 likes)",
+    "warnings": []
+  }
+}

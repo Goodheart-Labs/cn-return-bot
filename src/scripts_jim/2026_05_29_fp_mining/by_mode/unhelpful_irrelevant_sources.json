@@ -1,0 +1,125 @@
+[
+ {
+  "tweet_id": "2006044334873858556",
+  "url": "https://x.com/i/status/2006044334873858556",
+  "role": "unhelpful_irrelevant_sources",
+  "needs_note": "yes",
+  "categories": [
+   "staged_or_scripted_content",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Did you see where she landed 😯 that was close  https://t.co/ES0QxICDvl",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2001139443064033280/pu/vid/avc1/704x1252/l-yl4QJqLnHG9ZCT.mp4",
+    "description": {
+     "description": "A man is positioned on a red inflatable platform that is cantilevered over a steep cliff face overlooking a lush green valley and distant mountains. Suspended below him by guide wires is a white rectangular target with a red border. In the second frame, the man has jumped or fallen, and a small figure is visible mid-air, plummeting toward the suspended target.",
+     "ocrText": ""
+    },
+    "transcription": "Ready? Set it! She is flying! Yeah! Perfect shot! Nailed it!"
+   }
+  ],
+  "tweet_summary": "Posts a dramatic video captioned 'Did you see where she landed 😯 that was close' showing a person seemingly flung off a cliffside platform toward a suspended target far below, presented as a real near-miss stunt.",
+  "bad_note_text": "This is a staged stunt in which a man jumps on an inflatable mat to launch the woman into a safety net below; the footage uses camera angles to heighten the perceived risk.    https://www.instagram.com/reel/DStped1jJR4/  https://www.instagram.com/reel/DSnhAQ5iMcv/",
+  "failure_reason": "Irrelevant sources + likely-incorrect mechanism: the note confidently describes a specific physical staging (man-on-mat launching a woman into a safety net) and cites two Instagram reels that do not depict this clip, while the clip is more likely AI-generated (per the media description and the bulk of replies). Raters tagged IrrelevantSources (5) and Incorrect (5).",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 14,
+  "why_note_decision": "The clip is presented as a real, jaw-dropping near-death moment but is not an authentic uncontrolled event. The strongest evidence (AI media description of physically implausible cantilevered-platform geometry; near-unanimous replies calling it AI/'AI slop' and noting it 'defies physics - she bounces higher than she fell') points to AI-generated or fabricated content, not a genuine accident. A note is warranted so viewers don't treat synthetic/fabricated footage as a real event. However, the verdict hinges on media that an AI description can misread and that I cannot independently source, so c…",
+  "reference_note": "This is not real footage of an accident. The clip is fabricated/AI-generated: the depicted fall is physically impossible (the figure rebounds higher than it dropped) and the imagery shows hallmarks of AI-generated video. It is not a genuine stunt or near-miss."
+ },
+ {
+  "tweet_id": "2006367522879054193",
+  "url": "https://x.com/i/status/2006367522879054193",
+  "role": "unhelpful_irrelevant_sources",
+  "needs_note": "yes",
+  "categories": [
+   "breaking_news_and_war",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Immediately after Russians hastily posted photos of the \"Ukrainian drone that attacked Putin’s residence” this morning, open source investigators already noted that the drone appears to be a black-painted Russian Gerbera, also featuring a battery and cellular modem module from a https://t.co/qKRs0v69cs",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G9gMoQFXkAEewnH.jpg",
+    "description": {
+     "description": "The image is a compilation of several photos showing the wreckage of drones, along with diagrams and electronic components. The upper photos show a black, crashed drone in the snow, revealing its internal engine and wiring. The middle photos show a white fixed-wing drone and a close-up of a motor with a wooden propeller. Technical components like a Savox servo and a SIM800C module are also featured. An infographic at the bottom right identifies a 'RUSSIAN DRONE ORLAN-10' and lists various foreign-sourced components including Swiss GPS, Japanese engines, and Chinese electronics.",
+     "ocrText": "ONLINE.UA The element base for electronic circuits is produced in Malaysia, Korea, Japan, and China. Servo drives manufactured by Savox (Sweden-China). Scorpion engines (USA-China). Radio channels (except Russian and their own) are produced by RFDesign (Australia). Engine regulators (except for Russian and our own) are manufactured by Scorpion (USA-China) and Hobbyking (China). SAVOX 202107 SIM800C IMEI: 869531071889707 FCC ID: UDV-SIM800C S2-10685-Z1L1E CE CCC RUSSIAN DRONE ORLAN-10 Deployed for Armenia with foreign model hobby RC electronics MANUFACTURER RUSSIA SPECIAL TECHNOLOGY CENTER (STC) Positioning System SWITZERLAND Ublox Neo-M8 CHINA Simcom Mobile IMEI Engine SWITZERLAND Saito 40 CC Servo Actuator CHINA Hyporian Atlas Communication System USA 900 MHz Telemetry 2.3-2.5 Ghz Video USA Axis Communication Video Decoder Analog Devices RF Transceiver Motorola Sensors An Orlan-10 crashed after being shot"
+    }
+   }
+  ],
+  "tweet_summary": "Ukraine's SPRAVDI Stratcom Centre claims that the 'Ukrainian drone' Russia presented as evidence of an attack on Putin's residence (late Dec 2025) is actually a black-painted Russian Gerbera drone with a battery and cellular modem, implying Russia staged the attack.",
+  "bad_note_text": "For context: The drone is identified as Ukrainian-made Chaklun-V (a fixed-wing strike drone), not Russian Gerbera (a loitering munition). US intelligence assesses Putin's residence was not targeted.  https://www.reuters.com/world/europe/ukraine-eu-officials-dismiss-alleged-attack-putin-residence-2025-12-31/  https://www.foxnews.com/world/putin-residence-attack-video-slammed-us-officials-say-ukraine-target-leader  https://www.nbcnews.com/world/europe/us-finds-ukraine-not-target-putin-residence-alleged-drone-strike-sourc-rcna251776",
+  "failure_reason": "Rated notHelpfulIrrelevantSources (6). The note opens with a confident drone-model identification (Chaklun-V, not Gerbera) that directly contradicts the tweet's claim and cannot be verified from the image — and that drone-model assertion is not what its cited sources establish (the sources are about US intelligence finding the residence was not targeted, not about the drone model). Raters flagged the sources as not supporting the lead claim. The well-supported point (US intel: residence not targ…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 12,
+  "why_note_decision": "A note is warranted, but the situation is more nuanced than the original note frames it. The verified core facts: US/CIA intelligence (per WSJ/CNN) concluded Ukraine did NOT target Putin or any of his residences — Ukraine was likely striking a military site in the region — and the EU dismissed the episode as a Russian 'deliberate distraction.' Ukraine called it a fabrication. So readers benefit from a note that the alleged 'attack on Putin's residence' is not supported. The original note instead asserts a specific OSINT drone-identification claim (Russian Gerbera, not Ukrainian Chaklun-V) that…",
+  "reference_note": "US intelligence (CIA) assessed that Ukraine did not target Putin or any of his residences in the late-December 2025 drone incident; officials believe Ukraine was striking a military site in the region, not the Valdai residence. Ukraine called the alleged attack a fabrication and the EU described it as a Russian distraction tactic. https://www.cnn.com/2025/12/31/politics/cia-ukraine-drone-putin-res…"
+ },
+ {
+  "tweet_id": "2029979232391082443",
+  "url": "https://x.com/i/status/2029979232391082443",
+  "role": "unhelpful_irrelevant_sources",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Here is an Iranian missile exploding near US soldiers at Prince Sultan Air Base in Saudi Arabia. Thankfully, no one lost their life.\n\nSaudi Arabia had been secretly allowing Israel and the United States to operate from the base, while publicly stating that it would not permit the https://t.co/zbn9k5lB5E",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2029979112799084544/vid/avc1/360x640/lKrkdNkR9uics1el.mp4",
+    "description": {
+     "description": "A three-frame sequence starting with a grainy, low-light shot of a dark night sky with thick clouds. In the second frame, a bright, circular light source, likely the moon or a streetlamp, glows faintly through the heavy cloud cover. The final frame is a blurry, close-up shot of a dimly lit, brownish surface, possibly a door or a piece of furniture, in an indoor setting.",
+     "ocrText": ""
+    },
+    "transcription": "Продолжение следует..."
+   }
+  ],
+  "tweet_summary": "A 405k-follower account posts a video captioned as an 'Iranian missile exploding near US soldiers at Prince Sultan Air Base in Saudi Arabia' (March 2026), adding that Saudi Arabia was secretly letting the US/Israel operate from the base.",
+  "bad_note_text": "The video shows Iran's 2020 missile attack on Al Asad Air Base in Iraq, not a recent strike on Prince Sultan Air Base in Saudi Arabia. Saudi defenses intercepted the 2026 missiles, with no damage or casualties reported.    https://www.dvidshub.net/video/785331/al-asad-tbm-attack    https://www.arabnews.com/node/2635432/saudi-arabia    https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Saudi_Arabia",
+  "failure_reason": "Rated notHelpfulIrrelevantSources (27) — the dominant reason on a 49-rating note. The note confidently identifies the clip as 2020 Al Asad footage and cites a DVIDS Al Asad video, but raters found the source did not actually match/prove the misattribution (the AI media description of the clip is vague night-sky frames, so a precise origin ID is hard to substantiate). The interception point is well-supported, but the specific 'this is the 2020 Al Asad video' claim outran what the cited evidence s…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 49,
+  "why_note_decision": "A note is warranted. The early-March 2026 Iranian missiles aimed at Prince Sultan Air Base were INTERCEPTED by Saudi defenses, with no reported damage or casualties (Long War Journal, Arab News) — so a video of a missile 'exploding near US soldiers' there is not accurate documentation of that event. The footage is consistent with reused older war footage (old-footage recycling was rampant in this conflict per AAP). The original note's specific identification (2020 Al Asad attack footage) is plausible but not something I can confirm frame-by-frame; the robustly verifiable point is that the earl…",
+  "reference_note": "This video does not show what is claimed. Iran's early-March 2026 missiles targeting Prince Sultan Air Base in Saudi Arabia were intercepted by Saudi air defenses, with no reported damage or casualties — there was no missile 'exploding near US soldiers' at the base as described. Old and unrelated war footage was widely recycled during this conflict. https://www.arabnews.com/node/2635432/saudi-arab…"
+ },
+ {
+  "tweet_id": "2031114049841254733",
+  "url": "https://x.com/i/status/2031114049841254733",
+  "role": "unhelpful_irrelevant_sources",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "It’s raining hell in Tel Aviv and there isn’t ONE interceptor missile in sight!\n\nhttps://t.co/aomn1QGXVF",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2030859027421208576/vid/avc1/480x626/e4CC7XTwke2AO3ph.mp4",
+    "description": {
+     "description": "A sequence of frames showing an night-time scene with explosions and fiery trails in the sky. In the first frame, small points of light and an orange glow are visible over a dark horizon. The second frame shows larger, bright orange orbs of light descending or hovering, with a significant orange haze lighting up the sky. The third frame shows a single streak of light moving against a dark background, possibly a missile or projectile. The final frame shows a bright orange flash near the ground with smoke and a smaller light source higher in the orange-tinted sky.",
+     "ocrText": ""
+    },
+    "transcription": "يا الله يا يا الله يا يا موسيقى موسيقى سنذهب لداخل וואו! והכון נופל ללבטים אני אומר לך, המתקפה אחת החזקות תגיעו אותנו בלעדיה זהו, למקרד סבבה, זהו מה נראה? נראה איש תודה רבה."
+   }
+  ],
+  "tweet_summary": "Posts a video of nighttime missile/explosion activity captioned 'It's raining hell in Tel Aviv and there isn't ONE interceptor missile in sight!' - implying current (March 2026) Iranian missiles are hitting Tel Aviv unopposed by Israeli air defenses.",
+  "bad_note_text": "The video is recycled from Iran's 2024 missile attack on Nevatim airbase, not current 2026 strikes on Tel Aviv. Reports confirm Israeli interceptors have launched against Iranian missiles over Tel Aviv in March 2026, though some impacts occurred.    https://www.aljazeera.com/video/newsfeed/2026/3/7/iranian-missiles-over-tel-aviv-prompt-sirens-interceptor-launches    https://www.reuters.com/world/middle-east/israeli-military-says-iranian-missiles-hit-central-israel-2026-03-03/    https://edition.cnn.com/2026/03/08/world/video/israel-tel-aviv-iranian-missile-damage-vrtc",
+  "failure_reason": "Irrelevant sources: the note's interceptor/context claims are well-sourced, but its headline claim that the clip is 'recycled from Iran's 2024 Nevatim airbase attack' is not actually supported by the cited links (which cover 2026 events), so raters tagged IrrelevantSources (5). The unproven precise-origin attribution is the weak point.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 9,
+  "why_note_decision": "The tweet pushes two checkable claims: that the footage is current March 2026 Tel Aviv strikes, and that Israeli interceptors were absent. Both are misleading. During the March 2026 Iran-Israel exchanges, Israeli interceptors WERE launched over Tel Aviv (Al Jazeera, Reuters), so 'not ONE interceptor in sight' is false; and old conflict footage was widely recycled and presented as current (a commenter flags 'This is not current!'). A note is warranted to correct the misattributed/decontextualized footage and the false 'no interceptors' claim. I can confirm the interceptor-presence point from re…",
+  "reference_note": "Israeli air defenses did launch interceptors over Tel Aviv during the March 2026 Iranian missile attacks, so the claim that there 'isn't ONE interceptor in sight' is misleading, and this clip is not verified as current Tel Aviv footage - old conflict video has been recycled and presented as the 2026 strikes. https://www.aljazeera.com/video/newsfeed/2026/3/7/iranian-missiles-over-tel-aviv-prompt-si…"
+ }
+]

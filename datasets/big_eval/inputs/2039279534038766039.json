@@ -1,0 +1,131 @@
+{
+  "tweet_id": "2039279534038766039",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:14.901Z",
+  "post": {
+    "id": "2039279534038766039",
+    "author_id": "1492092029609799680",
+    "created_at": "2026-04-01T09:51:43.000Z",
+    "text": "BREAKING: United Kingdom Prime Minister Kier Starmer stopped the entire nation to do his part in the announcement of a new global order. \n\nIt appears the UK will now rejoin the European Union. \n\nWith Ursula Von der Leyen just leaving Australia, are we joining the EU? https://t.co/vhPLpjuWNC https://t.co/n4UsaXP8WT",
+    "media": [
+      {
+        "media_key": "13_2039278579419435008",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2039278579419435008/img/-oDiZwx79-8UisnW.jpg",
+        "height": 656,
+        "width": 1170,
+        "duration_ms": 627926,
+        "view_count": 992107,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2039278579419435008/vid/avc1/480x270/fuOQpZbYj4SHbw9H.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2039278579419435008/vid/avc1/642x360/ziAohYUntQLT66_K.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2039278579419435008/vid/avc1/1170x656/HO68C38EVDRNzu9p.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2039278579419435008/pl/ndyEqJTh3rqYDy0e.m3u8?v=c66"
+          }
+        ]
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2039255097553948732"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2039255097553948732",
+      "author_id": "1492092029609799680",
+      "created_at": "2026-04-01T08:14:37.000Z",
+      "text": "BREAKING: Australian Prime Minister Anthony Albanese stopped the nation in a rare address on every single station across the country.\n\nHis message: Stay Calm, Carry On.\n\nThis narcissistic pig stopped a nation so we could watch a pre-recorded message.\n\nWhat do you think he said? https://t.co/d50n1cydqt",
+      "media": [
+        {
+          "media_key": "13_2039254828246036480",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2039254828246036480/img/bsZIuqG6lDHfWE73.jpg",
+          "height": 660,
+          "width": 1168,
+          "duration_ms": 198431,
+          "view_count": 254725,
+          "variants": [
+            {
+              "bit_rate": 256000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2039254828246036480/vid/avc1/476x270/yK3UwPkzwOSrqw-o.mp4"
+            },
+            {
+              "bit_rate": 832000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2039254828246036480/vid/avc1/636x360/aIs6zfwiEuIPAbFh.mp4"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2039254828246036480/vid/avc1/1168x660/VomT_cCyd9dg5vPk.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/2039254828246036480/pl/8qRLOgHfGaEMCqZL.m3u8?v=f35"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 379,
+      "reply_count": 298,
+      "like_count": 2518,
+      "quote_count": 45,
+      "bookmark_count": 1577,
+      "impression_count": 3517757
+    },
+    "author_followers": 55529,
+    "author_name": "Aus Integrity",
+    "author_description": "Aussies must stop the erosions of their freedoms by governments and foreign influence. They do not have your interests at heart. Posts & likes not actionable",
+    "author_tweet_count": 65353
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2039278579419435008/vid/avc1/1170x656/HO68C38EVDRNzu9p.mp4",
+          "description": {
+            "description": "A man in a dark suit of Keir Starmer stands behind a wooden podium at a Downing Street press conference, framed by two Union Jack flags as he delivers a speech; a sign language interpreter is shown in a small inset window in the corner.",
+            "ocrText": "DOWNING STREET Briefing Room"
+          },
+          "transcription": "Diolch. ac y bydd gennym bwriad hir i ddod o'i ffordd, yn gyffredin a chyffredin. Yn gyntaf, gadewch i mi ddweud eto, nid yw hyn yn ein llaw. Ni fyddwn ni'n cael ein drwyddo i mewn i'r cyflawn. Nid yw hynny yn ein bwriad genedlaethol. A'r ffordd mwyaf effeithiol y gallwn ein cefnogi'r cost o bywyd yng Nghymru yw gwisgo am ddesgylfao yn y Ddyfodol Cymru a chyflawni'r Strait of Hormuz, sy'n fwyaf rŵan i'r energi. I'r ddiwedd hwn, rydym yn ymweld â bob ariann ddiplomatig sydd ar gael i ni. Mae'r Prif Weinidog a'r Chancellor wedi cyfarfod eu cymharlwyr yn y G7. Mae'r Prif Weinidog wedi bod yn y Ddyfodol Cymru yn siarad â'n partneriaid A yw'r DU wedi cyflawni 35 wlad ar gyfer ein ddyfyniad o ddyfyniad i ddychmygu fel un ar gyfer sicrhau'r maritim ar draws y Gwlff. A heddiw, gallaf adnabod y byddi'r wythnos nesaf, bydd y Prif Weinidog yn cynnig cyfarfod sy'n cyflawni'r dynion hyn gyda'i gilydd am y tro cyntaf, lle byddwn yn asesu pob fawr o fesurau ddiplomac a pholitigol y gallwn eu cymryd i adael llawr o'r cyfnod, gwirio'r diogelwch o sipiau traps a chyflawnwyr, a chyflawni'r symudiad o gwasanaethau pwysig. Yn ddiwedd y cyfweliad hwn, byddwn ni hefyd yn cyd-dynnu ein cynllunwyr gwleidyddol i edrych ar sut y gallwn ni gynnal ein gallu a gwneud y strait yn gyfathrebu a'i ddiogel ar ôl bod y cyfweliad wedi stopio. Oherwydd rwy'n rhaid i mi lefel gyda phobl ar hyn. Dydw i ddim yn gallu. yn hawdd. Yn si fe wnes i siarad rhedeg busnes sy cyflawni yn ysgog ariannu a chyflogi a chyflogi ader yn Downing Street on Monday And they were clear with me the primary challenge they face is not one of insurance but one of safety and security of passage. So the fact is, we need all of this together. A united front of military strength and diplomatic activity, partnership with industry so they too can mobilise once the fighting has stopped and above all clear and calm leadership that is what this country is ready to provide because my guide from the start of this conflict has always been the British national interest and freedom of navigation in the Middle East is in the British national interest let me turn now to the impact at home because i know that this is causing huge concern people turn on their television they look at their screens they say explosions infrastructure blown up aggressive rhetoric they worry that the uk will be dragged into this we won't but i also know that people have a deep sense that this will affect their family and their household. They can see it at the petrol pumps and they worry about their energy bills. It is the job of government to meet these moments, not just with immediate action, but also with clarity about our direction. That's what I remember about the 1970s when my family could not pay every bill. We struggled through the energy shocks and the price rises of that decade. But we always believed in the end that Britain would secure a better future for us. And I think that's what's been lacking in the crises of recent years. And I'm not prepared to ask the British people once again to go through a crisis, come out of it and say, business as usual, back to the status quo. So on our economy, on our energy and on our defence, this time will be different. We will make Britain a fairer and more secure country because that hope is what is needed as the country comes together and because how we emerge from this crisis will define us for a generation So as I set out a few weeks ago, we have a five-point plan for the immediate crisis. We're cutting energy bills by over £100 per household today. we've extended the cut in fuel duty until September and we're monitoring that situation daily we're supporting people exposed to heating oil rises setting aside 53 million pounds for that we're taking back control of our energy security by investing in clean British energy because that is the only way we get your bills off the rollercoaster that is controlled by Putin and the Iranian regime and frankly I'm sick and tired of your energy bills fluctuating up and down because we're on the international market when if we took control of our energy and had home grown renewables we could stabilise your bills and finally as I say we'll continue to push for de-escalation in the Middle East but look there's also a bigger argument here because every one of these measures is part of a long-term plan to make our country more secure and more resilient to shocks like this. I mean, just look at what's happening today. Today, your energy bills will be cut because of the action that we took at the budget. And whatever happens in Iran, that price is now fixed until July. Today, if you need a prescription, instead of rising as they used to, the price will be frozen for a year. Today, if you're working on the national living wage your wages will go up. Next week on Monday, the state pension will go up. Next week the two-child limit will be scrapped lifting 450,000 children out of poverty the vast majority from working households. And next week the biggest strengthening of workers' rights in a generation will become law a huge boost to the economic security of working people. Now, some people may say, this isn't new, this was already planned. To which I say yes that is my point Everything I done in politics certainly since the Ukraine war in 2022 is a response to this new and dangerous world We campaigned for a windfall tax on oil and gas companies, which we extended. We focused on the cost of living and we acted at the budget. And we've always emphasised the need for clean British energy. And we've invested because we knew that making our country secure in this world was the ultimate test that we would face and our ultimate responsibility to the British people. Now, it's not going to be easy, clearly. And in the coming weeks, as you would expect, we will continue to assess the economic effects. We will continue to stand up for the British national interest and we will continue to do what we must to guide our country calmly through this storm. However, it is increasingly clear that as the world continues down this volatile path, our long-term national interest requires closer partnership with our allies in Europe and with the European Union. Now we have made progress on this front, on agriculture, electricity, emissions trading and more. But as the Chancellor has rightly pointed out, Brexit did deep damage to our economy and the opportunities to strengthen our security and cut the cost of living are simply too big to ignore. so in the coming weeks we will announce a new summit with our EU partners and I can tell you that at that summit the UK will not just ratify existing commitments made at last year's summit we want to be more ambitious closer economic cooperation closer security cooperation a partnership that recognises our shared values, our shared interests and our shared future. A partnership for the dangerous world that we must navigate together. A world where this government will be guided at all times by the interests of the British people. Thank you. I will now take questions and I have the BBC first. Henry. Thank you Prime Minister."
+        }
+      ],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2039254828246036480/vid/avc1/1168x660/VomT_cCyd9dg5vPk.mp4",
+          "description": {
+            "description": "A capture from a 9News broadcast featuring Australian Prime Minister Anthony Albanese giving an address regarding fuel supply. He is wearing a dark suit and light blue tie, seated in an office-like setting with Australian, Aboriginal, and Torres Strait Islander flags in the background.",
+            "ocrText": ":::9NEWS PRIME MINISTER'S ADDRESS BREAKING ANTHONY ALBANESE SPEAKING ON FUEL SUPPLY"
+          },
+          "transcription": "easy. My fellow Australians, by nature we're an optimistic country but I understand that right now it's hard to be positive. The war in the Middle East has caused the biggest spike in petrol and diesel prices in history. Australia is not an active participant in this war but all Australians are paying higher prices because of it. I know that you're seeing this at the servo and at the supermarket and I understand farmers and truckies, small businesses and families are doing it tough and the reality is the economic shocks caused by this war will be with us for months. Tonight I want to speak directly with you about what the government is doing to shield Australia in these uncertain times and also what all of us can do to help our country and help each other in the period ahead. On Monday, National Cabinet adopted the National Fuel Security Plan. Leaders from both sides of politics, from right around the country, working together to keep Australia moving, making sure that we are prepared so that if the global situation gets worse and our fuel supplies are seriously disrupted over the long term, we can coordinate the next steps together. Today we cut the fuel excise in half, cutting the tax on every litre of petrol by 26 cents. Those savings have started showing up at your petrol station. For our truckies we have cut the heavy vehicle road user charge to zero Both these measures will be in place for the next three months We are working to bring the price of fuel down to make more fuel here and to keep it on shore, and get more fuel here, using our strong trading relationships with our region to bring more petrol, diesel and fertiliser to Australia. Now, it's the Australian way that people want to do their bit. and there are simple ways that you can. You should go about your business and your life as normal. Enjoy your Easter and if you're hitting the road, don't take more fuel than you need, just fill up like you normally would. Think of others in your community, in the bush and in critical industries. And over coming weeks, if you can switch to catching the train or bus or tram to work, do so. That builds our reserves and it saves fuel for people who have no choice but to drive. Farmers and miners and tradies who need diesel every single day. And all those shift workers and nurses who do so much for our country. The months ahead may not be easy. I want to be up front about that. No government can promise to eliminate the pressures that this war is causing. I can promise we will do everything we can to protect Australia from the worst of it. These are uncertain times, but I'm absolutely certain of this. We will deal with these global challenges the Australian way, working together and looking after each other, as we always have. Thank you and good evening."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Wutangflan23**: F if Australia joins the EU there is zero chance we get any kind of Australia back  \n(Likes: 86)\n\n**@jace_d**: Albo pulled an April fools joke on the nation. National address - to say nothing.  \n(Likes: 67)\n\n**@Jonnyboy2100**: The UK VOTED to leave... there has been NO VOTE by any person to re-join... HE and his EU, WEF and Globalists puppet masters are doing this off their own backs!! It's a complete backstab to the UK! The guy is a sell out and a complete disgrace to the country, and doing everything he possibly can to destroy the country before he is forced out or voted out. He knows he is the most unpopular Prime Minister ever in the history of the UK. and he doesn't care! Because he only answers to his puppet masters and controllers from the EU, WEF and Globalist's and not the British people! The guy needs hanging for Treason and destruction of the country and the monarchy!  \n(Likes: 37)\n\n**@SuperMAGA17**: So @Keir_Starmer is unilaterally joining the EU without a national referendum? If so Keir is officially a dictator, time to leave NATO @SecRubio. @Nigel_Farage @TRobinsonNewEra  \n(Likes: 33)\n\n**@Mark03772110**: Both woke globalist traitors to the UK and Australia in my opinion  \n(Likes: 32)\n\n**@mickeydub4**: What's Trump got up his sleeve? This hurried, coordinated announcement-of-nothing is pre-empting something from the US.  \n(Likes: 25)\n\n**@WarThomas78**: 😂😂😂. He just said screw you people with Brexit and you wanting to have a national identity. Welcome to Dumbfuckastan  \n(Likes: 21)\n\n**@TakanoriT41**: They're all part of the same gradual socialist club  \n(Likes: 21)\n\n**@HateCollector**: Two wankers giving a synchronised speech on April fools day.  \n(Likes: 17)\n\n**@Lolaka94**: Albo would actually be stupid enough to have Ursula convince him Australia is in Europe  \n(Likes: 16)",
+    "warnings": []
+  }
+}

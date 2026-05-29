@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2041625290598678617",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Spanish-language post claims the Iranian people are pouring into the streets, risking their lives to protect power plants, accompanied by a 'All Eyes on Iran' video showing a mass crowd holding up phone lights at night.",
+  "why_note_decision": "The flashlight-crowd 'All Eyes on Iran' video is AI-generated. Snopes, AFP, Cyber Peace Foundation, University at Buffalo / Media Forensic Lab (DeepFake-o-Meter), and Vishvas News all confirm this; the original creator (Instagram user elnaz555) acknowledged it was AI art inspired by real January 2026 protest footage. The tweet repurposes this AI video as evidence that Iranians are defending power plants during the April 2026 Iran-related crisis — neither the medium nor the framing is real. ~165K views; a note is warranted.",
+  "judge_guidance": "PASS if the note (a) clearly states the video is AI-generated, not real footage, and (b) ideally notes the creator (elnaz555) acknowledged it was AI art. Strong notes cite Snopes, AFP, or the University at Buffalo / Cyber Peace fact-checks. FAIL if the note tries to also re-litigate which Iranian protests the AI was 'recreating' without first establishing the basic 'this is AI, not real' point (the original note buries this by saying it's a recreation of January protests — many raters scored it missing-key-points/opinion). FAIL if the bot declines (the video is verifiably AI). FAIL if the note treats the video as real footage.",
+  "reference_note": "El video es generado por inteligencia artificial, no muestra imágenes reales de iraníes en las calles. La propia creadora (Instagram @elnaz555) reconoció que la escena fue creada con IA. Verificadores como Snopes, AFP y Cyber Peace Foundation lo confirmaron. https://www.snopes.com/fact-check/iran-protest-video-marching https://factcheck.afp.com/doc.afp.com.93AP8WE",
+  "original_unhelpful_note": {
+    "text": "El video muestra una recreación generada por IA de protestas antigubernamentales de enero en Irán con luces de teléfonos, no imágenes reales de personas protegiendo centrales eléctricas. https://factcheck.afp.com/doc.afp.com.93AP8WE https://www.snopes.com/fact-check/iran-protest-video-marching https://www.vishvasnews.com/english/world/fact-check-viral-all-eyes-on-iran-flashlight-protest-video-is-ai-generated-not-real-footage",
+    "failure_reason": "Buries the headline ('this is AI-generated, not real footage') behind a more complex framing about 'a recreation of January anti-government protests'. Raters tagged missing-key-points / opinion / note-not-needed — likely because the lead doesn't land cleanly as 'video is AI'.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet_uses_ai_video_as_real_footage",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/iran-protest-video-marching/",
+      "https://www.thedailyjagran.com/india/fact-check-viral-all-eyes-on-iran-protest-video-is-ai-generated-not-real-footage-10293112",
+      "https://engineering.buffalo.edu/computer-science-engineering/news-and-events/news.host.html/content/shared/engineering/home/articles/media-mentions/2026-media-coverage/fact-check--viral--all-eyes-on-iran--protest-video-is-ai-generat.detail.html",
+      "https://cyberpeace.org/resources/blogs/ai-generated-video-falsely-linked-to-protests-in-iran"
+    ],
+    "notes": "Creator elnaz555 admitted the video is AI-generated; multiple fact-checks (Snopes, AFP, Cyber Peace, University at Buffalo) confirm. No real footage exists of Iranians forming such a flashlight crowd to protect power plants."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Wartime AI-generated imagery shaping Western sympathy narratives during the Iran crisis; pattern matters even when this particular tweet is medium-reach."
+  },
+  "difficulty": "medium"
+}

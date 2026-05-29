@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2029196297534890195",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:56.472Z",
+  "post": {
+    "id": "2029196297534890195",
+    "author_id": "4810191422",
+    "created_at": "2026-03-04T14:04:32.000Z",
+    "text": "Kyler Murray spotted at Minneapolis-Saint Paul International Airport this morning. https://t.co/PI3JC0jZbq",
+    "media": [
+      {
+        "media_key": "3_2029196295098019840",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCknR3zbMAAhnBW.jpg",
+        "height": 1322,
+        "width": 1320
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 538,
+      "reply_count": 176,
+      "like_count": 10793,
+      "quote_count": 103,
+      "bookmark_count": 337,
+      "impression_count": 848545
+    },
+    "author_followers": 14116,
+    "author_name": "East Bay Chris",
+    "author_description": "Proud mailman for the United States Postal Service. Voted as the top 49ers social media influencer in 2025 & 2026.",
+    "author_tweet_count": 38190
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCknR3zbMAAhnBW.jpg",
+          "description": {
+            "description": "A man with dwarfism is standing at a generic airport or car rental counter, interacting with a tablet mounted low on the front of the desk while his luggage sits nearby. Several computer monitors and a 'Hertz' sign are visible in the background.",
+            "ocrText": "Hertz"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@EastBayChris (East Bay Chris):** Of course he’s on a screen again. Typical Kyler.  \nLikes: 49 | Reposts: 0 | Replies: 0 | Views: 5487\n\n**@CHRIS_T1SDALE (UFL T1SDALE):** Dak headed to 🇮🇷 after one hearing about all their celebrated missile interceptions  \nLikes: 21 | Reposts: 0 | Replies: 0 | Views: 3010\n\n**@pforjets (paul.):** [image]  \nLikes: 12 | Reposts: 0 | Replies: 0 | Views: 245\n\n**@marssvivan (𝓥𝓘𝓥𝓘𝓐𝓝 𝓜𝓐𝓡𝓢𝓢):** that made me spit out my water  \nLikes: 9 | Reposts: 0 | Replies: 0 | Views: 1594\n\n**@FaulkenJP (I’m Doing My Part):** Good luck at your interview! Don't forget your fruit snacks  \nLikes: 6 | Reposts: 0 | Replies: 0 | Views: 2466\n\n**@BookieMenace (Menace 2 The Bookie):** You win the internet today 🤣  \nLikes: 5 | Reposts: 0 | Replies: 0 | Views: 790\n\n**@WhaleBetsNV1 (SportsBets):** Can he see over the suitcase? #Cardinals #NFL  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 981\n\n**@Mymusictrek (LeRoux):** [video]  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 96\n\n**@QuestFourSix (BuiltLikeGru49):** Nah that’s too tall to be him  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 591\n\n**@samaier (Scott Maier):** Kid gets around…😆 (@CoachJimFuller) #KylerMurray  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 915",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2052418979256312172",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:34.297Z",
+  "post": {
+    "id": "2052418979256312172",
+    "author_id": "1290828161480105984",
+    "created_at": "2026-05-07T16:03:11.000Z",
+    "text": "The Chameleon Bit the Wrong Branch… Full of Fire Ants https://t.co/cBhIIT3wnD",
+    "media": [
+      {
+        "media_key": "7_2052418933416693762",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2052418933416693762/pu/img/rHCPtdfIoOfPhuDU.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 15122,
+        "view_count": 791627,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2052418933416693762/pu/vid/avc1/320x568/1BgMv23jfRwSrMDy.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2052418933416693762/pu/vid/avc1/480x852/E24yxVREqsI8hr43.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2052418933416693762/pu/vid/avc1/720x1280/Wo5of_yNq8QV7Ufb.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2052418933416693762/pu/pl/Mqf8VZn-6jGuB7Rk.m3u8?v=904"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 75,
+      "reply_count": 198,
+      "like_count": 864,
+      "quote_count": 127,
+      "bookmark_count": 265,
+      "impression_count": 1797744
+    },
+    "author_followers": 4731,
+    "author_name": "Animavex",
+    "author_description": "Nature’s most intense moments live here 🐍🔥\nViral wildlife videos daily\nNature is absolutely unforgiving.",
+    "author_tweet_count": 15769
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2052418933416693762/pu/vid/avc1/720x1280/Wo5of_yNq8QV7Ufb.mp4",
+          "description": {
+            "description": "A brightly colored chameleon with red, green, and blue patterns is seen in its enclosure. In the first frame, it is perched on a thick wooden branch that is partially covered with tiny red ants. In the subsequent frames, the chameleon is shown falling or scrambling at the base of the branch on the mulch substrate, appearing distressed or losing its balance amidst the ants and wood debris. A 'MADE WITH AI' watermark is present at the top of each frame.",
+            "ocrText": "MADE WITH AI"
+          },
+          "transcription": "A clip depicting a colorful chameleon biting a branch infested with fire, ants inside a terrarium. Chameleon bites the branch, triggering a rapid and violent counterattack from the ants. Were you expecting a tremendous conquer?"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@HadassaThee**: Is this how chameleon just Die  \n  Engagement: 8 likes, 0 reposts, 21.7k views\n\n- **@_mabuja**: Chameleon mistaken the way  \n  Engagement: 1 like, 3.2k views\n\n- **@ZXZZZThanks**: It messed with the wrong person  \n  Engagement: 1 like, 4.9k views\n\n- **@Blosept001_**: Ese bino biremwa ni gari ki  \n  Engagement: 1 like, 2.8k views\n\n- **@copy_paste23**: don't dare them,they are bad!  \n  Engagement: 0 likes, 65 views\n\n- **@adorable_ca**: It is true  \n  Engagement: 0 likes, 7.7k views\n\n- **@Tinahnelly250**: That chameleon looks good  \n  Engagement: 0 likes, 206 views\n\n- **@Nicolemilandah**: Icyo kiboru gihita gihindura ibara  \n  Engagement: 0 likes, 10 views\n\n- **@Jasleen1_**: Can u do it for me too  \n  Engagement: 0 likes, 6 views\n\n- **@21mimi8**: I need more information about chameleon  \n  Engagement: 0 likes, 54 views",
+    "warnings": []
+  }
+}

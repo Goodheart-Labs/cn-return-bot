@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2029628981817770215",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:50.737Z",
+  "post": {
+    "id": "2029628981817770215",
+    "author_id": "3316376038",
+    "created_at": "2026-03-05T18:43:52.000Z",
+    "text": "BREAKING: President Trump officially removes Kristi Noem from her position as US Secretary of Homeland Security and nominates Markwayne Mullin as her replacement. https://t.co/qzTnmA2B7n",
+    "media": [
+      {
+        "media_key": "3_2029628668746608640",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCqwhVKXMAAZ9_z.png",
+        "height": 726,
+        "width": 471
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 331,
+      "reply_count": 212,
+      "like_count": 2584,
+      "quote_count": 77,
+      "bookmark_count": 187,
+      "impression_count": 369813
+    },
+    "author_followers": 1905191,
+    "author_name": "The Kobeissi Letter",
+    "author_description": "Official X account for The Kobeissi Letter, an industry leading commentary on the global capital markets. Email us: support@thekobeissiletter.com",
+    "author_tweet_count": 31559
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCqwhVKXMAAZ9_z.png",
+          "description": {
+            "description": "A screenshot of a social media post on Truth Social by Donald J. Trump, announcing Markwayne Mullin as the future United States Secretary of Homeland Security (DHS) starting March 31, 2026, and moving current Secretary Kristi Noem to a new role.",
+            "ocrText": "Donald J. Trump @realDonaldTrump\n\nI am pleased to announce that the Highly Respected United States Senator from the Great State of Oklahoma, Markwayne Mullin, will become the United States Secretary of Homeland Security (DHS), effective March 31, 2026. The current Secretary, Kristi Noem, who has served us well, and has had numerous and spectacular results (especially on the Border!), will be moving to be Special Envoy for The Shield of the Americas, our new Security Initiative in the Western Hemisphere we are announcing on Saturday in Doral, Florida. I thank Kristi for her service at \"Homeland.\"\n\nServing 10 years in the United States House of Representatives, and 3 in the Senate, Markwayne has done a tremendous job representing the wonderful People of Oklahoma, where I won all 77 out of 77 Counties - in 2016, 2020, and 2024! A MAGA Warrior, and former undefeated professional MMA fighter, Markwayne truly gets along well with people, and knows the Wisdom and Courage required to Advance our America First Agenda. As the only Native American in the Senate, Markwayne is a fantastic advocate for our incredible Tribal Communities. Markwayne will work tirelessly to Keep our Border Secure, Stop Migrant Crime, Murderers, and other Criminals from illegally entering our Country, End the Scourge of Illegal Drugs and, MAKE AMERICA SAFE AGAIN. Markwayne will make a spectacular Secretary of Homeland Security. Thank you for your attention to this matter!\n\nPRESIDENT DONALD J. TRUMP\n38 ReTruths 104 Likes Mar 05, 2026, 1:41 PM"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@LmMacro_ - Cabinet reshuffles during major geopolitical tensions usually signal internal disagreement behind the scenes (Likes: 81)\n@miodzioLFC10 - Jesus Christ. Markwayne Mullin is somehow even worse than Noem. Fucked. (Likes: 54)\n@SarAEsQMd - Markwayne : this is war. \nReporter : but secretary hegseth and the president said this is not war. \nMarkwayne : it was misspoken . \n\nMAGA . Explain this. (Likes: 31, video)\n@CryptoIntelPlug - Trump firing Noem like she's on a reality show and replacing her with an MMA fighter. The cabinet meetings are about to get physical. (Likes: 25)\n@SamuelC1726 - Fell for it again (Likes: 24, image)\n@DoinksTheFrog - Dude got two names in one (Likes: 15)\n@Polymarket - 34% chance the DHS shutdown ends this month. https://polymarket.com/event/when-will-the-dhs-shutdown-end?via=pizzintwatch (Likes: 13)\n@chorx - Wheres the \"I voted for this crowd\" on this one? (Likes: 7)\n@DocLanceP - Markwayne is an incompetent, again par for the course. (Likes: 6)\n@RationalMind00 - Good riddance. But WTF is Special Envoy for \"The Shield of the Americas\"? (Likes: 5)",
+    "warnings": []
+  }
+}

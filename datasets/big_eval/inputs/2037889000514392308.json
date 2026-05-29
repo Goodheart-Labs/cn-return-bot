@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2037889000514392308",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:01.330Z",
+  "post": {
+    "id": "2037889000514392308",
+    "author_id": "87101095",
+    "created_at": "2026-03-28T13:46:14.000Z",
+    "text": "Brutal Teslacam footage https://t.co/GjjQov1nzo",
+    "media": [
+      {
+        "media_key": "13_2037888936106758145",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2037888936106758145/img/lAQ-wmErYgc5B7Ap.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 31600,
+        "view_count": 981361,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037888936106758145/vid/avc1/320x568/pP5P68xk21g5wHVW.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037888936106758145/vid/avc1/480x852/EYOAPEq20QH6olrx.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037888936106758145/vid/avc1/720x1280/axFUutfLZ7lURsMr.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2037888936106758145/pl/d8IxFzOHAfyL4wp7.m3u8?v=296"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 805,
+      "reply_count": 812,
+      "like_count": 16535,
+      "quote_count": 123,
+      "bookmark_count": 3325,
+      "impression_count": 1788577
+    },
+    "author_followers": 8562,
+    "author_name": "Gary Mark⚡️Blue Sky Kites  𝕏 🈴",
+    "author_description": "Pro kite flier, Tesla owner/investor, SpaceX fan, co-founder Tesla & Friends 𝕏Space, admin of Tesla Universe @Clubhouse  Referral code:https://t.co/F6mUIxkGEM",
+    "author_tweet_count": 18374
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2037888936106758145/vid/avc1/720x1280/axFUutfLZ7lURsMr.mp4",
+          "description": {
+            "description": "These frames were captured from a video of a Tesla's central screen, which displays dashcam footage. The dashcam shows several motorcycles speeding and weaving through traffic on a freeway. In the first frame, one motorcyclist speeds between two other vehicles, while other motorcyclists follow behind. The subsequent frames show the motorcycles moving further away into the distance at high speeds.",
+            "ocrText": "Dang 😳😳, 91° F, Easy Ent, Dashcam: Thursday, June 6, 2024 20:16:40, 20:16:45, 20:16:50, 20:16:55, KAOTIC.COM, PASSENGER AIRBAG OFF, 04:18, 03:44, 03:49, 03:54"
+          },
+          "transcription": "Трансформация на автобусе Продолжение следует..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @rado_88z: Damn that idiot killed that girl on the back (Likes: 2007, Replies: 6, Views: 64768)\n- @ratziIla: People still defending those mf after that (Likes: 1284, Replies: 0, Views: 73076)\n- @uxm1ke: Instant Karma. (Likes: 854, Replies: 0, Views: 44087)\n- @StageCraftBeast: The mf who mixed cyclists with motor engines (Likes: 849, Replies: 0, Views: 52504)\n- @electronzap: I don't get why motorcyclists think that being on the smallest vehicles on the road makes them invincible. (Likes: 525, Replies: 0, Views: 17207)\n- @justabirthmk: People need to learn how to keep their ego in check. (Likes: 361, Replies: 0, Views: 12836)\n- @conkernasa: sometimes you just gotta kill your self and the passenger to prove those Tesla folks wrong (Likes: 329, Replies: 0, Views: 9485)\n- @ManitobaSAO: @elonmusk should add a system to Tesla’s that detect when you’re road raging with a bunch of dummies on motorcycles and automatically seize control of the car and pull over for 10 minutes or until you’ve calmed down… so no one else gets hurt. (Likes: 231, Replies: 119, Views: 59515)\n- @steveMmattison: Looks like Tesla driver was getting out of a dangerous road rage situation that we didn't see here. Did not look like Tesla driver was trying to show how fast he was, looked like there was only one way from escaping a group of entitled road rage bikers, to get in front of them and leave the situation behind, raging biker chose catch up and to pass on the right and found out why that is unsafe and illegal. (Likes: 226, Replies: 0, Views: 21281)\n- @thatseguy: The vehicle driver had an opportunity to de-escalate this situation and chose to do otherwise. Mistakes were made by both parties. (Likes: 207, Replies: 0, Views: 32800)",
+    "warnings": []
+  }
+}

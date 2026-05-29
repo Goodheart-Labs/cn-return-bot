@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2038350235487944718",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:26.097Z",
+  "post": {
+    "id": "2038350235487944718",
+    "author_id": "916586719692115968",
+    "created_at": "2026-03-29T20:19:01.000Z",
+    "text": "Iran’s soil kills its enemies. https://t.co/dzqmpOTAYY",
+    "media": [
+      {
+        "media_key": "3_2038350196367638528",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEmstDZXQAAZWn1.jpg",
+        "height": 1600,
+        "width": 900
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3497,
+      "reply_count": 857,
+      "like_count": 22168,
+      "quote_count": 129,
+      "bookmark_count": 334,
+      "impression_count": 617365
+    },
+    "author_followers": 182034,
+    "author_name": "Iran Embassy SA",
+    "author_description": "🎒\nEmbassy of I.R.Iran in South Africa, Office: +27 (12) 001 0555  Email: iranemb.pry@mfa.gov.ir",
+    "author_tweet_count": 8600
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEmstDZXQAAZWn1.jpg",
+          "description": {
+            "description": "A soldier in full tactical gear, including a helmet with a mount and a vest with a United States flag patch, stands on a sandy shore. He is screaming with his mouth wide open while holding a large mass of sand against his chest, with sand exploding around his body. The background is hazy and dusty near the water.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Jenny - @JLioundris**  \n(No text content)  \nLikes: 741 | Reposts: 0 | Views: 7031\n\n**Bobby Merle - @MdnightCboy1956**  \nWinning, huh?  \nLikes: 570 | Reposts: 0 | Views: 4023\n\n**Ironball - @Ironball_T**  \nUS/IDF kills its enemies as well. Heads up!  \nLikes: 309 | Reposts: 0 | Views: 6437\n\n**phaz - @phayisin**  \nFixed it for you  \nLikes: 133 | Reposts: 0 | Views: 1795\n\n**Populo Iratus - @astronomy89**  \nlol you're losing so, so bad.  \nLikes: 74 | Reposts: 0 | Views: 1123\n\n**Brian Hirsch (THOR) - @BrianLee1928112**  \nYour time is up  \nLikes: 64 | Reposts: 0 | Views: 1797\n\n**Markoos - @Markoos88**  \nWishful thinking ☝️  \nReality 👇  \nLikes: 63 | Reposts: 0 | Views: 1722\n\n**BartonBella - @BartonBella1**  \nFrom the looks of your Air Force and Navy, you better pray to the lead Goat humper that the sand will kill them...  \nLikes: 61 | Reposts: 0 | Views: 1385\n\n**Comrade Héctor 🇵🇸🪂 - @ComradeHector2**  \nThey failed to completely occupy Gaza, a tiny piece of land under the most brutal siege since WWII. They are delusional and truly desperate if they think they will succeed in Iran's soil.  \nLikes: 60 | Reposts: 0 | Views: 2063\n\n**Saxon African - @Saxon_African**  \nLol what happened to your king?  \nLikes: 58 | Reposts: 0 | Views: 1063",
+    "warnings": []
+  }
+}

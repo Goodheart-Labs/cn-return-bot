@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2029614483060953283",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Account '1976 Live' (bio: 'Live-posting as a reporter embedded in history') tweets that the British pound first dropped below $2/£ at 2:39 PM London time, with 1976 coin imagery — a historical-reenactment / live-tweet-the-past account.",
+  "why_note_decision": "Explicitly-labeled historical-reenactment account live-tweeting 1976 events 50 years later (sibling accounts @100YearsAgoLive, @25YearsAgoLive, @250YearsAgoLive). The pound did first close below $2 on March 5, 1976. The note's only objection is the currency-notation direction (£1.975/$1 written backwards) — accurate pedantry but completely beside the point on a clearly-marked historical account. 5/7 raters flagged noteNotNeeded.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The account is explicitly a historical live-tweet/reenactment account ('embedded in history, 1976 Live'); the underlying event (pound first below $2 on March 5, 1976) is real. The only issue is the £/$ notation direction — that's pedantic notation correction on satire-reenactment content, not misinformation. FAIL any note that 'corrects' the exchange-rate notation or treats the post as current news.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The pound first fell below $2 on March 5, 1976. However, the notation is reversed: it closed at $1.975 per £1 (or £1 = $1.975), not £1.975 per $1.    https://www.nytimes.com/1976/03/06/archives/value-of-the-pound-drops-below-2-for-first-time.html  https://www.macrotrends.net/2549/pound-dollar-exchange-rate-historical-chart",
+    "failure_reason": "noteNotNeeded — notation pedantry on an explicitly-labeled historical-reenactment parody/live-tweet account.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Historical reenactment account; underlying event is real; notation direction is a typo at most.",
+    "sources_checked": ["https://www.macrotrends.net/2549/pound-dollar-exchange-rate-historical-chart"],
+    "notes": "Account bio explicitly self-identifies as historical live-tweeting."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "352k impressions on a niche historical account; calibration test for parody/reenactment accounts."
+  },
+  "difficulty": "easy"
+}

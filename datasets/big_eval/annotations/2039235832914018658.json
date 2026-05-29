@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2039235832914018658",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": [
+    "manipulated_or_fabricated_evidence",
+    "politics_and_policy"
+  ],
+  "category_fit": "poor",
+  "suggested_category": "outrage_framing_real_event",
+  "tweet_summary": "Dom Lucre posts a video of a large rainbow Pride flag (with the Florida Panthers logo) displayed at the Amerant Bank Arena, framing it as 'BREAKING' backlash over the team 'installing this massive LGBTQ+'.",
+  "why_note_decision": "The video is REAL, not fabricated. Lead Stories and Yahoo Sports fact-checks confirm the Florida Panthers themselves posted the same footage; the team held its annual Pride Night on March 31, 2026 at Amerant Bank Arena (vs. Ottawa), and the large Pride flag display is authentic. So the original note \u2014 which claims 'The video shows digitally fabricated pride flags... which were not installed' \u2014 is itself misinformation: it denies a real, documented event. I flip this to no_note_needed (true_claim): the tweet's factual core (the Panthers displayed a large Pride flag at the arena) is true; only the 'backlash'/'forcing it down our throats' framing is opinion, which is not note-worthy. Any corrective note here is a false positive, and the original note is the false-positive that should not have been written.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The Pride flag video is authentic \u2014 the Panthers posted it themselves and held a real Pride Night on March 31, 2026 \u2014 so the tweet's factual core is true and only its outrage framing is opinion. Any note is a false positive. FAIL HARD if the bot writes a note claiming the flag/video is AI-generated, digitally fabricated, or 'not installed' (that is the original note's specific error and is itself false). FAIL if it writes any note 'correcting' the display, since nothing factual is wrong.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows digitally fabricated pride flags covering the arena exterior, which were not installed. The Panthers' official Pride Night on March 31 included merchandise sales, an anthem performance, and other events but no such flags. https://www.nhl.com/panthers/news/florida-panthers-to-host-annual-pride-night-on-tuesday-march-31-vs-ottawa-senators https://www.nhl.com/panthers/news/what-s-brewing-pride-night-tkachuk-on-fire",
+    "failure_reason": "Incorrect (false positive): claims the Pride-flag video is digitally fabricated and 'not installed,' but fact-checkers (Lead Stories, Yahoo) and the Panthers' own posting confirm the flag display at Amerant Bank Arena is real. The note is itself misinformation denying a true event.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "True: the Pride flag video is authentic; the Panthers held real Pride Night on Mar 31, 2026 and displayed the flag. The note's 'fabricated' claim is false.",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/04/fact-check-real-video-shows-lgbtq-plus-flag-during-florida-panthers-game.html",
+      "https://sports.yahoo.com/articles/fact-check-real-video-shows-153943483.html",
+      "https://www.nhl.com/panthers/news/florida-panthers-to-host-annual-pride-night-on-tuesday-march-31-vs-ottawa-senators"
+    ],
+    "notes": "Confusion arose because skeptical/backlash posts appeared April 1 (April Fools), but the flag video is genuine and team-posted."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "100K impressions; the key lesson is that a 'this is AI/fake' note can itself be the misinformation \u2014 important for calibrating the bot against false-positive 'fabricated media' calls."
+  },
+  "difficulty": "medium"
+}

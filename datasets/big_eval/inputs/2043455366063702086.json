@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2043455366063702086",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:45.093Z",
+  "post": {
+    "id": "2043455366063702086",
+    "author_id": "1981886774583705600",
+    "created_at": "2026-04-12T22:24:59.000Z",
+    "text": "https://t.co/G34YtQKDiI",
+    "media": [
+      {
+        "media_key": "3_2043455363832328192",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFvP06OXsAAVM1p.jpg",
+        "height": 680,
+        "width": 513
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 819,
+      "reply_count": 1003,
+      "like_count": 24468,
+      "quote_count": 595,
+      "bookmark_count": 5352,
+      "impression_count": 9072222
+    },
+    "author_followers": 2208,
+    "author_name": "✏️Ruffertro RuffArt 🖼️🎨",
+    "author_description": "Derecho y Ciencia Políticas 👩🏼‍⚖️\nLeft4Dead ☭ \nNeurodetergente 🌜\nFree Palpatine 🇵🇸\nAutism 🧠 \nDibujante IA ✨\n19 ❄️",
+    "author_tweet_count": 5713
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFvP06OXsAAVM1p.jpg",
+          "description": {
+            "description": "A satirical infographic titled 'DRAGON BALL FAMILY TREE' displaying character portraits connected by red lines. The first generation shows Bardock and Gine as parents of Goku. The chart then humorously suggests that Chi-Chi is the partner to every subsequent male, including her own son Gohan and grandson Goku Jr., leading to an illogical genealogy ending with Shallot.",
+            "ocrText": "DRAGON BALL FAMILY TREE BARDOCK GINE GOKU CHI-CHI VIDEL GOHAN CHI-CHI GOKU PAN GOTEN CHI-CHI GOKU JR. SHALLOT"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Omen3324🦋 (@omen3324): [video] (Likes: 3789, Reposts: 45, Views: 288815)\n- SnorlaX (@ItWasSnorlax): Fake post should be suspended. (Likes: 3034, Reposts: 71, Views: 609585)\n- Ozenstay (@SergioA09093446): [image] (Likes: 2961, Reposts: 3, Views: 243802)\n- Cephas (@pedroco112358): Goku is canonically hispanic and, thus, not this kind of degenerate. If his maid's son goes supersayan, ok, that's a kind of sin to be expected. (Likes: 1218, Reposts: 8, Views: 812951)\n- Alexis (@Alexis14923): [image] (Likes: 943, Reposts: 0, Views: 69328)\n- AleXx_ 2 🇨🇴 (@AleXx_2CK): Que mierda acabo de ver (Likes: 784, Reposts: 0, Views: 133940)\n- Moisés gamer (@GenialUm): [video] (Likes: 563, Reposts: 0, Views: 28282)\n- eggy (@dw2074): [image] (Likes: 464, Reposts: 0, Views: 29312)\n- JK. Elemino (@JayKElemino): And then you hit post !? (Likes: 447, Reposts: 0, Views: 51197)\n- モンキー・D・アユニ@生涯清掃員 (@Ayuni_D_Monkey): こういうことね👏 (Likes: 333, Reposts: 9, Views: 194492)",
+    "warnings": []
+  }
+}

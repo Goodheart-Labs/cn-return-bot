@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2013206173189636603",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:30.533Z",
+  "post": {
+    "id": "2013206173189636603",
+    "author_id": "24787367",
+    "created_at": "2026-01-19T11:05:29.000Z",
+    "text": "Recognize the meme. The inference. The belief. The trajectory. The collective thought. https://t.co/xQ4Pwg1Sre",
+    "media": [
+      {
+        "media_key": "13_2012975414558277632",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2012975414558277632/img/w3g117-i15Aax0jK.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 14348,
+        "view_count": 9320000,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012975414558277632/vid/avc1/320x568/uM7wPl7vTUOD6CgV.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012975414558277632/vid/avc1/480x852/G381Q17m8AUH-iV_.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012975414558277632/vid/avc1/720x1280/wTo3u2Z4wxFAv3BO.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2012975414558277632/pl/hJGrVUZ2OOsyPDUW.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 78,
+      "reply_count": 70,
+      "like_count": 677,
+      "quote_count": 5,
+      "bookmark_count": 45,
+      "impression_count": 50215
+    },
+    "author_followers": 247243,
+    "author_name": "🇺🇸Lionel🇺🇸",
+    "author_description": "The Official Account of #LOTUS (Lionel of the U.S.) — Emmy® Fêted, Flanêur, Husband, Haruspex, Quodlibetary, Zaouli Expert, Lawyer",
+    "author_tweet_count": 307189
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2012975414558277632/vid/avc1/720x1280/wTo3u2Z4wxFAv3BO.mp4",
+          "description": {
+            "description": "A figure with long blonde hair, seen from behind, walks through a dark hallway before entering a brightly lit stage in front of a cheering crowd.",
+            "ocrText": "@slayatknight 23 24"
+          },
+          "transcription": "Good I cut a bag with your hoes Do it fast, doors light through the ropes Tootsie party, they on coke Tootsie slide when I stroke Tell her get it out the float I tell her get it out the dope"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@SladjanNonwo**: I was waiting for a \"Shabbat Shalom, Motherfuckers!\" (20 likes)\n- **@chesternchloe4**: I don’t like her.  Her whole vibe is anti Charlie.  She’s opposite of everything he stood for. (19 likes)\n- **@GeneralJoeM17**: Yup, thats exactly what she wanted & she wasnt going to let anyone get in her way (14 likes)\n- **@tommyborumjokes**: Wild and plausible. (11 likes)\n- **@flyingpinto**: Looks more and more like it was planned long ago. Seems talent hasn't had anything to do with game and fortune for a long time, all their puppets are created for purpose (9 likes)\n- **@chelle_talky**: Better watch out! She's gonna send you a cease & desist letter. Not only does she want to be above sincere grieving, she also wants to be above the law. (9 likes)\n- **@zulu934**: Moving on up. (7 likes)\n- **@MrsKelly2**: Leave her alone. She's \"building\". 😉 (6 likes)\n- **@superstuddd777**: I'm shocked she isn't superbowl halftime show (5 likes)\n- **@Uncompromised26**: She totally does NOT seem like a person that is the happiest she's ever been in her whole life... Totally does not😂🤣 (5 likes)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2022872011253436766",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "conspiracy_and_viral_hoax", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A partisan account claims 'BREAKING: DOJ has released all names in the Epstein Files.. & Thomas Massie was one of them,' calling supporters of Massie 'p*do protectors,' over an image circling 'Massie, Thomas' in an alphabetical name list.",
+  "why_note_decision": "This is a defamatory, checkable falsehood. Rep. Thomas Massie is not an Epstein associate; he co-sponsored the Epstein Files Transparency Act forcing the files' release. The 'list' is a photo lineup that the SDNY assembled years ago for investigative purposes; appearing in it does NOT mean involvement — the same list contains obviously unrelated names (Marilyn Monroe, Elvis, etc.), as commenters note, and DOJ said it 'unmasked random people.' A reader is seriously misled into believing a named Congressman is implicated in child sex trafficking. A note is clearly warranted — flipping the provisional 'no_note_needed.' The original note is substantively strong; its 'missing key points' tag likely reflects packing two ideas (Massie's role + lineup context) tightly.",
+  "judge_guidance": "PASS only if the note establishes BOTH: (1) being named/appearing in the released Epstein documents does NOT imply wrongdoing — this specific image is a photo lineup the SDNY assembled years ago, which by design includes people with no connection (the list also contains names like Marilyn Monroe/Elvis), and (2) Thomas Massie is not implicated as an Epstein associate; he in fact co-sponsored the Epstein Files Transparency Act mandating release. FAIL if the note merely says 'unverified' or debates whether Massie is guilty, or if it omits the lineup/inclusion-is-not-implication context (the crux). Cite a credible source (Guardian/BBC/DOJ reporting). Must NOT repeat or lend credence to the 'Massie is a pedo' claim.",
+  "reference_note": "Appearing in the released Epstein documents does not imply wrongdoing. This image is a photo lineup the SDNY compiled years ago for an investigation, which by design includes unrelated people (the same list shows names like Marilyn Monroe and Elvis). Thomas Massie is not implicated; he co-sponsored the Epstein Files Transparency Act mandating their release. https://www.theguardian.com/us-news/2026/feb/13/four-men-unredacted-epstein-files-no-ties-ro-khanna https://en.wikipedia.org/wiki/Epstein_Files_Transparency_Act",
+  "original_unhelpful_note": {
+    "text": "Rep. Thomas Massie is not named in the Epstein files; he co-sponsored the Epstein Files Transparency Act mandating their release and has reviewed unredacted versions. The image misuses a NYPD photo lineup of individuals with no known Epstein ties. https://www.theguardian.com/us-news/2026/feb/13/four-men-unredacted-epstein-files-no-ties-ro-khanna https://www.bbc.com/news/articles/cn5gzepnw4lo",
+    "failure_reason": "missing_key_points_dense_two_claims",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/defamatory. Massie is not an Epstein associate; he co-sponsored the Transparency Act. The image is an SDNY photo lineup that, by design, lists unrelated people; inclusion is not implication.",
+    "sources_checked": [
+      "https://www.theguardian.com/us-news/2026/feb/13/four-men-unredacted-epstein-files-no-ties-ro-khanna",
+      "https://www.rawstory.com/epstein-files-2675268627/",
+      "https://en.wikipedia.org/wiki/Epstein_Files_Transparency_Act",
+      "https://thehill.com/opinion/robbys-radar/5740437-epstein-files-innocent-exposed/"
+    ],
+    "notes": "DOJ and multiple outlets confirm names in the released material include people from an SDNY photo lineup with no Epstein ties; appearing is not implication. Massie co-sponsored the Transparency Act. Commenters (Raymond Molina, others) already supply the correct context. The original note is accurate; it just compresses two points, which can read as dense/missing-context to raters."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "57k impressions but it's a defamatory child-sex-trafficking smear of a named sitting Congressman built on misread documents; correcting weaponized 'named in the files' = guilty narratives matters for discourse integrity."
+  },
+  "difficulty": "medium"
+}

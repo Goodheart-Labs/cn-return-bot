@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2016209072454783484",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quote-tweet by @choppa joking 'If I see my son guarding a 6'5 10 year old i'm checking in the game and we doubling that grown man' over a viral Ballislife clip of Archange Railey-Lemovou ('10 YEAR OLD ... already 6'5'). 2.1M impressions, 49k likes.",
+  "why_note_decision": "The quoted Ballislife caption is approximately right at time of posting (the kid IS extraordinarily tall and was widely reported as 6'5\" since the November 2024 viral video; per NY Post/SportBible, he is now 11–12 and 6'5\"–6'6\"). The Choppa quote-tweet itself makes no fact-checkable claim — it's a humor/reaction post about the unreal size. The original note's pedantic '...he was 6'5\" at age 10 in Nov 2024 video; he turned 12 in January 2026 and was measured at 6'6\" as of October 2025' adds minor timeline detail but doesn't actually correct anything substantive about the tweet — and the joke quote-tweet doesn't claim a date. Community correctly rejected (18 noteNotNeeded vs 4 missingKeyPoints).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The quoted Ballislife clip is the well-known November 2024 viral video of Archange Railey-Lemovou (confirmed by NY Post, SportBible, Outkick, BroBible). At the time of that video he was 10 and 6'5\"; subsequent reporting has him at 11–12 and 6'5\"–6'6\". The Choppa quote-tweet is a joke reaction (parental basketball humor), not a sourced claim. FAIL any note that (a) does pedantic age-vs-date arithmetic on a joke tweet — the joke doesn't depend on when the kid was that height, (b) repeats the original failure of trying to 'correct' Ballislife's caption when the caption is in fact correct for the time of filming, (c) writes anything except 'no note needed' here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is from November 2024, when Archange Railey-Lemovou was 10 years old and 6'5\". He turned 12 in January 2026 and was measured at 6'6\" as of October 2025.  https://www.facebook.com/ballislifestyle/posts/archange-railey-lemovou-is-already-65-and-doesnt-turn-11-until-january/1105856480896127  https://www.reddit.com/r/NBA_Draft/comments/1ohs2pz/11yearold_phenom_archange_raileylemovou_dominated",
+    "failure_reason": "note_not_needed — pedantic timeline detail on a quote-tweet joke. The quoted caption was accurate at time of filming.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_tweet_underlying_facts_accurate",
+    "sources_checked": [
+      "https://thespun.com/college-basketball/archange-railey-lemovou-11-year-old-basketball-player",
+      "https://www.outkick.com/sports/meet-archange-railey-lemovou-65-11-year-old-phenom-who-tank-basketball",
+      "https://x.com/Ballislife/status/1855664216323293406",
+      "https://www.sportbible.com/nba/nba-the-new-shaq-shaquille-oneal-basketball-968357-20241112"
+    ],
+    "notes": "Archange Railey-Lemovou was 10 and 6'5\" in Nov 2024; now 11–12 and 6'5\"–6'6\". The Ballislife caption ('10 YEAR OLD ... already 6'5\"') was accurate at filming. Choppa's quote-tweet is humor."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports humor; false-positive suppression value."
+  },
+  "difficulty": "easy"
+}

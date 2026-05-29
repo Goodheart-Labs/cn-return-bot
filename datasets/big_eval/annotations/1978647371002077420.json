@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1978647371002077420",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "selective_quote_misframing",
+  "tweet_summary": "Tweet (10.7M impressions) clips AOC at a CNN town hall, presenting her as saying 'rivers were on fire because of corporations like Deloitte pouring chemicals.' The author claims she has 'no idea what she's talking about.'",
+  "why_note_decision": "The clip is selectively edited. The transcript actually shows AOC said 'corporations like Deloitte AND 3M' — 3M is a real chemical manufacturer that has paid billions in PFAS/'Forever Chemicals' settlements. The Deloitte mention appears to be a misspeak (likely meant DuPont, famous for waterway contamination). Omitting '3M' from the framing makes AOC look ignorant when her broader point — chemical companies poisoning waterways — is supported by 3M being on her list. A note IS warranted both to flag the misspeak and to flag the selective quoting. The original (NMR) note acknowledges Deloitte/DuPont but misses that AOC also named 3M in the same sentence — the most important missing key point.",
+  "judge_guidance": "PASS if the note (1) notes the full quote includes 3M (a real chemical manufacturer with multibillion-dollar PFAS settlements), AND (2) acknowledges Deloitte is a professional services firm, not a chemical polluter (probable misspeak, often for DuPont). FAIL notes that (a) endorse 'she has no idea what she's talking about' without flagging the 3M reference, (b) treat Deloitte as an environmental polluter on the merits, or (c) only correct the Deloitte/DuPont mix-up while ignoring the selective-quoting issue.",
+  "reference_note": "The full quote names 'Deloitte AND 3M.' 3M is a real chemical manufacturer that has paid billions in PFAS 'forever chemicals' settlements (e.g. $10.3B in 2023 to US water utilities). Deloitte is a professional services firm and appears to be a misspeak (likely DuPont, famous for waterway contamination). https://www.reuters.com/legal/3m-reach-103-billion-pfas-settlement-with-us-public-water-systems-2023-06-22/ https://www.nytimes.com/2016/01/10/magazine/the-lawyer-who-became-duponts-worst-nightmare.html",
+  "original_unhelpful_note": {
+    "text": "AOC did say \"Deloitte\", but Deloitte is a professional services firm and does not manufacture chemicals. Observers suggest she meant DuPont, which has settled lawsuits over polluting waterways with toxic chemicals. https://www.deloitte.com/global/en/about.html https://www.nytimes.com/2016/01/10/magazine/the-lawyer-who-became-duponts-worst-nightmare.html https://governor.ohio.gov/media/news-and-media/state-secures-110-million-settlement-with-dupont-for-environmental-restoration-along-ohio-river https://twitchy.com/warren-squire/2025/10/16/aoc-says-rivers-were-on-fire-because-of-corporations-like-deloitte-pouring-chemicals-into-waterways-n2420422",
+    "failure_reason": "missing_key_points: omits that the full quote names 'Deloitte AND 3M' — 3M is a real chemical polluter with major PFAS settlements; this selective-quoting context is the most important missing fact",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "selective_quote_around_a_misspeak",
+    "sources_checked": [
+      "https://www.nytimes.com/2016/01/10/magazine/the-lawyer-who-became-duponts-worst-nightmare.html",
+      "https://www.reuters.com/legal/3m-reach-103-billion-pfas-settlement-with-us-public-water-systems-2023-06-22/"
+    ],
+    "notes": "Transcript shows AOC said 'corporations like Deloitte and 3M.' Deloitte is professional services (misspeak, likely for DuPont). 3M is a chemical manufacturer with billions in PFAS pollution settlements. The tweet's reduction to 'Deloitte' alone is misleadingly selective."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "10.7M impressions reducing a politician's broader (and partly accurate) chemical-pollution point to a misspeak; modest discourse stakes."
+  },
+  "difficulty": "medium"
+}

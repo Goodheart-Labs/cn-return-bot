@@ -1,0 +1,131 @@
+{
+  "tweet_id": "2040655295106503130",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:01.031Z",
+  "post": {
+    "id": "2040655295106503130",
+    "author_id": "1319287761048723458",
+    "created_at": "2026-04-05T04:58:30.000Z",
+    "text": "🇺🇸🇮🇷 How a US F-15E Strike Eagle Was Shot Down Over Iran?\n\nIt was supposed to be just another routine combat sortie, one of nearly 13,000 flown by the U.S. military since the start\n\nAn F-15E Strike Eagle, flying at high speed over southwestern Iran, was suddenly struck by a https://t.co/rSlZuEiGkD https://t.co/VNTiB9RfVl",
+    "media": [
+      {
+        "media_key": "13_2040655192933142528",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2040655192933142528/img/hsvPm9aeegNaBtlO.jpg",
+        "height": 480,
+        "width": 848,
+        "duration_ms": 387959,
+        "view_count": 138276,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040655192933142528/vid/avc1/476x270/ciljpiJL4dmI0lWX.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040655192933142528/vid/avc1/636x360/txj99ikmgsGgCJXC.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040655192933142528/vid/avc1/848x480/LF30cQ2cUlBwuQl8.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2040655192933142528/pl/T6P-kzT8kyt_M7Sn.m3u8"
+          }
+        ]
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2040651864010580168"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2040651864010580168",
+      "author_id": "1319287761048723458",
+      "created_at": "2026-04-05T04:44:52.000Z",
+      "text": "🇺🇸 The missing U.S. pilot has been extracted, but is now in critical condition.\n\nMedics are racing to stabilize him before landing.\n\nSeveral U.S. service members were also injured in the daring rescue, but all are now safe.\n\nhttps://t.co/KaPhykBJtQ https://t.co/WwbeJnixlE",
+      "media": [
+        {
+          "media_key": "13_2040642494002802689",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2040642494002802689/img/puoZRddnCmABWlPr.jpg",
+          "height": 720,
+          "width": 1280,
+          "duration_ms": 89589,
+          "view_count": 905496,
+          "variants": [
+            {
+              "bit_rate": 288000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2040642494002802689/vid/avc1/480x270/1pgTpyCLDee0WMxL.mp4?tag=14"
+            },
+            {
+              "bit_rate": 832000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2040642494002802689/vid/avc1/640x360/R2v8jiWixd-GZ3mc.mp4?tag=14"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2040642494002802689/vid/avc1/1280x720/8RSuDoWA8G3F5gDj.mp4?tag=14"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/2040642494002802689/pl/5MF5F9_wRQ39P8Ym.m3u8?tag=14&v=d95"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 289,
+      "reply_count": 120,
+      "like_count": 1148,
+      "quote_count": 15,
+      "bookmark_count": 394,
+      "impression_count": 338992
+    },
+    "author_followers": 3525328,
+    "author_name": "Mario Nawfal",
+    "author_description": "Largest Show on X | 24x7 News | Investor 700+ Startups | Founder @ibcgroupio , https://t.co/sw7OQ5KgAW",
+    "author_tweet_count": 233327
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2040655192933142528/vid/avc1/848x480/LF30cQ2cUlBwuQl8.mp4",
+          "description": {
+            "description": "A sequence showing an explosion in mid-air, an F-15E Strike Eagle flying quickly, a close-up of a fired projectile, and a helicopter labeled 'PEDRO-11' with soldiers running nearby in a desert landscape.",
+            "ocrText": "AITELLY F-15E STRIKE EAGLES AITELLY SOLDIER PILOT PEDRO-11 SOLDIER AITELLY"
+          },
+          "transcription": "F-15E Strike Eagle get hit while flying a routine mission. Just one of the nearly 13,000 combat sorties flown by the U.S. military. However, it was on this day that Iranian forces successfully targeted an American jet with a Russian-made missile. But there's one strict code in the U.S. military that overrides everything else. Nobody gets left behind. An A-10 Thunderbolt flew into the rescue, treading an approaching Iranian convoy before they could reach the American pilot. But this aggressive maneuver came with a massive risk. Because the A-10 was flying at such a low altitude, Iranian forces armed with thousands of manpads were able to launch a Chinese-made shoulder-fired missile. It found its mark crippling the A-10's engine. But this single incident triggered a massive chain reaction. When two rescue helicopters launched to recover the downed pilot, they flew right into an ambush taking heavy fire from a Soviet-era Su-23 anti-aircraft gun. On the 3rd April 2026, the Zagros Mountains, Kermanshah Province, near the Iran-Iraq border. This terrain is characterized by jagged peaks and deep, narrow valleys. It is a tactical nightmare for aviators, but provides excellent terrain masking to hide from long-range radar. However, it also allows enemy forces to set up devastating short-range anti-aircraft ambushes. But how did the US lose an F-15 East Strike Eagle, an A-10 Warthog, and nearly a combat search and rescue team helicopter and a Reaper drone in a single night? Well, this is how it started at 2.15 hours. A flight of two F East Strike Eagles crosses the border at low altitude A pilot and a weapons system officer were flying their target a deeply buried command bunker They used terrain following radar to hide in the valleys, staying beneath the gaze of Iran's long-range Baver 373 missile network. But what happens when they have to strike? To drop its GBU-28 bunker buster, the lead strike Eagle has to pull up and move to above the mountains. This is breaking the radar horizon. In a gorge below, highly mobile, TOR M1's surface-to-air missile system is waiting. It achieves a lock, and two missiles leave the rails. The pilot dumps flares and pulls high GS. One missile is spoofed. But could they evade the second? Well, the second missile detonates on proximity, causing catastrophic hydraulic failure. The crew ejects into the pitch-black mountains, and the Sandy Protocol is immediately activated. But this is the U.S. military, and they will move heaven on earth to rescue a fallen combat. At 2.45 hours in the morning, because the crash is near the border, A-10 Thunderbolt II operating nearby our diverted full resort, also called Rescue Escort. Down below, Iranian quick reaction forces are closing in on the downed airmen. The Liva 10 executes a low-level strafing run with a legendary 30mm Avenger cannon, neutralizing the convoy. But how did this aggressive maneuver come into cost? The noise and tracers give away its position As the A-10 banks hard bleeding off airspeed For context Iran recently flooded the battlefield with these Chinese shoulder missiles Weapons that are essentially reverse clones of Russian MANPAD The Iranian soldier fires a MISA inferred guided missile At this altitude, countermeasures deploy too late. The missile shreds the right turbofan engine. But can the Warthog's legendary armor save it? Yes, the armor did save it from this missile launcher as it flew even with a damaged engine. Because of the armor, the pilot managed to point the dying jet toward a plateau and punches out. But just how many crash sites are we looking at the F-15E crash deep inside southwestern Iran? Specifically, local reports and verified wreckage photos placed the crash site in the rugged mountainous terrain of the Koji-Lui and Boyer-Almad province, while the A-10 Warthog did not go down over the Iranian mainland. After taking heavy damage during the search and rescue escort mission, the pilot managed to navigate the crippled jet away from the mountains and towards safer airspace. The rugged battle damage at 10 eventually crashed in the southern waters of the Persian Gulf, specifically near the Strait of Hormuz. Now this at 3.15 hours. A dedicated combat search and rescue package launches. These are highly trained rescue units built for this type of rescue mission. It includes an HC-130J Combat King. This act as an airborne command center, followed by two Asia 60-dil helicopters, callsigns Pedro 11 and Pedro 12. They fly under the radar, topping off their fuel in mid-air to maximize loiter time. But will they make it into hostile territory undetected? Well, they push deep into the Zagros Mountains just as dawn approaches. 4 hours Pedro 11 locates the A pilot inferred strobe Pedro 12 circles above providing overwatch with its caliber machine guns Pedro 11 flares for landing and the P's hit the dirt to secure the pilot. Then this happened to hidden Iranian Su-23, a Soviet-era anti-aircraft gun opens fire from a concealed hideout. It's an ambush. Heavy armor-piercing rounds tear through Pedro 12 as it orbits, resulting in severed transmission lines and an injured crew. The pilot wrestles the crippled chopper into a hard-control crash near Pedro 11. The rescue mission is now a fight for survival, and Pedro 11 is the only way home. Under heavy covering fire, the crew of the downed chopper sprints to the surviving bird. But how do they stop the enemy barrage? Then at 5-2 hours, the C-130 overhead coordinates an immediate strike. Two F-35 stealth fighter jet littering high above in stealth overwatch drop precision munitions, silencing the anti-aircraft gun. With the A-10 pilot, the PJ and the crash chopper's crew crammed inside. Pedro 11 is maxed out on weight. But how do you fly an overloaded helicopter escape the Zagros mountain? This is how they do it. Pulling maximum power, the engines screaming, they barely clear the tree line and dive back into the valleys racing for the border. By 5.30 in the morning, Pedro 11 crossed back into Iraqi airspace. Battered, overloaded, but alive. As stated, no one gets left behind. The F-15E crew is still missing in action, requiring a massive JISOC raid the following night."
+        }
+      ],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2040642494002802689/vid/avc1/1280x720/8RSuDoWA8G3F5gDj.mp4?tag=14",
+          "description": {
+            "description": "A collection of frames from a news broadcast showing military aircraft flying, with overlay graphics providing information about a rescued US service member.",
+            "ocrText": "FILE\nVOICE OF: JENNIFER GRIFFIN | CHIEF NATIONAL SEC CORRESPONDENT\nFOX NEWS SECOND CREW MEMBER OF DOWNED F-15E FIGHTER JET RESCUED\n10:01 MT\nWAR DEPARTMENT\nFILE\nVOICE OF: JENNIFER GRIFFIN | CHIEF NATIONAL SEC CORRESPONDENT\nFOX NEWS channel MISSING U.S. SERVICE MEMBER EXTRACTED, RESCUE TEAM SAFELY OUT OF IRAN\nWAR DEPARTMENT\nFILE\nVOICE OF: JENNIFER GRIFFIN | CHIEF NATIONAL SEC CORRESPONDENT\nFOX NEWS 9:01 PT MISSING U.S. SERVICE MEMBER EXTRACTED, RESCUE TEAM SAFELY OUT OF IRAN\nWAR DEPARTMENT\nFILE\nVOICE OF: JENNIFER GRIFFIN | CHIEF NATIONAL SEC CORRESPONDENT\nFOX NEWS 9:01 PT MISSING U.S. SERVICE MEMBER EXTRACTED, RESCUE TEAM SAFELY OUT OF IRAN"
+          },
+          "transcription": "We don't know the condition of the airmen at this point. I can tell you that the injuries are likely to be serious. We know that the pilot still remains in the region getting treatment. That suggests to me that the medical condition of the pilot is such that he cannot travel onto Landstool yet, must be stabilized before you can do that. So this is still a very serious situation. A number of U.S. service members were injured during the rescue mission. We knew on Friday that two of the military helicopters were struck by enemy fire as part of that rescue mission. And then now we know more details about the A-10 Warthog that crashed on Friday. That A-10 Warthog was providing suppressive fire and flying cover for the rescue operation as they were trying to find this. They were in a race against the clock to find this second airman who had ejected from the plane and was hiding in that ridgeline. But we know that that A-10 Warthog crashed in Kuwait, and the pilot of that plane also had to eject and be rescued. But he is safe as well, I'm told. And good news tonight. But I think when all is said and done and we learn the details of this rescue mission, it really will be the stuff of Hollywood."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Colin O'Connor (@halfundergaming): How are you this dumb with basic facts? No such thing as a routine combat sortie, F-15E sure as hell ain't hitting mach 2.8, no official confirmation as to what exactly it was hit with nor the country of origin of whatever it was. Stop spouting crap out your ass. (Likes=179, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=10898)\n- Logicon (@logicsblade): I see you are sad our team got rescued while delivery cans of whup ass to IRGC ground forces… does this mean you won’t be watching the blockbuster film about it when it comes out?? 🤗🇺🇸🍾 (Likes=94, Reposts=5, Quotes=0, Replies=0, Bookmarks=0, Views=5080)\n- Naija2capeblog (@naija2capeblog): Praying for the pilot still fighting for his life and a full recovery for everyone injured in that daring rescue.  \n\nThe F-15E took a brutal hit at Mach 2.8, but that leave no one behind' code is what makes our military different. Heroes on the ground and in the air.  \n\nStay safe out there 🇺🇸 (Likes=57, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=9033)\n- Airborne (@abnheel): This is fantasy right here. @CitizenFreePres would be wise to avoid this account. (Likes=48, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2714)\n- Investing and Politics (@reibtr): What a fucking joke, AI makes a video of whatever narrative it receives dipshit. (Likes=27, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2485)\n- Michael Duffy (@Michael56411049): F-15E can't hit 2.8. Can't even hit 2 in combat condition. AI f'd up. (Likes=24, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3545)\n- Curt Watters (@heimdalsword): Stupid comment; an F-15 in only capable of around 2.5 Mach and that is in full after burner mode. (Which uses fuel rapidly, so very limited) Usual cruise speed is about .9 Mach.  Iran got lucky once! (Likes=14, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3417)\n- Christopher Weight (@chrisweight): Holy retarded... Yeah they had a it pinned at Mach 2.8... Fucking morons (Likes=14, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2077)\n- Stacey-AA7YA 🇺🇸🎙️ 📻🎧 (@AA7YA): How much are China and Russia paying you to post this AI slop? (Likes=14, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=828)\n- WeatherRX (@rx_weather): America leaves no one behind. (Likes=8, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1184)",
+    "warnings": []
+  }
+}

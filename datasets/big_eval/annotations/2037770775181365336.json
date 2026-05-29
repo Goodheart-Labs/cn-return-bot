@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2037770775181365336",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "'World of Statistics' lists 'X users by country (2025)' with figures like Poland 23.3M and (in the full thread) Finland 7.7M, Hong Kong 12.8M, Singapore 8.1M.",
+  "why_note_decision": "Several figures are impossible or grossly inflated. Finland is listed at 7.7M X users against a total population of only ~5.6M; DataReportal's actual X ad-reach for Finland is ~2.2M. Poland is listed at 23.3M but DataReportal-derived X reach is ~4-5M. Hong Kong (12.8M users vs ~7.5M population) and Singapore (8.1M vs ~6M population) are similarly impossible. Replies independently flag every one of these (Finland, Poland, HK, Singapore). These appear to misread X's inflated 'potential ad reach' or VPN-distorted figures as real user counts. A note correcting the inflated numbers with a credible source is warranted.",
+  "judge_guidance": "PASS only if the note flags that the listed figures are inflated beyond credible X user counts (and beyond country populations in cases like Finland 7.7M > 5.6M population), and gives at least one corrected figure from a credible source (e.g. DataReportal: Finland ~2.2M, Poland ~4-5M). It should ideally note the likely cause (X 'potential ad reach' is not unique users). A note that endorses the listed totals fails. A note that just says 'sources missing' without a corrected number is weaker (the original was dinged for sourcesMissingOrUnreliable, so a strong credible source is required). Cite DataReportal/Statista.",
+  "reference_note": "The figures are inflated beyond official X ad reach and population sizes in multiple countries; e.g., 4.6M users in Poland (not 23.3M) and 2.2M in Finland (not 7.7M). https://datareportal.com/reports/digital-2026-poland https://www.statista.com/statistics/1419627/nordics-x-twitter-users-by-country",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading/inflated: figures exceed credible X user counts and, for Finland (7.7M vs ~5.6M pop), exceed total population. DataReportal X ad-reach: Finland ~2.2M, Poland ~4-5M.",
+    "sources_checked": [
+      "https://datareportal.com/reports/digital-2025-finland",
+      "https://datareportal.com/reports/digital-2025-poland",
+      "https://datareportal.com/essential-x-stats"
+    ],
+    "notes": "DataReportal lists X ad-reach for Finland at ~2.21M early 2025; Finland population ~5.6M makes 7.7M impossible. Replies independently caught Finland, Poland, Hong Kong, Singapore exceeding plausible counts. Likely conflates X 'potential ad reach' (not unique humans) and/or VPN inflation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.3M impressions from a 5M-follower stats account; spreads bad data literacy. Modest stake — correcting widely-shared bogus statistics has general epistemic value but no specific welfare/safety impact."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2012051984933929151",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["scams_fraud_finance", "platform_manipulation"],
+  "category_fit": "partial",
+  "suggested_category": "influencer_misleading_investigation",
+  "tweet_summary": "Wall Street Apes posts a Nick Shirley video claiming a Minnesota healthcare company 'Advance Mobility Incorporated' has been getting taxpayer money for 26 years but their address 'doesn't exist' — frames as '26 years of scamming Americans'.",
+  "why_note_decision": "Note IS warranted. The 'scam' framing is misleading — Advance Mobility Inc. (USDOT 881376) is a real, active, FMCSA-registered ADA-van/non-emergency-medical-transportation business with a physical address at 15222 Florist Circle, Apple Valley, MN. The Minneapolis address Shirley visited (2833 13th Ave S #224) is the company's listed mailing address in a commercial strip mall, not its operations location. FMCSA SAFER, the MN Secretary of State business records, Help Me Connect (the MN state provider directory), and the company's own website all confirm it operates. Per Minnesota Reformer (Jan 2026), Shirley's reporting was criticized as 'shoddy' — he conflated mailing address with operational location. The original AI note nails this (active and in good standing, incorporated 1999, physical address Apple Valley, Minneapolis is the mailing address) with strong sources (MN SoS, FMCSA SAFER). Raters split: 524 missing-key-points, 462 note-not-needed, 375 incorrect. The substance is correct; partisan downvoting likely. A correct note must clearly establish the company exists with a real Apple Valley address and that the visited Minneapolis location is just a mailing address.",
+  "judge_guidance": "PASS if the note establishes: (1) Advance Mobility Inc. is a real, active business — registered with MN SoS since 1999, FMCSA-registered ADA/non-emergency-medical-transportation carrier (USDOT 881376); (2) the company has a physical operational address at 15222 Florist Circle, Apple Valley, MN; (3) the 2833 13th Ave S #224 Minneapolis location is the company's registered MAILING address (a commercial strip mall), not its operations site; (4) optionally that Minnesota Reformer described Shirley's investigation as 'shoddy' for conflating these. Sources from MN SoS business search, FMCSA SAFER, or Minnesota Reformer are appropriate. The bot MUST NOT validate the 'company doesn't exist' framing. Length-OK if it makes the mailing-vs-operations address distinction clearly.",
+  "reference_note": "Advance Mobility Inc. is an active, FMCSA-registered ADA-van and non-emergency medical transport business (USDOT 881376), registered with Minnesota since 1999. Its physical/operational address is 15222 Florist Circle, Apple Valley, MN; 2833 13th Ave S #224 Minneapolis is its registered mailing address in a commercial strip mall, not its operations. https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=USDOT&query_string=881376 https://minnesotareformer.com/2026/01/20/shirleys-work-is-shoddy-but-the-failure-to-stop-fraud-is-what-got-us-here/",
+  "original_unhelpful_note": {
+    "text": "The company is active and in good standing per Minnesota records, incorporated in 1999, with a physical address at 15222 Florist Circle, Apple Valley, MN; the visited location is its registered mailing address in a commercial strip mall. https://mblsportal.sos.state.mn.us/Business/SearchDetails?filingGuid=c168f6a2-9dd4-e011-a886-001ec94ffe7f https://safer.fmcsa.dot.gov/query.asp?query_param=USDOT&amp;query_string=881376&amp;query_type=queryCarrierSnapshot",
+    "failure_reason": "Note is substantively correct and well-sourced (MN SoS + FMCSA SAFER). Raters split — likely partisan downvoting because it undercuts a viral 'fraud caught on camera' narrative. Could cite Minnesota Reformer's criticism of Shirley for sharper framing.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://bubba.ai/trucking-companies/minnesota/apple-valley/advance-mobility-inc-881376",
+      "https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=USDOT&query_string=881376",
+      "https://www.startribune.com/minnesota-medical-transportation-program-faces-new-scrutiny/601564056",
+      "https://minnesotareformer.com/2026/01/20/shirleys-work-is-shoddy-but-the-failure-to-stop-fraud-is-what-got-us-here/",
+      "https://helpmeconnect.web.health.state.mn.us/HelpMeConnect/Providers/Advance_Mobility_Inc./Transportation/1"
+    ],
+    "notes": "Advance Mobility Inc. is real (USDOT 881376), with operational address at 15222 Florist Circle, Apple Valley, MN. Minneapolis address is mailing-only. Minnesota Reformer called Shirley's work 'shoddy' specifically because he confused mailing with operations address. Minnesota DOES have a real autism-Medicaid fraud problem but Advance Mobility is not part of it per public records."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "8.5M-view tweet feeds the wider Minnesota-fraud narrative; this specific influencer claim is wrong and a clean correction is valuable for trust."
+  },
+  "difficulty": "medium"
+}

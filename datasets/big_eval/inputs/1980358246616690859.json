@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1980358246616690859",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:59.371Z",
+  "post": {
+    "id": "1980358246616690859",
+    "author_id": "1720701343",
+    "created_at": "2025-10-20T19:39:33.000Z",
+    "text": "Can you imagine if Biden or Obama started demolishing the Whitehouse? Wtf. https://t.co/aNBG3ApVL4",
+    "media": [
+      {
+        "media_key": "3_1980358244011827200",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3ulVJ5XYAAIaJx.jpg",
+        "height": 862,
+        "width": 968
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 669,
+      "reply_count": 688,
+      "like_count": 10867,
+      "quote_count": 63,
+      "bookmark_count": 326,
+      "impression_count": 395777
+    },
+    "author_followers": 946093,
+    "author_name": "JerryRigEverything",
+    "author_description": "I review technology from the inside.",
+    "author_tweet_count": 24384
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3ulVJ5XYAAIaJx.jpg",
+          "description": {
+            "description": "A high-angle shot shows a large excavator demolishing a white, two-story building on what appears to be a government or historical campus, with a much larger white classical building seen in the background. The excavator is tearing into the center of the structure, leaving piles of rubble and debris. Several workers in high-visibility vests are scattered around the dirt site, and a black metal fence with plywood barriers is in the foreground.",
+            "ocrText": "VOLVO\nACECO"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Neeko 🥑** (@NeekoC18): They lost their sht over a tan suit.. (Likes: 647)\n- **Trumplesteinskin** (@1GexX2): When you're a star, they let you do it. Or something like that. (Likes: 386)\n- **Damon Imani** (@damonimani): Wow! Trump is making renovations to the White House like at leasts 20 presidents before him who oversaw major renovations or expansions. \n\n- My name is JerryRetardEverything and I think disinformation is bad! (Likes: 368)\n- **Below Average Utah Dad** (@Belowavgutdad): Come on Zach don’t let your hatred of Trump cloud, your critical thinking skills. They’re removing a portion of the east wing which is historically been used for the first lady and her staff and replacing it with a large ballroom area so that soft tents are no longer needed on the White House lawns that can be better secured for hosting state events. And it is being paid for by Donald Trump and private donors out-of-pocket not by taxpayers.\n\nYou say that you’re better than people that tell half truths tell the whole truth about what’s going on (Likes: 313)\n- **Papa Luigi** (@papaluigi77): Look at the upside, just think of how satisfying and symbolic it will be to tear all this shit down when he's gone (Likes: 174)\n- **Windchaser** (@windchaser22): Truman’s renovations. (Likes: 162)\n- **Stars And Sips 🥃** (@StarsAndSips): Remember to breathe, Zack... your TDS is showing. (Likes: 119)\n- **Gregor** (@Gregor063125891): Can you imagine this;? (Likes: 88)\n- **NicWar** (@NicWar): To be replaced with gold bullshit. Eek. (Likes: 87)",
+    "warnings": []
+  }
+}

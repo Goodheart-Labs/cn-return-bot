@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1992885850938745326",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:22.632Z",
+  "post": {
+    "id": "1992885850938745326",
+    "author_id": "1429400366819512323",
+    "created_at": "2025-11-24T09:19:47.000Z",
+    "text": "Turkish Muslim Ali Dawah humiliated by British patriots: \"The UK is a Christian country, go back to your Islamic country!\" British patriots have had enough. https://t.co/uF0YXvKgn8",
+    "media": [
+      {
+        "media_key": "7_1992885800577466368",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1992885800577466368/pu/img/TYxrtmj7Tt4LqBaq.jpg",
+        "height": 1282,
+        "width": 720,
+        "duration_ms": 16788,
+        "view_count": 215244,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1992885800577466368/pu/vid/avc1/320x568/VOFMPi49-SMjMEUN.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1992885800577466368/pu/vid/avc1/480x854/f2KbFlPqXV_fF253.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1992885800577466368/pu/vid/avc1/720x1282/R3P3UfWNvLiQ7r4u.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1992885800577466368/pu/pl/cZ5ocJ_dWKfoSMS4.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 770,
+      "reply_count": 760,
+      "like_count": 6477,
+      "quote_count": 67,
+      "bookmark_count": 380,
+      "impression_count": 353505
+    },
+    "author_followers": 1537715,
+    "author_name": "RadioGenoa",
+    "author_description": "RadioGenoa",
+    "author_tweet_count": 24679
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1992885800577466368/pu/vid/avc1/720x1282/R3P3UfWNvLiQ7r4u.mp4",
+          "description": {
+            "description": "A man with a beard and glasses is seen in the foreground, speaking to the camera in a crowded outdoor area at night. He is wearing a grey shirt. In the background, there are blurred lights and people, including one person wearing a white headdress and a black shirt, holding what appears to be a cup.",
+            "ocrText": ""
+          },
+          "transcription": "It's a Christian country mate. It's a Christian country mate. I ain't a fucking Muslim country. Yeah, yeah. Go back to Islamic country with that attitude. It's a Christian country. It's a Christian country. Christian country. No, I don't want to read the Quran."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @zagortenay (Nevzat Aydın): \"This guy is not Turkish, typical Arab. There is no ‘W’ in Turkish alphabet, he couldn’t get that name if born in Turkey. Don’t spread false information.\" (Likes: 1180, Reposts: 6, Views: 15131)\n- @uyilbeimatk (Procyon): \"This man is not Turkish, he is Arab. Don't spread false news and target Turks. We do not accept such people and their ideas. Turkey is a secular country. It has nothing to do with Arabs and their ridiculous Arab culture. Have you never been on vacation to Turkey?\" (Likes: 1083, Reposts: 11, Views: 13772)\n- @srkntnyldz (Serkan Tanyildizi): \"Dawah is not exist in Turkish surnames. Btw, it s okey to send them to their countries 😂\" (Likes: 462, Reposts: 0, Views: 8707)\n- @SlayerX1988 (Alvin Tammy): \"Bro they’re not Turkish ☠️\" (Likes: 358, Reposts: 0, Views: 3425)\n- @kemalalp02 (Kemal Alp): \"He’s not Turkish\" (Likes: 309, Reposts: 0, Views: 3175)\n- @Mu_Scientist (Mu_Scientist🏴‍☠️🇹🇷🇦🇿🇵🇰🇦🇶☢️🔬): \"Ali Dawah (real name Erdi Kilic) was born in London, UK, in 1989, to a Kurdish Alevi family from Turkey, according to multiple biographical sources. He grew up there and converted to Islam in 2012.\" (Likes: 199, Reposts: 0, Views: 4876)\n- @Ozgen17 (Sevgi PEKAYDIN 2): \"Bu adam Türk değil Arap. Yalan haber yapmayın.\" (Likes: 157, Reposts: 0, Views: 1522)\n- @EbruDevrim1 (Ms. Revolution): \"This man is not Turkish, it is clear from his physical appearance and surname that he is of Arab origin.\" (Likes: 96, Reposts: 0, Views: 2392)\n- @KieraDiss (Kiera Diss): \"All these British-born Islamists must leave.\" (Likes: 20, Reposts: 0, Views: 2557)\n- @Aku_700 (AshleY): \"When will Muslims understand that they are in the United Kingdom, a Christian country with British traditional values and not in still living in their oppressed third world violent hole they choose to move from? If you don't fit in or disagree with British values move back home.\" (Likes: 15, Reposts: 0, Views: 2068)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2022292449066938697",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:18.230Z",
+  "post": {
+    "id": "2022292449066938697",
+    "author_id": "23194886",
+    "created_at": "2026-02-13T12:51:06.000Z",
+    "text": "#Poland — America’s very first and oldest ally!!!  That’s why @realDonaldTrump⁩ LOVES Poland ⁦@NawrockiKn⁩ #polandUSA250 https://t.co/nK4pPzaES9",
+    "media": [
+      {
+        "media_key": "13_2022292392536068096",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2022292392536068096/img/uEPBCUDC4mnpDNrn.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 45373,
+        "view_count": 444907,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022292392536068096/vid/avc1/480x270/mYjXzRpU5V7v4YRv.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022292392536068096/vid/avc1/640x360/oQr5B2Tn53oPmBgZ.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022292392536068096/vid/avc1/1280x720/BM8GdbhTRzHGZRec.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2022292392536068096/pl/-RtSS30q-nnN_bqM.m3u8?v=e0b"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 927,
+      "reply_count": 2045,
+      "like_count": 4710,
+      "quote_count": 360,
+      "bookmark_count": 518,
+      "impression_count": 1206554
+    },
+    "author_followers": 21064,
+    "author_name": "Tom Rose",
+    "author_description": "A not-so-secret agent of MAGA Judeo-Christian Conspiracy",
+    "author_tweet_count": 4531
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2022292392536068096/vid/avc1/1280x720/BM8GdbhTRzHGZRec.mp4",
+          "description": {
+            "description": "A set of four frames depicting a large political event at a mound. The first frame presents an aerial view of the mound overcrowded with people and decorated with Polish and US flags. The second frame shows Donald Trump standing at the top of the mound, looking down onto the crowd. The third frame shows fireworks being launched from the top of the mound. The final frame shows Donald Trump shaking hands with another official, while soldiers holding flags stand in the background.",
+            "ocrText": "USA 2024"
+          },
+          "transcription": "Oh, say can you see by the dawn's early light What so proudly we hailed at the twilight's last gleaming Whose broad stripes and bright stars through the perilous fight O'er the ramparts we watched were so gallantly streaming"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Bart Staszewski (@BartStaszewski): (No text content) - Likes=1420, Reposts=8, Quotes=0, Replies=1, Views=13962\n- 𝓝𝓪𝓽𝓽𝔂_𝓓𝓻𝓮𝓪𝓭𝔂♡︎ 🇵🇱 (@natty_dready91): Tak. Spektakularnie Pan spierdolił nastroje Polaków wobec USA, a teraz Pan myślisz, że post o rzekomej miłości Trumpa do Polski coś zmieni? Przykro mi, ale nie z nami te numery - Likes=1323, Reposts=0, Quotes=0, Replies=0, Views=18025\n- Narodowy Front Krzewienia Cnót i Zapobiegania Złu (@FrontCnot): AI płakała jak generowała. - Likes=979, Reposts=0, Quotes=0, Replies=0, Views=7805\n- Irina Ilkiw (@IrinaIlkiw): Then why are you posting shit like this - Likes=975, Reposts=6, Quotes=0, Replies=4, Views=11273\n- Robert Maślak (@RobertMaslak): Mr. Ambassador, instead of posting pathetic AI-generated videos, you should be apologizing to the Marshal of the Sejm and to the families of Polish victims of the wars in Iraq and Afghanistan. - Likes=938, Reposts=0, Quotes=0, Replies=0, Views=14063\n- Mesuret (@NocnaZ): Don't get tired, Poles don't trust you anymore. - Likes=766, Reposts=0, Quotes=0, Replies=0, Views=8219\n- Podcast Wojenne Historie (@WojenneH): The oldest ally of the USA is France. - Likes=693, Reposts=0, Quotes=0, Replies=0, Views=18593\n- Darth is Vader (@Darth_is_Vader): You can’t be real, man🤦‍♂️ - Likes=646, Reposts=0, Quotes=0, Replies=0, Views=6151\n- Jakub Kralka (@jakubkralka): Nie no, widać napracowanko - Likes=592, Reposts=0, Quotes=0, Replies=0, Views=15150\n- Dominik Tarczyński MEP (@D_Tarczynski): 🇵🇱🤝🇺🇸 - Likes=455, Reposts=10, Quotes=0, Replies=44, Views=26476\n- Stanisław Nelken (@smnelken): Are history classes optional in the US? Your oldest ally is France. - Likes=435, Reposts=0, Quotes=0, Replies=0, Views=27823\n- Kasia💉🩺 (@KasiaActus): Not anymore. And what is this fake AI-generated video ❓ - Likes=384, Reposts=0, Quotes=0, Replies=0, Views=6654",
+    "warnings": []
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2007457717040931265",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "politics_and_policy"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "On Jan 3, 2026, a MAGA account posts crowd-celebration footage ('VENEZUELA LIBRE') captioned 'Today is Venezuela's Independence Day!'",
+  "why_note_decision": "The 'Independence Day' framing is false. Venezuela's Independence Day is July 5, not January 3. The footage shows people celebrating the US capture of Nicolas Maduro on Jan 3, 2026 (Operation Absolute Resolve), not a national holiday. The factual error (wrong holiday/date) is checkable and worth correcting. The original note makes exactly this correction and is accurate; it was rated not-helpful likely for tone/note-not-needed in a celebratory partisan thread, not for being wrong.",
+  "judge_guidance": "PASS only if the note corrects the false 'Independence Day' claim: Venezuela's Independence Day is July 5, NOT January 3; the celebrations shown are over the US capture/removal of Nicolas Maduro on Jan 3, 2026, not a national independence holiday. The note should cite a source for Venezuela's actual independence date and/or the Maduro-capture event. FAIL if it concedes Jan 3 is Independence Day, disputes that the celebrations happened (they did), or fails to name the real occasion (Maduro's capture). Keep it factual and non-partisan -- correct the date/holiday, do not editorialize about the intervention.",
+  "reference_note": "Venezuela's Independence Day is July 5, not January 3. These celebrations are over the U.S. capture of Nicolas Maduro on Jan 3, 2026, not an independence holiday. https://nationaltoday.com/venezuela-independence-day/ https://apnews.com/article/venezuela-us-military-action-95e557166a08a1b40aa0d8af507a8b99",
+  "original_unhelpful_note": {
+    "text": "Misleading: Venezuela's Independence Day is July 5, not Jan 3. The footage and news reports show people celebrating the U.S. ouster/capture of Nicolas Maduro on Jan 3, 2026, not an independence holiday. https://nationaltoday.com/venezuela-independence-day/ https://apnews.com/article/venezuela-us-military-action-95e557166a08a1b40aa0d8af507a8b99",
+    "failure_reason": "Accurate and well-sourced; rated not-helpful mainly on note-not-needed/tone grounds in a celebratory MAGA thread (raters felt the date error was harmless or the note partisan). The core correction is correct.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_date_real_event_miscontextualized",
+    "sources_checked": [
+      "https://nationaltoday.com/venezuela-independence-day/",
+      "https://www.cnn.com/world/live-news/venezuela-explosions-caracas-intl-hnk-01-03-26",
+      "https://en.wikipedia.org/wiki/2026_United_States_intervention_in_Venezuela"
+    ],
+    "notes": "Venezuela's independence is July 5 (signed 1811). Jan 3, 2026 was the US capture of Maduro (Operation Absolute Resolve). The crowd footage is real celebration of that event, mislabeled as 'Independence Day'."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.2M views; the date error is minor but the miscontextualization of a major geopolitical event (Maduro capture) as a holiday is a clean, low-controversy correction the pipeline should make."
+  },
+  "difficulty": "easy"
+}

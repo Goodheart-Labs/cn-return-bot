@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2046831831459225736",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": [
+    "joke_or_satire",
+    "scams_fraud_finance"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "persona_satire_on_real_controversy",
+  "tweet_summary": "Peter Girnus writes in the persona of a 'Web3 Ambassador at World Liberty Financial' (a Trump-family-linked crypto project), describing an internal dashboard column called LITIGATION and the 52-page Justin Sun complaint \u2014 a viral satirical thread.",
+  "why_note_decision": "This is well-documented satire by Peter Girnus, a journalist who has published a series of similar persona-as-insider posts on the WLFI controversy. He is not actually a WLFI ambassador \u2014 co-founder Zach Witkoff publicly stated 'You don't work at WLFI\u2026 nobody from the project has ever met you' (top reply). The Justin Sun 52-page complaint and the WLFI counter-defamation suit are real public matters. The post is critical commentary, not a fact claim that a CN should adjudicate, and the visible reply thread engages with the satirical voice rather than taking the persona literally. The original note conflates 'satirical voice' with 'misleading' and adds a not-quite-correct gloss; given satire is being prominently corrected in-thread by the actual co-founder, an additional note is unnecessary.",
+  "judge_guidance": "PASS only if the bot declines to write a note, OR writes a note that does all of: (1) identifies the post as satire by journalist Peter Girnus writing in an insider persona; (2) notes Girnus has no formal role at WLFI per WLFI co-founder Zach Witkoff's reply; (3) does NOT mischaracterize the underlying factual matters (the Justin Sun complaint is real, WLFI's defamation counter-suit is real). REJECT any note that calls the underlying allegations false, defends WLFI's leadership, or otherwise denies the documented controversy.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This post is a satirical piece; the author is not affiliated with World Liberty Financial or involved in its operations, per WLFI co-founder Zach Witkoff. Core details on the Justin Sun lawsuit align with reports but are presented fictionally.    https://www.binance.com/en/square/post/311634254749090  https://www.reddit.com/r/thebulwark/comments/1sixefp/peter_girnus_posted_a_complete_dismantling_of_the  https://www.reuters.com/legal/government/world-liberty-investor-justin-sun-claims-trump-crypto-venture-secretly-installed-2026-04-13",
+    "failure_reason": "Note not needed \u2014 satire correctly read by the audience; the most-engaged reply is Zach Witkoff publicly disowning the persona, so the context is already in-thread. Adding a literal note is low-value and risks signalling that political satire requires CN intervention.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satire_with_real_context_already_in_thread",
+    "sources_checked": [
+      "https://x.com/gothburz/status/2043043381559837153",
+      "https://ourcryptotalk.com/news/peter-girnus-satirical-post-trump-witkoff-crypto-conflicts-goes-viral",
+      "https://protos.com/justin-sun-wants-world-liberty-financial-to-unmask-its-x-admin/"
+    ],
+    "notes": "Girnus posts a multi-part satirical 'confession' series; Justin Sun's complaint and WLFI's defamation suit are real and ongoing."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "~113k impressions on satirical political-finance commentary; corrections to satire have low EA value and risk over-noting."
+  },
+  "difficulty": "medium"
+}

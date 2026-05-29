@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2031884438553182633",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Turning Point Action promotes a Trump/Jake Paul rally ('MAGA rallies are BACK') with on-screen text framing it as an effort 'To stop RINO Massie,' implying Rep. Thomas Massie is an enemy of the MAGA movement.",
+  "why_note_decision": "A note is warranted: the 'RINO Massie' framing from TPUSA contradicts the documented record of its own late founder. Charlie Kirk repeatedly praised Massie as 'one of my favorite members of Congress,' calling him 'honest,' 'tough,' and 'terrific' (2023), and TPUSA's own legislative scorecard rates Massie ~91.7/100 for the current session - among the highest. This verifiable context corrects the implication that opposing Massie is consistent with Kirk's/TPUSA's stated positions. The factual hook (Kirk's quotes and the scorecard) makes this a correction, not mere political opinion.",
+  "judge_guidance": "PASS only if the note supplies verifiable, on-point context that undercuts the 'RINO Massie' framing - e.g. that TPUSA founder Charlie Kirk publicly praised Massie ('one of my favorite members,' 'honest/tough/terrific') and/or that TPUSA's own scorecard rates Massie very highly (~91.7/100). It must cite sources and stay factual. FAIL if the note instead argues the broader merits of Massie (pure opinion), takes sides on whether he is a 'RINO,' or omits the concrete Kirk-quote / scorecard facts. The correction's value is the documented inconsistency, not editorializing.",
+  "reference_note": "TPUSA founder Charlie Kirk repeatedly said that Massie was one of his &quot;favorite&quot; members of Congress, calling him &quot;honest,&quot; &quot;tough,&quot; and &quot;just terrific.&quot; TPUSA currently gives Massie a rating of 91.7 out of 100 for the current session on their own website.    https://x.com/decensorednews/status/2031968073595388071  https://x.com/charliekirk11/status/810227376466620417  https://www.tpaction.com/scorecard/legislators/thomasmassie",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_framing",
+    "sources_checked": [
+      "https://www.mediaite.com/media/news/turning-point-usa-fawns-over-trumps-bid-to-stop-rino-massie-but-charlie-kirk-considered-massie-one-of-his-favorite-congressmen/",
+      "https://www.tpaction.com/scorecard/legislators/thomasmassie",
+      "https://x.com/decensorednews/status/2031968073595388071"
+    ],
+    "notes": "Confirmed: Kirk in 2023 called Massie 'one of my favorite members of Congress' ('honest,' 'tough,' 'just terrific'); TPUSA's own scorecard rates Massie ~90-91.7/100. The note accurately documents the inconsistency in TPUSA's 'RINO Massie' attack. Rated CURRENTLY_RATED_HELPFUL. Borderline on opinion, but anchored to verifiable quotes/scorecard, so a note is warranted."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.6M impressions in an intra-MAGA dispute; modest world-stakes but a good example of correcting political framing using the source's own documented record rather than opinion."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2017441660578254936",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["staged_or_scripted_content", "joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "@FearBuck (1.2M-follower viral-clip account) posts a 2-minute clip from a Druski comedy skit where comedian Druski (in fake police gear with RaKai) does a scripted fake traffic stop. Caption frames it as 'Druski and RaKai gets excited after pulling over a girl with a BBL'. 622k impressions, 10k likes.",
+  "why_note_decision": "Druski is a famous black-comedy creator whose entire shtick is fake-cop / fake-interview sketches. The dialogue in the transcript ('Bitch, stay! Bitch, stay!', 'We promote each other', 'you a hating ass nigga') is plainly comedic improv, not a real police interaction. The audience knows Druski is a comedian — comments mostly debate whether the woman's body is natural, not whether it's a real stop. The tweet caption already frames it as Druski's content (using his name), so no reader is being misled into thinking this is real bodycam. Community downrated the note (4 noteNotNeeded vs 3 missingKeyPoints) — the explainer is unneeded.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The clip is Druski (a well-known black-comedy creator with millions of followers whose career is fake-cop sketches) and RaKai performing scripted comedy. The tweet already names Druski — readers know who he is. The dialogue ('Bitch, stay!', 'We promote each other', 'You a hating ass nigga' between two 'cops') is plainly scripted comedy improv. FAIL any note that (a) repeats the original failure of solemnly stating 'this is comedy by Druski, not real bodycam' as if anyone watching thought it was real — Druski's name is IN THE TWEET, (b) treats clearly-named comedian content as deception. This is restraint-on-named-comedy: no note needed when the comedian is identified in the caption.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is a comedy skit by comedian Druski role-playing as a police officer, not real bodycam footage of an actual traffic stop. https://en.wikipedia.org/wiki/Druski https://www.youtube.com/watch?v=ZeIhwPjmiRA",
+    "failure_reason": "note_not_needed — Druski's name is in the tweet itself; the comedy-skit framing is implicit. Explainer note adds nothing.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "named_comedian_named_in_tweet",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Druski",
+      "Comment patterns (debate the woman's body, no debate that the clip is real bodycam)"
+    ],
+    "notes": "Druski is a widely known Black comedian whose comedy persona includes fake-cop bits. The tweet already credits him by name. Clip is unambiguously scripted comedy."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Named-comedian comedy clip; false-positive trap for the pipeline."
+  },
+  "difficulty": "easy"
+}

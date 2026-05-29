@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2047279927959941133",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "unverified_breaking_news_wire",
+  "tweet_summary": "*Walter Bloomberg (1.47M followers, 554k views) — a market-news headline aggregator known for fast paraphrases of wire stories — posts on April 23 2026: 'IRAN-U.S. TALKS IN PAKISTAN MAY SEE BREAKTHROUGH IN PREPARATIONS TONIGHT OR TOMORROW, IRANIAN DIPLOMATIC SOURCE SAYS, PER RIA'. Replies mock the vagueness and note that ~1,750 ES futures contracts (10x average volume) were bought 5 minutes before the headline.",
+  "why_note_decision": "A note is not warranted, though this is a borderline case. The tweet is a paraphrase of a wire-style headline citing RIA Novosti and an unnamed Iranian diplomatic source. As of April 20-23 2026, Iran was publicly signaling it would not attend a second round of US talks in Islamabad (Al Jazeera, Jerusalem Post) — but Iranian diplomatic sources to Russian press were simultaneously hedging that talks could resume. This is exactly the kind of conflicting signals/anonymous-source breaking news Community Notes shouldn't try to adjudicate in real time. The original note's claims — that 'no such statement exists on RIA Novosti' (proving a negative) and that 'Iran has denied' (accurate but doesn't disprove a separate diplomatic-source quote to RIA) — are both shaky. Raters correctly flagged SourcesMissingOrUnreliable (4), NoteNotNeeded (4), IrrelevantSources (3). The cited Daily Sabah and Al Jazeera articles document Iran's public skepticism but don't disprove the existence of a RIA-cited diplomatic source. Better to let market-aggregator hot takes ride than to issue a fragile fact-check.",
+  "judge_guidance": "PASS only if the bot declines to write a note (any note is a false positive on a fast-moving wire story). The tweet is a paraphrase of a RIA-attributed quote from an anonymous Iranian diplomatic source about US-Iran talks in Pakistan. As of April 23 2026, Iran was sending mixed public signals (public skepticism re: second round per Al Jazeera Apr 20, but private channels active per CNN/Time). A bot that writes a note claiming 'no such statement on RIA' FAILS (proves a negative; RIA's Russian-language wire is hard to search). A bot that writes a note saying 'Iran has denied plans to attend talks' FAILS — that's not the same claim and doesn't disprove an unnamed-source comment to a Russian wire. A bot that adds context about the broader denied-second-round situation could be acceptable but is unnecessary; the tweet is wire-aggregator content with no clear misleader.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Additional context: The claimed statement is not found on RIA Novosti's website. Iran has denied plans to attend talks with the US in Pakistan.    https://www.aljazeera.com/news/2026/4/20/pakistan-ready-for-multi-day-us-iran-talks-but-tehran-unsure-about-joining  https://www.dailysabah.com/world/mid-east/iran-reportedly-rejects-next-round-of-talks-with-us-in-pakistan",
+    "failure_reason": "Note tries to debunk a wire-aggregator headline by (1) proving a negative ('not found on RIA Novosti's website' — implausible to verify across Russian-language wires and over time), and (2) substituting a related-but-different claim ('Iran has denied plans to attend' — accurate, but doesn't disprove an anonymous-source RIA quote about preparations). Raters flagged SourcesMissingOrUnreliable (4), NoteNotNeeded (4), IrrelevantSources (3), Incorrect (2). This is a case where the underlying diplomatic situation is genuinely confused (Iran publicly skeptical, private channels active) and CN shouldn't try to adjudicate.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "unverifiable_wire_paraphrase",
+    "sources_checked": [
+      "https://www.aljazeera.com/news/2026/4/20/pakistan-ready-for-multi-day-us-iran-talks-but-tehran-unsure-about-joining",
+      "https://www.dailysabah.com/world/mid-east/iran-reportedly-rejects-next-round-of-talks-with-us-in-pakistan",
+      "https://www.cnn.com/2026/04/25/world/live-news/iran-war-israel-pakistan-talks",
+      "https://en.wikipedia.org/wiki/Islamabad_Talks"
+    ],
+    "notes": "Around April 20-25 2026, Iran-US talks in Islamabad were in a 'will they/won't they' phase. Iran publicly signaled no plans for a second round (Al Jazeera Apr 20, Jerusalem Post). Yet Iranian sources also indicated a delegation could arrive on Tuesday with possible inclusion of Mohammad Bagher Ghalibaf and FM Abbas Araghchi. The Walter Bloomberg headline is consistent with a mixed-signals environment — an unnamed diplomatic source telling RIA about preparations is plausible even if Iran's public position was skeptical. The original note's bid to call this 'not on RIA' is unfalsifiable and the substitute claim ('Iran has denied') is a different point."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "554k views on market-moving breaking-news aggregation. Info-integrity stakes are real (algorithmic trading on these headlines), but Community Notes is poorly suited to adjudicating conflicting anonymous-source wire reports in real time — better to let mainstream outlets do the verification."
+  },
+  "difficulty": "hard"
+}

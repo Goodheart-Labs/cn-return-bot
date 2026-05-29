@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2014958165889318978",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:25.685Z",
+  "post": {
+    "id": "2014958165889318978",
+    "author_id": "1333110223163301889",
+    "created_at": "2026-01-24T07:07:17.000Z",
+    "text": "🚨⚡️Ukrainian Mechanics Teach Zelensky's Recruitment Staff a Harsh Lesson! 🇺🇦🛠️\n\nWorkers in a car repair shop beat military recruitment center (TCC) employees after they tried to forcibly drag their colleague from his workplace to mobilize him into the army in the city of Izmail. https://t.co/G0jUiicHFH",
+    "media": [
+      {
+        "media_key": "13_2014957525767225348",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2014957525767225348/img/EiH63q_J4Y7Wb47s.jpg",
+        "height": 1056,
+        "width": 1920,
+        "duration_ms": 38243,
+        "view_count": 558296,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2014957525767225348/vid/avc1/654x360/_rRwyvQstcUdH_W6.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2014957525767225348/vid/avc1/1920x1056/T4IYnuhfwuFxjFeD.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2014957525767225348/vid/avc1/490x270/YU0H1kB1VIXGUQ8J.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2014957525767225348/vid/avc1/1308x720/bTL8cAg9htYwmrgr.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2014957525767225348/pl/V9V1hf7Gl2kzKjDN.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4158,
+      "reply_count": 505,
+      "like_count": 23891,
+      "quote_count": 239,
+      "bookmark_count": 1116,
+      "impression_count": 889842
+    },
+    "author_followers": 379105,
+    "author_name": "RussiaNews 🇷🇺",
+    "author_description": "RussiaNews, and geopolitical conflict areas in the world",
+    "author_tweet_count": 42298
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2014957525767225348/vid/avc1/1920x1056/T4IYnuhfwuFxjFeD.mp4",
+          "description": {
+            "description": "The video shows a group of men in a garage setting, likely in Russia as indicated by the overlay text. In the first frame, one man is walking across the garage towards a white car raised on a lift, while another man stands near the car. As the frames progress, a third man joins them, and they are seen standing and talking near the back of the raised white vehicle. Two of the men are wearing camouflage jackets. The scene appears to be captured on a security camera, showing a cluttered workshop environment with various tools and parts visible in the background.",
+            "ocrText": "Russia news | الموجز الروسي"
+          },
+          "transcription": "Storbritannia Thank you for watching."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@MehmedCele12095** (463 likes): Why aren't Jews in Ukraine conscripted into the military?\n\n**@BeAlterEgos** (157 likes): Never pick a fight with a man who holds a torque wrench for a living. That is tactical suicide.\n\n**@EXITINN** (154 likes): https://t.co/hNtbC1JU3Z\n\n**@JahnTeam** (116 likes): Exellent Job!\n\n**@rtz549** (90 likes): I hope they killed those government goons. Now they need to march over to Zelenskyys mansion and burn it down. Acquire weapons and end the war. You'll be under Russian occupation soon enough.\n\n**@2xnmore** (75 likes): He had some loyalist fight for him.\n\n**@Andresuco68** (75 likes): They should turn their weapons against Zelesky's Nazi regime and collaborate with their Russian brothers. In this way, Ukraine would once again become a democratic and prosperous country.\n\n**@InvestUpX_Trade** (54 likes): People fighting back against forced conscription shows desperation on both sides. 💥 Not heroes, but a sign Ukraine's war machine is cracking.\n\n**@kickoffglitch** (40 likes): Its crazy how Ukrainian civilians dont carry guns when this is happening to them, just shoot the shit out of them\n\n**@SandraDresen** (39 likes): We need more heroes !!!!",
+    "warnings": []
+  }
+}

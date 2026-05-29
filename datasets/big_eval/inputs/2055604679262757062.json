@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2055604679262757062",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:48.973Z",
+  "post": {
+    "id": "2055604679262757062",
+    "author_id": "2002856451858219008",
+    "created_at": "2026-05-16T11:02:01.000Z",
+    "text": "This Ukrainian soldier finally returned home after spending 730 days at war.\n\nI stand with Ukraine 🇺🇦 https://t.co/dbisRZTQgk",
+    "media": [
+      {
+        "media_key": "3_2055604665367035904",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIb5jVXWgAASwkZ.jpg",
+        "height": 1485,
+        "width": 1266
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1792,
+      "reply_count": 310,
+      "like_count": 8348,
+      "quote_count": 70,
+      "bookmark_count": 86,
+      "impression_count": 82413
+    },
+    "author_followers": 12579,
+    "author_name": "Viral Reel Addict",
+    "author_description": "Your daily dose of viral reels 🔥\nTikTok • Instagram • Facebook = Pure Fire\nAddicted yet? Tag your friends 👇",
+    "author_tweet_count": 490
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIb5jVXWgAASwkZ.jpg",
+          "description": {
+            "description": "A split-screen image showing a 'before and after' comparison of a man. The left side shows him healthy and smiling, holding a bouquet of red roses next to a woman in front of a house. The right side shows the same man significantly emaciated and pale, appearing distressed while being hugged by a crying woman outdoors. They are both wrapped in a Ukrainian flag.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @HotSotin: Why use AI when real pictures like this exist? (Likes: 81)\n- @HpyNtlya: There are so many photos evidence to show Ukr POW in horrific conditions returning home and you chose a fake ai generated image? If that’s not naive then you play with the Kremlin propaganda to give them food Delete this pls (Likes: 51)\n- @stigahund: Why post AI slop, when there are real ones? It contains Google's SynthID watermark, which is embedded in all media generated or edited by Google's AI tools (confirmed via reverse-image checks and AI detectors). (Likes: 40)\n- @gryn_a: Well that's nice that you stand with Ukraine, but THESE PHOTOS ARE AI GENERATED! There are so many real ones, why use this slop??? (Likes: 37)\n- @Info53917080: Are you a moron posting AI created pics??? (Likes: 21)\n- @MJackson7673: Time to heal, no better place than home.♥️🇺🇦. May the enemy burn for the crimes committed against the Ukrainian people. (Likes: 16)\n- @JessIsAStar1: My God, look at the terrible state he’s in. (Likes: 10)\n- @KateBadb: Stop posting fake shit. We debunked this last year, and every time it appears, we'll debunk it again (Likes: 10)\n- @helen_halia: Why are you posting AI generated images?? (Likes: 9)\n- @goodell2017: Welcome Home 🇺🇦 💙🇺🇦 💛🇺🇦 💙 (Likes: 9)",
+    "warnings": []
+  }
+}

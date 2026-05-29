@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2005037218071806349",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Polymarket states that in Minnesota a registered voter can 'vouch' for up to eight other voters in their precinct on Election Day, with no ID or proof of residency required from the vouched voters.",
+  "why_note_decision": "The factual content is accurate per the Minnesota Secretary of State. Minnesota law (since 1974) allows a registered voter to vouch for up to 8 voters during same-day registration; those voters do not have to present ID. The vouching voter signs an oath under penalty of perjury, but the tweet doesn't deny that. Adding context that vouching has been in place since 1974 or that false vouching is a felony would be useful framing but is not required — the tweet's claim itself is literally true and 'BREAKING' is editorial color, not a factual claim. The original note essentially confirms the tweet (says the same thing) and then adds tangential historical context, which is why raters tagged it 'note not needed'.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's factual claim — that a Minnesota registered voter can vouch for up to 8 others on Election Day without requiring ID or proof of residency from the vouched voters — is accurate per Minnesota SoS. Any note that 'corrects' or 'adds context' here is a false positive. The previous AI note was itself flagged as note-not-needed by 728 raters.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This provision allowing a registered voter in Minnesota to vouch for up to eight others in their precinct during election day registration has been in place since 1974 and does not require additional ID or proof of residency from the vouched voters.  https://www.sos.mn.gov/elections-voting/register-to-vote/register-on-election-day/  https://www.startribune.com/same-day-voter-registration-works-in-minnesota/600215840",
+    "failure_reason": "Note confirms the tweet rather than correcting it; adds tangential historical context (since 1974) that doesn't refute any claim. Rated note-not-needed.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.sos.mn.gov/elections-voting/register-to-vote/register-on-election-day/",
+      "https://www.foxnews.com/politics/mn-policy-allowing-voters-vouch-8-others-amid-somali-scandals-leads-calls-federal-action",
+      "https://www.kttc.com/2026/01/03/how-does-vouching-work-minnesota-elections/"
+    ],
+    "notes": "Minnesota SoS confirms the 8-voter vouching rule on Election Day without ID requirement for the vouched voter (the voucher signs an oath). DOJ has opened an inquiry into vouching records, confirming the practice is real."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Election-integrity narrative on a 21M-impression Polymarket tweet — false-positive notes here erode trust in the notewriter system and feed the 'notes are partisan' narrative."
+  },
+  "difficulty": "medium"
+}

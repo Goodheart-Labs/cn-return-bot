@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1977906196951572568",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["platform_manipulation"],
+  "category_fit": "poor",
+  "suggested_category": "gaming_industry_news",
+  "tweet_summary": "Post claims Battlefield 6 / EA is now banning Cronus Zen (cheat device) users, with a screenshot of an EA account-disablement message citing Cronus Zen activity.",
+  "why_note_decision": "The tweet's core claim is true: in October 2025 EA did begin banning Battlefield 6 accounts for Cronus Zen use, and EA's own messaging states accounts are 'permanently blocked.' The original note disputes this by claiming bans are 'mostly temporary' and that the screenshot is 'inauthentic' from button inconsistencies, but enforcement was tiered (both 3-day suspensions AND permanent bans were issued) and there is no solid basis to call the screenshot fake. The note injects a contested counter-narrative onto an accurate report.",
+  "judge_guidance": "PASS only if the bot declines to write a note (or, if it writes one, it must NOT claim bans are merely temporary and must NOT assert the screenshot is fabricated without proof). The tweet is accurate: EA did begin banning Battlefield 6 players for Cronus Zen use in Oct 2025, and EA's messaging says accounts are permanently blocked; enforcement was tiered (some 3-day, some permanent). A note that 'corrects' this to 'bans are mostly temporary' or calls the screenshot inauthentic is itself misinformation and must FAIL. Any note that contradicts the true ban claim fails.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Bans are in place for Cronus Zen use in Battlefield 6, but they are mostly temporary (e.g., 3-day) suspensions per reports, not permanent. The screenshot appears inauthentic due to controller button inconsistencies. [1][2][3]    https://www.dexerto.com/battlefield/battlefield-6-cheaters-in-panic-as-ban-wave-apparently-strikes-3266475/  https://www.eurogamer.net/battlefield-6-cheaters-cronus-zen  https://www.reddit.com/r/Battlefield/comments/1o5zgg9/battlefield_6_is_now_banning_cronus_zen_users/",
+    "failure_reason": "Contests an accurate report; falsely downplays bans as 'mostly temporary' (permanent bans were issued) and speculatively brands the screenshot fake without evidence.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet substantially true: EA began banning Battlefield 6 Cronus Zen users in Oct 2025; enforcement was tiered including permanent bans, and EA's disablement message says 'permanently blocked.'",
+    "sources_checked": [
+      "https://www.gamesradar.com/games/battlefield/battlefield-6-fans-cheer-as-popular-cheat-maker-tells-users-to-pause-for-now-following-a-swift-banning-spree-from-ea-they-deserve-zero-second-chances/",
+      "https://www.allkeyshop.com/blog/battlefield-6-takes-action-against-cronus-zen-users-with-a-permanent-ban-news-n/",
+      "https://playday.one/2025/10/14/ea-appears-to-be-banning-cronus-users-from-battlefield-6/"
+    ],
+    "notes": "Multiple outlets confirm a real Oct 2025 ban wave; some users got 3-day suspensions, others permanent bans. The note's 'mostly temporary' framing is wrong, and there's no evidence the EA screenshot is fabricated."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2.7M impressions but low real-world stakes (gaming anti-cheat); value is mainly as a false-positive trap where the note, not the tweet, is wrong."
+  },
+  "difficulty": "medium"
+}

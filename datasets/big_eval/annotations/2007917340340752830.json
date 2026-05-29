@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2007917340340752830",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A sports-media account posts a farewell tribute to Travis Kelce alongside an image purporting to show a giant Allegiant Stadium screen reading 'Thanks For Everything Travis' as Kelce salutes the crowd.",
+  "why_note_decision": "The image is an AI fabrication: replies overwhelmingly flag it as AI slop (backwards foot, mangled Raiders logo, doesn't look like Kelce), and no such on-screen tribute at Allegiant Stadium has been reported. Allegiant Stadium is the Raiders' home; a rival stadium thanking a Chiefs player on its videoboard would be a notable, reported event, and it isn't. Travis Kelce is a prominent figure who has been a repeated target of AI-generated hoaxes (fake $3.3M donation, fake 'No Kings' rally photo), so readers benefit from knowing this specific tribute didn't happen.",
+  "judge_guidance": "PASS only if the note states the image is fabricated / AI-generated and that no real 'Thanks For Everything Travis' tribute was displayed at Allegiant Stadium. It should not assert the tribute is real. Acknowledging that Kelce's career/retirement was genuinely being discussed is fine but optional. A note that merely says 'this is AI' without tying it to the false stadium-tribute claim is acceptable but weaker; the core required element is denying the depicted on-screen tribute. Must cite at least one source on the fabrication or the absence of any such reported tribute.",
+  "reference_note": "The image in this post is fabricated and does not depict a real tribute at Allegiant Stadium. While Raiders coaches and players have verbally praised Travis Kelce's career amid retirement speculation, no such on-screen message has been reported.  https://www.essentiallysports.com/nfl-active-news-chiefs-travis-kelce-receives-hall-of-fame-message-from-raiders-as-retirement-looms-for-chiefs-te/  https://www.kansascity.com/sports/nfl/kansas-city-chiefs/article314161772.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/fabricated: the image is AI-generated; no real 'Thanks For Everything Travis' on-screen tribute at Allegiant Stadium has been reported.",
+    "sources_checked": [
+      "https://www.profootballnetwork.com/is-taylor-swift-travis-kelce-relationship-staged-lifestyle/",
+      "https://ca.sports.yahoo.com/news/travis-kelce-viral-story-gift-122011351.html",
+      "https://www.politifact.com/factchecks/2025/jun/16/facebook-posts/taylor-swift-travis-kelce-ai-image-protests/"
+    ],
+    "notes": "Could not find any news report of an Allegiant Stadium videoboard tribute to Kelce. Image shows classic AI artifacts cited by replies (backwards foot, distorted logo). Kelce is a documented repeat target of AI hoaxes. Verdict rests on media interpretation + absence of corroborating reporting."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "104K impressions of low-stakes celebrity AI slop; correcting it matters mainly as part of the broad project of inoculating the public against synthetic imagery, not for any direct welfare/policy outcome."
+  },
+  "difficulty": "medium"
+}

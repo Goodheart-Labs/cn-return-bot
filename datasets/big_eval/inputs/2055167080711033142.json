@@ -1,0 +1,42 @@
+{
+  "tweet_id": "2055167080711033142",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:32.763Z",
+  "post": {
+    "id": "2055167080711033142",
+    "author_id": "1282509001926692864",
+    "created_at": "2026-05-15T06:03:09.000Z",
+    "text": "@takashikiso 丁寧なコメントをありがとうございます。\n私は他人がどこでどんなコスプレをしていようと気にしないですし、通報などもしたことはないのですが、参考までにどの言動でそのように評価されたのかお教えいただけますか？",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "2055020630425379274"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1,
+      "reply_count": 12,
+      "like_count": 36,
+      "quote_count": 19,
+      "bookmark_count": 22,
+      "impression_count": 449149
+    },
+    "author_followers": 33107,
+    "author_name": "鹿乃つの🍨Shikano Tsuno",
+    "author_description": "2023.08〜cosplay ¦ 万博コスプレ騒動のエルフの人です ¦ リプライするとあなたが攻撃されるので、応援はDMが嬉しいです。 ¦ 声を聞いてみたい人はYouTubeやゲーム配信へ🎮🫶🏻",
+    "author_tweet_count": 29497
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@takashikiso**  \n申し訳ないけど、私自身が「イタい」感じてる人達と延々と絡んでも、私には何も得がないので。周りの反応に関しては↓  \nLikes=843, Replies=6\n\n**@9VoJNIbUVi11564**  \n引用して引用元から突っ込まれたら突撃って、まさにダル過ぎる。  \nLikes=245, Replies=2\n\n**@hOnvYfRcIP78315**  \n気にしないと言いつつ、マルシルコスしていた人に対して、いじめの煽動だーとか一人で騒いでましたよね。  \nなんですぐめくれてしまう浅い発言ばかりしてしまうんですかね？  \nLikes=86, Reposts=1\n\n**@GN00508771**  \n「私は他人がどこでどんなコスプレをしていようと気にしないです」  \n\n凄いな、こんな大嘘を堂々と発言するなんて⋯⋯マルシルのコスプレを施した他のコスプレイヤーさんに引用でイチャモン付けてたのくせに  \nLikes=85\n\n**@sathitgi**  \n読解力なく絡んできて持論展開永遠とするのまじコミュ障。相変わらずだな…  \nLikes=56\n\n**@zSvvHyMlNSc282T**  \n自分を客観的に見れる日が来るといいね!  \nLikes=28\n\n**@Nokomi2zph**  \nお前よくそんなこと恥ずかしげもなく言えるな  \n他のコスプレイヤーにゴキブリって言ったの覚えてないのか？  \n認知症よりもタチ悪いわこのゴミ  \nLikes=8\n\n**@not_sub_account**  \n黙っとけよ害悪  \nLikes=15\n\n**@DIZEfu5GoJ97102**  \n何処にも、エビデンスないのがなw単なる、個人の意見止まり…  \nLikes=7, Replies=2\n\n**@yu_kimi02** (quote tweet)  \nhttps://t.co/11sRWMFAHF  \n(quoting a post criticizing the user)  \nLikes=4",
+    "warnings": []
+  }
+}

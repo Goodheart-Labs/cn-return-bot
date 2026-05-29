@@ -1,0 +1,424 @@
+[
+ {
+  "tweet_id": "1990582306810310886",
+  "url": "https://x.com/i/status/1990582306810310886",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "health_medical_science"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "🚨 SIMPLE: If you're a furry, you are mentally ill.\n\nThere is no other way to look at it.\n\nhttps://t.co/zP6zvuSwUb",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/1990556413123313664/vid/avc1/720x1280/5vDVjRLwobSZC1rT.mp4",
+    "description": {
+     "description": "A person wearing a purple, blue, and yellow canine-style fetish mask is seen sitting at a table in a restaurant with a plate of French toast. The individual picks up a fork and proceeds to rub the French toast against the snout of the mask before rubbing it onto the head area of the mask. An overlay text reads 'Mental Illness Crisis'.",
+     "ocrText": "Mental Illness Crisis\n@YOURDAILYDOSEOFKRINGE"
+    },
+    "transcription": "Wooooo! Woo! Woo! Woooo! Woo! Woo! Woo! Woo! Woo! Thank you."
+   }
+  ],
+  "tweet_summary": "A pundit posts a video labeled 'Mental Illness Crisis' of a masked person playing with food, captioned 'SIMPLE: If you're a furry, you are mentally ill. There is no other way to look at it.'",
+  "bad_note_text": "Scientific research contradicts the claim that all furries are mentally ill. Studies show mental illness prevalence among furries isn't significantly higher than comparable age groups. Being a furry isn't recognized as a mental disorder in diagnostic manuals. https://furscience.com/research-findings/wellness-dysfunction/11-2-psychological-conditions/",
+  "failure_reason": "Sources missing/unreliable + argumentative: the note's claims are accurate but it relies on a single advocacy-affiliated source (furscience.com) for the prevalence point and gives no independent reference for the DSM/ICD claim, so raters tagged SourcesMissingOrUnreliable (30) and ArgumentativeOrBiased (15). A stronger note would add an independent/secondary citation and stay strictly neutral.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 85,
+  "why_note_decision": "The tweet makes a checkable, categorical health claim ('if you're a furry, you are mentally ill') stated as fact, not opinion. Peer-reviewed research (Furscience / IARP) finds furries do not have higher rates of mental illness than comparable populations and that being a furry is not a recognized disorder in the DSM/ICD. The claim is false misinformation about a stigmatized group, so a note is warranted. Separately, commenters and the media description indicate the video depicts BDSM 'pup play,' not a furry - but that media mislabel does not change the warrant for correcting the textual genera…",
+  "reference_note": "Being a furry is not classified as a mental illness in diagnostic manuals such as the DSM-5 or ICD-11. Peer-reviewed research from the International Anthropomorphic Research Project finds furries are not more likely to have mental-health conditions than comparable age groups. (Note: the masked individual shown is engaged in BDSM 'pup play,' which is distinct from the furry fandom.)"
+ },
+ {
+  "tweet_id": "1991863814908973348",
+  "url": "https://x.com/i/status/1991863814908973348",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "statistical_or_numerical_claim",
+   "scams_fraud_finance"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "another 10% dip and saylor is liquidated btw",
+  "media_description": [],
+  "tweet_summary": "Crypto influencer 'lynk' (301k followers) posts 'another 10% dip and saylor is liquidated btw' — claiming Michael Saylor / MicroStrategy (Strategy) would be liquidated by another 10% drop in Bitcoin's price.",
+  "bad_note_text": "Claim that 10% BTC dip liquidates Saylor is false. MicroStrategy's liquidation price is ~$20,143/BTC. 10% dip from $100k = $90k, still 4x above liquidation. Debt is unsecured with no forced liquidation mechanism. https://protos.com/what-is-microstrategys-bitcoin-liquidation-price/",
+  "failure_reason": "Note is substantively correct but rated 'sources missing or unreliable' (3) — Protos.com is a niche crypto-news outlet, and the note cites only one source. Adding a more authoritative source (Strategy SEC filings, CCN, or a major outlet) and acknowledging the theoretical-vs-actual distinction (there's no real liquidation mechanism at all because the debt is unsecured) would strengthen it. Some raters likely also wanted citation of Saylor's own public statements.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 28,
+  "why_note_decision": "The claim is false. MicroStrategy/Strategy's debt is primarily unsecured convertible notes with maturities 2027-2032; there is no margin-call mechanism tied to BTC price. Saylor himself has said the company faces no forced liquidation until BTC approaches ~$8,000 (and theoretical math puts the net-debt cover point around $20k/BTC). At the time of the tweet (Nov 2025), BTC was around $100k — many multiples above any liquidation threshold. Adam Back and other crypto experts in replies called the claim 'nonsense.' This kind of viral financial misinformation can drive panic selling and is worth co…",
+  "reference_note": "False. Strategy (formerly MicroStrategy) cannot be liquidated by a 10% BTC dip — its debt is mostly unsecured convertible notes (2027-2032 maturities) with no margin-call mechanism tied to BTC price. Saylor has said there is no forced-liquidation risk until BTC falls to roughly $8,000; theoretical net-debt cover is around $20,000/BTC. BTC was ~$100k at the time of this post. https://www.ccn.com/ne…"
+ },
+ {
+  "tweet_id": "2014630182796083580",
+  "url": "https://x.com/i/status/2014630182796083580",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "ai_generated_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Sydney Sweeney &amp; Ana de Armas https://t.co/fAdK3VVsuN",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G_VnSdPX0AAR0tN.jpg",
+    "description": {
+     "description": "A mirror selfie of two young women in a gym after a workout. The woman on the left has blonde hair in a ponytail and is wearing light blue athletic set consisting of a sports bra and shorts. The woman on the right has dark hair, a white towel around her neck, and is wearing a dark grey short-sleeved top and dark grey shorts. They appear sweaty and are smiling. The background shows gym equipment like dumbbells, benches, and other people exercising.",
+     "ocrText": ""
+    }
+   }
+  ],
+  "tweet_summary": "Posts a gym mirror-selfie image captioned 'Sydney Sweeney & Ana de Armas', presented as a real candid photo of the two actresses.",
+  "bad_note_text": "The image depicting Sydney Sweeney and Ana de Armas at the gym is AI-generated, as no such photo exists on their official Instagram accounts. https://www.instagram.com/sydneysweeney/ https://www.instagram.com/ana.dearmas/",
+  "failure_reason": "Unreliable sourcing: infers 'AI-generated' from absence on the actresses' Instagram, which is not evidence an image is synthetic (celebrities don't post every real photo). Correct conclusion, weak/argument-from-silence basis - dominant rating was notHelpfulSourcesMissingOrUnreliable.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 82,
+  "why_note_decision": "The image is AI-generated: it traces to a circulating 'Gemini Nano Banana Pro' prompt producing Sweeney/de Armas gym selfies, and no such real photo exists. Commenters genuinely ask 'is this real?' / tag Grok to check, showing real deception of a 3M-impression audience depicting real people. A note flagging it as AI is warranted. I disagree with the provisional no-note because viewers are actually being misled, not in on an obvious joke. However, the ORIGINAL note's method (proving AI by absence from the actresses' Instagram accounts) is weak and unreliable, which is why it failed.",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2015371356733620372",
+  "url": "https://x.com/i/status/2015371356733620372",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "MORE THAN 38,700 HOTEL BOOKINGS FOR 2026 FIFA WORLD CUP RESERVATIONS IN THE USA 🇺🇸 HAVE BEEN CANCELLED \n\nYour thoughts on this … https://t.co/cM0ODvbfdL",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G_gJkEIW8AAqO5y.jpg",
+    "description": {
+     "description": "A close-up portrait of Donald Trump looking directly at the camera with a stern, furrowed expression. He is wearing a blue suit jacket, a white dress shirt, and a blue necktie. The background shows a blurred American flag on the left and dark office-style furniture on the right.",
+     "ocrText": ""
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G_gJkE0XUAAn0p9.jpg",
+    "description": {
+     "description": "A close-up photograph of a blue circular banner featuring the FIFA logo, which consists of two interconnected soccer balls depicting a world map, with the word 'FIFA' in bold white letters below. The banner is situated within a stadium, with spectator stands and architectural elements visible in the background under a daylight sky.",
+     "ocrText": "© 1977 FIFA TM FIFA"
+    }
+   }
+  ],
+  "tweet_summary": "Claims (with a stern Trump photo + FIFA logo) that 'MORE THAN 38,700 HOTEL BOOKINGS FOR 2026 FIFA WORLD CUP RESERVATIONS IN THE USA HAVE BEEN CANCELLED,' tied to US-politics boycott sentiment in the replies.",
+  "bad_note_text": "No evidence confirms over 38,700 cancelled hotel bookings for the 2026 FIFA World Cup; reported figures refer to unverified ticket application withdrawals, which FIFA has denied as fake news. https://www.dw.com/en/fact-check-are-fans-cancelling-world-cup-2026-tickets-over-us-immigration-fears/a-75562821 https://www.marca.com/en/world-cup/2026/01/14/6966d713e2704e0c6a8b4597.html",
+  "failure_reason": "Note is substantively correct and well-aimed at a fabricated statistic, but it is in NEEDS_MORE_RATINGS (not a confirmed failure). Its tag spread (OpinionSpeculation 16, NoteNotNeeded 15) suggests raters split on whether the boycott framing made the number 'opinion.' A tighter note nailing the fabricated specific figure should land; it is the reference model here.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 45,
+  "why_note_decision": "The precise '38,700 cancelled hotel bookings' figure is a fabricated/unverified statistic with no official source; fact-checking (DW; Grok summary) traces it to social media and notes the closest real figure is ~16,800 withdrawn World Cup ticket applications, plus FIFA's own contractual cancellation of hotel room blocks for unrelated demand reasons. The tweet launders an unverified specific number to ~860k viewers as established fact. A note correcting the fabricated statistic is warranted (I disagree with the provisional no_note_needed: a precise false number presented as fact is exactly the …",
+  "reference_note": "There is no official source for the claim that 38,700 hotel bookings for the 2026 FIFA World Cup were cancelled. Fact-checkers trace the figure to social media; the nearest verified number is roughly 16,800 withdrawn ticket applications (not hotel bookings), and FIFA has denied a mass-cancellation narrative. https://www.dw.com/en/fact-check-are-fans-cancelling-world-cup-2026-tickets-over-us-immigr…"
+ },
+ {
+  "tweet_id": "2017214487384789346",
+  "url": "https://x.com/i/status/2017214487384789346",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "real_media_falsely_called_ai",
+   "celebrity_entertainment_sports",
+   "manipulated_or_fabricated_evidence"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "The level of AI slopification is so high that Ariana Grande has 6 fingers on the cover of Vogue Japan and NOBODY noticed it before publishing it: https://t.co/5b3HyNz8kb",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G_6V4QsWgAA5dfT.jpg",
+    "description": {
+     "description": "A portrait of Ariana Grande for Vogue Japan. She is wearing a cream-colored floral print blouse with a bow neckline, sheer white gloves, and large sparkling earrings. She is leaning against a pale green wall next to a dark floral painting.",
+     "ocrText": "VOGUE\n\nVOGUE JAPAN MAR 2024 Issue Photo: MICHAEL BAILEY-GATES\n©2024 Condé Nast Japan. All rights reserved."
+    }
+   }
+  ],
+  "tweet_summary": "Luiza Jarovsky tweet (2.5M views) claims 'The level of AI slopification is so high that Ariana Grande has 6 fingers on the cover of Vogue Japan and NOBODY noticed it before publishing it' over the Vogue Japan March 2024 cover.",
+  "bad_note_text": "Ariana Grande's Vogue Japan photoshoot image shows an extra finger due to a Photoshop compositing error (common in blending photos), not AI generation. Fabric patterns are consistent and no other typical AI artifacts appear. https://x.com/Pentagear/status/2017246210415833560 https://x.com/MOZZIEMUTANT/status/2017249686101356991 https://x.com/billybinion/status/2017271885348626731",
+  "failure_reason": "Sources missing/unreliable: the note's verdict is correct but its only citations are three X posts from anonymous users, which raters consistently mark unreliable. Substance was fine; sourcing sank it.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 37,
+  "why_note_decision": "This is a real_media_falsely_called_ai case. Per Variety, BuzzFeed, Stereogum, TMZ, the consensus (including from photo-retouching professionals) is that the extra finger is a Photoshop compositing error from blending two takes, NOT AI generation. AI image generators in this style typically don't produce this kind of clean fabric/pattern consistency, and Vogue cover photo workflows are heavily Photoshop-based. The tweet propagates a real misconception about what is and isn't AI, with significant reach (29K likes, 2.5M views). A note is warranted. The original note has the right verdict (Photos…",
+  "reference_note": "Multiple outlets and retouching professionals attribute the extra finger on Ariana Grande's Vogue Japan cover to a Photoshop compositing/blending error (likely two takes stitched together), not AI generation — fabric patterns and other details are consistent with photo editing, not generative AI. Vogue Japan corrected the image on its website. https://variety.com/2026/digital/news/ariana-grande-vo…"
+ },
+ {
+  "tweet_id": "2026719854112170126",
+  "url": "https://x.com/i/status/2026719854112170126",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Btw if anyone with Ray-Ban glasses is recording you, just pull up a picture of the ISIS flag on your phone and hold it up to their glasses. It’ll permanently ban their account almost immediately",
+  "media_description": [],
+  "tweet_summary": "Claims that if someone with Ray-Ban (Meta) smart glasses is recording you, holding up a picture of the ISIS flag to their glasses will 'permanently ban their account almost immediately.'",
+  "bad_note_text": "Showing an ISIS flag to Ray-Ban Meta smart glasses won't instantly ban the wearer's account. The glasses record on command; account actions apply to content uploaded/shared to Meta, which removes terrorist content under its policies after review. https://x.com/grok/status/2026722647455695200 https://about.fb.com/news/2018/04/community-standards-examples",
+  "failure_reason": "Sources missing/unreliable: the note's reasoning is correct but it is sourced to a Grok tweet (not a reliable source) and an unrelated 2018 Meta 'community standards examples' blog post that does not address the specific glasses claim. Raters tagged SourcesMissingOrUnreliable (183) and IrrelevantSources (66) heavily.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 393,
+  "why_note_decision": "Presented as genuine actionable advice (not flagged as satire) and went massively viral (7.1M impressions, 217k likes), with users genuinely testing it and reporting nothing happened. The claim is factually false: Ray-Ban Meta glasses do on-device object recognition but do not perform real-time content moderation or auto-ban based on what the camera sees; bans apply to content uploaded/shared to Meta and only after review. A note correcting a false, widely-believed 'life hack' is warranted.",
+  "reference_note": "This is false. Ray-Ban Meta glasses use on-device object recognition but do not scan what they see for banned symbols or auto-ban wearers in real time. Meta enforces its rules on content that is actually uploaded/shared, and only after review - not instantly from recording. Users who tested the 'ISIS flag' trick report nothing happened. https://www.dailydot.com/debug/streamer-claims-meta-glasses-b…"
+ },
+ {
+  "tweet_id": "2027817956000858503",
+  "url": "https://x.com/i/status/2027817956000858503",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "breaking_news_and_war",
+   "manipulated_or_fabricated_evidence"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "@TheKingCenter Iran bombed them.",
+  "media_description": [],
+  "tweet_summary": "Laura Loomer (1.9M followers) replies '@TheKingCenter Iran bombed them.' regarding (per the original note context) the deadly strike on Shajareh Tayyebeh Elementary School in Minab, Iran on 28 Feb 2026, attributing the bombing to Iran itself.",
+  "bad_note_text": "Claim 'Iran bombed them' misattributes the attack. Multiple outlets and Iranian officials report a US–Israeli missile strike on the Minab girls' school that killed dozens of children. See The Guardian report: https://www.theguardian.com/world/2026/feb/28/children-dead-as-missile-hits-elementary-school-in-southern-iran",
+  "failure_reason": "Verdict is correct but the note leans on a single Guardian link of contested provenance and uses 'dozens' when the toll is ~156. Raters dinged it hard on 'sources unreliable' (15) and 'incorrect' (10) — likely because the URL date matches the strike day (raising 'too-fast' concerns) and the note doesn't anchor with the Tomahawk munitions evidence.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 30,
+  "why_note_decision": "A note is clearly warranted. The Minab school strike on 28 February 2026 killed 156 people including 120 students and 26 teachers. Amnesty International's analysis of missile remnants identifies a US-manufactured Tomahawk cruise missile, used exclusively by US forces in this conflict; UN experts, Time, NPR, Al Jazeera, and UNESCO all describe it as a US/US-Israeli strike, with a Pentagon probe pointing to a US missile. There is no credible source attributing the strike to Iran. The original note's verdict (US-Israeli missile strike) is correct, but raters flagged it heavily on 'sources unrelia…",
+  "reference_note": "The 28 February 2026 strike on Shajareh Tayyebeh Elementary School in Minab, Iran killed about 156 people including 120 students and 26 teachers. Amnesty International's analysis of missile remnants identified a US-manufactured Tomahawk cruise missile — used exclusively by US forces in this conflict — and a Pentagon probe and UN experts have pointed to US/US-Israeli responsibility. There is no cre…"
+ },
+ {
+  "tweet_id": "2029107216389947886",
+  "url": "https://x.com/i/status/2029107216389947886",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "breaking_news_and_war",
+   "conspiracy_and_viral_hoax"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Reports on the ground in Dubai show that some missiles hitting the gulf nations are coming from the direction of Israel, not Iran. 👀 https://t.co/Bsq76QQ2vl",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2029107153026596869/vid/avc1/720x1280/mJsf-R3qgYIEFbwr.mp4",
+    "description": {
+     "description": "A series of frames from a video recorded from inside a moving vehicle on a highway in Dubai, UAE. The footage shows dark plumes of smoke in the distance against a hazy sky, passing billboards and electrical pylons. Text overlays present unsubstantiated claims regarding regional aggressions and location tags for Dubai, UAE.",
+     "ocrText": "Dubai, UAE. Israel is behind some aggr.essions on Dubai not Iran. @SAMIFIKREE. Guys this is Dubai world. fly over your head and hitting. from Iran because Iran is there. TARRAD DEVELOPMENT BEYOND LUXURY WWW.TARRAD.AE"
+    },
+    "transcription": "Guys, this is Dubai World. It's literally a port, a seaport. Which means if you're seeing rockets fly over your head and hitting this port, it did not come from Iran because Iran is there. We won't see any rockets flying over our head unless we're in a ship. The rockets you see came from the opposite direction and everyone witnessed it. No more live motherfuckers."
+   }
+  ],
+  "tweet_summary": "A video filmed from a car in Dubai during the March 2026 Iran war, with a voiceover and overlay claiming that the missiles hitting Gulf nations are coming 'from the direction of Israel, not Iran' — i.e. an Israeli false-flag, because (the speaker argues) rockets seen flying over the Jebel Ali seaport could not have come from Iran's direction.",
+  "bad_note_text": "UAE Defence Ministry and joint statement with US and Gulf states confirm missile and drone attacks on Dubai originate from Iran in retaliation for US-Israeli strikes, with no evidence of Israeli launches toward UAE. https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_the_United_Arab_Emirates https://www.mofa.gov.ae/en/MediaHub/News/2026/3/2/UAE-Iran-Attacks https://www.aljazeera.com/news/2026/3/4/hundreds-of-drones-target-kuwait-iraq-saudi-arabia-uae-amid-iran-war",
+  "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (23). The note's verdict is correct, but it cites a likely-fabricated/dead UAE MoFA URL (mofa.gov.ae/.../UAE-Iran-Attacks) and an Al Jazeera link about drones targeting other countries that does not directly substantiate the Israel-vs-Iran attribution for Dubai. Raters also flagged it as argumentative/opinion. The note states a defensible conclusion but on sourcing that doesn't hold up.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 51,
+  "why_note_decision": "A note is warranted. The tweet pushes a false-flag conspiracy: that Israel, not Iran, is behind the missile strikes on the UAE. Mainstream reporting and investigation (NYT, Bellingcat, Euronews, Time, UAE government) attribute the March 2026 strikes on Dubai/Abu Dhabi — including the Jebel Ali port fires — to Iran, launched in retaliation for US-Israeli strikes on Iran. The viral geographic 'proof' (missiles seen over the port must come from the west/Israel) is a single bystander's speculation; a top reply even notes the speaker has the geography wrong (anything launched from Iran to Dubai is …",
+  "reference_note": "Credible reporting attributes the March 2026 missile and drone strikes on the UAE — including the Jebel Ali/Dubai port fires shown — to Iran, launched in retaliation for US-Israeli strikes on Iran. There is no evidence Israel fired missiles at the UAE. The claim that the rockets came 'from the direction of Israel' is an unverified false-flag theory; even the trajectory reasoning in the clip is dis…"
+ },
+ {
+  "tweet_id": "2031285040248922487",
+  "url": "https://x.com/i/status/2031285040248922487",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "breaking_news_and_war",
+   "statistical_or_numerical_claim"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "#Iran has destroyed #Isreali air defense systems. Now, #Hezbollah has started raining missiles on Central Israel where 40% of the population lives. https://t.co/XfSXRueu1c",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2031284648337354754/vid/avc1/1288x718/3-_E0KUwNI72yfZs.mp4",
+    "description": {
+     "description": "A news anchor on Al Jazeera news is during his daily news stream reporting some events occurring around the world. The footage alternates between the news anchor being broadcast and some footage being shown to showcase the reporter's findings on the field. In the beginning, the anchor is alone while back footage of smoke is being showcased. Later, that footage changes into a footage of a crowd and then to some stones on the ground. Finally, the frame changes into a map of Israel and the West Bank alongside Gaza while a woman's portrait appears at the top right.",
+     "ocrText": "15:17 GMT ONDAY - U.S. EMBASSY IN SAUDI ARABIA\\'S CAPITAL ORDERS NON-EMERGENCY EMPLOYEES AND THEIR F, ALJAZEERA\\\\\\'S CAPITAL ORDERS NON-EMERGENCY EMPLOYEES AND THEIR FAMILIES TO LEAVE - DRONES SHOT DOW, ALJAZEERA PLOYEES AND THEIR FAMILIES TO LEAVE - DRONES SHOT DOWN NEAR IRAQ\\'S BAGHDAD AND ERBIL AIRP, ALJAZEERA- DRONES SHOT DOWN NEAR IRAQ\\'S BAGHDAD AND ERBIL AIRPORTS - TURKIYE DEPLOYS F-16S, AIR DE"
+    },
+    "transcription": "Some breaking news now just coming out of Israel where it's being reported that rockets have fallen in several areas in the center of the country. Let's go straight over to Noor Arde. She joins us from Ramallah in the occupied West Bank. And Noor, what are we hearing about the impact of those fallen rockets? Well, we're not hearing, Sami, because the military censor in Israel has not cleared information for publication yet. What we can tell you, though, is that eyewitnesses are talking about plumes of smoke. They're talking about several areas of impact. Now, the areas that have been targeted, we keep telling our viewers the center of Israel. Let's explain what does that mean. It means that the area that is being targeted is where about 44% of the Israeli population lives. This is where the Ben-Gurion Airport is. It is where several air bases and military bases are, the Ministry of Defense, the Mossad, our headquarters. This is a very strategic area for Israel. Targeting that area keeping all those millions of people in the shelters is extremely disruptive And this is what we heard for example from the mayor of Haifa saying that he will not ease restrictions that he will not allow schools to come back to resume activity because it was simply too risky. The alarms and the sirens are going off almost nonstop in Haifa and northern communities from rocket fire coming from Lebanon. And this is something that Israelis are increasingly frustrated with. There is no early warning to them. They have very few seconds, no more than a minute to get to the shelter. They cannot possibly think about and plan about going to work, sending kids to school, picking them up from school and so on. But throughout this war, Sami, we have to say I've never seen anything like it. The military censor has been adamant. It has imposed basically a blackout on where these missiles and rockets are falling, how many have been fired at Israel from Iran or Hezbollah, the information being tightly controlled. In fact, even having authorities arrest journalists who were deemed to have said too much on the air."
+   }
+  ],
+  "tweet_summary": "An Iran-war account claims 'Iran has destroyed Israeli air defense systems' and that Hezbollah is now 'raining missiles on Central Israel where 40% of the population lives,' over an Al Jazeera broadcast clip about rockets hitting central Israel.",
+  "bad_note_text": "The post inaccurately claims Iran destroyed Israeli air defenses. Actually, Israel destroyed ~80% of Iran's air defenses. Hezbollah has launched missiles at central Israel (home to ~40-44% of Israelis).    https://www.timesofisrael.com/liveblog_entry/idf-chief-says-israel-has-destroyed-80-of-irans-air-defense-systems  https://www.jpost.com/middle-east/iran-news/2026-03-09/live-updates-889301",
+  "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (19) as the dominant tag. The substance is correct (it inverts the false air-defense claim and accepts the true Hezbollah element), but it cites two live-blog entries — transient, hard-to-verify URLs that raters deemed unreliable/missing. The fix is a stable, authoritative citation for the ~80% figure rather than liveblogs.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 36,
+  "why_note_decision": "A note is warranted because the headline factual claim is inverted: it was ISRAEL/the U.S. that devastated IRAN's air defenses in the Feb-Mar 2026 campaign (officials/analysts cited ~80-92% degradation of Iran's missile/drone launch capacity and air defenses), not the reverse. There is no credible reporting that Iran destroyed Israel's air-defense systems. The secondary claim is more defensible: Hezbollah did strike Israel in early March 2026, and the embedded Al Jazeera report itself says the targeted central region holds ~44% of Israelis — so the '40%/central Israel' element is roughly accur…",
+  "reference_note": "This is reversed: in the Feb-Mar 2026 war, Israeli and U.S. strikes degraded IRAN's air defenses and sharply cut its missile/drone launch capacity (officials and analysts cited ~80-90% reductions); there is no credible report that Iran destroyed Israel's air-defense systems. Hezbollah did launch missiles toward central Israel, which holds roughly 44% of the population. https://en.wikipedia.org/wik…"
+ },
+ {
+  "tweet_id": "2034230519907627221",
+  "url": "https://x.com/i/status/2034230519907627221",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Netanyahu is certainly dead on March 9, his son observed 7 days of shiva then resumed posting exactly 7 days later.",
+  "media_description": [],
+  "tweet_summary": "A viral conspiracy post (3.6M impressions) claiming Benjamin Netanyahu 'is certainly dead on March 9,' inferring his death from his son allegedly observing 7 days of shiva then resuming posting exactly 7 days later.",
+  "bad_note_text": "Benjamin Netanyahu is alive and visited Ashdod Port on March 10, 2026, after the claimed date of death. https://www.gov.il/en/pages/event-ashdod100326 https://www.yahoo.com/news/articles/fact-check-netanyahu-alive-despite-160900467.html",
+  "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (49) — the dominant reason on a 108-rating note. The verdict (he's alive) is correct, but the lead evidence is a gov.il event page (event-ashdod100326) that is likely dead/unverifiable and a single Ashdod-Port visit, which is weaker and more disputable than his later live news conference and corroborated cafe videos. Raters also flagged it as incorrect/opinion-speculation, suggesting the cited proof didn't convince.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 108,
+  "why_note_decision": "A note is clearly warranted. Netanyahu is alive. After death rumors spread in March 2026 (seeded by Iranian state media and AI-claim speculation about a six-fingered hand in a video), Netanyahu appeared at a live news conference on March 12, posted Instagram videos from a Jerusalem cafe on March 15-16 (corroborated by the cafe), and the rumor was debunked by Snopes, NBC, Euronews and AFP/Reuters-style fact-checks. The 'exact 7-day gap' is coincidental/cherry-picked inference, not evidence of death.",
+  "reference_note": "Benjamin Netanyahu is alive. After death rumors spread in mid-March 2026, he appeared at a live, widely-broadcast news conference on March 12, 2026 and posted videos from the HaSataf cafe in Jerusalem on March 15-16 (the cafe confirmed the footage was authentic). The '7-day shiva gap' is unfounded inference. https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/ https://www.nbcnews.…"
+ },
+ {
+  "tweet_id": "2035819464848240782",
+  "url": "https://x.com/i/status/2035819464848240782",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Palm Beach Pete... and he's famous for living in Palm Beach\n\nit's the perfect cover https://t.co/dl9RVhyM4C",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2035819409156284416/pu/vid/avc1/576x1024/Dr9eUR8IoJW6d4qL.mp4",
+    "description": {
+     "description": "A series of frames from a TikTok video alleging that a man identified as 'Palm Beach Pete' is Jeffrey Epstein. The frames use a 'Breaking News' template and show close-up comparison photos of the two men, including dental shots and profile views, asserting they are 'similar' or that the connection is 'obvious'. Each frame features the TikTok handle '@ratharfhortfsdv'.",
+     "ocrText": "BREAKING NEWS HERE'S ALL THE EVIDENCE WE HAVE TO CONFIRM PALM BEACH PETE IS ACTUALLY JEFFERY EPSTEIN... TikTok @ratharfhortfsdv THE  BREAKING NEWS HERE'S ALL THE EVIDENCE WE HAVE TO CONFIRM PALM BEACH PETE IS ACTUALLY JEFFERY EPSTEIN... OBVIOUS TikTok @ratharfhortfsdv BREAKING NEWS HERE'S ALL THE EVIDENCE WE HAVE TO CONFIRM PALM BEACH PETE IS ACTUALLY JEFFERY EPSTEIN... BOTH TikTok @ratharfhortfsdv BREAKING NEWS HERE'S ALL THE EVIDENCE WE HAVE TO CONFIRM PALM BEACH PETE IS ACTUALLY JEFFERY EPSTEIN... Similar?! TikTok @ratharfhortfsdv PALM BEACH"
+    },
+    "transcription": "Here's all the evidence we have to confirm that Palm Beach Pete is actually Jeffrey Epstein. Starting off with the first and most obvious piece of evidence that both of them look identical to each other. Here's a side-by-side picture of the both of them, and you literally cannot tell either of them apart. Next, the both of them literally have the same exact teeth. So as you can see right here, this is Jeffrey Epstein's bottom row of teeth. And then if we go ahead and look at Palm Beach Pete's bottom row of teeth, literally identical to Jeffrey Epstein's. next in a recent interview it was actually revealed that Jeffrey Epstein and Palm Beach Pete actually lived in the same areas at the exact same time so when Jeffrey Epstein was living in New York so was Palm Beach Pete and then when Jeffrey Epstein was living in Florida so was Palm Beach Pete and when this was brought up Palm Beach Pete was literally trying to shush the interviewers and then finally every single day now Palm Beach Pete is uploading videos onto social media saying that he is not Jeffrey Epstein and in a lot of these videos a lot of people feel like he's actually trying to gaslight us because he really is actually Jeffrey Epstein."
+   }
+  ],
+  "tweet_summary": "Shares a TikTok-style 'breaking news' video arguing 'Palm Beach Pete' is secretly Jeffrey Epstein (teeth/face comparisons), captioning 'it's the perfect cover' - endorsing the conspiracy that Epstein is alive in Palm Beach.",
+  "bad_note_text": "Palm Beach Pete is not Jeffrey Epstein, who died by suicide in 2019; Pete has publicly denied the claims. https://nypost.com/2026/03/20/us-news/jeffrey-epstein-look-a-like-palm-beach-pete-went-viral-because-of-ny-post/ https://www.foxnews.com/lifestyle/florida-man-mistaken-jeffrey-epstein-sends-internet-frenzy-im-just-me-being-me https://en.wikipedia.org/wiki/Jeffrey_Epstein",
+  "failure_reason": "Sources missing/unreliable: the note's content is correct, but its lead source is a NY Post article (frequently paywalled/401 for raters) and Fox, which a share of raters distrust; tagged SourcesMissingOrUnreliable (11). Routing around paywalls with an AFP/Yahoo/ABC fact-check would make it verifiable.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 26,
+  "why_note_decision": "The video and tweet promote the false conspiracy that Jeffrey Epstein is alive as 'Palm Beach Pete.' Epstein died in jail in August 2019. 'Palm Beach Pete' is a real, separate person - Peter Simel, a 71-year-old retired Florida real-estate executive and former tennis player - who has repeatedly stated 'I'm not Jeffrey Epstein,' and photo comparisons confirm they are different people. The post reached 1.8M views with many treating it earnestly. A note debunking the Epstein-is-alive claim is warranted.",
+  "reference_note": "Jeffrey Epstein died in jail in August 2019. 'Palm Beach Pete' is a different, real person - Peter Simel, a 71-year-old retired Florida real-estate executive and former tennis player - who has publicly said 'I'm not Jeffrey Epstein'; side-by-side photo comparisons confirm they are not the same man. https://www.yahoo.com/news/articles/fact-check-im-not-jeffrey-171000060.html https://en.wikipedia.or…"
+ },
+ {
+  "tweet_id": "2036035230037901378",
+  "url": "https://x.com/i/status/2036035230037901378",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "ai_generated_media",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Police just uncovered a YouTube 'view farm' after a sting operation... Phones mounted to the ceiling running nonstop for fake views. https://t.co/kbu4O40HIF",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2036016201265221632/vid/avc1/716x932/zFO8qwjiyCgjmQbb.mp4",
+    "description": {
+     "description": "A series of four frames from a video showing an extensive array of smartphones set up in rows on walls and shelving units, commonly referred to as a 'click farm' or 'bot farm'. The first two frames display grids of phones mounted on vertical panels with numerous charging cables. The third frame shows a dimly lit aisle between two racks of glowing smartphones. The final frame features police or security personnel in uniforms examining the facility.",
+     "ocrText": ""
+    },
+    "transcription": "Olha isso. Meu Deus do céu, são centenas. Os dados no YouTube, é uma fazenda de visualização. Quem montou isso aqui gastou uma fortuna. A gente precisa chamar o pessoal da inteligência agora. O celular até o teto. Parece uma colmeia. Vai dar um trabalho."
+   }
+  ],
+  "tweet_summary": "TaraBull's tweet (1M+ views, 1.7M impressions) claims 'Police just uncovered a YouTube view farm after a sting operation' with video showing rows of phones mounted to a wall/ceiling and uniformed personnel — Portuguese audio. The video is presented as real police bodycam footage of a Brazilian raid.",
+  "bad_note_text": "The video is AI-generated and does not depict a real police raid on a YouTube view farm. Brazilian fact-checkers confirmed the scene is fake, with no such event occurring. https://g1.globo.com/fato-ou-fake/noticia/2025/12/03/e-fake-video-que-mostra-policia-achando-fabrica-de-visualizacoes-de-conteudos-do-youtube-cena-foi-criada-com-inteligencia-artificial.ghtml",
+  "failure_reason": "sources_missing_or_unreliable / partially_wrong — note is directionally right but (1) cites only a single Portuguese-language source that many US raters can't easily verify, (2) says 'no such event occurring' which is too strong because there WAS a real, separate view-farm bust in Macaé that audiences may conflate.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 145,
+  "why_note_decision": "Brazilian fact-checkers — most prominently G1's 'Fato ou Fake' and Estadão Verifica — confirmed in December 2025 that the viral video is AI-generated, not real police footage. Tells include distorted police insignia, cables that lead into solid walls, mismatched doors, and the absence of any Brazilian police record of such an operation. Hive Moderation flagged AI artifacts. (Note: there WAS a real, separate view-farm bust in Macaé, RJ around the same period, but the specific clip TaraBull posted is the AI fake.) A CN is clearly warranted. The original note correctly identifies it as AI-generat…",
+  "reference_note": "This video is AI-generated, not real footage of a Brazilian police raid on a YouTube view farm. Brazilian fact-checkers (G1 Fato ou Fake; Estadão Verifica) and AI-detection tools identified distorted police insignia, cables entering solid walls, and the absence of any official police record. A separate, real view-farm bust did occur in Macaé, RJ in December 2025 but is unrelated to this clip. http…"
+ },
+ {
+  "tweet_id": "2037330120646484132",
+  "url": "https://x.com/i/status/2037330120646484132",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "manipulated_or_fabricated_evidence",
+   "politics_and_policy"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "https://t.co/nYA4zRFWLQ",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HEYM8mBbwAEKq4h.jpg",
+    "description": {
+     "description": "A close-up photograph of U.S. Representative Alexandria Ocasio-Cortez speaking, with impact font text overlaid on the bottom portion of the image making a political statement.",
+     "ocrText": "\"Republicans are trying to rig elections by only allowing U.S. citizens to vote!\""
+    }
+   }
+  ],
+  "tweet_summary": "Image-overlay meme of AOC with the impact-font caption: 'Republicans are trying to rig elections by only allowing U.S. citizens to vote!' — posted without a satire/parody label and amplified by replies treating it as a real quote.",
+  "bad_note_text": "This is not a real quote from Rep. Ocasio-Cortez. Searches of her official X account return no such statement, and fabricated quotes attributed to her are common. https://x.com/AOC https://www.factcheck.org/person/alexandria-ocasio-cortez/",
+  "failure_reason": "sources_missing_or_unreliable — links a general X profile and a topic-page on factcheck.org rather than a dedicated fact-check of this specific fabricated quote (Snopes, MBFC, factually.co, MSN all have direct debunks).",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 7,
+  "why_note_decision": "Snopes, Media Bias/Fact Check, factually.co, and AOC's press secretary all confirm AOC never said this. The quote originated as satire (Genesius Times) but is being amplified as a real statement. Multiple replies in this tweet's thread accept it as genuine ('I could 100% see her saying this'). Original note correctly says the quote is not real but used weak sources (her X feed and a factcheck.org category page) instead of citing the dedicated Snopes/MBFC fact-checks. Reference note should cite those.",
+  "reference_note": "Rep. Alexandria Ocasio-Cortez never said this. Snopes and other fact-checkers confirm the quote is fabricated; her press secretary denied it. The line originated from satire site Genesius Times. https://www.snopes.com/fact-check/aoc-gop-rig-elections-quote/ https://mediabiasfactcheck.com/fact-check-did-aoc-say-gop-rig-elections-by-allowing-citizens-only/"
+ },
+ {
+  "tweet_id": "2040248192785088645",
+  "url": "https://x.com/i/status/2040248192785088645",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "antisemitic_conspiracy"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "BREAKING: A leaked report from Argentina reveals plans to accept 300,000 Israelis and create a mini-state, establishing a private community in burned areas of Patagonia called “Private Neighborhood Josué, Prophet of Israel.” https://t.co/dsSYin0vYf",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HFBq63lacAAfqfr.jpg",
+    "description": {
+     "description": "A wide shot shows a man kneeling on a sidewalk and hugging a small, light-colored dog. In the background, a house is being consumed by huge bright orange flames and thick grey smoke fills the sky behind it. The house is behind a low concrete wall topped with a metal fence. The street in front is empty except for the man and his dog.",
+     "ocrText": ""
+    }
+   }
+  ],
+  "tweet_summary": "A 269k-follower account posts 'BREAKING: A leaked report from Argentina reveals plans to accept 300,000 Israelis and create a mini-state... in burned areas of Patagonia called \"Private Neighborhood Josué, Prophet of Israel,\"' with a photo of a house on fire. Replies push the antisemitic 'Jews started the fires to grab land' narrative.",
+  "bad_note_text": "There is no evidence of a &quot;leaked report&quot; regarding Israeli settlements in Patagonia. Maldita reports that no such plans or policy changes have been announced by the Argentine government. https://maldita.es/clima/20260113/incendios-patagonia-argentina-provocados-israel-connivencia-milei-recalificar-terrenos",
+  "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (6) on a low-volume (9) note. The verdict is correct and Maldita is a reputable fact-checker, but it rests on a single source whose long Spanish URL may not resolve cleanly, and the note doesn't connect to corroborating fact-checks (Chequeado, CAM) or name the antisemitic 'Andinia Plan' trope. Substance is right; the failure is thin/single-source citation reliability.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 9,
+  "why_note_decision": "A note is warranted. The claim is a fabricated antisemitic conspiracy. There is no leaked Argentine government report, no plan to settle 300,000 Israelis, and no 'Private Neighborhood Josué' mini-state; fact-checkers (Maldita, Argentina's Chequeado, and the Combat Antisemitism Movement) found no massive Israeli land purchases and debunked the related 'Israelis started the Patagonia fires' claim (the device blamed was an Argentine-made FMK-2 grenade, not Israeli). The narrative recycles the century-old, baseless 'Andinia Plan' antisemitic trope. This is a checkable, high-reach false claim that …",
+  "reference_note": "There is no leaked Argentine government report and no plan to settle 300,000 Israelis or create an Israeli 'mini-state' in Patagonia. Fact-checkers (Maldita, Argentina's Chequeado) found no such policy and no massive Israeli land purchases; the related claim that Israelis started the Patagonia fires was also debunked. The story recycles the long-debunked antisemitic 'Andinia Plan' myth. https://ma…"
+ },
+ {
+  "tweet_id": "2052428676478685470",
+  "url": "https://x.com/i/status/2052428676478685470",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "needs_note": "yes",
+  "categories": [
+   "health_medical_science"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Sol beyniniz varsa kedi yavrusu görürsünüz, sağ beyniniz varsa tavşan yavrusu görürsünüz.\n\nNe görüyorsun? https://t.co/jJnFH2Wk4N",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HHuxAK7XoAcf0hk.jpg",
+    "description": {
+     "description": "A landscape photograph of a rugged, snow-dusted mountain range under a clear blue sky. The shadows and snow patterns on the mountain peaks are arranged in a way that creates a hidden image of a man's face looking slightly to the side.",
+     "ocrText": ""
+    }
+   }
+  ],
+  "tweet_summary": "A Turkish-language viral post (3.6M impressions) claims that whether you see a kitten or a rabbit in an image reveals 'left-brain' vs 'right-brain' dominance, asking 'what do you see?' (Note: the attached image per the AI description is actually a mountain range with a hidden face, and most replies say they see Hitler — so the image appears unrelated to the kitten/rabbit framing.)",
+  "bad_note_text": "Sol/sağ beyin yarımküresi baskınlığına göre farklı şeyler görme iddiası bilimsel bir mittir; beyin taramaları böyle bir ayrımı desteklemez. https://www.health.harvard.edu/blog/right-brainleft-brain-right-2017082512222 https://www.britannica.com/story/are-there-really-right-brained-and-left-brained-people https://ed.ted.com/lessons/the-left-brain-vs-right-brain-myth-elizabeth-waters",
+  "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (2) on a very small rating pool (12 total; only 6 not-helpful tags). The verdict is correct and the sources (Harvard/Britannica/TED-Ed) are reputable. The likely issue is the exact Harvard Health URL slug resolving (the '...-right-2017082512222' path may not load cleanly) plus the tiny sample. Substantively a sound debunk; weak point is citation reliability.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 12,
+  "why_note_decision": "A note is warranted on the textual claim. The 'left-brain/right-brain dominance determines what you perceive (kitten vs rabbit)' premise is a well-documented neuromyth: while some functions are lateralized, neuroscience finds no evidence that individuals are 'left-brained' or 'right-brained,' and perceptual ambiguity in an image does not map onto hemispheric dominance. Debunking this is the standard, well-sourced correction (Harvard Health, Britannica, University of Utah study). It's a low-stakes but high-reach pseudoscience claim, so a concise note adds value. (The image/text mismatch is a se…",
+  "reference_note": "Sol/sağ beyin baskınlığına göre farklı şeyler görme iddiası bilimsel bir mittir; bir görselde ne gördüğünüz beyin yarımküresi baskınlığını göstermez. Sinirbilim, insanların 'sol beyinli' veya 'sağ beyinli' olduğuna dair bir kanıt bulamamıştır. https://www.health.harvard.edu/blog/right-brainleft-brain-right-2017082512222 https://www.britannica.com/story/are-there-really-right-brained-and-left-brain…"
+ }
+]

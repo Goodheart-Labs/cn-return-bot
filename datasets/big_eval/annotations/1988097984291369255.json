@@ -1,0 +1,33 @@
+{
+  "tweet_id": "1988097984291369255",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "poor",
+  "suggested_category": "satire_or_joke_misread",
+  "tweet_summary": "Comedy account 'greg' quote-tweets a McDonald's McRib-return announcement with 'The McRib usually comes back right before a major world event' — a long-running internet running joke.",
+  "why_note_decision": "This is a well-established internet meme/joke; 'greg' is a known comedy persona account with millions of impressions on absurdist jokes. All replies engage as comedy ('shit water for 72 hours', 'Christ has returned', 'Maybe it'll be a really good major world event'). The community rated the original note NOT_HELPFUL with dominant tag noteNotNeeded. Bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive. FAIL any note that literally fact-checks the McRib-vs-world-events connection (the original note's failure) or that calls the post misleading; the persona, the meme history, and the all-jokes reply chain make the comedic intent unmistakable.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The claim McRib returns before major world events is factually incorrect. McRib is a seasonal item returning almost every fall since 2006 based on marketing/demand, not global events. No credible pattern exists linking McRib to world events. https://www.businessinsider.com/history-mcdonalds-mcrib-cult-favorite-menu-item-photos-2022-10",
+    "failure_reason": "note_not_needed — fact-checks a long-standing internet running joke. Author is comedy account; replies are all jokes.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_no_factual_claim",
+    "sources_checked": [],
+    "notes": "Long-standing McRib conspiracy meme. Account 'greg' is an established comedy persona (1.6M followers, absurdist humor)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "2.16M-impression joke; main value is teaching the bot to not fact-check meme-pattern humor."
+  },
+  "difficulty": "easy"
+}

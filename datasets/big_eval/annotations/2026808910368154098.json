@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2026808910368154098",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["platform_manipulation", "celebrity_entertainment_sports", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "fictional_characters_as_real",
+  "tweet_summary": "An engagement-farming post claims 'Tasha & Tommy got married' with photos, implying the real actors Naturi Naughton (Tasha) and Joseph Sikora (Tommy) from the show Power married each other.",
+  "why_note_decision": "Tasha and Tommy are fictional Power characters; the actors did not marry each other. Naturi Naughton has been married to Xavier 'Two' Lewis since 2022, and Joseph Sikora is married to Tania Ribalow. The post deliberately conflates characters with actors to farm engagement/confusion (many commenters congratulate them as if real). A clarifying note is warranted.",
+  "judge_guidance": "PASS only if the note clarifies that Tasha & Tommy are fictional Power characters and the actors did NOT marry each other, ideally naming the actors' actual spouses (Naturi Naughton married Xavier 'Two' Lewis in 2022; Joseph Sikora is married to Tania Ribalow) with sources. It should treat the post as engagement-bait/misleading, not real news. A note that congratulates them, or that fails to distinguish characters from actors, should FAIL.",
+  "reference_note": "OP is engagement farming. Tasha & Tommy are fictional Power characters; the actors did not marry. Naturi Naughton has been married to Xavier Lewis since 2022 and Joseph Sikora is married to Tania Ribalow. https://people.com/who-is-tania-ribalow-joseph-sikora-wife-11846940 https://thegrio.com/2022/04/06/naturi-naughton-marries-boyfriend-xavier-two-lewis/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false/misleading - fictional characters presented as real married couple; actors married to other people",
+    "sources_checked": [
+      "https://thegrio.com/2022/04/06/naturi-naughton-marries-boyfriend-xavier-two-lewis/",
+      "https://www.aol.com/articles/joseph-sikoras-wife-makeup-artist-223000553.html"
+    ],
+    "notes": "Naturi Naughton married Xavier 'Two' Lewis April 2022. Joseph Sikora married to makeup artist Tania Ribalow (reportedly since 2014). 'Tasha & Tommy' are their Power roles."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "6.3M impressions but purely entertainment engagement-bait; low world-stakes, mild value in countering platform manipulation patterns."},
+  "difficulty": "easy"
+}

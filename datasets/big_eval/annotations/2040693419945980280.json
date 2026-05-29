@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2040693419945980280",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A 'World War 3' breaking-news account posts a video captioned 'URGENT: U.S. Pilot Reportedly Captured in Iraq' with an on-screen date '4.4.2026', showing a captured airman being interrogated.",
+  "why_note_decision": "A note IS warranted: this is old footage presented as a current 2026 event. The video is the 1991 Gulf War POW interrogation of Col. David Eberly (F-15E shot down Jan 1991, paraded on Iraqi TV / shown on CNN), confirmed by AFP/Lead Stories fact-checks and POW records. His transcribed answers (F-15, 4th Tactical Fighter Wing, base in Al-Kharj Saudi Arabia, targets 'Scud missiles and chemical facilities') are textbook Desert Storm, not 2026. Commenters uniformly say '1991'. The original note got the correction wrong: it accepted the clip as a real recent event and merely 'fixed' the location from Iraq to Iran, asserting a 2026 F-15E was struck in Iranian airspace \u2014 compounding the misinformation instead of identifying the footage as 1991.",
+  "judge_guidance": "PASS only if the note establishes that the video is OLD footage from the 1991 Gulf War \u2014 specifically the captured/interrogated U.S. F-15E pilot Col. David Eberly shown on Iraqi/CNN TV in 1991 \u2014 and is NOT a 2026 event. Cite the Gulf War origin (AFP/Lead Stories debunk, POW records, or the Desert Storm details in the clip: 4th TFW, Al-Kharj base, Scud/chemical targets). FAIL the note if it treats the clip as a real 2026 capture and only disputes the country (e.g. 'it happened in Iran, not Iraq; a 2026 F-15E was struck in Iranian airspace') \u2014 that is the original note's error, which validates a fake current event. The reader's key takeaway must be: this is 1991 footage, not from 2026.",
+  "reference_note": "This is 1991 Gulf War footage, not a 2026 event. The video shows captured U.S. pilot Col. David Eberly, whose F-15E was shot down over Iraq in January 1991; he was paraded on Iraqi TV and shown on CNN. The clip's details (4th Tactical Fighter Wing, Al-Kharj base, Scud/chemical targets) are Desert Storm. https://www.yahoo.com/news/articles/fact-check-video-does-not-235446725.html https://www.pownetwork.org/gulf/ed011.htm",
+  "original_unhelpful_note": {
+    "text": "**Geographic error:** The incident occurred in **Iran**, not Iraq. A U.S. F-15E was struck in Iranian airspace. U.S. officials denied capture, stating they had \"no information indicating that the pilot has been taken prisoner.\" https://www.kurdistan24.net/en/story/905585",
+    "failure_reason": "Rated notHelpfulIncorrect (5 of 6, low volume). The note treats decades-old footage as a genuine 2026 event and only 'corrects' the country from Iraq to Iran, asserting a current F-15E was struck in Iranian airspace. In reality the clip is the 1991 Gulf War capture of Col. David Eberly. By accepting the fake premise and relocating it, the note amplifies the misinformation rather than exposing the old-footage reuse that commenters and fact-checkers identified.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/fact-check-video-does-not-235446725.html",
+      "https://www.pownetwork.org/gulf/ed011.htm",
+      "https://airandspace.si.edu/support/wall-of-honor/colonel-david-w-eberly",
+      "https://uk.news.yahoo.com/old-gulf-war-video-misrepresented-061103528.html"
+    ],
+    "notes": "AFP/Lead Stories fact-check: the clip does NOT show a U.S. pilot captured by Iran in April 2026 \u2014 it is 1991 Gulf War footage. Col. David Eberly's F-15E was shot down Jan 1991; he was captured, paraded on Iraqi TV, shown on CNN Jan 25 1991, and released March 5 1991. The transcribed interrogation (F-15, 4th TFW, Al-Kharj, Scud/chemical targets) matches Desert Storm exactly. The '4.4.2026' overlay is fabricated context."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Lower-reach (28K impressions) but a clear war-misinformation pattern: recycled 1991 POW footage sold as a live 2026 US-Iran escalation. Correctly debunking old-footage war hoaxes reduces fog-of-war panic and is a core competency the bot must get right."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2047489331346960839",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:15.317Z",
+  "post": {
+    "id": "2047489331346960839",
+    "author_id": "2041752599238508544",
+    "created_at": "2026-04-24T01:34:31.000Z",
+    "text": "Take a seat everyone. We won. https://t.co/5su7c9SDrd",
+    "media": [
+      {
+        "media_key": "3_2047485549385043968",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGohQlXXUAAWjCn.jpg",
+        "height": 1281,
+        "width": 1079
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 343,
+      "reply_count": 186,
+      "like_count": 6980,
+      "quote_count": 58,
+      "bookmark_count": 463,
+      "impression_count": 264239
+    },
+    "author_followers": 3126,
+    "author_name": "TaxedBrass",
+    "author_description": "A fan of LibertAryanism and whatnot",
+    "author_tweet_count": 286
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGohQlXXUAAWjCn.jpg",
+          "description": {
+            "description": "A screenshot of a post on X (formerly Twitter) by user Chibi Reviews. The post features a selfie of a man with dark curly hair and a somber expression standing in a green wooded area. Above the image, the text indicates a significant update with a link to a YouTube video. Below the image, the platform's engagement metrics are visible, showing various counts for reposts, quotes, likes, and bookmarks.",
+            "ocrText": "Chibi Reviews\r\n@ChibiReviews\r\nFollow\r\nimportant.. i'm done youtu.be/\r\no-crBBKrfvA\r\n20:28 23 Apr 26 16K Views\r\n20 Reposts 8 Quotes 510 Likes\r\n53 Bookmarks"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @takeiteqsy: “Take a seat everyone”: Chibi’s brother: (Likes=888, Reposts=21, Quotes=0, Replies=6)\n- @mingebag13: Chibis haters don't know how to listen apparently lmao (Likes=568, Reposts=0, Quotes=0, Replies=0)\n- @Notorious_Zero: Apparently he called the Feds over this (Likes=556, Reposts=12, Quotes=5, Replies=23)\n- @Indexventure67: So bvck broken over a fake photo he has to call irl jannies geeeg. (Likes=344, Reposts=0, Quotes=0, Replies=0)\n- @KOB13x: 'We went as far as to bring up a man's dead brother, yay!' I fucking hate you all. (Likes=252, Reposts=0, Quotes=0, Replies=0)\n- @Mushroom_hat1: Tf is law enforcement supposed to do over an AI meme that wasn’t real lmao (Likes=195, Reposts=3, Quotes=0, Replies=4)\n- @Hazespark0: Chibi when he gives the fbi all the information he can while fighting for his right to not let them look at his computer (Likes=140, Reposts=3, Quotes=0, Replies=4)\n- @hoekwinder: Fake and gay (Likes=128, Reposts=0, Quotes=0, Replies=0)\n- @yannerland: nigga got mindbroken by an ai meme XD so much for ''it's just fiction'' (Likes=117, Reposts=0, Quotes=0, Replies=0)\n- @megunajujutsu: BYE BYE CUCK REVIEWS (Likes=106, Reposts=0, Quotes=0, Replies=0)",
+    "warnings": []
+  }
+}

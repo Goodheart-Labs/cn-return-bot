@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2036452727082066005",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Viral claim that the DOJ 'admitted' 47,635 Epstein files (including Trump allegations) were deleted after the US-Iran war started, implying intentional cover-up via destruction of evidence.",
+  "why_note_decision": "The tweet makes a checkable, misleading claim ('files deleted' = permanent destruction). In reality the DOJ temporarily took down 'several thousand' (not 47,635) Epstein documents in early February 2026 to fix faulty redactions that exposed victim identities — they were not deleted, and the takedown was unrelated to any Iran war. A correction is warranted, but the original note misframes the timeline (claims removal was 'after the US-Iran war began on Feb 28 2026', which is itself a contested/unverified linkage) and inflates the number to match the tweet's 47,635.",
+  "judge_guidance": "PASS only if the note (a) clarifies that the documents were temporarily withdrawn for re-redaction, not deleted, (b) gives the actual reason — exposed victim-identifying information / faulty redaction — citing credible reporting (NPR, ABC News, PBS), and (c) does NOT assert the takedown was caused by or timed to the Iran war. FAIL if it repeats the '47,635 deleted' framing or invents a war-driven timeline.",
+  "reference_note": "DOJ did not delete these files. In early Feb 2026, DOJ temporarily took down several thousand Epstein documents from its public site after faulty redactions exposed identifying information for ~100 victims. The files are being re-redacted, not destroyed. https://www.npr.org/2026/02/06/nx-s1-5702692/epstein-files-doj-trump-clinton-oversight https://www.pbs.org/newshour/politics/government-says-its-fixing-thousands-of-documents-in-epstein-related-files-that-may-have-had-victim-information",
+  "original_unhelpful_note": {
+    "text": "The DOJ did not admit to deleting 47,635 Epstein files. It stated they were temporarily taken offline for review and redaction after the US-Iran war began on Feb. 28, 2026—not permanently deleted. Many have been republished.    https://www.usatoday.com/story/news/politics/2026/03/05/epstein-files-removed-for-redaction-back/89005511007  https://nypost.com/2026/03/05/us-news/doj-to-release-more-than-47000-withheld-jefferey-epstein-files-by-end-of-week  https://www.npr.org/2026/02/24/nx-s1-5723968/epstein-files-trump-accusation-maxwell",
+    "failure_reason": "Invents/contests the timeline (links takedown to a 'US-Iran war' that started Feb 28 2026, which is not the documented reason — redaction errors are) and accepts the tweet's '47,635' number rather than the actual ~several thousand. The core point (not deleted, redaction-related) is correct but the supporting framing is wrong.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — files were temporarily withdrawn for redaction fixes, not deleted; cause was exposed victim info, not the Iran war",
+    "sources_checked": [
+      "https://www.npr.org/2026/02/06/nx-s1-5702692/epstein-files-doj-trump-clinton-oversight",
+      "https://abcnews.com/US/epstein-files-doj-thousand-documents-mistakenly-identified-victims/story?id=129787942",
+      "https://www.pbs.org/newshour/politics/government-says-its-fixing-thousands-of-documents-in-epstein-related-files-that-may-have-had-victim-information"
+    ],
+    "notes": "Multiple mainstream outlets report DOJ took down several thousand documents in early Feb 2026 to fix redaction failures that leaked victim identities. No reporting ties the action to the 'Iran war' framing the original note adopts."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.5M impressions; Epstein/cover-up narratives are high-trust-erosion misinformation pushed during a fraught political moment — correcting them well matters for institutional credibility."
+  },
+  "difficulty": "hard"
+}

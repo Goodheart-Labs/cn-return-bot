@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2040474166290178199",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "manipulated_or_fabricated_evidence",
+    "statistical_or_numerical_claim",
+    "joke_or_satire"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post claims 'Netflix is reportedly removing the Household Sharing ban after a 15% drop in global subscribers,' posted by Hoops Crave (a parody account) with the Netflix logo.",
+  "why_note_decision": "Both factual claims are false: Netflix did not announce reversal of its password/household-sharing crackdown, and there was no 15% subscriber drop \u2014 the crackdown has been a major monetization success and Netflix subscribers grew (300M+). The post comes from a self-described parody account but is written as straight breaking news with the Netflix logo, and the replies show many readers taking it literally. A fabricated, checkable claim being read as real warrants a note.",
+  "judge_guidance": "PASS only if the note establishes that the claim is fabricated/unsupported: there is no credible report that Netflix is removing the household-sharing ban, and there was no 15% subscriber drop (the crackdown succeeded and subscriber counts rose). Noting that the source (Hoops Crave / @HoopsCrave) is a parody account strengthens it. The note must NOT validate the 15%-drop or policy-reversal claim. A bare 'this is fake' without addressing either the non-existent reversal or the false 15% figure is weak. Cite a fact-check or Netflix subscriber data (Fact Crescendo, NetflixJunkie, etc.).",
+  "reference_note": "No credible reports indicate Netflix is reversing its household-sharing ban, and there was no 15% subscriber drop \u2014 the password-sharing crackdown has grown paying subscribers (300M+). The claim is fabricated; @HoopsCrave is a parody account.    https://english.factcrescendo.com/2026/04/11/netflix-household-sharing-ban-not-reversed-15-percent-subscriber-drop-false/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/fabricated: no report of Netflix removing the household-sharing ban; no 15% subscriber drop \u2014 the crackdown boosted paying subscribers and Netflix grew. Posted by a parody account but framed as real news.",
+    "sources_checked": [
+      "https://english.factcrescendo.com/2026/04/11/netflix-household-sharing-ban-not-reversed-15-percent-subscriber-drop-false/",
+      "https://www.netflixjunkie.com/netflix-news-fact-check-is-netflix-removing-the-household-sharing-ban/"
+    ],
+    "notes": "Fact Crescendo and NetflixJunkie both rate the claim false; the password-sharing crackdown is widely reported as Netflix's most successful monetization move (subscribers rose to ~300M+, no 15% drop). @HoopsCrave's bio self-identifies as a parody account not affiliated with PopCrave."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "6.7M impressions; low real-world stakes (corporate-policy rumor) but a clean case of fabricated 'news' from a parody account spreading as fact \u2014 useful for the dataset as an easy fabrication/parody false-claim exemplar."
+  },
+  "difficulty": "easy"
+}

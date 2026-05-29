@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2038078622590779632",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "breaking_news_and_war",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A donation-soliciting account posts a dramatic claim (256k impressions) that Ukrainian forces broke through the front in late March 2026, that Russian defenses 'collapsed' and enemy positions surrendered en masse, accompanied by a generic photo of advancing Ukrainian troops/armor.",
+  "why_note_decision": "A note is warranted. The claim of a sudden Russian collapse and mass surrender of positions in late March 2026 is contradicted by the Institute for the Study of War: that period saw only incremental gains and grinding, contested front lines, with Russia still slowly advancing (ISW: ~17 sq mi gained by Russia the week of Mar 24-31). There was no breakthrough, no collapse, no liberation of cities. The accompanying image carries an 'SC9' watermark suggesting it is generic/recycled footage, not documentation of the claimed event. Readers benefit from the factual context.",
+  "judge_guidance": "PASS only if the note establishes that, as of late March 2026, there was NO Ukrainian breakthrough, NO collapse of Russian defenses, and NO mass surrender / liberation of cities \u2014 credible assessments (ISW) describe only incremental gains and stalled, contested front lines, with Russia still making slow advances. The note MUST cite a loadable, authoritative source for the front-line status (e.g. ISW / criticalthreats.org assessment for late March 2026, or AP/Reuters/Al Jazeera war coverage). FAIL the original note's specific failure: ensure the cited URLs actually load and substantiate the 'no breakthrough' claim (the original was rated notHelpfulSourcesMissingOrUnreliable). Optionally the note may note the image appears to be generic/unrelated footage, but only if it does not over-claim about media it cannot verify. FAIL any note that endorses the breakthrough/collapse narrative.",
+  "reference_note": "As of late March 2026 there was no Ukrainian breakthrough or collapse of Russian defenses. The Institute for the Study of War describes grinding, contested front lines with only incremental gains on both sides; Russia continued to make slow advances and no cities were liberated in a sudden offensive. https://www.criticalthreats.org/analysis/russian-offensive-campaign-assessment-march-31-2026 https://www.aljazeera.com/news/2026/3/28/russian-strikes-on-ukraine-cities-kill-4-as-deal-to-end-war-dims",
+  "original_unhelpful_note": {
+    "text": "There are no credible reports of a major Ukrainian breakthrough, collapse of Russian defenses, or the liberation of cities as of late March 2026. Experts describe only incremental gains in the south and stalled front lines.     https://understandingwar.org/research/russia-ukraine/russian-offensive-campaign-assessment-march-26-2026   https://www.aljazeera.com/news/2026/3/28/russian-strikes-on-ukraine-cities-kill-4-as-deal-to-end-war-dims",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (5) on a low-volume (12) note. The verdict is correct and well-aligned with ISW, but the lead ISW URL uses an 'understandingwar.org/research/...' path that may not resolve cleanly (ISW assessments are commonly hosted at criticalthreats.org), and the small rating pool flagged sourcing. Substantively sound but the citation reliability is the weak point.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.criticalthreats.org/analysis/russian-offensive-campaign-assessment-march-31-2026",
+      "https://www.criticalthreats.org/analysis/russian-offensive-campaign-assessment-march-25-2026",
+      "https://www.russiamatters.org/news/russia-ukraine-war-report-card/russia-ukraine-war-report-card-april-1-2026"
+    ],
+    "notes": "ISW assessments for late March 2026 show incremental, contested fighting \u2014 Russia gained ~17 sq mi the week of Mar 24-31 and was still advancing slowly; Russian operations were infiltration-style with no terrain breakthrough. No Ukrainian collapse-of-Russian-defenses or mass surrender occurred. The image has an 'SC9' watermark consistent with generic/recycled footage rather than event documentation."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Wartime morale/disinformation (256k impressions) overstating battlefield success; inflated 'collapse' narratives distort public understanding of the war and peace-deal prospects. Moderate public-interest value."
+  },
+  "difficulty": "medium"
+}

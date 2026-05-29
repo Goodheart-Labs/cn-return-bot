@@ -1,0 +1,95 @@
+{
+  "tweet_id": "2012810884482265285",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:42.883Z",
+  "post": {
+    "id": "2012810884482265285",
+    "author_id": "1499051924649295877",
+    "created_at": "2026-01-18T08:54:45.000Z",
+    "text": "There is growing evidence that the brutal Iranian regime has used chemical agents against protesters. Last week, videos surfaced showing repression forces in Sabzevar, Razavi Khorasan Province, wearing protective clothing and masks typically associated with chemical weapons. Now, https://t.co/oRiWP1gsVe https://t.co/7277Pw3dTE",
+    "media": [
+      {
+        "media_key": "7_2012810371141169152",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2012810371141169152/pu/img/zoV2gddK0JGWjfDd.jpg",
+        "height": 1080,
+        "width": 1080,
+        "duration_ms": 25820,
+        "view_count": 54927,
+        "variants": [
+          {
+            "bit_rate": 8768000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2012810371141169152/pu/vid/avc1/1080x1080/gp8f5DPeddt27Rwd.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2012810371141169152/pu/pl/_xJcYH_iwt8IGWwE.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 1280000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2012810371141169152/pu/vid/avc1/720x720/7OujU3mprm42P6qC.mp4"
+          },
+          {
+            "bit_rate": 432000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2012810371141169152/pu/vid/avc1/320x320/rSB4ecgzPjM1q6Jt.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2012810371141169152/pu/vid/avc1/540x540/wvBhZq0WdoeBnW1E.mp4"
+          }
+        ]
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2012667145549648249"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2012667145549648249",
+      "author_id": "169179541",
+      "created_at": "2026-01-17T23:23:35.000Z",
+      "text": "«بعد از گذشت یک هفته که در اعتراضات نیاوران شرکت داشتم و هدف گاز اشک آور قرار گرفتم هنوز وضعیت بدنم نرمال نشده.\n\nیک هفته است فشار خونم بسیار بالاست و ضربان بالا. دل‌درد و سردرد و سرگیجه دارم.\n\nپس از آزمایش کامل در درمانگاه نیاوران، دکتر گفت خیلی ها با حالات تو اومدن و این تاثیر",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 3024,
+      "reply_count": 593,
+      "like_count": 6077,
+      "quote_count": 258,
+      "bookmark_count": 155,
+      "impression_count": 223971
+    },
+    "author_followers": 181317,
+    "author_name": "علی شریفی زارچی",
+    "author_description": "Ali Sharifi-Zarchi. Faculty of AI, Aryamehr University of Technology, Iran. Elected Member of the International Olympiad of Informatics (IOI).",
+    "author_tweet_count": 4677
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2012810371141169152/pu/vid/avc1/1080x1080/gp8f5DPeddt27Rwd.mp4",
+          "description": {
+            "description": "A figure in a yellow raincoat is standing on top of a structure. In one frame, a police officer and another figure are looking at each other, as if one is grabbing the other. In another frame, an officer and someone else are together, near the ground where a small fire is visible. Text in Persian overlaying the video claims a British official said the Islamic Republic used toxic chemicals against protesters.",
+            "ocrText": "ایران بريفینگ فارسی مقام بریتانیایی جمهوری اسلامی علیه معترضان از ماده شیمیایی سمی استفاده کرد انقلاب ملی ایران"
+          },
+          "transcription": "¿Puedes darme la canción en negro?"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@iran_amazing**  \nIran didn’t even use chemical weapons in Iraq after Iraq used it on them. Stop spreading lies.  \nLikes: 109 | Reposts: 0 | Replies: 0\n\n**@waltman_j42227**  \nYou’ve lost your olympiadi brain bro!  \nA quote from the satirical “mamlekate” page, and a video from one guy wearing mask while all other regime men have no mask is enough to conclude that Iran gas used chemicals?  \nYoung Iranians took you too seriously. You are a joke.  \nLikes: 55 | Reposts: 0 | Replies: 0\n\n**@Laakshou**  \nThought you were a professor, and you're that stupid  \nLikes: 40 | Reposts: 0 | Replies: 0\n\n**@MaryamMehr68**  \nنادون  \nاین دروغا رو که هی کپی پیست میکنی از پیج های دروغین برانداز، نمیفهمی چه تبعاتی داره؟!  \nاینا رو میگن که اگه فردا روزی حتی بمب اتم هم زدن تو ایران، بگن خود ج.ا به مردمش رحم نکرد، و بمب اتم رو توجیه کنند  \nبفهم نفهم  \nLikes: 28 | Reposts: 0 | Replies: 0\n\n**@soltan_ar**  \nاز پستون سگ شیر می‌خوردی شاید به این روز نمی‌افتادی بی‌شرف  \nLikes: 23 | Reposts: 0 | Replies: 0\n\n**@aminemati57**  \n@OPCW  \nسازمان منع سلاحهای شیمیایی را تک کنید.  \nLikes: 16 | Reposts: 0 | Replies: 0\n\n**@moinifard**  \nخجالت بکش  \nLikes: 15 | Reposts: 0 | Replies: 0\n\n**@ixtland**  \nYou’ve literally lost your mind. Hatred has blinded and deafened you. What’s your red line? When will you stop and return to your conscience? Why have you become like this, a shallow, brainless follower of lies?  \nLikes: 12 | Reposts: 0 | Replies: 0\n\n**@IranMilitaryNet**  \nThat is water cannon imbecile,it is used in anti riot operations regularly around the world,also it was used in NBC( Nuclear Biological Chemical) military drills in Iran as post attack cleaning vehicle. Chemical weapons is delivered using warheads,shells,..etc..it's not liquid  \nLikes: 10 | Reposts: 0 | Replies: 0\n\n**@BigSui31**  \nWhy aren't the police wearing masks then if it was chemical weapons...it's skunk water you morons  \nLikes: 10 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

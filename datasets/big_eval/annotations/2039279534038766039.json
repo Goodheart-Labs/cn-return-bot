@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2039279534038766039",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims UK PM Keir Starmer 'stopped the entire nation' to announce 'a new global order' and that 'the UK will now rejoin the European Union', tying it to Von der Leyen leaving Australia.",
+  "why_note_decision": "Starmer's 1 April 2026 Downing Street address called for CLOSER EU cooperation and announced an upcoming EU summit amid the Iran/energy crisis; he did NOT announce rejoining the EU or a 'new global order'. The post asserts a specific false outcome ('the UK will now rejoin the EU') to a 3.5M-impression audience. I disagree with the provisional no-note: the tweet makes a checkable, false factual claim, so a correction is warranted.",
+  "judge_guidance": "PASS only if the note states that Starmer's speech called for closer cooperation/a partnership summit with the EU but did NOT announce the UK rejoining the EU (nor a 'new global order'), citing the official transcript (gov.uk PM remarks 1 April 2026) or reputable reporting. It must avoid endorsing the 'rejoining the EU' claim. A note that agrees the UK is rejoining, or that only discusses the unrelated Australia angle, should FAIL.",
+  "reference_note": "Prime Minister Starmer's address called for closer cooperation with the EU but did not announce rejoining it or a \"new global order.\" https://www.gov.uk/government/speeches/pm-remarks-1-april-2026",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false - Starmer called for closer EU cooperation and a summit, did not announce rejoining the EU",
+    "sources_checked": [
+      "https://www.gov.uk/government/speeches/pm-remarks-1-april-2026",
+      "https://www.bloomberg.com/news/articles/2026-04-01/starmer-pledges-closer-ties-with-europe-after-trump-criticism",
+      "https://www.usnews.com/news/world/articles/2026-04-01/uk-requires-closer-eu-partnerships-due-to-volatile-world-starmer-says"
+    ],
+    "notes": "Transcript shows Starmer announced an upcoming EU summit and 'closer economic/security cooperation', explicitly framed around the Iran crisis and energy costs - not membership. No mention of rejoining or a 'new global order'."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "3.5M impressions on a politically charged false claim (treason/'dictator' replies); correcting a fabricated policy announcement supports informed democratic debate."},
+  "difficulty": "easy"
+}

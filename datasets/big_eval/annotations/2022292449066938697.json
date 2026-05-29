@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2022292449066938697",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "ai_generated_media"],
+  "category_fit": "partial",
+  "suggested_category": "historically_false_political_claim",
+  "tweet_summary": "Tom Rose (described as an ambassador-style MAGA poster) declares 'Poland — America's very first and oldest ally!!!' attached to what appears to be an AI-generated patriotic montage of Trump on top of a mound with crowds, Polish and US flags, fireworks, and the Star-Spangled Banner playing. Tagged with #polandUSA250.",
+  "why_note_decision": "The claim 'Poland is America's first and oldest ally' is straightforwardly historically false. France is the United States' first formal ally (1778 Treaty of Alliance, signed Feb 6 1778 — France was the first nation to recognize US independence). US–Poland formal ties did not exist until after Polish independence in 1918/1919, and Poland became a NATO ally only in 1999. Multiple top replies (Wojenne Historie, Stanisław Nelken, etc.) point this out, and the post has 1.2M impressions, so this is a checkable, prominent factual claim a note can correct. Provisional 'no_note_needed' is wrong — this IS the standard checkable historical-fact case. The original note actually does state France 1778 vs Poland 1919 correctly, but raters tagged 'Missing Key Points' (32) as dominant — likely because the note didn't address the AI-generated video element which several top commenters flagged ('AI płakała jak generowała', 'fake AI-generated video') and didn't engage with the Trump-Poland diplomatic context.",
+  "judge_guidance": "PASS criteria: the note must establish that the tweet's headline claim is historically false — specifically, that France (not Poland) is the United States' first and oldest formal ally via the 1778 Treaty of Alliance, and that US–Poland diplomatic relations only formally began in 1919 (after Polish independence in 1918), with Poland joining NATO in 1999. A good note cites State Department / National Archives / official history. BONUS but not required: noting the attached video appears to be AI-generated (multiple commenters and the AI-style description suggest this), since the AI provenance is part of why the post is misleading. FAIL any note that (a) repeats the 'Poland first ally' claim as true, (b) hedges into 'Poland has been a close ally' without contradicting the 'first/oldest' claim, or (c) treats this as opinion. The history fact is unambiguous.",
+  "reference_note": "False. America's first and oldest formal ally is France, via the Treaty of Alliance signed Feb 6, 1778 — France was the first country to recognize U.S. independence. U.S.–Poland formal relations began in 1919 after Polish independence; Poland joined NATO in 1999. https://history.state.gov/countries/france https://www.archives.gov/milestone-documents/treaty-of-alliance-with-france https://history.state.gov/countries/poland",
+  "original_unhelpful_note": {
+    "text": "Misleading — France was the United States' first formal ally (1778 Treaty of Alliance). Poland's official U.S. ties began in 1919 and it became a close NATO ally much later. https://history.state.gov/countries/france https://www.congress.gov/crs-product/R45784",
+    "failure_reason": "Factually correct core, but raters dominated by 'notHelpfulMissingKeyPoints' (32). Likely missed: the video appears AI-generated (top commenters flag this), and the author's diplomatic context (Tom Rose, US Amb to Poland nominee/holder) is part of why the post is notable. Note also reads slightly hedged ('much later') instead of decisive.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False — France (1778) is US's first formal ally; Poland's formal US ties start 1919, NATO membership 1999.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Treaty_of_Alliance_(1778)",
+      "https://www.archives.gov/milestone-documents/treaty-of-alliance-with-france",
+      "https://history.state.gov/countries/france",
+      "https://guides.loc.gov/treaty-of-alliance-with-france"
+    ],
+    "notes": "Library of Congress and National Archives unambiguously identify the 1778 Franco-American treaty as the first US alliance. Poland did not exist as an independent state from 1795–1918."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.2M impressions on a historical-falsehood-as-propaganda post from a high-profile MAGA account using apparent AI-generated patriotic imagery; correcting historical falsehoods that flatter authoritarian-leaning politics matters modestly for epistemic hygiene."
+  },
+  "difficulty": "easy"
+}

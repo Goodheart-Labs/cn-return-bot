@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2011916644767998087",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "James Woods (5.3M followers) posts an image purporting to show Barack Obama bowing deeply before Iran's Supreme Leader Ali Khamenei, framing it as 'the absolute low point in American history.'",
+  "why_note_decision": "The image is a doctored composite presented as a real event to a mass audience. A reader benefits from knowing it is fabricated and that the two men never met, so a debunking note is clearly warranted.",
+  "judge_guidance": "PASS only if the note establishes that the image is fabricated/altered, not a real photograph of an actual meeting. The strongest note identifies the composite: the Obama portion is from a 2009 White House photo of Obama bending down so a boy could touch his hair (Pete Souza), and the Khamenei portion is from a 2005 Tehran photo (Ahmadinejad's inauguration); Obama and Khamenei never met in person. A note that merely says 'this looks edited' without asserting it is fake/that no such meeting happened is too weak. Must cite at least one credible debunk (AFP/Reuters/PolitiFact/Snopes fact-check or the original Flickr/AP source). Do NOT treat the image as authentic.",
+  "reference_note": "This image is altered. It combines a 2009 White House photo of Obama letting a boy touch his hair with a 2005 photo of Ayatollah Khamenei at Ahmadinejad's inauguration. Obama and Khamenei never met.    https://www.flickr.com/photos/obamawhitehouse/4291874710  https://apnews.com/article/archive-fact-checking-5113960004  https://www.reuters.com/fact-check/image-barack-obama-bowing-ayatollah-khamenei-is-fake-2023-11-09",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: the image is a doctored composite of a 2009 Obama photo and a 2005 Khamenei photo; the two never met.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/president-obama-bow-ayatollah-khamenei/",
+      "https://www.politifact.com/factchecks/2019/may/23/viral-image/photo-barack-obama-bowing-ayatollah-khamenei-fake/",
+      "https://www.reuters.com/fact-check/image-barack-obama-bowing-ayatollah-khamenei-is-fake-2023-11-09"
+    ],
+    "notes": "AFP, Reuters, Snopes and PolitiFact all confirm the composite. Obama portion = Pete Souza 2009 White House photo (boy touching his hair); Khamenei portion = Atta Kenare 2005 photo from Ahmadinejad's inauguration (Ahmadinejad originally stood where Obama is pasted)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.27M impressions on a fabricated image stoking US-Iran hostility from a 5.3M-follower account; correcting manufactured visual propaganda about foreign policy has real epistemic/geopolitical value."
+  },
+  "difficulty": "easy"
+}

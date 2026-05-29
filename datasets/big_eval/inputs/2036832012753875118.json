@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2036832012753875118",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:07.072Z",
+  "post": {
+    "id": "2036832012753875118",
+    "author_id": "1330219101080477705",
+    "created_at": "2026-03-25T15:46:09.000Z",
+    "text": "First time buying some shares on chase app 🫣 #chase #amc https://t.co/dnqOqWPRYT",
+    "media": [
+      {
+        "media_key": "3_2036832001546649600",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HERH6e9WAAAynQf.jpg",
+        "height": 1161,
+        "width": 1319
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 32,
+      "reply_count": 42,
+      "like_count": 6143,
+      "quote_count": 5,
+      "bookmark_count": 436,
+      "impression_count": 639564
+    },
+    "author_followers": 501,
+    "author_name": "mike angel",
+    "author_description": "AMC 8.01 vet 🦍 HOLDING TILL SHORTS COVER OR THE ECONOMY COLLAPSES #AMC500k",
+    "author_tweet_count": 5045
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HERH6e9WAAAynQf.jpg",
+          "description": {
+            "description": "A smartphone screenshot displaying a stock purchase confirmation for AMC. The screen shows the AMC logo in a red circle with a green checkmark, indicating a successful transaction. It states 103 shares were bought for a total of $101.56, executed as a market order at $0.99 per share. Status indicators for time, signal strength, and battery are visible at the top.",
+            "ocrText": "9:13\nConfirmation\nClose\namc\nYou bought 103 shares of AMC for $101.56\nOrder executed\nMarket order at $0.99 per share\nAccount"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@CookedByPJ**: \"No point of investing $100 in a stock\" (Likes=129, Views=59958)\n- **@SicParvisMagna_**: \"Better off giving $100 to the needy. $AMC is a shitty business model and I frequent there weekly.\" (Likes=79, Views=43049)\n- **@imshwet25**: \"This is insane. Today I was in chase bank and banker told me if you are interested in investing in stock market using chase bank app and account? I said no and he said ok let me know when you want. How the f x showed me this tweet. I Never ever searched anywhere 😕\" (Likes=20, Views=12615)\n- **@Dale05713126362**: [image reply] (Likes=19, Views=30145)\n- **@Comptonx187**: \"Robinhood would’ve blocked buying shares 🌚\" (Likes=7, Views=4970)\n- **@DreamsWrldd777**: \"amc is lowkey dying out they sold the biggest amc in NJ and i knew it was over\" (Likes=6, Views=4701)\n- **@o00tyler00o**: \"AMC lol\" (Likes=4, Views=4704)\n- **@ZaynWillia50747**: \"Dead stock anyway\" (Likes=2, Views=3404)\n- **@luvstrckgrl**: \"i’m crying\" (Likes=2, Views=758)\n- **@JodieGoodnite**: \"-i wanted to buy amc stock....had no idea I can buy it on chase 🤯🤯🤯\" (Likes=2, Views=4283)",
+    "warnings": []
+  }
+}

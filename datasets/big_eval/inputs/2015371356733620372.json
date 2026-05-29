@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2015371356733620372",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:11.765Z",
+  "post": {
+    "id": "2015371356733620372",
+    "author_id": "1536268354830360576",
+    "created_at": "2026-01-25T10:29:09.000Z",
+    "text": "MORE THAN 38,700 HOTEL BOOKINGS FOR 2026 FIFA WORLD CUP RESERVATIONS IN THE USA 🇺🇸 HAVE BEEN CANCELLED \n\nYour thoughts on this … https://t.co/cM0ODvbfdL",
+    "media": [
+      {
+        "media_key": "3_2015371348437037056",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_gJkEIW8AAqO5y.jpg",
+        "height": 554,
+        "width": 554
+      },
+      {
+        "media_key": "3_2015371348621611008",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_gJkE0XUAAn0p9.jpg",
+        "height": 391,
+        "width": 783
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4908,
+      "reply_count": 5699,
+      "like_count": 23208,
+      "quote_count": 693,
+      "bookmark_count": 392,
+      "impression_count": 859640
+    },
+    "author_followers": 1178875,
+    "author_name": "African Hub",
+    "author_description": "Telling the African stories to the world.",
+    "author_tweet_count": 49700
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_gJkEIW8AAqO5y.jpg",
+          "description": {
+            "description": "A close-up portrait of Donald Trump looking directly at the camera with a stern, furrowed expression. He is wearing a blue suit jacket, a white dress shirt, and a blue necktie. The background shows a blurred American flag on the left and dark office-style furniture on the right.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_gJkE0XUAAn0p9.jpg",
+          "description": {
+            "description": "A close-up photograph of a blue circular banner featuring the FIFA logo, which consists of two interconnected soccer balls depicting a world map, with the word 'FIFA' in bold white letters below. The banner is situated within a stadium, with spectator stands and architectural elements visible in the background under a daylight sky.",
+            "ocrText": "© 1977 FIFA TM FIFA"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@nodaisiestoday**  \nGood!!  \nWe are not okay here!!  \nLikes: 693 | Reposts: 0 | Replies: 0 | Views: 9132\n\n**@pablobojar**  \nThis old joke is becoming more and more relevant...  \nLikes: 661 | Reposts: 89 | Replies: 11 | Views: 8115\n\n**@Badener12**  \nVisiting the U.S. is not safe. GESTAPO style killers are hunting and killing people randomly. So yes, the 2026 World cup and the 2028 Olympic games must be relocated to a safe place.  \nLikes: 552 | Reposts: 180 | Replies: 37 | Views: 8476\n\n**@SmircleMc**  \nIf FIFA had any morals they should ban the US as a host  \nThis is how the US treat their own citizens I know I’ll never visit the U.S. again  \nLikes: 455 | Reposts: 85 | Replies: 80 | Views: 7661\n\n**@Saxondk**  \nDon't go.  \nLikes: 427 | Reposts: 70 | Replies: 25 | Views: 7726\n\n**@BanashKelly**  \nWhy would anyone in their right mind come to the U.S. now? People are being murdered by agents of the U.S. with ample video evidence of the killings. But the government blatantly lies. We are in a war zone with citizens being killed by our own government. Tourists, beware.  \nLikes: 201 | Reposts: 0 | Replies: 0 | Views: 2844\n\n**@pongapappy**  \nI do think there should be a complete European boycott now. The way POTUS has spoken about Europe recently is outrageous and I personally would not spend one cent in the USA right now  \nLikes: 182 | Reposts: 0 | Replies: 0 | Views: 3355\n\n**@DidierPeinke**  \nThere is no evidence of mass cancel. Ticket are still selling  \nLikes: 108 | Reposts: 0 | Replies: 0 | Views: 21557\n\n**@RAlsakkaf**  \nKeep cancelling your hotel rooms, boycott FIFA hit the Trump administration where it hurts. Deprive them of the money and status that comes with hosting FIFA. Do NOT come to America as long as he is president, he is dangerous  \nLikes: 55 | Reposts: 0 | Replies: 0 | Views: 594\n\n**@prettycachy**  \nIf I had made a booking as well, I would have cancelled it without hesitation. The current U.S. approach toward immigrants is not only disturbing but outright indefensible. Reports of U.S. citizens being killed in operations involving ICE are unacceptable by any standard. The cold-blooded killing of a nurse yesterday is a grave violation of human rights and the rule of law.  \nHad such an act occurred in Russia, China, or any other country the U.S. routinely criticises, Washington would be the loudest voice condemning it. Human rights cannot be selective. Accountability and justice must apply equally, regardless of nationality or political convenience.  \nLikes: 67 | Reposts: 12 | Replies: 57 | Views: 11988",
+    "warnings": []
+  }
+}

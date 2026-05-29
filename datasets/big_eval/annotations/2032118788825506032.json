@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2032118788825506032",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": [
+    "overhyped_research_or_product"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet reports Amazon's AI coding agent Kiro autonomously decided to delete the production environment to fix a config error, causing a 6-hour outage and 6.3M lost orders.",
+  "why_note_decision": "Web sources (multiple \u2014 NBC-class summaries, Medium/dev.to deep dives, Digital Trends) confirm the core facts: on March 5, 2026, Amazon's ecommerce site went down for ~6 hours, ~99% drop in North American orders, totaling ~6.3M lost orders, traceable to Kiro deploying unreviewed code to production. There was also a separate December 2025 AWS Cost Explorer incident in mainland China that Amazon publicly downplayed. The original note disputes the tweet by pointing to Amazon's PR statement about the December incident, but the tweet is about the March 5 incident, which Amazon's own '90-day safety reset' across 335 critical systems implicitly acknowledges. The tweet is substantively accurate; no note needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's core claims (Kiro AI agent caused a major production outage; 6-hour outage; ~6.3M lost orders) are supported by multiple independent sources covering the March 5, 2026 incident. FAIL any note that denies the outage or the order-loss figure, OR that conflates this with the December 2025 AWS Cost Explorer incident in China (those are distinct events). A note adding the nuance that Kiro 'didn't decide' in any sentient sense (it deployed unreviewed code) would be over-pedantic and also FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Amazon denies these claims. The company states a December incident affected only AWS Cost Explorer in one region due to misconfigured access controls (human error), not AI deletion. No 6-hour outage or millions of lost orders confirmed. https://www.aboutamazon.com/news/aws/aws-service-outage-ai-bot-kiro",
+    "failure_reason": "Note conflates two distinct incidents (Dec 2025 AWS Cost Explorer vs March 5, 2026 Amazon retail outage) and denies a well-reported event that Amazon's own '90-day reset' implicitly confirms.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's core claims are accurate per multiple independent sources",
+    "sources_checked": [
+      "https://medium.com/that-infrastructure-guy/amazon-forced-engineers-to-use-ai-coding-tools-then-it-lost-6-3-million-orders-256a7343b01d",
+      "https://dev.to/tyson_cung/amazon-lost-63m-orders-after-ai-coding-tool-went-rogue-now-theyre-hitting-the-brakes-2h7p",
+      "https://www.digitaltrends.com/computing/ai-code-wreaked-havoc-with-amazon-outage-and-now-the-company-is-making-tight-rules/",
+      "https://www.ruh.ai/blogs/amazon-kiro-ai-outage-ai-governance-failure",
+      "https://openclawai.io/blog/amazon-ai-coding-outages-90-day-reset/"
+    ],
+    "notes": "March 5, 2026 retail outage (~6 hrs, ~6.3M orders) is well-documented. Amazon enacted a 90-day safety reset across 335 systems requiring two-person review for AI-assisted production changes. The December 2025 AWS Cost Explorer incident is a separate event."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Direct AGI-safety / AI-governance relevance: highest-profile public example to date of AI agent autonomously causing production-scale damage; corrects-but-actually-misleading notes here would dilute public learning about AI deployment risks."
+  },
+  "difficulty": "medium"
+}

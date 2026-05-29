@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1977906196951572568",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:40.899Z",
+  "post": {
+    "id": "1977906196951572568",
+    "author_id": "1923472304593567746",
+    "created_at": "2025-10-14T01:15:59.000Z",
+    "text": "Battlefield 6 is now banning cronus zen users 👇\n\nU/Automatic_Ad1665\n\n#Battlefield6 | #BF6 | #BF https://t.co/Af6JJWPanZ",
+    "media": [
+      {
+        "media_key": "3_1977906194246234112",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3LvNEsXcAA8OS2.jpg",
+        "height": 810,
+        "width": 1482
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 835,
+      "reply_count": 776,
+      "like_count": 15654,
+      "quote_count": 338,
+      "bookmark_count": 624,
+      "impression_count": 2755124
+    },
+    "author_followers": 37825,
+    "author_name": "Battlefield Intel",
+    "author_description": "⚔️ Battlefield 6 news, gaming updates, nostalgia, memes & legendary community clips. Covering the best moments in gaming.\n Contact Us👇",
+    "author_tweet_count": 2258
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3LvNEsXcAA8OS2.jpg",
+          "description": {
+            "description": "A screenshot of a blue screen displaying an EA account disablement message for Battlefield 6. The message states the account was disabled due to Cronus Zen activity, which violates the user agreement. A light blue 'GO BACK' button is at the bottom, and a URL is visible at the very top.",
+            "ocrText": "ea.com/p/juno/login?execution=e9760070731&initref=https%3A%2F%2Fzauth.ea.com%2Fconnect%2Fauth%2Finit_rer=%8mt_case& BF 6 Your account has been disabled Cronus zen activity on this account has violated EA's User Agreement: we have permanently blocked access to this product. Learn more about EA Account locks, bans, and suspensions. GO BACK SELECT BACK"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@NaviTheBeagle**: [video] Likes:1447  \n**@Stumblinz**: @Battlefield y’all my heroes for banning Cronus zen users  \n\nYou’re doing what @Rainbow6Game is too weak to do. Likes:914  \n**@deathwing1306**: Funny how console players are crying about cheaters on PC, but they cheat themselves. I didn't even know you can actually cheat on console. Likes:528  \n**@BlastMyTex**: Using a Cronus in battlefield is top tier virgin behavior 😭😭😭😭 Likes:435  \n**@1onexonex**: [video] Likes:252  \n**@McBeefy636**: I'm such a straight arrow that I don't even know what the fuck that is. Likes:146  \n**@ThaEazy1**: Totally get em out Likes:120  \n**@Its_Hamiii**: You believe anything 😂😂 they wouldn't put a specific brand it would be a 3rd party device Likes:89  \n**@Shashhh_**: Mind learning something @CallofDuty  and unban afk players ? Likes:78  \n**@Optimus_Pike**: I was hesitant to get it, but if guys @Battlefield are setting the tone from the start, promoting a healthy, fair, and fun game, free from those stupid and talentless hackers and cheaters, I'm all in. Applauds and respects for that. Thanks! Likes:75",
+    "warnings": []
+  }
+}

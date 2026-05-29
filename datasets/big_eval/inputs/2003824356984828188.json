@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2003824356984828188",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:48.667Z",
+  "post": {
+    "id": "2003824356984828188",
+    "author_id": "1860153524383862784",
+    "created_at": "2025-12-24T13:45:30.000Z",
+    "text": "Have you ever seen this before? https://t.co/o9HVgBMwwd",
+    "media": [
+      {
+        "media_key": "7_2003824314760458240",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2003824314760458240/pu/img/qTYqwkDyPVju8EiZ.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 80853,
+        "view_count": 193306,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2003824314760458240/pu/vid/avc1/320x568/uCjUSAcZf28hwpzz.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2003824314760458240/pu/vid/avc1/480x852/iMtG70jF0-hP55Wu.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2003824314760458240/pu/vid/avc1/720x1280/VOSyl1u1AmcRYV5O.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2003824314760458240/pu/pl/q_u0fZ95EWgqRzx2.m3u8?v=1f5"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2149,
+      "reply_count": 239,
+      "like_count": 10460,
+      "quote_count": 99,
+      "bookmark_count": 4763,
+      "impression_count": 282372
+    },
+    "author_followers": 209509,
+    "author_name": "Mr. Star Spangled MAGA",
+    "author_description": "Faith, Family, Freedom, Comedy • Starve the Grift",
+    "author_tweet_count": 66803
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2003824314760458240/pu/vid/avc1/720x1280/VOSyl1u1AmcRYV5O.mp4",
+          "description": {
+            "description": "A man in a white polo shirt looks at the ceiling and wall paintings in the Raphael Rooms of the Vatican Museums.",
+            "ocrText": "The archeologist who discovered the blood of Jesus"
+          },
+          "transcription": "First of all in this analysis I took the blood into a laboratory in Israel. I just said please examine this blood and they said okay we'll do it. So I was back there they took it out examined it under microscope and the one technician called the other one over there and then they called the boss over there and they were talking Hebrew a mile a minute there for a little bit and they looked at me and they said, Mr. Wyatt, this human blood only has 24 chromosomes in it. Everybody else has 46. You see, 23 from your mother, 23 from your father, 22 autosomes from your mother, 22 autosomes from your father. This blood had 23 chromosomes from the mother's side one why could not have developed if they hadn't had the autophones from the mother his maleness was determined by this one why that came from the source not a human male then they said this blood is alive and then they said whose blood is this I said it's the blood of your Messiah and"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Soul of Justice** (@Majorblues)  \nJesus Christ is King!  \nLikes: 110 | Reposts: 0 | Views: 5224\n\n**Victoria** (@Victori77417378)  \nYes. Amazing. He was the original discover of the final resting place of Noah’s Ark as well. He also found where the Israelites crossed the Red Sea. He also found the Ark of the Covenant. One ordinary man, along with his sons, did extraordinary things. They paid for it with their lives as well.  \nLikes: 69 | Reposts: 0 | Views: 7592\n\n**Matthew Thomason** (@Matthew56193629)  \nYes.  \nRon Wyatt was an amazing man who took a bible, read where things were, and then went and found them.  \n\nAs far as the haploid blood test goes, I don't know about that one; that was only for SDA consumption, iirc.  Not widespread.  \nLikes: 62 | Reposts: 0 | Views: 11256\n\n**Azzz** (@Azkyrie)  \nYes  \nLikes: 45 | Reposts: 0 | Views: 6266\n\n**Redeemed** (@rachel_redeemed)  \nMerry Christmas!  \nLikes: 39 | Reposts: 0 | Views: 4030\n\n**Nick** (@NickPlaysCrypto)  \nSounds like a load of bs  \nLikes: 35 | Reposts: 0 | Views: 4210\n\n**S.L.** (@10__Bears)  \nTotal fraud…you cannot see chromosomes un blood under a microscope  \nLikes: 28 | Reposts: 0 | Views: 9092\n\n**tisme** (@Tismeimback)  \nYes, and I'd love to believe it. But where are the studies? Where are the press releases? I'd think there would be a bit more fuss around this. But, my God would I love for this to be teue  \nLikes: 25 | Reposts: 0 | Views: 3996\n\n**BlauwBloed** (@BlauwBloed1983)  \nComplete nonsense, one cannot see the chromosomes under a microscope (thats only possible in very special occasions (mitosis or meiosis!))  \nLikes: 24 | Reposts: 0 | Views: 3805\n\n**50/Fifty** (@4thst50)  \nHe lost me when he said he took it to a lab in Israel.  \nLikes: 22 | Reposts: 0 | Views: 3693",
+    "warnings": []
+  }
+}

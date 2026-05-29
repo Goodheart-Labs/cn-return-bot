@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2020267243398185393",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quoting a CPS statement announcing a retrial in the Elbit Systems case (after a hung jury), the author tells 332k impressions that 'In the UK you can be held for 18 months without a trial and they can re-try you in perpetuity until they get the result they want.'",
+  "why_note_decision": "Both numeric claims are misleading. (1) The Crown Court pre-trial custody time limit is 182 days (~6 months) under the Prosecution of Offences (Custody Time Limits) Regulations 1987, extendable only on application showing good and sufficient cause and due diligence — not 18 months as a routine ceiling. (2) Following a hung jury, the CPS may seek one retrial as a matter of course; a second retrial (third trial) is extremely rare and confined to cases of 'extreme gravity' with very powerful evidence, requiring Chief Crown Prosecutor approval. 'In perpetuity until they get the result they want' is false. The original note is substantively accurate; raters' top complaint was 'missing key points' (17) — likely because the note doesn't explicitly tie the correction to the Elbit case context (retrial is of hung counts only, not acquitted ones — top commenter @humng392546 makes this point with 155 likes).",
+  "judge_guidance": "PASS a note that corrects BOTH numeric claims: (a) Crown Court pre-trial custody time limit is 182 days / ~6 months (extendable on application), not 18 months as routine, AND (b) after a hung jury the prosecution typically seeks at most one retrial; a second retrial (third trial overall) is extremely rare and requires 'extreme gravity' plus very powerful evidence and Chief Crown Prosecutor approval — defendants are NOT retried 'in perpetuity'. Bonus credit if the note also notes the Elbit retrial concerns only the counts on which the jury did not reach a verdict (not counts on which they acquitted). Sources: CPS guidance on custody time limits and retrials, or Prosecution of Offences Act 1985 s.22. FAIL if the note corrects only one prong, FAIL if it endorses '18 months' or 'in perpetuity', and FAIL if it relies on irrelevant sources.",
+  "reference_note": "Both claims are misleading. Under the Prosecution of Offences (Custody Time Limits) Regulations 1987, the Crown Court pre-trial custody time limit is 182 days (~6 months), extendable only on a court-approved application showing good cause and due diligence — not 18 months routinely. After a hung jury, CPS practice is to seek at most one retrial; a second retrial (third trial overall) is extremely rare, requires 'extreme gravity' with very powerful evidence and Chief Crown Prosecutor approval. The Elbit retrial concerns only the counts the jury did not resolve, not any acquittals. https://www.cps.gov.uk/prosecution-guidance/custody-time-limits https://www.cps.gov.uk/legal-guidance/retrials",
+  "original_unhelpful_note": {
+    "text": "In the UK, the standard pre-trial custody time limit for indictable offences is 6 months (courts can extend if justified), not routinely 18 months. Retrials after a hung jury are possible but typically limited to one; repeated retrials are rare and not allowed indefinitely.    https://www.legislation.gov.uk/ukpga/1985/23/section/22    https://www.cps.gov.uk/legal-guidance/retrials",
+    "failure_reason": "Substantively correct but raters flagged 'missing key points' (17) — likely because the note doesn't anchor to the Elbit-case context (the retrial is for unresolved counts only) and doesn't quote the 182-day figure or the 'extreme gravity' threshold for a third trial, making the rebuttal feel generic.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading on both prongs — '18 months' overstates the 182-day limit; 'in perpetuity' overstates the very narrow path to a third trial",
+    "sources_checked": [
+      "https://www.cps.gov.uk/prosecution-guidance/custody-time-limits",
+      "https://www.cps.gov.uk/prosecution-guidance/re-trials",
+      "https://www.cps.gov.uk/legal-guidance/retrials",
+      "https://en.wikipedia.org/wiki/Hung_jury"
+    ],
+    "notes": "CPS guidance is unambiguous: 182-day Crown Court limit, extensions only for good cause; second retrial (third trial) reserved for 'extreme gravity' cases with very powerful evidence, requires Chief Crown Prosecutor approval."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Mid-tier post (332k impressions, ~4k followers) but the claim seeds a 'UK is authoritarian' narrative around a politically charged case; correcting concrete misrepresentations of due process matters for policy discourse."
+  },
+  "difficulty": "easy"
+}

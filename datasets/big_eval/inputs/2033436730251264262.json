@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2033436730251264262",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:47.111Z",
+  "post": {
+    "id": "2033436730251264262",
+    "author_id": "1763854223865978880",
+    "created_at": "2026-03-16T06:54:30.000Z",
+    "text": "🚨According to my reliable sources, Benjamin Netanyahu actually died 7 days ago.\n\nThe two subsequent public appearances on camera appear to be fabricated, likely using advanced deepfake technology.\n\nIsraeli authorities are expected to attribute his death to natural causes and https://t.co/V1a9fdfGBA",
+    "media": [
+      {
+        "media_key": "3_2033436722907025408",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDg37QYbkAAACm0.jpg",
+        "height": 1089,
+        "width": 1152
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5142,
+      "reply_count": 2583,
+      "like_count": 27606,
+      "quote_count": 473,
+      "bookmark_count": 2242,
+      "impression_count": 2665030
+    },
+    "author_followers": 14097,
+    "author_name": "Nawazish Ahmad",
+    "author_description": "Journalist & Author || Islamic Thought ||\nComparative Religion & History || India & Global Affairs, Views & Analysis.",
+    "author_tweet_count": 44470
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDg37QYbkAAACm0.jpg",
+          "description": {
+            "description": "A close-up photograph of Benjamin Netanyahu wearing a suit and light blue tie, adjusting a translation earpiece with his right hand while looking slightly to the side against a blue background.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@IamPuneetX**: I think he died, along with his brother, wife and possibly his son too who hasn't tweeted since then (Likes: 1227)\n- **@khansalman88177**: Just heavily Zoom on laptop date 🧐 15/2/2024 (Likes: 484)\n- **@RichardHanania**: At least make a funny AI video or something you disgusting cheap grifter. At least entertain us. (Likes: 285)\n- **@JenCommon**: Agreed. And further circumstantial evidence includes that his son has not posted on X in over six days and prior to that he posted every day and several times a day. This most likely means he is sitting Shiva. (Likes: 274)\n- **@TheAsifReyaz**: Since AI came, there’s a lot of confusion it’s hard to tell who is real and who is fake. 🤖 (Likes: 187)\n- **@yehoshuabaracda**: In my opinion, they will say he is ill but due to a natural disease. He has been without a prostate since late December 2025 and the condition has worsened recently. They will say he is alive, but absent from political life and under intensive treatment. (Likes: 153)\n- **@Ricburton**: Your profile picture is AI 🤣 (Likes: 130)\n- **@Tk_ksa_002**: Yes you are absolutely right. This image is fake AI generated (Likes: 105)\n- **@kawaiibsfr**: (No text content) (Likes: 96)\n- **@coffeebag300**: This was released on the 8th march 2026 (Likes: 71)",
+    "warnings": []
+  }
+}

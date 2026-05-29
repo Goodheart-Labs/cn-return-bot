@@ -1,0 +1,42 @@
+{
+  "tweet_id": "2031091781786276155",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "UK news-style account 'UNN' (114k followers) declares 'BREAKING NEWS \ud83d\udd25\ud83d\udd25\ud83d\udd25' that Itamar Ben-Gvir has been killed in an Iranian missile strike on his home \u2014 and that Israeli media's 'car crash' framing is a cover-up. 1.42M impressions, 21k likes, 4.7k RTs, image of Ben-Gvir. Replies celebrate the alleged death.",
+  "why_note_decision": "Clear death hoax. PolitiFact, Yahoo/AFP fact-check, EBU Spotlight, IBTimes UK, and The Jewish Chronicle all confirm Ben-Gvir is alive \u2014 he posted 'I'm alive' on X on March 10, 2026. The hoax was part of a pro-Iran disinfo wave that also targeted Netanyahu and David Barnea. With 1.42M impressions and celebratory replies a note IS needed. The original note's substance is correct; it was rated NOT_HELPFUL likely because (a) it leans on 'unconfirmed/no reliable sources' instead of citing Ben-Gvir's own 'I'm alive' post + a fact-checker, and (b) the 'A prior crash occurred in 2024' line muddies the message.",
+  "judge_guidance": "PASS only if the note (a) clearly states Ben-Gvir is alive \u2014 citing his own March 10, 2026 'I'm alive' post on X OR a recognized fact-check (PolitiFact, AFP/Yahoo, EBU Spotlight, The Jewish Chronicle), AND (b) frames the death claim as a known pro-Iran disinformation hoax that also targeted Netanyahu/Barnea. AVOID the original note's failure (rated notHelpfulNoteNotNeeded 19, OpinionSpeculation 14, MissingKeyPoints 14, SourcesMissingOrUnreliable 11): do NOT hedge with 'unconfirmed/no reliable sources report' (Ben-Gvir HAS personally confirmed he is alive \u2014 say so directly), do NOT cite the unrelated 2024 car crash (it muddies the message), and do NOT use vague 'active as of March 4' \u2014 use the 'I'm alive' post and a dedicated fact-check. FAIL any note that endorses the death claim or hedges on whether he's alive.",
+  "reference_note": "Itamar Ben-Gvir is alive. He posted 'I'm alive' on X on March 10, 2026 after viral pro-Iran hoaxes claimed he was killed in an Iranian missile strike. PolitiFact, AFP and EBU Spotlight have debunked the rumor; the same wave also falsely targeted Netanyahu and Mossad chief David Barnea. https://www.politifact.com/factchecks/2026/mar/11/tweets/Israel-Minister-Ben-Gvir-no-dead/ https://www.yahoo.com/news/articles/fact-check-ben-gvir-not-231638807.html",
+  "original_unhelpful_note": {
+    "text": "Rumors of Itamar Ben-Gvir's death in an Iranian missile strike, misreported as a car crash, are unconfirmed. No reliable sources report his death or a 2026 crash. He was active as of March 4, 2026. A prior crash occurred in 2024.    https://www.timesofisrael.com/liveblog_entry/government-ministers-accuse-ag-of-harming-iran-war-effort-with-call-to-fire-ben-gvir  https://www.timesofisrael.com/nine-people-killed-in-iranian-missile-strike-on-residential-area-in-beit-shemesh  https://www.reuters.com/world/middle-east/israeli-minister-ben-gvir-slightly-hurt-car-accident-2024-04-26  https://en.wikipedia.org/wiki/Itamar_Ben-Gvir",
+    "failure_reason": "Substantively correct (Ben-Gvir alive) but rated NOT_HELPFUL (42 ratings; dominant notHelpfulNoteNotNeeded 19, then OpinionSpeculation 14, MissingKeyPoints 14, SourcesMissingOrUnreliable 11). Hedging language ('unconfirmed/no reliable sources') reads as weak; the unrelated 2024 car-crash line muddies the message; no citation of Ben-Gvir's own 'I'm alive' post or a dedicated fact-check (PolitiFact/AFP) despite their existence.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False. Ben-Gvir is alive (posted 'I'm alive' March 10, 2026); part of a pro-Iran death-hoax wave debunked by PolitiFact/AFP/EBU.",
+    "sources_checked": [
+      "https://www.politifact.com/factchecks/2026/mar/11/tweets/Israel-Minister-Ben-Gvir-no-dead/",
+      "https://www.thejc.com/news/israel/ben-gvir-iddo-netanyahu-death-hoax-jltqxz2u",
+      "https://www.yahoo.com/news/articles/fact-check-ben-gvir-not-231638807.html",
+      "https://spotlight.ebu.ch/p/false-claims-of-assassinations-and",
+      "https://www.ibtimes.co.uk/was-itamar-ben-gvir-targeted-no-evidence-iranian-air-strike-ministers-house-despite-viral-posts-1784514"
+    ],
+    "notes": "Same hoax wave targeted Netanyahu, Iddo Netanyahu, and Mossad's David Barnea. Originating in pro-Iran/regime accounts."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.42M impressions on a categorical 'official killed in war' death claim; geopolitically volatile during active Iran-Israel hostilities \u2014 exactly the class of misinformation Community Notes should suppress quickly."
+  },
+  "difficulty": "medium"
+}

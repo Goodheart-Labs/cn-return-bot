@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2023868808386277835",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["ai_generated_media", "joke_or_satire"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Gamer/streamer 'SuperSisi' shares a clip captioned 'Super North Korea 64 is a trip' — a fictional/mock-up Mario-64-themed-as-North-Korea title screen and gameplay, with copyright stamp '© 1998 SHOFAR INTERACTIVE.'",
+  "why_note_decision": "Obvious satire/joke content: a clearly impossible 'official' 1998 N64 game with North Korean iconography, posted with a non-claiming caption ('is a trip') by a gamer account. Comments are split between 'AI SLOP' and 'inject this game into my veins' — community read it as joke/AI-art. The 5 noteNotNeeded raters and small sample (10 ratings total) reflect a low-stakes joke post; no reasonable viewer is going to believe an actual North Korean Mario 64 ROM exists. Even if the visuals were AI-generated (likely), there is no misleading-real-event claim to correct — the satire is the point.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The post is overt joke/satire — fake game title screen with absurd 1998 'SHOFAR INTERACTIVE' branding and DPRK iconography in a Mario 64 frame, captioned 'is a trip' by a gamer account. No reasonable viewer would treat it as a real product. FAIL any note that solemnly explains 'this is AI/fake/not a real game' on obviously-satirical content.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This footage is AI-generated using Sora, not real gameplay from an actual game. https://www.instagram.com/reel/DQZti5fjxaW https://www.tiktok.com/@stinky_feet_pete/video/7563847340164140302",
+    "failure_reason": "noteNotNeeded — pedantically debunks obvious joke/satire content as if anyone could mistake it for a real 1998 N64 game.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Joke/satire post; underlying media likely AI-assisted, but no misleading factual claim.",
+    "sources_checked": [],
+    "notes": "OCR shows clearly absurd branding ('SHOFAR INTERACTIVE LICENSED BY NINTENDO'); caption 'is a trip' explicitly flags it as novelty content."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "760k impressions; low-stakes joke; calibration test for don't-note-jokes."
+  },
+  "difficulty": "easy"
+}

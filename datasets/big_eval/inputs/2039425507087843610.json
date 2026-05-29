@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2039425507087843610",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:06.043Z",
+  "post": {
+    "id": "2039425507087843610",
+    "author_id": "1589308541927669761",
+    "created_at": "2026-04-01T19:31:46.000Z",
+    "text": "That's a torta guaaaaddd damn!! 🥹😍 https://t.co/8ZbONCbeop",
+    "media": [
+      {
+        "media_key": "13_2039425256071593985",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2039425256071593985/img/iguZUzquVuyKn-xd.jpg",
+        "height": 1024,
+        "width": 576,
+        "duration_ms": 18300,
+        "view_count": 670965,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2039425256071593985/vid/avc1/320x568/sq7QejlT8VzqAb-l.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2039425256071593985/vid/avc1/480x852/dlDvvipVr5KvdXwi.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2039425256071593985/vid/avc1/576x1024/B5EjxdJfnyGiYhD_.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2039425256071593985/pl/Er7PB9mthM_Wj5Hg.m3u8?v=a5d"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 870,
+      "reply_count": 332,
+      "like_count": 31574,
+      "quote_count": 54,
+      "bookmark_count": 9773,
+      "impression_count": 1439985
+    },
+    "author_followers": 330079,
+    "author_name": "BAMIDELE🕊",
+    "author_description": "I take pictures and videos of memories 📩:thenihiin@gmail.com DM for Credit/Removal",
+    "author_tweet_count": 173918
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2039425256071593985/vid/avc1/576x1024/B5EjxdJfnyGiYhD_.mp4",
+          "description": {
+            "description": "A series of frames from a video showing a young woman working at a fast-food restaurant. In the first and second frames, she is playfully posing by lying on the counter where orders are typically prepared or served. In the third frame, she is sitting on the counter, raising one arm as if celebrating or dancing. The final frame shows a blurry internal area of the restaurant with a beverage machine and some storage boxes.",
+            "ocrText": "EXIT\nNKL INTELLISAFE\nATTENTION\nANY EMPLOYEE OPENING THE SAFE THAT IS NOT A MANAGER WILL BE DOCUMENTED\nEMPLOYEES ARE NOT AUTHORIZED TO OPEN THE SAFE"
+          },
+          "transcription": "Cuando le preguntan al patrón qué tan buenos somos en el jale. Si no hacen nada. No hacen nada. Te vas a caer, pinche gorda. Eso es nada más de lunes a viernes. Pues qué quieres. Vangen a mañana un rato."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **YO REAL DADDY online! (@YOREALDADonline)**: Which Taco Bell is this? And I'm not asking for a friend--I'm asking for me! (165 likes)\n- **ChloeBaileyFanPage (@GordonKillon)**: She needs to get her big ass down and make my damn luxe box😭😭 (78 likes)\n- **Real 94 West (@Nine4West)**: Aye tortas are delicious (47 likes)\n- **CaptainMcStabbins (@CaptainMcstabbs)**: I now love tortas. Thanks for the new fetish, you bastards. (45 likes)\n- **C (@C169395771342)**: thts @txchnoslxt (27 likes)\n- **Amber :) (@1daisuk)**: Mine shakes better (24 likes)\n- **⭑ ✞ 𝕻𝖎𝖑𝖑𝖘.✞ ⭑ (@mythicalpills)**: Found her TikTok Goon Time (17 likes)\n- **Ikemefuna (@47People)**: She will be mine someday (13 likes)\n- **Chitown_KiiD (@eldjbambino)**: I bet you she’s only like 20… imagine how much bigger she’s gonna get.. (13 likes)\n- **naz (@theregonaz)**: This build be having the wettest of the wettest. On bro (11 likes)",
+    "warnings": []
+  }
+}

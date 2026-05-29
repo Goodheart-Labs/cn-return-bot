@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2041328344499888579",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["breaking_news_and_war", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "space_mission_news",
+  "tweet_summary": "Elon Musk (240M followers, 139M impressions, 1.3M likes) posts video on Apr 7 2026 captioned 'NASA Artemis passing close to the Moon.' Video shows external Orion-camera lunar-flyby footage with Earth as a distant speck.",
+  "why_note_decision": "The tweet is TRUE. Artemis II launched April 1, 2026 with a four-astronaut crew (Wiseman, Glover, Koch, Hansen) and made its closest lunar approach (4,066 miles) at 7:02 PM ET Monday April 6, 2026 — the night before Elon's tweet. NASA released exterior Orion-camera footage; coverage explicitly identifies Elon's clip as Artemis II flyby video. The original (NMR) note claims this is uncrewed Artemis I 2022 footage — that is a false positive. The community flagged it (noteNotNeeded 747).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The video is genuinely from the Artemis II mission's lunar flyby on Apr 6 2026. Any note claiming this is Artemis I 2022 footage is a false positive (exactly the original note's failure). FAIL any note that says the video is reused/old/from Artemis I, or that doubts the lunar flyby occurred.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is from the uncrewed Artemis I mission's lunar flyby in November 2022, not the current crewed Artemis II mission. https://www.youtube.com/watch?v=BvWtNx3VOUA https://www.nasa.gov/artemis-ii/",
+    "failure_reason": "incorrect_false_positive: Artemis II launched Apr 1 2026, closest lunar approach Apr 6 2026; multiple outlets explicitly identify Elon's clip as Artemis II exterior Orion-camera flyby footage. The note misidentifies real current footage as a 2022 clip.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/watch-chilling-video-shows-just-023123037.html",
+      "https://www.uniladtech.com/science/space/elon-musk-responds-photo-artemis-2-space-383759-20260408",
+      "https://en.wikipedia.org/wiki/Artemis_II",
+      "https://www.nasa.gov/blogs/missions/2026/04/01/live-artemis-ii-launch-day-updates/"
+    ],
+    "notes": "Artemis II (Wiseman, Glover, Koch, Hansen) launched Apr 1 2026, closest lunar approach at 7:02 PM ET Mon Apr 6 2026 (4,066 mi), splashdown Apr 10/11. Yahoo article explicitly identifies Musk's tweeted video as exterior Orion-camera footage from Artemis II's closest approach."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "139M impressions on a major spaceflight milestone (first crewed lunar mission since Apollo 17); a wrong CN claiming the footage is fake/old would actively undermine credible space-progress reporting."
+  },
+  "difficulty": "medium"
+}

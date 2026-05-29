@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2009650204006552032",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "old_footage_re_shared",
+  "tweet_summary": "MUSAFIR account (191K followers, 6.7M impressions) shares the well-known 2022 Mulberry, Arkansas / Crawford County excessive-force video of Randal Worcester, framing it as an example of US human-rights violations.",
+  "why_note_decision": "The footage is the August 21, 2022 Mulberry/Crawford County arrest of Randal Worcester by deputies Levi White and Zack King and officer Thell Riddle. Both deputies pleaded guilty in 2024 and were sentenced in October 2024 to federal prison for civil-rights violations. The tweet does not claim the video is recent — it just describes it as 'in Arkansas, in the United States'. The original note's '2022 not 2026' framing is straw-manning a claim the tweet didn't make; the 71 notHelpfulNoteNotNeeded ratings and 64 MissingKeyPoints reflect that. The accurate-context add (deputies were prosecuted) would help, but the original note doesn't lead with that and instead reads as defensive deflection. Better outcome: no note, OR a note that simply adds 'two deputies were convicted and sentenced for this'.",
+  "judge_guidance": "PASS if the bot declines a note OR if it writes a tight note that adds the accountability context: that the August 2022 Mulberry arrest of Randal Worcester resulted in both Crawford County deputies pleading guilty to federal civil-rights violations and being sentenced to federal prison in October 2024 (sources: DOJ press release, Wikipedia 'Arrest of Randal Worcester'). FAIL if the note pretends the tweet falsely claimed a 2026 date (it didn't), uses the 'not 2026' framing as the primary correction, or implies the incident didn't happen.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The Department of Justice confirms this footage is from August 2022, not 2026. Two former Crawford County deputies pleaded guilty and were sentenced in 2024 for federal civil rights violations related to this incident. https://www.justice.gov/archives/opa/pr/former-arkansas-sheriffs-deputies-sentenced-federal-civil-rights-violations-violently",
+    "failure_reason": "Frames the correction as 'not 2026' when the tweet never claimed 2026. Buries the genuinely useful accountability context (deputies convicted and imprisoned). Raters overwhelmingly tagged NoteNotNeeded (71) and MissingKeyPoints (64).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_incident_real_no_date_claim_disputed",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Arrest_of_Randal_Worcester",
+      "https://www.5newsonline.com/article/news/special-reports/mulberry-police-video/second-former-crawford-county-deputy-sentenced-excessive-force/527-fcc4dcd9-12c1-433b-8a96-670159da1e3f"
+    ],
+    "notes": "Tweet describes a real Arkansas police incident without claiming a date. Deputies prosecuted. Note attacks a date claim the tweet never made."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "6.7M impressions on a politically charged old-footage repost; pertinent to media-literacy + US police-accountability narrative, but the right answer is a contextual note (not a denial) and arguably no note at all."
+  },
+  "difficulty": "medium"
+}

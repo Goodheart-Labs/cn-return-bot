@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2037974573631594599",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "BRICS News tweets that Russia took multiple satellite images of US Prince Sultan Air Base in Saudi Arabia days before Iran attacked, citing NBC News.",
+  "why_note_decision": "The tweet accurately summarizes NBC News reporting: NBC ran a story citing Zelenskyy's intelligence summary alleging Russian satellites imaged Prince Sultan Air Base on March 20, 23, and 25 ahead of the March 26 Iran strike. The tweet credits NBC explicitly. The note's framing ('NBC could not independently verify it') is technically true but is already implicit in 'NBC reports' and a sourced relay of NBC reporting is not misleading. Community rating (only 6 NNN tags) and dominant_not_helpful_reason align with no-note.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet faithfully relays NBC reporting and credits NBC; injecting a 'NBC couldn't independently verify' caveat is the exact 'accurate_reporting_contested' false positive — adds no value beyond what 'NBC reports' already implies.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "NBC reported this as a claim by Ukrainian President Zelenskyy based on unverified intelligence. NBC could not independently verify it.",
+    "failure_reason": "accurate_reporting_contested: tweet already credits NBC and 'reports'; the caveat is redundant pedantry",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet accurately paraphrases NBC reporting that itself cites Zelenskyy's intelligence summary",
+    "sources_checked": [
+      "https://www.nbcnews.com/world/ukraine/russia-us-base-american-troops-zelenskyy-rcna265612",
+      "https://thehill.com/policy/international/5806319-zelensky-russian-satellite-images-iran/"
+    ],
+    "notes": "NBC's own headline asserts the satellite imaging claim with Zelenskyy as source; the tweet's phrasing mirrors NBC's."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "wartime intelligence framing; relevant to geopolitical info ecosystem but tweet itself is faithful relay"},
+  "difficulty": "easy"
+}

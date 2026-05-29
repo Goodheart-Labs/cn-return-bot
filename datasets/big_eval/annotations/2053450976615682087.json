@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2053450976615682087",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["legal_or_court_claim"],
+  "category_fit": "partial",
+  "suggested_category": "advocacy_framing",
+  "tweet_summary": "A men's-rights advocacy account ('NCM India') visits Kirti Nagar Police Station demanding the arrest of activist Jasmeet Kaur Arora, who was videoed slapping a security guard with a slipper outside the station. The tweet frames her as the 'Dog Woman who abused and assaulted' the guard.",
+  "why_note_decision": "Both facts the original note adds are essentially confirmed by Indian news reports (Sunday Guardian, India TV, Tribune, Statesman, NewsX): guard Vinod Paswan attacked a stray dog with an iron rod, dog later died, FIRs were filed against both the guard (BNS 325 + PCA Act) and Jasmeet (BNS 115(1), 126). However the tweet itself is an advocacy/opinion post calling for arrest and saying 'violence cannot be tolerated' — both true statements. It does not deny the dog incident. The note injects context the tweet author may dispute but isn't lying about. This is opinion/framing territory: both sides have legitimate grievances and police actions are documented. A Community Note arguing the assault was justified by alleged prior animal cruelty steps into opinion-speculation territory.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an advocacy post calling for arrest after a video of an assault; both parties have FIRs and both narratives (guard killed dog vs guard chased biting dog) are reported. A note that justifies the assault as a response to the dog killing is opinion/speculation and crosses into argumentative-or-biased territory. A note that merely says 'guard allegedly killed dog' is partial truth that takes one side. Best response: no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The woman in the video is animal activist Jasmeet Kaur Arora. She slapped the security guard after he had allegedly beaten a stray dog to death with a stick that morning. Police officers were present watching. https://www.news18.com/amp/viral/watch-delhi-woman-slaps-guard-with-chappal-outside-police-station-after-he-allegedly-kills-stray-dog-10083874.html https://hindustanherald.in/delhi-guard-kills-stray-dog-kirti-nagar/",
+    "failure_reason": "noteNotNeeded / argumentative — adds context that takes one side of a disputed incident with FIRs against both parties; the tweet is opinion/advocacy, not factual misinformation.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Underlying events are real and accurately reported by both sides. Note's added context is partially correct (guard accused; dog died; police present) but the tweet's framing is opinion/advocacy, not falsifiable misinformation.",
+    "sources_checked": [
+      "https://sundayguardianlive.com/trending/viral-video-fact-check-did-delhi-guard-kill-dog-truth-behind-video-of-a-woman-thrashing-him-outside-police-station-191129/",
+      "https://www.indiatvnews.com/delhi/stray-dog-s-death-sparks-chaos-in-delhi-s-kirti-nagar-case-filed-against-guard-and-woman-activist-2026-05-12-1040806",
+      "https://www.tribuneindia.com/news/delhi/stray-dogs-death-fir-against-guard-who-hit-him-with-iron-rod-in-delhis-kirti-nagar/"
+    ],
+    "notes": "Both FIRs filed; the assault happened May 9 outside the police station, dog died after May 7 incident. Tweet is advocacy demanding arrest after a real video assault."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Local Delhi incident with animal-welfare angle; modest EA/animal-welfare relevance but no major global stakes."
+  },
+  "difficulty": "medium"
+}

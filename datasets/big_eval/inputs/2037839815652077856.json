@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2037839815652077856",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:25.713Z",
+  "post": {
+    "id": "2037839815652077856",
+    "author_id": "1736342968036966400",
+    "created_at": "2026-03-28T10:30:47.000Z",
+    "text": "Dr. Peter McCullough says the vaccinated now have different DNA to the unvaccinated. https://t.co/pPScJQIRjU",
+    "media": [
+      {
+        "media_key": "7_2037839754000035840",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2037839754000035840/pu/img/qvtJgQ3sqOs1Vpbu.jpg",
+        "height": 900,
+        "width": 720,
+        "duration_ms": 138251,
+        "view_count": 29018,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2037839754000035840/pu/vid/avc1/320x400/onBXYOfYYnrsOHs7.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2037839754000035840/pu/vid/avc1/480x600/HB1ElQkbzsloI9tX.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2037839754000035840/pu/vid/avc1/720x900/F77N1h2jx99cbWw2.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2037839754000035840/pu/pl/jaCauBqGO2Eu9N1j.m3u8?tag=12&v=ad6"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 842,
+      "reply_count": 162,
+      "like_count": 1456,
+      "quote_count": 64,
+      "bookmark_count": 495,
+      "impression_count": 64042
+    },
+    "author_followers": 323504,
+    "author_name": "Red Pill Dispenser",
+    "author_description": "WAKE UP, NEO...\n\nTHE MATRIX HAS YOU...\n\nFOLLOW THE WHITE RABBIT.",
+    "author_tweet_count": 3799
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2037839754000035840/pu/vid/avc1/720x900/F77N1h2jx99cbWw2.mp4?tag=12",
+          "description": {
+            "description": "A series of frames depicting various elements related to vaccination and DNA. Each frame features a consistent layout: the top section contains an artistic illustration of a biomechanical or 'digitized' arm reaching toward a human finger, reminiscent of Michelangelo's 'Creation of Adam'. The bottom section for each frame has a black banner with white text that reads 'THE JABBED HAVE DIFFERENT DNA'. The center section varies; it features different individuals or documents: a woman in a blue jacket, a man in a suit, and a scientific paper titled 'Intracellular Reverse Transcription of Pfizer BioNTech COVID-19 mRNA Vaccine BNT162b2 In Vitro in Human Liver Cell Line'. A watermark '@Endilluminati' is visible across the middle of the frames.",
+            "ocrText": "THE JABBED HAVE DIFFERENT DNA @Endilluminati Subscribe Intracellular Reverse Transcription of Pfizer BioNTech COVID-19 mRNA Vaccine BNT162b2 In Vitro in Human Liver Cell Line"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- ClaireF 💙💛 (@CFSH67): Peter McCullough is a Quack spreading misinformation; he is grifting. (Likes=66)\n- True North (@NorthBearing): That’s not how mRNA works, it doesn’t change DNA. Claiming people are biologically “different” because they’re vaccinated is misinformation, full stop. (Likes=34)\n- KCBooey (@BubbaBooey): This is some funny shit. The only thing funnier are the dumbasses that believe his moronic takes that does not understand basic biology (Likes=30)\n- Peace (@jeannie4peace): MZ censored and banned thousands off FB for exposing MRNA, while he warned others not to take the shot! (Likes=29)\n- hutjaboson.bsky.social (@hutjaboson): That’s hogwash. I’ve been vaccinated and my DNA still hasn’t mutated to deliver those magnetic superpowers we were promised. 🤣🤣🤣🤣 (Likes=19)\n- steve gunn (@stevegu19196081): it is going to upset a lot of people when they find out (Likes=17)\n- Well, who did you expect? #COYS (@BreezerGalway): (No text content) (Likes=17)\n- R Marcucio (@mcfunny): McCullough says really silly things (Likes=15)\n- Stick To Facts (@facts_stick): McCullough has become a nutcase, he is talking nonsense all the time. (Likes=14)\n- Adam G (@AdamG620): Fact check. You will believe any nonsense that idiot pukes onto social media. (Likes=13)",
+    "warnings": []
+  }
+}

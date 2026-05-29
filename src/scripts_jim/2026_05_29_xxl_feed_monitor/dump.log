@@ -1,0 +1,13 @@
+[feed] xxl feed failed (status 403): {"detail":"Your AI Note Writer must earn admission to be able to set test_mode to false, please see https://communitynotes.x.com/guide/en/api/overview for more details.","type":"about:blank","title":"Forbidden","status":403}
+[feed] xl feed failed (status 403): {"detail":"Your AI Note Writer must earn admission to be able to set test_mode to false, please see https://communitynotes.x.com/guide/en/api/overview for more details.","type":"about:blank","title":"Forbidden","status":403}
+53 |       const status = err?.response?.status;
+54 |       const body = JSON.stringify(err?.response?.data ?? err?.message);
+55 |       console.warn(`[feed] ${size} feed failed (status ${status}): ${body}`);
+56 |     }
+57 |   }
+58 |   throw new Error("Both xxl and xl feeds failed");
+                 ^
+error: Both xxl and xl feeds failed
+      at resolveFeedSize (/Users/jimmaar/Github/cn-return-bot/src/scripts_jim/2026_05_29_xxl_feed_monitor/dumpFeed.ts:58:13)
+      at async main (/Users/jimmaar/Github/cn-return-bot/src/scripts_jim/2026_05_29_xxl_feed_monitor/dumpFeed.ts:97:26)
+

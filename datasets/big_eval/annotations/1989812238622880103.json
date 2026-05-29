@@ -1,0 +1,41 @@
+{
+  "tweet_id": "1989812238622880103",
+  "role": "no_note_needed",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": [
+    "politics_and_policy",
+    "statistical_or_numerical_claim"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post claims Marjorie Taylor Greene's net worth was ~$700,000 before taking office in 2021 and is now $22-25 million in 2025, contrasting it with the $174,000 congressional salary ('that's Marjorie First').",
+  "why_note_decision": "The tweet's checkable figures are substantially accurate and corroborated by mainstream net-worth trackers, so no correction is warranted. Quiver Quantitative, GOBankingRates, Newsweek and others all report MTG's net worth at ~$700K before 2021 and ~$22-25M by 2025; the $174K House salary is correct. The original note tries to rebut '$700,000' by citing her financial-disclosure business-stake bracket of $5M-$25M — but that is a gross asset-value disclosure bracket, not net worth, and the very trackers that account for that business holding still estimate her pre-Congress net worth at ~$700K. The note conflates a disclosure asset bracket with net worth and 'corrects' a substantially true claim, making it a false positive.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note (or writes one merely adding neutral context without contradicting the figures). The tweet's claim that MTG's net worth went from ~$700K (pre-2021) to ~$22-25M (2025) and that the House salary is $174K is supported by mainstream sources. Any note asserting the '$700,000' figure is inaccurate — e.g. by citing her $5M-$25M disclosure asset bracket as a rebuttal — is a FALSE POSITIVE and must FAIL, because it confuses a gross disclosure bracket with net worth and contradicts a substantially true claim. The 'Marjorie First' line is opinion/framing, not a factual claim to correct.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The claim of $700,000 net worth before Congress is inaccurate. Greene's 2020 disclosure, covering pre-2021 assets, shows her business stake valued at $5M–$25M, plus millions in other holdings.    Sources:  https://disclosures-clerk.house.gov/public_disc/financial-pdfs/2020/10042733.pdf  https://www.quiverquant.com/congresstrading/politician/Marjorie%20Taylor%20Greene-G000596/net-worth",
+    "failure_reason": "Incorrect/false-positive: conflates a financial-disclosure gross asset-value bracket ($5M-$25M for the Taylor Commercial stake) with net worth. The ~$700K pre-Congress net-worth figure is the standard estimate used by the very source it cites (Quiver Quant) and others, which already account for the business. The note 'corrects' a substantially accurate claim and injects a contested counter-figure.",
+    "original_status": "CURRENTLY_RATED_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.quiverquant.com/congresstrading/politician/Marjorie%20Taylor%20Greene-G000596/net-worth",
+      "https://www.gobankingrates.com/net-worth/politicians/marjorie-taylor-greene-net-worth/",
+      "https://www.newsweek.com/marjorie-taylor-greene-net-worth-claims-insider-trading-2111774",
+      "https://earlymagazine.co.uk/marjorie-taylor-greene-net-worth/"
+    ],
+    "notes": "Mainstream trackers report MTG net worth ~$700K before 2021 and ~$22-25M by 2025 (≈$11M in 2023, ≈$22M early 2025, +$3M by fall 2025); House salary is $174K. The Taylor Commercial stake is disclosed in a $5M-$25M *asset-value* bracket — gross, not net — and the trackers that cite this still land on ~$700K pre-Congress net worth. The original note's rebuttal is an apples-to-oranges conflation; the tweet's figures are essentially correct, so no note is needed. (MTG herself attributes the growth to her business/investments, which is a framing dispute, not a refutation of the numbers.)"
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "335k impressions on a politically charged wealth-of-politicians claim. Stakes are real (public-trust/anti-corruption), which is exactly why a false-positive 'correction' of an accurate claim is harmful — it would wrongly discredit true accountability reporting."
+  },
+  "difficulty": "hard"
+}

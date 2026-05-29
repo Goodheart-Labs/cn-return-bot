@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2012682789070524500",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "media_press_relations",
+  "tweet_summary": "Brian Allen posts audio of Karoline Leavitt telling CBS anchor Tony Dokoupil after a Trump interview: 'make sure the interview is out in full… if it's not out in full we'll sue your ass off.' He frames it as the White House 'openly trying to bully the media into compliance.'",
+  "why_note_decision": "The audio is real and accurately quoted (multiple outlets — TheWrap, NY Post, Yahoo, Mediaite — independently confirm Leavitt's exact words to Dokoupil after a Jan 17–18 2026 Trump interview). Whether 'sue your ass off' constitutes 'intimidation' versus a demand to air an unedited interview is opinion/framing, not a checkable fact. The original note adds nothing the tweet doesn't already say — it restates that Leavitt relayed Trump's instruction and that CBS aired the interview unedited. Raters agreed by a wide margin: NoteNotNeeded 179, HardToUnderstand 120, MissingKeyPoints 111 on 515 ratings.",
+  "judge_guidance": "PASS only if the bot declines to write a note. FAIL any note that simply restates the quote (the tweet already has it), or that picks a side on whether 'sue your ass off' was intimidation vs. a request for unedited airing. The disagreement is over framing of an accurately-quoted, audio-confirmed remark — not a fact. If the bot writes a note pointing out CBS aired it unedited, FAIL: the tweet's accuracy is not in dispute, and CBS's response doesn't change whether the threat itself was made.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "In the audio, White House Press Secretary Karoline Leavitt relayed President Trump's instruction to CBS: \"If it's not out in full, we'll sue your ass off.\" CBS aired the interview unedited and stated the comments did not alter their plans. https://nypost.com/2026/01/17/us-news/karoline-leavitt-warned-cbs-that-trump-would-sue-if-interview-was-edited https://www.mediaite.com/media/news/karoline-leavitt-reportedly-threatened-cbs-anchor-tony-dokoupil-to-not-edit-trump-interview-well-sue-your-ass-off",
+    "failure_reason": "Note-not-needed: restates the very quote the tweet is built around. Doesn't dispute the audio, doesn't add a meaningful correction — just signals disapproval of the tweet's 'intimidation' framing. Rated NOT_HELPFUL with NoteNotNeeded by a 179-vote margin.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "accurate_quote_disputed_framing",
+    "sources_checked": [
+      "https://www.thewrap.com/media-platforms/politics/karoline-leavitt-threatened-to-sue-cbs-news-trump-interview/",
+      "https://nypost.com/2026/01/17/us-news/karoline-leavitt-warned-cbs-that-trump-would-sue-if-interview-was-edited",
+      "https://www.mediaite.com/media/news/karoline-leavitt-reportedly-threatened-cbs-anchor-tony-dokoupil-to-not-edit-trump-interview-well-sue-your-ass-off"
+    ],
+    "notes": "Quote is real and verified across mainstream outlets. CBS said it had independently decided to air unedited; some staff thought Leavitt's line was a joke. Whether it constitutes intimidation is opinion."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Press-freedom flashpoint covered widely; not values-aligned but politically significant."
+  },
+  "difficulty": "medium"
+}

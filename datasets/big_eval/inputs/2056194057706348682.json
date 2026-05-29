@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2056194057706348682",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:29.636Z",
+  "post": {
+    "id": "2056194057706348682",
+    "author_id": "1941437252246061057",
+    "created_at": "2026-05-18T02:04:00.000Z",
+    "text": "In another universe… 😪 https://t.co/ZSHEZViqOf",
+    "media": [
+      {
+        "media_key": "13_2056145283210158080",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2056145283210158080/img/syy0qtxNHweuZbyy.jpg",
+        "height": 1440,
+        "width": 1080,
+        "duration_ms": 11099,
+        "view_count": 39715,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2056145283210158080/vid/avc1/320x426/aEk38F21Yz51Njte.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2056145283210158080/vid/avc1/720x960/7cHG0IIaZWS8ZLRR.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2056145283210158080/vid/avc1/1080x1440/qmo_DXuaHnz-SwER.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2056145283210158080/vid/avc1/480x640/EXxknVpOiqwJd_8H.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2056145283210158080/pl/1ZHe8URSVN9OYamk.m3u8?v=515"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 41,
+      "reply_count": 220,
+      "like_count": 187,
+      "quote_count": 73,
+      "bookmark_count": 59,
+      "impression_count": 127061
+    },
+    "author_followers": 10965,
+    "author_name": "Memecoin",
+    "author_description": "just a memecoin Bb4jR951QtVjeFAYFLBYXDSMKjbTDroCLPbFLdd7pump",
+    "author_tweet_count": 1280
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2056145283210158080/vid/avc1/1080x1440/qmo_DXuaHnz-SwER.mp4",
+          "description": {
+            "description": "A person in a large smiley face mascot costume wearing a blue suit and red tie hands a small plush version of the same character to a small monkey at a zoo. The monkey then sits next to a rock wall holding and cuddling the plush toy.",
+            "ocrText": ""
+          },
+          "transcription": "さよならと隣にいたあなたの目の中を"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@knknknpopopo: 日本にくるな (Likes: 286, Reposts: 4, Replies: 3, Bookmarks: 0, Views: 10645)\n@nekousano8043: [image only] (Likes: 259, Reposts: 9, Replies: 3, Bookmarks: 0, Views: 12461)\n@DB_limit_break: If you want to more attention in Japan, let’s go to “Gunma safari park” and meet lions without the car! And present meat for them directly. So you will get huge attention from all over the world. (Likes: 156, Reposts: 3, Replies: 4, Bookmarks: 0, Views: 10241)\n@rururu_dayone: こんな動画まで作って未だに何が問題で、何が批判されているか分からないの？ それとも理解力無いの？ 二度と日本に来ないでください〜 (Likes: 140, Reposts: 6, Replies: 0, Bookmarks: 0, Views: 5941)\n@oyabunbun: Shame on you! Your actions are criminal and nothing short of a desecration of Japan and its animals. Immediately remove this video, which is offending so many people. 恥を知りなさい！あなたの行為は犯罪であり日本及び動物達への冒涜。多くの人の感情を逆なでするこのビデオを削除せよ。 (Likes: 117, Reposts: 0, Replies: 0, Bookmarks: 0, Views: 6189)\n@kuronekobluesky: あなたがやった事は動物虐待です 動物達が怖がっている様子が映像にありました ぬいぐるみを受け取っている映像はAIのフェイク？ 猿山に侵入し、猿達が怖がっている映像をニュースでみました 動物達は怖がっていたので、これは動物虐待です ルールを守れない人は日本に来ないでください 二度とです💢 (Likes: 114, Reposts: 0, Replies: 0, Bookmarks: 0, Views: 2941)\n@JudyMalabanan: Despicable. You put your mascot in danger by jumping in, you stressed out the animals, you traumatized the kids who watched him jump. Your measly 1m donation should be sent w/o announcement. Pay more pay for additional security bec others might imitate your poor media stunt. (Likes: 114, Reposts: 0, Replies: 0, Bookmarks: 0, Views: 8945)\n@coMETALow: 二度と日本に来るな。 (Likes: 92, Reposts: 0, Replies: 0, Bookmarks: 0, Views: 2378)",
+    "warnings": []
+  }
+}

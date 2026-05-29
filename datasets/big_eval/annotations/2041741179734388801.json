@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2041741179734388801",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "unproven_criminal_accusation_stated_as_fact",
+  "tweet_summary": "Kim Dotcom flatly asserts 'Trump raped children with Jeffrey Epstein' as established fact, with no evidence cited.",
+  "why_note_decision": "The post states an unproven, grave criminal accusation as settled fact. The known record: the 2016 'Katie Johnson' lawsuit alleging Trump assaulted a 13-year-old was dismissed and then voluntarily withdrawn with no ruling on the merits; no charges have ever been brought; the DOJ said it had no evidence to charge other parties and flagged a circulated anti-Trump letter as a fake the FBI determined was untrue. A note giving readers this verifiable status is warranted, since the claim is presented as proven when it is not.",
+  "judge_guidance": "PASS only if the note rebuts the 'stated as fact' framing using verifiable, attributable specifics rather than a sweeping opinion. It should establish that this is an unproven allegation: e.g., the 2016 civil suit was dismissed/voluntarily withdrawn without any merits ruling; no criminal charges have been brought; DOJ stated it lacked evidence to charge additional parties and identified a related anti-Trump letter as fake. It must AVOID the original note's failure of reading as one-sided advocacy \u2014 do NOT use blanket 'there is no evidence' editorializing or partisan-sounding phrasing; stick to what records actually show (cases dismissed/withdrawn, no charges, DOJ statements). Cite Reuters/AP/Newsweek/DOJ-quoting reporting, not opinion blogs.",
+  "reference_note": "This is an unproven allegation presented as fact. The 2016 lawsuit claiming Trump assaulted a 13-year-old (the 'Katie Johnson' case) was dismissed and then voluntarily withdrawn in Nov 2016 with no court ruling on its merits, and no criminal charges have ever been filed. The DOJ stated it had no evidence to charge additional parties in the Epstein case and said a related letter alleging Trump misconduct was determined by the FBI to be fake. https://www.newsweek.com/donald-trump-katie-johnson-allegations-sexual-assault-case-dismissed-1921051 https://www.npr.org/2025/12/23/nx-s1-5653302/more-epstein-files-released-trump-mentioned",
+  "original_unhelpful_note": {
+    "text": "There is no evidence that Donald Trump raped children with Jeffrey Epstein. While a 2016 lawsuit made such a claim, it was voluntarily dismissed. The DOJ and multiple fact-checks have found no evidence or video supporting these unverified allegations. https://www.snopes.com/news/2026/03/11/trump-child-rape-video https://www.latimes.com/politics/story/2025-12-23/claims-about-trump-in-epstein-files-untrue-justice-dept-says https://www.reuters.com/fact-check/false-posts-say-ap-reported-trump-child-molestation-charges-2024-07-11",
+    "failure_reason": "Opinion/speculation + argumentative on a polarizing topic: opens with a blanket 'there is no evidence' assertion and 'DOJ and multiple fact-checks have found no evidence,' which reads as one-sided advocacy and drew opinionSpeculation (38) and argumentativeOrBiased (28) tags. More defensible to state the specific, verifiable procedural status (suit dismissed/withdrawn, no charges, DOJ statements) and let readers weigh it.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Unproven allegation stated as fact: no court has ruled the claim true, no charges filed; the cited 2016 suit was dismissed/withdrawn; DOJ found no evidence to charge others and flagged a fake anti-Trump letter.",
+    "sources_checked": [
+      "https://www.newsweek.com/donald-trump-katie-johnson-allegations-sexual-assault-case-dismissed-1921051",
+      "https://www.npr.org/2025/12/23/nx-s1-5653302/more-epstein-files-released-trump-mentioned",
+      "https://www.nbcnews.com/politics/justice-department/justice-department-releases-3rd-batch-jeffrey-epstein-files-mention-tr-rcna250533"
+    ],
+    "notes": "Katie Johnson v. Trump dismissed May 2016 (no actionable federal claim), refiled and voluntarily withdrawn Nov 4 2016; never tried on merits. DOJ (July memo) said no evidence to charge other parties; Dec 2025 release flagged an anti-Trump letter as FBI-determined fake. No verdict establishing the rape claim exists."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Posted by a 1.7M-follower account, ~196K impressions; an unproven grave criminal accusation against a sitting head of state stated as fact is a serious epistemic/defamation concern regardless of one's politics."
+  },
+  "difficulty": "hard"
+}

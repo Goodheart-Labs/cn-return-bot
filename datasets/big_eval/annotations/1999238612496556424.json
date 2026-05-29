@@ -1,0 +1,33 @@
+{
+  "tweet_id": "1999238612496556424",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Obvious satirical 'LEAK' that the White House will require eating a bacon cheeseburger as part of the citizenship test; replies treat it as a joke.",
+  "why_note_decision": "Author bio is 'Megalomaniac' and the post uses the joke 'LEAK' format with a cartoonish bacon-cheeseburger illustration. Replies overwhelmingly read it as obvious humor (top replies joke about applying again, milk/stool audit, etc.). No reader is being misled; the original note pedantically explains the real civics test, exactly the kind of false positive the bot should avoid.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is obvious satire — any note 'correcting' the joke is a false positive. In particular, a note that earnestly describes the real USCIS naturalization test is the canonical failure mode here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This claim is satirical fiction. The US naturalization test updates effective October 2025 expand the civics exam to 128 questions on history and government, requiring 12 out of 20 correct answers, with no requirements involving food consumption.",
+    "failure_reason": "Note-not-needed: tweet is obvious satire from a clearly-comedic author; the note pedantically debunks an unmistakable joke (dominant NotHelpfulNoteNotNeeded=8).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satire — no real claim being asserted",
+    "sources_checked": [],
+    "notes": "Format ('🚨LEAK'), absurd content, and reply tone all make satire clear; rating volume small and dominated by NoteNotNeeded."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "4.6M impressions but zero factual stakes; useful as a false-positive trap for satire detection."
+  },
+  "difficulty": "easy"
+}

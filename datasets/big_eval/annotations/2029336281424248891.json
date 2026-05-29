@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2029336281424248891",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "manipulated_or_fabricated_evidence"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A small (439-follower) account posts a TikTok-overlaid video (credited 'epalkert') in which a 2hollis face has been edited onto the 2013 Jeff Bliss 'frigging packet, yo' viral classroom video. Caption frames it ironically: 'Clip of 2hollis arguing with his highschool teacher has recently resurfaced 😳'. 566k impressions, 24k likes.",
+  "why_note_decision": "This is an obvious meme edit using the well-known 2013 Jeff Bliss 'friggin packet yo' video (KnowYourMeme, multiple viral resurrections). The tweet itself is plainly framed as a joke — comments are universally in on it ('Stop recycling old clips and claiming it's these new dudes, this vid is from like a decade ago', 'Frigging packet yo', '2hollis Frickin Packet Yo Factory', 'Gen Z childhood lost video'). The original note's solemn 'this is an edited meme overlaying 2hollis's face on a recent (2026) Pontiac High School incident' is FACTUALLY WRONG — it's actually the 2013 Jeff Bliss video, not a 2026 Pontiac incident. The note is BOTH unnecessary (audience knows it's a meme) AND incorrect (wrong source). Community rejected it (6 noteNotNeeded, 5 incorrect, 4 missingKeyPoints).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The video is the iconic 2013 Jeff Bliss 'friggin packet, yo' classroom clip (KnowYourMeme has full provenance) with 2hollis's face memed onto it — comments universally recognize the meme ('this vid is from like a decade ago', 'Frigging packet yo'). FAIL any note that (a) repeats the original note's outright incorrect claim that this is footage from a '2026 Pontiac High School incident' — that is a different teacher-firing incident and is not the source video, (b) solemnly explains the face-swap as if anyone was fooled, (c) cites the CBS Detroit Pontiac story as the underlying clip. If the bot writes a note, it must NOT propagate the original note's false sourcing. Best outcome: no note (meme is universally recognized).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is an edited meme overlaying 2hollis's face on a recent (2026) Pontiac High School incident. It's not a real resurfaced clip of 2hollis in high school.    https://www.cbsnews.com/detroit/news/pontiac-teacher-fired-after-video-shows-her-cussing-out-students    https://en.wikipedia.org/wiki/2hollis",
+    "failure_reason": "incorrect AND note_not_needed — note misidentifies the source clip (it's the 2013 Jeff Bliss video, not a 2026 Pontiac incident) AND the meme is universally recognized in comments.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious_meme_face_swap_on_2013_jeff_bliss_clip",
+    "sources_checked": [
+      "https://knowyourmeme.com/memes/jeff-bliss-friggin-packet-yo",
+      "Comment thread (universal meme recognition: 'this vid is from like a decade ago', 'Frigging packet yo')"
+    ],
+    "notes": "The base video is the 2013 Jeff Bliss 'friggin packet yo' viral classroom outburst (Texas, Duncanville HS). Original note's claim of '2026 Pontiac' sourcing is false. The 2hollis face-swap is overt and audience-recognized as meme."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Music-fandom joke meme; matters as a false-positive trap AND as a case where the original note itself is misinfo (wrong source attribution)."
+  },
+  "difficulty": "medium"
+}

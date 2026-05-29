@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2018514781641298403",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["staged_or_scripted_content", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet captions a comedic skit video with 'This isn't AI, this is just a normal day at Walmart' — the video is from Pleasant Mart (a real Shelby NC grocery store with a parody/comedy social-media presence) showing a staged interview with a man on a rock-climbing wall.",
+  "why_note_decision": "The 'Walmart' framing is a joke, not a sincere factual claim — the video is clearly a scripted comedy bit (verified Pleasant Mart parody content), and the tweet's own commentariat reads it as humor. Pointing out that a comedy clip is staged doesn't add information a reader needs. A note that says 'this is a parody, not Walmart' is the prototypical no-note-needed false positive.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note flagging this as 'staged' / 'not real Walmart' / 'parody store' is a false positive — the tweet is obvious comedy and the audience already reads it that way. If the bot writes a note, it FAILS.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is a skit at \"Pleasant Mart,\" a parody grocery store account, not real footage from Walmart. https://www.facebook.com/p/Pleasant-Mart-61565894596688 https://www.reddit.com/r/Charlotte/comments/1ft2yya/has_anyone_been_to_pleasant_mart_in_shelby_yet_it",
+    "failure_reason": "Note flags an obvious joke / scripted comedy clip as if it were a sincere misattribution; tweet author and audience are clearly treating it as humor.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is comedic framing of a real parody/comedy account's skit; no checkable factual claim is being deceptively asserted.",
+    "sources_checked": [
+      "https://www.tiktok.com/@pleasantmartnc",
+      "https://www.facebook.com/p/Pleasant-Mart-61565894596688/"
+    ],
+    "notes": "Pleasant Mart in Shelby NC is a real small grocery that runs a parody/comedy social-media presence (39k TikTok followers). The clip is one of their skits. Tweet author 'Klara' self-describes as a shitposter."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "A comedy clip about a small NC grocery — no policy, science, or safety stakes. Correcting this has near-zero world impact."
+  },
+  "difficulty": "easy"
+}

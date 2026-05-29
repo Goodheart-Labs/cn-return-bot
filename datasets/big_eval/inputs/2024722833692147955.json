@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2024722833692147955",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:10.741Z",
+  "post": {
+    "id": "2024722833692147955",
+    "author_id": "1334670567685959683",
+    "created_at": "2026-02-20T05:48:35.000Z",
+    "text": "Watching a young man get assaulted by the British public for calling Prince Andrew a Sick man.\nSome people can't be saved https://t.co/2RAdVu5GXj",
+    "media": [
+      {
+        "media_key": "7_2024721546548228096",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2024721546548228096/pu/img/RxYIb2Cjk22SRKw0.jpg",
+        "height": 1190,
+        "width": 720,
+        "duration_ms": 33065,
+        "view_count": 1135753,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2024721546548228096/pu/vid/avc1/320x528/jJXSioSIH90pKaGw.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2024721546548228096/pu/vid/avc1/480x792/zyaxyf1QBAIiWmKD.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2024721546548228096/pu/vid/avc1/720x1190/fFOmYkO7cGbtIGsv.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2024721546548228096/pu/pl/VHp9bbL8Mjl1wC3X.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4579,
+      "reply_count": 534,
+      "like_count": 43930,
+      "quote_count": 233,
+      "bookmark_count": 2406,
+      "impression_count": 1350631
+    },
+    "author_followers": 18941,
+    "author_name": "Alexis is sowing discord in the West",
+    "author_description": "Formerly known as Most Noble Order of Spread Legs NOW Queen Consort",
+    "author_tweet_count": 46079
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2024721546548228096/pu/vid/avc1/720x1190/fFOmYkO7cGbtIGsv.mp4?tag=12",
+          "description": {
+            "description": "Each frame depicts a crowd of people gathered behind a metal barrier, many of whom are holding up phones to record. In the foreground of some frames, ceremonial guards in red tunics and tall black busby hats are visible. Frame 1 includes a centered white text overlay with the quote: 'andrew, you're a sick old man'. The subsequent frames show the crowd from different angles as the cameras and participants move.",
+            "ocrText": " \"andrew, you're a sick old man\" "
+          },
+          "transcription": "Disgusting! Disgusting! Oh, you're doing it again?"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Hollo 🏴‍☠️ (@Hollo1390)**: Two fat pedo sympathisers \nGood on that young man respect 👊\nEngagement: Likes=2395\n\n- **HopeAuq 🏳️‍⚧️ (@Hope_Auq)**: Pedo defender\nEngagement: Likes=548\n\n- **🍉🍋🍓 Murielle 🇫🇷 🇬🇦 💛🖤+💜 (@Mu_Ri_Elle)**: This one must have been in the crowd too 😅\nEngagement: Likes=484\n\n- **Joe McAdam (@JoeMcAdam99)**: The peasant mindset is why we’re still giving these parasitical deviants millions every year.\nEngagement: Likes=366\n\n- **Bobby (@B0WERMAN)**: Retards- “God save the king”\nEngagement: Likes=222\n\n- **Rocky (@RockyWasYer)**: This was during the Queen's Funeral procession. Totally inappropriate behaviour. He got what he deserved.\nEngagement: Likes=169\n\n- **MD 🇫🇷. 🇮🇶 (@2286MD)**: Some of the retards start chanting ‘God save the King’.  He’s a billionaire living in multiple palaces on a permanent holiday at taxpayers expense. What about the thousands of rape victims whose lives have been ruined?\nEngagement: Likes=153\n\n- **Declan Kelly (@DeclanK65470406)**: No one licks a boot like a British royalist\nEngagement: Likes=119\n\n- **Siva (@aususa7)**: Whoever assaulted him should be prosecuted.\nEngagement: Likes=114\n\n- **JamesEL (@JamesEL1215)**: Heckling anyone at a mourning procession is sick in itself, the rest of the royal family are not responsible for Andrew’s alleged actions!\nEngagement: Likes=90",
+    "warnings": []
+  }
+}

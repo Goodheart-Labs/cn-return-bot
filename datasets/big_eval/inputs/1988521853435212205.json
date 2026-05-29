@@ -1,0 +1,68 @@
+{
+  "tweet_id": "1988521853435212205",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:38.894Z",
+  "post": {
+    "id": "1988521853435212205",
+    "author_id": "1638544323536130049",
+    "created_at": "2025-11-12T08:18:49.000Z",
+    "text": "🚨🚨| Jose Mourinho ‘leaves Fenerbahçe with £656,000 bill for luxury hotel stay’ — after landing £13m compensation for serving around 15 months of his 16-month deal at the club. 😳🇹🇷\n\nThe Turkish side are still paying the price for Mourinho’s exit.\n\n[@TheSun] https://t.co/RJacHGhEKm",
+    "media": [
+      {
+        "media_key": "3_1988521836280508418",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G5imEw-bcAIKpC6.jpg",
+        "height": 556,
+        "width": 556
+      },
+      {
+        "media_key": "3_1988521836188180480",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G5imEwoaoAAWJJS.jpg",
+        "height": 556,
+        "width": 556
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 399,
+      "reply_count": 75,
+      "like_count": 6375,
+      "quote_count": 46,
+      "bookmark_count": 131,
+      "impression_count": 347832
+    },
+    "author_followers": 555556,
+    "author_name": "CentreGoals.",
+    "author_description": "An all-round coverage of European football 🇪🇺⚽️",
+    "author_tweet_count": 24555
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G5imEw-bcAIKpC6.jpg",
+          "description": {
+            "description": "A medium shot of José Mourinho, a well-known professional football manager, wearing a blue blazer over a white shirt. He has short grey hair and a serious expression, pointing his index finger directly toward the camera. The background is a blurred stadium crowd with red accents.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G5imEwoaoAAWJJS.jpg",
+          "description": {
+            "description": "The image shows the official logo of the Turkish sports club Fenerbahçe S.K. centered against a background of vertical navy blue and yellow stripes. The circular crest features a white border with the club's name and founding date inscribed. Inside the circle is a shield containing a yellow horizontal band over a navy base with a green oak branch, all enclosed within a red and white border.",
+            "ocrText": "FENERBAHÇE SPOR KULÜBÜ 1907"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @CfccarefreeIG: The special one.  \nEngagement: Likes=155\n\n- @GalaNetwork1905: Ask them and they’ll still find a way to blame Gala..  \nEngagement: Likes=81\n\n- @Gullitxtra: They should have left him, he always does well in his second season \n\nFor sacking the special one let them suffer  \nEngagement: Likes=69\n\n- @footballpunditX: So he got rich for getting sacked 😂😂😂  \nEngagement: Likes=14\n\n- @Beejaysport: Mourinho  is just cashing  out  \nEngagement: Likes=9\n\n- @L1ghtandSalt: Mourinho always leaves with style and a hefty bill to match  \nEngagement: Likes=7\n\n- @mo_the_bull: Clubs should stop going for this washed managers... Grandpa could easily be managing a national team right now but over and over again he's refused to act his age !!  \nEngagement: Likes=7\n\n- @KingJ0sh99: The special one doesn't leave like the normies  \nEngagement: Likes=5\n\n- @NaughtySoja: made sure to milk them first😂😂\nspecial one indeed  \nEngagement: Likes=4\n\n- @Falsus_in_uno: The special one will always be special. Heavy price.  \nEngagement: Likes=2",
+    "warnings": []
+  }
+}

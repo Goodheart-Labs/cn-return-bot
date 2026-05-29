@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2018455684661338294",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Account 'Boston Smalls' (143k followers) declares as fact: 'Epstein and Maxwell bury 2 foreign kids who were strangled to death during rough, fetish sex.' Image is the 2019 Eddy Aragon email that demanded 1 BTC for a USB of alleged Epstein material. 1M+ impressions, 16k likes, 7k RTs.",
+  "why_note_decision": "The tweet states an UNVERIFIED extortion-email claim as confirmed fact. The 2019 email from an anonymous sender to Eddy Aragon was an unverified pay-for-USB scheme; the FBI took no action on it for six years. New Mexico authorities did begin first-ever searches at Zorro Ranch in March 2026 (per Al Jazeera/Time/NBC/WSWS), but NO bodies have been found and the email itself is the source of the buried-girls claim. The tweet should carry context. The original note is correct in substance; it was rated NOT_HELPFUL likely because the long quoted claim from the email tags it as 'note not needed' to many raters who saw the email's source-attribution on the image.",
+  "judge_guidance": "PASS only if the note (a) makes clear the 'buried girls' claim originates from a single unverified 2019 email asking for 1 BTC for a USB of alleged evidence, (b) states no bodies have been found and no remains were recovered in the 2026 Zorro Ranch search to date, and (c) cites a reliable source (Al Jazeera, Time, NBC News, or DOJ filing). AVOID stating definitively 'the FBI never searched the property' \u2014 New Mexico/state authorities DID conduct a first-ever search at Zorro Ranch in March 2026 (the original note's blanket 'FBI never searched' is now outdated). FAIL any note that endorses the buried-bodies claim as fact, or that simply waves away the email without explaining its provenance.",
+  "reference_note": "The 'buried girls' claim comes from a single unverified Nov 2019 email to Eddy Aragon offering a USB of alleged Epstein evidence for 1 bitcoin. No bodies have been found; New Mexico authorities conducted a first-ever search of Zorro Ranch in March 2026 but recovered no remains. https://www.aljazeera.com/news/2026/3/17/tipster-claims-to-have-seen-grave-like-plots-at-epsteins-zorro-ranch https://time.com/article/2026/03/10/epstein-zorro-ranch-investigation-search-new-mexico/",
+  "original_unhelpful_note": {
+    "text": "The claim that Epstein and Maxwell buried two girls near Zorro Ranch originates from an unverified email in DOJ files offering videos for sale; no bodies have been found, and the FBI never searched the property. https://www.justice.gov/epstein/files/DataSet%209/EFTA00067066.pdf https://en.wikipedia.org/wiki/Zorro_Ranch",
+    "failure_reason": "notHelpfulNoteNotNeeded dominant (56) but also notHelpfulMissingKeyPoints (54), notHelpfulOpinionSpeculation (36), notHelpfulIncorrect (24). The 'FBI never searched the property' line is now outdated \u2014 state authorities DID search Zorro Ranch in March 2026. Reliance on the raw DOJ PDF (which is the email itself, not a fact-check) reads as circular sourcing.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Unverified. Claim sourced to a single 2019 extortion email; no bodies found despite first-ever 2026 search of Zorro Ranch.",
+    "sources_checked": [
+      "https://www.aljazeera.com/news/2026/3/17/tipster-claims-to-have-seen-grave-like-plots-at-epsteins-zorro-ranch",
+      "https://time.com/article/2026/03/10/epstein-zorro-ranch-investigation-search-new-mexico/",
+      "https://www.wsws.org/en/articles/2026/03/12/qvzp-m12.html",
+      "https://www.nbcnews.com/news/us-news/epstein-lured-girls-zorro-ranch-new-mexico-investigation-jeffrey-rcna261370"
+    ],
+    "notes": "FBI did receive the 2019 email and took no action. NM authorities conducted first-ever search in March 2026 \u2014 no remains recovered as of available reporting."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1M+ impressions on a categorical statement that two children were murdered and buried; conspiracy ecosystem amplification of unverified Epstein claims erodes information integrity around real, serious matters."
+  },
+  "difficulty": "hard"
+}

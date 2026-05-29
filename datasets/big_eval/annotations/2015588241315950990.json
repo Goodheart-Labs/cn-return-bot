@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2015588241315950990",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Niche Yakuza-fan account 'Judgement Kazzer' (bio: 'most miserable Yakuza fan | slop sommelier | #REMOVEKAGAWA') posts a fan-made video styled as a Like A Dragon 9 trailer, captioned 'BREAKING: The first official Like a Dragon 9 story trailer has seemingly leaked online. (Via: @IGN)'.",
+  "why_note_decision": "This is obvious in-community satire from a self-described 'slop sommelier' niche-Yakuza-comedy account. Top replies confirm: 'Pre-order Like a Dragon 9: The Rise of Yakuza to get the legendary Ichiban Kasuga Manager DLC for Kiryu's Orphanage Builder Minigame!', 'No Ichiban in sight #Yep #ItsReal', 'No community note must be real', 'It unironically is actually gonna end up being as ungrounded as this lmao'. The 'Via: @IGN' is the joke. There is no real Like A Dragon 9 trailer, but no one is being misled — the audience is in on the bit. Writing a literal debunk on community comedy is a classic false positive.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The tweet is in-community satire from a niche Yakuza-fan parody account, and top replies make explicit the audience is in on the joke (mocking the fake-trailer trope, joking about a community note, etc.). A bot must distinguish niche-community satire/jokes from genuine misinformation — a literal debunk like the original is the failure mode to avoid.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is a fan-made trailer; no official Like a Dragon 9 has been announced and IGN has not reported any such leak. https://ryu-ga-gotoku.com/asia_en https://www.ign.com/search?q=Like+a+Dragon+9",
+    "failure_reason": "note_not_needed_joke",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satirical_no_real_claim",
+    "sources_checked": [
+      "https://comicbook.com/gaming/news/leaked-trailer-for-long-awaited-sequel-confirmed-to-be-fake/",
+      "https://www.ign.com/search?q=Like+a+Dragon+9"
+    ],
+    "notes": "Fan-made/joke trailer. Account bio + replies make this unambiguously a community-comedy post, not a sincere claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low impressions, niche gaming subculture in-joke. Pipeline learning: parody accounts joking with the audience aren't misinformation."
+  },
+  "difficulty": "easy"
+}

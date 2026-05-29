@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2032110843635089792",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:51.550Z",
+  "post": {
+    "id": "2032110843635089792",
+    "author_id": "1981574281101475840",
+    "created_at": "2026-03-12T15:05:54.000Z",
+    "text": "#BREAKING: Iranian supreme leader confirmed in a coma, and had his leg amputated.",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 2183,
+      "reply_count": 917,
+      "like_count": 27827,
+      "quote_count": 792,
+      "bookmark_count": 1948,
+      "impression_count": 7859058
+    },
+    "author_followers": 9762,
+    "author_name": "Insider (World News)",
+    "author_description": "24/7 Breaking & World News. Politics at @InsiderWire.",
+    "author_tweet_count": 1871
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Omar Bendouro (@bendouromar): That is a rumour, nothing is confirmed, you are spreading fake news.  \n  Likes=364, Reposts=2, Replies=64, Views=468039\n\n- Eric Scho (@ericscho): I dont know, his cardboard cut out looked real.  \n  Likes=175, Reposts=0, Replies=0, Views=13070\n\n- Just Posting Ls (@MomsPostingLs): Rough first week at the new job  \n  Likes=161, Reposts=0, Replies=0, Views=4861\n\n- Dad Jokes Animals (@DadJokesAnimals): The should rebuild him into the Bionic Ayatollah. After all, #WeHaveTheTechnology  \n  Likes=110, Reposts=0, Replies=0, Views=38278\n\n- Daniella Greenbaum Davis (@DGreenbaum): almost like the job is cursed or something  \n  Likes=100, Reposts=0, Replies=0, Views=13804\n\n- Fan Russian Embassy Canada (Toronto offices) (@RussiaEmbassyTO): they can just graft him a new leg though, what's the problem?  \n  Likes=70, Reposts=0, Replies=0, Views=10400\n\n- Kruzor (@IceKnightK): How did he make an announcement for Iran then less than an hour ago?  \n  Likes=65, Reposts=0, Replies=0, Views=106229\n\n- Gloyper1 ❄️ (@n1ckfuentes): No way they appointed a dead man as supreme leader. Demoralization porn.  \n  Likes=61, Reposts=0, Replies=0, Views=2808\n\n- Truth Magnate (@TruthMagnate): He’s not walking away from this.  \n  Likes=60, Reposts=0, Replies=0, Views=4918\n\n- Beardo (@BeardoTrader): Health and life insurance premiums for the Supreme Leader of Iran must be insane.  \n  Likes=49, Reposts=0, Replies=0, Views=3334",
+    "warnings": []
+  }
+}

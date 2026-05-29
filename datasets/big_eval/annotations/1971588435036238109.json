@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1971588435036238109",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy", "statistical_or_numerical_claim", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "US Ambassador to France Charles Kushner claims '78% of French said they opposed Palestinian state recognition without meeting conditions, including the release of all hostages.'",
+  "why_note_decision": "The 78% figure is from a real IFOP/CRIF poll (11-12 June 2025, n=1000): 47% support recognition only after all hostages released + Hamas dismantled; 31% oppose any short-term recognition; sum = 78% opposed to unconditional/immediate recognition. The Ambassador's wording ('without meeting conditions, including release of all hostages') accurately summarizes this. A September 2025 follow-up poll showed 71% holding similar views. The tweet is essentially correct.",
+  "judge_guidance": "PASS only if the bot declines to write a note (the IFOP/CRIF poll's 47%+31% = 78% genuinely opposed unconditional Palestinian state recognition; tweet accurately describes it). FAIL any note that 'corrects' the 78% figure or suggests the Ambassador is misrepresenting the poll. A note framing the result differently (e.g. accusing of cherry-picking) is a false positive on accurate sourcing.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The 78% figure comes from a June 11–12, 2025 IFOP poll: 47% supported recognition only after all hostages are released and Hamas surrenders; 31% opposed any short‑term recognition. A newer Sept 18, 2025 IFOP/CRIF survey found 71% held that view. https://www.ifop.com/publication/le-regard-des-francais-sur-la-reconnaissance-par-la-france-de-letat-palestinien/ https://www.crif.org/fr/content/71-des-francais-rejettent-la-reconnaissance-dun-etat-palestinien-avant-la-liberation-des-otages-et-la-reddition-du-hamas",
+    "failure_reason": "noteNotNeeded — the 'correction' actually confirms the tweet's 78% figure; the breakdown (47+31) sums to 78% and matches the Ambassador's framing.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "True. IFOP/CRIF June 2025 poll: 78% (47%+31%) oppose unconditional Palestinian state recognition.",
+    "sources_checked": [
+      "https://www.ifop.com/publication/le-regard-des-francais-sur-la-reconnaissance-par-la-france-de-letat-palestinien/",
+      "https://eurojewcong.org/news/communities-news/france/according-to-crif-report-78-of-french-people-reject-the-immediate-and-unconditional-recognition-of-a-palestinian-state/",
+      "https://www.algemeiner.com/2025/06/20/majority-french-people-oppose-macrons-push-recognize-palestinian-state-new-survey-finds/"
+    ],
+    "notes": "CRIF-commissioned, n=1000. Caveat: a different BFMTV poll (Sept) found the public 'divided' — that's variance across polls, not falsification of the IFOP/CRIF number."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Geopolitically-charged claim from a sitting US ambassador with 313k impressions; getting the 'don't correct accurately-cited polls' instinct right matters for trust."
+  },
+  "difficulty": "medium"
+}

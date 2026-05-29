@@ -1,0 +1,38 @@
+{
+  "tweet_id": "1975882279806439811",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "A Bayern fan account posts a two-image meme of an Olise UCL-feature interview where Olise says he would steal 'Yamal's PR' from another Champions League player, captioned 'Olise is cold for this.'",
+  "why_note_decision": "The Olise 'Yamal's PR' quote is a real, widely-circulated answer from a UEFA / Bayern Champions League promo interview (multiple corroborating clips on Instagram, Facebook, Threads, TikTok, and t7psg's verified post). The original note's claim that Olise didn't say it, and that there were no UCL matches on Oct 8, is wrong on both counts (it was a feature/interview, not a post-match quote — the tweet never claimed otherwise). The tweet itself is a sports-banter meme that doesn't make any false factual claim. No note is needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive here. The quote is real, the tweet is just a sports-meme repost with no misleading factual claim. In particular, FAIL any note that asserts Olise didn't say this, or that there were no UCL matches on Oct 8 (irrelevant — the source is an interview, not a post-match quote).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This meme uses an edited quote. Michael Olise did not make this statement. No Champions League matches were played on October 8, 2025, so claims of a post-match interview are false.  https://en.wikipedia.org/wiki/2025â26_UEFA_Champions_League  https://www.uefa.com/uefachampionsleague/fixtures-results/  https://www.espn.com/soccer/schedule/_/league/uefa.champions/date/20251008",
+    "failure_reason": "incorrect — Olise did make the quote in a real interview promo clip; the note's denial is itself the misinformation. Note also misreads the meme as a 'post-match interview' claim.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_real_quote",
+    "sources_checked": [
+      "https://www.facebook.com/100068817455283/posts/%EF%B8%8F-michael-olise-on-one-ability-he-would-steal-from-another-ucl-playerhe-said-yam/1102414638729108/",
+      "https://x.com/t7psg/status/1975848655824240703",
+      "https://www.instagram.com/reel/DPmBolUiD_O/",
+      "https://www.threads.com/@bayern_munich_xtra/post/DPi7TO7guk_/-michael-olise-on-one-ability-he-would-steal-from-another-ucl-playeryamals-pr"
+    ],
+    "notes": "Quote 'Yamal's PR' from Olise was widely shared from a UCL feature interview in October 2025 — multiple independent uploads of the same clip on FB, IG, Threads, X."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports banter meme; correcting an incorrect community note here matters more than the original tweet — it shows the bot must not fabricate facts to debunk real quotes."
+  },
+  "difficulty": "medium"
+}

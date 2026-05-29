@@ -216,6 +216,30 @@ export function NoteCard({
         </div>
       )}
 
+      {/* Annotation context (big_eval dataset rows) */}
+      {(item.judgeGuidance || item.originalNoteText || item.failureReason) && (
+        <div className="mb-3 bg-yellow-50 rounded p-3 border border-yellow-200 space-y-2 text-sm">
+          {item.judgeGuidance && (
+            <div>
+              <div className="text-xs font-medium text-yellow-800 mb-0.5">Judge guidance</div>
+              <p className="text-gray-800 whitespace-pre-wrap">{item.judgeGuidance}</p>
+            </div>
+          )}
+          {item.originalNoteText && (
+            <div>
+              <div className="text-xs font-medium text-yellow-800 mb-0.5">Original note text</div>
+              <p className="text-gray-800 whitespace-pre-wrap">{item.originalNoteText}</p>
+            </div>
+          )}
+          {item.failureReason && (
+            <div>
+              <div className="text-xs font-medium text-yellow-800 mb-0.5">Failure reason</div>
+              <p className="text-gray-800 whitespace-pre-wrap">{item.failureReason}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Comparison notes */}
       {item.comparisonNotes && item.comparisonNotes.length > 0 && (
         <div className="mb-3">

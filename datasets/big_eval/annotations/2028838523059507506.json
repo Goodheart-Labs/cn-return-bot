@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2028838523059507506",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "ai_generated_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A viral 'Worth Sharing' post presents an image of a smiling female F-15E pilot posing with three Kuwaiti men after she was supposedly shot down in a friendly-fire incident, framing it as a real heartwarming rescue moment.",
+  "why_note_decision": "The underlying event is real (Kuwaiti air defenses mistakenly shot down three US F-15Es on Mar 1 2026; all six crew ejected safely and locals did help), but the specific image in the post is AI-generated/fabricated, not authentic footage of the incident. Snopes confirmed the image contains Google SynthID watermarking and AI artifacts. A note is warranted to flag that the heartwarming photo is not a real depiction.",
+  "judge_guidance": "PASS only if the note establishes that the IMAGE in this post is fabricated/AI-generated and does not depict the real incident. It should ideally avoid over-claiming that the whole event is fake — the friendly-fire shootdown and pilots ejecting safely DID happen, and at least one real local did help a downed pilot. A correct note may cite tells of AI fabrication (e.g. the slung rifle a fighter pilot would not carry, SynthID/AI artifacts). It must NOT assert the event itself never occurred. A note that only debunks the rifle detail without flagging the image as AI/fabricated is weaker but acceptable; full credit requires identifying the image as fabricated.",
+  "reference_note": "The post's image is a fabricated meme not depicting the incident. F-15E pilots do not carry slung assault rifles, and the staged posing does not match real ejection videos showing locals reassuring crew.    https://www.instagram.com/reel/DVZRLE7DI4K/  https://www.lbc.co.uk/article/f-15-female-pilot-shot-down-over-kuwait-thanked-by-locals-5HjdTmT_2  https://www.reddit.com/r/isthisAI/comments/1rjtzn4/comments_on_fb_post_are_mixed_as_to_whether_this/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_real_event_fake_image",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/us-fighter-pilot-fake-image/",
+      "https://www.military.com/daily-news/2026/03/02/us-f-15-friendly-fire-incident-kuwait-all-pilots-safe.html",
+      "https://www.snopes.com/news/2026/03/04/video-us-pilot-kuwait/"
+    ],
+    "notes": "Kuwait shot down three US F-15Es in a friendly-fire incident Mar 1 2026; all crew safe. The circulating image of a pilot posing with locals is AI-generated (Snopes: contains SynthID). The real event happened; the photo does not depict it."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "452k impressions on a war/military incident; AI-fabricated imagery muddying a real geopolitical event degrades public information quality — moderate epistemic stakes."},
+  "difficulty": "medium"
+}

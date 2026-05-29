@@ -1,0 +1,61 @@
+{
+  "tweet_id": "2032514777663021439",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:42.854Z",
+  "post": {
+    "id": "2032514777663021439",
+    "author_id": "20179628",
+    "created_at": "2026-03-13T17:50:59.000Z",
+    "text": "That Friday feeling when wages are going up and prices are coming down for American workers 💸🇺🇸 https://t.co/4RjG69J2ia",
+    "media": [
+      {
+        "media_key": "16_2032514770373345280",
+        "type": "animated_gif",
+        "preview_image_url": "https://pbs.twimg.com/tweet_video_thumb/HDTxajjWgAA40_o.jpg",
+        "height": 254,
+        "width": 220,
+        "variants": [
+          {
+            "bit_rate": 0,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/tweet_video/HDTxajjWgAA40_o.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 283,
+      "reply_count": 3271,
+      "like_count": 1694,
+      "quote_count": 1057,
+      "bookmark_count": 266,
+      "impression_count": 5149651
+    },
+    "author_followers": 651007,
+    "author_name": "U.S. Department of Labor",
+    "author_description": "AMERICAN WORKERS FIRST 🇺🇸",
+    "author_tweet_count": 34599
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/tweet_video/HDTxajjWgAA40_o.mp4",
+          "description": {
+            "description": "",
+            "ocrText": ""
+          },
+          "transcription": "(transcription failed: Command failed: ffmpeg -i \"/var/folders/n4/l4rh4y3n4lz2b0h3p52h20240000gn/T/cn-gemini-1779720994460-)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @TJ_Ren76: 13 soldiers dead and this fat pedophile is dancing. (Likes: 18906, Reposts: 251, Replies: 26)\n- @AdamKinzinger: Why do you guys think the jerkin off two dudes dance is cool (Likes: 9524, Reposts: 373, Replies: 196)\n- @MidwestHumanist: I don't think gaslighting America about the economy is going to be a winning message (Likes: 6134, Reposts: 0, Replies: 0)\n- @LowEffrt: The fact that every government account has to get community noted with the truth is a big problem. (Likes: 3385, Reposts: 0, Replies: 0)\n- @uspolitics1111: How fucking out of touch can you be to post this shit when literally at least 12 soldiers are dead in an illegal war (Likes: 2641, Reposts: 0, Replies: 0)\n- @1776General_: US jobs numbers have now been revised down in each of the last 13 months, by a total of -710,000 jobs. Trump increased H1B's and doubled H2B's. Yet, Americans are getting fired at lightning speed. (Likes: 2030, Reposts: 128, Replies: 13)\n- @RyanShead: The federal government being community noted is peak 2026. Trump and his administration are LYING to us. (Likes: 829, Reposts: 0, Replies: 0)\n- @Ghostzapper0406: That Friday feeling when you are gaslighting Americans and are so stupid and self-absorbed that you think Americans are buying your lame, bottom feeding lies, deception and bullshit (Likes: 778, Reposts: 0, Replies: 0)\n- @hippojuicefilm: As somebody who voted for Trump several times and with all due respect.... Go fuck yourself. (Likes: 283, Reposts: 19, Replies: 13)\n- @hypzr: Do you guys even shop? I'm, at this point, convinced you don't. Prices are not coming down & wages aren't going up to what they should be. (Likes: 210, Reposts: 0, Replies: 0)",
+    "warnings": []
+  }
+}

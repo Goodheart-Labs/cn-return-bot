@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1993849082671190093",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "politics_and_policy",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "political_misframing_or_misleading_context",
+  "tweet_summary": "Rep. Byron Donalds blames Democrats for the DC National Guard shooting because the suspect entered the US from Afghanistan in 2021 under the Biden withdrawal; the tweet omits that the same suspect was granted asylum under the Trump administration in April 2025.",
+  "why_note_decision": "The shooter, Rahmanullah Lakanwal, entered the US on Sep 8, 2021 under Operation Allies Welcome (Biden) but was granted asylum by USCIS in April 2025 under the Trump administration. The tweet's 'Democrat fingerprints all over it' framing is misleading by omission: the most recent vetting/immigration approval was Trump-administration. On a 237K-impression post by a sitting US Congressman with 1.17M followers, this material omission warrants a note.",
+  "judge_guidance": "PASS if the note (1) acknowledges the suspect entered the US in 2021 under Operation Allies Welcome (Biden era), AND (2) states that the suspect was granted asylum by USCIS in April 2025 under the Trump administration. Both pieces are needed to correct the tweet's one-sided framing. Sources should include CBS, NBC, ABC, FactCheck.org, or Wikipedia coverage of the 2025 DC National Guard shooting. FAIL if the note only repeats the Biden-era framing, omits the April 2025 Trump-era asylum approval, or denies that the suspect's immigration history is relevant.",
+  "reference_note": "Suspect Rahmanullah Lakanwal entered the US in Sep 2021 under Biden's Operation Allies Welcome, but his asylum application was approved by USCIS in April 2025, under the Trump administration. https://www.cbsnews.com/news/rahmanullah-lakanwal-national-guard-shooting-suspect-vetting-immigration/ https://www.factcheck.org/2025/12/qa-on-vetting-of-accused-national-guard-shooter/ https://en.wikipedia.org/wiki/2025_Washington,_D.C.,_National_Guard_shooting",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_by_omission",
+    "sources_checked": [
+      "https://www.cbsnews.com/news/rahmanullah-lakanwal-national-guard-shooting-suspect-vetting-immigration/",
+      "https://www.nbcnews.com/news/us-news/afghan-accused-shooting-2-national-guard-members-was-part-cia-backed-u-rcna246320",
+      "https://www.factcheck.org/2025/12/qa-on-vetting-of-accused-national-guard-shooter/",
+      "https://en.wikipedia.org/wiki/2025_Washington,_D.C.,_National_Guard_shooting"
+    ],
+    "notes": "Multiple reputable outlets confirm: entered 9/8/2021 under OAW, asylum granted April 2025 under Trump. Tweet's framing pins blame only on Democrats."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Post by a sitting US Congressman running for Florida Governor on a politically-charged shooting story; correcting partisan misframing on high-salience immigration topics is high-impact for civic information quality."
+  },
+  "difficulty": "medium"
+}

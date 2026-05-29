@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2018394336426082735",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:33.937Z",
+  "post": {
+    "id": "2018394336426082735",
+    "author_id": "1628244860665835530",
+    "created_at": "2026-02-02T18:41:24.000Z",
+    "text": "YouTuber Markiplier broke down in tears after his self-financed horror movie \"Iron Lung\" opened to $23 at the worldwide box office: “Fuuuck dude this movie cost so much money I'm so fucked” https://t.co/9NWRSeCtYA",
+    "media": [
+      {
+        "media_key": "3_2018394325520900096",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HALG8fVWYAA9TQZ.jpg",
+        "height": 912,
+        "width": 912
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 14654,
+      "reply_count": 477,
+      "like_count": 191658,
+      "quote_count": 165,
+      "bookmark_count": 14954,
+      "impression_count": 11047449
+    },
+    "author_followers": 969,
+    "author_name": "casIFIED",
+    "author_description": "20\nCertified Jason Voorhees Slayer\nNot in Need of Psychiatric Help\n(sardonicGeek, Yoshifan33)",
+    "author_tweet_count": 39317
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HALG8fVWYAA9TQZ.jpg",
+          "description": {
+            "description": "A headshot of Mark Fischbach, known as Markiplier, with medium-length dark wavy hair and facial hair. He is wearing a dark suit jacket and a dark shirt with a textured red tie. He is posing in front of a background featuring large, distressed red graphic elements on a dark grey surface.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @PhelleAlt: This is real he told me (6451 likes)\n- @QSugoi: The movie had a $3 million budget. For one person to fund their own venture and succeed at the level he did this weekend is amazing. He inspired me watching his \"Actual Emergency Meeting\" live stream yesterday with the stories I'm working on. (2636 likes)\n- @Lynxtop: tweet got read out loud in a distractible episode award (2103 likes)\n- @Foiled__Again: There's so many replies to this taking it dead seriously come onnnnn (601 likes)\n- @jibstubbly: I was the one that saw it. Markiplier personally came into my theatre and shattered my kneecaps with a metal baseball bat. (343 likes)\n- @punkquency: Hit tweet follow me for more bangers! (316 likes)\n- @MuncherSalmon: Maybe he shouldn’t have been selling the sinister potion to his pure of heart fans (218 likes)\n- @TobyTurner: did he say that?? (199 likes)\n- @dracostarcloud: $23?! Where can I find a movie ticket that cheap? XD (131 likes)\n- @TheeAdziazz: doesnt markiplier have like upwards to 75 million dollars (105 likes)",
+    "warnings": []
+  }
+}

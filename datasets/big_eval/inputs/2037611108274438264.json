@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2037611108274438264",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:25.380Z",
+  "post": {
+    "id": "2037611108274438264",
+    "author_id": "9624742",
+    "created_at": "2026-03-27T19:21:59.000Z",
+    "text": "SECRETARY RUBIO: The reason why Cuba doesn’t have oil or fuel is because they want it for free. Cuba is a disaster because their economic system doesn't work. https://t.co/4jl0IkRpJM",
+    "media": [
+      {
+        "media_key": "13_2037610934131109888",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2037610934131109888/img/tHtrTpA_YpXEkYjV.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 70445,
+        "view_count": 598700,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037610934131109888/vid/avc1/640x360/LwN9aXb336QGGnpL.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037610934131109888/vid/avc1/480x270/elIUhj1_TiYjWyeu.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037610934131109888/vid/avc1/1920x1080/4LbyKuqPXSb1YRif.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2037610934131109888/pl/NJ2QrDYmqfGd-YgP.m3u8?v=557"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037610934131109888/vid/avc1/1280x720/nSWHqe3WScXS9n5S.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3717,
+      "reply_count": 1591,
+      "like_count": 20382,
+      "quote_count": 320,
+      "bookmark_count": 453,
+      "impression_count": 1808497
+    },
+    "author_followers": 6736985,
+    "author_name": "Department of State",
+    "author_description": "Leading U.S. foreign policy and American diplomacy since 1789.\nFor all Department accounts: https://t.co/VpbtF1LASc",
+    "author_tweet_count": 74453
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2037610934131109888/vid/avc1/1920x1080/4LbyKuqPXSb1YRif.mp4",
+          "description": {
+            "description": "A close-up of Marco Rubio from the chest up as he speaks to the camera in front of a white airplane with blue and gold accents that says United States on its side. He is dressed in a dark suit with a dark red tie and a white shirt. There are two people in dark suits behind him near the stairs that have been brought to the side of the plane. To the right is another man who is barely visible and several hands are visible on the left side holding phones as if recording him. On the bottom left of the screen, there is a blue line that says Meeting With G7 Foreign Ministers. Below that on a white background, it says Marco Rubio in blue and Secretary of State in black below that name. On the bottom right, there is a white rectangular box that says 7pm ET/PT Ceasefire. Below that there are two portraits in grey boxes with names below them. The first one is Rep. Cuellar and the second is Rep. Gimenez. Below that is a red box that says Live and has a time of 9:42 am pt. Below that is a white box with the C-Span logo in blue. In the top right corner, there is a blue and white box that says Cernay-La-Ville, France and the time 5:42 pm below that.",
+            "ocrText": "UNITED STAT CERNAY-LA-VILLE, FRANCE 5:42PM 7PM ET/PT CEASEFIRE MEETING WITH G7 FOREIGN MINISTERS REP. CUELLAR REP. GIMENEZ LIVE 9:42 PT MARCO RUBIO C-SPAN Secretary of State"
+          },
+          "transcription": "I didn't come all the way to France to talk about Cuba, but let's talk about Cuba. It's perfect, I'm happy to do it, because we actually talked about it in the G7. No, no, of course not, plus we talked about it in the G7, okay. Everybody talks about these blackouts. Cuba's been having blackouts all of last year, all the year before. There isn't a naval blockade surrounding Cuba. The reason why Cuba doesn't have oil and fuel is because they want it for free. And people don't give away oil and fuel for free on a regular basis, unless it was the Soviet Union subsidizing them or Maduro subsidizing them. They just don't do it. They may get a shipment here or there now and then someone, but not enough to sustain their country. So that's why they don't have fuel. And the reason why they're having blackouts is because they have equipment from the 1950s and 60s that they never maintained or kept up. But ultimately, the reason why Cuba's a disaster is because their economic system doesn't work. It's a nonsensical system. and the people of Cuba are suffering because of the decisions, because of the unwillingness of the people who govern that country to make the changes that need to be made so they can join the 21st century. It is sad that the only place Cubans can only be successful is if they leave the country. That's a very sad thing."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Ben Norton** (@BenjaminNorton): This is a blatant LIE. The US imposed an illegal oil blockade on Cuba, threatening to impose tariffs on any country that sells it oil. Cuba is willing to buy the oil. It doesn't need charity. But when Russia tried to send Cuba oil, the US blocked it. This is a medieval siege. (Likes: 3941, Reposts: 763)\n- **🥀_ Imposter_🥀** (@Imposter_Edits): If their system didn't work, it would die on its own. Somehow, they have survived even with the USA boot on their neck for 60 years. (Likes: 1480)\n- **Araquel Bloss** (@AraquelBloss): I’m sure it has nothing to do with our sanctions. Just like Iran. (Likes: 797)\n- **🇨🇦 dronefishing 🇨🇦 🇺🇦** (@dronefishing1): Fuck you pieces of shit. Cuba doesn’t have oil because you are blockading it. People are dying and you are playing stupid fucking games. I’m can’t wait to see all of your trials. I’ll take vacation so I can watch them live (Likes: 764)\n- **Israel Exposed** (@xIsraelExposedx): Shameless liars. Nothing you say can be trusted (Likes: 579)\n- **Anonymous** (@YourAnonCentral): Quick reminder about Narco Rubio (Likes: 556)\n- **Tara Riva** (@tara_riva): Marco Rubio : Cuba = Reza Pahlavi : Iran Weak men with unresolved issues who seek revenge through the collective punishment of their former homeland. To do that, they’re also willing to destroy what’s their current homeland. (Likes: 548)\n- **Christis G. Tombazos** (@CTombazos): What a scumbag? (Likes: 243)\n- **🅹 🅴 🆁 🆁 🆈 🅰** (@MindOfJera): You’re sure it’s not the blockade and sanctions? And yes you’re ruining millions of lives. A repression that has gone in for decades and now accelerated in preparation of your invasion of Cuba. Fucking psychopath propagandists.😏 (Likes: 229)\n- **William White** (@WmWhiteJ): Bullshit. The US had been strangling the country for decades (Likes: 139)",
+    "warnings": []
+  }
+}

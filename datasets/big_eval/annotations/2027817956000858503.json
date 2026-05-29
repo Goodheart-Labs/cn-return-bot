@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2027817956000858503",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "manipulated_or_fabricated_evidence"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Laura Loomer (1.9M followers) replies '@TheKingCenter Iran bombed them.' regarding (per the original note context) the deadly strike on Shajareh Tayyebeh Elementary School in Minab, Iran on 28 Feb 2026, attributing the bombing to Iran itself.",
+  "why_note_decision": "A note is clearly warranted. The Minab school strike on 28 February 2026 killed 156 people including 120 students and 26 teachers. Amnesty International's analysis of missile remnants identifies a US-manufactured Tomahawk cruise missile, used exclusively by US forces in this conflict; UN experts, Time, NPR, Al Jazeera, and UNESCO all describe it as a US/US-Israeli strike, with a Pentagon probe pointing to a US missile. There is no credible source attributing the strike to Iran. The original note's verdict (US-Israeli missile strike) is correct, but raters flagged it heavily on 'sources unreliable' (15) and 'incorrect' (10) — the cited Guardian URL appears speculative and the note quotes a contested dateline; a stronger note would cite Amnesty, the UN, AP/Reuters, or the Pentagon probe.",
+  "judge_guidance": "PASS a note that (a) states the Minab/Shajareh Tayyebeh school strike on 28 February 2026 killed roughly 156 people (mostly students and teachers), and (b) attributes the strike to US/US-Israeli forces based on missile-remnant evidence (Tomahawk) and Pentagon/Amnesty/UN findings — not to Iran. The note MUST cite at least one strong primary or near-primary source: Amnesty International, OHCHR/UN experts, Time, NPR, or AP/Reuters. FAIL if the note repeats the 'Iran bombed them' framing, FAIL if it relies on a single contested or low-credibility URL (the original note's failure mode — its sole Guardian link drew 15 'sources unreliable' votes), and FAIL if it equivocates with 'unclear who is responsible' when Amnesty's munitions analysis points specifically to a Tomahawk.",
+  "reference_note": "The 28 February 2026 strike on Shajareh Tayyebeh Elementary School in Minab, Iran killed about 156 people including 120 students and 26 teachers. Amnesty International's analysis of missile remnants identified a US-manufactured Tomahawk cruise missile — used exclusively by US forces in this conflict — and a Pentagon probe and UN experts have pointed to US/US-Israeli responsibility. There is no credible reporting that Iran bombed its own school. https://www.amnesty.org/en/latest/news/2026/03/usa-iran-those-responsible-for-deadly-and-unlawful-us-strike-on-school-that-killed-over-100-children-must-be-held-accountable/ https://www.ohchr.org/en/press-releases/2026/03/un-experts-strongly-condemn-deadly-missile-strike-girls-school-iran-call https://www.npr.org/2026/03/11/nx-s1-5744981/pentagon-iran-missile-school-hegseth",
+  "original_unhelpful_note": {
+    "text": "Claim 'Iran bombed them' misattributes the attack. Multiple outlets and Iranian officials report a US–Israeli missile strike on the Minab girls' school that killed dozens of children. See The Guardian report: https://www.theguardian.com/world/2026/feb/28/children-dead-as-missile-hits-elementary-school-in-southern-iran",
+    "failure_reason": "Verdict is correct but the note leans on a single Guardian link of contested provenance and uses 'dozens' when the toll is ~156. Raters dinged it hard on 'sources unreliable' (15) and 'incorrect' (10) — likely because the URL date matches the strike day (raising 'too-fast' concerns) and the note doesn't anchor with the Tomahawk munitions evidence.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false — Iran did not bomb the Minab school; munitions evidence points to a US Tomahawk strike",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Minab_school_attack",
+      "https://www.amnesty.org/en/latest/news/2026/03/usa-iran-those-responsible-for-deadly-and-unlawful-us-strike-on-school-that-killed-over-100-children-must-be-held-accountable/",
+      "https://www.ohchr.org/en/press-releases/2026/03/un-experts-strongly-condemn-deadly-missile-strike-girls-school-iran-call",
+      "https://time.com/article/2026/03/11/iran-school-strike-minab-tomahawk/",
+      "https://www.npr.org/2026/03/11/nx-s1-5744981/pentagon-iran-missile-school-hegseth"
+    ],
+    "notes": "Strong cross-source convergence: Amnesty munitions analysis, UN OHCHR statement, Time, NPR (Pentagon probe), Al Jazeera investigation, and Wikipedia all attribute the strike to US/US-Israeli forces. No credible source supports Iran bombing its own school."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "50k impressions on a 1.9M-follower account misattributing a US strike that killed 120+ children to the victim state — high stakes for war-crime accountability and information ecosystem during an active conflict (EA/global priorities lens)."
+  },
+  "difficulty": "easy"
+}

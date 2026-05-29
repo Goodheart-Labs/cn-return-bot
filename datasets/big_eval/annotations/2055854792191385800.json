@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2055854792191385800",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A cricket account quote-tweets footage of Craig Overton (twin of CSK's Jamie Overton) scoring a county-cricket century with a sarcastic 'Did all this injury drama to play County Cricket. 💔', implying Jamie faked his IPL injury.",
+  "why_note_decision": "The post is sarcasm/banter — the OP and many commenters explicitly recognize that's Craig Overton, not Jamie. The most-liked reply ('He is Craig Overton. He is the twin brother of Jamie Overton', 1494 likes), and many other replies, point this out and several call out the OP for engagement-baiting. The original note's substance is correct (it IS Craig, not Jamie, and Jamie is the one ruled out of IPL 2026) but adding it is fighting a strawman: the OP isn't sincerely confused, this is a meme-format jibe at Jamie's CSK injury. Raters tagged 'note not needed'.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The post is sarcastic engagement-bait, and the top reply already clarifies it's Craig (the twin) not Jamie. FAIL if the bot writes any note clarifying twin identities — that's the original note's mistake. Bot must recognize sarcasm/joke framing when the OP's own follow-up engagement confirms it and the most-liked replies already make the correction.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The player shown is Craig Overton, not his twin brother Jamie Overton of CSK who is ruled out of IPL with a thigh injury. https://x.com/SomersetCCC/status/2055687924629262710 https://www.espncricinfo.com/story/csk-s-jamie-overton-returns-home-from-ipl-2026-to-get-thigh-injury-assessed-1536664",
+    "failure_reason": "Substantively correct identity correction but the OP is being sarcastic (a meme-style jibe), and the top reply already clarifies — note isn't needed. Raters tagged 'note not needed'.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "sarcastic — OP knows it's Craig; Jamie Overton's IPL 2026 thigh injury is real",
+    "sources_checked": [
+      "https://www.espncricinfo.com/story/csk-s-jamie-overton-returns-home-from-ipl-2026-to-get-thigh-injury-assessed-1536664",
+      "https://sundayguardianlive.com/sports/fact-check-is-jamie-overton-playing-county-cricket-after-ipl-2026-exit-csk-fans-confused-watching-som-vs-sus-clash-193399/"
+    ],
+    "notes": "Sunday Guardian fact-check explicitly calls out the SOM v SUS confusion and confirms Craig (twin) played for Somerset while Jamie was injured at CSK."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "1M impressions but cricket-fan banter; no public-interest stakes."
+  },
+  "difficulty": "medium"
+}

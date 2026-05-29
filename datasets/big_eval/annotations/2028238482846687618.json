@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2028238482846687618",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "breaking_news_and_war",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post by 'Pakistan Strategic Forum' (711k views) shows a night video of a glowing object descending over a city, claiming Iranian air defense 'shot down something likely a fighter jet over Tehran' on March 1, 2026, citing the smoke and speed as evidence of jet fuel.",
+  "why_note_decision": "A note is warranted because the post presents an unverified, speculative war claim ('likely a fighter jet') as near-fact to 711k viewers. As of March 1, 2026 there was no confirmed shootdown of a manned fighter jet by Iranian air defense over Tehran \u2014 documented losses that day were Israeli drones intercepted and Iranian aircraft destroyed on the ground at Tabriz; the first Tehran air-to-air kill (March 4) was an Israeli F-35 downing an Iranian Yak-130 trainer. The post's own commenters split between 'drone', 'B2', and 'jet', underscoring that the object is unidentified.",
+  "judge_guidance": "PASS only if the note establishes that the 'fighter jet shot down over Tehran' claim is UNVERIFIED/unsupported \u2014 there is no confirmed Iranian shootdown of a manned fighter jet over Tehran as of March 1, 2026, and the falling object cannot be identified as a jet \u2014 ideally noting that early-March confirmed losses were drones/ground strikes, sourced to a credible war tracker (Wikipedia 2026-Iran-war aviation-losses list / Reuters / AP / Times of Israel / Wired's disinfo coverage). AVOID the original note's failure (rated notHelpfulOpinionSpeculation 12, SourcesMissingOrUnreliable 10): do NOT issue a flat, unsourced-feeling 'No fighter jet was shot down' denial backed only by a generic war-overview link (Wired/Wikipedia/TimesofIsrael) that doesn't address THIS clip \u2014 that read as opinion. The note must frame it as 'unconfirmed/no evidence for this specific claim' and, if it can, note the object is unidentified. A note that confidently asserts the clip IS or ISN'T a jet without grounding fails (the media is unidentifiable from description alone).",
+  "reference_note": "There is no confirmed report that Iranian air defense shot down a fighter jet over Tehran on March 1, 2026. The falling object in this clip is unidentified \u2014 commenters themselves dispute jet vs. drone. Verified early-March losses were intercepted Israeli drones and Iranian aircraft hit on the ground; the first Tehran air-to-air kill (March 4) was an Israeli F-35 downing an Iranian trainer. https://en.wikipedia.org/wiki/List_of_aviation_shootdowns_and_accidents_during_the_2026_Iran_war https://www.wired.com/story/x-is-drowning-in-disinformation-following-us-and-israels-attack-on-iran",
+  "original_unhelpful_note": {
+    "text": "No fighter jet was shot down by Iranian air defense over Tehran amid recent strikes. https://www.wired.com/story/x-is-drowning-in-disinformation-following-us-and-israels-attack-on-iran https://en.wikipedia.org/wiki/2026_Iran\u2013United_States_crisis https://www.timesofisrael.com/idf-over-2000-bombs-dropped-on-iran-in-30-hours-air-supremacy-achieved-on-1st-day",
+    "failure_reason": "Conclusion is defensible but rated NOT_HELPFUL (25 ratings; dominant notHelpfulOpinionSpeculation 12, SourcesMissingOrUnreliable 10, IrrelevantSources 5). The note makes an absolute negative claim ('No fighter jet was shot down') but backs it with three generic war-overview links that do not specifically address this March 1 Tehran clip, so it reads as an unsupported assertion. Proving a negative in fast-moving fog-of-war requires framing as 'unconfirmed / no evidence', not a flat denial.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/List_of_aviation_shootdowns_and_accidents_during_the_2026_Iran_war",
+      "https://www.wired.com/story/x-is-drowning-in-disinformation-following-us-and-israels-attack-on-iran",
+      "https://cyberpeace.org/resources/blogs/factcheck--ai-generated-video-falsely-claims-iran-shot-down-us-f-35-fighter-jet"
+    ],
+    "notes": "War began Feb 28, 2026. On/around March 1: Israeli Hermes 900 drones intercepted (Khorramabad), two Iranian jets (F-5, F-4) destroyed on the ground at Tabriz airport in an Israeli strike. No confirmed Iranian air-defense kill of a manned fighter jet over Tehran on March 1; the first Tehran air-to-air kill was March 4 (Israeli F-35 vs Iranian Yak-130 trainer). The clip shows an unidentified glowing descending object; could be a drone, intercepted munition, or debris. Multiple fabricated/AI 'Iran shot down a jet' clips circulated in this period. MEDIA CAVEAT: I cannot identify the object from the AI frame description alone."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "711k impressions of fog-of-war claims inflating Iranian air-defense success; war-period battlefield-outcome misinformation shapes public perception of the conflict and is a high-volume pipeline stressor."
+  },
+  "difficulty": "hard"
+}

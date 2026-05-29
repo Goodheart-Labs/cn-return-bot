@@ -1,0 +1,653 @@
+[
+  {
+    "tweet_url": "https://x.com/i/status/1996831133414363186",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.dutchnews.nl/2015/09/appeal-court-jails-driver-for-killing-couple-and-grandchild/",
+    "classification": "fetched_ok",
+    "body_head": "# Appeal court jails driver for killing couple and grandchild\n\nSeptember 23, 2015\n\nSee more DutchNews articles in your Google search results\n\nSee more DutchNews articles in your Google search results\n\n[Add as a favourite source on Google Add DutchNews as a favourite source on Google](https://www.goo"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2047745135526428683",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.uscis.gov/tools/reports-and-studies/h-1b-employer-data-hub",
+    "classification": "fetched_ok",
+    "body_head": "# H-1B Employer Data Hub\n\nThe [H-1B program](/working-in-the-united-states/h-1b-specialty-occupations) allows employers in the United States to temporarily employ foreign workers in occupations that require the theoretical and practical application of a body of highly specialized knowledge and a bac"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2047745135526428683",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://peterchu.com/blogs/medium-feed/how-many-h1b-visa-holders-in-usa",
+    "classification": "fetched_ok",
+    "body_head": "# H1B Visa Holders in the USA: The 2026 Numbers Explained\n\nIt\u2019s one of the most common questions we hear at the Law Offices of Peter D. Chu, and honestly, it sounds simple on the surface. A client, often a forward-thinking employer or a highly skilled professional, will ask, \u201cSo, exactly **how many "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2039118807692968130",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.facebook.com/photo.php?fbid=982113224486408&set=a.850196581011407&id=100080632194001",
+    "classification": "very_short_body",
+    "body_head": "Facebook"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2039118807692968130",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/",
+    "classification": "very_short_body",
+    "body_head": "Reddit - Please wait for verification"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2049464880520888535",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://home.treasury.gov/news/press-releases/sb0500",
+    "classification": "fetched_ok",
+    "body_head": "# Remarks by Secretary of the Treasury Scott Bessent Before the No Money for Terror Conference\n\nGood afternoon. Let me begin by thanking Minister Lescure for those opening comments and for convening this year\u2019s No Money for Terror conference. Thanks also to President Macron for his contributions to "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2049464880520888535",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/business/energy/bessent-urges-china-step-up-diplomacy-iran-ahead-trump-xi-summit-2026-05-04/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2034574905858040263",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/lineups/",
+    "classification": "fetch_error_network",
+    "body_head": "Fetch error: The operation timed out."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1999999737379143950",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://factcheck.afp.com/doc.afp.com.76UX8KE",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1999999737379143950",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://cedmohub.eu/exaggerated-claims-about-russias-cancer-vaccine-enteromix-sweep-across-africa/",
+    "classification": "fetched_ok",
+    "body_head": "# Exaggerated claims about Russia\u2019s cancer vaccine Enteromix sweep across Africa\n\n![Exaggerated claims about Russia\u2019s cancer vaccine Enteromix sweep across Africa - Featured image](https://belux-edmo.s3-accelerate.amazonaws.com/wp-content/uploads/2025/09/c3c068a5e17b655b576172b23caa92aeab796008-ipad"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1999999737379143950",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.snopes.com/fact-check/russia-enteromix-mrna-cancer-vaccine/",
+    "classification": "fetched_ok",
+    "body_head": "# Analyzing claim Russian cancer vaccine is ready for use\n\nClaim:\n\nIn September 2025, Russia officially announced its mRNA cancer vaccine, Enteromix, was ready for clinical use and would be free to patients.\n\nContext\n\nAlthough all three are cancer vaccines, Russia's mRNA vaccine (1), Enteromix (2) a"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2046782070840586266",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://en.wikipedia.org/wiki/Nick_Fuentes",
+    "classification": "fetched_ok",
+    "body_head": "# Nick Fuentes\n\n\"Nicholas Fuentes\" redirects here. For the Peruvian footballer, see [Nicol\u00e1s Fuentes](/wiki/Nicol%C3%A1s_Fuentes \"Nicol\u00e1s Fuentes\").\n\nNick Fuentes\n\n[![Webcam picture of Fuentes. He is wearing a white shirt, navy sport coat, and headphones.](//upload.wikimedia.org/wikipedia/commons/th"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2001327023839735928",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://factcheck.afp.com/doc.afp.com.87W89G3",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2028943273042100353",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://www.senate.gov/about/powers-procedures/declarations-of-war.htm",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2028943273042100353",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://constitution.congress.gov/browse/essay/artI-S8-C11-2-3/ALDE_00013914/",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2036122449536811392",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2036122449536811392",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.snopes.com/fact-check/braille-in-some-steering-wheels/",
+    "classification": "fetched_ok",
+    "body_head": "# Do Steering Wheels Include Braille So Visually Impaired Drivers Can Find the Horn?\n\nClaim:\n\nCar steering wheels include Braille to help visually impaired drivers find the horn.\n\nIn mid-January 2019, a meme spread online stating the steering wheels of some automobiles were outfitted with Braille, t"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2036122449536811392",
+    "outcome": "rejected (check_failed)",
+    "source_url": "[By Bethania Palma](/author/bethania/)",
+    "classification": "very_short_body",
+    "body_head": "Bethania Palma is a journalist from the Los Angeles area who has been working in the news industry since 2006."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2039707797244215475",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.instagram.com/p/DUWHli8gTpK/",
+    "classification": "very_short_body",
+    "body_head": "Instagram"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2039707797244215475",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://en.wikipedia.org/wiki/United_States_presidential_approval_rating",
+    "classification": "fetched_ok",
+    "body_head": "# United States presidential approval rating\n\nFrom Wikipedia, the free encyclopedia\n\nIn the [United States](/wiki/United_States \"United States\"), presidential job approval ratings were first conducted by [George Gallup](/wiki/George_Gallup \"George Gallup\") (estimated to be 1937) to gauge public supp"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2033436730251264262",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2033436730251264262",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.euronews.com/my-europe/2026/03/18/netanyahu-denies-death-rumours-in-social-media-clip-which-grok-falsely-branded-ai",
+    "classification": "fetched_ok",
+    "body_head": "# Netanyahu denies death rumours in social media clip which Grok falsely branded AI\n\nIs Israel's Prime Minister Benjamin Netanyahu dead? That's what some people have been claiming on social media as the war between Israel, the US and Iran continues.\n\nThe answer to that question is no, as the prime m"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2031539160700313846",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://jweekly.com/2026/03/10/israeli-americans-assaulted-in-san-jose-while-speaking-hebrew/",
+    "classification": "fetched_ok",
+    "body_head": "[fetched via Wayback Machine snapshot]\n\n# Israeli Americans assaulted in San Jose while speaking Hebrew\n\nSan Jose police are investigating a possible hate crime after two Israeli Americans were assaulted on Sunday afternoon outside a local restaurant while speaking Hebrew.\n\nThe incident comes amid h"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2031539160700313846",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.facebook.com/NBCBayArea/videos/police-investigating-santana-row-attack-as-possible-hate-crime/2384729795331069/",
+    "classification": "very_short_body",
+    "body_head": "A brutal attack outside a restaurant on Santana Row is being investigated as a possible hate crime, police say: http://nbcbay.com/mR4qvXL | NBC Bay Area"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2048712783483879812",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://x.com/US_FDA/status/1691937764667760946",
+    "classification": "twitter_skipped",
+    "body_head": "Twitter/X link \u2014 accepted without fetching."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2048712783483879812",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.cancer.org/cancer/latest-news/what-to-know-about-ivermectin.html",
+    "classification": "fetched_ok",
+    "body_head": "# What to Know About Ivermectin\n\n1.  [Home](/) \n2.  [All About Cancer](/cancer.html) \n3.  [News](/cancer/latest-news.html) \n4.  What to Know About Ivermectin \n\nPublished on: May 21, 2026\n\n![](/adobe/dynamicmedia/deliver/dm-aid--691a9fd1-8a42-4acd-80c7-3eb071db4e12/man-and-laptop-in-shadows.jpg?quali"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2019501956482367716",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/fact-check/image-depicting-jeffrey-epstein-tel-aviv-was-created-with-ai-2026-02-26/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2019501956482367716",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/",
+    "classification": "very_short_body",
+    "body_head": "# Image of Jeffrey Epstein in Tel Aviv is AI-generated"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2019501956482367716",
+    "outcome": "rejected (check_failed)",
+    "source_url": "Stand up for the facts!",
+    "classification": "very_short_body",
+    "body_head": "Our only agenda is to publish the truth so you can be an informed participant in democracy.  \nWe need your help.\n\n[More Info](/membership/)"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2014434985046921417",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://people.com/debunking-viral-fake-trump-quote-people-magazine-11852804",
+    "classification": "fetch_failed_http_402",
+    "body_head": "Fetch failed: HTTP 402"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2014434985046921417",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.reuters.com/article/world/fact-check-trump-did-not-call-republicans-the-dumbest-group-of-voters-idUSKBN2342DH/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2014434985046921417",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.factcheck.org/2015/11/bogus-meme-targets-trump/",
+    "classification": "fetched_ok",
+    "body_head": "# Bogus Meme Targets Trump\n\n**Q: Did Donald Trump tell People magazine in 1998 that if he ever ran for president, he\u2019d do it as a Republican because \u201cthey\u2019re the dumbest group of voters in the country\u201d and that he \u201ccould lie and they\u2019d still eat it up\u201d?**  \n**A:\u00a0No, that\u2019s a bogus meme.**"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2014434985046921417",
+    "outcome": "rejected (check_failed)",
+    "source_url": "FULL ANSWER",
+    "classification": "fetched_ok",
+    "body_head": "The meme purports to be a quote from Trump in _People_ magazine in 1998 saying, \u201cIf I were to run, I\u2019d run as a Republican. They\u2019re the dumbest group of voters in the country. They believe\u00a0anything on Fox News. I could lie and they\u2019d still eat it up. I bet my numbers would be terrific.\u201d\n\n[![TrumpFal"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2014434985046921417",
+    "outcome": "rejected (check_failed)",
+    "source_url": "**Sources**",
+    "classification": "fetched_ok",
+    "body_head": "Travis, Shannon. \u201c[Was he ever serious? How Trump strung the country along, again](http://www.cnn.com/2011/POLITICS/05/16/trump.again/).\u201d CNN. 17 May 2011.\n\nSmith, Kyle. \u201c[Stop pretending \u2014 Donald Trump is not running for president](http://nypost.com/2015/05/30/stop-pretending-donald-trump-is-not-ru"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2013275340064395642",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://www.instagram.com/reels/DSx9TGyjeS8/",
+    "classification": "media_cascade",
+    "body_head": "Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.\nTitle: Video by qom_insta\nUploader: \u0642\u0645 \u0627\u06cc\u0646\u0633\u062a\u0627 | \u0627\u062e\u0628\u0627\u0631 \u0642\u0645 | \u062e\u0628\u0631 \u0642\u0645 |qom | \u0628\u0644\u0627\u06af\u0631\nPublished: 2025-12-27T20:41:35.000Z\nUploader-provided description:\n\u0645\u0639\u0644\u0645\u06cc \u06a9\u0647 \u0648\u0642\u062a\u06cc \u062e\u0628\u0631 \u062c\u0627\u0646\u0628\u0627\u062e\u062a\u0646 \u062f\u0627\u0646\u0634 \u0622\u0645\u0648\u0632\u0634 \u0631\u0648 \u0634\u0646\u06cc\u062f \u062f\u06cc\u06af\u0647 \u0646\u062a\u0648\u0646\u0633\u062a \u062e\u0648\u062f\u0634\u0648 \u06a9\u0646\u062a\u0631\u0644 \u06a9\u0646\u0647 "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "https://www.snopes.com/fact-check/ronald-reagan-fascism-liberalism/",
+    "classification": "fetched_ok",
+    "body_head": "# Ronald Reagan: 'If Fascism Ever Comes to America, It Will Come in the Name of Liberalism'\n\nClaim:\n\nRonald Reagan said, \"If fascism ever comes to America, it will come in the name of liberalism.\"\n\nOn 21 August 2017, the conservative non-profit organization Turning Point USA (TPUSA) posted a meme ju"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "[By Bethania Palma](/author/bethania/)",
+    "classification": "very_short_body",
+    "body_head": "Bethania Palma is a journalist from the Los Angeles area who has been working in the news industry since 2006."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/",
+    "classification": "very_short_body",
+    "body_head": "# \u201cThe fascists of the future will call themselves anti-fascists.\u201d Not WSC."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "**Q: Did Churchill say this?**",
+    "classification": "fetched_ok",
+    "body_head": "I\u2019m a reporter writing to ask whether a certain quote attributed to Winston Churchill was actually spoken or written by him. The quote is: \u201cThe fascists of the future will call themselves anti-fascists.\u201d There does not seem to be credible information on the internet linking those words to Churchill."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "**A: He did not**",
+    "classification": "fetched_ok",
+    "body_head": "Manufacturing Churchill quotes is a parlor game. [Nigel Rees,](https://en.wikipedia.org/wiki/Nigel_Rees) host of the BBC program [_Quote\u2026Unquote_](https://en.wikipedia.org/wiki/Quote..._Unquote), describes what he calls \u201c[Churchillian Drift](https://richardlangworth.com/drift).\u201d It\u2019s a proces whereb"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "**Fascists and anti-fascists**",
+    "classification": "fetched_ok",
+    "body_head": "We are very confident that Churchill made no pronouncement about fascists of the future. Not only because the quotation or parts of it does not come up in digital searches; but because Churchill didn\u2019t use \u201cfascist\u201d in the generic sense\u2014or as a pejorative against political opponents, as so frequentl"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "**\u201cThe Creeds of the Devil\u201d**",
+    "classification": "fetched_ok",
+    "body_head": "There is a third reason why Churchill would not have said this popular phrase. To speak in sweeping terms about \u201cfascists\u201d doesn\u2019t even sound like him. It\u2019s too pat, too simple; not natural nor realistic. Churchill\u2019s views on extreme and tyrannical government were specific. They first occur in a bea"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "**\u201cFertile fields of freedom\u201d**",
+    "classification": "fetched_ok",
+    "body_head": "Extending his geographic analogies, Churchill contrasts these totalitarian forms of government with his own and those of the great democracies:\n\nI have made up my mind, however far I may travel, whatever countries I may see, I will not go to the Arctic or to the Antarctic regions. Give me London, gi"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "**Further reading**",
+    "classification": "fetched_ok",
+    "body_head": "\u201cThe Creeds of the Devil\u201d was published in _The Sunday Chronicle_, London, 27 June 1937, followed by a sequel, \u201cA Better Way,\u201d on 4 July. The two essays were combined under the title \u201cThe Infernal Twins\u201d in _Collier\u2019s_ (USA) on 3 July 1937. Republished in Michael Wolff, ed., [_The Collected Essays o"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2055719221812666428",
+    "outcome": "candidate",
+    "source_url": "https://www.politifact.com/factchecks/2018/aug/07/greg-abbott/greg-abbott-misquotes-winston-churchill-fascism/",
+    "classification": "fetched_ok",
+    "body_head": "# Greg Abbott celebrates invented Winston Churchill statement\n\n![Texas Gov. Greg Abbott posted this tweet early Aug. 7, 2018. It evidently was deleted later that morning (screen grab).](https://static.politifact.com/CACHE/images/politifact/photos/080718_abbottchurchill/9e98862182503265d31402686fc95f"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2038670145497764304",
+    "outcome": "candidate",
+    "source_url": "https://www.snopes.com/fact-check/photo-trump-epstein-children/",
+    "classification": "fetched_ok",
+    "body_head": "# Don't fall for this photo of Trump, Epstein, young female and children\n\nClaim:\n\nA photo authentically showed U.S. President Donald Trump and the deceased financier Jeffrey Epstein with his arm around a young female standing in a room with a group of children.\n\nAt the end of January 2026, the U.S. "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2043729676795879601",
+    "outcome": "candidate",
+    "source_url": "https://www.euronews.com/my-europe/2026/04/20/fake-footage-allegedly-shows-zelenskyys-friendship-with-jeffrey-epstein",
+    "classification": "fetched_ok",
+    "body_head": "# Fake footage allegedly shows Zelenskyy's friendship with Jeffrey Epstein\n\nPublished on 20/04/2026 - 17:00 GMT+2\n\nSocial media users are sharing a collection of AI-generated images, falsely claiming that they are stills from security camera footage of Ukraine's President Volodymyr Zelenskyy meeting"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2020558648716521763",
+    "outcome": "candidate",
+    "source_url": "https://www.bbc.com/news/articles/cx2w2ywe9e0o",
+    "classification": "fetched_ok",
+    "body_head": "# Epstein emails raise questions over role of Andrew's palace aide\n\n7 February 2026\n\nRianna CroxfordInvestigations correspondent\n\n![](https://static.files.bbci.co.uk/bbcdotcom/web/20260513-115025-e64852cb1d-web-3.6.0-1/grey-placeholder.png)![US Department of Justice A photograph of Stern, Ferguson a"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2025496691588104274",
+    "outcome": "candidate",
+    "source_url": "https://www.forbes.com/sites/paultassi/2026/02/24/new-xbox-ceo-responds-to-real-gamer-ai-tweet-accusations/",
+    "classification": "fetched_ok",
+    "body_head": "# New Xbox CEO Responds To \u2018Real Gamer,\u2019 AI Tweet Accusations\n\n![asha sharma](https://imageio.forbes.com/specials-images/imageserve/699db3d1bb4c72d55b46032b/asha-sharma/0x0.jpg?crop=1920%2C1079%2Cx395%2Cy53%2Csafe&width=960)\n\nAsha Sharma\n\nInstacart\n\nOutside of a flurry of Twitter posts and replies w"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2025496691588104274",
+    "outcome": "candidate",
+    "source_url": "https://www.trueachievements.com/news/asha-sharma-xbox-gamertag",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2044830697127321794",
+    "outcome": "candidate",
+    "source_url": "https://en.wikipedia.org/wiki/Afro-Brazilians",
+    "classification": "fetched_ok",
+    "body_head": "# Afro-Brazilians\n\nAfro-Brazilians\n\n_Afro-brasileiros_\u00a0([Portuguese](/wiki/Portuguese_language \"Portuguese language\"))  \n_Brasileiros negros_\u00a0([Portuguese](/wiki/Portuguese_language \"Portuguese language\"))\n\n[![](//upload.wikimedia.org/wikipedia/commons/thumb/0/09/Brazil_Black_Alone_in_2022.svg/250px"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2027825363460473205",
+    "outcome": "candidate",
+    "source_url": "https://miftah.org/Display.cfm?DocId=14662&CategoryId=5",
+    "classification": "fetched_ok",
+    "body_head": "# MIFTAH - Israel Warned US not to Invade Iraq after 9/11\n\n  MIFTAH\n\n[![The Palestinian Initiatives for The Promotoion of Global Dialogue and Democracy](Images/Head/FullLogoMIFTAH.jpg)](http://www.miftah.org)\n\n[![](./images/Titles/newsandanalysis2020.gif)](CatIndex2020.cfm?CategoryID=5)\n\n[![](Images"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2016176528531267592",
+    "outcome": "candidate",
+    "source_url": "https://en.wikipedia.org/wiki/Operation_Metro_Surge",
+    "classification": "fetched_ok",
+    "body_head": "# Operation Metro Surge\n\nOperation Metro Surge\n\nPart of the [immigration raids, arrests](/wiki/List_of_immigration_raids_and_arrests_in_the_second_Trump_presidency \"List of immigration raids and arrests in the second Trump presidency\"), and [domestic military deployments by the second Trump administ"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2048230103994515524",
+    "outcome": "candidate",
+    "source_url": "https://www.gktoday.in/global-forest-resources-assessment-gfra-report-2025-india-ranks-9th-in-forest-area-and-5th-in-carbon-sinks/",
+    "classification": "fetched_ok",
+    "body_head": "# Global Forest Resources Assessment (GFRA) Report 2025 \u2013 India Ranks 9th in Forest Area and 5th in Carbon Sinks\n\nIndia has recorded major progress in forest conservation and climate action, advancing to the 9th position worldwide in total forest area and maintaining its 3rd rank in annual net fores"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2028333038547927472",
+    "outcome": "candidate",
+    "source_url": "https://www.facebook.com/pressoneph/posts/factcheck-a-facebook-reel-racking-up-over-400000-views-falsely-depicts-us-missil/1425155566297826/",
+    "classification": "very_short_body",
+    "body_head": "Facebook This browser isn&#039;t supported Use Facebook app tap to use a supported browser Safari Chrome"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2015520423820083697",
+    "outcome": "candidate",
+    "source_url": "https://en.wikipedia.org/wiki/2026_Iran_war",
+    "classification": "fetched_ok",
+    "body_head": "# 2026 Iran war\n\n\"Iran\u2013United States war\" redirects here. For the 2025 war, see [Twelve-Day War](/wiki/Twelve-Day_War \"Twelve-Day War\").\n\n2026 Iran war\n\nPart of the [Iran\u2013Israel conflict](/wiki/Iran%E2%80%93Israel_conflict \"Iran\u2013Israel conflict\") and the [Middle Eastern crisis](/wiki/Middle_Eastern_"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2002086396576887148",
+    "outcome": "candidate",
+    "source_url": "https://www.instagram.com/reel/DToWOookcl4/?hl=de",
+    "classification": "very_short_body",
+    "body_head": "Instagram"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1991574142038999227",
+    "outcome": "candidate",
+    "source_url": "https://x.com/USCG/status/1991597087595851904",
+    "classification": "twitter_skipped",
+    "body_head": "Twitter/X link \u2014 accepted without fetching."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "https://x.com/i/trending/1985523959043850732",
+    "classification": "twitter_skipped",
+    "body_head": "Twitter/X link \u2014 accepted without fetching."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "https://computeruser.com/youtuber-claims-ai-moderation-error-deleted-his-thriving-350k-subscriber-channel",
+    "classification": "fetched_ok",
+    "body_head": "# YouTuber claims AI moderation error deleted his thriving 350K-subscriber channel \u2013 ComputerUser\n\nWas this helpful?\n\n![Thumbs UP](https://computeruser.com/wp-content/themes/cu/assets/images/post-like.svg \"Like the post\") ![Thumbs Down](https://computeruser.com/wp-content/themes/cu/assets/images/pos"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "A shocking end to a thriving channel",
+    "classification": "fetched_ok",
+    "body_head": "Tech creator Enderman reportedly discovered his YouTube channel, which had around 350,000 subscribers, had been terminated. What stunned him most was that it wasn\u2019t due to copyright or community strikes but an automated AI decision.\n\nHis account was allegedly linked to a foreign-language channel he "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "When automation goes too far",
+    "classification": "fetched_ok",
+    "body_head": "Enderman\u2019s case shows the growing risk of overreliance on AI moderation. According to public reports, the termination appears to have stemmed from an automated association algorithm, though it is not confirmed whether human review was involved.\n\nFor creators who depend on their channels for income, "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "How a mistaken link triggered a wipeout",
+    "classification": "fetched_ok",
+    "body_head": "According to YouTube\u2019s notice, Enderman\u2019s channel was terminated because it was linked to another account that had received three copyright strikes.\n\nThe strange part is that this \u201clinked\u201d account appeared to be a Japanese-language channel the YouTuber had never interacted with.\n\nThe AI system assum"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "The fallout spreads beyond one creator",
+    "classification": "fetched_ok",
+    "body_head": "Multiple creators have reported similar terminations allegedly linked to the same foreign-language channel. Some of these creators also had substantial subscriber counts, though not all claims have been independently verified.\n\nFor them, it\u2019s not just about one glitch but about a possible systemic i"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "A painful goodbye to years of work",
+    "classification": "fetched_ok",
+    "body_head": "In a heartfelt message, Enderman told fans that losing his main channel felt like watching years of effort vanish overnight. From tutorials to tech reviews, everything he built suddenly became inaccessible.\n\n\u201cIt feels like being bullied by an algorithm,\u201d he said. The emotional toll is visible; his v"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "The appeal that faced challenges",
+    "classification": "fetched_ok",
+    "body_head": "Enderman tried to appeal the termination but ran into another wall of automation. According to him, the appeals process itself appears powered by AI, with no real person reviewing his case.\n\nThe frustration reflects a bigger industry problem: creators often have no path to explain or defend themselv"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "The mystery of the foreign connection",
+    "classification": "fetched_ok",
+    "body_head": "One of the most unusual aspects of the story is the alleged connection between Enderman\u2019s account and a Japanese-language channel discussing a role-playing game. He said he had never interacted with it, but YouTube\u2019s AI somehow decided they were linked.\n\nIt\u2019s unclear whether this was caused by share"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "Other creators report similar stories",
+    "classification": "fetched_ok",
+    "body_head": "Soon after Enderman shared his experience, other YouTubers came forward saying the same thing had happened to them. Channels like Scratchit Gaming and [4096](https://www.sportskeeda.com/us/streamers/why-enderman-s-youtube-channel-removed-understating-platform-deleting-creators-accounts?), each with "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "YouTube\u2019s silence leaves creators uneasy",
+    "classification": "fetched_ok",
+    "body_head": "So far, YouTube hasn\u2019t publicly commented on these terminations. The lack of transparency has only deepened frustration within the creator community. Without an official explanation or fix, many worry that similar automated bans could happen again.\n\nYouTube\u2019s failure to address the situation has rai"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "The community rallies to preserve content",
+    "classification": "fetched_ok",
+    "body_head": "Some fans and members of the creator community began efforts to archive publicly available copies of the deleted videos.\n\nThis spontaneous effort highlights how deeply fans value creators\u2019 work and how fragile online content can be in the age of automated enforcement. For some, the incident feels li"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "Why AI moderation is under scrutiny",
+    "classification": "fetched_ok",
+    "body_head": "AI moderation systems are designed to catch bad actors quickly, but when they fail, the consequences can be massive. In Enderman\u2019s case, automation appeared to bypass human review entirely.\n\nCritics argue that this shows a growing gap between efficiency and fairness. As AI handles billions of upload"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "A warning for the future of online creation",
+    "classification": "fetched_ok",
+    "body_head": "This incident stands as a cautionary tale about automation\u2019s limits in the creative economy. AI can streamline moderation, but when it goes unchecked, it risks erasing livelihoods in seconds.\n\nFor every restored channel, there may be others that never return. Enderman\u2019s story reminds us that behind "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1985675392586264946",
+    "outcome": "candidate",
+    "source_url": "Author",
+    "classification": "fetched_ok",
+    "body_head": "[Marty Spargo](https://computeruser.com/author/marty \"Marty Spargo\")\n\nFather, tech enthusiast, pilot and traveler. Trying to stay up to date with all of the latest and greatest tech trends that are shaping out daily lives.\n\nWe appreciate you taking the time to share your feedback about this page wit"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2023868808386277835",
+    "outcome": "candidate",
+    "source_url": "https://www.youtube.com/shorts/CzhSqogCWC0",
+    "classification": "media_cascade",
+    "body_head": "Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.\nTitle: THIS MARIO 64 MOD FORCES MARIO IN THE HERMIT KINGDOM!!!\nUploader: Markus Daily\nPublished: 2026-02-18T07:49:51.000Z\nUploader-provided description:\nIn this youtube short I basically react to a clip I found of poor M"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2002014744727728582",
+    "outcome": "candidate",
+    "source_url": "https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf",
+    "classification": "fetched_ok",
+    "body_head": "# Killing of Austin Metcalf\n\n\"Karmelo Anthony\" redirects here. For the basketball player, see [Carmelo Anthony](/wiki/Carmelo_Anthony \"Carmelo Anthony\").\n\nKilling of Austin Metcalf\n\n[![](//upload.wikimedia.org/wikipedia/en/6/68/Austin_Metcalf.png)](/wiki/File:Austin_Metcalf.png)\n\nUndated photograph "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2030077895658401996",
+    "outcome": "candidate",
+    "source_url": "https://x.com/i/status/2030077895658401996",
+    "classification": "twitter_skipped",
+    "body_head": "Twitter/X link \u2014 accepted without fetching."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2030077895658401996",
+    "outcome": "candidate",
+    "source_url": "https://theconversation.com/a-deadly-strike-or-call-of-duty-clip-how-the-us-government-is-trying-to-memeify-the-war-on-iran-277974",
+    "classification": "fetched_ok",
+    "body_head": "# A deadly strike, or Call of Duty clip? How the US government is trying to memeify the war on Iran\n\nMillions of people recently [watched a video](https://www.theverge.com/games/889701/trump-white-house-call-of-duty-footage-iran) posted by the White House showing US strikes against Iranian targets. "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2004901730430189831",
+    "outcome": "candidate",
+    "source_url": "https://x.com/antoinellorca/status/2004901730430189831",
+    "classification": "twitter_skipped",
+    "body_head": "Twitter/X link \u2014 accepted without fetching."
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2004901730430189831",
+    "outcome": "candidate",
+    "source_url": "https://www.chartsinfrance.net/Serge-Gainsbourg/news-125749.html",
+    "classification": "fetched_ok",
+    "body_head": "# Mais c'est quoi cette vid\u00e9o de Serge Gainsbourg, devenue virale dans le monde entier ?\n\nDepuis quelques semaines, une vid\u00e9o insolite fait le tour des r\u00e9seaux sociaux : Serge Gainsbourg en larmes face \u00e0 des enfants habill\u00e9s comme lui sur le plateau d'une \u00e9mission. Mais d'o\u00f9 est tir\u00e9e cette s\u00e9quence"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2004901730430189831",
+    "outcome": "candidate",
+    "source_url": "Une s\u00e9quence culte remise au go\u00fbt du jour",
+    "classification": "fetched_ok",
+    "body_head": "D'autres y voient l\u00e0 quelque chose se rapprochant du cin\u00e9ma de David Lynch dans le fait de voir Serge Gainsbourg faire face \u00e0 des version enfantines de lui-m\u00eame. Un internaute s'est m\u00eame amus\u00e9 \u00e0 mettre la musique de la s\u00e9rie [\"Twin Peaks\"](https://www.chartsinfrance.net/Twin-Peaks/news-93949.html) p"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2004901730430189831",
+    "outcome": "candidate",
+    "source_url": "\"Aujourd'hui, il se ferait fracasser par Marl\u00e8ne Schiappa\"",
+    "classification": "fetched_ok",
+    "body_head": "Si cette s\u00e9quence \u00e9tait d\u00e9j\u00e0 pr\u00e9sente dans de nombreuses r\u00e9trospectives sur la t\u00e9l\u00e9 des ann\u00e9es 80 ou des documentaires sur Serge Gainsbourg, c'est donc aujourd'hui Twitter (ou X) qui la remet en avant. En 2019, Patrick S\u00e9bastien \u00e9tait d'ailleurs revenu sur ce moment culte : \u00ab _Quand j'ai \u00e9crit \u00e7a, j"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2006395901426737233",
+    "outcome": "candidate",
+    "source_url": "https://en.wikipedia.org/wiki/Amou_Haji",
+    "classification": "fetched_ok",
+    "body_head": "# Amou Haji\n\nFrom Wikipedia, the free encyclopedia\n\nAmou Haji\n\n[![](//upload.wikimedia.org/wikipedia/en/thumb/6/68/Amou_Haji_in_2014_or_earlier.png/250px-Amou_Haji_in_2014_or_earlier.png)](/wiki/File:Amou_Haji_in_2014_or_earlier.png)\n\nHaji smoking, pre-2014\n\nBorn\n\n20 August 1928  \n\n[Fars province](/"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2006395901426737233",
+    "outcome": "candidate",
+    "source_url": "https://www.theguardian.com/world/2022/oct/25/worlds-dirtiest-man-dies-in-iran-at-94-a-few-months-after-first-wash",
+    "classification": "fetched_ok",
+    "body_head": "# \u2018World\u2019s dirtiest man\u2019 dies in Iran at 94 a few months after first wash\n\nAn Iranian hermit nicknamed the \u201cworld\u2019s dirtiest man\u201d for not taking a shower for more than half a century has died at the healthy old age of 94, state media has reported.\n\nIrna news agency reported that \u201cAmou Haji\u201d, an ende"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2017441660578254936",
+    "outcome": "candidate",
+    "source_url": "https://www.youtube.com/watch?v=d-0SY9gklrA",
+    "classification": "media_cascade",
+    "body_head": "Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.\nTitle: Rakai Becomes A CORRUPT Cop With Druski..\ud83d\ude02\ud83d\udc6e\nUploader: Rakai Live\nPublished: 2026-01-31T03:36:49.000Z\nUploader-provided description:\nRakai Becomes A CORRUPT Cop With Druski..\ud83d\ude02\ud83d\udc6e\n\nFOLLOW ME ON TWITCH: https://www.twi"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2010758934366507334",
+    "outcome": "candidate",
+    "source_url": "https://www.amazon.se/-/en/dp/B0C5WZ5WNQ?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1",
+    "classification": "fetched_ok",
+    "body_head": "# BRIAN & DANY Shower Tent Camping Pop Up Toilet Tent, Portable Dressing Tent with Rain Cover and Window Privacy Tent for Outdoor UPF 50+ Waterproof (120 x 120 x 195 cm, Olive Green) : Amazon.se: Sports & Outdoors\n\n![](https://m.media-amazon.com/images/I/41csfK2O05L._SS75_.jpg)\n\nBRIAN & DANY Pop Up "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/1988041452493172783",
+    "outcome": "rejected (check_failed)",
+    "source_url": "https://ca.sports.yahoo.com/news/did-anthony-davis-gain-weight-145040773.html",
+    "classification": "fetched_ok",
+    "body_head": "# Did Anthony Davis gain weight? Explaining oft-injured Mavs star's appearance in fake viral post\n\n_[Did Anthony Davis gain weight? Explaining oft-injured Mavs star's appearance in fake viral post](https://www.sportingnews.com/us/nba/dallas-mavericks/news/did-anthony-davis-gain-weight-explaining-inj"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2013638785850843460",
+    "outcome": "failed (unfetchable_sources)",
+    "source_url": "https://lis.virginia.gov/bill-details/20261/HB863/text/HB863",
+    "classification": "fetch_failed_http_200",
+    "body_head": "Fetch failed: HTTP 200"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2043783331540578439",
+    "outcome": "candidate",
+    "source_url": "https://www.cnn.com/polling/approval/trump-polls",
+    "classification": "fetched_ok",
+    "body_head": "# President Trump\u2019s approval ratings | CNN Politics\n\nThe chart below tracks President Donald Trump\u2019s approval and disapproval ratings across polls. It includes all national-level results on this question which meet CNN\u2019s standards for reporting.\n\n*   [Return to CNN\u2019s Poll of Polls for Trump\u2019s approv"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2036903878726131807",
+    "outcome": "candidate",
+    "source_url": "https://news.un.org/en/story/2026/03/1167199",
+    "classification": "very_short_body",
+    "body_head": "# UN resolution urges reparations for slavery\u2019s \u2018historical wrongs\u2019"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2025357414841663677",
+    "outcome": "candidate",
+    "source_url": "https://www.cbc.ca/news/canada/montreal/ai-video-quebec-city-maxwell-9.7104284",
+    "classification": "fetched_ok",
+    "body_head": "# What a viral fake video of Ghislaine Maxwell in Quebec City says about AI deception\n\n[Montreal](/news/canada/montreal)\n\nA video purporting to show Ghislaine Maxwell, the former girlfriend and longtime associate of Jeffrey Epstein, out for a stroll in Quebec City has gained millions of views since "
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2032514777663021439",
+    "outcome": "candidate",
+    "source_url": "https://www.bls.gov/news.release/pdf/cpi.pdf",
+    "classification": "very_short_body",
+    "body_head": "[fetched via Wayback Machine snapshot]\n\n# Wayback Machine\n\nThe Wayback Machine - http://web.archive.org/web/20260526162442/https://www.bls.gov/news.release/pdf/cpi.pdf"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2032514777663021439",
+    "outcome": "candidate",
+    "source_url": "https://www.bls.gov/opub/ted/2026/real-average-hourly-earnings-increased-0-3-percent-from-march-2025-to-march-2026.htm",
+    "classification": "fetched_ok",
+    "body_head": "[fetched via Wayback Machine snapshot]\n\n# Real average hourly earnings increased 0.3 percent from March 2025 to March 2026 : The Economics Daily : U.S. Bureau of Labor Statistics\n\nApril 15, 2026\n\nReal (adjusted for inflation) average hourly earnings increased 0.3 percent from March 2025 to March 202"
+  },
+  {
+    "tweet_url": "https://x.com/i/status/2041891972512936030",
+    "outcome": "candidate",
+    "source_url": "https://www.primetimer.com/features/did-ellen-degeneres-give-up-her-us-citizenship-passport-denial-over-antifa-links-claim-debunked",
+    "classification": "fetched_ok",
+    "body_head": "# Did Ellen DeGeneres give up her US citizenship? Passport denial over Antifa links claim debunked\n\n![Ellen Degeneres, winner of mulitple awards, poses in the press room during the People's Choice Awards 2017 - Source: Getty](https://d1rldr9jdodfaa.cloudfront.net/images/01KJVPFM3V4PT50K6WCE775YN1/20"
+  }
+]

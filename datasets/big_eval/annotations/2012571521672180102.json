@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2012571521672180102",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post 'Mess with the bull as the saying goes' shares a video that purports to show a National Guard soldier pepper-spraying a screaming protester; framed approvingly as a real confrontation.",
+  "why_note_decision": "The video is AI-generated (made with OpenAI's Sora, which left a watermark), confirmed by Snopes and RumorGuard, and shows telltale AI artifacts (a finger missing/teleporting, the spray can leaking unnaturally). It depicts a fabricated event of state violence against a protester, presented as real to 1.25M viewers. Even though several commenters already call it AI, the post itself endorses it as genuine ('Mess with the bull'), and fabricated footage of military/National-Guard violence is exactly the kind of misleading content a note should flag. Provisional 'no_note' is wrong: this is fabricated media.",
+  "judge_guidance": "A correct note must establish that this video is AI-generated (created with the Sora AI video app, watermark present; AI artifacts like a missing/extra finger and unnatural spray) and does not show a real event, confirmed by fact-checkers (Snopes / RumorGuard). PASS if the note clearly labels it AI-generated/not real with a credible source. FAIL if it (a) treats the confrontation as real, (b) merely opines, or (c) says 'no note needed'. There is no specific prior failure to avoid beyond accuracy here, since the original note's substance was correct; the bar is simply a clear, sourced 'this is AI-generated, not a real event' note.",
+  "reference_note": "This video is AI-generated and does not show a real event. It was created with the Sora AI video app (watermark visible) and contains AI artifacts; fact-checkers (Snopes, RumorGuard) confirmed it is fabricated. https://www.snopes.com/fact-check/protester-pepper-sprayed-video/ https://www.rumorguard.org/post/ai-generated-video-falsely-shows-sgt-pepper-spraying-protester",
+  "original_unhelpful_note": {
+    "text": "This video depicting a National Guard soldier pepper-spraying a protester is AI-generated and does not show a real event. https://www.yahoo.com/news/articles/fact-check-video-showing-sergeant-235039962.html https://www.rumorguard.org/post/ai-generated-video-falsely-shows-sgt-pepper-spraying-protester",
+    "failure_reason": "Substance is correct (AI-generated, not real) and only lightly downrated (low rating volume of 15, dominant NoteNotNeeded 2). The note is essentially fine; it may have read as 'not needed' to some because commenters already flagged it as AI. A correct note is the same: clearly label as AI-generated with credible fact-check sources.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/fabricated: AI-generated (Sora) video, not a real event.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/protester-pepper-sprayed-video/",
+      "https://www.rumorguard.org/post/ai-generated-video-falsely-shows-sgt-pepper-spraying-protester",
+      "https://leadstories.com/hoax-alert/2025/10/fact-check-video-showing-sergeant-pepper-spraying-a-shouting-protester-in-the-face-is-made-with-ai-video-app.html"
+    ],
+    "notes": "Carried a Sora watermark; AI artifacts include the sprayer's finger not on the trigger and a missing pinky, plus unnaturally leaking orange spray. Snopes/RumorGuard/Lead Stories all confirm AI-generated. Went viral Oct 2025 in MAGA-adjacent feeds."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Fabricated footage of state violence against protesters (1.25M views) can inflame real tensions and erode trust in genuine footage; flagging AI fakes of this kind has societal value."
+  },
+  "difficulty": "easy"
+}

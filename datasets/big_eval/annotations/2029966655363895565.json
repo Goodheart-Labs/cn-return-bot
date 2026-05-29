@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2029966655363895565",
+  "role": "unhelpful_irrelevant_sources",
+  "provisional_role": "unhelpful_irrelevant_sources",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "OSINTdefender (2.2M followers) shares footage 'purported to show' an Iranian ballistic missile strike on Prince Sultan Air Base in Al-Kharj, Saudi Arabia, near U.S. servicemembers, with 'said to be' only minor injuries. The clip (per description) shows a glowing object in a night sky, then an orange-tinted interior.",
+  "why_note_decision": "A note is warranted because the video's attribution is unverified, but the ORIGINAL note is a clear failure: it claims this clip is 'from Israeli airstrikes on Hodeida, Yemen in July 2024.' That debunk belongs to a DIFFERENT viral video \u2014 one showing a base/port engulfed in fire (Full Fact matched a 'unicef' rooftop in Hodeida). This tweet's clip shows a missile/glow in the night sky, not a base ablaze, so the Hodeida/AFP source is irrelevant and the attribution is wrong \u2014 exactly why raters hit it with 104 'incorrect' + 111 'irrelevant sources.' A correct note should flag that THIS clip's provenance is unverified (a commenter places it over Ali Salem Air Base, Kuwait, shared earlier), while noting the real context: Saudi/US officials reported missiles toward Prince Sultan were intercepted in early March 2026 (a larger, confirmed strike with U.S. casualties came March 27).",
+  "judge_guidance": "PASS only if the note (1) does NOT repeat the false claim that this specific clip is Hodeida/Yemen July-2024 footage (that debunk applies to a different 'base ablaze' video, not this night-sky/missile clip), and (2) correctly conveys that this clip's attribution to a Prince Sultan strike is unverified/misattributed, ideally noting the real situation (early-March 2026 missiles toward Prince Sultan were reported intercepted by Saudi MoD; a confirmed strike with U.S. casualties occurred later, March 27). CRITICAL: a note that says this video = 'Israeli airstrike on Hodeida 2024' must FAIL \u2014 that is the original note's specific, heavily-downvoted error. A note may also legitimately decline if it can't establish provenance, but it must not assert the wrong origin. FAIL if it confidently affirms or denies the Prince Sultan strike using mismatched footage.",
+  "reference_note": "This footage's attribution is unverified and likely misattributed; it does not clearly depict a strike on Prince Sultan Air Base (one commenter places it over Ali Salem Air Base, Kuwait). In early March 2026, Saudi authorities reported intercepting Iranian missiles aimed at Prince Sultan Air Base and Riyadh; a confirmed Iranian strike on the base wounding U.S. troops occurred later, on March 27, 2026. https://www.pbs.org/newshour/world/u-s-troops-wounded-planes-damaged-in-iranian-strike-on-saudi-air-base-official-says https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Saudi_Arabia",
+  "original_unhelpful_note": {
+    "text": "This video is from Israeli airstrikes on Hodeida, Yemen in July 2024, not a 2026 Iranian missile strike on Prince Sultan Air Base. Saudi officials state recent missiles targeting the base were intercepted, with no reported impacts or injuries.    https://factcheck.afp.com/doc.afp.com.99J43G3  https://apnews.com/article/iran-israel-us-march-6-2026-6108249f19c4bc162eacd7847976c174  https://www.nytimes.com/live/2026/03/06/world/iran-war-trump-israel-lebanon",
+    "failure_reason": "Rated notHelpfulIrrelevantSources (111) + notHelpfulIncorrect (104), very high volume (238). The note misidentifies THIS clip: the Hodeida/AFP debunk applies to a different video showing a base on fire (Full Fact matched a Hodeida 'unicef' rooftop), whereas this clip shows a glowing object in a night sky. So the source is irrelevant and the attribution is false. It also over-claims 'no reported impacts or injuries,' which is contestable given subsequent confirmed Prince Sultan casualties.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "video provenance unverified; original note's Hodeida attribution is wrong",
+    "sources_checked": [
+      "https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false/",
+      "https://www.pbs.org/newshour/world/u-s-troops-wounded-planes-damaged-in-iranian-strike-on-saudi-air-base-official-says",
+      "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Saudi_Arabia"
+    ],
+    "notes": "Full Fact's Hodeida-2024 debunk concerns a 'base ablaze' video, not this night-sky/missile clip \u2014 the original note mismatched them. Iran did target Prince Sultan: early-March missiles were reported intercepted over Al-Kharj (Saudi MoD), and a confirmed March 27 strike wounded ~12-15 U.S. troops (one death, Sgt Pennington). This specific clip's origin is unverified; a commenter says Ali Salem AB, Kuwait. Correct move: flag the misattribution / unverified provenance, do NOT repeat the Hodeida claim."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Viral wartime footage (2.5M views) about a strike near U.S. troops; getting the provenance right matters for escalation framing, and this is a strong example of a note failing by attaching the wrong debunk to the wrong video."
+  },
+  "difficulty": "hard"
+}

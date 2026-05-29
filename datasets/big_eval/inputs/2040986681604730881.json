@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2040986681604730881",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:35.720Z",
+  "post": {
+    "id": "2040986681604730881",
+    "author_id": "1841591864908251136",
+    "created_at": "2026-04-06T02:55:19.000Z",
+    "text": "This is a scene from the new Netflix show “The Sandman.” It depicts the Pope kissing a priest. \n\nHere are the names of the executive producer and directors: \n\nNeil Gaiman\nDavid S. Goyer\nAllan Heinberg\nSamuel Kieth\nMike Dringenberg https://t.co/W9NqwrSx1H",
+    "media": [
+      {
+        "media_key": "3_2040986678333149185",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFMKkgFaEAE9-ZN.jpg",
+        "height": 989,
+        "width": 1320
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3028,
+      "reply_count": 2042,
+      "like_count": 18243,
+      "quote_count": 1019,
+      "bookmark_count": 2849,
+      "impression_count": 11036300
+    },
+    "author_followers": 123560,
+    "author_name": "Red Pill Media",
+    "author_description": "🇺🇸 America First",
+    "author_tweet_count": 8802
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFMKkgFaEAE9-ZN.jpg",
+          "description": {
+            "description": "A close-up side profile shot from a film or television show depicting two men in religious attire, one dressed in a black priest's cassock and the other in a white papal zucchetto and cassock, as they lean in to kiss. The scene is dimly lit with the Netflix logo in the upper right corner.",
+            "ocrText": "NETFLIX"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Representative Replies:**\n\n- **🅻🅳🅴🅻🆂🍉🅻 (@LDelsoll)**: The usual suspects  \n  Likes: 7341 | Reposts: 164 | Quotes: 21 | Replies: 44 | Views: 208761\n\n- **Louie B (@MaxAgorist)**: They wouldn't do that.  \n  Likes: 3925 | Reposts: 61 | Quotes: 0 | Replies: 3 | Views: 67266\n\n- **Mwas (@alexmwangi0)**: It's always these guys spreading the gay agenda  \n  Likes: 3671 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 62720\n\n- **⚠️⚠️⚠️ (@i_alammar)**: If Jews were living in our Islamic countries and did this to our religious figures, we would drag them in the streets. Living in Christian countries, they can safely mock Christianity's most sacred symbols and figures and still live prosperously without fear of any consequences.  \n  Likes: 3023 | Reposts: 127 | Quotes: 0 | Replies: 67 | Views: 164051\n\n- **Zhuo Shi Li (@ZhuoShiLi1)**: I blame the catholics for not daring to mock rabbis in the same way. 🤡  \n  Likes: 2084 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 38836\n\n- **✧˚.⋆Vi 𓇼 Veri 𓇼 Veniversum 𓇼 Vivus 𓇼 Vici⋆.˚✧ (@GoonMoi)**: [Image only]  \n  Likes: 1888 | Reposts: 48 | Quotes: 0 | Replies: 1 | Views: 103427\n\n- **KAMAL AHMED (@KING7KAMAL)**: [Image only]  \n  Likes: 1120 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 40587\n\n- **Phairy Megan (@tadgh_dc)**: “Why did Europe kick us out? “  \n  Likes: 864 | Reposts: 31 | Quotes: 0 | Replies: 0 | Views: 44956\n\n- **Wally Rashid (@wallyrashid)**: Why doesn’t the Christian community cause enough uproar that it forces the producers to issue a public apology? They’ll just keep seeing how much they can get away with.  \n  Likes: 614 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 55566\n\n- **Gabriel ✝️ (@GabrielCalabro_)**: every single time  \n  Likes: 528 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 38090",
+    "warnings": []
+  }
+}

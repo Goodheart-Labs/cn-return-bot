@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2027435963090075815",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "",
+  "tweet_summary": "@DailyNoud — a parody account whose bio explicitly states 'PARODY Hip-Hop News' and 'These are fake stories' — posts that Charlie Dompler, a fictional cartoon character from Adult Swim's Smiling Friends, is dead via overdose. The image is the cartoon character himself.",
+  "why_note_decision": "Both layers signal satire: (1) the author is an openly-labeled PARODY account with 'These are fake stories' in the bio, and (2) Charlie Dompler is a fictional cartoon character, not a real person who could die. The replies are uniformly in on the joke (mourning a cartoon character). No reader is being misled in a way that warrants a Community Note. 21 raters tagged NNN.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The author is an openly-labeled parody account ('PARODY Hip-Hop News' / 'These are fake stories' in the bio) reporting on a fictional cartoon character (Charlie Dompler from Smiling Friends). Any note explaining that the character isn't really dead or that the account is satire treats a clearly-marked parody as misinformation and must FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is a fake story from a parody account that states in its bio \"These are fake stories.\" Charlie Dompler is a fictional character from Smiling Friends who does not die permanently. https://x.com/DailyNoud https://smilingfriends.fandom.com/wiki/Charlie_Dompler",
+    "failure_reason": "notHelpfulNoteNotNeeded — note on an openly-labeled parody account about a fictional cartoon character; nobody is being misled",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satire_obvious",
+    "sources_checked": [
+      "https://x.com/DailyNoud",
+      "https://smilingfriends.fandom.com/wiki/Charlie_Dompler"
+    ],
+    "notes": "Author bio explicitly says 'PARODY' and 'These are fake stories'. Charlie Dompler is the cartoon protagonist of Adult Swim's Smiling Friends. Replies are uniformly in on the joke."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pop-culture/cartoon joke; 573k views but zero policy/safety/welfare stakes. Useful as a false-positive trap for the bot."
+  },
+  "difficulty": "easy"
+}

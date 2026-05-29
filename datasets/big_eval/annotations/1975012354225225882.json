@@ -1,0 +1,32 @@
+{
+  "tweet_id": "1975012354225225882",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Sam Tripoli quote-tweets a screenshot of a purported Laura Loomer post implying she had foreknowledge of an impending attack on the country, demanding she 'be hunted down and interrogated.'",
+  "why_note_decision": "The quoted screenshot is a fabricated tweet that Loomer never posted (the originating handle is a parody/troll account, and Loomer publicly called it fake). The post treats the fake as real to justify a call for her interrogation, so a note clarifying the screenshot is fabricated is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the screenshot/quoted tweet is fabricated and was not posted by Laura Loomer. Strong signals to cite: Loomer herself replied calling it 'completely fake' / a 'fake photoshopped tweet,' and the originating account (@JeffreyxEpstein) is a parody/impersonation handle, not Loomer's real account. A note that debates whether Loomer 'knew' anything misses the point; the core correction is that the evidence (the tweet image) is fake. Must point to Loomer's denial or evidence the source account is parody. Do NOT accept the screenshot as authentic.",
+  "reference_note": "The screenshot shows a fabricated tweet not posted by Laura Loomer. The originating account is labeled as parody, and Loomer has called it fake.  https://x.com/LauraLoomer/status/1975169771256606762  https://x.com/JeffreyxEpstein",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Fabricated: the quoted Loomer 'tweet' is a doctored/parody screenshot; Loomer denied posting it.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Laura_Loomer",
+      "https://www.snopes.com/fact-check/reiner-tweet-trump-maga/"
+    ],
+    "notes": "Direct in-thread corroboration: Loomer's own reply ('Why are you making fake photoshopped tweets? That's not even a real tweet. Completely fake.') is captured in this datapoint's comments. Loomer has a documented pattern of both sharing and being targeted by fabricated screenshots. Could not surface a dedicated external fact-check for this specific Oct 2025 screenshot, but the subject's first-person denial plus the parody-source handle are decisive."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "500k impressions; a fabricated screenshot used to launder an antisemitic 'they knew' conspiracy and a call to 'hunt down' a named person — correcting fake-evidence-driven incitement matters."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2017398079381770440",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy", "conspiracy_and_viral_hoax"],
+  "category_fit": "partial",
+  "suggested_category": "reaction_opinion_video",
+  "tweet_summary": "MAGA-Cult-Slayer post sharing a TikTok in which the creator reacts to the January 2026 Epstein files release, saying the documents are 'horrific', that allegations against Trump are 'corroborated', and calling for Trump's immediate removal.",
+  "why_note_decision": "The DOJ released ~3M pages of Epstein-investigation documents on Jan 30, 2026 under the Epstein Files Transparency Act. The release does contain FBI-tip-line allegations against Trump; DOJ called them 'unfounded and false' and the documents themselves note many tips are unverified. Reporting (Miami Herald / Julie K. Brown) describes at least one accuser as found credible by DOJ interviewers. The TikTok speaker doesn't name a specific factual claim — they describe the files as 'horrific', say allegations are 'corroborated', and call for removal. This is reaction commentary / political opinion on a contested topic, not a discrete checkable factual claim of the type Community Notes is for; raters dominantly tagged it 'incorrect/opinion-speculation' (18 each) and 'missing-key-points', reflecting polarization, not a clean factual hook.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet/video is a political reaction to a real, contested news event (Jan 30, 2026 Epstein files release) — no single checkable factual claim ('these specific allegations are corroborated' is the speaker's interpretation, not a discrete misstatement). Any note that asserts the allegations are 'unfounded and false' as if that settles the matter is partisan framing, not a Community Note. Any note that asserts the allegations are corroborated is the same. FAIL if the bot writes a note in either direction here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The January 2026 Epstein file release contains unverified FBI tip line allegations but no corroborated evidence of wrongdoing by Donald Trump. The DOJ stated that claims of misconduct in these files are unfounded and false. https://www.justice.gov/opa/pr/department-justice-publishes-35-million-responsive-pages-compliance-epstein-files",
+    "failure_reason": "Adopts the DOJ/White House framing on a hotly-contested political question; raters strongly objected (incorrect=18, opinion/speculation=18, missing-key-points=18). Note also omits credible reporting (Miami Herald) that DOJ found at least one accuser credible, so 'no corroborated evidence' is itself contestable.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_is_opinion_about_contested_event",
+    "sources_checked": [
+      "https://www.cnn.com/politics/live-news/epstein-files-release-doj-01-30-26",
+      "https://www.npr.org/2026/01/30/nx-s1-5693904/epstein-files-doj-trump",
+      "https://oversightdemocrats.house.gov/news/press-releases/oversight-democrats-statement-after-doj-released-previously-withheld-epstein-files-accusing-president-trump-of-sexual-abuse-continues-white-house-cover-up",
+      "https://www.pbs.org/newshour/show/what-the-latest-epstein-files-release-reveals-and-where-trump-is-mentioned"
+    ],
+    "notes": "Real event: DOJ released ~3M pages Jan 30, 2026 under EFTA. Documents include FBI tip-line allegations against Trump; DOJ called them 'unfounded and false' but characterization is contested (House Oversight Dems' statement; Julie K. Brown reporting). Tweet/video itself is opinion not a discrete factual claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "High-prominence political and sex-crime story with deep public-trust implications; precisely because both sides are contested, Community Notes should avoid taking sides absent a clean factual error."
+  },
+  "difficulty": "hard"
+}

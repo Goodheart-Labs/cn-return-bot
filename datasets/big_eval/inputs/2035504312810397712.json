@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2035504312810397712",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:43.333Z",
+  "post": {
+    "id": "2035504312810397712",
+    "author_id": "763094579491008512",
+    "created_at": "2026-03-21T23:50:20.000Z",
+    "text": "🚨 BREAKING: President Trump just gave Iran the ultimatum of a LIFETIME\n\n\"If Iran doesn’t FULLY OPEN, WITHOUT THREAT, the Strait of Hormuz, within 48 HOURS, the United States of America will hit and obliterate their various POWER PLANTS, STARTING WITH THE BIGGEST ONE FIRST!\" 🔥 https://t.co/YvDQHP2a4K",
+    "media": [
+      {
+        "media_key": "13_2035504231306936320",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2035504231306936320/img/Y4gn6ZUUTLIy7JLD.jpg",
+        "height": 720,
+        "width": 720,
+        "duration_ms": 63666,
+        "view_count": 988280,
+        "variants": [
+          {
+            "bit_rate": 432000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2035504231306936320/vid/avc1/320x320/05g21XiCtG62kTuR.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2035504231306936320/vid/avc1/540x540/rrEsMef7tQlLQbOb.mp4"
+          },
+          {
+            "bit_rate": 1280000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2035504231306936320/vid/avc1/720x720/IaZg1_wYqBgF_3Wb.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2035504231306936320/pl/uKaW1q7myGLkqbXM.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3247,
+      "reply_count": 1670,
+      "like_count": 15039,
+      "quote_count": 183,
+      "bookmark_count": 632,
+      "impression_count": 1933725
+    },
+    "author_followers": 1108519,
+    "author_name": "Eric Daugherty",
+    "author_description": "Chief Content Officer @RightLineNews @FLVoiceNews | Marylander-turned-Floridian | Politics & breaking news alerts | “Men must vote” - Charlie Kirk",
+    "author_tweet_count": 86581
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2035504231306936320/vid/avc1/720x720/IaZg1_wYqBgF_3Wb.mp4",
+          "description": {
+            "description": "A sequence of four frames showing a social media post from Donald J. Trump layered over infrared aerial footage of an explosion and smoke. The post contains a threat toward Iran regarding the Strait of Hormuz and power plants. Below the text, 'UNCLASSIFIED' appears in neon green over various stages of thermal footage showing ground strikes and rising smoke plumes.",
+            "ocrText": "Donald J. Trump @realDonaldTrump If Iran doesn't FULLY OPEN, WITHOUT THREAT, the Strait of Hormuz, within 48 HOURS from this exact point in time, the United States of America will hit and obliterate their various POWER PLANTS, STARTING WITH THE BIGGEST ONE FIRST! Thank you for your attention to this matter. President DONALD J. TRUMP UNCLASSIFIED"
+          },
+          "transcription": "you you you"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@Highdar6**  \n  Iran rn  \n  Likes: 210 | Reposts: 11 | Views: 13166\n\n- **@CubsWorld80**  \n  Trump having an absolute meltdown on social media in front of the entire world because Iran checkmated his ass 😂  \n  Likes: 179 | Reposts: 0 | Views: 6362\n\n- **@NJ_USA_Patriot**  \n  I would not try to call Trump's bluff if I were an Iranian terrorist.  \n  Likes: 157 | Reposts: 0 | Views: 43648\n\n- **@ultramaga_1**  \n  Dear Iran….  \n  Likes: 156 | Reposts: 0 | Views: 10483\n\n- **@JimPlumDFS**  \n  He’s threatening war crimes  \n  Likes: 121 | Reposts: 12 | Views: 7620\n\n- **@acathleen5**  \n  Finish it @realDonaldTrump  \n  Likes: 91 | Reposts: 8 | Views: 14207\n\n- **@paul_walu**  \n  Why...if he's won already...that would be an unnecessary act of aggression on a country that has 'no navy, no army, no missiles... nothing'  \n  Likes: 79 | Reposts: 0 | Views: 2093\n\n- **@paleocongeneral**  \n  This will further escalate the war. Hitting Irans power plants isn’t going to make Iran reopen the fucking strait, they’ll just keep it close. Exercise diplomacy. This is what happens when you don’t have control over a situation, you resort to more violence. Iran holds power over the strait.  \n  Likes: 58 | Reposts: 0 | Views: 4573\n\n- **@DinaricWulf**  \n  I beg Iran is shaking in its boots. Didn’t Trump complain about Russia targeting Ukraines power plants? What a hypocrite 🤡  \n  Likes: 34 | Reposts: 0 | Views: 1400\n\n- **@MarsSeemsNice**  \n  Oh look, an escalation. I’m sure Iran won’t do the same.  \n  Likes: 34 | Reposts: 0 | Views: 2340",
+    "warnings": []
+  }
+}

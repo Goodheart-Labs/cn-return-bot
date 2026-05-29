@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2004901730430189831",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "ironic_caption_meme",
+  "tweet_summary": "An 'Old Internet' account quote-tweets the famous 1988 clip of Les Petits Chanteurs d'Asnières paying homage to Serge Gainsbourg, captioning it as if it were 'French TV show Affronter Votre Pire Cauchemar' confronting 'farmer François Lavigne' with kids dressed as his accidentally killed brother.",
+  "why_note_decision": "This is the long-running 'Serge Gainsbourg fake plot summary' joke — a widely recognized meme where users invent ever more absurd backstories for the iconic 1988 hommage clip. The top comments make this explicit ('Google AI has been poisoned by this meme', 'this video always gets a more ridiculous description', 'directed by David Lynch', 'in Poland we also had this show called…'). The audience is in on it; the post is satire/meme content, not a sincere factual claim. The original note technically identifies the real footage but raters voted strongly 'note not needed' (39) — correctly recognizing the joke. A bot writing a literal correction here would be the false positive.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. Any literal 'correction' here is a false positive — the post is an obvious ironic-caption meme over the famous 1988 Les Petits Chanteurs d'Asnières / Serge Gainsbourg hommage. Comments and quote-tweet style ('ai could never replicate this') make the joke unmistakable; bot must recognize meme/satire register. FAIL any note that solemnly corrects the fake plot summary, FAIL any note citing the real Gainsbourg footage as if a reader were being deceived.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows French singer Serge Gainsbourg receiving an homage from Les Petits Chanteurs d'Asnières in a 1988 TV appearance, not farmer François Lavigne on a show called 'Affronter Votre Pire Cauchemar.' https://www.chartsinfrance.net/Serge-Gainsbourg/news-125749.html https://suis-nous.com/une-video-virale-ou-lon-voit-serge-gainsbourg-pleurer-devant-des-gamins-chanteurs-fait-le-tour-du-monde/",
+    "failure_reason": "Literally true but unnecessary — the post is a recognized meme format, not sincere misinformation. 39 'note not needed' votes confirm raters saw this.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke — fake plot summary captioning a real, well-known 1988 Gainsbourg hommage clip",
+    "sources_checked": [
+      "https://knowyourmeme.com/memes/serge-gainsbourg-hommage-les-petits-chanteurs-dasnieres-rendent-hommage-a-serge-gainsbourg",
+      "https://stereogum.com/2286415/this-fall-were-dressing-as-french-children-paying-tribute-to-serge-gainsbourg-on-an-80s-tv-show/news"
+    ],
+    "notes": "KnowYourMeme documents this exact 'fake elaborate backstory' meme format around the Gainsbourg clip. Comments confirm in-joke audience."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "2.2M impressions but zero harm — pure ironic-meme content; no EA/policy/safety stake."
+  },
+  "difficulty": "medium"
+}

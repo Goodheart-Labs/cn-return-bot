@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2014958165889318978",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Russian-propaganda-leaning account 'RussiaNews' shares CCTV footage of Ukrainian auto-shop workers brawling with TCC (military recruitment) personnel, framed as happening in Izmail.",
+  "why_note_decision": "The underlying event — Ukrainian civilians fighting TCC mobilization officers — is real and widely documented (multiple Odesa-region incidents through 2025). The original note's only objection is that the city is Odesa (Aug 13, 2025), not Izmail. That city-name pedantry doesn't change anything substantive (same region, same TCC-vs-civilian dynamic, same year). 29/57 raters flagged noteNotNeeded. The framing 'Ukrainians beat recruiters' is accurate; the city correction is trivia, not a misleading-claim correction.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The video really does show Ukrainian civilians fighting TCC officers (a documented, recurring 2025 phenomenon); the only inaccuracy is the city label (Izmail vs Odesa, both in Odesa Oblast). That is trivial geographic pedantry, not a misleading claim worth correcting. FAIL any note that 'corrects' the city or that piles on Russian-propaganda framing — neither helps the average reader.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This footage shows a clash at an auto repair shop in Odesa on August 13, 2025, between civilians and TCC staff attempting to detain men for mobilization violations, not a new incident in Izmail.  https://24tv.ua/biyka-ttsk-odesi-sto-13-serpnya-politsiya-zatrimala-pravoporushnikiv_n2894378  https://dumskaya.net/news/massovaya-draka-ttsk-i-grazhdanskih-v-odesse-v-v-188676/ua",
+    "failure_reason": "noteNotNeeded — pedantic city-name correction on an essentially-accurate clip; doesn't change the meaning.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Real footage of a real recurring event (Odesa-region TCC-vs-civilian brawl, Aug 2025); city label is wrong but the substance is correct.",
+    "sources_checked": ["https://intent.press/en/news/crime/2025/in-odesa-a-group-of-attackers-beat-up-the-military-of-the-tcc/", "https://en.wikipedia.org/wiki/Busification"],
+    "notes": "Multiple TCC-civilian fights occurred in Odesa region through 2025; the specific Aug 13, 2025 Odesa shopping-mall/garage incident is documented. Izmail vs Odesa is trivia."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "890k impressions on Russian-propaganda account; AI Notes engaging in city-name pedantry on Ukraine-war content wastes credibility that should be reserved for the actual fake/misleading clips."
+  },
+  "difficulty": "medium"
+}

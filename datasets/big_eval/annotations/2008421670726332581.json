@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2008421670726332581",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["overhyped_research_or_product"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "EU-boosterism account reports Finnish company Donut Lab announced at CES 2026 'the first Solid State Battery that is commercially available' with 100,000 cycle life.",
+  "why_note_decision": "Donut Lab did make this exact announcement at CES 2026 — calling it 'world's first all-solid-state battery ready to power up production vehicles now,' with 100,000 cycle and 400 Wh/kg claims, and naming Verge Motorcycles as the first integration. The tweet accurately summarizes the company's marketing claims. The note states the battery 'is not yet commercially available to consumers, with first deliveries scheduled for Q1 2026' — but at posting time (Jan 6, 2026), Donut Lab WAS marketing it as 'commercially available' / ready for production. Note is essentially injecting healthy skepticism (which later turned out justified after April 2026 fraud allegations) but at posting time the tweet matched the company's announcement. The dominant tag was noteNotNeeded (20/49). Skepticism would be more appropriate after the April 2026 Electrek revelations, not Jan 6.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a calibrated overhype note that (a) acknowledges Donut Lab did announce this at CES 2026, (b) flags that the battery had not yet shipped to consumers and the 100,000-cycle claim lacked independent verification at posting time. FAIL any note that flatly states the battery doesn't exist or doesn't acknowledge Donut Lab's announcement. FAIL any note relying on post-hoc (April 2026) fraud allegations that did not exist when the tweet was posted. FAIL any note that simply nitpicks 'commercially available' vs 'pre-orders open' without explaining the substance of the skepticism (no independent third-party verification of 100k cycles).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The battery is not yet commercially available to consumers, with first deliveries scheduled for Q1 2026, and performance claims including 100,000 cycles lack independent verification. https://www.destinationcharged.com/news/donut-lab-claims-its-solid-state-ev-battery-is-ready-for-production-use/ https://electrek.co/2026/01/05/verge-unveils-370-mile-electric-motorcycle-with-solid-state-battery/",
+    "failure_reason": "noteNotNeeded — tweet accurately conveys Donut Lab's CES announcement; the note overstates the gap between announcement and shipping and offers tepid 'lacks independent verification' framing on a freshly-launched product.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet accurately summarizes Donut Lab's CES 2026 announcement. Later (April 2026) a former Nordic Nano CCO filed criminal complaint alleging fraud; at Jan 6 posting time this controversy did not yet exist. Skepticism warranted in hindsight but tweet was reporting the company's claims.",
+    "sources_checked": [
+      "https://www.donutlab.com/ces-battery-announcement/",
+      "https://spectrum.ieee.org/solid-state-battery-2675554640",
+      "https://electrek.co/2026/04/17/donut-labs-miracle-solid-state-battery-is-fraud-says-insider-donut-lab-denies/",
+      "https://www.technologyreview.com/2026/02/26/1133722/solid-state-batteries-donut-lab/"
+    ],
+    "notes": "By April 2026 the company faced fraud allegations and Q1 2026 deliveries had not materialized — but tweet predates that. Comments include reasonable skepticism ('snake oil vendor', 'too good to be true')."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "250k impressions on a tech/progress topic. Battery overhype is a recurring pipeline challenge; nuanced 'real-but-overstated' notes are the showcase target here."
+  },
+  "difficulty": "hard"
+}

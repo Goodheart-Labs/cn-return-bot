@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2011412920903872766",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:41.749Z",
+  "post": {
+    "id": "2011412920903872766",
+    "author_id": "4495950443",
+    "created_at": "2026-01-14T12:19:45.000Z",
+    "text": "Both Miley Cyrus and Ariana Grande ignored Selena Gomez's story even though she tagged them. https://t.co/uRw1eYiBSa",
+    "media": [
+      {
+        "media_key": "3_2011412900213374978",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-n5YDXbQAI5zW5.jpg",
+        "height": 3464,
+        "width": 3464
+      },
+      {
+        "media_key": "3_2011412918085042176",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-n5ZF8XQAA-log.jpg",
+        "height": 1708,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 280,
+      "reply_count": 138,
+      "like_count": 12635,
+      "quote_count": 221,
+      "bookmark_count": 764,
+      "impression_count": 1430216
+    },
+    "author_followers": 920,
+    "author_name": "Selena Gomez Updates",
+    "author_description": "Bringing an unique content about\nSelena Gomez Fan Account— Turn on the\nnotifications for updated news!",
+    "author_tweet_count": 396
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-n5YDXbQAI5zW5.jpg",
+          "description": {
+            "description": "A side-by-side collage of three prominent female singers at gala events. On the left, Ariana Grande is shown from the back wearing a textured black off-the-shoulder gown with her hair in a high ponytail. In the middle, Selena Gomez is pictured over her shoulder wearing a white feathered boa and dark red lipstick. On the right, Miley Cyrus poses in a black sequined gown with oversized ruffled shoulders, wearing dark sunglasses and an emerald necklace.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-n5ZF8XQAA-log.jpg",
+          "description": {
+            "description": "A screenshot of an Instagram story posted by Selena Gomez. The story features a collage comparing the Powerpuff Girls in a stylized, older aesthetic (top) to real-life images of Miley Cyrus, Ariana Grande, and Selena Gomez (bottom). The top frame shows Bubbles, Blossom, and Buttercup with mature features, while the bottom frame shows red-carpet photos of the three singers. Text on the image expresses pride for the colleagues she grew up with, accompanied by tagged usernames and hearts.",
+            "ocrText": "selenagomez 18h\nMiley Cyrus • Edge of Midni...\nFollow\nPowerpuff girls\nSo proud of my ladies I grew up with!\n@mileycyrus\n@mileycyrus_bz\n@arianagrande 🖤❤️💚"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@jah_crispie**: Somehow her lupus will flare up because of this  \nLikes: 2077 | Reposts: 0 | Replies: 0\n\n**@hancl23**: As they should  \nLikes: 702 | Reposts: 0 | Replies: 0\n\n**@monuknight**: they had to ignore her zionist, victim-playing ass. 🤣  \nLikes: 669 | Reposts: 0 | Replies: 0\n\n**@glindastan4**: Lmfao she was looking for attention and got nothing 😭  \nLikes: 547 | Reposts: 0 | Replies: 0\n\n**@MenaceDisguised**: Because she’s a mean girl in disguise. Always playing the victim  \nLikes: 291 | Reposts: 0 | Replies: 0\n\n**@selenatanked_**: I’ll ignore her too if she was seeking attention from my name  \nLikes: 231 | Reposts: 0 | Replies: 0\n\n**@SeIenaGomemez**: Miley included Selena in her GG post but Ariana completely ignored her \nAriana is the mean girl everybody thinks Selena is  \nLikes: 143 | Reposts: 0 | Replies: 0\n\n**@darkernightaway**: I'll ignore too if the photo used is edited 😭😭😭😭  \nLikes: 122 | Reposts: 0 | Replies: 0\n\n**@kletlape**: (GIF reply, no text)  \nLikes: 138 | Reposts: 0 | Replies: 0\n\n**@kayaisgreedy**: arianas photo was edited and miley probably didnt like the aesthetic of it  \nLikes: 95 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

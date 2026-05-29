@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2025954048520630430",
+  "role": "unhelpful_other",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "politics_and_policy",
+    "statistical_or_numerical_claim"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "tariff_incidence_misinformation",
+  "tweet_summary": "Profanity-laden meme posted as 'Sincerely, The American People' asserting foreign exporters \u2014 not Americans \u2014 pay U.S. tariffs, plus a claim about an automatic 15% 'fuck you globalists' tax renewed every 149.5 days.",
+  "why_note_decision": "The core claim ('foreign exporters paid tariffs, not Americans') is straightforwardly false. U.S. tariffs are levied at Customs on importers of record, who almost always pass at least part of the cost through to U.S. businesses and consumers (CFR, Tax Foundation, PIIE; widely documented for the 2018-19 and 2025-26 tariff rounds). The '149.5-day 15%' framing garbles a real mechanism \u2014 Section 122 of the Trade Act lets the President impose tariffs up to 15% for up to 150 days without Congress \u2014 but distorts it (it's not 'auto-renewed every 149.5 days'; Congress must extend). Reaches ~31K views and is presented as fact. A note is warranted.",
+  "judge_guidance": "PASS if the note (a) clearly states U.S. tariffs are paid by importers (the importer of record at Customs), not by foreign exporters, and (b) explains that importers typically pass costs through to U.S. businesses and consumers. Strong notes cite CFR, Tax Foundation, PIIE, or a Reuters/AP explainer. Optional bonus: a brief, accurate description of the Section 122 150-day mechanism rather than dismissing the '149.5-day' claim as unsourced. FAIL if the bot declines (this is the canonical 'foreigners pay tariffs' misinformation). FAIL if the note repeats the original's framing that the 150-day claim 'lacks supporting evidence' \u2014 Section 122's 150-day limit is real; the meme garbles it.",
+  "reference_note": "Tariffs are paid at U.S. Customs by the importer of record, not by foreign exporters. Studies of the 2018-19 and 2025-26 tariff rounds find importers pass most of the cost through to U.S. businesses and consumers (CFR, Tax Foundation, PIIE). The 150-day reference comes from Section 122 of the Trade Act of 1974, which caps such tariffs at 15% for up to 150 days unless Congress extends them \u2014 not an automatic renewal. https://www.cfr.org/articles/who-pays-trumps-tariffs https://taxfoundation.org/research/all/federal/trump-tariffs-trade-war/",
+  "original_unhelpful_note": {
+    "text": "Importers, not foreign exporters, pay U.S. tariffs at Customs; research shows those costs are often passed on to American businesses and consumers. Claims of an automatic 149.5-day 15% renewal lack supporting evidence. https://www.cfr.org/articles/who-pays-trumps-tariffs",
+    "failure_reason": "Substantively correct on the headline claim, but the dismissal of the 150-day point as 'lacking supporting evidence' is itself loose \u2014 Section 122's 150-day cap is real, the meme just garbles it. Note also a bit thin on sources for a contested political claim (only one link).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet_false_tariff_incidence",
+    "sources_checked": [
+      "https://www.cfr.org/articles/who-pays-trumps-tariffs",
+      "https://taxfoundation.org/research/all/federal/trump-tariffs-trade-war/",
+      "https://govfacts.org/money/broader-economy/trade-policy/the-150-day-clock-on-trumps-new-tariffs-and-what-legal-authorities-come-next/",
+      "https://www.piie.com/blogs/realtime-economics/2026/what-supreme-courts-tariff-ruling-changes-and-what-it-doesnt"
+    ],
+    "notes": "Tariff incidence falls on U.S. importers and largely passes through to U.S. consumers (CFR, Tax Foundation, PIIE). Section 122 of the Trade Act caps such tariffs at 15% for up to 150 days unless Congress extends; not an automatic renewal mechanism."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Economic-policy misinformation with broad downstream effects on public reasoning about trade and inflation; common pattern across MAGA-aligned accounts."
+  },
+  "difficulty": "easy"
+}

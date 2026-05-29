@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2051145725828841572",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["celebrity_entertainment_sports", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "celebrity_feud_document_authenticity",
+  "tweet_summary": "Laura Loomer posts photos of a Nashville Metro Police arrest report (DUI/weapon/leaving-scene, 8/10/2023) naming GEORGE T. FARMER, a totaled RAM 1500 TRX, the VIN on its certification label (1C6SRFU98MN702626), and a mugshot — claiming this is Candace Owens' husband George Farmer. Quoted tweet calls the documents fake/manipulated.",
+  "why_note_decision": "The original note tries to debunk Loomer by stating George Farmer (Candace Owens' husband) was born 12/15/1989 in London — but his actual DOB per Wikipedia is 7/5/1990 in London, which MATCHES the arrest report's DOB of 7/5/1990. The original note's DOB claim is itself factually wrong, which is why raters flagged it (notHelpfulIncorrect, notHelpfulSourcesMissingOrUnreliable). The genuine discrepancies remain: the report says place of birth Nashville TN (Wikipedia says London), and the spelling 'Tennesse' is unusual on a real Nashville Metro form (commenters note this); independent court/booking databases reportedly do not corroborate. A note is warranted to flag that the documents have not been independently verified and that the place-of-birth field on the report contradicts Farmer's documented London birthplace — but it must not repeat the original note's DOB error.",
+  "judge_guidance": "A correct note must (1) NOT claim Farmer's DOB is 12/15/1989 — his actual DOB is 5 July 1990 (per Wikipedia), which matches the report's DOB field, so that field is not a discrepancy; (2) point out genuine discrepancies if asserting the document is suspect — e.g. the report's 'place of birth: Nashville, Tennessee' contradicts Wikipedia's London birthplace, AND no independent Davidson County court/booking record corroborating the arrest has been surfaced in public reporting; (3) cite Wikipedia or a reliable bio for Farmer's birth details and ideally a fact-check site noting the absence of independent corroboration. MUST avoid: (a) repeating the false DOB-mismatch claim, (b) asserting the document IS fake without evidence (it is unverified, not proven fake), (c) endorsing Loomer's identification without independent confirmation. PASS if the note correctly identifies the place-of-birth mismatch and the lack of independent court-record corroboration. FAIL if it asserts a DOB mismatch (there isn't one) or claims the documents are confirmed fake/confirmed real without sourcing.",
+  "reference_note": "Per Wikipedia, George Farmer (Candace Owens' husband) was born 5 July 1990 in London — the report's DOB (7/5/1990) matches, but its 'place of birth: Nashville, TN' contradicts Farmer's London birthplace, and no independent Davidson County court/booking record corroborating a 2023 DUI against him has surfaced in public reporting. The documents remain unverified. https://en.wikipedia.org/wiki/George_Farmer_(businessman)",
+  "original_unhelpful_note": {
+    "text": "The arrest report shown identifies a subject born in Nashville on 7/5/1990. Candace Owens' husband, George Farmer, was born in London on 12/15/1989 https://en.wikipedia.org/wiki/George_Farmer_(businessman) and has no verified criminal history https://people.com/all-about-george-farmer-candace-owens-husband-11778204",
+    "failure_reason": "States Farmer's DOB as 12/15/1989, but Wikipedia (which it cites) says 5 July 1990 — and the report's DOB of 7/5/1990 actually matches. The note's headline 'mismatch' is wrong. Raters tagged 'incorrect', 'sources missing/unreliable', 'irrelevant sources'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "documents are unverified; the DOB on the report actually matches Farmer's real DOB (7/5/1990), but the place-of-birth field (Nashville TN) contradicts his documented London birthplace and no independent Davidson County record has been surfaced",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/George_Farmer_(businessman)",
+      "https://www.yahoo.com/entertainment/celebrity/articles/laura-loomer-goes-candace-owens-001452677.html",
+      "https://www.primetimer.com/news/was-george-farmer-arrested-laura-loomer-posts-alleged-candace-owens-husband-mugshot-from-tennessee-2023-accident-arrest-amid-feud",
+      "https://www.soapcentral.com/entertainment/said-nothing-hide-laura-loomer-shares-mugshot-candace-owens-husband-george-farmer-allegedly-charged-dui-weapon-possession"
+    ],
+    "notes": "Multiple outlets report the claim is unsubstantiated — public court databases do not surface a 2023 DUI prosecution of a George Farmer in Davidson County. Owens disputes the framing. The original community note's DOB error is the clearest provable mistake."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Influencer feud with reputational stakes and document-authenticity questions; modest EA relevance via misinformation-environment health, but mainly tabloid."
+  },
+  "difficulty": "hard"
+}

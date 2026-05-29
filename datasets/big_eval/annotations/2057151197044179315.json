@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2057151197044179315",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims Iran's IRGC struck an oil ship in the Strait of Hormuz despite a US Navy 'guarantee' of its safety; video bears the Tasnim News logo.",
+  "why_note_decision": "The core factual claim — IRGC striking a tanker in the Strait of Hormuz in May 2026 — is verified by multiple outlets (CBS, NPR, Wikipedia 2026 Strait of Hormuz crisis). The 'US Navy guaranteed safety' detail is rhetorical/unsourced framing, not a clearly checkable specific claim a reader would benefit from a note correcting. The original note primarily restates the verified attack and speculates about the safety guarantee without contradicting the tweet's main point; raters flagged it as note-not-needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The core event (IRGC strike on a tanker in the Strait of Hormuz, May 2026) is verified and the tweet's framing about a 'US Navy guarantee' is rhetorical opinion, not a falsifiable factual misstatement. Any note here would be a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Video is recent Tasnim News footage of IRGC striking a tanker near Strait of Hormuz (May 2026). This occurred amid US naval blockade of Iran and mutual seizures/attacks; no evidence US 'guaranteed safety' for this vessel. https://en.wikipedia.org/wiki/2026_United_States_naval_blockade_of_Iran",
+    "failure_reason": "Note is not needed — the underlying event is real, and the 'US safety guarantee' framing is rhetorical political language not a checkable factual claim.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Core claim (IRGC strike on tanker in Strait of Hormuz, May 2026, Tasnim News footage) is verified. Tweet's 'US guaranteed safety' is unsupported framing but not a primary checkable claim.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis",
+      "https://www.cbsnews.com/news/iran-war-strait-of-hormuz-strike-ship-oil/",
+      "https://www.npr.org/2026/05/08/g-s1-121061/iran-war-updates"
+    ],
+    "notes": "Tasnim released video of IRGC striking the Safesea Vishnu (US-owned, Marshall Islands flag). Authentic footage of a real incident."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "War coverage with real geopolitical consequence; getting the framing right matters but the underlying facts here check out."
+  },
+  "difficulty": "medium"
+}

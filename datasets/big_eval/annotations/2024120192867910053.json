@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2024120192867910053",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "manipulated_or_fabricated_evidence",
+    "celebrity_entertainment_sports"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An image-macro post amplifies a viral claim that 'U.S. Olympic skier Bo Loudon' refused to join his 'anti-American' teammates and wore a MAGA-style hat/shirt; the poster says 'I STAND 100% WITH BO LOUDON.'",
+  "why_note_decision": "The image's bold 'BREAKING: U.S. OLYMPIC SKIER BO LOUDON' framing is a checkable factual claim and is false: Bo Loudon is a 19-year-old conservative influencer (a friend of Barron Trump), not a member of the U.S. Olympic ski team for the 2026 Milan-Cortina Games. The fabricated 'Olympic athlete' identity is the misleading element a reader benefits from correcting.",
+  "judge_guidance": "PASS only if the note clearly establishes that Bo Loudon is NOT a U.S. Olympic skier and is not on the 2026 Olympic team (he is a social-media/political influencer, friend of Barron Trump), thereby debunking the 'BREAKING: U.S. OLYMPIC SKIER' claim in the image. It should ideally cite the official Olympic/US Ski roster or a fact-check. FAIL if it instead argues over whether athletes should be 'kicked out' for being anti-American, treats Loudon as a real athlete, or only opines about politics without correcting the false identity claim.",
+  "reference_note": "This post shares a fabricated story. Bo Loudon is a social media influencer, not a U.S. Olympic skier. He is not on the official team for the 2026 Olympics.    Official team (no Loudon): https://www.usskiandsnowboard.org/alpine    His bio: https://www.boloudon.org/    Fox News: https://www.foxnews.com/video/6374158796112",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.threads.com/@buffaloadvicedad/post/DU6JG12EX7U/",
+      "https://x.com/grok/status/2024182450574782900",
+      "https://www.imdb.com/news/ni64931941/"
+    ],
+    "notes": "Multiple sources confirm Bo Loudon is a conservative influencer and friend of Barron Trump, not a U.S. Olympic skier; the viral 'Olympic skier refusing anti-American teammates' claim is fabricated/misleading content. Official 2026 Milan-Cortina rosters do not list him."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "245k impressions; a fabricated-celebrity political hoax. Low world-stakes but corrects active partisan misinformation that drove followers to an account under a false premise."
+  },
+  "difficulty": "easy"
+}

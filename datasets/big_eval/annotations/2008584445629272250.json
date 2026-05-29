@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2008584445629272250",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Stand Up For Trump tweet claims Trump 'disclosed' that Soros and Reid Hoffman are funding Antifa/left-wing violence against ICE and vows a RICO investigation into Soros, quoting Trump: 'They're going to have some problems.'",
+  "why_note_decision": "The tweet accurately reports what Trump said. Trump did publicly accuse Soros and Hoffman of funding Antifa/left-wing violence and vowed a RICO investigation — this is reported by Newsweek, Axios, Spectrum News, Democracy Docket. Yes, he had floated similar accusations in August/September 2025 — but the tweet doesn't claim it's a brand-new accusation, only that Trump made these statements. The original AI note tries to argue the remarks were 'originally discussed in September 2025' so they aren't 'new' in January 2026 — but Trump made additional remarks in early 2026 too, and the tweet's word 'disclosed' is editorial color, not a recency claim. Source 'dailyclout.io' is also a weak conservative blog. Raters tagged notHelpfulMissingKeyPoints (467) and notHelpfulNoteNotNeeded (506). What a note SHOULD say (that Trump's accusation lacks evidence) is a better correction but is itself contested — Trump did sign EOs designating Antifa a domestic terror org and ordered DOJ to investigate left-funding networks. The 'no evidence' framing is partisan-coded. Net: no note needed; the tweet faithfully reports Trump's remarks.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately reports Trump's public remarks (he did accuse Soros and Hoffman of funding Antifa/ICE-violence and did vow RICO probes — reported by Newsweek, Axios, Democracy Docket, etc). 'Disclosed' is editorial color. The original note's 'these aren't new, they're from Sept 2025' framing is weak and got rated note-not-needed. The bot MUST NOT write a pedantic 'these remarks aren't new' note. The bot MAY (with care) note that Trump has not presented evidence Soros/Hoffman funded ICE violence — but that's a contested editorial point and risky.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Trump's comments regarding George Soros and Reid Hoffman are not a new announcement from January 2026. The remarks and potential for a RICO investigation were originally discussed in September 2025.     https://dailyclout.io/trump-names-soros-hoffman-in-alleged-antifa-funding-floats-rico-probe/",
+    "failure_reason": "Tweet doesn't actually claim recency ('disclosed' is editorial color). Source is a weak conservative blog. The 'not new, was September' angle is pedantic and Trump did continue making such remarks into 2026. Raters: notHelpfulMissingKeyPoints (467), notHelpfulNoteNotNeeded (506).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "accurately reports Trump's statements",
+    "sources_checked": [
+      "https://www.newsweek.com/soros-trump-politically-motivated-10785749",
+      "https://www.axios.com/2025/09/26/trump-organized-political-violence-radical-left",
+      "https://www.democracydocket.com/news-alerts/trump-order-terrorism-network-left-leaning-nonprofits/",
+      "https://www.usresistnews.org/2025/11/07/funding-dissent-in-the-crosshairs-trumps-war-on-the-soros-foundations-elections-politics-policy-brief-200/"
+    ],
+    "notes": "Trump did accuse Soros and Hoffman of funding Antifa/ICE-targeting violence and did call for RICO. Remarks span Aug 2025 through early 2026. No evidence has been presented publicly that Soros/Hoffman fund antifa or ICE violence, but the tweet only reports what Trump said."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "22M-view tweet on the politicization of DOJ — relevant to rule-of-law concerns. False-positive notes here add noise."
+  },
+  "difficulty": "medium"
+}

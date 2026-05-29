@@ -1,0 +1,68 @@
+{
+  "tweet_id": "1994339986607411696",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:31.290Z",
+  "post": {
+    "id": "1994339986607411696",
+    "author_id": "1262469865262194688",
+    "created_at": "2025-11-28T09:38:00.000Z",
+    "text": "Windows 1.x and 2.x were funny because they clearly wanted to flex that they had a full-colour GUI before the Macintosh but didn’t know what to do with it\n\nso obviously they made it radioactive https://t.co/pTYnSIWHlW",
+    "media": [
+      {
+        "media_key": "3_1994339976914354176",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G61RpH1XQAACeWy.jpg",
+        "height": 350,
+        "width": 640
+      },
+      {
+        "media_key": "3_1994339976889167872",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G61RpHvW8AA6rjl.jpg",
+        "height": 1208,
+        "width": 1650
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 118,
+      "reply_count": 48,
+      "like_count": 1807,
+      "quote_count": 11,
+      "bookmark_count": 192,
+      "impression_count": 91261
+    },
+    "author_followers": 24404,
+    "author_name": "† lucia scarlet 🩸",
+    "author_description": "✢ listless vampire ✧ people dni ✧ enquiries: hello@lucia.red ✧ pfp: @Ougiikun ✧ check highlights ✢",
+    "author_tweet_count": 183151
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G61RpH1XQAACeWy.jpg",
+          "description": {
+            "description": "A screenshot of Microsoft Windows 1.01 showing multiple tiled windows: an analog clock, the game Reversi, the MS-DOS Executive file manager with an 'About' dialog box overlay, and a Write document titled README.DOC. The interface features the classic 1985 EGA color palette with bright blues, yellows, and reds.",
+            "ocrText": "Clock Reversi Game Skill MS-DOS Executive File View Special A C D C:\\\\WINDOWS ABC.T BUILD CALC. CALEN CARDR CGA.D CGA.G CGA.L CITOH CLIPB CLOCK COMM. CONTROL.EXE COURA.FON COURB.FON COURC.FON EGAMONO.GRB EGAMONO.LGO EMM.AT EMM.PC HPLA IBM0 JOYN KERN Microsoft Windows MS-DOS Executive Version 1.01 Copyright © 1985, Microsoft Corp. Ok Disk Space Free: 30024K Memory Free: 303K Write - README.DOC File Edit Search Character Paragraph Document Information should indows. Also co Addendum encl THOUT THE SPO b print from an ap This may be prefe onfiguration as it ature change the tion of the WIN.I Spooler=no will d RUNNING BATCH (.BAT) FILES If you run a standard applicatio should create a PIF file for the Page 1"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G61RpHvW8AA6rjl.jpg",
+          "description": {
+            "description": "A screenshot of the Microsoft Windows version 2.0 operating system. An 'MS-DOS Executive' window in the background lists files like CALC.EXE and PAINT.EXE, while a 'Notepad' window is open in the foreground displaying a README.TXT file. The text in Notepad discusses documentation corrections for the PIF Editor and SMARTDrive. The interface uses a light blue, white, and black color scheme typical of early graphical user interfaces.",
+            "ocrText": "MS-DOS Executive\nFile View Special\nA C C:MS-DOS_6 \\WINDOWS\nPIF\nABC.TXT\nCALC.EXE\nCALENDAR.EX\nCARDFILE.EX\nCLIPBRD.EXE\nCLOCK.EXE\nCONTROL.EXE\nCOURB.FON\nCVTPAINT.EX\nDOTHIS.TXT\nHELVB.FON\nMODERN.FON\nMSDOS.EXE\nNOTEPAD.EXE\nPAINT.EXE\nPIFEDIT.EXE\nPRACTICE.WR\nREADME.TXT\nREVERSI.EXE\nROMAN.FON\nNotepad - README.TXT\nFile Edit Search\n==========================================================\nMICROSOFT WINDOWS VERSION 2.0\n==========================================================\nDOCUMENTATION CORRECTION\nPIF Editor\n----------\nPage 182, \"Microsoft Windows User's Guide\"\nThe manual says the PIF Editor, PIFEDIT.EXE, may be locate\nthe PIF directory, a subdirectory of the main Windows dire\nActually, it is in the main Windows directory.\nPage 228, \"Microsoft Windows User's Guide\"\nThe manual says that if \"you don't specify an amount of me\nSMARTDrive will receive 256K (the default size).\" This is\nyou are using extended memory. However, if you are using\n[ ]XDA"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@unsafeword: Windows 3.1’s Hot Dog Stand theme kept that spirit alive (120 likes)  \n@unit_accord: It's like early stereo music, where each instrument was exactly 100% in one ear, and 0% in the other. It's kinda hilarious (97 likes)  \n@horsemankukka: what would you have done with the 16 CGA colors. remember that this was a new interface and making stuff like progress bars and context menus easy to spot was part of accessibility (67 likes)  \n@vcprocles: CGA color, there wasn't much choice. By Windows 3 the UI looked quite pleasant both in VGA color and in monochrome (55 likes)  \n@luciascarlet: I would’ve used them very sparingly and stuck to white, black, grey with some dark blue and red highlights (49 likes)  \n@FoldingNapkins: Magic Desk managed to look solid with 16 colours, but Windows even back then was a fair bit more than a shortcut manager lol. (21 likes)  \n@snwy_me: windows 2’s blue is repulsively ugly but i fw windows 1. windows 3 is where it peaked tho (18 likes)  \n@friend_candid: like it was possible to make it non radioactive? until mid 90ies even 256 colors was as common as 10bit monitors today, i.e. regular setups had even less colors (9 likes)  \n@djonesuk: People saying this is CGA - it's not. Windows only supported CGA's high resolution 600x200 monochrome mode. Even EGA had a very limited palette made of primary colours. Going outside this palette resulted in a 'dithered' look which was not very usable. (5 likes)  \n@takeiteqsy: This probably blew some boomers mind back in the 80s (3 likes)",
+    "warnings": []
+  }
+}

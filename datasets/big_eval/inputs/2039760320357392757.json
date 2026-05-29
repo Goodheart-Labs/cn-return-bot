@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2039760320357392757",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:56.837Z",
+  "post": {
+    "id": "2039760320357392757",
+    "author_id": "1629230553504391168",
+    "created_at": "2026-04-02T17:42:11.000Z",
+    "text": "The case for Ed Gallrein instead of Thomas Massie, explained in a meme: https://t.co/6DVCs2QpyO",
+    "media": [
+      {
+        "media_key": "3_2039760311184494592",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HE6vMicXkAApAqB.jpg",
+        "height": 1440,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4359,
+      "reply_count": 786,
+      "like_count": 7805,
+      "quote_count": 147,
+      "bookmark_count": 170,
+      "impression_count": 85261
+    },
+    "author_followers": 32045,
+    "author_name": "𝙏𝙝𝙚 𝙂𝙤𝙡𝙙𝙚𝙣 𝘼𝙜𝙚 𝙏𝙞𝙢𝙚𝙨 🇺🇸",
+    "author_description": "MAGA | MAHA | DarkMAGA | News, Investigations, etc in Highlights Tab | Follows/Reposts ≠ Endorsement | Founder of @TrackIslamUSA | Ended Thomas Massie's Career",
+    "author_tweet_count": 189539
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HE6vMicXkAApAqB.jpg",
+          "description": {
+            "description": "A political comparison graphic featuring two men side-by-side with lists of their alleged accomplishments. On the left is a man with short brown hair, and on the right is a man with a grey beard. The text compares military and educational background against political endorsements and legislative history, concluding with a call to action for Kentucky voters.",
+            "ocrText": "ACCOMPLISHMENTS\n* 3 MASTERS DEGREES\n* NAVY SEAL\n* ARMY RANGER\n* DECORATED COMBAT VETERAN\n* 5TH GENERATION FARMER\n* ENDORSED BY PRESIDENT TRUMP\n* 1 BILL PASSED IN 14 YEARS\n* ENDORSED BY IPAC (DSA-ALIGNED), JACK DORSEY & CENK UYGUR\n* SUPPORTED BY THE SQUAD, JOY BEHAR & JASMINE CROCKETT\n* RATIOED PEOPLE ONLINE\nCHOOSE WISELY, KENTUCKY!"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Todd Hall (@bigkeebler63)**: All I need to know. (Likes: 404, Reposts: 36, Replies: 26)\n- **Mediocregoon (@mediocregoon)**: For those still confused. (Likes: 234, Reposts: 0, Replies: 0)\n- **Dear Younger Me (@ShannonMB)**: Ain’t no way I’m voting for AIPAC Ed (Likes: 96, Reposts: 0, Replies: 0)\n- **Warren (@Ahab4Eva)**: The case for Thomas Massie instead of Gallrein, explained in a meme: (Likes: 85, Reposts: 0, Replies: 0)\n- **Imran (@onlyimranpatel)**: This is a choice between America First vs Israel First. (Likes: 74, Reposts: 0, Replies: 0)\n- **Independent Chick (@chick_right)**: The case for of Thomas Massie, instead of anyone else explained in 6 words: America First - not bought by ISRAEHELL (Likes: 61, Reposts: 0, Replies: 0)\n- **Kacee Allen (@KaceeRAllen)**: The people of Kentucky don’t want Israel interfering with our elections. Gallrein has received millions from people who literally have said their loyalty is to Israel. (Likes: 59, Reposts: 0, Replies: 0)\n- **Liberty (@LibertyJ64547)**: Nice try. We support @RepThomasMassie because he stands up for the innocent. Even if it means making Trump look bad. We're ok with that. (Likes: 56, Reposts: 0, Replies: 0)\n- **Dale Gribble (@DaRealGribble)**: I don’t vote for résumés, I vote for voting records. Massie actually votes to limit government. (Likes: 42, Reposts: 0, Replies: 0)",
+    "warnings": []
+  }
+}

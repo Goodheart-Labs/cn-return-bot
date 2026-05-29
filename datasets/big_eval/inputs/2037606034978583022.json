@@ -1,0 +1,59 @@
+{
+  "tweet_id": "2037606034978583022",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:49.633Z",
+  "post": {
+    "id": "2037606034978583022",
+    "author_id": "1574095209838919681",
+    "created_at": "2026-03-27T19:01:50.000Z",
+    "text": "The last Magic Tree House, “Revolutionary War on Wednesday,” was released on September 26, 2000. https://t.co/plwmvCQh9t",
+    "media": [
+      {
+        "media_key": "3_2037606030830694400",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEcH46vbcAALt8K.jpg",
+        "height": 989,
+        "width": 666
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "2037560165558276414"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 68,
+      "reply_count": 22,
+      "like_count": 1316,
+      "quote_count": 82,
+      "bookmark_count": 130,
+      "impression_count": 1702104
+    },
+    "author_followers": 332951,
+    "author_name": "2001 Live",
+    "author_description": "Live-posting as a reporter embedded in history. Curated by @MannyMarotta. Companion to @50YearsAgoLive, @100YearsAgoLive, and @250YearsAgoLive. DM for business.",
+    "author_tweet_count": 14679
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEcH46vbcAALt8K.jpg",
+          "description": {
+            "description": "The image shows the front cover of the book 'Revolutionary War on Wednesday', which is the 22nd book in the Magic Tree House series by Mary Pope Osborne. The illustration depicts George Washington and several children on a boat crossing an icy river, evocative of Washington's crossing of the Delaware. Washington stands tall at the front with a sword, while a young boy holds a large American flag behind him. Other children are huddled in the boat amidst falling snow.",
+            "ocrText": "MAGIC TREE HOUSE #22 Revolutionary War on Wednesday Mary Pope Osborne"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@universe_JPCP**: Don’t forget the Merlin missions came after (115 likes)  \n**@SomeMoe69**: There are like 20 more books after this one? Twister on Tuesday was my favorite and was released right after this (50 likes)  \n**@bigsmilingmouth**: \"hey, general washington...i'm ready to kill these hessians but why are these little kids coming with? are they armed?\" (32 likes)  \n**@CraftyToast1**: Holy shit I used to love these books (4 likes)  \n**@vonnegutson**: Did you guys ever read that 9/11 themed magic tree house book from like 2015?? It was really racist and weird (2 likes)  \n**@AResoluteFaith**: You should've written, \"The previous Magic House...\" the way it's written (without being able to hear vocal inflections) implies that RWoW is the final one that will ever be released. (2 likes)  \n**@YHyperbole**: The series continued after #22 though, didn’t it? (1 like, 2 on quoted post)  \n**@mizthoggy**: Christmas in Camelot was peak (1 like)  \n**@GreenManApple**: OH MY GOSH. MEMORY UNLOCKED! (1 like)  \n**@Ahemhem**: You say \"last\" and it sounds like she's not writing anymore, should be \"latest\" (0 likes)",
+    "warnings": []
+  }
+}

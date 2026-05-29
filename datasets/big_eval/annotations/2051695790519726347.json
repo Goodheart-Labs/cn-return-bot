@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2051695790519726347",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tabloid-style tweet recycles August 2024 paparazzi photos of Marcus Jordan (son of Michael Jordan) apparently snorting a white powder during a poolside lunch in the South of France.",
+  "why_note_decision": "The substantive claim — that Marcus Jordan was photographed apparently snorting white powder in the South of France — is true; the photos are real (MEGA paparazzi, August 2024, widely covered by Daily Mail, Vibe, Yahoo, Reality Tea). The only thing 'off' is the tweet's present-tense framing ('has been spotted') which arguably implies recency, but no specific date is asserted. The original note's correction ('these photos are from August 2024, not recent') is technically true but addresses a pedantic recency issue on lightweight celebrity gossip, with no real-world misinformation harm. Rating volume is low (12) and comments themselves flag it as 'old' without confusion. This is trivial pedantry territory.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The underlying claim (Marcus Jordan photographed apparently snorting a white substance in France) is true and documented. A note nit-picking that the photos are from August 2024 rather than 'today' would be technically defensible but is the kind of recycled-celebrity-gossip pedantry that notes shouldn't address — no one is materially misled. Treat any correction-style note as a false positive. Bonus failure: any note that asserts the substance was confirmed as a drug (it was never officially identified).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "These photos of Marcus Jordan are from August 2024, not recent. https://www.dailymail.co.uk/tvshowbiz/article-13715943/marcus-jordan-white-powder-substance-girlfriend-ashley-stevenson-model.html https://www.vibe.com/news/entertainment/marcus-jordan-michael-jordan-son-sniff-white-substance-1234904005",
+    "failure_reason": "Pedantic recency correction on celebrity gossip; tweet's actual claim (he was photographed apparently snorting white powder in France) is true. Rating volume low, raters tagged as 'note not needed' / 'missing key points'.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Substantively true (photos are real, from Saint-Tropez/Cannes, Aug 2024); tweet's framing as 'spotted' is mildly stale but not materially misleading.",
+    "sources_checked": [
+      "https://www.vibe.com/news/entertainment/marcus-jordan-michael-jordan-son-sniff-white-substance-1234904005/",
+      "https://www.whiskeyriff.com/2024/08/08/the-internet-sounds-off-after-michael-jordans-son-marcus-seen-sniffing-white-powder-alongside-new-girlfriend-in-france/",
+      "https://www.yahoo.com/entertainment/marcus-jordan-spotted-holding-white-powder-192921106.html"
+    ],
+    "notes": "Marcus Jordan was also arrested in Feb 2025 on cocaine possession charges, reinforcing that the gossip is grounded in real behavior, not a fabrication."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Celebrity gossip about a billionaire's son. 817k impressions but no public-interest harm; correcting recency on tabloid material is not a high-leverage use of notes."
+  },
+  "difficulty": "easy"
+}

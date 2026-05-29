@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2028943273042100353",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Clip framed to mock Sen. Fetterman: reporter Manu Raju asks why Congress doesn't 'vote to declare war the way it did with Iraq and Afghanistan'; Fetterman says the last declared war was WWII; Raju says 'No. Iraq and Afghanistan'; Fetterman 'stammers.'",
+  "why_note_decision": "A note is warranted: the tweet's framing (and the reporter's interjection) wrongly implies Congress formally declared war for Iraq and Afghanistan, making Fetterman appear mistaken. In fact Fetterman is correct - Congress's last formal declaration of war was in 1942 (WWII); Iraq and Afghanistan were authorized via Authorizations for Use of Military Force (AUMFs), which are legally and historically distinct from declarations of war. The note corrects this factual point that many readers got backwards.",
+  "judge_guidance": "PASS only if the note establishes that Congress did NOT formally declare war for Iraq or Afghanistan - those were AUMFs, legally distinct from declarations of war - and that the last formal US declaration of war was during WWII. It must make clear Fetterman's underlying statement was factually correct (or at minimum that the 'Congress declared war on Iraq/Afghanistan' premise is wrong). FAIL if the note endorses the premise that Iraq/Afghanistan were declared wars, conflates AUMFs with declarations of war, or mocks/sides against Fetterman on the substance. A neutral, sourced explanation of the AUMF-vs-declaration distinction is required.",
+  "reference_note": "Congress did not declare war in Iraq and Afghanistan, it passed AUMFs which are legally and historically distinct. Scholars have noted that, “Congress issued its last official declaration of war during World War II”     https://education.cfr.org/learn/reading/how-single-phrase-defined-war-terror#:~:text=What%20is%20an%20AUMF?,military%20operations%20since%209/11.",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "true_underlying_claim_misframed",
+    "sources_checked": [
+      "https://constitution.congress.gov/browse/essay/artI-S8-C11-2-3/ALDE_00013914/",
+      "https://www.senate.gov/about/powers-procedures/declarations-of-war.htm",
+      "https://en.wikipedia.org/wiki/Declaration_of_war_by_the_United_States"
+    ],
+    "notes": "Confirmed: last formal US declaration of war was 1942 (WWII). Vietnam, Gulf War, Afghanistan and Iraq were all AUMFs, legally distinct from declarations of war. Fetterman was correct; the reporter's 'No. Iraq and Afghanistan' was wrong. The note accurately corrects the framing. Rated CURRENTLY_RATED_HELPFUL. Note: the note targets the embedded false premise rather than the poster's own assertion, which is a legitimate Community Note use."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.5M impressions; corrects a widespread civic misconception (AUMF vs declaration of war) on a war-powers question with real governance stakes, and defends an accurate statement against misleading 'gotcha' framing."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2031181670968139894",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Anti-establishment lifestyle account 'iTamara' tweets 'Cancer is just parasites. They lied to us.' to 152k followers. Text-only. 32k likes, 376 replies, 976k impressions; the comments are dominated by parasite-conspiracy adjacent claims, including a top reply saying 'this is why you never ever get a biopsy. Or chemo.'",
+  "why_note_decision": "The claim is dangerous health misinformation: cancer is overwhelmingly the result of mutations in the body's own cells leading to uncontrolled proliferation, not 'parasites.' This is the medical consensus (American Cancer Society, NIH, Cancer Genome Project). While certain parasitic infections (e.g., Schistosoma haematobium, Opisthorchis viverrini) can increase cancer risk via chronic inflammation, they are not the cause of most cancers and cancer cells themselves are genetically human-derived. Compounding the harm, top replies discourage biopsies and chemotherapy. The reach (976k impressions) plus medical-stakes (people may forgo treatment) makes this a clear note case. Provisional 'no_note_needed' is wrong. Original note correctly cites the American Cancer Society parasites-and-cancer page and explains the mechanism, but raters dominated 'notHelpfulIncorrect' (6) — the wording 'cancer cells are genetically human-derived, not parasitic organisms' may have read as oversimplified; the audience is hostile to mainstream medical sources. Failure category is borderline incorrect/missing-key-points; classify as missing key points (didn't directly address the implicit 'don't get chemo' takeaway).",
+  "judge_guidance": "PASS criteria: the note must clearly state that cancer is NOT caused by parasites — it arises from mutations in the body's own cells leading to uncontrolled proliferation (the established medical consensus). Cite a credible medical source (American Cancer Society, NIH/NCI, CDC, or Cancer.gov). Acknowledging that certain parasites can INCREASE cancer risk via chronic inflammation (e.g., Schistosoma, liver flukes) is fine context but the headline must be: cancer cells are human cells, not parasites. FAIL any note that (a) treats this as a defensible alternative theory, (b) is vague or hedges, (c) uses only ivermectin/fenbendazole anecdote sources, or (d) doesn't cite an authoritative medical source. Strong notes also implicitly address why this matters (treatment refusal risk).",
+  "reference_note": "Cancer is not caused by parasites. It results from genetic mutations in the body's own cells that drive uncontrolled growth — this is the established medical consensus (American Cancer Society, NIH/NCI). A few parasitic infections (e.g., Schistosoma, liver flukes) can raise cancer risk via chronic inflammation, but cancer cells themselves are derived from the patient's own cells, not parasitic organisms. https://www.cancer.org/cancer/risk-prevention/infections/infections-that-can-lead-to-cancer/parasites.html https://www.cancer.gov/about-cancer/understanding/what-is-cancer",
+  "original_unhelpful_note": {
+    "text": "Cancer is not parasites. Cancer develops from mutations in the body's own cells causing uncontrolled growth. While certain parasites can increase cancer risk through chronic inflammation, cancer cells are genetically human-derived, not parasitic organisms. https://www.cancer.org/cancer/risk-prevention/infections/infections-that-can-lead-to-cancer/parasites.html",
+    "failure_reason": "Substantively correct but raters dominated 'notHelpfulIncorrect' (6) — likely because (a) hostile-audience pushback on mainstream sources, and (b) note didn't directly address the implicit 'don't get chemo' takeaway from top replies. Classified as failure to drive the bot to engage more decisively.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False — cancer arises from somatic mutations in the patient's own cells; not 'parasites'.",
+    "sources_checked": [
+      "https://www.nature.com/articles/s41598-023-39608-2",
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC10406856/",
+      "https://www.nature.com/scitable/topicpage/cell-division-and-cancer-14046590/",
+      "https://www.cancer.org/cancer/risk-prevention/infections/infections-that-can-lead-to-cancer/parasites.html"
+    ],
+    "notes": "Cancer Genome Project: most cancer cells have 60+ mutations; tumorigenesis is driven by mutations in oncogenes/tumor-suppressor genes. ACS lists a handful of parasites as RISK FACTORS (Schistosoma, Opisthorchis) but explicitly distinguishes risk from causation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "976k impressions on dangerous health misinformation from a follower-heavy lifestyle conspiracy account; top reply explicitly tells people not to get biopsies or chemo. Real risk of treatment avoidance — high EA stakes per impression."
+  },
+  "difficulty": "medium"
+}

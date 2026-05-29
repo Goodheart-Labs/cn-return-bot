@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2029336281424248891",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:30.965Z",
+  "post": {
+    "id": "2029336281424248891",
+    "author_id": "1932318303676248064",
+    "created_at": "2026-03-04T23:20:47.000Z",
+    "text": "🚨 Clip of 2hollis arguing with his highschool teacher has recently resurfaced 😳 https://t.co/GsBKKVsrau",
+    "media": [
+      {
+        "media_key": "13_2029336208380444672",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2029336208380444672/img/NBtg1p1wEy1P_6p3.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 29203,
+        "view_count": 216694,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029336208380444672/vid/avc1/320x568/FHLiGvtoAyLBE5tb.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029336208380444672/vid/avc1/480x852/pNO8rQDm8rJYl1g0.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029336208380444672/vid/avc1/720x1280/NRz9wp0o_efJKicV.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2029336208380444672/pl/Y3TIxtY0zOFyOVdC.m3u8?v=c64"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2143,
+      "reply_count": 142,
+      "like_count": 24613,
+      "quote_count": 89,
+      "bookmark_count": 2520,
+      "impression_count": 566982
+    },
+    "author_followers": 439,
+    "author_name": "💽",
+    "author_description": "i just painted her face now she part of the circus",
+    "author_tweet_count": 4756
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2029336208380444672/vid/avc1/720x1280/NRz9wp0o_efJKicV.mp4",
+          "description": {
+            "description": "A series of video frames showing a person with long blonde hair walking through a classroom or workspace. A picture-in-picture overlay at the top left shows a similar-looking blonde person making a peace sign and smoking. Three flushed-face emojis are superimposed on the screen. The scene includes desks, blue chairs, a white board, and posters, including a Garfield poster on the wall in the final frame.",
+            "ocrText": "TikTok @ epalkert"
+          },
+          "transcription": "We just get up and teach them instead of handing them a freaking packet, yo. These kids in here don't learn like that. They need to learn face to face. You're just getting mad because I'm pointing out the obvious and you're too late. No, because you're wasting my time. No, I'm not wasting your time. I'm telling you what you need to do. Get out. You want kids to come in your class? You want them to get excited for this? You got to come in here. You got to make them excited. You want a kid to change and start doing better? You got to touch his freaking heart. Can't expect a kid to change if all you do is just tell him."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@snowsipping**  \nno joke tho fuck that teacher just acting like a bitch for nothing  \nLikes: 259\n\n**@noblestqiyoku**  \nholy shit is this real  \nLikes: 163\n\n**@tervisscoot**  \nFrigging packet yo  \nLikes: 133\n\n**@fleurmick**  \n2hollis Frickin Packet Yo Factory  \nLikes: 103\n\n**@casscainscowl**  \n2hollis blaccent classroom  \nLikes: 79\n\n**@sgrtalkin2night**  \nWait he gagged  \nLikes: 55\n\n**@itsmalhee**  \nStop recycling old clips and claiming it’s these new dudes, this vid is from like a decade ago  \nLikes: 52\n\n**@kyozerv2**  \nFricken packet yo  \nLikes: 50\n\n**@LePinkprint**  \nThis video is so iconic, Gen Z childhood lost video  \nLikes: 50\n\n**@Turkeyrasher**  \ngod this is gonna become a gif soon  \nLikes: 34",
+    "warnings": []
+  }
+}

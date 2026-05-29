@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2039395207213670691",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quote-tweet of a woman in Army uniform dancing in a new house, claiming 'Old video. She was killed by an Iranian missile in March. A family member inherited the house.'",
+  "why_note_decision": "A note is warranted: the claim falsely links an unrelated TikTok creator's house-celebration dance to a real soldier killed in the Iran war. The video shows TikTok user @blossomt_ celebrating an Army-assisted move; there is no report connecting her to any death. The 'killed by an Iranian missile in March' claim appears to be April Fools' / engagement-bait misinformation (posted April 1) that exploits the real, recent deaths of U.S. soldiers (e.g. SFC Nicole Amor, killed in an Iranian drone strike in Kuwait on March 1, 2026) to seem credible. Top replies ('source: I made it up') reinforce this.",
+  "judge_guidance": "PASS only if the note establishes that the woman in the video is NOT the soldier killed and that the 'killed by an Iranian missile' claim is unsupported/false, ideally noting the video is an unrelated TikTok dance and that the real soldier(s) killed in the Iranian strike are different people. FAIL if the note treats the death claim as true, fails to separate the video subject from any casualty, or invents a death for the actual woman shown. Bonus accuracy: identifying it as April-Fools/engagement-bait or naming the real, unrelated soldier killed (Nicole Amor) strengthens it, but the core requirement is decoupling the living video subject from the false death claim.",
+  "reference_note": "The woman in the video is unrelated to the U.S. soldier killed in March 2026.    Sgt. 1st Class Nicole L. Amor, age 39 and mother of two, died in an Iranian drone strike in Kuwait.    https://www.fox10tv.com/2026/03/05/community-remembers-soldier-killed-war-with-iran-beloved-wife-mother-2/    https://www.cbsnews.com/news/husband-nicole-amor-us-soldier-killed-kuwait-iran-war/    https://www.instagram.com/reel/DVpOlxaDPDq/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_misattributed_media",
+    "sources_checked": [
+      "https://www.cbsnews.com/news/husband-nicole-amor-us-soldier-killed-kuwait-iran-war/",
+      "https://www.pbs.org/newshour/nation/pentagon-identifies-4-of-6-u-s-soldiers-killed-in-iran-war-by-drone-strike-in-kuwait",
+      "https://www.mprnews.org/story/2026/03/04/nicole-amor-minnesota-solider-killed-in-airstrike-in-kuwait-during-iran-war"
+    ],
+    "notes": "SFC Nicole Amor (39, mother of two) was killed in an Iranian drone strike on a Kuwait base March 1, 2026 - a real, distinct person. The dancing woman is unrelated TikTok creator @blossomt_; no reporting links her to a death. The quote-tweet (posted April 1) is engagement-bait/April-Fools misinfo. Original note rated CURRENTLY_RATED_HELPFUL. Tweet says 'missile'; the actual cause was a drone strike, a minor detail the note correctly handles."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.7M impressions exploiting real wartime deaths for engagement bait; correcting misinformation that trivializes/fabricates casualties of an active war is meaningful for info-integrity and respect for the actually deceased."
+  },
+  "difficulty": "medium"
+}

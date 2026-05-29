@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2013411849803304999",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:11:03.711Z",
+  "post": {
+    "id": "2013411849803304999",
+    "author_id": "469509327",
+    "created_at": "2026-01-20T00:42:47.000Z",
+    "text": "#SDF commander threatens to wipe out Arab tribes if they rise up &amp; side with #Syria’s government:\n\n“Warning to the Tribes in #Qamishli:\n\nAny move against our people, we will erase you entirely from history.\n\nThe message is to everyone, not just #Qamishli!\n#YPG” https://t.co/tPlALIMsjl",
+    "media": [
+      {
+        "media_key": "3_2013411845814566913",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_ETaABXQAEFNC5.jpg",
+        "height": 1091,
+        "width": 1320
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 605,
+      "reply_count": 300,
+      "like_count": 2140,
+      "quote_count": 69,
+      "bookmark_count": 160,
+      "impression_count": 263302
+    },
+    "author_followers": 219098,
+    "author_name": "Charles Lister",
+    "author_description": "Director of #Syria Program, @MiddleEastInst.\nFounder https://t.co/QX1KDP0vBO.\nSenior Consultant, @KShaar_Advisory.",
+    "author_tweet_count": 46011
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_ETaABXQAEFNC5.jpg",
+          "description": {
+            "description": "A screenshot of a social media post on X (formerly Twitter) by user Egîd Şerzan. The post contains Arabic text addressed to tribes in Qamishli, a warning about loyalty, and the hashtag #YPG. The post indicates it was translated by Grok and shows metrics such as views, retweets, and likes.",
+            "ocrText": "Post \nEgîd Şerzan \n@EgidSerzan \nX.com \nTranslated by Grok \nتنبيه إلى العشائر في قاملشو \nاي تحرك ضد شعبنا سوف نجعلكم من التاريخ \nالرسالة للجميع وليست فقط لقامشلو! \n#YPG \n1:22 PM · 1/19/26 · 54K Views \n85 444 14"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Jino Victoria Doabi ‏ژینۆ ویکتوریا دو‌آبی (@_jvd9): But you know what is true? This guy used be ISIS supporter, and is now Jolani supporter. (Likes: 389)\n- Woofers (@NotWoofers): This is not a Kurdish commander (Likes: 350)\n- Jino Victoria Doabi ‏ژینۆ ویکتوریا دو‌آبی (@_jvd9): He is not Kurdish Commander are you fucking insane (Likes: 311)\n- Frederike Geerdink (@fgeerdink): Even though by now you know this is not a Kurdish commander, you refuse to delete your post. Again you show yourself a bad faith actor. I'm expressing myself mildly. (Likes: 204)\n- VivaRevolt (@VivaRevolt): That is not a Kurdish Commander (Likes: 204)\n- Servan (@corduene_): You are utterly disgusting. You focus on a person’s “words” while ignoring all the videos that show terrorists of the Syrian government throwing young men off balconies, throwing the body of a Kurdish girl from the third floor, forcibly displacing the Kurds of Sheikh Maqsoud, launching a barbaric attack on Hasakah, desecrating the bodies of Kurds, and carrying out summary executions against Kurdish women and young men. (Likes: 81)\n- Dr. Taleb (@Tanomadu): This confirms what many see online: PKK-affiliated media and influencers are openly inciting Arab, Kurdish strife, threatening Arab tribes and pushing for militarization. This is a deliberate attempt to shift the issue from lawful state efforts to restore authority and enforce the law into an ethnic conflict. The reality is different. The Syrian state and most Syrian activists are not in conflict with Kurds or Arabs. The strongest evidence is the safe return of residents to Sheikh Maqsoud, al-Ashrafieh, Afrin, Jindires, and other areas. Calls to “erase” tribes are dangerous incitement that risks civil war. Stability comes from demilitarization, civilian protection, and integration under the rule of law, not ethnic threats or propaganda. (Likes: 76)\n- Hawzhin Azeez (@hawzhin_azeez): Been supporting ISIS since day one! Keep earning that Qatari money. (Likes: 68)\n- ابو احمد (@Al7khalidi): These people claim they are being ethnically cleansed while not one single Kurdish civilian was killed intentionally. Meanwhile they are threatening ethnic cleansing (Likes: 46)\n- International Volunteers Report ☀️ (@VolunteerReport): Omg Charles you are fucking kidding me he's a random kurd on twitter not a commander 😂😂😂 (Likes: 39)",
+    "warnings": []
+  }
+}

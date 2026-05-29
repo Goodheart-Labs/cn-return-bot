@@ -1,0 +1,397 @@
+[
+  {
+    "url": "https://www.facebook.com/photo.php?fbid=982113224486408&set=a.850196581011407&id=100080632194001",
+    "default": {
+      "label": "default",
+      "url": "https://www.facebook.com/photo.php?fbid=982113224486408&set=a.850196581011407&id=100080632194001",
+      "success": true,
+      "status_code": 200,
+      "chars": 25196,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "Facebook\n[Log In](https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&next=https%3A%2F%2Fwww.facebook.com%2Fphoto.php%3Ffbid%3D982113224486408%26set%3Da.850196581011407%26id%3D100080632194001)\nLog In\n[Forgot Account?](https://www.facebook.com/recover/initiate?ars=royal_blue_bar)\n![May be an image of text that says 'CELEBS Talk BEN STILLER BACKTRACKS ON SUPPORT FOR NYC MAYOR ",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/",
+    "default": {
+      "label": "default",
+      "url": "https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/",
+      "success": true,
+      "status_code": 200,
+      "chars": 17780,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "[ Skip to main content ](https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/?solution=d47d1ff1bc8ff891d47d1ff1bc8ff891&js_challenge=1&token=bbbe4bf1c9a2b5160829c4be34da58616e3175449ca3fde919f0e990038b5c14&jsc_orig_r=#main-content) De Niro and Mamdani : r/GetNoted\nOpen menu Open navigation [ ](https://www.reddit.com/)Go to Reddit Home\nr/GetNoted\n[ Sign Up ](https://www.reddit.co",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.reuters.com/business/energy/bessent-urges-china-step-up-diplomacy-iran-ahead-trump-xi-summit-2026-05-04/",
+    "default": {
+      "label": "default",
+      "url": "https://www.reuters.com/business/energy/bessent-urges-china-step-up-diplomacy-iran-ahead-trump-xi-summit-2026-05-04/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    },
+    "magic": {
+      "label": "magic",
+      "url": "https://www.reuters.com/business/energy/bessent-urges-china-step-up-diplomacy-iran-ahead-trump-xi-summit-2026-05-04/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    }
+  },
+  {
+    "url": "https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/lineups/",
+    "default": {
+      "label": "default",
+      "url": "https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/lineups/",
+      "success": true,
+      "status_code": 200,
+      "chars": 5574,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "Champions League Official  Live football scores & Fantasy \nGet \n![UEFA.COM](https://img.uefa.com/imgml/uefacom/elements/main-nav/uefa-logo-black.svg)\nUEFA.com works better on other browsers\nFor the best possible experience, we recommend using [Chrome](https://www.google.com/chrome/), [Firefox](https://www.mozilla.org/firefox/) or [Microsoft Edge](https://www.microsoft.com/edge).\n[Skip to main cont",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://factcheck.afp.com/doc.afp.com.76UX8KE",
+    "default": {
+      "label": "default",
+      "url": "https://factcheck.afp.com/doc.afp.com.76UX8KE",
+      "success": true,
+      "status_code": 200,
+      "chars": 22496,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "[ Skip to main content ](https://factcheck.afp.com/doc.afp.com.76UX8KE#main-content)\n[ ![Home](https://factcheck.afp.com/themes/custom/factuel/afp-logo-light.svg) ](https://factcheck.afp.com/ \"Home\")\n[ Fact Check ](https://factcheck.afp.com/ \"Home\")\n  * Search\n  * [Contact](https://factcheck.afp.com/contact)\n\n\nEnglish Fran\u00e7ais Espa\u00f1ol Catal\u00e0 Portugu\u00eas Deutsch Nederlands Suomi Svenska Polski \u010ce\u0161tin",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://factcheck.afp.com/doc.afp.com.87W89G3",
+    "default": {
+      "label": "default",
+      "url": "https://factcheck.afp.com/doc.afp.com.87W89G3",
+      "success": true,
+      "status_code": 200,
+      "chars": 16527,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "[ Skip to main content ](https://factcheck.afp.com/doc.afp.com.87W89G3#main-content)\n[ ![Home](https://factcheck.afp.com/themes/custom/factuel/afp-logo-light.svg) ](https://factcheck.afp.com/ \"Home\")\n[ Fact Check ](https://factcheck.afp.com/ \"Home\")\n  * Search\n  * [Contact](https://factcheck.afp.com/contact)\n\n\nEnglish Fran\u00e7ais Espa\u00f1ol Catal\u00e0 Portugu\u00eas Deutsch Nederlands Suomi Svenska Polski \u010ce\u0161tin",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.senate.gov/about/powers-procedures/declarations-of-war.htm",
+    "default": {
+      "label": "default",
+      "url": "https://www.senate.gov/about/powers-procedures/declarations-of-war.htm",
+      "success": true,
+      "status_code": 200,
+      "chars": 17570,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "[Skip Content](https://www.senate.gov/about/powers-procedures/declarations-of-war.htm#skip)\n![U.S. Flag](https://www.senate.gov/resources/images/usFlag.png)\nFind Your Senators Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Monta",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://constitution.congress.gov/browse/essay/artI-S8-C11-2-3/ALDE_00013914/",
+    "default": {
+      "label": "default",
+      "url": "https://constitution.congress.gov/browse/essay/artI-S8-C11-2-3/ALDE_00013914/",
+      "success": false,
+      "status_code": 307,
+      "chars": 550,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "![Icon for constitution.congress.gov](https://constitution.congress.gov/favicon.ico)\n# constitution.congress.gov\n## Performing security verification\nThis website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot.\n## Verification successful. Waiting for constitution.congress.gov to respond\nRay ID: `a0259bb9ca5b77fb`\nPerfor",
+      "error": "Blocked by anti-bot protection: Cloudflare JS challenge"
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US/",
+    "default": {
+      "label": "default",
+      "url": "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    },
+    "magic": {
+      "label": "magic",
+      "url": "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    }
+  },
+  {
+    "url": "https://www.instagram.com/p/DUWHli8gTpK/",
+    "default": {
+      "label": "default",
+      "url": "https://www.instagram.com/p/DUWHli8gTpK/",
+      "success": true,
+      "status_code": 200,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": ""
+    },
+    "magic": {
+      "label": "magic",
+      "url": "https://www.instagram.com/p/DUWHli8gTpK/",
+      "success": true,
+      "status_code": 200,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": ""
+    }
+  },
+  {
+    "url": "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+    "default": {
+      "label": "default",
+      "url": "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    },
+    "magic": {
+      "label": "magic",
+      "url": "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    }
+  },
+  {
+    "url": "https://www.facebook.com/NBCBayArea/videos/police-investigating-santana-row-attack-as-possible-hate-crime/2384729795331069/",
+    "default": {
+      "label": "default",
+      "url": "https://www.facebook.com/NBCBayArea/videos/police-investigating-santana-row-attack-as-possible-hate-crime/2384729795331069/",
+      "success": true,
+      "status_code": 200,
+      "chars": 46134,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "Facebook\n[Log In](https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&next=https%3A%2F%2Fwww.facebook.com%2FNBCBayArea%2Fvideos%2Fpolice-investigating-santana-row-attack-as-possible-hate-crime%2F2384729795331069%2F)\nLog In\n[Forgot Account?](https://www.facebook.com/recover/initiate?ars=royal_blue_bar)\n# [Video](https://www.facebook.com/watch/)\n[Home](https://www.facebook.com",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.reuters.com/fact-check/image-depicting-jeffrey-epstein-tel-aviv-was-created-with-ai-2026-02-26/",
+    "default": {
+      "label": "default",
+      "url": "https://www.reuters.com/fact-check/image-depicting-jeffrey-epstein-tel-aviv-was-created-with-ai-2026-02-26/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    },
+    "magic": {
+      "label": "magic",
+      "url": "https://www.reuters.com/fact-check/image-depicting-jeffrey-epstein-tel-aviv-was-created-with-ai-2026-02-26/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    }
+  },
+  {
+    "url": "https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/",
+    "default": {
+      "label": "default",
+      "url": "https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/",
+      "success": true,
+      "status_code": 200,
+      "chars": 118625,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "[ The Poynter Institute  ](https://www.politifact.com/)\n[ Menu ](https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/)\n[ Donate ](https://www.politifact.com/membership/)\nState Editions \n  * [ California ](https://www.politifact.com/california/)\n  * [ Florida ](https://www.politifact.com/florida/)\n  * [ Iowa ](https://www.politifact.com/iowa/)\n  * [",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.reuters.com/article/world/fact-check-trump-did-not-call-republicans-the-dumbest-group-of-voters-idUSKBN2342DH/",
+    "default": {
+      "label": "default",
+      "url": "https://www.reuters.com/article/world/fact-check-trump-did-not-call-republicans-the-dumbest-group-of-voters-idUSKBN2342DH/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    },
+    "magic": {
+      "label": "magic",
+      "url": "https://www.reuters.com/article/world/fact-check-trump-did-not-call-republicans-the-dumbest-group-of-voters-idUSKBN2342DH/",
+      "success": false,
+      "status_code": 401,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: DataDome captcha"
+    }
+  },
+  {
+    "url": "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/",
+    "default": {
+      "label": "default",
+      "url": "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/",
+      "success": true,
+      "status_code": 200,
+      "chars": 44581,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "[Skip to main content](https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/#main)\n[ ![The Churchill Project \u2013 Hillsdale College](https://winstonchurchill.hillsdale.edu/wp-content/uploads/2015/09/churchill-logo.png) ](https://winstonchurchill.hillsdale.edu/)\nToggle navigation\n  * [About](https://winstonchurchill.hillsdale.edu/about-the-churchill-project/)\n  * [The Written Word](https://wi",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.trueachievements.com/news/asha-sharma-xbox-gamertag",
+    "default": {
+      "label": "default",
+      "url": "https://www.trueachievements.com/news/asha-sharma-xbox-gamertag",
+      "success": true,
+      "status_code": 200,
+      "chars": 24268,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "[TrueAchievements](https://www.trueachievements.com/)\n  * Gaming\nNews\n[Xbox News](https://www.trueachievements.com/news)[Community News](https://www.trueachievements.com/newslist/community)[Site Updates](https://www.trueachievements.com/news/tags/site-feature)[Xbox Live Status](https://www.trueachievements.com/xbox-live-status)[Suggest News](https://www.trueachievements.com/suggestnews.aspx)\nGamin",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.facebook.com/pressoneph/posts/factcheck-a-facebook-reel-racking-up-over-400000-views-falsely-depicts-us-missil/1425155566297826/",
+    "default": {
+      "label": "default",
+      "url": "https://www.facebook.com/pressoneph/posts/factcheck-a-facebook-reel-racking-up-over-400000-views-falsely-depicts-us-missil/1425155566297826/",
+      "success": true,
+      "status_code": 200,
+      "chars": 8136,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "Facebook\n[Log In](https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&next=https%3A%2F%2Fwww.facebook.com%2Fpressoneph%2Fposts%2Ffactcheck-a-facebook-reel-racking-up-over-400000-views-falsely-depicts-us-missil%2F1425155566297826%2F)\nLog In\n[Forgot Account?](https://www.facebook.com/recover/initiate?ars=royal_blue_bar)\n## PressOne.PH's Post\n* * *\n[](https://www.facebook.com/p",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.instagram.com/reel/DToWOookcl4/?hl=de",
+    "default": {
+      "label": "default",
+      "url": "https://www.instagram.com/reel/DToWOookcl4/?hl=de",
+      "success": true,
+      "status_code": 200,
+      "chars": 32705,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "[Instagram](https://www.instagram.com/?hl=de)\n[Anmelden](https://www.instagram.com/accounts/login/?next=%2Freel%2FDToWOookcl4%2F%3Fhl%3Dde&source=desktop_nav)\n[Registrieren](https://www.instagram.com/accounts/emailsignup/)\nSchlie\u00dfen\n![uncrustamemess Profilbild](https://scontent-fra3-1.cdninstagram.com/v/t51.82787-19/539752314_18339010183203374_994826213095929272_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_",
+      "error": ""
+    },
+    "magic": {
+      "label": "magic",
+      "url": "https://www.instagram.com/reel/DToWOookcl4/?hl=de",
+      "success": true,
+      "status_code": 200,
+      "chars": 32705,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "[Instagram](https://www.instagram.com/?hl=de)\n[Anmelden](https://www.instagram.com/accounts/login/?next=%2Freel%2FDToWOookcl4%2F%3Fhl%3Dde&source=desktop_nav)\n[Registrieren](https://www.instagram.com/accounts/emailsignup/)\nSchlie\u00dfen\n![uncrustamemess Profilbild](https://scontent-fra3-1.cdninstagram.com/v/t51.82787-19/539752314_18339010183203374_994826213095929272_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_",
+      "error": ""
+    }
+  },
+  {
+    "url": "https://news.un.org/en/story/2026/03/1167199",
+    "default": {
+      "label": "default",
+      "url": "https://news.un.org/en/story/2026/03/1167199",
+      "success": true,
+      "status_code": 200,
+      "chars": 22295,
+      "good": true,
+      "wall_suspected": false,
+      "preview": "[Skip to main content / navigation](https://news.un.org/en/story/2026/03/1167199#main-content)\n[ Welcome to the United Nations ](https://www.un.org/en \"United Nations\")\n##  Language \n  * [\u0627\u0644\u0639\u0631\u0628\u064a\u0629](https://news.un.org/ar/)\n  * [\u4e2d\u6587](https://news.un.org/zh/)\n  * [English](https://news.un.org/en/)\n  * [Fran\u00e7ais](https://news.un.org/fr/)\n  * [\u0420\u0443\u0441\u0441\u043a\u0438\u0439](https://news.un.org/ru/)\n  * [Espa\u00f1ol](https://news",
+      "error": ""
+    },
+    "magic": null
+  },
+  {
+    "url": "https://www.bls.gov/news.release/pdf/cpi.pdf",
+    "default": {
+      "label": "default",
+      "url": "https://www.bls.gov/news.release/pdf/cpi.pdf",
+      "success": false,
+      "status_code": 200,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: Structural: minimal_text, no_content_elements (174 bytes, 0 chars visible)"
+    },
+    "magic": {
+      "label": "magic",
+      "url": "https://www.bls.gov/news.release/pdf/cpi.pdf",
+      "success": false,
+      "status_code": 200,
+      "chars": 0,
+      "good": false,
+      "wall_suspected": true,
+      "preview": "",
+      "error": "Blocked by anti-bot protection: Structural: minimal_text, no_content_elements (174 bytes, 0 chars visible)"
+    }
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2011078844875489465",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Breaking911 shares THP-released dashcam footage of an anti-ICE protest, framing it as: an anti-ICE protester 'alleges he was struck by a Tennessee Highway Patrol vehicle.'",
+  "why_note_decision": "The tweet uses correctly hedged language ('alleges') and presents the THP-released dashcam itself — the very piece of evidence that THP cites to refute the strike claim. The note repeats THP's official position as if it were the settled fact, but the situation is genuinely contested: Tyler Foster (Memphis Interfaith Coalition for Action) said there's 'a lot more to the story'; MLK50 reported THP vehicles drove into the back of the crowd hitting at least three people; Rep. Justin Pearson called for an investigation. The original note picks one side of a live dispute. Dominant tag was noteNotNeeded (86/175).",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a note that PRESENTS BOTH SIDES of the contested account (THP says no contact; organizers and Rep. Pearson allege otherwise). FAIL any note that flatly states 'protester was not struck' without acknowledging the dispute — that takes one side of contested reporting. FAIL any note that invents new claims (e.g. the protester is at fault) beyond what the dashcam shows. The tweet's 'alleges' framing is appropriate hedging; the bot should not over-correct properly-hedged reporting.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The Tennessee Highway Patrol states the protester was not struck by the vehicle, as dash cam video shows him holding onto it, lying down, then standing and walking away unharmed. https://www.wsmv.com/2026/01/13/fact-check-thp-says-trooper-did-not-hit-protest-marshal-memphis-anti-ice-march https://wreg.com/news/local/thp-responds-to-viral-video-after-claims-trooper-hit-protester-at-anti-ice-protest",
+    "failure_reason": "noteNotNeeded — takes one side of a contested account; tweet already uses 'alleges'; protest organizers and a US Congressman dispute THP's framing.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Genuinely contested incident: THP says no protester was struck; protest organizers (Tyler Foster) and Rep. Justin Pearson dispute THP's account and called for investigation. MLK50 reported troopers hit at least three people including driving a vehicle over a woman's foot. Tweet's 'alleges' framing is appropriate.",
+    "sources_checked": [
+      "https://www.actionnews5.com/2026/01/13/thp-releases-dashcam-footage-refute-claim-trooper-hit-protester/",
+      "https://mlk50.com/2026/01/13/anti-ice-march-tennessee-highway-patrol-drove-into-the-crowd-hitting-at-least-three-people/",
+      "https://www.foxnews.com/us/tennessee-highway-patrol-debunks-viral-claims-protester-struck-trooper-vehicle",
+      "https://www.localmemphis.com/article/news/local/thp-dashcam-footage-ice-out-for-good-protest-rep-pearson-calls-for-investigation/522-1861b083-bfd3-4a86-886d-edfc0e25ad67"
+    ],
+    "notes": "On Feb 6, 2026 THP released additional footage following Rep. Pearson's call for investigation — indicating the dispute remained active."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.5M impressions on a politically-charged ICE protest incident. Bot must learn that 'alleges' is the right hedge on contested incidents and not pick sides between law enforcement and protest organizers when both have documented positions."
+  },
+  "difficulty": "medium"
+}

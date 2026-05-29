@@ -1,0 +1,66 @@
+{
+  "tweet_id": "1994761464851120432",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:44.116Z",
+  "post": {
+    "id": "1994761464851120432",
+    "author_id": "1367084746258415618",
+    "created_at": "2025-11-29T13:32:48.000Z",
+    "text": "Bananas. They aged like fucking bananas.\nThis is actually scary cause not only do they look older than 39, they look OLD AF! Their eyes are sunken. Like I’m sure they have on makeup and they still look elderly. https://t.co/YaGgLtt5NP",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "1994643789890126140"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "1994643789890126140",
+      "author_id": "844286710775234560",
+      "created_at": "2025-11-29T05:45:12.000Z",
+      "text": "For clarity, The Olsen Twins are 39. Ain’t no way https://t.co/3LneyBGrjr",
+      "media": [
+        {
+          "media_key": "3_1994643786152955906",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/G65l9JcWUAIRkil.jpg",
+          "height": 2048,
+          "width": 1637
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 768,
+      "reply_count": 938,
+      "like_count": 8934,
+      "quote_count": 198,
+      "bookmark_count": 1235,
+      "impression_count": 1722313
+    },
+    "author_followers": 48912,
+    "author_name": "imjus.Ke🧜🏽‍♀️✨",
+    "author_description": "GA born and raised🍑 Benedict College Alum💜💛 Music Junkie🎶Food Lover🍜Lipstick Enthusiast💋 I’m no ones Twitter soulmate please do not DM me on no weird shit",
+    "author_tweet_count": 110662
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G65l9JcWUAIRkil.jpg",
+          "description": {
+            "description": "A high-fashion advertisement parody featuring two women who appear to be the Olsen twins with voluminous teased hair and no eyebrows. They are wearing matching red latex turtlenecks covered in green Louis Vuitton monograms, paired with heavy gold-link necklaces, LV logo earrings, and black belts with large gold LV buckles. The image has a surreal, stylized aesthetic.",
+            "ocrText": "LOUIS VUITTON THE CELEB TALK girl"
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@SteffieSu: Except it’s AI they don’t look like this (Likes: 1386)  \n@xoofeli: mind u this is them 3 weeks ago (Likes: 757)  \n@drugproblem: this is AI you dumb bitch (Likes: 685)  \n@worstbehaviorll: y’all have rocks for brains istg…. can u not tell this is ai? (Likes: 358)  \n@MrHaydenW: First of all, they wouldn’t be caught dead wearing such tacky outfits & secondly, these are Ai… (Likes: 184)  \n@ZeeMachineMusic: The fact that you can’t tell this is AI is actually frightening (Likes: 170)  \n@iamn0tthe1: Not sure why people are bothering but this is completely faked. They’re not working for LV and this is what they look like as of this month. (Likes: 134)  \n@blahbybb: That’s ai (Likes: 99)  \n@harrrmy: girl someone needs to be in charge of your bank accounts you’re gonna get swindled (Likes: 75)  \n@JerLisa_Nicole: That’s not a real photo lmao. BUT they historically had eating disorders and cigarette/alcohol problems and that will age ya! (Likes: 50)",
+    "warnings": []
+  }
+}

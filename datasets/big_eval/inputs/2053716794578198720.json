@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2053716794578198720",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:02.692Z",
+  "post": {
+    "id": "2053716794578198720",
+    "author_id": "1817586112740659200",
+    "created_at": "2026-05-11T06:00:14.000Z",
+    "text": "My Visa has been Approved. 😭😭❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️ https://t.co/oICnVFldSA",
+    "media": [
+      {
+        "media_key": "3_2053716784511922176",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIBEiNIXMAA4t_K.jpg",
+        "height": 2048,
+        "width": 1152
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 971,
+      "reply_count": 2711,
+      "like_count": 17500,
+      "quote_count": 141,
+      "bookmark_count": 149,
+      "impression_count": 541095
+    },
+    "author_followers": 360309,
+    "author_name": "RUTH 🇨🇦",
+    "author_description": "Aspiring to live life to the fullest",
+    "author_tweet_count": 23876
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIBEiNIXMAA4t_K.jpg",
+          "description": {
+            "description": "A young woman with long dark hair is smiling at the camera while holding a green Nigerian passport balanced above her head. The passport features the gold-colored Coat of Arms of Nigeria and text embossed on the front cover.",
+            "ocrText": "FEDERAL REPUBLIC OF NIGERIA PASSPORT"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Unique_felo: Congratulations hope we're going together my baby (349 likes, 5 reposts)\n- @townxipclownza: Only Nigerians celebrates Visa Approvals. This is equivalent to a matric certificate in SA. (277 likes, 11 reposts)\n- @SpiroGp: Hopefully they review your social media posts to see how you support bad governance.. and denies you, make you stay and enjoy the reforms you support (220 likes, 9 reposts)\n- @YKoluwaseun9: congrats sister in the lord (214 likes)\n- @beet_kon: Visa has been approved but na passport you dey show us (154 likes)\n- @_NhlanhlaNkosi_: As long as you destination is not South Africa. (144 likes)\n- @Cooltiie: So you go leave Abbaz here (97 likes)\n- @only_1_opzhy: Visa approved but nah Passport you Dey show us 🤣😂 Ruth (97 likes, 3 reposts)\n- @Blessed_eagle1: Ruth carry me along oh😭 (90 likes)\n- @NtsentsoBvuma: Why Nigerians celebrate visa approval is your country that bad like everyone is dreaming of running away from ur country? (89 likes, 3 reposts)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2017354263647658448",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:08.331Z",
+  "post": {
+    "id": "2017354263647658448",
+    "author_id": "1332477587399053313",
+    "created_at": "2026-01-30T21:48:31.000Z",
+    "text": "WHO SENT THIS EMAIL? https://t.co/n1LMjkcfwI",
+    "media": [
+      {
+        "media_key": "3_2017354260975874049",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_8VAw-WcAE_75A.jpg",
+        "height": 508,
+        "width": 1081
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3716,
+      "reply_count": 826,
+      "like_count": 58140,
+      "quote_count": 392,
+      "bookmark_count": 2209,
+      "impression_count": 7261062
+    },
+    "author_followers": 229380,
+    "author_name": "Spencer Hakimian",
+    "author_description": "Founder of Tolou Capital Management. Daily Podcast on YouTube. Daily Shorts on Instagram.",
+    "author_tweet_count": 188989
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_8VAw-WcAE_75A.jpg",
+          "description": {
+            "description": "A screenshot of an email header and message. The recipient's information is redacted with a black bar. The sender is listed as Jeffrey Epstein, with a timestamp from April 2009. The body of the email contains a brief question and a controversial statement.",
+            "ocrText": "To: \nFrom: Jeffrey Epstein\nSent: Fri 4/24/2009 3:36:38 PM\n\nwhere are you? are you ok , I loved the torture video"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Ace (@aceventus_)**  \nJerry Epstein sent that email. Basic reading comprehension confirms that.  \nLikes: 4216 | Views: 96159\n\n**Soggy Oreo (@TheSoggyOreo)**  \nWhy the fuck is the name censored? That is not a victim  \nLikes: 2309 | Views: 67376\n\n**ARK (@trojanbladeOG)**  \nSo all those movies about torture and sex/rape by elites in satanic rituals are true?  \nThey literally tell us.  \nLikes: 1430 | Views: 26902\n\n**Jeffrey Levy 🇺🇸 🇨🇦 🇺🇦 (@jeffreymlevy)**  \nWhy did Howard NutLick lie and say his 2005 encounter with Epstein made him so uncomfortable that he was never in the same room with him again and then 7 years later he’s bringing his and his friends young children to his island or home? Brought 8 children to a pedophile.  \nLikes: 1169 | Views: 46889\n\n**nao sei como desativa essa porra (@pedrao_ped87997)**  \n!!! NO ONE IS SEEING THIS ONE  \nLikes: 1168 | Views: 63812\n\n**2𐋄𐌔𐌀𐌌 (@KachySZN)**  \nThe mail is FROM Jeffrey Epstein.  \nThe question is: WHO received this email?  \nLikes: 833 | Views: 24790\n\n**Pierregingerre (@pierregingerre)**  \nDon't you mean, who was the recipient?  \nLikes: 680 | Views: 8909\n\n**The Eskimofo (@IFkdYoBitch69)**  \nIt literally says From: Jeffrey Epstein?  \nLikes: 603 | Views: 45287\n\n**Whole Mars Catalog (@wholemars)**  \nJeffery Epstein  \nLikes: 513 | Views: 119987\n\n**Shakitty (@EggoMyChemtrail)**  \nJes Staley.  \nHe was getting advice from Epstein about expanding JP Morgan in China at that time.  \nHe also had that \"sent by my blackberry\" in other verified emails.  \nLikes: 425 | Views: 44007",
+    "warnings": []
+  }
+}

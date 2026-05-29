@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2043455366063702086",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["manipulated_or_fabricated_evidence"],
+  "category_fit": "poor",
+  "suggested_category": "fictional_universe_joke",
+  "tweet_summary": "Image-only tweet (no text) sharing a clearly satirical 'Dragon Ball family tree' infographic where Chi-Chi is shown as the partner of every male character (Goku, then her son Gohan, then her grandson Goku Jr., etc.). The chart is an obvious joke about a fictional anime universe.",
+  "why_note_decision": "The image is an intentional, obvious joke/meme about a fictional anime franchise. No one is making a sincere genealogical claim about Dragon Ball. Replies treat it as humor ('And then you hit post !?', laughing reactions, 'qué mierda acabo de ver'). Notes correcting jokes about fictional characters are a textbook false-positive use of Community Notes.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The image is a self-evidently satirical meme about fictional Dragon Ball characters; the rapidly-incest-loop chart is the joke. Any note that earnestly 'corrects' the family tree using the Dragon Ball Wiki — explaining who Pan's real parents are, that Goku Jr. is Pan's descendant, etc. — is a false positive. Even granting the meme could mislead a child unfamiliar with the franchise, Community Notes is not the right tool for clarifying jokes about a fictional universe.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The depicted family tree is inaccurate and fabricated. Goku and Chi-Chi are parents of Gohan and Goten; Pan is daughter of Gohan and Videl; Goku Jr. is Pan's great-great-grandson. https://dragonball.fandom.com/wiki/Son_family https://dragonball.fandom.com/wiki/Family_trees",
+    "failure_reason": "Note earnestly fact-checks a joke meme about fictional anime characters using a fan wiki. Raters overwhelmingly tagged 'note not needed' (13 of 26).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke/satire — not a sincere claim",
+    "sources_checked": [],
+    "notes": "The infographic is comedy. The rapidly-recurring 'CHI-CHI' label across generations is the punchline. Comments confirm everyone reads it as a joke."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Anime joke; ~9M impressions but zero stakes for any EA / progress / safety / animal-welfare lens."
+  },
+  "difficulty": "easy"
+}

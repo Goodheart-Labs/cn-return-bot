@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2018147684276748388",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["conspiracy_and_viral_hoax", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Nicki Minaj broadcasts a vague satanic-cult conspiracy accusation — 'your favorite artist' is practicing rituals where they kidnap, mutilate, and kill babies as blood sacrifice — with no named target, no evidence, and a Chucky-doll meme image.",
+  "why_note_decision": "The tweet names no specific artist, gives no event, no time, no source — it is a generic Satanic Panic screed wrapped as a celebrity feed-of-consciousness post. There is no concrete factual claim a note can pin down and refute. A note rebutting 'satanic cults sacrifice babies' restates a debunked panic, but the original tweet doesn't name a verifiable proposition; community raters (997 noteNotNeeded + 920 opinionSpeculation) treated it as opinion/rant. Community Notes is poorly suited to vague conspiracy rants from individual celebrities; this is opinion/framing, not a checkable claim.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet asserts no named person, no specific event, no checkable proposition — it is a rambling satanic-cult conspiracy rant. Without a concrete claim to fact-check, any community note would either (a) debunk a strawman, or (b) editorialize about conspiracy thinking. FAIL any note that attributes a specific accusation Nicki did not make, or that simply moralizes about 'baseless conspiracies' without a fact-check anchor.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Claims of organized satanic cults sacrificing babies, including by celebrities, lack any credible evidence and stem from the debunked Satanic Panic. https://en.wikipedia.org/wiki/Satanic_panic https://theconversation.com/satanism-ritual-cults-and-hollywood-debunking-satanic-panic-conspiracy-theories-203453 https://www.ojp.gov/pdffiles1/Digitization/136592NCJRS.pdf",
+    "failure_reason": "note_addresses_a_general_claim_not_present_in_the_tweet; rebuts the genre of satanic panic without a specific factual claim to anchor on",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "vague_unfalsifiable_screed",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Satanic_panic"
+    ],
+    "notes": "Satanic ritual-abuse conspiracies have been investigated and debunked since the 1980s-90s (e.g. FBI Lanning report). But Minaj's tweet identifies no artist, no event, no evidence — there is nothing concrete to refute beyond a generic genre claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "25M+ impressions from a major celebrity amplifies conspiracy thinking, but a note here would not effectively counter the genre — the better intervention is reducing reach/labels, not a CN refutation."
+  },
+  "difficulty": "medium"
+}

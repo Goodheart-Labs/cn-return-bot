@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2041737922458599477",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:48.175Z",
+  "post": {
+    "id": "2041737922458599477",
+    "author_id": "1968962180",
+    "created_at": "2026-04-08T04:40:29.000Z",
+    "text": "The mystery of Satoshi Nakamoto, the pseudonymous inventor of Bitcoin, has remained unsolved for 17 years. Not anymore. Read my 18-month investigation to find out who Satoshi really is. https://t.co/fPtaK6YHJC",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 1414,
+      "reply_count": 937,
+      "like_count": 8942,
+      "quote_count": 564,
+      "bookmark_count": 9108,
+      "impression_count": 5385194
+    },
+    "author_followers": 60307,
+    "author_name": "John Carreyrou",
+    "author_description": "@nytimes reporter and bestselling author of Bad Blood: Secrets and Lies in a Silicon Valley Startup. Send story tips to john.carreyrou@nytimes.com",
+    "author_tweet_count": 3037
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Michael Saylor** (@saylor)  \nStylometry is interesting, but not proof. The contemporaneous emails between Satoshi and Adam Back suggest they were distinct individuals. Until someone signs with Satoshi’s keys, every theory is just narrative.  \nLikes=5145, Reposts=296, Replies=225, Views=255428\n\n**Nikita Bier** (@nikitabier)  \n@NateSilver538 This is how the New York Times should be posting, not DDoS’ing X with link and 1 sentence captions  \nLikes=1507, Reposts=35, Replies=248, Views=816061\n\n**Pledditor** (@Pledditor)  \nI read this from start to finish. I kept waiting for the big bombshell tying Adam to Satoshi to drop, but it never did. The @NYTimes just recycled the same old slop that had been repeated ad nauseum by others before them, without adding much new insights. Waste of my time.  \nLikes=520, Reposts=12, Replies=14, Views=21537\n\n**Jameson Lopp** (@lopp)  \nStylometric analysis is a joke, as evidenced by how many different ways you had to try it until you got the answer you wanted. You should have performed timestamp and code analysis to dig up better clues.  \nLikes=414, Reposts=0, Replies=0, Views=18751\n\n**Nikita Bier** (@nikitabier)  \nHoly shit - I was on the edge my seat  \nLikes=413, Reposts=8, Replies=52, Views=95961\n\n**Martin Shkreli** (@MartinShkreli)  \nthe world's worst-kept secret  \ndid i use the hyphen right?  \nLikes=289, Reposts=1, Replies=11, Bookmarks=21, Views=81079\n\n**Joe Nakamoto ⚡️** (@JoeNakamoto)  \njohn you wasted so much of your time on a rather silly outcome.   \nhow did your editors let you print this?  \nadam is not satoshi (obviously) and your self indulgent idiotic and fruitless \"unmasking\" is actually harmful to adam and the community.  \nyou should really know better.  \nLikes=288, Reposts=3, Quotes=1, Replies=12, Bookmarks=2, Views=9330\n\n**Alex Thorn** (@intangiblecoins)  \nanother journo oneshotted by the satoshi mystery  \nnew york times continues to publish garbage, never ceases to amaze  \nLikes=267, Reposts=2, Replies=9, Views=6525\n\n**rip van wankle** (@vt__snowflake)  \nfantastic piece, just read the whole thing. everyone will be disappointed at the lack of a smoking gun (i’m sure you were!), but really terrific reporting and analysis overall    \nLikes=214, Reposts=2, Replies=1, Views=169787\n\n**Against Narrative** (@3RenChengHu)  \nWithout commenting on the rest of the story, this is not as interesting as you thought. Public-key cryptography is foundational to secure communication on the Internet, not an obscure technology used in a handful of projects. Ditto C++, a very widely-used language.  \nLikes=210, Reposts=0, Replies=0, Views=20121",
+    "warnings": []
+  }
+}

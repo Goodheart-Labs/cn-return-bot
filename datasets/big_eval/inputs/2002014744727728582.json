@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2002014744727728582",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:31.407Z",
+  "post": {
+    "id": "2002014744727728582",
+    "author_id": "612862560",
+    "created_at": "2025-12-19T13:54:45.000Z",
+    "text": "Lets remember to support Karmelo Anthony! The young brother in Texas who defended himself against attackers and is now being charged with murder. His trial is coming up in 2026 and he needs our support. https://t.co/nDVoTS06HU https://t.co/VtM2ZYinf3",
+    "media": [
+      {
+        "media_key": "13_2002014076537356288",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2002014076537356288/img/drKtMIblboy9Vw3D.jpg",
+        "height": 640,
+        "width": 360,
+        "duration_ms": 48366,
+        "view_count": 119784,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2002014076537356288/vid/avc1/320x568/ro5hDkj3ORymU-T5.mp4?tag=14"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2002014076537356288/vid/avc1/360x640/nAIMKASbz_12cbWn.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2002014076537356288/pl/2qCPBGA4R50YsLPf.m3u8?tag=14&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1750,
+      "reply_count": 2604,
+      "like_count": 5146,
+      "quote_count": 89,
+      "bookmark_count": 328,
+      "impression_count": 304864
+    },
+    "author_followers": 27269,
+    "author_name": "Kamau Franklin",
+    "author_description": "Organizer, Writer, Lawyer. I organize more than I tweet",
+    "author_tweet_count": 9262
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2002014076537356288/vid/avc1/360x640/nAIMKASbz_12cbWn.mp4?tag=14",
+          "description": {
+            "description": "A close-up of Karmelo Anthony, a young African American man with short dreadlocks, wearing a light grey suit and black shirt. Another man in a dark suit is partially visible behind him. The image features a red and dark blue text overlay describing him.",
+            "ocrText": "KARMELO'S TRUTH\nThe Truth\nAbout Karmelo\nAnthony\nKarmelo Anthony is a straight \"A\"\nstudent and accomplished athlete\nworking two jobs who is beloved by his\npeers, employers, teachers, family and\nfriends."
+          },
+          "transcription": "Thank you for watching. Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- mandala (@mandala_mandy): \"I support life in prison for him that I sure do support\" (Likes=878)\n- Bk (@Kerr_BJ14): \"Remember Austin Metcalf...the bright young man that this loser Anthony killed\" (Likes=877, media)\n- Texas Rose II (@1961MLB): \"This is the real Karmello Anthony that stabbed Austin Metcalf in the Heart at a Track Meet.\" (Likes=457, media)\n- TigerFan (@TigerFan1107): \"Kinda funny how you will support someone solely because they’re black but if a white person supported a white person who did this same thing you’d be calling the a nazi/white supremacist lol 😂\" (Likes=360)\n- OwenJames4547 (@Jim093924088846): \"You're trippin'. 🤣🤣🤣🤣\" (Likes=344, media)\n- Joe Pags Pagliarulo (@JoeTalkShow): \"what about the young brother he allegedly stabbed to death? You don't care about him?\" (Likes=219)\n- Dr. Lynn Fynn-derella (@Fynnderella1): \"Are you insane? He murdered an innocent athlete by bringing a weapon illegally and placing himself in a place he had no business being in. @SarahisCensored\" (Likes=170)\n- Blackie Johnson (@extennnd): \"White people CANNOT be racist, they produce a few logs of “black pride” daily…\" (Likes=165, media)\n- Don Keith (@RealDonKeith): \"Fck that. Give him the chair.\" (Likes=112)\n- Artorius (@tripptease): \"Karmelo is innocent this case should be thrown out\" (Likes=53)",
+    "warnings": []
+  }
+}

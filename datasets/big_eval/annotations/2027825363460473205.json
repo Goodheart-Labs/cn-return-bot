@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2027825363460473205",
+  "role": "unhelpful_argumentative_or_biased",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "conspiracy_and_viral_hoax", "antisemitic_conspiracy"],
+  "category_fit": "good",
+  "suggested_category": "antisemitic_conspiracy",
+  "tweet_summary": "Nick Fuentes asserts that for decades Israel has 'openly pursued an agenda to topple Iraq, Syria, and Iran' and 'orchestrated all of these wars' to gain 'total hegemony over the Middle East' — framed as the real reason for the ongoing US-Iran conflict.",
+  "why_note_decision": "This is a sweeping antisemitic-conspiracy-coded historical claim that misrepresents a real policy document. The 1996 'A Clean Break' memo (authored by Perle/Feith/Wurmser et al. for Netanyahu) does propose weakening regional rivals — that part is real and citeable. But the tweet's claim that Israel 'orchestrated' the Iraq War, the Syria conflict, and the current Iran war is not supported by mainstream historiography: those conflicts had US/regional drivers. The claim is widely promoted in white-nationalist/'Groypers' spaces and converted into 'Greater Israel' rhetoric. With 5.2M impressions and replies amplifying overt antisemitism, a note is warranted. The original note was rated NOT_HELPFUL primarily because raters disagreed politically (high notHelpfulOpinionSpeculation/Argumentative tags) — that doesn't mean a note isn't needed; it means the bar is high.",
+  "judge_guidance": "A correct note must (1) NOT endorse the conspiracy framing, (2) acknowledge that 'A Clean Break' (1996) is a real document advocating weakening Iraq/Syria/Iran, (3) state that mainstream historians/declassified records attribute the Iraq War, Syrian civil war, and US-Iran conflict primarily to US, regional, and domestic Iraqi/Syrian/Iranian drivers — not to Israeli orchestration, (4) cite at least one neutral mainstream source (e.g. Wikipedia on the Iraq War, CFR/RAND, or major newspapers). MUST NOT repeat the original note's specific failures: do not editorialize ('disputed/debunked'), do not stack ideologically slanted opinion sites as primary sources, keep tone neutral. PASS if the note clearly contests the 'orchestrated all these wars' claim with neutral sources and stays under 280 chars; FAIL if it (a) is argumentative/biased, (b) cites only opinion/advocacy sites, or (c) accepts the conspiracy framing.",
+  "reference_note": "Israel's 1996 'A Clean Break' memo did urge weakening regional rivals (https://en.wikipedia.org/wiki/A_Clean_Break:_A_New_Strategy_for_Securing_the_Realm), but mainstream historians attribute the Iraq War, Syrian civil war, and US–Iran conflict mainly to US decision-making and regional/local drivers — not Israeli orchestration. https://en.wikipedia.org/wiki/Iraq_War",
+  "original_unhelpful_note": {
+    "text": "1996's \"A Clean Break\" urged weakening regional rivals https://en.wikipedia.org/wiki/A_Clean_Break:_A_New_Strategy_for_Securing_the_Realm. But historians and analysts say Iraq/Syria conflicts were mainly U.S.-led or locally driven, and \"Greater Israel\" domination is a disputed/debunked claim https://www.progressiveisrael.org/iraq-war-pro-israel-conspiracy.",
+    "failure_reason": "Argumentative/biased framing ('disputed/debunked'), and key source is an advocacy site (Progressive Israel) rather than neutral historiography; reads as taking a side rather than neutrally citing mainstream consensus. Raters heavily tagged 'argumentative or biased', 'opinion/speculation', 'sources missing/unreliable', 'incorrect'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false / misleading — A Clean Break is real and does urge regime change in the region, but the leap to 'Israel orchestrated all these wars for hegemony' is not supported by mainstream historiography of the Iraq War, Syrian conflict, or US-Iran tensions",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/A_Clean_Break:_A_New_Strategy_for_Securing_the_Realm",
+      "https://www.dougfeith.com/docs/Clean_Break.pdf",
+      "https://thehill.com/opinion/4646742-israel-peace-palestine-benjamin-netanyahu-clean-break-doctrine/"
+    ],
+    "notes": "Tweet conflates a real (and controversial) US-neocon/Israel-aligned policy paper with a sweeping 'Israel orchestrated everything' conspiracy. Mainstream sources document Iraq War as US-led with multiple drivers; Syrian conflict as a 2011 uprising/civil war; Iran tensions as multi-decade nuclear/security standoff."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "5.2M impressions on an antisemitic-conspiracy framing of a major active war; correcting these claims matters for information-environment health and reducing real-world targeting of Jewish people."
+  },
+  "difficulty": "hard"
+}

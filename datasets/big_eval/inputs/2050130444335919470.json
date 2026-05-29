@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2050130444335919470",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:52.062Z",
+  "post": {
+    "id": "2050130444335919470",
+    "author_id": "2025427566388195328",
+    "created_at": "2026-05-01T08:29:22.000Z",
+    "text": "My mom is Cancer free! Last chemo session!!! https://t.co/lCE8vt4dxz",
+    "media": [
+      {
+        "media_key": "7_2050130410898931712",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2050130410898931712/pu/img/jLwYToBBIQrT37pu.jpg",
+        "height": 720,
+        "width": 1276,
+        "duration_ms": 10937,
+        "view_count": 838679,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2050130410898931712/pu/vid/avc1/478x270/ITK_vfzGu6PG-49s.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2050130410898931712/pu/vid/avc1/638x360/jKrNlkSjyPGh6WnA.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2050130410898931712/pu/vid/avc1/1276x720/xbQqJQx5BwKP0kZO.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2050130410898931712/pu/pl/j6AhxtSR3dJzdKmW.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8532,
+      "reply_count": 436,
+      "like_count": 124699,
+      "quote_count": 293,
+      "bookmark_count": 520,
+      "impression_count": 3384457
+    },
+    "author_followers": 6394,
+    "author_name": "Sabiha 🇺🇸",
+    "author_description": "Portrait Artist | Pet Sketch Expert 🐶✏️\nDetailed, Realistic, Hand-Drawn Art 🎨\nWorldwide Shipping Available 🌍\n📩 pencilxstudio@gmail.com",
+    "author_tweet_count": 8363
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2050130410898931712/pu/vid/avc1/1276x720/xbQqJQx5BwKP0kZO.mp4",
+          "description": {
+            "description": "A woman rings a bell in celebration in a medical facility.",
+            "ocrText": "NEVER GIVE\nNEVER GIVE\nUP UP"
+          },
+          "transcription": "Go, go, go!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@itsmidknightson: Me taking my like back after finding out this POS is a content farming liar (Likes: 450)\n@TVFan43: Pathetic bastard!!! 😡😡🤬🤬🤬 (Likes: 348)\n@MissZindzi: The Community Note...why are you doing this?? (Likes: 74)\n@giftchijioke_: Me anytime I see a stranger I don’t even know beat cancer (Likes: 71)\n@walrus_whimical: congrats to your mom for winning the fight! (Likes: 67)\n@iAmNgash: I mean, there used to be shame.. engagement farming in Cancer is not it (Likes: 52)\n@FarmsGwendolyn: That’s not your mother How horrendous to make money off other people’s cancer journeys (Likes: 37)\n@aristo_jr20732: Me every time someone I dont even know beats a deadly disease 🦠  all thanks to God almighty 🤲💯 (Likes: 27)\n@taliban4x: (Likes: 23)\n@6_bbaby: CONGRATS MAMA!!!!! (Likes: 18)",
+    "warnings": []
+  }
+}

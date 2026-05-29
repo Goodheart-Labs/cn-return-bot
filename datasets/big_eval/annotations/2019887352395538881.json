@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2019887352395538881",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["conspiracy_and_viral_hoax", "joke_or_satire"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "A 15-year-old's joke tweet pairing the 'Epstein alive in Israel via Fortnite' meme with a South Park 'Family Guy joke combine' clip — engagement-baiting humor, not a sincere claim.",
+  "why_note_decision": "The tweet's attached media is a South Park manatee-joke-combine clip; top replies — including the author's own community — recognize this as a joke/meme reaction to the viral Fortnite-littlestjeff1 rumor. The poster's bio reads '15 | roblox gamer extraordinaire'. The note treats it as a sincere conspiracy claim and writes a long sourced debunk, which raters tagged as note-not-needed. The Fortnite rumor itself was already debunked by Epic Games and Snopes.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Tweet is a humorous meme reaction (South Park clip + joke caption) by a 15-year-old, not a sincere conspiracy claim. Any earnest debunking note here is a false positive on satire/joke content.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "False. Epstein's death was ruled a suicide in 2019 and a 2023 DOJ review found no evidence he survived. Epic/Fortnite and multiple fact-checks say the viral in-game account was a troll/name change and does not prove he's alive. https://en.wikipedia.org/wiki/Death_of_Jeffrey_Epstein https://www.facebook.com/Dexerto/posts/fortnite-has-debunked-a-viral-theory-that-jeffrey-epstein-is-still-playing-after/1484947116964263",
+    "failure_reason": "Treated a meme/joke tweet as a sincere claim. The Fortnite-Epstein rumor was widely known and debunked; the tweet is humor referencing it.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is a joke/meme. Underlying viral rumor (Epstein littlestjeff1 Fortnite account) was already publicly debunked by Epic Games and Snopes.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/epstein-fortnite/",
+      "https://kotaku.com/littlestjeff1-epstein-files-fortnite-v-bucks-conspiracy-epic-2000666464"
+    ],
+    "notes": "Many top replies explicitly call it debunked/a joke; the author and community treat the tweet as humor."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pure meme content — low importance, but a useful no-note false-positive trap for the pipeline."
+  },
+  "difficulty": "easy"
+}

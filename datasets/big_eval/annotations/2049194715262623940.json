@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2049194715262623940",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["misattributed_or_miscontextualized_media", "overhyped_research_or_product"],
+  "category_fit": "poor",
+  "suggested_category": "authentic_nasa_panorama",
+  "tweet_summary": "A 'Curiosity' science-content account posts a video of a sweeping panoramic Martian landscape, calling it real footage from Mars from 140M miles away. The video shows the rover's robotic arm coming into frame and matches the look of NASA's recent Perseverance/Curiosity panoramas.",
+  "why_note_decision": "The original note flatly claims 'this video is not authentic Mars rover footage; smooth panning videos like this are simulations or stitched panoramas'. This is wrong on its face: NASA released exactly this type of high-resolution, smooth-panning 360-degree panorama from both Curiosity (1.5-billion-pixel mosaic of 1,031 images, Nov-Dec 2025) and Perseverance (980-image panorama, Dec 2025-Jan 2026), and the rover-arm-coming-into-frame matches a real Perseverance/Curiosity composition. The 'stitched panorama' framing in the note ISN'T disqualifying — NASA's official panoramas ARE stitched panoramas, and that's how rover panoramic video has always been built; the rover doesn't have a high-frame-rate movie camera. The note also cites a Forbes 2021 piece and a Mashable piece about a different fake video from 2021 plus a Snopes Mars-audio fact-check — none of which establish the video here is fake. The tweet itself doesn't claim it's a continuous live shot. So a CN denying authenticity is itself misinformation — a clear false-positive case.",
+  "judge_guidance": "PASS only if the bot declines to write a note. NASA released ultra-high-resolution stitched panoramas from Curiosity (Nov-Dec 2025, 1.5 gigapixel) and Perseverance (Dec 2025-Jan 2026) that are exactly this kind of footage. The original note's claim that 'smooth panning videos like this are simulations' is itself misinformation — NASA panoramic 'videos' are routinely composed from many still images, and that doesn't make them fake. Specifically FAIL any note that (a) says the video is AI-generated, a simulation, or not real Mars footage, (b) cites the Snopes 'Mars audio' fact-check or the 2021 Forbes/Mashable pieces about an unrelated viral fake video as if they cover this one, or (c) characterizes 'stitched panorama' as disqualifying. A note would only be warranted if the bot can identify a specific provenance issue (e.g. the clip is actually a CGI render from a particular game/film, or the rover-arm in this composition does not correspond to any released NASA panorama).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is not authentic Mars rover footage; smooth panning videos like this are simulations or stitched panoramas, while real rover media uses still images or low-frame-rate clips. https://www.snopes.com/fact-check/mars-real-audio https://mashable.com/article/mars-perseverance-fake-video https://www.forbes.com/sites/ericmack/2021/02/21/the-mars-rover-viral-video-going-around-isnt-what-it-seems",
+    "failure_reason": "incorrect_note — denies authenticity of footage that matches NASA's recently released Perseverance/Curiosity panoramas; conflates 'stitched panorama' with 'not real Mars footage'. Sources cited are about a different 2021 viral fake video and Mars audio, not this clip.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "likely_authentic_NASA_panorama",
+    "sources_checked": [
+      "https://www.jpl.nasa.gov/news/nasas-perseverance-curiosity-panoramas-capture-two-sides-of-mars/",
+      "https://www.nasa.gov/solar-system/planets/mars/nasas-perseverance-curiosity-panoramas-capture-two-sides-of-mars/",
+      "https://www.space.com/astronomy/mars/nasas-curiosity-and-perseverance-rovers-capture-sweeping-mars-panoramas-video"
+    ],
+    "notes": "NASA's Curiosity 360-degree panorama (Nov 9-Dec 7, 2025, 1.5 gigapixel from 1,031 images) and Perseverance panorama (Dec 18, 2025-Jan 25, 2026, 980 images of Jezero rim) match the visual style and the rover-arm composition described. Without specific provenance contradiction, the default is 'authentic'."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Science-popularization content; bad notes that 'debunk' real NASA footage degrade public trust in real science — small absolute harm but emblematic of false-positive risks."
+  },
+  "difficulty": "medium"
+}

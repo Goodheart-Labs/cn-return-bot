@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2020558648716521763",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "conflated_locations_or_entities",
+  "tweet_summary": "Viral post (838k views, 38k likes, by 'Basil the Great', 311k followers) headline-screams 'LEAKED EMAIL REVEALS KING CHARLES AIDE OVERSAW ROYAL PROTECTION AT EPSTEIN ISLAND'. The DOJ-released emails actually concern Met protection officers staying at Epstein's Manhattan townhouse on East 71st Street during Prince Andrew's November\u2013December 2010 US trip, NOT Little St. James ('Epstein Island').",
+  "why_note_decision": "A note IS warranted. 'Epstein Island' (Little St. James, USVI) is a culturally loaded location synonymous with the trafficking allegations. Conflating it with Epstein's Manhattan townhouse materially changes the implication of the story (from 'royal aide arranged stays at island where trafficking allegedly occurred' to 'royal aide arranged officer lodging at NYC townhouse during an official visit'). The underlying GB News reporting is real (Peter Loughborough, then-commander of Met royalty protection, allegedly oversaw the arrangement; Officer Julian Phillips arrived Nov 28, 2010 at the \u00a343M 7th-floor 71st Street townhouse). The headline-level location swap is a checkable factual error that 838k viewers benefit from being corrected on. Provisional 'no_note_needed' label is wrong.",
+  "judge_guidance": "PASS only if the note (a) corrects the location: the DOJ-released emails describe Met protection officers staying at Epstein's Manhattan townhouse (East 71st Street, NYC) during Prince Andrew's 2010 US trip \u2014 NOT Little St. James ('Epstein Island'); and (b) cites a credible primary report (GB News, AOL, ABC News, or the original DOJ files) \u2014 not low-tier conspiracy aggregators (amg-news, davidicke). A note that simply says 'no evidence' without naming the correct location FAILS (the story is real, only the location is wrong). A note that defends the King or denies Loughborough's role categorically FAILS too \u2014 palace sources only said the deployment 'wouldn't have required his direct approval', not that the underlying email exchange is fabricated. AVOID the original note's failure: it correctly distinguishes townhouse vs. island but raters tagged it MissingKeyPoints (4) \u2014 likely because it underplays that the story itself (officers staying at the townhouse, arranged via Andrew's secretary to Epstein's executive assistant) is confirmed and serious. A correct note should both fix the location AND acknowledge officers did stay at Epstein's NYC townhouse.",
+  "reference_note": "Misleading framing: the leaked DOJ emails describe Met protection officers staying at Epstein's Manhattan townhouse (East 71st Street, NYC) for ~9 days during Prince Andrew's 2010 US trip, not at Little St. James ('Epstein Island'). The arrangement was reportedly coordinated between Andrew's then-secretary Amanda Thirsk and Epstein's assistant Lesley Groff; Peter Loughborough then commanded Scotland Yard's royalty/diplomatic protection unit. A Palace source said the specific deployment wouldn't have required his direct approval. https://www.gbnews.com/royal/king-charles-peter-loughborough-epstein-files https://abcnews.com/US/fallout-epstein-files-release-reaches-highest-levels-uk/story?id=129893095",
+  "original_unhelpful_note": {
+    "text": "Misleading: GB News reports DOJ emails show Peter Loughborough arranged Met officers to stay at Epstein's Manhattan townhouse during a 2010 official trip, not on Little St James ('Epstein Island'). A Palace source says no direct approval was required. https://www.gbnews.com/royal/king-charles-peter-loughborough-epstein-files https://en.wikipedia.org/wiki/Herbert_N._Straus_House",
+    "failure_reason": "Note has the right correction (townhouse vs island) but raters flagged MissingKeyPoints (4), IrrelevantSources (2, the Wikipedia townhouse-architecture link is tangential), and OpinionSpeculation (2). Likely under-emphasizes that the underlying story \u2014 officers did sleep at Epstein's NYC townhouse for ~9 days, arranged via Andrew's secretary \u2014 IS confirmed, while spending words on the palace-source exoneration ('no direct approval was required') which reads as defensive framing. Net result: rated NEEDS_MORE_RATINGS, no clear push to HELPFUL.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.gbnews.com/royal/king-charles-peter-loughborough-epstein-files",
+      "https://www.aol.com/articles/king-charless-aide-oversaw-royal-144951183.html",
+      "https://abcnews.com/US/fallout-epstein-files-release-reaches-highest-levels-uk/story?id=129893095"
+    ],
+    "notes": "The DOJ emails released in Feb 2026 describe Met protection officers staying at Epstein's Manhattan townhouse on East 71st Street during Prince Andrew's Nov 28 \u2013 Dec 6/7, 2010 trip. Officer Julian Phillips arrived Nov 28; the second PPO arrived with Andrew Nov 29. Andrew's then-secretary Amanda Thirsk emailed Epstein's executive assistant Lesley Groff to coordinate. Peter Loughborough (7th Earl of Rosslyn, now Lord Steward) commanded the Met royalty and diplomatic protection unit at the time. 'Epstein Island' refers to Little St. James (USVI) \u2014 a different location. The tweet's headline-level location swap is the core misleader."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "838k impressions on a high-profile UK royal/Epstein story; 'Epstein Island' is a politically and emotionally loaded location. From an info-integrity lens, conflating the NYC townhouse with Little St. James inflates the implication into trafficking-site association and is exactly the class of subtle location swap that benefits from a precise correction."
+  },
+  "difficulty": "medium"
+}

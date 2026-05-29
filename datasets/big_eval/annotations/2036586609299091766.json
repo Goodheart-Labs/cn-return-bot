@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2036586609299091766",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": [
+    "celebrity_entertainment_sports"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "wholesome_viral_animal",
+  "tweet_summary": "A wholesome post about 'Punch,' a baby macaque, who 'looks for his orange mama, the one that stayed' \u2014 referring affectionately to his stuffed orangutan toy. Video shows the baby monkey cuddling a fluffy plush orangutan.",
+  "why_note_decision": "The underlying story is TRUE and the framing is obviously affectionate, not a deceptive factual claim. Punch is a real baby Japanese macaque at Ichikawa City Zoo, abandoned by his mother and given an IKEA Djungelskog orangutan plushie (nicknamed 'Oran-Mama') as a surrogate \u2014 a widely covered viral story (BBC, Guardian, PBS). Everyone, including the tweet's audience, understands 'orange mama' is the plush toy; that IS the whole story. The original note 'correcting' that the surrogate is 'an immobile stuffed toy' belabors something no one was deceived about \u2014 pedantry on poetic framing. The only genuine reader question in the comments is whether the clip is AI-generated, and it is not (real zoo footage). No note is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The video is real footage of Punch, a baby Japanese macaque at Ichikawa City Zoo who was abandoned by his mother and clings to an IKEA orangutan plushie as a surrogate ('Oran-Mama'); the 'orange mama' framing is affectionate, not a claim that the toy is alive, and the audience knows it is a toy. There is no factual misrepresentation to correct. CRITICAL FAIL: any note that pedantically 'clarifies' the orange mama is a stuffed toy (as the original did) \u2014 that corrects framing nobody was misled by; also FAIL any note claiming the video is AI-generated (it is genuine zoo footage).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video shows Punch's &quot;orange mama&quot; moving and interacting. In reality, the surrogate is an immobile stuffed toy provided to the abandoned baby macaque at Ichikawa Zoo.    https://www.bbc.com/news/videos/c1d6ell32weo  https://www.theguardian.com/world/2026/feb/23/punch-monkey-japan-macaque-why-do-mother-animals-abandon-offspring",
+    "failure_reason": "Pedantic correction of obvious affectionate framing: 'orange mama' is plainly the plush toy and the audience knows it. The story is true; no one was deceived into thinking the toy is alive.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Punch_(monkey)",
+      "https://www.pbs.org/newshour/show/punch-the-monkey-melts-hearts-after-rejection-and-unlikely-friendship",
+      "https://www.animals24-7.org/2026/02/25/punch-the-ichikawa-zoo-baby-macaque-may-be-among-the-lucky-ones/"
+    ],
+    "notes": "Punch: baby Japanese macaque, Ichikawa City Zoo, born Jul 26 2025, abandoned by mother, given IKEA Djungelskog orangutan plushie ('Oran-Mama'). Real, widely covered viral story; footage genuine, not AI."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Wholesome low-stakes animal content; no EA/progress/safety stakes. Useful as a false-positive trap against pedantic 'it's a toy' corrections and against false 'this is AI' claims on real footage."
+  },
+  "difficulty": "easy"
+}

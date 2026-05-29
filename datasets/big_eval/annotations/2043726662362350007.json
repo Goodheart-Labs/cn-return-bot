@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2043726662362350007",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["health_medical_science", "overhyped_research_or_product"],
+  "category_fit": "partial",
+  "suggested_category": "popsci_oversimplification",
+  "tweet_summary": "A science account states that scientists discovered black melanized fungi (Cladosporium sphaerospermum, Cryptococcus neoformans, Wangiella) growing inside Reactor No. 4 at Chernobyl, one of the most radioactive environments on Earth; the attached image headline says the fungus is 'surviving by feeding on nuclear radiation'.",
+  "why_note_decision": "The tweet's text is accurate: those melanized fungi really do colonize the Chernobyl reactor and grow faster under high radiation — a documented finding (Albert Einstein College of Medicine; PLOS ONE 2007). The only contestable element is the image headline's phrase 'feeding on nuclear radiation', a popular-science shorthand for the still-unproven 'radiosynthesis' mechanism. Clarifying that the energy-harvesting mechanism is unproven is technically correct but is a minor mechanistic caveat on an otherwise accurate science-popularization post that did not, in its own text, claim the mechanism is established. This is closer to trivial pedantry than a correction of misinformation a reader is harmed by.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet's factual claims (these fungi grow in Reactor No. 4; they thrive under radiation) are TRUE; only the image's loose 'feeding on radiation' phrasing slightly overstates an unproven mechanism. A note is not needed. If a note IS written, it is acceptable ONLY if it is strictly a mechanistic clarification — i.e. it affirms the fungi do grow faster under radiation (a real finding) AND states that 'radiosynthesis' (using radiation as an energy source like photosynthesis) remains an unproven hypothesis. FAIL any note that denies the fungi exist/grow there, calls the whole post false or a hoax, or claims radiation does not affect their growth.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "While melanized fungi from Chernobyl grow faster when exposed to radiation, the proposed \"radiosynthesis\" process of using radiation as an energy source like photosynthesis remains a hypothesis not conclusively demonstrated. https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0000457 https://www.bbc.com/future/article/20251125-the-mysterious-black-fungus-from-chernobyl-that-appears-to-eat-radiation https://en.wikipedia.org/wiki/Radiotrophic_fungus",
+    "failure_reason": "Note is accurate but addresses only a mechanistic caveat in the image headline; the tweet's own text did not overclaim the mechanism, so the note reads as a not-needed pedantic clarification (raters: notHelpfulNoteNotNeeded dominant).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "mostly true (popsci oversimplification in image headline only)",
+    "sources_checked": ["https://en.wikipedia.org/wiki/Radiotrophic_fungus", "https://www.sciencealert.com/chernobyl-fungus-seems-to-have-evolved-an-incredible-ability", "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0000457"],
+    "notes": "Confirmed: melanized fungi colonize the Chernobyl reactor and grow faster under ionizing radiation (real, replicated). 'Radiosynthesis' (deriving usable energy from radiation, analogous to photosynthesis) is a hypothesis not conclusively demonstrated — no shown carbon fixation or metabolic gain pathway. The note's science is correct; it just isn't needed for the tweet's accurate text."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Accurate science-popularization with a mild headline overstatement; minimal risk to the public and low priority across EA/progress/safety lenses."
+  },
+  "difficulty": "medium"
+}

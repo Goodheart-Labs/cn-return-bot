@@ -1,0 +1,502 @@
+[
+ {
+  "tweet_id": "2010617989209706498",
+  "url": "https://x.com/i/status/2010617989209706498",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "breaking_news_and_war",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "🚨BREAKING: Mass pro-government rallies showed support for the Iranian regime in various Iranian cities today.\n\nhttps://t.co/jkKj08ZjRY",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2010608440930910209/vid/avc1/426x240/C-8cNvtaQ1k0b1aU.mp4",
+    "description": {
+     "description": "A split-screen news broadcast showing aerial and ground views of thousands of people marching in the streets, predominantly carrying flags and banners. A large lower third banner in Persian is visible across the bottom of the screen, with additional smaller live location markers in the corners.",
+     "ocrText": "محکومیت جنایت های تروریست های مسلح"
+    },
+    "transcription": "موسیقی موسیقی فارباردی"
+   }
+  ],
+  "tweet_summary": "Post by Jackson Hinkle (3.9M followers) claims 'Mass pro-government rallies showed support for the Iranian regime in various Iranian cities today' (Jan 12, 2026), with a split-screen broadcast of crowds marching with flags/banners. The Persian lower-third references condemning 'armed terrorists.'",
+  "bad_note_text": "Iran is experiencing widespread anti-government protests across all provinces, not mass pro-regime rallies. State TV has aired pro-government footage amid the unrest. https://en.wikipedia.org/wiki/2025–2026_Iranian_protests https://www.politico.com/news/2026/01/10/protests-in-iran-near-the-2-week-mark-as-authorities-intensify-crackdown-on-demonstrators-00721166",
+  "failure_reason": "Direction is right (missing-context: huge anti-government protests + crackdown) but rated NOT_HELPFUL (20 ratings; dominant notHelpfulOpinionSpeculation 10, Incorrect 8, MissingKeyPoints 8). The phrasing 'widespread anti-government protests ... not mass pro-regime rallies' overcorrects — it can be read as denying that pro-government rallies happened at all, but state-organized pro-regime rallies were real (Khamenei thanked participants). That over-flat denial invites the 'incorrect' flags. The n…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 20,
+  "why_note_decision": "A note is warranted because the post is misleading by omission. In Jan 2026 Iran was convulsed by the LARGEST anti-government protests since 1979 — nationwide demonstrations from late Dec 2025 met by a lethal crackdown that killed thousands and arrested tens of thousands. State-organized pro-government rallies DID occur (Khamenei thanked participants in Jan-12 pro-government rallies, and state TV aired pro-regime footage), so the rallies are not fabricated — but presenting them as the headline reality while omitting the far larger anti-government uprising and crackdown materially misleads view…",
+  "reference_note": "Context: in Jan 2026 Iran was gripped by its largest anti-government protests since 1979 (nationwide since late Dec 2025), met by a lethal crackdown that killed thousands and detained tens of thousands. State-organized pro-government rallies did occur and were aired on state TV, but this post omits the far larger anti-regime uprising and crackdown. https://en.wikipedia.org/wiki/2025%E2%80%932026_I…"
+ },
+ {
+  "tweet_id": "2019530774572331058",
+  "url": "https://x.com/i/status/2019530774572331058",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Charlie Kirk Was About to Prove Epstein Is Alive and Living in Israel \n\nCharlie Kirk uncovered the one secret no American political figure was ever supposed to see: Jeffrey Epstein wasn't dead. Not even close. He was quietly exfiltrated from his Manhattan cell and flown to Israel https://t.co/yFn11DkUqj",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2019530722802036736/pu/vid/avc1/640x360/HWeIcDr51gQcqj0D.mp4",
+    "description": {
+     "description": "A news segments with showing frames of a male reporter with two side-by-side headshots in the background of Charlie Kirk and Jeffrey Epstein.",
+     "ocrText": "@tpvsean"
+    },
+    "transcription": "A Turning Point USA donor, one of Charlie Kirk's closest friends, has come forward with a bombshell that flips the official narrative upside down. According to the source, Charlie uncovered the one secret no American political figure was ever supposed to see. Jeffrey Epstein wasn't dead, not even close. He was quietly exfiltrated from his Manhattan cell and flown to Israel under deep intelligence protection, while the world was fed a convenient lie. And when Charlie found out, when he started asking the wrong questions, pushing into the wrong files, connecting the wrong dots, that's when the countdown began. The public execution of Charlie Kirk wasn't punishment. It was a warning, a message, a reminder of who really holds the keys to the shadows. Before we dive in, did you know that the Mossad secretly controls most of the world's most popular VPNs? If you're a customer, you need to cancel your subscription right now. The only VPN I trust to protect my privacy from the deep state is VP.net. They're built to block the deep state from spying on you. Visit VP forward slash TPV to find out more Another day and yet more pressure from Israel This time an Israeli agent living in the United States issued a thinly veiled threat towards American lawmakers who don't fall in line. Watch his expression at the end. That evil smile. It says everything. He knows the truth is out in the open. He knows that Americans know who is behind the public execution of Charlie Kirk. And he knows most people are still too afraid to speak it. Did you hear what he just said? He threatened politicians in the West that if they don't agree with Israel's war against Iran, that they're going to fall. And remember, he's an Israeli agent. Are you saying Israel will murder politicians in the West or get rid of them politically through bribery or whatever else? What do you mean the politicians in the West will fall if they don't agree to back Israel's war against Iran? Yeah, we will not vote for them anymore. oh well you don't vote for them now you're not in our country what do you mean the politicians will fall according to bombshell testimony of a turning point usa donor we have coming up charlie had just begun to understand the machinery behind the world the hidden net"
+   }
+  ],
+  "tweet_summary": "Post by 'Censored Humans' (2.2M views) claims Charlie Kirk was about to prove Jeffrey Epstein is alive and living in Israel — that Epstein was 'exfiltrated from his Manhattan cell' under intelligence protection, and that Kirk's assassination was a cover-up. The video is a narrated conspiracy segment that also pitches a VPN.",
+  "bad_note_text": "Jeffrey Epstein died by suicide in 2019; no evidence shows he is alive or in Israel. Charlie Kirk's 2025 assassination was by a politically motivated gunman with no Epstein connection. https://en.wikipedia.org/wiki/Death_of_Jeffrey_Epstein https://en.wikipedia.org/wiki/Assassination_of_Charlie_Kirk https://factually.co/fact-checks/media/is-jeffrey-epstein-alive-in-israel-38875a",
+  "failure_reason": "Substance correct but rated NOT_HELPFUL (28 ratings; dominant notHelpfulOpinionSpeculation 11, SourcesMissingOrUnreliable 11, NoteNotNeeded 8, Incorrect 7). On a hardcore conspiracy thread the flat 'died by suicide / no evidence' framing reads to believers as bare assertion, and one source ('factually.co') is an obscure aggregator. The note also doesn't mention the most concrete debunk — that the 'alive in Israel' photos are AI-fabricated (Gemini watermark) — which is the strongest available cou…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 28,
+  "why_note_decision": "A note is warranted: a sweeping, checkable conspiracy claim with high reach. Jeffrey Epstein died Aug 10, 2019 in his Manhattan jail cell; the death was ruled suicide and a forensic pathologist hired by his brother confirmed the body's fingerprints matched Epstein's. The viral 'Epstein alive in Tel Aviv' photos are AI-fabricated (a Gemini AI watermark, a fake street name; AFP and Full Fact debunked them). There is no evidence Epstein was exfiltrated to Israel, and no evidence Charlie Kirk uncovered or was killed over any such secret.",
+  "reference_note": "Jeffrey Epstein died in his Manhattan jail cell on Aug 10, 2019; the death was ruled suicide and a forensic pathologist confirmed the body's fingerprints matched Epstein. Viral photos of him 'alive in Israel' are AI-fabricated and have been debunked (Gemini AI watermark; AFP/Full Fact). There is no evidence he was exfiltrated to Israel or any link to Charlie Kirk's killing. https://en.wikipedia.or…"
+ },
+ {
+  "tweet_id": "2023453339350950308",
+  "url": "https://x.com/i/status/2023453339350950308",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "celebrity_entertainment_sports"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "🚨 KATE SPADE DIES BY “SUICIDE” - 48 HOURS LATER HER HUSBAND EMERGES IN A STRANGE MASK AS THE STORY GETS SEALED\n\nTwo days after Kate Spade is ruled dead by “suicide” in June 2018 - officially recorded as suicide by hanging using a red scarf - cameras catch her husband Andy Spade https://t.co/cRatFbari5",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2023452640898936833/vid/avc1/1920x1080/urFsLKpZ8jZB4VG_.mp4",
+    "description": {
+     "description": "The video captures a person exiting a building wearing a mouse mask. The person also wears a denim jacket and carries a yellow and blue backpack. The person walks down a street and then gets into a large black SUV.  The 'Inside Edition' logo is periodically displayed in the bottom-left corner.",
+     "ocrText": "[{\"frame\": 1, \"text\": \"INSIDE\"}, {\"frame\": 2, \"text\": \"INSIDE EDITION\"}, {\"frame\": 3, \"text\": \"INSIDE EDITION\"}, {\"frame\": 4, \"text\": \"INSIDE EDITION LTZ\"}]"
+    },
+    "transcription": "Kate Spade's husband is hiding his grief in a mouse mask. Two days after Kate's shocking suicide, Andy Spade left his Manhattan apartment wearing the bizarre mask. Photographers surrounded him and expressed sympathy as Spade appealed for privacy. Sorry for your loss, Andy. Meanwhile, the New York City medical examiner made it official. Cause of death, hanging, manner, suicide. In a statement, Andy Spade confirms he moved out 10 months ago, but he and his wife remained close. We ate many meals together as a family. We were not legally separated and never even discussed divorce. The statement also denounced the leak of Kate's suicide note, which was addressed to their 13-year-old daughter, B, and reportedly declared, B, I have always loved you. This is not your fault. Ask Daddy."
+   }
+  ],
+  "tweet_summary": "HustleBitch tweet (4.8M views) frames Kate Spade's 2018 suicide and her husband Andy's subsequent appearance in a mouse mask as 'strange' / 'sealed,' insinuating foul play. Comments amplify Epstein conspiracy theories, 'rat' symbolism, government cover-up claims.",
+  "bad_note_text": "Kate Spade's death was ruled suicide by hanging after NYC medical examiner investigation; family attributed it to depression. Andy Spade wore the mask amid grief/media avoidance, per contemporary reports. No evidence supports foul play or cover-up claims. https://www.nytimes.com/2018/06/05/fashion/kate-spade-dead.html https://nypost.com/2018/06/07/why-andy-spade-was-photographed-wearing-a-mouse-mask/ https://www.cnn.com/2018/06/06/us/kate-spade-death/index.html",
+  "failure_reason": "Opinion-speculation tagging: substantively correct but refuting an unstated insinuation rather than an explicit claim; could add the Bernard/Rescuers mask detail explicitly. Borderline — original is close to a good note; the vote sample (19) is small.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 19,
+  "why_note_decision": "The tweet uses scare quotes around 'suicide' and language like 'as the story gets sealed' to insinuate conspiracy without making one explicit checkable claim. The verified facts: Kate Spade's death was ruled suicide by hanging by the NYC ME; Andy Spade's mask was a Bernard-from-The-Rescuers cartoon-mouse mask he wore amid grief and media avoidance (per Inside Edition, NY Post, CNN); the case is NOT sealed and was publicly reported in detail. Comments are full of explicit conspiracy claims (Epstein emailed her the day she died — false; she was 'killed for being a rat' — no evidence), so a note …",
+  "reference_note": "Kate Spade's June 2018 death was ruled suicide by hanging by the NYC medical examiner; her husband Andy attributed it to depression in a public statement and contemporary reporting (NYT, CNN). The mouse mask Andy wore was modeled on Bernard from the 1977 Disney film 'The Rescuers' — he wore it to avoid press during acute grief, per Inside Edition / NY Post. The case is not sealed and there is no c…"
+ },
+ {
+  "tweet_id": "2027002640257659181",
+  "url": "https://x.com/i/status/2027002640257659181",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "politics_and_policy"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "SNEAKO absolutely destroys India’s Prime Minister Modi 😭💀🤣 https://t.co/wrh2eIMw6Z",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2026992857320493056/pu/vid/avc1/1920x1080/8vC72I7IB-YYAP9n.mp4",
+    "description": {
+     "description": "A series of frames from a 'Kick' live stream by user SNEAKO. The main video shows Indian Prime Minister Narendra Modi delivering a speech in front of a white flag with a blue Star of David. In the bottom-right corner, a secondary video inset shows the streamer, SNEAKO, wearing a beanie and a black hoodie, reacting to the speech. A live chat feed is overlayed on the left side, showing comments from various users. The streamer's Kick profile link 'KICK.COM/SNEAKO' is displayed at the bottom of the main frame.",
+     "ocrText": "Gold_Boutt: ILLUMINATI VEST\neighteencharacters: 157\nel_trappeador:\niit was the ottomans in the 19th century dumbass\nliverpool86: 1920s\nTWODADS:\nSomethinglightit:\nKICK\nKICK.COM/SNEAKO\neighteencharacterss: JEWS JEWS JEWS\neighteencharacterss:\nliverpool86: Hahah\nzinoiliq: DOOOOPPTAAA SCOOOPPTAAAAA\nJamesHardo: they build toilets\nLuhKee:\nboyonaro: Indians are sub 9 guys to them\nLuhKee:\nLuliKvet:\nyummy:\nAMGibra63: plz sneak can't take more of this jeet torture\nGold_Boutt: THIS GUY IS NOT A JEW\nDean88777: DOOONT TT TREEEEDEM\nzinoiliq: DDDOOPPTAA\nDDPOOOPP PTAAA BETAAAA\nhttps://x.com/zhao_dashuai/status/17801\n91035727262157?s=46\nparzu:\niujegrbegs: india has more Muslims than Pakistan\nparzu:\nLuhKeed:\nnavs93:"
+    },
+    "transcription": "They hold firmly that Israel is the fatherland and India the motherland. That glaze is crazy. Oh my God. Israel is the fatherland and India is the motherland. Did you just say publicly on stage that you're getting fucked by Netanyahu? did you just say you literally said in elegant Indian words that you are Netanyahu's bitch literally Israel is daddy and I'm the mommy I'm"
+   }
+  ],
+  "tweet_summary": "A clip captioned 'SNEAKO absolutely destroys India's PM Modi' shows streamer SNEAKO reacting to Modi's Knesset speech line 'Israel is the fatherland, India the motherland,' mocking it as Modi publicly debasing himself before Netanyahu.",
+  "bad_note_text": "The clip takes Modi’s Knesset remarks out of context. He praised Indian-origin Jews—“Israel is their fatherland, India their motherland”—as a tribute and highlighted India–Israel ties; the streamer’s reaction reframes that praise as a humiliating moment. https://www.youtube.com/watch?v=or2RwY0P10Q",
+  "failure_reason": "opinion_speculation_editorializing_and_weak_source",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 429,
+  "why_note_decision": "The clip miscontextualizes a real, checkable fact. In his Feb 2026 Knesset address Modi was describing Indian-origin Jews in Israel ('they hold firmly that Israel is their fatherland and India their motherland') as a tribute to that community and to India-Israel ties — he was not speaking about himself or India submitting to Israel. The viral edit strips that context so viewers believe Modi humiliated himself; many commenters take it literally. Multiple fact-checkers (FACTLY, BOOM, Eurasian Times) addressed exactly this clipped quote, so a context note is warranted. This is a genuine correctio…",
+  "reference_note": "Out of context. In his Feb 2026 Knesset speech, Modi was describing Indian-origin Jews in Israel — 'they hold firmly that Israel is their fatherland and India their motherland' — as a tribute to that community and to India-Israel ties. He was not speaking about himself or India. https://www.memri.org/reports/indian-prime-minister-narendra-modis-historic-speech-israeli-knesset-heart-india-israel ht…"
+ },
+ {
+  "tweet_id": "2028238482846687618",
+  "url": "https://x.com/i/status/2028238482846687618",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "breaking_news_and_war",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Iranian Air Defense has shot down \"something\" likely a fighter jet over Tehran 🚀\n\nNotice the smoke on impact [Indicates jet fuel] &amp; the speed of the falling object. https://t.co/P6dy0RdnM2",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2028238454619013120/pu/vid/avc1/352x640/0VK1OQV6qo2pAFTy.mp4",
+    "description": {
+     "description": "A series of four frames from a night video shows a city skyline under a dark sky. A bright, glowing object is seen descending through the clouds and moving toward the city buildings in the background. Each frame tracks the object's downward trajectory over the urban area. A colorful graphic logo in Arabic script is present in the top right corner of every frame.",
+     "ocrText": "يلا تنور"
+    },
+    "transcription": "اللا و اکبر مشکل نه مانمونه اللا و اکبر اللا و اکبر اللا و اکبر یوزه یوهوهو یوهوهو اللہ و اکبر اللہ و اکبر"
+   }
+  ],
+  "tweet_summary": "Post by 'Pakistan Strategic Forum' (711k views) shows a night video of a glowing object descending over a city, claiming Iranian air defense 'shot down something likely a fighter jet over Tehran' on March 1, 2026, citing the smoke and speed as evidence of jet fuel.",
+  "bad_note_text": "No fighter jet was shot down by Iranian air defense over Tehran amid recent strikes. https://www.wired.com/story/x-is-drowning-in-disinformation-following-us-and-israels-attack-on-iran https://en.wikipedia.org/wiki/2026_Iran–United_States_crisis https://www.timesofisrael.com/idf-over-2000-bombs-dropped-on-iran-in-30-hours-air-supremacy-achieved-on-1st-day",
+  "failure_reason": "Conclusion is defensible but rated NOT_HELPFUL (25 ratings; dominant notHelpfulOpinionSpeculation 12, SourcesMissingOrUnreliable 10, IrrelevantSources 5). The note makes an absolute negative claim ('No fighter jet was shot down') but backs it with three generic war-overview links that do not specifically address this March 1 Tehran clip, so it reads as an unsupported assertion. Proving a negative in fast-moving fog-of-war requires framing as 'unconfirmed / no evidence', not a flat denial.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 25,
+  "why_note_decision": "A note is warranted because the post presents an unverified, speculative war claim ('likely a fighter jet') as near-fact to 711k viewers. As of March 1, 2026 there was no confirmed shootdown of a manned fighter jet by Iranian air defense over Tehran — documented losses that day were Israeli drones intercepted and Iranian aircraft destroyed on the ground at Tabriz; the first Tehran air-to-air kill (March 4) was an Israeli F-35 downing an Iranian Yak-130 trainer. The post's own commenters split between 'drone', 'B2', and 'jet', underscoring that the object is unidentified.",
+  "reference_note": "There is no confirmed report that Iranian air defense shot down a fighter jet over Tehran on March 1, 2026. The falling object in this clip is unidentified — commenters themselves dispute jet vs. drone. Verified early-March losses were intercepted Israeli drones and Iranian aircraft hit on the ground; the first Tehran air-to-air kill (March 4) was an Israeli F-35 downing an Iranian trainer. https:…"
+ },
+ {
+  "tweet_id": "2028529524707655894",
+  "url": "https://x.com/i/status/2028529524707655894",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "İran füzelerinin vurduğu Tel Aviv'in yıkıntılarına ait görüntüler.\n\nİsrail Ordusu: \"Siviller ateş altında medeni Dünya buna sessiz kalamaz.\"\n\nYooo kalır , kaldı yani biz gördük. Kalır kalır endişeye gerek yok!\n#TelAviv https://t.co/iIo8XJBgHB",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2028529500997206017/pu/vid/avc1/474x850/9csNNRsFKp5GGeBa.mp4",
+    "description": {
+     "description": "A scene showing the aftermath of an urban disaster at night. The first frame depicts a crowded area with first responders and onlookers near high-rise buildings. The second frame focuses on a severely damaged building structure with twisted metal and debris. The third frame shows rescue workers in high-visibility vests and helmets near a crushed vehicle and emergency vehicles like fire trucks.",
+     "ocrText": "sepah_pasdaran"
+    },
+    "transcription": "תודה רבה."
+   }
+  ],
+  "tweet_summary": "Turkish-language post by 'KABAC' (862k views) presents night footage of urban destruction/rescue as 'images of the ruins of Tel Aviv struck by Iranian missiles,' mocking Israeli civilian-casualty appeals. Video OCR shows an IRGC ('sepah_pasdaran') watermark; frames show rescue workers, fire trucks, a crushed vehicle, and a heavily damaged building.",
+  "bad_note_text": "Bu görüntüler Tel Aviv değil, İran füzesinin vurduğu Beit Şemeş'teki yıkımı gösteriyor; Tel Aviv'deki hasar cam kırıkları ve enkazla sınırlı kaldı. https://www.nytimes.com/2026/03/01/world/middleeast/9-killed-beit-shemesh-iranian-missiles.html https://www.bbc.com/news/videos/c363zr0n27yo https://www.euronews.com/video/2026/03/02/tel-aviv-residents-assess-damage-after-iranian-missile-strike-kills-one",
+  "failure_reason": "Direction is correct (real footage misattributed: Beit Shemesh, not Tel Aviv) and sources are solid (NYT/BBC/Euronews), but rated NOT_HELPFUL (16 ratings; dominant notHelpfulOpinionSpeculation 8, Incorrect 7, SourcesMissingOrUnreliable 5). The note asserts the Beit-Shemesh identification confidently, but the specific clip is hard to verify from the frames (and an AI-generated 'Tel Aviv destroyed' fake circulated simultaneously), so raters split on whether the relabeling was proven. The NYT sourc…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 16,
+  "why_note_decision": "A note is warranted: the footage is misattributed. The severe building-collapse destruction shown is consistent with the March 1, 2026 Iranian missile strike on Beit Shemesh (Ramat Lehi neighborhood) that destroyed the Tiferet Israel synagogue and killed nine — NOT Tel Aviv, where damage from that salvo was far more limited (a building hit, one killed, broken glass/debris). Calling this 'the ruins of Tel Aviv' overstates Tel Aviv damage and mislocates a real Beit Shemesh tragedy. (A notorious fully AI-generated 'Tel Aviv destroyed' video also circulated in this period, so location/authenticity…",
+  "reference_note": "Bu görüntüler Tel Aviv'i değil, 1 Mart 2026'da İran füzesinin vurduğu Beit Şemeş'teki (Ramat Lehi) yıkımı gösteriyor; saldırıda Tiferet Israel sinagogu yıkıldı ve 9 kişi öldü. Aynı saldırıda Tel Aviv'deki hasar bir binayla ve cam kırıkları/enkazla sınırlı kaldı (1 ölü). https://www.timesofisrael.com/nine-people-killed-in-iranian-missile-strike-on-residential-area-in-beit-shemesh/ https://www.aljaz…"
+ },
+ {
+  "tweet_id": "2032528916817260817",
+  "url": "https://x.com/i/status/2032528916817260817",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Netanyahu is dead!  That's what I get from this. It fits the dead stiffness in Scott Bessent's body and hands, and his upset voice after returning from the Situation Room. \n\nHe then talks about his teenager's life being safe in Trump's hands. 🤡 Because he knows Iran is going to https://t.co/IyURqiQgPD",
+  "media_description": [],
+  "tweet_summary": "Speculates 'Netanyahu is dead!' by reading Scott Bessent's body language and 'upset voice' after he left an interview for the Situation Room during the March 2026 Iran conflict.",
+  "bad_note_text": "Israeli PM Benjamin Netanyahu is not dead. He held a press conference on March 12, 2026, addressing the Iran conflict. Rumors of his death are false. Sources: https://www.aljazeera.com/news/2026/3/12/netanyahu-says-israel-stronger-than-ever-in-first-speech-since-iran-war https://www.timesofisrael.com/liveblog_entry/watch-netanyahu-holding-his-first-press-conference-of-current-iran-war https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor https://www.youtube.com/watch?v=Cm0amGXkngs",
+  "failure_reason": "Opinion/speculation tags despite being factually correct — likely because the tweet is framed as the author's interpretation and raters on this charged topic read the note as taking a side; the note is actually solid. The dominant tag reflects the contested topic more than a real defect; a clean, well-sourced 'not dead, here's the proof' note is the right fix.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 16,
+  "why_note_decision": "The tweet asserts a false, checkable factual claim (Netanyahu is dead) inferred purely from a third party's demeanor. Netanyahu was demonstrably alive: he held a live press conference March 12, 2026 and posted videos March 15-17 dispelling the rumor. The 'Netanyahu is dead' narrative spread to 218k+ mentions and is a verified false conspiracy, so a corrective note is warranted even though the post frames it as the author's interpretation.",
+  "reference_note": "Netanyahu is not dead. He held a live, broadcast press conference on March 12, 2026 and posted further videos on March 15-17 (including a Jerusalem cafe appearance) specifically to dispel these death rumors, which fact-checkers traced to Iranian media and rated false. https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/ https://www.aljazeera.com/news/2026/3/12/netanyahu-says-israe…"
+ },
+ {
+  "tweet_id": "2032575905327915048",
+  "url": "https://x.com/i/status/2032575905327915048",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war",
+   "conspiracy_and_viral_hoax",
+   "ai_generated_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "🇮🇷🇮🇱 | Iranian media are reporting that Netanyahu is dead.\n\nIn addition, analyses suggest that Netanyahu’s most recently released video was likely generated using AI.\n\nInterestingly, two days ago, during an interview, Scott Bessent was urgently called away for a conversation with https://t.co/qx0prthdg4",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2032575829696282624/vid/avc1/1124x590/BDJm1Gm_t8lLrGQw.mp4",
+    "description": {
+     "description": "A series of video frames showing Benjamin Netanyahu speaking in front of two Israeli flags. The video appears to have digital artifacts or AI manipulations, highlighted by red circles and text. In the first frame, his right hand is circled with the text \"6 fingers\". In the second and third frames, his left hand is circled, showing distorted or blurred finger movement.",
+     "ocrText": "GPO 6 fingers"
+    },
+    "transcription": "(transcription failed: Command failed: ffmpeg -i \"/var/folders/n4/l4rh4y3n4lz2b0h3p52h20240000gn/T/cn-gemini-1779720775755-)"
+   },
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2032575829679448064/vid/avc1/608x1080/zGde2j0RR4SOs95Z.mp4",
+    "description": {
+     "description": "A man in a navy suit is being interviewed in a room with American and government flags. During the interview, someone off-camera informs Scott Bessent that he is needed at the White House immediately. Bessent is shown being unclipped from his microphone and standing to leave. The final frame shows the empty chair and a timestamp of 10:22 AM.",
+     "ocrText": "BESSENT CALLED TO WHITE HOUSE MID INTERVIEW The President wants you right away. 10:22AM"
+    },
+    "transcription": "I listened to you on the... Oh, okay. Okay, no problem at all. See you shortly, Mr. Secretary. Mr. Secretary, I have to say, it's a first, I'm sure, a last as well, that an interviewee has been pulled away to go to the Situation Room. How is the President? Was he stressed? No, the President is in great spirits. The Iranian mission is proceeding well ahead of schedule. And I have to tell you, Wolf, that I'm a teenager who's considering military service, and I could give this team my highest compliment. From President Trump to the head of the Joint Chiefs to the Secretary of War, I would say that I would trust my child's life in their hands."
+   }
+  ],
+  "tweet_summary": "Relays that 'Iranian media are reporting Netanyahu is dead,' adds that his recent video was 'likely generated using AI' (citing a '6 fingers' anomaly), and ties in Bessent being called away mid-interview.",
+  "bad_note_text": "Netanyahu is not dead; his office dismissed Iranian media claims as fake news. Recent statements confirm he's alive. The video is real & shows no six fingers—claims of AI are false. https://www.reuters.com/world/middle-east/netanyahu-threatens-irans-new-supreme-leader-defends-joint-assault-with-us-2026-03-12 https://www.snopes.com/fact-check/netanyahu-6-fingers-ai https://www.aljazeera.com/news/2026/3/12/netanyahu-says-israel-stronger-than-ever-in-first-speech-since-iran-war",
+  "failure_reason": "Opinion/speculation: phrases the rebuttal as the note's own assertions ('The video is real & shows no six fingers') rather than attributing the authentic/not-AI verdict to forensic analysis or a fact-check. On a charged topic this read as the annotator's opinion, drawing opinionSpeculation (12) tags despite being substantively correct.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 29,
+  "why_note_decision": "Two false checkable claims: (1) Netanyahu is dead, and (2) his recent video is AI-generated. Both are debunked: Netanyahu held a live March 12, 2026 press conference (forensic analysis by GetReal Security found no AI signs) and appeared March 15-17 (cafe video, with Huckabee) showing five fingers on each hand. The 'six fingers' was a video/compression artifact, not AI. The post amplifies a verified false conspiracy (218k+ mentions), so a note is warranted.",
+  "reference_note": "Netanyahu is not dead and the video is not AI-generated. He held a live press conference on March 12, 2026 (forensic analysis found no signs of AI manipulation) and appeared publicly March 15-17 showing five fingers on each hand. The 'six fingers' and similar anomalies are video/compression artifacts, not AI; fact-checkers rated the death and AI claims false. https://www.politifact.com/article/202…"
+ },
+ {
+  "tweet_id": "2033236021002031109",
+  "url": "https://x.com/i/status/2033236021002031109",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "ai_generated_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "🚨🇮🇱 BREAKING — He's Dead\n\nNetanyahu's AI-Generated Video\n\nLook at the Pocket... https://t.co/awgLWI2GGI",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2033235828273811456/vid/avc1/590x1278/nfn0XWo27SAEDwgx.mp4",
+    "description": {
+     "description": "A frame capture of a social media post showing a video of Benjamin Netanyahu. He is indoors, standing in what appears to be a cafe, holding a green paper cup. A man in an apron is visible in the background.",
+     "ocrText": "03:45 X M • 47, 0:54 / 1:00, Megatron @Megatron_ron, BREAKING:, Netanyahu posts a... more, 303 204 1K 131K"
+    },
+    "transcription": "(transcription failed: Command failed: ffmpeg -i \"/var/folders/n4/l4rh4y3n4lz2b0h3p52h20240000gn/T/cn-gemini-1779720788370-)"
+   }
+  ],
+  "tweet_summary": "Post by 'Pamphlets' (200k followers, 6.6M views) headlined 'BREAKING — He's Dead' claims a real March 2026 video of Netanyahu in a cafe is AI-generated ('Look at the Pocket'), feeding the viral rumor that an Iranian missile killed Netanyahu. Comments pile on with debunked 'extra finger', 'coffee cup never empties', and bogus '96.9% Hive AI' claims.",
+  "bad_note_text": "Netanyahu is alive. He posted a video on March 15, 2026, joking about death rumors and showing his hand to debunk AI claims of extra fingers.    https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor  https://www.dawn.com/news/1982385/i-am-dead-for-coffee-israeli-pm-netanyahu-posts-his-videos-amid-speculation-about-his-death  https://www.tribuneindia.com/news/world/israeli-pm-netanyahu-debunks-death-rumours-sips-coffee-shows-5-fingers",
+  "failure_reason": "Substance is correct but rated NOT_HELPFUL (109 ratings, dominant notHelpfulOpinionSpeculation 48, also MissingKeyPoints 38, SourcesMissingOrUnreliable 41, IrrelevantSources 33, Incorrect 35). The note engages the conspiracy on its own terms ('showing his hand to debunk AI claims of extra fingers') rather than firmly anchoring the proof-of-life, and two of its three sources are lower-tier Indian/Pakistani aggregators (Dawn, Tribune India). Raters read it as speculative and under-sourced.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 109,
+  "why_note_decision": "A note is warranted: this is a checkable, high-reach death hoax. Netanyahu was NOT killed by an Iranian missile. He proactively debunked the rumor with cafe videos posted to his official Instagram on March 15-16, 2026 (filmed at HaSataf cafe in Jerusalem, which posted behind-the-scenes photos confirming authenticity), and appeared publicly at a March 19 Jerusalem press conference. The 'six fingers' claim was the pinky's hypothenar eminence, and Grok briefly mislabeling the clip as AI was itself corrected. Readers benefit from being told the man is alive and the 'AI video' framing is false.",
+  "reference_note": "Netanyahu is alive; he was not killed by an Iranian missile. He posted authentic videos from HaSataf cafe in Jerusalem on March 15-16, 2026 (the cafe confirmed the footage was real, not AI) and appeared at a March 19 Jerusalem press conference. The viral 'six-finger'/'AI video' claims have been debunked. https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-…"
+ },
+ {
+  "tweet_id": "2034311376588709934",
+  "url": "https://x.com/i/status/2034311376588709934",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "breaking_news_and_war",
+   "ai_generated_media",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Netanyahu died on March 8th, 2026.\n\nYair, his son who posts 24/7, took an exact 7 day break on X from 3/8 to 3/15. That lines up precisely with the Jewish Shiva mourning period. \n\nPresident Trump looked visibly shaken on 3/8.\n\nNow they are striking oil fields and hitting civilian https://t.co/WxFpkYvfnp",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HDtTalLaQAAERyQ.jpg",
+    "description": {
+     "description": "A close-up photograph of Benjamin Netanyahu with his eyes closed, resting his head against a white pillow. He appears to be in a hospital bed or a similar medical setting, wearing a white garment.",
+     "ocrText": ""
+    }
+   }
+  ],
+  "tweet_summary": "A near-8M-view post claims Netanyahu died March 8, 2026, citing as 'evidence' that his son Yair took a 7-day X break (=Jewish Shiva), Trump looked shaken on 3/8, and Israel is now striking oil/civilian targets; attached is a photo of Netanyahu eyes-closed in an apparent hospital bed.",
+  "bad_note_text": "Benjamin Netanyahu is alive: his office released recent authenticated photos and videos and he posted a proof-of-life clip March 15–17; experts and fact-checkers reviewed post‑Mar‑8 footage and found it genuine. https://www.yahoo.com/news/articles/fact-check-netanyahu-alive-despite-160900467.html https://www.nytimes.com/2026/03/17/technology/netanyahu-ai-video-iran-israel.html",
+  "failure_reason": "Rated notHelpfulOpinionSpeculation (49) + incorrect (31) + sources (29), high volume (87). The verdict (alive) is correct, but the note relies on appeals to authority ('experts found it genuine') without engaging the post's specific claims (the Yair/Shiva inference, the hospital photo), so to skeptical raters it read as assertion rather than rebuttal. It also doesn't flag the attached image as unverified/AI.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 87,
+  "why_note_decision": "A note is warranted: Netanyahu is alive. He posted proof-of-life videos (Jerusalem café March 15; with Amb. Huckabee March 17) and major fact-checkers debunked the March 2026 death hoax as Iranian information warfare that stitches real fragments (a posting gap, a facial expression) into a false narrative. The attached 'hospital bed' image is unverified/likely AI or misattributed. The original note got the verdict right but was rated opinion/speculation because it leaned on rhetorical claims ('experts and fact-checkers reviewed footage and found it genuine') without crisply dismantling THIS pos…",
+  "reference_note": "Netanyahu is alive. He posted proof-of-life videos after March 8 (at a Jerusalem café and walking with U.S. Ambassador Huckabee), and fact-checkers debunked the death rumor as Iranian information warfare. A son's posting gap and a facial expression are not evidence of death, and the attached eyes-closed 'hospital' image is unverified and likely AI-generated or misattributed. https://www.reuters.co…"
+ },
+ {
+  "tweet_id": "2034367339626455295",
+  "url": "https://x.com/i/status/2034367339626455295",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "🚨🇺🇸 BREAKING: American jews are now OCCUPYING land in Patagonia, Argentina.\n\nThey are putting up gates to mark their territory. https://t.co/WcN5fsrQi7",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HDuGJj3WUAAnL4p.jpg",
+    "description": {
+     "description": "A view from inside a vehicle looking down a paved two-lane road with double yellow lines in the center. A large metal gate, reinforced with red and white caution tape, blocks the road. The gate is supported by a tall metal frame. In the distance, a dark vehicle is parked on the other side of the gate under a cloudy sky.",
+     "ocrText": ""
+    }
+   },
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2034367264397430784/vid/avc1/886x1584/Fr0BORLa0tIZZwsW.mp4",
+    "description": {
+     "description": "A white pickup truck with an attached metal frame drove directly into a tall metal beam structure over an open road in a desert landscape. The impact caused the truck's structure to crash into the vertical beams, creating a violent collision. The vehicle then skidded off the side of the road into the brush as the structure swayed from the force.",
+     "ocrText": "ATENCION"
+    },
+    "transcription": "Thank you for watching."
+   }
+  ],
+  "tweet_summary": "A viral post (3.8M views) claims 'American jews are now OCCUPYING land in Patagonia, Argentina' and 'putting up gates to mark their territory,' attaching a photo of a gate blocking a rural road and a video of a truck crashing a metal-beam structure.",
+  "bad_note_text": "This claim promotes the debunked Andinia Plan conspiracy theory alleging a Jewish plot to seize Patagonia; no evidence supports mass occupation by American Jews or similar activity. https://en.wikipedia.org/wiki/Andinia_Plan https://combatantisemitism.org/cam-news/antisemitic-wildfire-conspiracy-theories-spread-in-argentina-targeting-israelis https://www.batimes.com.ar/news/argentina/patagonias-wildfires-become-weapons-of-disinformation.phtml",
+  "failure_reason": "Rated notHelpfulOpinionSpeculation (26) + notHelpfulNoteNotNeeded (23) + incorrect (19). The note correctly names the Andinia Plan but rebuts the claim abstractly ('no evidence supports mass occupation') without addressing the specific gate/video media or a concrete fact, so to skeptical raters it read as asserting a conclusion (opinion) rather than demonstrating it. The word 'promotes' also reads as editorializing about intent.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 51,
+  "why_note_decision": "A note is clearly warranted. This advances the debunked, antisemitic Andinia Plan conspiracy theory — the claim that Jews/Zionists are seizing Patagonia to build a Jewish state. There has never been any evidence of such a plan or of mass 'occupation,' and ADL, Chequeado and multiple fact-checkers classify it as a hoax that resurged in 2026 around the Chubut wildfires (with AI-generated 'Israeli saboteur' videos circulating). The attached gate is an ordinary rural-road gate presented as 'territory marking' with no provenance. The original note correctly named the conspiracy but was rated opinio…",
+  "reference_note": "This revives the Andinia Plan, a long-debunked antisemitic conspiracy theory alleging Jews/Zionists are seizing Patagonia for a Jewish state; the ADL and Argentine fact-checkers (Chequeado) find no evidence such a plan or 'occupation' exists. A roadside gate is not evidence of ethnic land seizure, and the 2026 wave of 'Israelis in Patagonia' claims relied on AI-generated and misattributed videos. …"
+ },
+ {
+  "tweet_id": "2039870854058713281",
+  "url": "https://x.com/i/status/2039870854058713281",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "breaking_news_and_war",
+   "politics_and_policy"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "3 total generals fired today. \n\nThey are refusing to put troops in Iran. https://t.co/lVPILMJW15",
+  "media_description": [],
+  "tweet_summary": "Claims '3 total generals fired today. They are refusing to put troops in Iran,' quoting a report that Hegseth fired Army Chief of Staff Randy George, Gen. David Hodne, and Maj. Gen. William Green Jr.",
+  "bad_note_text": "One of the three officers fired was Maj. Gen. William Green Jr., the Army's top chaplain. There is no evidence a chaplain or the head of Training and Doctrine (Gen. Hodne) were dismissed for refusing troop deployment orders. https://www.seattletimes.com/nation-world/nation/hegseth-asks-the-armys-top-uniformed-officer-to-step-down-while-us-wages-war-against-iran",
+  "failure_reason": "Opinion/speculation framing: leads with the chaplain detail and rebuts the motive only by saying 'no evidence,' without stating the actually-reported reason (clash over blocked promotions / leadership realignment). Reads as the note's own inference rather than affirmatively sourcing the real cause, drawing opinionSpeculation (12) and noteNotNeeded (9) tags.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 23,
+  "why_note_decision": "The firings are real (April 2-3, 2026: George, Hodne, and Green Jr.), but the tweet asserts a specific false MOTIVE — that they were fired for refusing to deploy troops to Iran. Reporting attributes the removals to a clash between George and Hegseth over blocked officer promotions and Hegseth wanting leaders aligned with his vision; one of the three (Green Jr.) is the Army's chief of chaplains, who has no role in deployment orders. The fabricated 'refusing Iran orders' motive, presented as fact and amplified to 3.2M impressions, warrants a note.",
+  "reference_note": "These firings happened (April 2-3, 2026: Army Chief of Staff Gen. Randy George, Gen. David Hodne, and Maj. Gen. William Green Jr.), but there is no evidence they were fired for refusing to send troops to Iran. Reporting attributes the removals to a clash between George and Hegseth over blocked officer promotions and Hegseth's push for leaders aligned with his vision. Notably, Green Jr. is the Army…"
+ },
+ {
+  "tweet_id": "2041678310531584334",
+  "url": "https://x.com/i/status/2041678310531584334",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "manipulated_or_fabricated_evidence",
+   "celebrity_entertainment_sports"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Mike Vrabel on his recent affair with Dianna Russini:\n\n“It was a mistake… I had a few drinks and thought it was Kay Adams.” https://t.co/1TsJ7mhhxE",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HFV_mn1bQAAnAVp.jpg",
+    "description": {
+     "description": "A headshot of Mike Vrabel, former head coach of the Tennessee Titans and current personnel for the Cleveland Browns, speaking at a press conference. He is wearing a blue linen-textured blazer over a light blue collared shirt. He is leaning forward with his arms crossed in front of three microphones from various media outlets, including NBC Sports Boston and a microphone with the New England Patriots logo.",
+     "ocrText": "Sports BOSTON 4"
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HFV_mnzaEAAhRlI.jpg",
+    "description": {
+     "description": "A headshot image of a woman with long brown hair wearing a blue strapless button-down dress and large hoop earrings. She is standing in front of a black backdrop featuring a white repeating logo and the word 'Fanatics'.",
+     "ocrText": "Fanati Fanc ics ics F Fanc tics ana"
+    }
+   }
+  ],
+  "tweet_summary": "Post by 'Football Crave' (a self-described parody account, 1.4M views) attributes a fabricated quote to NFL coach Mike Vrabel about a 'recent affair with Dianna Russini': 'It was a mistake… I had a few drinks and thought it was Kay Adams.' Paired with real headshots of Vrabel and Russini.",
+  "bad_note_text": "This is a parody post. Mike Vrabel did not make this statement. Photos of Vrabel and Russini show an innocent group outing with friends. There is no evidence of an affair, and Vrabel called such suggestions &quot;laughable.&quot;    https://www.hindustantimes.com/sports/us-sports/mike-vrabel-thought-dianna-russini-was-kay-adams-fact-checking-viral-affair-claim-after-sedona-hotel-photos-emerge-nfl-101775614089285.html    https://www.foxnews.com/sports/patriots-coach-mike-vrabel-responds-photos-new-york-times-nfl-reporter-leak",
+  "failure_reason": "Low-volume NOT_HELPFUL (10 ratings; dominant notHelpfulOpinionSpeculation 6, Incorrect 4, NoteNotNeeded 4). The first two sentences are correct (parody, quote not real), but the note overreaches by stating as fact that the photos 'show an innocent group outing' and 'there is no evidence of an affair' — these characterize a contested celebrity dispute as settled, which reads as taking sides / speculation. The verifiable correction (the quote is fabricated) is sound; the editorializing about the a…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 10,
+  "why_note_decision": "A note is warranted because the quote is fabricated and was widely taken as real (~1.4M views, 17k likes; mainstream fact-checkers debunked it and the parody-account ecosystem also faked a related TreVeyon Henderson statement that he had to publicly deny). Although the account bio says 'parody', the disclaimer is easily missed and the quote spread as a genuine confession. Vrabel never said this; he called the affair suggestions 'laughable'. The note's job is narrow: flag the quote as fabricated, not litigate whether an affair occurred.",
+  "reference_note": "This quote is fabricated. Mike Vrabel never said he 'thought it was Kay Adams'; the post is from a self-described parody account. Vrabel addressed the viral Russini photos by calling any affair suggestion 'laughable.' https://www.hindustantimes.com/sports/us-sports/mike-vrabel-thought-dianna-russini-was-kay-adams-fact-checking-viral-affair-claim-after-sedona-hotel-photos-emerge-nfl-101775614089285…"
+ },
+ {
+  "tweet_id": "2041741179734388801",
+  "url": "https://x.com/i/status/2041741179734388801",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "politics_and_policy"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "Trump raped children with Jeffrey Epstein",
+  "media_description": [],
+  "tweet_summary": "Kim Dotcom flatly asserts 'Trump raped children with Jeffrey Epstein' as established fact, with no evidence cited.",
+  "bad_note_text": "There is no evidence that Donald Trump raped children with Jeffrey Epstein. While a 2016 lawsuit made such a claim, it was voluntarily dismissed. The DOJ and multiple fact-checks have found no evidence or video supporting these unverified allegations. https://www.snopes.com/news/2026/03/11/trump-child-rape-video https://www.latimes.com/politics/story/2025-12-23/claims-about-trump-in-epstein-files-untrue-justice-dept-says https://www.reuters.com/fact-check/false-posts-say-ap-reported-trump-child-molestation-charges-2024-07-11",
+  "failure_reason": "Opinion/speculation + argumentative on a polarizing topic: opens with a blanket 'there is no evidence' assertion and 'DOJ and multiple fact-checks have found no evidence,' which reads as one-sided advocacy and drew opinionSpeculation (38) and argumentativeOrBiased (28) tags. More defensible to state the specific, verifiable procedural status (suit dismissed/withdrawn, no charges, DOJ statements) and let readers weigh it.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 77,
+  "why_note_decision": "The post states an unproven, grave criminal accusation as settled fact. The known record: the 2016 'Katie Johnson' lawsuit alleging Trump assaulted a 13-year-old was dismissed and then voluntarily withdrawn with no ruling on the merits; no charges have ever been brought; the DOJ said it had no evidence to charge other parties and flagged a circulated anti-Trump letter as a fake the FBI determined was untrue. A note giving readers this verifiable status is warranted, since the claim is presented as proven when it is not.",
+  "reference_note": "This is an unproven allegation presented as fact. The 2016 lawsuit claiming Trump assaulted a 13-year-old (the 'Katie Johnson' case) was dismissed and then voluntarily withdrawn in Nov 2016 with no court ruling on its merits, and no criminal charges have ever been filed. The DOJ stated it had no evidence to charge additional parties in the Epstein case and said a related letter alleging Trump misc…"
+ },
+ {
+  "tweet_id": "2057583151518535962",
+  "url": "https://x.com/i/status/2057583151518535962",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "A Fox News guest wore a MASK when speaking about how evil Iran is today. \n\nLook at the neck ⬇️  https://t.co/FHFjgPVDwQ",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2057470117160570880/vid/avc1/576x832/txO_u1aww8818d54.mp4",
+    "description": {
+     "description": "A sequence of four frames from a television news broadcast featuring Vice Admiral Robert Harward (Ret.). He is a bald man wearing a tan blazer and a dark blue shirt. He is speaking directly into the camera against a blurred city skyline background. As the frames progress, his mouth opens wider to speak. The broadcast graphics change to show a scrolling ticker at the bottom containing news alerts regarding Iran's President and U.S. forces.",
+     "ocrText": "TikTok @_keeks... BREAKING NEWS VICE ADM ROBERT HARWARD RAN PRESIDENT: \"DIALOGUE DON ALERT RS FOX NEWS REPORT: I TikTok @_keeks... BREAKING NEWS VICE ADM ROBERT HARWARD IRAN PRESIDENT: \"DIALOGUE DO ALERT S U.S. HAS SHOWN FLEXIB REAKING NEWS ICE ADM ROBERT HARWARD (RE N PRESIDENT: \"DIALOGUE DOES ERT CONTINUE SOME PEACEFUL N OBEL G NEWS OBERT HARWARD (RET) I RETIRED NT: \"DIALOGUE DOES NOT MEAN NEWS CENTCOM SAYS U.S. FORC H TikTok @_keeks..."
+    },
+    "transcription": "In the eyes of the Iranian people, but the world global economy, which they're holding all hostage to, the more everybody comes to realize this is all about the IRGC. At the end of the day, we're going to have to need a government in Iran that not only hands over the nuclear material, stops threatening the Straits of Hormuz, but quits exporting the Islamic Revolution throughout the region, causing the collapse of Lebanon, Gaza, Yemen, Syria, and as well..."
+   }
+  ],
+  "tweet_summary": "A viral clip claims a Fox News guest discussing Iran 'wore a MASK' ('Look at the neck'), implying deception/impersonation. The guest is retired Vice Admiral Robert Harward; the 'mask' look is a shadow/video artifact.",
+  "bad_note_text": "The guest is retired Vice Admiral Robert Harward, real former deputy commander of U.S. Central Command and military analyst. The 'mask' appearance is due to lighting, camera quality, and skin texture—not evidence of deception. https://en.wikipedia.org/wiki/Robert_Harward",
+  "failure_reason": "Rated notHelpfulOpinionSpeculation (12) + notHelpfulIncorrect (11). The note's core ID is correct, but it asserts a specific unproven cause ('due to lighting, camera quality, and skin texture') as fact, which reads as speculation; it also cites only Wikipedia (identity) rather than a source that actually addresses the mask claim, so the debunk is unsupported.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 18,
+  "why_note_decision": "A note is warranted: this is a checkable, misleading claim (8.5M+ views) asserting a real, identifiable public figure was secretly masked or impersonated. Fact-checkers (Snopes, Lead Stories/Yahoo, AFP) confirmed the video is real and unedited, the guest is genuinely VAdm Robert Harward, and there is no evidence of any prosthetic mask; the appearance is attributed to a remote mobile-camera/lighting setup. The original note got the core facts right but was rated NOT_HELPFUL because it asserted a specific causal explanation ('due to lighting, camera quality, and skin texture') as if proven, whic…",
+  "reference_note": "The guest is retired Vice Admiral Robert Harward, former deputy commander of U.S. Central Command. Fact-checkers confirmed the broadcast clip is authentic and unedited; there is no evidence he wore a mask or that anyone impersonated him. The look stemmed from a remote mobile-camera/lighting setup, per Fox News and JINSA. https://www.snopes.com/news/2026/05/22/robert-harward-mask-fox-news/"
+ },
+ {
+  "tweet_id": "2057589163004932198",
+  "url": "https://x.com/i/status/2057589163004932198",
+  "role": "unhelpful_opinion_speculation",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Holy shit why is this man on Fox News wearing a literal CIA mask https://t.co/RQazYIrgDq",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HI4GIEKbcAA3yl3.jpg",
+    "description": {
+     "description": "A close-up of a bald man with a serious expression, wearing a tan blazer over a dark blue button-down shirt. He is featured on a Fox News television broadcast, with a blurred cityscape in the background and news graphics at the bottom of the frame.",
+     "ocrText": "FOX NEWS BREAKING VICE ADM ROBE TRUMP SAYS"
+    }
+   },
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2057588867143008256/vid/avc1/1080x1920/jjtaTublnpmsarc0.mp4",
+    "description": {
+     "description": "A close-up of a bald man with light skin, wearing a brown jacket over a black shirt. He appears to be speaking on a news broadcast with a city skyline in the background. News banners are present at the bottom of the frame.",
+     "ocrText": "BREAKING NEWS VICE ADM ROBERT HARWARD (RET TRUMP SAYS HE'S PUT SCHEDU ALERT RAN IS ATTACKED, GULF PRICE /FOX NEWS REPO ALERTI'T WANT THEIR OIL/ENE"
+    },
+    "transcription": "And the president knows he's in the position to demand those. So I think in that sense, he controls the narrative and when he would strike. I'd also say that patience and the request from Saudi Qatar UAE"
+   }
+  ],
+  "tweet_summary": "Post by Blaire White (701k followers, 21M views) claims a Fox News guest is 'wearing a literal CIA mask,' fueling a viral conspiracy that retired Vice Adm. Robert Harward was an impostor/masked man during a May 19, 2026 Fox appearance. Replies push 'lizard people', 'fake Biden' and humiliation-ritual theories.",
+  "bad_note_text": "The visual anomaly is caused by studio lighting, shadows, and video compression artifacts from repeatedly re-shared clips. No credible evidence of a mask exists; Robert Harward is a verified retired U.S. Navy SEAL and real Fox News guest. https://news.meaww.com/fact-check-did-robert-harward-wear-a-mask-during-fox-news-appearance https://www.ibtimes.co.uk/fox-news-guest-mask-speculation-1798247",
+  "failure_reason": "Conclusion is correct but rated NOT_HELPFUL (38 ratings; dominant notHelpfulOpinionSpeculation 19, SourcesMissingOrUnreliable 12, Incorrect 11, IrrelevantSources 11). The note over-explains with a partly-wrong mechanism ('video compression artifacts from repeatedly re-shared clips' — the shadow is in the original feed, per Fox's own statement about in-van lighting), which invites the 'incorrect' flags, and cites two low-tier aggregators (meaww, ibtimes) instead of Snopes/AFP, drawing the sources…",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 38,
+  "why_note_decision": "A note is warranted: a massively viral (21M views) checkable claim that a real person was wearing a prosthetic mask. Robert Harward is a verified retired U.S. Navy SEAL and frequent Fox guest; the clip is real and unedited (no AI/editing). The 'mask' is a shadow caused by lighting — Fox stated he appeared via a remote mobile camera in a van where lighting contrasted with his jacket, casting a shadow on his neck. Snopes and AFP/Lead-Stories-style fact-checks debunked the mask claim.",
+  "reference_note": "There is no evidence of a mask. Robert Harward is a verified retired U.S. Navy SEAL and the Fox News clip is real and unedited. The apparent 'mask line' on his neck is a shadow: Fox said he appeared via a remote mobile camera in a van where lighting contrasted with his jacket, casting a shadow on his neck. https://www.snopes.com/news/2026/05/22/robert-harward-mask-fox-news/ https://www.yahoo.com/n…"
+ }
+]

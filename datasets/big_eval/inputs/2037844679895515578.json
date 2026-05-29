@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2037844679895515578",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:16.449Z",
+  "post": {
+    "id": "2037844679895515578",
+    "author_id": "1518554920441552902",
+    "created_at": "2026-03-28T10:50:07.000Z",
+    "text": "Time to D!E for 🇮🇱 https://t.co/bjR5YSn2UK",
+    "media": [
+      {
+        "media_key": "13_2037844554288885763",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2037844554288885763/img/jxxOzmRdcKBoSM4g.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 19666,
+        "view_count": 265829,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037844554288885763/vid/avc1/320x568/GE1ytihTNNdEdVfZ.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037844554288885763/vid/avc1/480x852/yNU3LdcWYh3CGYtx.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037844554288885763/vid/avc1/720x1280/yV4ESP88MRVarwlp.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2037844554288885763/pl/BK-TTNufXgM_HaYU.m3u8?v=158"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2589,
+      "reply_count": 2018,
+      "like_count": 14544,
+      "quote_count": 349,
+      "bookmark_count": 334,
+      "impression_count": 579116
+    },
+    "author_followers": 39805,
+    "author_name": "Daniel Prinsloo",
+    "author_description": "Christian and follower of Jesus Christ / INFJ Personality Type / Straight Edge / Anti-Zionist / Pro Palestine Activist / Living with Long-Covid /",
+    "author_tweet_count": 19595
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2037844554288885763/vid/avc1/720x1280/yV4ESP88MRVarwlp.mp4",
+          "description": {
+            "description": "A soldier in OCP camouflage uniform says goodbye to family members at a passenger pick-up and drop-off area, likely an airport or transit hub. In the first frame, he stands with two men, one in a brown jacket and one in a black hoodie and white cap. In the second frame, the soldier hugs the man in the black hoodie. In the third frame, the soldier looks down while carrying a black bag. In the final frame, the soldier leans down to hug or kiss a young girl in a red fuzzy jacket. An overlay text block expressing support for soldiers appears across all frames.",
+            "ocrText": "Passenger Pick Up & Drop Off. U.S. ARMY. The moment of uncertainty. God Bless Our Soldiers  ♀  ᆔ"
+          },
+          "transcription": "I see a ritual and I want it in to the lab"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **⚰︎ ⚔︎ - @vamperignon**  \nMexican going to war for Israel to keep out of jail a pedophile who’s trying to deport his parents. Not sure if this plot is more a comedy or a tragedy  \nLikes=1741, Reposts=114, Replies=29, Views=17917\n\n- **GREGORY LIONS - @GREGLIONS**  \nrefuse! #illegalwar  \nLikes=267, Reposts=49, Replies=4, Views=8239\n\n- **MrActive - @active7866**  \nHurry up son. You gotta sacrifice your life for the Jews  \nLikes=250, Reposts=0, Replies=0, Views=5397\n\n- **Alex - @Alex54983848**  \n(No text content)  \nLikes=230, Reposts=0, Replies=0, Views=3745\n\n- **Henry the hyena - @Firstname12224**  \nFucking disgusting watching American troops being sent to die for Israel...  \nLikes=163, Reposts=0, Replies=0, Views=5506\n\n- **snapsorg - @snapsorg**  \n(No text content)  \nLikes=162, Reposts=0, Replies=0, Views=4644\n\n- **Amanda 🇺🇸🇮🇪✝️🕊️🩸 - @Amandasmylife**  \nObviously they are Catholic because the dad blesses him. My grandson would go AWOL before I let him go, even if that meant kidnapping him. My family, after serving for 250 years, is done serving.  \nLikes=162, Reposts=0, Replies=0, Views=4223\n\n- **ΑΝΤΙΝΕΟΤΑΞΙΤΗΣ - @sakisbeis2**  \nThe True  \nLikes=140, Reposts=0, Replies=0, Views=3625\n\n- **WASWE - @WASWEJEFF**  \nand  \nLikes=136, Reposts=22, Replies=0, Views=2398\n\n- **Mark - @itsMarkd6**  \nThe sacrificial sheep being sent to the slaughterhouse to die for the elites!  \nLikes=103, Reposts=0, Replies=0, Views=2213",
+    "warnings": []
+  }
+}

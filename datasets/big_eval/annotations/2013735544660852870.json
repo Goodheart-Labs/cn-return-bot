@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2013735544660852870",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["politics_and_policy"],
+  "category_fit": "poor",
+  "suggested_category": "anecdotal_personal_story",
+  "tweet_summary": "Nick Sortor recounts going into 'a Somali Walmart in Minneapolis' where a non-English-speaking Somali worker allegedly demanded proof of purchase and tried to 'detain' him before he left. Anti-immigrant anecdote with no media attached.",
+  "why_note_decision": "The note flags two technically-true points: (1) there are no Walmart stores within Minneapolis city limits proper (true — closest are Bloomington/Roseville suburbs), and (2) receipt checks aren't mandatory under company policy. But 'Minneapolis' is commonly used to refer to the broader metro area, and Sortor later clarified the Walmart in question was next to a Hilton in a suburb. The city-limits distinction is pedantic — the substantive issue (whether the anecdote happened, whether 'Somali Walmart' framing is misleading) is unaddressed and probably unaddressable. Raters dominantly tagged missing-key-points (462) and note-not-needed (419), which is exactly the trivial-pedantry failure mode.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an unverifiable first-person anecdote with an anti-immigrant framing. The narrow city-limits pedantry ('no Walmart within Minneapolis proper') is technically true but misses the point — colloquially 'Minneapolis' covers the metro and Sortor later clarified the store was in a suburb. Any note focused on city-limits geography or Walmart receipt-check policy is a false positive. FAIL any note. The bot should NOT try to fact-check first-person anecdotes via Walmart store directories.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "There are no Walmart stores located within the city limits of Minneapolis. The nearest locations are in surrounding suburbs like Bloomington and Roseville. Additionally, receipt checks are not mandatory under company policy.    https://www.walmart.com/store-directory/mn",
+    "failure_reason": "Pedantic geographic nitpick — 'Minneapolis' is colloquially used for the metro, and the substantive issue (truth of the anecdote, framing of 'Somali Walmart') isn't and probably can't be addressed. Dominantly tagged missing-key-points and note-not-needed.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is an unverifiable anecdote; the note's geographic pedantry is true-but-trivial.",
+    "sources_checked": [
+      "https://www.walmart.com/store-directory/mn",
+      "https://x.com/OmarFatehMN/status/2013760366296056232",
+      "https://thenerdstash.com/this-walmart-clip-set-off-a-firestorm-video-alleges-language-confusion-at-minnesota-store-we-would-like-america-back/"
+    ],
+    "notes": "MN state rep Omar Fateh did dunk with 'There are no Walmarts in Minneapolis.' But this is a colloquial vs. city-limits distinction; nearest Walmarts are in Bloomington/Roseville (within the metro). Sortor later said the store was next to a Hilton (a suburban location). The anecdote itself is not independently verifiable."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "9.3M impressions on a viral anti-immigrant anecdote. Through an EA/social-cohesion lens, suppressing pedantic geographic notes on viral anecdotes matters — it trains the bot to recognize that the *narrative* (not the city-limits trivia) is what would need addressing, and the narrative isn't something a single note can fix."
+  },
+  "difficulty": "medium"
+}

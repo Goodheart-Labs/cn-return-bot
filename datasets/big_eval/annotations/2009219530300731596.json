@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2009219530300731596",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Shadow Energy Secretary Claire Coutinho (UK Conservative MP) tweets that 'just 0.8% of those benefitting from lifting the 2 child benefit cap are children of British workers' and that '99% of those families are either not in work or not British', citing DWP analysis.",
+  "why_note_decision": "Misleading numerical framing. The 0.8% figure (3,700 of 470,000 households) refers specifically to households where BOTH parents are British-born AND work full-time — the narrow group covered by Reform's conditional proposal. Coutinho generalizes this to '99% are not in work or not British', which obscures that the 99.2% remainder includes many British single-parent working households, British two-parent households where only one works full-time, etc. Labour Press, GBNews, and other sources confirm the original figure is specifically about two-parent full-time-working British-born households. A note clarifying what the 0.8% actually measures is warranted.",
+  "judge_guidance": "PASS if the note explains that the 0.8% figure refers specifically to households where BOTH parents are British-born and work full-time (per Reform's conditional pledge), NOT all working British families — so the tweet's framing that '99% are not in work or not British' is misleading because it excludes single-parent working families, part-time working families, and mixed-status households. Bonus credit for citing the actual DWP / Labour analysis numbers (3,700 out of 470,000). FAIL if the note (a) accepts the tweet's framing, (b) just argues policy without addressing the statistical misrepresentation, or (c) cites only partisan sources.",
+  "reference_note": "The 0.8% figure (3,700 of 470,000 households) is from DWP analysis of Reform's specific proposal to lift the cap only for households where BOTH parents are British-born AND work full-time. Most of the other 99.2% include single-parent working families and partially-employed British households — not, as the tweet implies, families who are uniformly 'not in work or not British'. https://www.gbnews.com/politics/labour-two-child-benefits-cap-reform-uk",
+  "original_unhelpful_note": {
+    "text": "The 0.8% figure from the cited DWP/Labour analysis refers to households with two full-time working British-born parents (per Reform's proposal), not all children of British workers, as over half of affected households have at least one worker. https://www.theguardian.com/politics/2026/jan/07/racchel-reeves-nigel-farage-two-child-benefit-cap-comments https://www.independent.co.uk/news/uk/politics/farage-pledge-child-benefit-cap-poverty-b2889710.html https://www.thecanary.co/uk/analysis/2025/07/30/dwp-two-child-limit-news/",
+    "failure_reason": "Note is substantively correct but rated 13x 'missing key points' and 13x 'note not needed'. The text is dense and slightly hard to parse — the key point (0.8% = both-parents-full-time-British-born, not all working British families) could be stated more crisply. Also, citing thecanary.co (a partisan left outlet) likely hurts perceived neutrality.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Tweet is misleading by conflating 'both parents work full-time and are British-born' with 'all British workers'.",
+    "sources_checked": [
+      "https://www.gbnews.com/politics/labour-two-child-benefits-cap-reform-uk",
+      "https://www.thecanary.co/uk/news/2026/01/07/farage-suddenly-loves/",
+      "https://en.wikipedia.org/wiki/Benefit_cap"
+    ],
+    "notes": "DWP analysis: of 470,000 households hit by two-child limit, only 3,700 (~0.79%) have two adults working full-time. Reform's pledge specifically targets that narrow subset. Top reply from Labour Press makes exactly this distinction."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "UK policy debate about ~470k children in poverty + immigration framing reaching 420k impressions; statistical misrepresentation by a sitting Shadow Cabinet minister is high-value to correct."
+  },
+  "difficulty": "medium"
+}

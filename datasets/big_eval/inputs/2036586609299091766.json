@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2036586609299091766",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:21.357Z",
+  "post": {
+    "id": "2036586609299091766",
+    "author_id": "1715329690125430784",
+    "created_at": "2026-03-24T23:31:00.000Z",
+    "text": "Punch wakes up slowly… and the first thing he looks for isn’t the world — it’s his orange mama, the one that stayed when no one else did. https://t.co/32clGJXisY",
+    "media": [
+      {
+        "media_key": "13_2036470830327275524",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2036470830327275524/img/hMlFdN6Ben05Se8z.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 15068,
+        "view_count": 208991,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036470830327275524/vid/avc1/320x568/yaGDJNvEC0sHQn5K.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036470830327275524/vid/avc1/480x852/tfqsEB7dIMrOWUgS.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036470830327275524/vid/avc1/720x1280/XgzELgeyAFmn_483.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2036470830327275524/pl/b1m5vBSbmUv0mmwi.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 907,
+      "reply_count": 52,
+      "like_count": 12430,
+      "quote_count": 46,
+      "bookmark_count": 695,
+      "impression_count": 264633
+    },
+    "author_followers": 49190,
+    "author_name": "Human Owned by Cat 😺",
+    "author_description": "Paws & aura: unmatched. Living my 9 lives 99 vibes in 4K 🐁🐇🐘🐦🐼",
+    "author_tweet_count": 234302
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2036470830327275524/vid/avc1/720x1280/XgzELgeyAFmn_483.mp4",
+          "description": {
+            "description": "A baby monkey is cuddling a large, fluffy stuffed orangutan on stony ground. In the first frame, the monkey has its eyes closed and is nestled against the toy's chest. In the second frame, the monkey opens its eyes and looks to the side. In the third frame, it adjusts its position, holding onto the toy's arm.",
+            "ocrText": ""
+          },
+          "transcription": "Puss, puss, puss. Puss, puss, puss."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- AZ Dave - @davpeterson27: good lord i love punch, i hope this shit ain't A.I.-generated. (Likes=39)\n- Steve - @StevePudzis: Little Punchi-Kun is saving the internet (Likes=14)\n- ContempraINN🌹 - @CONTEMPRA_INN: Is this video AI? (Likes=13)\n- Deshman Major - @the_deshboard2: AI slop (Likes=9)\n- Mary G Martis - @martis_mar24502: Again, putting the arm around him. 😭😭 (Likes=9)\n- Janet - @janetrbl223: He deserves the best life possible.  His soul is so pure. (Likes=7)\n- Truthmatters - @fr244450: We project so much onto animals. But what I see is longing. Longing for his own mommy. (Likes=4)\n- jini - @minjin1221k: so cute😍 (Likes=3)\n- Linda Gagacki,she is Miss Sherlock Holmes - @LGagacki44429: So adorable 😍 (Likes=2)\n- Pug 🇺🇸 - @puglifespace: The stuffy is Gone. We don’t even know if he can use it as a pillow atleast at night (Likes=2)",
+    "warnings": []
+  }
+}

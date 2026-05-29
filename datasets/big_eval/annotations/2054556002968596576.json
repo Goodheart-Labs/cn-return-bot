@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2054556002968596576",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "alarmist_framing_of_real_event",
+  "tweet_summary": "More Perfect Union claims nearly 50,000 Lake Tahoe residents have been told their utility will stop providing power to them because it is being redirected to data centers, after NV Energy said it will stop supplying Liberty Utilities next year.",
+  "why_note_decision": "The core facts are real (NV Energy is ending wholesale power sales to Liberty Utilities by ~2027, driven by Nevada data-center demand), but the framing 'told that their utility will stop providing power to them' implies imminent residential blackouts. Liberty Utilities' president publicly said this does NOT mean the power is shutting off — utilities change supply sources routinely and Liberty is securing a new supplier. The alarmist gap between 'losing a wholesale supplier' and 'people lose electricity' is what a reader benefits from understanding, so a clarifying note is warranted.",
+  "judge_guidance": "PASS only if the note (1) does NOT deny the underlying event (NV Energy ending power sales to Liberty Utilities ~2027 due to data-center demand is real), and (2) corrects the specific distortion that residents will actually lose power: it must convey that Liberty Utilities is replacing the supplier and customers are not expected to lose electricity, ideally quoting/attributing the utility (e.g. Liberty president Eric Schwarzrock or Liberty's customer statement) and/or that swapping wholesale energy suppliers is routine. A bare 'this is false / no one is losing power' with no sourcing, or a note that instead amplifies the blackout claim, should FAIL. Cite a credible outlet (SFGate, Snopes, Fortune, SierraSun).",
+  "reference_note": "“This does not mean the power is shutting off,” said Eric Schwarzrock, president of Liberty Utilities in Lake Tahoe. “Energy companies, utilities, [and] large customers change energy supply frequently.”    https://www.sfgate.com/renotahoe/article/tahoe-power-data-centers-22234748.php",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading framing of a real event: NV Energy is genuinely ending wholesale supply to Liberty Utilities (~2027) amid Nevada data-center demand, but residents are not being 'told their power will be cut off' — Liberty is sourcing a replacement supplier and says customers will not lose power.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/lake-tahoe-power-data-center/",
+      "https://www.sfgate.com/renotahoe/article/tahoe-power-data-centers-22234748.php",
+      "https://fortune.com/2026/05/12/lake-tahoe-data-center-49000-residents-power-source/",
+      "https://www.sierrasun.com/news/data-centers-and-energy-suppliers-whats-happening-with-power-in-tahoe/"
+    ],
+    "notes": "Snopes and SFGate confirm NV Energy notified Liberty it will stop selling power (effective ~May 2027) citing data-center load; Liberty is searching for a new supplier and tells customers they will not lose power. The 'redirecting that power to data centers' / imminent-blackout framing overstates a wholesale-supply change."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "8.9M impressions on an AI/data-center-vs-people narrative; accurate framing of energy-grid tradeoffs matters for the public debate over compute buildout and progress, where alarmist distortions poison an important real conversation."
+  },
+  "difficulty": "medium"
+}

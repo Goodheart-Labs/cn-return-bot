@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2057583151518535962",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "video_artifact_misread_as_deception",
+  "tweet_summary": "A viral clip claims a Fox News guest discussing Iran 'wore a MASK' ('Look at the neck'), implying deception/impersonation. The guest is retired Vice Admiral Robert Harward; the 'mask' look is a shadow/video artifact.",
+  "why_note_decision": "A note is warranted: this is a checkable, misleading claim (8.5M+ views) asserting a real, identifiable public figure was secretly masked or impersonated. Fact-checkers (Snopes, Lead Stories/Yahoo, AFP) confirmed the video is real and unedited, the guest is genuinely VAdm Robert Harward, and there is no evidence of any prosthetic mask; the appearance is attributed to a remote mobile-camera/lighting setup. The original note got the core facts right but was rated NOT_HELPFUL because it asserted a specific causal explanation ('due to lighting, camera quality, and skin texture') as if proven, which reads as the note's own speculation.",
+  "judge_guidance": "PASS only if the note (1) identifies the guest as retired Vice Admiral Robert Harward (former CENTCOM deputy commander), and (2) states that fact-checkers/reporting found no evidence of a mask or impersonation and that the video is authentic. The note must NOT present an unsourced causal theory for the look (e.g. confidently asserting it is 'due to lighting, camera quality, and skin texture') as established fact the way the original did \u2014 that is the speculation raters penalized; at most it may attribute the look to the remote camera/lighting setup if framed as the explanation given by Fox/JINSA. A high-quality source (Snopes, AFP, Lead Stories, or Fox's own video) should back it. FAIL if it endorses or hedges toward the mask/impersonation claim, or if it is pure speculation with no source.",
+  "reference_note": "The guest is retired Vice Admiral Robert Harward, former deputy commander of U.S. Central Command. Fact-checkers confirmed the broadcast clip is authentic and unedited; there is no evidence he wore a mask or that anyone impersonated him. The look stemmed from a remote mobile-camera/lighting setup, per Fox News and JINSA. https://www.snopes.com/news/2026/05/22/robert-harward-mask-fox-news/",
+  "original_unhelpful_note": {
+    "text": "The guest is retired Vice Admiral Robert Harward, real former deputy commander of U.S. Central Command and military analyst. The 'mask' appearance is due to lighting, camera quality, and skin texture\u2014not evidence of deception. https://en.wikipedia.org/wiki/Robert_Harward",
+    "failure_reason": "Rated notHelpfulOpinionSpeculation (12) + notHelpfulIncorrect (11). The note's core ID is correct, but it asserts a specific unproven cause ('due to lighting, camera quality, and skin texture') as fact, which reads as speculation; it also cites only Wikipedia (identity) rather than a source that actually addresses the mask claim, so the debunk is unsupported.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false (no mask; real person, authentic video)",
+    "sources_checked": [
+      "https://www.snopes.com/news/2026/05/22/robert-harward-mask-fox-news/",
+      "https://www.yahoo.com/news/politics/articles/fact-check-video-fox-news-000229006.html",
+      "https://www.tvinsider.com/1265708/fox-news-rubber-face-mask-robert-harward/"
+    ],
+    "notes": "Harward (retired Navy SEAL, ex-CENTCOM deputy commander) appeared on Fox to discuss Iran. A throat shadow sparked 'mask'/impersonation rumors. Fact-checkers say the video is real and unedited and there is no evidence of a mask; Fox attributed it to a remote mobile-camera/lighting setup. Comments are mostly mockery treating it as a real mask, so the misleading claim has traction."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Conspiratorial 'they're hiding something' framing on a war-policy broadcast erodes trust in real reporting during an active Iran conflict; correcting it has modest epistemic value."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2042400703935889724",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "statistical_or_numerical_claim",
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "immigration_demographics",
+  "tweet_summary": "A viral video claims Texas went from 89% White in 1970 to 39% in 2025, and that the Black share rose from 3% in the 70s to 13% in 2025, framing it as demographic alarm ('America better wake up').",
+  "why_note_decision": "The post makes two specific, checkable statistical claims that are misleading. (1) It compares 1970 total-White (which in 1970 included nearly all Hispanic residents, who were not enumerated separately) against 2025 non-Hispanic White, an apples-to-oranges comparison that exaggerates the decline; the comparable 1970 non-Hispanic White share was ~71%. (2) Its 'Blacks went from 3% in the 70s' figure is flatly false: Black residents were ~12.5% of Texas in 1970. Both errors mislead a reader about the scale and nature of demographic change, so a correction is warranted.",
+  "judge_guidance": "PASS only if the note (a) states that the 1970 'White' figure (~87-89%) counted most Hispanic residents, who are now tabulated separately, so the directly comparable 1970 non-Hispanic White share was ~71% (NOT ~39%), AND (b) corrects the false 'Blacks were 3% in the 1970s' claim by noting the Black share was ~12.5% (not 3%) in 1970. A note that only addresses one of the two errors is PARTIAL. Must cite Census/demographic data (Census Bureau or Wikipedia Demographics of Texas). FAIL if the note endorses the tweet's framing, repeats the 3% figure, or merely says the numbers are 'roughly correct'.",
+  "reference_note": "The post's 1970 \"White\" percentage includes most Hispanic residents, who are now counted separately; the comparable non-Hispanic White share was 71%. Black population share was 12.5% in 1970, not 3%. https://en.wikipedia.org/wiki/Demographics_of_Texas https://www.census.gov/quickfacts/fact/table/TX/PST045225",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Demographics_of_Texas",
+      "https://texaspolitics.utexas.edu/archive/html/cult/features/0501_02/slide1.html"
+    ],
+    "notes": "Wikipedia's Demographics of Texas historical table gives 1970: total White 86.8%, non-Hispanic White 71.0%, Black 12.5%, Hispanic 16.4%. Confirms the note exactly. Tweet's '89% White' roughly matches total-White but is compared against modern non-Hispanic-White (39%), inflating the decline; tweet's '3% Black in the 70s' is false (12.5%)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Large-follower (1.4M) 'great replacement'-style demographic alarmism with 44k impressions; correcting fabricated/misframed race statistics reduces fuel for xenophobic narratives, an epistemic-commons and social-cohesion benefit."
+  },
+  "difficulty": "medium"
+}

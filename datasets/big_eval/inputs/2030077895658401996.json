@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2030077895658401996",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:48.837Z",
+  "post": {
+    "id": "2030077895658401996",
+    "author_id": "1846909300066693120",
+    "created_at": "2026-03-07T00:27:42.000Z",
+    "text": "“Iran is winning this war, our government is lying to us. This is Tel Aviv right now” https://t.co/PTzfkWr128",
+    "media": [
+      {
+        "media_key": "13_1996311526064451585",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1996311526064451585/img/Av2U1cwT8PMtE6ao.jpg",
+        "height": 360,
+        "width": 640,
+        "duration_ms": 18619,
+        "view_count": 298669,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1996311526064451585/vid/avc1/480x270/oUPirhk7Ju6XY-k9.mp4?tag=14"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1996311526064451585/vid/avc1/640x360/vUCqQMLu3AJh6wDe.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1996311526064451585/pl/7BwkctniqtVYdOOe.m3u8?tag=14&v=2b2"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 552,
+      "reply_count": 264,
+      "like_count": 10213,
+      "quote_count": 62,
+      "bookmark_count": 393,
+      "impression_count": 465158
+    },
+    "author_followers": 9296,
+    "author_name": "homans top guy",
+    "author_description": "",
+    "author_tweet_count": 4662
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1996311526064451585/vid/avc1/640x360/vUCqQMLu3AJh6wDe.mp4?tag=14",
+          "description": {
+            "description": "A close-up of a battlefield under a sandy surface, with a metallic object and a sword handle sticking out. In the middle of the frame is written, \"Electronic Arts Presents.\"",
+            "ocrText": "ELECTRONIC ARTS PRESENTS"
+          },
+          "transcription": "Come on, move out!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **AlexTheGreat** (@AlexGreat1024): Don't forget this one, they \"captured\" an F-35 and all these soldiers came out of it and Iranian army arrested them  \n  Engagement: 206 likes, 7770 views\n\n- **Ray says #WalkAway** (@Africanis): Omg I knew it, Iran just got this in from Temu!  \n  Engagement: 135 likes, 5132 views\n\n- **Bloom Desert** (@bloomin_deserts): Hashem have mercy......they are coming  \n  Engagement: 39 likes, 708 views\n\n- **luna plateada** (@lunaplateada69): Tweets like this are genuinely funny, we need more like this  \n  Engagement: 38 likes, 2540 views\n\n- **Mirjam Lübke** (@MirjamLubke): You forgot the Chinese robot Army of 5 Million Terminators, which are marching through the streets of Tel Aviv right now. Iran has just bought them from Temu.  \n  Engagement: 23 likes, 2223 views\n\n- **Azumi Nova** (@azumi_nova): Not so fast!  \n  Engagement: 20 likes, 1653 views\n\n- **Raleigh T. Sakers** (@holyblaschemer): Those who bless Israel will be blessed.  \n  Engagement: 8 likes, 2857 views\n\n- **Eli Goldman | אלי גולדמן** (@EliGoldman): LOL  \n  Engagement: 5 likes, 309 views\n\n- **Caek Islove** (@realcaekislove): Stupid caption ruining the joke!  \n  Engagement: 5 likes, 1346 views\n\n- **TheSloth** (@maddsloth1701): From the River to Tatooine, Palestine will be forever full of Tusken raiders.  \n  Engagement: 3 likes, 144 views",
+    "warnings": []
+  }
+}

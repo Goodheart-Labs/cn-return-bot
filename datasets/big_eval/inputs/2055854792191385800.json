@@ -1,0 +1,100 @@
+{
+  "tweet_id": "2055854792191385800",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:42.192Z",
+  "post": {
+    "id": "2055854792191385800",
+    "author_id": "1947632362772164608",
+    "created_at": "2026-05-17T03:35:53.000Z",
+    "text": "Did all this injury drama to play County Cricket. 💔 https://t.co/GMVevuFlvr",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2055713203812982916"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2055713203812982916",
+      "author_id": "1947632362772164608",
+      "created_at": "2026-05-16T18:13:15.000Z",
+      "text": "Overton scored a century and took a wicket in his first over today 🔥👏 https://t.co/ILeyxKtGDG",
+      "media": [
+        {
+          "media_key": "13_2055693348719984640",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2055693348719984640/img/JP3x73vKoyDKaj9i.jpg",
+          "height": 3840,
+          "width": 2160,
+          "duration_ms": 21966,
+          "view_count": 447551,
+          "variants": [
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/2055693348719984640/pl/7QHldKT_Jq-UxUAl.m3u8?v=f0f"
+            },
+            {
+              "bit_rate": 950000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2055693348719984640/vid/avc1/480x852/n2qvWuUXgzsYMW_-.mp4"
+            },
+            {
+              "bit_rate": 25128000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2055693348719984640/vid/avc1/2160x3840/AGLwdC8HA0yTzDGu.mp4"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2055693348719984640/vid/avc1/720x1280/M5Cd10uwWzyb0GsM.mp4"
+            },
+            {
+              "bit_rate": 632000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2055693348719984640/vid/avc1/320x568/KzjqXkgZdjySkEFE.mp4"
+            },
+            {
+              "bit_rate": 10368000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2055693348719984640/vid/avc1/1080x1920/y65JfrcTfpV-6_fg.mp4"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 324,
+      "reply_count": 260,
+      "like_count": 9633,
+      "quote_count": 58,
+      "bookmark_count": 695,
+      "impression_count": 1093888
+    },
+    "author_followers": 10091,
+    "author_name": "The Brevis",
+    "author_description": "Cricket | Entertainment | Brevis Nation 💛",
+    "author_tweet_count": 15797
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2055693348719984640/vid/avc1/2160x3840/AGLwdC8HA0yTzDGu.mp4",
+          "description": {
+            "description": "A cricket player in a cream sweater and white pads is shown in various stages of a match. In the first frame, he is in mid-stride during a run or fielding play near boundary advertisements. In the subsequent three frames, he is walking across the field while holding his cricket bat and helmet aloft in acknowledgement, as spectators in the stands behind him applaud his performance.",
+            "ocrText": "yes that'll be back for a his name at 480 for"
+          },
+          "transcription": "Yes, that'll be it. It's a parried stop in the end but it was enough for Craig Overton who will come back for a second. He'll move to 101, not out. Three first-class entries now to his name. Two of them have come this season and he's helped Somerset to a really commanding position here at 480 for six and they're still going. He waves his bat to the ground."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Shivansh rajpal (@RajpalShiv46534):** He is Craig Overton. He is the twin brother of Jamie Overton (Likes: 1494, Replies: 2)  \n**bhanu teja (@0940bb5c02084e4):** That's why education is important in India. He is Craig overton you dumb. (Likes: 338)  \n**sobanbabu (@Sobanism):** He very well knows its Craig Overton and it’s a sarcastic post (Likes: 325)  \n**Devil (@Debasis_Nayak23):** You're doing this on purpose just for a bit of engagement. You also know that he is Jamie Overturn's brother 😂😂 (Likes: 294)  \n**Raj (@07reddevilz):** That’s Craig not Jamie (Likes: 151)  \n**Heisenberg (@PointGamin68734):** You guys think that admin didn't know who he is 😭😭 (Likes: 24)  \n**Umarrr (@Halfprofessor47):** I thought people on x are intelligent 😭 no way they are fighting with you 🤦 (Likes: 22)  \n**Sasikumar Mani Agamudayar (@M_SKUMAR):** (image) (Likes: 21)  \n**Mr. Tanikella 🔱 (@sivatanikella99):** It's his brother not him Don't blame his loyalty towards CSK (Likes: 13)  \n**Kind Human (@Erenparker14):** Joke went over everyone in the comment section (Likes: 9)",
+    "warnings": []
+  }
+}

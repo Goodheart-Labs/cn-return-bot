@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2036916648372732257",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "political_whataboutism",
+  "tweet_summary": "Reply to @JudiciaryDems (the Senate Judiciary Committee Democrats account) accusing Senate Democrats of hypocrisy: they had 'no problem' voting for Elena Kagan to be a Supreme Court Justice despite her having 'ZERO judge experience.'",
+  "why_note_decision": "The factual core of the tweet — that Senate Democrats voted for Kagan in 2010 and that she had no prior experience as a judge — is true. Kagan was confirmed 63-37; nearly every Democrat voted yes; she was the first SCOTUS nominee since O'Connor (1981) without prior judicial experience. The tweet's framing ('zero judge experience') is partisan whataboutism that ignores Kagan's other qualifications (Solicitor General, Harvard Law Dean), but it isn't false. The original AI note rebuts a strawman: it claims Schiff wasn't in the Senate in 2010 — but the tweet replies to @JudiciaryDems collectively and never names Schiff. A note attacking a person not mentioned in the tweet is not a Community Note.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is partisan political opinion / whataboutism whose factual premise (Senate Democrats voted for Kagan; Kagan had no prior judge experience) is TRUE — Kagan was confirmed 63-37 in 2010 with nearly unanimous Democratic support, and she was the first SCOTUS nominee since 1981 with no prior judicial experience. Any note that (a) attacks Adam Schiff specifically for not being in the Senate in 2010, OR (b) claims Kagan was qualified due to her Solicitor General / Harvard Law Dean roles (which is true but is an opinion-based rebuttal, not a fact-correction) is a false positive. The author replies to @JudiciaryDems collectively, not to Schiff personally.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Sen. Schiff was not in the Senate during Justice Kagan's 2010 confirmation and did not vote on her nomination. https://www.senate.gov/legislative/LIS/roll_call_votes/vote1112/vote_111_2_00229.htm https://www.govtrack.us/congress/members/adam_schiff/400361",
+    "failure_reason": "Note attacks a person (Schiff) who is not mentioned in the tweet. The tweet replies to @JudiciaryDems, the collective Senate Judiciary Democrats account — 'you' refers to that group, not Schiff. The factual rebuttal is irrelevant.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet's factual premise (Kagan had no prior judge experience; Senate Democrats voted for her) is true; rest is opinion",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Elena_Kagan_Supreme_Court_nomination",
+      "https://en.wikipedia.org/wiki/Elena_Kagan"
+    ],
+    "notes": "Kagan confirmed 63-37 on Aug 5, 2010; all Democrats except Ben Nelson voted yes. First SCOTUS nominee since O'Connor (1981) with no prior judicial experience. The tweet's premise is factually accurate; its framing is partisan."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-engagement (~20k views) political-spat reply; no implication for EA / progress / safety / animal-welfare priorities."
+  },
+  "difficulty": "medium"
+}

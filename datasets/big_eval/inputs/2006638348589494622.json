@@ -1,0 +1,116 @@
+{
+  "tweet_id": "2006638348589494622",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:45.262Z",
+  "post": {
+    "id": "2006638348589494622",
+    "author_id": "1306345635910647809",
+    "created_at": "2026-01-01T08:07:18.000Z",
+    "text": "This JBL speaker was found after floating in the ocean for 3 months, and it still works perfectly. https://t.co/K2cytfZMI8",
+    "media": [
+      {
+        "media_key": "13_2006637685884977152",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2006637685884977152/img/THNuz_82RTlzb8u6.jpg",
+        "height": 960,
+        "width": 720,
+        "duration_ms": 47469,
+        "view_count": 6084157,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2006637685884977152/vid/avc1/320x426/Don4Xm-tiMCZPUeK.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2006637685884977152/vid/avc1/480x640/blalcoVlXQqSsucd.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2006637685884977152/vid/avc1/720x960/mlqDaqd6ZIKlwWrS.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2006637685884977152/pl/JM4zfyrTmkBBz8Q4.m3u8?v=cfc"
+          }
+        ]
+      },
+      {
+        "media_key": "13_2006637685893468160",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2006637685893468160/img/SjgH38ckPu4l63dL.jpg",
+        "height": 960,
+        "width": 720,
+        "duration_ms": 17006,
+        "view_count": 859380,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2006637685893468160/vid/avc1/320x426/1C8WICTn8crL0bka.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2006637685893468160/vid/avc1/480x640/59bFFIturUnRif4b.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2006637685893468160/vid/avc1/720x960/HFP-P-QTKqevhB_7.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2006637685893468160/pl/QXfDGJEkYXgS1wz5.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 10468,
+      "reply_count": 2405,
+      "like_count": 134604,
+      "quote_count": 2264,
+      "bookmark_count": 11672,
+      "impression_count": 20896321
+    },
+    "author_followers": 74504,
+    "author_name": "Erimus",
+    "author_description": "🚧 Bio is currently under construction 🚧",
+    "author_tweet_count": 63231
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2006637685884977152/vid/avc1/720x960/mlqDaqd6ZIKlwWrS.mp4",
+          "description": {
+            "description": "The video shows a JBL-style portable speaker that has been washed ashore on a beach. It is heavily encrusted with goose barnacles and covered in brown marine growth and sand from being at sea for an extended period. The camera pans around the speaker as it sits on the wet sand, with the ocean waves visible in the background in the later frames.",
+            "ocrText": "JBL"
+          },
+          "transcription": "O amor, ultimamente eu tô aqui em saudade O amor, chegava a chame imunidade E aí"
+        },
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2006637685893468160/vid/avc1/720x960/HFP-P-QTKqevhB_7.mp4",
+          "description": {
+            "description": "A portable speaker that was lost at sea is shown washed up on a beach, now heavily encrusted with goose barnacles and some form of brown marine moss or seaweed. The barnacles are clustered around the speaker's rim and its internal components, which have been exposed. The speaker's control panel and power button are barely visible through the thick layer of marine growth.",
+            "ocrText": ""
+          },
+          "transcription": "Música"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@officialbat419**: \"Wow this is great PR for JBL\" (Likes: 9696, Reposts: 98, Replies: 22)\n- **@iCrazyTeddy**: \"The organisms on there once the music started playing\" (Likes: 4621, Reposts: 0, Replies: 0)\n- **@Reyex49**: \"How did they know the duration of time it floated on the water?\" (Likes: 2963, Reposts: 14, Replies: 13)\n- **@RexhaRexhaRexha**: \"Nah you supposed to bump fetty wap on that shit\" (Likes: 1912, Reposts: 0, Replies: 0)\n- **@THEEDON304**: \"this shit made my skin crawl😭\" (Likes: 1095, Reposts: 0, Replies: 0)\n- **@poortardio**: \"JBL paid you for this post Just can't prove it yet\" (Likes: 656, Reposts: 7, Replies: 6)\n- **@HolyGasGod**: \"This what that speaker was being used for\" (Likes: 595, Reposts: 0, Replies: 0)\n- **@lookdotfun**: \"The fish were getting lit\" (Likes: 580, Reposts: 0, Replies: 0)\n- **@pastelETH**: \"bro got clams and crabs living on him that’s crazy\" (Likes: 450, Reposts: 0, Replies: 0)\n- **@NaturallyDragon**: \"Marketing level 100.\" (Likes: 355, Reposts: 0, Replies: 0)",
+    "warnings": []
+  }
+}

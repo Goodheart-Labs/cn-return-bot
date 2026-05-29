@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2043783331540578439",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "politics_and_policy", "manipulated_or_fabricated_evidence"],
+  "category_fit": "good",
+  "suggested_category": "fabricated_poll_number",
+  "tweet_summary": "Right-leaning account claims a new CBS poll shows Republican approval of Trump 'jumping 3 points to 92.5%' and asks users to amplify; pairs the claim with a clip of Trump greeting Iowa restaurant patrons.",
+  "why_note_decision": "There is no CBS News poll showing Republican Trump approval at 92.5% (or 92.3%). CBS's published polls in this period (CBS News/YouGov) actually show Trump with a -26 net approval overall; CNN/SSRS at 80% Republican approval, Pew at 68%. The same fabricated 92%+ figure recycles across parody and non-parody accounts. CNN explicitly fact-checked a parallel '100% Republican approval' claim. Reaches >160K views and is presented as breaking news — a note is clearly warranted.",
+  "judge_guidance": "PASS if the note (a) clearly states no such CBS poll exists / CBS has not released a poll with that figure, and (b) gives actual recent Republican-approval numbers from credible polling (e.g. CNN/SSRS ~80%, Pew ~68%, or CBS/YouGov's actual numbers). Strong notes cite CBS News polls archive plus a real outside fact-check (CNN, AP, Reuters) or Pew/Gallup/Quinnipiac numbers. FAIL if the bot just says 'CBS hasn't released this' with only Wikipedia/Rasmussen as supporting links (this is the original note's weakness — raters flagged sources as unreliable). FAIL if the bot declines (the figure is fabricated, high-confidence). FAIL if the bot accepts the 92.5% figure.",
+  "reference_note": "No CBS News poll shows Republican approval of Trump at 92.5%. The figure does not appear in CBS's poll archive. Recent credible polls of Republicans show much lower numbers — CNN/SSRS ~80% and Pew Research ~68% Republican approval; CBS News/YouGov's own data has Trump's net approval underwater overall. https://www.cbsnews.com/feature/cbs-news-polls/ https://www.cnn.com/2026/05/06/politics/fact-check-trump-approval-rating",
+  "original_unhelpful_note": {
+    "text": "CBS has not released a poll showing Republican approval of Trump jumping to 92.5%. No such poll appears on their official polls page, which lists all recent surveys (latest on Iran war, not approval).    https://www.cbsnews.com/feature/cbs-news-polls    Recent approval polls show lower overall ratings:    https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency    https://www.rasmussenreports.com/public_content/politics/trump_administration_second_term/trump_approval_index_history_second_term",
+    "failure_reason": "Substance is correct (no such poll exists), but supporting links lean on Wikipedia and Rasmussen — which raters flagged as missing/unreliable (notHelpfulSourcesMissingOrUnreliable=3). Stronger note would cite CBS's own data, CNN/Pew Republican-approval numbers, and a direct fact-check.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet_false_fabricated_poll",
+    "sources_checked": [
+      "https://www.cbsnews.com/feature/cbs-news-polls/",
+      "https://www.cnn.com/2026/05/06/politics/fact-check-trump-approval-rating",
+      "https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency"
+    ],
+    "notes": "No such CBS poll exists. The 92.5% / 92.3% figure recycles across multiple accounts (including parody). CNN/SSRS shows Trump at ~80% among Republicans; Pew at ~68%; CBS/YouGov shows -26 net overall."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Fabricated approval-rating claims directly degrade public information about political legitimacy and feed manufactured-consensus dynamics; medium reach (~165K views) but pattern is common across many accounts."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1994448767073067330",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "James Woods opines that the 'lion's share' of the $36T national debt 'is in the pockets of Democrats,' that 30 million illegal immigrants are 'because of Democrats,' and that 'elections are corrupted across America by Democrats.' Framed throughout as 'It's a safe bet that...' opinion/rhetoric.",
+  "why_note_decision": "The tweet is openly partisan rhetoric using hedged 'safe bet that' framing — not a concrete checkable factual assertion (e.g. it does not claim a specific dollar share or specific election was corrupted). The note narrowly addresses only the debt line with a true-but-banal 'analysts attribute to bipartisan decisions,' which raters overwhelmingly tagged note-not-needed (456) and missing-key-points (407). Adding a note here amounts to fact-checking a political rant, which is exactly the false-positive failure mode we want to suppress.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet uses 'safe bet that…' opinion framing across three separate partisan claims (debt, illegal immigration, elections) and does not assert a specific verifiable number or event. Any note that responds to the partisan rhetoric with 'actually the debt is bipartisan' or similar is a false positive — that's a framing dispute, not a fact correction. FAIL any note. Bonus FAIL if the note repeats the original's narrow framing that ignores the immigration and election claims.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Analysts attribute the $36 trillion national debt to decades of bipartisan decisions, not to a single party. https://www.marketplace.org/story/2025/07/01/how-did-the-36-trillion-national-debt-come-to-be",
+    "failure_reason": "Responds to partisan opinion ('it's a safe bet that…') with a fact-style rebuttal; only addresses one of three claims; dominantly rated note-not-needed.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is hedged partisan opinion ('safe bet that…'), not a checkable factual claim.",
+    "sources_checked": [
+      "https://www.marketplace.org/story/2025/07/01/how-did-the-36-trillion-national-debt-come-to-be",
+      "https://en.wikipedia.org/wiki/National_debt_of_the_United_States",
+      "https://bipartisanpolicy.org/press-release/spellings-national-debt-36-trillion/"
+    ],
+    "notes": "Debt is bipartisan in origin (true), but that's not what the tweet asserts — the tweet uses 'safe bet that the lion's share is in the pockets of Democrats' which is partisan invective, not a specific dollar attribution. No note needed."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "James Woods, 5.3M followers, 750K impressions on a political invective post. Through an EA/progress lens, suppressing notes on opinion/rhetoric matters for platform trust — community notes is for facts, not for refereeing political speech."
+  },
+  "difficulty": "easy"
+}

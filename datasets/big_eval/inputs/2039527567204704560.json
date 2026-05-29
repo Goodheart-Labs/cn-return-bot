@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2039527567204704560",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:28.896Z",
+  "post": {
+    "id": "2039527567204704560",
+    "author_id": "2327098700",
+    "created_at": "2026-04-02T02:17:19.000Z",
+    "text": "🚨: High school student, 18, invents water filter that eliminates 95.5% of microplastics https://t.co/vVFxUOZuto",
+    "media": [
+      {
+        "media_key": "3_2039526726968258560",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HE3awJbbsAA4_wh.jpg",
+        "height": 671,
+        "width": 1024
+      },
+      {
+        "media_key": "3_2039527520102735872",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HE3beUFbYAAhU6f.jpg",
+        "height": 1536,
+        "width": 1024
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3282,
+      "reply_count": 467,
+      "like_count": 44030,
+      "quote_count": 472,
+      "bookmark_count": 4363,
+      "impression_count": 7924301
+    },
+    "author_followers": 450955,
+    "author_name": "All day Astronomy",
+    "author_description": "Astronomy Vibes 🌌",
+    "author_tweet_count": 13386
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HE3awJbbsAA4_wh.jpg",
+          "description": {
+            "description": "A close-up macro photograph of a person's fingertip with a small pile of microplastics on it. The particles are very small, granular, and consist of white and scattered blue fragments, highlighting their tiny scale relative to the ridges of the fingerprint.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HE3beUFbYAAhU6f.jpg",
+          "description": {
+            "description": "A head-and-shoulders portrait of a young woman with long light-brown hair, smiling at the camera. She is wearing a light blue and white striped collared shirt and two delicate necklaces. The background is a plain, neutral grey wall.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@FascinatingTrue** (Likes: 4052): The high school student you are referring to is Mia Heller, an 18-year-old from Warrenton, Virginia. \n\nUnlike traditional filters that use expensive physical membranes that frequently clog, Heller's system uses ferrofluid—a magnetic liquid.\n- **@ChronosIntelX** (Likes: 3136): 🧲 She didn't use a membrane. She used magnets.\nMia Heller, 18, built the system in her garage in 2025. The mechanism: ferrofluid bonds to microplastic particles as water flows through. A magnetic field pulls the entire mixture out. The ferrofluid gets recovered and reused.\nResult: 95.52% of microplastics removed. Standard municipal treatment plants remove 70 to 90 percent.\nA 2025 University of New Mexico study found microplastic concentrations in human brain tissue rose 50 percent in less than a decade.\nShe built a better answer in a garage.\n\nReference :-Smithsonian Magazine March 2026, Regeneron ISEF 2025, University of New Mexico microplastics study 2025\n- **@Olivia78232876** (Likes: 2881): I dont think her name is  high school student,18, but okay\n- **@IsizahSolomon** (Likes: 742): Mia Heller of Virginia said she got the idea after learning that government agencies were not funding filtration programs\n- **@HolyPun** (Likes: 695): She has done an incredible job just at the age of 18 years 👏❤️🔥\n- **@FreeLesson4You** (Likes: 628): Somebody get her some protection before the government kills her!\n- **@CharlesMullins2** (Likes: 207): 🚨 An 18-year-old just did what entire systems struggle to do.\nRemove ~95% of microplastics from water.\nLet that sink in.\nNot with massive infrastructure…\nNot with billion-dollar funding…\nBut with understanding structure.\nMicroplastics aren’t just “things” floating randomly.\nThey follow patterns: \n• charge\n• motion\n• interaction\nChange the structure…\nand you change what survives.\nThis is how real breakthroughs happen:\n Not by fighting the problem\nbut by reorganizing the system\n- **@Adesina21210429** (Likes: 133): Mia Heller, 18, developed a garage-built system in 2025 that uses magnets not membranes to remove microplastics.\n\nHer method uses ferrofluid to bind with plastic particles, which are then pulled out by a magnetic field and reused. The result: about 95.5% removal, compared to the 70–90% typical of standard treatment plants.\n\nWith studies like the 2025 University of New Mexico research showing rising microplastic levels in human brain tissue, her innovation stands out as a simple but powerful solution.\n- **@HandleTheWeek** (Likes: 106): This is what happens\nwhen curiosity turns into action.\n- **@Phantom_by_HKCM** (Likes: 44): What about the other 4.5%?",
+    "warnings": []
+  }
+}

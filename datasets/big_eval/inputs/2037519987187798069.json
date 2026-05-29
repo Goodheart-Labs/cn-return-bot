@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2037519987187798069",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:21.119Z",
+  "post": {
+    "id": "2037519987187798069",
+    "author_id": "449974837",
+    "created_at": "2026-03-27T13:19:54.000Z",
+    "text": "Allegedly this is a Chinese state video.  \n\nAmerica’s insane foreign policy is being ridiculed worldwide.  \n\n https://t.co/UdFMZATbJT",
+    "media": [
+      {
+        "media_key": "13_2037388473431371776",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2037388473431371776/img/wxkuLs45lDZbUHMZ.jpg",
+        "height": 1080,
+        "width": 1762,
+        "duration_ms": 99125,
+        "view_count": 1653020,
+        "variants": [
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2037388473431371776/pl/MzNjTJ4IdgzRMJfW.m3u8"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037388473431371776/vid/avc1/1762x1080/0VOOch4X5kgMwirf.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037388473431371776/vid/avc1/440x270/2y_GLu_pYGoF7oyj.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037388473431371776/vid/avc1/586x360/gdQyB-SS31PHopDB.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037388473431371776/vid/avc1/1174x720/N3EK5tW-k6w92act.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1733,
+      "reply_count": 233,
+      "like_count": 9691,
+      "quote_count": 195,
+      "bookmark_count": 2156,
+      "impression_count": 609374
+    },
+    "author_followers": 261688,
+    "author_name": "John Mappin",
+    "author_description": "Truth Seeker Game Maker",
+    "author_tweet_count": 97751
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2037388473431371776/vid/avc1/1762x1080/0VOOch4X5kgMwirf.mp4",
+          "description": {
+            "description": "A surreal animated or special-effects video. An eagle-headed man in a business suit discovers a squid on a snowy mountain landscape and attempts to eat it raw. The squid jumps up and attaches itself to his face like a parasite. The scene then cuts to a black-furred, cat-like monk or scholar character in a traditional setting looking on.",
+            "ocrText": ""
+          },
+          "transcription": "你没事吧你是谁来我家做什么你是不是打算用油来炸鱿鱼我们只是研究拿来点灯用来生产而已别听他狡辩他搞出来是想炸我们的搞定他把他炼油的东西都砸了还狡辩没人比我更懂怎么用油不过我们也不是不可以商量你竟然偷袭我你以后他在院子里面石油都是我的了长老打死他给我们的长老报仇大哥怎么进去这么久不是说吓醒那个老头就行了吗急什么大哥一定会带给我们一个惊喜的出事了别管大哥了快跑啊哎呀别打了别打了我一定会回来的哦"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Frederick Seton (@frederickseton)**: JUSTICE FOR THE MEOWATOLLAH!  \n  Likes: 611 | Views: 16987\n\n- **WallStWolfdog (@WallStWolfdog)**: Fun fact: in Chinese platform we call Zionist Jew Squid because squid in Chinese sounds like Jew in Chinese.  \n  Likes: 504 | Reposts: 26 | Views: 15726\n\n- **KP (@pa49932)**: Accurate  \n  Likes: 264 | Views: 11406\n\n- **CoinSage2k (@CoinSage_2k)**: no worry catfu will take care of world leaders  \n  Likes: 144 | Views: 8984\n\n- **Afterthought (@Afterthought_01)**: I like how they used persian cats for Iran and a parasitic squid for the Jews  \n  Likes: 132 | Views: 7987\n\n- **Matthew Marsden (@matthewdmarsden)**: By a country that has murdered its own people?  \n  Likes: 99 | Views: 8686\n\n- **AstraLucia199 (@Allie2026)**: Oh my God, this is fantastic!  The Japanese PM!  I'm dying!!!!!  \n  Likes: 96 | Views: 4846\n\n- **Polly St. George (@FringeViews)**: Meowotollah 🤣  \n  Likes: 62 | Views: 4378\n\n- **Rebel Reiver (@BorderReiverReb)**: The squid is Israel 🇮🇱. 😂  \n  Likes: 55 | Views: 4599\n\n- **Digital Asset News (@NewsAsset)**: FIRST OF ALL....that was pretty funny. Second, I liked the part where he flew out at the end.  \n  Likes: 32 | Views: 3678",
+    "warnings": []
+  }
+}

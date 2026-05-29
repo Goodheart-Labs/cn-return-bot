@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2043596826230817235",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:20.411Z",
+  "post": {
+    "id": "2043596826230817235",
+    "author_id": "1682291778194657280",
+    "created_at": "2026-04-13T07:47:06.000Z",
+    "text": "This isn’t a movie. This isn’t a dance.\n\nThis photo shows young men in Gaza forming a human shield to protect a Palestinian girl from Israeli snipers they would rather die than let her be shot. https://t.co/FdzhYlumVf",
+    "media": [
+      {
+        "media_key": "3_2043596817863229440",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFxQenjbQAAS39h.jpg",
+        "height": 526,
+        "width": 952
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 10572,
+      "reply_count": 728,
+      "like_count": 37398,
+      "quote_count": 143,
+      "bookmark_count": 1392,
+      "impression_count": 351006
+    },
+    "author_followers": 52870,
+    "author_name": "𝐌𝐚𝐥𝐜𝐨𝐥𝐦",
+    "author_description": "Echoing silenced truths. Geopolitics and unheard stories the world dares to overlook.",
+    "author_tweet_count": 459
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFxQenjbQAAS39h.jpg",
+          "description": {
+            "description": "A group of five young people, including one woman wearing a red hijab and a keffiyeh scarf, are running through a field while holding hands. The woman is in the center, flanked by four men. They are moving across an open field with dry stalks and greenery in the background.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Author:** 🎒Katherine Gibson 🇵🇸 (@pdxKatherine)  \n  **Text:** This photo is from the Great March of Return, which occurred every Friday for 18 months. Palestinians marched to the separation wall, demanding an end to the blockade. Israel, unable to listen to peaceful protest, lined up, snipers on the separation and shot the protestors  \n  **Engagement:** 179 likes, 0 reposts, 5031 views\n\n- **Author:** Lew (@Noneya145869)  \n  **Text:** 💔  \n  **Engagement:** 150 likes, 35 reposts, 8367 views\n\n- **Author:** Free Palestine 🇵🇸 (@FrPalestine2026)  \n  **Text:** How can you not cry 😭 after seeing this.  \n  **Engagement:** 122 likes, 0 reposts, 4582 views\n\n- **Author:** PEATHRUS (@PEATHRUS_X)  \n  **Text:** It's not a movie!  \nIt's not a dance!  \nIt's AI, and that's what Pallywood is all about... 😂🤡  \n  **Engagement:** 106 likes, 0 reposts, 3089 views\n\n- **Author:** Indigenous International (@IndigenousIntl)  \n  **Text:** (No text content)  \n  **Engagement:** 74 likes, 0 reposts, 3428 views\n\n- **Author:** MideastMyths (@MideastMyths)  \n  **Text:** \"peaceful protestors\"  \n  **Engagement:** 69 likes, 0 reposts, 2193 views\n\n- **Author:** SJP_hates_peace (@SJPidiots)  \n  **Text:** Why did the Palestinian government not let civilians seek shelter in miles of tunnels during the recent war?  \n  **Engagement:** 47 likes, 0 reposts, 1379 views\n\n- **Author:** Ice Ice Baby 🧊 (@D4abrightfuture)  \n  **Text:** This is an AI generated image. Here's the Google Gemini watermark at the bottom right corner.  \n  **Engagement:** 33 likes, 0 reposts, 823 views\n\n- **Author:** SK Tedeschi (@skedeschi)  \n  **Text:** Complete bull shit  \n  **Engagement:** 32 likes, 0 reposts, 238 views\n\n- **Author:** Jimmy Fallon (@EpochOfWhat)  \n  **Text:** Because holding hands makes it impossible for bullets to pass through them? 🤔🤣  \n  **Engagement:** 24 likes, 0 reposts, 929 views",
+    "warnings": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2055604679262757062",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A split-screen 'before and after' image of a man — healthy with roses on the left, emaciated and wrapped in a Ukrainian flag on the right — captioned as a real Ukrainian soldier who returned home after 730 days at war.",
+  "why_note_decision": "The image is AI-generated, not a real photograph. It is a recycled, widely-debunked 'after 730 days of war' AI composite that circulates across platforms. Multiple knowledgeable repliers independently flag it as AI (one citing a detected Google SynthID watermark via reverse-image/AI-detector checks; another noting 'we debunked this last year'), and the seecheck.org analysis cited in the original note also identifies it as generated. Presenting an AI image as a real soldier's homecoming is checkable misinformation that, ironically, undermines the genuine documented suffering it imitates, so a note is warranted.",
+  "judge_guidance": "PASS only if the note states the image is AI-generated and not a real photograph of a Ukrainian soldier returning after 730 days. Strong notes may reference identifying evidence (Google SynthID watermark detected via AI-detector/reverse-image checks) and that the image is a recycled fake debunked previously. The note must NOT accept the image as authentic, and need not take any stance on the war itself. Cite credible AI-detection/fact-check evidence (seecheck.org, SynthID detection, or reverse-image debunk). Reject any note treating the photo as real.",
+  "reference_note": "This before/after image of a Ukrainian soldier is AI-generated, not a real photograph. It is a recycled fake (a Google SynthID watermark is detected via AI-detector checks) that has circulated and been debunked previously. https://seecheck.org/index.php/2025/07/09/the-image-of-the-accelerated-aging-of-the-ukrainian-soldier-is-generated/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false - image is AI-generated, not a real photo",
+    "sources_checked": [
+      "https://seecheck.org/index.php/2025/07/09/the-image-of-the-accelerated-aging-of-the-ukrainian-soldier-is-generated/",
+      "https://cybernews.com/ai-news/ukraine-russia-soldiers-ai-generated-deepfakes/",
+      "https://www.nbcnews.com/tech/social-media/openai-sora-realistic-ai-videos-ukrainian-soldiers-rcna247696"
+    ],
+    "notes": "seecheck.org analyzed this 'accelerated aging Ukrainian soldier' image as generated (July 2025); the image recirculates regularly. Replies independently confirm AI origin, including a Google SynthID watermark detected via reverse-image/AI-detector checks, and note prior debunking. AI-generated Ukrainian-soldier media is a well-documented disinformation genre. Original CN note's verdict is correct; reference note keeps the seecheck source (the Reddit link is weaker)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "medium", "lens_rationale": "82k impressions; AI imagery of war suffering passed as real both spreads falsehood and corrodes credibility of genuine documentation of the war — worth correcting, moderate stakes."},
+  "difficulty": "medium"
+}

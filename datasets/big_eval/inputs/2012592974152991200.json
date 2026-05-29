@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2012592974152991200",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:21.603Z",
+  "post": {
+    "id": "2012592974152991200",
+    "author_id": "750683331260321792",
+    "created_at": "2026-01-17T18:28:51.000Z",
+    "text": "This experiment breaks your brain 🤯 \n\nRemove air in the world’s largest vacuum chamber, drop a bowling ball and feathers, and Galileo is proven right—400 years later.\n\nhttps://t.co/aENN7yE4l0",
+    "media": [
+      {
+        "media_key": "7_1628943379450023936",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1628943379450023936/pu/img/fJ9seV9MuJKKiEzE.jpg",
+        "height": 360,
+        "width": 640,
+        "duration_ms": 91049,
+        "view_count": 24098108,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1628943379450023936/pu/vid/480x270/FT4nUXkmSKwNrEJ5.mp4?tag=12"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1628943379450023936/pu/vid/640x360/vNBmeD7LPdVZmNqr.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1628943379450023936/pu/pl/TXXSanrLIelNfXK4.m3u8?tag=12&v=46e"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 7726,
+      "reply_count": 692,
+      "like_count": 58916,
+      "quote_count": 412,
+      "bookmark_count": 11674,
+      "impression_count": 4109954
+    },
+    "author_followers": 1548442,
+    "author_name": "Curiosity",
+    "author_description": "Curiosity-driven content across science, history, and culture. Sharing knowledge and stories that spark curiosity.\nct: curiosityonx@gmail.com\nSub for only $3⤴️.",
+    "author_tweet_count": 17889
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1628943379450023936/pu/vid/640x360/vNBmeD7LPdVZmNqr.mp4?tag=12",
+          "description": {
+            "description": "A man in a red sweater is in a large, industrial vault, possibly a NASA vacuum chamber. All frames contain the 'BBC TWO' logo in the top or bottom corner.",
+            "ocrText": "BBC TWO"
+          },
+          "transcription": "Now in this case the feathers fell to the ground at a slower rate than the bowling ball because of air resistance. So in order to see the true nature of gravity we have to remove the air. Station 1, go for drop. PCB 30-1, pressure set point at 240 PSI. We are go for drop. 10, 9, 8, 7, 6, 5, 4, camera's on, 2, 1, release. I'll be back with this."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@astraterra_**  \nGalileo's groundbreaking assertion was that in the absence of air resistance, all objects, regardless of their mass, fall at the same rate.  \nThis was a revolutionary idea, challenging the then-prevailing Aristotelian view. In the vast vacuum chamber, when air resistance is removed, the bowling ball and feathers fall simultaneously, visually confirming Galileo's insight. This experiment not only pays homage to a foundational moment in physics but also underscores the enduring power of curiosity and the scientific method.  \n(Likes: 1832)\n\n**@DailyNoahNews**  \nI wonder why we couldn’t see a clean shot of the full fall at normal speed?  \n(Likes: 880)\n\n**@mona73337**  \nIts astonishing these guys never had ai, internet or even complex level books back in their time buh yet achieved the most significant achievements contributing to modern science and technology  \n(Likes: 333)\n\n**@JamesGurley1**  \ntoo late. Alan Shepard on the Moon did it first.😄  \n(Likes: 113)\n\n**@hrmnyA**  \nI feel so ripped off not seeing it actual time instead of just in slow motion.  \n(Likes: 104)\n\n**@MartinPaasi**  \nThis was preceeded by a similar test on the moon:  \nhttps://www.youtube.com/watch?v=oYEgdZ3iEKA  \n(Likes: 82)\n\n**@0xSunSeeker**  \nGalileo somewhere like “took y’all long enough.”  \n(Likes: 68)\n\n**@RLH_Permaban**  \ndoes the bowling ball fall at the same speed as before the vacuum?  \nSo its the feather that are basically \"catching up\" or is the speed just totally different?  \n(Likes: 58)\n\n**@Zaytion_**  \nBoo! I wanted to see it at full speed.  \n(Likes: 51)\n\n**@Drownomatic5000**  \nYou guys couldn't just show it real speed?  \n(Likes: 37)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2040709022978851083",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:41.230Z",
+  "post": {
+    "id": "2040709022978851083",
+    "author_id": "2249073306",
+    "created_at": "2026-04-05T08:32:00.000Z",
+    "text": "Valve needs to stop making realistic updates https://t.co/Lwjyd45aUt",
+    "media": [
+      {
+        "media_key": "13_2035923005889765377",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2035923005889765377/img/oglpAbDenYi_5ME-.jpg",
+        "height": 1080,
+        "width": 1080,
+        "duration_ms": 21482,
+        "view_count": 1025077,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2035923005889765377/vid/avc1/540x540/Rle7iInEkYs4DwgS.mp4"
+          },
+          {
+            "bit_rate": 1280000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2035923005889765377/vid/avc1/720x720/DPiJd5r_EsL37klt.mp4"
+          },
+          {
+            "bit_rate": 8768000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2035923005889765377/vid/avc1/1080x1080/skVFOKOxM6d7vq3l.mp4"
+          },
+          {
+            "bit_rate": 432000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2035923005889765377/vid/avc1/320x320/Tm1THNHtyjCEnSVW.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2035923005889765377/pl/LpdlQq1nsCEb3hs2.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 220,
+      "reply_count": 185,
+      "like_count": 10224,
+      "quote_count": 34,
+      "bookmark_count": 820,
+      "impression_count": 2143558
+    },
+    "author_followers": 184301,
+    "author_name": "Tradeit",
+    "author_description": "Instantly Trade, Buy or Sell CS2, RUST, and TF2 skins for the lowest fees! Official Partners of @FACEIT @gamersclub @HLTVorg",
+    "author_tweet_count": 81160
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2035923005889765377/vid/avc1/1080x1080/skVFOKOxM6d7vq3l.mp4",
+          "description": {
+            "description": "A satirical video presented as a CS2 update reveal showing new 'realistic' grenade mechanics. In frame 1, text explains that once a pin is pulled or a wick is ignited, the grenade cannot be put away. In frame 2, the player character ignites a molotov cocktail in an open courtyard. Frame 3 shows the player attempting to switch weapons while holding a grenade, which presumably leads to a self-inflicted explosion in frame 4 where the screen is filled with fire and the health bar drops to 32.",
+            "ocrText": "[ GRENADES ] • Grenades now work like real life. • You are now unable to rethrow your grenade once the pin has been pulled or ignited. TRADEIT 100 32"
+          },
+          "transcription": "Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@its_pickletime**: Would actually be fun to use the nade to turn yourself into a suicide bomber 😂 (Likes: 532)\n- **@sweatbetio**: Next update: if you get hit by a Molotov, your character has to spend 3 months in a virtual ICU (Likes: 406)\n- **@Easelm**: Instead of making the character drop it, put the pin back in? This is unrealistic as that can be done lmao. But yeah, CS doesn't need realism updates.. (Likes: 192)\n- **@gooddealnft_eth**: Let us throw defuse kits on the ground. (Likes: 98)\n- **@CyberCryptoMe**: Hear me out! Pull out a pin of a smoke nade take the c4 into your hands and plant, smoke releases covering you, and you made no nade throw sound, there will be some 1000 iq plays with this stuff! (Likes: 76)\n- **@FairnessGG**: Wouldn't be surprised if Valve adds this at this point (Likes: 70)\n- **@mousquitwo**: This is not how grenades work in real life lmfao, you can put the pin back in. (Likes: 67)\n- **@TheTopMostDog**: You can reinsert the pin into a grenade that still has the spoon, so they should add that as a mechanic, maybe by pressing R? (Likes: 36)\n- **@dogsbeerfoodw8s**: Might as well arm the bomb in spawn and time it to the bombsite. (Likes: 34)\n- **@Wishtap_**: We need real life time for reload animations now (Likes: 14)",
+    "warnings": []
+  }
+}

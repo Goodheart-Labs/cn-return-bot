@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2033076362374950976",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:52.703Z",
+  "post": {
+    "id": "2033076362374950976",
+    "author_id": "1502831572298436611",
+    "created_at": "2026-03-15T07:02:32.000Z",
+    "text": "Everyone filming… then the giant ship rolls completely over https://t.co/KtHejDbdMc",
+    "media": [
+      {
+        "media_key": "7_2033076326874361858",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2033076326874361858/pu/img/e8UYvwJHRlKt9IjP.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 15094,
+        "view_count": 3879389,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2033076326874361858/pu/vid/avc1/320x568/R1ppGpnt8MxbShsX.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2033076326874361858/pu/vid/avc1/480x852/QAb_koPzkEFs2Ukq.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2033076326874361858/pu/vid/avc1/720x1280/_3kWj5weZJOE5_Xw.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2033076326874361858/pu/pl/ZmNvRD2v7TRQBc-H.m3u8?v=9e9"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 314,
+      "reply_count": 943,
+      "like_count": 2148,
+      "quote_count": 56,
+      "bookmark_count": 417,
+      "impression_count": 3479921
+    },
+    "author_followers": 323038,
+    "author_name": "Crazy Moments",
+    "author_description": "Posting trending and viral videos around the world. Stay in the loop with what's buzzing! DM for credit or removal",
+    "author_tweet_count": 74972
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2033076326874361858/pu/vid/avc1/720x1280/_3kWj5weZJOE5_Xw.mp4",
+          "description": {
+            "description": "A sequence of three frames showing a large container ship capsizing in rough seas while people on a nearby boat record the event. In the first frame, the ship is tilted heavily to its side, showing its red hull and stacked containers. In the second frame, the ship capsizes further, creating a massive splash and white mist as it hits the water. In the third frame, the ship has completely disappeared below the surface or into the mist, leaving only the witnesses in their yellow and black jackets visible on their vessel.",
+            "ocrText": ""
+          },
+          "transcription": "Look at that list. I got two going. The containers are sliding. Holy! It's rolling, it's rolling right under! Look at that hole. Upside down! Oh my god, it's going under."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Peterson** (@LiveLetLiveKe): AI bullshit. \n\nSo No Container was shaken off? (116 likes)\n- **bsaintonge🇨🇦🇺🇦** (@bsaintonge): It's funny that no container falls...🤣😂🤣 (64 likes)\n- **Niyaz Bin Ibrahim** (@NIYAZKIBRAHIM): [image] (34 likes)\n- **Ayeza** (@AnayezaKha78911): Everyone else just standing there like \"let's watch the show\" while the tanker's about to go BOOM. 🤯🥶\nWhy didn't they run??🤦🏾‍♀️🤦🏾‍♀️ (12 likes)\n- **Andrew** (@AndrewTradesNQ): This is why RAM costs are so high. (8 likes)\n- **ጋ๏sєph Ibe 🇳🇬 🇲🇾 🇹🇷 🇵🇹 🇵🇱 🇫🇷** (@DoubleJezzy): @grok what type of glue was used to bind the containers on the ship? (6 likes)\n- **Maryama Cissey** (@Sweet_Maryama): @grok real or Ai? (5 likes)\n- **TumsaEksel** (@Tumsa_Eksel): @grok. Please confirm if this is real or not. (4 likes)\n- **Asue** (@KathaBox): Hey @grok this video made with Ai right? (4 likes)\n- **Blackmann** (@blacklawyerr): Billions of dollars down the drain\n\nWe need to rethink the idea of transitting goods by sea.\n\nWhat’s this! Imagine borrowing money from the bank to ship these goods and suddenly everything went down the drain\n\nHow do you payback people’s money 💴 \n\nLord have mercy (4 likes)",
+    "warnings": []
+  }
+}

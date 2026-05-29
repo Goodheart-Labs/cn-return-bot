@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2032601126957158440",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "BRICS News claims (citing WSJ) that Iran struck 5 US Air Force refueling planes at Prince Sultan Air Base, Saudi Arabia, accompanied by a photo of a row of KC-135 tankers.",
+  "why_note_decision": "The headline event is essentially TRUE: in March 2026 an Iranian missile strike did damage five US KC-135 Stratotankers at Prince Sultan Air Base (WSJ, Military Times, AP). The misleading element is purely the IMAGE: the attached photo shows intact KC-135s of the 185th Air Refueling Wing parked at Sioux City, Iowa (the tail-stencil OCR reads 'SIOUX CITY, 185 ARW'), i.e. a generic file/stock photo of undamaged aircraft in the US, not the damaged planes in Saudi Arabia. A note is warranted to flag that the photo is unrelated file footage, while NOT denying that the strike occurred. The original note correctly identifies the Sioux City planes but its MissingKeyPoints failure is that it omits the crucial concession that the underlying strike is real \u2014 leaving readers to think the whole post is false, which fuels the heavy NoteNotNeeded counter-tags (31).",
+  "judge_guidance": "A correct note must establish that the attached photo is an unrelated file image of intact KC-135s from the 185th Air Refueling Wing at Sioux City, Iowa (per the visible tail markings) and does NOT show the damaged aircraft in Saudi Arabia. CRITICALLY, it must also acknowledge that the reported strike itself is real \u2014 an Iranian strike did damage ~5 US KC-135s at Prince Sultan Air Base in March 2026 \u2014 so it corrects only the image, not the event. PASS only if it both (a) flags the photo as misattributed Sioux City file footage AND (b) avoids implying the strike didn't happen. FAIL if it states or implies the whole claim/event is false (that is the original note's MissingKeyPoints defect, and would itself be misinformation).",
+  "reference_note": "The reported strike is real \u2014 Iran damaged about five US KC-135 tankers at Prince Sultan Air Base in March 2026 (WSJ) \u2014 but this PHOTO does not show it. The tail markings read 'SIOUX CITY / 185 ARW', i.e. intact 185th Air Refueling Wing KC-135s parked in Iowa, an unrelated file image, not the damaged aircraft in Saudi Arabia. https://www.militarytimes.com/news/your-military/2026/03/16/iran-missile-strike-damages-five-kc-135-tankers-in-saudi-arabia-officials-say/ https://www.185arw.ang.af.mil/",
+  "original_unhelpful_note": {
+    "text": "The image shows undamaged KC-135 refueling planes at Sioux City Air National Guard Base in Iowa, not the damaged planes struck at Prince Sultan Air Base in Saudi Arabia. https://www.wsj.com/livecoverage/us-israel-iran-war-news-2026/card/wHYFMW2YG3p0rwH3HaGU https://www.185arw.ang.af.mil/About-Us/Fact-Sheets/Display/Article/446924/kc-135r-stratotanker",
+    "failure_reason": "Correctly IDs the photo as Sioux City file footage but fails to concede that the strike itself actually happened, so it reads as if debunking the whole event. This MissingKeyPoint drove heavy NoteNotNeeded counter-tagging (the event was real and widely reported).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Event true (Iran damaged ~5 KC-135s at Prince Sultan AB, Mar 2026); image false/misattributed (intact Sioux City 185 ARW file photo).",
+    "sources_checked": [
+      "https://www.militarytimes.com/news/your-military/2026/03/16/iran-missile-strike-damages-five-kc-135-tankers-in-saudi-arabia-officials-say/",
+      "https://www.washingtonpost.com/national-security/2026/03/27/iran-wounds-us-troops-saudi-base/",
+      "https://theaviationist.com/2026/03/14/five-tankers-damaged-at-psab/"
+    ],
+    "notes": "OCR ('SIOUX CITY, 185 ARW') confirms the photo is the Iowa Air National Guard wing, not Saudi Arabia; aircraft appear intact."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.3M impressions during an active US-Iran war; correctly separating a real strike from a recycled file photo matters for war-information integrity and avoiding both panic and false 'debunk' overreach."
+  },
+  "difficulty": "hard"
+}

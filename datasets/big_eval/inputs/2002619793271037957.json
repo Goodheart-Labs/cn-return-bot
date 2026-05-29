@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2002619793271037957",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:05:56.209Z",
+  "post": {
+    "id": "2002619793271037957",
+    "author_id": "1291128494",
+    "created_at": "2025-12-21T05:59:00.000Z",
+    "text": "He deleted this after 3.3M votes… https://t.co/9C4Oy6B1Zs",
+    "media": [
+      {
+        "media_key": "3_2002409607780589568",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G8n87daXYAAnkAz.jpg",
+        "height": 1239,
+        "width": 1061
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5712,
+      "reply_count": 567,
+      "like_count": 31305,
+      "quote_count": 137,
+      "bookmark_count": 1032,
+      "impression_count": 522365
+    },
+    "author_followers": 845692,
+    "author_name": "Sulaiman Ahmed",
+    "author_description": "https://t.co/L7BfZDskci https://t.co/L1qa0ouLiC",
+    "author_tweet_count": 91578
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G8n87daXYAAnkAz.jpg",
+          "description": {
+            "description": "A screenshot of a post from X (formerly Twitter) by user Gad Saad containing a poll titled 'Which religious group is responsible for the majority of today's global issues?'. The poll shows results for four options: Hindus (25%), Christians (3%), Jews (61%), and Muslims (11%). The post indicates a total of 3,316,014 votes and was posted on December 4, 2022.",
+            "ocrText": "Gad Saad @GadSaad Follow... Which religious group is responsible for the majority of today's global issues? Hindus 25% Christians 3% Jews 61% Muslims 11% 3,316,014 votes Final results 2:09 - 04 Dec 22 54.6K Reposts 6,998 Quotes 166K Likes 1,256 Bookmarks"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@HasanDarawal**: And this is their latest one 👇 they always learn the hard way 😃 (1,143 likes)\n- **@EsqJPD**: (No text content) (731 likes)\n- **@KhalidaTasneem**: He had to delete it 😄😄😄👍 (316 likes)\n- **@NoManland667**: This one try the same yesterday. The results : They never learn. (309 likes)\n- **@gujjubangali**: Off all the things that never happened in the World, 👆🏻 never happened the most. What actually happened 👇🏻 (263 likes)\n- **@AussieMAGABot**: (No text content) (205 likes)\n- **@BeaconSaleem**: Another poll but didn't include Hindu in options. They do terrism together throughout world👇 (166 likes)\n- **@Alchemyst789**: You have lost your moral compass @GadSaad ! (138 likes)\n- **@PoncedeLeon_Isr**: Yawn 🥱 (124 likes)\n- **@AwaisAfrid32306**: He deleted because he start to sh*t in his pants. He thought they have a upper hands by fooling peoples 😂😂 (73 likes)",
+    "warnings": []
+  }
+}

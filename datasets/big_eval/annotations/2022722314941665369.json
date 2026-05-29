@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2022722314941665369",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["scams_fraud_finance"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A woman records a Ziosk pay-at-table tablet showing a $60.50 check with an 18% tip calculated as $29.88 (~49%), asserting the kiosk is misleading diners; tweet frames this as 'the tip screen is lying.'",
+  "why_note_decision": "On a $60.50 check, 18% = $10.89, not $29.88; the displayed amount is roughly 49% of the check, not 18%. Multiple sources (Daily Dot, Johnny Jet, BroBible) document the Ziosk over-calculation phenomenon and treat the woman's complaint as legitimate. The original note's 'tipping on pre-discount is standard etiquette' is not a clean universal fact — etiquette literature is mixed, and even granting the discount/tax framing the math here is implausible (no normal discount would push 18% to 49%). The note essentially defends a kiosk practice that consumer-reporting sources flag as misleading. 19/47 raters voted noteNotNeeded; this is opinion-y consumer warning, not falsifiable misinfo to be corrected.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a strictly factual note that says 'Ziosk allows operators to configure tip-base (pre-tax, post-tax, pre/post-discount); the displayed 18% can reflect that configuration' WITHOUT defending the kiosk practice as 'standard etiquette' (that framing is contested). FAIL any note that flatly calls the woman wrong, asserts tipping pre-discount is universally 'standard,' or claims $29.88 on $60.50 is a normal 18% calculation.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video's tipping screen states &quot;Tip is calculated after tax and before discounts.&quot; Tipping on the pre-discount amount is standard etiquette, as the server's work is based on the full bill value.    https://www.delish.com/food-news/a60648119/higher-tip-scam/  https://www.businessinsider.com/how-to-tip-on-discounted-meals-2012-3  https://www.rd.com/article/tipping-mistake/",
+    "failure_reason": "noteNotNeeded — defends a Ziosk practice that consumer-reporting sources call a tipping scam; tweet's underlying complaint (18% display ~49% of bill) is mathematically suspect.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet flags a real consumer issue documented in mainstream consumer reporting; note's 'standard etiquette' framing is contested.",
+    "sources_checked": ["https://www.dailydot.com/news/ziosk-tipping-30-percent/", "https://johnnyjet.com/dont-fall-for-it-the-restaurant-tipping-scam-that-makes-you-tip-extra-without-knowing/", "https://brobible.com/culture/article/restaurant-kiosk-50-percent-tip/"],
+    "notes": "18% of $60.50 = $10.89; displayed $29.88 = ~49%. Even with the kiosk's stated 'after tax, before discounts' rule, you'd need an enormous discount to produce that ratio."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.2M impressions on a consumer-protection topic; AI Notes incorrectly defending kiosk-tip practices would erode trust on a non-political issue where calibration is achievable."
+  },
+  "difficulty": "medium"
+}

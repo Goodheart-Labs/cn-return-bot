@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2041654633513546236",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A video claims Jake Paul is facing backlash for 'pulling this move' on Druski (a darker/blackface response to Druski's Erika Kirk parody), showing footage of Jake Paul appearing to imitate Druski.",
+  "why_note_decision": "Jake Paul discussed on Theo Von's podcast that he was contacting makeup artists and considering a 'darker' response skit, but as of the post he had NOT released any such skit. The imitation footage circulating is AI-generated/deepfake, not from a real released skit. The post presents an unreleased idea + fake footage as an actual completed act, which misleads viewers.",
+  "judge_guidance": "PASS only if the note establishes BOTH: (1) Jake Paul only DISCUSSED/considered a 'darker' (blackface) response to Druski on Theo Von's podcast and has not released an actual skit, AND (2) the imitation footage/image shown is AI-generated (deepfake), not real skit footage. It must avoid the original framing's failure of treating the move as already done. A note that only says 'this is real footage' or that omits the AI/unreleased distinction should FAIL. Cite reporting on the podcast remarks (e.g. thegrio/yahoo) for the 'discussed but not released' point.",
+  "reference_note": "Jake Paul discussed planning a \"darker\" skit response to Druski on Theo Von's podcast but has not released it. The image shown is AI-generated, not from an actual skit. He faces backlash for the idea. https://thegrio.com/2026/04/06/jake-paul-weighs-controversial-reply-to-druski-skit-as-debate-over-comedy-boundaries-grows https://www.yahoo.com/entertainment/celebrity/articles/jake-paul-said-wants-blackface-162736267.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading - Jake Paul only discussed a possible blackface response on a podcast and did not release a skit; circulating imitation footage is AI/deepfake",
+    "sources_checked": [
+      "https://thegrio.com/2026/04/06/jake-paul-weighs-controversial-reply-to-druski-skit-as-debate-over-comedy-boundaries-grows/",
+      "https://www.yahoo.com/entertainment/celebrity/articles/jake-paul-says-contacting-makeup-203010291.html",
+      "https://eurweb.com/jake-paul-blackface-controversy-druski/"
+    ],
+    "notes": "Multiple outlets confirm Paul said he 'wanted to do it back' and had been calling makeup artists, but as of 7 Apr 2026 no skit was filmed/released. Druski's whiteface 'conservative women' skit was real and viral (~180M views)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "medium", "lens_rationale": "2.7M impressions; mainly celebrity/race-comedy discourse, low world-stakes, but deepfake-as-real is a recurring epistemics problem worth correcting."},
+  "difficulty": "medium"
+}

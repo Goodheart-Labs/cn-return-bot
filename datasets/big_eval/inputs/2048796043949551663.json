@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2048796043949551663",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:11.951Z",
+  "post": {
+    "id": "2048796043949551663",
+    "author_id": "36730901",
+    "created_at": "2026-04-27T16:06:56.000Z",
+    "text": "XRP team teeing off at Bitcoin conference in Las Vegas.  @scottmelker08  @GrantCardone @MarkYusko @cryptomanran  https://t.co/MMGsIIuxQk",
+    "media": [
+      {
+        "media_key": "13_2048512755624497152",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2048512755624497152/img/jF19_yeS68tQT71V.jpg",
+        "height": 602,
+        "width": 720,
+        "duration_ms": 10033,
+        "view_count": 230440,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2048512755624497152/vid/avc1/322x270/0Uak5nVlFKC5dxid.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2048512755624497152/vid/avc1/430x360/IoyBmLiZmM2wY5Pu.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2048512755624497152/vid/avc1/720x602/i9J-C4caSlqXWofm.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2048512755624497152/pl/XsVYDXYeyduwGJTT.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 35,
+      "reply_count": 147,
+      "like_count": 380,
+      "quote_count": 8,
+      "bookmark_count": 34,
+      "impression_count": 42138
+    },
+    "author_followers": 115703,
+    "author_name": "Gary Cardone",
+    "author_description": "Disruptor, Creator of 1/2 dozen startups in Nat gas, Power, Fintech, Bitcoin.  Artist.",
+    "author_tweet_count": 15358
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2048512755624497152/vid/avc1/720x602/i9J-C4caSlqXWofm.mp4",
+          "description": {
+            "description": "A sequence of two images. In the first image, a golf cart is performing a precarious wheelie while driving along a paved road alongside other cars. Its front wheels are high in the air, and it appears to be tipping dangerously while being driven by a person. In the second image, the golf cart is shown driving normally alongside a silver and a black car on the same road.",
+            "ocrText": ""
+          },
+          "transcription": "Do-ba-do-ba-do-ba-do, ba-do-ba-do-ba-do-ba-do, do-ba-do-do-do, a-boo-ba-do-ba-do."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Vet - @Vet_X0: $XRP is the standard for money, Gary. (297 likes)\n- Hunter Lewis - @realhlewis: Surprised you’re not charging the XRP Army rent for all that real estate they have in your head… (28 likes)\n- Jacob Metzger - @MasterHuzzah: You talk about ripple:native more than bitcoin:native Gary. It’s nice it lives rent free in your mind. Both will win. (28 likes)\n- XRP Shillionaire🏴‍☠️🟦 - @XShillionaire: I bet the xrp conference is more constructive than bitcoin’s. (25 likes)\n- RG | Zeek - @ZeekTyt: Why y’all always so worried about XRP ?😂 (23 likes)\n- X - @SArcaria: Gary if your coin was so great, why even worry about xrp?? hmmm (17 likes)\n- Stevie 🔮 $XRP - @EsotericKang: Old people trying to meme (12 likes)\n- Samir - @Samirhxh3zw: That’s how I see BtC coming down in a leveled play field , and utility kicks in , wait to see (10 likes)\n- Chase Jones - @ChaseJones57514: The future runs on the XRPL…y’all still need to figure out if btc is money or digital gold😉 (9 likes)\n- Matthew C - @Matthew25735295: You be a good boy and promote the narrative that your handlers tell you. (9 likes)",
+    "warnings": []
+  }
+}

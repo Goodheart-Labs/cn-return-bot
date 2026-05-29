@@ -1,0 +1,33 @@
+{
+  "tweet_id": "1987582574915395694",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "satire_or_joke_misread",
+  "tweet_summary": "Comedian Lil Samsquanch jokes 'ESPN is charging an extra $15/monthly for sound on Redzone'.",
+  "why_note_decision": "Tweet is a joke by an account self-described as 'Comedian'. Every top reply is a comedy riff in the same register ('upgraded from black & white last week', 'I'm paying $7.99 for closed captioning', 'still on the GIF-only version'). No sincere factual claim. Community correctly rated original note NOT_HELPFUL (dominant tag noteNotNeeded). Bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive. FAIL any note that: (a) literally explains ESPN's actual NFL RedZone pricing (the original note's failure), (b) calls the tweet misleading, or (c) misses that the author is a comedian and the replies are a joke chain.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Post falsely claims ESPN charges $15 extra &quot;for sound on Redzone.&quot; ESPN actually charges $15/month for NFL Plus (includes full NFL RedZone with audio/video), not sound as separate add-on. https://thedesk.net/2025/08/espn-unlimited-nfl-redzone-plus-bundle/",
+    "failure_reason": "note_not_needed — fact-checks an obvious joke by a comedian. The reply chain is all riffs in the same comedic register.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satire_no_factual_claim",
+    "sources_checked": [],
+    "notes": "Author bio: 'Comedian'. Replies are all jokes ('upgraded from B&W', 'paying $7.99 for closed captions'). The tweet itself is too absurd-on-its-face to be a sincere consumer-news claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "1.46M-impression joke. Primary value: bot must recognize comedian's jokes."
+  },
+  "difficulty": "easy"
+}

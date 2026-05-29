@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2036122449536811392",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "viral_false_fact_meme",
+  "tweet_summary": "User 'steve' (114k followers, retired retailer) posts an image of a textured steering wheel with overlay text 'Just realised that these little bumps on the steering wheel are in Braille so that blind drivers have no trouble finding the horn'. 683k impressions, 5.9k likes, 547 RTs. Caption: 'I never knew this !!! Everyday is a school day'.",
+  "why_note_decision": "This is a well-documented viral hoax that resurfaces periodically. Reuters, USA Today, and Snopes have all debunked it: the bumps are tactile/grip texture (or markers for assembly orientation), not Braille; blind individuals are not legally permitted to drive. Author tweets it sincerely ('I never knew this'); most replies treat it as truth or as a joke about blind drivers. With 683k impressions and the author expressly endorsing the false fact, a note IS warranted. The original note's substance is correct; rating likely fell to NoteNotNeeded (7/13) because many readers see the obvious joke premise (blind drivers) and dismiss the underlying false-fact claim as harmless.",
+  "judge_guidance": "PASS only if the note (a) states the bumps are NOT Braille (typically tactile grip/texture or assembly markers), (b) notes that blind people are not legally permitted to drive, and (c) cites Reuters, USA Today, or Snopes fact-checks. AVOID over-explaining or moralizing. A note that merely calls it a joke without addressing the false-fact claim fails because the author tweets it sincerely. FAIL any note that endorses the Braille claim.",
+  "reference_note": "The raised bumps on car steering wheels are not Braille \u2014 they are tactile grip texture (and on some models, alignment markers from assembly). Blind people are not legally permitted to drive in the US, UK, or other jurisdictions. The 'Braille horn' claim is a long-running viral hoax debunked by Reuters, USA Today, and Snopes. https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US https://www.usatoday.com/story/news/factcheck/2020/09/24/fact-check-raised-dots-steering-wheel-not-braille/5839064002",
+  "original_unhelpful_note": {
+    "text": "The raised bumps on steering wheels are not Braille for blind drivers but tactile markers to help all drivers locate the horn; blind individuals are not legally permitted to drive. https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US https://www.snopes.com/fact-check/braille-in-some-steering-wheels https://www.usatoday.com/story/news/factcheck/2020/09/24/fact-check-raised-dots-steering-wheel-not-braille/5839064002",
+    "failure_reason": "Substantively correct but rated notHelpfulNoteNotNeeded (7/13) plus MissingKeyPoints (5). Likely because many readers treat the post as obvious humor about blind drivers and dismiss the false-fact below it. Could read more crisply.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False. Bumps are tactile grip/assembly markers, not Braille. Long-debunked hoax.",
+    "sources_checked": [
+      "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US",
+      "https://www.usatoday.com/story/news/factcheck/2020/09/24/fact-check-raised-dots-steering-wheel-not-braille/5839064002"
+    ],
+    "notes": "Reuters/USA Today/Snopes all addressed this same viral image years ago; the claim periodically resurfaces."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "683k impressions on a sincere endorsement of a well-known false fact; low stakes individually but characteristic of viral false-fact creep \u2014 useful baseline for note-warranted-but-rated-not-needed pattern."
+  },
+  "difficulty": "easy"
+}

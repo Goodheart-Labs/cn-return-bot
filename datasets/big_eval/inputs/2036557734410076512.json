@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2036557734410076512",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:53.980Z",
+  "post": {
+    "id": "2036557734410076512",
+    "author_id": "871488669219270656",
+    "created_at": "2026-03-24T21:36:15.000Z",
+    "text": "An older relative is a retired Hollywood producer. We were watching the original Harry Potter films, which adopted the entire book series in under 10 years. \n\nI asked him if it would be possible to do that now. I'll never forget his answer: \"We can't. We don't know how.\" https://t.co/qqaJy1uDeP",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2036527146647089391"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2036527146647089391",
+      "author_id": "922508745812402178",
+      "created_at": "2026-03-24T19:34:43.000Z",
+      "text": "The HARRY POTTER TV series won't have one season a year\n\n\"For some of the bigger shows like Harry Potter, huge world-building shows, it would be nice to have those on an annual basis. But from a production point of view, it’s just not possible.\" - Casey Bloys https://t.co/eXAePyh6vr",
+      "media": [
+        {
+          "media_key": "3_2036527134311849985",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HEMyo4AaIAEFihD.jpg",
+          "height": 2731,
+          "width": 4096
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 132,
+      "reply_count": 48,
+      "like_count": 4212,
+      "quote_count": 11,
+      "bookmark_count": 364,
+      "impression_count": 758214
+    },
+    "author_followers": 16189,
+    "author_name": "Alex Muresianu",
+    "author_description": "Federal Analyst @taxfoundation, alum @youngvoicesorg. 80s Pop Culture Enjoyer, Tax Reform Act of 1986 Disrespecter. \n\nViews my own.",
+    "author_tweet_count": 43534
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEMyo4AaIAEFihD.jpg",
+          "description": {
+            "description": "Three children are crouching in a grassy field with lush green trees in the background under an overcast sky. On the left is a girl with long dark wavy hair, wearing a white t-shirt and blue jeans. In the center is a boy with short brown hair, wearing a navy blue knit sweater and tan shorts. On the right is a boy with curly reddish-orange hair, wearing a beige zip-up sweater and blue jeans. All three children are smiling and looking directly at the camera.",
+            "ocrText": ""
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Easton Croy (@CroyEaston)**: These kids are gonna be like 30 by the time they finish  \n  Engagement: 140 likes\n\n- **Rani, Last of The Red Hot Boomers (@ShadesOfRani)**: well, the \"House of the Dragon thing has completely lost the public's imagination. we'll see if anyone cares enough to watch the next season. I'd say the odds are little less than even. People get tired of the gaps. Doctor Who gets away with it because it is (was) a beloved lifetime fixture  \n  Engagement: 55 likes\n\n- **sean the bacon king (@Seanfucious)**: Harry Potter in season 10:  \n  Engagement: 34 likes (with video)\n\n- **R-Yay (@R_YayOFFICIAL)**: Netflix's ASOUE did 13 books in 2 years.  \n  Engagement: 28 likes\n\n- **Jim McCaslin (@JimMcCaslin23)**: Dude, in the 70s, 80s and 90s, the standard order was 22 episodes PER YEAR if you even wanted in the door. They haven't forgotten how to do it. They're fat, lazy and overpaid.  \n  Engagement: 25 likes\n\n- **LeeZ (@LeeCZ73)**: They know how. They just don't want to do what is necessary.  \n  Engagement: 24 likes\n\n- **Julián Molina (@julian_molina)**: The original Harry Potter film series was an amazing achievement production-wise. An entire book series being adapted to film, with roughly a year between each movie and with the same cast is pretty much unheard of.  \n  Engagement: 18 likes\n\n- **EH3 (@EHetz3)**: They don't know how? What, did they forget how to keep an organized schedule sometime since firing all the men that kept Hollywood functional? In all seriousness, is it that they don't know how? Or that they refuse to confront the sclerotic, graft-driven mess it's become?  \n  Engagement: 18 likes\n\n- **Whimsical🇦🇺 (@whimsical523456)**: Reality: First three books were filmed one year after the other and are only 2-3 hours length, meaning they only took 1 or 2 months to film. They took a 1.5 year break between 3 and 4, then another 1.5 years break after 5. They filmed the 6 then took another short break before filming both parts of 7 back to back. They took 12 years from the beginning of filming 1 to the release of the Deathly Hallows part 2.  \n  Engagement: 14 likes\n\n- **Timothy B. Lee (@binarybits)**: Can you explain what this means?  \n  Engagement: 10 likes",
+    "warnings": []
+  }
+}

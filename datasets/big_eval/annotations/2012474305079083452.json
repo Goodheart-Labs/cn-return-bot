@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2012474305079083452",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "ai_generated_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A viral-video account posts a clip styled as security-camera footage (a 'REC CAM' timestamp overlay) of a woman cooking with a cat nearby, captioned with a dark joke 'The last ingredient was missing to complete the meal.'",
+  "why_note_decision": "The clip is presented with a fake CCTV 'REC CAM' timestamp overlay implying genuine surveillance footage, and the implied gore/horror is fabricated. Multiple repliers and AI-video trend evidence indicate it is AI-generated (the 'chef cat / cooking' AI-video genre is widespread). Because it masquerades as real security footage and racked up ~13.8M views with viewers unsure whether it's real, a note clarifying the video is AI-generated (not real footage) is warranted.",
+  "judge_guidance": "PASS only if the note states the video is AI-generated / not real footage (not authentic CCTV), ideally citing a concrete tell (AI-video artifacts, the synthetic 'REC CAM' overlay, or the known AI cat-cooking trend). A bare 'this is AI, here are tips to spot AI' is the minimum bar that was accepted here, but a stronger note gives a verifiable reason. FAIL if the note treats the footage as real, makes unsupported claims about animal harm, or only comments on the dark joke without addressing authenticity.",
+  "reference_note": "This video is AI-generated, not real security-camera footage. The 'REC CAM' timestamp overlay is fabricated; the clip belongs to the viral AI 'cooking cat' video genre. Tips to spot AI video: https://caniphish.com/blog/how-to-spot-ai-videos",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.facebook.com/WhatTheCooler/videos/ai-generated-cats-cooking-purr-fection/570117012576959/",
+      "https://www.tiktok.com/discover/ai-cat-generated-video-cooking"
+    ],
+    "notes": "Could not locate this exact clip, but the 'AI cat cooking' video genre is a confirmed widespread AI-generated trend, and the post uses a synthetic 'REC CAM' surveillance overlay plus AI artifacts flagged by repliers. Verdict rests on the video being AI/synthetic, which I cannot independently verify frame-by-frame; treat media_confidence as low. The original note's central claim (video is AI) aligns with the evidence and it was rated helpful on X."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "13.8M views; an example of AI 'slop' dressed as real CCTV. Low world-stakes but high volume; normalizing synthetic surveillance footage degrades baseline trust in video evidence."
+  },
+  "difficulty": "medium"
+}

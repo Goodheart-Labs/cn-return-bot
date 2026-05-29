@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2034054930160300346",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A breaking-news account posts text-only: 'BIG BREAKING — NETANYAHU IS OFFICIALLY DEAD — CONFIRMED BY ISRAEL.'",
+  "why_note_decision": "Benjamin Netanyahu is alive. The March 2026 'Netanyahu is dead' claim (fueled by a doctored 'six-finger' video and Iranian-missile rumors) was debunked by NBC News, Newsweek, PolitiFact, Snopes and others; Netanyahu's office called it fake news and he posted videos mocking the rumor from a Jerusalem café. The flat 'OFFICIALLY DEAD, CONFIRMED BY ISRAEL' assertion is false and warrants correction.",
+  "judge_guidance": "PASS only if the note clearly states Benjamin Netanyahu is alive and that the 'officially dead / confirmed by Israel' claim is false, ideally citing a credible source (Netanyahu's office/official account, or a fact-check). FAIL if it hedges ('reports are unconfirmed' without a verdict), repeats the death claim, or only critiques the account's credibility without affirming he is alive. The note must directly contradict the death claim, not merely note absence of confirmation.",
+  "reference_note": "Benjamin Netanyahu is alive; claims of his death are false, as confirmed by fact-checkers and his recent videos on his official account. https://x.com/netanyahu/status/2034021266861003258 https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+      "https://www.newsweek.com/benjamin-netanyahu-alive-latest-update-israel-six-finger-video-11679702",
+      "https://en.tempo.co/read/2090785/fact-check-benjamin-netanyahu-did-not-die-in-iran-attack-on-march-3-2026"
+    ],
+    "notes": "Netanyahu is alive; death rumors debunked by NBC, Newsweek, PolitiFact, Snopes, Times of Israel. His office called it 'fake news' and he posted café videos (HaSataf, Jerusalem) mocking the rumor and showing his hand. The 'six-finger AI' claim was itself a trick of light."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "420k impressions; false death of a sitting head of government during active Middle East conflict can move markets and inflame tensions. Correcting it has real geopolitical stakes."
+  },
+  "difficulty": "easy"
+}

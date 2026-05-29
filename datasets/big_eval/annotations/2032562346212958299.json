@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2032562346212958299",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "health_medical_science",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "poor",
+  "suggested_category": "biologically_impossible_claim",
+  "tweet_summary": "A user announces she is 'officially the world's FIRST transgender woman to become pregnant by 100% natural means,' with a photo of a pregnant-appearing person.",
+  "why_note_decision": "A note is warranted: the claim is biologically impossible and presented as a literal factual 'ANNOUNCEMENT,' not labeled satire. A trans woman (assigned male at birth) does not have a uterus or ovaries and cannot become pregnant by natural means; no such medical case exists. The post is engagement bait designed to be taken at face value by many readers.",
+  "judge_guidance": "PASS only if the note clearly establishes that the claim is false / fabricated \u2014 i.e. that a transgender woman cannot become naturally pregnant and there is no verified case of this. Calling it engagement bait or fake is acceptable. The note should be neutral and factual, not derogatory toward the poster. FAIL if the note treats the pregnancy claim as plausibly real, gets distracted into unrelated commentary, or uses demeaning/abusive language about the author (which would draw notHelpfulSpamHarassmentOrAbuse ratings).",
+  "reference_note": "It is fake. Bait for engagement.    https://x.com/itstellafrancis/status/2032666745064837359?s=46&amp;t=lP5QKHToGpSLKb7dHu5UTQ",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_biologically_impossible",
+    "sources_checked": [
+      "established reproductive biology: trans women lack uterus/ovaries and cannot gestate by natural means",
+      "no credible reporting of any 'first transgender woman pregnant by natural means' case"
+    ],
+    "notes": "The claim is biologically impossible and unsupported by any medical case. The original note was rated CURRENTLY_RATED_HELPFUL. The author's own follow-up (linked in the note) reportedly confirms it as bait."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2.5M impressions on a biologically impossible viral claim; low world-stakes but a clean example of correcting fabricated 'first-ever' health claims that fuel polarized discourse."
+  },
+  "difficulty": "easy"
+}

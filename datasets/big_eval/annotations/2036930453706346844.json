@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2036930453706346844",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "",
+  "tweet_summary": "RothStuff jokes 'they really did fire the marketing team why tf are they shooting at trees' while quoting a Fortnite showcase video by creator @Guille_GAG of upcoming Lola Bunny & Daffy Duck Looney Tunes skins (#SponsoredByEpic, releasing March 26). The quoted video explicitly carries the disclosure 'These cosmetics were gifted for free by Epic Games as part of an endorsement.'",
+  "why_note_decision": "The tweet is an obvious joke about the showcase video's vibe ('shooting at trees'). The quoted post is correctly disclosed as a sponsored creator video (#SponsoredByEpic, on-screen endorsement disclosure, brown.com SAC program partner). The note pedantically explains that the showcase is by a creator partner rather than Epic's in-house marketing team — but the original joke doesn't actually claim it's by Epic's marketing team; it's a sarcastic 'they fired the marketing team' line about how the video looks. Replies overwhelmingly read it as humor. 43 NNN out of 104 raters.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a sarcastic joke ('they fired the marketing team / why are they shooting at trees') quoting a sponsored Fortnite content-creator showcase by @Guille_GAG (#SponsoredByEpic, with on-video endorsement disclosure 'These cosmetics were gifted for free by Epic Games'). The skins/release date are real and the sponsorship is disclosed; the original tweet isn't asserting the video was made by Epic's in-house team. Any note explaining the Support-A-Creator program treats a joke as a factual claim and must FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The showcased video was created by an independent Fortnite content creator partnered via Epic's Support-A-Creator program, not by Epic Games' marketing team. https://sac.epicgames.com/ https://x.com/Guille_GAG/status/2036801618411401620",
+    "failure_reason": "notHelpfulNoteNotNeeded — corrects a joke literally; the original post is sarcasm about the showcase's aesthetic, not a factual attribution claim",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_with_true_factual_basis",
+    "sources_checked": [
+      "https://x.com/Guille_GAG/status/2036801618411401620",
+      "https://www.vice.com/en/article/looney-tunes-fortnite-skins-revealed-daffy-duck-lola-bunny-release-date-cosmetics-leaked/",
+      "https://gamerant.com/fortnite-how-get-daffy-duck-lola-bunny-skins-looney-tunes/"
+    ],
+    "notes": "Looney Tunes Fortnite collab released 26 March 2026. @Guille_GAG is a Fortnite leaker/creator in Epic's Support-A-Creator program; the video carries proper sponsorship disclosure. The viral tweet is a joke."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Gaming culture/joke, 2M impressions. Low policy stakes; useful false-positive trap for the bot on humorous quote-tweets."
+  },
+  "difficulty": "easy"
+}

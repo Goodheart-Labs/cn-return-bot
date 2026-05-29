@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2013987157782720732",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "@duncan (creator of SeedQueue, a Minecraft speedrunning tool) posts a Minecraft screenshot of a normal acacia tree at the edge of savanna/desert biome with a red outline drawn around the canopy, captioned 'Did you know? Sometimes Minecraft will generate \"arrow trees\", which point to the Stronghold...' 1.77M impressions, 30k likes, 3k bookmarks.",
+  "why_note_decision": "This is a Minecraft-community in-joke / shitpost about the random tree shape. The tweet is presented as a fake 'Did you know?' fun-fact — top replies are all jokes ('bro wasnt lying', 'This is real. My father is John Arrowtree', '\"Sometimes\" is doing a lot here', 'no'). The author is a well-known Minecraft speedrunner; his audience gets the joke. The original note solemnly explains the actual stronghold-finding mechanic (Eyes of Ender) as if anyone was deceived. Community overwhelmingly rejected it (19 noteNotNeeded, multiple high-engagement reply jokes confirm no one was misled). 3,000 BOOKMARKS strongly suggests the audience treats it as funny content, not as fact.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The post is a Minecraft community shitpost on an obvious 'fake fun fact' format — the screenshot just shows a normal acacia tree with a hand-drawn red outline, and the top replies are universally jokes ('bro wasnt lying', 'My father is John Arrowtree'). The author is a Minecraft speedrunning tool dev whose audience is in on the gag. FAIL any note that (a) repeats the original failure of explaining stronghold-finding mechanics (Eyes of Ender) as if correcting a real misconception, (b) treats the post as a sincere claim about game mechanics. This is gaming-community humor; an explanatory note is the textbook false positive on a joke.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Minecraft does not generate \"arrow trees\" to point to strongholds. Strongholds are located by throwing Eyes of Ender, which fly toward the nearest one.  https://minecraft.wiki/w/Stronghold  https://minecraft.wiki/w/Eye_of_Ender",
+    "failure_reason": "note_not_needed — explains-the-joke note on Minecraft-community shitpost. Community correctly downrated (19 noteNotNeeded).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke_post_no_real_claim",
+    "sources_checked": [
+      "Top reply pattern (all jokes: 'bro wasnt lying', 'My father is John Arrowtree', 'Bro ts is NOT real')",
+      "Author profile: @duncan / creator of SeedQueue (Minecraft speedrunning tool)"
+    ],
+    "notes": "Tweet is a Minecraft-community joke. The 'arrow tree' is just a normal acacia tree with hand-drawn red outline. Reply pattern shows 100% recognition as a joke."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes gaming joke. False-positive trap: pipeline must distinguish 'Did you know?'-format jokes from genuine misinformation."
+  },
+  "difficulty": "easy"
+}

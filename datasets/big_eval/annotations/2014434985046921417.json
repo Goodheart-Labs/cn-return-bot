@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2014434985046921417",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "manipulated_or_fabricated_evidence", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "fake_quote_meme",
+  "tweet_summary": "A pro-Democratic meme image presenting a fabricated 1998 People-Magazine 'quote' from Donald Trump calling Republicans 'the dumbest group of voters', shared earnestly ('Keepin' it real!').",
+  "why_note_decision": "The quote is a long-debunked fabrication. People Magazine combed its archive and found no such interview or quote; the meme has been repeatedly debunked by Snopes, FactCheck.org, PolitiFact, Full Fact, and Newsweek since 2015. The Fox News reference is itself an anachronism (Fox News was little-known and not yet partisan-coded in 1998). The tweet has 1.17M impressions and is being shared as a real quote, not a self-aware joke. A note labeling it fabricated is warranted.",
+  "judge_guidance": "PASS if the note clearly says the People Magazine 1998 quote is fabricated and was never said by Trump, citing at least one credible fact-check (Snopes / PolitiFact / FactCheck.org / Full Fact). The note must not equivocate ('appears to be fake', 'no evidence found') — sources are definitive. FAIL if the note instead claims the quote is genuine, or if the bot declines (this is a clear fabricated-quote case worth correcting).",
+  "reference_note": "This 1998 People Magazine quote is fabricated. People Magazine searched its archive and found no record of any 1998 Trump interview or this quote. Fact-checkers including Snopes, PolitiFact and FactCheck.org have repeatedly debunked it since 2015. https://www.snopes.com/fact-check/republicans-dumbest-group-of-voters/ https://www.factcheck.org/2015/11/bogus-meme-targets-trump/ https://www.politifact.com/factchecks/2018/dec/18/blog-posting/no-donald-trump-did-not-call-republican-voters-dum/",
+  "original_unhelpful_note": {
+    "text": "This quote is not genuine and was not said by Donald Trump in a 1998 People Magazine interview. The magazine has no record of it. Fact-checkers confirm it's fabricated.    https://www.snopes.com/fact-check/1998-trump-people-quote/  https://www.foxnews.com/entertainment/bette-midler-blasted-for-tweeting-fake-trump-quote-bashing-republicans-and-fox-news  https://www.breitbart.com/entertainment/2019/06/03/bette-midler-blasted-after-tweeting-fake-donald-trump-quote",
+    "failure_reason": "Substantively correct content, but raters flagged sources (Fox/Breitbart entertainment columns) as unreliable/biased. A stronger note would lead with Snopes/FactCheck/PolitiFact and drop the Fox/Breitbart links.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "quote_is_fabricated",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/republicans-dumbest-group-of-voters/",
+      "https://www.factcheck.org/2015/11/bogus-meme-targets-trump/",
+      "https://www.politifact.com/factchecks/2018/dec/18/blog-posting/no-donald-trump-did-not-call-republican-voters-dum/",
+      "https://fullfact.org/online/donald-trump-fake-quote-people-magazine/"
+    ],
+    "notes": "Fabricated quote first surfaced 2015. People Magazine has no record. Anachronism: Fox News was not partisan-coded in 1998."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Political misinformation at 1M+ impressions; fake-quote memes erode epistemic trust on all sides. Catching fabricated-quote images is a core notewriter capability."
+  },
+  "difficulty": "easy"
+}

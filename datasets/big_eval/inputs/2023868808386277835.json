@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2023868808386277835",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:38.461Z",
+  "post": {
+    "id": "2023868808386277835",
+    "author_id": "1263352509025759233",
+    "created_at": "2026-02-17T21:15:00.000Z",
+    "text": "Super North Korea 64 is a trip https://t.co/0hoT6WzTfY",
+    "media": [
+      {
+        "media_key": "13_1988564310046683136",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1988564310046683136/img/PvekRbE8l6UQ8gRf.jpg",
+        "height": 868,
+        "width": 828,
+        "duration_ms": 25076,
+        "view_count": 391922,
+        "variants": [
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1988564310046683136/vid/avc1/720x754/VVzr7jamAtsFzgdW.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1988564310046683136/vid/avc1/828x868/_vosJHvVwIH5o5SD.mp4"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1988564310046683136/vid/avc1/320x334/JuNrlNFaK88coQ17.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1988564310046683136/pl/B3QxVtVhmp6pZy7n.m3u8?v=541"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1988564310046683136/vid/avc1/480x502/RuDcfYuO3OPYsLpK.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1646,
+      "reply_count": 111,
+      "like_count": 12691,
+      "quote_count": 98,
+      "bookmark_count": 3079,
+      "impression_count": 761735
+    },
+    "author_followers": 73046,
+    "author_name": "SuperSisi",
+    "author_description": "Gamer/Streamer/1CC maker | Pronounced “Suh-Suh”• Alt acc: @gemugirl • https://t.co/T3NjwTnI6M | VIPeach: https://t.co/wiffbjBoKW",
+    "author_tweet_count": 119944
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1988564310046683136/vid/avc1/828x868/_vosJHvVwIH5o5SD.mp4",
+          "description": {
+            "description": "These frames show a fan-made modification of Super Mario 64 with a North Korean theme called 'Super North Korea 64.' The first frame is the title screen, featuring a stylized logo with North Korean flags inside the letters and a floating head of Mario wearing a military cap with a red star. The second frame depicts Mario in a level called 'The People's Square,' collecting a 'Hero Star.' The third frame shows Mario running through a large square with red flags and a Goomba wearing a military hat, with a government-style building in the background featuring a portrait. The final frame shows Mario jumping in a level filled with rows of North Korean flags.",
+            "ocrText": "SUPER NORTH KOREA 64 © 1998 SHOFAR INTERACTIVE LICENSED BY NINTENDO. YOU GOT A HERO STAR 1 OF 5 THE PEOPLE'S SQUARE x04 x0 x2 x23 050x10"
+          },
+          "transcription": "Super North Korea 64"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Owen_TDS: AI SLOP! (Likes: 44)\n- @Noone11486: Inject this game into my veins!! 😃🫡🙌🏾🎮 (Likes: 33)\n- @tweengo1: (image, no text) (Likes: 26)\n- @thatbluedemon: Kim Jong Un approved (Likes: 20)\n- @LudisCharta: This is what ai was meant for (Likes: 10)\n- @ravenblad3: I'd...actually play this (Likes: 9)\n- @PsychoZacian: Instead of getting 120 stars, you collect 120 nukes (Likes: 4)\n- @acidxp: WTF (Likes: 3)\n- @JohnJ15574377: Might be accurate, I didn't see any food (Likes: 3)\n- @zodttd: Nintendo going for that ransomware money 😂 (Likes: 3)",
+    "warnings": []
+  }
+}

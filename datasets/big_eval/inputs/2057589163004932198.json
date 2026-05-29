@@ -1,0 +1,97 @@
+{
+  "tweet_id": "2057589163004932198",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:32.275Z",
+  "post": {
+    "id": "2057589163004932198",
+    "author_id": "4316769252",
+    "created_at": "2026-05-21T22:27:39.000Z",
+    "text": "Holy shit why is this man on Fox News wearing a literal CIA mask https://t.co/RQazYIrgDq",
+    "media": [
+      {
+        "media_key": "3_2057588815381098496",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HI4GIEKbcAA3yl3.jpg",
+        "height": 1280,
+        "width": 753
+      },
+      {
+        "media_key": "13_2057588867143008256",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2057588867143008256/img/ptWLBW7MXDRlSLje.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 13880,
+        "view_count": 5601816,
+        "variants": [
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057588867143008256/vid/avc1/720x1280/8aWiTBH5JSzifUrV.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057588867143008256/vid/avc1/1080x1920/jjtaTublnpmsarc0.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057588867143008256/vid/avc1/480x852/Ve_L54pO9WFQPsnO.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2057588867143008256/pl/uwU3nGhlg9w2abqD.m3u8?v=9d0"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057588867143008256/vid/avc1/320x568/-iZS5eXBbam87PUB.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5294,
+      "reply_count": 1690,
+      "like_count": 54841,
+      "quote_count": 772,
+      "bookmark_count": 9346,
+      "impression_count": 21059356
+    },
+    "author_followers": 701660,
+    "author_name": "BLAIRE WHITE",
+    "author_description": "I’m Blaire Russell White. ⭐️ I talk politics, gender, and conspiracies on YouTube. I also host my podcast, The Blaire White Project. 📍San Diego, CA",
+    "author_tweet_count": 4889
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HI4GIEKbcAA3yl3.jpg",
+          "description": {
+            "description": "A close-up of a bald man with a serious expression, wearing a tan blazer over a dark blue button-down shirt. He is featured on a Fox News television broadcast, with a blurred cityscape in the background and news graphics at the bottom of the frame.",
+            "ocrText": "FOX NEWS BREAKING VICE ADM ROBE TRUMP SAYS"
+          }
+        },
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2057588867143008256/vid/avc1/1080x1920/jjtaTublnpmsarc0.mp4",
+          "description": {
+            "description": "A close-up of a bald man with light skin, wearing a brown jacket over a black shirt. He appears to be speaking on a news broadcast with a city skyline in the background. News banners are present at the bottom of the frame.",
+            "ocrText": "BREAKING NEWS VICE ADM ROBERT HARWARD (RET TRUMP SAYS HE'S PUT SCHEDU ALERT RAN IS ATTACKED, GULF PRICE /FOX NEWS REPO ALERTI'T WANT THEIR OIL/ENE"
+          },
+          "transcription": "And the president knows he's in the position to demand those. So I think in that sense, he controls the narrative and when he would strike. I'd also say that patience and the request from Saudi Qatar UAE"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Sara Higdon (@SaraHigdon): Lizard people are real… (Likes: 2459)\n- BLAIRE WHITE (@BlaireWhite): Yes, it’s real: https://www.youtube.com/watch?si=XhugqxFtoUFjDBSU&v=X06b8rITwRE&feature=youtu.be (Likes: 1728)\n- The Redheaded libertarian (@TRHLofficial): What the fkkkkkkkk (Likes: 876)\n- Ancient Paths (@AncientPathsYT): The people giving you crap in the comments are probably also agency bots. This is 100% a mask. It has been left uncovered at the bottom on purpose imo. It's a form of humiliation ritual. \"See we can leave the bottom untucked and they still won't get it.\" (Likes: 731)\n- Sarah Adams (@sarahadams): Now a shadow is a conspiracy, we live in the dumbest of times (Likes: 562)\n- Darth IxIoN (@DarthIxion): Shhhh you're not supposed to see that 🙈🙉 (Likes: 474)\n- STR Tiga (@georgescruggs9): My family still thinks I’m nuts about the fake Biden’s. I still can’t believe they tried to pull of the Tall one at the White House. That guy was 6’7”! (Likes: 317)\n- Crystal Z (@CrystalZebra): They make ones not ending at neck now (Likes: 265)\n- kabster (@kabster): That doesn’t look like the same guy, and the voice is off. IMO (Likes: 250)\n- Kimberly Klacik (@kimKBaltimore): To the people claiming it’s a shadow… I have been doing media hits for 15 years, I have never seen anything like this 😳 (Likes: 245)",
+    "warnings": []
+  }
+}

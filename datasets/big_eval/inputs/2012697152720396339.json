@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2012697152720396339",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:47.017Z",
+  "post": {
+    "id": "2012697152720396339",
+    "author_id": "1440456218280005632",
+    "created_at": "2026-01-18T01:22:49.000Z",
+    "text": "‼️🚨BREAKING🚨‼️\n\nTony Romo was seen in the broadcast booth throwing papers after watching Josh Allen fall short again🥺 https://t.co/q7QXsmyzkW",
+    "media": [
+      {
+        "media_key": "7_1574130589166407684",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1574130589166407684/pu/img/Kh0rJ7P0-sJPXctG.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 6711,
+        "view_count": 604613,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1574130589166407684/pu/vid/480x270/GlQqCTczSakcqHuq.mp4?tag=12"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1574130589166407684/pu/vid/640x360/xNkbmDjwbK8To0KO.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1574130589166407684/pu/vid/1280x720/fzj5CnbJ1GF6sadD.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1574130589166407684/pu/pl/x2XTKMaHyGcrqWex.m3u8?tag=12"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 274,
+      "reply_count": 58,
+      "like_count": 12321,
+      "quote_count": 30,
+      "bookmark_count": 1011,
+      "impression_count": 1004086
+    },
+    "author_followers": 5015,
+    "author_name": "Lamar & Order: RPO",
+    "author_description": "#RavensFlock #NFLTwitter #BirdLand Let’s talk football, fantasy and sports betting. Parody/Satire tweets. I make up fake quotes.",
+    "author_tweet_count": 10634
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1574130589166407684/pu/vid/1280x720/fzj5CnbJ1GF6sadD.mp4?tag=12",
+          "description": {
+            "description": "A close-up of a person in a bright red sweatshirt, with other individuals visible in the background, including one wearing a headset. A CBS logo is visible in the top-right corner, and the scene appears to be set in a broadcast booth or a production room.",
+            "ocrText": "OCBS"
+          },
+          "transcription": "They run out of time in the end, and the offensive coordinator, Dorsen."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Mark** (@Grymrich): Tony Romo after watching Josh Allen lose (191 likes)\n- **CUKA** (@cukashawty): Lmaoooo when cooks caught a clearly out of bounds ball “I think his knee might’ve been in” but when mims caught a clearly touchdown “I don’t know if this is a touchdown” (69 likes)\n- **Hado** (@Hadometa): Ai bro lolol (40 likes)\n- **Devo** (@4Ldevo_): “Always on the fucking go-go, you a bitch like Tony Romo”- Trippie redd (24 likes)\n- **Super Tech Bro** (@SuperTechBro): That's not tony romo. This is old footage from 2yrs ago. Y'all believe anything. (11 likes)\n- **Mike** (@Randomnbafacts): That is not Romo lol (9 likes)\n- **May** (@May34015306): They sick of Josh 😂😂😂 (6 likes)\n- **JayJosephVet** (@JayJosephVet): Tony knows the Bills got screwed over by the refs (4 likes)\n- **venerican** (@Chickitychoco): Here we see a man in total control of his emotions (3 likes)\n- **James Ottar Grundvig** (@JamesGrundvig): Who's the bozo that called an offensive play 25 secs left so Josh Allen could fumble? Down by 10 Momentum with Denver Get the ball to start 3rd quarter Why even risk it? Don't blame the refs for the stupidity of coarching. #Billsmafia. #firemcdermott (2 likes)",
+    "warnings": []
+  }
+}

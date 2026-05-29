@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2027165889339032047",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:57.147Z",
+  "post": {
+    "id": "2027165889339032047",
+    "author_id": "1326229737551912960",
+    "created_at": "2026-02-26T23:36:25.000Z",
+    "text": "WOW. Minnesota's spending on Autism Care went from $1 million in 2017 to $343 million in 2024 under Tim Walz’s watch.\n\nThat's a 34,200% increase.\n\nThis level of fraud is unbelievable. https://t.co/TjnsjL8aOe",
+    "media": [
+      {
+        "media_key": "3_2027165884100292609",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCHwoZaWsAEVTu1.jpg",
+        "height": 695,
+        "width": 1600
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 9574,
+      "reply_count": 1800,
+      "like_count": 36307,
+      "quote_count": 822,
+      "bookmark_count": 3324,
+      "impression_count": 27461861
+    },
+    "author_followers": 4752669,
+    "author_name": "Libs of TikTok",
+    "author_description": "News you can’t see anywhere else. 📧 submissions@libsoftiktok.com. DM submissions. Bookings: Partnerships@libsoftiktok.com. ⬇️Subscribe to our newsletter",
+    "author_tweet_count": 62000
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCHwoZaWsAEVTu1.jpg",
+          "description": {
+            "description": "A financial data graphic titled 'MINNESOTA AUTISM PROGRAM REPAYMENTS' showing a table of annual figures from 2017 to 2024. The data shows a significant year-over-year increase in dollars reimbursed, starting from approximately $1 million in 2017 and rising to over $343 million in 2024. The source is attributed to the Minnesota Department of Human Services at the bottom.",
+            "ocrText": "MINNESOTA AUTISM PROGRAM REPAYMENTS\\nSERVICE YEAR  DOLLARS REIMBURSED\\n2017  $1,099,946.52\\n2018  $6,147,815.61\\n2019  $20,396,475.53\\n2020  $38,133,882.73\\n2021  $82,984,248.31\\n2022  $124,519,184.31\\n2023  $189,430,647.21\\n2024  $343,176,474.78\\nMINNESOTA DEPARTMENT OF HUMAN SERVICES"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@PatrioticDee** (Likes=1942, Reposts=282, Replies=17): [Image only]\n\n**@CarlosBtnoCigar** (Likes=961, Reposts=159, Replies=4): [Image only]\n\n**@billysandytodd** (Likes=915, Reposts=359, Replies=0): Minnesota falsely claimed my granddaughter had autism at 5 years old, they drugged her, emotionally abused her for years. They have done this to thousands of children.\n\n**@americansublime** (Likes=827, Reposts=109, Replies=45): How is Tim Walz still a free man?\n\n**@Bubblebathgirl** (Likes=646, Reposts=0, Replies=0): But don’t worry, Tim Walz is on top of the fraud. I guess he actually is. Just not in the way he’s pretending.\n\n**@DeepBlueCrypto** (Likes=592, Reposts=207, Replies=21): Democrats don’t care about you\n\n**@EricThehysteric** (Likes=472, Reposts=144, Replies=12): [Image only]\n\n**@LowIQJoe1** (Likes=465, Reposts=0, Replies=0): Walz is the fraud father\n\n**@JohnSitarek** (Likes=397, Reposts=66, Replies=12): “Tim Walz is 100% responsible for massive fraud in Minnesota. We let Tim Walz know of fraud early on, hoping for a partnership in stopping fraud but No, we got the opposite response,” the Minnesota DHS\n\n**@WeirdGutFeeling** (Likes=316, Reposts=0, Replies=0): This wasn't an accident. There is no way officials looked at these numbers and didn't realize there was a massive scam going on. They let it happen.",
+    "warnings": []
+  }
+}

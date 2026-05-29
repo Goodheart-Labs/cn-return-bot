@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2032599639703396545",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Ana Kasparian (TYT, 884k followers) tweets a one-line question on 13 March 2026 — 'So did they kill Netanyahu or not?' — riffing on the viral Iran-war-era 'Netanyahu dead' rumor. It's a question, not an assertion.",
+  "why_note_decision": "The tweet poses a question, not a factual claim. Netanyahu was alive (he held a press conference on 12 March 2026 and the rumors were debunked by Snopes and Times of Israel) — so the literal answer is 'no', but the tweet isn't asserting otherwise. Replies include people both joking that they wish he were dead and confirming he's alive. The question itself doesn't propagate misinformation; a literal-reading note 'No, he is alive' on a rhetorical question reads as harassment-adjacent moralizing rather than a correction. 28 NNN, 18 OpinionSpeculation, 14 SourcesUnreliable — clear note-not-needed signal.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a one-line rhetorical question ('So did they kill Netanyahu or not?'), not an assertion that Netanyahu is dead. The viral 'Netanyahu dead' rumor was indeed false (Snopes/Times of Israel — he held a press conference 12 March 2026), but Ana Kasparian is asking, not claiming. Any note that 'corrects' the question by stating Netanyahu is alive treats a question as a factual claim and must FAIL. (Notes that go further and editorialize about her tone are double-fails.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No, Benjamin Netanyahu was not killed; he spoke at a news conference on March 12, 2026, and his office dismissed death rumors as fake news. https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor https://www.timesofisrael.com/liveblog_entry/fake-news-netanyahus-office-dismisses-iran-army-claims-pms-fate-unclear-after-purported-jerusalem-missile-attack",
+    "failure_reason": "notHelpfulNoteNotNeeded — corrects a question as if it were a claim; the tweet doesn't actually state Netanyahu was killed",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "rhetorical_question_no_claim",
+    "sources_checked": [
+      "https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor/",
+      "https://www.timesofisrael.com/liveblog-march-19-2026/"
+    ],
+    "notes": "Netanyahu was alive (press conference 12 March 2026; ongoing statements through March). But the tweet is just a question — no claim to correct."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "9.3M impressions during the Iran-Israel war; the false 'Netanyahu dead' rumor was a major info-warfare incident. Useful trap: bot must distinguish 'spreading the rumor' from 'asking the question.'"
+  },
+  "difficulty": "medium"
+}

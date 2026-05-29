@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2031285040248922487",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "breaking_news_and_war",
+    "statistical_or_numerical_claim"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An Iran-war account claims 'Iran has destroyed Israeli air defense systems' and that Hezbollah is now 'raining missiles on Central Israel where 40% of the population lives,' over an Al Jazeera broadcast clip about rockets hitting central Israel.",
+  "why_note_decision": "A note is warranted because the headline factual claim is inverted: it was ISRAEL/the U.S. that devastated IRAN's air defenses in the Feb-Mar 2026 campaign (officials/analysts cited ~80-92% degradation of Iran's missile/drone launch capacity and air defenses), not the reverse. There is no credible reporting that Iran destroyed Israel's air-defense systems. The secondary claim is more defensible: Hezbollah did strike Israel in early March 2026, and the embedded Al Jazeera report itself says the targeted central region holds ~44% of Israelis \u2014 so the '40%/central Israel' element is roughly accurate and not the thing to correct. The original note correctly inverted the air-defense claim but relied on live-blog URLs that raters flagged as missing/unreliable.",
+  "judge_guidance": "PASS only if the note corrects the inverted core claim \u2014 i.e. it states that Israel/the U.S. degraded IRAN's air defenses (not the other way around), ideally with a figure (~80% or higher) from a credible, stable source (Wikipedia '2026 Iran war', Reuters/AP/Britannica, or an official statement), NOT a bare live-blog link. The note must AVOID the original's sourcing weakness (two liveblog entries). It should NOT over-correct the Hezbollah/central-Israel element: Hezbollah did fire on Israel and central Israel ~ 44% of the population, so flatly denying any Hezbollah strikes would be wrong. FAIL if it affirms 'Iran destroyed Israeli air defenses,' cites only unstable liveblogs, or wrongly denies the Hezbollah strikes.",
+  "reference_note": "This is reversed: in the Feb-Mar 2026 war, Israeli and U.S. strikes degraded IRAN's air defenses and sharply cut its missile/drone launch capacity (officials and analysts cited ~80-90% reductions); there is no credible report that Iran destroyed Israel's air-defense systems. Hezbollah did launch missiles toward central Israel, which holds roughly 44% of the population. https://en.wikipedia.org/wiki/2026_Iran_war https://www.npr.org/2026/03/02/g-s1-112140/hezbollah-strikes-israel",
+  "original_unhelpful_note": {
+    "text": "The post inaccurately claims Iran destroyed Israeli air defenses. Actually, Israel destroyed ~80% of Iran's air defenses. Hezbollah has launched missiles at central Israel (home to ~40-44% of Israelis).    https://www.timesofisrael.com/liveblog_entry/idf-chief-says-israel-has-destroyed-80-of-irans-air-defense-systems  https://www.jpost.com/middle-east/iran-news/2026-03-09/live-updates-889301",
+    "failure_reason": "Rated notHelpfulSourcesMissingOrUnreliable (19) as the dominant tag. The substance is correct (it inverts the false air-defense claim and accepts the true Hezbollah element), but it cites two live-blog entries \u2014 transient, hard-to-verify URLs that raters deemed unreliable/missing. The fix is a stable, authoritative citation for the ~80% figure rather than liveblogs.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false core claim (inverted); secondary Hezbollah claim true",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Iran_war",
+      "https://www.npr.org/2026/03/02/g-s1-112140/hezbollah-strikes-israel",
+      "https://www.britannica.com/event/2026-Iran-war"
+    ],
+    "notes": "Feb 28, 2026: ~900 US/Israeli strikes hit Iran's missiles, air defenses, infrastructure; analysts/officials cite ~80-92% drops in Iran's missile/drone launch capacity. No reporting that Iran destroyed Israel's air defenses. Hezbollah did strike Israel (Mar 2, NPR); the embedded Al Jazeera report puts central Israel at ~44% of population. So only the air-defense claim is false; the Hezbollah/central-Israel part is roughly right."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Wartime battlefield-status misinformation shapes public understanding and escalation pressure; correcting an inverted claim about who holds the military advantage is genuinely valuable."
+  },
+  "difficulty": "medium"
+}

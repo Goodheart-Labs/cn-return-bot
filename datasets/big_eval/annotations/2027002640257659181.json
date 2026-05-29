@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2027002640257659181",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A clip captioned 'SNEAKO absolutely destroys India's PM Modi' shows streamer SNEAKO reacting to Modi's Knesset speech line 'Israel is the fatherland, India the motherland,' mocking it as Modi publicly debasing himself before Netanyahu.",
+  "why_note_decision": "The clip miscontextualizes a real, checkable fact. In his Feb 2026 Knesset address Modi was describing Indian-origin Jews in Israel ('they hold firmly that Israel is their fatherland and India their motherland') as a tribute to that community and to India-Israel ties — he was not speaking about himself or India submitting to Israel. The viral edit strips that context so viewers believe Modi humiliated himself; many commenters take it literally. Multiple fact-checkers (FACTLY, BOOM, Eurasian Times) addressed exactly this clipped quote, so a context note is warranted. This is a genuine correction case, not no-note — hence the flip from the provisional label.",
+  "judge_guidance": "PASS only if the note establishes the missing context: Modi's line 'Israel is the fatherland, India the motherland' referred to INDIAN-ORIGIN JEWS LIVING IN ISRAEL (a tribute to that community and to India-Israel ties), NOT a statement that Modi/India is subordinate to Israel or Netanyahu. The note must convey that the streamer's framing ('you said you're Netanyahu's bitch' / self-humiliation) rests on a clipped quote taken out of context. Cite the speech or a fact-check. FAIL if the note merely opines that the reaction is unfair/biased without supplying the factual context, or if it accepts the 'Modi humiliated himself' framing. To beat the original, the note must read as a neutral context correction, not as argumentative editorializing ('the streamer's reaction reframes that praise as a humiliating moment').",
+  "reference_note": "Out of context. In his Feb 2026 Knesset speech, Modi was describing Indian-origin Jews in Israel — 'they hold firmly that Israel is their fatherland and India their motherland' — as a tribute to that community and to India-Israel ties. He was not speaking about himself or India. https://www.memri.org/reports/indian-prime-minister-narendra-modis-historic-speech-israeli-knesset-heart-india-israel https://factly.in/pm-modis-statement-that-israel-is-fatherland-and-india-is-motherland-was-made-in-reference-to-indian-origin-jews-living-in-israel/",
+  "original_unhelpful_note": {
+    "text": "The clip takes Modi’s Knesset remarks out of context. He praised Indian-origin Jews—“Israel is their fatherland, India their motherland”—as a tribute and highlighted India–Israel ties; the streamer’s reaction reframes that praise as a humiliating moment. https://www.youtube.com/watch?v=or2RwY0P10Q",
+    "failure_reason": "opinion_speculation_editorializing_and_weak_source",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Miscontextualized. Modi's 'Israel is the fatherland, India the motherland' line referred to Indian-origin Jews living in Israel, not to himself or India; the clip is edited to imply self-humiliation.",
+    "sources_checked": [
+      "https://factly.in/pm-modis-statement-that-israel-is-fatherland-and-india-is-motherland-was-made-in-reference-to-indian-origin-jews-living-in-israel/",
+      "https://www.eurasiantimes.com/israel-is-the-fatherland-india/",
+      "https://www.boomlive.in/amp/fact-check/fake-news-kerala-congress-modi-said-india-is-the-motherland-israel-is-the-fatherland-video-factcheck-30746",
+      "https://www.memri.org/reports/indian-prime-minister-narendra-modis-historic-speech-israeli-knesset-heart-india-israel"
+    ],
+    "notes": "Independent fact-checks (FACTLY, BOOM) and the full Knesset transcript confirm the line was about Indian-origin Jews in Israel. The clip and 'SNEAKO destroys Modi' framing rely on stripping that context. A neutral context note is warranted; the original note added editorial color ('reframes that praise as a humiliating moment') and leaned on a YouTube link, which likely drove the opinion/argumentative ratings."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "967k impressions; an edited clip about a head of state's speech feeding sectarian/antisemitic 'they convert' and 'subjugation' narratives. Correcting miscontextualized political media at scale matters for healthy public discourse."
+  },
+  "difficulty": "medium"
+}

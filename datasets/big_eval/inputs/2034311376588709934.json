@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2034311376588709934",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:15.445Z",
+  "post": {
+    "id": "2034311376588709934",
+    "author_id": "1869092087855005697",
+    "created_at": "2026-03-18T16:50:02.000Z",
+    "text": "Netanyahu died on March 8th, 2026.\n\nYair, his son who posts 24/7, took an exact 7 day break on X from 3/8 to 3/15. That lines up precisely with the Jewish Shiva mourning period. \n\nPresident Trump looked visibly shaken on 3/8.\n\nNow they are striking oil fields and hitting civilian https://t.co/WxFpkYvfnp",
+    "media": [
+      {
+        "media_key": "3_2034311372809584640",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDtTalLaQAAERyQ.jpg",
+        "height": 720,
+        "width": 1280
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8984,
+      "reply_count": 1288,
+      "like_count": 77497,
+      "quote_count": 675,
+      "bookmark_count": 12629,
+      "impression_count": 7979763
+    },
+    "author_followers": 86394,
+    "author_name": "The AI Robot Guy on X",
+    "author_description": "Time for the world to get better",
+    "author_tweet_count": 1345
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDtTalLaQAAERyQ.jpg",
+          "description": {
+            "description": "A close-up photograph of Benjamin Netanyahu with his eyes closed, resting his head against a white pillow. He appears to be in a hospital bed or a similar medical setting, wearing a white garment.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@RWynYoung: My take: Coward Netanyahu is faking his death to escape international accountability.  \nTime will tell.  \nLikes: 3388\n\n@Neversleeps_HQ: Was it your Dard who recorded this?  \nLikes: 1141\n\n@Pankymba: He didn’t just d;e, he joined these crew  \nLikes: 727\n\n@tv_awarra: Sorry.... I am alive  \nLikes: 722\n\n@nnamanichi93717: This video says it all  \nLikes: 438\n\n@4T7VN: checks out  \nLikes: 426\n\n@kundiabdulmalik: Mileikowsky 🔥 right now  \nLikes: 310\n\n@whatdfuk: Looks like Trump will be getting that long-awaited promotion to President of the US.  \nLikes: 167\n\n@glugalug: \"ow they are striking oil fields and hitting civilian infrastructure in response. They wouldn’t do that unless something serious happened, like a major assassination.\"  \nYou obviously haven't been paying attention to Israel's habits over the past 20 years.  \nLikes: 60\n\n@Regulawyer: It appears he almost got hit in an inadvertent disclosure of his location, and then when his house was hit. He got scared and went to Europe to hide. In an effort to take the attention off the fact that he is hiding like a coward, they were trying to fake everyone out with AI videos. When everyone identified those and jumped to the conclusion he was dead, they decided to keep doing it so they could keep the attention on the fake videos and off the fact he is a coward.  \nLikes: 49",
+    "warnings": []
+  }
+}

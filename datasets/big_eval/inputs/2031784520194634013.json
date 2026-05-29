@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2031784520194634013",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:47.856Z",
+  "post": {
+    "id": "2031784520194634013",
+    "author_id": "1157545116095143936",
+    "created_at": "2026-03-11T17:29:13.000Z",
+    "text": "🚨BREAKING - MASSIVE NON-NUCLEAR EXPLOSION IN QOM, IRAN JUST NOW  \n\nQom is Iran's clerical capital\n\nLots of speculation that the USA has used its 30,000lb  GBU-57A/B Massive Ordnance Penetrator (MOP)\n\nwhich has RARELY been used, and can penetrate 200 feet into the earth. https://t.co/9IUnoX2PPD",
+    "media": [
+      {
+        "media_key": "13_2031783623733444608",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2031783623733444608/img/eTmrIIC8N3NbOq-N.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 25933,
+        "view_count": 4896630,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031783623733444608/vid/avc1/640x360/qWE9gUvUb6W36WCP.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031783623733444608/vid/avc1/1280x720/BehD1N2hBYistkEC.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031783623733444608/vid/avc1/1920x1080/ITS7PYh0DISyfeRe.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031783623733444608/vid/avc1/480x270/eV5ft0Zv3snNQVQz.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2031783623733444608/pl/jTXK5FHarzMo1r9f.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8798,
+      "reply_count": 2169,
+      "like_count": 58563,
+      "quote_count": 631,
+      "bookmark_count": 7236,
+      "impression_count": 6037077
+    },
+    "author_followers": 113915,
+    "author_name": "Tablesalt 🇨🇦🇺🇸",
+    "author_description": "Professional red-piller. \n\nI've ratioed the Prime Minister of Canada. \n\nSponsor a post: https://t.co/zwpD6EnyNQ",
+    "author_tweet_count": 31958
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2031783623733444608/vid/avc1/1920x1080/ITS7PYh0DISyfeRe.mp4",
+          "description": {
+            "description": "A sequence of frames showing a large explosion with a massive mushroom cloud rising over a city skyline. In the corner of each frame is a picture-in-picture image of a B-2 Spirit stealth bomber dropping a large bomb, specifically the GBU-57 Massive Ordnance Penetrator (MOP). The main footage portrays the aftermath of a catastrophic blast, while the inset aims to suggest the cause, though both scenes are from different original contexts.",
+            "ocrText": "82103"
+          },
+          "transcription": "Shit, I'm shot a woman."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@cb1crypto (Sh*tcoin-enthusiast): [photo]  \nLikes=1163, Reposts=43, Replies=28, Views=56157\n\n@Tablesalt13 (Tablesalt 🇨🇦🇺🇸): Theyre going to have to cut out some more cardboard stuff after that one  \nLikes=829, Reposts=0, Replies=0, Views=289236\n\n@Tablesalt13 (Tablesalt 🇨🇦🇺🇸): SRC:  \nLikes=823, Reposts=68, Replies=36, Views=551882\n\n@HouseofElon (Voice of Sanity): You do NOT want to get a message from Trump that isn’t a fun campaign text.  \nLikes=586, Reposts=46, Replies=7, Views=32179\n\n@AttackOnWar (WarNews): Just in:  \nLikes=582, Reposts=146, Replies=29, Views=58932\n\n@Remigrationator (AwakeNotWoke🏴󠁧󠁢󠁥󠁮󠁧󠁿🇺🇲): same profile as a peregrine. So cool.  \nLikes=538, Reposts=34, Replies=19, Views=38683\n\n@BillHerringIII (Bill Herring): Oops….we did it again!  \nLikes=486, Reposts=18, Replies=17, Views=24012\n\n@Tablesalt13 (Tablesalt 🇨🇦🇺🇸): @grok how far was is the camera man from the blast? thats a crazy shockwave!  \nLikes=410, Reposts=10, Replies=29, Views=350218\n\n@yuriandopov (YuriAndropov’sJazzRecords): Only carried by the B-2 which does not fly during the day. I am guessing GBU-72s hit a large stash of weaponry.  \nLikes=321, Reposts=0, Replies=0, Views=196121\n\n@heyyitsleox (♛𝓵𝓮𝓸🥷): Someone said they are using the new \"BACON WRAPPED MOAB\" 😂  \nLikes=290, Reposts=12, Replies=6, Views=19517",
+    "warnings": []
+  }
+}

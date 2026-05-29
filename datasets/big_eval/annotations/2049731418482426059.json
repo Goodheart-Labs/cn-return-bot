@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2049731418482426059",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "video_game_leak",
+  "tweet_summary": "An FC Mobile content creator posts a 'Team of the Season' leak listing Yaya Touré (Box 1), Cha Bum Kun (Box 2), and Laurent Blanc (Box 3) as the 120-OVR Icon Box rewards, with a promotional graphic.",
+  "why_note_decision": "Independent FC Mobile guides confirm Box 3 features 120 CB Laurent Blanc as part of the TOTS 2026 event (Mr. Believer Hub, fifamobileguide.com, Instagram leaks). The note's claim that Box 3 doesn't exist and the image is fan-made is contradicted by multiple FC Mobile community sources documenting all three boxes. Community rating notHelpfulNoteNotNeeded + notHelpfulIncorrect aligns: the note itself is the misinformation here. Note also cites a guide URL that does list the Laurent Blanc box per search results.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet correctly reports an FC Mobile TOTS leak — Box 3 with Laurent Blanc is confirmed across community/leak sources. Any note 'correcting' this as fake is itself a false positive (the original note was rated notHelpfulNoteNotNeeded + notHelpfulIncorrect).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "There is no Box 3 featuring Laurent Blanc in FC Mobile TOTS; official boxes are Week 1 (Yaya Touré) and Week 2 (Cha Bum Kun). The attached image is fan-made.",
+    "failure_reason": "true_claim: tweet is accurate per multiple FC Mobile leak sources; note is itself the misinfo",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true: Box 3 features Laurent Blanc per FC Mobile TOTS leak coverage",
+    "sources_checked": [
+      "https://www.fifamobileguide.com/tots-26",
+      "https://mrbelieverhub.com/fc-mobile-news/fc-mobile-utots-leaks-2026",
+      "https://www.instagram.com/p/DX-fpYGkrfI/"
+    ],
+    "notes": "Multiple community/leak sources confirm 120 CB Blanc Box 3."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {"prominence": "low", "lens_rationale": "mobile game cosmetics leak; trivial real-world stakes"},
+  "difficulty": "easy"
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2030094959496548391",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:05.123Z",
+  "post": {
+    "id": "2030094959496548391",
+    "author_id": "3385236489",
+    "created_at": "2026-03-07T01:35:30.000Z",
+    "text": "Was a live child auction conducted during the 2014 Oscars?\n\n\"They went really overboard with the pizza obsession, which I feel like makes it more suspicious.\" https://t.co/ZEJEyLnxki",
+    "media": [
+      {
+        "media_key": "13_2030094887245512704",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2030094887245512704/img/mZRHJvdBKUEygmRC.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 120256,
+        "view_count": 806220,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030094887245512704/vid/avc1/320x568/FxehC1--086NjeW1.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030094887245512704/vid/avc1/480x852/XAr6WTBrgYzL-QCa.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030094887245512704/vid/avc1/720x1280/VVPpQDBTAezYyEiH.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2030094887245512704/pl/oCRL6vBkel3lPiwX.m3u8?v=94c"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2553,
+      "reply_count": 285,
+      "like_count": 14846,
+      "quote_count": 78,
+      "bookmark_count": 5340,
+      "impression_count": 317618
+    },
+    "author_followers": 736880,
+    "author_name": "redpillbot",
+    "author_description": "Truth over comfort.",
+    "author_tweet_count": 194023
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2030094887245512704/vid/avc1/720x1280/VVPpQDBTAezYyEiH.mp4",
+          "description": {
+            "description": "A series of frames from a video showing a creator commenting on footage from the 2014 Oscars. The frames include various overlays and text promoting conspiracy theories about the 2014 Oscars pizza delivery segment featuring Ellen DeGeneres.",
+            "ocrText": "PIZZAGATE CONFIRMED DISTURBING 2014 OSCARS A conspiracy theory A 2014 OSCARS WAS WEIRD 86TH ANNUAL OSCARS HOSTED BY ELLEN DEGENERES + CELEBRITY PIZZA PARTY hi hey Jeffrey how are you how's everybody doing good I was hoping you'd say that"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@BitterBrews4u: Not everything related to epstien 😑 (Likes: 543)\n@BitterBrews4u: (video, no text) (Likes: 349)\n@KingWindsor1: That was Jeff Bezos, not Jeffrey Epstein (Likes: 239)\n@jessie4usa: that's not Epstein. (Likes: 157)\n@ilegacy21239074: Bro your telling me the food was pizza, Harvey Weinstein and Kevin spacey (also had allegations), and says hi to Jeff in the beginning? Cmon now they’re playing in our face (Likes: 147)\n@stefficastro1: It’s not suspicious anymore, it’s real. 🙄 (Likes: 124)\n@k_sarah_sera: She doesn’t say hi to Jeffrey Epstein, she says hi to Jeffrey Katzenberg, the Hollywood Producer (Likes: 123)\n@Charleston94843: Jesus y’all, she ordered pizza, and not everyone named Jeffrey is Epstein (Likes: 95)\n@GN1ch: People need to have their Internet forcibly taken away. Videos like this lose all credibility when creators claim Jeffrey Katzenberg is Epstein. The worst part is that sex trafficking is a real issue, but trust in what’s real is dissolved when this slop gets promoted. (Likes: 80)\n@BadalJohannes: Their death penalty should be this for these sick fuckers (Likes: 73)",
+    "warnings": []
+  }
+}

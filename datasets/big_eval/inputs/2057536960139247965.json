@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2057536960139247965",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:01.664Z",
+  "post": {
+    "id": "2057536960139247965",
+    "author_id": "902256170",
+    "created_at": "2026-05-21T19:00:13.000Z",
+    "text": "The USA has murdered about 200 Caribbean fisherman for no reason in the past 5 months https://t.co/QhvdTrdhlv",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2057287771371323680"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2057287771371323680",
+      "author_id": "51241574",
+      "created_at": "2026-05-21T02:30:01.000Z",
+      "text": "Federal prosecutors have announced charges against former Cuban President Raul Castro in the 1996 downing of civilian planes operated by Miami-based exiles. https://t.co/oBtr4rv64c",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 6170,
+      "reply_count": 640,
+      "like_count": 26273,
+      "quote_count": 56,
+      "bookmark_count": 703,
+      "impression_count": 1006329
+    },
+    "author_followers": 5771,
+    "author_name": "🌋",
+    "author_description": "yo soy un hombre sincero / / tiocfaidh ár lá",
+    "author_tweet_count": 55365
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **elGroko (@Shortcarbine)**: Fishermen ?? Hahaa what do you know. (1,425 likes)\n- **RealJeremy (@RealJeremy03)**: Fishermen that carry large quantities of drugs in sealed containers? Those fishermen? (864 likes)\n- **Jackie (@Whatsthehapp5)**: Please take out the 🏴󠁧󠁢󠁳󠁣󠁴󠁿flag when you are posting bullshit,it makes us all look stupid. (761 likes)\n- **Apple Lamps (@lamps_apple)**: You’re actually retarded. Don’t smuggle drugs and you won’t get blown up. It’s quite simple. The fact that you think they were fishermen is laughable. We don’t spend $1 trillion per year on our military to not have the capability to track drug shipments in our hemisphere. (741 likes)\n- **MEME THE LEFT (@memetheleft)**: 200 is disappointing. I thought the number was closer to 500. (331 likes)\n- **Jay Fivekiller (@JayFivekiller)**: \"fishermen\" (289 likes)\n- **Judah (@JudahDirect)**: Those drug dealers are fisherman as Islam is the religion of peace. (259 likes)\n- **Sensurround (@ShamashAran)**: Caribbean fisherman shouldn't be carrying drugs illegally then. They should stick to phishing. (192 likes)\n- **PALoyalist (@LoyalistPa)**: What fisherman owns à sub? (165 likes)\n- **Señor exprópiese (@NoVive_Socialis)**: Sin motivo alguno? Eran literalmente narcotraficantes (139 likes)",
+    "warnings": []
+  }
+}

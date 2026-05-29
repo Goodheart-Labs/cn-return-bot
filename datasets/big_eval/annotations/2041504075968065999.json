@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2041504075968065999",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "breaking_news_and_war",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "fearmongering_unverified_prediction",
+  "tweet_summary": "An Iran-themed 'news' account posts a missile-convoy + helicopter video captioned 'AMERICA IS GOING TO TEST SOMETHING BIG TONIGHT,' framed as an imminent major US weapons test/strike.",
+  "why_note_decision": "It is an unverified fear-mongering prediction with 3.5M views and no basis. No US government or military announcement of any 'big test tonight' exists; the cryptic 'NF-7C' source is meaningless, and the convoy footage is generic/repurposed (not evidence of a scheduled test). Even an in-thread commenter notes 'There's no confirmed official announcement.' A note is warranted to flag the lack of any credible source. The original note tries this but is thin (proving a negative with two homepage links) and was rated not-helpful.",
+  "judge_guidance": "PASS only if the note makes clear there is NO credible/official source for an imminent 'big US test tonight' -- the claim is unverified, the 'NF-7C' citation is meaningless, and the attached convoy footage does not establish any scheduled test (it is generic/unattributed military footage). FAIL if the note affirms or lends credibility to the test claim, if it asserts the video is confirmed AI without evidence, or if it merely links agency homepages without explaining that no such announcement exists. A good note should note the absence of any official confirmation rather than over-claim. This is a hard 'prove-a-negative' case; reward concise sourcing of the absence over speculation.",
+  "reference_note": "There is no official US government or military announcement of any major 'test' tonight. The cited 'NF-7C' is not a recognized source, and the attached convoy footage is generic and does not document any scheduled test. Treat this as an unverified rumor. https://www.defense.gov/News/",
+  "original_unhelpful_note": {
+    "text": "No US military announcement confirms a major test scheduled for tonight. https://www.defense.gov/News/ https://www.afgsc.af.mil/",
+    "failure_reason": "Thin and hard to act on: it asserts a negative with two homepage links and no explanation, doesn't address the bogus 'NF-7C' source or the repurposed footage, so raters found it missing key points / unconvincing.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "unverified_no_credible_source",
+    "sources_checked": [
+      "https://www.defense.gov/News/",
+      "https://www.armyrecognition.com/news/army-news/2026/u-s-army-and-navy-conduct-joint-hypersonic-missile-test-boosting-long-range-strike-readiness",
+      "https://www.cnn.com/2026/03/11/politics/fake-ai-images-videos-iran-war"
+    ],
+    "notes": "No announcement of any 'big test tonight' (Apr 7, 2026) found. 'NF-7C' is not a real designator/source. Engagement-farming Iran-war account; this is a fear-mongering unverified prediction. Many Iran-war clips this period are AI-generated/repurposed (per CNN), so the footage cannot be taken as evidence."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "3.5M views of war-panic content during US-Iran tensions; correcting unsourced escalation rumors reduces fear-driven misinformation, though stakes are lower than a concrete false-fact claim."
+  },
+  "difficulty": "hard"
+}

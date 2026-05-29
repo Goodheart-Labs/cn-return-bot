@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2022430654726865356",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "death_conspiracy_theory",
+  "tweet_summary": "Post asserts 'Zionists 100% murdered US atty Jessica Aber' because she allegedly 'caught Zionist hit teams being smuggled into this country', citing a screenshot of her real 2023 tweet about an immigration-fraud extradition case.",
+  "why_note_decision": "This is a fabricated murder/conspiracy claim about a real person's death. Jessica Aber, former U.S. Attorney for EDVA, was found dead March 22, 2025; the medical examiner ruled it natural causes — sudden unexpected death in epilepsy (SUDEP) — and her family confirmed she had epilepsy and died in her sleep. Police found no foul play. The 'Zionist hit teams' framing also mischaracterizes the case she referenced: it was an immigration-fraud/visa scheme involving an Israeli national, not 'hit teams'. With 236K impressions and replies amplifying 'they drugged her' / 'we're at war with Jewish people', the false murder claim and antisemitic conspiracy warrant a note. Provisional 'no_note' is wrong.",
+  "judge_guidance": "A correct note must establish that Jessica Aber's death was officially ruled NATURAL — sudden unexpected death in epilepsy (SUDEP) — by the medical examiner, with her family confirming she had epilepsy and died in her sleep and police finding no foul play; therefore the 'murdered by Zionists' / 'hit teams' claim is unsupported. It may also note that the case she tweeted about was an immigration/visa-fraud prosecution, not 'hit teams'. PASS if the note cites the SUDEP/natural-causes ruling with a reliable source (NBC News / WUSA9 / WJLA) and rebuts the murder claim. FAIL if it (a) lends any credence to the murder/conspiracy claim, (b) relies only on a single weak source, or (c) declines to note. The original note had the facts but was downrated SourcesMissingOrUnreliable — a correct note should use a strong outlet reporting the ME ruling, not just one local affiliate.",
+  "reference_note": "Jessica Aber's death was ruled natural by the medical examiner: sudden unexpected death in epilepsy (SUDEP). Her family said she had epilepsy and died in her sleep, and police found no evidence of foul play. There is no evidence of a 'Zionist murder' or 'hit teams'; the case she referenced was an immigration/visa-fraud prosecution. https://www.nbcnews.com/news/us-news/jessica-aber-former-us-attorney-found-dead-epilepsy-died-sleep-family-rcna198245",
+  "original_unhelpful_note": {
+    "text": "Aber's death was ruled natural (SUDEP) by the VA Medical Examiner. Her family confirmed years of epilepsy. Police found no evidence of foul play. The case she prosecuted involved an Israeli national for immigration fraud via fraudulent tourist visas, not \"hit teams.\" https://www.fox5dc.com/news/cause-death-revealed-jessica-aber-former-us-attorney-found-dead-virginia-home",
+    "failure_reason": "Facts are correct (SUDEP/natural, no foul play, immigration-fraud case) but heavily rated SourcesMissingOrUnreliable(10)/Argumentative(7)/OpinionSpeculation(9). Likely the single local-affiliate source and the directly-rebutting tone drew pushback from a hostile audience. A correct note uses a top-tier national source (NBC/AP) reporting the ME ruling and states it plainly.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: death ruled natural (SUDEP); no evidence of murder or 'Zionist hit teams'.",
+    "sources_checked": [
+      "https://www.nbcnews.com/news/us-news/jessica-aber-former-us-attorney-found-dead-epilepsy-died-sleep-family-rcna198245",
+      "https://abcnews.go.com/US/former-us-attorney-jessica-aber-epilepsy-family-statement/story?id=120182437",
+      "https://wjla.com/news/local/former-us-attorney-jessica-aber-death-epilepsy-epileptic-seizures-medical-examiner-office-eastern-district-of-virginia"
+    ],
+    "notes": "Aber (43), former EDVA US Attorney, found dead Mar 22, 2025 in Alexandria. ME: natural causes, sudden unexpected death in epilepsy (SUDEP). Family confirmed epilepsy, died in sleep. Her referenced case was a visa/immigration-fraud prosecution (Israeli national extradited, pleaded guilty), not 'hit teams'."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "A 236K-impression antisemitic murder conspiracy about a public official's natural death is high-harm disinformation that fuels real-world hate; correcting it has clear societal value."
+  },
+  "difficulty": "medium"
+}

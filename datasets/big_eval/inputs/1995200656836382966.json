@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1995200656836382966",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:28.731Z",
+  "post": {
+    "id": "1995200656836382966",
+    "author_id": "750683331260321792",
+    "created_at": "2025-11-30T18:38:00.000Z",
+    "text": "A piece of the moon and mars on one hand https://t.co/VPBTCjCnSp",
+    "media": [
+      {
+        "media_key": "3_1995154466698395648",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G7A2aquXgAA4O0w.png",
+        "height": 853,
+        "width": 640
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 112,
+      "reply_count": 94,
+      "like_count": 2408,
+      "quote_count": 11,
+      "bookmark_count": 92,
+      "impression_count": 86813
+    },
+    "author_followers": 1548462,
+    "author_name": "Curiosity",
+    "author_description": "Curiosity-driven content across science, history, and culture. Sharing knowledge and stories that spark curiosity.\nct: curiosityonx@gmail.com\nSub for only $3⤴️.",
+    "author_tweet_count": 17887
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G7A2aquXgAA4O0w.png",
+          "description": {
+            "description": "A close-up photograph of a person's palm holding two distinct specimens. The top specimen is a rectangular, flat-cut slice of a lunar meteorite breccia, showing a mosaic of light gray clasts and dark matrix with small rusty spots. The bottom specimen is a rough, irregularly shaped, dark charcoal-to-black textured rock.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- John - @JohnEdgarAllan: Fact check:  No Mars mission has yet ever returned to Earth.  First round trip mission is hopeful in 2030. (Likes:31)\n- ² Chris ⁵ Mars ⁴ - @Chris69Mars: Fuse them and make Moars. (Likes:7)\n- Shubham - @Shubham_Singh_l: Impressive. Very nice. Now Let's see Paul Allen's Piece of Rock (Likes:6)\n- EᑎTᖇOᑭY 🏴󠁧󠁢󠁥󠁮󠁧󠁿 🇬🇧 🇪🇸 - @AgleronEntropy: A piece of the meteor that created Meteor Crater in Arizona. (Likes:4)\n- Sanika - @SanicaCodeio: The Mars specimen was brought by? (Likes:3)\n- Void Freud - @voidfreud: Looks like something my kitchen is made of. That justifies the cost. (Likes:2)\n- KOOSHA - @kooshamusic: If I was a cabinet maker this would look like a business opportunity for niche kitchen/bath top materials. (Likes:2)\n- mimeticlol - @mimeticlol: What part are you missing to make an Oreo cookie?🙃 (Likes:2)\n- Annie van Leur - @AnnevanLeur: The top one looks exactly like the old linoleum floor we ripped out of the beach house. (Likes:2)\n- Mr. Wonderful - @mrwonderful091: Me struggling to open a jar of pickles… meanwhile, someone’s casually holding two planets. 😎✋ (Likes:2)",
+    "warnings": []
+  }
+}

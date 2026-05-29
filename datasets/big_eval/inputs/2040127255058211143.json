@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2040127255058211143",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:01.395Z",
+  "post": {
+    "id": "2040127255058211143",
+    "author_id": "1697311819201708032",
+    "created_at": "2026-04-03T18:00:15.000Z",
+    "text": "Take my money, I want one… https://t.co/Wkp12Z1NHt",
+    "media": [
+      {
+        "media_key": "13_2040127128033710080",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2040127128033710080/img/CWEFm1TZ1kiMJ7SG.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 62666,
+        "view_count": 64616,
+        "variants": [
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2040127128033710080/pl/3YPz1YrDgA4v2N0-.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040127128033710080/vid/avc1/720x1280/Iw8EsetKmHwqeD_x.mp4"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040127128033710080/vid/avc1/320x568/AZh8n5KccUHe-4DU.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040127128033710080/vid/avc1/480x852/s29jcS01lzmBr6qV.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040127128033710080/vid/avc1/1080x1920/U9_uZ6zmMGnpgbeQ.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 457,
+      "reply_count": 45,
+      "like_count": 2284,
+      "quote_count": 21,
+      "bookmark_count": 401,
+      "impression_count": 69575
+    },
+    "author_followers": 33320,
+    "author_name": "Dweller",
+    "author_description": "A Christ following political nomad that posts very random stuff. \n\nRomans 10:9-11 - Jesus is Lord",
+    "author_tweet_count": 156949
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2040127128033710080/vid/avc1/1080x1920/U9_uZ6zmMGnpgbeQ.mp4",
+          "description": {
+            "description": "A series of frames showing a detailed diorama featuring a robotic figure riding a tracked, motorcycle-like vehicle. The robot has a boxy head with dual red glowing eyes and a dark articulated body. The vehicle is rests on miniature red jack stands and displays a prominent yellow 'W' chevron pattern on its side armor. The scene is shot from a low profile angle, zooming in and slightly panning as the robot hunches over the controls.",
+            "ocrText": "6"
+          },
+          "transcription": "BGM車内の音声ご視聴ありがとうございました"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @GhoulieRat: The Weiland Yutani logo elevates it to perfection!!! (Likes: 8)\n- @VintageFeelsFL: Thats danny huynh. All of his builds are nuts. (Likes: 5)\n- @LionessInMOtion: Oh wow, now that’s a wild VIP play toy (Likes: 4)\n- @_rockytop_biker: I'd take one of those too! (Likes: 4)\n- @Scott5563254466: 🤣😂 absolutely (Likes: 4)\n- @DSWildBloom86: I need one too. (Likes: 3)\n- @T3KN05H4M4N: Cool! (Likes: 2)\n- @DubTrooper_669: This is the coolest fucking thing I've seen today, Holy shit (Likes: 1)\n- @HatzTinfoil: Why does it have a Weyland-Yutani logo? (Likes: 1)\n- @RackhamRishel: This video keeps popping up lately, and such a cool soundtrack. (Likes: 1)",
+    "warnings": []
+  }
+}

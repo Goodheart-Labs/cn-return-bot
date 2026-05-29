@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2028333038547927472",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:19.350Z",
+  "post": {
+    "id": "2028333038547927472",
+    "author_id": "1261816778256265222",
+    "created_at": "2026-03-02T04:54:15.000Z",
+    "text": "Democrats avoiding giving Trump credit for literally anything https://t.co/Anlqw1lCm3",
+    "media": [
+      {
+        "media_key": "13_2028332986349895680",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2028332986349895680/img/leOw5oVodBn_UfTb.jpg",
+        "height": 1080,
+        "width": 1080,
+        "duration_ms": 23195,
+        "view_count": 49950,
+        "variants": [
+          {
+            "bit_rate": 432000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2028332986349895680/vid/avc1/320x320/wKBVBULFE-D60Yuz.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2028332986349895680/vid/avc1/540x540/lwqQ3SrGEBcwHs42.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2028332986349895680/pl/hxb7fsYNy8U44zFz.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 1280000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2028332986349895680/vid/avc1/720x720/erchNhW32ZVjQrzG.mp4"
+          },
+          {
+            "bit_rate": 8768000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2028332986349895680/vid/avc1/1080x1080/DxCmoQx80M8O71mv.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 320,
+      "reply_count": 82,
+      "like_count": 3616,
+      "quote_count": 10,
+      "bookmark_count": 173,
+      "impression_count": 69717
+    },
+    "author_followers": 653284,
+    "author_name": "TONY™",
+    "author_description": "Love Jesus | Love My Family | Love My Country 🇺🇸",
+    "author_tweet_count": 38363
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2028332986349895680/vid/avc1/1080x1080/DxCmoQx80M8O71mv.mp4",
+          "description": {
+            "description": "A series of four video frames showing a fighter jet engagement. In the first frame, a missile with a visible flame trail is launched from an off-screen source towards the jet. In the second frame, the missile strikes the tail section of the fighter jet, causing a bright flash. The third frame shows the damaged jet attempting to gain altitude while leaving a faint smoke trail. The fourth frame shows the jet in a steep vertical climb, with a red circle highlighting a small piece of debris falling away from the aircraft.",
+            "ocrText": ""
+          },
+          "transcription": "Продолжение следует..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@NoCRTinSchools**  \nWow, this footage is amazing! The US Military is truly that best fighting force ever on the face of the planet.  \n🇺🇸🇺🇸🇺🇸🇺🇸🇺🇸  \nLikes: 56 | Reposts: 0 | Replies: 0 | Views: 1029\n\n**@GhayathSiniora**  \nAMEN! 🙏GOD PROTECT AND BLESS OUR TROOPS!  \n✝️🇺🇸 🦅  \nLikes: 52 | Reposts: 0 | Replies: 0 | Views: 1295\n\n**@KathleenWinche3**  \nThey all suffer from TDS!  \nLikes: 50 | Reposts: 0 | Replies: 0 | Views: 754\n\n**@Thevictoria76**  \nAt this point, some Democrats wouldn’t give Donald Trump credit for sunshine on a clear day. Politics aside, progress should be acknowledged when it happens.  \nLikes: 30 | Reposts: 0 | Replies: 0 | Views: 944\n\n**@JimMcCaslin23**  \nCmon man. That’s not even close to real.  \nLikes: 24 | Reposts: 0 | Replies: 0 | Views: 1221\n\n**@Deathofasource**  \nDropping his ordinance to get lighter, top gun  \nLikes: 14 | Reposts: 0 | Replies: 0 | Views: 986\n\n**@CodyAlanAllred**  \nIf I see this FAKE VIDEO GAME CLIP one more time....  \nLikes: 12 | Reposts: 0 | Replies: 0 | Views: 399\n\n**@vadimkazak8165**  \n(No text content - media only)  \nLikes: 12 | Reposts: 0 | Replies: 0 | Views: 1232\n\n**@they_call_mePan**  \nOr when asked if there should be any restrictions on abortion.  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 221\n\n**@Jessica79950416**  \nThese pilots are absolutely amazing  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 183",
+    "warnings": []
+  }
+}

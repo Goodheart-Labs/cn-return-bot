@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2051421153281859967",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "insider_reporting_framing",
+  "categories": ["breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Nick Sortor reports a USSS-involved shooting near JD Vance's motorcade by the White House (May 4, 2026): an armed man fired on Secret Service, USSS returned fire and 'took down' the shooter; says no LE officers injured; calls for prayer for Vance.",
+  "why_note_decision": "The core facts the tweet asserts (USSS-involved shooting in the vicinity of Vance's motorcade; suspect fired first; USSS returned fire and incapacitated him; no LEOs injured) all check out per Secret Service and prosecutors. The note's corrections are framing-level pedantry: 'taking the shooter down' colloquially means incapacitated (Marx was hit in abdomen/hand/arm and arrested, not killed) and the tweet never claims the motorcade was 'targeted' — it says 'in the vicinity of'. The juvenile bystander grazing is a genuine omission but is downstream of the same shootout the tweet already describes; raters dominantly flagged note-not-needed (459).",
+  "judge_guidance": "PASS only if the bot declines to write a note (or returns a no-note decision). The tweet's factual core (USSS shooting near Vance motorcade, suspect fired first, USSS incapacitated him, no LEOs injured) is true per Secret Service and the Marx criminal complaint. Any note that 'corrects' this tweet by saying the motorcade was NOT the target (the tweet doesn't claim it was), nitpicking 'taken down' (the suspect was in fact shot and incapacitated), or otherwise reframing breaking-news language is a false positive. FAIL any note that repeats the original's pedantic reframing.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Secret Service officials stated there was 'no indication' the motorcade was a target and that the suspect 'did not approach or attack' it. The suspect was transported to a hospital alive and conscious — not 'taken down.' A juvenile bystander was also grazed by gunfire. https://www.nbcwashington.com/news/local/shooting-near-national-mall-dc-secret-service-officer-involved/4100097/ https://wtop.com/dc/2026/05/1-shot-by-law-enforcement-near-white-house-nearby-dc-roads-closed/",
+    "failure_reason": "Pedantic framing nitpick: the tweet didn't claim the motorcade was targeted, and 'taking down' the shooter accurately describes that USSS incapacitated him. Raters dominantly tagged note-not-needed.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's core facts are accurate; the dispute is framing-level.",
+    "sources_checked": [
+      "https://abcnews.com/US/secret-service-officers-exchange-gunfire-armed-suspect-white/story?id=132651102",
+      "https://www.washingtonpost.com/dc-md-va/2026/05/06/secret-service-shooting-jd-vance/",
+      "https://www.france24.com/en/americas/20260504-secret-service-shoots-armed-suspect-near-white-house-after-brief-lockdown",
+      "https://abc7chicago.com/post/texas-man-michael-marx-charged-national-mall-shooting-was-walking-path-vp-jd-vances-motorcade-agent-says/19054145/"
+    ],
+    "notes": "USSS Deputy Director Quinn said no indication motorcade was Marx's target. Marx was shot in abdomen/hand/left arm and arrested (not killed). A juvenile bystander was grazed by a ricochet. Tweet text matches these underlying facts; note's reframing is pedantic."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "High-engagement breaking-news political-violence narrative reaching 3.2M impressions; misframing or pedantic over-correction can erode trust in legitimate breaking-news reporting. Mostly progress/civic-trust adjacent rather than EA/AGI core."
+  },
+  "difficulty": "medium"
+}

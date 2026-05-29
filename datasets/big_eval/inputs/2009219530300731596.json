@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2009219530300731596",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:24.508Z",
+  "post": {
+    "id": "2009219530300731596",
+    "author_id": "336529567",
+    "created_at": "2026-01-08T11:04:00.000Z",
+    "text": "Astonishing.\n\nAccording to Labour’s own analysis, just 0.8% of those benefitting from lifting the 2 child benefit cap are children of British workers.\n\n99% of those families are either not in work or not British. https://t.co/mfoAmyZeSN https://t.co/hwhgR9BHmF",
+    "media": [
+      {
+        "media_key": "3_2009219525179305984",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-Iug0oXcAAGdHg.jpg",
+        "height": 597,
+        "width": 1179
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2009174530779172891"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2009174530779172891",
+      "author_id": "2425571623",
+      "created_at": "2026-01-08T08:05:11.000Z",
+      "text": "I won’t apologise for lifting almost half a million children out of poverty.\n\nI won’t apologise for putting money back in people’s pockets.\n\nThat's why we are scrapping the two-child limit.",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 2511,
+      "reply_count": 328,
+      "like_count": 9753,
+      "quote_count": 189,
+      "bookmark_count": 831,
+      "impression_count": 420933
+    },
+    "author_followers": 42499,
+    "author_name": "Claire Coutinho",
+    "author_description": "Shadow Energy Secretary & Shadow Minister for Equalities. Conservative Member of Parliament for East Surrey elected in 2019.",
+    "author_tweet_count": 3419
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-Iug0oXcAAGdHg.jpg",
+          "description": {
+            "description": "A close-up of a text snippet from a digital article or social media post discussing UK political policy regarding the two-child benefit cap.",
+            "ocrText": "Numberwang: Labour is armed with DWP analysis suggesting that Farage's plans to scrap the two-child cap just for \"working British people\" would only affect just 3,700 of the 470,000 children currently hit by the limit. (Badenoch has pledged to fully reinstate it.)"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Labour Press (@labourpress)**: \"Completely wrong. Most of those affected by the two child limit are the children of British workers, but just 0.8% are two-parent households in which both parents are in full-time work. That’s why both the Tories’ and Reform’s policies would push almost half a million children back into poverty.\" (Likes: 456)\n- **Jason (@JasonVsTheNoise)**: \"They know. It’s the point. They are paying their voter base.\" (Likes: 108)\n- **Francis Hoar (@Francis_Hoar)**: \"The worse thing about this is that it shows how few low and middle income working families have more than two children (they not being available to high income families). While it also suggests that ending the cap won’t change that, it is a real problem with our demographic time-b0mb, not to mention the fact that British people have so much fewer children than immigrants.\" (Likes: 49)\n- **John O'Connell (@jdpoc)**: \"Your Tory party killed 1/3 million people through austerity and poverty. It seems that you are not done yet.\" (Likes: 38)\n- **Gyll King Post Skip Diplomacy (@GyllKing)**: \"You wouldn't care if 100% of recipients were white British & working 100 hours a week. You'd still object and belly ache about the undeserving poor.\" (Likes: 23)\n- **MrCEssex2 (@blue_essexMrC)**: \"The number of left wing extremists replying, who believe that migrants shouldn’t have to pay their own way, and that British tax payers should pay for the children of the world. There are also the first people who complain when the magic money tree runs out of cash\" (Likes: 22)\n- **Kathryn Walker 🌹 💙 🌻 (@KathrynDW59)**: \"Coutinho - that well-known British name….! Just playing devil’s advocate Claire. Stop with this divisive claptrap - poverty is poverty.\" (Likes: 21)\n- **Ramon Agusta (@ramonagusta)**: \"Everything they do damages Britain.\" (Likes: 19)\n- **TheTopSignal (@top_signal)**: \"If they're not working and are immigrants, they need to be deported - not subsidized\" (Likes: 17)\n- **Laughing Monkey (@laughnowmonkey)**: \"This is insane. Not contributing yet being funded by the the British tax payer. In what world is this ok? Deport.\" (Likes: 15)",
+    "warnings": []
+  }
+}

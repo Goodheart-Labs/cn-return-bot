@@ -1,0 +1,33 @@
+{
+  "tweet_id": "1990568584997974142",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "identity_or_ethnicity_debate",
+  "tweet_summary": "Anti-Israel poster mocks a photo of a blonde, blue-eyed young man (apparently US actor Zane Phillips) by sarcastically calling him 'an indigenous person from Israel,' arguing visible Ashkenazi Jews can't be indigenous to the Levant while Palestinians can.",
+  "why_note_decision": "The tweet is rhetorical / opinion-based — a sarcastic jab in a long-running identity debate about Jewish indigeneity to the Levant. The original note attempted two corrections: (a) identifying the man as actor Zane Phillips, and (b) asserting Ashkenazi Jews have Middle Eastern origins via genetic studies. Even if both factual claims are roughly accurate, the tweet itself is not asserting a checkable false fact — it is expressing a political/identity opinion using a photo as illustration. A community note debating Jewish ancestry on a snarky tweet is not what notes are for; readers correctly flagged it as 'missing key points' / 'irrelevant sources' / 'argumentative.'",
+  "judge_guidance": "PASS only if the bot declines to write a note (no-note is the correct answer). The tweet is opinion/framing in a contested identity debate; it does not make a discrete falsifiable claim that warrants correction. Any note that wades into 'Ashkenazi Jews are/aren't indigenous to the Levant' should FAIL — that is an opinion battleground, not a fact-check. A narrow note pointing out the photo is of US actor Zane Phillips might be technically true but doesn't correct anything material (the poster never claimed the man WAS an Israeli — they were sarcastic). Treat any note here as a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The photo depicts American actor Zane Phillips, not an Israeli. While appearances vary, genetic studies confirm Ashkenazi Jews have ancient Middle Eastern origins.  https://www.imdb.com/name/nm6974163/  https://pubmed.ncbi.nlm.nih.gov/11543891/  https://www.nature.com/articles/ncomms3928",
+    "failure_reason": "Note injects itself into an opinion/identity debate; tweet is sarcastic framing, not a falsifiable claim. The 'photo is Zane Phillips' correction is pedantic and misses the rhetorical point.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Not a factual claim — sarcastic opinion in an identity-debate context.",
+    "sources_checked": [],
+    "notes": "Even if both facts the note cites are accurate, the tweet doesn't make a discrete false claim that benefits from correction. Comments themselves are split along partisan lines, which signals opinion territory."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "323k impressions on a charged identity/political topic, but no specific factual misinformation; correcting opinion tweets doesn't reduce misleading views and risks dragging notes into culture-war territory."
+  },
+  "difficulty": "medium"
+}

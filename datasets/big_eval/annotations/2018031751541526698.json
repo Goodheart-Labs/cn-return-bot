@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2018031751541526698",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "'Vatnik Soup' (anti-disinfo account) shares a TikTok parody by @munchy_monk in which a young man in a fedora performs fake comedic emails between 'Elon' and 'Big Jeffy/Big Steve' about Epstein's island, with absurd details (UN code = children, 'meme lord', etc.). Tweet explicitly credits 'Video by @munchy_monk /TikTok'.",
+  "why_note_decision": "The tweet itself attributes the video to a TikTok creator and is plainly a comedic skit (visible costume, exaggerated language, parody framing). The author's bio ('Fighting online disinformation since 2022') and the explicit @munchy_monk /TikTok attribution remove any pretense of authentic email-reading. Most comments engage with the joke. Underlying real-world story (Musk's leaked emails about visiting the island) is documented separately, but the video is openly comedic riffing, not a claim those exact lines were said. A note 'this is satire' restates the obvious attribution.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet explicitly credits a TikTok comedy creator; the format (costume + caricatured dialogue) is openly satirical. Any note debunking the literal email content as 'not authentic' is a satire/parody false positive. The bot must not insert the false-binary 'either authentic OR completely fake' framing — separate underlying news exists about Musk and Epstein's island but the tweet isn't claiming the comedy clip *is* that news.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is a satirical TikTok parody, not authentic footage or direct quotes from Epstein files. Real emails show Musk expressing interest in island parties but contain no references to \"young babes,\" \"UN\" codes, or underage individuals. https://www.nbcnews.com/tech/elon-musk/expressed-interest-visiting-jeffrey-epstein-island-emails-show-doj-rcna256784 https://www.bbc.com/news/articles/cevnmxyy4wjo https://www.businessinsider.com/elon-musk-emails-plans-to-visit-jeffrey-epstein-island-2026-1",
+    "failure_reason": "noteNotNeeded — the tweet itself credits the TikTok parody source, format is overtly comedic. Adding 'this is parody, not real' is pedantic on an already-attributed satire share.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Video is overtly satirical comedy; tweet correctly attributes it to TikTok creator @munchy_monk. Underlying real-Musk-Epstein-island-emails story exists separately and is not what the comedy claims to be.",
+    "sources_checked": [
+      "Tweet's own /TikTok attribution",
+      "Author bio (Vatnik Soup — disinfo researcher)",
+      "https://www.nbcnews.com/tech/elon-musk/expressed-interest-visiting-jeffrey-epstein-island-emails-show-doj-rcna256784",
+      "Reply context (treats it as comedy)"
+    ],
+    "notes": "Attribution is in the tweet itself; satire is self-evident."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Epstein/Musk topic is politically charged and getting note-writing right (avoid bot-imposed pedantic debunks on satire) matters; underlying story is consequential but this tweet isn't the misinformation vector."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,72 @@
+{
+  "tweet_id": "1999064913155633547",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:14.736Z",
+  "post": {
+    "id": "1999064913155633547",
+    "author_id": "1529763962094596097",
+    "created_at": "2025-12-11T10:33:10.000Z",
+    "text": "Why have so many athletes suddenly stopped wearing wireless headphones? https://t.co/CRwBmY559U",
+    "media": [
+      {
+        "media_key": "7_1999064885095710720",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1999064885095710720/pu/img/1boYXUtqJYfDJ6Bs.jpg",
+        "height": 854,
+        "width": 480,
+        "duration_ms": 57429,
+        "view_count": 729965,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1999064885095710720/pu/vid/avc1/320x568/mcvsOSv5UC2fh1gK.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1999064885095710720/pu/vid/avc1/480x854/i3Hw4feMJBRlDYOm.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1999064885095710720/pu/pl/h_QrRp-oEcXulKp2.m3u8?tag=12&v=f21"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1740,
+      "reply_count": 341,
+      "like_count": 6917,
+      "quote_count": 83,
+      "bookmark_count": 3915,
+      "impression_count": 877492
+    },
+    "author_followers": 846129,
+    "author_name": "Wide Awake Media",
+    "author_description": "Covering current events, geopolitics, the climate agenda, health, and everything in between.\n\nSupport us:\nhttps://t.co/YVlWNinTLl",
+    "author_tweet_count": 20949
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1999064885095710720/pu/vid/avc1/480x854/i3Hw4feMJBRlDYOm.mp4?tag=12",
+          "description": {
+            "description": "Frames from a social media video discussing technology trends in sports fashion. Frame 1 shows a man in a black jacket and green pants walking down stairs with the caption 'THE BIGGEST THREAT TO PUBLIC HEALTH'. Frame 2 shows a man in camouflage sweats walking down stairs with the subtitle 'common?'. Frame 3 features a tall man wearing a red sweatshirt with 'rains diamonds on jupiter?' in crystals, alongside the name caption 'Ben Skowronek'. Frame 4 shows a close-up of a person wearing silver over-ear headphones with the word 'wireless' overlayed.",
+            "ocrText": "THE BIGGEST THREAT TO PUBLIC HEALTH look common? rains diamonds on jupiter? Ben Skowronek wireless"
+          },
+          "transcription": "Are you guys seeing what I'm seeing? Look. Do you see it? All these dudes. Look. What do they all have in common? What do they all have in common, guys? Devante Adams. Puka Nakua. Ben Skoranek. A-Rod. More and more athletes are finally starting to understand the danger behind wireless technology like Bluetooth headphones. You gotta protect the brain. I'm starting to think about that. Because the electromagnetic is going in there. This is not a conspiracy theory. There is legitimate science dating back to the 1960s showing that non-native electromagnetic fields can have detrimental impacts on plants, animals, and humans. And it's not just your headphones. It's your Wi-Fi, cell towers, cell phones, electronic devices, electric vehicles, power lines, the wiring inside your walls, the light emitted from your device screens, and more. In our modern environment, we are being inundated by these fields everywhere we go. And as technology continues to grow, this is the number one health problem we will all face."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@1984_is_today**: They also all wore power balance bracelets (Likes: 173)  \n**@RedLeaderRobby**: (image only) (Likes: 156)  \n**@0xBB3**: I’m sure this has truth to it but I honestly just think people are tired of wireless and having to charge it etc etc. AirPods are an entire thing whereas wired is just there. Idk if this makes sense (Likes: 131)  \n**@kaleazy**: Because 4-hour battery life is shitty (Likes: 88)  \n**@FinalTelegraph**: Because they give you crazy headaches. Try falling asleep with a pair of cheap Chinese wireless headphones and you will see how bad they are for your brain. (Likes: 63)  \n**@TheWondererNews**: lol so guys that play a sport where they smash helmets together in many games a season or get concussions over and over suddenly need to protect the brain. Can somebody make this make sense? 😝 (Likes: 59)  \n**@anmlbhvr7**: I think my airpods are pretty low on the list of things to worry about (image) (Likes: 43)  \n**@NotOpCue**: Been telling people many years now, BT headphones transmit the signal through the brain from one pod to another. You are frying your brain if you use those. (Likes: 36)  \n**@freakoutsideofx**: Guarantee they wearing wired earphones because they don’t wanna worry about AirPods dying while traveling. (Likes: 26)  \n**@CynicalTimbo**: Also, a lot of folks get fed up with losing 'buds'. Much easier to keep track of actual wired headphones every time! (Likes: 21)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2012558410122670331",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:39.210Z",
+  "post": {
+    "id": "2012558410122670331",
+    "author_id": "1786938591441997824",
+    "created_at": "2026-01-17T16:11:31.000Z",
+    "text": "Here are Zelensky and Macron before they became presidents.\nIt feels like we’re all part of one big show, doesn’t it? https://t.co/qtj90VlQSv",
+    "media": [
+      {
+        "media_key": "13_2012558316602318849",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2012558316602318849/img/rtdDj9ulfGZjWDX7.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 60464,
+        "view_count": 1178773,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012558316602318849/vid/avc1/320x568/-LRBmozwbld9EDyy.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012558316602318849/vid/avc1/480x852/utmIlzekcuS7eJMa.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012558316602318849/vid/avc1/720x1280/2mqzMy8Hbq3PblVa.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2012558316602318849/pl/CdHuHyBaQ8wi1F_P.m3u8?v=6c7"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 11798,
+      "reply_count": 2387,
+      "like_count": 34703,
+      "quote_count": 760,
+      "bookmark_count": 5688,
+      "impression_count": 1431843
+    },
+    "author_followers": 193289,
+    "author_name": "Mr. Nobody",
+    "author_description": "Truth Seeker | Demon Slayer\nEverything on this page is satire and for entertainment purposes only *wink* *wink*😉",
+    "author_tweet_count": 21970
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2012558316602318849/vid/avc1/720x1280/2mqzMy8Hbq3PblVa.mp4",
+          "description": {
+            "description": "A four-frame sequence of a video with overlaid text about Zelenskyy and Macron. The first frame shows a blurry image of a person dancing in a white outfit. The second frame shows Volodymyr Zelenskyy dancing on a stage with bright yellow lights in the background. The third frame shows a blurry shot of a man in a green tank top in a dimly lit environment, possibly a club. The fourth frame shows Zelenskyy in a red traditional costume performing a dance in an indoor setting.",
+            "ocrText": "ZELENSKYY AND MACRONI BEFORE THEY BECAME PRESIDENTS."
+          },
+          "transcription": "🎵 🎵 All you've got is this moment 🎵 🎵 Pray for such as yesterday 🎵 🎵 You can care all you want 🎵 🎵 Everybody does it, and that's okay 🎵 Since I'm over here, I'm giving you a moment, you need us all, I've got to let you know, I've got to let you know, you're my kind. I need you tonight Cause I'm in a sleep It's something about to go"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@ThrillaRilla369: Shall we have this conversation? (Likes: 1145, Reposts: 167)\n@ThrillaRilla369: Pedophiles and perverts are easy to control (Likes: 683, Reposts: 11)\n@Magnus_Veritas: Degenerate homosexuals are easy to blackmail and control. They are puppets of the true masters. (Likes: 532)\n@TheRISEofROD: (Likes: 236, Reposts: 25)\n@P_Ellison17: Explains a lot (Likes: 198)\n@BlondeBigot11: Both gayer than cum on a moustache too (Likes: 177)\n@PatriotXV11: Freaks! (Likes: 169)\n@ThrillaRilla369: Is the stock market full of fake shares? (Likes: 161, Reposts: 41)\n@StephenM158: Amazing how many of these world leaders are perverted homosexuals who don’t have a masculine bone in their body !!! God bless America God bless Donald J Trump (Likes: 25, Reposts: 2)\n@omnimatty: Politics is just Hollywood for ugly people (Likes: 21)",
+    "warnings": []
+  }
+}

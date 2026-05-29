@@ -1,0 +1,101 @@
+[
+  {
+    "url": "https://x.com/i/status/2052825590319690191",
+    "text": "Iran is willing to tell us more about Charlie Kirk than our FBI https://t.co/KYIE5jSt08",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot declines to write a note. Any note that fact-checks the explosive-microphone / Iranian-general story as if it were a sincere claim \u2014 even if factually accurate about Kirk's actual cause of death \u2014 is a false positive on a comedy clip. The bot should recognize stand-up satire from the transcript (jokes, audience reaction, comedian's framing) and decline.",
+    "ground_truth_note": "",
+    "original_note_text": "This is a stand-up comedy routine, not a factual report. Charlie Kirk was shot and killed at Utah Valley University on September 10, 2025; official FBI and Utah DPS investigations confirm he died from a gunshot wound, not an explosive device. https://dps.utah.gov/press-releases/updates-on-charlie-kirk-shooting-at-uvu/ https://www.fbi.gov/utahvalleyshootingupdates",
+    "failure_reason": "Note-not-needed: the post is overt comedy/satire; fact-checking the punchline treats a joke as a sincere claim.",
+    "note_text": "Charlie Kirk was shot and killed on September 13, 2025, at Utah Valley University. The suspect charged is Tyler Robinson, and authorities have not linked the killing to any foreign government. https://www.cnn.com/2025/09/20/politics/fact-check-charlie-kirk-murder",
+    "result": "nnw_fp_published"
+  },
+  {
+    "url": "https://x.com/i/status/2002014744727728582",
+    "text": "Lets remember to support Karmelo Anthony! The young brother in Texas who defended himself against attackers and is now being charged with murder. His trial is coming up in 2026 and he needs our support. https://t.co/nDVoTS06HU https://t.co/VtM2ZYinf3",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot declines to write a note. The tweet's factual claim ('trial coming up in 2026') is true \u2014 June 1, 2026 in Collin County. Any note that nitpicks the phrase 'coming up' is a false positive. A note disputing the self-defense framing or characterizing Anthony as a murderer (rather than defendant) is also wrong \u2014 guilt has not been adjudicated. The only marginally noteworthy fact (Metcalf died of a single stab wound; Anthony claims self-defense) is already heavily represented in the replies and doesn't require correction by Community Notes.",
+    "ground_truth_note": "",
+    "original_note_text": "The post states the trial is \"coming up in 2026\" but the trial date is specifically set for June 1, 2026, which is over a year away, not \"coming up\" as implied. https://www.cbsnews.com/texas/news/trial-date-set-karmelo-anthony-charged-in-fatal-stabbing-austin-metcalf-frisco-track-meet/",
+    "failure_reason": "Pedantic \u2014 'coming up in 2026' is accurate. At time of writing the trial was ~6 months away; the note manufactures a discrepancy where none exists.",
+    "note_text": "The incident involved a single victim, Austin Metcalf, not multiple attackers. After a heated argument at a track meet, Anthony fatally stabbed Metcalf, who was unarmed. Anthony's defense plans to argue self-defense, but that claim will be tested at trial starting June 1, 2026. https://en.wikipedia.org/wiki/Killing_of_Austin_Metcalf https://www.fox4news.com/news/trial-karmelo-anthony-frisco-track-meet-stabbing",
+    "result": "nnw_fp_published"
+  },
+  {
+    "url": "https://x.com/i/status/1994449046916731187",
+    "text": "As Trump craters \u2014 Epstein files, spiking cost of living, people losing health care \u2014 he\u2019s desperate for a Reichstag Fire.\n\nIt\u2019s here: A murder by a refugee, so he declares 53M non-citizens criminals &amp; announces denaturalization, \u201creverse migration\u201d &amp; whites-only immigration. \ud83e\uddf5 https://t.co/0mCbhRsMmj",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately reflects a real Trump Truth Social post (shown in the image): the 53M foreign-population figure, mass-deportation/denaturalization/'reverse migration' plans are all genuinely his. The author's gloss ('whites-only', 'Reichstag Fire', 'declares them all criminals') is political opinion about a real document, not a fabricated fact. Any note that (a) treats the 53M figure as the author's own invention to be debunked, or (b) 'corrects' Wiener's characterization of real Trump statements, is a false positive. The original note's specific failure was citing a 2024 FactCheck.org article about a different Trump chart and implying the tweet fabricated the claim \u2014 a correct response must avoid that and recognize the post is contested opinion on accurate reporting.",
+    "ground_truth_note": "",
+    "original_note_text": "Misleading: Trump's \"53M\" mixes legal and unauthorized foreign-born and wrongly implies they're all criminals; FactCheck has debunked similar claims. Media report his migration pause and denaturalization plans, but denaturalization is reported as targeted, not a blanket purge. https://www.factcheck.org/2024/04/trumps-misleading-chart-on-illegal-immigration/",
+    "failure_reason": "Note treats the tweet as if it fabricated the 53M claim and 'corrects' the author, but the figure and policies are Trump's own real Thanksgiving post; cites an unrelated 2024 FactCheck article. Rated notHelpfulIncorrect / NoteNotNeeded \u2014 it argues against an accurate characterization of a public official's statements (opinion target).",
+    "note_text": "The only reported fatal incident involving immigration enforcement in Minnesota in this period was the killing of U.S. citizen Renee Nicole Good by ICE agents in January 2026, not a murder by a refugee. https://en.wikipedia.org/wiki/Killing_of_Ren%C3%A9e_Good",
+    "result": "nnw_fp_published"
+  },
+  {
+    "url": "https://x.com/i/status/2013924875757371711",
+    "text": "\ud83d\udca5BREAKING:\n\n\ud83c\uddfa\ud83c\uddf8\ud83c\udde8\ud83c\uddf3 China is dumping U.S. treasuries and instead buying gold on a massive scale. https://t.co/rnv58v0SuV",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot declines to write a note. Tweet's core claim aligns with mainstream reporting on China's Treasury reduction and 15-month gold-buying streak. Any note that tries to soften 'dumping' into 'gradual decline' is injecting a contested framing rather than correcting a fact, and is the canonical false positive here. If a note IS written, it must NOT understate the documented Treasury drop (lowest since 2008) or the record gold accumulation.",
+    "ground_truth_note": "",
+    "original_note_text": "China's US Treasury holdings fell $6.1 billion to $682.6 billion in November 2025, continuing a gradual decline rather than massive dumping. Central bank gold purchases have been steady at about 1 tonne per month.",
+    "failure_reason": "Reframes accurate reporting (lowest Treasury holdings since 2008, record gold-buying streak) as a 'gradual decline rather than massive dumping' \u2014 a contested counter-narrative, not a fact correction. Community rated NoteNotNeeded.",
+    "note_text": "China did reduce U.S. Treasury holdings to $652.3 billion by March 2026, the lowest since September 2008 \u2014 but this was a gradual multi-year decline, not a sudden \"dumping.\" https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html",
+    "result": "nnw_fp_published"
+  },
+  {
+    "url": "https://x.com/i/status/2037606034978583022",
+    "text": "The last Magic Tree House, \u201cRevolutionary War on Wednesday,\u201d was released on September 26, 2000. https://t.co/plwmvCQh9t",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot declines to write a note. The author @2001Live (run by Manny Marotta) is an openly-labeled period-roleplay account that posts in-character as if it's 2001 \u2014 its bio explicitly states 'Live-posting as a reporter embedded in history' and it's a companion to @50YearsAgoLive, @100YearsAgoLive, @250YearsAgoLive. As of late March 2001, 'Revolutionary War on Wednesday' (Magic Tree House #22, published 26 Sept 2000) WAS the most recent Magic Tree House book \u2014 #23 Twister on Tuesday released 27 March 2001. The word 'last' means 'most recent' in context. Any note that 'corrects' the tweet by listing books published after 2001 misses the in-character premise and must FAIL.",
+    "ground_truth_note": "",
+    "original_note_text": "\"Revolutionary War on Wednesday\" is the 22nd Magic Tree House book, not the last; Twister on Tuesday is the 23rd, released March 27, 2001, with 16 more in the original series and additional subseries books following. https://en.wikipedia.org/wiki/Magic_Tree_House https://www.rd.com/list/magic-tree-house-books-in-order/",
+    "failure_reason": "notHelpfulNoteNotNeeded \u2014 corrects a period-roleplay account that is in-character in 2001; from that POV the tweet is accurate",
+    "note_text": "This is the 22nd book in the original 28-book Magic Tree House series, not the last. The series continued with Merlin Missions and dozens more titles \u2014 over 60 fiction books have been published as of 2026. https://www.goodreads.com/series/41463-magic-tree-house https://www.rd.com/list/magic-tree-house-books-in-order/",
+    "result": "nnw_fp_published"
+  },
+  {
+    "url": "https://x.com/i/status/2016313026161299803",
+    "text": "The Left said his name over and over again. \n\nThe Left never said her name. https://t.co/WEHYZBr0Hk",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a partisan opinion/framing ('the Left said his name... never said her name') with no specific, checkable factual claim -- it is a rhetorical generalization about attention, not a falsifiable fact. Any note is a false positive. FAIL especially a note that argues over whether one side 'said' either victim's name or that quotes vigil/chant facts (e.g. 'hundreds chanted Alex Pretti's name') -- that engages a subjective frame, does not correct any false fact, and repeats the original note's strawman. Do not have the bot adjudicate which side cared more.",
+    "ground_truth_note": "",
+    "original_note_text": "Hundreds of protesters chanted Alex Pretti's name during a vigil following his death. This article from a student publication details the event and the chants used. https://www.psucollegian.com/news/people-s-defense-front-scds-hold-vigil-protest-to-honor-alex-pretti/article_cd64bf2f-ed80-4bbd-a9a8-959b362223c3.html",
+    "failure_reason": "Answers a strawman: it documents a vigil chanting Pretti's name, but the tweet is a subjective comparison about which 'side' amplified which name. It corrects no false fact and treats a partisan opinion as a checkable claim; raters overwhelmingly tagged note-not-needed/missing key points.",
+    "note_text": "The woman pictured is Iryna Zarutska, a 23-year-old Ukrainian refugee whose murder on a Charlotte light-rail train was covered extensively by PBS, the Associated Press, and other outlets \u2014 all reporting her name. https://apnews.com/article/charlotte-stabbing-ukrainian-refugee-iryna-zarutska-cc9ec826660468830b3f18a71e1a9aaf https://www.pbs.org/newshour/politics/ukrainian-refugees-murder-becomes-flashpoint-in-2026-north-carolina-senate-race https://en.wikipedia.org/wiki/Killing_of_Iryna_Zarutska",
+    "result": "nnw_fp_published"
+  },
+  {
+    "url": "https://x.com/i/status/2004901730430189831",
+    "text": "French TV show Affronter Votre Pire Cauchemar ('Face Your Worst Nightmare') confronts farmer Fran\u00e7ois Lavigne with 36 singing children dressed as the brother he accidentally killed in a drink-driving accident 10 years prior. https://t.co/rd9cHu40Ay",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot DECLINES to write a note. Any literal 'correction' here is a false positive \u2014 the post is an obvious ironic-caption meme over the famous 1988 Les Petits Chanteurs d'Asni\u00e8res / Serge Gainsbourg hommage. Comments and quote-tweet style ('ai could never replicate this') make the joke unmistakable; bot must recognize meme/satire register. FAIL any note that solemnly corrects the fake plot summary, FAIL any note citing the real Gainsbourg footage as if a reader were being deceived.",
+    "ground_truth_note": "",
+    "original_note_text": "The video shows French singer Serge Gainsbourg receiving an homage from Les Petits Chanteurs d'Asni\u00e8res in a 1988 TV appearance, not farmer Fran\u00e7ois Lavigne on a show called 'Affronter Votre Pire Cauchemar.' https://www.chartsinfrance.net/Serge-Gainsbourg/news-125749.html https://suis-nous.com/une-video-virale-ou-lon-voit-serge-gainsbourg-pleurer-devant-des-gamins-chanteurs-fait-le-tour-du-monde/",
+    "failure_reason": "Literally true but unnecessary \u2014 the post is a recognized meme format, not sincere misinformation. 39 'note not needed' votes confirm raters saw this.",
+    "note_text": "This video shows French singer Serge Gainsbourg in 1988 being surprised on TV by the children's choir Les Petits Chanteurs d'Asni\u00e8res, who are dressed like him and singing his song. There is no farmer Fran\u00e7ois Lavigne and no show called 'Affronter Votre Pire Cauchemar.' https://www.youtube.com/watch?v=unYu22Ign1E https://suis-nous.com/une-video-virale-ou-lon-voit-serge-gainsbourg-pleurer-devant-des-gamins-chanteurs-fait-le-tour-du-monde/",
+    "result": "nnw_fp_published"
+  },
+  {
+    "url": "https://x.com/i/status/2030077895658401996",
+    "text": "\u201cIran is winning this war, our government is lying to us. This is Tel Aviv right now\u201d https://t.co/PTzfkWr128",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot declines to write a note (the tweet is overt sarcasm; the clip openly displays 'Electronic Arts Presents'). Any note literally rebutting the 'this is Tel Aviv' caption is a false positive. The original NOT_HELPFUL note did exactly that \u2014 a correct response must avoid earnestly debunking what is plainly a joke.",
+    "ground_truth_note": "",
+    "original_note_text": "The video is from a video game, not real footage of Tel Aviv. Iranian missiles have triggered sirens and caused limited damage/debris in Israel (including Tel Aviv area), but reports show most intercepted with no widespread destruction as implied. https://www.aljazeera.com/video/newsfeed/2026/3/7/iranian-missiles-over-tel-aviv-prompt-sirens-interceptor-launches https://www.timesofisrael.com/liveblog-march-07-2026 https://www.nytimes.com/live/2026/03/07/world/iran-war-trump-israel-lebanon",
+    "failure_reason": "noteNotNeeded \u2014 earnestly fact-checks an overt joke whose own footage shows 'Electronic Arts Presents'; replies are all in on the joke.",
+    "note_text": "The video shows the \"Electronic Arts Presents\" logo, identifying it as a video game clip, not real footage of Tel Aviv. Fact-checkers previously debunked the same footage in 2023. https://www.euronews.com/my-europe/2026/03/06/did-you-spot-these-fake-videos-about-the-iran-war https://factcheck.afp.com/doc.afp.com.A28J663",
+    "result": "nnw_fp_published"
+  },
+  {
+    "url": "https://x.com/i/status/2006395901426737233",
+    "text": "The Man Who Refused To Bathe For 60 Years \ud83d\ude28 https://t.co/bqvPUGVwCj",
+    "needs_note": "no",
+    "judge_guidance": "PASS only if the bot declines to write a note. The tweet's headline claim is true and the medium is an obvious explainer animation. A note about animation-pacing fidelity (e.g. 'he died months later, not immediately') is the canonical false positive here. If a note is written, it must NOT repeat the original's failure of nitpicking timing in an animated retelling.",
+    "ground_truth_note": "",
+    "original_note_text": "This video dramatizes the story of Amou Haji, an Iranian man who avoided bathing for over 60 years. He died at age 94 a few months after his first wash, having become ill shortly afterward but not immediately as shown.",
+    "failure_reason": "Pedantic timing correction on a clearly-stylized animated explainer; tweet's underlying claim is correct. Community rated NoteNotNeeded.",
+    "note_text": "Amou Haji died at age 94 in October 2022, a few months after washing, not immediately after. His cause of death was trichinosis from eating raw meat, not the bath itself. https://www.theguardian.com/world/2022/oct/25/worlds-dirtiest-man-dies-in-iran-at-94-a-few-months-after-first-wash https://en.wikipedia.org/wiki/Amou_Haji https://www.bbc.com/news/world-middle-east-63389045",
+    "result": "nnw_fp_published"
+  }
+]

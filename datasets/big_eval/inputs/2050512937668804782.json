@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2050512937668804782",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:00.874Z",
+  "post": {
+    "id": "2050512937668804782",
+    "author_id": "2022616618476736512",
+    "created_at": "2026-05-02T09:49:15.000Z",
+    "text": "Which one you like the most? https://t.co/cd6cTCdwDC",
+    "media": [
+      {
+        "media_key": "3_2050512928391245824",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHTipPAbMAAV6BK.jpg",
+        "height": 1024,
+        "width": 819
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 104,
+      "reply_count": 699,
+      "like_count": 2242,
+      "quote_count": 92,
+      "bookmark_count": 511,
+      "impression_count": 261734
+    },
+    "author_followers": 1493,
+    "author_name": "Viper 🐍",
+    "author_description": "Wrestling Related Content",
+    "author_tweet_count": 7280
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHTipPAbMAAV6BK.jpg",
+          "description": {
+            "description": "A 2x4 grid of images showing eight female professional wrestlers in casual or no-makeup looks. The final image in the bottom right corner jokingly features R-Truth wearing a blonde wig as a humorous substitute for Jade Cargill.",
+            "ocrText": "RHEA RIPLEY BAYLEY ROXANNE PEREZ IYO SKY TATUM PAXLEY LOLA VICE BIANCA BELAIR JADE CARGILL WANTED R-TRUTH 24/7 CHAMPION"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Tiffany Stratton’s Lawyer (@TiffyTimez): you knew not to post her mug because she’d win (381 likes)\n- tvcomicbookshows (@ron_keith): O my goodness Tatum Paxley 🔥💯🚨🙌🏿 (212 likes)\n- 🇹🇹Mini-Webs🇺🇲 (@SpiactiveBite): ...........🤦🏿‍♂️ (131 likes)\n- 🇩🇴LU-MOS🇺🇸 (@LTFS_LU1334): Disrespectful asf. Jade is beautiful. (128 likes)\n- Wolf (@riverwolf0518): (gif) (46 likes)\n- Musa (@HunchoJ01): They had to nerf her.. (43 likes)\n- thecharliebx (@thecharlieNYC): Jade cargill of course (31 likes)\n- Mitch Moolah 🎯 (@TruePain747): Don’t know why you fools be playing with Jade Cargill (22 likes)\n- ⛈️ (@_swaycity5): racist bitch (16 likes)\n- DigBicHimbo (@BigManHimbo1423): We pretending Jade isn't one of the hottest women in the business? Lmao ok bro (15 likes)",
+    "warnings": []
+  }
+}

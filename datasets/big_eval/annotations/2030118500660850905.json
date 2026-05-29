@@ -1,0 +1,31 @@
+{
+  "tweet_id": "2030118500660850905",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A dramatic night-time video of dozens of missiles/burning objects raining down on a landscape, captioned 'Looks like it's going to be just like Gaza,' implying it shows real Iranian strikes devastating Israel during the March 2026 conflict.",
+  "why_note_decision": "The video is AI-generated, not real footage of the March 2026 Iran-Israel war. It is a widely-debunked clip (NewsGuard's 'False Claim of the Week,' fact-checked by Poynter, BOOM, CNN, Thai PBS) of dozens of missiles supposedly striking Tel Aviv on March 3, 2026. It carries a pro-Iran propaganda Instagram watermark (@Z.A.IRAN_MILITRY). Real Iranian strikes occurred but caused far more limited damage (e.g. fires from debris); this clip massively exaggerates the scale. Passing AI war footage as real to a 430k-impression audience is checkable misinformation warranting a note.",
+  "judge_guidance": "PASS only if the note establishes that the video is AI-generated / not authentic footage of the March 2026 Iran-Israel conflict (it is a known AI fake of missiles striking Tel Aviv), and ideally that real strikes caused far more limited damage than depicted. The note must NOT treat the footage as real or merely argue about the conflict's politics. Acceptable to cite the watermarked pro-Iran source as a red flag. Cite credible fact-checks (Poynter, NewsGuard, BOOM, CNN). Reject any note that accepts the video as genuine.",
+  "reference_note": "This video is AI-generated and does not show real footage of the March 2026 Iran-Israel conflict. It is a widely-debunked fake of missiles striking Tel Aviv; actual Iranian strikes caused far more limited damage (e.g. fires from falling debris). https://www.poynter.org/fact-checking/2026/fake-videos-strikes-iran/ https://www.boomlive.in/fact-check/fake-news-viral-video-tel-aviv-iranian-missiles-hitting-ai-generated-factcheck-30795",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false - AI-generated video, not real footage; exaggerates the scale of actual limited-damage strikes",
+    "sources_checked": [
+      "https://www.poynter.org/fact-checking/2026/fake-videos-strikes-iran/",
+      "https://www.boomlive.in/fact-check/fake-news-viral-video-tel-aviv-iranian-missiles-hitting-ai-generated-factcheck-30795",
+      "https://www.newsguardrealitycheck.com/p/dozens-of-missiles-struck-tel-aviv",
+      "https://en.wikipedia.org/wiki/Misinformation_during_the_2026_Iran_war"
+    ],
+    "notes": "Multiple fact-checkers confirm the 'missiles striking Tel Aviv March 3 2026' video is AI-generated; NewsGuard named it False Claim of the Week. The @Z.A.IRAN_MILITRY watermark is a pro-Iran propaganda source. Original CN note's verdict is correct; reference note tightened and re-sourced to fact-checks (the original cited paywalled Haaretz/NYT)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "432k impressions, 257k video views on AI war propaganda during an active Iran-Israel conflict; fake escalation footage inflames violence and distorts public understanding of a live war — high value to correct."},
+  "difficulty": "medium"
+}

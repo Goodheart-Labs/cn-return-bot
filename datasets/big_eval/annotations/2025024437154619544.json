@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2025024437154619544",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "religion_prophecy",
+  "tweet_summary": "Claims 'The Red Heifer has been sacrificed... under secrecy', calling it 'a dry run' but 'the first in 2,000 years nonetheless', and implies religious authorities are 'preparing for something BIG' (Third Temple / end-times framing).",
+  "why_note_decision": "The claim that a (even 'dry run') red heifer sacrifice was the 'first in 2,000 years' is misleading. The Temple Institute and Sanhedrin issued official statements that the July 2025 event was an unqualified practice exercise: the heifer was deliberately the most invalid/unkosher in their possession (damaged tail, a defect), the priestly garments were unconsecrated, and any resulting ashes are completely invalid (a valid ritual requires the Mount of Olives facing the Temple site). So no valid red-heifer sacrifice has occurred; the last valid one was ~2,000 years ago. Framing an invalid practice run as a momentous 'first in 2,000 years' preparing for 'something BIG' misleads readers about a religiously and geopolitically charged topic, so a note is warranted.",
+  "judge_guidance": "PASS only if the note establishes that NO valid red-heifer sacrifice took place \u2014 the 2025 event was an explicitly invalid practice/simulation (unqualified heifer, unconsecrated garments, invalid ashes) per the Temple Institute/Sanhedrin's own statements \u2014 and therefore it was not a genuine 'first in 2,000 years' ritual. Must cite the Temple Institute / Sanhedrin clarification (or reputable reporting of it). FAIL if the note affirms that a valid/historic sacrifice occurred, endorses the 'first in 2,000 years' framing, or treats it as a real Third-Temple milestone. A note that says only 'unconfirmed' without the invalid-simulation detail is PARTIAL.",
+  "reference_note": "According to the Temple Institute, no red heifer was sacrificed in 2026. Their latest activity was a 2025 simulation using an invalid heifer, resulting in ineligible ashes. No valid ritual has occurred in ~2,000 years.    https://www.facebook.com/templeinstitute/posts/1261748369317791  https://en.wikipedia.org/wiki/Red_heifer",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://israel365news.com/413978/update-and-clarification-regarding-the-red-heifer/",
+      "https://mycharisma.com/propheticrevival/temple-institute-and-sanhedrin-release-official-statements-on-the-red-heifer/",
+      "https://en.wikipedia.org/wiki/Red_heifer"
+    ],
+    "notes": "Temple Institute & Sanhedrin officially clarified the July 1 2025 burning was a practice exercise using a deliberately invalid (unkosher) heifer with unconsecrated garments; the ashes are invalid (must be made on the Mount of Olives facing the Temple site). No valid red-heifer ritual has occurred; the last was ~2,000 years ago. Tweet's 'first in 2,000 years' / 'preparing for something BIG' framing is misleading. (Note's '2026' phrasing is slightly off since the event was 2025, but the substance is correct.)"
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "153k impressions on apocalyptic/Third-Temple end-times content that can stoke real Israel/Mideast religious tension; correcting non-event prophecy hype has modest but real value for reducing inflammatory narratives."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2025986662719693184",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:58.941Z",
+  "post": {
+    "id": "2025986662719693184",
+    "author_id": "234638601",
+    "created_at": "2026-02-23T17:30:36.000Z",
+    "text": "One of the oldest recorded Bitcoin whales just sold his entire $1.24 billion BTC stack.\n\nHe’s held through every market cycle since Bitcoin was created in 2009.\n\nNow he’s cashing out. \n\nAsk yourself why. https://t.co/T8tfHvcFG8",
+    "media": [
+      {
+        "media_key": "3_2025986654888976384",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HB3AIORW4AAlVuz.jpg",
+        "height": 928,
+        "width": 1091
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 442,
+      "reply_count": 574,
+      "like_count": 2750,
+      "quote_count": 82,
+      "bookmark_count": 265,
+      "impression_count": 318373
+    },
+    "author_followers": 527975,
+    "author_name": "Jacob King",
+    "author_description": "CEO & Founder @SwanDesk - #1 Source for Finance/Crypto News and Insights - Contrarian Investor & Analyst. Breaking the Echo Chamber.",
+    "author_tweet_count": 4644
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HB3AIORW4AAlVuz.jpg",
+          "description": {
+            "description": "A financial dashboard showing the token balance history of a cryptocurrency wallet. The top section displays an area chart with a sharp decline in Bitcoin (BTC) balance starting in February. Below the chart is a table listing recent transactions from a sender labeled 'SATOSHI WHALE (1KFYo)' to 'Coinbase (352zz)', with each transaction valued at approximately 40.647 BTC, or roughly $2.64 million.",
+            "ocrText": "BALANCES HISTORY TOKEN BALANCES HISTORY PROFIT & LOSS COIN BTC Choose a token 14K 12K 10K 8K 6K 4K 2K 0 Dec 13 Jan 13 Feb 13 TIME FROM TO VALUE TOKEN USD 32 minutes ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.64M 57 minutes ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.65M 1 hour ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.63M 1 hour ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.63M 2 hours ago SATOSHI WHALE (1KFYo) Coinbase (352zz) 40.647 BTC $2.64M"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**wangr - @wangrdotcom**  \nI'm guessing he found his private key finally during a move.  \nLikes=204, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=6147\n\n**𝗗𝗥𝗘𝗔𝗗 𝗕𝗢𝗡𝗚𝗢 - @DreadBong0**  \nI'm asking myself why did he wait for the price to crash 50% before cashing out?  \nLikes=130, Reposts=1, Quotes=0, Replies=9, Bookmarks=0, Views=12956\n\n**Crypto AI - @CryptoA12552**  \nCould be personal, could be strategic, someone holding since 2009 has already won by any measure, cashing out 1.24 billion after 16 years is not necessarily a bearish signal, it might just be called retirement.  \nLikes=80, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=7492\n\n**™️ - @tmar106**  \nThe tide is shifting - BTC had its time but it’s over now  \nLikes=49, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=7208\n\n**head-in-a-jar - @headinajaro**  \nMet a woman?  \nLikes=48, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2179\n\n**MJ - @MJStacking**  \nWe'll congratulations to this person. Nothing wrong with cashing out although i don't get it. That person should be educated enough to understand now is not the time to cash out lol  \nLikes=45, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=13142\n\n**BitRoot - @SamRatio**  \nThe fact that he was able to sell it shows that it is a liquid market and someone else bought it. I would’ve worried if someone has a sale order and it is waiting to be executed for days or months.  \nLikes=29, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=3796\n\n**Matt Barrie - @matt_barrie**  \nQuite a few of these happening  \nNot sure who would sit on $1b for so long  \nSmells like hacked wallets  \nLikes=26, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4049\n\n**Garry ⚡️🇩🇪⚡️ - @GarryKrug**  \nWe know nothing of this person. They could be old, tired, divorced, who knows.  \n\nReal OGs continue to hold.  \n\nGovernments and institutions continue to buy.  \n\nWe are just getting started.  \nLikes=24, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4159\n\n**LadyP - @LadyP5652074923**  \nSo even if people don’t feel that Bitcoin should be abandoned because of Epstein, remember it has no utility and it’s value is \nonly based on speculation and hype. Institutions seem to be getting rid of it because they don’t want the association with people referring to it as the pedo coin. So the hype is all bad and even Saylor made the Freudian slip of saying MSTR would still be ok if it went to $8. In its present form Bitcoin is useless, not a reliable store of value and certainly not a great investment. Something needs to change.  \nLikes=24, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4381",
+    "warnings": []
+  }
+}

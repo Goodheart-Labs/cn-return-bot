@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2035027865763221635",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "fabricated_quote", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Fan-art account 'Ash' (a TADC/Pomni fan artist) posts a Pomni-watching-sunset image with caption claiming Gooseworx 'Confirms Episode 8...will be delayed by another 6 months' and an obviously-fake panicky quote: 'dude I fucked up and deleted everything man we need to start over man fuuuccckkkk thats gonna cost so much money ffffuuuucccckkkkk'.",
+  "why_note_decision": "Obvious shitpost/joke from a fan-art account. Episode 8 actually released as scheduled on March 20, 2026 (the very day of this tweet). The 'quote' is comically stylized profanity-spam that no real creator would post as an official statement. Top replies all engage as joke: 'It's going to be even harder to make all over again because the voice actors are now dead' (joke), 'How? Many? Months?', 'Please god let this happen, it'd be SO fucking funny', 'klawspirit: awwhhh dude fuuuuuuuuck that suckkks gggs guys see ya', 'NotAGoodUsername360: That's the cover story, but we all know the reason is because Netflix censored the 15 minute sex scene from Caine's last ditch attempt to win Zooble over'. Entirely in-community humor; nobody is being misled.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The tweet is transparent fan-account shitposting: a deliberately ridiculous fake panic-quote attributed to Gooseworx, posted by a TADC fan-artist on the very day Episode 8 released. Top replies are all jokes (RIP voice actors, '15-minute sex scene' bits, etc.). Reject any literal 'this quote is fake / no delay' debunk — though factually correct, it misreads obvious shitposting as misinformation.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The claim that Gooseworx confirmed a delay for episode 8 with the quoted statement is false; no such post exists on their account. Episode 8 is scheduled for release on March 20, 2026, as indicated by Glitch Productions. https://x.com/GooseworxMusic https://x.com/glitch_prod/status/2034706606332444992",
+    "failure_reason": "note_not_needed_joke",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satirical_no_real_claim",
+    "sources_checked": [
+      "https://x.com/ToonHive/status/2008032242246058004",
+      "https://en.wikipedia.org/wiki/The_Amazing_Digital_Circus",
+      "https://parties365.com/tadc-ep-9-release-date/"
+    ],
+    "notes": "TADC Ep 8 released March 20, 2026 as scheduled. The 'quote' is obviously fake stylized profanity-spam; account is a fan artist; replies confirm joke context."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Fandom humor, ~720k impressions but zero misinformation harm. Pipeline learning: absurd-style fake quotes from fan accounts on release day are jokes, not fabricated-quote misinformation."
+  },
+  "difficulty": "easy"
+}

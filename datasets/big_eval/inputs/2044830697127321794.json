@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2044830697127321794",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:03.824Z",
+  "post": {
+    "id": "2044830697127321794",
+    "author_id": "1700839809990766592",
+    "created_at": "2026-04-16T17:30:03.000Z",
+    "text": "👍🏿 Countries with the most Africans:\n\n1. 🇧🇷 Brazil: 112,739,744\n2. 🇺🇸 United States: 46,936,733\n3. 🇨🇴 Colombia: 15,000,000\n4. 🇭🇹 Haiti: 11,200,000\n5. 🇫🇷 France: 10,000,000\n6. 🇩🇴 Dominican Republic: 8,984,587\n7. 🇨🇺 Cuba: 7,656,042\n8. 🇬🇧 United Kingdom: 4,871,916\n9. 🇸🇦 Saudi https://t.co/88B7MVHaL6",
+    "media": [
+      {
+        "media_key": "3_2044830693826375680",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGCyrptWMAAKzZd.jpg",
+        "height": 2048,
+        "width": 1714
+      },
+      {
+        "media_key": "3_2044830693205966848",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGCyrnZbgAAo-5i.jpg",
+        "height": 325,
+        "width": 267
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 151,
+      "reply_count": 239,
+      "like_count": 1372,
+      "quote_count": 72,
+      "bookmark_count": 333,
+      "impression_count": 467685
+    },
+    "author_followers": 42247,
+    "author_name": "Stats Globe",
+    "author_description": "Stats from around the Globe",
+    "author_tweet_count": 12731
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGCyrptWMAAKzZd.jpg",
+          "description": {
+            "description": "A close-up portrait of Barack Obama smiling at the camera. He is wearing a white dress shirt and a blue patterned tie. The background consists of vertical wooden panels.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGCyrnZbgAAo-5i.jpg",
+          "description": {
+            "description": "A portrait photo of a young Black man with dark dreadlocks, smiling broadly to show his teeth. He is wearing a dark green hooded sweatshirt and a small silver earring in his left ear. The background consists of a dark window frame with white panes.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@1FilhoDeHecate**  \nTotally fake, not every mixed people in Brazil are afro... they count mixed as narrative  \nLikes: 627\n\n**@giano1976**  \n(No text content)  \nLikes: 203\n\n**@desdenho**  \n📊 Censo 2022: Diversidade no Brasil 🇧🇷  \n\nPardos : 92,1 milhões (45,3%)  \nBrancos : 88,3 milhões (43,5%)  \nNegros : 20,7 milhões (10,2%)  \nIndígenas : 1,7 milhão (0,6%)  \nAmarelos : 850 mil (0,4%)  \n\nEstes \"112% milhões de Afro-brasileiros\" não existem 👍🏻  \nLikes: 161\n\n**@CarloCordulino**  \nKkkkkkkkkkk  \n\nTudo errado kkkkk  \n\nMaioria da população é branca ou parda no Brasil,  africanos devem ser de 10% a 25% da população  \nLikes: 144\n\n**@viihmaldita2**  \nThe \"Africans\" in Brazil 🥴🤡  \nLikes: 122\n\n**@ns_statmapper**  \nBlack Population in Americas 🌎  \nLikes: 114\n\n**@Arthur63200852**  \nOne drop rule bullshit. Blacks are majority only in Africa and in some caribbean islands.  \nLikes: 40\n\n**@Perdiminha49977**  \nEngraçado que o brasil esta em primeiro lugar, mas não colocaram foto de nenhum brasileiro  \nLikes: 36",
+    "warnings": []
+  }
+}

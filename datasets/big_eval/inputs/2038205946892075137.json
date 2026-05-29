@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2038205946892075137",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:00.428Z",
+  "post": {
+    "id": "2038205946892075137",
+    "author_id": "2004949114874986497",
+    "created_at": "2026-03-29T10:45:40.000Z",
+    "text": "My Italian grandma taught me this. https://t.co/six55BTYl6",
+    "media": [
+      {
+        "media_key": "13_2038205839140663296",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2038205839140663296/img/bOAE5Na8tX1E5dbT.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 62251,
+        "view_count": 1509768,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2038205839140663296/vid/avc1/320x568/WDR-9RSh49BEpN2w.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2038205839140663296/vid/avc1/480x852/b52qvJbDFn8xAncz.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2038205839140663296/vid/avc1/720x1280/dYI8xtOnVasI5w5O.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2038205839140663296/pl/yVLxkdduRWPBeCT2.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 102,
+      "reply_count": 2317,
+      "like_count": 2956,
+      "quote_count": 431,
+      "bookmark_count": 1864,
+      "impression_count": 3062652
+    },
+    "author_followers": 34509,
+    "author_name": "Mindful DIY",
+    "author_description": "Mindful Life Tips, Kitchen & Home Tips",
+    "author_tweet_count": 617
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2038205839140663296/vid/avc1/720x1280/dYI8xtOnVasI5w5O.mp4",
+          "description": {
+            "description": "A close-up of a person's hands holding a silver bowl and mixing raw ground meat with a fork. In the first and second frames, a caption reads, 'My Italian grandmother taught me this.' The person mixes the meat more thoroughly in the third and fourth frames, turning it into a more uniform, liquidy mixture.",
+            "ocrText": "My Italian grandmother taught me this."
+          },
+          "transcription": "Music Give me Oh, mama La, la, la, la, la, la, la Oh, mama La, la, la, la, la, la, la Mama dear, come over here And see who's looking in my window It's the baker boy And look, he's got a cannoli in his hand If you marry the baker boy He will come and he will go And he will always make..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@mycf_98**  \nThats the least Italian shit I’ve ever seen  \nLikes: 2215\n\n**@ChitownMike312**  \nItalian? Are you sure?  \nLikes: 655\n\n**@Duddy__Kravitz**  \nYour Italian grandma is Albanian.  \nNo other explanation for the recipes & cooking techniques you share.  \nLikes: 316\n\n**@Orangeman5175**  \nI am not even Italian and yet I feel insulted by this  \nLikes: 291\n\n**@hlitoroy**  \nItalian grandma💀  \nLikes: 281\n\n**@JonnyMicro**  \nYour Italian grandma told you to make raw beef soup and then add jarred tomato sauce to it lmaooooooo  \nLikes: 220\n\n**@LizZilaesa**  \nDid your grandma teach you to use a metal fork in that pan?  \nLikes: 213\n\n**@rk9712246**  \nI am going to call BS. No Italian Grandmother would use sauce from a jar or put virtually sauce less meat on noodles  \nLikes: 153\n\n**@TheC0mment4t0r**  \nNobody's ITALIAN grandmother would ever teach this to anyone this is like sacrilegious acts on par with breaking pasta to fit the pot  \nLikes: 132\n\n**@heygroc**  \nstrange, because my Italian grandmother would have you and your grandmother arrested.  \nLikes: 126",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2027464278236950696",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:19.694Z",
+  "post": {
+    "id": "2027464278236950696",
+    "author_id": "83932539",
+    "created_at": "2026-02-27T19:22:07.000Z",
+    "text": "I hike small hills, and @denise_artist thinks I live dangerously. https://t.co/AXv6650FhI",
+    "media": [
+      {
+        "media_key": "13_2027463993636564992",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2027463993636564992/img/D1ttoC49JcVtI9HK.jpg",
+        "height": 1280,
+        "width": 704,
+        "duration_ms": 47740,
+        "view_count": 19411,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027463993636564992/vid/avc1/320x580/hLHpGJEbgY5mf3rB.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027463993636564992/vid/avc1/480x872/V0LOUwX8N47vTj2m.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2027463993636564992/vid/avc1/704x1280/rugq-Evx6PcRR7e8.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2027463993636564992/pl/Q2AyHiGKLLqK6ld5.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 100,
+      "reply_count": 80,
+      "like_count": 578,
+      "quote_count": 27,
+      "bookmark_count": 119,
+      "impression_count": 33834
+    },
+    "author_followers": 389226,
+    "author_name": "Praying Medic",
+    "author_description": "Constitutional Extremist ★ Telegram https://t.co/OT1LmDVG97 ★ GiveSendGo:  https://t.co/3onvGVz7HM",
+    "author_tweet_count": 99213
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2027463993636564992/vid/avc1/704x1280/rugq-Evx6PcRR7e8.mp4",
+          "description": {
+            "description": "A man attaches a black action camera to the neck of a beige mountain goat. Initially standing on a grassy ledge overlooking a canyon, the goat then begins to traverse an extremely steep and narrow rocky cliff path high in the mountains, with the camera capturing a first-person perspective from the animal's neck. The background features rugged mountain peaks, some with snow, under a blue sky.",
+            "ocrText": ""
+          },
+          "transcription": "მეე, ათახ ვიჯეთინაი, გირდას აგიჩი ცუგოკ, იარიყი გაირა ქამერა გავათა გინაქვალა. და გრანენისას ფრნიდა."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @WordObi: Folks, if you don't know this is AI, please log off (15 likes, 0 reposts)\n- @realSnakeFarm: The first time I saw this I thought it was ai (8 likes, 0 reposts)\n- @lighteninghead2: Did I just fall off a cliff. I think I died. I know I did. Video should have come with a warning! 🤣🤣🤣 (6 likes, 0 reposts)\n- @Patriot_Josh11: 😍😍😍 That was amazing. Unbelievable. Beautiful creatures. (6 likes, 0 reposts)\n- @DucoOneOfOne: I don’t care how many AIs confirm that this isn’t AI… it has to be AI 🤯 (5 likes, 0 reposts)\n- @DogMom89891412: This has to be AI. Since when can a goat run horizontally across a cliff face? And that's exactly what you see ahead of the camera goat around 25 or 30 seconds into the clip. (5 likes, 0 reposts)\n- @troypatriot1: I have watched this in person... (not this perspective obviously) in the western slopes of Colorado.. it is mesmerizing and amazing to witness..... (5 likes, 0 reposts)\n- @Downtownfairy: Wow!   That doesn’t even look real, it’s so wild (5 likes, 0 reposts)\n- @Tennessee_Fury: I want joints that can survive that. (2 likes, 0 reposts)\n- @MahatmasRebirth: This isn't real. Rock told me. (2 likes, 0 reposts)",
+    "warnings": []
+  }
+}

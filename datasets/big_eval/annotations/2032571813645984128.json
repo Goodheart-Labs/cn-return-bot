@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2032571813645984128",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["platform_manipulation", "scams_fraud_finance"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "@Right Angle News Network (418k followers) posts a screenshot of Nikita Bier's official X post (already visible in the screenshot) announcing $335,000 reallocated to creator payouts — funded by suspending users posting undisclosed AI war videos and deducting Community-Note-flagged earnings. Tweet caption rounds this up as 'nearly half a million dollars'. 959k impressions.",
+  "why_note_decision": "The screenshot in the tweet itself shows the exact $335,000 figure. Calling $335k 'nearly half a million' is a stretch but defensible loose reporting (it's closer to a third of a million; 'nearly half a million' is hype). The other quibbles (note says 'includes posts with Community Notes for any false info, not just war footage' — Bier's own text already says that, and the screenshot shows it). The note essentially restates what's already visible in the screenshot. Multiple major outlets (404 Media, Times of Israel, Decrypt, Free Press Journal) confirm the underlying announcement and the $335k figure. Community correctly downrated as note-not-needed (69 noteNotNeeded vs 43 missingKeyPoints) — the screenshot shows the truth.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Bier's official X post is fully visible in the screenshot embedded in the tweet, including the exact $335,000 figure and the breakdown (1. suspended AI-war-video posters, 2. Community-Note deductions for any false info). The tweet's 'nearly half a million' is loose rounding (335k → 'nearly half a million' is hype but the actual figure is in front of the reader). FAIL any note that (a) pedantically points out '$335k is not nearly half a million' when the actual figure is visible in the embedded screenshot — readers can do that math themselves, (b) repeats the original failure of restating facts that are already shown in the screenshot. If the bot writes anything, it must demonstrably add information the screenshot doesn't already provide. Best outcome: no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "X did deduct and redistribute funds from creators posting fake content, but the amount was $335,000 (not nearly half a million) and includes posts with Community Notes for any false info, not just war footage.    https://x.com/nikitabier/status/2032561056867037263",
+    "failure_reason": "note_not_needed — the $335k figure and the 'any false info / not just war' detail are both ALREADY in the screenshot embedded in the tweet. Note adds nothing. Community correctly downrated.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_loose_rounding_but_source_visible_in_screenshot",
+    "sources_checked": [
+      "https://www.404media.co/x-will-stop-paying-people-for-sharing-unlabeled-ai-generated-war-footage/",
+      "https://decrypt.co/359880/x-suspend-creator-payouts-undisclosed-ai-war-videos",
+      "Screenshot of @nikitabier post embedded in the tweet ($335,000 figure clearly visible)"
+    ],
+    "notes": "Bier's announcement is real and the $335,000 figure is correct. Tweet's 'nearly half a million' is hyperbolic rounding. The Community-Notes-for-any-false-info detail is also in Bier's post (visible in the screenshot). Note restates what's visible."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pedantic-rounding case; false-positive value — pipeline must learn that loose rounding on figures visible in the screenshot doesn't warrant a 'correction'."
+  },
+  "difficulty": "easy"
+}

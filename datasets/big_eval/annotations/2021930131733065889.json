@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2021930131733065889",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "staged_or_scripted_content"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Reposted TikTok comedy skit by Jessica Marchi (@theitalianceo) playing an Italian shopkeeper kicking out an American customer for ordering Hawaiian pizza; on-screen text and watermarks visibly read 'POV: you're American ordering in Italy' and '@JESSICAMARCHI'.",
+  "why_note_decision": "The video is an obvious comedy skit by a well-known creator — Jessica Marchi appears throughout under her TikTok handle, the watermark is visible, and top replies explicitly identify it as fake/staged in LA. The original note correctly identifies it as a Jessica Marchi skit but was rated NotHelpfulNoteNotNeeded (15, dominant). Obvious-comedy with creator credit on-screen is the canonical no-note territory.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The clip is an obvious comedy skit with the creator's @JESSICAMARCHI watermark visible throughout and 'POV: you're American ordering in Italy' framing on-screen. Any note explaining it's staged is a NoteNotNeeded false positive — readers can already see the watermark.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is a staged comedy skit by Jessica Marchi filmed in Los Angeles, not a real interaction in Italy.",
+    "failure_reason": "Factually correct but the comedy framing (POV title, visible @JESSICAMARCHI watermark, top replies) makes it self-evident; community rated NotHelpfulNoteNotNeeded (15).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious comedy skit by Jessica Marchi (@theitalianceo); confirmed via her TikTok/YouTube/Instagram presence",
+    "sources_checked": [
+      "https://www.tiktok.com/@theitalianceo",
+      "https://www.tiktok.com/@theitalianceo/video/7507662375957351688"
+    ],
+    "notes": "Jessica Marchi is an LA-based actress who runs the @theitalianceo character; pizza pie / Hawaiian pizza skit is one of her recurring bits. Comedy framing is self-evident in the clip itself."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "200k impressions, fluff comedy; useful false-positive trap for obvious-skit detection."
+  },
+  "difficulty": "easy"
+}

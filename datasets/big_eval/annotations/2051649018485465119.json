@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2051649018485465119",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "constitutional_law_misstatement",
+  "tweet_summary": "After TMC's 2026 Bengal election defeat, the poster argues the Governor can only 'ask' Mamata Banerjee to resign but cannot force her, and that if she refuses the only outcome is President's rule with no party able to govern Bengal.",
+  "why_note_decision": "A note is warranted: the claim misstates Indian constitutional law. Under Article 172, a state Legislative Assembly automatically dissolves five years from the date appointed for its first meeting; once the term expires, the sitting government's mandate ends regardless of whether the CM resigns. The Governor can then invite the party with a majority (here BJP, which won 207/294) to form the government - President's rule is not the only or automatic outcome, and a sitting CM does not retain office merely by refusing to resign. The post's framing that Mamata can cling to power by not resigning is false.",
+  "judge_guidance": "PASS only if the note explains that a sitting CM cannot retain office simply by refusing to resign once the Assembly's term ends - the Assembly automatically dissolves at the end of its constitutional five-year term (Article 172), after which the Governor can invite the majority party to form a government. It must rebut the false premise that refusal to resign blocks a transfer of power or forces President's rule. FAIL if the note accepts the poster's framing, claims the Governor is powerless to effect a transition, asserts President's rule is the inevitable result, or muddles the constitutional mechanism. Citing the relevant constitutional provision / credible reporting strengthens it.",
+  "reference_note": "As per Article 172 of the Constitution,  every state legislative assembly shall automatically dissolve five years from the date appointed for its first meeting. Automatic dissolution means the sitting CM does not remain the CM anymore, even if they refuse to resign.    https://www.indiatoday.in/india/law-news/story/mamata-banerjee-bengal-assembly-election-results-loss-refuses-to-resign-as-trinamool-congress-term-ends-what-happens-next-2907044-2026-05-05",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_legal_misstatement",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_West_Bengal_Legislative_Assembly_election",
+      "https://www.onmanorama.com/news/india/2026/05/07/west-bengal-governor-dissolves-assembly-after-mamata-banerjee-refuses-to-resign.html",
+      "https://clarionindia.net/bengal-governor-dissolves-state-assembly-after-mamata-banerjee-refuses-to-resign/"
+    ],
+    "notes": "BJP won 207/294; TMC's 15-year rule ended. Constitutional experts noted Mamata would automatically cease to hold office once the Assembly term expired (around May 7) even without resigning; Governor R.N. Ravi dissolved the Assembly (reported under Art 174(2)(b)) and a new govt forms. The note's core point - she cannot remain CM by refusing to resign - is correct; Article 172 (five-year term) is the apt provision for the automatic term-end. Rated CURRENTLY_RATED_HELPFUL."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2M impressions on a contested democratic transition of power in India; correcting constitutional misinformation that suggests an electoral loser can cling to office supports democratic-norms integrity in the world's largest democracy."
+  },
+  "difficulty": "medium"
+}

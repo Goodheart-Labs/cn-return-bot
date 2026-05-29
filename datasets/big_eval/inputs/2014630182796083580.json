@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2014630182796083580",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:14.914Z",
+  "post": {
+    "id": "2014630182796083580",
+    "author_id": "1270628212041793538",
+    "created_at": "2026-01-23T09:24:00.000Z",
+    "text": "Sydney Sweeney &amp; Ana de Armas https://t.co/fAdK3VVsuN",
+    "media": [
+      {
+        "media_key": "3_2014629975102574592",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_VnSdPX0AAR0tN.jpg",
+        "height": 1200,
+        "width": 805
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 678,
+      "reply_count": 523,
+      "like_count": 34563,
+      "quote_count": 195,
+      "bookmark_count": 4078,
+      "impression_count": 3067259
+    },
+    "author_followers": 233474,
+    "author_name": "UCFasimétrico 🎬",
+    "author_description": "AQUÍ exclusivamente ENCONTRARÁS un mundo infinito de instantáneas que conforman el “Universo Cinematográfico Femenino\"",
+    "author_tweet_count": 95948
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_VnSdPX0AAR0tN.jpg",
+          "description": {
+            "description": "A mirror selfie of two young women in a gym after a workout. The woman on the left has blonde hair in a ponytail and is wearing light blue athletic set consisting of a sports bra and shorts. The woman on the right has dark hair, a white towel around her neck, and is wearing a dark grey short-sleeved top and dark grey shorts. They appear sweaty and are smiling. The background shows gym equipment like dumbbells, benches, and other people exercising.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@aishagreyrat69**: would  \n  Likes: 3 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 405\n\n- **@Surge100x**: which is Sydney Sweeney please?  \n  Likes: 2 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 17904\n\n- **@JanneSoini**: 🥰🥰  \n  Likes: 2 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 29\n\n- **@th0t4you**: SYDNEY IS ALWAYS GONNA BE MY FAV  \n  Likes: 29 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 5931 (video)\n\n- **@Potepkim**: Hey @grok esta foto es real?  \n  Likes: 0 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 121\n\n- **@SealOfTheEnd**: It's an AI generated picture ofc.  \n  Likes: 0 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 3\n\n- **@autopsicograma**: @grok es real???  \n  Likes: 0 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 294\n\n- **@Meenukutty1994**: @grok remove the best actress  \n  Likes: 0 | Reposts: 0 | Quotes: 0 | Replies: 0 | Views: 417",
+    "warnings": []
+  }
+}

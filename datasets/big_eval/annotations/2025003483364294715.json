@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2025003483364294715",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet says 'GOLD 🥇⛸️' over a video of Alysa Liu spinning on a baseball field at a Cardinals first pitch (May 2025). Posted Feb 21, 2026 — the day Liu won the 2026 Winter Olympics women's figure skating gold.",
+  "why_note_decision": "The clip went viral *because* Liu had just won Olympic gold; people celebrated her by recirculating the famous Cardinals first-pitch axel video. The visuals make it unambiguously a baseball field (jersey #26, padded outfield wall, protective netting) — no viewer is misled into thinking this IS her Olympic performance. The tweet's 'GOLD' is a celebration of her Olympic gold, not a claim about the video. Comments confirm: 'I literally thought you could only do they on ice. Looks just as impressive on the infield!', 'Alsya Liu is a National Treasure!'. The note pedantically 'corrects' a misreading nobody made.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The video is plainly on a baseball field (jersey, netting, padded wall), Alysa Liu's Cardinals first pitch from May 2025 went viral the moment she won Olympic gold on Feb 21, 2026, and the tweet's 'GOLD' is celebratory framing — not a claim the video shows the Olympic performance. Comments confirm viewers understood the setting. Reject any 'this is not the Olympic performance' debunk.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video shows Olympic figure skater Alysa Liu performing spins before throwing a ceremonial first pitch at a St. Louis Cardinals game in May 2025, not her Olympic gold medal performance. https://www.mlb.com/news/alysa-liu-cardinals-first-pitch",
+    "failure_reason": "note_not_needed_pedantic",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.mlb.com/news/alysa-liu-cardinals-first-pitch",
+      "https://sports.yahoo.com/articles/alysa-liu-2025-1st-pitch-234431757.html",
+      "https://clutchpoints.com/olympics/olympics-news-alysa-liu-2025-1st-pitch-cardinals-game-viral-gold-medal-win"
+    ],
+    "notes": "Cardinals first pitch May 7, 2025; Olympic gold Feb 21, 2026. Tweet posted the day of her gold — celebration, not a misattribution."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "~700k impressions, harmless celebration. Pipeline learning: 'GOLD' as celebratory caption over older footage isn't a misattribution claim."
+  },
+  "difficulty": "easy"
+}

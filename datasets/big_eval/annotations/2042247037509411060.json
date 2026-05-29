@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2042247037509411060",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post claims British police raided a house because the occupant tweeted 'Keir Starmer had nothing to do with the Iran ceasefire,' over footage of police smashing a door to arrest someone.",
+  "why_note_decision": "The footage is real but miscontextualized: it is the widely circulated August 2024 video of Northumbria Police in Sunderland forcing a door to arrest a woman suspected of violent disorder during the UK riots — nothing to do with Keir Starmer, a tweet, or the Iran ceasefire. The post fabricates a 'arrested for a tweet about Starmer' narrative around old riot-arrest footage, and many readers take it literally (replies decry 'fascist' UK speech policing). A note correcting the footage's origin is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the video is old/unrelated footage: it is the August 2024 Sunderland (UK) arrest of a woman suspected of violent disorder during the 2024 riots (Northumbria Police), and it has nothing to do with anyone being raided for tweeting about Keir Starmer or the Iran ceasefire. The note must debunk the specific 'raided for a tweet' framing, not just say 'context needed.' Cite the 2024 Sunderland riot-arrest source. FAIL any note that endorses or hedges toward the 'police raided someone over a Starmer tweet' claim, and FAIL a note that only adds vague context without identifying the real 2024 event.",
+  "reference_note": "This video is from August 2024 and shows Northumbria Police in Sunderland, UK, forcing a door to arrest a woman suspected of violent disorder during the 2024 riots. It is not connected to anyone being raided for a tweet about Keir Starmer or the Iran ceasefire. https://www.itv.com/news/tyne-tees/2024-08-05/six-charged-in-connection-with-violent-disorder-in-sunderland https://en.wikipedia.org/wiki/2024_United_Kingdom_riots",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Miscontextualized: real Aug 2024 Sunderland riot-arrest footage falsely captioned as a raid over a Starmer/Iran-ceasefire tweet.",
+    "sources_checked": [
+      "https://www.itv.com/news/tyne-tees/2024-08-05/six-charged-in-connection-with-violent-disorder-in-sunderland",
+      "https://en.wikipedia.org/wiki/2024_United_Kingdom_riots",
+      "https://www.tiktok.com/@dailymailuk/video/7399577455637318944"
+    ],
+    "notes": "The door-smashing arrest video is the August 2024 Sunderland clip (Daily Mail/Sky/ITV), where police arrested a woman among 12 suspected of violent disorder during the UK riots. It predates any 2026 Iran ceasefire and is unrelated to a 'Starmer tweet' raid. Despite a few 'enjoy the satire' replies, the post spreads as a literal speech-policing claim. Provisional was no_note; I flip to yes — clear miscontextualized-media misinformation."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "323k impressions, 3.7k reposts; fuels a false 'arrested for a tweet' free-speech panic about the UK government — correcting recycled-footage political misinformation has real value."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1994654075338854791",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "well_known_movie_clip",
+  "tweet_summary": "A clip from the 2009 film 'The Blind Side' showing the coach defending Michael Oher and a dramatic football play, captioned 'Coach gave him the motivation he needed'.",
+  "why_note_decision": "This is an instantly-recognizable clip from a famous Hollywood movie ('The Blind Side', 2009, Sandra Bullock won an Oscar for it). The tweet doesn't claim the scene is real — it's just a 'feel-good clip from a movie' post. The comment section is FULL of people identifying it as the movie ('Actually ruined this movie for me to find out it was all a lie', 'This film is a lie. Michael Oher was a top-5 high school recruit', 'Where were you taking him? Love it'). No one is being misled into thinking this is a real game. The original note acknowledges this is from the movie but still treats it as needing correction, which is why raters flagged it noteNotNeeded — the movie is widely recognized and the tweet isn't deceiving anyone.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The clip is from a famous, 17-year-old Oscar-winning Hollywood film and the tweet doesn't claim it's real footage. Adding a 'this is from a movie' note is a false positive for content nobody mistakes for reality. FAIL if the bot writes any note 'correcting' a clearly-cinematic clip.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading — the clip is from the 2009 film The Blind Side, not a real game. The movie dramatizes Michael Oher's rise; the coach's &quot;transformational&quot; speech and Oher's portrayed inexperience were fictionalized. Sources: https://www.youtube.com/watch?v=Vq64MxNlnMM https://screenrant.com/the-blind-side-true-story-details-left-out/",
+    "failure_reason": "Note-not-needed — this is a famous 2009 Oscar-winning movie clearly recognized by viewers in the comments. Nobody is misled.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "The clip is indeed from The Blind Side (2009), but no one is misled — this is widely known.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/The_Blind_Side_(film)",
+      "https://www.biography.com/movies-tv/the-blind-side-true-story-michael-oher"
+    ],
+    "notes": "Sandra Bullock Oscar-winning film; the coach motivation scene is fictionalized; Oher was already a top-5 HS recruit. All true but obvious-fake territory."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Movie clip; no policy or safety stakes."
+  },
+  "difficulty": "easy"
+}

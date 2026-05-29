@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2049866378229006425",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Rock-history account posts a Beatles photo captioned as 'the cover of their final album Get Back', accompanied by an AI-upscaled/restored version of the 1969 EMI House balcony photo.",
+  "why_note_decision": "The 'Get Back' framing is technically off (the project was shelved and released as Let It Be; the photo ended up on the 1973 1967-1970 Blue Album), but this is well-known Beatles trivia and the original note also fails to address the more visually relevant point readers actually raise — that the image is AI-upscaled. The factual error is a small history nitpick on a non-news pop-culture tweet; rated NoteNotNeeded by raters. Not the kind of misinformation that needs correction.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive — the 'Get Back' wording is a minor pop-history slip on a fluff tweet; readers can self-correct via top reply. A note that focuses on whether the image is AI-upscaled (without solid evidence) would also be wrong.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The photo was taken for the planned \"Get Back\" album, which was shelved and released as \"Let It Be\" with a different cover. No Beatles album titled \"Get Back\" was ever released, and this image was used for the 1973 compilation \"1967-1970\".",
+    "failure_reason": "Pedantic correction of a fluff music-history tweet; community rated NoteNotNeeded. The underlying historical claim is roughly accurate, but the tweet does not assert false news a reader needs help correcting.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "minor misstatement of album history; no harmful misinformation",
+    "sources_checked": [
+      "https://www.beatlesbible.com/1969/05/13/get-back-photo-session/",
+      "https://ultimateclassicrock.com/beatles-get-back-album-cover/"
+    ],
+    "notes": "Photo was taken May 13 1969 at EMI House for the abandoned 'Get Back' project; used on the 1973 Blue Album. Tweet's framing is slightly wrong but not misleading on any matter of public consequence."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "118k impressions on a music-history fluff tweet; near-zero stakes for any EA/progress/safety lens."
+  },
+  "difficulty": "easy"
+}

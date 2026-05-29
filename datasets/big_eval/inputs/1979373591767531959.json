@@ -1,0 +1,83 @@
+{
+  "tweet_id": "1979373591767531959",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:21.019Z",
+  "post": {
+    "id": "1979373591767531959",
+    "author_id": "258858596",
+    "created_at": "2025-10-18T02:26:53.000Z",
+    "text": "A russian flag tie. At the White House. To meet Zelensky. American politicians like Hegseth know exactly what message they’re sending. They don’t hide the fact they are on the Kremlin payroll and completely compromised. They are traitors. https://t.co/Mm3jh8KPOk",
+    "media": [
+      {
+        "media_key": "3_1979373583609556992",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3glyYDW8AABWEj.jpg",
+        "height": 838,
+        "width": 1100
+      },
+      {
+        "media_key": "3_1979373583647334400",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3glyYMXYAAUZi1.jpg",
+        "height": 1797,
+        "width": 1168
+      },
+      {
+        "media_key": "3_1979373583613800448",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3glyYEXsAAAPXx.jpg",
+        "height": 1342,
+        "width": 1100
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 9272,
+      "reply_count": 5003,
+      "like_count": 41408,
+      "quote_count": 668,
+      "bookmark_count": 1255,
+      "impression_count": 1342200
+    },
+    "author_followers": 136101,
+    "author_name": "Caolan",
+    "author_description": "Name is pronounced Kay-lin | ☘️ Frontline Reporter in Ukraine | Director of Under Deadly Skies On Apple TV | Won 22 Film Awards | Co-Founder of Byline TV",
+    "author_tweet_count": 4132
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3glyYDW8AABWEj.jpg",
+          "description": {
+            "description": "A man in a blue suit and striped tie sits at a formal dinner table. Behind him are the flags of the United States Space Force and the Coast Guard.",
+            "ocrText": "PACE FORCE PARATUS"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3glyYMXYAAUZi1.jpg",
+          "description": {
+            "description": "An e-commerce product page featuring a necktie with diagonal red, white, and blue stripes. The product is titled 'Russia Plain Flag Tie' with a price of $22.32, which is marked as 20% off. The necktie's stripes are reminiscent of a barber pole or the Russian flag colors. A red horizontal line has been edited onto the image to underline the product name.",
+            "ocrText": "$22.32 $27.90 Comp. value per tie You save 20% Russia Plain Flag Tie (2325) | by ... Qty: 1 Add to Cart"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3glyYEXsAAAPXx.jpg",
+          "description": {
+            "description": "A man in a blue suit and striped tie is sitting at a table. Overlaid on the image is a Russian flag emoji with a red arrow pointing toward the colors of his tie, which also feature red, white, and blue stripes.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@ mz_storymakers: Get your facts straight! Your Ukrainian-bought propaganda and disinformation is ridiculous.\nLikes: 987 | Reposts: 0 | Replies: 0 | Views: 15125\n\n@ rhlueger: (image reply)\nLikes: 779 | Reposts: 0 | Replies: 0 | Views: 12426\n\n@ ShaunPinnerUA: Hegseth might as well have turned up wearing a Nazi swastika tie. If that really is a Russian flag tie. He’s not just mocking the families, women, and children slaughtered by Russia’s invasion, this level of disrespect shows just how much influence Moscow has over the Trump camp. You can’t whitewash atrocities.\nLikes: 713 | Reposts: 0 | Replies: 0 | Views: 19128\n\n@ theAmericanBen: (image reply)\nLikes: 520 | Reposts: 0 | Replies: 0 | Views: 10483\n\n@ Sandfort_: Hegseth's flag tie...\nLikes: 499 | Reposts: 0 | Replies: 0 | Views: 8824\n\n@ MarkSimonHK: Moron…\nLikes: 491 | Reposts: 7 | Replies: 5 | Views: 11911\n\n@ maulruaidh: By your logic here’s your Russian barber shop for that Putin cut\nLikes: 415 | Reposts: 0 | Replies: 0 | Views: 4730\n\n@ TroothSoshul: But trump is the goodest boy ever!\nLikes: 394 | Reposts: 0 | Replies: 0 | Views: 8285\n\n@ Markus_Krall: No, they are not traitors, they are just sick of this cocainistic corrupt warmonger.\nLikes: 387 | Reposts: 0 | Replies: 0 | Views: 9007\n\n@ SambaD888: The Russian bitch.\nLikes: 357 | Reposts: 21 | Replies: 3 | Views: 3986",
+    "warnings": []
+  }
+}

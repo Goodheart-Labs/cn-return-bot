@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2052418979256312172",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Small viral-wildlife account posts a 15-second vertical video titled 'The Chameleon Bit the Wrong Branch… Full of Fire Ants' showing a colorful chameleon falling off a branch crawling with red ants. The video has a clear 'MADE WITH AI' watermark on every frame.",
+  "why_note_decision": "The video has an explicit 'MADE WITH AI' watermark visible on every frame (confirmed by the OCR/description field), and the account is a known viral-wildlife slop account that posts daily AI clips. The labeling means the platform's own provenance signal is already present and salient — readers can see 'MADE WITH AI' without any external help. The original note ('this clip was created with AI; the MADE WITH AI text appears multiple times') is technically accurate but redundant given the on-frame label. Rater volume is only 4, all noteNotNeeded. Note is unnecessary; abstain.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The video carries an explicit 'MADE WITH AI' watermark on every frame (visible in the input's OCR), so any reader can see for themselves that it is AI-generated. Writing a note that just re-states the on-frame watermark is redundant and was rated 'Note Not Needed'. FAIL any note that (a) treats this as deceptive misinformation without acknowledging the visible AI watermark, (b) writes a long warning about AI wildlife videos in general, or (c) is paternalistic about labeled content. Correct behavior: abstain.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This clip was created with AI. The \"MADE WITH AI\" text appears multiple times throughout the video.  https://mashable.com/article/ai-generated-animals-footage-fake https://www.outsideonline.com/outdoor-adventure/environment/ai-wildlife-video/",
+    "failure_reason": "Redundant — the video itself carries an on-frame 'MADE WITH AI' watermark, so the note is just restating what every viewer can already see. Rated noteNotNeeded.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Clip is AI-generated (the video labels itself); but on-frame label means no note is needed.",
+    "sources_checked": [
+      "https://www.outsideonline.com/outdoor-adventure/environment/ai-wildlife-video/",
+      "https://news.mongabay.com/2026/01/wildlife-attacks-and-strange-animal-behavior-fake-images-spark-conservation-concerns/"
+    ],
+    "notes": "Genre-level reporting confirms AI wildlife slop is a known issue, but this specific clip self-labels and the audience is small (4 raters). The on-frame watermark is the dispositive signal."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "1.8M impressions but on labeled AI animal slop with no policy/health/safety stakes; low EA priority."
+  },
+  "difficulty": "easy"
+}

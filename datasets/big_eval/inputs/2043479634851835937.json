@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2043479634851835937",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:47.689Z",
+  "post": {
+    "id": "2043479634851835937",
+    "author_id": "1919121427174719488",
+    "created_at": "2026-04-13T00:01:25.000Z",
+    "text": "Si realmente estaban en el espacio… ¿por qué esa pelota nunca empezó a flotar?.\n\nLa reacción en sus caras fue de puro pánico cuando se dieron cuenta de que no ocurrió. 😬 https://t.co/5GLzkBY1J8",
+    "media": [
+      {
+        "media_key": "13_2043479461811585024",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2043479461811585024/img/3LVGJwLgqFZ6DLws.jpg",
+        "height": 420,
+        "width": 640,
+        "duration_ms": 37800,
+        "view_count": 1372021,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2043479461811585024/vid/avc1/410x270/E5ZfCaqBWHfkqR7s.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2043479461811585024/vid/avc1/640x420/jQ3jV9p_eRycFQrm.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2043479461811585024/pl/N_AVLp_WCVlU9JJu.m3u8?v=0e2"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1985,
+      "reply_count": 509,
+      "like_count": 10110,
+      "quote_count": 132,
+      "bookmark_count": 1821,
+      "impression_count": 2996211
+    },
+    "author_followers": 43998,
+    "author_name": "El Arte De La Vida",
+    "author_description": "Pasa un buen rato garantizado. Historias, clips y momentos fascinantes, Lo mejor de X en un solo lugar. @RalphHoracioSSR CUENTA ROBADA ⚠️.",
+    "author_tweet_count": 30991
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2043479461811585024/vid/avc1/640x420/jQ3jV9p_eRycFQrm.mp4",
+          "description": {
+            "description": "The video shows five astronauts standing inside a spacecraft, likely the International Space Station, given the visible 'ISS 20' logo and various international flags behind them. They are dressed in matching blue polo shirts and tan trousers. One male astronaut on the far right holds a microphone and a globe, gesturing as if to explain or present something. Red arrows in the first few frames point toward specific areas, such as equipment on the wall, the ISS 20 logo, and the microphone. The scene appears to be a promotional or educational clip, overlaid with social media watermarks like '@LOSTCIVILIZATIONS_' and an all-seeing eye Egyptian symbol in the top right corner.",
+            "ocrText": "ISS20 @LOSTCIVILIZATIONS_"
+          },
+          "transcription": "You can see the eye and how it's forming. But one of the things that's interesting about up here, when you see that whole hurricane, you're pretty amazed and you start taking pictures and all of that of it, but then you forget that there are people in danger down on Earth with the hurricanes and all that. So sometimes it's easy to lose perspective. Here, when you see that whole hurricane, you're pretty amazed and you start taking pictures and all of that of it, But then you forget that there are people in danger down on Earth with the hurricanes and all that."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **jose (@scusatefratello)**: Porque le da impulso hacia abajo al aplastarla… Tienes el CI justo para no cagarte encima. Madre mía 😂 (201 likes)\n- **méxicolibre (@mexicolibre2030)**: como serás pendejo @ElArteDeLaVidaX pero pendejo, pendejisimo..... puñetas de mierda. Te explico animal, la presión del brazo empujo el esférico hacia abajo, no es que tenga que flotar puñetas. CHINGAS A TU MADRE. (137 likes)\n- **JSM 🇦🇷 (@KLibrado)**: Bruto De acuerdo a los q vos mismo mostrás, no podés hacer el cuestionamiento q hacés, ya q se ve q no suelta la ⚽ sino q se le desliza hacia abajo x la presión q él mismo ejerce Por lo q en el espacio va a seguir c/la trayectoria de la fuerza ejercida, en este caso, hacia abajo (90 likes)\n- **JMJ Waste Solutions (@JmjWaste)**: (image reply, no text) (87 likes)\n- **ELE Lobo Gris 🕊️ (@eloylobogris)**: 🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣 (49 likes)\n- **Rafael Junquera (@ArsimRafael)**: Jajaja jajajaja (38 likes)\n- **justiciero (@justiciero2050)**: Pues la verdad es que la reacción es muy extraña. (21 likes)\n- **El Joaco (@JBL_1969)**: Además, si saliéra un cohete al espacio, rompería la bóveda celeste que contiene nuestro planeta, como muestra esta imagen: (20 likes)\n- **Mr_Neuma (@JhonRomero74251)**: Así funciona la física, no entiendo que ve de raro un objeto se mantendrá en reposo o movimiento hasta que una fuerza se aplique sobre el En este caso la presión del brazo y cuerpo la empuja hacia abajo, y esa es la dirección que toma (18 likes)\n- **Kordobes (@Bidualidad)**: Me da risa la gente que se vuelve violenta cuando decís que estas cosas son mentiras… (17 likes)",
+    "warnings": []
+  }
+}

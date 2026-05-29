@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2038034807108633087",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "vfx_practical_effects_trivia",
+  "tweet_summary": "Complex Pop Culture tweet asserting the Astrophage scene in 'Project Hail Mary' was shot practically, with two BTS images.",
+  "why_note_decision": "The Astrophage close-ups in Project Hail Mary WERE shot practically — Lord/Miller used a chicken-wire rig with infrared LEDs, water poured between glass panes, and a full-spectrum ARRI ALEXA 65 with the IR filter removed (covered by GeekTyrant, SlashFilm, CinemaBlend, Yahoo, Kolari Vision, ScreenRant, and the directors themselves). Wide shots were augmented/replaced digitally by ILM, but the principal 'breathtaking Astrophage scene' the tweet refers to is the practical close-up work. The original note's claim that the scene was 'made entirely digitally by ILM' is incorrect.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's claim that the Astrophage scene was shot practically is substantively true (close-ups used IR LEDs on chicken wire + water refraction, captured with a modified ALEXA 65; ILM did wides and augmentation). Any note that says it was 'made entirely digitally' or 'fully CGI' is a false positive. A note is only justified if it adds the nuance that wides were digital — but doing so contradicts the tweet's claim only weakly and was poorly received here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The director states the Astrophage shots were made entirely digitally by ILM. https://x.com/chrizmillr/status/2037629284622233902 https://x.com/ILMVFX/status/2037793550096839031",
+    "failure_reason": "Factually wrong — the close-up Astrophage shots were practical (IR LEDs on chicken wire, water refraction, modified ALEXA 65). Only wides were fully digital. Misrepresents the director's own remarks.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_with_nuance",
+    "sources_checked": [
+      "https://geektyrant.com/news/the-movie-beautiful-scene-in-project-hail-mary-took-serious-movie-magic-to-pull-off",
+      "https://www.slashfilm.com/2136965/project-hail-mary-most-difficult-scene-film-directors/",
+      "https://www.cinemablend.com/movies/incredible-way-astrophage-created-project-hail-mary-tweaked-cameras-chicken-wire",
+      "https://kolarivision.com/how-project-hail-mary-used-full-spectrum-infrared-cinematography/"
+    ],
+    "notes": "Hybrid: close-ups practical (IR + chicken wire + water), wides digital by ILM. Tweet's 'shot practically' is correct for the famous Astrophage close-ups."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "VFX trivia; minimal world-impact. Useful in eval as a 'note is wrong, tweet is right' false-positive case."
+  },
+  "difficulty": "medium"
+}

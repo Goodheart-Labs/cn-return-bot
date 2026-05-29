@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2033272561677799618",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "conspiracy_and_viral_hoax", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Verified-style account claims 'this is a different man' and 'Netanyahu is no longer with us', sharing a side-by-side photo of Netanyahu in formal vs casual settings during the March 2026 Israel-Iran conflict.",
+  "why_note_decision": "False. Netanyahu is alive — the side-by-side images simply show him in different settings (formal address vs casual at HaSataf café in Jerusalem). The 'different man' / death claim was a viral Iranian-disinformation narrative debunked by Reuters, NBC News, Euronews, France24, the Israeli PM's office, and the café itself (which posted behind-the-scenes photos confirming authenticity). 1.66M impressions, 37K likes — large reach. A corrective note IS clearly warranted. The original note hits the key facts but cites only Snopes, which raters flagged as weak (notHelpfulSourcesMissingOrUnreliable). Adding a primary or wire source would have been better.",
+  "judge_guidance": "PASS if the note establishes (1) Netanyahu is alive; (2) the side-by-side images show him in different settings, not a body double — specifically that the casual-clothing photo is from HaSataf café in Jerusalem which posted its own behind-the-scenes photos confirming authenticity; (3) cites Reuters, NBC News, Euronews, France24, or the Israeli PM's office (gov.il) — NOT only Snopes (that is the original note's specific failure: weak single-source). FAIL if the note: (a) hedges on Netanyahu being alive; (b) relies solely on Snopes; (c) doesn't address the 'different man' / body-double framing. Must avoid the original's source-thinness.",
+  "reference_note": "Netanyahu is alive. The casual photo is from HaSataf café in Jerusalem, which posted its own behind-the-scenes images confirming the visit was real. The Israeli PM's office and his official social accounts have posted multiple authenticated proof-of-life clips in March 2026. The 'different man' claim is part of an Iranian-disinformation narrative repeatedly debunked. https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15 https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+  "original_unhelpful_note": null,
+  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "false — Netanyahu alive; same man in two settings", "sources_checked": ["https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987", "https://www.cbc.ca/news/world/netanyahu-video-proof-of-life-iran-israel-9.7132558", "https://www.euronews.com/my-europe/2026/03/18/netanyahu-denies-death-rumours-in-social-media-clip-which-grok-falsely-branded-ai"], "notes": "Café-context image authenticated by the café posting its own photos. Israeli PM's office dismissed rumors. Multiple wire sources covered the debunking."},
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "1.66M impressions, 37K likes on head-of-state-is-dead misinfo during active conflict. High info-integrity stakes; head-of-state-death hoaxes can move markets and inflame regional tensions."},
+  "difficulty": "easy"
+}

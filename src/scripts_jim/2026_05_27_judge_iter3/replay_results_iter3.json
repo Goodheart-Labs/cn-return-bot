@@ -1,0 +1,382 @@
+[
+  {
+    "url": "https://x.com/i/status/2038078622590779632",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "Rule 2: The post's claim that Ukrainian forces achieved a 'breakthrough' and 'complete surrender of enemy positions' is not directly disputed by the note's cited source, which instead confirms Ukrainian advances of 10–12 km and 400+ km² liberated — substantiating a significant tactical breakthrough rather than contradicting it. The note adds a granularity caveat ('but the front line did not collapse...') that is adjacent context, not a correction of a false assertion.",
+    "newDecision": true,
+    "newReasoning": "Step 1: the post asserts that Ukrainian forces achieved a breakthrough with a collapsed front line and complete surrender of enemy positions. Step 2: the note directly disputes that, stating only limited advances occurred without collapse or surrender. Step 3: substantive — the disagreement changes the reader's understanding of a major battlefield event. Step 4: the cited ISW assessment confirms gains but not collapse, and no other source in findings supports the post's claim. All 4 steps pass.",
+    "flipped": "M_NOW_YES"
+  },
+  {
+    "url": "https://x.com/i/status/2055719221812666428",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts two specific quotes attributed to Reagan and Churchill as facts. Research confirms both are inauthentic, and no in-tweet signal discloses this. A typical reader would be misled into believing these are real historical quotes.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post presents a meme with images of Reagan and Churchill, each with an attributed quote, asserting that these are authentic statements by these historical figures. Step 2: The note directly disputes the authenticity of both quotes, claiming that Reagan's quote is a misremembered Sinclair Lewis line and Churchill's quote is not found in any credible record. Step 3: This is a substantive dispute about fabricated quotes attributed to real public figures, not stylistic. Step 4: The research findings include links to Snopes confirming Reagan's quote was a misremembered Sinclair Lewis line, and Hillsdale College's page confirming Churchill never said the quote, supported also by PolitiFact and AP News. All four steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2009219530300731596",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post claims Labour analysis shows just 0.8% of those benefiting from lifting the cap are 'children of British workers,' but the 0.8% figure refers to two-parent two-full-time-worker households, not British workers generally. The proposed note directly disputes the post's misleading interpretation of the metric with a government source, and a typical reader would be misled without the correction.",
+    "newDecision": false,
+    "newReasoning": "Step 1: the post claims that Labour’s own analysis shows just 0.8% of those benefiting from lifting the two-child benefit cap are children of British workers, implying the rest are not British or not in work. Step 2: the note disputes that characterization, stating the 0.8% refers specifically to two-parent households where both parents work full-time, and that most children affected are in families where at least one adult works. Step 3: the dispute is substantive—the post omits a load-bearing qualifier that flips reader understanding. However, the research findings do not provide a named source that directly states the corrected fact. The cited gov.uk document is linked but its content is not excerpted in the findings, and no direct quotation or analysis is provided to support the note’s claim about the interpretation of the 0.8% figure. The findings only describe general documents about the two-child limit without confirming the specific breakdown or rebutting the post’s number. Thus, the substantive dispute is not supported by acceptable evidence in the research findings. Step 4 halt: evidence not present.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2039118807692968130",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "This is a fabricated quote claim — the post asserts Ben Stiller made a specific criticism, but all major news sources and the absence of any statement from Stiller confirm it is made up. Multiple users in the top replies (e.g., @jxcxbrxss, @ramenlugosi) flag the claim as fake, and the research turned up zero results for Stiller commenting on Mamdani. A typical reader would be misled without the correction.",
+    "newDecision": true,
+    "newReasoning": "Step 1: post claims Ben Stiller 'turns on' Zohran Mamdani by blasting his wealth tax — a specific factual assertion. Step 2: note disputes that Stiller has made any such statement. Step 3: substantive — fabricated quote attributed to a real named public figure. Step 4: research finds no credible reports of Stiller's criticism, and major outlets cover Mamdani's tax proposal without any such statement — absence of evidence from authoritative sources counts as evidence of fabrication. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2047978936311918600",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post presents a video of dark liquid being discharged from ships and calls it an \"",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post claims cruise ships' sewage treatment systems are amazing, with video showing dark liquids being discharged into the ocean. Step 2: The note claims the video is AI-generated. Step 3 halt: The research findings did not find any AI-generation evidence for this specific video — the query 'クルーズ船 排水 動画 AI 生成' returned no results. The cited Facebook source discusses pollution claims generally, not AI generation of this particular video. The note's claim that the video is AI-generated lacks support in the research findings, and the cited Facebook post does not address AI generation. Therefore, the dispute is not substantiated by the evidence provided.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2016932474081657121",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts 'a Spanish scientist have cured pancreatic cancer in mice', which a reader could take to mean a human cure is imminent. The note directly disputes that interpretation by clarifying it was a preclinical animal study, not a cure for humans, and is supported by the CNIO official source.",
+    "newDecision": false,
+    "newReasoning": "Step 1: Post makes two factual claims: (a) Mariano Barbacid's team cured pancreatic cancer in mice, and (b) this is a huge step closer to a possible treatment in humans. Step 2: The note restates that the treatment eliminated tumors in mice and adds 'not a cure for humans' — this doesn't contradict the post's claims that it's a preclinical study in animals and 'a huge step closer.' The post already frames it as a result in animal models, so the note is adding adjacent context about human applicability rather than disputing anything. Step 3 halt: Stylistic — the note provides additional nuance but does not correct a false factual claim made by the post.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2043783331540578439",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts a factual claim—that a 'new CBS poll shows Republican approval at 92.5%'—which is contradicted by authoritative research showing all CBS polls report an overall approval rating around 41%, and the 92.5% figure appears in no CBS News/YouGov poll. The note directly disputes that claim with strong direct evidence, and the replies show both credulity (e.g., 'A. Hell yeah') and a challenge to the claim's accuracy (e.g., 'Lies lies lies'), indicating a reader on their own could be misled.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post claims a CBS poll shows Republican approval of Trump jumping to 92.5%. Step 2: The note disputes that the 92.5% figure exists in any CBS poll, citing CBS's actual overall approval number of 41%. The note contradicts the central factual assertion of the post. Step 3: The dispute is substantive—a fabricated poll number misattributes a false statistic to a real polling organization, not a stylistic framing disagreement. Step 4: The research findings include a news article summarizing that CBS News has Trump at 41% overall and a query showing no CBS News source for 92.5%, only viral social media posts. This constitutes a negative-claim evidence pattern: a credible outlet's silence on a viral fabricated figure combined with direct polling data contradicting it. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2029976032799764557",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "Rule 7: the proposed note's cited source is a single commenter's X post, not a primary or credible source. The research findings show the original video was widely reported as showing the Iranian ballistic missile strike on Prince Sultan Air Base, with no definitive alternative location identified in authoritative sources. The note fails the evidence threshold.",
+    "newDecision": false,
+    "newReasoning": "Step 1: post asserts the video shows a ballistic missile strike on Prince Sultan Air Base, Saudi Arabia. Step 2: note claims it shows a different location — Al-Udeid Air Base, Qatar. Step 3: substantive — different location changes reader understanding. Step 4: the note's cited source is a tweet from a user called CJeifler (who appears in the top comments saying the same thing) with no verification or corroboration — not an acceptable evidence form. Research findings do not confirm Al-Udeid; no fact-checker or news outlet supports the claim. Evidence fails.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/2034574905858040263",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts a checkable factual claim—'Man United haven't played a CL knockout game in over 10 years'—which is false; reputable sources confirm their last CL knockout was March 2022. The many replies already correcting the mistake show readers are meaningfully misled, and the author's ironic bio does not override the clear falsehood. The note is supported by a direct, authoritative source (UEFA) and directly disputes the post's central claim.",
+    "newDecision": false,
+    "newReasoning": "Step 1: post claims Manchester United haven't played a Champions League knockout game in over 10 years. Step 2: note disputes that — says they played Atlético Madrid in March 2022. Step 3 halt — the post author's bio states 'Everything I post is made up,' and the tweet is replied to by multiple users who easily correct the factual error in replies. The author is a known comedy/satire account (bio disclaimer) and the replies uniformly debunk the claim, indicating readers recognize the post as false or inaccurate. However, the key consideration for Step 3 is whether the note is needed given the bio disclosure and replies: the bio-level disclaimer is present, and the replies show that readers are not confused — they are correcting the error themselves. Under the instruction, a bio disclaimer alone is not enough if replies are confused, but here the replies demonstrate clear recognition of the falsehood, not confusion. Therefore the dispute is stylistic — the post is clearly a false claim from a known parody/satire account, and the note would add no new information to what readers already see.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2036903878726131807",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "The post's literal claim — that Israel, the U.S., and Argentina voted against a U.N. resolution 'to condemn slavery' — is factually true: all three voted 'no' on the resolution. The proposed note does not dispute that claim; rather, it adds surrounding context about the resolution's reparations language and the countries' rationales. A typical reader is not misled by the post's literal assertion; the note appends adjacent information about the resolution's content and motivations, which falls under rule 2 (post accurate, note adds context).",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post makes a specific factual claim: \"Israel, United States and Argentina vote against U.N. resolution to condemn slavery.\" This is a checkable fact, and the research findings confirm it is literally true—the three countries voted against resolution that condemned the transatlantic slave trade. Step 2 halt: The proposed note does not dispute that fact; instead it adds context (the resolution also called for reparations and the countries objected on that basis). The note does not contradict the post's claim; it merely appends adjacent explanatory information. A note is not needed when the post's factual assertion is accurate and the note only adds context without correcting a falsehood.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/1999999737379143950",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post makes a clear factual claim that Russia announced a cancer vaccine 'will soon be offered free to patients around the world,' which is false. The note directly disputes this claim with evidence that the vaccine has only completed preclinical trials and no such global free distribution plan exists. The misleading nature is confirmed by numerous commenters taking the post at face value, expressing hope or conspiracy theories, indicating meaningful public deception.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post asserts that Russia has confirmed a cancer vaccine will soon be offered free to patients worldwide — a checkable factual claim about a medical development and distribution plan. Step 2: The note disputes the claim by stating the vaccine has only completed preclinical trials and no such free distribution announcement exists. Step 3: Substantive — the post's claim materially misrepresents the vaccine's development stage and availability, and the word 'free to patients around the world' is central to the reader's understanding, not a stylistic restatement. Step 4: The research findings show no official announcement about free distribution, and fact-checkers (AFP, Newsweek) confirm Enteromix has only cleared preclinical trials. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2020736450589790541",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "The note fails rule 3 (trivial pedantry) because the post's core factual claim—that Epstein placed a piece of the Kiswah on the floor—is not disputed. The proposed note merely clarifies the *chain of custody* (UAE intermediary vs. direct Saudi shipment), which is a tangential nuance that does not meaningfully correct a misleading factual assertion for typical readers.",
+    "newDecision": true,
+    "newReasoning": "Step 1: the post claims the Kiswah was 'shipped to [Epstein] directly from Saudi Arabia', asserting that the gift originated solely from Saudi authorities to Epstein himself. Step 2: the note disputes the attribution, saying the piece was given by an Emirati official as part of the annual distribution of old Kiswah pieces—not a direct Saudi shipment. Step 3: substantive—different attribution/chain-of-custody that changes whether readers believe Saudi Arabia singled out Epstein. Step 4: Mashable article confirms the photograph shows Epstein with Emirati official Sultan Ahmed bin Sulayem and describes the piece as coming via UAE contacts, not direct Saudi shipment. All 4 steps pass.",
+    "flipped": "M_NOW_YES"
+  },
+  {
+    "url": "https://x.com/i/status/2039395207213670691",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post makes a clear factual claim that the woman in the video was killed by an Iranian missile in March and a family member inherited the house — neither claim is supported by any evidence. The research confirms the video is a recent TikTok dance by a living person, and the user comment from wf_oracle provides direct disconfirmation. Without the note, readers would be misled by a fabricated death story.",
+    "newDecision": true,
+    "newReasoning": "Step 1: the post claims the woman in the video was killed by an Iranian missile in March, and her family inherited the house. Step 2: the note disputes that claim by asserting she is alive and the video is a harmless TikTok. Step 3: substantive — the dispute is about life-and-death facts, not style. Step 4: research shows no such death report exists, and the TikTok creator's account shows active posts; the wf_oracle comment also confirms she is alive. This constitutes sufficient negative-claim evidence. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2024612128422793276",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post presents a real confrontation as fact, but the research confirms it's a staged prank. The note directly disputes the factual claim that the event actually happened, and is supported by strong evidence from multiple sources. Despite the apparent realism, no in-tweet disclosure exists, meeting the threshold for misleadingness.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post's claim is that a real incident occurred — a Muslim man confronted a woman on a bus for eating during his fast. Step 2: The proposed note disputes the authenticity of the video, asserting it was a staged prank. Step 3: This is a substantive dispute — misrepresenting a staged interaction as a real confrontation is a factual misidentification. Step 4: The research findings include a Daily Mail article confirming the video is a prank and a TikTok link to the original staged clip, providing adequate evidence. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2046782070840586266",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts that Fuentes took a quarter million dollars from the SPLC, which is a specific factual claim. The research finds no public evidence for this, and the SPLC has criticized Fuentes, not funded him. Multiple commenters are challenging the claim as baseless fabrication, showing meaningful misleadingness. The proposed note directly disputes the post's claim with clear evidence of absence, fitting the fabricated-quote or non-event exception.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post states 'this dude took a quarter mil from the SPLC', asserting that Nick Fuentes (identifiable from replies and context) took $250,000 from the Southern Poverty Law Center. Step 2: The proposed note disputes this, stating no public evidence exists that Fuentes was paid by the SPLC, and that his income comes from other sources. Step 3: Substantive — the claim is a fabricated attribution of a specific payment to a public figure, not a stylistic dispute. Step 4: Research findings include news coverage of the SPLC indictment and specific articles noting that claims about Fuentes being an SPLC informant are unproven, plus a source showing SPLC actively criticizing Fuentes, not funding him. This supports the negative claim. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2001327023839735928",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts a real, distressing event in Gaza. AFP directly identifies the exact video as AI-generated. Strong evidence exists; a typical reader could be misled. No in-tweet self-disclosure.",
+    "newDecision": true,
+    "newReasoning": "Step 1: the post asserts the video shows real flooding in Gaza affecting displaced children. Step 2: the note disputes that — claims it is AI-generated. Step 3: substantive — misidentified media (AI-generated footage presented as real). Step 4: AFP's fact-check specifically identifies this exact video as AI-generated. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2049702745783882104",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "Rule 2 (post accurate; note adds context rather than disputing a claim): the post's factual claim—that Bessent said the US seized $450 million in Iranian cryptocurrency—is confirmed by all research sources (which cite 'nearly $500 million'; $450 million is a rounding within the reported range). The proposed note merely appends the name of the operation and describes the campaign's scope, without disputing any assertion in the post.",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post claims Treasury Secretary Bessent said the US seized $450 million in Iranian cryptocurrency. Step 2: The note says \"Operation Economic Fury\" is a campaign targeting Iranian assets, but doesn't dispute the $450 million figure. Step 2 halt: The note does not contradict the Step 1 claim; it merely appends adjacent context about the name of the campaign, which is not in dispute.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/2004909604052889910",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "The post's factual claim about Minnesota's vouching law (up to eight voters, no ID/proof of residency required for the vouchee) is accurate. The proposed note adds context about safeguards (sworn oath, tracking, prohibition) but does not dispute any assertion in the post. This falls under Rule 2: post is accurate, note adds adjacent information rather than correcting a misleading claim.",
+    "newDecision": false,
+    "newReasoning": "Step 1: post claims Minnesota law allows a registered voter to vouch for up to eight others with 'No ID required. No proof of residency', implying the system is vulnerable to fraud. Step 2: note says vouching requires a signed sworn oath, vouched-for voters cannot vouch for others, and every instance is tracked — these are additional procedural safeguards, not a correction of the post's factual claim. Step 3 halt: the note doesn't dispute the core claim (vouching for up to eight with no ID/residency at point of receipt); it adds adjacent context about what the process actually entails, which is a stylistic reframing.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/2020558648716521763",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "Rule 2: The research confirms the email linked to King Charles's aide Peter Loughborough regarding royal protection officers at Epstein's home is real. The post's claim that the 'aide oversaw royal protection at Epstein Island' is a fair characterization of the news report—GB News, cited by the note itself, uses similar language. The proposed note adds nuance about the King's personal involvement but does not dispute a false literal claim in the post; it appends adjacent context.",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post claims the email shows a King Charles aide 'oversaw royal protection at Epstein Island' — asserting that an aide of King Charles personally oversaw security at Epstein's private island. Step 2: The note disputes that by saying the email is about Met Police protection officers staying at Epstein's home (not the island) and not about the King himself. Step 3 halt: The note's correction about the location (home vs. island) is substantive, but the dispute about whether the email shows the King himself oversaw protection is stylistic — the post claims an 'aide' oversaw it, not the King. The note primarily reframes the post's implication rather than contradicting a specific falsifiable claim in the post text itself. The core factual assertion — that a leaked email shows a King Charles aide connected to Epstein protection — is supported by the research findings (GB News, Politico). The note's disagreement about 'island' vs 'home' and 'King himself' vs 'his aide' is a matter of degree and framing, not a clear factual dispute.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/2002014744727728582",
+    "category": "FP",
+    "needsNote": "no",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post frames Karmelo Anthony as someone who 'defended himself against attackers,' omitting that he is charged with first-degree murder for fatally stabbing another teen at a track meet—a clear factual omission that over half of the comments already challenge. The note adds essential context to a verifiable claim that would mislead readers.",
+    "newDecision": false,
+    "newReasoning": "Step 1: the post claims that Karmelo Anthony defended himself against attackers and his trial is coming up in 2026, asking for support. Step 2: the note provides additional context about the charges and victim but does not dispute the post's primary claims. Step 3 halt: the note does not contradict any specific factual claim in the post — it merely adds information about the victim and exact trial date — so this is supplementary context rather than a correction.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2025496691588104274",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "The proposed note relies on 'appear to be genuine' speculation from a fan site, not strong evidence that directly disproves the post's claim that the account was 'pre-set by Microsoft'. The research findings show community debate is ongoing and unresolved—multiple outlets report the account looks suspicious. The note is hedged ('appear to be genuine') and does not meet the 'strong, direct evidence' standard required to dispute the factual assertion.",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post asserts that the achievements on Asha Sharma's Xbox account are pre-set by Microsoft as a PR account. Step 2: The note claims they appear genuine and that she voluntarily shared her gamertag after questions arose. Step 3: Stylistic halt — the dispute is about the interpretation/authenticity of the achievements, not a clear-cut factual error. The Windows Central source merely reports that she shared her gamertag and describes the achievements, but does not provide evidence proving the post's 'pre-set PR account' claim is false; it does not rule out the possibility of curation. The note restates a press narrative without evidence that contradicts the suspicious pattern described (all achievements from the same date, new account, rapid gamerscore). The research findings show the community debate is ongoing, with multiple outlets acknowledging the pattern is unusual. No source definitively proves the achievements were earned normally or disproves the PR account theory.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/2032514777663021439",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts wages are going up and prices are coming down. Official BLS data shows the opposite: real average hourly earnings declined 0.3% year-over-year, and CPI rose 3.8%. The note directly disputes a verifiable factual claim with authoritative primary sources. The highly engaged replies show widespread skepticism but the official account's unqualified claim is misleading without correction.",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post claims wages are going up and prices are coming down for American workers. Step 2: The note disputes this with BLS data showing real wages declined 0.3% and CPI rose 3.8% year-over-year as of April 2026. Step 3 halt — the dispute is substantive (factual disagreement on wage and price trends). However, the note is time-stamped to April 2026 while the post was made on March 13, 2026. The note uses data from after the post's publication date, which the author could not have known at time of posting. A note should correct claims based on information available at or before the post's timestamp, not future data that retroactively contradicts it. Therefore the note is inappropriate.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2041891972512936030",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post quotes an image claiming Ellen DeGeneres renounced her citizenship, was denied a passport, and was listed as an Antifa supporter. Although a small watermark reads 'NOTHING on this page is REAL,' multiple commenters are treating the story as real (e.g., 'I wish it was true... but no,' 'Hell awaits her kind,' 'We don't want that... pedophile in this country'). More than 20% of responding commenters are taking the claim as real or expressing hatred based on it, and the watermark alone is not sufficiently prominent to inform all viewers directly. The note directly disputes the image's fabricated claims using strong evidence from multiple fact-checkers, and the reader would be significantly misled without the correction.",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post quotes 'Cry me a River.' with a link to a quoted post that contains an image making several false claims about Ellen DeGeneres. The post does not assert those claims as true; it simply shares the image with a dismissive caption. Step 2 halt: The note says the image is fake and labeled as satire, which the post does not dispute. Since the post makes no factual claim itself (it's just sharing content with a rhetorical phrase), there is no claim for the note to correct.",
+    "flipped": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2018031751541526698",
+    "category": "FP",
+    "needsNote": "no",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post uses imagery and a caption that together assert Elon Musk sent emails begging to be invited to Epstein's island in a lewd, mocking tone. The proposed note directly disputes the authenticity of those specific fabricated emails, citing real Epstein correspondence that contains no such language. A typical reader would be misled into thinking these lewd invitations are genuine court-released documents.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post presents a satirical video as real, claiming that actual Epstein files show Elon Musk seeking to get invited to Epstein's island via emails with that mocking tone. Step 2: The proposed note correctly identifies the video as fabricated, and points out that the actual emails from DOJ releases are different. Step 3: This is a substantive dispute because the post misrepresents the content of official court documents. Step 4: The TIME article from the research findings confirms the real emails were about travel plans, not the mocking tone shown in the video. All 4 steps pass.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2011406203851833461",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post claims 800k voters were found 'improperly registered'—implying fraud. The note explains they are inactive records, not fraudulent, per the Oregon Secretary of State. A typical reader would be misled by the post's framing without correction, and the note directly disputes the implication using a primary source.",
+    "newDecision": true,
+    "newReasoning": "Step 1: the post claims 800k voters were found to be 'improperly registered to vote in Oregon' — the phrasing insinuates fraudulent or ineligible registrations. Step 2: the note disputes that, clarifying they are inactive records of people who moved or haven't voted, not fraudulent entries. Step 3: substantive — the post's framing is materially misleading, omitting the load-bearing qualifier 'inactive' which flips reader understanding from fraud to routine administrative cleanup. Step 4: the research findings include Oregon's own official statement describing these as 'inactive voter records', the Opeonlive article specifying they are 'people who have moved and not updated their address', and factually.co confirming they are 'outdated, inactive records separate from active registrants who receive ballots.' All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2014063733836828813",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post claims a nurse has been 'taken into custody.' Multiple news sources and the research findings report she was fired but provide no evidence of arrest or custody. The proposed note directly disputes that factual claim and is supported by absence-of-evidence (no credible arrest reports) for a verifiable non-event, satisfying the fabricated-events exception. A meaningful fraction of commenters (e.g., @unhealthytruth) already question the arrest claim, indicating confusion.",
+    "newDecision": true,
+    "newReasoning": "Step 1: the post explicitly asserts that Chanda Petrey Czaruck has been 'taken into custody'. Step 2: the note disputes that claim, saying there are no credible reports of an arrest and no record of one. Step 3: substantive — a claim that someone was arrested vs. the claim that they were not arrested is a classic factual dispute with real-world consequences; one comment notes 'Chanda has NOT been arrested' and police records confirm it. Step 4: Times Now coverage confirms she was fired but does not mention arrest; combined with the user comment citing court/jail records and the absence of any arrest-source in the provided research, the negative claim is adequately supported. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2015588241315950990",
+    "category": "FP",
+    "needsNote": "no",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post claims an official Like a Dragon 9 story trailer has leaked. The research confirms no such trailer exists—RGG Studio has not announced the game, and the cited Gematsu source shows the January 2025 Direct featured only the Pirate Yakuza spin-off. The note directly disputes the post's core factual claim that this is official/real leaked footage. The playful framing doesn't override the clear assertion. A reader could be meaningfully misled into believing an official leak occurred.",
+    "newDecision": false,
+    "newReasoning": "Step 1: the post says 'the first official Like a Dragon 9 story trailer has seemingly leaked online' — the claim is that this is the leaked official trailer. Step 2 halt: the note says it's 'fan-made footage set to a fan song, not an official trailer,' and that RGG hasn't announced Like a Dragon 9. But the post already hedges with 'seemingly' and credits the source as 'Via: @IGN' — the IGN watermark is visible in the video. The research findings do not include any source (such as RGG studio, IGN, or a fact-checker) that actually states this footage is fan-made. The cited source (Gematsu) only discusses an unrelated January 2025 direct for Pirate Yakuza in Hawaii; it says nothing about the video in the post or whether it's fan-made. The note's claim that the video is fan-made is completely unsupported by the research findings — no evidence is provided to substantiate that assertion.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2055854792191385800",
+    "category": "FP",
+    "needsNote": "no",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post suggests a player who feigned injury to skip IPL and instead play county cricket, but the video shows his twin brother Craig Overton (who plays county cricket for Somerset)—not his injured twin Jamie Overton, who was ruled out of the IPL. The note directly disputes that implication with strong evidence, and without it a typical reader would be misled about the claim that the player who participated in county cricket was the same one who pulled out of the IPL.",
+    "newDecision": false,
+    "newReasoning": "Step 1: the post insinuates that Jamie Overton faked an injury to play county cricket. Step 2: the note claims the player is Craig, not Jamie. Step 3 halt — stylistic: the comment section overwhelmingly shows that readers are already aware it's Craig Overton (top replies explicitly correct the mistaken identity and recognize it as sarcasm), so the note adds no new information to the audience. The dispute is about fan inside-baseball trivia, not a material misrepresentation that misleads readers beyond what the replies already resolve.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2012558410122670331",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts a false factual claim—that the video shows Zelenskyy and Macron before they became presidents. All research confirms the footage is AI-manipulated: Zelenskyy's face was superimposed, and Macron scenes are deepfakes from 1980s nightclub footage. The author's 'satire' bio disclaimer is ambiguous and counterbalanced by the fact that a large majority of replies (roughly 10 of 11 sampled) treat the video as real, with none recognizing it as fake. Thus, the note directly disputes the post's core factual claim with strong evidence, and a typical reader would be meaningfully misled without it.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post asserts that the video shows real footage of Zelenskyy and Macron before they became presidents. Step 2: The note disputes this by claiming the footage is AI-manipulated (deepfake/manipulated). Step 3: Substantive — this is a claim about the authenticity of media, which is a factual dispute. Step 4: The research findings include two primary sources that directly support the note: one from Yahoo/Newsweek stating the Zelenskyy belly dance clip is a fake superimposition, and one from Reuters stating the Macron scenes are a deepfake from 1980s nightclub footage. Both sources are cited and are acceptable evidence. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2046250034262647232",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "Rule 2: The post emotionally characterizes the video as showing what 'many Service People come back to,' but the proposed note does not directly dispute that claim—it adds context about the man not being a veteran and the responders being crisis team rather than military. However, the research provides no strong, direct evidence establishing the identities shown. The absence of evidence in the research is not enough to support the note's assertions, and the note thus constitutes adjacent context rather than a correction of a clear falsehood.",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post claims the video shows a returning service member (veteran) who is suffering and alone after coming back from service. Step 2: The note disputes that the man is a veteran and that the tactical-gear people are military. Step 3 halt — the dispute is stylistic, not substantive. The post says 'many Service People come back to this' and 'the sacrifice is real'; the top comments overwhelmingly accept the video as depicting a PTSD episode in a veteran. However, the note's central factual challenge ('no evidence the man is a veteran') is a negative claim that the note's cited sources (which are empty) do not support. The research findings do not identify the man or provide evidence that he is not a veteran; they only show tangential, unrelated stories. Therefore, the substantive dispute is unsupported.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/2034073867401240608",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post makes a clear false factual claim that three named individuals died. The note directly disputes this with multiple primary-source debunks; with 22k+ likes and many commenters clearly taking the claim as real, readers would be meaningfully misled without the correction.",
+    "newDecision": true,
+    "newReasoning": "Step 1: the post claims Benjamin Netanyahu, Iddo Netanyahu, and David Barnea died in an attack on March 9, 2026. Step 2: the note disputes all three—says they are alive, no credible sources confirm deaths. Step 3: substantive—different event/outcome (death vs alive). Step 4: research findings include Snopes debunking Netanyahu's death, a fact-check on Iddo's death rumors, and Times Now stating Barnea remains active—all supporting the note. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2004901730430189831",
+    "category": "FP",
+    "needsNote": "no",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post makes a verifiable factual claim about the video's content (farmer confronted by children dressed as his dead brother) which is false. The note directly disputes that claim with strong evidence identifying the actual event. Despite some commenters recognizing it as a meme, a meaningful number are taking the post's false framing seriously, and there is no in-tweet self-disclosure, so the note should be published.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post claims the video shows a French TV show confronting farmer François Lavigne with 36 singing children dressed as the brother he killed in a drink-driving accident. This is a factual claim about the video's content. Step 2: The note disputes the claim, stating it shows singer Serge Gainsbourg being honored by a children's choir in 1988. Step 3: Substantive — misidentified media. Step 4: Research findings confirm the video is from a 1988 tribute to Serge Gainsbourg; multiple sources (Stereogum, Know Your Meme, Chartsinfrance) describe the actual event. The hoax description has been debunked. All 4 steps pass.",
+    "flipped": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2020297543721312361",
+    "category": "FP",
+    "needsNote": "no",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post asserts Messi 'scored against Barcelona' in a way that a typical reader would understand as FC Barcelona, but the opponent is an Ecuadorian club sharing that name, and the goal occurred in a friendly. Without the correction, many readers would be meaningfully misled about the significance of the event. The note directly disputes a clear factual implication of the post and is supported by strong evidence.",
+    "newDecision": false,
+    "newReasoning": "Step 1: the post's claim is that Lionel Messi scored against Barcelona — a true statement (he scored against Barcelona SC). Step 2: the note clarifies that the opponent is Barcelona SC of Ecuador, not FC Barcelona. Step 3 halt — this is already disclosed in the top comment (DawgsHQz) with 547 likes, is obvious from the visible scoreboard text 'BSC 0-0 MIA 30:40' in the video itself, and the note adds no new information beyond what any reasonable reader already sees.",
+    "flipped": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2048712783483879812",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "Rule 2: The post makes sweeping, unsupported claims about ivermectin with no pretense of authority (it's from a pharmacy promoting sales). The proposed note merely adds contextual facts about FDA approval and early-stage research. It does not directly dispute any specific factual assertion in the post that a typical reader would be misled by—the post is already transparent in its promotional and hyperbolic nature.",
+    "newDecision": false,
+    "newReasoning": "Step 1: post claims ivermectin 'cures Parkinson's' and 'cures cancer very quickly' — these are specific false medical efficacy claims. Step 2: note disputes that — says ivermectin is 'not approved' for those conditions and research is still preclinical. Step 3: substantive — false medical claims are always substantive. Step 4 halt: the research findings confirm ivermectin is not FDA-approved for COVID-19, Parkinson's, or cancer, and that research is preclinical — but the note's cited sources do not directly support the 'cures cancer very quickly' debunk; the FDA source only covers COVID-19, the PubMed study is preclinical research on Parkinson's (not a cure), and the NCI trial page is preclinical. The findings show preclinical studies exist, which the note's oversimplification ('not approved for...cancer') is supported by the NCI preclinical trial page. However, the note says 'not approved for Parkinson's or cancer' — the findings do show FDA has not approved ivermectin for those conditions (only for parasitic infections). The FDA source covers COVID-19; the NCI page confirms preclinical status; the PubMed study does not claim approval. So evidence exists for the 'not approved' claim. But the note omits that ivermectin is FDA-approved for parasitic worms and topical use — that's not a correction of the post but additional context. The core problem: the note adds context about approval status but doesn't contradict the post's specific claim that ivermectin 'cures' these diseases — it merely says 'not approved,' which is true but doesn't address the efficacy claim. The findings show preclinical promise, not a 'cure.' The note fails Step 4 because it doesn't cite a source that directly says 'ivermectin does not cure Parkinson's or cancer' — it only cites approval and preclinical status. The mismatch between the post's causal claim and the note's approval-status correction means the note doesn't truly dispute the claim.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/2019501956482367716",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post makes a clear factual claim by cryptically suggesting Jeffrey Epstein was recently spotted alive in Tel Aviv. Multiple fact-checkers confirm the image is AI-generated and bears a Gemini AI watermark in the uncropped version. The proposed note directly disputes the post's implication with strong evidence from authoritative sources (Reuters, Yahoo/Full Fact), and many commenters (≥20%) are sincerely 'taking it as real' rather than recognizing the fakery. A typical reader would be misled without the correction.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post claims a person spotted in Tel Aviv with security is Jeffrey Epstein, implying he is alive and recently sighted. Step 2: The note disputes this, stating the image is AI-generated and Epstein died in 2019. Step 3: Substantive — a fabricated claim that a dead person is alive and sighted, supported by multiple top replies treating the claim as real. Step 4: Multiple fact-checkers (Reuters, Yahoo News, Full Fact, PolitiFact) confirm the image is AI-generated and Epstein died in 2019, providing direct evidence. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2014434985046921417",
+    "category": "CORRECT",
+    "needsNote": "yes",
+    "iter3Decision": true,
+    "iter3Reasoning": "The post presents a fabricated quote as genuine, attributed to a named real public figure (Donald Trump) from a specific source (People Magazine, 1998). Multiple authoritative fact-checkers (People, Reuters, AP, Snopes, Newsweek) confirm the quote is fabricated, meeting the 'fabricated quote' exception for absence-of-evidence evidence. A meaningful fraction (≥20%) of commenters treat the claim as real (e.g., repeating belief in the quote) rather than recognizing it as fake. The note directly disputes a clear factual claim in the original post and provides direct evidence. Without the note, a typical reader could be misled.",
+    "newDecision": true,
+    "newReasoning": "Step 1: The post asserts that Donald Trump said 'If I were to run, I'd run as a Republican. They're the dumbest group of voters in the country...' in a 1998 People Magazine interview. The image text explicitly attributes the quote to him. Step 2: The proposed note directly disputes this claim, stating Trump never said this and People Magazine has no record of it. Step 3: The dispute is substantive — it's about a fabricated quote falsely attributed to a named public figure, not a stylistic or trivial disagreement. Step 4: The research findings include multiple credible fact-checkers (People Magazine itself, Reuters, AP News, Snopes) confirming the quote is fake. All 4 steps pass.",
+    "flipped": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2013275340064395642",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "Rule 1: the post frames the video neutrally ('a video said to be from Iran shows... The footage suggests that...'), making no outright factual assertion about what happened. The note tries to supply clarifying context, not to correct a false claim, and its single Instagram source is a weak secondary link lacking any authoritative fact-check.",
+    "newDecision": false,
+    "newReasoning": "Step 1: The post claims the video shows a teacher crying because 'many of his students may no longer be alive', implying the video depicts a mass-casualty event. Step 3 halt: the note does not dispute the date or the core event—it only clarifies the number of students lost (one vs. many). This is a stylistic quibble over a subjective interpretation of implied severity, not a verifiable factual correction. The note concedes the video is real and the teacher is crying over a student's death, so it does not contradict any concrete factual claim in the post.",
+    "flipped": "M_STILL_NO"
+  },
+  {
+    "url": "https://x.com/i/status/2027825363460473205",
+    "category": "MISSED",
+    "needsNote": "yes",
+    "iter3Decision": false,
+    "iter3Reasoning": "Rule 2: the proposed note does not actually dispute the post's claim; instead, it affirms Fuentes's assertion by citing the same Wesley Clark allegation, which is the post's central evidence. The note adds adjacent sourcing and slightly reframes the claim but does not correct any misstatement in the post.",
+    "newDecision": false,
+    "newReasoning": "Step 1: post claims Israel 'orchestrated all of these wars in order to eliminate their rivals and gain total hegemony over the Middle East' — a factual claim about Israel's motives and actions. Step 2: note does not dispute that claim. Instead of correcting a false assertion, the note endorses the post's substance ('Israel has long pursued destabilizing Iraq, Syria, and Iran. Fuentes repeats this claim'), then provides supporting context. Step 2 halt: note doesn't contradict the Step-1 claim; it affirms and elaborates on it.",
+    "flipped": "M_STILL_NO"
+  }
+]

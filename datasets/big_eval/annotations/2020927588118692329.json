@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2020927588118692329",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "fake_dubbed_translation_meme",
+  "tweet_summary": "Scott Lincicome (Cato Institute VP focused on trade, well-known Jones Act critic) tweets 'OMG he did it. He really did it! (Turn captions on)' over a Bad Bunny Super Bowl halftime show clip with fake/joke captions translating his Spanish lyrics as a Jones Act critique.",
+  "why_note_decision": "This is a transparent in-joke from a Jones Act policy wonk. The original Bad Bunny halftime show (Feb 8, 2026) did NOT mention the Jones Act — Bad Bunny's actual lyrics are 'Tití me preguntó si tengo mucha novia...'. Lincicome added joke captions pretending the lyrics were about Puerto Rico's Jones Act burdens. Top replies confirm: 'Crazy, who knew he was so woke?' (sarcasm), 'As a Spanish speaker I confirm the translation as accurato' (joke), 'El Cabotaje! That's my favorite Bad Bunny track' (in-joke), 'You have to be resilient on this app to know what's really real'. The 'AI-generated video' framing in the original note is also factually wrong — it's the real halftime broadcast with fake captions, not AI video. Note is doubly wrong AND it's a joke.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The post is a Jones Act in-joke from Cato's Scott Lincicome — fake/joke captions overlaid on a real Bad Bunny halftime clip, parodying a wonkish trade-policy line. The video is NOT AI-generated (it's the real broadcast with edited captions), and Bad Bunny did NOT mention the Jones Act on stage, but the audience is in on the bit (top replies are all jokes). Reject any literal debunk; especially reject any 'this is AI' claim — the video is real footage with joke captions.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is an AI-generated video; Bad Bunny did not mention the Jones Act during his Super Bowl halftime show. https://x.com/scottlincicome/status/2020946765332218322 https://www.youtube.com/watch?v=G6FuWd4wNd8",
+    "failure_reason": "incorrect_misclassified_ai_AND_pedantic_on_joke",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satirical_no_real_claim",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Super_Bowl_LX_halftime_show",
+      "https://www.foxsports.com/stories/nfl/2026-super-bowl-halftime-show-who-performing-time-more"
+    ],
+    "notes": "Real Bad Bunny halftime footage with joke captions added by Lincicome (a Cato trade-policy commentator). Not AI; not a sincere claim."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "~2.6M impressions; the original note actively mis-labels real footage as AI, which is a worse failure than the joke itself. Pipeline learning: don't fabricate an AI-generation claim, and recognize wonkish in-jokes."
+  },
+  "difficulty": "hard"
+}

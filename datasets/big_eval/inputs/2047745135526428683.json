@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2047745135526428683",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:46.316Z",
+  "post": {
+    "id": "2047745135526428683",
+    "author_id": "1902353292883021826",
+    "created_at": "2026-04-24T18:31:00.000Z",
+    "text": "WATCH: Graph shows H-1B visa holders legally migrating to the United States.\n\nhttps://t.co/wHaPWyQtLD",
+    "media": [
+      {
+        "media_key": "13_2047532377078177793",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2047532377078177793/img/ozip0umzUJeI3Q5w.jpg",
+        "height": 1080,
+        "width": 1080,
+        "duration_ms": 19500,
+        "view_count": 1245033,
+        "variants": [
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2047532377078177793/pl/dp344V0A1MAX7ahC.m3u8"
+          },
+          {
+            "bit_rate": 1280000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047532377078177793/vid/avc1/720x720/uBX10tSHJajYB-02.mp4"
+          },
+          {
+            "bit_rate": 8768000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047532377078177793/vid/avc1/1080x1080/ypP1T7SttdBRRwEP.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047532377078177793/vid/avc1/540x540/0wyrHYpxpmg87bWf.mp4"
+          },
+          {
+            "bit_rate": 432000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047532377078177793/vid/avc1/320x320/sMLipI6mRc-q4YiC.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 207,
+      "reply_count": 157,
+      "like_count": 1233,
+      "quote_count": 28,
+      "bookmark_count": 449,
+      "impression_count": 930292
+    },
+    "author_followers": 604802,
+    "author_name": "Donald J Trump Posts TruthSocial",
+    "author_description": "Independent digital media outlet covering global news and current affairs, doing analysis and commentary. Not affiliated with President Trump.",
+    "author_tweet_count": 6529
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2047532377078177793/vid/avc1/1080x1080/ypP1T7SttdBRRwEP.mp4",
+          "description": {
+            "description": "A series of infographic maps illustrating the cumulative number of H-1B visa workers in the United States from 2016 to projected 2025. Each frame displays a map of the US populated with colored dots representing workers from various countries of origin, with India being the most prominent. Sidebars and tables track the growth, showing a sharp increase from 812,775 workers in 2016 to a projected 5,152,824 in 2023 and 6,932,647 by 2025.",
+            "ocrText": "LAYOFFHEDGE; H-1B Visa Workers into the United States; Each figure represents ~292 H-1B LCA filings; DOL LCA x USCIS country-of-birth shares, FY2015 -> FY2025; INDIA 74.2%; CHINA 8.2%; S. KOREA 1.0%; PHILIPPINES 1.1%; TAIWAN 0.60%; MEXICO 0.60%; CANADA 1.0%; UK 0.60%; PAKISTAN 0.50%; BRAZIL 0.40%; VIETNAM 0.00%; JAPAN 0.40%; GERMANY 0.40%; FRANCE 0.50%; NEPAL 0.40%; OTHER 8.0%; CUMULATIVE H-1B WORKERS - 2015 -> 2016; 812,775; TOP ORIGINS - CUMULATIVE; India 580,345; Other 84,865; China 75,241; Philippines 9,624; S. Korea 9,041; 2016; 3,052,499; 2019; 5,152,824; 2023; 6,932,647; 2025; LAYOFFHEDGE.COM"
+          },
+          "transcription": "(transcription failed: Command failed: ffmpeg -i \"/var/folders/n4/l4rh4y3n4lz2b0h3p52h20240000gn/T/cn-gemini-1779721048726-)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @AIHernz25: So what’s wrong with “legally” migrating? Native American indians didnt invite u either. (Likes:49, Reposts:1, Quotes:0, Replies:1, Bookmarks:0, Views:3862)\n- @bhanubonu: This can't be True. USCIS approve 85k new h1b every year.  At max, you would see 1 million over last 11 years. Even if you're accounting for h4, it would still under 3 million. (Likes:46, Reposts:4, Quotes:0, Replies:0, Bookmarks:0, Views:11487)\n- @Grooovy718: No problem by selling american lives and taxes to Bibi \n\nBut deflecting it to show problem is LEGAL MIGRATION with a CAP in place \n\nBravo (Likes:17, Reposts:0, Quotes:0, Replies:2, Bookmarks:0, Views:4376)\n- @geraldlee193: American companies‘ indian manager love their fellow villager😂 (Likes:13, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:2976)\n- @caspereux: please donny (Likes:7, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:3732)\n- @cheerssmiling: Why one side is shown what about growth and benefits derived  from services (Likes:5, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:3120)\n- @thinktited01: I agree with many trump policy but I support h1b visa to have high tech talents in USA. (Likes:5, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:4563)\n- @IamDilluu: (Likes:5, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:276)\n- @skirfanindia: Stop This Pathetic Fear-Mongering These H-1B Workers Are Highly Skilled Professionals Not The Threat You Portray Them To Be US Companies Would Collapse Without Indian Talent Youre Happy To Take Their Tax Money And Labor But Use Them as Scapegoats For Your Political Games Shameful (Likes:4, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:103)\n- @rogfur_: Take a Look how 73% of them are from India, a shithole country that doesn’t even have a restroom. If people don’t realize the fraud and scamming going on by now, they’ll never forever. (Likes:4, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:3156)",
+    "warnings": []
+  }
+}

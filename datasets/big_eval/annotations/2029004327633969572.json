@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2029004327633969572",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quote-tweet of a recursive/fractal-style image of nested 17-square packing patterns; caption: 'believe it or not, this is the most efficient way to pack 298 squares into a container'. Account bio: 'just here to have fun in the replies'.",
+  "why_note_decision": "Transparent meme/joke based on the well-known asymmetric 17-square packing meme (the underlying real math result). The '298' is intentional absurd humor — top replies confirm: 'Assuming the \"298\" is a typo and the picture actually shows exactly 289 squares, the most efficient way to pack them would just be a simple 17×17 grid', 'Bro thinks 17 * 17 is 298💀', 'this one is maddening because it really feels like we should have figured it out without a computer'. The fractal image is itself a joke/recursive riff. The note pedantically corrects to '17, not 298' — but no sincere mathematical claim is being made; the joke depends on the absurd number. Classic note-not-needed false positive on math humor.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The tweet is a joke/meme riffing on the well-known asymmetric 17-square packing problem; the '298' is intentional absurd humor (the image shown is recursive/fractal). Top replies explicitly engage with the joke ('Bro thinks 17*17 is 298', etc.). Reject any literal '17 squares, not 298' debunk.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is the best known packing of 17 unit squares into the smallest enclosing square, not 298. https://kingbird.myphotos.cc/packing/squares_in_squares.html https://erich-friedman.github.io/papers/squares/squares.html",
+    "failure_reason": "note_not_needed_joke",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "satirical_no_real_claim",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Square_packing",
+      "https://erich-friedman.github.io/papers/squares/squares.html",
+      "https://knowyourmeme.com/memes/17-squares-in-a-larger-square"
+    ],
+    "notes": "Underlying result (best-known 17-square packing) is real. Tweet's '298' is a joke; readers are in on it."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Math-twitter humor; ~460k impressions. Pipeline learning: meme math posts with absurd numbers aren't misinformation to correct."
+  },
+  "difficulty": "easy"
+}

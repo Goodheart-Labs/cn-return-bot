@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2029196297534890195",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports", "joke_or_satire"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A 49ers/NFL fan account posts a photo of a person with dwarfism at a Hertz airport counter, captioned 'Kyler Murray spotted at Minneapolis-Saint Paul International Airport' — an ongoing 'short Kyler Murray' joke about the Cardinals QB's 5'10\" height.",
+  "why_note_decision": "This is an overt, recurring sports-fan joke — 'short Kyler Murray' memes are a well-known running gag and every top reply treats it as a joke ('Of course he's on a screen again', 'You win the internet today'). Literally treating the photo as a misattribution and 'correcting' it is exactly the false-positive trap.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an obvious joke meme — fact-checking it as a literal claim that the pictured person is Kyler Murray is a false positive that the community heavily rated notHelpfulNoteNotNeeded (13 NNN). A correct bot recognizes the recurring 'short Kyler Murray' meme format and declines.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The photo does not show Kyler Murray and is an old image from 2023 used in memes falsely claiming he was spotted at airports.",
+    "failure_reason": "joke_or_meme: literal-mindedly fact-checks an obvious recurring sports meme",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious joke; no reasonable reader thinks this person is Kyler Murray",
+    "sources_checked": [
+      "https://wahup.com/blogs/meme-blogs/kyler-murray-short-meme-explained",
+      "https://www.tiktok.com/discover/kyler-murray-airport-meme"
+    ],
+    "notes": "The 'short Kyler Murray' meme is widely documented; commenters explicitly engage with it as humor."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "sports humor with no stakes for EA/progress/safety"},
+  "difficulty": "easy"
+}

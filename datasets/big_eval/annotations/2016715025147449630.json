@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2016715025147449630",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "overhyped_research_or_product"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Viral tweet (45M views, 689K likes) introducing Mariano Barbacid as the scientist who 'may have discovered the cure for pancreatic cancer,' with a portrait and a fluorescence-microscopy image.",
+  "why_note_decision": "This is an overhyped-research case that DOES need a note. The tweet's 'may have discovered the cure' framing dramatically overstates a mouse-only preclinical result, and 45M views is exactly the scale where the correction matters. The original note says the right thing (triple therapy eliminated tumors in mice, no human trials), and the PNAS paper is real — but a critical new fact has emerged that the original note doesn't include: the PNAS paper was retracted on April 27 2026. A correct note today must (a) frame this as mouse-only preclinical work, NOT a discovered cure, AND (b) flag the retraction, since the underlying paper is no longer in the scientific record. The original was rated NOT_HELPFUL with NoteNotNeeded dominant (72), but in this case raters were wrong — the topic is wildly overclaimed at 45M views and the bridging tone of the original isn't bad, it's just become out-of-date due to the retraction (which post-dated most rating activity).",
+  "judge_guidance": "PASS the note ONLY if it (a) clearly states results were in MICE / preclinical, not humans, (b) clearly states this is NOT an approved cure for pancreatic cancer, and (c) for top marks, mentions that the underlying PNAS paper was retracted (April 2026). FAIL notes that say 'this is just a normal scientific discovery' or that affirm the cure framing. FAIL notes that come across as snarky or that attack the researcher personally — he is a legitimate cancer scientist with major prior contributions. Bridging tone is required (the tweet shares real excitement about a real lab's real attempt; the note should preserve that while puncturing the 'cure' claim).",
+  "reference_note": "This was a mouse-only preclinical study, not a cure. A CNIO team led by Mariano Barbacid reported that a triple-drug therapy fully eliminated pancreatic tumors in mice; no human trials have started. The underlying PNAS paper was retracted on April 27, 2026. https://www.pancreaticcancer.org.uk/news-and-blogs/new-combination-of-drugs-shown-to-effectively-treat-pancreatic-cancer-in-mice/ https://www.pnas.org/doi/10.1073/pnas.2523039122",
+  "original_unhelpful_note": {
+    "text": "Mouse preclinical study: Triple therapy completely eliminated pancreatic tumors in models, no relapse, well tolerated. Results are in mice only—no human trials started. https://www.pnas.org/doi/10.1073/pnas.2523039122 https://timesofindia.indiatimes.com/science/spanish-scientist-finds-cure-for-pancreatic-cancer-in-major-medical-breakthrough/articleshow/127714543.cms https://www.ndtv.com/feature/scientists-cure-pancreatic-cancer-in-mice-without-major-side-effects-10907198",
+    "failure_reason": "Missing key points: the substantive correction (mouse-only, no human trials) is right, but the note is terse, doesn't soften the 'cure' framing for a 45M-view tweet, and (now) misses the April 2026 retraction of the PNAS paper. Raters tagged NoteNotNeeded heavily — likely because the bridging tone was poor.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "real_preclinical_result_overhyped_paper_retracted",
+    "sources_checked": [
+      "https://www.cnio.es/en/news/the-group-led-by-barbacid-at-cnio-completely-eliminates-pancreatic-tumours-in-mice-with-no-resistance-developing/",
+      "https://www.pnas.org/doi/10.1073/pnas.2523039122",
+      "https://www.pancreaticcancer.org.uk/news-and-blogs/new-combination-of-drugs-shown-to-effectively-treat-pancreatic-cancer-in-mice/",
+      "https://www.newsweek.com/did-scientists-find-pancreatic-cancer-cure-what-to-know-about-breakthrough-11439577"
+    ],
+    "notes": "Barbacid's CNIO group reported elimination of pancreatic tumors in mouse models using daraxonrasib + afatinib + SD36 triple therapy. No human trials. PNAS retracted the paper on April 27, 2026 — CNIO's own news page now notes the retraction. The 'cure' framing is unsupported."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Health-science overhype at 45M views; correcting cancer-cure misinfo is high-value EA/progress-aligned territory."
+  },
+  "difficulty": "medium"
+}

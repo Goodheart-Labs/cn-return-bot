@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2033748974104932849",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:34.874Z",
+  "post": {
+    "id": "2033748974104932849",
+    "author_id": "410409666",
+    "created_at": "2026-03-17T03:35:15.000Z",
+    "text": "Gengar is the perfect Pokémon.\n\nHe’s essential to every trainer’s starting 6, with a versatile and unpredictable moveset. \n\nIf he’s taken damage? Hypnosis —&gt; Dream Eater will put your opponent to sleep, suck their HP, and replenish yours. With the right trainer, he can’t be https://t.co/CyiJD6oJNK",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2033562154381553696"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2033562154381553696",
+      "author_id": "1362467141505712130",
+      "created_at": "2026-03-16T15:12:54.000Z",
+      "text": "why is every man’s favorite pokemon gengar? 😭 \n\ncan someone explain this phenomenon to me please",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 244,
+      "reply_count": 1651,
+      "like_count": 4847,
+      "quote_count": 2284,
+      "bookmark_count": 1066,
+      "impression_count": 8005287
+    },
+    "author_followers": 6392848,
+    "author_name": "Logan Paul",
+    "author_description": "Artist, Boxer, Wrestler — Founder @PrimeHydrate — Host @IMPAULSIVE podcast",
+    "author_tweet_count": 11529
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@M1das_OW2**: you deadass just asked chatgpt what the best pokemon was and just copy pasted it for the tweet (Likes: 40724)\n- **@Tha_Row**: Nice ChatGPT bro, but 1 Psychic and that nigga is dead (Likes: 8411)\n- **@Mikkel91893769**: \"Immune to normal, fighting and ground\" 😭 (Likes: 5229)\n- **@harrynotaverage**: larp larp larp sahur (Likes: 3879)\n- **@Lucky1998_**: chatgpt doesn't even know gengar doesn't have levitate anymore (Likes: 2984)\n- **@Th3birdman15**: And then my Bisharp Sucker Punches him and he dies before he could do anything. “Can’t be killed” and “immune to Ground” 😂😂😂😂 Stop using A.I. clown (Likes: 2728)\n- **@LeonardDonalds**: Holy AI post, at least tell it to \"act like an expert\", \"write like a human\" and last but not least \"make no mistakes\" (Likes: 2623)\n- **@cecililytweets**: it would be lovely to see you actually try to play a single pokemon game and see the look on your face when your gengar faints immediately to an earthquake (Likes: 2036)\n- **@HaydunnOfficial**: Bro really asked chat gpt to write an essay about gengar but make it all wrong (Likes: 1726)\n- **@CrubTV**: \"chatgbt, make epic pokomon encyclopieda entry\" (Likes: 1355)",
+    "warnings": []
+  }
+}

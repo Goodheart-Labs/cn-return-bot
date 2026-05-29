@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1990582306810310886",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:58.423Z",
+  "post": {
+    "id": "1990582306810310886",
+    "author_id": "763094579491008512",
+    "created_at": "2025-11-18T00:46:19.000Z",
+    "text": "🚨 SIMPLE: If you're a furry, you are mentally ill.\n\nThere is no other way to look at it.\n\nhttps://t.co/zP6zvuSwUb",
+    "media": [
+      {
+        "media_key": "13_1990556413123313664",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1990556413123313664/img/0onWIoV1xdz6P9p3.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 33156,
+        "view_count": 442679,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1990556413123313664/vid/avc1/320x568/EbgYh95oJ9sUTHy8.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1990556413123313664/vid/avc1/480x852/6YeVq3VrB1u8g6i1.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1990556413123313664/vid/avc1/720x1280/5vDVjRLwobSZC1rT.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1990556413123313664/pl/dSXmXJYvFfJyDwKx.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 505,
+      "reply_count": 561,
+      "like_count": 4347,
+      "quote_count": 170,
+      "bookmark_count": 106,
+      "impression_count": 268790
+    },
+    "author_followers": 1108150,
+    "author_name": "Eric Daugherty",
+    "author_description": "Chief Content Officer @RightLineNews @FLVoiceNews | Marylander-turned-Floridian | Politics & breaking news alerts | “Men must vote” - Charlie Kirk",
+    "author_tweet_count": 86526
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1990556413123313664/vid/avc1/720x1280/5vDVjRLwobSZC1rT.mp4",
+          "description": {
+            "description": "A person wearing a purple, blue, and yellow canine-style fetish mask is seen sitting at a table in a restaurant with a plate of French toast. The individual picks up a fork and proceeds to rub the French toast against the snout of the mask before rubbing it onto the head area of the mask. An overlay text reads 'Mental Illness Crisis'.",
+            "ocrText": "Mental Illness Crisis\n@YOURDAILYDOSEOFKRINGE"
+          },
+          "transcription": "Wooooo! Woo! Woo! Woooo! Woo! Woo! Woo! Woo! Woo! Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@LibsofFurry**: (image reply, no text)  \n  Likes: 732 | Reposts: 0\n\n- **@starseeker1334**: Not a furry A BDSM fetishist Bother to do 5s of internet culture due diligence, mr Florida Man  \n  Likes: 405 | Reposts: 3\n\n- **@naffy37**: That’s not a furry. Furries have enough issues without being lumped in with the pup hood people.  \n  Likes: 345 | Reposts: 0\n\n- **@NoonTheWolf**: Fursuits > puphoods  \n  Likes: 250 | Reposts: 0\n\n- **@waffer_bunny**: Eric you are a fucking minging retard  \n  Likes: 169 | Reposts: 0\n\n- **@sevski007**: That's straight up just not a furry  \n  Likes: 149 | Reposts: 0\n\n- **@GuntherEagleman**: It’s a mental illness. A sick one.  \n  Likes: 142 | Reposts: 0\n\n- **@TheBonkMaykr**: Not a furry. Pup hood. Learn the difference before you start throwing us under the bus, thanks.  \n  Likes: 141 | Reposts: 0\n\n- **@NeroFox_**: that aint a furry bru, thats pup gear part of the BDSM fetish. and furry aint a fetish fyi.  \n  Likes: 130 | Reposts: 0\n\n- **@RealKodiTheFox**: I hate to break it to you Eric but this isn’t a furry this is bdsm pup play Please for the life of me get it right before you try and conflate the two? Just use google man it’s free  \n  Likes: 96 | Reposts: 0",
+    "warnings": []
+  }
+}

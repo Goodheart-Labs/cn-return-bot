@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2027530524521107559",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_irrelevant_sources",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "staged_or_scripted_content",
+    "celebrity_entertainment_sports"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "wry_commentary_on_real_event",
+  "tweet_summary": "A small true-crime account posts 'Just another day in Tucson' over a video of a man with a camera/tripod photographing a posing woman in the desert; the audio says 'we're gonna find nancy and get that million dollar reward.'",
+  "why_note_decision": "No note is warranted, and the original note is itself inaccurate. The clip depicts a REAL incident: amid the Feb 2026 disappearance of Nancy Guthrie (mother of Savannah Guthrie) in Tucson, content creators/streamers descended on the scene, and one streamer did a provocative photoshoot near the location \u2014 widely reported and criticized by other streamers. The tweet asserts no checkable falsehood; 'Just another day in Tucson' is wry commentary on a genuine, documented event. The original note claims the video is a 'staged photoshoot' with 'no local news reports confirm[ing] such an incident in Tucson' \u2014 but the photoshoot/streamer circus did happen and WAS reported, so the note both misframes a real event as fabricated and cites only generic local-news homepages (irrelevant sources).",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet makes no false factual claim \u2014 it is wry framing ('Just another day in Tucson') over a video of a real content-creator photoshoot tied to the Nancy Guthrie disappearance. Any note asserting 'no such incident occurred in Tucson' or that the video is fabricated/AI must FAIL: the streamer photoshoot near the scene is real and was reported. A note pedantically labeling it 'staged' is also a false positive \u2014 it is commentary, not misinformation. Treat as note-not-needed.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video depicts a staged photoshoot with visible tripods, cameras, and props; no local news reports confirm such an incident in Tucson. https://tucson.com/news/local/crime-courts/ https://www.kold.com/ https://www.kgun9.com/",
+    "failure_reason": "Rated notHelpfulIrrelevantSources (4), low volume (9). The note cites three generic local-news homepages (no specific article) \u2014 useless as evidence. Worse, it asserts 'no local news reports confirm such an incident,' which is false: the clip shows a real content-creator photoshoot near the Nancy Guthrie disappearance scene, an event covered by outlets like The Mirror. The note debunks a non-claim and misframes a real event as unverified.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "wry commentary on a real event; no checkable falsehood",
+    "sources_checked": [
+      "https://www.themirror.com/entertainment/streamers-clash-nancy-guthrie-home-1714428",
+      "https://news.azpm.org/p/news-npr/2026/2/10/228381-how-the-use-of-ai-and-deepfakes-play-a-role-in-the-search-for-nancy-guthrie/"
+    ],
+    "notes": "Nancy Guthrie (Savannah Guthrie's mother) disappeared from Tucson ~Feb 1, 2026; a $1M family reward was offered. Content creators converged on the scene; one streamer did a provocative photoshoot with a cameraman, criticized by other streamers \u2014 a real, reported incident. The video's audio ('find nancy and get that million dollar reward') ties directly to it. The tweet asserts nothing false; it's commentary. The original note's 'no such incident' framing is itself wrong."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Minor true-crime-content-creator spectacle; negligible real-world stakes. Useful as a false-positive trap where a note wrongly declared a real (if tasteless) event fabricated."
+  },
+  "difficulty": "hard"
+}

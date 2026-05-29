@@ -1,0 +1,84 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "IShowSpeed proposed Valentine's Day 2026",
+        "IShowSpeed girlfriend proposal February 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "No news of a real proposal. Multiple reposts of the same claim (same tweet/Instagram/Facebook), all circular. Search engine summary noted the images are AI-generated. Found that IShowSpeed actually did a Valentine's Day IRL stream in disguise as an old man. Also learned he and girlfriend Vanessa Anne broke up in January 2026.",
+      "lesson": "The claim is almost certainly false — no mainstream outlet reported it, only re-shares of the original viral post. IShowSpeed's actual Valentine's Day activity (old-man disguise stream) directly contradicts the proposal narrative."
+    },
+    {
+      "queries": [
+        "IShowSpeed proposal Valentine's Day fake AI generated debunked",
+        "IShowSpeed Valentine's Day 2026 old man disguise IRL stream"
+      ],
+      "purpose": "targeted + refine",
+      "what_returned": "Confirmed: IShowSpeed has previously responded to AI-generated videos of him, saying 'This is getting turned off, officially. No more.' Dexerto covered this. K24 Digital article confirmed his Valentine's Day 2026 stream was an old-man disguise prank — no proposal. Anti-hindsight check: adding 'AI generated debunked' is borderline retrofitting, but the comments in the tweet itself named AI slop, so this angle was discoverable from the tweet text alone.",
+      "lesson": "IShowSpeed has a documented history of AI-generated content being spread about him. The Valentine's Day stream content (disguise prank) is well-documented and directly contradicts the proposal claim."
+    },
+    {
+      "queries": [
+        "IShowSpeed AI generated images proposal snopes factcheck site:snopes.com OR site:leadstories.com OR site:politifact.com",
+        "\"IShowSpeed\" propose OR proposal \"February 14\" OR \"Valentine\" 2026 false fake"
+      ],
+      "purpose": "brand-suffix",
+      "what_returned": "No dedicated Snopes/LeadStories/PolitiFact fact-check found for this specific claim. The Dexerto AI video response article confirmed IShowSpeed spoke out against AI-generated fake videos of him generally. The Dexerto Cambodia article confirmed the only real proposal event was a fan proposing TO him in September 2024.",
+      "lesson": "No major fact-check outlet has a standalone article on this specific Valentine's Day proposal claim — the debunking evidence comes from documenting what he actually did (old-man stream) and IShowSpeed's own statements about AI fakes."
+    },
+    {
+      "queries": [
+        "IShowSpeed Valentine's Day stream 2026 what he actually did dexerto OR kotaku OR polygon"
+      ],
+      "purpose": "refine — finding more authoritative outlet coverage",
+      "what_returned": "K24 Digital article (Feb 15, 2026) is the strongest narrative source. Confirms old-man disguise IRL stream with brother Jamal on Valentine's Day. No Dexerto/Kotaku/Polygon article found specifically for the Valentine's stream. Dexerto Cambodia article confirmed IShowSpeed never proposed to anyone — instead a fan proposed to him in Cambodia in 2024.",
+      "lesson": "K24 Digital is the best-available authoritative source for his actual Valentine's Day 2026 activity. The absence of any mainstream news about a proposal is itself strong evidence the claim is false."
+    }
+  ],
+  "gold_queries": [
+    "IShowSpeed Valentine's Day 2026 stream",
+    "IShowSpeed proposed Valentine's Day fake AI generated",
+    "IShowSpeed AI generated videos response",
+    "IShowSpeed Valentine's Day old man disguise IRL stream"
+  ],
+  "found_sources": [
+    {
+      "url": "https://k24.digital/entertainment/why-ishowspeed-disguised-himself-as-an-old-man-in-his-valentines-day-irl-stream",
+      "title": "Why IShowSpeed disguised himself as an old man in his Valentine's Day IRL stream - K24 Digital",
+      "found_via_query": "IShowSpeed Valentine's Day 2026 old man disguise IRL stream",
+      "authority_reason": "Mainstream entertainment news outlet, article dated February 15, 2026 — the day after Valentine's Day. Directly covers what IShowSpeed actually did that day.",
+      "what_it_establishes": "IShowSpeed's actual Valentine's Day 2026 activity was an IRL stream where he disguised himself as an old man to find love — not a proposal. He was with his brother Jamal. No proposal happened."
+    },
+    {
+      "url": "https://www.dexerto.com/youtube/ishowspeed-hits-back-at-viral-ai-videos-of-him-that-look-too-real-3271415/",
+      "title": "IShowSpeed hits back at viral AI videos of him that look 'too real' - Dexerto",
+      "found_via_query": "IShowSpeed AI generated images proposal snopes factcheck",
+      "authority_reason": "Dexerto is a major gaming/streaming news outlet with editorial standards. Covers IShowSpeed's documented history with AI-generated fake content.",
+      "what_it_establishes": "IShowSpeed has previously spoken out against AI-generated videos of him that fans believed were real, saying 'No more.' He disabled his Sora AI account. This is a known pattern of AI disinformation targeting him."
+    },
+    {
+      "url": "https://www.dexerto.com/youtube/ishowspeed-receives-marriage-proposal-from-fan-during-cambodia-stream-2907463/",
+      "title": "IShowSpeed receives marriage proposal from fan during Cambodia stream - Dexerto",
+      "found_via_query": "IShowSpeed girlfriend proposal February 2026",
+      "authority_reason": "Dexerto, major streaming news outlet. Documents the only real 'proposal' event involving IShowSpeed — a fan proposing TO him, not him proposing to anyone.",
+      "what_it_establishes": "The only documented proposal event involving IShowSpeed was in Cambodia in September 2024, where a fan proposed TO him. IShowSpeed has never been reported to have proposed to anyone."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching for what IShowSpeed actually did on Valentine's Day 2026 (the old-man disguise stream) — this directly disproves the proposal claim",
+      "Searching for IShowSpeed's documented history with AI-generated fake content — establishes the broader pattern",
+      "The tweet's own comments contained strong signals ('Nope, he didn't and this is AI slop', 'Grok said it's not true') that guided query direction without needing to know the truth in advance",
+      "Date-anchoring queries to February 2026 helped filter to relevant results"
+    ],
+    "what_hurt": [
+      "No major US fact-check outlet (Snopes/LeadStories/PolitiFact) had a dedicated article on this specific claim, so brand-suffix queries were less productive",
+      "The viral post was re-shared on Instagram/Facebook/Twitter making it hard to distinguish original claim from debunking in results",
+      "K24 Digital article returned 403 Forbidden on WebFetch — had to rely on search snippet summaries"
+    ],
+    "would_multipass_help": "yes — a second pass could search for IShowSpeed's girlfriend status in February 2026 (he had broken up with Vanessa in January 2026, making a Valentine's Day proposal even less plausible) and could search YouTube for the actual Valentine's Day stream to confirm content directly",
+    "deepseek_advice": "For celebrity claim tweets with high engagement and skeptical comments, first search for what the celebrity actually did on the claimed date — the absence of mainstream news about the alleged event plus evidence of what really happened is often stronger than searching for a direct debunking article. For AI-image claims specifically, search '[celebrity] AI generated fake [year]' to surface the broader pattern of AI disinformation targeting that person."
+  }
+}

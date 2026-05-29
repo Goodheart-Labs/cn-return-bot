@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1978647371002077420",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:37.053Z",
+  "post": {
+    "id": "1978647371002077420",
+    "author_id": "1442238195387678721",
+    "created_at": "2025-10-16T02:21:09.000Z",
+    "text": "AOC says \"rivers were on fire\" because of corporations like Deloitte \"pouring chemicals\" into waterways.\n\nDeloitte is an accounting, consulting, and tax services firm.\n\nNo idea what she's talking about. https://t.co/mLX64nPnVk",
+    "media": [
+      {
+        "media_key": "13_1978646424767090688",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1978646424767090688/img/-3a9im2drETO32tU.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 20019,
+        "view_count": 3014780,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1978646424767090688/vid/avc1/480x270/BQxSP8GaKd7eSna3.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1978646424767090688/vid/avc1/640x360/UyduNPedbouDB-VO.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1978646424767090688/vid/avc1/1280x720/swkGQaRxLzkqeqlV.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1978646424767090688/pl/9ew0Xk-PDp3fXhFD.m3u8?v=28a"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 19424,
+      "reply_count": 10687,
+      "like_count": 131684,
+      "quote_count": 2765,
+      "bookmark_count": 7498,
+      "impression_count": 10746803
+    },
+    "author_followers": 288823,
+    "author_name": "johnny maga",
+    "author_description": "Est. 2016 🇺🇸",
+    "author_tweet_count": 25410
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1978646424767090688/vid/avc1/1280x720/swkGQaRxLzkqeqlV.mp4",
+          "description": {
+            "description": "A woman speaks during a televised town hall event. She is wearing a dark blazer over a dark top. On the screen, there is a CNN logo and the text 'TOWN HALL SHUTDOWN AMERICA'. The event is being broadcast live.",
+            "ocrText": "LIVE CNN 6:39 PM PT CNN TOWN HALL SHUTDOWN AMERICA LIVE CNN 9:39 PM ET CNN TOWN HALL SHUTDOWN AMERICA LIVE CNN 6:39 PM PT CNN TOWN HALL SHUTDOWN AMERICA LIVE CNN 9:39 PM ET CNN TOWN HALL SHUTDOWN AMERICA"
+          },
+          "transcription": "Rivers in rural areas were on fire because of corporations poisoning the people who lived in those areas. Poor, middle-class communities getting poisoned and dumped on by corporations like Deloitte and 3M, pouring chemicals into these places, and they want to call it a democratic priority."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**YourFavoriteGuy** (@guychristensen_): She said Deloitte but probably meant DuPont- who is famous for poisoning our world.  \nIs this correct about DuPont @grok If you had to put their damage in terms of human lives cost, what would you say DuPont took from us?  \n(Likes: 3901)\n\n**William Neuheisel** (@wneuheisel): DuPont. She just misspoke. Not that complicated…  \n(Likes: 2784)\n\n**Griftocracy™** (@TheGriftocracy): Deloitte ought to sue her pants off.  \n(Likes: 2750)\n\n**Tom** (@BoreGuru): AOC found a lot of ICE Detention Centers tho.  \n(Likes: 2176)\n\n**Eric** (@Thunder_Chuck24): Deloitte be like…  \n(Likes: 2135)\n\n**Tom** (@BoreGuru): AOC should be on the Banking Committee. 🤪🤡  \n(Likes: 1623)\n\n**Randy Ramone** (@masterblaster3t): Idiot probably meant DuPont.  \n(Likes: 1391)\n\n**I Find Snowflakes on X** (@FindXSnowflakes): When AOC misspeaks, she has no idea what she's talking about.  \nWhen the current president of the US misspeaks several times a day, it's OK with MAGA. It's just Donald.  \n(Likes: 1043)\n\n**Nick ࣨ** (@NHarding97): To be completely day, Deloitte is a consulting firm that would 100% tell a company it's cheaper to pay the fines for dumping chemicals than to properly dispose of them.  \nI don't know if she meant that, but that's something they'd do.  \n(Likes: 939)\n\n**American as Trump** (@JoshuaBradner): [image]  \n(Likes: 929)",
+    "warnings": []
+  }
+}

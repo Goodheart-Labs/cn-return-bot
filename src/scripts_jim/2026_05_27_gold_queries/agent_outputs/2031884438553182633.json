@@ -1,0 +1,88 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Trump Jake Paul rally Kentucky Hebron Turning Point Action Thomas Massie",
+        "Charlie Kirk death died 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Confirmed the rally happened March 11 2026 in Hebron KY. Confirmed Charlie Kirk was assassinated September 10 2025. Turning Point Action is now led by his widow Erika Kirk. Massie is a Republican congressman being targeted in a GOP primary.",
+      "lesson": "Both core factual angles were confirmed immediately. The most important context the tweet omits: (1) Massie is a Republican not a generic 'Trump hater', (2) Charlie Kirk (TPUSA founder) had been a vocal Massie supporter before his death, (3) Kirk was assassinated 6 months before this rally."
+    },
+    {
+      "queries": [
+        "Turning Point Action leadership after Charlie Kirk death who runs it 2026",
+        "Trump Kentucky rally Hebron March 2026 date location facts"
+      ],
+      "purpose": "targeted",
+      "what_returned": "Confirmed rally date was March 11 2026 at Verst Logistics, Hebron KY. Trump supported Ed Gallrein (Navy SEAL) against Massie. Erika Kirk became CEO 8 days after assassination. She fired 60+ staffers. Rally aimed at Republican primary opponent, not a Democrat or generic Trump opponent.",
+      "lesson": "The 'RINO Massie' framing is internally contradictory from Turning Point's own history - Kirk previously called Massie one of his favorite congressmen. This is a strong Community Notes angle."
+    },
+    {
+      "queries": [
+        "Thomas Massie Republican congressman Kentucky Trump feud reason 2026"
+      ],
+      "purpose": "refine",
+      "what_returned": "Massie is a Republican (libertarian-leaning). Feud stems from Massie opposing Trump's 'big beautiful bill', pushing for Epstein files release, opposing Iran war funding. Massie eventually lost primary to Gallrein in May 2026.",
+      "lesson": "Framing Massie as a 'Trump hater' misleads - he's a Republican colleague who voted against specific Trump legislation on principled grounds. The 'RINO' label is contested."
+    }
+  ],
+  "gold_queries": [
+    "Trump Jake Paul rally Kentucky Hebron Turning Point Action Thomas Massie",
+    "Charlie Kirk death assassination September 2025",
+    "Thomas Massie Republican congressman Kentucky party affiliation",
+    "Turning Point Action Erika Kirk leadership 2026 after Charlie Kirk death",
+    "Charlie Kirk Thomas Massie praise favorite congressman quote"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.mediaite.com/media/news/turning-point-usa-fawns-over-trumps-bid-to-stop-rino-massie-but-charlie-kirk-considered-massie-one-of-his-favorite-congressmen/",
+      "title": "TPUSA Attacks Thomas Massie Despite Charlie Kirk Liking Him",
+      "found_via_query": "Trump Jake Paul rally Kentucky Hebron Turning Point Action Thomas Massie",
+      "authority_reason": "Mainstream political media outlet covering the contradiction between Kirk's past Massie praise and current TPUSA stance",
+      "what_it_establishes": "Thomas Massie is a Republican; Charlie Kirk previously called Massie 'one of my favorite members of Congress'; Turning Point Action now labels him RINO after Kirk's death - a stark reversal"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Assassination_of_Charlie_Kirk",
+      "title": "Assassination of Charlie Kirk - Wikipedia",
+      "found_via_query": "Charlie Kirk death died 2026",
+      "authority_reason": "Wikipedia with citations; confirmed by multiple mainstream sources including NPR, Britannica, Arizona Secretary of State",
+      "what_it_establishes": "Charlie Kirk (Turning Point founder/leader) was assassinated September 10 2025 at Utah Valley University - 6 months before this tweet"
+    },
+    {
+      "url": "https://spectrumlocalnews.com/us/snplus/politics/2025/09/18/charlie-kirk-s-turning-point-taps-his-widow-as-next-leader",
+      "title": "Charlie Kirk's Turning Point taps his widow as its next leader",
+      "found_via_query": "Turning Point Action leadership after Charlie Kirk death who runs it 2026",
+      "authority_reason": "Local/national news outlet reporting organizational leadership change",
+      "what_it_establishes": "Erika Kirk became Turning Point CEO 8 days after her husband's assassination; she has since fired 60+ staffers"
+    },
+    {
+      "url": "https://rollcall.com/factbase/trump/transcript/donald-trump-speech-verst-logistics-hebron-kentucky-march-11-2026/",
+      "title": "Speech: Donald Trump Discusses His Administration in Hebron, Kentucky - March 11, 2026",
+      "found_via_query": "Trump Kentucky rally Hebron March 2026 date location facts",
+      "authority_reason": "Roll Call / Factbase - authoritative Congressional/political record with full transcript",
+      "what_it_establishes": "Rally occurred March 11 2026 at Verst Logistics in Hebron KY; Jake Paul appeared; rally was against Republican primary incumbent Thomas Massie in favor of challenger Ed Gallrein"
+    },
+    {
+      "url": "https://www.nbcnews.com/politics/2026-election/rep-thomas-massie-confronts-full-force-trumps-wrath-republican-primary-rcna345257",
+      "title": "Rep. Thomas Massie confronts the full force of Trump's wrath in a Republican primary",
+      "found_via_query": "Thomas Massie Republican congressman Kentucky Trump feud reason 2026",
+      "authority_reason": "NBC News - major mainstream outlet",
+      "what_it_establishes": "Massie is a Republican congressman opposed by Trump in a GOP primary; the feud is about specific legislative votes (big beautiful bill, Epstein files, Iran war), not generic Trump-hatred"
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching for 'Charlie Kirk death' immediately surfaced the most important missing context - the founder was assassinated months before this rally",
+      "Including 'Thomas Massie' and 'Turning Point Action' in the same query quickly surfaced the contradiction between Kirk's past praise and current TPUSA stance",
+      "The comments on the tweet were strong signals: 'turning over in his grave', 'Charlie is turning over in his grave' pointed directly to Kirk's death as the key context gap"
+    ],
+    "what_hurt": [
+      "NBCNews and NKYTribune returned 403 Forbidden on direct fetch - mainstream news paywalls blocked 2 of 5 WebFetch attempts",
+      "The tweet text itself is thin ('MAGA rallies are BACK / Trump haters are on notice') - the factual claims are entirely in the embedded video description, requiring careful reading of the media block"
+    ],
+    "would_multipass_help": "no - the core facts (Kirk's death, Massie's party, rally date/purpose) were all confirmed in rounds 1-2. Additional passes would add detail but not change the Community Notes angle.",
+    "deepseek_advice": "When a tweet from a political organization uses tribal framing ('Trump haters') about a specific named target, always search the target's party affiliation and the organization's history with that target - the factual gap is usually in what the framing conceals. Also check whether the organization's leadership has recently changed, especially for orgs whose founders are prominent public figures."
+  }
+}

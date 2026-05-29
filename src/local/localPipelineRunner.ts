@@ -22,13 +22,12 @@ import { parseCsvRecords } from "../utils/csv";
 import { buildRunName, initOutputFolder, resultToCsvRow, errorToCsvRow } from "./outputWriter";
 import { autoOpenInDashboard } from "./dashboardAutoOpen";
 import {
-  categorizeRow,
-  writeResultJsons,
-  CATEGORY_RESULT_LABEL,
+  categorizeRowV2,
+  writeResultJsonsV2,
   type CsvRow,
-  type CategorizedRow,
-  type Category,
-  type BucketCounts,
+  type CategorizedRowV2,
+  type CategoryV2,
+  type BucketCountsV2,
 } from "./evaluateResults";
 
 // ---------------------------------------------------------------------------
@@ -39,6 +38,9 @@ export interface InputRow {
   url: string;
   needsNote?: string;
   groundTruthNote?: string;
+  judgeGuidance?: string;
+  originalNoteText?: string;
+  failureReason?: string;
 }
 
 export type PostFetcher = (input: InputRow) => Promise<{ post: Post; title: string }>;
@@ -50,7 +52,7 @@ interface CompletedResult {
   outcome: string;
   outcomeReason?: string;
   noteText?: string;
-  categorized?: CategorizedRow;
+  categorized?: CategorizedRowV2;
 }
 
 // ---------------------------------------------------------------------------
@@ -75,6 +77,9 @@ export function parseInputCsv(filePath: string): InputRow[] {
 
   const needsNoteIdx = header.indexOf("needs_note");
   const groundTruthIdx = header.indexOf("ground_truth_note");
+  const judgeGuidanceIdx = header.indexOf("judge_guidance");
+  const originalNoteIdx = header.indexOf("original_note_text");
+  const failureReasonIdx = header.indexOf("failure_reason");
 
   const rows: InputRow[] = [];
   for (let i = 1; i < records.length; i++) {
@@ -86,6 +91,9 @@ export function parseInputCsv(filePath: string): InputRow[] {
       url,
       needsNote: needsNoteIdx >= 0 ? fields[needsNoteIdx]?.trim() : undefined,
       groundTruthNote: groundTruthIdx >= 0 ? fields[groundTruthIdx]?.trim() : undefined,
+      judgeGuidance: judgeGuidanceIdx >= 0 ? fields[judgeGuidanceIdx]?.trim() : undefined,
+      originalNoteText: originalNoteIdx >= 0 ? fields[originalNoteIdx]?.trim() : undefined,
+      failureReason: failureReasonIdx >= 0 ? fields[failureReasonIdx]?.trim() : undefined,
     });
   }
 
@@ -145,6 +153,9 @@ export function parseCliArgs(
     console.error("  --reversed              process newest-last");
     console.error("  --concurrency <n>       parallel workers (default 5)");
     console.error("  --name <label>          name for dashboard upload (default: derived)");
+    console.error("  --search-cache <dir>    cache/replay SearXNG results to/from this directory");
+    console.error("  --input-cache <dir>     cache/replay bot inputs (media, comments, author history)");
+    console.error("  --writer-cache <dir>    cache/replay cheap-bot writer output (replay starts from the two judges)");
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);
   }
@@ -186,6 +197,24 @@ export function parseCliArgs(
 
   const runName = takeFlagValue(args, "--name");
 
+  const searchCache = takeFlagValue(args, "--search-cache");
+  if (searchCache) {
+    process.env.SEARCH_CACHE = searchCache;
+    console.log(`[${scriptName}] Search cache: ${searchCache}`);
+  }
+
+  const inputCache = takeFlagValue(args, "--input-cache");
+  if (inputCache) {
+    process.env.BIG_EVAL_INPUT_CACHE = inputCache;
+    console.log(`[${scriptName}] Input cache: ${inputCache}`);
+  }
+
+  const writerCache = takeFlagValue(args, "--writer-cache");
+  if (writerCache) {
+    process.env.CHEAP_BOT_WRITER_CACHE = writerCache;
+    console.log(`[${scriptName}] Writer cache: ${writerCache}`);
+  }
+
   let reversed = false;
   const reversedFlagIdx = args.indexOf("--reversed");
   if (reversedFlagIdx !== -1) {
@@ -221,13 +250,26 @@ export function parseCliArgs(
 // Progress tracking
 // ---------------------------------------------------------------------------
 
-const CATEGORY_LABELS: Record<Category, { emoji: string; label: string }> = {
-  note_worthy_correct: { emoji: "✅", label: "correct" },
-  note_worthy_incorrect: { emoji: "❌", label: "incorrect" },
-  note_worthy_not_proposed: { emoji: "❌", label: "missed" },
-  non_note_worthy_correct: { emoji: "✅", label: "correct" },
-  non_note_worthy_incorrect: { emoji: "❌", label: "false positive" },
-  uncategorized: { emoji: "❓", label: "uncategorized" },
+const CATEGORY_LABELS: Record<CategoryV2, { emoji: string; label: string }> = {
+  nw_success:                   { emoji: "✅", label: "success" },
+  nw_published_directional:     { emoji: "🟢", label: "published directional" },
+  nw_published_bad:             { emoji: "❌", label: "published bad" },
+  nw_miss_judge_killed_good:    { emoji: "🟠", label: "judge killed good" },
+  nw_miss_judge_killed_bad:     { emoji: "✅", label: "judge killed bad" },
+  nw_miss_verifier_killed_good: { emoji: "🟠", label: "verifier killed good" },
+  nw_miss_verifier_killed_bad:  { emoji: "✅", label: "verifier killed bad" },
+  nw_miss_writer_abstained:     { emoji: "❌", label: "writer abstained" },
+  nw_miss_search_exhausted:     { emoji: "❌", label: "search exhausted" },
+  nw_miss_satire_killed:        { emoji: "❌", label: "satire killed good" },
+  nnw_correct_writer_abstained: { emoji: "✅", label: "nnw writer abstained" },
+  nnw_correct_judge_rejected:   { emoji: "✅", label: "nnw judge rejected" },
+  nnw_correct_verifier_rejected:{ emoji: "✅", label: "nnw verifier rejected" },
+  nnw_correct_search_exhausted: { emoji: "✅", label: "nnw search exhausted" },
+  nnw_correct_satire_rejected:  { emoji: "✅", label: "nnw satire rejected" },
+  nnw_fp_harmless:              { emoji: "🟡", label: "fp harmless" },
+  nnw_fp_published:             { emoji: "❌", label: "false positive" },
+  nnw_eval_disagrees:           { emoji: "🟡", label: "eval disagrees" },
+  uncategorized:                { emoji: "❓", label: "uncategorized" },
 };
 
 function formatResult(r: CompletedResult, count: number, total: number): string {
@@ -235,7 +277,7 @@ function formatResult(r: CompletedResult, count: number, total: number): string 
   const lines: string[] = [];
 
   if (r.categorized) {
-    const { emoji, label } = CATEGORY_LABELS[r.categorized.category];
+    const { emoji, label } = CATEGORY_LABELS[r.categorized.category]!;
     lines.push(`--- ${count}/${total} ---`);
     lines.push(`${emoji} (${label}) | ${r.outcome}${reason}`);
   } else {
@@ -256,11 +298,28 @@ function fmtRate(count: number, total: number): string {
   return `${count}/${total} (${((count / total) * 100).toFixed(0)}%)`;
 }
 
-function printSummary(counts: BucketCounts, totalProcessed: number, errors: number, outputPath: string) {
-  const nwTotal = counts.note_worthy_correct + counts.note_worthy_incorrect + counts.note_worthy_not_proposed;
-  const nnwTotal = counts.non_note_worthy_correct + counts.non_note_worthy_incorrect;
+function printSummary(counts: BucketCountsV2, totalProcessed: number, errors: number, outputPath: string) {
+  const nwSuccess = counts.nw_success;
+  const nwDirectional = counts.nw_published_directional;
+  const nwBad = counts.nw_published_bad;
+  const nwMissed = counts.nw_miss_judge_killed_good + counts.nw_miss_judge_killed_bad
+    + counts.nw_miss_verifier_killed_good + counts.nw_miss_verifier_killed_bad
+    + counts.nw_miss_writer_abstained + counts.nw_miss_search_exhausted
+    + counts.nw_miss_satire_killed;
+  const nwTotal = nwSuccess + nwDirectional + nwBad + nwMissed;
+
+  const nnwCorrect = counts.nnw_correct_writer_abstained + counts.nnw_correct_judge_rejected
+    + counts.nnw_correct_verifier_rejected + counts.nnw_correct_search_exhausted
+    + counts.nnw_correct_satire_rejected;
+  const nnwHarmless = counts.nnw_fp_harmless;
+  const nnwHardFP = counts.nnw_fp_published;
+  const nnwDisagrees = counts.nnw_eval_disagrees;
+  const nnwTotal = nnwCorrect + nnwHarmless + nnwHardFP + nnwDisagrees;
+
   const scoredTotal = nwTotal + nnwTotal;
-  const overallCorrect = counts.note_worthy_correct + counts.non_note_worthy_correct;
+  // Directional notes are net-helpful and count as wins; harmless extra notes are
+  // tolerated but NOT counted correct (we still published when none was needed).
+  const overallCorrect = nwSuccess + nwDirectional + nnwCorrect;
 
   console.log(`\n${"=".repeat(60)}`);
   console.log(`RESULTS: ${totalProcessed} processed, ${errors} errors`);
@@ -268,19 +327,30 @@ function printSummary(counts: BucketCounts, totalProcessed: number, errors: numb
 
   if (nwTotal > 0) {
     console.log(`\n  NOTEWORTHY (ground truth = yes): ${nwTotal} tweets`);
-    console.log(`    correct:      ${fmtRate(counts.note_worthy_correct, nwTotal).padEnd(16)} AI judge confirmed note is good`);
-    console.log(`    incorrect:    ${fmtRate(counts.note_worthy_incorrect, nwTotal).padEnd(16)} note proposed but wrong`);
-    console.log(`    not proposed: ${fmtRate(counts.note_worthy_not_proposed, nwTotal).padEnd(16)} missed entirely`);
+    console.log(`    success:              ${fmtRate(nwSuccess, nwTotal).padEnd(16)}`);
+    console.log(`    published directional:${fmtRate(nwDirectional, nwTotal).padEnd(16)}`);
+    console.log(`    published bad:        ${fmtRate(nwBad, nwTotal).padEnd(16)}`);
+    console.log(`    judge killed good:    ${fmtRate(counts.nw_miss_judge_killed_good, nwTotal).padEnd(16)}`);
+    console.log(`    judge killed bad:     ${fmtRate(counts.nw_miss_judge_killed_bad, nwTotal).padEnd(16)}`);
+    console.log(`    verifier killed good: ${fmtRate(counts.nw_miss_verifier_killed_good, nwTotal).padEnd(16)}`);
+    console.log(`    verifier killed bad:  ${fmtRate(counts.nw_miss_verifier_killed_bad, nwTotal).padEnd(16)}`);
+    console.log(`    writer abstained:     ${fmtRate(counts.nw_miss_writer_abstained, nwTotal).padEnd(16)}`);
+    console.log(`    search exhausted:     ${fmtRate(counts.nw_miss_search_exhausted, nwTotal).padEnd(16)}`);
+    console.log(`    satire killed good:   ${fmtRate(counts.nw_miss_satire_killed, nwTotal).padEnd(16)}`);
   }
 
   if (nnwTotal > 0) {
     console.log(`\n  NON-NOTEWORTHY (ground truth = no): ${nnwTotal} tweets`);
-    console.log(`    correct:      ${fmtRate(counts.non_note_worthy_correct, nnwTotal).padEnd(16)} correctly no note`);
-    console.log(`    incorrect:    ${fmtRate(counts.non_note_worthy_incorrect, nnwTotal).padEnd(16)} false positive`);
+    console.log(`    correct (no publish): ${fmtRate(nnwCorrect, nnwTotal).padEnd(16)}`);
+    console.log(`    fp harmless:          ${fmtRate(nnwHarmless, nnwTotal).padEnd(16)}`);
+    console.log(`    fp published (HARMFUL):${fmtRate(nnwHardFP, nnwTotal).padEnd(16)}`);
+    console.log(`    eval disagrees:       ${fmtRate(nnwDisagrees, nnwTotal).padEnd(16)}`);
   }
 
   if (scoredTotal > 0) {
     console.log(`\n  OVERALL: ${fmtRate(overallCorrect, scoredTotal)}`);
+    console.log(`  HARD FP RATE (harmful notes on no-note posts): ${fmtRate(nnwHardFP, nnwTotal)}`);
+    console.log(`  PUBLISHED-WHEN-NOT-NEEDED (harmful + harmless):  ${fmtRate(nnwHarmless + nnwHardFP, nnwTotal)}`);
   }
   if (counts.uncategorized > 0) {
     console.log(`  NO GROUND TRUTH: ${counts.uncategorized} uncategorized`);
@@ -331,15 +401,40 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   console.log(`[${scriptName}] Processing ${inputs.length} item(s)`);
 
-  const output = initOutputFolder(folderPrefix, datasetName, forcedBotId);
+  const output = initOutputFolder(folderPrefix, datasetName, forcedBotId, runName);
   console.log(`[${scriptName}] Output folder: ${output.folderPath}`);
 
   const results: CompletedResult[] = [];
-  const categorizedRows: CategorizedRow[] = [];
+  const categorizedRows: CategorizedRowV2[] = [];
   let completedCount = 0;
   let errorCount = 0;
 
-  const queue = new PQueue({ concurrency });
+  // All searches funnel through a single global 3s-gap queue, so with 5
+  // concurrent workers each making ~3 queries the queue wait alone can be
+  // 45s+. Factor in SearXNG cool-downs / retries and a single tweet can
+  // legitimately take 15+ min. 20 min catches real hangs without killing
+  // slow-but-progressing rows.
+  const PER_TWEET_TIMEOUT_MS = 20 * 60 * 1000;
+  const queue = new PQueue({ concurrency, timeout: PER_TWEET_TIMEOUT_MS, throwOnTimeout: true });
+
+  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId);
+  let uploaded = false;
+  const uploadResults = async () => {
+    if (uploaded) return;
+    uploaded = true;
+    try { await autoOpenInDashboard(output.csvPath, uploadLabel); } catch (err: any) {
+      console.error(`[${scriptName}] dashboard upload failed: ${err?.message}`);
+    }
+  };
+
+  // If the user kills the process (Ctrl-C / SIGTERM), still upload what's
+  // already in the CSV so the dashboard reflects partial progress.
+  const onSignal = (sig: string) => {
+    console.log(`\n[${scriptName}] received ${sig} — uploading partial results before exit...`);
+    uploadResults().finally(() => process.exit(130));
+  };
+  process.once("SIGINT", () => onSignal("SIGINT"));
+  process.once("SIGTERM", () => onSignal("SIGTERM"));
 
   const orderedInputs = reversed ? [...inputs].reverse() : inputs;
   for (const [i, input] of orderedInputs.entries()) {
@@ -387,6 +482,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
           text: result.pipelineResult?.post?.text ?? "",
           needs_note: input.needsNote ?? "",
           ground_truth_note: input.groundTruthNote ?? "",
+          judge_guidance: input.judgeGuidance ?? "",
+          original_note_text: input.originalNoteText ?? "",
+          failure_reason: input.failureReason ?? "",
           bot_id: loggedBotId,
           note_status: result.noteStatus ?? "",
           outcome: `${result.outcome}${result.outcomeReason ? ` (${result.outcomeReason})` : ""}`,
@@ -394,13 +492,12 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
           logs: log ? JSON.stringify(nestDotKeys(Object.fromEntries(log))) : "",
         };
 
-        // Categorize before writing CSV so we have the result label
         let resultLabel = "";
         try {
-          const categorized = await categorizeRow(csvRowData);
+          const categorized = await categorizeRowV2(csvRowData);
           completed.categorized = categorized;
           categorizedRows.push(categorized);
-          resultLabel = CATEGORY_RESULT_LABEL[categorized.category];
+          resultLabel = categorized.category;
         } catch (err: any) {
           console.error(`[${scriptName}] Judge failed for ${input.url}: ${err?.message}`);
         }
@@ -420,7 +517,7 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   await queue.onIdle();
 
-  const counts = writeResultJsons(categorizedRows, output.folderPath);
+  const counts = writeResultJsonsV2(categorizedRows, output.folderPath);
   printSummary(counts, inputs.length, errorCount, output.folderPath);
 
   if (cleanup) {
@@ -429,6 +526,5 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
 
   try { await closeBrowser(); } catch {}
 
-  const uploadLabel = runName ?? buildRunName(folderPrefix, datasetName, forcedBotId);
-  await autoOpenInDashboard(output.csvPath, uploadLabel);
+  await uploadResults();
 }
