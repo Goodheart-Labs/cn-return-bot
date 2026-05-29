@@ -53,7 +53,7 @@ const AGENT_FAMILY_SCORE_FILTERS: ScoreFilter[] = [
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
-    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
+    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 50 },
     { variant: { name: "cheap-bot", overrides: {
       botId: "cheap-bot",
       model: "deepseek/deepseek-v4-flash",
@@ -74,7 +74,7 @@ export const BOT_TEST: ABTest = {
       // the judge's "is this dispute substantive" classification + the writer's
       // "find a dispute or return nothing" decision-making.
       reasoning_effort: "high",
-    }}, weight: 0 },
+    }}, weight: 50 },
     { variant: { name: "multi-agent", overrides: {
       botId: "multi-agent",
       model: "google/gemini-3-flash-preview",
