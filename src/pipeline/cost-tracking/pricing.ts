@@ -66,7 +66,7 @@ export function calculateGrokCost(
 // usage.cost like OpenRouter does.
 const GEMINI_PRICING: Record<string, { in: number; out: number; searchPerCall: number }> = {
   "gemini-3-flash-preview": { in: 0.50, out: 3.00,  searchPerCall: 0.014 },
-  "gemini-3-pro-preview":   { in: 2.00, out: 12.00, searchPerCall: 0.014 },
+  "gemini-3-pro":           { in: 2.00, out: 12.00, searchPerCall: 0.014 },
 };
 
 export function calculateGeminiCost(

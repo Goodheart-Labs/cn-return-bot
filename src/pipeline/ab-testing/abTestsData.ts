@@ -111,7 +111,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 1 },
-    { variant: { name: "gemini3pro-native",       overrides: { search_model: "google/gemini-3-pro-preview",       web_search: "native_gemini" }}, weight: 1 },
+    { variant: { name: "gemini3pro-native",       overrides: { search_model: "google/gemini-3-pro",               web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 2 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
