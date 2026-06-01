@@ -26,7 +26,7 @@ export async function runSearchAnalyzer(
 ): Promise<string> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const model = config.search_model ?? config.model;
+  const model = config.search_analyzer_model ?? config.search_model ?? config.model;
 
   const userMessage = `${postContext}\n\n## Raw search results\n\n${rawFindings}`;
 

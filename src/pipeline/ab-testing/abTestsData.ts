@@ -166,6 +166,45 @@ const CHEAP_BOT_JUDGE_MODEL_TEST: ABTest = {
   ],
 };
 
+// Run gemini-3-flash for exactly the two steps where it most improved the
+// big_eval val — the search analyzer (evidence synthesis) and the note-needed
+// judge (the FP guard) — and keep deepseek-v4-flash everywhere else (query
+// writer, satire detector, writer, verifier). note_judge_model is already
+// gemini via CHEAP_BOT_JUDGE_MODEL_TEST, so this test routes the analyzer to
+// gemini (search_analyzer_model) and pins the satire detector back to deepseek
+// (satire_model) — which otherwise shares note_judge_model. Placed after
+// CHEAP_BOT_JUDGE_MODEL_TEST so its overrides win. Prereq-gated to cheap-bot,
+// so no defaultVariant.
+const CHEAP_BOT_GEMINI_STEPS_TEST: ABTest = {
+  name: "cheap_bot_gemini_steps",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "deepseek-baseline", overrides: {} }, weight: 0 },
+    { variant: { name: "gemini-analyzer-judge", overrides: {
+      search_analyzer_model: "google/gemini-3-flash-preview",
+      satire_model: "deepseek/deepseek-v4-flash",
+    } }, weight: 100 },
+  ],
+};
+
+// Replace the query-writer → SearXNG → analyzer chain with a single Gemini
+// native-search call (googleSearch): Gemini issues its own queries and returns
+// a findings brief directly. The writer/judge/verifier gates are unchanged. The
+// cheap-bot orchestrator branches on web_search="native_gemini"; search_model
+// is set to gemini here because the native variant's search call must hit
+// Gemini. Prereq-gated to cheap-bot, so no defaultVariant.
+const CHEAP_BOT_NATIVE_SEARCH_TEST: ABTest = {
+  name: "cheap_bot_native_search",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "searxng", overrides: {} }, weight: 50 },
+    { variant: { name: "native-gemini", overrides: {
+      web_search: "native_gemini",
+      search_model: "google/gemini-3-flash-preview",
+    } }, weight: 50 },
+  ],
+};
+
 const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   name: "verifier_media_sources",
   variants: [
@@ -247,6 +286,8 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   NOTE_NEEDED_JUDGE_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
+  CHEAP_BOT_GEMINI_STEPS_TEST,
+  CHEAP_BOT_NATIVE_SEARCH_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   SEARCH_ANALYZER_TEST,
   SATIRE_DETECTOR_TEST,

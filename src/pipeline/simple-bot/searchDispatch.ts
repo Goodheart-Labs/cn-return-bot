@@ -200,7 +200,7 @@ async function searchWithAnthropicNative(
   };
 }
 
-async function searchWithGeminiNative(
+export async function searchWithGeminiNative(
   userMessage: string,
   name: string,
 ): Promise<SearchDispatchResult> {
