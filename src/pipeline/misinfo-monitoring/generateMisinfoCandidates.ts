@@ -138,7 +138,9 @@ function buildWorkList(
     });
     if (work.length >= MISINFO_MAX_PROCESS) break;
   }
-  return work;
+  // Run same-topic posts consecutively so the injected reference document forms
+  // a stable prompt prefix across calls, maximizing provider prefix-cache hits.
+  return work.sort((a, b) => a.topicId.localeCompare(b.topicId));
 }
 
 export async function generateMisinfoCandidates(
