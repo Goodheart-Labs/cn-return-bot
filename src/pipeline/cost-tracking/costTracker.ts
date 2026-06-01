@@ -8,6 +8,7 @@
 
 import { AsyncLocalStorage } from "node:async_hooks";
 import { llm } from "../llm/llm";
+import { tryGeminiFreeChat } from "../llm/geminiChatAdapter";
 import { getTweetLog, formatLlmMessages } from "../utils/tweetLog";
 import { type TokenCost, extractOpenRouterCost, addTokenCost, emptyTokenCost } from "./pricing";
 
@@ -66,6 +67,13 @@ export async function trackedLlmCreate(
   params: Parameters<typeof llm.create>[0],
 ): Promise<{ response: any; costEntry: LlmCallCost }> {
   logLlmInput(name, params);
+
+  // Any non-tooling gemini call prefers the free native key; null = not routable
+  // or free key failed, so fall through to OpenRouter.
+  const native = await tryGeminiFreeChat(params);
+  if (native) {
+    return { response: native.response, costEntry: { name, ...native.cost, tools: [] } };
+  }
 
   const response = await llm.create(params);
   const cost = extractOpenRouterCost(response);

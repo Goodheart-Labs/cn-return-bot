@@ -63,7 +63,7 @@ const RESPONSE_FORMAT = {
 export async function runSatireDetector(postContext: string): Promise<SatireResult> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const model = config.note_judge_model ?? config.model;
+  const model = config.satire_model ?? config.note_judge_model ?? config.model;
 
   log?.set(`${STEP.satireDetector}.messages.0`, { systemPrompt: SYSTEM_PROMPT, userMessage: postContext, model });
 

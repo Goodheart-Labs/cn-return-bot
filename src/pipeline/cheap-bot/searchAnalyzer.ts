@@ -29,7 +29,7 @@ export async function runSearchAnalyzer(
 ): Promise<string> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const model = config.search_model ?? config.model;
+  const model = config.search_analyzer_model ?? config.search_model ?? config.model;
 
   // Misinfo pre-pass: prepend the topic's ground-truth article so the analyzer
   // grounds its brief in it and surfaces the Source URL as a citation.

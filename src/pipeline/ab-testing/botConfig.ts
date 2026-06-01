@@ -1,5 +1,4 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { AllNoteScores } from "../score/noteScores";
 
 // --- Config type ---
 
@@ -8,18 +7,16 @@ export type VideoDescriptionStrategy = "full_video" | "frames";
 /** Feed sizes accepted by X's eligible-posts API. */
 export type FeedSize = "small" | "large" | "xl" | "xxl";
 
-export interface ScoreFilter {
-  score: keyof AllNoteScores;
-  op: "gte" | "lte";
-  threshold: number;
-}
-
 export interface BotConfig {
   /** Which bot to run. Set by the BOT_TEST A/B test (or forced via withForcedPicks). */
   botId: string;
   model: string;
   /** Step-specific model overrides. Each defaults to `model` when unset. */
   search_model?: string;
+  /** Model for the cheap-bot search analyzer. Defaults to `search_model` then
+   *  `model`. Decouples the analyzer from the query writer (which also reads
+   *  `search_model`) so they can run on different models. */
+  search_analyzer_model?: string;
   writer_model?: string;
   /** Defaults to gemini-3-flash-preview via DEFAULT_CONFIG (no A/B test). */
   verifier_model?: string;
@@ -35,6 +32,10 @@ export interface BotConfig {
   note_needed_judge?: boolean;
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
+  /** Model for the cheap-bot satire detector. Defaults to `note_judge_model`
+   *  then `model`. Decouples the satire detector from the note-needed judge
+   *  (which also reads `note_judge_model`) so they can run on different models. */
+  satire_model?: string;
   /**
    * If set, passed through to OpenRouter as `reasoning_effort` for every LLM
    * call made by this bot. Useful when the configured model supports test-time
@@ -59,7 +60,6 @@ export interface BotConfig {
     | "searxng"            // tool-calling loop: model calls google_search (raw SearXNG)
     | "searxng_summarized";// tool-calling loop: model calls google_search (SearXNG → Gemini summary)
   video_description_strategy: VideoDescriptionStrategy;
-  scoreFilters: ScoreFilter[];
   parallel_research: boolean;
   /** When true, an LLM step between search and writer distills raw search
    *  snippets into a structured research brief. Defaults to false. */
@@ -87,7 +87,6 @@ export const DEFAULT_CONFIG: BotConfig = {
   verifier_model: "google/gemini-3-flash-preview", // simple-bot has always verified with gemini-flash
   web_search: "perplexity",
   video_description_strategy: "frames",
-  scoreFilters: [],
   parallel_research: false,
   feed_size: "small",
 };
