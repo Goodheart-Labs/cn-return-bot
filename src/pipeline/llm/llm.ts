@@ -82,10 +82,19 @@ function hasEmptyContent(result: OpenAI.Chat.Completions.ChatCompletion): boolea
 async function callWithRetry(
   params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
+  // OpenRouter: only route to providers that honor every parameter we send
+  // (notably response_format=json_schema and tools). Without this, OpenRouter
+  // can fall back to a provider that silently ignores the strict schema, and
+  // the model reverts to wrapping its JSON in ```json fences — unparseable.
+  const routedParams = {
+    ...params,
+    provider: { require_parameters: true, ...(params as any).provider },
+  } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming;
+
   let lastError: any;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const result = await getClient().chat.completions.create(params);
+      const result = await getClient().chat.completions.create(routedParams);
       if (hasEmptyContent(result) && attempt < MAX_RETRIES) {
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
