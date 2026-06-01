@@ -5,10 +5,19 @@ on:
     - cron: "*/15 * * * *" # Runs every 15 minutes
   workflow_dispatch:
 
+# Never run two pipelines at once: the in-process watchdog now allows up to
+# 22.5 min, so a 15-min cron can fire while a prior run is still going. Queue
+# (don't cancel) so a run is never killed mid note-submission.
+concurrency:
+  group: create-notes-routine
+  cancel-in-progress: false
+
 jobs:
   fetch-and-submit:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Above the 22.5-min in-process watchdog so the watchdog (clean exit), not
+    # the runner kill, is the normal stop; this covers setup steps too.
+    timeout-minutes: 30
     env:
       # X API OAuth 1.0a credentials
       X_API_KEY: ${{ secrets.X_API_KEY }}

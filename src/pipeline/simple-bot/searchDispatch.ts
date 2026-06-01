@@ -12,6 +12,7 @@ import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
 import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, executeToolCall } from "../tool-calling/tools";
 import { getBotConfig } from "../ab-testing/botConfig";
+import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../cost-tracking/pricing";
 import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
@@ -82,9 +83,20 @@ Return JSON with two fields:
 - If correction_needed is false, the findings can be brief — just explain why.`;
 
 export function getSearchSystemPrompt(): string {
-  return getBotConfig().note_needed_judge
+  const base = getBotConfig().note_needed_judge
     ? SEARCH_SYSTEM_PROMPT_SIMPLIFIED
     : SEARCH_SYSTEM_PROMPT_FULL;
+
+  // Misinfo pre-pass: inject the topic's ground-truth article (covers every
+  // simple-bot search provider, since they all build their prompt from here).
+  // Treat it as ground truth and cite its Source URL in the findings.
+  const monitoring = getMonitoringContext();
+  if (!monitoring) return base;
+  return `${base}
+
+A reference document on this post's topic is provided below. Treat it as ground truth and include its Source URL inline in the findings as a citation.
+
+${buildReferenceBlock(monitoring)}`;
 }
 
 // OpenAI-flavoured schema (strict json_schema), used by Anthropic via OpenRouter.
@@ -181,7 +193,15 @@ async function searchWithAnthropicNative(
   const response = await llm.create({
     model,
     messages: [
-      { role: "system" as const, content: systemPrompt },
+      // Mark the per-topic-stable system prompt as an Anthropic prefix-cache
+      // breakpoint (passed through by OpenRouter). Anthropic doesn't cache
+      // automatically and only caches >=1024 tokens, so this is a no-op for the
+      // regular pipeline and kicks in when the misinfo reference document is
+      // injected — repeated across every post of the same topic.
+      {
+        role: "system" as const,
+        content: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
+      },
       { role: "user" as const, content: userMessage },
     ],
     tools: [WEB_SEARCH_TOOL],

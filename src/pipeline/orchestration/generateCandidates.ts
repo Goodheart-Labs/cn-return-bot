@@ -17,6 +17,7 @@ import { runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from
 import { AB_TESTS } from "../ab-testing/abTestsData";
 import { withBotConfig, type FeedSize } from "../ab-testing/botConfig";
 import { withCostTracker } from "../cost-tracking/costTracker";
+import { withMonitoringContext, type MonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
@@ -55,22 +56,31 @@ async function fetchWithFeedSizeFallback(
 
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
-  maxPosts: number
+  maxPosts: number,
+  prefetchedSkipPostIds?: Set<string>,
+  prefetchedKnownTweetIds?: Set<string>,
 ): Promise<{ posts: Post[]; feedSize: FeedSize; newCount: number; retryCount: number }> {
-  let skipPostIds = new Set<string>();
-  let knownTweetIds = new Set<string>();
+  let skipPostIds = prefetchedSkipPostIds;
+  let knownTweetIds = prefetchedKnownTweetIds;
 
-  if (supabaseLogger) {
+  // Fetch whatever the caller didn't pre-fetch. runPipeline pre-fetches both
+  // (shared with the misinfo pre-pass) so notes/pipeline_runs aren't scanned
+  // twice per run; other callers fetch here.
+  if (supabaseLogger && (!skipPostIds || !knownTweetIds)) {
     try {
-      [skipPostIds, knownTweetIds] = await Promise.all([
+      const [skip, known] = await Promise.all([
         supabaseLogger.getSkipTweetIds(),
         supabaseLogger.getKnownTweetIds(),
       ]);
-      console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${knownTweetIds.size} already in tweets table`);
+      skipPostIds = skipPostIds ?? skip;
+      knownTweetIds = knownTweetIds ?? known;
     } catch (err) {
       console.warn("[generate] Failed to get known tweet IDs:", err);
     }
   }
+  skipPostIds = skipPostIds ?? new Set<string>();
+  knownTweetIds = knownTweetIds ?? new Set<string>();
+  console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${knownTweetIds.size} already in tweets table`);
 
   const { feedSize, posts } = await fetchWithFeedSizeFallback(skipPostIds);
 
@@ -133,44 +143,49 @@ export interface TweetProcessedEvent {
   botId: string;
 }
 
-export interface GenerateCandidatesOptions {
-  maxPosts: number;
-  onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+/**
+ * A post to process, optionally with the misinfo-monitoring context that
+ * injects a topic's reference document into the bot's research step. Regular
+ * small-feed posts carry no monitoring context.
+ */
+export interface ProcessPostItem {
+  post: Post;
+  monitoring?: MonitoringContext;
 }
 
-export async function generateCandidates(
+export interface ProcessPostsOptions {
+  /** feed_size pick recorded on each run; the size the fetch actually used. */
+  feedSize: FeedSize;
+  onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+  /** Log prefix so the misinfo pre-pass and regular pass are distinguishable. */
+  label?: string;
+}
+
+/**
+ * Run the per-post pipeline over `items` concurrently: AB-pick a bot, wrap it
+ * in the per-tweet ALS contexts (forced picks, monitoring, tweet log, bot
+ * config, cost tracker), process, score, and collect candidates. Shared by the
+ * regular small-feed pass and the XXL-feed misinfo pre-pass.
+ */
+export async function processPosts(
+  items: ProcessPostItem[],
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, onTweetProcessed }: GenerateCandidatesOptions,
+  { feedSize, onTweetProcessed, label = "generate" }: ProcessPostsOptions,
 ): Promise<Candidate[]> {
+  if (!items.length) return [];
+
   const commit = process.env.GITHUB_SHA;
-
   const outerForcedPicks = getForcedPicks();
-  if (Object.keys(outerForcedPicks).length > 0) {
-    console.log(`[generate] Forced picks: ${JSON.stringify(outerForcedPicks)}`);
-  }
-  const botProbs = getBotProbabilities();
-  const activeBots = botProbs.filter((b) => b.probability > 0);
-  console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
+  // Force feed_size pick to the size the fetch actually used so the recorded
+  // pick matches reality (preferred normally, fallback after an API failure).
+  const feedSizePick = { ...outerForcedPicks, feed_size: feedSize };
 
-  // Fetch posts
-  const { posts, feedSize, newCount, retryCount } = await fetchPosts(supabaseLogger, maxPosts);
-  if (!posts.length) {
-    console.log("[generate] No eligible posts found.");
-    return [];
-  }
-  logMediaBreakdown(posts);
-
-  // Process posts concurrently
   const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
   const allLogs: TweetLogMap[] = [];
   const candidates: Candidate[] = [];
 
-  // Force feed_size pick to the size the fetch actually used (preferred
-  // normally, fallback after API failure) so the recorded pick matches reality.
-  const feedSizePick = { ...outerForcedPicks, feed_size: feedSize };
-
-  for (const [idx, post] of posts.entries()) {
-    queue.add(() => withForcedPicks(feedSizePick, async () => {
+  for (const [idx, item] of items.entries()) {
+    queue.add(() => withForcedPicks(feedSizePick, () => withMonitoringContext(item.monitoring, async () => {
       // Forced picks (if any) are already in ALS — set up by runPipeline.ts
       // via withForcedPicks. runABTests honours them for whichever tests fire.
       const { config, picks } = runABTests(AB_TESTS);
@@ -181,7 +196,7 @@ export async function generateCandidates(
 
       const log = createTweetLog();
       log.set("tweet.index", idx + 1);
-      log.set("tweet.total", posts.length);
+      log.set("tweet.total", items.length);
 
       const tweetResult = await withTweetLog(log, () =>
         withBotConfig(config, () =>
@@ -190,7 +205,7 @@ export async function generateCandidates(
             log.set("bot.picks", picks);
             log.set("bot.config", config);
             return processSingleTweet({
-              post,
+              post: item.post,
               bot: selectedBot,
               logger: supabaseLogger,
               commitSha: commit,
@@ -204,14 +219,14 @@ export async function generateCandidates(
 
       const botId = getLoggedBotId(selectedBot.id, log);
       if (onTweetProcessed) {
-        try { await onTweetProcessed({ post, tweetResult, log, botId }); }
-        catch (err) { console.warn("[generate] onTweetProcessed hook failed:", err); }
+        try { await onTweetProcessed({ post: item.post, tweetResult, log, botId }); }
+        catch (err) { console.warn(`[${label}] onTweetProcessed hook failed:`, err); }
       }
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        candidates.push({ post, tweetResult, botId });
+        candidates.push({ post: item.post, tweetResult, botId });
       }
-    }));
+    })));
   }
 
   await queue.onIdle();
@@ -220,9 +235,40 @@ export async function generateCandidates(
     console.log("::endgroup::");
     console.log("::group::Run summary");
   }
-  console.log(`[generate] ${candidates.length} candidates (${newCount} new + ${retryCount} retry processed), ${posts.length - candidates.length} rejected`);
+  console.log(`[${label}] ${candidates.length} candidates, ${items.length - candidates.length} rejected (of ${items.length} processed)`);
   console.log(formatRunSummary(allLogs, feedSize));
   if (process.env.CI) console.log("::endgroup::");
 
   return candidates;
+}
+
+export interface GenerateCandidatesOptions {
+  maxPosts: number;
+  /** Pre-fetched by runPipeline and shared with the misinfo pre-pass to avoid
+   *  double-scanning notes/pipeline_runs/tweets. Omitted callers fetch them. */
+  skipPostIds?: Set<string>;
+  knownTweetIds?: Set<string>;
+  onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+}
+
+export async function generateCandidates(
+  supabaseLogger: SupabaseLogger | null,
+  { maxPosts, skipPostIds, knownTweetIds, onTweetProcessed }: GenerateCandidatesOptions,
+): Promise<Candidate[]> {
+  const outerForcedPicks = getForcedPicks();
+  if (Object.keys(outerForcedPicks).length > 0) {
+    console.log(`[generate] Forced picks: ${JSON.stringify(outerForcedPicks)}`);
+  }
+  const botProbs = getBotProbabilities();
+  const activeBots = botProbs.filter((b) => b.probability > 0);
+  console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
+
+  const { posts, feedSize } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
+  if (!posts.length) {
+    console.log("[generate] No eligible posts found.");
+    return [];
+  }
+  logMediaBreakdown(posts);
+
+  return processPosts(posts.map((post) => ({ post })), supabaseLogger, { feedSize, onTweetProcessed, label: "generate" });
 }
