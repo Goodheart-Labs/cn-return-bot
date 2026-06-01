@@ -55,6 +55,7 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
         post.media,
         post.referenced_tweet_data?.media,
         config.video_description_strategy,
+        post.entities,
       );
     } catch (err: any) {
       const msg = `Media analysis failed: ${err.message}`;

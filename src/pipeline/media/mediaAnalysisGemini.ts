@@ -57,6 +57,13 @@ const VIDEO_PROMPT = `Analyze this video. Describe what happens and extract all 
 
 const FRAME_PROMPT = `These are frames extracted from a video. Describe what happens per frame and extract all visible text per frame`;
 
+// Entities X tagged on the post (people, orgs, topics) — given to Gemini as a hint
+// to identify who/what is shown, since vision models often can't name people unaided.
+function entityHint(entities?: string[]): string {
+  if (!entities?.length) return "";
+  return `\n\nThe post is tagged with these entities (may appear in the media): ${entities.join(", ")}`;
+}
+
 const MEDIA_RESPONSE_FORMAT = {
   type: "json_schema" as const,
   json_schema: {
@@ -125,12 +132,12 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
-async function describeImageFromUrl(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
+async function describeImageFromUrl(imageUrl: string, costName: string, entities?: string[]): Promise<GeminiMediaItem> {
   const messages = [
     {
       role: "user" as const,
       content: [
-        { type: "text" as const, text: IMAGE_PROMPT },
+        { type: "text" as const, text: IMAGE_PROMPT + entityHint(entities) },
         { type: "image_url" as const, image_url: { url: imageUrl } },
       ],
     },
@@ -173,7 +180,7 @@ async function extractAudio(videoPath: string, tmpDir: string): Promise<string> 
   return transcribeAudio(audioBuffer);
 }
 
-async function analyzeShortVideo(videoPath: string, costName: string): Promise<GeminiMediaDescription> {
+async function analyzeShortVideo(videoPath: string, costName: string, entities?: string[]): Promise<GeminiMediaDescription> {
   const videoBytes = await readFile(videoPath);
   const b64 = videoBytes.toString("base64");
   const dataUrl = `data:video/mp4;base64,${b64}`;
@@ -182,7 +189,7 @@ async function analyzeShortVideo(videoPath: string, costName: string): Promise<G
     {
       role: "user" as const,
       content: [
-        { type: "text" as const, text: VIDEO_PROMPT },
+        { type: "text" as const, text: VIDEO_PROMPT + entityHint(entities) },
         { type: "video_url" as const, video_url: { url: dataUrl } } as any,
       ],
     },
@@ -198,7 +205,7 @@ async function analyzeShortVideo(videoPath: string, costName: string): Promise<G
   return parseMediaResponse(response.choices?.[0]?.message?.content ?? "");
 }
 
-async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costName: string): Promise<GeminiMediaDescription> {
+async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costName: string, entities?: string[]): Promise<GeminiMediaDescription> {
   await execAsync(
     `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v 4 "${tmpDir}/frame%03d.jpg" -y 2>&1`,
     { timeout: 60000 },
@@ -226,7 +233,7 @@ async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costNam
     {
       role: "user" as const,
       content: [
-        { type: "text" as const, text: FRAME_PROMPT },
+        { type: "text" as const, text: FRAME_PROMPT + entityHint(entities) },
         ...frameDataUrls.map((url) => ({
           type: "image_url" as const,
           image_url: { url },
@@ -273,6 +280,7 @@ async function analyzeVideo(
    * - null: explicit "no transcript available, do NOT fall back to Whisper" (used for long videos to cap cost).
    */
   precomputedTranscript?: string | null,
+  entities?: string[],
 ): Promise<GeminiMediaItem> {
   const isLocal = isLocalPath(videoUrl);
   const tmpDir = join(tmpdir(), `cn-gemini-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -290,10 +298,10 @@ async function analyzeVideo(
         console.warn("[mediaAnalysisGemini] FFmpeg not available, skipping frames");
         description = { description: "", ocrText: "" };
       } else {
-        description = await analyzeLongVideoFrames(videoPath, tmpDir, costName);
+        description = await analyzeLongVideoFrames(videoPath, tmpDir, costName, entities);
       }
     } else {
-      description = await analyzeShortVideo(videoPath, costName);
+      description = await analyzeShortVideo(videoPath, costName, entities);
     }
 
     const transcription = await resolveTranscription(videoPath, tmpDir, precomputedTranscript);
@@ -332,6 +340,7 @@ async function analyzeMediaItems(
   mediaItems: any[],
   namePrefix: string,
   strategy: "full_video" | "frames" = "frames",
+  entities?: string[],
 ): Promise<GeminiMediaItem[]> {
   if (!mediaItems?.length) return [];
 
@@ -345,7 +354,7 @@ async function analyzeMediaItems(
     images
       .map((img) => getBestUrl(img))
       .filter((url): url is string => !!url)
-      .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`).catch((err) => {
+      .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`, entities).catch((err) => {
         console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
         return { type: "image" as const, url, description: { description: "", ocrText: "" } };
       })),
@@ -356,7 +365,7 @@ async function analyzeMediaItems(
   for (const video of videos) {
     const videoUrl = getBestUrl(video);
     if (!videoUrl) continue;
-    results.push(await analyzeVideo(videoUrl, video.duration_ms, `${namePrefix}.video.${videoIdx++}`, strategy));
+    results.push(await analyzeVideo(videoUrl, video.duration_ms, `${namePrefix}.video.${videoIdx++}`, strategy, undefined, entities));
   }
 
   return results;
@@ -467,13 +476,14 @@ export async function analyzeMediaGemini(
   tweetMedia?: any[],
   quotedTweetMedia?: any[],
   strategy: "full_video" | "frames" = "frames",
+  entities?: string[],
 ): Promise<GeminiMediaResult> {
   const startMs = Date.now();
   const log = getTweetLog();
 
   const [tweetResults, quotedResults] = await Promise.all([
-    analyzeMediaItems(tweetMedia ?? [], "media.tweet", strategy),
-    analyzeMediaItems(quotedTweetMedia ?? [], "media.quoted", strategy),
+    analyzeMediaItems(tweetMedia ?? [], "media.tweet", strategy, entities),
+    analyzeMediaItems(quotedTweetMedia ?? [], "media.quoted", strategy, entities),
   ]);
 
   log?.set("media.gemini.tweetMedia", tweetResults);
