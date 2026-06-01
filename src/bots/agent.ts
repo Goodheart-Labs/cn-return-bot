@@ -13,7 +13,7 @@ import { createBotInput } from "../pipeline/input/createBotInput";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
 import { buildToolList } from "../pipeline/tool-calling/tools";
 import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "../pipeline/tool-calling/agentLoop";
-import { buildSystemPrompt, buildUserMessage } from "../pipeline/input/prompt";
+import { buildSystemPrompt, buildUserMessageFromInput } from "../pipeline/input/prompt";
 import { evaluateAndPickBest } from "../pipeline/score/noteEvaluation";
 import { AgentToolError, PipelineExhaustedError } from "../pipeline/utils/errors";
 
@@ -31,13 +31,7 @@ async function runAgent(post: Post, input: BotInput): Promise<PipelineOutcome> {
     model: config.model,
   };
 
-  const userMessage = buildUserMessage({
-    post,
-    tweetMedia: input.mediaResult.tweetMedia,
-    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
-    authorNoteHistory: input.authorHistory,
-    comments: input.comments,
-  });
+  const userMessage = buildUserMessageFromInput(post, input);
 
   log?.set("agent.config", config);
 

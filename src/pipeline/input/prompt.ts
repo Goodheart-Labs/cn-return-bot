@@ -8,6 +8,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { GeminiMediaItem } from "../media/mediaAnalysisGemini";
 import type { AuthorNoteHistory } from "../input/authorHistory";
 import type { BotConfig } from "../ab-testing/botConfig";
+import type { BotInput } from "./createBotInput";
 
 function buildToolSection(config: BotConfig): string {
   const lines: string[] = [];
@@ -75,6 +76,7 @@ export function buildUserMessage(params: {
   quotedTweetMedia: GeminiMediaItem[];
   authorNoteHistory?: AuthorNoteHistory;
   comments?: string;
+  mediaMadeWithAiLabel?: boolean;
 }): string {
   const { post } = params;
   const now = new Date();
@@ -143,12 +145,31 @@ export function buildUserMessage(params: {
     parts.push(formatMediaItems(params.quotedTweetMedia));
   }
 
+  // X's synthetic-media provenance label, scraped from the post page.
+  if (params.mediaMadeWithAiLabel) {
+    parts.push(`\nMedia was tagged with "Made with AI" on x.com`);
+  }
+
   // Comments and replies
   if (params.comments) {
     parts.push(`\n## Comments and replies\n\n${params.comments}`);
   }
 
   return parts.join("\n");
+}
+
+/** Render the user message for the bots' shared `BotInput`. The flexible
+ *  `buildUserMessage` primitive stays available for callers (e.g. eval harnesses)
+ *  that assemble media from somewhere other than a `BotInput`. */
+export function buildUserMessageFromInput(post: Post, input: BotInput): string {
+  return buildUserMessage({
+    post,
+    tweetMedia: input.mediaResult.tweetMedia,
+    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
+    authorNoteHistory: input.authorHistory,
+    comments: input.comments,
+    mediaMadeWithAiLabel: input.mediaMadeWithAiLabel,
+  });
 }
 
 function formatMediaItems(items: GeminiMediaItem[]): string {

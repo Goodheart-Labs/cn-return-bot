@@ -8,7 +8,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
 import { getBotConfig } from "../ab-testing/botConfig";
 import type { BotInput } from "../input/createBotInput";
-import { buildUserMessage } from "../input/prompt";
+import { buildUserMessageFromInput } from "../input/prompt";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
@@ -22,13 +22,7 @@ export async function runSimpleBotPipeline(
 ): Promise<PipelineOutcome> {
   const startMs = Date.now();
 
-  const userMessage = buildUserMessage({
-    post,
-    tweetMedia: input.mediaResult.tweetMedia,
-    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
-    authorNoteHistory: input.authorHistory,
-    comments: input.comments,
-  });
+  const userMessage = buildUserMessageFromInput(post, input);
 
   const search = await runSearch(userMessage);
   if (!search.correctionNeeded) {
