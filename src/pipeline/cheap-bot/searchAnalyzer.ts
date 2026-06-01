@@ -13,12 +13,15 @@ import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
+import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 
 const SYSTEM_PROMPT = `You receive a social-media post and raw search results. Distill them into a research brief.
 
 Think step by step: what does the post claim, what do the search results say, and if the post is wrong, what's actually true?
 
-Write a brief (a few paragraphs) with specific names, dates, numbers, and all relevant source URLs inline (Its important that you include the full source URLs). Only use information from the search results.`;
+Write a brief (a few paragraphs) with specific names, dates, numbers, and all relevant source URLs inline (Its important that you include the full source URLs). Only use information from the search results.
+
+If a reference document is provided, treat it as ground truth for the topic and include its Source URL inline as a citation.`;
 
 export async function runSearchAnalyzer(
   postContext: string,
@@ -28,7 +31,17 @@ export async function runSearchAnalyzer(
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
 
-  const userMessage = `${postContext}\n\n## Raw search results\n\n${rawFindings}`;
+  // Misinfo pre-pass: prepend the topic's ground-truth article so the analyzer
+  // grounds its brief in it and surfaces the Source URL as a citation.
+  const monitoring = getMonitoringContext();
+  const referenceBlock = monitoring ? `${buildReferenceBlock(monitoring)}\n\n` : "";
+  const userMessage = `${referenceBlock}${postContext}\n\n## Raw search results\n\n${rawFindings}`;
+
+  // Quick yes/no next to the analysis so injection is verifiable at a glance;
+  // the full injected text shows under llm_inputs.cheapBot.searchAnalyzer.
+  log?.set(`${STEP.searchAnalyzer}.referenceInjected`, monitoring
+    ? { topicId: monitoring.topicId, documentUrl: monitoring.documentUrl }
+    : false);
 
   const { response, costEntry } = await trackedLlmCreate("cheapBot.searchAnalyzer", {
     model,

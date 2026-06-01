@@ -8,8 +8,13 @@
 
 import { AsyncLocalStorage } from "node:async_hooks";
 import { llm } from "../llm/llm";
-import { getTweetLog } from "../utils/tweetLog";
+import { getTweetLog, formatLlmMessages } from "../utils/tweetLog";
 import { type TokenCost, extractOpenRouterCost, addTokenCost, emptyTokenCost } from "./pricing";
+
+// Cap so a single call's flattened input can't bloat the pipeline_runs JSONB.
+// Injected reference docs are ~2KB and sit at the front of the message, so this
+// always preserves them; only very long raw search dumps get truncated.
+const MAX_LLM_INPUT_CHARS = 16000;
 
 // --- Types ---
 
@@ -46,10 +51,22 @@ export function trackLlmCall(entry: LlmCallCost): void {
 
 // --- Tracked LLM call ---
 
+/** Record the call's flattened input (system + user messages, multimodal-safe)
+ *  under `llm_inputs.<name>` so every LLM call's prompt — including any injected
+ *  reference document — is inspectable in the tweet log / dashboard. */
+function logLlmInput(name: string, params: Parameters<typeof llm.create>[0]): void {
+  const log = getTweetLog();
+  const messages = (params as { messages?: unknown[] }).messages;
+  if (!log || !Array.isArray(messages)) return;
+  log.set(`llm_inputs.${name}`, formatLlmMessages(messages).slice(0, MAX_LLM_INPUT_CHARS));
+}
+
 export async function trackedLlmCreate(
   name: string,
   params: Parameters<typeof llm.create>[0],
 ): Promise<{ response: any; costEntry: LlmCallCost }> {
+  logLlmInput(name, params);
+
   const response = await llm.create(params);
   const cost = extractOpenRouterCost(response);
   const costEntry: LlmCallCost = { name, ...cost, tools: [] };
