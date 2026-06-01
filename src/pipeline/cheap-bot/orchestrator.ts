@@ -2,10 +2,11 @@
  * cheap-bot Orchestrator
  *
  * 5-stage pipeline for hill-climbing the new bot against datasets/big_eval:
- *   1. Query writer  (DeepSeek; produces 1-3 search queries)
- *   2. searXNG fetch (no LLM; runs each query, combines results)
+ *   1-2. Search: either the SearXNG chain (query writer → searXNG fetch →
+ *        optional analyzer) or a single Gemini native-search call, chosen by
+ *        the cheap_bot_native_search A/B test (config.web_search).
  *   3. Note writer   (reuses simple-bot's writer with DeepSeek)
- *   4. Note-needed judge (reuses simple-bot's judge with DeepSeek — always on)
+ *   4. Note-needed judge (reuses simple-bot's judge — always on)
  *   5. Source verifier (reuses verify/sourceVerifier with DeepSeek)
  *
  * Stages 3-5 are reused as-is from simple-bot / verify so we're not
@@ -24,6 +25,8 @@ import { STEP } from "../utils/noteWriterSteps";
 import { verifySources, type SourceVerification } from "../verify/sourceVerifier";
 import { runNoteNeededJudge } from "../simple-bot/judge";
 import { runWriter, type WriterResult } from "../simple-bot/writer";
+import { searchWithGeminiNative } from "../simple-bot/searchDispatch";
+import { trackLlmCall } from "../cost-tracking/costTracker";
 import { runQueryWriter } from "./queryWriter";
 import { runSatireDetector } from "./satireDetector";
 import { readSearchCache, writeSearchCache } from "./searchCache";
@@ -58,8 +61,8 @@ export async function runCheapBotPipeline(
   return outcome;
 }
 
-/** Stages 1-3: query writer → searXNG → analyzer → note writer. Returns the
- *  writer's note (writer_done) or a terminal early-exit outcome. */
+/** Stages 0-3: satire gate → search (via gatherFindings) → note writer.
+ *  Returns the writer's note (writer_done) or a terminal early-exit outcome. */
 async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterStageResult> {
   const log = getTweetLog();
   const config = getBotConfig();
@@ -92,6 +95,55 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     }
   }
 
+  // Stages 1-2b: gather research findings. The cheap_bot_native_search test
+  // picks between the SearXNG chain (query writer → fetch → analyzer) and a
+  // single Gemini native-search call.
+  const search = await gatherFindings(userMessage);
+  if (search.kind === "early_exit") return search;
+  const { findings, queries, snippetsByUrl } = search;
+
+  // Stage 3: writer
+  const note = await runWriter(userMessage, findings);
+
+  // Writer signals "no dispute found" by returning empty note_text. Short-
+  // circuit to no_correction without spending a judge call.
+  if (!note.noteText.trim()) {
+    log?.set(`${STEP.noteWriter}.empty`, true);
+    return { kind: "early_exit", outcome: { type: "no_correction", reason: "writer_returned_empty: no dispute found in research findings" } };
+  }
+
+  return {
+    kind: "writer_done",
+    userMessage,
+    findings,
+    queries,
+    noteText: note.noteText,
+    sources: note.sources,
+    snippets: [...snippetsByUrl.entries()],
+  };
+}
+
+/** Research findings for the writer: a terminal early-exit, or the findings
+ *  brief + the queries that produced it + per-URL snippets (verifier fallback).
+ *  Native-gemini search has no discrete queries and no snippets, so those come
+ *  back empty. */
+type GatheredFindings =
+  | { kind: "early_exit"; outcome: PipelineOutcome }
+  | { kind: "ok"; findings: string; queries: string[]; snippetsByUrl: Map<string, Snippet> };
+
+/** Route the search step by config.web_search: the SearXNG chain (query writer
+ *  → fetch → analyzer) or a single Gemini native-search call. */
+async function gatherFindings(userMessage: string): Promise<GatheredFindings> {
+  return getBotConfig().web_search === "native_gemini"
+    ? gatherNativeGeminiFindings(userMessage)
+    : gatherSearxngFindings(userMessage);
+}
+
+/** SearXNG path: query writer → searXNG fetch → optional analyzer. */
+async function gatherSearxngFindings(userMessage: string): Promise<GatheredFindings> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+
   // Stage 1: query writer
   const { queries } = await runQueryWriter(userMessage);
   log?.set(`${STEP.queryWriter}.queries`, queries);
@@ -120,32 +172,23 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
 
   // Stage 2b (optional): search analyzer — distill raw search snippets into a
   // clean free-text research brief. Gated by config.search_analyzer (default off).
-  let findings: string;
-  if (config.search_analyzer) {
-    findings = await runSearchAnalyzer(userMessage, rawFindings);
-  } else {
-    findings = rawFindings;
+  const findings = config.search_analyzer ? await runSearchAnalyzer(userMessage, rawFindings) : rawFindings;
+  return { kind: "ok", findings, queries, snippetsByUrl };
+}
+
+/** Native-gemini path: one googleSearch-grounded call returns the findings
+ *  brief directly, replacing the query writer + searXNG fetch + analyzer.
+ *  Gemini issues its own queries, so there are no discrete queries or per-URL
+ *  snippets to carry forward. */
+async function gatherNativeGeminiFindings(userMessage: string): Promise<GatheredFindings> {
+  const log = getTweetLog();
+  const search = await searchWithGeminiNative(userMessage, "cheapBot.nativeSearch");
+  trackLlmCall(search.costEntry);
+  log?.set(`${STEP.searchAnalyzer}.analysis`, search.findings.slice(0, 4000));
+  if (!search.findings.trim()) {
+    return { kind: "early_exit", outcome: { type: "no_correction", reason: "native_gemini_search_empty: Gemini native search returned no findings" } };
   }
-
-  // Stage 3: writer
-  const note = await runWriter(userMessage, findings);
-
-  // Writer signals "no dispute found" by returning empty note_text. Short-
-  // circuit to no_correction without spending a judge call.
-  if (!note.noteText.trim()) {
-    log?.set(`${STEP.noteWriter}.empty`, true);
-    return { kind: "early_exit", outcome: { type: "no_correction", reason: "writer_returned_empty: no dispute found in research findings" } };
-  }
-
-  return {
-    kind: "writer_done",
-    userMessage,
-    findings,
-    queries,
-    noteText: note.noteText,
-    sources: note.sources,
-    snippets: [...snippetsByUrl.entries()],
-  };
+  return { kind: "ok", findings: search.findings, queries: [], snippetsByUrl: new Map() };
 }
 
 /** Stages 4-5: note-needed judge → source verifier (with one revision pass).
