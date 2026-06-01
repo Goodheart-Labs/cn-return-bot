@@ -17,7 +17,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../ab-testing/botConfig";
-import { buildUserMessage } from "../input/prompt";
+import { buildUserMessageFromInput } from "../input/prompt";
 import { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError, type SearxngResult } from "../tool-calling/tools";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
@@ -74,13 +74,7 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     return { kind: "early_exit", outcome: { type: "no_correction", reason: "empty_tweet_text: post.text was empty/whitespace — likely a fetch issue, not a pipeline decision" } };
   }
 
-  const userMessage = buildUserMessage({
-    post,
-    tweetMedia: input.mediaResult.tweetMedia,
-    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
-    authorNoteHistory: input.authorHistory,
-    comments: input.comments,
-  });
+  const userMessage = buildUserMessageFromInput(post, input);
 
   // Stage 0 (optional): satire detector — early-exit before search/writer when
   // the post is overt satire the audience is in on. Gated by config.satire_detector.

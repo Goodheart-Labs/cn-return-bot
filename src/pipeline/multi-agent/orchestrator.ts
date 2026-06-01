@@ -15,7 +15,7 @@ import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from ".
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
 import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
-import { buildUserMessage } from "../input/prompt";
+import { buildUserMessageFromInput } from "../input/prompt";
 import { createNotewriterDef } from "./notewriter";
 import { AgentToolError, PipelineExhaustedError } from "../utils/errors";
 
@@ -49,13 +49,7 @@ function initPipeline(post: Post, input: BotInput): PipelineState {
   log?.set("multiAgent.config", config);
   log?.set("multiAgent.agents", defs.map((d) => ({ name: d.name, desc: d.description })));
 
-  const postContext = buildUserMessage({
-    post,
-    tweetMedia: input.mediaResult.tweetMedia,
-    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
-    authorNoteHistory: input.authorHistory,
-    comments: input.comments,
-  });
+  const postContext = buildUserMessageFromInput(post, input);
   addUserMessage(agents.researcher!, postContext);
 
   return { post, postContext, agents, researcherFindings: "", currentAgentName: "researcher", sourceVerifierTurnCount: 0 };
