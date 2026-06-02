@@ -134,6 +134,17 @@ const INLINE_RESPONSE_SCHEMA = {
   required: ["findings", "correction_needed"],
 };
 
+// Prompt-level JSON instruction for providers that can't accept a
+// response_format we'd route to: OpenAI's web_search_preview (rejects
+// json_schema) and Perplexity Sonar (no endpoint advertises json_schema/
+// json_object support, so provider.require_parameters 404s the request).
+const PROMPTED_JSON_INSTRUCTION =
+  "Respond with strict JSON only matching: { findings: string, correction_needed: boolean }";
+
+function stripJsonFences(content: string): string {
+  return content.replace(/^```json\n?|\n?```$/g, "").trim();
+}
+
 // --- Public types ---
 
 export interface SearchDispatchResult {
@@ -313,11 +324,10 @@ async function searchWithOpenaiNative(
   // response_format=json_schema (returns 500 on production-sized prompts).
   // Ask for JSON in the prompt and parse the result; gpt-5.x reliably emits
   // valid JSON when explicitly instructed.
-  const promptedSchema = `Respond with strict JSON only matching: { findings: string, correction_needed: boolean }`;
   const response = await llm.create({
     model,
     messages: [
-      { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}\n\n${promptedSchema}` },
+      { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}\n\n${PROMPTED_JSON_INSTRUCTION}` },
     ],
     tools: [{ type: "web_search_preview" }] as any,
     max_tokens: OPENAI_MAX_TOKENS,
@@ -325,7 +335,7 @@ async function searchWithOpenaiNative(
 
   const choice = response.choices?.[0];
   const rawContent = choice?.message?.content ?? "";
-  const cleaned = rawContent.replace(/^```json\n?|\n?```$/g, "").trim();
+  const cleaned = stripJsonFences(rawContent);
   if (!cleaned) {
     const finishReason = choice?.finish_reason ?? "unknown";
     const usage = response.usage ? JSON.stringify(response.usage) : "(no usage)";
@@ -351,7 +361,12 @@ async function searchWithSonarBundled(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
-  const systemPrompt = getSearchSystemPrompt();
+  // Perplexity Sonar honors response_format=json_schema, but no Sonar endpoint
+  // advertises it, so the global provider.require_parameters routing 404s the
+  // request ("No endpoints found that can handle the requested parameters").
+  // Ask for JSON in the prompt and parse it instead — Sonar reliably emits
+  // valid JSON when instructed.
+  const systemPrompt = `${getSearchSystemPrompt()}\n\n${PROMPTED_JSON_INSTRUCTION}`;
   log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
 
   // Sonar models ground the response in web search automatically; no tool needed.
@@ -361,11 +376,10 @@ async function searchWithSonarBundled(
       { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
-    response_format: OPENAI_RESPONSE_FORMAT,
   } as any);
 
   const message = response.choices?.[0]?.message;
-  const content = message?.content ?? "";
+  const content = stripJsonFences(message?.content ?? "");
   const parsed = parseSearchJson(content, "searchWithSonarBundled");
   const findings = appendSonarCitations(parsed.findings, message?.annotations);
   log?.set(`${name}.messages.1`, { content: { ...parsed, findings } });
