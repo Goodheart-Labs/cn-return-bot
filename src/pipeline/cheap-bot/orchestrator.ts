@@ -21,7 +21,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { buildUserMessageFromInput } from "../input/prompt";
 import { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError, type SearxngResult } from "../tool-calling/tools";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP } from "../utils/noteWriterSteps";
+import { STEP, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
 import { verifySources, type SourceVerification } from "../verify/sourceVerifier";
 import { runNoteNeededJudge } from "../simple-bot/judge";
 import { runWriter, type WriterResult } from "../simple-bot/writer";
@@ -184,7 +184,7 @@ async function gatherNativeGeminiFindings(userMessage: string): Promise<Gathered
   const log = getTweetLog();
   const search = await searchWithGeminiNative(userMessage, "cheapBot.nativeSearch");
   trackLlmCall(search.costEntry);
-  log?.set(`${STEP.searchAnalyzer}.analysis`, search.findings.slice(0, 4000));
+  log?.set(`${STEP.searchAnalyzer}.messages.1`, { content: search.findings.slice(0, ANALYSIS_LOG_MAX_CHARS) });
   if (!search.findings.trim()) {
     return { kind: "early_exit", outcome: { type: "no_correction", reason: "native_gemini_search_empty: Gemini native search returned no findings" } };
   }
@@ -258,7 +258,7 @@ function restoreWriterLogs(stage: WriterStageResult): void {
   if (stage.kind !== "writer_done") return;
   const log = getTweetLog();
   log?.set(`${STEP.queryWriter}.queries`, stage.queries);
-  log?.set(`${STEP.searchAnalyzer}.analysis`, stage.findings.slice(0, 4000));
+  log?.set(`${STEP.searchAnalyzer}.messages.1`, { content: stage.findings.slice(0, ANALYSIS_LOG_MAX_CHARS) });
   log?.set(`${STEP.noteWriter}.attempts.0.response`, { note_text: stage.noteText, sources: stage.sources });
 }
 

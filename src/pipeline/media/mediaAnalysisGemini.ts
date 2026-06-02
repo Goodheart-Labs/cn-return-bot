@@ -81,17 +81,39 @@ const MEDIA_RESPONSE_SCHEMA = {
 
 // --- Helpers ---
 
-/** One native-Gemini media call: send the parts, record cost, map the JSON. */
+/** Readable view of the parts sent to a media call: text (prompt + entity hint)
+ *  verbatim, binary parts as a `[media: mime, N b64 chars]` placeholder so the
+ *  base64 bytes never bloat the log. */
+function formatMediaParts(parts: GeminiContentPart[]): string {
+  return parts
+    .map((part) =>
+      "text" in part
+        ? part.text
+        : `[media: ${part.inlineData.mimeType}, ${part.inlineData.data.length} b64 chars]`,
+    )
+    .join("\n");
+}
+
+/** One native-Gemini media call: send the parts, record cost, map the JSON.
+ *  Logs input (prompt + entity hint + media placeholders) and output under the
+ *  call's cost name so every media description's I/O is inspectable. */
 async function analyzeMediaParts(parts: GeminiContentPart[], costName: string): Promise<GeminiMediaDescription> {
+  const log = getTweetLog();
+  log?.set(`${costName}.input`, formatMediaParts(parts));
+
   const result = await geminiNativeGenerate({
     model: GEMINI_NATIVE_MODEL,
     userParts: parts,
     responseSchema: MEDIA_RESPONSE_SCHEMA,
   });
   trackLlmCall({ name: costName, ...result.cost, tools: [] });
+
   const parsed = result.parsed;
-  if (!parsed) return { description: "", ocrText: "" };
-  return { description: parsed.description ?? "", ocrText: parsed.ocr_text ?? "" };
+  const description: GeminiMediaDescription = parsed
+    ? { description: parsed.description ?? "", ocrText: parsed.ocr_text ?? "" }
+    : { description: "", ocrText: "" };
+  log?.set(`${costName}.output`, description);
+  return description;
 }
 
 async function fetchImageInlineData(imageUrl: string): Promise<{ mimeType: string; data: string }> {

@@ -24,3 +24,7 @@ export const STEP = {
   noteNeededJudge: `${ROOT}.note_needed_judge`,
   sourceVerifier: `${ROOT}.source_verifier`,
 } as const;
+
+/** Cap on the research-brief text logged under search_analyzer.messages.1, so a
+ *  long free-text brief can't bloat the pipeline_runs JSONB. */
+export const ANALYSIS_LOG_MAX_CHARS = 4000;
