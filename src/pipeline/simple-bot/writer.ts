@@ -12,6 +12,7 @@ import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { countNoteLength } from "../write/writeNote";
 import { ModelOutputInvalidError } from "../utils/errors";
+import { stripJsonFences } from "../utils/jsonOutput";
 
 export interface WriterResult {
   noteText: string;
@@ -104,11 +105,24 @@ export async function runWriter(userMessage: string, findings: string): Promise<
     const content = response.choices?.[0]?.message?.content ?? "{}";
     let parsed: { note_text: string; sources: string[] };
     try {
-      parsed = JSON.parse(content);
+      parsed = JSON.parse(stripJsonFences(content));
     } catch {
-      throw new ModelOutputInvalidError(
-        `simpleBot.writer: model output was not valid JSON. content="${content.slice(0, 200)}"`,
-      );
+      // Some writer models occasionally answer in prose instead of JSON. Re-ask
+      // for JSON rather than crashing the whole pipeline; only fail for good
+      // once the attempts are exhausted.
+      if (attempt >= MAX_WRITER_ATTEMPTS) {
+        throw new ModelOutputInvalidError(
+          `simpleBot.writer: model output was not valid JSON after ${MAX_WRITER_ATTEMPTS} attempts. content="${content.slice(0, 200)}"`,
+        );
+      }
+      messages.push({ role: "assistant", content });
+      messages.push({
+        role: "user",
+        content:
+          `Your previous response was not valid JSON. Respond with ONLY a JSON object matching the schema: ` +
+          `{ "note_text": string, "sources": string[] }. No prose, no markdown fences.`,
+      });
+      continue;
     }
     const charCount = countNoteLength(parsed.note_text);
 
