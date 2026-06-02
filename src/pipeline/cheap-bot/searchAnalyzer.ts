@@ -12,7 +12,7 @@
 import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP } from "../utils/noteWriterSteps";
+import { STEP, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 
 const SYSTEM_PROMPT = `You receive a social-media post and raw search results. Distill them into a research brief.
@@ -43,6 +43,10 @@ export async function runSearchAnalyzer(
     ? { topicId: monitoring.topicId, documentUrl: monitoring.documentUrl }
     : false);
 
+  // Log the full input alongside the output, matching the messages.0 /
+  // messages.1 convention of the other note_writer_steps.
+  log?.set(`${STEP.searchAnalyzer}.messages.0`, { systemPrompt: SYSTEM_PROMPT, userMessage, model });
+
   const { response, costEntry } = await trackedLlmCreate("cheapBot.searchAnalyzer", {
     model,
     messages: [
@@ -54,6 +58,6 @@ export async function runSearchAnalyzer(
   trackLlmCall(costEntry);
 
   const content = response.choices?.[0]?.message?.content ?? "";
-  log?.set(`${STEP.searchAnalyzer}.analysis`, content.slice(0, 4000));
+  log?.set(`${STEP.searchAnalyzer}.messages.1`, { content: content.slice(0, ANALYSIS_LOG_MAX_CHARS) });
   return content;
 }
