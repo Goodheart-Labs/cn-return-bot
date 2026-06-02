@@ -17,6 +17,7 @@ import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } f
 import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { ModelOutputInvalidError } from "../utils/errors";
+import { stripJsonFences } from "../utils/jsonOutput";
 
 const linkify = new LinkifyIt();
 
@@ -140,10 +141,6 @@ const INLINE_RESPONSE_SCHEMA = {
 // json_object support, so provider.require_parameters 404s the request).
 const PROMPTED_JSON_INSTRUCTION =
   "Respond with strict JSON only matching: { findings: string, correction_needed: boolean }";
-
-function stripJsonFences(content: string): string {
-  return content.replace(/^```json\n?|\n?```$/g, "").trim();
-}
 
 // --- Public types ---
 
@@ -424,12 +421,17 @@ You have access to a google_search tool. Issue search queries to gather evidence
     // Force a tool call on turn 1: without this, some models (DeepSeek v4
     // Flash, observed 2026-05-23) prefer the JSON schema and short-circuit
     // with empty findings + correction_needed=false, never searching.
+    //
+    // When forcing the tool the model must emit a tool call, not JSON, so the
+    // response_format is moot — and some providers (Mistral) reject json_schema
+    // unless tool_choice is "auto". Attach the schema only on the "auto" turns.
+    const forceToolCall = turn === 1;
     const response = await llm.create({
       model,
       messages,
       tools,
-      response_format: OPENAI_RESPONSE_FORMAT,
-      tool_choice: turn === 1 ? "required" : "auto",
+      tool_choice: forceToolCall ? "required" : "auto",
+      ...(forceToolCall ? {} : { response_format: OPENAI_RESPONSE_FORMAT }),
     } as any);
     addTokenCost(totalCost, extractOpenRouterCost(response));
 
