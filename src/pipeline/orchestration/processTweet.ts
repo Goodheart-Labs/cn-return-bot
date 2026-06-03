@@ -18,6 +18,7 @@ import { shouldSubmitNote } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
 import { PipelineError } from "../utils/errors";
 import { aggregateAndLogCosts } from "../cost-tracking/costTracker";
+import { countNoteLength, joinNoteAndUrl } from "../write/writeNote";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -164,7 +165,7 @@ async function scorePipelineResult(
   result: PipelineResult
 ): Promise<ScoringOutput> {
   const scores: ScoreEntry[] = [];
-  const noteText = result.noteResult.note + " " + result.noteResult.url;
+  const noteText = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
 
   // Source verification
   const svScore = extractSourceVerificationScore(result);
@@ -305,7 +306,7 @@ function buildSuccessCompletionData(
     bot_name: bot.name,
     ab_test_picks: bot.picks,
     bot_config: bot.config,
-    note_text: result.noteResult.note + " " + result.noteResult.url,
+    note_text: joinNoteAndUrl(result.noteResult.note, result.noteResult.url),
     source_url: result.noteResult.url,
     note_status: result.noteResult.status,
     search_results: result.searchContextResult.searchResults?.slice(0, 10000),
@@ -403,9 +404,10 @@ export async function processSingleTweet(
     log?.set("outcome.reason", outcome.outcomeReason ?? "");
     log?.set("outcome.finalStage", outcome.finalStage);
     log?.set("note.status", result.noteResult.status);
-    log?.set("note.text", result.noteResult.note + " " + result.noteResult.url);
+    const submittedNote = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
+    log?.set("note.text", submittedNote);
     log?.set("note.url", result.noteResult.url);
-    log?.set("note.charCount", (result.noteResult.note + " " + result.noteResult.url).length);
+    log?.set("note.charCount", countNoteLength(submittedNote));
     if (result.checkResult != null) {
       log?.set("sourceCheck.result", result.checkResult.trim().toUpperCase());
     }
@@ -430,7 +432,7 @@ export async function processSingleTweet(
       finalStage: outcome.finalStage,
       noteStatus: result.noteResult.status,
       evaluationScore: scoring.evaluationScore,
-      noteText: result.noteResult.note + " " + result.noteResult.url,
+      noteText: joinNoteAndUrl(result.noteResult.note, result.noteResult.url),
       scores: scoring.scores,
       pipelineRunId,
       warnings,
