@@ -6,3 +6,19 @@
 export function stripJsonFences(content: string): string {
   return content.replace(/^```json\n?|\n?```$/g, "").trim();
 }
+
+const MAX_URL_CHARS_IN_LOG = 48;
+
+/**
+ * Shorten long URLs inside a string for error logging while leaving the rest of
+ * the text intact. Use this instead of slicing the whole response: a single long
+ * source URL otherwise eats the entire budget and makes a markdown-instead-of-
+ * JSON failure look like a truncated response.
+ */
+export function truncateUrlsForLog(text: string): string {
+  return text.replace(/https?:\/\/\S+/g, (url) =>
+    url.length > MAX_URL_CHARS_IN_LOG
+      ? `${url.slice(0, MAX_URL_CHARS_IN_LOG)}…(+${url.length - MAX_URL_CHARS_IN_LOG} chars)`
+      : url,
+  );
+}
