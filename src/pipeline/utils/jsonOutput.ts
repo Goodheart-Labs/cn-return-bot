@@ -7,7 +7,7 @@ export function stripJsonFences(content: string): string {
   return content.replace(/^```json\n?|\n?```$/g, "").trim();
 }
 
-const MAX_URL_CHARS_IN_LOG = 48;
+const MAX_URL_CHARS_IN_LOG = 150;
 
 /**
  * Shorten long URLs inside a string for error logging while leaving the rest of
