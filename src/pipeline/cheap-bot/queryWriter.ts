@@ -7,11 +7,10 @@
  * stage with a separate sub-task dataset.
  */
 
-import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
-import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
-import { ModelOutputInvalidError } from "../utils/errors";
+import { runJsonLlmCall } from "../utils/jsonLlmCall";
 
 export interface QueryWriterResult {
   queries: string[];
@@ -74,28 +73,19 @@ export async function runQueryWriter(userMessage: string): Promise<QueryWriterRe
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
 
+  const messages = [
+    { role: "system" as const, content: SYSTEM_PROMPT },
+    { role: "user" as const, content: userMessage },
+  ];
   log?.set(`${STEP.queryWriter}.messages.0`, { systemPrompt: SYSTEM_PROMPT, userMessage, model });
 
-  const { response, costEntry } = await trackedLlmCreate("cheapBot.queryWriter", {
+  const parsed = await runJsonLlmCall<{ queries: string[] }>({
+    costName: "cheapBot.queryWriter",
     model,
-    messages: [
-      { role: "system" as const, content: SYSTEM_PROMPT },
-      { role: "user" as const, content: userMessage },
-    ],
-    response_format: RESPONSE_FORMAT,
-    ...llmTuningParams(config),
-  } as any);
-  trackLlmCall(costEntry);
-
-  const content = response.choices?.[0]?.message?.content ?? "";
-  let parsed: { queries: string[] };
-  try {
-    parsed = JSON.parse(content);
-  } catch {
-    throw new ModelOutputInvalidError(
-      `cheapBot.queryWriter: model output was not valid JSON. content="${content.slice(0, 200)}"`,
-    );
-  }
+    messages,
+    responseFormat: RESPONSE_FORMAT,
+    schemaHint: `{ "queries": string[] }`,
+  });
   log?.set(`${STEP.queryWriter}.messages.1`, { content: parsed });
 
   return { queries: parsed.queries ?? [] };

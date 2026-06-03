@@ -6,11 +6,11 @@
  */
 
 import { handleWebFetch } from "../tool-calling/tools";
-import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
-import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
-import { UnfetchableSourcesError, ModelOutputInvalidError } from "../utils/errors";
+import { UnfetchableSourcesError } from "../utils/errors";
+import { runJsonLlmCall } from "../utils/jsonLlmCall";
 import {
   describeMediaFromUrl,
   type MediaSourceDescription,
@@ -262,26 +262,16 @@ export async function verifySources(params: {
     );
   }
 
-  const { response, costEntry } = await trackedLlmCreate(costPrefix, {
+  const parsed = await runJsonLlmCall<SourceVerification>({
+    costName: costPrefix,
     model: config.verifier_model ?? config.model,
     messages: [
       { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
-    response_format: RESPONSE_FORMAT,
-    ...llmTuningParams(config),
-  } as any);
-  trackLlmCall(costEntry);
-
-  const content = response.choices?.[0]?.message?.content ?? "{}";
-  let parsed: SourceVerification;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
-    throw new ModelOutputInvalidError(
-      `sourceVerifier.turn.${params.turnNumber}: model output was not valid JSON. content="${content.slice(0, 200)}"`,
-    );
-  }
+    responseFormat: RESPONSE_FORMAT,
+    schemaHint: `{ "good_sources": string[], "bad_sources": string[], "accepted": boolean, "reasoning": string }`,
+  });
 
   // Defensive: clamp good_sources/bad_sources to URLs the writer actually
   // cited. A misbehaving model could echo URLs from the research findings

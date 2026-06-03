@@ -16,11 +16,10 @@
  * Reasoning precedes the verdict so the boolean is conditioned on the analysis.
  */
 
-import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
-import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
-import { ModelOutputInvalidError } from "../utils/errors";
+import { runJsonLlmCall } from "../utils/jsonLlmCall";
 
 export interface SatireResult {
   isSatire: boolean;
@@ -65,28 +64,19 @@ export async function runSatireDetector(postContext: string): Promise<SatireResu
   const config = getBotConfig();
   const model = config.satire_model ?? config.note_judge_model ?? config.model;
 
+  const messages = [
+    { role: "system" as const, content: SYSTEM_PROMPT },
+    { role: "user" as const, content: postContext },
+  ];
   log?.set(`${STEP.satireDetector}.messages.0`, { systemPrompt: SYSTEM_PROMPT, userMessage: postContext, model });
 
-  const { response, costEntry } = await trackedLlmCreate("cheapBot.satireDetector", {
+  const parsed = await runJsonLlmCall<{ is_satire: boolean; reasoning: string }>({
+    costName: "cheapBot.satireDetector",
     model,
-    messages: [
-      { role: "system" as const, content: SYSTEM_PROMPT },
-      { role: "user" as const, content: postContext },
-    ],
-    response_format: RESPONSE_FORMAT,
-    ...llmTuningParams(config),
-  } as any);
-  trackLlmCall(costEntry);
-
-  const content = response.choices?.[0]?.message?.content ?? "";
-  let parsed: { is_satire: boolean; reasoning: string };
-  try {
-    parsed = JSON.parse(content);
-  } catch {
-    throw new ModelOutputInvalidError(
-      `cheapBot.satireDetector: model output was not valid JSON. content="${content.slice(0, 200)}"`,
-    );
-  }
+    messages,
+    responseFormat: RESPONSE_FORMAT,
+    schemaHint: `{ "reasoning": string, "is_satire": boolean }`,
+  });
   log?.set(`${STEP.satireDetector}.messages.1`, { content: parsed });
 
   return { isSatire: !!parsed.is_satire, reasoning: parsed.reasoning ?? "" };

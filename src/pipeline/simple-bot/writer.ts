@@ -6,13 +6,11 @@
  * does not re-check that here.
  */
 
-import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
-import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
-import { countNoteLength } from "../write/writeNote";
-import { ModelOutputInvalidError } from "../utils/errors";
-import { stripJsonFences } from "../utils/jsonOutput";
+import { countSubmittedNoteLength } from "../write/writeNote";
+import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 
 export interface WriterResult {
   noteText: string;
@@ -85,66 +83,51 @@ export async function runWriter(userMessage: string, findings: string): Promise<
   const config = getBotConfig();
   const combinedUserMessage = `${userMessage}\n\n## Research findings\n\n${findings}`;
 
-  const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
+  const messages: ChatMessage[] = [
     { role: "system", content: SYSTEM_PROMPT },
     { role: "user", content: combinedUserMessage },
   ];
 
+  // The helper owns the JSON parse + re-ask loop; this loop layers the note's
+  // own length validation on top, re-asking the writer on the same thread.
   for (let attempt = 1; attempt <= MAX_WRITER_ATTEMPTS; attempt++) {
     const logPrefix = `${STEP.noteWriter}.attempts.${attempt - 1}`;
     log?.set(`${logPrefix}.messages`, messages);
 
-    const { response, costEntry } = await trackedLlmCreate(`simpleBot.writer.${attempt}`, {
+    const parsed = await runJsonLlmCall<{ note_text: string; sources: string[] }>({
+      costName: `simpleBot.writer.${attempt}`,
       model: config.writer_model ?? config.model,
       messages,
-      response_format: RESPONSE_FORMAT,
-      ...llmTuningParams(config),
-    } as any);
-    trackLlmCall(costEntry);
+      responseFormat: RESPONSE_FORMAT,
+      schemaHint: `{ "note_text": string, "sources": string[] }`,
+    });
+    const noteText = parsed.note_text ?? "";
+    const sources = parsed.sources ?? [];
+    // Count the note as it will actually be submitted: body + appended source
+    // URLs (each URL counts as 1 char). The body alone can be ≤280 yet overflow
+    // once sources are appended — that's how a 284-char note reached X and was
+    // rejected. An empty note (no dispute found) counts as 0 and returns below.
+    const charCount = countSubmittedNoteLength(noteText, sources);
 
-    const content = response.choices?.[0]?.message?.content ?? "{}";
-    let parsed: { note_text: string; sources: string[] };
-    try {
-      parsed = JSON.parse(stripJsonFences(content));
-    } catch {
-      // Some writer models occasionally answer in prose instead of JSON. Re-ask
-      // for JSON rather than crashing the whole pipeline; only fail for good
-      // once the attempts are exhausted.
-      if (attempt >= MAX_WRITER_ATTEMPTS) {
-        throw new ModelOutputInvalidError(
-          `simpleBot.writer: model output was not valid JSON after ${MAX_WRITER_ATTEMPTS} attempts. content="${content.slice(0, 200)}"`,
-        );
-      }
-      messages.push({ role: "assistant", content });
-      messages.push({
-        role: "user",
-        content:
-          `Your previous response was not valid JSON. Respond with ONLY a JSON object matching the schema: ` +
-          `{ "note_text": string, "sources": string[] }. No prose, no markdown fences.`,
-      });
-      continue;
-    }
-    const charCount = countNoteLength(parsed.note_text);
-
-    log?.set(`${logPrefix}.response`, parsed);
+    log?.set(`${logPrefix}.response`, { note_text: noteText, sources });
     log?.set(`${logPrefix}.charCount`, charCount);
 
     if (charCount <= MAX_NOTE_CHARS) {
-      return { noteText: parsed.note_text, sources: parsed.sources };
+      return { noteText, sources };
     }
 
     if (attempt >= MAX_WRITER_ATTEMPTS) {
       throw new Error(
-        `simple-bot writer exceeded ${MAX_NOTE_CHARS} char limit after ${MAX_WRITER_ATTEMPTS} attempts (last: ${charCount} chars)`,
+        `simple-bot writer exceeded ${MAX_NOTE_CHARS} char limit after ${MAX_WRITER_ATTEMPTS} attempts (last: ${charCount} chars incl. sources)`,
       );
     }
 
-    messages.push({ role: "assistant", content });
+    messages.push({ role: "assistant", content: JSON.stringify(parsed) });
     messages.push({
       role: "user",
       content:
-        `Your previous note was ${charCount} characters (URLs count as 1 each), but the hard max is ${MAX_NOTE_CHARS}. ` +
-        `Rewrite the note shorter while keeping the same correction and sources. Previous note: "${parsed.note_text}"`,
+        `Your previous note was ${charCount} chars long (URLs count as one char). The limit is ${MAX_NOTE_CHARS}. ` +
+        `Previous note: "${noteText}"`,
     });
   }
 

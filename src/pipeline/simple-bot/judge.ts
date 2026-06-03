@@ -9,11 +9,10 @@
  * Activated when config.note_needed_judge is true.
  */
 
-import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
-import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
-import { ModelOutputInvalidError } from "../utils/errors";
+import { runJsonLlmCall } from "../utils/jsonLlmCall";
 
 export interface JudgeResult {
   noteNeeded: boolean;
@@ -122,28 +121,19 @@ export async function runNoteNeededJudge(params: {
   const userMessage = sections.join("\n");
 
   const systemPrompt = buildSystemPrompt(!!config.satire_detector, !!params.researcherFindings);
+  const messages = [
+    { role: "system" as const, content: systemPrompt },
+    { role: "user" as const, content: userMessage },
+  ];
   log?.set(`${STEP.noteNeededJudge}.messages.0`, { systemPrompt, userMessage, model });
 
-  const { response, costEntry } = await trackedLlmCreate("simpleBot.judge", {
+  const parsed = await runJsonLlmCall<{ note_needed: boolean; reasoning: string }>({
+    costName: "simpleBot.judge",
     model,
-    messages: [
-      { role: "system" as const, content: systemPrompt },
-      { role: "user" as const, content: userMessage },
-    ],
-    response_format: RESPONSE_FORMAT,
-    ...llmTuningParams(config),
-  } as any);
-  trackLlmCall(costEntry);
-
-  const content = response.choices?.[0]?.message?.content ?? "";
-  let parsed: { note_needed: boolean; reasoning: string };
-  try {
-    parsed = JSON.parse(content);
-  } catch {
-    throw new ModelOutputInvalidError(
-      `simpleBot.judge: model output was not valid JSON. content="${content.slice(0, 200)}"`,
-    );
-  }
+    messages,
+    responseFormat: RESPONSE_FORMAT,
+    schemaHint: `{ "reasoning": string, "note_needed": boolean }`,
+  });
   log?.set(`${STEP.noteNeededJudge}.messages.1`, { content: parsed });
 
   return { noteNeeded: !!parsed.note_needed, reasoning: parsed.reasoning ?? "" };
