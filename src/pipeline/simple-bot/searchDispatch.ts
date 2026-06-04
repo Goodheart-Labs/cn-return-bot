@@ -16,6 +16,7 @@ import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../cost-tracking/pricing";
 import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
+import { STEP } from "../utils/noteWriterSteps";
 import { ModelOutputInvalidError } from "../utils/errors";
 import { stripJsonFences } from "../utils/jsonOutput";
 
@@ -169,18 +170,18 @@ function parseSearchJson(content: string, source: string): SearchOutput {
 
 export async function dispatchSearch(
   userMessage: string,
-  name: string,
+  costName: string,
 ): Promise<SearchDispatchResult> {
   const config = getBotConfig();
   switch (config.web_search) {
-    case "native":         return searchWithAnthropicNative(userMessage, name);
-    case "native_gemini":  return searchWithGeminiNative(userMessage, name);
-    case "native_grok":    return searchWithGrokNative(userMessage, name);
-    case "native_openai":  return searchWithOpenaiNative(userMessage, name);
-    case "bundled":        return searchWithSonarBundled(userMessage, name);
+    case "native":         return searchWithAnthropicNative(userMessage, costName);
+    case "native_gemini":  return searchWithGeminiNative(userMessage, costName);
+    case "native_grok":    return searchWithGrokNative(userMessage, costName);
+    case "native_openai":  return searchWithOpenaiNative(userMessage, costName);
+    case "bundled":        return searchWithSonarBundled(userMessage, costName);
     case "searxng":
     case "searxng_summarized":
-                           return searchWithSearxngLoop(userMessage, name);
+                           return searchWithSearxngLoop(userMessage, costName);
     case "perplexity":
       throw new Error(`simple-bot search arch "${config.web_search}" not yet implemented`);
   }
@@ -190,13 +191,13 @@ export async function dispatchSearch(
 
 async function searchWithAnthropicNative(
   userMessage: string,
-  name: string,
+  costName: string,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
   const systemPrompt = getSearchSystemPrompt();
-  log?.set(`${name}.messages.0`, { systemPrompt, userMessage });
+  log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
   const response = await llm.create({
     model,
@@ -218,25 +219,25 @@ async function searchWithAnthropicNative(
 
   const content = response.choices?.[0]?.message?.content ?? "";
   const parsed = parseSearchJson(content, "searchWithAnthropicNative");
-  log?.set(`${name}.messages.1`, { content: parsed });
+  log?.set(`${STEP.search}.messages.1`, { content: parsed });
 
   const cost = extractOpenRouterCost(response);
   return {
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,
-    costEntry: { name, ...cost, tools: [] },
+    costEntry: { name: costName, ...cost, tools: [] },
   };
 }
 
 export async function searchWithGeminiNative(
   userMessage: string,
-  name: string,
+  costName: string,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
   const model = stripPrefix(config.search_model ?? config.model, "google/");
   const systemPrompt = getSearchSystemPrompt();
-  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
+  log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   const result = await geminiNativeGenerate({
     model,
@@ -252,7 +253,7 @@ export async function searchWithGeminiNative(
     );
   }
   const parsed = result.parsed as { findings: string; correction_needed: boolean };
-  log?.set(`${name}.messages.1`, {
+  log?.set(`${STEP.search}.messages.1`, {
     content: parsed,
     groundingChunks: result.groundingChunks,
     searchCalls: result.searchCalls,
@@ -261,19 +262,19 @@ export async function searchWithGeminiNative(
   return {
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,
-    costEntry: castCost(name, result.cost),
+    costEntry: castCost(costName, result.cost),
   };
 }
 
 async function searchWithGrokNative(
   userMessage: string,
-  name: string,
+  costName: string,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
   const model = stripPrefix(config.search_model ?? config.model, "x-ai/");
   const systemPrompt = getSearchSystemPrompt();
-  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
+  log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   const result = await xaiNativeGenerate({
     model,
@@ -289,12 +290,12 @@ async function searchWithGrokNative(
     );
   }
   const parsed = result.parsed as { findings: string; correction_needed: boolean };
-  log?.set(`${name}.messages.1`, { content: parsed, searchCalls: result.searchCalls });
+  log?.set(`${STEP.search}.messages.1`, { content: parsed, searchCalls: result.searchCalls });
 
   return {
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,
-    costEntry: castCost(name, result.cost),
+    costEntry: castCost(costName, result.cost),
   };
 }
 
@@ -307,7 +308,7 @@ const OPENAI_MAX_TOKENS = 16000;
 
 async function searchWithOpenaiNative(
   userMessage: string,
-  name: string,
+  costName: string,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
@@ -315,7 +316,7 @@ async function searchWithOpenaiNative(
   // the Phase 0 spike), so this is just an llm.create call — no native client.
   const model = config.search_model ?? config.model;
   const systemPrompt = getSearchSystemPrompt();
-  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
+  log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   // OpenAI's web_search_preview tool via OpenRouter rejects
   // response_format=json_schema (returns 500 on production-sized prompts).
@@ -341,19 +342,19 @@ async function searchWithOpenaiNative(
     );
   }
   const parsed = parseSearchJson(cleaned, "searchWithOpenaiNative");
-  log?.set(`${name}.messages.1`, { content: parsed });
+  log?.set(`${STEP.search}.messages.1`, { content: parsed });
 
   const cost = extractOpenRouterCost(response);
   return {
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,
-    costEntry: { name, ...cost, tools: [] },
+    costEntry: { name: costName, ...cost, tools: [] },
   };
 }
 
 async function searchWithSonarBundled(
   userMessage: string,
-  name: string,
+  costName: string,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
@@ -364,7 +365,7 @@ async function searchWithSonarBundled(
   // Ask for JSON in the prompt and parse it instead — Sonar reliably emits
   // valid JSON when instructed.
   const systemPrompt = `${getSearchSystemPrompt()}\n\n${PROMPTED_JSON_INSTRUCTION}`;
-  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
+  log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   // Sonar models ground the response in web search automatically; no tool needed.
   const response = await llm.create({
@@ -379,13 +380,13 @@ async function searchWithSonarBundled(
   const content = stripJsonFences(message?.content ?? "");
   const parsed = parseSearchJson(content, "searchWithSonarBundled");
   const findings = appendSonarCitations(parsed.findings, message?.annotations);
-  log?.set(`${name}.messages.1`, { content: { ...parsed, findings } });
+  log?.set(`${STEP.search}.messages.1`, { content: { ...parsed, findings } });
 
   const cost = extractOpenRouterCost(response);
   return {
     findings,
     correctionNeeded: parsed.correction_needed,
-    costEntry: { name, ...cost, tools: [] },
+    costEntry: { name: costName, ...cost, tools: [] },
   };
 }
 
@@ -399,7 +400,7 @@ const SEARXNG_MAX_TURNS = 6;
  */
 async function searchWithSearxngLoop(
   userMessage: string,
-  name: string,
+  costName: string,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
@@ -411,7 +412,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
     { role: "system", content: systemPrompt },
     { role: "user", content: userMessage },
   ];
-  log?.set(`${name}.messages.0`, { systemPrompt, userMessage, model });
+  log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   const tools = [GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL];
   const totalCost: TokenCost = emptyTokenCost();
@@ -450,7 +451,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
         const tDuration = Date.now() - tStart;
 
         const logKey = i === 0 ? fnName : `${fnName}_${i}`;
-        log?.set(`${name}.turn.${turn}.${logKey}`, {
+        log?.set(`${STEP.search}.turn.${turn}.${logKey}`, {
           args,
           result: result.output,
           durationMs: tDuration,
@@ -468,12 +469,12 @@ You have access to a google_search tool. Issue search queries to gather evidence
     }
 
     const parsed = parseSearchJson(message.content ?? "", `searxng loop final (turn ${turn})`);
-    log?.set(`${name}.messages.final`, { turn, content: parsed });
+    log?.set(`${STEP.search}.messages.final`, { turn, content: parsed });
 
     return {
       findings: parsed.findings,
       correctionNeeded: parsed.correction_needed,
-      costEntry: { name, ...totalCost, tools: toolCosts },
+      costEntry: { name: costName, ...totalCost, tools: toolCosts },
     };
   }
 
@@ -481,7 +482,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
   // the turn limit without ever producing a final answer on their own. Force
   // synthesis with one more call that has no tools — the model has all the
   // accumulated search results in messages already.
-  log?.set(`${name}.forced_synthesis`, true);
+  log?.set(`${STEP.search}.forced_synthesis`, true);
   const finalResp = await llm.create({
     model,
     messages: [
@@ -496,11 +497,11 @@ You have access to a google_search tool. Issue search queries to gather evidence
   addTokenCost(totalCost, extractOpenRouterCost(finalResp));
   const finalContent = finalResp.choices?.[0]?.message?.content ?? "";
   const parsed = parseSearchJson(finalContent, `searxng forced synthesis (after ${SEARXNG_MAX_TURNS} turns)`);
-  log?.set(`${name}.messages.final`, { turn: SEARXNG_MAX_TURNS + 1, content: parsed });
+  log?.set(`${STEP.search}.messages.final`, { turn: SEARXNG_MAX_TURNS + 1, content: parsed });
   return {
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,
-    costEntry: { name, ...totalCost, tools: toolCosts },
+    costEntry: { name: costName, ...totalCost, tools: toolCosts },
   };
 }
 

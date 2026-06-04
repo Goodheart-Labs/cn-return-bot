@@ -23,8 +23,8 @@ export interface ChatMessage {
 }
 
 export async function runJsonLlmCall<T>(params: {
-  /** Cost-tracker / llm_inputs key. The first attempt keeps it verbatim so
-   *  existing log lookups still hit; retries append `.retry.N`. */
+  /** Cost-tracker name. The first attempt keeps it verbatim so existing cost
+   *  lookups still hit; retries append `.retry.N`. */
   costName: string;
   model: string;
   /** Mutated with the model's reply + a corrective prompt on each parse failure,

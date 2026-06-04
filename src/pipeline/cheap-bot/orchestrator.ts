@@ -181,10 +181,9 @@ async function gatherSearxngFindings(userMessage: string): Promise<GatheredFindi
  *  Gemini issues its own queries, so there are no discrete queries or per-URL
  *  snippets to carry forward. */
 async function gatherNativeGeminiFindings(userMessage: string): Promise<GatheredFindings> {
-  const log = getTweetLog();
+  // searchWithGeminiNative logs its own input/output under note_writer_steps.search.
   const search = await searchWithGeminiNative(userMessage, "cheapBot.nativeSearch");
   trackLlmCall(search.costEntry);
-  log?.set(`${STEP.searchAnalyzer}.messages.1`, { content: search.findings.slice(0, ANALYSIS_LOG_MAX_CHARS) });
   if (!search.findings.trim()) {
     return { kind: "early_exit", outcome: { type: "no_correction", reason: "native_gemini_search_empty: Gemini native search returned no findings" } };
   }

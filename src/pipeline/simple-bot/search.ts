@@ -7,7 +7,6 @@
  */
 
 import { trackLlmCall } from "../cost-tracking/costTracker";
-import { STEP } from "../utils/noteWriterSteps";
 import { dispatchSearch } from "./searchDispatch";
 
 export interface SearchResult {
@@ -18,7 +17,7 @@ export interface SearchResult {
 export async function runSearch(userMessage: string): Promise<SearchResult> {
   const { findings, correctionNeeded, costEntry } = await dispatchSearch(
     userMessage,
-    STEP.search,
+    "simpleBot.search",
   );
   trackLlmCall(costEntry);
   return { findings, correctionNeeded };

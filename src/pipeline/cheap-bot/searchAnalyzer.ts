@@ -38,7 +38,7 @@ export async function runSearchAnalyzer(
   const userMessage = `${referenceBlock}${postContext}\n\n## Raw search results\n\n${rawFindings}`;
 
   // Quick yes/no next to the analysis so injection is verifiable at a glance;
-  // the full injected text shows under llm_inputs.cheapBot.searchAnalyzer.
+  // the full injected text shows under search_analyzer.messages.0.
   log?.set(`${STEP.searchAnalyzer}.referenceInjected`, monitoring
     ? { topicId: monitoring.topicId, documentUrl: monitoring.documentUrl }
     : false);
