@@ -18,7 +18,7 @@
 
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP } from "../utils/noteWriterSteps";
+import { STEP, COST } from "../utils/noteWriterSteps";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
 
 export interface SatireResult {
@@ -71,7 +71,7 @@ export async function runSatireDetector(postContext: string): Promise<SatireResu
   log?.set(`${STEP.satireDetector}.messages.0`, { systemPrompt: SYSTEM_PROMPT, userMessage: postContext, model });
 
   const parsed = await runJsonLlmCall<{ is_satire: boolean; reasoning: string }>({
-    costName: "cheapBot.satireDetector",
+    costName: COST.satireDetector,
     model,
     messages,
     responseFormat: RESPONSE_FORMAT,

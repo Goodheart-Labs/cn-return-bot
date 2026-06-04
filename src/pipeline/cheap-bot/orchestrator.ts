@@ -21,7 +21,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { buildUserMessageFromInput } from "../input/prompt";
 import { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError, type SearxngResult } from "../tool-calling/tools";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
+import { STEP, COST, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
 import { verifySources, type SourceVerification } from "../verify/sourceVerifier";
 import { runNoteNeededJudge } from "../simple-bot/judge";
 import { runWriter, type WriterResult } from "../simple-bot/writer";
@@ -182,7 +182,7 @@ async function gatherSearxngFindings(userMessage: string): Promise<GatheredFindi
  *  snippets to carry forward. */
 async function gatherNativeGeminiFindings(userMessage: string): Promise<GatheredFindings> {
   // searchWithGeminiNative logs its own input/output under note_writer_steps.search.
-  const search = await searchWithGeminiNative(userMessage, "cheapBot.nativeSearch");
+  const search = await searchWithGeminiNative(userMessage, COST.search);
   trackLlmCall(search.costEntry);
   if (!search.findings.trim()) {
     return { kind: "early_exit", outcome: { type: "no_correction", reason: "native_gemini_search_empty: Gemini native search returned no findings" } };

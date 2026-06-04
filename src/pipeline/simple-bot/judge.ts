@@ -11,7 +11,7 @@
 
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP } from "../utils/noteWriterSteps";
+import { STEP, COST } from "../utils/noteWriterSteps";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
 
 export interface JudgeResult {
@@ -128,7 +128,7 @@ export async function runNoteNeededJudge(params: {
   log?.set(`${STEP.noteNeededJudge}.messages.0`, { systemPrompt, userMessage, model });
 
   const parsed = await runJsonLlmCall<{ note_needed: boolean; reasoning: string }>({
-    costName: "simpleBot.judge",
+    costName: COST.noteNeededJudge,
     model,
     messages,
     responseFormat: RESPONSE_FORMAT,

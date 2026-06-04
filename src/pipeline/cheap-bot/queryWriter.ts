@@ -9,7 +9,7 @@
 
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP } from "../utils/noteWriterSteps";
+import { STEP, COST } from "../utils/noteWriterSteps";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
 
 export interface QueryWriterResult {
@@ -80,7 +80,7 @@ export async function runQueryWriter(userMessage: string): Promise<QueryWriterRe
   log?.set(`${STEP.queryWriter}.messages.0`, { systemPrompt: SYSTEM_PROMPT, userMessage, model });
 
   const parsed = await runJsonLlmCall<{ queries: string[] }>({
-    costName: "cheapBot.queryWriter",
+    costName: COST.queryWriter,
     model,
     messages,
     responseFormat: RESPONSE_FORMAT,

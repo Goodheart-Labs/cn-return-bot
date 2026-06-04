@@ -8,7 +8,7 @@
 import { handleWebFetch } from "../tool-calling/tools";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP } from "../utils/noteWriterSteps";
+import { STEP, COST } from "../utils/noteWriterSteps";
 import { UnfetchableSourcesError } from "../utils/errors";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
 import {
@@ -222,7 +222,7 @@ export async function verifySources(params: {
 }): Promise<SourceVerification> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const costPrefix = `sourceVerifier.turn.${params.turnNumber}`;
+  const costPrefix = `${COST.sourceVerifier}.turn.${params.turnNumber}`;
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
   const messagesLogPrefix = `${logPrefix}.messages`;
 
