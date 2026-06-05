@@ -115,3 +115,25 @@ bun run src/production/runPipeline.ts --local   # local mode
 ```
 
 When running locally, the prod X API keys must only be used for reading (fetching tweets, fetching note feedback). Never submit notes or perform any account-modifying action with the prod key without explicit approval — use `LOCAL_X_*` for that.
+
+### Replay a cheap-bot run from prod logs (`tryoutNotes --from-db [level]`)
+
+Re-run a tweet's most recent cheap-bot run locally, reusing data from its prod
+logs. Pick how deep to reuse (each level includes the previous; default `tweet`):
+
+```bash
+bun run src/local/tryoutNotes.ts <tweet-id> --from-db          # = tweet
+bun run src/local/tryoutNotes.ts <tweet-id> --from-db input
+bun run src/local/tryoutNotes.ts <tweet-id> --from-db note
+```
+
+- `tweet` — reuse the post (no X fetch); rebuild input + search + writer + gates.
+- `input` — also reuse the full input (comments, media analysis, author history).
+- `note`  — also reuse the written note → only the note-needed judge + source
+  verifier re-run (e.g. "what would the verifier do now / on a different model?").
+
+It looks up the latest `pipeline_runs` row in prod and **seeds the existing
+caches** from its logs — no pipeline code changes: the input cache makes
+`createBotInput` short-circuit, the writer cache makes the orchestrator replay
+from the gates. Forces `--bot cheap-bot`. See `src/local/seedReplayFromDb.ts`,
+`src/pipeline/input/inputCache.ts`, `src/pipeline/cheap-bot/writerCache.ts`.

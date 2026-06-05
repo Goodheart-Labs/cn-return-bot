@@ -8,7 +8,7 @@
 import { handleWebFetch } from "../tool-calling/tools";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP } from "../utils/noteWriterSteps";
+import { STEP, COST } from "../utils/noteWriterSteps";
 import { UnfetchableSourcesError } from "../utils/errors";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
 import {
@@ -17,13 +17,14 @@ import {
 } from "../media/mediaAnalysisGemini";
 
 export interface SourceVerification {
+  /** Reasoning for the verification decision. */
+  reasoning: string;
   /** Cited URLs that support at least one factual claim in the note. Subset of the input sources. */
   good_sources: string[];
   /** Cited URLs that failed to fetch or don't support any factual claim. Subset of the input sources. */
   bad_sources: string[];
   /** True iff good_sources together cover every factual claim. */
   accepted: boolean;
-  reasoning: string;
 }
 
 const RESPONSE_FORMAT = {
@@ -34,6 +35,7 @@ const RESPONSE_FORMAT = {
     schema: {
       type: "object",
       properties: {
+        reasoning: { type: "string", description: "Why the note was accepted or rejected, and a short note on any bad_sources." },
         good_sources: {
           type: "array",
           items: { type: "string" },
@@ -45,9 +47,8 @@ const RESPONSE_FORMAT = {
           description: "Verbatim URLs from the cited sources that failed to fetch or that do not support any factual claim in the note.",
         },
         accepted: { type: "boolean", description: "True iff good_sources together cover every factual claim in the note." },
-        reasoning: { type: "string", description: "Why the note was accepted or rejected, and a short note on any bad_sources." },
       },
-      required: ["good_sources", "bad_sources", "accepted", "reasoning"],
+      required: ["reasoning", "good_sources", "bad_sources", "accepted"],
       additionalProperties: false,
     },
   },
@@ -193,7 +194,7 @@ function buildSystemPrompt(acceptsMediaSources: boolean): string {
     ? `- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).`
     : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
 
-  return `You verify whether the sources cited by a proposed community note support the correction made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.
+  return `You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.
 
 Scope — what to ignore:
 - Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.
@@ -222,7 +223,7 @@ export async function verifySources(params: {
 }): Promise<SourceVerification> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const costPrefix = `sourceVerifier.turn.${params.turnNumber}`;
+  const costPrefix = `${COST.sourceVerifier}.turn.${params.turnNumber}`;
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
   const messagesLogPrefix = `${logPrefix}.messages`;
 

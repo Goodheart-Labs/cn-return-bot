@@ -54,12 +54,12 @@ async function main() {
 
   const nested = nestDotKeys(Object.fromEntries(log)) as any;
   const injected = nested?.note_writer_steps?.search_analyzer?.referenceInjected;
-  const loggedInput = nested?.llm_inputs?.cheapBot?.searchAnalyzer as string | undefined;
+  const loggedInput = nested?.note_writer_steps?.search_analyzer?.messages?.["0"]?.userMessage as string | undefined;
 
   console.log("\n=== referenceInjected marker ===");
   console.log(JSON.stringify(injected, null, 2));
 
-  console.log("\n=== llm_inputs.cheapBot.searchAnalyzer (logged input) ===");
+  console.log("\n=== search_analyzer.messages.0.userMessage (logged input) ===");
   console.log(loggedInput ?? "(MISSING — input was not logged!)");
 
   console.log("\n=== assertions ===");

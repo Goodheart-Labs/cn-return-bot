@@ -12,7 +12,7 @@
 import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
 import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
+import { STEP, COST, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 
 const SYSTEM_PROMPT = `You receive a social-media post and raw search results. Distill them into a research brief.
@@ -38,7 +38,7 @@ export async function runSearchAnalyzer(
   const userMessage = `${referenceBlock}${postContext}\n\n## Raw search results\n\n${rawFindings}`;
 
   // Quick yes/no next to the analysis so injection is verifiable at a glance;
-  // the full injected text shows under llm_inputs.cheapBot.searchAnalyzer.
+  // the full injected text shows under search_analyzer.messages.0.
   log?.set(`${STEP.searchAnalyzer}.referenceInjected`, monitoring
     ? { topicId: monitoring.topicId, documentUrl: monitoring.documentUrl }
     : false);
@@ -47,7 +47,7 @@ export async function runSearchAnalyzer(
   // messages.1 convention of the other note_writer_steps.
   log?.set(`${STEP.searchAnalyzer}.messages.0`, { systemPrompt: SYSTEM_PROMPT, userMessage, model });
 
-  const { response, costEntry } = await trackedLlmCreate("cheapBot.searchAnalyzer", {
+  const { response, costEntry } = await trackedLlmCreate(COST.searchAnalyzer, {
     model,
     messages: [
       { role: "system" as const, content: SYSTEM_PROMPT },

@@ -8,7 +8,7 @@
 
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP } from "../utils/noteWriterSteps";
+import { STEP, COST } from "../utils/noteWriterSteps";
 import { countSubmittedNoteLength } from "../write/writeNote";
 import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 
@@ -95,7 +95,7 @@ export async function runWriter(userMessage: string, findings: string): Promise<
     log?.set(`${logPrefix}.messages`, messages);
 
     const parsed = await runJsonLlmCall<{ note_text: string; sources: string[] }>({
-      costName: `simpleBot.writer.${attempt}`,
+      costName: `${COST.noteWriter}.${attempt}`,
       model: config.writer_model ?? config.model,
       messages,
       responseFormat: RESPONSE_FORMAT,

@@ -7,22 +7,36 @@
  * Steps shared by both bots (note_writer, note_needed_judge, source_verifier)
  * log under the same key from one shared module.
  *
- * These are LOG/display keys only — cost-tracking names (the first arg to
- * trackedLlmCreate) are a separate concern and stay grouped by subsystem.
+ * The same leaf keys drive cost tracking: each LLM call's cost name starts with
+ * its step leaf (COST below), so `costs.groups` (grouped by the first name
+ * segment) lines up 1:1 with the step tree.
  */
 
 const ROOT = "note_writer_steps";
 
+/** Cost-tracker name prefix per step — the first segment of every LLM call's
+ *  cost name, so `costs.groups` keys match the note_writer_steps step names. */
+export const COST = {
+  satireDetector: "satire_detector",
+  queryWriter: "query_writer",
+  searchAnalyzer: "search_analyzer",
+  search: "search",
+  noteWriter: "note_writer",
+  noteNeededJudge: "note_needed_judge",
+  sourceVerifier: "source_verifier",
+} as const;
+
+/** Log/display key per step — nested under `note_writer_steps` in the tweet log. */
 export const STEP = {
   root: ROOT,
-  satireDetector: `${ROOT}.satire_detector`,
-  queryWriter: `${ROOT}.query_writer`,
+  satireDetector: `${ROOT}.${COST.satireDetector}`,
+  queryWriter: `${ROOT}.${COST.queryWriter}`,
   fetchAndFormatSearch: `${ROOT}.fetch_and_format_search`,
-  searchAnalyzer: `${ROOT}.search_analyzer`,
-  search: `${ROOT}.search`,
-  noteWriter: `${ROOT}.note_writer`,
-  noteNeededJudge: `${ROOT}.note_needed_judge`,
-  sourceVerifier: `${ROOT}.source_verifier`,
+  searchAnalyzer: `${ROOT}.${COST.searchAnalyzer}`,
+  search: `${ROOT}.${COST.search}`,
+  noteWriter: `${ROOT}.${COST.noteWriter}`,
+  noteNeededJudge: `${ROOT}.${COST.noteNeededJudge}`,
+  sourceVerifier: `${ROOT}.${COST.sourceVerifier}`,
 } as const;
 
 /** Cap on the research-brief text logged under search_analyzer.messages.1, so a
