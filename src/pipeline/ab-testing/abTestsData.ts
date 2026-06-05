@@ -49,7 +49,7 @@ export interface ABTest {
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
-    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 50 },
+    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
     { variant: { name: "cheap-bot", overrides: {
       botId: "cheap-bot",
       model: "deepseek/deepseek-v4-flash",
@@ -70,7 +70,7 @@ export const BOT_TEST: ABTest = {
       // the judge's "is this dispute substantive" classification + the writer's
       // "find a dispute or return nothing" decision-making.
       reasoning_effort: "high",
-    }}, weight: 50 },
+    }}, weight: 0 },
     { variant: { name: "multi-agent", overrides: {
       botId: "multi-agent",
       model: "google/gemini-3-flash-preview",
@@ -124,14 +124,25 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
-    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 100 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
 
-// Verifier is hardcoded to Gemini-flash via DEFAULT_CONFIG.verifier_model.
-// Add SIMPLE_BOT_VERIFIER_TEST later when comparing verifiers.
+// Source checker (text-LLM source verifier) model for simple-bot. Baseline is
+// Gemini-flash (DEFAULT_CONFIG.verifier_model); this 50/50 split trials
+// deepseek-v4-flash as the verifier. Media analysis is unaffected — it always
+// runs on Gemini regardless of verifier_model. Prereq-gated to simple-bot, so
+// no defaultVariant.
+const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
+  name: "simple_bot_verifier",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 50 },
+  ],
+};
 
 // Extra LLM step between writer and source verifier that judges whether the
 // proposed note is actually warranted. When "on", the search step's system
@@ -284,6 +295,7 @@ export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
+  SIMPLE_BOT_VERIFIER_TEST,
   NOTE_NEEDED_JUDGE_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
