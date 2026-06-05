@@ -49,7 +49,7 @@ export interface ABTest {
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
-    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 50 },
+    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
     { variant: { name: "cheap-bot", overrides: {
       botId: "cheap-bot",
       model: "deepseek/deepseek-v4-flash",
@@ -70,7 +70,7 @@ export const BOT_TEST: ABTest = {
       // the judge's "is this dispute substantive" classification + the writer's
       // "find a dispute or return nothing" decision-making.
       reasoning_effort: "high",
-    }}, weight: 50 },
+    }}, weight: 0 },
     { variant: { name: "multi-agent", overrides: {
       botId: "multi-agent",
       model: "google/gemini-3-flash-preview",
@@ -97,16 +97,16 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    // Uniform weights across every variant except haiku45-native. Each gets
-    // ~7.69% of simple-bot traffic (1/13). Haiku stays at 0 — code path is the
-    // same as sonnet46-native, no novel signal to gather.
-    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 5 },
+    // Non-uniform weights: sonnet46-native is the primary arm; the rest carry
+    // smaller exploratory weights, with the weaker/redundant variants pinned to
+    // 0 (still declared so their historical picks resolve).
+    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 10 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
-    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 1 },
-    { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 1 },
-    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 1 },
-    { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 2 },
+    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 1 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
@@ -116,7 +116,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 1 },
-    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 1 },
+    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
   ],
 };
 
@@ -124,14 +124,25 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
-    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 100 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
 
-// Verifier is hardcoded to Gemini-flash via DEFAULT_CONFIG.verifier_model.
-// Add SIMPLE_BOT_VERIFIER_TEST later when comparing verifiers.
+// Source checker (text-LLM source verifier) model for simple-bot. Baseline is
+// Gemini-flash (DEFAULT_CONFIG.verifier_model); this 50/50 split trials
+// deepseek-v4-flash as the verifier. Media analysis is unaffected — it always
+// runs on Gemini regardless of verifier_model. Prereq-gated to simple-bot, so
+// no defaultVariant.
+const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
+  name: "simple_bot_verifier",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 50 },
+  ],
+};
 
 // Extra LLM step between writer and source verifier that judges whether the
 // proposed note is actually warranted. When "on", the search step's system
@@ -284,6 +295,7 @@ export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
+  SIMPLE_BOT_VERIFIER_TEST,
   NOTE_NEEDED_JUDGE_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
