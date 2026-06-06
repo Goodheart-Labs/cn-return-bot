@@ -12,7 +12,7 @@ import {
   fetchDashboardData,
   buildDashboardItems,
   fetchLogsForRuns,
-  countsFromItems,
+  fetchProductionCounts,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
   fetchUploads,
@@ -25,6 +25,12 @@ import {
 } from "./lib/data";
 
 const DISPLAY_PAGE_SIZE = 20;
+// Production fetches are bounded by a date window on notes.submitted_at. The
+// initial load covers the last WINDOW_DAYS_STEP days; "Load older notes" extends
+// the window by another step. Keeping the window small is what makes the first
+// paint fast — see fetchDashboardData.
+const WINDOW_DAYS_STEP = 7;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
 import { DatasetSelector } from "./components/DatasetSelector";
@@ -95,6 +101,9 @@ export function App() {
   // are lazy-loaded per visible card and cached here keyed by pipeline_run id.
   const [displayLimit, setDisplayLimit] = useState(DISPLAY_PAGE_SIZE);
   const [logsByRunId, setLogsByRunId] = useState<Map<string, Record<string, unknown>>>(new Map());
+  // Production date-window size, in days. Extends in WINDOW_DAYS_STEP increments
+  // via "Load older notes". Dataset runs ignore this (bounded uploads).
+  const [windowDays, setWindowDays] = useState(WINDOW_DAYS_STEP);
 
   // Load uploads and failure mode catalog on mount
   useEffect(() => {
@@ -119,11 +128,12 @@ export function App() {
     setError(null);
     try {
       if (dataset.type === "production") {
-        const data = await fetchDashboardData();
+        // The list is windowed; the pill counts are all-time (fetched once by a
+        // separate effect), so we don't set them here.
+        const since = new Date(Date.now() - windowDays * MS_PER_DAY).toISOString();
+        const data = await fetchDashboardData(since);
         const built = buildDashboardItems(data);
         setItems(built);
-        setCounts(countsFromItems(built));
-        setDisplayLimit(DISPLAY_PAGE_SIZE);
         setLogsByRunId(new Map());
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
@@ -136,12 +146,31 @@ export function App() {
     } finally {
       setLoading(false);
     }
-  }, [dataset]);
+  }, [dataset, windowDays]);
 
+  // Reset filters and paging when the dataset changes (but not when only the
+  // window extends — extending should preserve the user's filters and reveal).
+  // windowDays intentionally persists across dataset switches; resetting it here
+  // would re-fire loadData a second time on every switch.
   useEffect(() => {
     setFilters(defaultFilters(dataset.type));
     setAbFilters({});
+    setDisplayLimit(DISPLAY_PAGE_SIZE);
+  }, [dataset]);
+
+  // Load whenever the dataset or the window changes. loadData is memoized on
+  // both, so this fires once per meaningful change.
+  useEffect(() => {
     loadData();
+  }, [loadData]);
+
+  // Production pill counts are all-time and independent of the date window, so
+  // fetch them once per production session rather than on every window extension.
+  useEffect(() => {
+    if (dataset.type !== "production") return;
+    fetchProductionCounts()
+      .then(setCounts)
+      .catch((e) => console.warn("Failed to fetch production counts:", e));
   }, [dataset]);
 
   // Sort items by date (stable memo so renders don't re-sort unnecessarily).
@@ -199,7 +228,12 @@ export function App() {
       }),
     [visibleRaw, logsByRunId],
   );
-  const canLoadMore = dataset.type === "production" && filtered.length > displayLimit;
+  // Two ways to see more in production: reveal already-loaded items (cheap), or
+  // extend the date window to fetch older notes. The button does whichever is
+  // next. Dataset runs are fully loaded, so only the reveal applies.
+  const hasMoreInWindow = filtered.length > displayLimit;
+  const canExtendWindow = dataset.type === "production";
+  const canLoadMore = hasMoreInWindow || canExtendWindow;
 
   // Lazy-load logs for visible production items that don't have them yet.
   // Dataset runs already carry logs inline (they're small & come from uploads),
@@ -234,8 +268,16 @@ export function App() {
   }, [dataset.type, visibleRunIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLoadMore = useCallback(() => {
+    if (hasMoreInWindow) {
+      setDisplayLimit((prev) => prev + DISPLAY_PAGE_SIZE);
+      return;
+    }
+    // Everything in the current window is shown — fetch an older slice. Bump the
+    // display limit too so the newly fetched notes are revealed, not hidden
+    // behind another click.
+    setWindowDays((prev) => prev + WINDOW_DAYS_STEP);
     setDisplayLimit((prev) => prev + DISPLAY_PAGE_SIZE);
-  }, []);
+  }, [hasMoreInWindow]);
 
   // Annotation handlers
   const handleSeenToggle = async (id: string, seen: boolean) => {
@@ -441,7 +483,7 @@ export function App() {
         {loading && items.length === 0
           ? "Loading..."
           : dataset.type === "production"
-            ? `Showing ${visible.length} of ${filtered.length}`
+            ? `Showing ${visible.length} of ${filtered.length} · last ${windowDays} days${loadingLogs ? " · loading logs…" : ""}`
             : `${filtered.length} items shown`}
       </div>
 
@@ -466,9 +508,14 @@ export function App() {
         <div className="flex justify-center mt-6">
           <button
             onClick={handleLoadMore}
-            className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50"
+            disabled={loading}
+            className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50"
           >
-            {loadingLogs ? "Loading logs..." : `Load more (${DISPLAY_PAGE_SIZE})`}
+            {loading
+              ? "Loading…"
+              : hasMoreInWindow
+                ? `Load more (${DISPLAY_PAGE_SIZE})`
+                : `Load older notes (+${WINDOW_DAYS_STEP} days)`}
           </button>
         </div>
       )}
