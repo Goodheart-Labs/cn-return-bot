@@ -23,6 +23,9 @@ import { runQueryWriter } from "../cheap-bot/queryWriter";
 import { runSearchAnalyzer } from "../cheap-bot/searchAnalyzer";
 import { fetchSearxngResults, formatSearxngResults, type SearxngResult } from "../tool-calling/tools";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
+import { createTweetLog, withTweetLog, getTweetLog, type TweetLogMap } from "../utils/tweetLog";
+import { withCostTracker, getCostTracker, trackLlmCall } from "../cost-tracking/costTracker";
+import { STEP, COST } from "../utils/noteWriterSteps";
 
 const DEEPSEEK = "deepseek/deepseek-v4-flash";
 const MAX_RESULTS_PER_QUERY = 6;
@@ -93,17 +96,20 @@ const JUDGE_RESPONSE_FORMAT = {
 export interface PrefilterVerdict {
   needsNote: boolean;
   reasoning: string;
-  queries: string[];
 }
 
-/** Query writer with retry-on-empty (see file header). */
-async function runQueryWriterRetryOnEmpty(userMessage: string): Promise<string[]> {
+/** Query writer with retry-on-empty (see file header). runQueryWriter logs its
+ *  own messages.0/1 + cost under the query_writer step; we add the attempt count. */
+async function runQueryWriterRetryOnEmpty(userMessage: string): Promise<{ queries: string[]; attempts: number }> {
   let queries: string[] = [];
-  for (let attempt = 0; attempt < QUERY_WRITER_MAX_ATTEMPTS; attempt++) {
+  let attempts = 0;
+  for (; attempts < QUERY_WRITER_MAX_ATTEMPTS; ) {
+    attempts++;
     queries = (await runQueryWriter(userMessage)).queries;
     if (queries.length > 0) break;
   }
-  return queries;
+  getTweetLog()?.set(`${STEP.queryWriter}.attempts`, attempts);
+  return { queries, attempts };
 }
 
 /** SearXNG fetch over all queries → search analyzer brief. Null if no results. */
@@ -121,45 +127,90 @@ async function gatherFindings(userMessage: string, queries: string[]): Promise<s
     total += top.length;
     sections.push(`## Query: ${q}\n${formatSearxngResults(top)}`);
   }
+  const rawFindings = sections.join("\n\n");
+  const log = getTweetLog();
+  log?.set(`${STEP.fetchAndFormatSearch}.findings`, rawFindings.slice(0, 4000));
+  log?.set(`${STEP.fetchAndFormatSearch}.resultCount`, total);
   if (total === 0) return null;
-  return runSearchAnalyzer(userMessage, sections.join("\n\n"));
+  // runSearchAnalyzer logs its own messages.0/1 + cost under the search_analyzer step.
+  return runSearchAnalyzer(userMessage, rawFindings);
 }
 
 async function runPrefilterJudge(postContext: string, findings: string): Promise<{ needsNote: boolean; reasoning: string }> {
+  const log = getTweetLog();
+  const userMessage = `## Original post\n${postContext}\n\n## Research findings\n${findings}`;
+  log?.set(`${STEP.noteNeededJudge}.messages.0`, { systemPrompt: JUDGE_SYSTEM_PROMPT, userMessage, model: DEEPSEEK });
   const parsed = await runJsonLlmCall<{ note_needed: boolean; reasoning: string }>({
-    costName: "prefilter.note_needed_judge",
+    costName: COST.noteNeededJudge,
     model: DEEPSEEK,
     messages: [
       { role: "system", content: JUDGE_SYSTEM_PROMPT },
-      { role: "user", content: `## Original post\n${postContext}\n\n## Research findings\n${findings}` },
+      { role: "user", content: userMessage },
     ],
     responseFormat: JUDGE_RESPONSE_FORMAT,
     schemaHint: `{ "reasoning": string, "note_needed": boolean }`,
   });
+  log?.set(`${STEP.noteNeededJudge}.messages.1`, { content: parsed });
   return { needsNote: !!parsed.note_needed, reasoning: parsed.reasoning ?? "" };
+}
+
+/** The prefilter's steps, run under the deepseek config. Each shared step
+ *  (query writer, search, analyzer, judge) logs its own messages.0/1 + cost to
+ *  the active tweet-log/cost-tracker — which the caller isolates so they land in
+ *  the prefilter's own namespace, not the bot's. */
+async function runPrefilterSteps(post: Post): Promise<PrefilterVerdict> {
+  const input = await createBotInput(post, `prefilter:${post.id}`);
+  const userMessage = buildUserMessageFromInput(post, input);
+
+  const { queries } = await runQueryWriterRetryOnEmpty(userMessage);
+  if (queries.length === 0) {
+    return { needsNote: false, reasoning: "query writer returned no queries — opinion/joke/non-checkable" };
+  }
+
+  const findings = await gatherFindings(userMessage, queries);
+  if (!findings) {
+    return { needsNote: false, reasoning: "no evidence found — every query returned zero results" };
+  }
+
+  const judge = await runPrefilterJudge(userMessage, findings);
+  return { needsNote: judge.needsNote, reasoning: judge.reasoning };
 }
 
 /**
  * Decide whether `post` needs a note. Builds the full input (createBotInput) —
  * cached in-memory so the bot reuses it when the post passes. Runs under its own
- * deepseek config; the caller's bot config is restored on return.
+ * deepseek config, in an ISOLATED tweet-log + cost-tracker, then grafts the step
+ * logs onto the caller's log under `note_prefilter_steps.*` (parallel to the
+ * bot's `note_writer_steps.*`, so the two never collide) and re-emits the cost
+ * entries namespaced under `note_prefilter.*` (one cost group for the prefilter).
  */
 export async function runNoteNeededPrefilter(post: Post): Promise<PrefilterVerdict> {
-  return withBotConfig(PREFILTER_CONFIG, async () => {
-    const input = await createBotInput(post, `prefilter:${post.id}`);
-    const userMessage = buildUserMessageFromInput(post, input);
+  const outerLog = getTweetLog();
+  const stepLog: TweetLogMap = createTweetLog();
 
-    const queries = await runQueryWriterRetryOnEmpty(userMessage);
-    if (queries.length === 0) {
-      return { needsNote: false, reasoning: "query writer returned no queries — opinion/joke/non-checkable", queries };
+  const { verdict, costs } = await withBotConfig(PREFILTER_CONFIG, () =>
+    withTweetLog(stepLog, () =>
+      withCostTracker(async () => {
+        const verdict = await runPrefilterSteps(post);
+        return { verdict, costs: [...getCostTracker()] };
+      }),
+    ),
+  );
+
+  if (outerLog) {
+    // Graft the LLM step logs under note_prefilter_steps.*; input/media logs
+    // (inputs.* / media.*) keep their conventional top-level keys.
+    for (const [key, value] of stepLog) {
+      outerLog.set(key.replace(/^note_writer_steps\b/, "note_prefilter_steps"), value);
     }
+    outerLog.set("note_prefilter_steps.verdict", verdict);
+  }
 
-    const findings = await gatherFindings(userMessage, queries);
-    if (!findings) {
-      return { needsNote: false, reasoning: "no evidence found — every query returned zero results", queries };
-    }
+  // Fold the prefilter's costs into the run total, namespaced so they group
+  // under "note_prefilter" instead of colliding with the bot's same-named steps.
+  for (const entry of costs) {
+    trackLlmCall({ ...entry, name: `note_prefilter.${entry.name}` });
+  }
 
-    const judge = await runPrefilterJudge(userMessage, findings);
-    return { needsNote: judge.needsNote, reasoning: judge.reasoning, queries };
-  });
+  return verdict;
 }

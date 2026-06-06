@@ -392,11 +392,10 @@ async function runPrefilterGate(
 ): Promise<ProcessTweetResult | null> {
   if (!getBotConfig().note_prefilter || getMonitoringContext()) return null;
 
+  // runNoteNeededPrefilter logs its own steps under note_prefilter_steps.* (incl.
+  // the verdict) and folds its cost into the run total.
   const verdict = await runNoteNeededPrefilter(post);
   const log = getTweetLog();
-  log?.set("prefilter.needsNote", verdict.needsNote);
-  log?.set("prefilter.reasoning", verdict.reasoning);
-  log?.set("prefilter.queries", verdict.queries);
   if (verdict.needsNote) return null; // proceed to the bot; bot reuses cached input
 
   log?.set("outcome.result", "rejected");
