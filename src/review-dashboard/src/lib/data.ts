@@ -400,13 +400,45 @@ export function buildDashboardItems(data: {
 
 // ─── Production counts ───────────────────────────────────────────────────────
 
-export function countsFromItems(items: ReviewItem[]): Record<FailureType, number> {
+/**
+ * All-time production category counts for the filter-bar pills. These are
+ * deliberately NOT windowed — the list shows the last N days, but the pills
+ * report the full picture, so "Rated Helpful 475" doesn't shrink to whatever
+ * happens to be loaded.
+ *
+ * Cheap because it pulls only the two tiny columns needed to classify (no text,
+ * no TOAST): every note's `cn_status`, the `our_note_id`s with a helpful
+ * competitor (to mark lost-to-competitor), and a head-count of missed
+ * opportunities. Classification mirrors buildDashboardItems via
+ * `cnStatusToFailureType`.
+ */
+export async function fetchProductionCounts(): Promise<Record<FailureType, number>> {
+  const [notes, helpfulCompeting, missed] = await Promise.all([
+    fetchAllRows<any>(supabase.from("notes").select("note_id, cn_status"), "count_notes"),
+    fetchAllRows<any>(
+      supabase
+        .from("competing_notes")
+        .select("our_note_id")
+        .eq("current_status", "CURRENTLY_RATED_HELPFUL")
+        .not("our_note_id", "is", null),
+      "count_helpful_competing",
+    ),
+    supabase
+      .from("competing_notes")
+      .select("note_id", { count: "exact", head: true })
+      .is("our_note_id", null)
+      .eq("current_status", "CURRENTLY_RATED_HELPFUL")
+      .not("pipeline_run_id", "is", null),
+  ]);
+
+  const helpfulCompetitorNoteIds = new Set(helpfulCompeting.map((c: any) => c.our_note_id));
   const counts = Object.fromEntries(
     Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
   ) as Record<FailureType, number>;
-  for (const item of items) {
-    if (item.failureType && item.failureType in counts) counts[item.failureType]++;
+  for (const note of notes) {
+    counts[cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id))]++;
   }
+  counts.missed_opportunity = missed.count ?? 0;
   return counts;
 }
 

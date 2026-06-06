@@ -12,7 +12,7 @@ import {
   fetchDashboardData,
   buildDashboardItems,
   fetchLogsForRuns,
-  countsFromItems,
+  fetchProductionCounts,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
   fetchUploads,
@@ -128,11 +128,12 @@ export function App() {
     setError(null);
     try {
       if (dataset.type === "production") {
+        // The list is windowed; the pill counts are all-time (fetched once by a
+        // separate effect), so we don't set them here.
         const since = new Date(Date.now() - windowDays * MS_PER_DAY).toISOString();
         const data = await fetchDashboardData(since);
         const built = buildDashboardItems(data);
         setItems(built);
-        setCounts(countsFromItems(built));
         setLogsByRunId(new Map());
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
@@ -162,6 +163,15 @@ export function App() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Production pill counts are all-time and independent of the date window, so
+  // fetch them once per production session rather than on every window extension.
+  useEffect(() => {
+    if (dataset.type !== "production") return;
+    fetchProductionCounts()
+      .then(setCounts)
+      .catch((e) => console.warn("Failed to fetch production counts:", e));
+  }, [dataset]);
 
   // Sort items by date (stable memo so renders don't re-sort unnecessarily).
   const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
