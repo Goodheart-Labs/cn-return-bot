@@ -23,14 +23,16 @@ import PQueue from "p-queue";
 
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
-// We screen a LARGE feed cheaply with the note-needed prefilter, then run the
-// bot only on what it flags. The small feed is the premium/curated subset, so
-// we take its new posts FIRST, then top up from the large feed — each post is
-// tagged with the feed it came from (recorded per-post in ab_test_picks.feed_size).
-const SMALL_FEED_SIZE: FeedSize = "small";
-const LARGE_FEED_SIZE: FeedSize = "large";
+// We screen a large feed cheaply with the note-needed prefilter, then run the
+// bot only on what it flags. Walk the feed tiers smallest-first (small is the
+// premium/curated subset; each larger tier is a superset) and fill up to
+// maxPosts: take new posts from `small`, then top up from `large`, then `xl`,
+// then `xxl`, deduping against tiers already taken. Each post is tagged with the
+// tier it came from (recorded per-post in ab_test_picks.feed_size). Deeper tiers
+// are only fetched when shallower ones don't fill maxPosts.
+const FEED_SIZE_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
 
-/** A post plus the feed it was sourced from (recorded as its feed_size pick). */
+/** A post plus the feed tier it was sourced from (recorded as its feed_size pick). */
 interface SourcedPost {
   post: Post;
   feedSize: FeedSize;
@@ -40,30 +42,12 @@ interface SourcedPost {
 // Post fetching
 // ---------------------------------------------------------------------------
 
-/**
- * Fetch the small feed first, then the large feed. Falls back to small-only if
- * the large feed errors (it sometimes 403s). Both fetches share `skipPostIds`.
- */
-async function fetchSmallThenLarge(
-  skipPostIds: Set<string>,
-): Promise<{ small: Post[]; large: Post[] }> {
-  const small = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(SMALL_FEED_SIZE));
-  let large: Post[] = [];
-  try {
-    large = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(LARGE_FEED_SIZE));
-  } catch (err) {
-    console.warn(`[generate] Large feed failed (${(err as Error)?.message}); using small only`);
-  }
-  console.log(`[generate] Feed: small=${small.length}, large=${large.length}`);
-  return { small, large };
-}
-
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
   maxPosts: number,
   prefetchedSkipPostIds?: Set<string>,
   prefetchedKnownTweetIds?: Set<string>,
-): Promise<{ posts: SourcedPost[]; smallCount: number; largeCount: number }> {
+): Promise<{ posts: SourcedPost[] }> {
   let skipPostIds = prefetchedSkipPostIds;
   let knownTweetIds = prefetchedKnownTweetIds;
 
@@ -86,20 +70,36 @@ async function fetchPosts(
   knownTweetIds = knownTweetIds ?? new Set<string>();
   console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${knownTweetIds.size} already in tweets table`);
 
-  const { small, large } = await fetchSmallThenLarge(skipPostIds);
+  // Walk the ladder smallest-first, accumulating new posts until we hit maxPosts.
+  // A tweet is "new" iff it wasn't already in the tweets table. We dedupe against
+  // tiers already taken (larger tiers are supersets). Insert every new post we
+  // see (insert-only, so engagement on existing rows stays frozen) so subsequent
+  // runs treat them as known and we stop re-processing the backlog. A tier that
+  // errors (larger feeds sometimes 403) is skipped, not fatal.
+  const selected: SourcedPost[] = [];
+  const takenIds = new Set<string>();
+  const allNew: Post[] = [];
 
-  // A tweet is "new" iff it wasn't already in the tweets table before this
-  // fetch. Take new posts from the small feed first, then top up with new posts
-  // from the large feed that the small feed didn't already include. Insert the
-  // new ones now (insert-only, so engagement on existing rows stays frozen) so
-  // subsequent runs see them as known and we stop re-processing the backlog.
-  const smallIds = new Set(small.map((p) => p.id));
-  const newSmall = sortByRecencyAndImpressions(small.filter((p) => !knownTweetIds!.has(p.id)));
-  const newLarge = sortByRecencyAndImpressions(
-    large.filter((p) => !knownTweetIds!.has(p.id) && !smallIds.has(p.id)),
-  );
+  for (const feedSize of FEED_SIZE_LADDER) {
+    if (selected.length >= maxPosts) break;
+    let posts: Post[];
+    try {
+      posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(feedSize));
+    } catch (err) {
+      console.warn(`[generate] Feed ${feedSize} failed (${(err as Error)?.message}); skipping tier`);
+      continue;
+    }
+    const newPosts = sortByRecencyAndImpressions(
+      posts.filter((p) => !knownTweetIds!.has(p.id) && !takenIds.has(p.id)),
+    );
+    console.log(`[generate] Feed ${feedSize}: ${posts.length} posts, ${newPosts.length} new`);
+    for (const post of newPosts) {
+      takenIds.add(post.id);
+      allNew.push(post);
+      if (selected.length < maxPosts) selected.push({ post, feedSize });
+    }
+  }
 
-  const allNew = [...newSmall, ...newLarge];
   if (supabaseLogger && allNew.length) {
     try {
       await supabaseLogger.bulkInsertNewTweets(allNew);
@@ -109,24 +109,16 @@ async function fetchPosts(
     }
   }
 
-  // Small first, then large fill, capped at maxPosts. Each post keeps its source
-  // feed (recorded per-post in ab_test_picks.feed_size). Retries are disabled.
-  const sourced: SourcedPost[] = [
-    ...newSmall.map((post) => ({ post, feedSize: SMALL_FEED_SIZE })),
-    ...newLarge.map((post) => ({ post, feedSize: LARGE_FEED_SIZE })),
-  ];
-  const selected = sourced.slice(0, maxPosts);
-  const smallCount = selected.filter((s) => s.feedSize === SMALL_FEED_SIZE).length;
-  const largeCount = selected.length - smallCount;
-
-  console.log(`[generate] Processing ${smallCount} small + ${largeCount} large = ${selected.length} tweets`);
+  const bySize: Partial<Record<FeedSize, number>> = {};
+  for (const s of selected) bySize[s.feedSize] = (bySize[s.feedSize] ?? 0) + 1;
+  console.log(`[generate] Processing ${selected.length} tweets: ${JSON.stringify(bySize)}`);
   for (const [i, s] of selected.entries()) {
     const imp = s.post.public_metrics?.impression_count ?? 0;
     const age = ageInHours(s.post);
     console.log(`[generate]   #${i + 1}: ${s.post.id} | ${s.feedSize} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago`);
   }
 
-  return { posts: selected, smallCount, largeCount };
+  return { posts: selected };
 }
 
 function logMediaBreakdown(posts: Post[]): void {
@@ -281,9 +273,12 @@ export async function generateCandidates(
   }
   logMediaBreakdown(posts.map((s) => s.post));
 
+  // Run-level label for the summary only; per-post feed_size is set on each item.
+  // posts are ladder-ordered, so the last one is the deepest tier reached.
+  const runFeedSize = posts[posts.length - 1]!.feedSize;
   return processPosts(
     posts.map((s) => ({ post: s.post, feedSize: s.feedSize })),
     supabaseLogger,
-    { feedSize: LARGE_FEED_SIZE, onTweetProcessed, label: "generate" },
+    { feedSize: runFeedSize, onTweetProcessed, label: "generate" },
   );
 }
