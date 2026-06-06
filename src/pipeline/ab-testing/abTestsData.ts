@@ -157,6 +157,21 @@ const NOTE_NEEDED_JUDGE_TEST: ABTest = {
   ],
 };
 
+// Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
+// skips it when no note is warranted (recorded as rejected / prefilter_no_note).
+// This is what makes the large feed affordable. Mostly-on, with a 20% "off"
+// holdout so we can measure in prod how often the bot writes a note on posts the
+// prefilter would have cut (the real false-negative rate). defaultVariant "off"
+// so historical rows (no pick) resolve to no-prefilter via resolvePicks.
+const NOTE_PREFILTER_TEST: ABTest = {
+  name: "note_prefilter",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 20 },
+    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 80 },
+  ],
+};
+
 // Model used for cheap-bot's note-needed judge (the primary FP guard). The
 // BOT_TEST cheap-bot variant sets the baseline (gemini-3-flash); this test
 // swaps just the judge model, holding writer/verifier/search constant so a
@@ -297,6 +312,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
   NOTE_NEEDED_JUDGE_TEST,
+  NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
   CHEAP_BOT_NATIVE_SEARCH_TEST,
