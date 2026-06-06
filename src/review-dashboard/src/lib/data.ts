@@ -105,23 +105,31 @@ const PIPELINE_METADATA_COLUMNS =
 const TWEETS_LIST_COLUMNS =
   "tweet_id, text, media, referenced_tweet_data, author_handle, has_photo, has_video, media_count";
 
+const PUBLIC_DUMP_RATING_COLUMNS =
+  "note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date";
+
 /**
- * Fetch all the metadata the production dashboard needs in one shot, without
- * any TOASTed blobs. Returns the raw rows; caller composes them into ReviewItems.
+ * Fetch the metadata the production dashboard needs for notes submitted on or
+ * after `sinceIso`, without any TOASTed blobs. Returns the raw rows; caller
+ * composes them into ReviewItems.
  *
- * - canonical: our notes.
- * - competing: all competing_notes (both the "on our tweets" kind and the
- *   "missed opportunity" kind where our_note_id IS NULL).
- * - submittedRuns: pipeline_runs with outcome='submitted' (matched to canonical by tweet_id).
- * - missedRuns: the specific pipeline_runs referenced by missed-opportunity competing
- *   notes (pipeline_run_id IS NOT NULL, current_status='CRH').
- * - annotations: review_dashboard_annotations for our note_ids.
+ * The window anchor is `notes.submitted_at` (no nulls in that table). Crucially,
+ * every other table is scoped to the *windowed note set* rather than fetched in
+ * full — that's what makes loading fast. The old version pulled the entire
+ * competing_notes (~13k), pipeline_runs, and public-ratings tables on every
+ * page load; now a 7-day window touches only a few hundred rows of each.
  *
- * This replaces the previous paginated approach — fetching all metadata up
- * front is cheap because we exclude logs; logs are the only expensive column
- * and they're pulled on demand by `fetchLogsForRuns`.
+ * - canonical: our notes submitted since `sinceIso`.
+ * - competing: competing_notes for those notes (comparisons) plus the
+ *   "missed opportunity" rows (our_note_id IS NULL, helpful competitor) created
+ *   within the window.
+ * - submittedRuns: pipeline_runs (outcome='submitted') for the windowed tweets.
+ * - missedRuns: pipeline_runs referenced by the missed-opportunity competing notes.
+ * - annotations: review_dashboard_annotations for the windowed targets.
+ *
+ * Logs remain the only on-demand fetch (`fetchLogsForRuns`), per visible card.
  */
-export async function fetchDashboardData(): Promise<{
+export async function fetchDashboardData(sinceIso: string): Promise<{
   canonical: any[];
   competing: any[];
   submittedRuns: any[];
@@ -130,31 +138,58 @@ export async function fetchDashboardData(): Promise<{
   tweets: any[];
   publicDumpRatings: any[];
 }> {
-  console.log("[data] Loading dashboard metadata...");
-  const [canonical, competing, submittedRuns, publicDumpRatings] = await Promise.all([
-    fetchAllRows<any>(
-      supabase
-        .from("notes")
-        .select(CANONICAL_LIST_COLUMNS)
-        .order("submitted_at", { ascending: false, nullsFirst: false }),
-      "canonical",
-    ),
-    fetchAllRows<any>(supabase.from("competing_notes").select("*"), "competing"),
-    fetchAllRows<any>(
-      supabase.from("pipeline_runs").select(PIPELINE_METADATA_COLUMNS).eq("outcome", "submitted"),
-      "submitted_runs",
-    ),
-    fetchAllRows<any>(
-      supabase
-        .from("note_ratings_from_public_dump")
-        .select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date"),
-      "public_dump_ratings",
-    ),
-  ]);
+  console.log(`[data] Loading dashboard metadata since ${sinceIso}...`);
 
-  // Missed opportunities reference specific pipeline_run ids; fetch just those
-  // (avoids pulling the full rejected-runs table, which is ~20k rows).
-  const missedOpps = competing.filter(isMissedOppCompetingNote);
+  // The window is driven entirely by the notes we fetch; everything downstream
+  // keys off this set, so fetch it first.
+  const canonical = await fetchAllRows<any>(
+    supabase
+      .from("notes")
+      .select(CANONICAL_LIST_COLUMNS)
+      .gte("submitted_at", sinceIso)
+      .order("submitted_at", { ascending: false, nullsFirst: false }),
+    "canonical",
+  );
+  const noteIds = canonical.map((n: any) => n.note_id);
+  const noteTweetIds = [...new Set(canonical.map((n: any) => n.tweet_id).filter(Boolean))];
+  const sinceMillis = new Date(sinceIso).getTime();
+
+  const [comparisonCompeting, missedOppCompeting, submittedRuns, publicDumpRatings] =
+    await Promise.all([
+      // Competing notes attached to our windowed notes — drives the comparison
+      // list and the lost-to-competitor classification.
+      fetchInBatches<any>(
+        supabase, "competing_notes", "*", "our_note_id", noteIds, undefined, "comparison_competing",
+      ),
+      // Missed opportunities: helpful competitor notes on tweets we rejected.
+      // Anchored by the competitor's creation time as a window proxy (the exact
+      // item date is the pipeline_run.created_at fetched below); a recent
+      // rejection of an older competitor can fall outside the window, which is
+      // acceptable for this secondary failure type.
+      fetchAllRows<any>(
+        supabase
+          .from("competing_notes")
+          .select("*")
+          .is("our_note_id", null)
+          .eq("current_status", "CURRENTLY_RATED_HELPFUL")
+          .not("pipeline_run_id", "is", null)
+          .gte("created_at_millis", sinceMillis),
+        "missed_opp_competing",
+      ),
+      fetchInBatches<any>(
+        supabase, "pipeline_runs", PIPELINE_METADATA_COLUMNS, "tweet_id", noteTweetIds,
+        (q) => q.eq("outcome", "submitted"), "submitted_runs",
+      ),
+      fetchInBatches<any>(
+        supabase, "note_ratings_from_public_dump", PUBLIC_DUMP_RATING_COLUMNS, "note_id", noteIds,
+        undefined, "public_dump_ratings",
+      ),
+    ]);
+
+  const competing = [...comparisonCompeting, ...missedOppCompeting];
+
+  // Missed opportunities reference specific pipeline_run ids; fetch just those.
+  const missedOpps = missedOppCompeting.filter(isMissedOppCompetingNote);
   const missedRunIds = [
     ...new Set(missedOpps.map((cn: any) => cn.pipeline_run_id as string)),
   ];
@@ -175,7 +210,7 @@ export async function fetchDashboardData(): Promise<{
   // engagement after the schema cleanup.
   const tweetIds = [
     ...new Set([
-      ...canonical.map((n: any) => n.tweet_id).filter(Boolean),
+      ...noteTweetIds,
       ...submittedRuns.map((r: any) => r.tweet_id).filter(Boolean),
       ...missedRuns.map((r: any) => r.tweet_id).filter(Boolean),
     ]),
@@ -196,7 +231,7 @@ export async function fetchDashboardData(): Promise<{
   // missed-opportunity items use the missedTargetId() encoding. Include both
   // shapes so tags applied to missed-opp cards survive reloads.
   const annotationTargetIds = [
-    ...canonical.map((n: any) => n.note_id),
+    ...noteIds,
     ...missedOpps.map((cn: any) => missedTargetId(cn.note_id)),
   ];
   const annotations = await fetchInBatches<any>(
