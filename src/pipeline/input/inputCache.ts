@@ -27,6 +27,22 @@ function cacheDir(): string | null {
   return process.env[CACHE_ENV] || null;
 }
 
+// In-memory cache, always on. The note-needed prefilter builds the input first;
+// when a post passes the prefilter the bot's createBotInput reuses it instead of
+// re-paying the Gemini media / Grok comment / author-history fetch. Keyed by
+// tweet id + video_description_strategy (so different strategies don't collide).
+// Bounded by the posts processed in one run; the process is short-lived (cron).
+const memCache = new Map<string, BotInput>();
+const memKey = (tweetId: string, strategy: string) => `${tweetId}::${strategy}`;
+
+export function readInputCacheMem(tweetId: string, strategy: string): BotInput | null {
+  return memCache.get(memKey(tweetId, strategy)) ?? null;
+}
+
+export function writeInputCacheMem(tweetId: string, strategy: string, botInput: BotInput): void {
+  memCache.set(memKey(tweetId, strategy), botInput);
+}
+
 export function readInputCache(tweetId: string, strategy: string): BotInput | null {
   const dir = cacheDir();
   if (!dir) return null;

@@ -19,6 +19,9 @@ import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLo
 import { PipelineError } from "../utils/errors";
 import { aggregateAndLogCosts } from "../cost-tracking/costTracker";
 import { countNoteLength, joinNoteAndUrl } from "../write/writeNote";
+import { getBotConfig } from "../ab-testing/botConfig";
+import { getMonitoringContext } from "../misinfo-monitoring/monitoringContext";
+import { runNoteNeededPrefilter } from "../prefilter/noteNeededPrefilter";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -374,6 +377,63 @@ async function recordFailedRun(
   };
 }
 
+/**
+ * Cheap note-needed prefilter gate. When `config.note_prefilter` is on (and this
+ * isn't the misinfo pre-pass), run the deepseek prefilter before the bot. If it
+ * says no note is needed, complete the run as rejected/prefilter_no_note and
+ * return that result so the caller skips the (expensive) bot. Returns null when
+ * the prefilter is off or says a note may be needed (proceed to the bot).
+ */
+async function runPrefilterGate(
+  logger: SupabaseLogger | null,
+  pipelineRunId: string | null,
+  post: Post,
+  bot: Bot,
+): Promise<ProcessTweetResult | null> {
+  if (!getBotConfig().note_prefilter || getMonitoringContext()) return null;
+
+  const verdict = await runNoteNeededPrefilter(post);
+  const log = getTweetLog();
+  log?.set("prefilter.needsNote", verdict.needsNote);
+  log?.set("prefilter.reasoning", verdict.reasoning);
+  log?.set("prefilter.queries", verdict.queries);
+  if (verdict.needsNote) return null; // proceed to the bot; bot reuses cached input
+
+  log?.set("outcome.result", "rejected");
+  log?.set("outcome.reason", "prefilter_no_note");
+  log?.set("outcome.finalStage", "prefilter");
+  const cost = aggregateAndLogCosts()?.cost;
+
+  if (logger && pipelineRunId) {
+    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
+    const loggedBot = getLoggedBotIdentity(bot.id, log);
+    try {
+      await logger.completePipelineRun(pipelineRunId, {
+        outcome: "rejected",
+        outcome_reason: "prefilter_no_note",
+        final_stage: "prefilter",
+        bot_name: loggedBot.name,
+        ab_test_picks: loggedBot.picks,
+        bot_config: loggedBot.config,
+        logs,
+        cost,
+      });
+    } catch (err) {
+      console.warn(`[processTweet] Failed to record prefilter rejection:`, err);
+    }
+  }
+
+  return {
+    pipelineResult: null,
+    outcome: "rejected",
+    outcomeReason: "prefilter_no_note",
+    finalStage: "prefilter",
+    scores: [],
+    pipelineRunId,
+    warnings: [],
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Orchestrator
 // ---------------------------------------------------------------------------
@@ -389,6 +449,9 @@ export async function processSingleTweet(
   }
 
   try {
+    const prefiltered = await runPrefilterGate(logger, pipelineRunId, post, bot);
+    if (prefiltered) return prefiltered;
+
     const { result, warnings } = await runBotPipeline(post, bot);
     if (!result) {
       throw new PipelineError("Bot returned null without throwing");

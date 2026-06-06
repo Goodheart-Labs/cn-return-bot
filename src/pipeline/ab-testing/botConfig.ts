@@ -32,6 +32,14 @@ export interface BotConfig {
   note_needed_judge?: boolean;
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
+  /**
+   * When true, a cheap deepseek-v4-flash "note-needed prefilter" runs BEFORE the
+   * bot (query writer → SearXNG → analyzer → reframed note-needed judge). If it
+   * decides no note is needed, the bot is skipped and the run is recorded as
+   * rejected / prefilter_no_note. Lets a large feed be screened cheaply. Set by
+   * NOTE_PREFILTER_TEST; defaults false.
+   */
+  note_prefilter?: boolean;
   /** Model for the cheap-bot satire detector. Defaults to `note_judge_model`
    *  then `model`. Decouples the satire detector from the note-needed judge
    *  (which also reads `note_judge_model`) so they can run on different models. */

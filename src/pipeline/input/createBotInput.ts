@@ -11,7 +11,7 @@ import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalys
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
 import { fetchTweetComments } from "./comments";
 import { detectMadeWithAiLabel } from "./madeWithAiLabel";
-import { readInputCache, writeInputCache } from "./inputCache";
+import { readInputCache, writeInputCache, readInputCacheMem, writeInputCacheMem } from "./inputCache";
 
 export interface BotInput {
   mediaResult: GeminiMediaResult;
@@ -41,8 +41,15 @@ function isMediaOnlyPost(post: Post): boolean {
 
 export async function createBotInput(post: Post, logTag: string): Promise<BotInput> {
   const config = getBotConfig();
-  const cached = readInputCache(post.id, config.video_description_strategy);
-  if (cached) return cached;
+  const strategy = config.video_description_strategy;
+  // In-memory first (prefilter built it this run), then the file cache (eval).
+  const memCached = readInputCacheMem(post.id, strategy);
+  if (memCached) return memCached;
+  const cached = readInputCache(post.id, strategy);
+  if (cached) {
+    writeInputCacheMem(post.id, strategy, cached);
+    return cached;
+  }
 
   const log = getTweetLog();
   const warnings: string[] = [];
@@ -103,6 +110,7 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
   log?.set("inputs.mediaMadeWithAiLabel", mediaMadeWithAiLabel);
 
   const result: BotInput = { mediaResult, authorHistory, comments, mediaMadeWithAiLabel, warnings };
-  writeInputCache(post, config.video_description_strategy, result);
+  writeInputCache(post, strategy, result);
+  writeInputCacheMem(post.id, strategy, result);
   return result;
 }
