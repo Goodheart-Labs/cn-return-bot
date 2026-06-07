@@ -1,0 +1,87 @@
+[
+  {
+    "runId": "19b57981-075b-4c7a-9502-d6d97b70ed68",
+    "tweetId": "2062103985784344846",
+    "tweetUrl": "https://x.com/i/status/2062103985784344846",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "PROTEST 🇳🇬✊: More Crowds Gather In Abeokuta As Demonstrations Over Abducted Oyo Schoolchildren And Teachers Gain Momentum. https://t.co/7BHKM3mSJw",
+    "variant": "base-lenient",
+    "predNeedsNote": false,
+    "predReason": "The research findings confirm that peaceful protests over the abduction of Oyo schoolchildren and teachers did take place in Abeokuta in early June 2026, consistent with the post's claim. Since the claim is accurate and not materially false, a Community Note is not needed.",
+    "queries": [
+      "Abeokuta protest Oyo schoolchildren abduction June 2026",
+      "Oyo schoolchildren abduction Abeokuta protest 2026",
+      "Nigeria protest Abeokuta abducted schoolchildren teachers 2026"
+    ],
+    "numCandidates": 16,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2224,
+    "costUsd": 0.0193022762
+  },
+  {
+    "runId": "45d16d8a-fd2f-4f31-8e50-f3234b49c16b",
+    "tweetId": "2059409485358129653",
+    "tweetUrl": "https://x.com/i/status/2059409485358129653",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "I JUST REALIZED THIS YEAR’S CHRISTMAS WILL BE 24/25/26 https://t.co/3wJYMgJ3ZG",
+    "variant": "base-lenient",
+    "predNeedsNote": false,
+    "predReason": "query writer returned no queries after 3 attempts — opinion/joke/non-checkable",
+    "queries": [],
+    "queryAttempts": 3,
+    "numCandidates": 0,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2192,
+    "costUsd": 0.008792999999999999
+  },
+  {
+    "runId": "55f55474-726c-4084-b054-24943b60d039",
+    "tweetId": "2062006890637242606",
+    "tweetUrl": "https://x.com/i/status/2062006890637242606",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "“Been in combat” probably not what Pelley meant to say in the NYT interview: https://t.co/EJySuENYo1",
+    "variant": "base-lenient",
+    "predNeedsNote": false,
+    "predReason": "The post's implied claim is that Pelley probably did not mean to say he 'was in combat' because it is inaccurate. However, Pelley indeed said he 'had been in combat' in the cited interview. Whether that claim is materially false depends on interpretation: as a journalist in war zones, 'being in combat' can be ambiguous, but the research does not provide conclusive proof that Pelley's specific statement is false. The commenters dispute it with unverified claims, and the findings show no direct evidence Pelley was a combatant, only that he reported from conflict areas. Thus the post's skepticism is not clearly falsifiable as materially false, so a note is not needed under the strict criteria.",
+    "queries": [
+      "Scott Pelley combat Afghanistan Iraq Ukraine journalist",
+      "Scott Pelley fired CBS News 2026",
+      "Scott Pelley Taliban ambush embedded convoy",
+      "Scott Pelley New York Times interview 2026"
+    ],
+    "numCandidates": 21,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2844,
+    "costUsd": 0.009072192
+  },
+  {
+    "runId": "63a782f0-bd94-4dfe-b10d-c94dac0258f8",
+    "tweetId": "2060130221915856985",
+    "tweetUrl": "https://x.com/i/status/2060130221915856985",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "I might lose followers for this, but it must be said\n\nDenying the atrocities of the Residential Schools is just as bad as Holocaust denial\n\nBoth should be ILLEGAL in Canada",
+    "variant": "base-lenient",
+    "predNeedsNote": false,
+    "predReason": "The post expresses an opinion that denying residential school atrocities should be illegal, comparing it to Holocaust denial. It does not assert a specific, checkable factual claim about the world; rather, it makes a moral and policy argument. Therefore, it fails the first precondition for a Community Note (falsifiable fact).",
+    "queries": [
+      "Canadian Residential Schools atrocities evidence Truth and Reconciliation Commission"
+    ],
+    "queryAttempts": 1,
+    "numCandidates": 6,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2666,
+    "costUsd": 0.008300864000000002
+  }
+]

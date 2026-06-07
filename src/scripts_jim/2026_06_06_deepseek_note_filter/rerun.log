@@ -1,0 +1,87 @@
+✅ Test "Post 0" passed for goal "search context"
+✅ Test "Post 1" passed for goal "search context"
+✅ Test "Post 2" passed for goal "search context"
+✅ Test "Post 3" passed for goal "search context"
+✅ Test "Post 4" passed for goal "search context"
+✅ Test "Post 5" passed for goal "search context"
+✅ Test "Post 6" passed for goal "search context"
+✅ Test "Post 7" passed for goal "search context"
+✅ Test "Post 8" passed for goal "search context"
+✅ Test "Post 9" passed for goal "search context"
+✅ Test "Post 10" passed for goal "search context"
+📝 Registering implementation "version one" for goal "search context"
+✅ Defined implementation "version one" for goal "search context"
+🔗 Creating derived tests for goal "write note with search" from implementation "version one" of goal "search context"
+✅ Successfully created derived tests for goal "write note with search" from "search context.version one"
+📝 Registering implementation "write note v1" for goal "write note with search"
+✅ Defined implementation "write note v1" for goal "write note with search"
+Re-running 14 empty-query rows with retry-on-empty
+
+[mediaAnalysisGemini] Audio extraction failed: Command failed: ffmpeg -i "/tmp/claude-501/cn-gemini-1780742313441-5gjoo9f42sm/video.mp4" -vn -acodec libmp3lame -ar 16000 -ac 1 "/tmp/claude-501/cn-gemini-1780742313441-5gjoo9f42sm/audio.mp3" -y 2>&1
+  rerun 4/14
+  rerun 5/14
+  rerun 7/14
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  rerun 8/14
+  rerun 2/14
+  rerun 1/14
+  rerun 9/14
+  rerun 11/14
+  rerun 3/14
+  rerun 13/14
+  rerun 6/14
+  rerun 12/14
+  rerun 14/14
+  rerun 10/14
+
+Per-row outcome (base-neutral): label  attempts  before->after
+  wants_note att=1  false -> true  | CJ Rescues Tommy Vercetti from Area 69 GTA San Andreas 
+  wants_note att=1  false -> true  | Niniola stuns in new photos 😍🥰❤️ https://t.co/yutABgu
+  wants_note att=1  false -> true  | He is holding that rib with a FREAKING NAPKIN.  They ju
+  wants_note att=3  false -> false  | I JUST REALIZED THIS YEAR’S CHRISTMAS WILL BE 24/25/26 
+  wants_note att=1  false -> false  | I might lose followers for this, but it must be said  D
+  wants_note att=1  false -> true  | What has become of Germany? #Frankfurt #Lufthansa  http
+  no_note    att=3  false -> false  | Notice how every lolicon that replies to this immediate
+  no_note    att=3  false -> false  | am i too woke or is calling straight the "default" sexu
+  no_note    att=3  false -> false  | Prime minister should resign.
+  no_note    att=2  false -> false  | Guess the missing player  Level; HARD https://t.co/XFNg
+  no_note    att=3  false -> false  | one design says ‘hi :)’ the other bites people 😭🦷 htt
+  no_note    att=3  false -> false  | Bro's been holding that sneeze since the Cretaceous per
+  no_note    att=3  false -> false  | All that shit talking to me about the Knicks beating th
+  no_note    att=3  false -> false  | [OFF] 260605 Jang Wonyoung’s Airport Full Reviews  ‼️ P
+
+=== corrected metrics ===
+
+--- base-neutral ---
+  BEFORE: FN 9/50 (18%)  filtered 36/50 (72%)
+  TP=45 FN=5 TN=36 FP=14 errored=0  (sum=100)
+  false-negative rate (wants_note -> filter says no): 10.0%  (5/50)
+  correctly filtered (no_note -> filter says no):     72.0%  (36/50)
+  total filtered out: 41/100   avg cost/tweet: $0.0133
+  FN by reason: {"(submitted)":3,"low_evaluation_score":2}
+
+--- base-lenient ---
+  BEFORE: FN 8/50 (16%)  filtered 32/50 (64%)
+  TP=46 FN=4 TN=32 FP=18 errored=0  (sum=100)
+  false-negative rate (wants_note -> filter says no): 8.0%  (4/50)
+  correctly filtered (no_note -> filter says no):     64.0%  (32/50)
+  total filtered out: 36/100   avg cost/tweet: $0.0132
+  FN by reason: {"(submitted)":2,"low_evaluation_score":2}
+
+--- select-neutral ---
+  BEFORE: FN 11/50 (22%)  filtered 30/50 (60%)
+  TP=43 FN=7 TN=30 FP=20 errored=0  (sum=100)
+  false-negative rate (wants_note -> filter says no): 14.0%  (7/50)
+  correctly filtered (no_note -> filter says no):     60.0%  (30/50)
+  total filtered out: 37/100   avg cost/tweet: $0.0137
+  FN by reason: {"(submitted)":4,"low_evaluation_score":3}
+
+--- select-lenient ---
+  BEFORE: FN 10/50 (20%)  filtered 28/50 (56%)
+  TP=44 FN=6 TN=28 FP=22 errored=0  (sum=100)
+  false-negative rate (wants_note -> filter says no): 12.0%  (6/50)
+  correctly filtered (no_note -> filter says no):     56.0%  (28/50)
+  total filtered out: 34/100   avg cost/tweet: $0.0137
+  FN by reason: {"(submitted)":3,"low_evaluation_score":3}
+
+Patched results_*, false_negatives_*, false_positives_*, metrics.json. Originals saved as results_*.preRetry.json

@@ -1,0 +1,77 @@
+[
+  {
+    "runId": "16c6c5b4-0842-44db-af32-9a9bf5cd2896",
+    "tweetId": "2062815479618773335",
+    "tweetUrl": "https://x.com/i/status/2062815479618773335",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "We don’t hate men enough https://t.co/7CV8DCqnVI",
+    "grokNeedsNote": false,
+    "grokReason": "The post expresses a subjective opinion rather than making a false or misleading factual claim about the image.",
+    "searchCalls": 1,
+    "citations": [
+      "https://x.com/i/status/2062815479618773335"
+    ],
+    "costUsd": 0.02059375
+  },
+  {
+    "runId": "37fbe383-082b-40c7-9e37-4cb809b0e6c0",
+    "tweetId": "2061772525349093519",
+    "tweetUrl": "https://x.com/i/status/2061772525349093519",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "‼️BOMBSHELL: French Biostatistician &amp; 25-Year Pharma WHISTLEBLOWER Christine Cotton Comes Forward — Claims the Pfizer COVID Vaccine Given to the Public Was NEVER the One Tested in the Clinical Trials🤯\n \nChristine Cotton — a biostatistician with 25 years of experience in clinical https://t.co/g3tFEOv7I9 https://t.co/Wcn2k7Vl0U",
+    "grokNeedsNote": false,
+    "grokReason": "Post accurately reports verified suicide note and death of Christine Cotton on June 2 2026 with her own claims about Pfizer vaccine; no false or misleading assertions requiring correction.",
+    "searchCalls": 3,
+    "citations": [
+      "https://x.com/i/status/2062942205283619300",
+      "https://x.com/i/status/2062938115552293201",
+      "https://www.facebook.com/groups/manchesterunited7/posts/1610131707333556/",
+      "https://x.com/i/status/2061772525349093519",
+      "https://www.instagram.com/p/DZL7IF8zd0L/",
+      "https://www.facebook.com/groups/1091718155609107/posts/1781286389985610/",
+      "https://www.instagram.com/p/DZF6XWuhgnR/",
+      "https://www.preciousmemoriessheveport.com/obituary/CHRISTINE-COTTON",
+      "https://x.com/grok/status/2062125671627829692",
+      "https://x.com/i/status/2062951697580753031",
+      "https://www.forevermissed.com/christine-cotton/about",
+      "https://www.kuhnfuneralhomes.com/obituaries/christine-h-krzyzanowski",
+      "https://www.ilmattinoquotidiano.it/news/basilicata-free/235621/la-scomparsa-di-christine-cotton.html",
+      "https://x.com/i/status/2062957796908265901",
+      "https://www.youtube.com/watch?v=P57HbRekOjI",
+      "https://x.com/i/status/2062951215525146758"
+    ],
+    "costUsd": 0.060555
+  },
+  {
+    "runId": "5e7d8ff9-e2cf-430f-b767-f477d8751499",
+    "tweetId": "2061878082311458999",
+    "tweetUrl": "https://x.com/i/status/2061878082311458999",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "The girl who walked into The Citadel and refused to quit, no matter what was thrown at her, is still inside of me.\n\nI was the first woman to graduate from one of the most demanding military colleges in the country. They did not make it easy. But I did not leave.\n\nI will not quit. https://t.co/VS2WJ4btc0",
+    "grokNeedsNote": false,
+    "grokReason": "The post's factual claim about being the first woman to graduate from The Citadel's Corps of Cadets is accurate per official sources including The Citadel itself.",
+    "searchCalls": 3,
+    "citations": [
+      "https://www.live5news.com/2026/05/09/this-day-history-may-9-1999-nancy-mace-becomes-first-woman-graduate-citadel/",
+      "http://mace.house.gov/about",
+      "https://www.postandcourier.com/politics/nancy-mace-pushes-back-after-shannon-faulkner-claims-to-be-citadel-grad-she-doesnt-wear/article_5f9196a8-2093-11e8-8172-c3d50811c29c.html",
+      "https://feminist.org/news/first-woman-graduates-from-citadel/",
+      "https://today.citadel.edu/rep-nancy-mace-99-to-deliver-commencement-address-at-the-citadel-25-years-after-her-own-graduation/",
+      "https://www.facebook.com/nancyrmace/posts/i-wasnt-the-first-woman-accepted-to-the-citadel-i-was-the-first-woman-to-graduat/1165009214993766/",
+      "https://x.com/RepNancyMace/status/2060141629806117041",
+      "http://today.citadel.edu/remembering-maxine-hudson-the-first-woman-to-graduate-from-the-citadel/",
+      "https://nancymace.org/meet-nancy/",
+      "https://www.live5news.com/video/2026/05/09/video-this-day-history-may-9-1999-nancy-mace-becomes-first-woman-graduate-citadel/",
+      "https://www.citadel.edu/womens-history/",
+      "https://x.com/i/status/2061878082311458999",
+      "https://en.wikipedia.org/wiki/Nancy_Mace"
+    ],
+    "costUsd": 0.046287499999999995
+  }
+]

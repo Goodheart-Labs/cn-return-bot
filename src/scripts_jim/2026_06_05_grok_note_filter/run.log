@@ -1,0 +1,37 @@
+Model=grok-4.3  rows=100  versions=neutral,lenient
+
+=== version: neutral ===
+    10/100
+    20/100
+    30/100
+    40/100
+    50/100
+    60/100
+    70/100
+    80/100
+    90/100
+    100/100
+  TP=6 FN=4 TN=4 FP=4 errored=0
+  false-negative rate (wants_note -> grok says no): 8.0%  (4/50)
+  correctly filtered (no_note -> grok says no):     8.0%  (4/50)
+  total filtered out: 8/100   cost: $3.83
+  FN by reason: {"(submitted)":1,"low_evaluation_score":3}
+
+=== version: lenient ===
+    10/100
+    20/100
+    30/100
+    40/100
+    50/100
+    60/100
+    70/100
+    80/100
+    90/100
+    100/100
+  TP=18 FN=1 TN=4 FP=6 errored=0
+  false-negative rate (wants_note -> grok says no): 2.0%  (1/50)
+  correctly filtered (no_note -> grok says no):     8.0%  (4/50)
+  total filtered out: 5/100   cost: $3.63
+  FN by reason: {"(submitted)":1}
+
+Wrote results_*, false_negatives_*, false_positives_*, metrics.json to /Users/jimmaar/Github/cn-return-bot/src/scripts_jim/2026_06_05_grok_note_filter

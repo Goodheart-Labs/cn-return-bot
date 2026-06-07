@@ -1,0 +1,110 @@
+[
+  {
+    "runId": "19b57981-075b-4c7a-9502-d6d97b70ed68",
+    "tweetId": "2062103985784344846",
+    "tweetUrl": "https://x.com/i/status/2062103985784344846",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "PROTEST 🇳🇬✊: More Crowds Gather In Abeokuta As Demonstrations Over Abducted Oyo Schoolchildren And Teachers Gain Momentum. https://t.co/7BHKM3mSJw",
+    "variant": "base-neutral",
+    "predNeedsNote": false,
+    "predReason": "The research findings confirm that the post's claim about protests in Abeokuta over abducted Oyo schoolchildren is accurate and well-documented by multiple credible sources. Since the claim is factually true, it is not materially false, and a note is not needed.",
+    "queries": [
+      "Abeokuta protest Oyo schoolchildren abduction June 2026",
+      "Oyo schoolchildren abduction Abeokuta protest 2026",
+      "Nigeria protest Abeokuta abducted schoolchildren teachers 2026"
+    ],
+    "numCandidates": 16,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2224,
+    "costUsd": 0.0192897502
+  },
+  {
+    "runId": "45d16d8a-fd2f-4f31-8e50-f3234b49c16b",
+    "tweetId": "2059409485358129653",
+    "tweetUrl": "https://x.com/i/status/2059409485358129653",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "I JUST REALIZED THIS YEAR’S CHRISTMAS WILL BE 24/25/26 https://t.co/3wJYMgJ3ZG",
+    "variant": "base-neutral",
+    "predNeedsNote": false,
+    "predReason": "query writer returned no queries after 3 attempts — opinion/joke/non-checkable",
+    "queries": [],
+    "queryAttempts": 3,
+    "numCandidates": 0,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2192,
+    "costUsd": 0.008792999999999999
+  },
+  {
+    "runId": "55f55474-726c-4084-b054-24943b60d039",
+    "tweetId": "2062006890637242606",
+    "tweetUrl": "https://x.com/i/status/2062006890637242606",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "“Been in combat” probably not what Pelley meant to say in the NYT interview: https://t.co/EJySuENYo1",
+    "variant": "base-neutral",
+    "predNeedsNote": false,
+    "predReason": "The post claims that Pelley likely did not mean to say he 'been in combat' — implying the statement was inaccurate or a slip. However, Pelley's exact quote is verified as said, and the phrase 'been in combat' is factually ambiguous: journalists in war zones often use such language, and the research findings do not provide a definitive falsehood (e.g., no source confirms Pelley was never in a combat zone or under fire). The post expresses opinion/skepticism about Pelley's intent, which is not a falsifiable factual claim about a past state of the world.",
+    "queries": [
+      "Scott Pelley combat Afghanistan Iraq Ukraine journalist",
+      "Scott Pelley fired CBS News 2026",
+      "Scott Pelley Taliban ambush embedded convoy",
+      "Scott Pelley New York Times interview 2026"
+    ],
+    "numCandidates": 21,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2844,
+    "costUsd": 0.009018572
+  },
+  {
+    "runId": "63a782f0-bd94-4dfe-b10d-c94dac0258f8",
+    "tweetId": "2060130221915856985",
+    "tweetUrl": "https://x.com/i/status/2060130221915856985",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "I might lose followers for this, but it must be said\n\nDenying the atrocities of the Residential Schools is just as bad as Holocaust denial\n\nBoth should be ILLEGAL in Canada",
+    "variant": "base-neutral",
+    "predNeedsNote": false,
+    "predReason": "The post expresses an opinion and a policy proposal (that denial of residential school atrocities should be illegal, like Holocaust denial), not a specific falsifiable factual claim. The underlying factual premise—that atrocities occurred—is supported by the research findings, so the post is not materially false.",
+    "queries": [
+      "Canadian Residential Schools atrocities evidence Truth and Reconciliation Commission"
+    ],
+    "queryAttempts": 1,
+    "numCandidates": 6,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2666,
+    "costUsd": 0.008305964
+  },
+  {
+    "runId": "7061eb78-0017-449a-a84e-49ffafe9de21",
+    "tweetId": "2060714055405310375",
+    "tweetUrl": "https://x.com/i/status/2060714055405310375",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "The LARGEST human ivermectin cancer study EVER conducted found 84% of cancer patients declared COMPLETE REMISSION, TUMOR SHRINKAGE, or HALTED TUMOR GROWTH.\n\nOur study is now PEER-REVIEWED and PUBLISHED by the International Institute of Anticancer Research.\n\nThe tide is turning. https://t.co/KYKpHS0THr https://t.co/kTuoLM31qB",
+    "variant": "base-neutral",
+    "predNeedsNote": false,
+    "predReason": "The post claims 84% of patients had complete remission, tumor shrinkage, or halted growth. The study's 84.4% Clinical Benefit Ratio includes exactly those three categories (NED, regression, stable disease). The study is real and peer-reviewed. The claim is materially accurate, even if the post omits methodological caveats. Therefore, a note is not needed.",
+    "queries": [
+      "\"Real-World Clinical Outcomes of Ivermectin and Mebendazole in Cancer Patients\" Anticancer Research",
+      "largest ivermectin cancer study",
+      "Anticancer Research journal peer-reviewed",
+      "International Institute of Anticancer Research"
+    ],
+    "numCandidates": 20,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 9366,
+    "costUsd": 0.039650650999999995
+  }
+]
