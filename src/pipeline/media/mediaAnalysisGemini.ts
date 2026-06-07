@@ -370,6 +370,10 @@ export interface MediaSourceDescription {
   kind: YtDlpKind;
   meta: YtDlpMetadata;
   analysis: GeminiMediaItem;
+  /** For image-kind sources: the downloaded image as a base64 data URL, so the
+   *  source verifier can pass it to a vision model. Undefined for videos (the
+   *  temp file is deleted after analysis) and when no image was produced. */
+  imageDataUrl?: string;
 }
 
 function imageMimeFromPath(filePath: string): string {
@@ -385,9 +389,15 @@ function imageMimeFromPath(filePath: string): string {
   }
 }
 
-async function describeImageFromLocalFile(filePath: string, costName: string): Promise<GeminiMediaItem> {
+async function describeImageFromLocalFile(
+  filePath: string,
+  costName: string,
+): Promise<{ item: GeminiMediaItem; dataUrl: string }> {
   const bytes = await readFile(filePath);
-  return describeImage({ mimeType: imageMimeFromPath(filePath), data: bytes.toString("base64") }, filePath, costName);
+  const mimeType = imageMimeFromPath(filePath);
+  const data = bytes.toString("base64");
+  const item = await describeImage({ mimeType, data }, filePath, costName);
+  return { item, dataUrl: `data:${mimeType};base64,${data}` };
 }
 
 /**
@@ -444,8 +454,8 @@ async function describeWithYtDlp(
       const analysis = await analyzeVideo(filePath, durationMs, costName, strategy, precomputedTranscript);
       return { kind, meta, analysis };
     }
-    const analysis = await describeImageFromLocalFile(filePath, costName);
-    return { kind, meta, analysis };
+    const { item, dataUrl } = await describeImageFromLocalFile(filePath, costName);
+    return { kind, meta, analysis: item, imageDataUrl: dataUrl };
   } finally {
     try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
   }
@@ -457,8 +467,8 @@ async function describeWithGalleryDl(url: string, costName: string): Promise<Med
   try {
     const { meta, filePath } = downloadWithGalleryDl(url, tmpDir);
     if (!filePath) throw new Error(`gallery-dl produced no file for ${url}`);
-    const analysis = await describeImageFromLocalFile(filePath, costName);
-    return { kind: "image", meta, analysis };
+    const { item, dataUrl } = await describeImageFromLocalFile(filePath, costName);
+    return { kind: "image", meta, analysis: item, imageDataUrl: dataUrl };
   } finally {
     try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
   }

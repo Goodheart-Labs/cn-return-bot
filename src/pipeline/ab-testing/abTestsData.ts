@@ -130,17 +130,19 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   ],
 };
 
-// Source checker (text-LLM source verifier) model for simple-bot. Baseline is
-// Gemini-flash (DEFAULT_CONFIG.verifier_model); this 50/50 split trials
-// deepseek-v4-flash as the verifier. Media analysis is unaffected — it always
-// runs on Gemini regardless of verifier_model. Prereq-gated to simple-bot, so
-// no defaultVariant.
+// Source checker (text-LLM source verifier) model for simple-bot. Three-way:
+// Gemini-flash WITH images (sees post + source media as vision input, to catch
+// out-of-context media), Gemini-flash text-only (the prior baseline), and
+// deepseek-v4-flash. verifier_sees_images only fires on a vision-capable model,
+// so it's paired with the gemini variant. Prereq-gated to simple-bot, so no
+// defaultVariant.
 const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   name: "simple_bot_verifier",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
-    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 50 },
+    { variant: { name: "gemini-images",    overrides: { verifier_model: "google/gemini-3-flash-preview", verifier_sees_images: true  }}, weight: 34 },
+    { variant: { name: "gemini-no-images", overrides: { verifier_model: "google/gemini-3-flash-preview", verifier_sees_images: false }}, weight: 33 },
+    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"                                  }}, weight: 33 },
   ],
 };
 

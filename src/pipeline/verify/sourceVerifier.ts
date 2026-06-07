@@ -10,11 +10,19 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
 import { UnfetchableSourcesError } from "../utils/errors";
-import { runJsonLlmCall } from "../utils/jsonLlmCall";
+import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   describeMediaFromUrl,
   type MediaSourceDescription,
+  type GeminiMediaResult,
 } from "../media/mediaAnalysisGemini";
+import {
+  collectPostImages,
+  extractSourceImages,
+  buildImagePayload,
+  verifierModelSupportsImages,
+  type VerifierImage,
+} from "./verifierImages";
 
 export interface SourceVerification {
   /** Reasoning for the verification decision. */
@@ -119,6 +127,9 @@ interface FetchedSource {
   url: string;
   content: string;
   fetched: boolean;
+  /** Images found in this source, for the vision verifier. Empty unless image
+   *  collection is on (collectImages) and the source yielded usable images. */
+  images: VerifierImage[];
 }
 
 async function fetchSourceContent(
@@ -126,11 +137,12 @@ async function fetchSourceContent(
   costPrefix: string,
   logPrefix: string,
   acceptMediaSources: boolean,
+  collectImages: boolean,
   snippetsByUrl?: Map<string, { title: string; snippet: string }>,
-): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number }> {
+): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number; images: VerifierImage[] }> {
   const results: FetchedSource[] = [];
   for (let i = 0; i < sources.length; i++) {
-    const fetched = await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, `${logPrefix}.source.${i}`, acceptMediaSources);
+    const fetched = await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, `${logPrefix}.source.${i}`, acceptMediaSources, collectImages);
     // Fallback: if the full fetch failed but we have a search snippet for this
     // URL, use it so the verifier has something to evaluate rather than nothing.
     if (!fetched.fetched && snippetsByUrl?.has(fetched.url)) {
@@ -146,6 +158,7 @@ async function fetchSourceContent(
     sections,
     fetchedCount: nonTwitter.filter((r) => r.fetched).length,
     totalNonTwitter: nonTwitter.length,
+    images: results.flatMap((r) => r.images),
   };
 }
 
@@ -154,23 +167,27 @@ async function fetchOneSource(
   costName: string,
   logKey: string,
   acceptMediaSources: boolean,
+  collectImages: boolean,
 ): Promise<FetchedSource> {
   if (isTwitterUrl(url)) {
-    return { url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true };
+    return { url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true, images: [] };
   }
   if (acceptMediaSources) {
-    const media = await tryMediaDescription(url, costName, logKey);
+    const media = await tryMediaDescription(url, costName, logKey, collectImages);
     if (media) return media;
   }
-  return fetchAsWebPage(url);
+  return fetchAsWebPage(url, collectImages);
 }
 
 /** Returns null when the URL isn't a media host or the cascade failed (caller falls through to handleWebFetch). */
-async function tryMediaDescription(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
+async function tryMediaDescription(url: string, costName: string, logKey: string, collectImages: boolean): Promise<FetchedSource | null> {
   if (!isMediaHost(url)) return null;
   try {
     const media = await describeMediaFromUrl(url, costName);
-    return { url, content: formatCascadeMediaSection(url, media), fetched: true };
+    const images = collectImages && media.imageDataUrl
+      ? [{ url: media.imageDataUrl, origin: `cited source ${url}` }]
+      : [];
+    return { url, content: formatCascadeMediaSection(url, media), fetched: true, images };
   } catch (err: any) {
     // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
     // removed content, private account, or host not yet supported).
@@ -179,22 +196,27 @@ async function tryMediaDescription(url: string, costName: string, logKey: string
   }
 }
 
-async function fetchAsWebPage(url: string): Promise<FetchedSource> {
+async function fetchAsWebPage(url: string, collectImages: boolean): Promise<FetchedSource> {
   const result = await handleWebFetch(url);
   const content = typeof result.output === "string" ? result.output : JSON.stringify(result.output);
   const isFetchError =
     content.startsWith("Fetch failed:") ||
     content.startsWith("Fetch error:") ||
     content.startsWith("Non-text content:");
-  return { url, content: `### ${url}\n${content}`, fetched: !isFetchError };
+  const images = collectImages && !isFetchError ? extractSourceImages(content, url) : [];
+  return { url, content: `### ${url}\n${content}`, fetched: !isFetchError, images };
 }
 
-function buildSystemPrompt(acceptsMediaSources: boolean): string {
+function buildSystemPrompt(acceptsMediaSources: boolean, attachImages: boolean): string {
   const mediaRule = acceptsMediaSources
     ? `- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).`
     : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
 
-  return `You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.
+  const imageRule = attachImages
+    ? `\n\nImages: some images are attached, and an "Attached images" manifest lists which image is from the post vs. each cited source. A post often shows an image/scene, and a cited source may show a SIMILAR BUT DIFFERENT event, place, or time. Compare them: if the post's image and a source's image are not the same event, that source does not support a claim that they are — treat it as bad and do not accept a note that asserts a connection the images contradict.`
+    : "";
+
+  return `You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.${imageRule}
 
 Scope — what to ignore:
 - Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.
@@ -219,23 +241,34 @@ export async function verifySources(params: {
   postContext: string;
   researcherFindings?: string;
   snippetsByUrl?: Map<string, { title: string; snippet: string }>;
+  /** Post + quoted-tweet media analysis, so the verifier can see the post's
+   *  images. Only used when the A/B flag + model are vision-capable. */
+  mediaResult?: GeminiMediaResult;
   turnNumber: number;
 }): Promise<SourceVerification> {
   const log = getTweetLog();
   const config = getBotConfig();
+  const model = config.verifier_model ?? config.model;
   const costPrefix = `${COST.sourceVerifier}.turn.${params.turnNumber}`;
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
   const messagesLogPrefix = `${logPrefix}.messages`;
 
+  const collectImages = (config.verifier_sees_images ?? false) && verifierModelSupportsImages(model);
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
-  const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(
+  const { sections, fetchedCount, totalNonTwitter, images: sourceImages } = await fetchSourceContent(
     params.sources,
     costPrefix,
     logPrefix,
     acceptMediaSources,
+    collectImages,
     params.snippetsByUrl,
   );
-  const systemPrompt = buildSystemPrompt(acceptMediaSources);
+
+  const images = collectImages
+    ? [...collectPostImages(params.mediaResult), ...sourceImages]
+    : [];
+  const attachImages = images.length > 0;
+  const systemPrompt = buildSystemPrompt(acceptMediaSources, attachImages);
 
   const messageParts = [
     `## Context`,
@@ -253,9 +286,20 @@ export async function verifySources(params: {
   if (params.researcherFindings) {
     messageParts.push(``, `## Research findings (background — not a source)`, params.researcherFindings);
   }
+
+  const payload = attachImages ? buildImagePayload(images) : null;
+  if (payload) messageParts.push(``, payload.manifest);
   const userMessage = messageParts.join("\n");
 
-  log?.set(`${messagesLogPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+  const userContent: ChatMessage["content"] = payload
+    ? [{ type: "text", text: userMessage }, ...payload.parts]
+    : userMessage;
+
+  log?.set(`${messagesLogPrefix}.0`, {
+    systemPrompt,
+    userMessage,
+    images: payload?.images.map((img, i) => ({ index: i + 1, origin: img.origin, url: img.url.slice(0, 80) })),
+  });
 
   if (totalNonTwitter > 0 && fetchedCount === 0) {
     throw new UnfetchableSourcesError(
@@ -265,10 +309,10 @@ export async function verifySources(params: {
 
   const parsed = await runJsonLlmCall<SourceVerification>({
     costName: costPrefix,
-    model: config.verifier_model ?? config.model,
+    model,
     messages: [
       { role: "system" as const, content: systemPrompt },
-      { role: "user" as const, content: userMessage },
+      { role: "user" as const, content: userContent },
     ],
     responseFormat: RESPONSE_FORMAT,
     schemaHint: `{ "good_sources": string[], "bad_sources": string[], "accepted": boolean, "reasoning": string }`,

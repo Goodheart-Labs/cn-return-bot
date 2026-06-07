@@ -22,6 +22,13 @@ export interface BotConfig {
   verifier_model?: string;
   /** If true, the source verifier surfaces an automated Gemini analysis (yt-dlp for video/audio/Instagram-photo, direct vision call for image URLs) for cited media URLs and treats that as the source's content. Defaults to false. */
   verifier_accepts_media_sources?: boolean;
+  /** If true, the source verifier additionally receives the actual images
+   *  (post + quoted-tweet media, plus images found in the cited sources) as
+   *  vision input, with a manifest mapping each image to its origin. Lets it
+   *  catch out-of-context / misattributed media (post image vs. a source
+   *  showing a similar but different event). Only takes effect on a
+   *  vision-capable verifier_model; ignored otherwise. Defaults to false. */
+  verifier_sees_images?: boolean;
   /**
    * When true, the simple-bot pipeline runs an extra LLM step between writer
    * and source verifier that judges whether a note is actually warranted for

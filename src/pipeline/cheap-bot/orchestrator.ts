@@ -56,7 +56,7 @@ export async function runCheapBotPipeline(
     writeWriterCache(post.id, stage);
   }
 
-  const outcome = stage.kind === "early_exit" ? stage.outcome : await runGates(stage);
+  const outcome = stage.kind === "early_exit" ? stage.outcome : await runGates(stage, input);
   logFinal(startMs);
   return outcome;
 }
@@ -192,7 +192,7 @@ async function gatherNativeGeminiFindings(userMessage: string): Promise<Gathered
 
 /** Stages 4-5: note-needed judge → source verifier (with one revision pass).
  *  Runs on every full pipeline and on every cache replay. */
-async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" }>): Promise<PipelineOutcome> {
+async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" }>, input: BotInput): Promise<PipelineOutcome> {
   const { userMessage, findings } = stage;
   const snippetsByUrl = new Map(stage.snippets);
   let note: WriterResult = { noteText: stage.noteText, sources: stage.sources };
@@ -221,6 +221,7 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
     sources: note.sources,
     postContext: userMessage,
     snippetsByUrl,
+    mediaResult: input.mediaResult,
     turnNumber: 1,
   });
 
@@ -233,6 +234,7 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
         sources: note.sources,
         postContext: userMessage,
         snippetsByUrl,
+        mediaResult: input.mediaResult,
         turnNumber: 2,
       });
     }

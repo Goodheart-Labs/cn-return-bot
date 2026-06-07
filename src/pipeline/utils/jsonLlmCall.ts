@@ -17,9 +17,15 @@ import { stripJsonFences, truncateUrlsForLog } from "./jsonOutput";
 
 const DEFAULT_MAX_ATTEMPTS = 3;
 
+/** OpenAI/OpenRouter multimodal content parts. A message's content is either a
+ *  plain string or an array of these (text + images) for vision models. */
+export type ContentPart =
+  | { type: "text"; text: string }
+  | { type: "image_url"; image_url: { url: string } };
+
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
-  content: string;
+  content: string | ContentPart[];
 }
 
 export async function runJsonLlmCall<T>(params: {

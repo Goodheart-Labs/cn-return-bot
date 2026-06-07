@@ -50,6 +50,7 @@ export async function runSimpleBotPipeline(
     sources: note.sources,
     postContext: userMessage,
     researcherFindings: search.findings,
+    mediaResult: input.mediaResult,
     turnNumber: 1,
   });
 
