@@ -1,0 +1,56 @@
+✅ Test "Post 0" passed for goal "search context"
+✅ Test "Post 1" passed for goal "search context"
+✅ Test "Post 2" passed for goal "search context"
+✅ Test "Post 3" passed for goal "search context"
+✅ Test "Post 4" passed for goal "search context"
+✅ Test "Post 5" passed for goal "search context"
+✅ Test "Post 6" passed for goal "search context"
+✅ Test "Post 7" passed for goal "search context"
+✅ Test "Post 8" passed for goal "search context"
+✅ Test "Post 9" passed for goal "search context"
+✅ Test "Post 10" passed for goal "search context"
+📝 Registering implementation "version one" for goal "search context"
+✅ Defined implementation "version one" for goal "search context"
+🔗 Creating derived tests for goal "write note with search" from implementation "version one" of goal "search context"
+✅ Successfully created derived tests for goal "write note with search" from "search context.version one"
+📝 Registering implementation "write note v1" for goal "write note with search"
+✅ Defined implementation "write note v1" for goal "write note with search"
+
+========================================
+label=wants_note (rejected/low_evaluation_score)
+tweet: Footage of Beyoncé and Jay-Z from one of P Diddy's parties has surfaced.😳 https://t.co/rLdXUFqqqk
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[2061712251178946955] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article[data-testid="tweet"]') to be visible
+ (assuming no label)
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+queries(4): Beyoncé Jay-Z P Diddy party footage 2023 | DM Daily MAGAZIN Beyoncé Jay-Z Diddy | Beyoncé Jay-Z Diddy party video fact check | Beyoncé Jay-Z Diddy CCTV footage November 15 2023
+fullInputChars=3471  candidates=19  selected=5  fetched=5  (142886ms)
+  [base-neutral] needsNote=true  $0.0249
+     The post claims that footage of Beyoncé and Jay-Z from one of P Diddy's parties has surfaced, which is a falsifiable statement about a specific past event. Multiple fact-checking sources confirm that 
+  [base-lenient] needsNote=true  $0.0252
+     The post makes a falsifiable factual claim that 'footage of Beyoncé and Jay‑Z from one of P Diddy's parties has surfaced.' Research findings from multiple fact-checkers confirm the images are fabricat
+  [select-neutral] needsNote=true  $0.0252
+     The post claims that footage of Beyoncé and Jay-Z from a P. Diddy party has surfaced, which is a specific, checkable factual assertion. Research findings from multiple sources (The Tab, Mashable, Inte
+  [select-lenient] needsNote=true  $0.0253
+     The post claims that footage of Beyoncé and Jay-Z from a Diddy party has surfaced, which is a falsifiable factual claim. Research findings from multiple fact-checking outlets consistently report that 
+
+========================================
+label=wants_note (rejected/submit_error)
+tweet: 🚨 BREAKING  Tiffany Doolan has been FIRED after 3 months of INTENSE community backlash.  She was accused of allowing people to distribute Q
+queries(3): Tiffany Doolan fired Wylie principal resignation 2026 | Tiffany Doolan Wylie Texas Quran Bible distribution First Amendment | Wylie principal Tiffany Doolan allowed Quran Christian Bible banned 2026
+fullInputChars=2325  candidates=15  selected=5  fetched=5  (105851ms)
+  [base-neutral] needsNote=true  $0.0088
+     The post claims Tiffany Doolan was 'fired' after 3 months of backlash for allowing Quran distribution while banning Bibles. Research shows she resigned, not fired, and the district policy prohibits AL
+  [base-lenient] needsNote=true  $0.0088
+     The post claims Tiffany Doolan was 'fired,' but research shows she resigned — a materially false claim. The post also asserts that she allowed Quran distribution while prohibiting Bible distribution, 
+  [select-neutral] needsNote=true  $0.0100
+     The post claims Tiffany Doolan was 'FIRED' and that she allowed Quran distribution while prohibiting Bible distribution. Research shows she resigned (not fired), and the district policy prohibits all 
+  [select-lenient] needsNote=true  $0.0100
+     The post claims Doolan was 'FIRED' for allowing Quran distribution while prohibiting Bible distribution, but research shows she resigned voluntarily and there is no evidence she or the school prohibit
+
+========================================
+label=no_note (rejected/no_correction_needed)
+tweet: New: A top White House aide intervened to get a $620 million Pentagon loan for a company tied to Donald Trump Jr.  “The call came from the W
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down

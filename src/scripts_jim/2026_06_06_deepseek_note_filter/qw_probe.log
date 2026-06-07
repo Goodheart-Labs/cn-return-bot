@@ -1,0 +1,61 @@
+Investigating 6 "no queries" FNs
+
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+========================================
+tweet: CJ Rescues Tommy Vercetti from Area 69 GTA San Andreas Secret Mission https://t.co/Vdf430e
+inputChars=3038  hasMediaSection=true  hasMediaDesc=true
+runQueryWriter -> queries=[]  parseRetry=false
+RAW content: {"queries": ["GTA San Andreas secret mission rescue Tommy Vercetti Area 69", "Area 69 Tommy Vercetti GTA San Andreas mod or glitch", "GTA San Andreas hidden mission CJ Tommy Vercetti fact check", "Grand Theft Auto San Andreas Area 69 secret mission"]}
+RAW reasoning (first 400): We need to analyze the tweet. The post says: "CJ Rescues Tommy Vercetti from Area 69 GTA San Andreas Secret Mission" with a link. This appears to be about a video game (Grand Theft Auto: San Andreas). The claim is that there is a secret mission where CJ (the protagonist) rescues Tommy Vercetti (a character from GTA: Vice City) from Area 69 (a location in GTA: San Andreas). This is a factual claim 
+
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+========================================
+tweet: Niniola stuns in new photos 😍🥰❤️ https://t.co/yutABguYON
+inputChars=2534  hasMediaSection=true  hasMediaDesc=true
+runQueryWriter -> queries=["Niniola new photos June 2026","Niniola husband death 2026","Niniola red outfit trailer RV photos","Niniola Magic Chef refrigerator photo"]  parseRetry=false
+RAW content: {"queries": ["\"Niniola stuns in new photos\"", "Niniola Instagram June 2026", "Niniola trailer photoshoot"]}
+RAW reasoning (first 400): We need to identify factual claims in the post. The post itself is just "Niniola stuns in new photos 😍🥰❤️" with two images. The claim is that these are "new photos" of Niniola. The comments dispute that, saying they are old photos, and that her husband recently died. So the factual claim is: Are these photos new? Also, the context of her husband's death might be relevant. But the post itself onl
+
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+========================================
+tweet: He is holding that rib with a FREAKING NAPKIN.  They just don't get it.  Lord do they try,
+inputChars=2310  hasMediaSection=true  hasMediaDesc=true
+runQueryWriter -> queries=["Tim Walz napkin turkey leg incident","Tim Walz fake manhood napkin social media post","fact check Tim Walz napkin turkey leg viral","Tim Walz eating turkey leg napkin controversy"]  parseRetry=false
+RAW content: {
+  "queries": []
+}
+RAW reasoning (first 400): We need to parse the tweet. The post itself is: "He is holding that rib with a FREAKING NAPKIN. They just don't get it. Lord do they try, but they just never got it." with a quoted post that says "November, here we come." and an image of a man eating a turkey leg (or rib). The author is criticizing the man for using a napkin while eating a rib, implying it's unmanly. The comments clarify it's actu
+
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[mediaAnalysisGemini] Audio extraction failed: Command failed: ffmpeg -i "/tmp/claude-501/cn-gemini-1780706220559-5vzj7k2471/video.mp4" -vn -acodec libmp3lame -ar 16000 -ac 1 "/tmp/claude-501/cn-gemini-1780706220559-5vzj7k2471/audio.mp3" -y 2>&1
+========================================
+tweet: I JUST REALIZED THIS YEAR’S CHRISTMAS WILL BE 24/25/26 https://t.co/3wJYMgJ3ZG
+inputChars=2193  hasMediaSection=true  hasMediaDesc=true
+runQueryWriter -> queries=[]  parseRetry=false
+RAW content: {"queries": ["Christmas 2026 date", "December 25 2026 calendar"]}
+RAW reasoning (first 400): We need to analyze the tweet. The post says: "I JUST REALIZED THIS YEAR’S CHRISTMAS WILL BE 24/25/26" with a video of B.O.B. from Monsters vs. Aliens. The claim is that Christmas 2026 will be on 24/25/26, meaning December 25, 2026, written as 24/25/26? Actually, the format is ambiguous. The user seems to think that because December is the 12th month, and 12*2=24, so Christmas (Dec 25) would be 24/
+
+========================================
+tweet: I might lose followers for this, but it must be said  Denying the atrocities of the Reside
+inputChars=2107  hasMediaSection=false  hasMediaDesc=false
+runQueryWriter -> queries=["Canada residential schools atrocities documented evidence Truth and Reconciliation Commission","Canada residential schools unmarked graves bodies found 2021 2025","Canadian law Holocaust denial illegal Criminal Code","Canada residential school denial law proposed crime","Holocaust denial illegal Canada legislation"]  parseRetry=false
+RAW content: {
+  "queries": [
+    "Canadian Residential School atrocities documented evidence",
+    "Canada Holocaust denial law Criminal Code",
+    "residential school denial legislation Canada"
+  ]
+}
+RAW reasoning (first 400): We need to identify distinct factual claims in the post. The post says: "Denying the atrocities of the Residential Schools is just as bad as Holocaust denial. Both should be ILLEGAL in Canada." This is an opinion/assertion, but it contains factual claims: (1) That there are "atrocities of the Residential Schools" – this implies that atrocities occurred. (2) That Holocaust denial is illegal in Cana
+
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+========================================
+tweet: What has become of Germany? #Frankfurt #Lufthansa  https://t.co/ulrgVL36Um
+inputChars=2312  hasMediaSection=true  hasMediaDesc=true
+runQueryWriter -> queries=["Lufthansa Boeing 787-9 Herne Frankfurt","Lufthansa 787-9 fleet 2026","Frankfurt Airport Lufthansa 787-9 June 2026"]  parseRetry=false
+RAW content: {"queries": []}
+RAW reasoning (first 400): We need to identify the factual claims in the post. The post is: "What has become of Germany? #Frankfurt #Lufthansa" with a video of a Lufthansa Boeing 787-9 Dreamliner. The tweet implies that something about Germany is wrong, likely referencing the aircraft. The video shows a Lufthansa plane, but the plane is a Boeing (American-made). The tweet seems to be criticizing Germany for something relate
+
