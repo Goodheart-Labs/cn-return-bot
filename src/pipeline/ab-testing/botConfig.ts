@@ -23,6 +23,14 @@ export interface BotConfig {
   /** If true, the source verifier surfaces an automated Gemini analysis (yt-dlp for video/audio/Instagram-photo, direct vision call for image URLs) for cited media URLs and treats that as the source's content. Defaults to false. */
   verifier_accepts_media_sources?: boolean;
   /**
+   * If true, the source verifier runs the two-call claim-based flow: one call
+   * extracts the note's distinct factual claims, a second maps each claim to the
+   * cited sources that support it. A source is "good" iff it supports ≥1 claim;
+   * the note is accepted iff every claim has ≥1 supporting source. Defaults to
+   * false (the single-call accept/reject flow). Set by VERIFIER_CLAIM_BASED_TEST.
+   */
+  verifier_claim_based?: boolean;
+  /**
    * When true, the simple-bot pipeline runs an extra LLM step between writer
    * and source verifier that judges whether a note is actually warranted for
    * the post. The search step's system prompt is also simplified — the "when

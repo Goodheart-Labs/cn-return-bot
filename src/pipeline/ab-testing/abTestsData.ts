@@ -239,6 +239,20 @@ const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   ],
 };
 
+// Two-call claim-based source verifier vs the single-call accept/reject flow.
+// claim-based: extract the note's distinct claims, then map each to its
+// supporting cited sources; submit the good sources iff every claim has one.
+// Not prereq-gated (verifySources runs in both simple- and cheap-bot), so
+// defaultVariant "classic" lets historical rows resolve to the old flow.
+const VERIFIER_CLAIM_BASED_TEST: ABTest = {
+  name: "verifier_claim_based",
+  defaultVariant: "classic",
+  variants: [
+    { variant: { name: "classic",     overrides: { verifier_claim_based: false } }, weight: 50 },
+    { variant: { name: "claim-based", overrides: { verifier_claim_based: true  } }, weight: 50 },
+  ],
+};
+
 const AGENT_SEARCH_TEST: ABTest = {
   name: "agent_search",
   prerequisites: { botId: ["agent", "multi-agent"] },
@@ -317,6 +331,7 @@ export const AB_TESTS: ABTest[] = [
   CHEAP_BOT_GEMINI_STEPS_TEST,
   CHEAP_BOT_NATIVE_SEARCH_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
+  VERIFIER_CLAIM_BASED_TEST,
   SEARCH_ANALYZER_TEST,
   SATIRE_DETECTOR_TEST,
   CHEAP_BOT_TEMPERATURE_TEST,
