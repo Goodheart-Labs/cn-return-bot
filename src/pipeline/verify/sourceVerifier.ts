@@ -1,8 +1,14 @@
 /**
  * Source Verifier
  *
- * Single LLM call that checks whether cited sources actually support a community note.
- * Fetches source content, then asks the model to accept or reject.
+ * Checks whether cited sources actually support a community note. Two flows,
+ * picked by config.verifier_claim_based:
+ *   - classic (default): one LLM call categorizes each cited source good/bad and
+ *     accepts iff the good ones cover every claim.
+ *   - claim-based: one call extracts the note's distinct claims, a second maps
+ *     each claim to its supporting cited sources. A source is good iff it
+ *     supports ≥1 claim; the note is accepted iff every claim has ≥1 supporter.
+ * Both share the same source-fetching cascade and return a SourceVerification.
  */
 
 import { handleWebFetch } from "../tool-calling/tools";
@@ -213,19 +219,19 @@ Output:
 - accepted: true iff good_sources together cover every factual claim in the note. Otherwise false, and name the unsupported claim in reasoning.`;
 }
 
-export async function verifySources(params: {
+export interface VerifySourcesParams {
   noteText: string;
   sources: string[];
   postContext: string;
   researcherFindings?: string;
   snippetsByUrl?: Map<string, { title: string; snippet: string }>;
   turnNumber: number;
-}): Promise<SourceVerification> {
-  const log = getTweetLog();
+}
+
+export async function verifySources(params: VerifySourcesParams): Promise<SourceVerification> {
   const config = getBotConfig();
   const costPrefix = `${COST.sourceVerifier}.turn.${params.turnNumber}`;
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
-  const messagesLogPrefix = `${logPrefix}.messages`;
 
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
   const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(
@@ -235,15 +241,23 @@ export async function verifySources(params: {
     acceptMediaSources,
     params.snippetsByUrl,
   );
-  const systemPrompt = buildSystemPrompt(acceptMediaSources);
 
-  const messageParts = [
-    `## Context`,
-    `Current date (UTC): ${new Date().toISOString()}`,
-    ``,
-    `## Proposed community note`,
-    params.noteText,
-    ``,
+  if (totalNonTwitter > 0 && fetchedCount === 0) {
+    throw new UnfetchableSourcesError(
+      `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,
+    );
+  }
+
+  return config.verifier_claim_based
+    ? runClaimBasedVerification(params, sections, costPrefix, logPrefix)
+    : runClassicVerification(params, sections, acceptMediaSources, costPrefix, logPrefix);
+}
+
+/** Shared tail of the verifier user message: the fetched cited sources plus the
+ *  post and research findings as background. The head (the note, or the
+ *  extracted claims) is prepended by each flow. */
+function buildSourcesContext(sections: string, params: VerifySourcesParams): string {
+  const parts = [
     `## Note's cited sources (verify these)`,
     sections,
     ``,
@@ -251,17 +265,43 @@ export async function verifySources(params: {
     params.postContext,
   ];
   if (params.researcherFindings) {
-    messageParts.push(``, `## Research findings (background — not a source)`, params.researcherFindings);
+    parts.push(``, `## Research findings (background — not a source)`, params.researcherFindings);
   }
-  const userMessage = messageParts.join("\n");
+  return parts.join("\n");
+}
 
-  log?.set(`${messagesLogPrefix}.0`, { systemPrompt: systemPrompt, userMessage });
+/** Restrict a model-returned URL list to URLs the writer actually cited. A
+ *  misbehaving model could echo URLs from the research findings or hallucinate;
+ *  the submitted note must never carry a URL the writer didn't choose. */
+function clampToCited(urls: string[] | undefined, citedSet: Set<string>): string[] {
+  return (urls ?? []).filter((u) => citedSet.has(u));
+}
 
-  if (totalNonTwitter > 0 && fetchedCount === 0) {
-    throw new UnfetchableSourcesError(
-      `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,
-    );
-  }
+// --- Classic flow: single accept/reject call ---
+
+async function runClassicVerification(
+  params: VerifySourcesParams,
+  sections: string,
+  acceptMediaSources: boolean,
+  costPrefix: string,
+  logPrefix: string,
+): Promise<SourceVerification> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const messagesLogPrefix = `${logPrefix}.messages`;
+  const systemPrompt = buildSystemPrompt(acceptMediaSources);
+
+  const userMessage = [
+    `## Context`,
+    `Current date (UTC): ${new Date().toISOString()}`,
+    ``,
+    `## Proposed community note`,
+    params.noteText,
+    ``,
+    buildSourcesContext(sections, params),
+  ].join("\n");
+
+  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage });
 
   const parsed = await runJsonLlmCall<SourceVerification>({
     costName: costPrefix,
@@ -274,18 +314,200 @@ export async function verifySources(params: {
     schemaHint: `{ "good_sources": string[], "bad_sources": string[], "accepted": boolean, "reasoning": string }`,
   });
 
-  // Defensive: clamp good_sources/bad_sources to URLs the writer actually
-  // cited. A misbehaving model could echo URLs from the research findings
-  // section or hallucinate; we never want the final submitted note to carry
-  // a URL the writer didn't choose.
   const citedSet = new Set(params.sources);
   const result: SourceVerification = {
-    good_sources: (parsed.good_sources ?? []).filter((u) => citedSet.has(u)),
-    bad_sources: (parsed.bad_sources ?? []).filter((u) => citedSet.has(u)),
+    good_sources: clampToCited(parsed.good_sources, citedSet),
+    bad_sources: clampToCited(parsed.bad_sources, citedSet),
     accepted: !!parsed.accepted,
     reasoning: parsed.reasoning ?? "",
   };
 
   log?.set(`${messagesLogPrefix}.1`, { content: result });
   return result;
+}
+
+// --- Claim-based flow: extract claims, then map each to supporting sources ---
+
+export interface ClaimExtraction {
+  claims: string[];
+}
+
+const CLAIM_EXTRACTION_FORMAT = {
+  type: "json_schema" as const,
+  json_schema: {
+    name: "note_claims",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        claims: {
+          type: "array",
+          items: { type: "string" },
+          description: "The distinct factual claims asserted by the note, each a self-contained verifiable statement.",
+        },
+      },
+      required: ["claims"],
+      additionalProperties: false,
+    },
+  },
+};
+
+const CLAIM_EXTRACTION_SYSTEM_PROMPT = `Extract the distinct atomic claims made.
+
+Output JSON: { "claims": string[] }`;
+
+/** First claim-based call: break the note into its distinct factual claims. */
+export async function extractClaims(noteText: string, costPrefix: string): Promise<string[]> {
+  const config = getBotConfig();
+  const parsed = await runJsonLlmCall<ClaimExtraction>({
+    costName: `${costPrefix}.claims`,
+    model: config.verifier_model ?? config.model,
+    messages: [
+      { role: "system" as const, content: CLAIM_EXTRACTION_SYSTEM_PROMPT },
+      { role: "user" as const, content: `## Proposed community note\n${noteText}` },
+    ],
+    responseFormat: CLAIM_EXTRACTION_FORMAT,
+    schemaHint: `{ "claims": string[] }`,
+  });
+  return parsed.claims ?? [];
+}
+
+interface ClaimSupport {
+  reasoning: string;
+  claim_support: { claim: string; supporting_sources: string[] }[];
+}
+
+const CLAIM_SUPPORT_FORMAT = {
+  type: "json_schema" as const,
+  json_schema: {
+    name: "claim_support",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        reasoning: { type: "string", description: "Brief note on which claims are unsupported, if any." },
+        claim_support: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              claim: { type: "string" },
+              supporting_sources: {
+                type: "array",
+                items: { type: "string" },
+                description: "Verbatim cited URLs whose content directly supports this claim. May be empty.",
+              },
+            },
+            required: ["claim", "supporting_sources"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["reasoning", "claim_support"],
+      additionalProperties: false,
+    },
+  },
+};
+
+function buildClaimSupportSystemPrompt(acceptsMediaSources: boolean): string {
+  const mediaRule = acceptsMediaSources
+    ? `- Media URLs (videos, audio, images) appear with an automated content analysis block (title, summary, on-screen/visible text, transcript). Treat that block as the source's content. If it could not be analyzed you'll see the raw page or a fetch error instead.`
+    : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) provide ZERO evidence — you cannot watch them, so never list them as supporting.`;
+
+  return `For each factual claim of a proposed community note, list the cited source URLs whose content directly supports that claim.
+
+Rules:
+- A source supports a claim only if its fetched content states or clearly implies that claim. If it doesn't, omit it for that claim.
+- Twitter/X links are shown without fetched content; list one only when the claim is about that linked post itself.
+- A source that failed to fetch ("Fetch failed:" / "Fetch error:" / "Non-text content:") supports nothing.
+${mediaRule}
+
+Scope — what to ignore:
+- The original post and any "Research findings" are background, not sources. Only URLs under "Note's cited sources" may be listed.
+- Sources marked "[from search snippet]" were not fully fetched; judge them from the available snippet.
+
+Output JSON: { "reasoning": string, "claim_support": [{ "claim": string, "supporting_sources": string[] }] }
+- Include every claim, in the order given. Use the verbatim cited URLs. supporting_sources may be empty when nothing supports the claim.`;
+}
+
+async function runClaimBasedVerification(
+  params: VerifySourcesParams,
+  sections: string,
+  costPrefix: string,
+  logPrefix: string,
+): Promise<SourceVerification> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const messagesLogPrefix = `${logPrefix}.messages`;
+  const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
+
+  const claims = await extractClaims(params.noteText, costPrefix);
+  log?.set(`${logPrefix}.claims`, claims);
+
+  const systemPrompt = buildClaimSupportSystemPrompt(acceptMediaSources);
+  const userMessage = [
+    `## Context`,
+    `Current date (UTC): ${new Date().toISOString()}`,
+    ``,
+    `## Claims to verify`,
+    claims.map((c, i) => `${i + 1}. ${c}`).join("\n"),
+    ``,
+    buildSourcesContext(sections, params),
+  ].join("\n");
+
+  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage });
+
+  const parsed = await runJsonLlmCall<ClaimSupport>({
+    costName: costPrefix,
+    model: config.verifier_model ?? config.model,
+    messages: [
+      { role: "system" as const, content: systemPrompt },
+      { role: "user" as const, content: userMessage },
+    ],
+    responseFormat: CLAIM_SUPPORT_FORMAT,
+    schemaHint: `{ "reasoning": string, "claim_support": [{ "claim": string, "supporting_sources": string[] }] }`,
+  });
+
+  const result = deriveVerificationFromClaims(claims, parsed, params.sources);
+  log?.set(`${messagesLogPrefix}.1`, { content: result });
+  return result;
+}
+
+/** A source is good iff it supports at least one claim (after clamping to cited
+ *  URLs). The note is accepted iff there is at least one claim and every claim
+ *  has at least one cited supporting source. */
+function deriveVerificationFromClaims(
+  claims: string[],
+  parsed: ClaimSupport,
+  cited: string[],
+): SourceVerification {
+  const citedSet = new Set(cited);
+  const support = parsed.claim_support ?? [];
+
+  const goodSet = new Set<string>();
+  const unsupportedClaims: string[] = [];
+  for (const entry of support) {
+    const supporters = clampToCited(entry.supporting_sources, citedSet);
+    supporters.forEach((u) => goodSet.add(u));
+    if (supporters.length === 0) unsupportedClaims.push(entry.claim);
+  }
+
+  // The model must return a support entry for every extracted claim. If it
+  // dropped some, those claims went unevaluated — treat that as not-accepted
+  // rather than silently submitting a note with an unverified claim.
+  const allClaimsCovered = support.length >= claims.length;
+  const accepted = claims.length > 0 && allClaimsCovered && unsupportedClaims.length === 0;
+  const reasonParts = [parsed.reasoning?.trim()].filter(Boolean) as string[];
+  if (unsupportedClaims.length > 0) {
+    reasonParts.push(`Unsupported claim(s): ${unsupportedClaims.map((c) => `"${c}"`).join("; ")}`);
+  }
+  if (claims.length === 0) reasonParts.push("Claim extraction returned no claims.");
+  else if (!allClaimsCovered) reasonParts.push(`Verifier mapped only ${support.length} of ${claims.length} claims.`);
+
+  return {
+    good_sources: [...goodSet],
+    bad_sources: cited.filter((u) => !goodSet.has(u)),
+    accepted,
+    reasoning: reasonParts.join(" ") || (accepted ? "All claims supported." : "No claims supported."),
+  };
 }
