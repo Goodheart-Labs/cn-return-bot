@@ -21,6 +21,7 @@ import {
   describeMediaFromUrl,
   type MediaSourceDescription,
 } from "../media/mediaAnalysisGemini";
+import { fetchTweetViaSyndication, type SyndicationTweet } from "./fetchTweet";
 
 export interface SourceVerification {
   /** Reasoning for the verification decision. */
@@ -45,7 +46,7 @@ const RESPONSE_FORMAT = {
         good_sources: {
           type: "array",
           items: { type: "string" },
-          description: "Verbatim URLs from the cited sources that support a factual claim in the note. Twitter/X links are always good if they appear in the cited sources.",
+          description: "Verbatim URLs from the cited sources that support a factual claim in the note. Twitter/X links come with the fetched tweet text — judge them on that content like any other source.",
         },
         bad_sources: {
           type: "array",
@@ -162,7 +163,7 @@ async function fetchOneSource(
   acceptMediaSources: boolean,
 ): Promise<FetchedSource> {
   if (isTwitterUrl(url)) {
-    return { url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true };
+    return fetchTwitterSource(url, costName, logKey, acceptMediaSources);
   }
   if (acceptMediaSources) {
     const media = await tryMediaDescription(url, costName, logKey);
@@ -171,15 +172,48 @@ async function fetchOneSource(
   return fetchAsWebPage(url);
 }
 
+/** Fetch a cited X post so the verifier can read it, rather than blind-accepting.
+ *  Video tweets go through the yt-dlp cascade (when media is accepted); the rest
+ *  fall back to the syndication endpoint for text + author. Only when both fail
+ *  (deleted/protected/unavailable) do we accept it unread. */
+async function fetchTwitterSource(
+  url: string,
+  costName: string,
+  logKey: string,
+  acceptMediaSources: boolean,
+): Promise<FetchedSource> {
+  if (acceptMediaSources) {
+    const media = await tryDescribeMedia(url, costName, logKey);
+    if (media) return media;
+  }
+  const tweet = await fetchTweetViaSyndication(url);
+  if (tweet) return { url, content: formatTweetSection(url, tweet), fetched: true };
+  return { url, content: `### ${url}\nTwitter/X link — tweet could not be fetched (deleted, protected, or unavailable); accepted without content.`, fetched: true };
+}
+
+function formatTweetSection(url: string, tweet: SyndicationTweet): string {
+  const lines = [
+    `### ${url}`,
+    `Twitter/X post by ${tweet.authorName} (@${tweet.authorHandle}).`,
+    tweet.createdAt ? `Published: ${tweet.createdAt}` : null,
+    `Tweet text: ${tweet.text}`,
+  ].filter((l): l is string => l !== null);
+  return lines.join("\n");
+}
+
 /** Returns null when the URL isn't a media host or the cascade failed (caller falls through to handleWebFetch). */
 async function tryMediaDescription(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   if (!isMediaHost(url)) return null;
+  return tryDescribeMedia(url, costName, logKey);
+}
+
+/** Run the yt-dlp/gallery-dl cascade + Gemini analysis, or null if it can't
+ *  extract media (text-only post, removed content, unsupported host). */
+async function tryDescribeMedia(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   try {
     const media = await describeMediaFromUrl(url, costName);
     return { url, content: formatCascadeMediaSection(url, media), fetched: true };
   } catch (err: any) {
-    // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
-    // removed content, private account, or host not yet supported).
     getTweetLog()?.set(`${logKey}.media_error`, err?.message ?? "unknown error");
     return null;
   }
@@ -208,7 +242,7 @@ Scope — what to ignore:
 - Sources marked "[from search snippet]" were not fully fetched; evaluate them based on the available title and snippet text.
 
 Classification rules for each cited source:
-- Twitter/X links (x.com, twitter.com) → always good.
+- Twitter/X links (x.com, twitter.com): the tweet's text and author are fetched and shown. Good only if that tweet content directly supports a factual claim in the note; otherwise bad. If a tweet is marked "could not be fetched", accept it as good — we can't read it, so don't penalize it.
 - Any other source → good only if it (a) was successfully fetched (no "Fetch failed:" / "Fetch error:" / "Non-text content:" marker) AND (b) its content directly supports at least one factual claim in the note. Otherwise bad.
 ${mediaRule}
 
@@ -418,7 +452,7 @@ function buildClaimSupportSystemPrompt(acceptsMediaSources: boolean): string {
 
 Rules:
 - A source supports a claim only if its fetched content states or clearly implies that claim. If it doesn't, omit it for that claim.
-- Twitter/X links are shown without fetched content; list one only when the claim is about that linked post itself.
+- Twitter/X links come with the fetched tweet text and author; list one as supporting a claim only if that tweet text states or clearly implies the claim. A tweet marked "could not be fetched" supports a claim only when the claim is about that post itself.
 - A source that failed to fetch ("Fetch failed:" / "Fetch error:" / "Non-text content:") supports nothing.
 ${mediaRule}
 

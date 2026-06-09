@@ -234,8 +234,8 @@ const CHEAP_BOT_NATIVE_SEARCH_TEST: ABTest = {
 const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   name: "verifier_media_sources",
   variants: [
-    { variant: { name: "reject", overrides: { verifier_accepts_media_sources: false } }, weight: 50 },
-    { variant: { name: "accept", overrides: { verifier_accepts_media_sources: true  } }, weight: 50 },
+    { variant: { name: "reject", overrides: { verifier_accepts_media_sources: false } }, weight: 0 },
+    { variant: { name: "accept", overrides: { verifier_accepts_media_sources: true  } }, weight: 100 },
   ],
 };
 

@@ -54,7 +54,7 @@ async function main() {
   if (!tweetId) throw new Error("usage: testFullVerifier.ts <tweet-id>");
 
   process.env.BIG_EVAL_INPUT_CACHE ||= path.join("output", "claim-verifier-input-cache");
-  process.env.CHEAP_BOT_WRITER_CACHE ||= path.join("output", "claim-verifier-writer-cache");
+  process.env.WRITER_CACHE ||= path.join("output", "claim-verifier-writer-cache");
 
   const seed = await seedReplayFromDb(tweetId, "note");
   const input = readInputCache(tweetId, seed.inputStrategy ?? "frames");
