@@ -7,7 +7,7 @@
  *   - "tweet": reuse the Post (skip the X fetch); rebuild input/search/writer/gates.
  *   - "input": also reuse the full BotInput (seed BIG_EVAL_INPUT_CACHE) so
  *              createBotInput short-circuits — no comment/media/author fetch.
- *   - "note":  also reuse the written note (seed CHEAP_BOT_WRITER_CACHE) so the
+ *   - "note":  also reuse the written note (seed WRITER_CACHE) so the
  *              orchestrator replays from the two gates (judge + verifier).
  *
  * Pure cache-seeding — no pipeline code changes. The existing cache-read paths
@@ -17,7 +17,7 @@
  */
 
 import { getProdSupabaseCreds } from "./prodSupabaseCreds";
-import { writeWriterCache, type WriterStageResult } from "../pipeline/cheap-bot/writerCache";
+import { writeWriterCache, type WriterStageResult } from "../pipeline/replay/writerCache";
 import { writeInputCache } from "../pipeline/input/inputCache";
 import type { Post } from "../api/fetchEligiblePosts";
 import type { BotInput } from "../pipeline/input/createBotInput";
@@ -164,7 +164,7 @@ function buildWriterStage(
 }
 
 /** Look up the latest run for `tweetId` and seed the caches up to `level`.
- *  Cache dirs are read from BIG_EVAL_INPUT_CACHE / CHEAP_BOT_WRITER_CACHE (set
+ *  Cache dirs are read from BIG_EVAL_INPUT_CACHE / WRITER_CACHE (set
  *  by the caller). */
 export async function seedReplayFromDb(tweetId: string, level: ReplayLevel): Promise<SeedResult> {
   const run = await fetchLatestRun(tweetId);

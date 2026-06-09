@@ -21,7 +21,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { readSearchCache } from "../../pipeline/cheap-bot/searchCache";
-import { writeWriterCache, type Snippet, type WriterStageResult } from "../../pipeline/cheap-bot/writerCache";
+import { writeWriterCache, type Snippet, type WriterStageResult } from "../../pipeline/replay/writerCache";
 
 const runDir = process.argv[2];
 const writerCacheDir = process.argv[3] ?? "datasets/big_eval/_writer_cache";
@@ -33,7 +33,7 @@ if (!runDir) {
 // Cache modules read these env vars lazily (inside cacheDir(), at call time),
 // so setting them here — before the loop calls read/write — is sufficient.
 process.env.SEARCH_CACHE = process.env.SEARCH_CACHE ?? "datasets/big_eval/_search_cache";
-process.env.CHEAP_BOT_WRITER_CACHE = writerCacheDir;
+process.env.WRITER_CACHE = writerCacheDir;
 
 const MAX_RESULTS_PER_QUERY = 6; // mirror orchestrator.fetchAndFormatSearch
 

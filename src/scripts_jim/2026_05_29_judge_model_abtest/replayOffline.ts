@@ -47,7 +47,7 @@ const SEARCH_CACHE_DIR = "datasets/big_eval/_search_cache";
 const JUDGE_MODEL_VARIANTS = ["sonnet46", "deepseek-v4flash", "deepseek-v4pro", "gemini3flash"];
 
 process.env.BIG_EVAL_INPUT_CACHE = INPUT_CACHE_DIR;
-process.env.CHEAP_BOT_WRITER_CACHE = WRITER_CACHE_DIR;
+process.env.WRITER_CACHE = WRITER_CACHE_DIR;
 process.env.SEARCH_CACHE = SEARCH_CACHE_DIR;
 
 function extractTweetId(url: string): string {

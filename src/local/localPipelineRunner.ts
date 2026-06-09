@@ -211,7 +211,7 @@ export function parseCliArgs(
 
   const writerCache = takeFlagValue(args, "--writer-cache");
   if (writerCache) {
-    process.env.CHEAP_BOT_WRITER_CACHE = writerCache;
+    process.env.WRITER_CACHE = writerCache;
     console.log(`[${scriptName}] Writer cache: ${writerCache}`);
   }
 

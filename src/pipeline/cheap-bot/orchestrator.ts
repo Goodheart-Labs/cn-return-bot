@@ -21,7 +21,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { buildUserMessageFromInput } from "../input/prompt";
 import { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError, type SearxngResult } from "../tool-calling/tools";
 import { getTweetLog } from "../utils/tweetLog";
-import { STEP, COST, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
+import { STEP, COST } from "../utils/noteWriterSteps";
 import { verifySources, type SourceVerification } from "../verify/sourceVerifier";
 import { runNoteNeededJudge } from "../simple-bot/judge";
 import { runWriter, type WriterResult } from "../simple-bot/writer";
@@ -31,7 +31,7 @@ import { runQueryWriter } from "./queryWriter";
 import { runSatireDetector } from "./satireDetector";
 import { readSearchCache, writeSearchCache } from "./searchCache";
 import { runSearchAnalyzer } from "./searchAnalyzer";
-import { readWriterCache, writeWriterCache, type WriterStageResult, type Snippet } from "./writerCache";
+import { withWriterCache, type WriterStageResult, type Snippet } from "../replay/writerCache";
 
 const MAX_RESULTS_PER_QUERY = 6;
 const MIN_TWEET_TEXT_CHARS = 1; // guard against truncated/empty fetches
@@ -41,21 +41,12 @@ export async function runCheapBotPipeline(
   input: BotInput,
 ): Promise<PipelineOutcome> {
   const startMs = Date.now();
-  const log = getTweetLog();
 
-  // Writer-output cache: when CHEAP_BOT_WRITER_CACHE is populated, replay just
-  // the two gates (judge + verifier) from the cached writer note. Misses (and
-  // an unset env var) fall through to the full pipeline; a set env var also
-  // writes the cache so the next run can replay.
-  let stage = readWriterCache(post.id);
-  if (stage) {
-    log?.set(`${STEP.noteWriter}.cacheHit`, true);
-    restoreWriterLogs(stage);
-  } else {
-    stage = await produceWriterOutput(post, input);
-    writeWriterCache(post.id, stage);
-  }
-
+  // Writer-output cache: when WRITER_CACHE is populated, replay just the two
+  // gates (judge + verifier) from the cached writer note. Misses (and an unset
+  // env var) fall through to the full pipeline; a set env var also writes the
+  // cache so the next run can replay.
+  const stage = await withWriterCache(post.id, () => produceWriterOutput(post, input));
   const outcome = stage.kind === "early_exit" ? stage.outcome : await runGates(stage);
   logFinal(startMs);
   return outcome;
@@ -248,17 +239,6 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
     reason: verification.reasoning,
     searchResults: findings,
   };
-}
-
-/** On a cache replay, stages 1-3 don't run, so re-log the queries + writer
- *  note that the result categorizer (extractProposedNote, inferStageBlock)
- *  and the dashboard expect to find. */
-function restoreWriterLogs(stage: WriterStageResult): void {
-  if (stage.kind !== "writer_done") return;
-  const log = getTweetLog();
-  log?.set(`${STEP.queryWriter}.queries`, stage.queries);
-  log?.set(`${STEP.searchAnalyzer}.messages.1`, { content: stage.findings.slice(0, ANALYSIS_LOG_MAX_CHARS) });
-  log?.set(`${STEP.noteWriter}.attempts.0.response`, { note_text: stage.noteText, sources: stage.sources });
 }
 
 interface SearchOutput {

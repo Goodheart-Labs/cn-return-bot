@@ -76,7 +76,7 @@ async function main() {
   if (!tweetId) throw new Error("usage: testVerifierImages.ts <tweet-id>");
 
   process.env.BIG_EVAL_INPUT_CACHE ||= path.join("output", "verifier-images-input-cache");
-  process.env.CHEAP_BOT_WRITER_CACHE ||= path.join("output", "verifier-images-writer-cache");
+  process.env.WRITER_CACHE ||= path.join("output", "verifier-images-writer-cache");
 
   const seed = await seedReplayFromDb(tweetId, "note");
   console.log(`seeded ${tweetId} from run ${seed.runId} (${seed.botName}, ${seed.outcome})`);
