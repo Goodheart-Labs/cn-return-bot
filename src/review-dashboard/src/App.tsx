@@ -24,12 +24,11 @@ import {
   pruneUnusedFailureModes,
 } from "./lib/data";
 
-const DISPLAY_PAGE_SIZE = 20;
 // Production fetches are bounded by a date window on notes.submitted_at. The
 // initial load covers the last WINDOW_DAYS_STEP days; "Load older notes" extends
 // the window by another step. Keeping the window small is what makes the first
 // paint fast — see fetchDashboardData.
-const WINDOW_DAYS_STEP = 7;
+const WINDOW_DAYS_STEP = 3;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
@@ -97,9 +96,9 @@ export function App() {
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Production: all items are loaded up-front (metadata only, no TOAST). Logs
-  // are lazy-loaded per visible card and cached here keyed by pipeline_run id.
-  const [displayLimit, setDisplayLimit] = useState(DISPLAY_PAGE_SIZE);
+  // Production: all items in the current date window are loaded up-front
+  // (metadata only, no TOAST). Logs are lazy-loaded per visible card and cached
+  // here keyed by pipeline_run id.
   const [logsByRunId, setLogsByRunId] = useState<Map<string, Record<string, unknown>>>(new Map());
   // Production date-window size, in days. Extends in WINDOW_DAYS_STEP increments
   // via "Load older notes". Dataset runs ignore this (bounded uploads).
@@ -148,14 +147,13 @@ export function App() {
     }
   }, [dataset, windowDays]);
 
-  // Reset filters and paging when the dataset changes (but not when only the
-  // window extends — extending should preserve the user's filters and reveal).
-  // windowDays intentionally persists across dataset switches; resetting it here
-  // would re-fire loadData a second time on every switch.
+  // Reset filters when the dataset changes (but not when only the window
+  // extends — extending should preserve the user's filters). windowDays
+  // intentionally persists across dataset switches; resetting it here would
+  // re-fire loadData a second time on every switch.
   useEffect(() => {
     setFilters(defaultFilters(dataset.type));
     setAbFilters({});
-    setDisplayLimit(DISPLAY_PAGE_SIZE);
   }, [dataset]);
 
   // Load whenever the dataset or the window changes. loadData is memoized on
@@ -218,35 +216,30 @@ export function App() {
 
   // Fold lazy-loaded logs into the items the list is about to render. Without
   // this, the first render sees logs=undefined; once the effect below fills
-  // logsByRunId we want the cards to pick them up.
-  const visibleRaw = dataset.type === "production" ? filtered.slice(0, displayLimit) : filtered;
+  // logsByRunId we want the cards to pick them up. Every filtered item in the
+  // current window renders — to see more, extend the window (production only).
   const visible = useMemo(
     () =>
-      visibleRaw.map((item) => {
+      filtered.map((item) => {
         const fromCache = item.pipelineRunId ? logsByRunId.get(item.pipelineRunId) : undefined;
         return fromCache ? { ...item, logs: fromCache } : item;
       }),
-    [visibleRaw, logsByRunId],
+    [filtered, logsByRunId],
   );
-  // Two ways to see more in production: reveal already-loaded items (cheap), or
-  // extend the date window to fetch older notes. The button does whichever is
-  // next. Dataset runs are fully loaded, so only the reveal applies.
-  const hasMoreInWindow = filtered.length > displayLimit;
-  const canExtendWindow = dataset.type === "production";
-  const canLoadMore = hasMoreInWindow || canExtendWindow;
+  const canLoadMore = dataset.type === "production";
 
   // Lazy-load logs for visible production items that don't have them yet.
   // Dataset runs already carry logs inline (they're small & come from uploads),
   // so this only fires for production.
   const visibleRunIdsKey = useMemo(
-    () => visibleRaw.map((i) => i.pipelineRunId ?? "").join(","),
-    [visibleRaw],
+    () => visible.map((i) => i.pipelineRunId ?? "").join(","),
+    [visible],
   );
   useEffect(() => {
     if (dataset.type !== "production") return;
     const needIds = Array.from(
       new Set(
-        visibleRaw
+        visible
           .map((i) => i.pipelineRunId)
           .filter((id): id is string => !!id && !logsByRunId.has(id)),
       ),
@@ -268,16 +261,8 @@ export function App() {
   }, [dataset.type, visibleRunIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLoadMore = useCallback(() => {
-    if (hasMoreInWindow) {
-      setDisplayLimit((prev) => prev + DISPLAY_PAGE_SIZE);
-      return;
-    }
-    // Everything in the current window is shown — fetch an older slice. Bump the
-    // display limit too so the newly fetched notes are revealed, not hidden
-    // behind another click.
     setWindowDays((prev) => prev + WINDOW_DAYS_STEP);
-    setDisplayLimit((prev) => prev + DISPLAY_PAGE_SIZE);
-  }, [hasMoreInWindow]);
+  }, []);
 
   // Annotation handlers
   const handleSeenToggle = async (id: string, seen: boolean) => {
@@ -483,7 +468,7 @@ export function App() {
         {loading && items.length === 0
           ? "Loading..."
           : dataset.type === "production"
-            ? `Showing ${visible.length} of ${filtered.length} · last ${windowDays} days${loadingLogs ? " · loading logs…" : ""}`
+            ? `${visible.length} notes · last ${windowDays} days${loadingLogs ? " · loading logs…" : ""}`
             : `${filtered.length} items shown`}
       </div>
 
@@ -511,11 +496,7 @@ export function App() {
             disabled={loading}
             className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50"
           >
-            {loading
-              ? "Loading…"
-              : hasMoreInWindow
-                ? `Load more (${DISPLAY_PAGE_SIZE})`
-                : `Load older notes (+${WINDOW_DAYS_STEP} days)`}
+            {loading ? "Loading…" : `Load older notes (+${WINDOW_DAYS_STEP} days)`}
           </button>
         </div>
       )}

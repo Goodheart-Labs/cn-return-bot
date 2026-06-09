@@ -25,6 +25,15 @@ function missedTargetId(competingNoteId: string): string {
 }
 
 /**
+ * Encoded `target_id` for a low-eval-score review item. These notes were never
+ * submitted, so they have no `notes.note_id` — they live only as a
+ * `pipeline_runs` row, keyed here by the run id.
+ */
+function lowEvalTargetId(pipelineRunId: string): string {
+  return `loweval:${pipelineRunId}`;
+}
+
+/**
  * A competing_notes row represents a missed opportunity when it has no
  * associated note from us, the competing note got rated helpful, and we have
  * a pipeline_run id to point back to the rejection.
@@ -102,6 +111,11 @@ const CANONICAL_LIST_COLUMNS = [
 const PIPELINE_METADATA_COLUMNS =
   "id, tweet_id, outcome, outcome_reason, bot_name, created_at, ab_test_picks";
 
+// Low-eval-score rejections were never submitted, so the note text/source live
+// on the pipeline_runs row itself rather than on a notes row. Pull those too.
+const LOW_EVAL_RUN_COLUMNS =
+  "id, tweet_id, note_text, source_url, note_status, outcome, outcome_reason, bot_name, created_at, ab_test_picks";
+
 const TWEETS_LIST_COLUMNS =
   "tweet_id, text, media, referenced_tweet_data, author_handle, has_photo, has_video, media_count";
 
@@ -134,6 +148,8 @@ export async function fetchDashboardData(sinceIso: string): Promise<{
   competing: any[];
   submittedRuns: any[];
   missedRuns: any[];
+  lowEvalRuns: any[];
+  lowEvalScores: any[];
   annotations: any[];
   tweets: any[];
   publicDumpRatings: any[];
@@ -154,7 +170,7 @@ export async function fetchDashboardData(sinceIso: string): Promise<{
   const noteTweetIds = [...new Set(canonical.map((n: any) => n.tweet_id).filter(Boolean))];
   const sinceMillis = new Date(sinceIso).getTime();
 
-  const [comparisonCompeting, missedOppCompeting, submittedRuns, publicDumpRatings] =
+  const [comparisonCompeting, missedOppCompeting, submittedRuns, lowEvalRuns, publicDumpRatings] =
     await Promise.all([
       // Competing notes attached to our windowed notes — drives the comparison
       // list and the lost-to-competitor classification.
@@ -180,11 +196,32 @@ export async function fetchDashboardData(sinceIso: string): Promise<{
         supabase, "pipeline_runs", PIPELINE_METADATA_COLUMNS, "tweet_id", noteTweetIds,
         (q) => q.eq("outcome", "submitted"), "submitted_runs",
       ),
+      // Notes rejected by the X eval gate — never submitted, so they aren't in
+      // `notes`. Windowed on the run's own created_at.
+      fetchAllRows<any>(
+        supabase
+          .from("pipeline_runs")
+          .select(LOW_EVAL_RUN_COLUMNS)
+          .eq("outcome_reason", "low_evaluation_score")
+          .gte("created_at", sinceIso)
+          .order("created_at", { ascending: false }),
+        "low_eval_runs",
+      ),
       fetchInBatches<any>(
         supabase, "note_ratings_from_public_dump", PUBLIC_DUMP_RATING_COLUMNS, "note_id", noteIds,
         undefined, "public_dump_ratings",
       ),
     ]);
+
+  // The eval score itself lives in pipeline_scores (it isn't mirrored onto
+  // pipeline_runs), so fetch it for the windowed low-eval runs to display.
+  const lowEvalRunIds = lowEvalRuns.map((r: any) => r.id);
+  const lowEvalScores = lowEvalRunIds.length
+    ? await fetchInBatches<any>(
+        supabase, "pipeline_scores", "pipeline_run_id, score_value", "pipeline_run_id", lowEvalRunIds,
+        (q) => q.eq("score_type", "evaluation"), "low_eval_scores",
+      )
+    : [];
 
   const competing = [...comparisonCompeting, ...missedOppCompeting];
 
@@ -213,6 +250,7 @@ export async function fetchDashboardData(sinceIso: string): Promise<{
       ...noteTweetIds,
       ...submittedRuns.map((r: any) => r.tweet_id).filter(Boolean),
       ...missedRuns.map((r: any) => r.tweet_id).filter(Boolean),
+      ...lowEvalRuns.map((r: any) => r.tweet_id).filter(Boolean),
     ]),
   ];
   const tweets = tweetIds.length
@@ -233,6 +271,7 @@ export async function fetchDashboardData(sinceIso: string): Promise<{
   const annotationTargetIds = [
     ...noteIds,
     ...missedOpps.map((cn: any) => missedTargetId(cn.note_id)),
+    ...lowEvalRuns.map((r: any) => lowEvalTargetId(r.id)),
   ];
   const annotations = await fetchInBatches<any>(
     supabase,
@@ -244,7 +283,7 @@ export async function fetchDashboardData(sinceIso: string): Promise<{
     "annotations",
   ).catch(() => [] as any[]);
 
-  return { canonical, competing, submittedRuns, missedRuns, annotations, tweets, publicDumpRatings };
+  return { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings };
 }
 
 /**
@@ -278,11 +317,13 @@ export function buildDashboardItems(data: {
   competing: any[];
   submittedRuns: any[];
   missedRuns: any[];
+  lowEvalRuns: any[];
+  lowEvalScores: any[];
   annotations: any[];
   tweets: any[];
   publicDumpRatings: any[];
 }): ReviewItem[] {
-  const { canonical, competing, submittedRuns, missedRuns, annotations, tweets, publicDumpRatings } = data;
+  const { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings } = data;
   const publicRatingsByNoteId = new Map<string, any>();
   for (const r of publicDumpRatings) publicRatingsByNoteId.set(r.note_id, r);
 
@@ -395,6 +436,39 @@ export function buildDashboardItems(data: {
     });
   }
 
+  const evalScoreByRunId = new Map<string, number>();
+  for (const s of lowEvalScores) {
+    if (s.score_value != null) evalScoreByRunId.set(s.pipeline_run_id, Number(s.score_value));
+  }
+
+  for (const run of lowEvalRuns) {
+    const tweet = tweetsById.get(run.tweet_id);
+    const id = lowEvalTargetId(run.id);
+    items.push({
+      id,
+      source: "production" as const,
+      tweetId: run.tweet_id,
+      tweetText: tweet?.text,
+      tweetHandle: tweet?.author_handle,
+      hasPhoto: tweet?.has_photo ?? false,
+      hasVideo: tweet?.has_video ?? false,
+      mediaCount: tweet?.media_count ?? 0,
+      tweetMedia: tweet?.media,
+      referencedTweetData: tweet?.referenced_tweet_data,
+      noteText: run.note_text,
+      sourceUrl: run.source_url,
+      createdAt: run.created_at,
+      outcome: run.outcome,
+      outcomeReason: run.outcome_reason,
+      pipelineRunId: run.id,
+      botId: run.bot_name,
+      abTestPicks: run.ab_test_picks ?? undefined,
+      evaluationScore: evalScoreByRunId.get(run.id),
+      annotation: annotationByTarget.get(id),
+      failureType: "filtered_low_eval_score" as const,
+    });
+  }
+
   return items;
 }
 
@@ -413,7 +487,7 @@ export function buildDashboardItems(data: {
  * `cnStatusToFailureType`.
  */
 export async function fetchProductionCounts(): Promise<Record<FailureType, number>> {
-  const [notes, helpfulCompeting, missed] = await Promise.all([
+  const [notes, helpfulCompeting, missed, lowEval] = await Promise.all([
     fetchAllRows<any>(supabase.from("notes").select("note_id, cn_status"), "count_notes"),
     fetchAllRows<any>(
       supabase
@@ -429,6 +503,10 @@ export async function fetchProductionCounts(): Promise<Record<FailureType, numbe
       .is("our_note_id", null)
       .eq("current_status", "CURRENTLY_RATED_HELPFUL")
       .not("pipeline_run_id", "is", null),
+    supabase
+      .from("pipeline_runs")
+      .select("id", { count: "exact", head: true })
+      .eq("outcome_reason", "low_evaluation_score"),
   ]);
 
   const helpfulCompetitorNoteIds = new Set(helpfulCompeting.map((c: any) => c.our_note_id));
@@ -439,6 +517,7 @@ export async function fetchProductionCounts(): Promise<Record<FailureType, numbe
     counts[cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id))]++;
   }
   counts.missed_opportunity = missed.count ?? 0;
+  counts.filtered_low_eval_score = lowEval.count ?? 0;
   return counts;
 }
 
