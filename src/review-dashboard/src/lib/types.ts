@@ -17,7 +17,6 @@ export interface ReviewItem {
   // Our note
   noteId?: string;
   noteText?: string;
-  sourceUrl?: string;
   status?: string;
   coreStatus?: string;
   viewCount?: number;

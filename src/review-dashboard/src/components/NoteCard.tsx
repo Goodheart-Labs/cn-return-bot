@@ -4,6 +4,7 @@ import { FAILURE_TYPE_CONFIG } from "../lib/types";
 import { JsonViewer } from "./JsonViewer";
 import { FailureModeSelector } from "./FailureModeSelector";
 import { TweetCard } from "../../../dashboard-shared/TweetCard";
+import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { Ratings } from "../../../dashboard-shared/Ratings";
 import type { Tweet } from "../../../dashboard-shared/types";
 
@@ -68,7 +69,7 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
           View note ↗
         </a>
       </div>
-      <p className="text-gray-700 whitespace-pre-wrap">{note.noteText ?? "No text"}</p>
+      <LinkifiedText className="text-gray-700 whitespace-pre-wrap" text={note.noteText ?? "No text"} />
     </div>
   );
 }
@@ -185,12 +186,7 @@ export function NoteCard({
               </a>
             )}
           </div>
-          <p className="text-sm text-gray-800 whitespace-pre-wrap">{item.noteText}</p>
-          {item.sourceUrl && (
-            <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline mt-1 block">
-              {item.sourceUrl}
-            </a>
-          )}
+          <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={item.noteText} />
         </div>
       )}
 

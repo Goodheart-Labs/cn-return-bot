@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { NoteRecord, NoteSort } from "../lib/types";
 import { TweetCard } from "../../../dashboard-shared/TweetCard";
+import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { Ratings } from "../../../dashboard-shared/Ratings";
 import { cnStatusBadge } from "../lib/aggregations";
 import { formatViews } from "../lib/format";
@@ -118,17 +119,7 @@ function StatsNoteCard({ note }: { note: NoteRecord }) {
               View note ↗
             </a>
           </div>
-          <p className="text-sm text-gray-800 whitespace-pre-wrap">{note.note_text}</p>
-          {note.source_url && (
-            <a
-              href={note.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-500 hover:underline mt-1 block"
-            >
-              {note.source_url}
-            </a>
-          )}
+          <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={note.note_text} />
         </div>
       )}
     </article>

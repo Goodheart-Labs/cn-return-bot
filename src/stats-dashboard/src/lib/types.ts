@@ -27,7 +27,6 @@ export interface NoteRecord {
   not_helpful_count: number;
   rating_count: number;
   note_text: string;
-  source_url: string | null;
   ab_test_picks: Record<string, string> | null;
   cost: number | null;
   tweet: NoteTweetData | null;

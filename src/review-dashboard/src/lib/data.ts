@@ -94,7 +94,6 @@ const CANONICAL_LIST_COLUMNS = [
   "note_id",
   "tweet_id",
   "note_text",
-  "source_url",
   "submitted_at",
   "first_seen_at",
   "cn_status",
@@ -114,7 +113,7 @@ const PIPELINE_METADATA_COLUMNS =
 // Low-eval-score rejections were never submitted, so the note text/source live
 // on the pipeline_runs row itself rather than on a notes row. Pull those too.
 const LOW_EVAL_RUN_COLUMNS =
-  "id, tweet_id, note_text, source_url, note_status, outcome, outcome_reason, bot_name, created_at, ab_test_picks";
+  "id, tweet_id, note_text, note_status, outcome, outcome_reason, bot_name, created_at, ab_test_picks";
 
 const TWEETS_LIST_COLUMNS =
   "tweet_id, text, media, referenced_tweet_data, author_handle, has_photo, has_video, media_count";
@@ -382,7 +381,6 @@ export function buildDashboardItems(data: {
       referencedTweetData: tweet?.referenced_tweet_data,
       noteId: note.note_id,
       noteText: note.note_text,
-      sourceUrl: note.source_url,
       createdAt: note.submitted_at ?? note.first_seen_at,
       status: note.cn_status,
       viewCount: note.view_count,
@@ -456,7 +454,6 @@ export function buildDashboardItems(data: {
       tweetMedia: tweet?.media,
       referencedTweetData: tweet?.referenced_tweet_data,
       noteText: run.note_text,
-      sourceUrl: run.source_url,
       createdAt: run.created_at,
       outcome: run.outcome,
       outcomeReason: run.outcome_reason,
