@@ -46,7 +46,6 @@ const NOTE_COLUMNS = [
   "note_id",
   "tweet_id",
   "note_text",
-  "source_url",
   "submitted_at",
   "first_seen_at",
   "cn_status",
@@ -66,7 +65,6 @@ interface RawNoteRow {
   note_id: string;
   tweet_id: string;
   note_text: string | null;
-  source_url: string | null;
   submitted_at: string | null;
   first_seen_at: string;
   cn_status: string | null;
@@ -203,7 +201,6 @@ function joinNotes(
       not_helpful_count: note.not_helpful_count ?? 0,
       rating_count: note.rating_count ?? 0,
       note_text: note.note_text ?? "",
-      source_url: note.source_url,
       ab_test_picks: run?.ab_test_picks ?? null,
       cost: run?.cost == null ? null : Number(run.cost),
       tweet: tweet
