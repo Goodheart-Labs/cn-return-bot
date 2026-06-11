@@ -10,9 +10,11 @@ import type {
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import {
   fetchDashboardData,
+  fetchDashboardDataByTags,
   buildDashboardItems,
   fetchLogsForRuns,
   fetchProductionCounts,
+  fetchProductionTagCounts,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
   fetchUploads,
@@ -64,12 +66,17 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
 
 function matchesFilters(filters: FilterState, abFilters: ABFilters) {
   return (item: ReviewItem) => {
-    if (!filters.failureTypes.has(item.failureType)) return false;
-    if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
-    if (filters.seen === "unseen" && item.annotation?.seen) return false;
+    // When tags are selected they're the primary lens: show every item carrying
+    // one, regardless of failure type or seen state. Tagged items are usually
+    // already marked seen, and many failure types are off by default, so
+    // applying those filters here would hide the very items you clicked to see.
     if (filters.failureModes.size > 0) {
       const itemModes = item.annotation?.failureModes ?? [];
       if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
+    } else {
+      if (!filters.failureTypes.has(item.failureType)) return false;
+      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+      if (filters.seen === "unseen" && item.annotation?.seen) return false;
     }
     if (!matchesAbFilters(item.abTestPicks ?? null, abFilters)) return false;
     return true;
@@ -90,6 +97,10 @@ export function App() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
+  // All-time tag usage for production pills, fetched once per production
+  // session and adjusted optimistically on tag edits. Dataset runs derive
+  // counts from their (fully loaded) items instead.
+  const [productionTagCounts, setProductionTagCounts] = useState<Map<string, number>>(new Map());
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -118,6 +129,18 @@ export function App() {
     fetchFailureModes().then(setFailureModeCatalog).catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
   }, []);
 
+  // Selecting failure-mode tags makes production loading fetch all-time tagged
+  // items instead of the date window, so the tag set is a fetch input. Serialize
+  // it for a stable loadData dep — the Set's identity churns on unrelated
+  // re-renders. Empty for dataset runs, whose tag filtering stays client-side.
+  const productionTagKey = useMemo(
+    () =>
+      dataset.type === "production"
+        ? JSON.stringify([...filters.failureModes].sort())
+        : "",
+    [dataset.type, filters.failureModes],
+  );
+
   // Load data when dataset changes. For production we fetch ALL metadata
   // (canonical + competing + pipeline_runs sans logs) in one shot; logs are
   // lazy-loaded per visible card in a separate effect below. Dataset runs
@@ -128,11 +151,14 @@ export function App() {
     try {
       if (dataset.type === "production") {
         // The list is windowed; the pill counts are all-time (fetched once by a
-        // separate effect), so we don't set them here.
-        const since = new Date(Date.now() - windowDays * MS_PER_DAY).toISOString();
-        const data = await fetchDashboardData(since);
-        const built = buildDashboardItems(data);
-        setItems(built);
+        // separate effect), so we don't set them here. Selecting tags swaps the
+        // window for an all-time fetch of everything ever tagged, so the pills
+        // filter across all history (see fetchDashboardDataByTags).
+        const tags = [...filters.failureModes];
+        const data = tags.length > 0
+          ? await fetchDashboardDataByTags(tags)
+          : await fetchDashboardData(new Date(Date.now() - windowDays * MS_PER_DAY).toISOString());
+        setItems(buildDashboardItems(data));
         setLogsByRunId(new Map());
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
@@ -145,7 +171,8 @@ export function App() {
     } finally {
       setLoading(false);
     }
-  }, [dataset, windowDays]);
+    // productionTagKey is the stable proxy for filters.failureModes (read above).
+  }, [dataset, windowDays, productionTagKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset filters when the dataset changes (but not when only the window
   // extends — extending should preserve the user's filters). windowDays
@@ -169,6 +196,9 @@ export function App() {
     fetchProductionCounts()
       .then(setCounts)
       .catch((e) => console.warn("Failed to fetch production counts:", e));
+    fetchProductionTagCounts()
+      .then(setProductionTagCounts)
+      .catch((e) => console.warn("Failed to fetch production tag counts:", e));
   }, [dataset]);
 
   // Sort items by date (stable memo so renders don't re-sort unnecessarily).
@@ -187,9 +217,9 @@ export function App() {
     [items],
   );
 
-  // Tag usage counts derived from current items' annotations. Used to sort
-  // and label the failure-mode pills.
-  const failureModeUsage = useMemo(() => {
+  // Tag usage counts derived from current items' annotations — correct for
+  // dataset runs, whose items are fully loaded.
+  const itemTagCounts = useMemo(() => {
     const counts = new Map<string, number>();
     for (const item of items) {
       for (const m of item.annotation?.failureModes ?? []) {
@@ -199,15 +229,20 @@ export function App() {
     return counts;
   }, [items]);
 
+  // Counts used to sort and label the pills (and order the card selector).
+  // Production items are only partially loaded (date window), so use the
+  // all-time counts there; deriving from items would undercount.
+  const tagCounts = dataset.type === "production" ? productionTagCounts : itemTagCounts;
+
   const sortedFailureModes = useMemo(() => {
     const list = showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed);
     return [...list].sort((a, b) => {
-      const ca = failureModeUsage.get(a.name) ?? 0;
-      const cb = failureModeUsage.get(b.name) ?? 0;
+      const ca = tagCounts.get(a.name) ?? 0;
+      const cb = tagCounts.get(b.name) ?? 0;
       if (cb !== ca) return cb - ca;
       return a.name.localeCompare(b.name);
     });
-  }, [failureModeCatalog, failureModeUsage, showFixedTags]);
+  }, [failureModeCatalog, tagCounts, showFixedTags]);
 
   const activeFailureModes = useMemo(
     () => failureModeCatalog.filter((m) => !m.fixed),
@@ -226,7 +261,9 @@ export function App() {
       }),
     [filtered, logsByRunId],
   );
-  const canLoadMore = dataset.type === "production";
+  const tagFilterActive = dataset.type === "production" && filters.failureModes.size > 0;
+  // An all-time tag fetch already loaded everything tagged; no window to extend.
+  const canLoadMore = dataset.type === "production" && !tagFilterActive;
 
   // Lazy-load logs for visible production items that don't have them yet.
   // Dataset runs already carry logs inline (they're small & come from uploads),
@@ -284,6 +321,7 @@ export function App() {
 
   const handleFailureModesChange = async (id: string, modes: string[]) => {
     const source = dataset.type === "production" ? "production" : "dataset_run";
+    const prevModes = items.find((item) => item.id === id)?.annotation?.failureModes ?? [];
     try {
       await upsertAnnotation(source as "production" | "dataset_run", id, { failureModes: modes });
       setItems((prev) =>
@@ -293,6 +331,23 @@ export function App() {
             : item,
         ),
       );
+      // Keep the all-time pill counts in step without refetching: apply the
+      // same add/remove diff we just persisted.
+      if (dataset.type === "production") {
+        setProductionTagCounts((prev) => {
+          const next = new Map(prev);
+          for (const m of modes) {
+            if (!prevModes.includes(m)) next.set(m, (next.get(m) ?? 0) + 1);
+          }
+          for (const m of prevModes) {
+            if (modes.includes(m)) continue;
+            const remaining = (next.get(m) ?? 1) - 1;
+            if (remaining > 0) next.set(m, remaining);
+            else next.delete(m);
+          }
+          return next;
+        });
+      }
       pruneUnusedFailureModes().then(setFailureModeCatalog).catch(() => {});
     } catch (err: any) {
       console.error("Failed to update failure modes:", err);
@@ -410,7 +465,7 @@ export function App() {
         <div className="flex flex-wrap gap-1 mb-4 items-center">
           {sortedFailureModes.map((mode) => {
             const active = filters.failureModes.has(mode.name);
-            const count = failureModeUsage.get(mode.name) ?? 0;
+            const count = tagCounts.get(mode.name) ?? 0;
             return (
               <span
                 key={mode.name}
@@ -468,7 +523,9 @@ export function App() {
         {loading && items.length === 0
           ? "Loading..."
           : dataset.type === "production"
-            ? `${visible.length} notes · last ${windowDays} days${loadingLogs ? " · loading logs…" : ""}`
+            ? tagFilterActive
+              ? `${visible.length} notes · all time, tagged${loadingLogs ? " · loading logs…" : ""}`
+              : `${visible.length} notes · last ${windowDays} days${loadingLogs ? " · loading logs…" : ""}`
             : `${filtered.length} items shown`}
       </div>
 
@@ -479,7 +536,7 @@ export function App() {
             key={item.id}
             item={item}
             failureModeCatalog={activeFailureModes}
-            failureModeUsage={failureModeUsage}
+            failureModeUsage={tagCounts}
             onSeenToggle={handleSeenToggle}
             onFailureModesChange={handleFailureModesChange}
             onCreateFailureMode={handleCreateFailureMode}
