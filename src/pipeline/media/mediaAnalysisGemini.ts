@@ -27,6 +27,7 @@ import {
   type YtDlpMetadata,
 } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
+import { getBestMediaUrl } from "./bestMediaUrl";
 
 const execAsync = promisify(exec);
 // Native Gemini API takes the model id without the OpenRouter "google/" prefix.
@@ -126,23 +127,6 @@ async function fetchImageInlineData(imageUrl: string): Promise<{ mimeType: strin
   const mimeType = response.headers.get("content-type")?.split(";")[0]?.trim() || "image/jpeg";
   const bytes = Buffer.from(await response.arrayBuffer());
   return { mimeType, data: bytes.toString("base64") };
-}
-
-function getBestUrl(item: {
-  type: string;
-  url?: string;
-  preview_image_url?: string;
-  variants?: Array<{ bit_rate?: number; content_type: string; url: string }>;
-}): string | undefined {
-  if (item.type === "photo") return item.url || item.preview_image_url;
-  if (item.variants?.length) {
-    const mp4s = item.variants
-      .filter((v) => v.content_type === "video/mp4")
-      .sort((a, b) => (b.bit_rate ?? 0) - (a.bit_rate ?? 0));
-    if (mp4s[0]) return mp4s[0].url;
-    return item.variants[0]?.url;
-  }
-  return item.url || item.preview_image_url;
 }
 
 // --- Audio transcription (reusing Groq Whisper pattern) ---
@@ -391,7 +375,7 @@ async function analyzeMediaItems(
   let imageIdx = 0;
   const imageResults = await Promise.all(
     images
-      .map((img) => getBestUrl(img))
+      .map((img) => getBestMediaUrl(img))
       .filter((url): url is string => !!url)
       .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`, entities).catch((err) => {
         console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
@@ -402,7 +386,7 @@ async function analyzeMediaItems(
 
   let videoIdx = 0;
   for (const video of videos) {
-    const videoUrl = getBestUrl(video);
+    const videoUrl = getBestMediaUrl(video);
     if (!videoUrl) continue;
     results.push(await analyzeVideo(videoUrl, video.duration_ms, `${namePrefix}.video.${videoIdx++}`, strategy, undefined, entities));
   }
