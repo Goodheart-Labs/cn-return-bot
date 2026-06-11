@@ -50,14 +50,24 @@ export interface PipelineRunDayBucket {
   submitted_count: number;
 }
 
+// Per-UTC-day origin split of rated-helpful Community Notes from the X public
+// dump. Human-written helpful = helpful_total - helpful_ours - helpful_other_ai.
+export interface DailyOriginCount {
+  day: string;                               // YYYY-MM-DD (createdAtMillis, UTC)
+  helpful_total: number;
+  helpful_ours: number;
+  helpful_other_ai: number;                  // top-9 other AI notewriters
+}
+
 export interface StatsSnapshot {
   generated_at: string;
   notes: NoteRecord[];
   pipeline_run_aggregates: PipelineRunAggregate[];
   pipeline_runs_by_day: PipelineRunDayBucket[];
   ab_test_slots: ABTestSlotInfo[];
+  daily_note_origin_counts: DailyOriginCount[];
 }
 
 export type ChartGranularity = "daily" | "weekly";
-export type ChartMode = "absolute" | "ratio";
+export type ChartMode = "absolute" | "ratio" | "share";
 export type NoteSort = "latest_helpful" | "most_views_helpful" | "latest_unhelpful";

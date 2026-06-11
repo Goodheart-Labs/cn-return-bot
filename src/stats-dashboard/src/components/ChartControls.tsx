@@ -59,6 +59,7 @@ export function ChartControls({
         options={[
           { value: "absolute", label: "Helpful / unhelpful" },
           { value: "ratio", label: "Ratio" },
+          { value: "share", label: "% of all" },
         ]}
       />
       {showNonCandidateAvailable && mode === "ratio" && (
@@ -77,6 +78,16 @@ export function ChartControls({
 }
 
 export function ChartLegend({ mode, showNonCandidate }: { mode: ChartMode; showNonCandidate: boolean }) {
+  if (mode === "share") {
+    return (
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-600" /> Our notes</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-400" /> Top other AI notewriters</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-200" /> Human-written</span>
+        <span className="text-gray-400">— share of rated-helpful Community Notes</span>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-wrap gap-4 text-xs text-gray-600">
       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-emerald-500" /> Helpful</span>
