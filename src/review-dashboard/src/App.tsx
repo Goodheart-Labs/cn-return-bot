@@ -73,7 +73,7 @@ export function App() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
-  const [showFixedTags, setShowFixedTags] = useState(false);
+  const [showFixedTags, setShowFixedTags] = useState(true);
   const [loading, setLoading] = useState(true);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -157,8 +157,8 @@ export function App() {
   }, [failureModeCatalog, failureModeUsage, showFixedTags]);
 
   const activeFailureModes = useMemo(
-    () => failureModeCatalog.filter((m) => !m.fixed),
-    [failureModeCatalog],
+    () => (showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed)),
+    [failureModeCatalog, showFixedTags],
   );
 
   // Fold lazy-loaded logs into the items the list is about to render. Without
@@ -240,6 +240,20 @@ export function App() {
             : item,
         ),
       );
+
+      // Applying a tag that's marked fixed is fresh evidence the failure isn't
+      // fixed: unfix it so it returns to the active picker without flipping
+      // "Show fixed" on the whole graveyard.
+      const reactivated = modes.filter(
+        (name) => failureModeCatalog.find((m) => m.name === name)?.fixed,
+      );
+      if (reactivated.length > 0) {
+        setFailureModeCatalog((prev) =>
+          prev.map((m) => (reactivated.includes(m.name) ? { ...m, fixed: false } : m)),
+        );
+        await Promise.all(reactivated.map((name) => setFailureModeFixed(name, false)));
+      }
+
       pruneUnusedFailureModes().then(setFailureModeCatalog).catch(() => {});
     } catch (err: any) {
       console.error("Failed to update failure modes:", err);
