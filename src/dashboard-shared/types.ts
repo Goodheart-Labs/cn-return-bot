@@ -1,7 +1,10 @@
+import type { MediaVariant } from "../pipeline/media/bestMediaUrl";
+
 export interface TweetMediaItem {
   type: string;
   url?: string;
   preview_image_url?: string;
+  variants?: MediaVariant[];
   [k: string]: unknown;
 }
 

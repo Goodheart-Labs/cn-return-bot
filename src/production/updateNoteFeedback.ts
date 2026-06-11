@@ -4,6 +4,7 @@ import { fetchAllRows } from "../api/paging";
 import { fetchNotesWritten, type WrittenNote, type NoteFactorBucketCounts } from "../api/fetchNotesWritten";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from "fs";
 import { execSync } from "child_process";
+import { join } from "path";
 
 /**
  * Cron job: refresh `notes`, `competing_notes`, and `public_data_snapshots`
@@ -32,12 +33,18 @@ const DATA_DIR = "./cn-data";
 const OUR_AUTHOR = "813EB394B10809EBA8D09BCFA8E2E1C25A2DA0085186867F9E9C00696951C447";
 const PAGE_SIZE = 1000;
 const MAX_DAYS_BACK_FOR_CN_DATA = 7;
-const PARTITIONS: Record<string, string[]> = {
-  notes: ["00000", "00001"],
-  noteStatusHistory: ["00000"],
-};
+// The dump splits each file across an unknown, growing number of zero-padded
+// partitions (notes-00000.zip, -00001.zip, …). We discover them dynamically —
+// fetch until one 404s — rather than hardcoding a list that goes stale when X
+// adds a partition. This cap is just a runaway guard.
+const MAX_PARTITIONS = 100;
 const STATUS_HELPFUL = "CURRENTLY_RATED_HELPFUL";
 const STATUS_NMR = "NEEDS_MORE_RATINGS";
+
+// AI-notewriter author IDs (hashed noteAuthorParticipantId), incl. OUR_AUTHOR.
+// "Other AI" = this set minus ours; we keep the top N by helpful-note count.
+const AI_AUTHOR_IDS_FILE = join(import.meta.dir, "../../datasets/big_eval/ai_author_ids.txt");
+const TOP_OTHER_AI_AUTHORS = 9;
 
 const useLocal = process.argv.includes("--local");
 if (useLocal) {
@@ -68,6 +75,25 @@ type MissedNote = OtherNote & { pipelineRunId: string };
 
 type StatusRecord = { currentStatus: string };
 
+// Column indices into a notes.tsv row, resolved from its header.
+type NoteColumnIndex = {
+  noteId: number;
+  author: number;
+  tweetId: number;
+  createdAtMillis: number;
+  classification: number;
+  summary: number;
+};
+
+// One row of daily_note_origin_counts: origin split of helpful notes created
+// that UTC day. Human-written = helpful_total - helpful_ours - helpful_other_ai.
+type DailyOriginCount = {
+  day: string;
+  helpful_total: number;
+  helpful_ours: number;
+  helpful_other_ai: number;
+};
+
 type PublicDumpFiles = {
   notesPaths: string[];
   statusPaths: string[];
@@ -79,6 +105,7 @@ type ParsedDump = {
   competing: CompetingNote[];
   missed: MissedNote[];
   statusMap: Map<string, StatusRecord>;
+  originCounts: DailyOriginCount[];
 };
 
 type ExistingState = {
@@ -130,29 +157,30 @@ async function downloadCNFile(
     date.setUTCDate(date.getUTCDate() - daysBack);
     const dateStr = formatDateForUrl(date);
 
-    const partitions = PARTITIONS[fileType] ?? ["00000"];
-    const firstPartition = partitions[0]!;
-    const firstZip = `${DATA_DIR}/${fileType}-${firstPartition}.zip`;
-    const firstTsv = `${DATA_DIR}/${fileType}-${firstPartition}.tsv`;
-    const firstUrl = `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${fileType}-${firstPartition}.zip`;
+    const partitionUrl = (partition: string) =>
+      `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${fileType}-${partition}.zip`;
+    const firstTsv = `${DATA_DIR}/${fileType}-00000.tsv`;
+    const firstZip = `${DATA_DIR}/${fileType}-00000.zip`;
 
     try {
-      await downloadFile(firstUrl, firstZip);
+      // Partition 00000 must exist; its absence means this day isn't published.
+      await downloadFile(partitionUrl("00000"), firstZip);
       execSync(`unzip -o "${firstZip}" -d "${DATA_DIR}"`, { stdio: "pipe" });
       unlinkSync(firstZip);
 
+      // Then keep pulling 00001, 00002, … until one 404s (no more partitions).
       const paths = [firstTsv];
-      for (const partition of partitions.slice(1)) {
+      for (let i = 1; i < MAX_PARTITIONS; i++) {
+        const partition = String(i).padStart(5, "0");
         const zipPath = `${DATA_DIR}/${fileType}-${partition}.zip`;
         const tsvPath = `${DATA_DIR}/${fileType}-${partition}.tsv`;
-        const url = `${CN_DATA_BASE_URL}/${dateStr}/${fileType}/${fileType}-${partition}.zip`;
         try {
-          await downloadFile(url, zipPath);
+          await downloadFile(partitionUrl(partition), zipPath);
           execSync(`unzip -o "${zipPath}" -d "${DATA_DIR}"`, { stdio: "pipe" });
           unlinkSync(zipPath);
           paths.push(tsvPath);
         } catch {
-          console.log(`[updateFeedback] Partition ${partition} not available for ${fileType}`);
+          break;
         }
       }
 
@@ -181,11 +209,12 @@ async function downloadPublicDump(): Promise<PublicDumpFiles | null> {
 function parsePublicDump(
   files: PublicDumpFiles,
   rejectedTweetIds: Map<string, string>,
+  otherAiAuthorIds: Set<string>,
 ): ParsedDump {
   console.log("[updateFeedback] Parsing notes file...");
   const { header: nHeader, lines: nLines } = readTsvLines(files.notesPaths);
   const nh = nHeader.split("\t");
-  const nIdx = {
+  const nIdx: NoteColumnIndex = {
     noteId: nh.indexOf("noteId"),
     author: nh.indexOf("noteAuthorParticipantId"),
     tweetId: nh.indexOf("tweetId"),
@@ -194,22 +223,24 @@ function parsePublicDump(
     summary: nh.indexOf("summary"),
   };
 
-  // Pass 1: identify our notes; build tweetId→noteId map.
+  // Pass 1: identify our notes; build tweetId→noteId map; track our earliest day.
   const ourNotesFromDump = new Map<string, OurNoteFromDump>();
   const ourTweetIdToNoteId = new Map<string, string>();
+  let ourEarliestMillis = Infinity;
   for (const line of nLines) {
     const vals = line.split("\t");
     if (vals[nIdx.author] !== OUR_AUTHOR) continue;
     const noteId = vals[nIdx.noteId]!;
     const tweetId = vals[nIdx.tweetId]!;
-    ourNotesFromDump.set(noteId, {
-      tweetId,
-      createdAtMillis: vals[nIdx.createdAtMillis]!,
-      summary: vals[nIdx.summary]!,
-    });
+    const createdAtMillis = vals[nIdx.createdAtMillis]!;
+    ourNotesFromDump.set(noteId, { tweetId, createdAtMillis, summary: vals[nIdx.summary]! });
     ourTweetIdToNoteId.set(tweetId, noteId);
+    const ms = Number(createdAtMillis);
+    if (Number.isFinite(ms) && ms < ourEarliestMillis) ourEarliestMillis = ms;
   }
   console.log(`[updateFeedback] Found ${ourNotesFromDump.size} of our notes in public data`);
+  const ourEarliestDay =
+    ourEarliestMillis === Infinity ? null : new Date(ourEarliestMillis).toISOString().slice(0, 10);
 
   // Pass 2: competing + missed-opportunity in one walk.
   const competing: CompetingNote[] = [];
@@ -253,17 +284,94 @@ function parsePublicDump(
     ...missed.map((m) => m.noteId),
   ]);
 
+  // Status of relevant notes (for the upsert stages) plus the set of every
+  // note that is currently rated helpful (for the origin counts below).
   const statusMap = new Map<string, StatusRecord>();
+  const helpfulNoteIds = new Set<string>();
   for (const line of sLines) {
-    const firstTab = line.indexOf("\t");
-    const noteId = line.slice(0, firstTab);
-    if (!relevantIds.has(noteId)) continue;
     const vals = line.split("\t");
-    statusMap.set(noteId, { currentStatus: vals[sIdx.currentStatus] || "" });
+    const noteId = vals[sIdx.noteId]!;
+    const currentStatus = vals[sIdx.currentStatus] || "";
+    if (currentStatus === STATUS_HELPFUL) helpfulNoteIds.add(noteId);
+    if (relevantIds.has(noteId)) statusMap.set(noteId, { currentStatus });
   }
   console.log(`[updateFeedback] Found ${statusMap.size} status records for relevant notes`);
+  console.log(`[updateFeedback] ${helpfulNoteIds.size} notes currently rated helpful (platform-wide)`);
 
-  return { ourNotesFromDump, competing, missed, statusMap };
+  const topOtherAiAuthors = rankTopOtherAiAuthors(nLines, nIdx, helpfulNoteIds, otherAiAuthorIds);
+  const originCounts = ourEarliestDay
+    ? tallyDailyOriginCounts(nLines, nIdx, helpfulNoteIds, topOtherAiAuthors, ourEarliestDay)
+    : [];
+
+  return { ourNotesFromDump, competing, missed, statusMap, originCounts };
+}
+
+// Rank the "other AI" notewriters by their total helpful-note count in the dump
+// and return the top N author IDs — these get their own dashboard segment.
+function rankTopOtherAiAuthors(
+  nLines: string[],
+  nIdx: NoteColumnIndex,
+  helpfulNoteIds: Set<string>,
+  otherAiAuthorIds: Set<string>,
+): Set<string> {
+  const helpfulByAuthor = new Map<string, number>();
+  for (const line of nLines) {
+    const vals = line.split("\t");
+    const author = vals[nIdx.author];
+    if (!author || !otherAiAuthorIds.has(author)) continue;
+    if (!helpfulNoteIds.has(vals[nIdx.noteId]!)) continue;
+    helpfulByAuthor.set(author, (helpfulByAuthor.get(author) ?? 0) + 1);
+  }
+  const top = [...helpfulByAuthor.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, TOP_OTHER_AI_AUTHORS);
+  console.log(`[updateFeedback] Top ${top.length} other AI notewriters by helpful notes:`);
+  for (const [author, count] of top) {
+    console.log(`[updateFeedback]   ${author.slice(0, 12)}… ${count} helpful`);
+  }
+  return new Set(top.map(([author]) => author));
+}
+
+// Tally helpful notes by UTC creation day and origin (ours / top other AI /
+// other), bounded to days on/after our first note. Human-written is derived
+// downstream as helpful_total - helpful_ours - helpful_other_ai.
+function tallyDailyOriginCounts(
+  nLines: string[],
+  nIdx: NoteColumnIndex,
+  helpfulNoteIds: Set<string>,
+  topOtherAiAuthors: Set<string>,
+  earliestDay: string,
+): DailyOriginCount[] {
+  const byDay = new Map<string, DailyOriginCount>();
+  for (const line of nLines) {
+    const vals = line.split("\t");
+    if (!helpfulNoteIds.has(vals[nIdx.noteId]!)) continue;
+    const millis = Number(vals[nIdx.createdAtMillis]);
+    if (!Number.isFinite(millis)) continue;
+    const day = new Date(millis).toISOString().slice(0, 10);
+    if (day < earliestDay) continue;
+    let row = byDay.get(day);
+    if (!row) {
+      row = { day, helpful_total: 0, helpful_ours: 0, helpful_other_ai: 0 };
+      byDay.set(day, row);
+    }
+    row.helpful_total++;
+    const author = vals[nIdx.author];
+    if (author === OUR_AUTHOR) row.helpful_ours++;
+    else if (author && topOtherAiAuthors.has(author)) row.helpful_other_ai++;
+  }
+  return [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day));
+}
+
+// Load the AI-notewriter author IDs, excluding ours (which is tracked separately).
+function loadOtherAiAuthorIds(): Set<string> {
+  const ids = readFileSync(AI_AUTHOR_IDS_FILE, "utf-8")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const set = new Set(ids);
+  set.delete(OUR_AUTHOR);
+  return set;
 }
 
 // ─── Stage D: fetch existing DB state ────────────────────────────────────────
@@ -589,6 +697,30 @@ async function upsertRatingTagCounts(apiNotes: WrittenNote[], now: string): Prom
   return upserted;
 }
 
+// ─── Stage K: daily origin counts ────────────────────────────────────────────
+
+async function upsertDailyOriginCounts(counts: DailyOriginCount[], now: string): Promise<number> {
+  if (counts.length === 0) {
+    console.log("[updateFeedback] Origin counts: 0 day rows");
+    return 0;
+  }
+  const rows = counts.map((c) => ({ ...c, last_synced_at: now }));
+  let upserted = 0;
+  for (let i = 0; i < rows.length; i += PAGE_SIZE) {
+    const batch = rows.slice(i, i + PAGE_SIZE);
+    const { error } = await client
+      .from("daily_note_origin_counts")
+      .upsert(batch, { onConflict: "day" });
+    if (error) {
+      console.error(`[updateFeedback] Error upserting origin-counts batch: ${error.message}`);
+    } else {
+      upserted += batch.length;
+    }
+  }
+  console.log(`[updateFeedback] Origin counts: ${upserted} day rows upserted`);
+  return upserted;
+}
+
 // ─── Stage J: cleanup ────────────────────────────────────────────────────────
 
 function cleanupFiles(paths: string[]): void {
@@ -631,7 +763,8 @@ async function main() {
   const existing = await fetchExistingState();
 
   // C. Parse dump.
-  const dump = parsePublicDump(files, existing.rejectedTweetIds);
+  const otherAiAuthorIds = loadOtherAiAuthorIds();
+  const dump = parsePublicDump(files, existing.rejectedTweetIds, otherAiAuthorIds);
 
   // E. Upsert our notes.
   const upsertResult = await upsertOurNotes(
@@ -657,6 +790,9 @@ async function main() {
   // I. Rating tag counts (no-op when no API note has has_access=true).
   await upsertRatingTagCounts(apiNotes, now);
 
+  // K. Daily helpful-note origin counts (stats-dashboard "% of all" view).
+  await upsertDailyOriginCounts(dump.originCounts, now);
+
   // J. Cleanup.
   cleanupFiles([...files.notesPaths, ...files.statusPaths]);
 
@@ -669,6 +805,7 @@ async function main() {
   console.log(`Notes: ${upsertResult.upserted} upserted, ${upsertResult.errors} errors`);
   console.log(`Competing: ${dump.competing.length} found, ${helpfulCompeting.length} helpful`);
   console.log(`Missed (helpful): ${missedInserted} inserted`);
+  console.log(`Origin counts: ${dump.originCounts.length} day rows`);
 
   process.exit(0);
 }

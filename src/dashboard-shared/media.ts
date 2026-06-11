@@ -1,4 +1,5 @@
 import type { ReferencedTweetData, TweetMediaItem } from "./types";
+import { getBestMediaUrl } from "../pipeline/media/bestMediaUrl";
 
 export interface MediaImage { url: string }
 export interface MediaVideo { url: string }
@@ -16,7 +17,9 @@ function pushMedia(
   imagesOut: MediaImage[],
   videosOut: MediaVideo[],
 ): void {
-  const url = m.url ?? m.preview_image_url;
+  // Videos have no `url` in the API payload — getBestMediaUrl picks the
+  // highest-bitrate mp4 variant so we link the video, not its thumbnail.
+  const url = getBestMediaUrl(m);
   if (!url) return;
   if (m.type === "photo") imagesOut.push({ url });
   else if (m.type === "video" || m.type === "animated_gif") videosOut.push({ url });
