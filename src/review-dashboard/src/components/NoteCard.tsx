@@ -11,6 +11,7 @@ interface NoteCardProps {
   item: ReviewItem;
   failureModeCatalog: FailureModeInfo[];
   failureModeUsage: Map<string, number>;
+  showFixed: boolean;
   onSeenToggle: (id: string, seen: boolean) => void;
   onFailureModesChange: (id: string, modes: string[]) => void;
   onCreateFailureMode: (name: string) => void;
@@ -99,6 +100,7 @@ export function NoteCard({
   item,
   failureModeCatalog,
   failureModeUsage,
+  showFixed,
   onSeenToggle,
   onFailureModesChange,
   onCreateFailureMode,
@@ -149,6 +151,7 @@ export function NoteCard({
             selected={failureModes}
             catalog={failureModeCatalog}
             usage={failureModeUsage}
+            showFixed={showFixed}
             onChange={(modes) => onFailureModesChange(item.id, modes)}
             onCreateNew={onCreateFailureMode}
           />

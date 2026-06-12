@@ -117,6 +117,71 @@ const COMPETING_LIST_COLUMNS = [
   "pipeline_run_id",
 ].join(", ");
 
+/** Raw-row bundle shared by the full fetch and the fast first-paint fetch. */
+export interface DashboardData {
+  canonical: any[];
+  competing: any[];
+  submittedRuns: any[];
+  missedRuns: any[];
+  annotations: any[];
+  tweets: any[];
+  publicDumpRatings: any[];
+}
+
+/**
+ * Fast first-paint fetch: just the N most recent notes plus the tweets,
+ * annotations, and public-dump ratings needed to render their cards. Skips
+ * competing_notes and pipeline_runs entirely (the slow tables), so items built
+ * from this lack competitor comparisons, missed opportunities, and pipeline
+ * outcome/logs — the full fetchDashboardData() runs in the background and
+ * swaps in the complete picture. Failure types here come from cn_status alone,
+ * which is exact for rated_helpful / rated_unhelpful / needs_more_ratings;
+ * lost_to_competitor items show as uncategorized until the backfill lands.
+ */
+export async function fetchRecentDashboardData(limit = 200): Promise<DashboardData> {
+  console.log(`[data] Loading recent ${limit} notes for first paint...`);
+  const { data: canonical, error } = await supabase
+    .from("notes")
+    .select(CANONICAL_LIST_COLUMNS)
+    .order("submitted_at", { ascending: false, nullsFirst: false })
+    .limit(limit);
+  if (error) throw error;
+
+  const noteIds = (canonical ?? []).map((n: any) => n.note_id);
+  const tweetIds = [...new Set((canonical ?? []).map((n: any) => n.tweet_id).filter(Boolean))];
+
+  const [tweets, annotations, publicDumpRatings] = await Promise.all([
+    fetchInBatches<any>(supabase, "tweets", TWEETS_LIST_COLUMNS, "tweet_id", tweetIds, undefined, "tweets_recent"),
+    fetchAllRows<any>(
+      supabase
+        .from("review_dashboard_annotations")
+        .select("*")
+        .eq("source", "production")
+        .order("target_id", { ascending: true }),
+      "annotations_recent",
+    ).catch(() => [] as any[]),
+    fetchInBatches<any>(
+      supabase,
+      "note_ratings_from_public_dump",
+      "note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date",
+      "note_id",
+      noteIds,
+      undefined,
+      "public_dump_recent",
+    ),
+  ]);
+
+  return {
+    canonical: canonical ?? [],
+    competing: [],
+    submittedRuns: [],
+    missedRuns: [],
+    annotations,
+    tweets,
+    publicDumpRatings,
+  };
+}
+
 /**
  * Fetch all the metadata the production dashboard needs in one shot, without
  * any TOASTed blobs. Returns the raw rows; caller composes them into ReviewItems.

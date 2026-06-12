@@ -5,6 +5,7 @@ interface FailureModeSelectorProps {
   selected: string[];
   catalog: FailureModeInfo[];
   usage: Map<string, number>;
+  showFixed: boolean;
   onChange: (modes: string[]) => void;
   onCreateNew: (name: string) => void;
 }
@@ -13,6 +14,7 @@ export function FailureModeSelector({
   selected,
   catalog,
   usage,
+  showFixed,
   onChange,
   onCreateNew,
 }: FailureModeSelectorProps) {
@@ -46,9 +48,11 @@ export function FailureModeSelector({
 
   const filteredCatalog = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return sortedCatalog;
+    // Fixed modes are hidden from the default menu, but a live search surfaces
+    // them (with their strikethrough marker) so you can still re-apply one.
+    if (!q) return showFixed ? sortedCatalog : sortedCatalog.filter((m) => !m.fixed);
     return sortedCatalog.filter((m) => m.name.toLowerCase().includes(q));
-  }, [sortedCatalog, query]);
+  }, [sortedCatalog, query, showFixed]);
 
   const toggle = (mode: string) => {
     if (selected.includes(mode)) {
@@ -109,10 +113,9 @@ export function FailureModeSelector({
           {filteredCatalog.length === 0 && query.trim() && (
             <button
               onClick={() => createMode(query)}
-              className="w-full flex items-center gap-1 px-3 py-1.5 text-left text-sm text-purple-700 hover:bg-purple-50"
+              className="w-full px-3 py-1.5 text-left text-sm text-purple-700 hover:bg-purple-50"
             >
-              <span className="font-medium">+</span>
-              <span>Add "{query.trim().toLowerCase()}"</span>
+              create <span className="italic">"{query.trim().toLowerCase()}"</span>
             </button>
           )}
           {filteredCatalog.length === 0 && !query.trim() && (
@@ -131,7 +134,12 @@ export function FailureModeSelector({
                   onChange={() => toggle(mode.name)}
                   className="mr-2"
                 />
-                <span className="flex-1">{mode.name}</span>
+                <span className={`flex-1 ${mode.fixed ? "line-through text-gray-400" : ""}`}>
+                  {mode.name}
+                </span>
+                {mode.fixed && (
+                  <span className="ml-2 text-[10px] text-gray-400">fixed</span>
+                )}
                 {count > 0 && (
                   <span className="ml-2 text-[10px] text-gray-400">{count}</span>
                 )}

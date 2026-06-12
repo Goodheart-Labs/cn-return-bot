@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import type {
   ReviewItem,
   DatasetOption,
@@ -10,6 +10,7 @@ import type {
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import {
   fetchDashboardData,
+  fetchRecentDashboardData,
   buildDashboardItems,
   fetchLogsForRuns,
   countsFromItems,
@@ -73,8 +74,9 @@ export function App() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
-  const [showFixedTags, setShowFixedTags] = useState(true);
+  const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [backfilling, setBackfilling] = useState(false);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,21 +99,54 @@ export function App() {
     fetchFailureModes().then(setFailureModeCatalog).catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
   }, []);
 
-  // Load data when dataset changes. For production we fetch ALL metadata
-  // (canonical + competing + pipeline_runs sans logs) in one shot; logs are
-  // lazy-loaded per visible card in a separate effect below. Dataset runs
-  // keep their original one-shot fetch (bounded set, already includes logs).
+  // Monotonic id per loadData call; phase-2 backfills check it before writing
+  // state so a dataset switch mid-backfill can't clobber the new view.
+  const loadSeq = useRef(0);
+
+  // Load data when dataset changes. Production loads in two phases: a fast
+  // fetch of the most recent notes paints the default view in ~1s, then the
+  // full metadata fetch (competing notes, pipeline runs, full history) runs in
+  // the background and swaps in the complete item list + accurate counts.
+  // Logs stay lazy-loaded per visible card in a separate effect below. Dataset
+  // runs keep their original one-shot fetch (bounded set, already includes logs).
   const loadData = useCallback(async () => {
+    const seq = ++loadSeq.current;
     setLoading(true);
     setError(null);
     try {
       if (dataset.type === "production") {
-        const data = await fetchDashboardData();
-        const built = buildDashboardItems(data);
+        const recent = await fetchRecentDashboardData();
+        if (seq !== loadSeq.current) return;
+        const built = buildDashboardItems(recent);
         setItems(built);
         setCounts(countsFromItems(built));
         setDisplayLimit(DISPLAY_PAGE_SIZE);
         setLogsByRunId(new Map());
+        setLoading(false);
+
+        setBackfilling(true);
+        fetchDashboardData()
+          .then((full) => {
+            if (seq !== loadSeq.current) return;
+            const all = buildDashboardItems(full);
+            // Keep any annotation edits made while the backfill was in flight —
+            // the freshly fetched rows predate them.
+            setItems((prev) => {
+              const edited = new Map(prev.map((i) => [i.id, i.annotation]));
+              return all.map((i) => {
+                const a = edited.get(i.id);
+                return a ? { ...i, annotation: a } : i;
+              });
+            });
+            setCounts(countsFromItems(all));
+          })
+          .catch((err) => {
+            console.error("Background full load failed:", err);
+            if (seq === loadSeq.current) setError(err?.message ?? "Failed to load full history");
+          })
+          .finally(() => {
+            if (seq === loadSeq.current) setBackfilling(false);
+          });
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
         setItems(loaded);
@@ -119,9 +154,9 @@ export function App() {
       }
     } catch (err: any) {
       console.error("Failed to load data:", err);
-      setError(err?.message ?? "Failed to load data");
+      if (seq === loadSeq.current) setError(err?.message ?? "Failed to load data");
     } finally {
-      setLoading(false);
+      if (seq === loadSeq.current) setLoading(false);
     }
   }, [dataset]);
 
@@ -155,11 +190,6 @@ export function App() {
       return a.name.localeCompare(b.name);
     });
   }, [failureModeCatalog, failureModeUsage, showFixedTags]);
-
-  const activeFailureModes = useMemo(
-    () => (showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed)),
-    [failureModeCatalog, showFixedTags],
-  );
 
   // Fold lazy-loaded logs into the items the list is about to render. Without
   // this, the first render sees logs=undefined; once the effect below fills
@@ -422,7 +452,7 @@ export function App() {
         {loading && items.length === 0
           ? "Loading..."
           : dataset.type === "production"
-            ? `Showing ${visible.length} of ${filtered.length}`
+            ? `Showing ${visible.length} of ${filtered.length}${backfilling ? " — loading full history…" : ""}`
             : `${filtered.length} items shown`}
       </div>
 
@@ -432,8 +462,9 @@ export function App() {
           <NoteCard
             key={item.id}
             item={item}
-            failureModeCatalog={activeFailureModes}
+            failureModeCatalog={failureModeCatalog}
             failureModeUsage={failureModeUsage}
+            showFixed={showFixedTags}
             onSeenToggle={handleSeenToggle}
             onFailureModesChange={handleFailureModesChange}
             onCreateFailureMode={handleCreateFailureMode}
