@@ -110,14 +110,15 @@ export function FailureModeSelector({
               className="w-full text-sm border border-gray-200 rounded px-2 py-1"
             />
           </div>
-          {filteredCatalog.length === 0 && query.trim() && (
-            <button
-              onClick={() => createMode(query)}
-              className="w-full px-3 py-1.5 text-left text-sm text-purple-700 hover:bg-purple-50"
-            >
-              create <span className="italic">"{query.trim().toLowerCase()}"</span>
-            </button>
-          )}
+          {query.trim() &&
+            !filteredCatalog.some((m) => m.name === query.trim().toLowerCase()) && (
+              <button
+                onClick={() => createMode(query)}
+                className="w-full px-3 py-1.5 text-left text-sm text-purple-700 hover:bg-purple-50"
+              >
+                create <span className="italic">"{query.trim().toLowerCase()}"</span>
+              </button>
+            )}
           {filteredCatalog.length === 0 && !query.trim() && (
             <div className="px-3 py-2 text-xs text-gray-400">No failure modes</div>
           )}
