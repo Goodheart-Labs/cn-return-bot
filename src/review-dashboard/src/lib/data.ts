@@ -8,7 +8,7 @@ import type {
   FailureModeInfo,
 } from "./types";
 import { resultToFailureType } from "./types";
-import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
+import { fetchAllRows, fetchAllRowsParallel, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
@@ -104,6 +104,19 @@ const PIPELINE_METADATA_COLUMNS =
 const TWEETS_LIST_COLUMNS =
   "tweet_id, text, media, referenced_tweet_data, author_handle, has_photo, has_video, media_count";
 
+// Only the competing_notes columns the list actually reads — replaces the old
+// select("*") over ~14k rows.
+const COMPETING_LIST_COLUMNS = [
+  "note_id",
+  "our_note_id",
+  "tweet_id",
+  "note_text",
+  "current_status",
+  "author_participant_id",
+  "created_at_millis",
+  "pipeline_run_id",
+].join(", ");
+
 /**
  * Fetch all the metadata the production dashboard needs in one shot, without
  * any TOASTed blobs. Returns the raw rows; caller composes them into ReviewItems.
@@ -130,23 +143,42 @@ export async function fetchDashboardData(): Promise<{
   publicDumpRatings: any[];
 }> {
   console.log("[data] Loading dashboard metadata...");
+  // Parallel pagination: each makeQuery rebuilds a fresh, stably-ordered query
+  // so page ranges can be fetched concurrently without racing a shared builder.
   const [canonical, competing, submittedRuns, publicDumpRatings] = await Promise.all([
-    fetchAllRows<any>(
-      supabase
-        .from("notes")
-        .select(CANONICAL_LIST_COLUMNS)
-        .order("submitted_at", { ascending: false, nullsFirst: false }),
+    fetchAllRowsParallel<any>(
+      () =>
+        supabase
+          .from("notes")
+          .select(CANONICAL_LIST_COLUMNS)
+          .order("submitted_at", { ascending: false, nullsFirst: false })
+          .order("note_id", { ascending: true }),
       "canonical",
     ),
-    fetchAllRows<any>(supabase.from("competing_notes").select("*"), "competing"),
-    fetchAllRows<any>(
-      supabase.from("pipeline_runs").select(PIPELINE_METADATA_COLUMNS).eq("outcome", "submitted"),
+    fetchAllRowsParallel<any>(
+      () =>
+        supabase
+          .from("competing_notes")
+          .select(COMPETING_LIST_COLUMNS)
+          .order("note_id", { ascending: true }),
+      "competing",
+    ),
+    fetchAllRowsParallel<any>(
+      () =>
+        supabase
+          .from("pipeline_runs")
+          .select(PIPELINE_METADATA_COLUMNS)
+          .eq("outcome", "submitted")
+          .order("id", { ascending: true }),
       "submitted_runs",
     ),
-    fetchAllRows<any>(
-      supabase
-        .from("note_ratings_from_public_dump")
-        .select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date"),
+    fetchAllRowsParallel<any>(
+      () =>
+        supabase
+          .from("note_ratings_from_public_dump")
+          .select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date")
+          .order("note_id", { ascending: true })
+          .order("dump_date", { ascending: true }),
       "public_dump_ratings",
     ),
   ]);
@@ -191,20 +223,16 @@ export async function fetchDashboardData(): Promise<{
       )
     : [];
 
-  // Annotations are keyed by item.id: canonical items use note_id directly,
-  // missed-opportunity items use the missedTargetId() encoding. Include both
-  // shapes so tags applied to missed-opp cards survive reloads.
-  const annotationTargetIds = [
-    ...canonical.map((n: any) => n.note_id),
-    ...missedOpps.map((cn: any) => missedTargetId(cn.note_id)),
-  ];
-  const annotations = await fetchInBatches<any>(
-    supabase,
-    "review_dashboard_annotations",
-    "*",
-    "target_id",
-    annotationTargetIds,
-    (q) => q.eq("source", "production"),
+  // Annotations are keyed by item.id (canonical note_id, or the missedTargetId()
+  // encoding for missed-opp cards). There are only a couple hundred production
+  // annotations total, so fetch them all in one query and let buildDashboardItems
+  // match by target_id — far cheaper than batching over every note_id.
+  const annotations = await fetchAllRows<any>(
+    supabase
+      .from("review_dashboard_annotations")
+      .select("*")
+      .eq("source", "production")
+      .order("target_id", { ascending: true }),
     "annotations",
   ).catch(() => [] as any[]);
 
