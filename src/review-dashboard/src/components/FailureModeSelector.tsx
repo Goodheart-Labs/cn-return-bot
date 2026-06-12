@@ -17,8 +17,9 @@ export function FailureModeSelector({
   onCreateNew,
 }: FailureModeSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [newMode, setNewMode] = useState("");
+  const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -27,6 +28,12 @@ export function FailureModeSelector({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // Focus the search box on open; clear the query on close.
+  useEffect(() => {
+    if (open) searchRef.current?.focus();
+    else setQuery("");
+  }, [open]);
 
   const sortedCatalog = useMemo(() => {
     return [...catalog].sort((a, b) => {
@@ -37,6 +44,12 @@ export function FailureModeSelector({
     });
   }, [catalog, usage]);
 
+  const filteredCatalog = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return sortedCatalog;
+    return sortedCatalog.filter((m) => m.name.toLowerCase().includes(q));
+  }, [sortedCatalog, query]);
+
   const toggle = (mode: string) => {
     if (selected.includes(mode)) {
       onChange(selected.filter((m) => m !== mode));
@@ -45,14 +58,14 @@ export function FailureModeSelector({
     }
   };
 
-  const handleCreate = () => {
-    const normalized = newMode.trim().toLowerCase();
+  const createMode = (name: string) => {
+    const normalized = name.trim().toLowerCase();
     if (!normalized) return;
     onCreateNew(normalized);
     if (!selected.includes(normalized)) {
       onChange([...selected, normalized]);
     }
-    setNewMode("");
+    setQuery("");
   };
 
   return (
@@ -71,7 +84,41 @@ export function FailureModeSelector({
 
       {open && (
         <div className="absolute z-20 mt-1 right-0 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-80 overflow-y-auto">
-          {sortedCatalog.map((mode) => {
+          <div className="sticky top-0 bg-white px-2 pt-1 pb-2 border-b border-gray-100">
+            <input
+              ref={searchRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (filteredCatalog.length > 0) {
+                    toggle(filteredCatalog[0].name);
+                    setQuery("");
+                  } else {
+                    createMode(query);
+                  }
+                } else if (e.key === "Escape") {
+                  setOpen(false);
+                }
+              }}
+              placeholder="Search failure modes..."
+              className="w-full text-sm border border-gray-200 rounded px-2 py-1"
+            />
+          </div>
+          {filteredCatalog.length === 0 && query.trim() && (
+            <button
+              onClick={() => createMode(query)}
+              className="w-full flex items-center gap-1 px-3 py-1.5 text-left text-sm text-purple-700 hover:bg-purple-50"
+            >
+              <span className="font-medium">+</span>
+              <span>Add "{query.trim().toLowerCase()}"</span>
+            </button>
+          )}
+          {filteredCatalog.length === 0 && !query.trim() && (
+            <div className="px-3 py-2 text-xs text-gray-400">No failure modes</div>
+          )}
+          {filteredCatalog.map((mode) => {
             const count = usage.get(mode.name) ?? 0;
             return (
               <label
@@ -91,23 +138,6 @@ export function FailureModeSelector({
               </label>
             );
           })}
-
-          <div className="border-t border-gray-100 px-3 py-2 flex gap-1">
-            <input
-              type="text"
-              value={newMode}
-              onChange={(e) => setNewMode(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-              placeholder="Add new..."
-              className="flex-1 text-sm border border-gray-200 rounded px-2 py-1"
-            />
-            <button
-              onClick={handleCreate}
-              className="text-sm px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
-            >
-              +
-            </button>
-          </div>
         </div>
       )}
     </div>
