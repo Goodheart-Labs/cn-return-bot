@@ -152,7 +152,7 @@ async function computeEvaluationScore(
   noteText: string
 ): Promise<{ score?: number; shouldSubmit?: boolean; error?: string }> {
   try {
-    const result = await shouldSubmitNote(postId, noteText, 0);
+    const result = await shouldSubmitNote(postId, noteText, getBotConfig().eval_submit_threshold);
     return {
       score: result.score,
       shouldSubmit: result.error ? undefined : result.shouldSubmit,

@@ -48,6 +48,7 @@ const PREFILTER_CONFIG: BotConfig = {
   reasoning_effort: "high",
   temperature: 0,
   feed_size: "small",
+  eval_submit_threshold: 0, // unused — prefilter runs before the bot / eval gate
 };
 
 // Reframed note-needed judge: same three preconditions as the real cheap-bot
