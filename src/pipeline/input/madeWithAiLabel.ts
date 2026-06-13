@@ -29,12 +29,16 @@ export async function detectMadeWithAiLabel(tweetId: string, logTag: string): Pr
       waitUntil: "domcontentloaded",
       timeout: NAV_TIMEOUT_MS,
     });
-    await page.waitForSelector('article[data-testid="tweet"]', { timeout: ARTICLE_TIMEOUT_MS });
+    await page.waitForSelector("article", { timeout: ARTICLE_TIMEOUT_MS });
 
     // Scope to the focused (primary) tweet — the first rendered tweet article —
     // and ignore the post's own body text, so a post that merely *says* "Made
     // with AI" can't be mistaken for the media-provenance label.
-    const article = page.locator('article[data-testid="tweet"]').first();
+    //
+    // X's logged-out status page is a lightweight server-rendered view whose
+    // tweet is a bare <article> with no data-testid attributes, so we match on
+    // the element name (the focused tweet is always the first article).
+    const article = page.locator("article").first();
     return await article.evaluate((root, labelText) => {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
       let node: Node | null = walker.currentNode;

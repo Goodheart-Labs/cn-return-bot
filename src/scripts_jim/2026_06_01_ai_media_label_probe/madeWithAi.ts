@@ -41,10 +41,11 @@ async function detect(
       waitUntil: "domcontentloaded",
       timeout: NAV_TIMEOUT_MS,
     });
-    await page.waitForSelector('article[data-testid="tweet"]', { timeout: ARTICLE_TIMEOUT_MS });
+    await page.waitForSelector("article", { timeout: ARTICLE_TIMEOUT_MS });
 
     // Scope to the focused (primary) tweet: the first rendered tweet article.
-    const article = page.locator('article[data-testid="tweet"]').first();
+    // The logged-out SSR view uses a bare <article> with no data-testid.
+    const article = page.locator("article").first();
 
     // Find every element inside the article whose own text is exactly the label.
     // Reporting tag/testid/aria lets us tighten the selector after seeing real DOM.
