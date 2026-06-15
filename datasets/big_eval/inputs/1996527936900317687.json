@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1996527936900317687",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:23.973Z",
+  "post": {
+    "id": "1996527936900317687",
+    "author_id": "1485068728412913666",
+    "created_at": "2025-12-04T10:32:08.000Z",
+    "text": "Can 100 magnets stop a bullet? https://t.co/rKtgCQCKVy",
+    "media": [
+      {
+        "media_key": "7_1996527906051227648",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1996527906051227648/pu/img/Ex5_NatXzhuwcmPh.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 29041,
+        "view_count": 5184725,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1996527906051227648/pu/vid/avc1/320x568/yiTJpiT5pn80GQ1g.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1996527906051227648/pu/vid/avc1/480x852/LrqMn_8bgEPGeJF6.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1996527906051227648/pu/vid/avc1/720x1280/PcHXsaRbbsf_iE5N.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1996527906051227648/pu/pl/zRaiE24sbfAaoGj8.m3u8?tag=12&v=10b"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 275,
+      "reply_count": 253,
+      "like_count": 6554,
+      "quote_count": 36,
+      "bookmark_count": 1445,
+      "impression_count": 4996976
+    },
+    "author_followers": 2597639,
+    "author_name": "Interesting AF",
+    "author_description": "Posting interesting history, tech, art, and more.\n\n📧 submit clips & inquiries to media@fixated.com",
+    "author_tweet_count": 26774
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1996527906051227648/pu/vid/avc1/720x1280/PcHXsaRbbsf_iE5N.mp4?tag=12",
+          "description": {
+            "description": "A 3D simulation showing a sequence of frames involving horseshoe magnets and a bullet. Frame 1 shows a long row of 100 horseshoe magnets on stands. Frame 2 shows a character in a jumpsuit aiming a revolver at the row of magnets; a 9mm bullet has just been fired. Frame 3 is a close-up of the bullet flying past the red 'North' pole of the horseshoe magnets. Frame 4 shows a head-on perspective looking down the tunnel created by the magnets, with the bullet traveling through the center.",
+            "ocrText": "SUBSCRIBE G 3D VISUAL 100 Magnets A 9Mm Bullet And Then N N N S S Are Not Magnetic"
+          },
+          "transcription": "What happens if you fire a bullet through 100 magnets? Most people think the bullet would slow down after passing a few magnets and then eventually stick to one of them. But that's not actually what would happen. A 9mm bullet travels at around 1,200 feet per second and most bullets are not magnetic at all. So instead of getting stuck, the bullet would fly straight through all 100 magnets with almost no change in speed or direction."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Zach Vorhies / Google Whistleblower** (@Perpetualmaniac): This video is incorrect. Copper traveling at high speed slows down due to induction when it approaches a magnet.  \nLikes: 235 | Reposts: 0 | Views: 28417\n\n**Military Arms** (@MAC_Arms): Hey @grok if a 9mm bullet comprised of lead with a copper were fired through 100 high powered magnets, would electromagnetic induction become a factor in the bullets velocity?  \nLikes: 44 | Reposts: 0 | Views: 28705\n\n**KC3SNR** (@Kc3Snr): Non ferrous metals are non magnetic. Generally use non ferrous metals as projectiles for that very reason. Softer and non magnetic.  \nLikes: 20 | Reposts: 0 | Views: 3719\n\n**Viral vortex** (@Viral_vortex1): type of thing you see once in a lifetime  \nLikes: 15 | Reposts: 0 | Views: 781\n\n**AMC_Ape** (@Banana_Eater84): Why are we not talking about the Revolver ejecting the shell casing? 🤦🏼‍♂️  \nLikes: 14 | Reposts: 0 | Views: 2083\n\n**Tamim** (@TamimAlArafat): Cool animation… that forgot about eddy currents 😅 A 9 mm jacketed bullet is a conductor moving through a changing B-field. Lenz’s law says it gets braked hard. Look up ‘magnet drop through copper tube’ but supersonic  \nLikes: 11 | Reposts: 0 | Views: 3024\n\n**Neothon 🐉🔺** (@0xNeothon): You are asking the wrong questions. Can 1000 magnets stop Iron Man?? Wait a minute, who wins between magneto vs ironman?  \nLikes: 10 | Reposts: 0 | Views: 9175\n\n**Jolly Roger** (@JollyRogX): No one show this to the Insane Clown Posse.  \nLikes: 8 | Reposts: 0 | Views: 8491\n\n**Cosmic Stanza** (@CatsandDogsmem): That's what you call trusting your product. 😅 Bulletproof car company CEO takes shots from an AK-47 to prove its reliability!  \nLikes: 5 | Reposts: 0 | Views: 900\n\n**lucid** (@lucid_bound): (No text content)  \nLikes: 4 | Reposts: 0 | Views: 12854",
+    "warnings": []
+  }
+}

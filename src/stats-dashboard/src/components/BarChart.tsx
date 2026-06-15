@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ChartBucket } from "../lib/aggregations";
+import type { ChartBucket, ShareBucket } from "../lib/aggregations";
 import type { ChartGranularity, ChartMode } from "../lib/types";
 
 const CHART_HEIGHT = 320;
@@ -14,11 +14,16 @@ const COLOR_HELPFUL = "#10b981";
 const COLOR_UNHELPFUL = "#ef4444";
 const COLOR_NMR = "#9ca3af";
 const COLOR_NON_CANDIDATE = "#111827";
+// "% of all" blue ramp: ours (strong) → other AI (medium) → human (light).
+const COLOR_OURS = "#2563eb";
+const COLOR_OTHER_AI = "#60a5fa";
+const COLOR_HUMAN = "#bfdbfe";
 const COLOR_AXIS = "#d1d5db";
 const COLOR_LABEL = "#6b7280";
 
 interface BarChartProps {
   buckets: ChartBucket[];
+  shareBuckets: ShareBucket[];
   granularity: ChartGranularity;
   mode: ChartMode;
   width: number;
@@ -58,54 +63,96 @@ function tickLabelEvery(numBars: number): number {
   return Math.max(1, Math.ceil(effectiveBars / TARGET_LABELS_IN_VIEW));
 }
 
-interface HoverState {
-  bucket: ChartBucket;
-  /** Bar center in SVG coordinates (before subtracting scrollLeft). */
-  slotCenter: number;
+// ─── 100%-stacked model (shared by ratio + share modes) ──────────────────────
+
+interface StackSegment {
+  key: string;
+  color: string;
+  label: string;
+  value: number;
+}
+interface StackBucket {
+  key: string;
+  label: string;
+  segments: StackSegment[];
 }
 
-export function BarChart({ buckets, granularity, mode, width, showNonCandidate }: BarChartProps) {
+function stackTotal(b: StackBucket): number {
+  return b.segments.reduce((sum, seg) => sum + seg.value, 0);
+}
+
+// Ratio mode: helpful / not-helpful / NMR (/ non-candidate). When the
+// non-candidate toggle is off that segment is dropped so the rest sums to 100%.
+function ratioToStacks(buckets: ChartBucket[], showNonCandidate: boolean): StackBucket[] {
+  return buckets.map((b) => {
+    const segments: StackSegment[] = [
+      { key: "helpful", color: COLOR_HELPFUL, label: "Helpful", value: b.helpful },
+      { key: "unhelpful", color: COLOR_UNHELPFUL, label: "Not helpful", value: b.unhelpful },
+      { key: "nmr", color: COLOR_NMR, label: "NMR / pending", value: b.nmr },
+    ];
+    if (showNonCandidate) {
+      segments.push({ key: "nonCandidate", color: COLOR_NON_CANDIDATE, label: "Non-candidate", value: b.nonCandidate });
+    }
+    return { key: b.key, label: b.label, segments };
+  });
+}
+
+// Share mode: of rated-helpful notes, ours / top other AI / human-written.
+function shareToStacks(buckets: ShareBucket[]): StackBucket[] {
+  return buckets.map((b) => ({
+    key: b.key,
+    label: b.label,
+    segments: [
+      { key: "ours", color: COLOR_OURS, label: "Our notes", value: b.ours },
+      { key: "otherAi", color: COLOR_OTHER_AI, label: "Top other AI", value: b.otherAi },
+      { key: "human", color: COLOR_HUMAN, label: "Human-written", value: b.human },
+    ],
+  }));
+}
+
+interface HoverState {
+  /** Bar center in SVG coordinates (before subtracting scrollLeft). */
+  slotCenter: number;
+  absolute?: ChartBucket;
+  stacked?: StackBucket;
+}
+
+export function BarChart({ buckets, shareBuckets, granularity, mode, width, showNonCandidate }: BarChartProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState<HoverState | null>(null);
   const [scrollLeft, setScrollLeft] = useState(0);
 
+  const stacks =
+    mode === "share" ? shareToStacks(shareBuckets) : mode === "ratio" ? ratioToStacks(buckets, showNonCandidate) : null;
+  const barCount = mode === "share" ? shareBuckets.length : buckets.length;
+
   const slotWidth = Math.max(
     1,
-    (width - PAD_LEFT - PAD_RIGHT) / Math.min(MAX_VISIBLE_BARS, Math.max(buckets.length, 1)),
+    (width - PAD_LEFT - PAD_RIGHT) / Math.min(MAX_VISIBLE_BARS, Math.max(barCount, 1)),
   );
-  const svgWidth = Math.max(width, PAD_LEFT + PAD_RIGHT + slotWidth * buckets.length);
+  const svgWidth = Math.max(width, PAD_LEFT + PAD_RIGHT + slotWidth * barCount);
   const innerHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
   const barWidth = slotWidth * (1 - BAR_GAP_FRAC);
 
-  // Latest bucket is rightmost; show it first whenever the time axis
-  // changes. Mode and the non-candidate toggle don't reshape the axis, so
-  // keep the user's scroll position across those.
+  // Latest bucket is rightmost; jump to it whenever the axis reshapes (bar
+  // count, granularity, or switching to/from the share axis). Clear any stale
+  // hover so a wrong-mode tooltip doesn't linger.
   useEffect(() => {
+    setHovered(null);
     const el = scrollRef.current;
     if (el) {
       el.scrollLeft = el.scrollWidth;
       setScrollLeft(el.scrollLeft);
     }
-  }, [buckets.length, granularity]);
+  }, [barCount, granularity, mode]);
 
-  if (!buckets.length) {
+  if (!barCount) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center text-sm text-gray-500">
-        No notes match the current selection.
+        {mode === "share" ? "No platform-wide note data yet." : "No notes match the current selection."}
       </div>
     );
   }
-
-  const inner: InnerProps = {
-    buckets,
-    granularity,
-    width: svgWidth,
-    innerHeight,
-    slotWidth,
-    barWidth,
-    showNonCandidate,
-    onHover: (bucket, slotCenter) => setHovered({ bucket, slotCenter }),
-  };
 
   return (
     <div className="relative">
@@ -115,31 +162,49 @@ export function BarChart({ buckets, granularity, mode, width, showNonCandidate }
         onMouseLeave={() => setHovered(null)}
         onScroll={(e) => setScrollLeft(e.currentTarget.scrollLeft)}
       >
-        {mode === "ratio" ? <RatioChart {...inner} /> : <AbsoluteChart {...inner} />}
+        {mode === "absolute" ? (
+          <AbsoluteChart
+            buckets={buckets}
+            granularity={granularity}
+            width={svgWidth}
+            innerHeight={innerHeight}
+            slotWidth={slotWidth}
+            barWidth={barWidth}
+            onHover={(bucket, slotCenter) => setHovered({ absolute: bucket, slotCenter })}
+          />
+        ) : (
+          <StackedBars
+            stacks={stacks!}
+            granularity={granularity}
+            width={svgWidth}
+            innerHeight={innerHeight}
+            slotWidth={slotWidth}
+            barWidth={barWidth}
+            onHover={(bucket, slotCenter) => setHovered({ stacked: bucket, slotCenter })}
+          />
+        )}
       </div>
-      <ChartTooltip
-        hover={hovered}
-        scrollLeft={scrollLeft}
-        containerWidth={width}
-        mode={mode}
-        showNonCandidate={showNonCandidate}
-      />
+      {hovered?.absolute && (
+        <AbsoluteTooltip bucket={hovered.absolute} slotCenter={hovered.slotCenter} scrollLeft={scrollLeft} containerWidth={width} />
+      )}
+      {hovered?.stacked && (
+        <StackedTooltip bucket={hovered.stacked} slotCenter={hovered.slotCenter} scrollLeft={scrollLeft} containerWidth={width} />
+      )}
     </div>
   );
 }
 
-interface InnerProps {
+interface AbsoluteChartProps {
   buckets: ChartBucket[];
   granularity: ChartGranularity;
   width: number;
   innerHeight: number;
   slotWidth: number;
   barWidth: number;
-  showNonCandidate: boolean;
   onHover: (bucket: ChartBucket, slotCenter: number) => void;
 }
 
-function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, barWidth, onHover }: InnerProps) {
+function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, barWidth, onHover }: AbsoluteChartProps) {
   const maxHelpful = Math.max(0, ...buckets.map((b) => b.helpful));
   const maxUnhelpful = Math.max(0, ...buckets.map((b) => b.unhelpful));
   const upperTicks = niceTicks(Math.max(maxHelpful, 1));
@@ -214,9 +279,19 @@ function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, ba
   );
 }
 
-function RatioChart({ buckets, granularity, width, innerHeight, slotWidth, barWidth, showNonCandidate, onHover }: InnerProps) {
+interface StackedBarsProps {
+  stacks: StackBucket[];
+  granularity: ChartGranularity;
+  width: number;
+  innerHeight: number;
+  slotWidth: number;
+  barWidth: number;
+  onHover: (bucket: StackBucket, slotCenter: number) => void;
+}
+
+function StackedBars({ stacks, granularity, width, innerHeight, slotWidth, barWidth, onHover }: StackedBarsProps) {
   const ticks = [0, 0.25, 0.5, 0.75, 1];
-  const labelStep = tickLabelEvery(buckets.length);
+  const labelStep = tickLabelEvery(stacks.length);
   const yFor = (frac: number) => PAD_TOP + (1 - frac) * innerHeight;
 
   return (
@@ -230,22 +305,20 @@ function RatioChart({ buckets, granularity, width, innerHeight, slotWidth, barWi
         </g>
       ))}
 
-      {buckets.map((b, i) => {
-        // When the non-candidate toggle is off, ignore that segment from the
-        // denominator so the visible segments still sum to 100%.
-        const denom = showNonCandidate ? b.total : b.helpful + b.unhelpful + b.nmr;
-        if (denom === 0) return null;
+      {stacks.map((b, i) => {
+        const total = stackTotal(b);
+        if (total === 0) return null;
         const xCenter = PAD_LEFT + slotWidth * (i + 0.5);
         const xBar = xCenter - barWidth / 2;
-        const helpfulH = (b.helpful / denom) * innerHeight;
-        const unhelpfulH = (b.unhelpful / denom) * innerHeight;
-        const nmrH = (b.nmr / denom) * innerHeight;
-        const nonCandidateH = showNonCandidate ? (b.nonCandidate / denom) * innerHeight : 0;
-        // Stack from the bottom up: helpful, unhelpful, nmr, non-candidate.
-        const helpfulY = PAD_TOP + innerHeight - helpfulH;
-        const unhelpfulY = helpfulY - unhelpfulH;
-        const nmrY = unhelpfulY - nmrH;
-        const nonCandidateY = nmrY - nonCandidateH;
+        // Stack from the bottom up in segment order.
+        let yCursor = PAD_TOP + innerHeight;
+        const rects = b.segments.map((seg) => {
+          const h = (seg.value / total) * innerHeight;
+          yCursor -= h;
+          return seg.value > 0 ? (
+            <rect key={seg.key} x={xBar} y={yCursor} width={barWidth} height={h} fill={seg.color} />
+          ) : null;
+        });
         return (
           <g key={b.key} onMouseEnter={() => onHover(b, xCenter)}>
             <rect
@@ -255,12 +328,7 @@ function RatioChart({ buckets, granularity, width, innerHeight, slotWidth, barWi
               height={innerHeight}
               fill="transparent"
             />
-            <rect x={xBar} y={helpfulY} width={barWidth} height={helpfulH} fill={COLOR_HELPFUL} />
-            <rect x={xBar} y={unhelpfulY} width={barWidth} height={unhelpfulH} fill={COLOR_UNHELPFUL} />
-            <rect x={xBar} y={nmrY} width={barWidth} height={nmrH} fill={COLOR_NMR} />
-            {showNonCandidate && nonCandidateH > 0 && (
-              <rect x={xBar} y={nonCandidateY} width={barWidth} height={nonCandidateH} fill={COLOR_NON_CANDIDATE} />
-            )}
+            {rects}
             {i % labelStep === 0 && (
               <text x={xCenter} y={CHART_HEIGHT - PAD_BOTTOM + 16} fontSize={10} fill={COLOR_LABEL} textAnchor="middle">
                 {b.label}
@@ -284,45 +352,64 @@ function RatioChart({ buckets, granularity, width, innerHeight, slotWidth, barWi
 const TOOLTIP_HALF_WIDTH = 90;
 const TOOLTIP_EDGE_MARGIN = 4;
 
-function ChartTooltip({
-  hover,
-  scrollLeft,
-  containerWidth,
-  mode,
-  showNonCandidate,
-}: {
-  hover: HoverState | null;
-  scrollLeft: number;
-  containerWidth: number;
-  mode: ChartMode;
-  showNonCandidate: boolean;
-}) {
-  if (!hover) return null;
-  const { bucket, slotCenter } = hover;
-  const denom = showNonCandidate ? bucket.total : bucket.helpful + bucket.unhelpful + bucket.nmr;
-  const pct = (n: number) => (denom === 0 ? "0.0%" : `${((n / denom) * 100).toFixed(1)}%`);
-
+function tooltipLeft(slotCenter: number, scrollLeft: number, containerWidth: number): number {
   const rawLeft = slotCenter - scrollLeft;
-  const clampedLeft = Math.max(
+  return Math.max(
     TOOLTIP_HALF_WIDTH + TOOLTIP_EDGE_MARGIN,
     Math.min(containerWidth - TOOLTIP_HALF_WIDTH - TOOLTIP_EDGE_MARGIN, rawLeft),
   );
+}
 
+function TooltipShell({ left, label, children }: { left: number; label: string; children: React.ReactNode }) {
   return (
     <div
-      style={{ left: clampedLeft, transform: "translateX(-50%)" }}
+      style={{ left, transform: "translateX(-50%)" }}
       className="absolute top-1 pointer-events-none bg-gray-900 text-white text-xs rounded shadow-lg px-3 py-2 space-y-0.5 min-w-[180px]"
     >
-      <div className="font-medium text-sm mb-1">{bucket.label}</div>
-      <TooltipRow color={COLOR_HELPFUL} label="Helpful" value={mode === "ratio" ? `${pct(bucket.helpful)} (${bucket.helpful})` : `${bucket.helpful}`} />
-      <TooltipRow color={COLOR_UNHELPFUL} label="Not helpful" value={mode === "ratio" ? `${pct(bucket.unhelpful)} (${bucket.unhelpful})` : `${bucket.unhelpful}`} />
-      {mode === "ratio" && (
-        <TooltipRow color={COLOR_NMR} label="NMR / pending" value={`${pct(bucket.nmr)} (${bucket.nmr})`} />
-      )}
-      {mode === "ratio" && showNonCandidate && (
-        <TooltipRow color={COLOR_NON_CANDIDATE} label="Non-candidate" value={`${pct(bucket.nonCandidate)} (${bucket.nonCandidate})`} />
-      )}
+      <div className="font-medium text-sm mb-1">{label}</div>
+      {children}
     </div>
+  );
+}
+
+function AbsoluteTooltip({
+  bucket,
+  slotCenter,
+  scrollLeft,
+  containerWidth,
+}: {
+  bucket: ChartBucket;
+  slotCenter: number;
+  scrollLeft: number;
+  containerWidth: number;
+}) {
+  return (
+    <TooltipShell left={tooltipLeft(slotCenter, scrollLeft, containerWidth)} label={bucket.label}>
+      <TooltipRow color={COLOR_HELPFUL} label="Helpful" value={`${bucket.helpful}`} />
+      <TooltipRow color={COLOR_UNHELPFUL} label="Not helpful" value={`${bucket.unhelpful}`} />
+    </TooltipShell>
+  );
+}
+
+function StackedTooltip({
+  bucket,
+  slotCenter,
+  scrollLeft,
+  containerWidth,
+}: {
+  bucket: StackBucket;
+  slotCenter: number;
+  scrollLeft: number;
+  containerWidth: number;
+}) {
+  const total = stackTotal(bucket);
+  const pct = (n: number) => (total === 0 ? "0.0%" : `${((n / total) * 100).toFixed(1)}%`);
+  return (
+    <TooltipShell left={tooltipLeft(slotCenter, scrollLeft, containerWidth)} label={bucket.label}>
+      {bucket.segments.map((seg) => (
+        <TooltipRow key={seg.key} color={seg.color} label={seg.label} value={`${pct(seg.value)} (${seg.value})`} />
+      ))}
+    </TooltipShell>
   );
 }
 

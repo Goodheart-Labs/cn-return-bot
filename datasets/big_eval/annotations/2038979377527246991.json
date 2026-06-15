@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2038979377527246991",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "politics_and_policy"
+  ],
+  "category_fit": "good",
+  "suggested_category": "wrong_country_location_swap",
+  "tweet_summary": "Japanese aggregator account '\u30a8\u30c3\u30af\u30b9\u901f\u5831' (195k followers, 488k views) claims that 'a Chinese person appeared in a Japanese park holding a placard saying never claim cherry blossoms are Japanese \u2014 they originated in China.' The post is a quote/repost driving Sino-Japanese animosity in replies. Per the cited Record China article (and confirmed in replies), the photo was actually posted on Chinese platform Xiaohongshu (RED) on March 29 2026 showing a man in hanfu in China, not Japan.",
+  "why_note_decision": "A note IS warranted. The tweet's headline claim ('in a Japanese park') is false \u2014 the photo originated on Xiaohongshu in China, not in Japan. This is a meaningful location swap (488k views) that materially changes the framing (from 'Chinese provocateur invading Japan' to 'Chinese internet content posted within China'), and it's directly fueling anti-Chinese sentiment in the replies. Provisional 'no_note_needed' is wrong; the note's correction is exactly the right kind of factual fix Community Notes is built for.",
+  "judge_guidance": "PASS only if the note (a) establishes the event happened in China, not Japan \u2014 specifically, the photo was posted on Chinese social platform Xiaohongshu (RED) around March 29 2026, and (b) cites a credible source \u2014 Record China (recordchina.co.jp) is acceptable; better is a primary Xiaohongshu link or Japanese mainstream outlet. AVOID writing a note that engages with the cherry-blossom-origin debate (Himalayan/Nepalese origin vs. Somei Yoshino as a Japanese cultivar) \u2014 that's a distraction from the actual misleader, which is the *location*. A note that argues 'cherry blossoms originated in Japan/China/Nepal' but doesn't fix the location FAILS. A note that simply says 'no evidence' without naming the actual location FAILS.",
+  "reference_note": "\u3053\u306e\u51fa\u6765\u4e8b\u306f\u4e2d\u56fd\u306e\u516c\u5712\u3067\u8d77\u304d\u305f\u3082\u306e\u3067\u3042\u308a\u3001\u65e5\u672c\u3067\u306f\u3042\u308a\u307e\u305b\u3093\u3002\u5143\u753b\u50cf\u306f2026\u5e743\u670829\u65e5\u9803\u3001\u4e2d\u56fd\u306eSNS\u300e\u5c0f\u7d05\u66f8\uff08Xiaohongshu/RED\uff09\u300f\u306b\u6295\u7a3f\u3055\u308c\u305f\u3082\u306e\u3067\u3001\u6f22\u670d\u3092\u7740\u305f\u7537\u6027\u304c\u4e2d\u56fd\u56fd\u5185\u3067\u64ae\u5f71\u3055\u308c\u3066\u3044\u307e\u3059\u3002 https://www.recordchina.co.jp/b973720-s25-c30-d0052.html",
+  "original_unhelpful_note": {
+    "text": "\u3053\u306e\u51fa\u6765\u4e8b\u306f\u4e2d\u56fd\u306e\u516c\u5712\u3067\u8d77\u304d\u305f\u3082\u306e\u3067\u3042\u308a\u3001\u65e5\u672c\u3067\u306f\u3042\u308a\u307e\u305b\u3093\u3002https://www.recordchina.co.jp/b973720-s25-c30-d0052.html",
+    "failure_reason": "Note is correct and concise but rated NEEDS_MORE_RATINGS (only 19 ratings, dominated by NoteNotNeeded 3). Likely too terse \u2014 doesn't quote the originating platform (Xiaohongshu) or date, making it easy for raters who don't click the link to dismiss as unsupported. Adding 'posted on Xiaohongshu (\u4e2d\u56fdSNS\u306e\u5c0f\u7d05\u66f8) on March 29 2026' would strengthen it. Also the topic is politically charged (Sino-Japanese antagonism) which makes raters less inclined to mark helpful.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.recordchina.co.jp/b973720-s25-c30-d0052.html"
+    ],
+    "notes": "Record China confirms the photo was posted on Chinese platform Xiaohongshu (RED) on March 29 2026, showing a man in traditional Chinese hanfu under a cherry blossom tree \u2014 the location is China, not Japan. Most Chinese commenters on the original Xiaohongshu thread reportedly acknowledged the species may have Chinese origins but cherry blossoms are now culturally tied to Japan (Somei Yoshino is a Japanese cultivar). Reply @zzbbbzbz independently confirmed location is China. The tweet's 'in a Japanese park' framing is fabricated."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "488k views fueling Sino-Japanese animosity (replies include COVID-Wuhan jabs, ethnic slurs). Correcting the location defuses a manufactured 'Chinese provocateur in Japan' narrative \u2014 info-integrity value in not letting fabricated international-incident framings spread."
+  },
+  "difficulty": "easy"
+}

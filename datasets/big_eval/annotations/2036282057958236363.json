@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2036282057958236363",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "court_case_legal_claim",
+  "tweet_summary": "Jake Shields quotes a clip of Oakland County (MI) Sheriff Mike Bouchard discussing a man arrested after circulating a meme that edited a Star of David onto Bouchard's forehead, and captions it 'Arrested in America for pointing out that a sheriff is jewish.'",
+  "why_note_decision": "Two checkable claims in the tweet are false. (1) The meme did not 'point out that a sheriff is Jewish' \u2014 Bouchard is NOT Jewish; the image edited Jewish symbols onto his photo to harass/intimidate him. (2) More importantly, the man was NOT arrested for the meme: the Oakland County Sheriff's Office explicitly CLARIFIED he was arrested in Wisconsin on a felony aggravated-stalking warrant (allegedly terrorizing two women), not for the image or the speech. A note is warranted. I reclassify the role from MissingKeyPoints to Incorrect because the ORIGINAL note repeats the sheriff's initial framing \u2014 'a man was arrested... for allegedly sending threats, including an edited image' \u2014 which the sheriff's office itself walked back; that arrest-cause statement is now inaccurate. The note's correct part (Bouchard isn't Jewish) is undercut by parroting the retracted arrest rationale.",
+  "judge_guidance": "A correct note must establish: (1) Sheriff Mike Bouchard (Oakland County, Michigan) is not Jewish \u2014 the meme falsely edited a Star of David/Jewish symbols onto his photo to harass him; and (2) the man was NOT arrested for the meme or for 'pointing out' anything \u2014 the Oakland County Sheriff's Office clarified he was arrested in Wisconsin on a pre-existing felony aggravated-stalking warrant (unrelated to the meme). PASS only if it both rebuts the 'Jewish/free-speech-arrest' framing AND reflects the sheriff's office clarification that the arrest was on a separate felony warrant. FAIL if it repeats the retracted claim that he was arrested for sending the threatening/antisemitic image (the original note's specific error), since that has been officially walked back. Note: the AI media description calls him a 'Jewish person' with a star on his forehead \u2014 that is the edited harassment image, not reality; do not rely on it.",
+  "reference_note": "Sheriff Mike Bouchard (Oakland County, Michigan) is not Jewish; the meme edited a Star of David onto his photo to harass him. He was not arrested for that meme: the Oakland County Sheriff's Office clarified the man was arrested in Wisconsin on a pre-existing felony aggravated-stalking warrant, unrelated to the image. https://www.cbsnews.com/detroit/news/oakland-county-sheriffs-office-clarifies-arrest-after-antisemitic-image/ https://www.jta.org/2026/03/24/united-states/sheriff-who-responded-to-temple-israel-attack-faces-online-backlash",
+  "original_unhelpful_note": {
+    "text": "Sheriff Mike Bouchard is not Jewish. A man was arrested in Wisconsin for allegedly sending threats, including an edited image adding a Star of David and other Jewish symbols to the sheriff's photo to intimidate him, not for \"pointing out that a sheriff is jewish.\" https://vinnews.com/2026/03/19/edited-photo-targeting-sheriff-leads-to-arrest-bouchard-warns-of-rising-antisemitism https://www.fox2detroit.com/news/osco-update https://en.wikipedia.org/wiki/Mike_Bouchard",
+    "failure_reason": "Incorrect: gets 'Bouchard isn't Jewish' right but states he was arrested 'for allegedly sending threats, including an edited image' \u2014 the Oakland County Sheriff's Office later clarified the arrest was on a separate felony aggravated-stalking warrant, NOT for the meme/threats. The note repeats the retracted framing.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Tweet false on both counts; original note also partly inaccurate on arrest cause. Bouchard not Jewish; arrest was on a felony stalking warrant per OCSO clarification.",
+    "sources_checked": [
+      "https://www.cbsnews.com/detroit/news/oakland-county-sheriffs-office-clarifies-arrest-after-antisemitic-image/",
+      "https://www.jta.org/2026/03/24/united-states/sheriff-who-responded-to-temple-israel-attack-faces-online-backlash",
+      "https://www.deadlinedetroit.com/articles/34374/oakland_county_sheriff_bouchard_clarifies_man_arrested_on_stalking_charges_not_for_antisemitic_meme"
+    ],
+    "notes": "Bouchard is the Oakland County, Michigan sheriff (quoted tweet wrongly calls him a 'Wisconsin sheriff'; the suspect was arrested IN Wisconsin). OCSO: arrest on felony aggravated stalking, not the meme."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "176K impressions on a charged free-speech/antisemitism claim; correcting both the false 'arrested for speech' narrative and the false 'sheriff is Jewish' framing supports accurate civil-liberties discourse."
+  },
+  "difficulty": "hard"
+}

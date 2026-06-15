@@ -1,0 +1,111 @@
+{
+  "tweet_id": "2051145725828841572",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:04.021Z",
+  "post": {
+    "id": "2051145725828841572",
+    "author_id": "537709549",
+    "created_at": "2026-05-04T03:43:44.000Z",
+    "text": "The VIN Number on the Arrest report matches the VIN number on the RAM 1500 TRX involved in the DUI as is documented on the arrest report. \n\nI’ve attached a photo of the totaled vehicle and the VIN number. A quick search of the VIN number for those who know where to look will show https://t.co/5mGlSv1J2q https://t.co/9ZxtHhjhW7",
+    "media": [
+      {
+        "media_key": "3_2051145720091021312",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHciKjyWkAAe69I.jpg",
+        "height": 613,
+        "width": 845
+      },
+      {
+        "media_key": "3_2051145720091070464",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHciKjyXUAA6KVf.jpg",
+        "height": 612,
+        "width": 845
+      },
+      {
+        "media_key": "3_2051145720086863872",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHciKjxXIAAbttW.jpg",
+        "height": 1441,
+        "width": 1272
+      },
+      {
+        "media_key": "3_2051145720095203328",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHciKjzWYAATZMN.jpg",
+        "height": 903,
+        "width": 771
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2051047717288435788"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2051047717288435788",
+      "author_id": "23865382",
+      "created_at": "2026-05-03T21:14:17.000Z",
+      "text": "@Villgecrazylady Using fake/manipulated “documents” to slander @RealCandaceO and her husband proves malicious intent. This is pretty disgusting and Candace should sue to be honest. This behavior is unacceptable and shouldn’t go unchecked.",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 792,
+      "reply_count": 224,
+      "like_count": 3326,
+      "quote_count": 32,
+      "bookmark_count": 53,
+      "impression_count": 78153
+    },
+    "author_followers": 1912430,
+    "author_name": "Laura Loomer",
+    "author_description": "Investigative Journalist 🇺🇸 Free Spirit🇺🇸Founder of LOOMERED. Host of @LoomerUnleashed Former @Project_Veritas operative. 📸 America First ✡️ Feisty Jewess",
+    "author_tweet_count": 108802
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHciKjyWkAAe69I.jpg",
+          "description": {
+            "description": "A close-up photograph of a vehicle certification label from FCA US LLC, typically found on the driver-side door jamb. The label contains manufacturing data, VIN, weight ratings, tire information, and a barcode. The image has multiple translucent watermarks reading '@LauraLoomer' overlaid on it.",
+            "ocrText": "@LauraLoomer @LauraLoomer @LauraLoomer @LauraLoomer @LauraLoomer MFD BY: FCA US LLC DATE OF MFR (BUILT): 3-21 GVWR: 7800 LB / 3539 KG VIN: 1C6SRFU98MN702626 GAWR FRONT: 4300 LB / 1951 KG WITH GAWR REAR: 4200 LB / 1906 KG WITH 18X9.0 RIMS 18X9.0 RIMS VEHICLE MADE IN: U.S.A. LT325/65R180 121 TIRES LT325/65R18D 121 TIRES AT 260 kPa / 38 PSI COLD AT 260 kPa / 38 PSI COLD TYPE: TRUCK PAINT: PXJ MDH: 030921 MKT: 875 THIS VEHICLE CONFORMS TO ALL APPLICABLE U.S.A. FEDERAL MOTOR VEHICLE SAFETY STANDARDS IN EFFECT ON THE DATE OF MANUFACTURE SHOWN ABOVE."
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHciKjyXUAA6KVf.jpg",
+          "description": {
+            "description": "A black pickup truck, appearing to be a RAM 1500 TRX, showing significant front-end damage including a crumpled hood, smashed headlight, and missing bumper parts. The truck is parked on a gravel lot under a bright sky, with a yellow car partially visible in the background. The interior airbags appear to have deployed. Multiple translucent watermarks cover the image.",
+            "ocrText": "@LauraLoomer @LauraLoomer @LauraLoomer @LauraLoomer RAM"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHciKjxXIAAbttW.jpg",
+          "description": {
+            "description": "A digitised copy of a formal Metropolitan Police Department Arrest Report from Nashville, Tennessee. The document details the arrest of George T. Farmer on August 10, 2023, for charges including DUI, weapon possession while under influence, and leaving the scene of an accident. The form includes personal details like height, weight, and DOB, along with vehicle information for a 2021 Black RAM 1500.",
+            "ocrText": "M.P.D. FORM 106 (REV 04-07) CALEA 82.2.1 82.3.7 Arrest Report Metropolitan Police Department Nashville Tennessee 1. M.P.D. Incident Number 20230471289 Juvenile Booking Type Adult Custodial Juvenile Custodial Bindover Tap Out 2. Related Incident Number N/A 3. I.D. / O.C.A. Number 618997 4. Arrest Number 230020602 5. Arrest Date / Time 08/10/2023 21:22 6. Day of Week Thursday 7. Charge Which Precipitated Arrest DUI 8. Reason Arrested (Offense / Classification) DUI 9 Social Security Number UNK 10. Driver License No. State TN UNK 11. Defendant's Name (Last, First, Middle) FARMER, GEORGE, T 12. Nickname / Alias None 13. Defendant's Address (Apt No.) City NASHVILLE State TN Zip Code 37204 14. Place of Employment / School UNKNOWN None 15. Home Phone 16. Work Phone 17. County Resident? 18. Occupation CEO 20. Sex MALE 21. Race WHITE 19. Is Arrestee a College Student? YES NO UNK 22. Ethnicity NOT HISPANIC OR 24. DOB 7/5/1990 23. Age 33 25. Place of Birth NASHVILLE TENNESSEE 26. Domestic Violence Yes No Officer Victim 27. Height 6'02\" 28. Weight 180 29. Hair BLACK 30. Eyes BLUE 32. Type of Arrest ON-VIEW 33. Resisted Arrest? N 31. Location of Arrest (Street Address) 2010 ROSA L PARKS BLVD City NASHVILLE State TN Zip Code 37208 34. Assaulted Officer? N 35. Chemical Agent Used? N 36. Arrestee Armed With: (Second Box if Automatic) Unarmed Firearm Handgun Rifle Shotgun Other Firearm Lethal Cutting Instrument (e.g. Switchblade knife) Club, Blackjack, Brass Knuckles Injury/Sick N/A See Incident Rpt 37. Injury Apparent Broken Bones Possible Internal Injury Severe Laceration Apparent Minor Injury Other Major Injury Loss of Teeth Unconsciousness Gunshot 38. Medical Treatment 39. Transported By 40. Describe Illness or Injury 41. Examining Physician N/A 42. Medical Treatment Status Admitted Released N/A N/A VEHICLE See Incident 43. License Number State TN Year 2024 44. Year 2021 45. Make RAM TRUCKS 46. Model RAM 1500 47. Style PICKUP 48. Color BLACK 49. V.I.N. 1C6SRFU98MN702626 None Altered UNK 50. VTR No. 333011 N/A 51. Vehicle Towed To: Tow-in Lot Other N/A Tow-in Lot 52. Vehicle Towed By: WEST NASHVILLE N/A Warrant # GS1007252 Typ S Inc Num 20230471289 NCIC Qual 5245 TCA 39-17-1321 Sev M Class A Charge Description WEAPON- POSSESSION WHILE UNDER Warrant # GS1007254 Typ S Inc Num 20230471289 NCIC Qual 5405 TCA 55-10-401*1 Sev M Class A Charge Description DRIVING UNDER THE INFLUENCE Warrant # GS1007253 Typ S Inc Num 20230471289 NCIC Qual 6470 TCA 55-10-102*4 Sev M Class A Charge Description LEAVING SCENE OF ACCIDENT- DAMAGE"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHciKjzWYAATZMN.jpg",
+          "description": {
+            "description": "A close-up mugshot of a young male with strawberry-blonde, fluffy hair. He is looking directly at the camera with a neutral-to-stern expression. A repeated watermark containing a social media handle is superimposed across the image diagonally from bottom-left to top-right.",
+            "ocrText": "@LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER @LAURALOOMER"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@JayTC53**: \"They want us to believe a different George Farmer was driving George Farmers Dodge ram registered to him 😂🥴\"  \nEngagement: Likes=183\n\n**@iknowitsilly**: \"Candace just interviewed Ana on Friday Laura. Seems interesting Ana all of a sudden coming out in support of Candace after they just hung out together.\"  \nEngagement: Likes=80\n\n**@Liza2Bay**: \"You spelled the state wrong, moron. Forging government files is a felony\"  \nEngagement: Likes=58\n\n**@BabylonBiBi**: \"The accidental Legend building continues.\"  \nEngagement: Likes=48\n\n**@BlueDauntless**: \"If you’re lying, why doesn’t Candy just sue you? That’s the logic right?\"  \nEngagement: Likes=35\n\n**@TheChadLedger**: \"Laura is Loomering George Farmer and Candace Owens\"  \nEngagement: Likes=35\n\n**@slanjverpriot**: \"Ana is a soul mate of Candace. Candace thinks you can insinuate truth into existence. Ana thinks you can shriek truth into existence. It's amazing how facile and how effective they are. With the people it works on.\"  \nEngagement: Likes=24\n\n**@skepticalsexual**: \"Larry you falsified a police report. Messed up age, hair color, birthplace, logo, \"perpetrator\" and spelled Tennessee wrong.Nice try though\"  \nEngagement: Likes=18\n\n**@AshlynCherry89**: \"TKO.. Nicely done @LauraLoomer!!!\"  \nEngagement: Likes=17\n\n**@JacobGoode18**: (image reply)  \nEngagement: Likes=16",
+    "warnings": []
+  }
+}

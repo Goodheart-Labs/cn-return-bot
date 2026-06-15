@@ -1,0 +1,40 @@
+[
+  {
+    "version": "neutral",
+    "n": 100,
+    "errored": 0,
+    "positives": 50,
+    "negatives": 50,
+    "tp": 42,
+    "fn": 8,
+    "tn": 27,
+    "fp": 23,
+    "falseNegativeRate": 0.16,
+    "correctlyFilteredRate": 0.54,
+    "totalFilteredOut": 35,
+    "totalCostUsd": 3.830955,
+    "fnByReason": {
+      "(submitted)": 4,
+      "low_evaluation_score": 4
+    }
+  },
+  {
+    "version": "lenient",
+    "n": 100,
+    "errored": 0,
+    "positives": 50,
+    "negatives": 50,
+    "tp": 47,
+    "fn": 3,
+    "tn": 26,
+    "fp": 24,
+    "falseNegativeRate": 0.06,
+    "correctlyFilteredRate": 0.52,
+    "totalFilteredOut": 29,
+    "totalCostUsd": 3.6263962500000004,
+    "fnByReason": {
+      "(submitted)": 2,
+      "low_evaluation_score": 1
+    }
+  }
+]

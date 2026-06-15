@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1977791146513584550",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:16.513Z",
+  "post": {
+    "id": "1977791146513584550",
+    "author_id": "1850570639196692481",
+    "created_at": "2025-10-13T17:38:49.000Z",
+    "text": "This is wild. The internet cannot and will not forget! 😂 https://t.co/lb2nC4veci",
+    "media": [
+      {
+        "media_key": "3_1977791140167639042",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3KGkC2bYAIYtL7.jpg",
+        "height": 2048,
+        "width": 1127
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 7033,
+      "reply_count": 197,
+      "like_count": 111196,
+      "quote_count": 261,
+      "bookmark_count": 11222,
+      "impression_count": 6466922
+    },
+    "author_followers": 31792,
+    "author_name": "Marcus d’Osint 🎒🕊️",
+    "author_description": "commentary - geopol - opinions",
+    "author_tweet_count": 63857
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3KGkC2bYAIYtL7.jpg",
+          "description": {
+            "description": "A composite image consisting of two social media posts. The top post is from the Israel Defense Forces (IDF) account, showing a photo of a man kissing a woman on the cheek while they sit on a bed. The bottom post is from an account named Suppressed News, featuring a photo of the same woman in a yellow bikini at a crowded party, being carried on someone's shoulders.",
+            "ocrText": "Israel Defense Forces @IDF · 2h\nNoa Argamani and Avinatan Or are reunited at last\n❤️\n379 2K 19K 294K\nSuppressed News. @SuppressedN... · 33m\nDon't worry Avinatan, she was very sad and loyal while waiting for you\nInstagram/cohenerez007\n15 36 359 7K"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@AudreyRoseHaven**: \"Erika Kirk vibes\" (Likes: 2869)\n- **@SuppressedNws**: \"I have no sympathy for them, she was a militant in the army and he is part of the elite Sayeret Matkal unit.\" (Likes: 2792)\n- **@ramapublishing**: \"When he kissed her she recoiled. It was veey awkward to watch\" (Likes: 757)\n- **@cookybottt**: \"Why Palestinians always lying?@WarFrontIntel\" (Likes: 120)\n- **@k_ruler007**: \"She was happily hoeing around while he was doing time😅🧃\" (Likes: 115)\n- **@ZherkaOfficial**: \"The darkness of modern dating dynamics\" (Likes: 74)\n- **@tigeruncensored**: \"Omg, The horror! She partied after being released , Cause unlike you that only want your ppl to suffer and stay victim forever, We want our ppl to live- and celebrate it.. And if you have a problem with it - good! I love how it makes you 67.9ers upset…\" (Likes: 70)\n- **@BongoBumHead**: \"Are you the morality police?\" (Likes: 68)\n- **@Sh3lby118**: \"That's the recoil & pullback of someone guilty of cheating . Poor guy 😭\" (Likes: 47)\n- **@Th3Unforgotten**: [media only] (Likes: 46)",
+    "warnings": []
+  }
+}

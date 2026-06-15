@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2041625290598678617",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:05:08.245Z",
+  "post": {
+    "id": "2041625290598678617",
+    "author_id": "1272169638831546369",
+    "created_at": "2026-04-07T21:12:55.000Z",
+    "text": "El pueblo irani 🇮🇷, volcado en las calles, para proteger con su vida las centrales eléctricas. Toda nuestra solidaridad y apoyo. https://t.co/phIM2g2Edn",
+    "media": [
+      {
+        "media_key": "7_2041625270084390912",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2041625270084390912/pu/img/awkLpzV-laZ8eO5U.jpg",
+        "height": 1278,
+        "width": 720,
+        "duration_ms": 9311,
+        "view_count": 78012,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2041625270084390912/pu/vid/avc1/320x568/SdQAKTILitshuN1S.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2041625270084390912/pu/vid/avc1/480x852/AnEPL9fT017HmZsx.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2041625270084390912/pu/vid/avc1/720x1278/RIQzhdzwDbdyvn7s.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2041625270084390912/pu/pl/HP9LfDKOiFiaYYIk.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 9084,
+      "reply_count": 316,
+      "like_count": 20751,
+      "quote_count": 165,
+      "bookmark_count": 511,
+      "impression_count": 164876
+    },
+    "author_followers": 72832,
+    "author_name": "Orlando Curioso",
+    "author_description": "Defensor obstinado de la democracia, de los animales y del medio ambiente. PETRO mi Presidente.\n\nANTIURIBISTA por convicción.",
+    "author_tweet_count": 44448
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2041625270084390912/pu/vid/avc1/720x1278/RIQzhdzwDbdyvn7s.mp4",
+          "description": {
+            "description": "A vertical video containing two frames. The first frame shows a high-angle night shot of a massive crowd in a city at night, with thousands of people holding up lights or illuminated phones, creating a sea of bright white dots across a long street. Overlaying the center is the text 'All Eyes on Iran'. The second frame transitions to a ground-level view behind the crowd, with many people shown in silhouette as they hold their illuminated phones high in the air against a hazy background under the same text overlay.",
+            "ocrText": "All Eyes on Iran"
+          },
+          "transcription": "Thanks for watching!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **F0010011001.-...--.🤡 (@pite440258)**  \n  Hay que ser bien hijueputa para usar las imagenes de las protestas de enero en iran y hacerla pasar por los pro extremista del regimen, ignorando que murieron personas en esas protestas.  \n  Engagement: Likes=55, Reposts=0, Quotes=0, Replies=0, Views=1149\n\n- **noe cervantes (@noecervantesgue)**  \n  Después de esto ya no son solo el pueblo de #Iran ...ahora se les debe de conocer como #HeroicoPuebloDeIran #HeroicTownIran  \n  Engagement: Likes=42, Reposts=0, Quotes=0, Replies=0, Views=1109\n\n- **Arturo Cárdenas Verdugo (@ArthCardenas)**  \n  (No text content)  \n  Engagement: Likes=40, Reposts=12, Quotes=0, Replies=6, Views=1028\n\n- **Camarada Gus (@gus_rabanovich)**  \n  Todo Nuestro Apoyo y Solidaridad con el Pueblo de IRAN  \n  Engagement: Likes=37, Reposts=0, Quotes=0, Replies=0, Views=1432\n\n- **いつかもうすぐ(ひでさん) (@japan0828boy)**  \n  イランの人々のその思いに連帯したいと思います🇮🇷唯一の被爆国のひとりとして  \n  Engagement: Likes=18, Reposts=0, Quotes=0, Replies=0, Views=483\n\n- **Jean (@eBuho)**  \n  Abajo el ORATE, EEUU encárgate de esa COSA que eligieron como presidente. El mundo debe apostar por la PAZ, deben invertir todo ese dinero que invierte en armas y preparse para la guerra, en los MAS NECESITADOS en crear UN MUNDO JUSTO. Hasta cuando, hasta cuando?  \n  Engagement: Likes=15, Reposts=0, Quotes=0, Replies=0, Views=471\n\n- **Julian Isaza (@julianisaza)**  \n  Ojalá todos los pueblos tuvieran la mitad de valentía y resistencia que el iraní y el cubano. Si fuera así, ningún psicópata anaranjado se atrevería a extorsionar al mundo.  \n  Engagement: Likes=14, Reposts=0, Quotes=0, Replies=0, Views=453\n\n- **Byakuya PN (@HigenekoSama)**  \n  Un gobierno que manda a sus ciudadanos a proteger infraestructura que es del Estado significa que usa a los iraníes como carne de cañón y peor aún como escudos para que en caso de ser bombardeados todos los países tacharían de genocidas Estados Unidos.  \n  Engagement: Likes=14, Reposts=0, Quotes=0, Replies=0, Views=1166\n\n- **Doña Pepa de Guama (@DonnaDonnut)**  \n  Yo creo que ya es hora de que sumercé vaya distinguiendo las imágenes y vídeos hechas con IA, ya toca dejar de engañar a la gente.  \n  Engagement: Likes=12, Reposts=0, Quotes=0, Replies=0, Views=274\n\n- **Rami Silva (@SIRRAMI)**  \n  El pueblo de Irán está con trump estúpidos , Ellos quieren derrocar el gobierno genocida , y todas esa gente y mujeres de negro en las centrales están con el gobierno , no les haría mal que les cayeran una bomba por apoyar el régimen , el IRANÍ ESTÁ DE FIESTA !!!!!  \n  Engagement: Likes=12, Reposts=0, Quotes=0, Replies=0, Views=305",
+    "warnings": []
+  }
+}

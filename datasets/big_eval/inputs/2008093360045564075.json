@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2008093360045564075",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:19.112Z",
+  "post": {
+    "id": "2008093360045564075",
+    "author_id": "2158616996",
+    "created_at": "2026-01-05T08:29:00.000Z",
+    "text": "This is how the US wants to bring freedom to Venezuela. https://t.co/wGOUX5cFYq",
+    "media": [
+      {
+        "media_key": "3_2008063808363732992",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G94TZP_WoAAneee.jpg",
+        "height": 772,
+        "width": 566
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8139,
+      "reply_count": 944,
+      "like_count": 36439,
+      "quote_count": 144,
+      "bookmark_count": 1046,
+      "impression_count": 1847033
+    },
+    "author_followers": 329985,
+    "author_name": "Hassan Mafi ‏",
+    "author_description": "Journalist/Streamer.\n\nI talk about politics.\n\nDonate with Bitcoin: bc1qvuj3n63c640r69fs478fl2xaflavyfajrj60wu",
+    "author_tweet_count": 36457
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G94TZP_WoAAneee.jpg",
+          "description": {
+            "description": "A composite image containing two separate photographs. The top photo shows a soldier in desert camouflage and a helmet pointing a handgun at the forehead of a young Black man while holding the back of his neck. The young man is wearing a yellow t-shirt with a lion logo and a patterned shirt over it. The bottom photo shows a soldier in desert camouflage pants and a t-shirt kicking a Black child in the street while other people observe in the background.",
+            "ocrText": "NDIAL\nDOMPTABLES"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Replies:**\n\nRyan M. Spaeder (@theaceofspaeder): \"That’s a Canadian and a Belgian…\" (1,770 likes)\n\nJayess (@Sootradhar): \"Actually, it happened like this\" (1,410 likes, with image)\n\n𝐆𝐫𝐞𝐠 (@CasuallyGreg): \"@grok, where are these original photos from?\" (713 likes)\n\nAnti Imp X (@antiimpx): \"fck america\" (563 likes)\n\nEducatëdHillbilly™ (@RobProvince): \"CC: @CommunityNotes\" (343 likes)\n\nmarmot (@MarmotRespecter): \"i didn't know venezuelans were black\" (309 likes)\n\nDon Norbury 🎮 (@DonNorbury): \"Top: Canadian. Bottom: Belgian.\" (304 likes)\n\nSocal Crypto, Secessio plebis (@Socal_crypto): \"Keep crying, sugartits 😘\" (274 likes, with image)\n\nJoe McWopSki (@LakesFirearmsTr): \"The first pic is of a Canadian soldier and the second Soldier is from Belgium.\" (273 likes)\n\nFlint Ironstag 🇺🇸🐕‍🦺 (@here_garbage): \"You're in Europe.\" (261 likes, with image)",
+    "warnings": []
+  }
+}

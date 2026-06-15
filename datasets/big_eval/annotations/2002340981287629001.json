@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2002340981287629001",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Mike Benz says Biden won Georgia by 11,779 votes in 2020 and that 'over 5 years later, they admit 315,000 votes in Georgia were actually counted illegally', quote-tweeting a post about Fulton County admitting ~315K early votes lacked poll-worker signatures.",
+  "why_note_decision": "This IS misleading and a note is warranted. The 11,779 margin is correct. But the 315K votes were NOT 'counted illegally' — they were valid early votes with photo-ID verification at casting; the clerical error was that 134 tabulator tapes lacked poll-worker signatures at the END of the counting day. SoS Brad Raffensperger explicitly said: 'A clerical error at the end of the day does not erase valid, legal votes.' Two recounts (including a hand recount) verified the result. Lead Stories and other fact-checkers have called the 'illegally counted' framing misleading. The original note half-acknowledges this ('officials say this error doesn't invalidate lawful votes') but is weak — it concedes 'admitted violating rules' and says recounts confirmed Biden's lead, which is true but doesn't drive home that the votes themselves are not in question. Raters split: 766 missing-key-points, 512 incorrect. A correct note must say: ballots were cast in person with photo ID; the issue was poll-worker signatures missing on tabulator tapes (a process error, not vote validity); both recounts confirmed results; voter rolls were not affected.",
+  "judge_guidance": "PASS only if the note clearly establishes: (1) the 315K votes were NOT 'counted illegally' — they were validly cast early ballots; (2) the violation was missing poll-worker signatures on tabulator tapes at end of day (a clerical/procedural error, not vote-validity); (3) Georgia SoS Raffensperger and Fulton County both say a clerical error does not erase legal votes; (4) the 2020 result was confirmed by hand recount AND machine recount. The note MUST NOT concede Fulton 'admitted violating rules' without immediately clarifying what the violation was (signatures, not vote validity). Pass if it cites GA SoS or a fact-check (Lead Stories/AP/Reuters/PolitiFact). Length-permitting, ideally also note Fulton County faces a fine but votes are unaffected.",
+  "reference_note": "The 315,000 Fulton County votes were validly cast early ballots verified by photo ID; the violation was poll workers failing to sign tabulator tapes at end of count — a clerical/procedural error. Both a hand recount and machine recount confirmed Biden's Georgia win. https://www.atlantanewsfirst.com/2025/12/23/fulton-county-admits-verifying-315000-votes-2020-without-poll-worker-signatures/ https://www.thecentersquare.com/georgia/article_77ef2ae8-082a-4cdb-87d1-df1a6b842299.html",
+  "original_unhelpful_note": {
+    "text": "While Fulton County admitted violating rules in 2020 by not signing tabulator tapes for ~315k early votes, officials say this error doesn't invalidate lawful votes. GA results confirmed by recounts. https://www.youtube.com/watch?v=AK_JF-Eh4gc https://www.npr.org/sections/live-updates-2020-election-results/2020/11/19/936647882/georgia-releases-hand-recount-results-affirming-bidens-lead",
+    "failure_reason": "Note is technically correct but weak — leads with the concession ('admitted violating rules') without immediately framing what the rule was (signatures, not vote validity). YouTube source is poor. Raters tagged notHelpfulMissingKeyPoints (766), notHelpfulIncorrect (512), notHelpfulNoteNotNeeded (607).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.atlantanewsfirst.com/2025/12/23/fulton-county-admits-verifying-315000-votes-2020-without-poll-worker-signatures/",
+      "https://www.yahoo.com/news/articles/fact-check-fulton-countys-315-064602452.html",
+      "https://www.thecentersquare.com/georgia/article_77ef2ae8-082a-4cdb-87d1-df1a6b842299.html",
+      "https://www.wsbtv.com/news/local/fulton-county/fulton-county-elections-officials-admits-315000-votes-werent-signed-by-poll-workers/DJ5PCEA7GVFEBK743JMERPDAGY/"
+    ],
+    "notes": "Fulton County admitted ~315K early votes lacked poll-worker signatures on 134 tabulator tapes — a procedural violation. SoS Raffensperger: 'A clerical error at the end of the day does not erase valid, legal votes.' Both recounts (hand + machine) confirmed Biden's win. The 'counted illegally' framing is the misinformation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "31M-view tweet feeding the 2020-stolen-election narrative ahead of 2026 cycle. High counterfactual impact for a well-sourced corrective note."
+  },
+  "difficulty": "medium"
+}

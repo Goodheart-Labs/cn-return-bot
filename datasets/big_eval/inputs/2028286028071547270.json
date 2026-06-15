@@ -1,0 +1,81 @@
+{
+  "tweet_id": "2028286028071547270",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:27.373Z",
+  "post": {
+    "id": "2028286028071547270",
+    "author_id": "2208906530",
+    "created_at": "2026-03-02T01:47:27.000Z",
+    "text": "Next time someone tells you, \"actually, Iranians are celebrating this\". Think to yourself, is that really fucking possible??? https://t.co/bSNr0zr9rO https://t.co/tK68kiPK1G",
+    "media": [
+      {
+        "media_key": "3_2028285882973974528",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCXrQ6WacAAZnbo.jpg",
+        "height": 854,
+        "width": 1280
+      },
+      {
+        "media_key": "3_2028285920735084544",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCXrTHBXQAAJmew.jpg",
+        "height": 720,
+        "width": 1080
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2028128246127005916"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2028128246127005916",
+      "author_id": "172858784",
+      "created_at": "2026-03-01T15:20:29.000Z",
+      "text": "An Iranian father: “I rushed to school to get my daughter from middle school. The girls were hiding under the stairs and crying.” https://t.co/xa0tIHhFnu",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 12327,
+      "reply_count": 727,
+      "like_count": 49269,
+      "quote_count": 144,
+      "bookmark_count": 2217,
+      "impression_count": 1615157
+    },
+    "author_followers": 11773,
+    "author_name": "Ali Ahmadi",
+    "author_description": "Just assume my employers disagree with everything I say",
+    "author_tweet_count": 23646
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCXrQ6WacAAZnbo.jpg",
+          "description": {
+            "description": "A chaotic nighttime scene showing a large fire, possibly a burning car or building structure, in the background. In the foreground, a man is carrying an elderly person covered in gray dust on his back away from the flames. A young girl in pajamas and sneakers, also covered in dust, follows them while reaching out. The ground is littered with debris, and the overall atmosphere is one of intense emergency or disaster. A logo in Persian script is visible in the upper-left corner.",
+            "ocrText": "فرهيختگان روزنامه"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCXrTHBXQAAJmew.jpg",
+          "description": {
+            "description": "A chaotic nighttime scene in a debris-filled street with fires burning in the background. In the foreground, a man is carrying a young woman in his arms, both looking distressed. Several other people are seen walking through the rubble, including an elderly woman and a man looking at a mobile phone. A logo for SNN TV is visible in the bottom right corner.",
+            "ocrText": "TV SNN"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@raisedbyphoenix**: Fake and AI generated photos  \n  Likes: 729 | Reposts: 0 | Views: 7685\n\n- **@Strange_G**: Man, Syrian photo and AI. You’re pathetic!  \n  Likes: 341 | Reposts: 0 | Views: 5992\n\n- **@DrunkWoodworker**: This is laughably AI generated  \n  Likes: 307 | Reposts: 0 | Views: 3530\n\n- **@LickFIRE_**: The only Iranians celebrating are not in Iran.  \n  Likes: 279 | Reposts: 11 | Views: 15481\n\n- **@TATBUILT003**: The IRGC are a bunch of murderers.  \n  Likes: 204 | Reposts: 0 | Views: 5328\n\n- **@MoneyMaknPigeon**: Yes, it is.  \n  Likes: 198 | Reposts: 0 | Views: 8015\n\n- **@earthtoroseyta**: Iranians are celebrating the dictators being killed NOT their countrymen being killed I cant believe i have to explain these basic things to you people. We live in such a stupid timeline with such stupid people  \n  Likes: 159 | Reposts: 0 | Views: 4927\n\n- **@AmyKosari**: From Grok: \"No, these photos aren't authentic to the recent Tehran strikes. The second image bears an SNN TV logo (Syrian News Network, tied to Aleppo footage from ~2016). Both scenes closely match documented Syrian civil war and Gaza images of nighttime evacuations amid rubble and fires—not new Iran coverage. The first has an added Farsi overlay (\"فرحتشان\" = \"their joy,\" ironic). Credible outlets like NYT/Reuters use different verified shots from AFP/Getty. Common misinfo tactic in fast-moving conflicts.  \n  Likes: 148 | Reposts: 0 | Views: 13000\n\n- **@sarakhs**: So the regime shuts the internet down for the entire country so that you can push your agenda? 🛜🚫 Why don’t they bring back the internet and let the world decide themselves? 🤔  \n  Likes: 101 | Reposts: 0 | Views: 3228",
+    "warnings": []
+  }
+}

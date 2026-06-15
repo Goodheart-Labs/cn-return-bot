@@ -4,7 +4,7 @@
  * Core per-tweet pipeline logic extracted from generateCandidates.ts.
  * Split into three layers:
  *   1. runBotPipeline()    — runs the bot, returns raw output
- *   2. scorePipelineResult() — computes all scores
+ *   2. scorePipelineResult() — records observational scores + runs the X eval gate
  *   3. determineOutcome()  — pure function, decides outcome from result + scores
  *
  * processSingleTweet() is the thin orchestrator that glues them together.
@@ -14,11 +14,14 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
-import { runNoteScores, countSources, applyScoreFilters, type AllNoteScores } from "../score/noteScores";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
 import { PipelineError } from "../utils/errors";
 import { aggregateAndLogCosts } from "../cost-tracking/costTracker";
+import { countNoteLength, joinNoteAndUrl } from "../write/writeNote";
+import { getBotConfig } from "../ab-testing/botConfig";
+import { getMonitoringContext } from "../misinfo-monitoring/monitoringContext";
+import { runNoteNeededPrefilter } from "../prefilter/noteNeededPrefilter";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -58,7 +61,6 @@ export interface ProcessTweetResult {
   finalStage: string;
   noteStatus?: string;
   evaluationScore?: number;
-  sourceCountScore?: number;
   noteText?: string;
   scores: ScoreEntry[];
   pipelineRunId: string | null;
@@ -106,10 +108,7 @@ async function runBotPipeline(
 
 interface ScoringOutput {
   scores: ScoreEntry[];
-  /** Typed note scores (when runNoteScores succeeded). Used for filter gating. */
-  noteScores?: AllNoteScores;
   evaluationScore?: number;
-  sourceCountScore?: number;
   /** Whether eval says we should submit (undefined if eval failed/skipped) */
   evalShouldSubmit?: boolean;
 }
@@ -153,7 +152,7 @@ async function computeEvaluationScore(
   noteText: string
 ): Promise<{ score?: number; shouldSubmit?: boolean; error?: string }> {
   try {
-    const result = await shouldSubmitNote(postId, noteText, 0);
+    const result = await shouldSubmitNote(postId, noteText, getBotConfig().eval_submit_threshold);
     return {
       score: result.score,
       shouldSubmit: result.error ? undefined : result.shouldSubmit,
@@ -165,43 +164,11 @@ async function computeEvaluationScore(
   }
 }
 
-const NOTE_SCORE_FIELDS: Array<{ name: string; key: keyof AllNoteScores }> = [
-  { name: "positive_evidence", key: "positiveEvidence" },
-  { name: "disagreement", key: "disagreement" },
-  { name: "helpfulness", key: "helpfulness" },
-  { name: "source_quality", key: "sourceQuality" },
-  { name: "breaking_news_risk", key: "breakingNewsRisk" },
-  { name: "pedantry", key: "pedantry" },
-  { name: "note_not_needed", key: "noteNotNeeded" },
-  { name: "tangential_correction", key: "tangentialCorrection" },
-  { name: "rater_verifiability", key: "raterVerifiability" },
-  { name: "overconfidence", key: "overconfidence" },
-];
-
-function noteScoresToEntries(scores: AllNoteScores): ScoreEntry[] {
-  return NOTE_SCORE_FIELDS.map(({ name, key }) => ({
-    type: name,
-    value: scores[key].score,
-    metadata: { reasoning: scores[key].reasoning },
-  }));
-}
-
-async function computeNoteQualityScores(
-  tweetText: string,
-  noteText: string,
-  searchResults: string,
-  sourceUrl: string
-): Promise<{ scores: AllNoteScores; entries: ScoreEntry[] }> {
-  const scores = await runNoteScores(noteText, tweetText, searchResults, sourceUrl);
-  return { scores, entries: noteScoresToEntries(scores) };
-}
-
 async function scorePipelineResult(
-  result: PipelineResult,
-  post: Post
+  result: PipelineResult
 ): Promise<ScoringOutput> {
   const scores: ScoreEntry[] = [];
-  const noteText = result.noteResult.note + " " + result.noteResult.url;
+  const noteText = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
 
   // Source verification
   const svScore = extractSourceVerificationScore(result);
@@ -224,31 +191,7 @@ async function scorePipelineResult(
     });
   }
 
-  // Source count
-  let sourceCountScore: number | undefined;
-  try {
-    sourceCountScore = countSources(noteText);
-    scores.push({ type: "pred_source_count", value: sourceCountScore });
-  } catch (err: any) {
-    console.warn(`[processTweet] Source count failed:`, err?.message);
-  }
-
-  // Note quality scores
-  let noteScores: AllNoteScores | undefined;
-  try {
-    const quality = await computeNoteQualityScores(
-      post.text,
-      noteText,
-      result.searchContextResult.searchResults ?? "",
-      result.noteResult.url ?? ""
-    );
-    noteScores = quality.scores;
-    scores.push(...quality.entries);
-  } catch (err: any) {
-    console.warn(`[processTweet] Note scores failed for ${post.id}:`, err?.message);
-  }
-
-  return { scores, noteScores, evaluationScore, sourceCountScore, evalShouldSubmit };
+  return { scores, evaluationScore, evalShouldSubmit };
 }
 
 // ---------------------------------------------------------------------------
@@ -265,7 +208,6 @@ const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 function determineOutcome(
   result: PipelineResult,
   scores: ScoreEntry[],
-  noteScores: AllNoteScores | undefined,
   evalShouldSubmit?: boolean
 ): Outcome {
   // Status-based rejections
@@ -292,19 +234,6 @@ function determineOutcome(
       finalStage: "check",
       errorMessage: checkRaw ? `check: ${checkRaw}` : undefined,
     };
-  }
-
-  // Score filter rejection (filters come from the bot's config)
-  if (result.scoreFilters?.length && noteScores) {
-    const failure = applyScoreFilters(noteScores, result.scoreFilters);
-    if (failure) {
-      return {
-        outcome: "rejected",
-        outcomeReason: "scoring_filters_failed",
-        finalStage: "scoring",
-        errorMessage: failure.reason,
-      };
-    }
   }
 
   // Evaluation score rejection
@@ -380,7 +309,7 @@ function buildSuccessCompletionData(
     bot_name: bot.name,
     ab_test_picks: bot.picks,
     bot_config: bot.config,
-    note_text: result.noteResult.note + " " + result.noteResult.url,
+    note_text: joinNoteAndUrl(result.noteResult.note, result.noteResult.url),
     source_url: result.noteResult.url,
     note_status: result.noteResult.status,
     search_results: result.searchContextResult.searchResults?.slice(0, 10000),
@@ -448,6 +377,62 @@ async function recordFailedRun(
   };
 }
 
+/**
+ * Cheap note-needed prefilter gate. When `config.note_prefilter` is on (and this
+ * isn't the misinfo pre-pass), run the deepseek prefilter before the bot. If it
+ * says no note is needed, complete the run as rejected/prefilter_no_note and
+ * return that result so the caller skips the (expensive) bot. Returns null when
+ * the prefilter is off or says a note may be needed (proceed to the bot).
+ */
+async function runPrefilterGate(
+  logger: SupabaseLogger | null,
+  pipelineRunId: string | null,
+  post: Post,
+  bot: Bot,
+): Promise<ProcessTweetResult | null> {
+  if (!getBotConfig().note_prefilter || getMonitoringContext()) return null;
+
+  // runNoteNeededPrefilter logs its own steps under note_prefilter_steps.* (incl.
+  // the verdict) and folds its cost into the run total.
+  const verdict = await runNoteNeededPrefilter(post);
+  const log = getTweetLog();
+  if (verdict.needsNote) return null; // proceed to the bot; bot reuses cached input
+
+  log?.set("outcome.result", "rejected");
+  log?.set("outcome.reason", "prefilter_no_note");
+  log?.set("outcome.finalStage", "prefilter");
+  const cost = aggregateAndLogCosts()?.cost;
+
+  if (logger && pipelineRunId) {
+    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
+    const loggedBot = getLoggedBotIdentity(bot.id, log);
+    try {
+      await logger.completePipelineRun(pipelineRunId, {
+        outcome: "rejected",
+        outcome_reason: "prefilter_no_note",
+        final_stage: "prefilter",
+        bot_name: loggedBot.name,
+        ab_test_picks: loggedBot.picks,
+        bot_config: loggedBot.config,
+        logs,
+        cost,
+      });
+    } catch (err) {
+      console.warn(`[processTweet] Failed to record prefilter rejection:`, err);
+    }
+  }
+
+  return {
+    pipelineResult: null,
+    outcome: "rejected",
+    outcomeReason: "prefilter_no_note",
+    finalStage: "prefilter",
+    scores: [],
+    pipelineRunId,
+    warnings: [],
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Orchestrator
 // ---------------------------------------------------------------------------
@@ -463,24 +448,28 @@ export async function processSingleTweet(
   }
 
   try {
+    const prefiltered = await runPrefilterGate(logger, pipelineRunId, post, bot);
+    if (prefiltered) return prefiltered;
+
     const { result, warnings } = await runBotPipeline(post, bot);
     if (!result) {
       throw new PipelineError("Bot returned null without throwing");
     }
 
-    const scoring = await scorePipelineResult(result, post);
+    const scoring = await scorePipelineResult(result);
     await logScoresToDb(logger, pipelineRunId, scoring.scores);
 
-    const outcome = determineOutcome(result, scoring.scores, scoring.noteScores, scoring.evalShouldSubmit);
+    const outcome = determineOutcome(result, scoring.scores, scoring.evalShouldSubmit);
 
     const log = getTweetLog();
     log?.set("outcome.result", outcome.outcome);
     log?.set("outcome.reason", outcome.outcomeReason ?? "");
     log?.set("outcome.finalStage", outcome.finalStage);
     log?.set("note.status", result.noteResult.status);
-    log?.set("note.text", result.noteResult.note + " " + result.noteResult.url);
+    const submittedNote = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
+    log?.set("note.text", submittedNote);
     log?.set("note.url", result.noteResult.url);
-    log?.set("note.charCount", (result.noteResult.note + " " + result.noteResult.url).length);
+    log?.set("note.charCount", countNoteLength(submittedNote));
     if (result.checkResult != null) {
       log?.set("sourceCheck.result", result.checkResult.trim().toUpperCase());
     }
@@ -505,8 +494,7 @@ export async function processSingleTweet(
       finalStage: outcome.finalStage,
       noteStatus: result.noteResult.status,
       evaluationScore: scoring.evaluationScore,
-      sourceCountScore: scoring.sourceCountScore,
-      noteText: result.noteResult.note + " " + result.noteResult.url,
+      noteText: joinNoteAndUrl(result.noteResult.note, result.noteResult.url),
       scores: scoring.scores,
       pipelineRunId,
       warnings,

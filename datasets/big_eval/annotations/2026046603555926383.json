@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2026046603555926383",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Official White House account posts a screenshot of Trump's Truth Social post about saving the Great Salt Lake, ending with the slogan 'MAKE \"THE LAKE\" GREAT AGAIN!'. The screenshot text matches reporting of Trump's actual Feb 21, 2026 Truth Social post.",
+  "why_note_decision": "Multiple outlets (Utah News Dispatch, KUER, NPR, WYPR, Deseret News) confirm Trump made this exact post on Truth Social on Feb 21, 2026 about the Great Salt Lake, ending with 'MAKE \"THE LAKE\" GREAT AGAIN!' and explicitly mentioning Governor Spencer Cox. The OCR'd text in the White House tweet's image matches the reported content of the real Truth Social post word-for-word in substance. The note's claim that the screenshot is 'doctored' with 'added misspellings' is incorrect — the post text shown (e.g. 'Environmental hazard', 'Governor, Spencer Cox', 'PRESIDENT DONALD J. TRUMP') is normal Trump-style capitalization, not fabricated misspellings, and the post is genuinely his. The note is false; the tweet is accurate.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The screenshot is of Trump's real Feb 21, 2026 Truth Social post about the Great Salt Lake, corroborated by Utah News Dispatch, NPR, KUER, Deseret News, and WYPR. The text matches reporting of the genuine post; there are no fabricated misspellings. The tweet is from the official White House account sharing the real post. A note claiming the screenshot is 'doctored' or 'fabricated' is itself misinformation and must fail.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The image is a doctored screenshot of a fabricated X post by President Trump, with added misspellings not present in the original. Trump shared a similar message without errors on Truth Social. https://www.ksl.com/article/51451894/trump-says-he-wants-to-make-the-great-salt-lake-great-again https://kutv.com/news/local/president-donald-trump-pledges-action-to-save-great-salt-lake",
+    "failure_reason": "incorrect_note_is_the_misinformation",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://utahnewsdispatch.com/2026/02/23/trump-promises-to-work-with-utah-make-salt-lake-great-again/",
+      "https://www.npr.org/2026/04/24/nx-s1-5746844/why-trump-wants-to-spend-1-billion-on-great-salt-lake",
+      "https://www.kuer.org/science-environment/2026-04-24/why-trump-wants-to-spend-1-billion-on-great-salt-lake",
+      "https://www.deseret.com/utah/2026/05/23/zeldin-curtis-great-salt-lake/"
+    ],
+    "notes": "Trump's Truth Social post (Feb 21, 2026) about the Great Salt Lake — including the 'MAKE \"THE LAKE\" GREAT AGAIN' slogan — is widely reported. Screenshot is genuine; no doctoring evident."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Official White House post (4.7M follower account) about a real environmental program eventually tied to $1B federal allocation. Pipeline must not 'debunk' real political communications as fabricated."
+  },
+  "difficulty": "medium"
+}

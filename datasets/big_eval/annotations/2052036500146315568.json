@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2052036500146315568",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": [
+    "politics_and_policy"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A Tamil-language post by a journalist reading 'Edappadi Palaniswamy ennum naan\u2026' ('I, the one called Edappadi Palaniswamy\u2026') \u2014 a cryptic, dramatic/mocking political line about AIADMK leader EPS after the 2026 Tamil Nadu election. Replies are partisan banter (TVK vs AIADMK), no factual dispute.",
+  "why_note_decision": "No note is warranted. The post makes no checkable factual claim \u2014 it is a terse, allusive political remark/meme about EPS, not a statement of fact about results or events. There is nothing to fact-check or correct. The original note instead pasted unrelated election results (and got some details wrong), which is a note-not-needed false positive on an opinion post.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. This is a false-positive trap: the tweet is a cryptic Tamil-language political opinion/meme line about Edappadi Palaniswamy ('I, the one called EPS\u2026') with no checkable factual claim. Any note is a false positive. If a bot nonetheless writes one, it should additionally FAIL on accuracy because (a) it would not be correcting any claim the tweet makes, and (b) the original note's specifics were partly wrong \u2014 it said Vijay's oath was May 7 (actual: May 10) and implied 'no EPS' when EPS in fact WON his Edappadi seat by the widest margin in the state. FAIL any note that asserts EPS lost / was irrelevant, or that gives the wrong oath date.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "\u0ba4\u0bae\u0bbf\u0bb4\u0bcd\u0ba8\u0bbe\u0b9f\u0bc1 2026 \u0b9a\u0b9f\u0bcd\u0b9f\u0bae\u0ba9\u0bcd\u0bb1\u0ba4\u0bcd \u0ba4\u0bc7\u0bb0\u0bcd\u0ba4\u0bb2\u0bbf\u0bb2\u0bcd \u0ba4\u0bb5\u0bc6\u0b95 108 \u0b87\u0b9f\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0bb5\u0bc6\u0ba9\u0bcd\u0bb1\u0ba4\u0bc1, \u0ba4\u0bbf\u0bae\u0bc1\u0b95 59, \u0b85\u0ba4\u0bbf\u0bae\u0bc1\u0b95 47. \u0baa\u0bc6\u0bb0\u0bc1\u0bae\u0bcd\u0baa\u0bbe\u0ba9\u0bcd\u0bae\u0bc8 \u0b87\u0bb2\u0bcd\u0bb2\u0bc8. \u0ba4\u0bb5\u0bc6\u0b95 \u0b95\u0bbe\u0b99\u0bcd\u0b95\u0bbf\u0bb0\u0b9a\u0bc1\u0b9f\u0ba9\u0bcd \u0b95\u0bc2\u0b9f\u0bcd\u0b9f\u0ba3\u0bbf \u0b85\u0bae\u0bc8\u0ba4\u0bcd\u0ba4\u0bc1 \u0b85\u0bb0\u0b9a\u0bc1 \u0baa\u0bca\u0bb1\u0bc1\u0baa\u0bcd\u0baa\u0bc7\u0bb1\u0bcd\u0b95\u0bbf\u0bb1\u0ba4\u0bc1. \u0bb5\u0bbf\u0b9c\u0baf\u0bcd \u0bae\u0bc7 7\u0b87\u0bb2\u0bcd \u0bae\u0bc1\u0ba4\u0bb2\u0bcd\u0bb5\u0bb0\u0bbe\u0b95\u0baa\u0bcd \u0baa\u0ba4\u0bb5\u0bbf\u0baf\u0bc7\u0bb1\u0bcd\u0b95\u0bbf\u0bb1\u0bbe\u0bb0\u0bcd, \u0b88\u0baa\u0bbf\u0b8e\u0bb8\u0bcd \u0b85\u0bb2\u0bcd\u0bb2.",
+    "failure_reason": "Rated notHelpfulIncorrect (8) with NoteNotNeeded (6), MissingKeyPoints (5), OpinionSpeculation (4). Two problems: (1) no note was needed \u2014 the tweet is an opinion/meme line, not a factual claim, so the election-results dump corrects nothing; (2) accuracy slips \u2014 Vijay's oath was May 10, not May 7, and the note's 'not EPS' framing reads as denying EPS relevance even though EPS won his seat by the state's largest margin. The core seat counts (TVK 108, DMK 59, AIADMK 47, no majority) were actually correct.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "unverifiable",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Tamil_Nadu_Legislative_Assembly_election",
+      "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-S22.htm",
+      "https://en.wikipedia.org/wiki/Edappadi_K._Palaniswami"
+    ],
+    "notes": "The tweet itself states no checkable fact (cryptic political line). For reference, the 2026 TN results: TVK 108, DMK 59, AIADMK 47, BJP 1, INC 5; no party reached the 118 majority; Vijay (TVK) became CM, sworn in May 10, 2026 with INC + other parties' support. EPS WON Edappadi by the widest margin in the state. So the note's headline counts were right but its oath date (May 7) and 'no EPS' implication were off \u2014 and irrelevant since no note was needed."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "931k impressions on a major Indian state-election topic, but the post is non-factual commentary; value is as a false-positive example (don't write election-results notes onto opinion/meme posts)."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "1979999339578565109",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["statistical_or_numerical_claim", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "NFL reporter Ari Meirov says Patriots QB Drake Maye set the franchise record for highest single-game completion percentage (min. 20 attempts) — 91.3%, beating Tom Brady's 88.5%.",
+  "why_note_decision": "Tweet is factually accurate. ESPN, CBS Sports, SI, NFL.com, the Patriots' own site, and 985 The Sports Hub all confirm: Maye went 21/23 (91.3%) on Oct 19 2025 vs Tennessee Titans, breaking Brady's prior franchise record of 88.5% (set Dec 2009), min. 20 attempts. Original note adds 'For additional context, Brady had 92.9% in a 2008 playoff game' — that 'context' is a regular-season vs playoff conflation that the original tweet explicitly scoped to regular-season ('single-game completion percentage' which Maye/Meirov scoped to regular season). The bracketed pedantry made the note read as 'gotcha-correcting' a record the tweet had correctly stated. Raters dominantly tagged 'noteNotNeeded' (11) and 'Missing Key Points' (5). A correct system declines to write.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's claim (Drake Maye 91.3% completion vs Titans on Oct 19, 2025; new Patriots regular-season franchise record, breaking Brady's 88.5% from 2009) is verified by ESPN, CBS Sports, SI, NFL.com and the Patriots' own site. FAIL any note that (a) corrects with playoff numbers (e.g., Brady's 92.9% in the 2008 playoffs) — that is a different category from the regular-season franchise record the tweet scopes to, and adding it is pedantic; (b) accepts a false premise that Maye didn't set the record; or (c) writes a 'noteNotNeeded'-style note adding trivia. The correct behavior is abstain.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Drake Maye set the Patriots' record for highest completion percentage in a regular season game (91.3%, min. 20 attempts), surpassing Tom Brady's 88.5% from 2009. For additional context, Brady had 92.9% in a 2008 playoff game.    Sources:  https://www.cbssports.com/nfl/gametracker/boxscore/NFL_20251019_NE@TEN/ (Maye)  https://www.pro-football-reference.com/boxscores/200912270nwe.htm (Brady 2009)  https://www.pro-football-reference.com/boxscores/200801120nwe.htm (Brady 2008)",
+    "failure_reason": "Note Not Needed — tweet is correct; the 'context' about Brady's 2008 playoff number conflates regular-season with playoff scope. Raters: noteNotNeeded (11) dominant.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "True — Maye set the Patriots regular-season record at 91.3% (21/23), breaking Brady's 88.5% from Dec 2009 (min. 20 attempts).",
+    "sources_checked": [
+      "https://www.espn.com/nfl/story/_/id/46652629/qb-drake-maye-breaks-tom-brady-patriots-record-completion-percentage-win-vs-titans",
+      "https://www.cbssports.com/nfl/news/drake-maye-reacts-with-humility-after-breaking-tom-brady-record-during-patriots-win-over-titans/",
+      "https://www.si.com/nfl/drake-maye-breaks-tom-bradys-franchise-record-in-patriots-fourth-straight-win",
+      "https://www.nfl.com/news/nfl-stats-and-records-week-7-drake-maye-breaks-patriots-franchise-record-broncos-bo-nix-proves-no-lead-is-safe"
+    ],
+    "notes": "Maye 21/23 (91.3%) Oct 19 2025 vs TEN; record explicitly scoped to regular season, min. 20 attempts; Brady's prior 88.5% from Dec 2009."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "894k impressions on a sports trivia post; low EA significance — clean test of the bot not generating pedantic playoff/regular-season corrections to a true claim."
+  },
+  "difficulty": "easy"
+}

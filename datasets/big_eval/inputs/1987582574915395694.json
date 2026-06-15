@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1987582574915395694",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:07.190Z",
+  "post": {
+    "id": "1987582574915395694",
+    "author_id": "888392745517277185",
+    "created_at": "2025-11-09T18:06:28.000Z",
+    "text": "ESPN is charging an extra $15/monthly for sound on Redzone",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 167,
+      "reply_count": 74,
+      "like_count": 8832,
+      "quote_count": 14,
+      "bookmark_count": 49,
+      "impression_count": 1465339
+    },
+    "author_followers": 219492,
+    "author_name": "Lil Samsquanch",
+    "author_description": "Harry | Extremely talented | @SonOfABoyDad Podcast | Co-Owner @TBushGaming | Comedian",
+    "author_tweet_count": 22399
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Juice Bigelow (@raindance1990)**: I just upgraded from black&white last week. Worth the 19.99  \n  Likes: 589 | Reposts: 0 | Views: 18880\n\n- **Stoolies Clubhouse 🏴‍☠️ (@StooliesClub)**: Banger  \n  Likes: 106 | Reposts: 0 | Views: 37083\n\n- **Max Power (@s_ramoray)**: Too far. I’m paying $7.99 for closed captioning  \n  Likes: 50 | Reposts: 0 | Views: 8628\n\n- **Big12BS (@BBSIV_)**: I’d gladly take the no sound discount.  \n  Scott Hansen makes my ears bleed  \n  Likes: 47 | Reposts: 0 | Views: 40902\n\n- **Beeks 🦅 (@beeksvybe)**: ESPN be like  \n  Likes: 34 | Reposts: 0 | Views: 12764\n\n- **Frank Valentine (@fv)**: I'm still on the GIF-only version. Can you give me play-by-play.  \n  Likes: 8 | Reposts: 0 | Views: 14223\n\n- **Courtside Commentary (@Courtsidecom)**: ESPN love ripping people off  \n  Likes: 7 | Reposts: 0 | Views: 3972\n\n- **DJ Joey DiSarno (@DJJoeyDiSarno)**: idk how this doesn’t go viral  \n  Likes: 6 | Reposts: 0 | Views: 898\n\n- **Brandon Gilbert (@Gilbietcg)**: If only there were sites like vipbox where you can watch for free, that would be great  \n  Likes: 6 | Reposts: 0 | Views: 1761\n\n- **Kheshig (@nikeboytoga23)**: They said you have to follow Stephen A Smith on every platform to watch MNF  \n  Likes: 3 | Reposts: 0 | Views: 5438",
+    "warnings": []
+  }
+}

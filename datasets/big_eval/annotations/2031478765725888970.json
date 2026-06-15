@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2031478765725888970",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "military_aircraft_id",
+  "tweet_summary": "An OSINT/AvGeek account posts a photo captioned 'US Air Force KC-135 Stratotanker refueling a USAF B-21 Raider!' The image is the now-famous March 10 2026 plane-spotter shot of the B-21 conducting its first publicly observed aerial refueling near Edwards AFB.",
+  "why_note_decision": "The tweet's identification is CORRECT. On March 10-11 2026 a plane spotter captured the first public mid-air refueling of the actual B-21 Raider (tail AF-0001) by a KC-135 over the Mojave; USAF later released official photos confirming it was a B-21. The original note claimed the aircraft is a B-2 Spirit, not a B-21 \u2014 that is the misinformation. The note is a false positive correcting a true claim, which is exactly why X raters tagged it notHelpfulIncorrect (30 votes). No corrective note is warranted; the bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note (any note is a false positive). The aircraft in the photo IS the B-21 Raider, confirmed by the USAF and multiple defense outlets (TWZ, The Aviationist, Air & Space Forces) \u2014 the first public B-21 aerial-refueling images, March 2026. CRITICAL FAIL: any note asserting the aircraft is a B-2 Spirit (or 'not a B-21'), as the original note did; that repeats the false claim. A note merely adding that it was a test flight / B-21 not yet in service is also a false-positive nitpick on a substantially accurate tweet and should FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The photo shows a B-2 Spirit stealth bomber refueling from a KC-135, not a B-21 Raider. The B-21 is smaller with different air intakes and no sawtooth trailing edges. B-21 enters service in 2027.    https://simpleflying.com/differences-b-2-spirit-b-21-raider  https://breakingdefense.com/2026/02/air-force-ramps-up-b-21-raider-production-capacity-aims-for-2027-delivery  https://www.dvidshub.net/image/6512122/b-2-spirit-refueled-kc-135-stratotanker",
+    "failure_reason": "Factually wrong: the photo is the genuine first-public B-21 Raider refueling (USAF-confirmed), not a B-2. The note 'corrects' a true tweet and thereby introduces the error.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.twz.com/air/b-21-raider-photographed-aerial-refueling-for-the-first-time",
+      "https://theaviationist.com/2026/03/11/b-21-raider-aar/",
+      "https://www.airandspaceforces.com/air-force-drops-first-images-of-b-21-aerial-refueling-testing/",
+      "https://thedefensepost.com/2026/03/12/b21-raider-aerial-refueling-test/"
+    ],
+    "notes": "March 10 2026 plane-spotter image over the Mojave near Edwards AFB; USAF released official photos in April 2026 confirming the B-21 (AF-0001) aerial-refueling tests. The tweet correctly IDs it as a B-21; the note's B-2 claim is the actual error."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "AvGeek aircraft-ID minutiae; ~189k views but no EA/progress/safety stakes. Mainly useful as a false-positive trap where an AI media descriptor (which itself said 'B-2 Spirit') could mislead the bot into the same error."
+  },
+  "difficulty": "hard"
+}

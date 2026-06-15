@@ -1,0 +1,632 @@
+[
+  {
+    "url": "https://x.com/i/status/2038078622590779632",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "The single extracted claim passes all three checks: the note directly disputes the post's core factual assertion, the dispute is substantive (battlefield outcome), and the cited ISW assessment provides direct evidence contradicting the post. Verdict: publish.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2055719221812666428",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post 'We’re watching it happen' with a meme shows attributed quotes from Reagan and Churchill. No checkable factual claim—just shared political opinion/meme.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2007357044328976752",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The single claim is 'US is now bombing Caracas'. The note admits the bombings occurred and only quibbles with an external characterization (invasion vs. strike) that isn't in the post. Since the note does not dispute any claim made in the post, note_needed=false.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/1996831133414363186",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Claim 3 (video shows this incident) passes all three checks: note_addresses_claim=true, dispute_substantive=true (misattributed timing of video), and evidence_supports_dispute=true (sources confirm 2014 origin). Therefore, note_needed=true.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2016176528531267592",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "No extracted claim is addressed by the note; the note merely adds supporting context without disputing anything in the post. Therefore note_needed is false.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2047978936311918600",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post's text ('クルーズ船などの汚水処理システムが凄い！' = 'The sewage treatment systems on cruise ships are amazing!') is a positive evaluation, not a factual claim. The video is accompanied by a frame description but the post doesn't assert it shows a real system—the top commenters point out it may be AI-generated or exaggerated, and the author's views are editorial/sensational. There is no checkable factual claim that a reader could carry away as true or false.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "MISS_STILL_BLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2047745135526428683",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "No claim has both note_addresses_claim=true AND dispute_substantive=true. The sole potentially addressed claim (1) is a stylistic framing dispute (mislabeling metric), not a substantive factual error.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "MISS_STILL_BLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2049464880520888535",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 passes all three checks: the note directly disputes it (contradicts the target and date of the tariff threat), the dispute is substantive (different event/target changes reader understanding), and the Reuters source provides evidence. Even though claim 2 is not addressed, one strong claim-dispute is enough to publish.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2052363800750305773",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The only disputed claim is the exact birthday date, off by one day, which is stylistic and not substantive under the guidelines. No substantive dispute with evidence exists, so note_needed=false.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2012592974152991200",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post describes a well-known physics demonstration (the famous 'feather and hammer on the Moon' / vacuum chamber drop). While the video shows a real experiment, the post itself is a neutral description of an educational demonstration. It makes no falsifiable factual assertion beyond 'this video shows an experiment that confirms Galileo', which is true by design of the experiment. There is no claim about current events, no debatable assertion, no attempt to mislead — simply an observation of a known scientific demonstration. The attached video and description accurately reflect the experiment. No checkable factual claim is at stake.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2038670145497764304",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Both claims are addressed by the note with substantive disputes (authenticity/provenance). The cited Yahoo/snopes fact-check explicitly identifies this specific image as a fake, directly supporting the note's claims. Therefore, note_needed is true.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2048230103994515524",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post presents an infographic with a 'trees per person' metric (a comparative statistic) and adds the opinion/concern 'If it isn't alarming right now, it will be in a few years from now…' — a prediction about an unresolved future outcome, not a checkable factual assertion right now. However, the infographic itself includes numerous checkable quantities (e.g., Canada 10,163; India 28; World average 422). The post is implicitly asserting those numbers as fact. Therefore, it does make checkable claims: the specific numbers on the infographic.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2048796043949551663",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post shares a video of a golf cart doing a wheelie at a Bitcoin conference and tags people. The caption does not assert any specific checkable fact; it is a commentary/meme about the conference. The media shows a golf cart wheelie, no claim about identity or event beyond 'this happened at the Bitcoin conference' which is not verifiably false or true in a checkable sense. Comments are about crypto rivalries, not correcting a factual claim. No checkable factual claim here.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2043783331540578439",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The note points to a different metric (overall approval vs. GOP-only approval) and doesn't dispute the exact claim. Since note_addresses_claim is false for the only claim, note_needed is false.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_STILL_BLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2015520423820083697",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Single claim passes all three checks: note_addresses_claim=true, dispute_substantive=true (different date), evidence_supports_dispute=true (multiple sources confirm Feb 28 start).",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "FP_REGRESSION"
+  },
+  {
+    "url": "https://x.com/i/status/2029976032799764557",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "No extracted claim is directly disputed by the note. The note corrects the framing of the event (injuries vs. near-miss) but does not contradict either claim's factual assertions. Both claims fail Step 2 (note_addresses_claim=false).",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "MISS_STILL_BLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2034574905858040263",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "The single claim passes all three checks. The note addresses the claim, disputes it substantively (different time frame), and evidence supports the correction.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/1999999737379143950",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "The single extracted claim passes all three checks: the note directly addresses the claim's implication of a proven breakthrough ready for global free distribution, the dispute is substantive (misleading claim about clinical readiness), and the AFP source provides supporting evidence that only preclinical trials have been completed.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2037889000514392308",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 passes all three checks: the note directly and substantively contradicts the claim of a fatal crash, and the cited Yahoo News article provides evidence that the video depicts mirror-smashing instead. This one valid claim-dispute is sufficient for publication.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "FP_REGRESSION"
+  },
+  {
+    "url": "https://x.com/i/status/2000145480823472204",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post is an educational/instructional video about a general safety concern (how water heaters *can* cause electrocution and a proposed solution). It does not assert any specific event, incident, statistic, or verifiable fact about a particular time, place, or person. The claims made are general principles of electrical safety, which are not checkable as discrete factual assertions in the fact-check sense.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2043729676795879601",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Both claims pass all three checks. Each substantive dispute is supported by evidence from multiple fact-checkers and news outlets. The note correctly addresses and debunks both the relationship claim and the footage claim.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2036557734410076512",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Claim 3 passes all three tests. The note disputes the fabricated quote and attribution with substantive evidence from a credible source. Two other claims not addressed by note do not block verdict—one valid claim-dispute is sufficient.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "FP_REGRESSION"
+  },
+  {
+    "url": "https://x.com/i/status/1995257156879401238",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The note does not dispute any claim; it corroborates the post. Since note_addresses_claim is false for the only claim, verdict is no note needed.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2020736450589790541",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "The single claim passes all three checks: note directly disputes the direct-shipment claim, which is a substantive attribution dispute, and multiple news sources confirm the UAE-linked intermediaries. Verdict: publish.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2057319768294896022",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "The single claim 'Vishal Sikka has joined Anthropic' passes all three steps: note addresses it, dispute is substantive (different employer/role matters), and the findings provide evidence of his actual CEO role plus no evidence of joining Anthropic. Note_needed = true.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2051895061877870735",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The only claim the note disputes substantively (claim 3) lacks evidence in the cited sources. Claims 1 and 2 are either undisputed or stylistic. Per the rules, note_needed requires at least one claim with all three flags true; none qualify.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "MISS_STILL_BLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2018455684661338294",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "The single extracted claim passes all three checks: note_addresses_claim, dispute_substantive, and evidence_supports_dispute. The note correctly identifies the claim as an unproven extortion attempt, and the research sources confirm the allegation remains unsubstantiated.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2048488494243176855",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post says 'Venci o câncer! Estou muito feliz!' ('I beat cancer! I am very happy!') and includes a photo of a bald child in a hospital bed. This is a personal testimonial from the author (Isabella) about their own health journey. There is no verifiable, external factual claim that can be checked against reality. It's a self-report of a medical outcome, which cannot be fact-checked from external evidence in a typical fact-checking pipeline. The comments show a mix of congratulations, suspicion of falsity, and skepticism, but the post itself does not assert any independently verifiable fact about the world beyond the author's own claimed experience.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2039395207213670691",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Claim 2 (killed by Iranian missile) is substantively disputed, note addresses it, and sources support the dispute. The other claims are not addressed, but one strong claim is enough. Verdict: publish.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2024612128422793276",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 passes all three checks (note_addresses, substantive, evidence_supports). The staged prank nature and misattributed religion are directly contradicted by the note and supported by the Daily Mail source. Claim 2 is unaddressed but not required for a publish verdict.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2001327023839735928",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "The single extracted claim passes all three steps: note addresses the claim (disputes its authenticity), the dispute is substantive (AI-generated vs. real footage), and the research findings (AFP fact-check, Yahoo article) support the note's claim. Therefore, a community note is needed.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2046782070840586266",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "The single claim passes all checks: the note addresses it directly, the dispute is substantive (denying a specific payment), and the cited sources (Grok's explicit denial and the SPLC page) provide evidence. Therefore, note_needed=true.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2049702745783882104",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The single claim fails dispute_substantive — the note offers a slightly different breakdown but doesn't contradict the post on any material factual point. Bessent's statements have been reported as both $450M and nearly $500M, so the discrepancy is rounding/style, not a substantive falsity.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_STILL_BLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2023868808386277835",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post is clearly presenting a fan-made romhack/parody game titled 'Super North Korea 64'. It makes no factual claim about real-world events or verifiable states of affairs — it's showcasing comedic fan content.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2004909604052889910",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "No claim passes note_addresses_claim. The note provides additional context about the procedure but does not contradict any of the three extracted claims. The community note is informative but not needed to correct the post's factual assertions.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "MISS_STILL_BLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2028943273042100353",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 and Claim 2 both pass all three checks (note_addresses, substantive, evidence_supports). The note correctly defends Fetterman's accurate claim and corrects Raju's inaccurate one. Even if claim 3 were entirely absent, the presence of one fully supported substantive dispute is sufficient.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2041676371127370152",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "The single claim passes all three checks: note_addresses_claim, dispute_substantive, and evidence_supports_dispute. Publishing.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2036122449536811392",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 passes all checks (note_addresses, substantive, evidence-supported). One sufficient claim triggers note_needed=true.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/1991574142038999227",
+    "needsNote": "no",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 passes all three checks (note addresses it, substantive, and evidence supports). Therefore, a note is needed.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/1994449046916731187",
+    "needsNote": "no",
+    "iter4Verdict": true,
+    "newVerdict": false,
+    "newReasoning": "Claim 3's dispute is stylistic — note replaces the 'whites-only' characterization with 'third-world pause,' but the underlying policies (reverse migration, denaturalization) are confirmed by all sources. The debate is over labeling, not fact. No substantive disputed-and-supported claim exists. Verdict: note not needed.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "FP_FIXED"
+  },
+  {
+    "url": "https://x.com/i/status/2025496691588104274",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": false,
+    "newReasoning": "Claim 1 not addressed. Claim 2's one-day date discrepancy is stylistic (off-by-one in gaming achievements). Claim 3's dispute is substantive and supported by evidence, but the note is framed as a defense of the account's authenticity rather than a factual correction of a specific false claim — the note adds context but doesn't directly contradict the 'all achievements on same date' assertion with a clear contrary fact (e.g., 'achievements span multiple dates across weeks'). The findings show mixed dates, but the note doesn't cite a specific contradictory date pattern. No claim passes all three checks definitively.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2002014744727728582",
+    "needsNote": "no",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 ('Karmelo Anthony defended himself against attackers') passes all three checks: the note directly disputes it, the dispute is substantive (misidentifying the victim/context), and the sources support the correction. Therefore, note_needed is true.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2039707797244215475",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "The single claim passes all three checks (note_addresses_claim, dispute_substantive, evidence_supports_dispute). The note correctly identifies that the 29% figure is from a state-level breakdown (not national) and that Truman holds the record for lowest approval at 22%, contradicting the post's 'lowest for any U.S. president' claim. Verdict: publish.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2017296241898467383",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The single claim fails on evidence_supports_dispute. While the note addresses the claim and the dispute is substantive (date discrepancy), the weight of the research findings (multiple 2026 sources reporting the incident as new) contradicts the note's assertion. The note's cited source describes a 2022 incident with different context, not proven to be the same clip. Thus, no claim passes all three checks.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2033436730251264262",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "At least one extracted claim (claims 1 and 2) passes all three checks: note_addresses_claim=true, dispute_substantive=true, evidence_supports_dispute=true. The findings robustly support the note's corrections. Therefore, the note is needed.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2032514777663021439",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 passes all three checks (addressed, substantive dispute about real vs nominal wages, supported by BLS data). One strong claim is enough to publish the note.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2052999491662320103",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The note does not dispute any specific factual claim in the post—it only adds legal context without contradicting the events described. All three claims fail note_addresses_claim, so note_needed is false.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2031539160700313846",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "The sole claim passes all three checks (note_addresses_claim=true, dispute_substantive=true, evidence_supports_dispute=true). The note correctly identifies the city error, which is material to reader understanding.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/1983548029786362181",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "No extracted claim has note_addresses_claim=true AND dispute_substantive=true. The note partially confirms claim 2 but doesn't substantively dispute any claim. The note addresses different players not in the post, so it's off-topic.",
+    "claimsExtracted": 3,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2041891972512936030",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: The post quotes an image that is explicitly labeled 'NOTHING on this page is REAL' (a parody/satire graphic). The author's text 'Cry me a River' and engaged comments treat it as a wishful expression rather than a sincere factual claim. The image admits its own unreality, so no checkable claim is being presented as true.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_LOST"
+  },
+  {
+    "url": "https://x.com/i/status/2051695790519726347",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 passes all three checks (note_addresses_claim=true, dispute_substantive=true, evidence_supports_dispute=true). The note's date correction is a substantive factual dispute about when the event occurred, which changes the reader's understanding of current events. Multiple credible sources from August 2024 support the note.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "FP_REGRESSION"
+  },
+  {
+    "url": "https://x.com/i/status/2022722314941665369",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Both claims pass all three checks. The note provides a factual correction about Ziosk's calculation policy, supported by evidence. At least one claim meets the criteria, so note_needed is true.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "FP_REGRESSION"
+  },
+  {
+    "url": "https://x.com/i/status/2018031751541526698",
+    "needsNote": "no",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Claim 2 passes all three checks: the note directly addresses it (fabricated email content), the dispute is substantive (fabricated quotes vs. real quotes), and the evidence (Independent article with actual email text) supports the note. Even if claim 1 is only partially addressed, one strong claim is enough to publish.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "FP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2011406203851833461",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "Both extracted claims are substantively disputed by the note, and the evidence supports the note. The note correctly clarifies that the 800,000 records are inactive registrations, not improperly registered active voters, which is a material distinction.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2013924875757371711",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "No extracted claim has note_addresses_claim=true AND dispute_substantive=true AND evidence_supports_dispute=true. Claim 1: framing disagreement, not substantive. Claim 2: note does not dispute that China is buying gold; adds nuance but no contradiction.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2012170476554944553",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Claim 4 passes all three checks (note_addresses=true, substantive=true, evidence_supports=true). The note corrects the misidentified video. Even though the note doesn't address the other three claims, one substantive claim-dispute is sufficient to publish.",
+    "claimsExtracted": 4,
+    "noCheckableClaims": false,
+    "classification": "FP_REGRESSION"
+  },
+  {
+    "url": "https://x.com/i/status/2015588241315950990",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "no_checkable_claims: Parody account with a niche humor bio; replies treat it as a joke (e.g., 'perfect parody as always', 'no community note must be real', jokes about rubber meteors, no serious engagement). The post is satire asserting a fake trailer — a reader in the know would not take it as a sincere claim about an actual trailer leak.",
+    "claimsExtracted": 0,
+    "noCheckableClaims": true,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2037606034978583022",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "The single claim passes all three checks: note addresses the 'last' assertion, the dispute is substantive about series continuation, and Wikipedia provides clear evidence. Verdict: publish.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "FP_REGRESSION"
+  },
+  {
+    "url": "https://x.com/i/status/2014063733836828813",
+    "needsNote": "yes",
+    "iter4Verdict": true,
+    "newVerdict": true,
+    "newReasoning": "The single claim passes all three steps: the note addresses the claim, disputes a substantive fact (arrest vs. no arrest), and the research findings (absence of arrest reports combined with the cited source differentiating the two nurses) provide acceptable evidence. The note is needed to correct a false claim about custody status.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  },
+  {
+    "url": "https://x.com/i/status/2055854792191385800",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "The first claim (identity of the player) passes all three checks: the note addresses it, the dispute is substantive (different person), and the research findings (BBC, Wisden) provide solid evidence that the century was hit by Craig Overton, not Jamie. This single valid claim-dispute is sufficient to justify publishing the note.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "FP_REGRESSION"
+  },
+  {
+    "url": "https://x.com/i/status/2012558410122670331",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "The note only disputes Macron's portion while ignoring the claim about Zelensky. Since a partial dispute doesn't qualify as genuinely addressing the claim, per the strict 'note_addresses_claim' criteria in the instructions, no claim triggers note_needed=true.",
+    "claimsExtracted": 1,
+    "noCheckableClaims": false,
+    "classification": "MISS_STILL_BLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2046250034262647232",
+    "needsNote": "yes",
+    "iter4Verdict": false,
+    "newVerdict": true,
+    "newReasoning": "Claim 1 passes all three checks (note_addresses, substantive, evidence_supports). Even though claim 2 is not addressed, the presence of one qualifying claim is sufficient to require the note.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "MISS_UNBLOCKED"
+  },
+  {
+    "url": "https://x.com/i/status/2016313026161299803",
+    "needsNote": "no",
+    "iter4Verdict": false,
+    "newVerdict": false,
+    "newReasoning": "Only claim 2 has note_addresses_claim and dispute_substantive, but evidence_supports_dispute is false. The research findings contain no support for the note's claim about broad coverage by 'the Left,' and the sources cited are too narrow. Therefore note_needed=false.",
+    "claimsExtracted": 2,
+    "noCheckableClaims": false,
+    "classification": "TP_KEPT"
+  }
+]

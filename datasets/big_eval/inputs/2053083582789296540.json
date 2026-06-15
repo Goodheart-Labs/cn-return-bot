@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2053083582789296540",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:01.549Z",
+  "post": {
+    "id": "2053083582789296540",
+    "author_id": "2042172937554239488",
+    "created_at": "2026-05-09T12:04:05.000Z",
+    "text": "Jews playing football during the German Holocaust. \n\nWhat shame you haven't inherited their dignity, resilience and pride. https://t.co/ZIhlhaKgRV https://t.co/RbzcU2Ec1u",
+    "media": [
+      {
+        "media_key": "3_2053083579320590340",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HH4Eoz-XYAQ1d4W.jpg",
+        "height": 608,
+        "width": 1079
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2052878072941359614"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2052878072941359614",
+      "author_id": "1409996087893524480",
+      "created_at": "2026-05-08T22:27:27.000Z",
+      "text": "The only genocide in the world where they have Marathon races…. https://t.co/N35wfKsyrW",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 3545,
+      "reply_count": 268,
+      "like_count": 34016,
+      "quote_count": 117,
+      "bookmark_count": 1225,
+      "impression_count": 858627
+    },
+    "author_followers": 1740,
+    "author_name": "Lisa Moorish",
+    "author_description": "singer 🎙️ songer 🖊️ 🎵 film producing, USB-ing 🎧 human rights activist-ing ✊🏽",
+    "author_tweet_count": 3194
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HH4Eoz-XYAQ1d4W.jpg",
+          "description": {
+            "description": "A side-by-side black and white photographic comparison showing a soccer match being played in a courtyard. The left panel is a close-up of players in action, while the right panel shows a wide view of the game taking place in front of a multi-story building with arched openings filled with spectators. Text is visible in the bottom right corner.",
+            "ocrText": "TEREZIN HOUSE"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@CatShoshanna**: “Human rights activist” posting literal nazi propaganda. Disgusting pos. @CommunityNotes (Likes: 509, Reposts: 34)  \n**@Cohenes2**: It’s a stage picture mother fucker (Likes: 451, Reposts: 10)  \n**@MichalSabra**: The irony of Palestinian terror supporter using a Nazi propaganda photo to draw a false equivalence. Palestinianism =Nazism (Likes: 301, Reposts: 8)  \n**@vampywitchy**: Maybe visit Theresienstadt & learn about it before using nazi propaganda to try to score points. But then you'd have to stop being a Jew hater & lose all your personality (Likes: 274, Reposts: 0)  \n**@Elie Cohen كامل أمين ثابت**: Its a soccer match staged by the Nazis in 1944 for a propaganda film and Red Cross visit. Most players and spectators were later deported to Auschwitz and killed, Lisa. (Likes: 161, Reposts: 0)  \n**@Ofernicus**: Luckily we have Artificial Intelligence to cover for the lack of human intelligence. (Likes: 105, Reposts: 3)  \n**@alfa_maven**: Read the community note: The photo is from a soccer match staged by the Nazis in the Terezin ghetto in 1944 for a propaganda film and Red Cross visit. Most of those involved were later deported to Auschwitz and murdered. (Likes: 102, Reposts: 0)  \n**@baum_p**: Playing football in the death camps as a propaganda exercise for the Nazis is hardly comparable to the Gaza marathon run you fucking imbecile (Likes: 66, Reposts: 0)  \n**@NoToMisogyny**: Bit different to a marathon, you fucking idiot. There hasn’t been ONE photo of a starving adult Gazan. They’re mostly fat if anything (Likes: 62, Reposts: 0)  \n**@mimi_teaching**: Ok. This was a staged soccer match at the Terezin camp and many players were deported to Auschwitz and killed. Good lord. You people have lost your minds. (Likes: 55, Reposts: 0)",
+    "warnings": []
+  }
+}

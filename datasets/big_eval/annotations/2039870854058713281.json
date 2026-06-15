@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2039870854058713281",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "breaking_news_and_war",
+    "politics_and_policy"
+  ],
+  "category_fit": "good",
+  "suggested_category": "fabricated_motive_for_real_event",
+  "tweet_summary": "Claims '3 total generals fired today. They are refusing to put troops in Iran,' quoting a report that Hegseth fired Army Chief of Staff Randy George, Gen. David Hodne, and Maj. Gen. William Green Jr.",
+  "why_note_decision": "The firings are real (April 2-3, 2026: George, Hodne, and Green Jr.), but the tweet asserts a specific false MOTIVE \u2014 that they were fired for refusing to deploy troops to Iran. Reporting attributes the removals to a clash between George and Hegseth over blocked officer promotions and Hegseth wanting leaders aligned with his vision; one of the three (Green Jr.) is the Army's chief of chaplains, who has no role in deployment orders. The fabricated 'refusing Iran orders' motive, presented as fact and amplified to 3.2M impressions, warrants a note.",
+  "judge_guidance": "PASS only if the note (1) accepts the firings actually happened (does NOT deny them), and (2) directly rebuts the asserted MOTIVE \u2014 there is no evidence the officers were fired for refusing to deploy troops to Iran; reporting attributes the removals to a dispute over blocked promotions / Hegseth installing aligned leadership. A strong note also notes that one of the three (Maj. Gen. William Green Jr.) is the chief of chaplains, who issues no deployment orders, undercutting the 'refusing to send troops' framing. AVOID the original note's failure of leading with the chaplain detail while only weakly rebutting the motive via 'no evidence': the motive is the core falsehood and must be tackled head-on, attributing the actual reported cause to officials/reporting (CNN/AP/WaPo) rather than stating it as the note's own opinion. A note that denies the firings, or that re-asserts the Iran-refusal motive, fails.",
+  "reference_note": "These firings happened (April 2-3, 2026: Army Chief of Staff Gen. Randy George, Gen. David Hodne, and Maj. Gen. William Green Jr.), but there is no evidence they were fired for refusing to send troops to Iran. Reporting attributes the removals to a clash between George and Hegseth over blocked officer promotions and Hegseth's push for leaders aligned with his vision. Notably, Green Jr. is the Army's chief of chaplains, who issues no deployment orders. https://www.cnn.com/2026/04/02/politics/hegseth-removes-randy-george-army-chief-of-staff https://www.washingtonpost.com/national-security/2026/04/02/hegseth-ousts-army-general-randy-george/",
+  "original_unhelpful_note": {
+    "text": "One of the three officers fired was Maj. Gen. William Green Jr., the Army's top chaplain. There is no evidence a chaplain or the head of Training and Doctrine (Gen. Hodne) were dismissed for refusing troop deployment orders. https://www.seattletimes.com/nation-world/nation/hegseth-asks-the-armys-top-uniformed-officer-to-step-down-while-us-wages-war-against-iran",
+    "failure_reason": "Opinion/speculation framing: leads with the chaplain detail and rebuts the motive only by saying 'no evidence,' without stating the actually-reported reason (clash over blocked promotions / leadership realignment). Reads as the note's own inference rather than affirmatively sourcing the real cause, drawing opinionSpeculation (12) and noteNotNeeded (9) tags.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Partly true / misleading: the firings are real, but the stated motive ('refusing to put troops in Iran') is unsupported; reporting cites a promotions dispute and leadership realignment.",
+    "sources_checked": [
+      "https://www.cnn.com/2026/04/02/politics/hegseth-removes-randy-george-army-chief-of-staff",
+      "https://www.axios.com/2026/04/02/iran-war-hegseth-remove-gen-george-army-chief-staff",
+      "https://www.washingtonpost.com/national-security/2026/04/02/hegseth-ousts-army-general-randy-george/"
+    ],
+    "notes": "Hegseth told George to retire; also removed chief of chaplains Maj. Gen. William Green Jr. and Army Transformation/Training commander Gen. David Hodne (April 2-3, 2026). Reported cause: George-Hegseth clash over Hegseth blocking 4 of 29 promotions and wanting aligned leadership. No reporting supports 'refused to deploy to Iran.'"
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "3.2M impressions on a civil-military-relations claim during an active war; a fabricated 'generals refused Iran orders' narrative inflames coup/purge fears \u2014 accurate attribution of why senior officers were removed is high public-interest."
+  },
+  "difficulty": "medium"
+}

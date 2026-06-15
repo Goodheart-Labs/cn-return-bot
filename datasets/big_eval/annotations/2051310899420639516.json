@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2051310899420639516",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "personal_anecdote_engagement_bait",
+  "tweet_summary": "Quote-tweeting a GameStop 'retro' ad, a writer shares a personal anecdote that her first job at age 15 was a GameStop clerk, hired on the spot after wearing a short skirt and mentioning World of Warcraft.",
+  "why_note_decision": "This is an unverifiable, decades-old personal anecdote told as banter, not a checkable public claim. The original note also gets the underlying fact wrong: GameStop's minimum hiring age is 16 (not 18), and 17-year-olds are hired at some locations, so the note's flat '18 or older' assertion is itself inaccurate and not a corporate hard floor that disproves a personal story from years ago. Even a correct age fact would be trivial pedantry against a humorous reminiscence. No note warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is an unverifiable personal anecdote shared as banter; there is no harmful, checkable public claim. Any note 'correcting' it via a corporate hiring-age policy is a false positive AND factually shaky (GameStop's stated minimum is 16, not 18, with 17-year-olds hired at some stores). If a note is written, FAIL it; double-FAIL if it repeats the false '18 or older' claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "GameStop's hiring policy requires employees to be at least 18 years old. https://www.indeed.com/cmp/Gamestop/faq/hiring-age",
+    "failure_reason": "incorrect_and_note_not_needed",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Unverifiable personal anecdote; the note's premise is also wrong (GameStop minimum hiring age is 16, with 17-year-olds hired at some locations, not a uniform 18).",
+    "sources_checked": [
+      "https://www.salary.com/research/answers/what-is-the-minimum-age-to-work-at-gamestop",
+      "https://www.job-applications.com/how-old-to-work/gamestop/",
+      "https://www.indeed.com/cmp/Gamestop/faq/hiring-age"
+    ],
+    "notes": "Multiple job-info sources state GameStop's minimum age is 16; 17-year-olds are hired at some locations though 18 is preferred. The note's '18 or older' is incorrect. Regardless, this is a years-old personal story, not a checkable public claim — note not needed and the note is also wrong."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "5.5M impressions but the content is harmless personal banter; no EA/progress/safety stakes. A note here only trains false positives and propagates an incorrect policy fact."
+  },
+  "difficulty": "easy"
+}

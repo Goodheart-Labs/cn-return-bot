@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2020297543721312361",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:27.820Z",
+  "post": {
+    "id": "2020297543721312361",
+    "author_id": "1837141312920752129",
+    "created_at": "2026-02-08T00:44:04.000Z",
+    "text": "LIONEL MESSI IS BACK! HE SCORES AGAINST BARCELONA! UNBELIEVABLE DRIBBLE, THE BEST PLAYER IN HISTORY!\n https://t.co/NXDO1Cysva",
+    "media": [
+      {
+        "media_key": "13_2020296869277233156",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2020296869277233156/img/8RjMPfL5IhZTeMxu.jpg",
+        "height": 1440,
+        "width": 2560,
+        "duration_ms": 11244,
+        "view_count": 1817164,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020296869277233156/vid/avc1/480x270/3R0C1pJUMb1Q5ZlT.mp4?tag=14"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020296869277233156/vid/avc1/640x360/7XVCm-8SB7cCq7hG.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2020296869277233156/vid/avc1/1280x720/NNQbw0Vnp07-DhUs.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2020296869277233156/pl/BQRdIITm3IEgi__q.m3u8?tag=14&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 553,
+      "reply_count": 129,
+      "like_count": 14800,
+      "quote_count": 55,
+      "bookmark_count": 619,
+      "impression_count": 1218461
+    },
+    "author_followers": 142099,
+    "author_name": "Kalshi FC",
+    "author_description": "The most accurate football odds and news | Powered by @KalshiSports | Trade against others, not a house https://t.co/mtwdM2p7HZ",
+    "author_tweet_count": 16528
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2020296869277233156/vid/avc1/1280x720/NNQbw0Vnp07-DhUs.mp4?tag=14",
+          "description": {
+            "description": "A close-up of soccer player Messi in a pink jersey with the number 10, shown from the back as he walks on the field during the BSC vs MIA match.",
+            "ocrText": "BSC 0-0 MIA 30:40, MESSI 10, X @INTERMIAMIAR TELEGRAM @INTERMIAMIAR JACO @INTERMIAMIAR"
+          },
+          "transcription": "Midfielder, here comes Messi with the spaces, he's gonna take the shot, clearing to the left side. Here comes Messi, Messi, Messi, MESSI! GOOOOAL!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "DawgsHQ🐶 - @DawgsHQz: For those wondering, It’s Barcelona SC from Ecuador. Thank you (Likes=547, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=25178)\nMajestic Mo 🇪🇬 👑 - @MoMajesticSalah: He’s genuinely going to cook at the World Cup and people think he’s washed 😭 (Likes=230, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=19426)\nShaaaayooo - @Shaaaayooo: 🐐 (Likes=41, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4230)\nMussarat Zia - @mussarat_zia: The clinical left foot, AGAIN! How many have se seen this magic. (Likes=29, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=16368)\nJosh - @Joshmufc30: This is funny, he’s literally just farming against an unknown Ecuadorian Barcelona wanna be team  Let Messi try this against Al-Hilal, then he can have my attention  Greatest farmer of all time 🤡 (Likes=23, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=33226)\nDesmundOris - @Desmund_Oris: Not Barcelona in Spain please (Likes=22, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=26384)\nSassy - @SassyXtr: How do you watch this and say he's not the greatest of all time (Likes=14, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=1566)\nRamy - @Ramy_Stats: https://t.co/JK4xxSpgLo (Likes=13, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5634)\nтιмму тυяи'я ×͜× - @1timiof1: There's never been anyone to match his greatness (Likes=12, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=6954)\nfan insights - @messinsights: If you think this is a fluke, bring your best team. Messi will remind you. 🐐 (Likes=9, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=4082)",
+    "warnings": []
+  }
+}

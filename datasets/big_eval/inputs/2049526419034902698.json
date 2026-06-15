@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2049526419034902698",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:58.541Z",
+  "post": {
+    "id": "2049526419034902698",
+    "author_id": "1690352207252819968",
+    "created_at": "2026-04-29T16:29:11.000Z",
+    "text": "Two economists just published a mathematical proof that AI will destroy the economy.\n\nNot might. Not could. Will — if nothing changes.\n\nThe paper is called \"The AI Layoff Trap.\" Published March 2, 2026. Wharton School, University of Pennsylvania. Boston University. Peer reviewed. https://t.co/Owkd98RdbC",
+    "media": [
+      {
+        "media_key": "3_2049526416409268226",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHFharfakAINnS_.png",
+        "height": 892,
+        "width": 825
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3945,
+      "reply_count": 1129,
+      "like_count": 9890,
+      "quote_count": 689,
+      "bookmark_count": 8316,
+      "impression_count": 1364199
+    },
+    "author_followers": 33223,
+    "author_name": "Elias Al",
+    "author_description": "Al Educator. Helping you to make money with Al, Tech Tools & Digital Skills | DM Open for collaboration.      ✉️✉️✉️eliaskennedy368@gmail.com",
+    "author_tweet_count": 35057
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHFharfakAINnS_.png",
+          "description": {
+            "description": "The image shows the first page of an academic paper titled 'The AI Layoff Trap'. It includes the author names Brett Hemenway Falk and Gerry Tsoukalas, the date March 2, 2026, and an abstract followed by an introductory section. The text is formatted in a standard academic layout with citations in orange text. A vertical identifier on the left margin reads 'arXiv:2603.20617v1 [econ.TH] 21 Mar 2026'. Footnotes at the bottom list the authors' university affiliations and email addresses.",
+            "ocrText": "The AI Layoff Trap\n\nBrett Hemenway Falk, Gerry Tsoukalas*\n\nMarch 2, 2026\n\nAbstract\nIf AI displaces human workers faster than the economy can reabsorb them, it risks eroding the very consumer demand firms depend on. We show that knowing this is not enough for firms to stop it. In a competitive task-based model, demand externalities trap rational firms in an automation arms race, displacing workers well beyond what is collectively optimal. The resulting loss harms both workers and firm owners. More competition and \"better\" AI amplify the excess; wage adjustments and free entry cannot eliminate it. Neither can capital income taxes, worker equity participation, universal basic income, upskilling, or Coasian bargaining. Only a Pigouvian automation tax can. The results suggest that policy should address not only the aftermath of AI labor displacement but also the competitive incentives that drive it.\n\nKeywords: artificial intelligence, automation, labor displacement, Pigouvian tax.\n\n1 Introduction\nThe fear that technology will displace workers is at least as old as the Industrial Revolution (Ricardo, 1821; Keynes, 1930; Leontief, 1982). Historically, displacement has largely been self-correcting: automation of existing tasks has been offset by the creation of new tasks and occupations. What Acemoglu and Restrepo (2018, 2019) call the reinstatement effect has tended to stabilize the labor market. Whether this balance will hold in the age of AI is an open question; Autor et al. (2024) find that displacement has intensified over the past four decades while the creation of new work has not always kept pace, and early signs suggest the current wave is disproportionately affecting entry-level workers (Brynjolfsson et al., 2025a).\n\nEven if reinstatement eventually occurs, a problem arises along the way: displaced workers are also consumers, and when their lost income is not replaced, each round of layoffs erodes the purchasing power all firms depend on. At the limit, this becomes self-destructive: firms automate\n\n*Hemenway Falk: University of Pennsylvania (fbrett@cis.upenn.edu), Tsoukalas: Boston University (gerryt@bu.edu)\n\narXiv:2603.20617v1 [econ.TH] 21 Mar 2026"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @trademindhq: This is as much about AI as it is about capitalism’s feedback loop.\n\nWorkers are not just labor costs.\nThey are the demand side of the economy.\n\nRemove enough of them,\nand companies optimize themselves into a smaller market.\n\nThat’s the trap.\n\nThe mistake is thinking efficiency alone creates prosperity.\n\nIt doesn’t.\n\nDistribution matters.\n\nIf productivity gains stay concentrated\nwhile consumption capacity disappears,\ngrowth turns against itself.\n\nTechnology can solve production.\nIt cannot solve incentives on its own. (Likes: 291, Reposts: 37, Quotes: 1, Replies: 9, Bookmarks: 32, Views: 21973)\n- @SwannMarcus89: Neither of these people are economists. Why are you lying about their credentials? (Likes: 150, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 2698)\n- @_evon3929: This is one of the clearest explanations of the demand collapse problem I’ve seen. If productivity rises but purchasing power disappears, the system breaks itself. (Likes: 80, Reposts: 4, Quotes: 0, Replies: 8, Bookmarks: 0, Views: 18356)\n- @suspected_n00b: > Stock AI-generated profile picture -> CHECK\n> Account based in Bangladesh -> CHECK\n> Post content clearly AI-generated -> CHECK\n\nBUT WOOOAH LISTEN TO ME! I AM TOTALLY TRUSTWORTHY.\n\nAlso, how the fuck do you \"mathematical\" prove something like this? You really have to be as stupid as a comic book villain. (Likes: 64, Reposts: 0, Quotes: 0, Replies: 4, Bookmarks: 0, Views: 3905)\n- @toly: Motors do the equivalent of 200 billion peoples worth of work. (Likes: 62, Reposts: 5, Quotes: 0, Replies: 12, Bookmarks: 0, Views: 2245)\n- @NewThinking2: I bet they didn't test a full Land Value Tax. Land under classical economics means ALL of nature's products: physical space, locational advantage in urban areas, air, water, freedom from pollution, oil, etc.\nTax the real things from nature. There's no escaping that even in the AI world. They are finite & locational value can't be moved to a cheaper location; a skyscraper in midtown NYC loses nearly all its value in the middle of NY state. Even a data center has to be located somewhere that can be taxed, even in LEO, which is finite too. Tax the finite bandwidth to transmit data to/from Earth. Tax pollution. All of this will encourage more efficient use of resources: good for the environment too.\nEliminate deadweight taxes that retard productivity too, which will make humans more valuable too, countering the competition from robots/AI. \nThere is a solution, tried & proven.\n@LVTYIMBY @LVT_USA @mmt_lvt @Lvt @LVT253 @henrygeorgepgm @HenryGeorgeInst @henrygeorgeuk @HGSSSNYC @Geolibertarian @elonmusk @Wharton @paulkrugman (Likes: 60, Reposts: 10, Quotes: 1, Replies: 6, Bookmarks: 0, Views: 4504)\n- @jes1voice: The economy has already been destroyed. Look around. It's operating on fumes. The petrodollar is dead. American government institutions and national industries are more corrupt than ever before and they're cleaning us out before the end. This paper allows them to blame it on AI. (Likes: 57, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 4297)\n- @TzviGot: I think any reasonable person could have reached this conclusion without math, no?\nComputer replaces employees - unemployed cannot afford to purchase - companies cannot make money.\nThe next part is also interesting:\nUnemployed take their torches and storm the castle of the owners (Likes: 38, Reposts: 0, Quotes: 0, Replies: 5, Bookmarks: 0, Views: 2594)\n- @El_King888: Just based on those first few paragraphs there is an ending in sight. Companies will realize they’re losing customers because people can’t afford their products so they will stop using AI across the board. \n\nAlthough it does bring up a good point that I was talking to my daughter about yesterday, which is if a bunch of people lose their jobs, they’re not going to have money, so what will happen then? (Likes: 32, Reposts: 1, Quotes: 0, Replies: 24, Bookmarks: 0, Views: 10473)\n- @htsssebb5543: This research is built on assumption that using AI increases productivity and replace workers infinitely. However, empirical data shows that it's not the case.\n\nOffice workers work ~15% more efficient with AI. That's it. 15%. (Likes: 29, Reposts: 0, Quotes: 0, Replies: 0, Bookmarks: 0, Views: 4505)",
+    "warnings": []
+  }
+}

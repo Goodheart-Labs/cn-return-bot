@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2007428087143686611",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy", "legal_or_court_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "AG Pam Bondi announces that Nicolas Maduro and his wife Cilia Flores have been indicted in the Southern District of New York; lists the narco-terrorism, cocaine importation, and machine-gun charges Maduro faces.",
+  "why_note_decision": "The tweet is TRUE. On Jan 3, 2026 a superseding indictment was unsealed in SDNY naming both Maduro AND Cilia Flores. Flores faces cocaine-importation and weapons charges (not narco-terrorism). Both pleaded not guilty during arraignment. The original (NMR) note — 'Cilia Flores has not been indicted; Maduro was indicted on these charges in 2020' — is FACTUALLY WRONG. It confuses the 2020 original indictment with the 2026 superseding indictment that added Flores. This is a clear false-positive note on an accurate AG statement.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's claim that both Maduro and Cilia Flores were indicted in SDNY is verified true (Jan 3 2026 superseding indictment; both arraigned, both pleaded not guilty). Any note that claims Flores 'has not been indicted,' or that says only Maduro was indicted (a stale 2020 framing), is a false-positive — exactly the original note's failure. FAIL any note pushing the 'Flores wasn't indicted' claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Cilia Flores has not been indicted; Maduro was indicted on these charges in 2020. https://x.com/thejusticedept/status/1243206576212762626",
+    "failure_reason": "incorrect_false_positive: a Jan 3 2026 superseding SDNY indictment named both Maduro and Cilia Flores; both pleaded not guilty at arraignment. The note relied on the 2020 original indictment and missed the 2026 superseder.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.jurist.org/news/2026/01/maduro-and-flores-plead-not-guilty-in-manhattan-federal-court/",
+      "https://www.cbsnews.com/news/venezuela-nicolas-maduro-cilia-flores-new-york-narco-terrorism/",
+      "https://www.cnbc.com/2026/01/03/maduro-indictment-drugs-venezuela.html",
+      "https://en.wikipedia.org/wiki/Prosecution_of_Nicol%C3%A1s_Maduro_and_Cilia_Flores"
+    ],
+    "notes": "Multiple outlets and the Wikipedia summary confirm Flores was named in the 2026 superseding indictment (cocaine importation + weapons charges; not narco-terrorism). She and Maduro were arraigned together and pleaded not guilty."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "20M+ impressions from the US AG about a major geopolitical prosecution; a false 'she wasn't indicted' note would actively spread misinformation."
+  },
+  "difficulty": "easy"
+}

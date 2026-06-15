@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2004254350156485038",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "platform_manipulation",
+    "politics_and_policy",
+    "conspiracy_and_viral_hoax"
+  ],
+  "category_fit": "poor",
+  "suggested_category": "impersonation_or_fake_account",
+  "tweet_summary": "A post shares a screenshot framed as Ruby Freeman's 'confession' to 2020 Georgia election fraud, posted 'before deleting her social media accounts.'",
+  "why_note_decision": "The purported confession is fake. It originated from an Instagram account (@RubyFreeman_Georgia) created the same day the post appeared and which did not belong to Freeman; the account later mocked people who fell for it. The man who created the fake account admitted to investigators (FBI / Georgia SEB) that he made it and that the content was fabricated. Georgia investigations cleared Freeman of all fraud allegations. A note debunking the fake confession is warranted.",
+  "judge_guidance": "PASS only if the note establishes that the 'confession' is NOT from Ruby Freeman \u2014 that it came from a fake/parody Instagram account impersonating her, and that the account's creator admitted to investigators the content was fabricated. Strong notes also mention Freeman was cleared of fraud by Georgia investigations. A note that treats the confession as authentic, or that hedges ('possibly real'), FAILS. The load-bearing correction is: the confession is fabricated impersonation, not Freeman's own words.",
+  "reference_note": "The purported confession is from a fake parody Instagram account impersonating Ruby Freeman; the creator admitted to investigators that the content was inauthentic. Georgia investigations cleared Freeman of election-fraud allegations. https://sos.ga.gov/sites/default/files/2023-06/SEB2020-059%20ROI%20redacted.pdf  https://www.snopes.com/fact-check/ruby-freeman-arrested-by-fbi/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "fabricated_impersonation",
+    "sources_checked": [
+      "https://www.truthorfiction.com/rubyfreeman_georgia-instagram-post/",
+      "https://www.snopes.com/fact-check/ruby-freeman-arrested-by-fbi/",
+      "https://www.nbcnews.com/politics/elections/georgia-poll-workers-targeted-trump-cleared-false-election-fraud-claim-rcna90350"
+    ],
+    "notes": "The @RubyFreeman_Georgia account was created the day the 'confession' was posted, did not belong to Freeman, and later mocked people who believed it. Per the Georgia SEB / FBI investigation report, the creator admitted he made the fake account and that its content was fake. Freeman was cleared of all fraud allegations."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "43k impressions, but it revives a debunked election-fraud smear against a private citizen who was harassed; correcting impersonation-based disinfo has real civic value."
+  },
+  "difficulty": "medium"
+}

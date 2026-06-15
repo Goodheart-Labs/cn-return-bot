@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2039707797244215475",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "statistical_or_numerical_claim", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Right-leaning account 'ThePatrioticBlonde' claims Trump's approval rating has dropped to 29%, calling it 'the lowest for any U.S. president' in history.",
+  "why_note_decision": "Two distinct false claims: (a) The 29% figure is specifically from the Harvard Youth Poll measuring approval among 18-29-year-olds (Fall 2025 edition), NOT Trump's overall approval, which has been hovering ~40% in major polling averages. (b) 29% would not be the lowest in US presidential history even if it were overall — Harry Truman bottomed out at 22% in 1952, and George W. Bush hit 25% in 2008. Both elements mislead readers about both Trump's standing and presidential approval history. A correction is warranted.",
+  "judge_guidance": "PASS only if the note (a) clarifies that the 29% figure is from the Harvard Youth Poll (18-29 demographic), not overall approval, and notes that overall Trump approval is around 40%, AND (b) corrects the 'lowest in history' claim by citing a lower historical figure (Truman 22%, or Bush ~25%). Strong sources: Harvard IOP Youth Poll page, Roper Center presidential approval database, Wikipedia opinion-polling-on-Trump article. A note that only addresses one of the two errors should partially pass (acceptable) but ideally addresses both. Notes that endorse the 'lowest in history' claim should FAIL. Notes that quibble with the Harvard Youth Poll methodology while missing the demographic-confusion point should FAIL.",
+  "reference_note": "The 29% figure refers to Trump's approval among 18-29-year-olds in the Harvard Youth Poll (Fall 2025), not overall approval, which averages around 40%. It is also not the lowest in US presidential history — Harry Truman hit 22% and George W. Bush 25%. https://iop.harvard.edu/youth-poll/51st-edition-fall-2025 https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency https://ropercenter.cornell.edu/presidential-approval/highslows",
+  "original_unhelpful_note": {
+    "text": "The 29% figure refers to Trump's approval among voters aged 18-29 in a Harvard Youth Poll, not overall approval which averages around 40%. It is also not the lowest in US presidential history, as Harry Truman reached 22%. https://iop.harvard.edu/youth-poll/51st-edition-fall-2025 https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency https://ropercenter.cornell.edu/presidential-approval/highslows",
+    "failure_reason": "Note is well-sourced and substantively correct. The 'missing key points' (19) and 'note not needed' (16) tags from raters likely reflect partisan rating dynamics on a Trump-related note rather than substantive failure. Provisional 'no_note_needed' is wrong: this is a clearly false dual factual claim worth correcting.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: 29% is the youth subgroup figure (Harvard Youth Poll), not overall approval (~40%); and 29% is not the historical low for US presidents (Truman 22%, Bush ~25%).",
+    "sources_checked": [
+      "https://iop.harvard.edu/youth-poll/51st-edition-fall-2025",
+      "https://en.wikipedia.org/wiki/Opinion_polling_on_the_second_Trump_presidency",
+      "https://ropercenter.cornell.edu/presidential-approval/highslows"
+    ],
+    "notes": "Harvard Youth Poll explicitly measures 18-29 cohort. Roper historical lows include Truman 22% (Feb 1952), Nixon 24% (Aug 1974), Bush 25% (Oct 2008)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "110k impressions on a misleading approval-rating claim that contributes to polarized misperceptions of presidential standing; numeric/historical fact-checks are reliably high-quality note material."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2028333038547927472",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Account 'TONY' (~650k followers) quote-tweets a video of a fighter jet evading a missile, with the caption 'Democrats avoiding giving Trump credit for literally anything' — framing the clip as real US military action that Democrats refuse to acknowledge.",
+  "why_note_decision": "The clip is DCS World flight-simulator footage (a known recycled gaming clip — viral fact-checks tie it to Su-57 vs Ukrainian missile scenarios and Iran-strike misinformation waves). The tweet uses it as if it were real US military footage. A note would be defensible, BUT: (a) the top engaged comments already call it out ('Cmon man. That's not even close to real.', 'FAKE VIDEO GAME CLIP', 'Dropping his ordinance to get lighter, top gun'), (b) the in-video Russian text 'Продолжение следует...' ('To be continued...') is a tell, (c) the post's framing is rhetorical/political snark rather than a sincere factual assertion about a specific event. The community's NMR-dominant rating (25 of 52) reflects exactly this calculus. A correct bot should lean toward declining unless it can produce a sharper, sourced note than the original.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a note that decisively (a) identifies the clip as DCS World simulator footage (citing Snopes, Yahoo/AFP, or PressProgress fact-checks of the same recycled clip) AND (b) avoids partisan framing. FAIL any note that: (1) repeats unsupported specifics from the original note (e.g. asserts a specific date ('since at least 2025'), or that it depicts a Russian Su-57 vs Ukrainian missiles, without sourcing — these are plausible but not all fact-checks agree, the original note's specifics are weakly sourced), (2) is hard to parse, (3) adds 'US capabilities are impressive, but…' style commentary. Declining is acceptable because top comments already debunk it and the tweet is political snark not a sincere factual claim. Lean toward decline; only accept a note that clearly improves on the community's own debunk.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is CGI from the flight simulation game DCS World, not real footage of US military action in the Iran conflict. It depicts a Russian Su-57 jet and has circulated since at least 2025. US capabilities are impressive, but this clip is simulated.    https://www.yahoo.com/news/articles/fact-check-video-does-not-225508322.html  https://www.nytimes.com/live/2026/02/28/world/iran-strikes-trump/false-and-outdated-videos-circulated-online-after-the-iran-strikes  https://www.digitalcombatsimulator.com/",
+    "failure_reason": "note_not_needed — top comments already debunk it; tweet is political snark, not a sincere news claim. Note also adds editorializing ('US capabilities are impressive, but…').",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "footage_is_simulator_gaming_clip_but_tweet_is_rhetorical_snark",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/video-iran-israeli-fighter-jets/",
+      "https://www.ibtimes.com/how-spot-fakes-iran-war-videos-70m-view-missile-strike-clip-game-3798334",
+      "https://pressprogress.ca/global-news-ben-mulroney-shared-a-video-of-airstrikes-the-footage-is-actually-from-a-video-game/"
+    ],
+    "notes": "Recycled DCS World / ARMA simulation clip — repeatedly fact-checked across Iran-strike and Ukraine misinformation waves. Russian text in-frame ('To be continued') is a giveaway. Tweet's framing is rhetorical (mocking Democrats) more than a sincere first-person claim that this specific clip is real."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "70k impressions; recycled gaming-clip misinfo is a structural pipeline-stress case (the territory category that comes up in every Iran/Ukraine cycle). Teaching the bot to not always note this is as important as teaching it to note real cases."
+  },
+  "difficulty": "hard"
+}

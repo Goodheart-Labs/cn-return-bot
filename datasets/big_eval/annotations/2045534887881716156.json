@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2045534887881716156",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "@the_fauxy (a verified-as-satire Indian news account, 220k followers, bio explicitly says 'Satire') posts a screenshot mock-up of Narendra Modi's X bio with 'Radical Feminist 💅🏻' appended, captioned as 'BREAKING'. Image carries the account's own 'THE FAUXI SATIRE' branding.",
+  "why_note_decision": "This is straightforward satire from a labelled satire account: bio says 'Satire', the image itself carries a 'THE FAUXY SATIRE' watermark in the top-right, and replies/quotes overwhelmingly treat it as a joke. The Fauxy is India's well-known satire publication (analogous to The Onion). Adding a note here is the textbook false-positive: lecturing an audience that obvious satire is satire. Community correctly rejected the original note with 12 noteNotNeeded ratings.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the account is explicitly self-labelled satire (bio: 'Satire Business@thefauxy.com'), the image itself is watermarked 'THE FAUXY SATIRE', and the content (Modi adding 'Radical Feminist' to his bio) is absurd on its face. FAIL any note that (a) explains the post is satire — that is exactly the pedantic correction the community downrated, (b) repeats the original note's failure of pointing to Modi's actual bio as if anyone needed the correction, (c) treats Fauxy posts as fact-checkable claims. The Fauxy is a well-established Indian satire outlet; pedantically explaining the joke to viewers is the false positive the pipeline must suppress.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is a satire post from an account that identifies as such in its bio. PM Modi's actual X bio is \"Prime Minister of India\". https://x.com/the_fauxy https://x.com/narendramodi",
+    "failure_reason": "note_not_needed — explains-the-joke style note on obviously labelled satire from a self-identified satire account. Community rejected with 12 noteNotNeeded.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious_satire_from_labeled_satire_account",
+    "sources_checked": [
+      "https://x.com/the_fauxy (bio: 'India's most credible and creative news source. Satire Business@thefauxy.com')",
+      "Image watermark 'THE FAUXY SATIRE' visible in post"
+    ],
+    "notes": "Account is explicitly labelled satire in its X bio AND the image carries an in-graphic 'THE FAUXY SATIRE' watermark. No reasonable viewer is misled."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "65k impressions on a labelled-satire post about an Indian political joke; correcting this matters mainly as a false-positive trap — the bot must learn that overt satire from satire accounts does not warrant pedantic explainers."
+  },
+  "difficulty": "easy"
+}

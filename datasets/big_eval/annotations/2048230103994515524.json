@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2048230103994515524",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Infographic claiming 'Trees per person' for various countries (India: 28, Canada: 10,163, Greenland: 4,964, World avg: 422). Caption frames it as alarming for India. 198k impressions.",
+  "why_note_decision": "The trees-per-person metric is a real (if unusual) way to slice forest data and the per-capita figures broadly match the well-cited 2015 Crowther et al. Nature study (which gave Canada ~8,953 trees/person and India ~28 — the chart's numbers are in the right ballpark). The tweet is making an editorial argument that this metric is alarming — that's a framing/opinion claim, not a falsifiable misrepresentation. The original note 'corrects' by switching metrics ('not trees per person but total forest area, India ranks 9th') — but the tweet never claimed otherwise; the note injects a contested counter-framing rather than refuting a fact. Community correctly downrated it (5 noteNotNeeded, 5 missingKeyPoints).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The trees-per-person figures (India ~28, Canada ~10,163) come from the standard Crowther et al. (Nature 2015) tree-count dataset and are widely cited. The tweet uses a real metric to make a per-capita argument — that is framing, not misinformation. FAIL any note that (a) repeats the original failure of switching to a different metric ('total forest area, India ranks 9th') without disputing the per-capita numbers themselves — that is moving the goalposts, not fact-checking, (b) calls per-capita comparisons 'misleading' as if the metric were invalid (it's a defensible framing). If the bot writes a note, the only correct framing would be 'figures roughly match Crowther 2015; per-capita is one valid metric among several' — but no note is the right call: the tweet is framing/opinion on environment-density tradeoffs.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Tree cover is typically measured by total forest area or percentage of land area, not trees per person which varies primarily with population density. India ranks 9th globally in total forest area and 3rd in net annual forest gain per GFRA 2025. https://www.pib.gov.in/PressReleasePage.aspx?PRID=2182269 https://timesofindia.indiatimes.com/india/india-rises-to-ninth-spot-globally-in-forest-area-fao/articleshow/124750833.cms",
+    "failure_reason": "note_not_needed — note doesn't dispute the per-capita figures, it switches to a different metric. The tweet's framing is opinion, not fact, and the note's counter-framing (defending India's forest record) is itself a contested counter-narrative.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "per_capita_metric_correctly_used_framing_dispute",
+    "sources_checked": [
+      "https://www.timesofindia.indiatimes.com/india/india-rises-to-ninth-spot-globally-in-forest-area-fao/articleshow/124750833.cms",
+      "Crowther et al. Nature 2015 'Mapping tree density at a global scale' (canonical source for per-capita tree counts)"
+    ],
+    "notes": "Per-capita tree numbers match widely cited Crowther 2015 figures. India's total forest area rank (9th) is also true. Both are true — the tweet picks the per-capita angle for rhetorical effect; that's framing, not falsehood."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Environmental framing on India's high population vs forest cover. Genuinely debatable but neither side is misinformation; a bot lecture either way adds noise."
+  },
+  "difficulty": "medium"
+}

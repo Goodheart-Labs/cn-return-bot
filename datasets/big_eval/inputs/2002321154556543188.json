@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2002321154556543188",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:15:24.974Z",
+  "post": {
+    "id": "2002321154556543188",
+    "author_id": "2427602532",
+    "created_at": "2025-12-20T10:12:19.000Z",
+    "text": "The Epstein files. https://t.co/FZKp4dYjId",
+    "media": [
+      {
+        "media_key": "3_2002321124021899264",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G8msdBuWEAAX17N.jpg",
+        "height": 2048,
+        "width": 2034
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 11041,
+      "reply_count": 1166,
+      "like_count": 222875,
+      "quote_count": 416,
+      "bookmark_count": 5200,
+      "impression_count": 13709450
+    },
+    "author_followers": 108814,
+    "author_name": "Dispropaganda",
+    "author_description": "The truth shall set you laughing!",
+    "author_tweet_count": 19575
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G8msdBuWEAAX17N.jpg",
+          "description": {
+            "description": "A photograph showing three individuals posing together. On the left is an adult female with dark hair wearing a white and blue long-sleeved shirt with a bunny logo. In the center is an adult male with blond hair, partially obscured by a black rectangular box, wearing a red cap and a white polo shirt. On the right is Bill Clinton, wearing a gray button-down shirt.",
+            "ocrText": "Trump National Golf Club"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@SettCandy: trump files be like (Likes: 2565)\n@91stComman91530: I never thought they would have redacted the whole pages (Likes: 1977)\n@JeanLoupSalzmann: [image reply] (Likes: 1419)\n@Vtxt21: You can't see me (Likes: 992)\n@CHItrader: ahhh yes, a late-1990s era photo op at the Playboy Mansion while being pictured with a WOMAN. You found the bombshell photo man, bravo. (Likes: 271)\n@S1ckAlpha: fixed. The Epstein files. (Likes: 115)\n@Gyan_Central: If I'm not wrong 🤯 (Likes: 107)\n@Shirink_13: We can still see the orange guy. (Likes: 85)\n@BugsBunnyReacts: Original image, for context: (Likes: 82)\n@libertarian_TN: [video reply] (Likes: 44)",
+    "warnings": []
+  }
+}

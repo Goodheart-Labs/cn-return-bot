@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2000145480823472204",
+  "role": "no_note_needed",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": true,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": [
+    "health_medical_science"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "diy_how_to_explainer",
+  "tweet_summary": "An explainer video by a popular science/engineering account showing how faulty electric water heaters can energize plumbing and electrocute bathers, and demonstrating an 'anti-electric wall' (water-resistance insulation) device fitted to the heater's hose connections as a mitigation.",
+  "why_note_decision": "The tweet is a broadly accurate safety explainer, not a misleading claim. Electric water heaters CAN cause electrocution via degraded heating-element insulation, missing grounding, and absence of RCD/ELCB protection (corroborated by the detailed top comments and by electrical-safety sources). The 'anti-electric wall' device is a real, patented Chinese product (CN201028801Y) that lengthens the water path to raise resistance and limit leakage current. Nothing checkable in the tweet is false; the only quibbles in replies are about whether the isolator alone is sufficient vs. needing grounding+RCD, which is an engineering nuance, not misinformation warranting a public correction. The note merely appends standard advice (grounding, GFCI/RCD) and contradicts nothing in the post.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a substantially accurate DIY/safety explainer about a real hazard and a real (patented) mitigation device; any note here is a false positive. A note that 'corrects' the tweet by implying the device is fake/useless, or that the electrocution mechanism is wrong, should FAIL outright. A note that merely adds supplementary safety tips (grounding/RCD) without correcting any false claim is also a fail, because no correction is warranted.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The anti-electric wall device, used in some countries, reduces shock risk by making the water path longer to limit current flow. Standard measures also include proper grounding and GFCI/RCD protection in wet areas. https://patents.google.com/patent/CN201028801Y/en https://www.esfi.org/understanding-your-home-electrical-system",
+    "failure_reason": "Note corrects nothing \u2014 the tweet is accurate. It only appends supplementary safety info, so raters tagged it both NoteNotNeeded and MissingKeyPoints. It is a false positive: no misleading claim to correct.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is substantially accurate: water heaters can electrocute via faulty insulation/poor grounding; the 'anti-electric wall' isolation device is a real patented product.",
+    "sources_checked": [
+      "https://patents.google.com/patent/CN201028801Y/en",
+      "https://www.amazon.com/Anti-leakage-Universal-Fireproof-Anti-electric-Accessories/dp/B0BY4NVS4S",
+      "https://www.mrfixitbali.com/electrical/earthing-grounding/earthing-electrical-water-heaters-181.html"
+    ],
+    "notes": "Replies dispute whether the isolator alone suffices (real protection = grounding + 10-30mA RCD), but that's a nuance, not a false claim. No correction warranted."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "545K views and a real-world electrocution hazard; from a progress/safety lens, accurate DIY safety content is net-positive and should not be suppressed by a spurious note."
+  },
+  "difficulty": "medium"
+}

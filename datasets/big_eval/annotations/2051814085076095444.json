@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2051814085076095444",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Gov. Newsom's press office quotes Inside Climate News (May 5, 2026): California's batteries discharged over 12,000 MW for the first time — 'equivalent to 12 large nuclear plants' — meeting 40% of state energy demand at peak.",
+  "why_note_decision": "The tweet directly quotes a credible reporting outlet (Inside Climate News) and the cited figures are accurate (12 GW peak discharge, ~40% of demand met at the relevant moment in late March 2026). The 'equivalent to 12 large nuclear plants' framing is the standard peak-capacity comparison used by the source article itself and replicated by Yahoo, EnviroLink, and other outlets. While the comparison is genuinely imperfect (batteries discharge for ~4 hours; nuclear runs ~90% capacity factor 24/7), this is a contextualization debate, not a misinformation claim. Adding a note would be a context-add, not a correction — and the readership / replies are already actively making the storage-vs-generation point. Notes that re-litigate accurate quotes of credible reporting under contested-framing terms are false positives.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately quotes Inside Climate News and the underlying facts (12 GW peak discharge; ~40% of peak demand met) are correct. The 'equivalent to 12 large nuclear plants' framing is the source's own peak-capacity comparison. Notes that add the caveat 'batteries store, not generate' or 'batteries provide ~4 hours vs nuclear's 24/7' are context-adds on a contested framing — not corrections of misinformation. The reader is not being misled about a checkable fact. Any note here is a false positive. (If the bot were to write one and it accurately added the storage-duration caveat without contradicting the quoted figures, it would be technically correct but unnecessary; the strongest pass is declining.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "California's batteries discharged a record 12 GW of power, equivalent in peak capacity to 12 large nuclear plants. However, batteries provide this for ~4 hours before recharging, unlike nuclear plants' continuous output. This met ~40% of demand during evening peak. https://insideclimatenews.org/news/05052026/california-battery-power https://www.eia.gov/todayinenergy/detail.php?id=56860",
+    "failure_reason": "Note adds genuine context (4-hour discharge vs continuous nuclear output) but doesn't correct any false claim — the tweet accurately quotes Inside Climate News. The 'equivalent to 12 nuclear plants' framing is the source's own. The note is a contextualization on a contested framing, which raters reasonably tag 'note not needed'.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet accurately quotes Inside Climate News; underlying figures verified across multiple outlets",
+    "sources_checked": [
+      "https://insideclimatenews.org/news/05052026/california-battery-power/",
+      "https://www.yahoo.com/news/articles/battery-array-powerful-12-nuclear-033000047.html",
+      "https://www.envirolink.org/2026/05/05/californias-battery-storage-capacity-reaches-milestone-equivalent-to-12-nuclear-power-plants/"
+    ],
+    "notes": "12 GW peak discharge, ~40% of demand met — confirmed. The 'equivalent to 12 large nuclear plants' phrasing originates with the source. Storage-vs-generation caveat is valid context but the original quote is not misleading enough to warrant a note."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Climate/energy progress is EA-relevant, but this specific tweet is accurate; correcting it adds nothing. Low engagement (~42k impressions)."
+  },
+  "difficulty": "medium"
+}

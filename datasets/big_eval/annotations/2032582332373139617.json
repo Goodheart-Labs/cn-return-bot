@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2032582332373139617",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A post claims 'people born in 2016 are turning 16 this year' (2026).",
+  "why_note_decision": "A note is warranted: the arithmetic is simply wrong. 2026 minus 2016 equals 10, so people born in 2016 turn 10 in 2026, not 16. Someone turning 16 in 2026 was born in 2010. The post is stated as a factual assertion (not obvious satire) and many readers engaged earnestly; a correction adds value.",
+  "judge_guidance": "PASS only if the note gives the correct arithmetic: people born in 2016 turn 10 in 2026 (2026 - 2016 = 10), and ideally adds that turning 16 in 2026 implies a 2010 birth year. It must be concise and clearly state the right numbers. FAIL if the note repeats or endorses the false '16' figure, hedges without committing to the correct answer, or muddles the years.",
+  "reference_note": "People born in 2016 are turning 10 in 2026, not 16. Someone turning 16 in 2026 would have been born in 2010.    https://www.calculator.net/age-calculator.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_arithmetic_error",
+    "sources_checked": ["basic arithmetic: 2026 - 2016 = 10"],
+    "notes": "Trivially verifiable. The original note was rated CURRENTLY_RATED_HELPFUL. Could be read as a joke, but it is stated flatly and the engagement (many earnest corrections in replies) indicates readers took it literally, so a note is appropriate."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "2.3M impressions but trivial arithmetic with no real-world stakes; useful only as a clean, unambiguous numeric-correction example for the bot."
+  },
+  "difficulty": "easy"
+}

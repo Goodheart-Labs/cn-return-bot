@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2019887352395538881",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:26.170Z",
+  "post": {
+    "id": "2019887352395538881",
+    "author_id": "1751491575098839040",
+    "created_at": "2026-02-06T21:34:07.000Z",
+    "text": "epstein is alive in israel and we found out about it through fortnite https://t.co/OlQhJda8TQ",
+    "media": [
+      {
+        "media_key": "13_2019887259944648704",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2019887259944648704/img/FgbpZJDmF4A-8tPX.jpg",
+        "height": 720,
+        "width": 864,
+        "duration_ms": 27966,
+        "view_count": 433889,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2019887259944648704/vid/avc1/324x270/uEKsHWc3tyNgW-3O.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2019887259944648704/vid/avc1/432x360/9bGl5F6jt9iqwZ9d.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2019887259944648704/vid/avc1/864x720/wE8FcACxGf1iCVQ8.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2019887259944648704/pl/j_mwZZQpYmPAhf8I.m3u8?v=f27"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2623,
+      "reply_count": 42,
+      "like_count": 50351,
+      "quote_count": 22,
+      "bookmark_count": 3981,
+      "impression_count": 693811
+    },
+    "author_followers": 2003,
+    "author_name": "judas ☄️",
+    "author_description": "i am 15 | priv: @sewnseven | roblox gamer extraordinaire",
+    "author_tweet_count": 31590
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2019887259944648704/vid/avc1/864x720/wE8FcACxGf1iCVQ8.mp4",
+          "description": {
+            "description": "A series of animated frames from a South Park episode featuring manatees interacting with a large pile of colorful 'idea balls' in an underwater setting, and one frame showing characters in a workspace that appears to be the 'Family Guy' writing room.",
+            "ocrText": "THE LINE UP 100 GARY COLEMAN WINNERS TRUTH LAUNDRY FIRE-TRUCK"
+          },
+          "transcription": "The right side of the tank is filled with idea balls. Each idea ball has a verb, noun, or pop culture reference written on it. There's millions of them. The manatees choose an idea ball and swim it over to the joke combine on the other side of the tank. But there goes Gretchen. She's coming up with an idea. Oh, she came up with Gary Coleman. The idea balls drop into the joke combine and form a part of the new script. Laundry, date, winning, Mexico, Gary Coleman. A perfect family guide."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Kailee le'cool (@V1CT0R304HCP): Debunked or not i hate how we got to the point where it's believable 😭🙏\n  Engagement: Likes=376, Views=17463\n\n- John T. Johnington (@Cringemin233): Been debunked pal\n  Engagement: Likes=169, Views=39570\n\n- rain (@gears4brekfast): all the evidence points to him being alive or atleast surviving his “suicide” but That fortnite stuff wasnt real\n  Engagement: Likes=119, Views=10516\n\n- Penis (@potina_): this is misinformation but the clip is just too funny and relevant that i'll like the tweet anyway\n  Engagement: Likes=56, Views=7680\n\n- late-stage cenozoicism (@lscenozoic): somehow palpatine has returned\n  Engagement: Likes=47, Views=8205\n\n- MakeSomethingUseful (@MSUYouTube): So THATS why they were so obsessed with Israel\n  Engagement: Likes=23, Views=8924\n\n- Jeremy (@mojavedelivery): I found out Michael Jackson was dead on RuneScape hours before it was on the news\n  Engagement: Likes=14, Views=1606\n\n- junot ⚓ (@junotsinferno): farmenwren (get it because youre getting hit tweets)\n  Engagement: Likes=9, Views=28130\n\n- Weapons Cirno (@weaponscirno): they did this with The Emperor for Star Wars too, it's not even original\n  Engagement: Likes=8, Views=4095\n\n- Dangerous Anonymous Kiwifarms 4chan Opsec Hackers (@penis_poonis): why would i live in myself\n  Engagement: Likes=4, Views=5690",
+    "warnings": []
+  }
+}

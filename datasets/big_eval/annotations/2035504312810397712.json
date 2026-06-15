@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2035504312810397712",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Eric Daugherty quotes Trump's 21 March 2026 ultimatum to Iran: open the Strait of Hormuz within 48 hours or US will hit Iranian power plants. The attached video shows Trump's Truth Social post text overlaid on infrared strike footage. The quote is verbatim and the ultimatum is real news.",
+  "why_note_decision": "The substantive claim is true: Trump did post this exact ultimatum on Truth Social on 21 March 2026 (confirmed by NBC News, Fox News, PBS, Time, Reuters). The video's overlay shows the Truth Social post, with the Truth Social header visible in the OCR ('Donald J. Trump @realDonaldTrump'). The note's nitpick — 'Trump posted on Truth Social, not X' — is technically true but irrelevant, since the tweet says 'Trump just gave' the ultimatum (he did) and the video is just a stylized presentation of the Truth Social post. The note's added claim that the video 'shows simulated tweet images that do not exist on X' misleads readers into thinking the underlying post was fabricated, when it was real (on Truth Social). 54 NNN out of 74 raters — strong consensus.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Trump did make this exact ultimatum on Truth Social on 21 March 2026 (NBC, Fox, PBS, Time, Reuters all confirm). The video in the tweet is a stylized presentation of the real Truth Social post, with infrared strike footage as background — the OCR shows 'Donald J. Trump @realDonaldTrump' which matches Truth Social's username display. Any note suggesting the video shows 'simulated tweet images that do not exist on X' creates the misleading impression that the post was fabricated. Tweet says 'Trump gave the ultimatum' which is true regardless of platform. A correct response is no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "President Trump posted this ultimatum on Truth Social. He did not post it on X. The attached video shows simulated tweet images that do not exist on X.    https://x.com/ANI/status/2035509295677317547  https://www.reuters.com/world/middle-east/trump-threatens-iran-with-power-plant-strikes-over-hormuz-blockade-2026-03-22",
+    "failure_reason": "notHelpfulNoteNotNeeded — substantively true claim corrected with irrelevant platform-distinction pedantry; note actively misleads readers into thinking post was fake",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_underlying_event",
+    "sources_checked": [
+      "https://www.nbcnews.com/world/iran/natanz-iran-nuclear-enrichment-site-rcna264576",
+      "https://www.foxnews.com/politics/trump-gives-iran-48-hour-ultimatum-reopen-strait-hormuz-face-strikes-power-plants",
+      "https://time.com/article/2026/03/22/trump-iran-strait-of-hormuz-power-plant/",
+      "https://www.pbs.org/newshour/world/u-s-wont-strike-irans-power-plants-for-5-days-trump-says-in-turnaround-on-strait-of-hormuz-deadline"
+    ],
+    "notes": "Trump posted this exact ultimatum on Truth Social on 21 March 2026. The 48-hour deadline was later extended to 5 days. Tweet's substantive claim is correct; platform-distinction is irrelevant pedantry."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.9M impressions on a major-war ultimatum. EA/progress lens: war-escalation context matters, but here a note would worsen reader understanding by suggesting the ultimatum itself was fake."
+  },
+  "difficulty": "medium"
+}

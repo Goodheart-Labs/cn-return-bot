@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2013206173189636603",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["ai_generated_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Lionel posts the viral 'Erika Kirk walks onto stage to a hyped club crowd' video with the caption 'Recognize the meme. The inference. The belief. The trajectory. The collective thought.' — explicitly framing the post as commentary on the meme.",
+  "why_note_decision": "The video is an AI-generated/manipulated clip (Lead Stories debunked, sourced from @slayatknight on TikTok) using Psy footage to mock Erika Kirk. HOWEVER, the tweet author explicitly labels it 'the meme' — telling readers this is a meme, not real footage. Comments reflect mixed but mostly meme-aware reactions. Because the tweet itself frames the content as a meme/cultural commentary rather than asserting it as real video of Erika Kirk, a corrective AI-debunk note is awkward — it would be explaining the joke to people who got it. Original note was rated NOT_HELPFUL with dominant noteNotNeeded (7/17). This is a close call — some viewers might still take it literally — but the tweet's framing pushes it into joke_or_meme territory.",
+  "judge_guidance": "PASS if the bot either (a) declines to write a note (the tweet explicitly calls it 'the meme'), OR (b) writes a precise, calibrated note stating the underlying video is AI-generated using Psy concert footage (Lead Stories debunk) and is one of several fake/AI Erika Kirk clips circulating. FAIL any note that asserts the video is real or quibbles the description without identifying it as AI. FAIL any moralistic note about Lionel's character or 'spreading misinformation' when his tweet text labels it as a meme.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video does not depict Erika Kirk; clips claiming to show her dancing after her husband's death are AI-generated or unrelated footage. https://www.distractify.com/p/erika-kirk-dancing-on-stage",
+    "failure_reason": "noteNotNeeded — tweet itself labels the clip as 'the meme'; raters concluded a note is unnecessary because the author already framed it as a meme.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Underlying video IS AI-generated/manipulated (sourced from Psy concert footage, posted by @slayatknight on TikTok Jan 17, 2026; debunked by Lead Stories). However, tweet labels it 'the meme' so the author is not asserting authenticity — making a corrective note awkward.",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/01/fact-check-video-not-real-erika-kirk-jumping-stage-rolling-loud-orlando-2026.html",
+      "https://www.yahoo.com/news/articles/fact-check-video-not-real-042618159.html",
+      "https://www.distractify.com/p/erika-kirk-dancing-on-stage"
+    ],
+    "notes": "Borderline case — some readers may not catch 'the meme' framing. But the tweet's explicit meme-labeling tips this to no-note."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "50k impressions; pure pop-political meme territory. Pipeline-learning case for respecting the author's own meme-labeling."
+  },
+  "difficulty": "hard"
+}

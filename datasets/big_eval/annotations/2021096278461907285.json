@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2021096278461907285",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A viral video (2M+ views) of a woman being shoved/dragged in a police holding cell, captioned 'This is how the so-called Land of the free treats immigrant women...', framing it as ICE abuse of immigrants.",
+  "why_note_decision": "The framing is misleading: the footage is a domestic US police-misconduct incident, NOT ICE and NOT an immigrant. The overlay text itself ('Cassandra had a camera') and Grok's reply identify it as the 2013 Skokie, Illinois case where officer Michael Hart shoved US citizen Cassandra Feuerstein (arrested for DUI) into a cell; she suffered facial fractures, won an ~$875k settlement, Hart resigned. A note correcting the ICE/immigrant framing is warranted. The ORIGINAL note is incorrect: it attributes the clip to a DIFFERENT real event \u2014 a 2022 Tampa officer (Gregory Damon) dragging a woman at Orient Road Jail. That Tampa incident is real but is a separate video (body-cam, woman dragged across a floor), not this surveillance-cell footage. So the note debunks the right framing with the wrong source.",
+  "judge_guidance": "A correct note must (1) establish that this is a domestic US police incident, not ICE and not an immigrant detainee, and (2) cite the actual event: the 2013 Skokie, IL holding-cell incident in which officer Michael Hart shoved Cassandra Feuerstein (a US citizen arrested for DUI), causing facial fractures (~$875k settlement). CRITICAL FAIL: any note that, like the original, identifies the clip as the 2022 Tampa / Gregory Damon / Orient Road Jail dragging \u2014 that is a different incident and repeats the original's misattribution. PASS requires the ICE/immigrant framing be corrected AND the source be the Skokie 2013 / Feuerstein incident (or, at minimum, correctly say it is not ICE / not immigrant detention without asserting the false Tampa attribution).",
+  "reference_note": "This is not ICE or immigration enforcement. The video is 2013 surveillance footage from Skokie, IL, where police officer Michael Hart shoved Cassandra Feuerstein \u2014 a US citizen arrested for DUI \u2014 into a holding cell, fracturing her face. Hart resigned; Skokie paid an ~$875,000 settlement. https://abc7chicago.com/michael-hart-cassander-feuerstein-skokie-cop-misconduct/1129413/ https://www.cbsnews.com/news/cassandra-feuerstein-sues-village-of-skokie-after-suffering-injuries-in-holding-cell/",
+  "original_unhelpful_note": {
+    "text": "This video shows Tampa police in 2022 dragging a woman arrested for trespassing to jail, not ICE mistreating immigrants. https://www.livenowfox.com/news/tampa-police-officer-fired-after-being-caught-on-video-dragging-woman-at-orient-road-jail https://www.foxnews.com/us/florida-police-officer-fired-after-video-shows-him-drag-woman-into-jail",
+    "failure_reason": "Misattribution: correct that it is not ICE, but identifies the wrong incident. The clip is the 2013 Skokie/Feuerstein cell-shoving video (per the overlay text and Grok's identification), not the 2022 Tampa/Gregory Damon Orient Road Jail dragging \u2014 a real but separate event.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://abc7chicago.com/michael-hart-cassander-feuerstein-skokie-cop-misconduct/1129413/",
+      "https://www.cbsnews.com/news/cassandra-feuerstein-sues-village-of-skokie-after-suffering-injuries-in-holding-cell/",
+      "https://x.com/grok/status/2020607292752748866",
+      "https://www.fox13news.com/news/tampa-police-officer-fired-after-being-caught-on-video-dragging-woman-at-orient-road-jail"
+    ],
+    "notes": "Overlay text 'Cassandra had a camera' + cell-shove surveillance angle match the 2013 Skokie/Feuerstein incident. The Tampa/Damon 2022 case the note cites is a real but distinct event (body-cam, woman dragged across floor). Tweet's ICE/immigrant framing is false; original note's attribution is also false."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2M+ views weaponizing a real police-misconduct video into anti-US/ICE immigration propaganda; correcting miscontextualized outrage media matters for an informed-discourse / institutional-trust lens."
+  },
+  "difficulty": "hard"
+}

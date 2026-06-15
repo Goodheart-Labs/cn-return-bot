@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2043333213729304866",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["fabricated_quote", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_quote",
+  "tweet_summary": "Attributes a long, harsh quote to Chelsea goalkeeper Robert Sanchez about Lamine Yamal — 'He doesn't respect his own coach... fellow teammates... opponent... I will never rate such a player' and 'he wanted to fight all the Madrid players' — framed as Sanchez slamming Yamal's attitude.",
+  "why_note_decision": "The quote is fabricated. After Chelsea beat Barcelona in the November 2025 Champions League match, Sanchez's actual comments about Yamal were that Marc Cucurella 'had him in his pocket' and 'everyone is great until they come to the Premier League.' He did not deliver the sweeping 'doesn't respect anyone / I will never rate such a player' rant the tweet quotes. Putting fabricated words in a named public figure's mouth is checkable misinformation, so a note is warranted.",
+  "judge_guidance": "PASS only if the note establishes that Robert Sanchez did NOT make the quoted statements attributed to him (the 'doesn't respect his coach/teammates/opponents... I will never rate such a player' quote is fabricated), and accurately conveys what he actually said about Yamal after Chelsea's Champions League win over Barcelona — namely that Cucurella had Yamal 'in his pocket' and 'everyone is great until they come to the Premier League.' The note must NOT repeat or endorse the fabricated disrespect quote as genuine. Cite credible sports reporting (Marca, Metro, OneFootball, etc.). A note that merely says 'this is unverified' without stating what Sanchez actually said is weaker; the strong note corrects the specific fabricated quote.",
+  "reference_note": "Robert Sanchez did not criticize Lamine Yamal's attitude or respect; after Chelsea's Champions League win over Barcelona he said Cucurella \"had him in his pocket\" and \"everyone is great until they come to the Premier League.\" The quote attributed here is fabricated. https://www.marca.com/en/football/champions-league/2025/11/26/6926860b268e3ef3768b4589.html https://metro.co.uk/2025/11/26/robert-sanchez-mocks-lamine-yamal-chelsea-beat-barcelona-24831976",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false - the quoted statement is fabricated; Sanchez's real comments were milder and different",
+    "sources_checked": [
+      "https://onefootball.com/en/news/robert-sanchez-says-that-chelsea-player-had-barcelona-man-in-his-pocket-42005625",
+      "https://worldsoccertalk.com/news/chelseas-robert-sanchez-delivers-sharp-message-to-lamine-yamal-barcelona-after-champions-league-win/"
+    ],
+    "notes": "Multiple outlets report Sanchez's actual quotes ('in his pocket', 'everyone is great until they come to the Premier League') from the Nov 2025 Champions League win. None report the 'doesn't respect anyone / I will never rate such a player' quote. Original CN note is accurate; reference note kept with a minor fix noting it was a Champions League win."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "Sports gossip with no bearing on world-critical issues; correcting fabricated quotes has modest value for general media-trust hygiene but low stakes."},
+  "difficulty": "easy"
+}

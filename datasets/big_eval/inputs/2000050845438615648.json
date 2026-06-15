@@ -1,0 +1,90 @@
+{
+  "tweet_id": "2000050845438615648",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:00.651Z",
+  "post": {
+    "id": "2000050845438615648",
+    "author_id": "1691529306520858625",
+    "created_at": "2025-12-14T03:50:55.000Z",
+    "text": "This is what won Game of the Year??? Um.. https://t.co/j39oz9kqhH https://t.co/J39y6qnbXe",
+    "media": [
+      {
+        "media_key": "7_2000050381670219777",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2000050381670219777/pu/img/30ClNJsztLpzgYAO.jpg",
+        "height": 483,
+        "width": 520,
+        "duration_ms": 16114,
+        "view_count": 764765,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2000050381670219777/pu/vid/avc1/290x270/ttOM6r6xeHaVVtWo.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2000050381670219777/pu/vid/avc1/386x360/j1sOkrtIWgmKceYh.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2000050381670219777/pu/vid/avc1/518x482/EW6ePNzP_RTewMzn.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2000050381670219777/pu/pl/HsAhpMwWedY9BLmr.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2000048386838294837"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2000048386838294837",
+      "author_id": "1691529306520858625",
+      "created_at": "2025-12-14T03:41:09.000Z",
+      "text": "Im trying out this \"Expedition 33\" wish me luck",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 1597,
+      "reply_count": 237,
+      "like_count": 28963,
+      "quote_count": 108,
+      "bookmark_count": 1661,
+      "impression_count": 2589271
+    },
+    "author_followers": 24058,
+    "author_name": "Alice",
+    "author_description": "Badass Divorced Mother and Surgeon. Level 42 and proud.",
+    "author_tweet_count": 3742
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2000050381670219777/pu/vid/avc1/518x482/EW6ePNzP_RTewMzn.mp4",
+          "description": {
+            "description": "A first-person view in a video game where a player is navigating an icy course over water. The player holds a specialized device that tracks collected items. Yellow orbs and pigs on spheres are seen on the track, while ice fragments shatter around the player's path.",
+            "ocrText": "5/140 Items 8/140 Items 10/140 Items"
+          },
+          "transcription": "Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Gurtella (Gurtella): \"Hey game of the year\" and they are pihs 😭😭😭😭 (Likes=787)\n- @coolestdrone_ (thad): dawg what the fuck are you playing (Likes=689)\n- @MarioST141636 (dmcaguy): [video] (Likes=346)\n- @bryancmc1 (Gamer): Yall, hold on, i might be onto something... (Likes=152)\n- @cyanidemuncher (Cyanidemuncher): Excuse me? You're trying to compare poopxpedion 33 to PIH! Pih was snubbed. Not one award because critics are fucking worthless. Never do this again (Likes=127)\n- @hushmush14 (🍉HushMush14🍉): you did this one twice alice (Likes=97)\n- @CarbonLikesMilk (Carbon): Never compare pih to expedition 33 ever (Likes=63)\n- @m0thfan (moth): i know this is fake bcs never has a good game won goty (Likes=61)\n- @AMsHotterWife (Vixer): [image] (Likes=54)\n- @JepoBuilds (Jepo): I think you downloaded the wrong one blud 😭 (Likes=43)",
+    "warnings": []
+  }
+}

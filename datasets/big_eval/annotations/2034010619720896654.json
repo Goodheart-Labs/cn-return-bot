@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2034010619720896654",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "false_context_breaking_news",
+  "tweet_summary": "Claims the Iranian embassy in Copenhagen 'just raised the Lion & Sun flag' (pre-revolutionary opposition flag), framed as a sign that Iranian regime collapse could be happening now if other embassies follow.",
+  "why_note_decision": "The Lion & Sun flag was hoisted by a protester who climbed the embassy building during a demonstration (and was arrested by Danish police), not by the embassy as an official act of defection/regime change. The tweet's framing implies an official institutional switch signalling imminent regime collapse, which is unsupported; a context note is warranted.",
+  "judge_guidance": "PASS only if the note clarifies that the Lion & Sun flag was raised by a protester/demonstrator (who climbed the building and was detained), NOT by embassy officials or as an official institutional act, and therefore does not indicate the embassy or regime is collapsing. It should cite credible reporting (e.g. Iran International / Euronews). It must avoid endorsing the 'regime collapse happening now' framing. A note that simply agrees the regime is collapsing, or that asserts embassy staff defected without evidence, should FAIL. (Note: a defecting diplomat reportedly sought asylum in Copenhagen, but the flag itself was a protester act — the note should not conflate the two.)",
+  "reference_note": "The Lion and Sun flag was raised at Iran's embassy in Copenhagen by a protester who climbed the building, not by embassy officials or staff. Sources: https://www.iranintl.com/en/202601219494 https://x.com/grok/status/2034032709115208094",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading - flag raised by a protester who scaled the building, not an official embassy act signalling regime collapse",
+    "sources_checked": [
+      "https://www.euronews.com/2026/03/19/iranian-oppositions-lion-and-sun-flag-hoisted-at-iranian-embassy-in-copenhagen",
+      "https://sg.news.yahoo.com/iranian-opposition-lion-sun-flag-200109645.html"
+    ],
+    "notes": "Euronews and Iran International report a protester hoisted the opposition flag; Danish police involved. Separately a Copenhagen-based Iranian diplomat reportedly applied for asylum, but the flag-raising itself was a demonstrator action, not an official switch."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "1.2M impressions, 14.7K likes on a war/regime-change narrative during Iran tensions; false 'regime collapsing now' framing can drive real geopolitical misperception."},
+  "difficulty": "medium"
+}

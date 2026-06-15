@@ -36,6 +36,7 @@ export type Post = {
   author_name?: string;
   author_description?: string;
   author_tweet_count?: number;
+  entities?: string[];
 };
 
 const API_URL = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
@@ -45,7 +46,7 @@ const API_URL = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
 // can't resolve its media. Pairing it with the `referenced_tweets.id.attachments.media_keys`
 // expansion makes X also include those media objects in includes.media[].
 const BASE_FIELDS = {
-  "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics,attachments",
+  "tweet.fields": "created_at,author_id,referenced_tweets,public_metrics,attachments,context_annotations",
   "media.fields": "type,url,preview_image_url,height,width,duration_ms,public_metrics,variants",
   "user.fields": "public_metrics,name,description",
   expansions: "attachments.media_keys,referenced_tweets.id,referenced_tweets.id.attachments.media_keys,author_id",
@@ -217,6 +218,16 @@ export function parsePostsResponse(data: any): Post[] {
       const authorDescription = authorData?.description;
       const authorTweetCount = authorData?.public_metrics?.tweet_count;
 
+      // X tags posts with named entities (people, orgs, topics) in context_annotations.
+      // The same entity recurs across taxonomy domains, so dedupe by trimmed name.
+      const entities = [
+        ...new Set<string>(
+          (tweet.context_annotations ?? [])
+            .map((ca: any) => ca.entity?.name?.trim())
+            .filter((name: string | undefined): name is string => Boolean(name)),
+        ),
+      ];
+
       posts.push({
         id: tweet.id,
         author_id: tweet.author_id,
@@ -230,6 +241,7 @@ export function parsePostsResponse(data: any): Post[] {
         author_name: authorName,
         author_description: authorDescription,
         author_tweet_count: authorTweetCount,
+        entities: entities.length ? entities : undefined,
       });
     }
   }

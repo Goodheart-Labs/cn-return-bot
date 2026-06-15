@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2014688646377435494",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:10:21.522Z",
+  "post": {
+    "id": "2014688646377435494",
+    "author_id": "1231314387119427584",
+    "created_at": "2026-01-23T13:16:19.000Z",
+    "text": "🚨 SOMETHING ISN’T RIGHT - ANGELINA JOLIE CAUGHT MAKING STRANGE HAND MOVEMENTS ON CAMERA \n\nDoes this look normal to you? https://t.co/5wgnKRcF8n",
+    "media": [
+      {
+        "media_key": "13_2014688430672809985",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2014688430672809985/img/EQv2AIdUj2bEobu8.jpg",
+        "height": 872,
+        "width": 718,
+        "duration_ms": 11433,
+        "view_count": 6444021,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2014688430672809985/vid/avc1/320x388/vn887ltGbxNDfnSt.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2014688430672809985/vid/avc1/480x582/l3Itpb6vSzqeKAHa.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2014688430672809985/vid/avc1/718x872/2PpzLZedKBUCOIAu.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2014688430672809985/pl/R9EjhMQ6qd4Kstws.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 984,
+      "reply_count": 2301,
+      "like_count": 7787,
+      "quote_count": 297,
+      "bookmark_count": 2726,
+      "impression_count": 10667254
+    },
+    "author_followers": 330975,
+    "author_name": "HustleBitch",
+    "author_description": "I seek the truth and share it but...\n\n📝Disclaimer: Posts made are not personalized nor financial advice for the viewer and are for entertainment purposes only.",
+    "author_tweet_count": 9652
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2014688430672809985/vid/avc1/718x872/2PpzLZedKBUCOIAu.mp4",
+          "description": {
+            "description": "A figure is shown on a red carpet at a crowded event. The figure's left hand is shown in a wide shot and then in a close up where several fingers on the hand appear oddly elongated or bent.",
+            "ocrText": "@CONSPIRACY.DECEPTION"
+          },
+          "transcription": "🎵"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- John (@LovingMIJesus): Seems to be a thing in Hollywierd (751 likes)\n- Wren (@wrendom): but she isn't Angelina (745 likes)\n- PulseEmperor (@PulseEmperor): How many idiots can't tell this is AI. 🤦‍♂️ The world is cooked. (566 likes)\n- 𝓛𝓪𝓭𝔂 𝓐𝓵𝓲 Author,Editor,Voice (@LadyAliBooks): She was bitten by cynthia erivo (466 likes)\n- 🇺🇸AmericanDad (@DanielJ2031): It's Called: \"The Hellywood Syndrome\" (227 likes)\n- Gun Lovers Club (@GunloverClub1): Being famous sounds exhausting as hell. You so much as twitch your hand funny for half a second and suddenly there’s 2 million views, red circles drawn everywhere, and people screaming ILLUMINATI HAND SIGNAL CONFIRMED. (132 likes)\n- failzero (@failzero29206): Yeah, that's not creepy at all... Psychological trauma? Adrenochrome withdrawal? Kuru symptoms related to \"questionable\" protein sources? Clone and/or android glitching? Jolie subtly auditioning for the next female lead role in a Nosferatu\" remake? I'm torn, could be any of those options, or maybe others Did I miss any other plausible causes? (102 likes)\n- Ack Teacher (@AckTeacher): @grok is this video AI? (84 likes)\n- TheJoesList (@TheJoesList): Probably because it's AI. (137 likes)\n- Ben Frank (@lostinganglia): That’s not even Angelina Jolie you retard. (62 likes)\n- BLEESHA MADIA (@BLEESHA_MADIA): It’s called clone malfunction (62 likes)",
+    "warnings": []
+  }
+}

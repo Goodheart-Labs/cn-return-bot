@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2009240597442466247",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "law_enforcement_use_of_force",
+  "tweet_summary": "Posts two photos of a blonde woman with a child and says 'The US Police MURDERED this MOTHER!' - referring to Renee Good, a US citizen and mother fatally shot in Minneapolis in January 2026.",
+  "why_note_decision": "The tweet's core claim is substantially true: Renee Nicole Good, a US-citizen mother, was fatally shot by a US federal law-enforcement agent in Minneapolis on Jan 7 2026. The only debatable points are (a) 'police' vs 'ICE' - both are US government law enforcement, a minor framing nuance, and (b) 'murdered,' a contested characterization (DHS/Trump claim self-defense / that she tried to ram the agent; Minnesota officials and witnesses dispute this and call it preventable; the agent turned-away footage is disputed). Where the central fact is true and the remaining dispute is a contested characterization plus a minor agency label, a correcting note is not warranted - the original note injects DHS's contested self-defense counter-narrative. A possible image-misattribution concern (replies claim the photos are of AEW interviewer Renee Paquette, not the victim) is unverified and not the basis the note pursued. PASS only if the bot declines.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's substance is accurate: Renee Good, a US-citizen mother, was fatally shot by a US federal agent (an ICE agent) in Minneapolis on Jan 7 2026 - a real, widely-reported event. The 'police' vs 'ICE' distinction is a minor label nuance and 'murdered' is a contested characterization, not a factual falsehood, so a note is not needed. FAIL any note that presents DHS's contested 'she tried to ram the agent / self-defense' account as established fact, or that frames the killing as justified - that injects a contested counter-narrative the official-vs-witness dispute does not resolve. A narrow note correcting only 'police' to 'federal ICE agent' would still be NoteNotNeeded and should FAIL. (If the bot could verify the two photos are NOT of Renee Good, an image-misattribution note could be legitimate, but that is unconfirmed.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The woman, a US citizen and mother, was fatally shot by an ICE agent (federal, not local police) after her vehicle moved toward him. DHS claims she tried to ram him in self-defense. But videos say she was driving away; Minnesota officials call it preventable.    https://www.reuters.com/legal/government/ice-fatal-shooting-minnesota-woman-puts-us-edge-2026-01-08/    https://www.nbcnews.com/news/us-news/live-blog/live-updates-woman-fatally-shot-ice-agent-identified-us-citizen-mother-rcna252927    https://www.aljazeera.com/video/newsfeed/2026/1/8/witnesses-film-ice-killing-of-us-citizen-in-minneapolis",
+    "failure_reason": "Note not needed: the tweet's core claim (a US-citizen mother killed by US government agents) is true; the note's only corrections are a minor 'police vs ICE' label and surfacing DHS's contested self-defense claim, which itself is disputed by witnesses/officials. Raters tagged NoteNotNeeded (25) and Incorrect (19), reflecting that the note adds a contested counter-narrative rather than correcting a falsehood.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet substantially TRUE; remaining disputes are contested characterization + minor label",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Killing_of_Renee_Good",
+      "https://www.cnn.com/2026/01/10/us/ice-shooting-minneapolis-renee-good",
+      "https://www.nbcnews.com/news/us-news/renee-nicole-good-minneapolis-ice-shooting-victim-caring-neighbor-rcna252901"
+    ],
+    "notes": "Renee Good (37, US citizen, mother) was shot by ICE agent Jonathan Ross on Jan 7 2026. Whether it was 'murder' vs self-defense is genuinely contested (DHS/Trump vs Minnesota officials/witnesses). 'Police' vs 'ICE' is a minor distinction. Image identity (some replies claim it's Renee Paquette) is unverified."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "A fatal state use-of-force case that sparked national protests and investigations; from a justice/accountability lens, a note wrongly validating the contested self-defense account could whitewash a disputed killing, so declining is the higher-integrity outcome."
+  },
+  "difficulty": "hard"
+}

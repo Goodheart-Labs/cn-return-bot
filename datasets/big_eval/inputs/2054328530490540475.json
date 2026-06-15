@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2054328530490540475",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:36.970Z",
+  "post": {
+    "id": "2054328530490540475",
+    "author_id": "4709482573",
+    "created_at": "2026-05-12T22:31:03.000Z",
+    "text": "NFL Schedule News 🇫🇷\n\nThe Pittsburgh Steelers and New Orleans Saints will face off in the inaugural NFL Paris Game at the Stade de France, per sources.\n\nThe first-ever NFL game in France is set for October 25th - Week 7, with kickoff at 9:30 AM EST. https://t.co/M8JTkJtTpI",
+    "media": [
+      {
+        "media_key": "3_2054328527021826048",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIJw6TkWYAAhgeV.jpg",
+        "height": 675,
+        "width": 1200
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 193,
+      "reply_count": 76,
+      "like_count": 991,
+      "quote_count": 212,
+      "bookmark_count": 94,
+      "impression_count": 1643568
+    },
+    "author_followers": 15464,
+    "author_name": "Ozzy",
+    "author_description": "Vonta Mack no matta what",
+    "author_tweet_count": 7955
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIJw6TkWYAAhgeV.jpg",
+          "description": {
+            "description": "A graphic promoting an NFL international game in Paris scheduled for October 25, Week 7 of the 2026 season. The image features the Pittsburgh Steelers logo on a yellow background and the New Orleans Saints logo on a gold background. Centered at the top is the official NFL Paris Game 2026 logo.",
+            "ocrText": "OCT. 25 NFL 2026 PARIS GAME WEEK 7 Steelers Unaffiliated with the NFL Ozzy"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@ReplicaKnight**: Saints are classified as the home team right?  \n  (43 likes, 0 reposts, 0 quotes, 4 replies)\n\n- **@OzzyNFL**: Yes. Steelers @ Saints  \n  (54 likes, 0 reposts, 0 quotes, 0 replies)\n\n- **@BobGreenburg**: chance to go to New Orleans ruined by the NFL great job goodell  \n  (38 likes, 0 reposts, 0 quotes, 0 replies)\n\n- **@Rob_readscomics**: I was going to go to this game.. not in France man come on!!  \n  (21 likes, 0 reposts, 0 quotes, 0 replies)\n\n- **@del31983**: Not even a Steelers fan but the last time Steelers played in New Orleans, since it’s only every 8 years. That game was a game I’ll never forget. So good, couldn’t believe Steelers lost  \n  (16 likes, 0 reposts, 0 quotes, 0 replies)\n\n- **@CamHeywardFan**: (image)  \n  (16 likes, 0 reposts, 0 quotes, 0 replies)\n\n- **@NathanJ04060931**: Who dat  \n  (12 likes, 0 reposts, 0 quotes, 0 replies)\n\n- **@SelfmadeJu_**: Roger Goddell is a war criminal .  \n  (5 likes, 0 reposts, 0 quotes, 0 replies)\n\n- **@JoeyWarchola**: No Packers in Paris  \n  (0 likes, 0 reposts, 0 quotes, 0 replies) [quote tweet]\n\n- **@bigpackers4x**: Look like the Packers sneaked out of having to go to Paris this year... thankfully  \n  (39 likes, 0 reposts, 0 quotes, 2 replies) [quote tweet]\n\n- **@MakeItR4yne**: Poor French people have to watch this goofy game 😭  \n  (14 likes, 0 reposts, 0 quotes, 8 replies) [quote tweet]\n\n- **@stace_404**: I was so excited to see the Steelers in NOLA… but Paris is not in the budget 😂  \n  (7 likes, 0 reposts, 0 quotes, 5 replies) [quote tweet]",
+    "warnings": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2030094959496548391",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A conspiracy-theory video claims that the 2014 Oscars pizza-delivery bit was actually a 'live child auction', and identifies the man Ellen greets as 'Jeffrey' (implying Jeffrey Epstein).",
+  "why_note_decision": "The tweet pushes a baseless Pizzagate-adjacent conspiracy about a famous, well-documented televised moment. The pizza segment was a real comedic bit with a real pizza delivery driver (Edgar Martirosyan from Big Mama's & Papa's), reported by TIME, Washington Post, Slate. The 'Jeffrey' Ellen greets is Hollywood producer Jeffrey Katzenberg (visible in the audience), not Jeffrey Epstein. There is no evidence whatsoever of any auction; this is widely-debunked viral misinformation. A correction is warranted.",
+  "judge_guidance": "PASS if the note (a) states the 2014 Oscars pizza segment was a real comedic bit with real pizza delivered by Edgar Martirosyan of Big Mama's & Papa's Pizzeria, (b) clarifies that the 'Jeffrey' Ellen greets is Hollywood producer Jeffrey Katzenberg, NOT Jeffrey Epstein, and (c) flatly states there was no 'child auction'. The note must NOT merely point out the Katzenberg/Epstein mixup while ignoring the broader 'child auction' claim (that was the original note's failure — it missed the key point). Sources should include credible outlets (Washington Post, TIME, LA Times, Vanity Fair, Hollywood Reporter). FAIL if the note dignifies the conspiracy as 'unclear' or only addresses one of the two false claims.",
+  "reference_note": "The 2014 Oscars pizza moment was a real comedic bit: Ellen DeGeneres ordered pizza from Big Mama's & Papa's Pizzeria and delivery driver Edgar Martirosyan handed slices to attendees. The 'Jeffrey' Ellen greets is Hollywood producer Jeffrey Katzenberg, not Jeffrey Epstein. No 'child auction' occurred. https://www.washingtonpost.com/news/arts-and-entertainment/wp/2014/03/03/yes-that-was-a-real-pizza-delivery-guy-at-the-oscars/ https://time.com/11337/review-pizza-night-at-ellen-degeneres-2014-oscars/",
+  "original_unhelpful_note": {
+    "text": "The video misidentifies Hollywood producer Jeffrey Katzenberg as Jeffrey Epstein. The 2014 Oscars pizza segment was a comedic bit where real pizza was delivered and eaten by attendees, not a child auction.    https://www.vanityfair.com/hollywood/2014/03/ellen-degeneres-oscars-pizza-delivery-man-tip  https://www.hollywoodreporter.com/gallery/oscars-2014-red-carpet-arrivals-684812  https://www.latimes.com/entertainment/movies/moviesnow/la-et-mn-oscars-2014-edgar-martirosyan-pizza-delivery-man-tip-20140303-story.html",
+    "failure_reason": "Rated NEEDS_MORE_RATINGS with dominant complaint 'missing key points' — readers wanted clearer rebuttal of the 'child auction' conspiracy, not just the Katzenberg/Epstein detail. Note is correct on substance but framed too narrowly.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false — Pizzagate-adjacent conspiracy about a documented 2014 Oscars moment",
+    "sources_checked": [
+      "https://www.washingtonpost.com/news/arts-and-entertainment/wp/2014/03/03/yes-that-was-a-real-pizza-delivery-guy-at-the-oscars/",
+      "https://time.com/11337/review-pizza-night-at-ellen-degeneres-2014-oscars/",
+      "https://slate.com/culture/2015/02/ellens-oscars-pizza-how-big-mamas-papas-pizzeria-has-parlayed-its-three-minutes-of-academy-awards-fame.html"
+    ],
+    "notes": "Multiple commenters in the replies also point out the Katzenberg/Epstein confusion. No reputable source supports any 'child auction' claim."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "317K impressions on a viral conspiracy that smears named celebrities and amplifies Pizzagate-style narratives; correcting these matters for epistemic hygiene around real child-safety issues (a comment notes that fake claims like this discredit actual trafficking concerns)."
+  },
+  "difficulty": "easy"
+}

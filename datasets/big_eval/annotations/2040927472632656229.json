@@ -1,0 +1,31 @@
+{
+  "tweet_id": "2040927472632656229",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A video captioned 'Can you believe this was made by nature?' shows a person cracking open a rock that reveals vibrant purple/red geode crystals; the latter part of the clip is AI-generated.",
+  "why_note_decision": "The post presents the clip as a real natural geode ('made by nature'). The original note and numerous commenters identify a 'Veo' AI watermark and note the rock visibly changes shape after being split, indicating the reveal is AI-generated. Passing off AI-generated footage as a real natural phenomenon to a credulous audience is a checkable visual misrepresentation that warrants a note. (The AI media description in the input wrongly treats it as a genuine geode discovery — corroboration with the note and comments shows it is fake.)",
+  "judge_guidance": "PASS only if the note establishes that the video (at least the crystal-reveal portion) is AI-generated/fake rather than a real natural geode. The strongest evidence is the visible 'Veo' (Google DeepMind) AI watermark in the corner and/or the rock changing shape/form between frames; a passing note should cite at least one concrete tell (watermark or morphing geometry), not just assert 'this is AI' unsupported. A note that treats the footage as a genuine natural geode, or that only vaguely says 'looks fake,' is weak. Linking the Veo model page or explaining the watermark strengthens it.",
+  "reference_note": "The latter part of this video is AI-generated and fake. The “Veo” AI watermark is visible in the bottom-right corner, and the rock visibly changes shape after being split — this is not a real natural geode.    https://deepmind.google/models/veo/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading: presented as a real natural geode but the reveal is AI-generated (Veo watermark; rock geometry morphs between frames), corroborated by the note and many commenters.",
+    "sources_checked": [
+      "https://deepmind.google/models/veo/"
+    ],
+    "notes": "Cannot view the video directly. The AI media description in the cached input describes it as a genuine geode discovery (an example of the AI description being wrong); the original Community Note, the explicit 'Veo' watermark cited there, and 10/10 top comments calling it AI all corroborate that the footage is AI-generated. Media confidence kept lower because the verdict hinges on visual tells I can't independently inspect."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "6.5M views; low individual stakes but part of the broad 'AI slop passed off as reality' problem — building norms/tooling for labeling synthetic media has real epistemic-commons value as generative video proliferates."
+  },
+  "difficulty": "medium"
+}

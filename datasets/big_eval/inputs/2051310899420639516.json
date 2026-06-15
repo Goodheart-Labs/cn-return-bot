@@ -1,0 +1,100 @@
+{
+  "tweet_id": "2051310899420639516",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:10.979Z",
+  "post": {
+    "id": "2051310899420639516",
+    "author_id": "1276301915970830336",
+    "created_at": "2026-05-04T14:40:04.000Z",
+    "text": "My first job at age 15 was a clerk at Gamestop. The managers were neckbeard chuds. I wore a short skirt to the interview and told them I played World of Warcraft. They hired me on the spot. https://t.co/rAWwosJVYa",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2050350370925494735"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2050350370925494735",
+      "author_id": "22258315",
+      "created_at": "2026-05-01T23:03:16.000Z",
+      "text": "She's back, and so are the classics. https://t.co/RKrn5AZ9GR",
+      "media": [
+        {
+          "media_key": "13_2050349322148208640",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/media/HHRPcXuWkAEqt-H.jpg",
+          "height": 3840,
+          "width": 2160,
+          "duration_ms": 32850,
+          "view_count": 14302128,
+          "variants": [
+            {
+              "bit_rate": 950000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2050349322148208640/vid/avc1/480x852/mGUstoeb2gltrpFe.mp4"
+            },
+            {
+              "bit_rate": 10368000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2050349322148208640/vid/avc1/1080x1920/WmfCa3IRSBqW62zi.mp4"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2050349322148208640/vid/avc1/720x1280/h6Xrjun4cDXa8wG0.mp4"
+            },
+            {
+              "bit_rate": 632000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2050349322148208640/vid/avc1/320x568/R1duYWCZkJIjm-Oi.mp4"
+            },
+            {
+              "bit_rate": 25128000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2050349322148208640/vid/avc1/2160x3840/TdLpm7qIS8qicM5i.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/2050349322148208640/pl/HUpS0JwTUN0pAxYP.m3u8?v=d28"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 1241,
+      "reply_count": 526,
+      "like_count": 102694,
+      "quote_count": 91,
+      "bookmark_count": 5404,
+      "impression_count": 5485264
+    },
+    "author_followers": 40351,
+    "author_name": "CHLOÉ HAPPE",
+    "author_description": "Writer Creator Bohemian in the desert. American Abundance on Patreon. Author of Desolation E-Girl, available for pre-order now. ⁀➴♡",
+    "author_tweet_count": 21750
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2050349322148208640/vid/avc1/2160x3840/TdLpm7qIS8qicM5i.mp4",
+          "description": {
+            "description": "A close-up of a GameStop female employee standing at the video game store. ",
+            "ocrText": "GameStop"
+          },
+          "transcription": "Hey, I'm Riley, and welcome back to GameStop. As you can see, some things have changed. Thanks to all your trade-ins, GameStop Retro has essentially expanded to all stores nationwide. That means no matter what GameStop location you visit, you can dive right back into your childhood. I love it! You'll find a growing selection of classic games and consoles, like the GameCube, the GameWatch, the Wii, and more. Feel old yet? Retro games are a great way to relive the characters and stories that became core memories. You swore you'd beat that final boss one day. Why not now? Thanks for stopping by GameStop. See you later."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Pedantic Killjoy (@PedanticKilljoy)**: We had a great used game store in a mall near me that sadly shut down, and I once saw a guy who looked exactly like the \"m'lady\" meme walk in and say, \"So when can I start working here?\" He had not applied. They were not hiring. I don't know how he thought employment worked, exactly. So I understand why they would hire a normal human woman on the spot. (Likes: 2105, Reposts: 6, Views: 243446)\n- **enfatigue (@enfatigued)**: Alliance or Horde? (Likes: 99, Reposts: 0, Views: 143738)\n- **Idomeneus (@Idomeneus_OG)**: Well, did you actually play World of Warcraft or was that just the nerdiest game you could think of? (Likes: 31, Reposts: 0, Views: 99699)\n- **h0rsegirlupdate (@h0rsegirlupdate)**: my first job was also 15 at gamestop! the neckbeards became my protectors... (Likes: 28, Reposts: 0, Views: 10706)\n- **meatheadmusings (@meatheadmusings)**: Prot Holy or Ret? Guessing WotLK (Likes: 27, Reposts: 0, Views: 146568)\n- **Ystirix (@Ystirix)**: You did not work for GameStop at 15. You can’t work for GameStop unless you’re 18 or older. (Likes: 66, Reposts: 0, Views: 54377)\n- **FrenlyOfficer (@FrenlyOfficer)**: I’m so glad they gave you a chance (Likes: 57, Reposts: 0, Views: 990)\n- **JahlilWill (@JahlilWill)**: I probably applied GameStop 5 times throughout the years in my youth. Never even got a call back. It turned into one of those “how do you even get this job” places for me. I’m thinking you gotta know someone! 😂 (Likes: 38, Reposts: 1, Views: 12611)\n- **buggyboisNFT (@buggyboisNFT)**: My ex-manager at GameStop was a very socially awkward lanky lolicon who drove a bike to work and ended up getting fired for stealing Pokemon merch (Likes: 36, Reposts: 0, Views: 4851)\n- **ThorgilB (@ThorgilB)**: Girls have it unbelievably, unfathomably easier, and it's not even close. (Likes: 11, Reposts: 0, Views: 1045)",
+    "warnings": []
+  }
+}

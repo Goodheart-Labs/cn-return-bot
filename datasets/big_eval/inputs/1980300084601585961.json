@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1980300084601585961",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:54.440Z",
+  "post": {
+    "id": "1980300084601585961",
+    "author_id": "1389833864122613761",
+    "created_at": "2025-10-20T15:48:27.000Z",
+    "text": "Illinois has 24 schools where not a single child can read at grade level.. \n\nHow tf is that possible..!? https://t.co/ArIOERfnnQ",
+    "media": [
+      {
+        "media_key": "3_1980300080100864000",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G3twbkcW8AAmKwK.jpg",
+        "height": 1035,
+        "width": 1169
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 11301,
+      "reply_count": 4325,
+      "like_count": 36983,
+      "quote_count": 1116,
+      "bookmark_count": 2030,
+      "impression_count": 1541713
+    },
+    "author_followers": 801205,
+    "author_name": "American AF 🇺🇸",
+    "author_description": "America First • Breaking News • Interesting Videos——— just a dude with an IPhone ✝️🔥",
+    "author_tweet_count": 105239
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G3twbkcW8AAmKwK.jpg",
+          "description": {
+            "description": "Graphic featuring a table titled 'Illinois State Board of Education: Schools with zero students scoring proficient on the IAR or SAT, 2024'. The table lists several schools, mostly from District CPS 299, their enrollment numbers, graduation rates, and a final column titled 'Students proficient in reading' showing '0' for every entry. A red oval is superimposed over the column of zeros to highlight the data.",
+            "ocrText": "Illinois State Board of Education: Schools with zero\nstudents scoring proficient on the IAR or SAT, 2024\n\nStudents\nGraduation proficient in\nSchool Name District Name Enrollment rate reading\nAustin College and Career Academy CPS 299 170 52% 0\nBowen High School CPS 299 175 59% 0\nChicago Collegiate Charter School CPS 299 245 71% 0\nChicago Military Academy HS CPS 299 209 68% 0\nChicago Technology Academy HS CPS 299 365 91% 0\nDouglass Academy High School CPS 299 35 72% 0\nHarlan Community Academy HS CPS 299 206 64% 0\nLegal Prep Academy Charter HS CPS 299 211 85% 0\nMarshall Metropolitan High School CPS 299 177 52% 0\nNorth Lawndale Prep Chtr - Christiana CPS 299 299 87% 0\nRaby High School CPS 299 146 60% 0\nSchool of Social Justice HS CPS 299 299 69% 0\nSpry Community Links High School CPS 299 60 85% 0\nYCCS - McKinley-Lakeside Leadership CPS 299 96 50% 0\nYCCS West CPS 299 67 56% 0\nYCCS-Association House CPS 299 99 38% 0\nYCCS-Community Youth Dev Inst HS CPS 299 83 28% 0\nYCCS-Latino Youth Alternative HS CPS 299 157 21% 0\nYCCS-Scholastic Achievement HS CPS 299 113 60% 0\nYCCS-Sullivan House Alt HS CPS 299 333 36% 0\nYCCS-Youth Connection Leadership CPS 299 130 62% 0\nLudlow Elementary School Ludlow CCSD 142 47 0\nSouth Fork Jr Sr High School South Fork SD 14 133 74% 0\nTri Point Elementary School Tri Point CUSD 6-J 120 0\n\nSource: Illinois State Board of Education, Illinois Report Card 2024"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Tom Hennessy (@Tomhennessey69)**: \"This is nationwide anywhere blacks exist by the way. Not unique to Illinois.\" (986 likes)\n- **The Tradition Rebellion (@trad_rebel)**: \"Your modern public education, funded by your taxes\" (730 likes)\n- **G. K. Masterson (@GKMasterson)**: \"Because they hire teachers like this one\" (697 likes)\n- **Sunburnt Badger (@Sunburnt_Badger)**: \"(image reply)\" (664 likes)\n- **Ken Moore (@alphakenmoore)**: \"Fact check: Illinois has some 850 school district and 4400 schools. The Chicago School district (CPS 299) with 600 schools is just one district. The shock for me is 0 reading proficiency in so many schools disproportionately come from Chicago.\" (280 likes)\n- **Contrarian Ω Researcher Ω Think Tank (@safehavenmoney)**: \"That is because CHICAGO Kills white people\" (215 likes)\n- **I Love America News (@ILA_NewsX)**: \"Pritzker is a terrible Governor.\" (211 likes)\n- **TheTreeGodfather (@TheTreeGodfathr)**: \"(image reply)\" (172 likes)\n- **Red (@RedLeaderRobby)**: \"The schools are working, they’re just not working how you might hope.\" (142 likes)\n- **Aga (@LegDayReps)**: \"...\" (136 likes)",
+    "warnings": []
+  }
+}

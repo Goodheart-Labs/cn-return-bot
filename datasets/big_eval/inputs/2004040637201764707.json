@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2004040637201764707",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:05:36.520Z",
+  "post": {
+    "id": "2004040637201764707",
+    "author_id": "1457867047334031360",
+    "created_at": "2025-12-25T04:04:55.000Z",
+    "text": "The North American Aerospace Defense Command (NORAD) has reportedly detected an “unidentified high-altitude, hypersonic contact” approaching U.S. Airspace from the direction of the Northern Atlantic, with F-22 Raptors being scrambled from Langley Air Force Base in Virginia.",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 695,
+      "reply_count": 309,
+      "like_count": 13392,
+      "quote_count": 145,
+      "bookmark_count": 1356,
+      "impression_count": 1390195
+    },
+    "author_followers": 2244403,
+    "author_name": "OSINTdefender",
+    "author_description": "Open Source Intelligence Monitor focused on Europe and Conflicts across the World. RT ≠ Endorsement. Want to Support my Work? https://t.co/PcUbewvWPr",
+    "author_tweet_count": 61288
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @hunterlanier: You just made me piss myself Merry Christmas (Likes: 985)\n- @MattMc60: I almost shit myself for a second! And I was just tracking Santa with my son 5 minutes ago, too 😂 (Likes: 291)\n- @nightshifter199: As long as he doesn't drop the MOAB out of his sleigh I think we're good (Likes: 131)\n- @anondeguerre: Pretty sure that’s Santa. No need to scramble the jets. (Likes: 77)\n- @Risawayyyy: Every bot post exposed for not knowing Santas flight path (Likes: 57)\n- @TheLyons: you son of a bitch. i didn't know you did christmas posts and almost had a heart attack. (Likes: 53)\n- @Ah03Rose: Stop I forgot it was Christmas 🎄💀💀 (Likes: 50)\n- @TaylorFromHR: 🚨🚨Current velocity indicates the object will go suborbital. Current flight trajectory is consistent with presents somewhere in the continental United States. (Likes: 39)\n- @LiamCarlen: Is it Santa? (Likes: 27)\n- @DudleyNYC: The risk of publicizing this information is that ICE may be watching it too. (Likes: 28)",
+    "warnings": []
+  }
+}

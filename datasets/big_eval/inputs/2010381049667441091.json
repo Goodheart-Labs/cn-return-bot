@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2010381049667441091",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:54.373Z",
+  "post": {
+    "id": "2010381049667441091",
+    "author_id": "178353631",
+    "created_at": "2026-01-11T15:59:27.000Z",
+    "text": "This movie was a total fabrication and resulted in Netflix paying a seven figure defamation settlement and now has a disclaimer on it explaining that it isn’t true. https://t.co/HtRfeOSQEG",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2009671850167808425"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2009671850167808425",
+      "author_id": "4520804723",
+      "created_at": "2026-01-09T17:01:21.000Z",
+      "text": "‘When They See Us’ was completely shut out of the 2019 Golden Globes in a year of almost all-white nominees 🤔 https://t.co/JjOxWvWVR8",
+      "media": [
+        {
+          "media_key": "3_2009671830588608512",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/G-PJ4dlX0AArfCX.jpg",
+          "height": 1152,
+          "width": 2048
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 1558,
+      "reply_count": 216,
+      "like_count": 32688,
+      "quote_count": 100,
+      "bookmark_count": 3435,
+      "impression_count": 4459150
+    },
+    "author_followers": 22600,
+    "author_name": "Daniel Friedman",
+    "author_description": "Author of mystery novels, including DON'T EVER GET OLD, nominated for the Edgar, Anthony and Thriller awards. Winner of the Macavity award.",
+    "author_tweet_count": 8229
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-PJ4dlX0AArfCX.jpg",
+          "description": {
+            "description": "A medium shot from the television miniseries 'When They See Us' showing two young Black men, Antron McCray and Kevin Richardson, standing in a courtroom. They are wearing oversized suits and ties, looking forward with expressions of apprehension. In the background, other people are visible including legal counsel and spectators in the gallery. The lighting is bright and filtered through large windows behind them.",
+            "ocrText": ""
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Fargo** (@TolulopeAsalu): \"If you do anything this year, let it be to stop telling lies: https://www.bbc.com/news/newsbeat-52017601\" (Likes: 443, Reposts: 9, Replies: 10, Views: 263241)\n- **thisisnothappen** (@thisisnothappen): \"Not a total fabrication as the prosecutor that won the case agreed the verdicts should be voided and was suing over her portrayal. Weird you lied.\" (Likes: 379, Reposts: 2, Replies: 7, Views: 225102)\n- **Blah Boats** (@BlahBoats): \"Everyone knows they are guilty.\" (Likes: 101, Reposts: 0, Replies: 0, Views: 10695)\n- **American Remnant** (@Plato62427481): \"Every story of “blacks falsely accused” is a piece of fiction asking “what if they actually dindu nuffin?” from To Kill a Mockingbird to this garbage.\" (Likes: 100, Reposts: 0, Replies: 0, Views: 6582)\n- **Guy Incognito** (@Sofakingretodid): \"Which is why Netflix can't be allowed to get Warner Bros.\" (Likes: 84, Reposts: 0, Replies: 0, Views: 10581)\n- **PoofMacCoohaill** (@PoofMacCoohaill): \"Why are we just lying about information that can be easily found online? *Some* aspects of the series were inaccurate (none of which has to do with the \"5 minorities being falsely arrested for raping a female jogger\", and neither suit ended up really going anywhere\" (Likes: 81, Reposts: 0, Replies: 0, Views: 142460)\n- **Lee Kuan Yimby 🇺🇸🇺🇦🇸🇬** (@billiceberg): \"This is the problem though.\" (Likes: 42, Reposts: 0, Replies: 0, Views: 5178)\n- **esco** (@TheArmyVeteran2): \"Your president paid for a full page in the newspaper condemning these individuals that were later found to be innocent.\" (Likes: 37, Reposts: 0, Replies: 0, Views: 61648)\n- **supercollider** (@supercollider_x): \"are we just living in a world where many black people want to, or just believe, alternative \"history\", believing fabrications or false things, cherry picked information, stories, or not fully complete pictures as true? who is disseminating this information? whose fault?\" (Likes: 34, Reposts: 0, Replies: 0, Views: 5617)\n- **𝑭𝑶𝑵 😈** (@focusonFON): \"take this tweet down for misinformation\" (Likes: 30, Reposts: 0, Replies: 0, Views: 26896)",
+    "warnings": []
+  }
+}

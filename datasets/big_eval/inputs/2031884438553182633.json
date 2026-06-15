@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2031884438553182633",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:24.428Z",
+  "post": {
+    "id": "2031884438553182633",
+    "author_id": "1459234662367129601",
+    "created_at": "2026-03-12T00:06:15.000Z",
+    "text": "MAGA rallies are BACK\n\nTrump haters are on notice 🇺🇸 https://t.co/o4heFbR5R0",
+    "media": [
+      {
+        "media_key": "13_2031884333192265728",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2031884333192265728/img/-bkCZr4EFa7KY_49.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 21710,
+        "view_count": 414066,
+        "variants": [
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031884333192265728/vid/avc1/720x1280/ol2OS_ADYV3L1Iee.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031884333192265728/vid/avc1/1080x1920/6E9lB3dyWseZNVax.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2031884333192265728/pl/tV83AaKUKyGWLWaT.m3u8?v=f0d"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031884333192265728/vid/avc1/320x568/yYTx2LtraGoR8mXO.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2031884333192265728/vid/avc1/480x852/M3CK62DO39lMGlZT.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 459,
+      "reply_count": 3241,
+      "like_count": 5037,
+      "quote_count": 395,
+      "bookmark_count": 414,
+      "impression_count": 1618576
+    },
+    "author_followers": 256479,
+    "author_name": "Turning Point Action",
+    "author_description": "We Register Voters, We Recruit Precinct Leaders and We Chase Ballots. Founded by @charliekirk11",
+    "author_tweet_count": 47003
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2031884333192265728/vid/avc1/1080x1920/6E9lB3dyWseZNVax.mp4",
+          "description": {
+            "description": "These frames show Donald Trump and Jake Paul together at a political rally in Kentucky. Trump and Paul appear side-by-side on stage, both giving speeches and addressing an enthusiastic crowd. The rally appears to be a Turning Point Action event, held in Hebron, Kentucky.",
+            "ocrText": "Trump pumps up rural KY voters at MASSIVE rally featuring Jake Paul \nTURNING POINT ACTION \nTo stop RINO Massie"
+          },
+          "transcription": "Well, this is something that would have never happened under the Obama or Biden administrations. The President wants to save college sports. No one believes in the American industry like President Trump, the American worker. This is about a return to American strength. Her tax refund was over $10,000. With these slam dunk economic numbers, I'm very confident that we're going to get the American dream back."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Thomas Massie** (@RepThomasMassie): What’s gotten into y’all ? (Likes: 70154, Reposts: 6146, Replies: 2427)\n- **Dan Bilzerian** (@DanBilzerian): Clown show, Massie is a hero, Trump is a pedophile rapist (Likes: 13288, Reposts: 934, Replies: 159)\n- **Dr. Simon** (@goddek): Turning Point is dead. This Community Note will hopefully be the last nail in your coffin. (Likes: 3735, Reposts: 137, Replies: 31)\n- **Dr. Vinny Boombatz MD** (@VinnyBoombatzMD): We know why you hate him (Likes: 3102, Reposts: 63, Replies: 6)\n- **Libertarian Party of Tennessee** (@LPTN1776): Go ahead, piss on Charlie’s grave. (Likes: 2685, Reposts: 0, Replies: 0)\n- **Carrie Price Cox** (@carriepricecox3): Oh TP.. (Likes: 2593, Reposts: 0, Replies: 0)\n- **Pyramid Libertarian Party** (@lptnsc): Turning point is fake and gay now. RIP Charlie, @MrsErikaKirk has betrayed your life’s work. (Likes: 2120, Reposts: 86, Replies: 15)\n- **Amity** (@amitylee13): What’s WRONG with y’all?!?!? (Likes: 1881, Reposts: 0, Replies: 0)\n- **Libertarian Party** (@LPNational): Charlie Kirk in 2023: Thomas Massie is “one of my favorite members of Congress. He loves the Constitution, he loves liberty. He’s honest and he’s tough, and he’s really gonna go after the intel agencies... Thomas Massie [is] just terrific.” (Likes: 1715, Reposts: 221, Replies: 29)\n- **Michael Flynn Jr** (@realmflynnJR): Charlie is turning over in his grave. He was a huge fan of @RepThomasMassie @MassieforKY (Likes: 1242, Reposts: 0, Replies: 0)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2008149040094220321",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:28.258Z",
+  "post": {
+    "id": "2008149040094220321",
+    "author_id": "906230721513181184",
+    "created_at": "2026-01-05T12:10:15.000Z",
+    "text": "⚠️WARNING: LEDGER SUFFERS A NEW DATA BREACH\n\nAs per ZachXBT, Ledger has suffered another data breach via its payment processor, Global-e.\n\nThe breach reportedly exposed customers’ personal information, including names and contact details. https://t.co/YjNBMMoEyR",
+    "media": [
+      {
+        "media_key": "3_2008147812337455105",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G95fy7LaEAEKg1u.jpg",
+        "height": 400,
+        "width": 400
+      },
+      {
+        "media_key": "3_2008147817936949248",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G95fzQCbkAA7LZa.jpg",
+        "height": 685,
+        "width": 671
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 249,
+      "reply_count": 169,
+      "like_count": 986,
+      "quote_count": 50,
+      "bookmark_count": 175,
+      "impression_count": 197035
+    },
+    "author_followers": 1105975,
+    "author_name": "Coin Bureau",
+    "author_description": "Official Coin Bureau X account.",
+    "author_tweet_count": 34331
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G95fy7LaEAEKg1u.jpg",
+          "description": {
+            "description": "The image features a white uppercase letter L centered within a square-shaped frame indicated by four L-shaped corners, all set against a solid black background.",
+            "ocrText": "L"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G95fzQCbkAA7LZa.jpg",
+          "description": {
+            "description": "A screenshot of a post by user ZachXBT on X (formerly Twitter) regarding a data breach involving Ledger and Global-e. The post includes a screenshot of an email sent to customers informing them of a security incident where personal data was improperly accessed.",
+            "ocrText": "ZachXBT @zachxbt  Community alert: Ledger had another data breach via payment processor Global-e leaking the personal data of customers (name & other contact information). Earlier today customers received the email below. Dear Customer, Global-e recently identified unusual activity on a portion of our network. Immediately after we became aware of the unusual activity in our cloud systems we took action to contain and ultimately secure our systems. We retained independent forensic experts to conduct an investigation into the incident and were able to determine that some personal data including name and contact information were improperly accessed."
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Nathan Jeffay** (@NathanOnCrypto): while your private keys are safe inside the hardware, your physical identity remains the weakest link in the \"self-custody\" chain. (32 likes)\n- **Saul 🌱** (@uptownsaul): @WietseWind (23 likes, video)\n- **Richard Schiller** (@jp0010110): This is bad. What is https://provex.com/ Why is Privacy important to you? Who is Richard Heart?♥️ (18 likes, video)\n- **Beefy** (@beefyfinance): Can we get a wallet that doesn't leak our info? (17 likes)\n- **varun.somi** (@v4run_0x): Isn’t this the 4th breach in four months? (10 likes)\n- **Surya** (@suryapro): Repeated incidents like this underline that custody might be decentralized, but user data still depends heavily on centralized vendors and their security practices (10 likes)\n- **DylanΞGra₿owski** (@GrabowskiDylan): The human layer of blockchain remains the biggest weakness Be sure not to ever answer any calls about your “crypto accounts” And don’t answer text messages about “withdrawals you just made” And be hyper diligent about any emails you receive (10 likes)\n- **Jared** (@jarednotjerry): Oh Ledger, you went down a bad path. (10 likes, quote tweet)\n- **Rezo🛡₿RRR** (@rezosh): It's not Ledger, it was Global-e. Anyhow... this just shows vulnerabilities in anything touching centralized infrastructure. (7 likes, quote tweet)\n- **Marcmiko** (@MinkowskiM68578): ledger and data breaches name a more iconic duo i'll wait (6 likes)",
+    "warnings": []
+  }
+}

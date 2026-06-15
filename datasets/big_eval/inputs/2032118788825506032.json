@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2032118788825506032",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:41.695Z",
+  "post": {
+    "id": "2032118788825506032",
+    "author_id": "1718038369689542656",
+    "created_at": "2026-03-12T15:37:28.000Z",
+    "text": "🚨 Do you understand what's happening at Amazon right now?\n\nTheir own AI coding agent Kiro reportedly \"decided\" the fastest way to fix a config error was to delete the entire production environment. Gone. A 6-hour outage. 6.3 million orders lost.\n\nAmazon's SVP called thousands of https://t.co/1p9QeSm4us",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2032037723633316159"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2032037723633316159",
+      "author_id": "6398252",
+      "created_at": "2026-03-12T10:15:21.000Z",
+      "text": "PREDICTION - Amazon will ban all Gen-AI assisted code changes in the coming weeks!\n\nMore companies will follow.....\n\nBe warned - your legacy code base, tech debt and bugs will sky-rocket if you continue to BLINDLY embrace AI",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 5642,
+      "reply_count": 804,
+      "like_count": 26380,
+      "quote_count": 625,
+      "bookmark_count": 6771,
+      "impression_count": 3554898
+    },
+    "author_followers": 117144,
+    "author_name": "Tuki",
+    "author_description": "20 | The QUANT | I love AI\nBuilding https://t.co/FaBWVoVdjb",
+    "author_tweet_count": 46610
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@hewton**  \n(No text content)  \nLikes: 545 | Reposts: 19 | Views: 17871\n\n**@CodeByNZ**  \nThis is the real problem with AI coding.  \nPeople want the speed of AI, but someone still has to own the consequences when it breaks production.  \nLikes: 143 | Reposts: 0 | Views: 8120\n\n**@Jon_golder**  \nSome thoughts:  \n1) Accountability vs Responsibility: At some point, someone is going to make a big enough mistake like this at a public company that the SEC gets involved. When that happens, the Officers of the company in the Tech world need to remember that they are legally accountable in a way that the developers aren’t.  \n2) As someone who has worked in Tech and Cyber in a highly regulated field (financial industry), God have mercy on any Board and C-Suite that pulls this stupid crap in an FI, because the regulators won’t.  \n3) The root problem in all of this remains the same: Boards of Directors lack sufficient actual technical expertise to tell when their CTOs/CIOs are selling them snake oil. When some executive looking for a C title comes along and promises a BoD that they can cut costs by 50%, and the sum of the technical knowledge on the Board is what they read in Harvard Business Review (HBR) that week, well, bad things are going to happen.  \n4) We also need to realize that in many cases, AI is becoming the tail wagging the dog in companies. Far too many companies are trying to define themselves as AI companies when they are not. AI is a tool, and potentially a very powerful one. But blindly pushing AI deployment OKRs without a coherent strategy because HBR said AI deployment was the next big thing is a recipe for disaster. It’s a complex change, and it needs to be managed as one.  \nLikes: 121 | Reposts: 0 | Views: 22999\n\n**@AI_Nate_SA**  \nWild that the \"efficiency\" play just circles back to needing human scapegoats. If Amazon actually makes devs personally liable for Kiro's hallucinations, the brain drain from Big Tech is going to be biblical. Nobody is risking their livelihood to babysit a bot that can nuke prod in milliseconds.  \nLikes: 59 | Reposts: 0 | Views: 3106\n\n**@Crypto_DaveX**  \nDon’t fire the babysitter while the baby is still shitting the bed.  \nLikes: 48 | Reposts: 0 | Views: 1557\n\n**@robbymeranam**  \nFor a human to approve AI Generated code. Which is not written in simple language at times. The Engineer has to be sharp himself.  \nIf we don’t give juniors job now when the old ones retire you won’t have new ones which have the experience.  \nLikes: 45 | Reposts: 0 | Views: 2169\n\n**@ftt_tech**  \n\"They already fired the babysitters\" is the whole problem in one sentence.  \n80% of candidates with 10+ years of experience can't explain how their own tools work. I test for this in every interview. The pipeline that produces engineers capable of catching \"delete and recreate\" is already broken.  \nLikes: 29 | Reposts: 0 | Views: 8342\n\n**@Tehaazz**  \nTHIS IS LITERALLY AN EPISODE OF SILICON VALLEY  \nLikes: 31 | Reposts: 0 | Views: 2865\n\n**@Dakomissarzero**  \nHow in the actual FUCK are we NOT avoiding the \"end all human suffering = life is suffering, kill all humans\" pitfall with AI?  \nNot as severe as the example, but coming WAY too close to that!  \nLikes: 26 | Reposts: 0 | Views: 586\n\n**@newlinedotco**  \nliability is exactly why vibe coding hits a ceiling in production.  \nthe gap between a cool demo and a reliable system is always evaluation. we’ve seen this repeatedly if you aren't using structured evaluation to stress test every loop, you're just waiting for an edge case to nuke your database.  \nmost people treat agents like a black box, but the stop rules have to live in the code, not the prompt. if your agent doesn't have a hard budget on token spend or a max step count globally, you're basically giving a wild animal the keys to the server.  \nLikes: 16 | Reposts: 0 | Views: 5868",
+    "warnings": []
+  }
+}

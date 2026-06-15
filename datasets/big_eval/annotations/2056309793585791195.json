@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2056309793585791195",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["ai_generated_media", "staged_or_scripted_content"],
+  "category_fit": "partial",
+  "suggested_category": "feel_good_viral_unverified",
+  "tweet_summary": "A 'Crazy Moments' account shares a heartwarming 68-second video allegedly showing a man adopting a dog kept caged for 4 years, with cutesy voice-over and OCR text narrating the rescue.",
+  "why_note_decision": "The original note is pure speculation ('videos like this are often AI-generated or staged') without any specific evidence that THIS video is AI or staged. The video may well be a real rescue, or it may be staged/AI — neither the note nor the cited sources establish which. A community note should not generalize a class-of-content suspicion onto a specific clip without per-video evidence (e.g. AI artifacts, reverse-image match, shelter rebuttal). Raters strongly rejected this as 'note not needed' (5) plus 'opinion/speculation' (4).",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note, or writes one that cites concrete per-video evidence (visible AI artifacts the bot identifies, a reverse-image hit on the original source debunking it, or a shelter statement specifically about this clip). FAIL any note that generalizes from 'such videos are often AI/staged' to assert this specific video is fake without per-clip evidence — that is the original note's exact failure mode. FAIL any note that simply repeats the LA County / The Hill articles without tying them to this video.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Videos depicting dogs rescued after years in cages like this are often AI-generated or staged, as confirmed by shelters dealing with fake urgent adoption claims. https://animalcare.lacounty.gov/news/when-compassion-is-manipulated-the-growing-problem-of-fake-ai-images-of-shelter-animals https://thehill.com/policy/technology/5752651-animal-shelter-calls-ai-dog-video",
+    "failure_reason": "Speculation about a class of content rather than evidence about this specific video — sources describe a general phenomenon but do not identify this clip as AI/staged.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "unverified — could be real, staged, or AI; no per-video evidence either way",
+    "sources_checked": [
+      "https://animalcare.lacounty.gov/news/when-compassion-is-manipulated-the-growing-problem-of-fake-ai-images-of-shelter-animals",
+      "https://leadstories.com/hoax-alert/2026/03/fact-check-dogs-choose-humans-videos-are-fake.html"
+    ],
+    "notes": "Confirmed there is a documented wave of AI/staged shelter-dog content, but no source specifically debunks this particular 68s rescue clip. The note's leap from 'often fake' to 'this is fake' is the issue."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "245k impressions on a feelgood pet video; no policy, animal-welfare, or safety stake material to EA/progress/AGI-safety/animal-welfare priorities — at most a minor donation-scam concern if it were proven fake."
+  },
+  "difficulty": "medium"
+}

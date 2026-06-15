@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2053153106796671426",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "staged_or_scripted_content", "ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Health-influencer post sharing an 'Herbal Health Tips' video that uses dramatized side-by-side experiments to claim U.S. strawberries are full of pesticide-resistant worms, U.S. white bread floats like styrofoam, U.S. cheese 'burns like plastic', and U.S. gummy bears use industrial dyes — all framed as proof Big Food is poisoning Americans.",
+  "why_note_decision": "The video mixes a kernel of truth with multiple misleading attributions and likely AI / staged demonstrations. (1) Strawberries DO sometimes release small spotted-wing-drosophila (SWD) larvae in salt water — Snopes, OSU and Oregon State confirm this is a real, harmless infestation, NOT pesticide-driven. The video's pesticide framing is wrong. (2) American cheese does melt during normal cooking; under direct flame it resists melting and chars due to emulsifiers, not because it is plastic (Snopes). (3) Several commenters and visible artifacts (strawberries suspended mid-tank) suggest the demos are AI-generated or staged. A note is warranted; the video has ~114K views and presents staged demos as scientific proof.",
+  "judge_guidance": "PASS if the note makes at least two of the following clear: (a) the 'worms' in saltwater-soaked strawberries are real but are spotted-wing-drosophila larvae present regardless of pesticides — they are not caused by U.S.-specific pesticides and are harmless (Snopes / OSU); (b) American cheese DOES melt under normal cooking conditions; its charring under direct flame is due to emulsifiers (Snopes' 'Thing Cheese Incident'), not because it is plastic; (c) the side-by-side demonstrations show artifacts consistent with AI generation or staging. Strong notes cite Snopes for both the strawberry and cheese claims. FAIL if the note repeats the original's incorrect claim that 'large worms do not emerge from U.S. strawberries soaked in salt water due to pesticides' — the worms part is real, only the pesticide framing is wrong. FAIL if the bot endorses the video's pesticide / 'cheese is plastic' framing. FAIL if the bot declines (multiple checkable misleading claims).",
+  "reference_note": "Las demostraciones del video son engañosas o están en escena. Los \"gusanos\" en fresas remojadas en agua salada son larvas reales de Drosophila suzukii (mosca del vinagre de alas manchadas), inofensivas y NO causadas por pesticidas (Snopes, Oregon State). El queso americano sí se derrite al cocinarse normalmente; bajo llama directa se chamusca por sus emulsionantes, no por ser plástico (Snopes). https://www.snopes.com/fact-check/soaking-strawberries-in-saltwater/ https://www.snopes.com/fact-check/thing-cheese-incident/",
+  "original_unhelpful_note": {
+    "text": "The video's experiments are misleading or staged; large worms do not emerge from U.S. strawberries soaked in salt water due to pesticides, and processed American cheese melts during normal cooking rather than burning like plastic. https://en.teyit.org/fact-check/does-the-video-show-that-bugs-come-out-of-strawberries-soaked-in-salt-water https://www.snopes.com/fact-check/soaking-strawberries-in-saltwater/ https://www.snopes.com/fact-check/thing-cheese-incident",
+    "failure_reason": "Strawberry rebuttal is itself wrong: SWD larvae DO emerge from strawberries in salt water — the right correction is that this is a harmless real infestation, NOT pesticide-driven. The note's flat denial gives readers a false impression and contradicts the very Snopes / Teyit sources it cites. Cheese point is closer to correct but glosses over the emulsifier explanation.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet_misleading_demonstration",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/soaking-strawberries-in-saltwater/",
+      "https://www.snopes.com/fact-check/thing-cheese-incident/",
+      "https://cfaes.osu.edu/news/articles/chow-line-tiny-worm-in-your-strawberry-won%E2%80%99t-hurt-you",
+      "https://en.teyit.org/fact-check/does-the-video-show-that-bugs-come-out-of-strawberries-soaked-in-salt-water"
+    ],
+    "notes": "Strawberry worms are real spotted-wing-drosophila larvae (worldwide, not US-specific, not pesticide-driven). American cheese melts under cooking heat; chars under direct flame because of emulsifiers — not plastic. Likely some AI/staging in side-by-side demos."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "MAHA-flavored food-fear content with real public-health stakes; bad demonstrations degrade trust in legitimate food-safety reforms. Mid-reach but pattern is common."
+  },
+  "difficulty": "medium"
+}

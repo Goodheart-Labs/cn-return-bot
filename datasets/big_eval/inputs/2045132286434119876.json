@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2045132286434119876",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:21.537Z",
+  "post": {
+    "id": "2045132286434119876",
+    "author_id": "314274700",
+    "created_at": "2026-04-17T13:28:28.000Z",
+    "text": "Pope Leo XIV is anticipated to be in attendance for Notre Dame and Villanova's college basketball doubleheader in Rome on Nov. 1.\n\nThe men's teams will play at 9:30 a.m. ET on Fox. The women follow at 12 p.m. ET on FS1.\n\nhttps://t.co/QDtJu72Xca https://t.co/IuFvh6n1u4",
+    "media": [
+      {
+        "media_key": "3_2045131382884585472",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGHEKDvW0AAQjE3.jpg",
+        "height": 2731,
+        "width": 4096
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 344,
+      "reply_count": 66,
+      "like_count": 6054,
+      "quote_count": 142,
+      "bookmark_count": 271,
+      "impression_count": 1717427
+    },
+    "author_followers": 31807,
+    "author_name": "Tyler Horka",
+    "author_description": "Notre Dame FB & WBB for @BGInews / @On3 | Previously @clarionledger, @thedailytexan, @NFLMedia & @SINow | “An outstanding young reporter” per @Finebaum",
+    "author_tweet_count": 34633
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGHEKDvW0AAQjE3.jpg",
+          "description": {
+            "description": "A medium shot of a religious figure, likely a Catholic prelate, wearing a white zucchetto, glasses, and a red and white liturgical vestment decorated with ornate gold embroidery. He is shown from the waist up, smiling and waving both hands towards the viewer. He is flanked by two other men in clerical clothing. The background is a solid, warm brown color.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Steve Schale (@steveschale): Greatest thing ever would be Pope Leo reverting back to being Southside Bob and chewing out the refs. (Likes: 204)\n- Tyler Horka (@tbhorka): Clarification: the Pope is not planning to attend the actual games but there is “a planned audience with Pope Leo XIV set to take place ahead of the game(s),” per the press release. (Likes: 178)\n- Out of Office (@soflofan): Prepare thyselves Notre Dame, to face God’s chosen basketball team (Likes: 52)\n- caleb (@caleb_william_g): Notre Dame will need a basketball team then! (Likes: 48)\n- Mr. Eberto (@ninetyftaway2): Yes, Catholics, including the Pope, can have a beer. (Likes: 20)\n- Coach K Kenneth Gipp ✝️🇺🇸🍀🇮🇱 (@KennethGipp): The almighty himself couldn't save this basketball program. (Likes: 15)\n- Joe (@joecal73): Honest question: what does a Pope where to a basketball game? (Likes: 10)\n- Brandon (@bdebelak88): Yeah I’m gonna need a signed photo or trading card of @Pontifex and @HannahHidalgo. @Topps make it happen (Likes: 8)\n- Jeremy Perdue (@Ajm3226): With the Pope at the game....ND by a thousand. (Likes: 7)\n- Pat Powers (@Duncombepat): A basketball game fit for His Eminence! Perhaps the White Sox in Rome next baseball season with a excellent opponent...The St. Louis Cardinals...you suppose?!?:0) (Likes: 7)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2043333213729304866",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:31.035Z",
+  "post": {
+    "id": "2043333213729304866",
+    "author_id": "1777672191041040384",
+    "created_at": "2026-04-12T14:19:36.000Z",
+    "text": "🚨Robert Sanchez on Yamal attitude;\n\n\"He doesn't respect his own coach, doesn't respect his fellow teammates, doesn't respect his opponent, doesn't respect other team managers.. I will never rate such a player\"..\n\n\"The other day we saw he wanted to fight all the madrid players ( https://t.co/Hixac8pEQj",
+    "media": [
+      {
+        "media_key": "3_2043333209992097793",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFtguntWcAEQRvZ.jpg",
+        "height": 576,
+        "width": 1024
+      },
+      {
+        "media_key": "3_2043333210843631616",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFtguq4X0AAzPYz.jpg",
+        "height": 859,
+        "width": 1320
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 220,
+      "reply_count": 135,
+      "like_count": 1151,
+      "quote_count": 7,
+      "bookmark_count": 23,
+      "impression_count": 53750
+    },
+    "author_followers": 14514,
+    "author_name": "Kai🇩🇪",
+    "author_description": "CFC london is blue @ChelseaFc ||",
+    "author_tweet_count": 49508
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFtguntWcAEQRvZ.jpg",
+          "description": {
+            "description": "A close-up of soccer player Robert Sanchez wearing a green jersey and headphones while being interviewed for BBC Final Score. He stands in front of a backdrop featuring various logos including the Premier League, JD Sports, and TradeW, with a yellow BBC Sport microphone in the foreground.",
+            "ocrText": "FINAL SCORE ROBERT SANCHEZ League Premier League BET VISIT LAUDERDALE TradeW Premier League DU BET MGM Premier League UDU BET Premier League VISIT LAUDERDALE DEBE BBC SPORT FINAL SCORE SUL DEBET Trad Premier Leag JD SUD JD JD EBET"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFtguq4X0AAzPYz.jpg",
+          "description": {
+            "description": "A close-up shot from behind of soccer player Lamine Yamal wearing an FC Barcelona jersey with number 10, holding his hands up to his head while facing a crowd in a stadium.",
+            "ocrText": "LIGHT tv LAMINE YAMAL 19"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Sage_FCB: \"A mid talking about the best player itw 😂.. next\" (Likes: 7)\n- @presresistant: \"Sanchez talking when he is a shite goalie 😭😭😭\" (Likes: 2)\n- @Velvetwall6: \"I don’t rate him\" (Likes: 1)\n- @lagcat12YT: \"bro doesn't even top Filip Jörgensen and now he's talking about ts\" (Likes: 1)\n- @daucmcmoy: \"I don't think this guy has the right to speak\" (Likes: 1)\n- @ghsuyeep: \"Fuck u baldie you never gonna make it to spain national team dickhead\" (Likes: 1)\n- @FolaSam394114: \"What the hell is wrong with this nigga jealousy??? Or pain??\" (Likes: 1)\n- @CFC_Pukka: \"Don’t setup my goalkeeper please 😭🤣\" (Likes: 1)\n- @zirkee_utdd: \"Sanchez should focus on his goalkeeping\" (Likes: 1)\n- @ArsenalN14: \"He is right\" (Likes: 0)",
+    "warnings": []
+  }
+}

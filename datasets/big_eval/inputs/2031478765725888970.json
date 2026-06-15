@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2031478765725888970",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:53.331Z",
+  "post": {
+    "id": "2031478765725888970",
+    "author_id": "4100757148",
+    "created_at": "2026-03-10T21:14:15.000Z",
+    "text": "👀👀👀\n\nUS Air Force KC-135 Stratotanker refueling a USAF B-21 Raider! https://t.co/mwPoNcvsWz",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2031458425910211068"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2031458425910211068",
+      "author_id": "1468290218264768512",
+      "created_at": "2026-03-10T19:53:26.000Z",
+      "text": "https://t.co/nGJrfp8PSk",
+      "media": [
+        {
+          "media_key": "3_2031458318674530304",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HDEwk-SbkAAlmEM.jpg",
+          "height": 794,
+          "width": 1300
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 167,
+      "reply_count": 35,
+      "like_count": 3103,
+      "quote_count": 8,
+      "bookmark_count": 210,
+      "impression_count": 189041
+    },
+    "author_followers": 116454,
+    "author_name": "TheIntelFrog",
+    "author_description": "AvGeek and OSINT enthusiast | Providing real-time updates on military aircraft movements and breaking events | NOT an undercover B-2 pilot",
+    "author_tweet_count": 51919
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDEwk-SbkAAlmEM.jpg",
+          "description": {
+            "description": "An aerial view from below showing a Northrop Grumman B-2 Spirit stealth bomber flying in close formation behind a Boeing KC-135 Stratotanker refueling aircraft against a clear blue sky. The tanker's boom is extended towards the B-2's refueling receptacle.",
+            "ocrText": "USAF ED"
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @Havoc_Six: 👀 (30 likes)\n- @combatracker: Are we going to see B21 make its combat debut? (24 likes)\n- @ZeroHourIntel: CCP punching air rn (16 likes)\n- @potheadsession: Is the B 21 near the theater this is awesome. They’d be stupid not to test it. (9 likes)\n- @MaiP118: (No text content) (7 likes)\n- @ChiTownGrowz: The amount of comments from people that have no idea what they are talking about is amazing. (5 likes)\n- @Parmenides5BCE: Nice! (3 likes)\n- @DanHeitzX: And we will still use B-52 and B-1Bs (3 likes)\n- @hugodeboss1: Useless piece of shit. The USAF should just be disbanded and split between the Army and the Navy at this point. Wow cool, another dorito. The Strait of Hormuz is still closed, buddy, and they're still firing missiles (3 likes)\n- @AviationDrew08: I believe that is an NKC-135, given the tail (2 likes)\n- @jedikjs: B-21 isn’t in service yet. You can tell by the probe on the front that this is a test flight. (2 likes)",
+    "warnings": []
+  }
+}

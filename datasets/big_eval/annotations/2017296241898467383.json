@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2017296241898467383",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "old_viral_clip_resurfaced",
+  "tweet_summary": "Hoops account posts the iconic 2022 viral clip of Michael Rapaport being hit by a snowball mid-rant in NYC, with the caption 'Michael Rapaport gets hit by a snowball in the streets of New York' — no date claim.",
+  "why_note_decision": "The Rapaport snowball video is one of the most famous viral clips of the last several years (4.2M views on the original; 'Get out of my way!' etc.). It surfaced in Feb 2022 during his Instagram Live rant about Whoopi Goldberg/cancel culture. The tweet uses present tense ('gets hit') but does not assert it's current; it's a famous internet moment people enjoy re-sharing. Most commenters reference it as a comfort clip ('I watch this whenever I'm sad'). The note's '2022, Instagram Live, suspect arrested January 2026' detail is fine context but the dominant rating tag was noteNotNeeded (12/25). The video is so widely-known there's no realistic misleading-readers risk.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is one of the most widely-shared 'famous viral clip' moments in recent years, posted with present-tense caption but no date claim. FAIL any note that 'corrects' the timing or adds the 2022 detail as if essential — viewers recognize the clip. A note here is over-correction on a meme. FAIL any note that asserts the tweet implies recency without textual evidence.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video shows Michael Rapaport being hit by a snowball in New York City in February 2022 during an Instagram Live rant. The individual responsible was arrested in January 2026. https://www.the-independent.com/news/world/americas/michael-rapaport-snowball-video-b2008225.html https://www.shorenewsnetwork.com/man-who-threw-snowball-at-michael-rapaport-finally-arrested-after-five-years",
+    "failure_reason": "noteNotNeeded — extremely well-known viral clip with no implicit recency claim; note is unsolicited context, not a correction.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Video genuinely is the Feb 2022 Rapaport Instagram Live snowball incident; tweet does not claim it is current.",
+    "sources_checked": [
+      "https://finance.yahoo.com/news/michael-rapaport-blasted-snowball-during-004623628.html",
+      "https://www.aceshowbiz.com/news/view/00182988.html",
+      "https://www.shorenewsnetwork.com/man-who-threw-snowball-at-michael-rapaport-finally-arrested-after-five-years"
+    ],
+    "notes": "Suspect was arrested in January 2026 after 5 years — interesting trivia but not necessary to correct the tweet."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "5.2M impressions but pure low-stakes celebrity entertainment. Pipeline-learning value: don't over-explain well-known viral clips just because they're re-shared with present-tense captions."
+  },
+  "difficulty": "easy"
+}

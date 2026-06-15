@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2019556804498452525",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["conspiracy_and_viral_hoax", "legal_or_court_claim"],
+  "category_fit": "partial",
+  "suggested_category": "tabloid_reporting_accurately_quoted",
+  "tweet_summary": "Mario Nawfal (3.5M followers) posts a 6.8-minute Alex Jones clip discussing newly-released DOJ Epstein documents, including a Nov 2019 anonymous tipster email alleging two foreign girls were strangled during 'rough fetish sex' and buried in hills around Zorro Ranch. Caption frames it as 'We have this out in the open. Let's see if this actually gets investigated...' 1.5M impressions.",
+  "why_note_decision": "The underlying allegation IS real and IS now being investigated. The Daily Mail (cited in the note) covered the 2019 email; in Feb–Mar 2026 the NM Land Commissioner and DOJ launched a probe, NM authorities conducted searches with cadaver dogs, Al Jazeera reported on 'grave-like plots' at Zorro Ranch (Mar 17 2026). The tweet accurately characterizes the email contents and the request to investigate — it does not assert the bodies have been found. The original note correctly states the email is unverified, no bodies found, and originated as a Bitcoin-payment offer — these facts are accurate, BUT the tweet doesn't deny any of this; the tweet's framing ('let's see if this gets investigated') is consistent with the actual state of evidence. The note reads as defensive context that doesn't refute the tweet. Community rejected it (18 noteNotNeeded, 14 opinionSpeculation, 15 missingKeyPoints). Also note: in March 2026 NM officials DID open an investigation, undermining the note's 'inactive' framing.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a tightly factual note that accurately describes the state of the investigation. The Nov 2019 anonymous tipster email about two girls buried at Zorro Ranch is a real document in the Epstein DOJ release (Daily Mail, Source NM, Al Jazeera, Santa Fe New Mexican all reported on it). The NM Land Commissioner publicly called for a probe in Feb 2026; NM DOJ opened one; authorities searched with cadaver dogs and reported 'grave-like plots' in Mar 2026. The tweet's framing is 'this is what the released document says — will it be investigated?' which matches reality. FAIL any note that (a) repeats the original failure of stating the FBI investigation 'remains inactive with no related charges' — by Feb–Mar 2026 NM had opened a state-level probe and physical searches occurred, (b) frames the tipster email as a debunked hoax when it is in fact a real document being actively investigated, (c) cites narativ.org (an unreliable substack) as the primary source. Confidence: medium — a tight neutral note IS possible, but the bar is high because the tweet's claim ('this is what the released docs say') is accurate. Best outcome: no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The claim that Epstein and Maxwell strangled and buried two girls at Zorro Ranch originates from an unverified anonymous email sent in 2019 offering material for Bitcoin payment; no bodies have been found, and the FBI investigation remains inactive with no related charges. https://www.narativ.org/p/exclusive-the-bodies-buried-at-zorro https://www.dailymail.co.uk/news/article-15531195/Jeffrey-Epstein-ordered-two-foreign-girls-strangled-death-rough-fetish-sex-buried-near-ranch-person-claiming-former-worker-alleged.html",
+    "failure_reason": "note_not_needed / outdated — by Feb–Mar 2026 NM had opened a probe and conducted searches; the 'investigation remains inactive' framing is wrong, and the tweet accurately summarizes the released document. Community downrated.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_accurately_summarizes_released_email_investigation_now_open",
+    "sources_checked": [
+      "https://www.dailymail.co.uk/news/article-15531195/Jeffrey-Epstein-ordered-two-foreign-girls-strangled-death-rough-fetish-sex-buried-near-ranch-person-claiming-former-worker-alleged.html",
+      "https://sourcenm.com/2026/02/10/nm-land-commissioner-seeks-probe-into-allegation-that-two-girls-were-buried-near-epstein-ranch/",
+      "https://www.aljazeera.com/news/2026/3/17/tipster-claims-to-have-seen-grave-like-plots-at-epsteins-zorro-ranch",
+      "https://www.santafenewmexican.com/news/local_news/new-mexico-official-urges-probe-into-claim-of-bodies-near-epstein-ranch/article_21a2e0e8-ebb6-4281-919f-7ba45e3805e9.html"
+    ],
+    "notes": "The Nov 2019 anonymous email is a real released document. It originated with a Bitcoin demand and is unverified. BUT by Feb–Mar 2026 NM state officials had publicly opened a probe and conducted physical searches with cadaver dogs, finding what they called 'grave-like plots'. The note's claim that the investigation 'remains inactive' is outdated. Tweet framing ('will this get investigated') is accurate at posting time and now confirmed."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Epstein/Zorro Ranch is a major ongoing public-interest investigation with criminal-justice and elite-accountability implications. False-positive notes that prematurely declare an active investigation closed are corrosive to trust."
+  },
+  "difficulty": "hard"
+}

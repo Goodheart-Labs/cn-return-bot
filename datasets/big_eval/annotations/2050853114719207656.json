@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2050853114719207656",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["manipulated_or_fabricated_evidence"],
+  "category_fit": "partial",
+  "suggested_category": "obvious_satire_greenwashing_parody",
+  "tweet_summary": "Sarcastically captioned 'This is how a responsible airline handles jet fuel crisis,' the post shows a screenshot of a purported Lufthansa flight-cancellation email that recommends converting your owed refund into a 'climate contribution' toward Sustainable Aviation Fuel in exchange for a digital certificate and 200 award miles.",
+  "why_note_decision": "The screenshot is transparent satire/greenwashing parody, not a real Lufthansa email presented as genuine. No airline asks customers to donate their legally-owed cancellation refund back to the airline's own climate program for a 'digital certificate'; the absurdity is the entire joke, and the sarcastic caption signals it. Every top reply reads it as comedy ('one of the funniest things I've seen', 'you better not have printed out that certificate'). Nobody is plausibly misled into thinking this is real Lufthansa policy, so a note debunking it is a false positive on obvious satire.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The image is obvious satire/greenwashing parody (a fake 'donate your refund to our climate program' email) shared with a sarcastic caption; the audience plainly treats it as a joke. Writing a literal 'this email is fabricated; Lufthansa offers standard refunds' note misreads satire as a deceptive claim and is a false positive. FAIL any note. If a note were somehow written, the bare-minimum non-failing version would explicitly frame the image as satire/parody, not present it as a real document someone is being tricked by.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The screenshot shows a fabricated email; Lufthansa's official policy for cancelled flights offers standard refunds or rebooking but no option to convert refunds to \"climate contribution\". https://www.lufthansa.com/us/en/cancellations-and-refunds https://www.lufthansa.com/de/en/flight-disruptions",
+    "failure_reason": "note_not_needed_treats_satire_as_deception",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Satire/parody. Lufthansa has real SAF/climate-contribution add-on programs at booking, but no policy converting an owed cancellation refund into a donation; the email is a comedic greenwashing parody, posted sarcastically.",
+    "sources_checked": [
+      "https://www.lufthansa.com/us/en/discover-lufthansa/carbon-offsetting/saf",
+      "https://www.lufthansa.com/us/en/refund",
+      "https://www.thedrum.com/news/2023/03/01/asa-bans-lufthansa-ad-over-misleading-environmental-claims"
+    ],
+    "notes": "Lufthansa does run SAF/offset add-ons (and has been dinged by the UK ASA for misleading green claims), but offering to convert a refund owed for a cancelled flight into a donation is not a real policy. The caption is sarcastic and the comments are uniformly jokes; this is recognized satire, not deceptive fabricated evidence."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "553k impressions of a corporate-greenwashing joke; satire about airline climate marketing has no EA/progress/safety stakes and is understood as a joke by the audience."
+  },
+  "difficulty": "medium"
+}

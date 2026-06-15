@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2028953063998763183",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "war_unverified_rumor",
+  "tweet_summary": "Middle East Observer (376K followers) posts an 'unconfirmed initial report' from 'Iranian witness channels' that a US F-15 was shot down by Iran and police went to capture the pilot — telling readers to 'stay tuned for confirmation.'",
+  "why_note_decision": "Even though the author hedges with 'unconfirmed,' the tweet circulates a specific factual claim (US F-15 shot down by Iran, pilot captured) that mainstream sources directly contradict: on March 1 2026, CENTCOM confirmed three US F-15Es were downed by Kuwaiti friendly fire (not by Iran), and all six aircrew ejected safely and were recovered. The 'Iranian witness channel' framing is exactly the kind of rumor-laundering that benefits from a corrective note before it spreads further. The original note correctly cited CENTCOM and was structurally sound; raters tagged 'note not needed' partly because the post was small (12 ratings, modest visibility) and partly because the author had already hedged. We still think a note is warranted given the specificity of the false sub-claim and Iran-war info-environment stakes.",
+  "judge_guidance": "A correct note must (1) state that CENTCOM confirmed the F-15E losses were caused by Kuwaiti friendly fire, not Iranian action, (2) state that all six aircrew ejected safely and were recovered — no US pilot was captured by Iran, (3) cite the CENTCOM press release (centcom.mil) or a wire/major outlet (Stars and Stripes, Military Times, Reuters/AP) as the source. MUST NOT: (a) speculate beyond the public record, (b) editorialize about Iran's motives, or (c) cite only social-media or partisan sources. PASS if the note clearly contradicts the 'shot down by Iran / pilot captured' framing using CENTCOM, in under ~280 chars. FAIL if it merely says 'unconfirmed' without naming the friendly-fire correction or omits the 'all crew safe' part.",
+  "reference_note": "US CENTCOM confirmed three US F-15Es were downed by Kuwaiti air defenses in a friendly-fire incident on Mar 1, 2026; all six aircrew ejected and were recovered. No US aircraft was shot down by Iran and no pilot was captured. https://www.centcom.mil/MEDIA/PRESS-RELEASES/Press-Release-View/Article/4418568/three-us-f-15s-involved-in-friendly-fire-incident-in-kuwait-pilots-safe",
+  "original_unhelpful_note": {
+    "text": "Unverified Iranian claims of an F-15 shootdown and pilot capture contradict US CENTCOM: three US F-15s were downed by Kuwaiti air defences in Kuwait in a friendly-fire incident and all pilots ejected and were recovered. https://www.centcom.mil/MEDIA/PRESS-RELEASES/Press-Release-View/Article/4418568/three-us-f-15s-involved-in-friendly-fire-incident-in-kuwait-pilots-safe",
+    "failure_reason": "Note is largely correct, but raters lean 'note not needed' on a low-volume hedged rumor post. Borderline rater fatigue; the correction itself is accurate and useful.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false — the F-15E losses were Kuwaiti friendly-fire, not Iranian shootdowns, and no pilots were captured",
+    "sources_checked": [
+      "https://www.centcom.mil/MEDIA/PRESS-RELEASES/Press-Release-View/Article/4418568/three-us-f-15s-involved-in-friendly-fire-incident-in-kuwait-pilots-safe/",
+      "https://www.stripes.com/branches/air_force/2026-03-02/kuwait-pilots-crash-20926094.html",
+      "https://www.militarytimes.com/news/your-military/2026/03/02/3-f-15s-shot-down-by-kuwait-in-friendly-fire-incident-pilots-safe-us-says/",
+      "https://www.airandspaceforces.com/f-15e-fighters-downed-over-kuwait-iran/"
+    ],
+    "notes": "CENTCOM confirmed three F-15Es lost on Mar 1 2026 to Kuwaiti air defenses during combat against Iran; all six crew safe. Iranian channels claiming an Iran-credited shootdown + pilot capture are not supported."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Active US-Iran war infosphere; correcting bogus shootdown/pilot-capture rumors matters for escalation dynamics and is relevant to global-security/EA priorities."
+  },
+  "difficulty": "easy"
+}

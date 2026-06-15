@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2021930131733065889",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:50.533Z",
+  "post": {
+    "id": "2021930131733065889",
+    "author_id": "1784785800153927680",
+    "created_at": "2026-02-12T12:51:23.000Z",
+    "text": "She had enough! Lmao! 🤣🤣 https://t.co/4WI1wGUvB0",
+    "media": [
+      {
+        "media_key": "7_2021930081648881669",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2021930081648881669/pu/img/dSjQ49y7sIkoR4Vs.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 48874,
+        "view_count": 212797,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2021930081648881669/pu/vid/avc1/320x568/svg8fXDIoxX8CgD6.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2021930081648881669/pu/vid/avc1/480x852/AsG6DmzPkdtvREBZ.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2021930081648881669/pu/vid/avc1/720x1280/XPpiOtvTDPwsvtVr.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2021930081648881669/pu/pl/XaNuTB8Pp3p0G8pO.m3u8?v=821"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 795,
+      "reply_count": 524,
+      "like_count": 5536,
+      "quote_count": 174,
+      "bookmark_count": 673,
+      "impression_count": 202910
+    },
+    "author_followers": 147426,
+    "author_name": "LynneP",
+    "author_description": "Food is my love language! I'm here to laugh, travel, fish, cook, woodwork, garden, and farm. Fascinated with mechanical machines! Coffee all day!",
+    "author_tweet_count": 368028
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2021930081648881669/pu/vid/avc1/720x1280/XPpiOtvTDPwsvtVr.mp4",
+          "description": {
+            "description": "A woman portraying an employee in a pizzeria, wearing a white floral top with a white apron, is shown interacting with a customer from behind a counter. In the background a commercial pizza oven and industrial mixer are visible. The first frame shows her with a neutral expression as a customer's request for a 'pizza pie' is displayed. In the following frames, she expresses confusion as text reveals her dialogue: 'what pizza would you like' and 'I don't know what the pizza pie is'. In the final frame, the customer's request for a 'Hawaiian pizza' is visible as the woman stares blankly with a pen and notepad in hand.",
+            "ocrText": "POV: you're American ordering in Italy\nYeah can I get a pizza pie?\n@JESSICAMARCHI\nwhat pizza would you like\n@JESSICAMARCHI\nI don't know what the pizza pie is\n@JESSICAMARCHI\nI'll have a Hawaiian pizza\n@JESSICAMARCHI"
+          },
+          "transcription": "Yeah, can I get a pizza pie? What's a pizza pie? You know, pie pizza, or a large... I don't know what a pizza pie is. I don't have pie. Okay, I have pizza. Do you want pizza? Sure, I'll have... What pizza would you like? Okay, fine. I'll have a Hawaiian pizza, you know, the one with the pineapple? We don't have pineapple on pizza in Italy. Do you understand this? Do you understand this? Please leave my shop. Do you understand this? Please leave my shop. Please leave my shop. Leave. I'll show you the entrance. Get an Uber. Get an Uber. We don't have Uber in Italy."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @SignorBrooklyn: Totally fake. First, she is a native English speaker with a poor Italian accent, and that street is not Italy. (Likes: 130)\n- @Texas_jeep_guy: I don’t blame her. Who eats pineapple on pizza. (Likes: 106)\n- @GuyaMariani: that's not Italy. We don't have those streets, street lights nor even those constructions. Funny though (Likes: 37)\n- @KMJB33079: Yeah that interaction is totally believable! (Likes: 33)\n- @Angoramex: It’s Inglewood CA, to be exact. That dump don’t look anything like Italy, but it’s a good leg pull. (Likes: 28)\n- @TawivixxenFafo: Ooooh!  He hit her with the pineapple on the pizza 😯🍕 (Likes: 21)\n- @rikku032795: That’s the U.S., not Italy. (Likes: 16)\n- @surbet86832: A pizza pie. Who ever says that needs capital punishment. (Likes: 14)\n- @PiidaDiida: 😂 What a Spicy Meatball (Likes: 12)\n- @CaptainBradFL: This is how every person should be treated when they order pineapple on pizza. (Likes: 12)",
+    "warnings": []
+  }
+}

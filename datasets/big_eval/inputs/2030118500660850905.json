@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2030118500660850905",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:45.291Z",
+  "post": {
+    "id": "2030118500660850905",
+    "author_id": "1356159033019916290",
+    "created_at": "2026-03-07T03:09:02.000Z",
+    "text": "Looks like it’s going to be just like Gaza https://t.co/fRF2i0SwMr",
+    "media": [
+      {
+        "media_key": "13_2030118441911234560",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2030118441911234560/img/NYMegclAPydcMeNv.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 19000,
+        "view_count": 257509,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030118441911234560/vid/avc1/320x568/7YK-cBf_8alCI5ep.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030118441911234560/vid/avc1/480x852/JU1CGeXQQRMhe9cL.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2030118441911234560/vid/avc1/720x1280/4eA7uBy_UqkoRReg.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2030118441911234560/pl/qnOuh6GtWLazKLMO.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3254,
+      "reply_count": 485,
+      "like_count": 12387,
+      "quote_count": 214,
+      "bookmark_count": 1194,
+      "impression_count": 432669
+    },
+    "author_followers": 78164,
+    "author_name": "Hussain “Hoz” Shafiei",
+    "author_description": "Proud British Citizen, Iranian by blood, Arab by birth and English by upbringing. To all the serial abusers insta-block\n\nMy Pronouns are Tahini/Tahiniya!!!",
+    "author_tweet_count": 95847
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2030118441911234560/vid/avc1/720x1280/4eA7uBy_UqkoRReg.mp4",
+          "description": {
+            "description": "A series of frames capturing bright, burning objects rapidly descending from the sky at night, leaving trails of light and smoke behind them. The scene appears as an intense bombardment over a landscape, with fires and light visible on the horizon. Each frame features an Instagram handle and a specific date and time stamp at the bottom.",
+            "ocrText": "@Z.A.IRAN_MILITRY 07/03/2026 03:35 AM"
+          },
+          "transcription": "Продолжение следует..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@void_post**  \nSimple life hack, move Israel to where it rightful should be / already is and we will get Peace In The Middle East.  \n(Im a Masshole, ill drive around it)  \n(Likes: 203, Reposts: 25, Replies: 32, Views: 16760)\n\n**@BTCbuddah**  \nNow I know how jews felt on 9/11 !!  \nI understand why they were dancing when the planes hit!!  \n(Likes: 195, Reposts: 0, Replies: 0, Views: 7207)\n\n**@Gilflorida2023**  \n[Image]  \n(Likes: 179, Reposts: 0, Replies: 0, Views: 8626)\n\n**@jamie3281659449**  \nMy heart bleeds - not. Fuck Israel  \n(Likes: 132, Reposts: 18, Replies: 4, Views: 6681)\n\n**@void_post**  \n[Video]  \n(Likes: 104, Reposts: 0, Replies: 0, Views: 15664)\n\n**@WAPBTRadio**  \n👍🇺🇸💖HIT THE Wall..        remove that fucking  symbol of Moloch, Baal, Ramphan false archon gods .. No refugees, No  survivors, No prisoners.. Turn the fake israel to dust  \n(Likes: 75, Reposts: 0, Replies: 0, Views: 3640)\n\n**@omt66**  \nForget about the Iron Dome, even the Paper Dome is gone!  \n(Likes: 63, Reposts: 0, Replies: 0, Views: 4803)\n\n**@A__MUSAB**  \n[Image]  \n(Likes: 55, Reposts: 0, Replies: 0, Views: 2705)\n\n**@KhaledMukerjee**  \n[Image]  \n(Likes: 34, Reposts: 0, Replies: 0, Views: 1699)\n\n**@RQuestion_**  \nSo it's real! 😳😳😳😳  \n(Likes: 34, Reposts: 0, Replies: 0, Views: 7167)",
+    "warnings": []
+  }
+}

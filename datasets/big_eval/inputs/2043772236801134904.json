@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2043772236801134904",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:36.247Z",
+  "post": {
+    "id": "2043772236801134904",
+    "author_id": "1791488630483271680",
+    "created_at": "2026-04-13T19:24:07.000Z",
+    "text": "Zelensky's wife in a $1,580 shirt.\n\nWhile we count every penny.\nWhile young moms struggle to feed their kids.  \n\nZelensky family has no shame.  \nPlease send him more money. https://t.co/pMlX6g7WAH",
+    "media": [
+      {
+        "media_key": "3_2043772131310247936",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFzv7NCXIAAcBer.jpg",
+        "height": 1028,
+        "width": 1270
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4747,
+      "reply_count": 1097,
+      "like_count": 13612,
+      "quote_count": 158,
+      "bookmark_count": 279,
+      "impression_count": 245688
+    },
+    "author_followers": 159921,
+    "author_name": "Diana Panchenko 🇺🇦",
+    "author_description": "Journalist of the Year in Ukraine. TV host\nEmail: i@panchenko.press",
+    "author_tweet_count": 8500
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFzv7NCXIAAcBer.jpg",
+          "description": {
+            "description": "A side-by-side comparison image showing Olena Zelenska on the left wearing a white embroidered blouse in what appears to be a church setting. On the right is a screenshot of an Instagram post featuring the same blouse. A large text box at the bottom right displays '$1 580' in bold black font.",
+            "ocrText": "irakaravay Подписаться ... 48 5 irakaravay сорочка FRANKO @karavaystudio $1 580"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@den_kazansky**  \nLOL. You don’t count every penny, you live in Moskow and work on Medvedchuk😂😂😂  \nLikes: 2235\n\n**@pepel_klaasa**  \nThis is a max 200$ vyshivanka. You invented the price. I saw those in the shop.  \nOn the bright side, I bet you can afford a $1580 shirt with your salary from Russia  \nLikes: 1663\n\n**@secretsqrl123**  \nyea not the same shirt. but what ever, you lie all the time  \nLikes: 1186\n\n**@MannC84373**  \nWe know what you're fighting for....  \nLikes: 497\n\n**@chich_8**  \nИмеет полное право. И вещь красивая.  \nLikes: 451\n\n**@don_spiridon**  \nДіана, сосі жопу  \nLikes: 326\n\n**@MiaDe54**  \nHere is the price range from that brand, and you are lying russian scum, traitor🤮 using cheap propaganda for low iq people, one day justice will find u.  \nLikes: 274\n\n**@SmilingMuffin87**  \nYou had the wrong price tag, traitor.  \nLikes: 272\n\n**@OnerealVlad**  \n@Panchenko_X lies  \n🇷🇺🐖  \nLikes: 272\n\n**@MarjDrag**  \nThey had money before he became president, dumbass  \nLikes: 167",
+    "warnings": []
+  }
+}

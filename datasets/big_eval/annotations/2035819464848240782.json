@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2035819464848240782",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "unhelpful_sources_missing_or_unreliable",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Shares a TikTok-style 'breaking news' video arguing 'Palm Beach Pete' is secretly Jeffrey Epstein (teeth/face comparisons), captioning 'it's the perfect cover' - endorsing the conspiracy that Epstein is alive in Palm Beach.",
+  "why_note_decision": "The video and tweet promote the false conspiracy that Jeffrey Epstein is alive as 'Palm Beach Pete.' Epstein died in jail in August 2019. 'Palm Beach Pete' is a real, separate person - Peter Simel, a 71-year-old retired Florida real-estate executive and former tennis player - who has repeatedly stated 'I'm not Jeffrey Epstein,' and photo comparisons confirm they are different people. The post reached 1.8M views with many treating it earnestly. A note debunking the Epstein-is-alive claim is warranted.",
+  "judge_guidance": "A correct note must establish (1) Jeffrey Epstein died in 2019, and (2) 'Palm Beach Pete' is a different, real person (Peter Simel) who has publicly denied being Epstein, with photo/identity comparisons confirming they are not the same man - so the 'Epstein is alive / perfect cover' claim is false. PASS only if the note debunks the conspiracy AND cites a reliable, accessible source. The original's specific failure (SourcesMissingOrUnreliable): it leaned on a NY Post link (often paywalled/401) and Fox; a stronger note should route around paywalls (e.g. a Yahoo/ABC/AFP fact-check or Wikipedia for Epstein's death) so raters can verify. FAIL if it leaves the lookalike claim open, treats it as possibly true, or cites only inaccessible/unreliable sources.",
+  "reference_note": "Jeffrey Epstein died in jail in August 2019. 'Palm Beach Pete' is a different, real person - Peter Simel, a 71-year-old retired Florida real-estate executive and former tennis player - who has publicly said 'I'm not Jeffrey Epstein'; side-by-side photo comparisons confirm they are not the same man. https://www.yahoo.com/news/articles/fact-check-im-not-jeffrey-171000060.html https://en.wikipedia.org/wiki/Jeffrey_Epstein",
+  "original_unhelpful_note": {
+    "text": "Palm Beach Pete is not Jeffrey Epstein, who died by suicide in 2019; Pete has publicly denied the claims. https://nypost.com/2026/03/20/us-news/jeffrey-epstein-look-a-like-palm-beach-pete-went-viral-because-of-ny-post/ https://www.foxnews.com/lifestyle/florida-man-mistaken-jeffrey-epstein-sends-internet-frenzy-im-just-me-being-me https://en.wikipedia.org/wiki/Jeffrey_Epstein",
+    "failure_reason": "Sources missing/unreliable: the note's content is correct, but its lead source is a NY Post article (frequently paywalled/401 for raters) and Fox, which a share of raters distrust; tagged SourcesMissingOrUnreliable (11). Routing around paywalls with an AFP/Yahoo/ABC fact-check would make it verifiable.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "conspiracy FALSE; Pete is Peter Simel, not Epstein (d. 2019)",
+    "sources_checked": [
+      "https://www.yahoo.com/news/articles/fact-check-im-not-jeffrey-171000060.html",
+      "https://www.foxnews.com/lifestyle/florida-man-mistaken-jeffrey-epstein-sends-internet-frenzy-im-just-me-being-me",
+      "https://abc3340.com/news/nation-world/im-not-jeffrey-epstein-viral-palm-beach-lookalike-speaks-out"
+    ],
+    "notes": "Epstein died Aug 2019. 'Palm Beach Pete' = Peter Simel, 71, retired FL real-estate executive/former tennis player; he denies being Epstein and photo comparisons confirm different people. The conspiracy is debunked but widely shared (1.8M views)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "High-reach (1.8M views) Epstein-is-alive conspiracy that also defames a private citizen (Simel); correcting protects an individual and curbs a viral hoax, though world-stakes are modest."
+  },
+  "difficulty": "easy"
+}

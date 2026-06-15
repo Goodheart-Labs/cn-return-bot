@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2035654466804847000",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Mario Nawfal posts grainy video claiming Iranian air defenses are engaging an F-15 near Hormuz island during the 2026 Iran war, quoting his own earlier post about Isfahan airbase strikes.",
+  "why_note_decision": "Iranian air-defense engagements with US F-15s during the 2026 Iran war are real (Wikipedia / Stars and Stripes document an F-15E shoot-down in early April 2026 and an A-10 incident near Hormuz). The video itself is grainy and unverifiable from the AI media description — there is not enough evidence to confidently call it 'military-simulation gameplay' as the original note did, nor to confirm it as authentic footage. With no clear contradiction available, a note overreaches. Better to leave un-noted than to assert gameplay on weak evidence.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a note that limits itself to verifiable, well-sourced context (e.g., that Iranian engagements with US aircraft during the 2026 Iran war are real, but the specific clip's origin can't be independently verified). FAIL any note that confidently labels the video 'video-game footage', 'simulation', or 'AI-generated' without strong corroborating evidence — the original CN failure was citing a single unrelated Instagram reel as if it proved gameplay. Also FAIL notes that confidently call it real combat footage.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video depicts footage from military simulation gameplay, not real Iranian air defenses engaging an F-15 near Hormuz. https://www.instagram.com/reel/DVYCKkSEkKc",
+    "failure_reason": "Strong factual claim ('this is gameplay') backed by a single Instagram reel — dominant rater complaint was irrelevant/unreliable sources. Cannot verify from the AI media description alone, and Iranian engagements with US F-15s during the 2026 Iran war were a real, documented phenomenon at this time.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Indeterminate — the broader claim (Iranian air defenses engaging US F-15s near Hormuz in the 2026 Iran war) is corroborated by mainstream reporting on the war; the specific video's provenance cannot be confirmed from available evidence.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Iran_war",
+      "https://en.wikipedia.org/wiki/List_of_aviation_shootdowns_and_accidents_during_the_2026_Iran_war",
+      "https://www.stripes.com/branches/air_force/2026-04-06/air-superiority-iran-us-fighter-jet-21293953.html"
+    ],
+    "notes": "F-15E shot down in Iran April 3, 2026; A-10 downed near Strait of Hormuz around the same time. Earlier March 2 incidents involved friendly fire. Tweet is dated March 22, 2026 — between events. Can't verify whether the specific clip is real combat footage or unrelated, but the gameplay claim is also unsupported."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "War-attribution claims by a 3.5M-follower account can shape geopolitical narratives; but Mario Nawfal's audience is already polarized and one Hormuz clip is unlikely to move policy."
+  },
+  "difficulty": "hard"
+}

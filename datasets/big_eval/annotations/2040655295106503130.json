@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2040655295106503130",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Mario Nawfal shares a dramatized 3D-animated 'explainer' video from the YouTube channel Aitelly recounting the April 3, 2026 shootdown of a US F-15E Strike Eagle (call sign Dude 44) and subsequent multi-aircraft search-and-rescue in Iran's Zagros Mountains. Tweet text frames the events as factual reporting without disclosing that the video is AI / 3D animation, not real combat footage.",
+  "why_note_decision": "The underlying event is REAL — an F-15E was shot down over Iran on 3 April 2026 and both crew members were eventually rescued (Wikipedia, Military Times, SOF News). However, the embedded video is a 3D-animated dramatization from 'Aitelly,' a channel that produces stylized military explainer animations, presented in the tweet without that disclosure. Several details in the narration (specific weapon types, exact timeline) are not officially confirmed by DoD. Readers in the comments are split: some recognize it as AI/animation ('AI slop', 'this is fantasy'), others believe it as combat footage ('F-15E took a brutal hit at Mach 2.8'). A note clarifying that the video is 3D animation, not real footage, would help readers — particularly because Nawfal's audience is large (3.5M followers, 339k impressions).",
+  "judge_guidance": "A correct note must (1) clearly state that the embedded video is a 3D/AI animation or dramatized reconstruction from a YouTube channel (Aitelly), NOT actual combat footage, AND (2) ideally acknowledge that the underlying event — the F-15E shootdown and rescue on 3 April 2026 — is real but that specific tactical details in the narration are unconfirmed/speculative. The note should cite the Aitelly channel and at least one credible news source about the real event (Military Times, Wikipedia, SOF News). PASS if the note clearly flags the video as animation. FAIL if the note (a) claims the entire event is fake (it isn't), (b) focuses on a Mach-number nitpick that isn't in the tweet text or main video narration, or (c) repeats unverified tactical details from the animation as fact.",
+  "reference_note": "The embedded video is a 3D-animated dramatization from the YouTube channel 'Aitelly,' not real combat footage. The underlying event is real — a US F-15E (call sign Dude 44) was shot down over Iran on 3 April 2026 and both crew members were later rescued — but the specific weapons, timeline and tactics shown in the animation are not officially confirmed. https://www.youtube.com/@Aitelly https://en.wikipedia.org/wiki/2026_United_States_F-15E_rescue_operation_in_Iran",
+  "original_unhelpful_note": {
+    "text": "The video is an animated simulation from a channel producing 3D military explanations, not real footage, and the claimed Mach 2.8 speed exceeds the F-15E's maximum of Mach 2.5 with no official confirmation of these details. https://www.youtube.com/@Aitelly https://en.wikipedia.org/wiki/McDonnell_Douglas_F-15E_Strike_Eagle https://www.twz.com/air/photos-of-f-15e-wreckage-emerge-amid-iranian-claims-it-shot-down-an-american-fighter",
+    "failure_reason": "Note correctly identifies the video as animation but then pivots to a Mach 2.8 nitpick that isn't in the tweet text shown — the Mach claim apparently comes from elsewhere in the thread/replies, making the rebuttal feel off-target to raters. The note also fails to acknowledge that the underlying event (F-15E shootdown over Iran) is real, which leaves room for raters to feel it's overstating fakeness. Tagged 'note not needed' (5) and 'missing key points' (3).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "real event, dramatized via AI/3D animation presented as if reportage",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_United_States_F-15E_rescue_operation_in_Iran",
+      "https://www.militarytimes.com/news/your-military/2026/04/03/us-fighter-jet-shot-down-over-iran/",
+      "https://sof.news/middle-east/f-15e-2nd-aviator-rescued/"
+    ],
+    "notes": "F-15E shootdown on 3 April 2026 is confirmed by multiple credible outlets. The 'Aitelly' channel produces 3D military animations — see channel URL. Mach 2.8 claim doesn't appear in either the tweet text or the narration we have; it may be in extended text or a follow-up tweet."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Major-account war reporting (~339k views, 3.5M-follower author). Presenting AI animation as combat reportage during an active war affects public understanding of the conflict; flagging is moderately important for information integrity."
+  },
+  "difficulty": "medium"
+}

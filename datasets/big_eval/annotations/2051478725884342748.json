@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2051478725884342748",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Pop Base reports that Racquel Chevremont partnered with March For Our Lives to deliver a gun-violence message at the Met Gala wearing a bulletproof dress reading 'Gun Violence Is Killing Our Kids', designed by Clarence Ruth.",
+  "why_note_decision": "The tweet is an accurate report of what happened. Replies argue that wearing body armor in NY is illegal — true under the 2022 NY body armor ban for civilians not in eligible professions — but this is a (a) tangential gotcha about NY law that doesn't refute anything in the tweet and (b) ignores that an artistic/protest garment 'engineered to look like' a bulletproof vest may or may not legally qualify as body armor, and the wearer's NY status / profession / where it was acquired are unclear. The original note states NY law correctly but is non-responsive to the tweet's actual claim — that's why raters tagged 'missing key points' / 'note not needed'. No factual claim in the tweet is wrong; this is opinion/framing pushback, not a misinfo correction.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's factual claims (Chevremont wore a message dress at the Met Gala in partnership with March For Our Lives, designed by Clarence Ruth) are accurate per Yahoo Lifestyle and TheInspiration.com. FAIL if the bot writes a note that simply cites NY body armor law as if it refutes the tweet — that is the original note's specific failure: it injects a tangential legal point without addressing any false claim in the post. FAIL also if the bot writes any note that contests the truth of the dress / the partnership / the designer. A correct response is no note.",
+  "reference_note": "",
+  "original_unhelpful_note": {"text": "New York law prohibits civilians not employed in eligible professions from purchasing or taking possession of body armor, punishable as a class A misdemeanor. https://dos.ny.gov/body-armor https://www.nysenate.gov/legislation/laws/PEN/270.21", "failure_reason": "Note injects a tangential legal gotcha about NY body armor law that doesn't refute anything in the tweet. The tweet accurately describes a protest garment / partnership; whether the wearer technically violated NY body armor law is a separate, unverified inference. Dominant rater reason: notHelpfulMissingKeyPoints + notHelpfulNoteNotNeeded.", "original_status": "NEEDS_MORE_RATINGS"},
+  "fact_check": {"agrees_correction_needed": false, "claim_verdict": "tweet accurate; NY-law gotcha is non-responsive", "sources_checked": ["https://www.yahoo.com/lifestyle/article/the-met-gala-was-about-fashion-one-unexpected-look-made-it-about-gun-control-211712343.html", "https://theinspiration.com/2026/05/march-for-our-lives-the-bulletproof-dress/", "https://dos.ny.gov/body-armor"], "notes": "NY's 2022 body armor law restricts civilian purchase/possession of body armor outside ~30 eligible professions. But the law is irrelevant to whether the tweet's factual claims are true."},
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "Politically charged topic with 672K impressions, but the underlying factual claim is uncontested; pushing back on the framing is not what notes are for."},
+  "difficulty": "medium"
+}

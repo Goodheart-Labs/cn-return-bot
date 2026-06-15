@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1987524325684244620",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "kerbal_space_program_render",
+  "tweet_summary": "Posted by a Kerbal Space Program content creator ('Truthful'), the image is captioned 'NG Booster Never Tell Me The Odds coming down for a landing' — it is openly a KSP render shared in his usual KSP-cinematic style.",
+  "why_note_decision": "The author's profile explicitly says 'Kerbal Space Program content creator' and the image is a clear KSP render with purple plasma plumes. The author isn't claiming this is real Blue Origin footage — he's a KSP simmer sharing fan art the day of the real New Glenn landing attempt. Top reply: 'lol some dumbass is trying to community note this post' — community read this as obvious KSP content. The original note pedantically explains what KSP is and that Blue Origin's real launch was scheduled for Nov 9. Note Not Needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive — the post is clearly fan-art / sim-render from a self-identified Kerbal Space Program content creator on the day of the real New Glenn launch; no reader is misled. A note 'explaining' that this is a video-game render is over-fact-checking.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This image is a recreation in the game Kerbal Space Program, not real footage. Blue Origin's New Glenn booster 'Never Tell Me The Odds' is scheduled to launch (and attempt landing) on Nov 9, 2025, at 19:45 UTC (2:45 PM ET).",
+    "failure_reason": "Tweet's author publicly creates KSP content — no implicit claim of real footage. Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Image is a KSP render and the author is publicly a KSP content creator; no false claim being made.",
+    "sources_checked": [
+      "https://www.space.com/space-exploration/launches-spacecraft/blue-origin-new-glenn-escapade-mars-launch-webcast"
+    ],
+    "notes": "Blue Origin's New Glenn 'Never Tell Me The Odds' second-stage / booster mission was a real launch on Nov 9, 2025; the tweet is fan-render commentary not impersonation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Tiny-engagement (83 likes) hobbyist post; zero broader impact."
+  },
+  "difficulty": "easy"
+}

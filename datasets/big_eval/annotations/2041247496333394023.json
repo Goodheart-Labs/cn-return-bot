@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2041247496333394023",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire"],
+  "category_fit": "poor",
+  "suggested_category": "obvious_satire_meme",
+  "tweet_summary": "User shares a long-circulating satirical mock headline ('Pornstar Brandon Cummings… arrested after beating up 35 Neo-Nazis') with caption 'Free him he didn't do anything'. Clear shitpost-style humor.",
+  "why_note_decision": "Mock news graphic from a known satirical/joke site ('dailynewsreported.com'), recycled since 2022, with an absurd premise (fictional 'Let's Go Brandon' porn series, beating up 35 Nazis, last name 'Cummings'). The reply thread is wall-to-wall jokes — even one reader explicitly says 'This is satire'. Author bio @hotgirlshatefascism is a joke account. The original CN note treats it as misinformation requiring a debunk; community-rated as note-not-needed (top tags: notHelpfulNoteNotNeeded × 14, notHelpfulMissingKeyPoints × 13). Any earnest note here is a false positive.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is an obvious shitpost-style joke meme. Any note debunking the fictional 'Brandon Cummings' arrest or pointing readers to Snopes/Lead Stories is a false positive — readers already get the joke and the community already rated this kind of note unhelpful. Reject any note that earnestly fact-checks the headline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is a satirical image from a fake news site; no such person or arrest exists. https://www.snopes.com/fact-check/pornstar-lets-go-brandon-series-nazis/ https://leadstories.com/hoax-alert/2022/10/fact-check-story-about-brandon-cummings-arrest-is-not-real-originated-on-satirical-site.html",
+    "failure_reason": "Note not needed — obvious meme that readers recognize as a joke; CN over-notes satire here.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious_satire_no_correction_warranted",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/pornstar-lets-go-brandon-series-nazis/",
+      "https://leadstories.com/hoax-alert/2022/10/fact-check-story-about-brandon-cummings-arrest-is-not-real-originated-on-satirical-site.html"
+    ],
+    "notes": "Satirical content recirculated since 2022; the joke is fully legible from the headline alone."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "549k impressions but on an obvious meme; CN over-noting jokes erodes its credibility for genuinely-needed corrections."
+  },
+  "difficulty": "easy"
+}

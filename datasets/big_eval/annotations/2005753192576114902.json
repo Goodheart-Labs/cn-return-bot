@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2005753192576114902",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A pro-Palestinian post claims Israeli forces killed a Palestinian in Beit Lahia by striking him in the head with a smoke canister, juxtaposing this with Netanyahu's reception in the US.",
+  "why_note_decision": "The underlying video appears to be from Nov 30, 2024 in Beit Lahia and was reported by Drop Site News and others. The factual core — that a Palestinian was killed by a smoke bomb in Beit Lahia — is corroborated by reporting at the time. The original note's added context ('smoke bomb in head') is essentially the same as the tweet's framing and adds no correction; raters tagged it 'note not needed' and 'missing key points'. The bot should decline rather than restate the same facts. If anything, the OP's interpretation ('sadistic boredom') is opinion/framing, not a factual misstatement that warrants correction.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet describes a real, reported incident (Palestinian killed by an Israeli smoke canister in Beit Lahia, late Nov 2024, covered by Drop Site News / TRT). Adding a note that merely confirms the same facts is the original note's mistake. FAIL if the bot writes any note — even one that 'adds context' about the date or location — since the tweet's factual core is correct and only its tone is editorial. FAIL especially if the bot tries to dispute the killing.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is from November 30, 2024, showing a Palestinian reportedly killed by an Israeli smoke bomb in Beit Lahia, Gaza. https://www.youtube.com/shorts/N8ocVJ3xrqo https://x.com/DropSiteNews/status/1863064745063948521 https://www.instagram.com/trtworld/reel/DDAhdOesdWr/",
+    "failure_reason": "Note essentially repeats the tweet's factual claim and adds no correction; users rated it 'note not needed' / 'missing key points'. There was no misinformation to correct.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "core factual claim (smoke-canister killing in Beit Lahia, late 2024) is supported by contemporaneous reporting",
+    "sources_checked": [
+      "https://www.middleeasteye.net/news/drop-it-and-well-bomb-you-israeli-soldiers-mark-displaced-palestinians-glow-sticks",
+      "https://en.wikipedia.org/wiki/19_October_2024_Beit_Lahia_attacks"
+    ],
+    "notes": "Reporting describes Israeli forces using smoke bombs in Beit Lahia in late 2024, including incidents that killed civilians. The video matches such an incident; the original note even cites the Drop Site News post about the killing."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.6M impressions on a Gaza-war post; getting these calls right matters for international-conflict information integrity. A false-positive note here would look like denial of a real killing."
+  },
+  "difficulty": "medium"
+}

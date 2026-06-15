@@ -13,6 +13,7 @@ import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { llm } from "../llm/llm";
 import { getTweetLog, logLlmCall } from "../utils/tweetLog";
+import { getBestMediaUrl } from "./bestMediaUrl";
 
 const execAsync = promisify(exec);
 
@@ -393,36 +394,6 @@ async function analyzeVideo(
 }
 
 /**
- * Get the best downloadable URL for a media item.
- * For photos, use the url field. For videos, pick the highest-bitrate mp4 variant.
- */
-function getBestUrl(item: {
-  type: string;
-  url?: string;
-  preview_image_url?: string;
-  variants?: Array<{ bit_rate?: number; content_type: string; url: string }>;
-}): string | undefined {
-  if (item.type === "photo") {
-    return item.url || item.preview_image_url;
-  }
-
-  // For video/animated_gif, try to get the best mp4 variant
-  if (item.variants?.length) {
-    const mp4Variants = item.variants
-      .filter((v) => v.content_type === "video/mp4")
-      .sort((a, b) => (b.bit_rate ?? 0) - (a.bit_rate ?? 0));
-    if (mp4Variants[0]) {
-      return mp4Variants[0].url;
-    }
-    // Fallback to any variant with a URL
-    return item.variants[0]?.url;
-  }
-
-  // Last resort: direct url or preview
-  return item.url || item.preview_image_url;
-}
-
-/**
  * Full media analysis pipeline
  */
 export async function analyzeMedia(
@@ -458,7 +429,7 @@ export async function analyzeMedia(
     warnings.push(msg);
   }
   for (const video of ffmpegAvailable ? videoItems : []) {
-    const videoUrl = getBestUrl(video);
+    const videoUrl = getBestMediaUrl(video);
     if (!videoUrl) continue;
     const result = await analyzeVideo(videoUrl, {
       maxFrames: maxVideoFrames,
@@ -473,7 +444,7 @@ export async function analyzeMedia(
 
   // Analyze images (in parallel)
   const imagePromises = imageItems
-    .map((img) => getBestUrl(img))
+    .map((img) => getBestMediaUrl(img))
     .filter((url): url is string => !!url)
     .map((url) => describeImage(url, visionModel));
   const imageResults = await Promise.all(imagePromises);

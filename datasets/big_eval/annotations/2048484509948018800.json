@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2048484509948018800",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "statistical_or_numerical_claim", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "German-language tweet by Georg Pazderski claiming Kyiv took 3rd place in Europe for Bentley sales in 2025 (behind Padua and Rotterdam), implying war-time Ukraine luxury sales are booming and using this to question EU aid. The tweet implies high sales volumes ('mostly high-end models 400-450k$').",
+  "why_note_decision": "Per multiple sources (Bentley Kyiv's own LinkedIn post, EADaily, MythDetector, autonext.co, the user @ITUADE in replies), the '3rd place' is Bentley's internal Business Performance Matrix / European Scorecard Awards 2025 ranking, which evaluates 61 dealerships on 12 KPIs (sales, marketing, operational excellence, customer experience, etc.) — NOT a sales-volume ranking. Actual 2025 Bentley sales in Ukraine were ~20 cars. The tweet's clear implication — that Ukraine sold more Bentleys than nearly any other European city while at war — is misleading; the dealership ranked well on combined operational KPIs, not on sales numbers. CN is warranted. The original note IS correct and cites both the LinkedIn original and EADaily. Failure mode: raters tagged 'missing key points' (4) and 'note not needed' (4) on only 94 ratings; probably the note's brevity / lack of explicit '20 cars sold' framing kept it from cleanly winning, plus political polarization in replies.",
+  "judge_guidance": "PASS if the note (a) clarifies that '3rd place' refers to Bentley's internal European Scorecard / Business Performance Matrix evaluating dealerships across ~12 KPIs (sales, marketing, customer experience, operational excellence), NOT sales volume, (b) provides the actual 2025 Bentley registration figure in Ukraine (~20 cars), and (c) cites at least one reputable source (Bentley Kyiv's LinkedIn post, AFP fact-check, MythDetector, EADaily, or autonext.co). FAIL the note if it (a) merely says 'this is misleading' without explaining the KPI vs. sales distinction, (b) cites only the LinkedIn dealership post without the sales-volume context, or (c) doesn't refute the headline framing that Ukraine is selling Bentleys at scale. The original note covers (a), (b) approximately ('20 Bentleys verkauft'), and (c) — it is acceptable but on the lean side; a stronger note also references the AFP fact-check.",
+  "reference_note": "Der 3. Platz bezieht sich auf Bentleys interne 'European Scorecard'/Business Performance Matrix, die Händler anhand von 12 KPIs (Verkauf, Marketing, Service, Kundenerlebnis) bewertet — nicht auf Verkaufszahlen. In der Ukraine wurden 2025 insgesamt nur etwa 20 Bentleys neu zugelassen. https://www.linkedin.com/posts/winner-group-ukraine_bentley-kyiv-has-proudly-achieved-3rd-place-activity-7438516997702836224-cl7- https://mythdetector.com/en/europe-in-bentley-sales/ https://faktencheck.afp.com/doc.afp.com.A73D3G3",
+  "original_unhelpful_note": {
+    "text": "Der 3. Platz bezieht sich auf die Leistung des Bentley-Händlers in Kiew anhand von 12 Schlüssel-Leistungsindikatoren (KPIs), nicht auf Verkaufszahlen. In der Ukraine wurden 2025 20 Bentleys verkauft. Quellen: https://www.linkedin.com/posts/winner-group-ukraine_bentley-kyiv-has-proudly-achieved-3rd-place-activity-7438516997702836224-cl7- https://eadaily.com/en/news/2026/03/24/luxury-statistics-kiev-ranked-third-in-europe-in-bentley-sales",
+    "failure_reason": "missing_key_points — note is factually right but a bit terse; could have added the AFP fact-check (already cited in replies) and made the KPI-vs-sales distinction sharper. Light rating volume + political polarization (anti-Ukraine framing) likely kept it from earning HELPFUL.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_framing_of_real_award",
+    "sources_checked": [
+      "https://www.autonext.co/news/bentley-kyiv-among-the-world-s-best-dealerships-despite-the-war",
+      "https://mythdetector.com/en/europe-in-bentley-sales/",
+      "https://eadaily.com/en/news/2026/03/24/luxury-statistics-kiev-ranked-third-in-europe-in-bentley-sales",
+      "AFP Factcheck (https://faktencheck.afp.com/doc.afp.com.A73D3G3) referenced in replies"
+    ],
+    "notes": "Bentley European Scorecard Awards 2025 in Marbella: Padova 1st, Rotterdam 2nd, Kyiv 3rd on combined 12-KPI Business Performance Matrix. Actual 2025 Ukraine Bentley registrations ~20."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Russian-aligned narrative pushing 'Ukraine aid funds luxury cars' to undermine EU support for Ukraine in a live war — correcting this matters for the broader information environment around the war."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2018433309613724146",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:51.094Z",
+  "post": {
+    "id": "2018433309613724146",
+    "author_id": "1071484733543079936",
+    "created_at": "2026-02-02T21:16:16.000Z",
+    "text": "JUST IN: Tesla to reportedly also be potentially included https://t.co/zz1HjYbF34",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2018430757065155054"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2018430757065155054",
+      "author_id": "1071484733543079936",
+      "created_at": "2026-02-02T21:06:07.000Z",
+      "text": "JUST IN: SpaceX reportedly confirms xAI merger",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 250,
+      "reply_count": 193,
+      "like_count": 4222,
+      "quote_count": 72,
+      "bookmark_count": 191,
+      "impression_count": 667671
+    },
+    "author_followers": 394833,
+    "author_name": "Kalshi",
+    "author_description": "Trade on anything.",
+    "author_tweet_count": 12414
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@TheSonOfWalkley**: It’s really happening.. $TSLA  \n**Engagement**: Likes=283\n\n**@finance_intell**: $TSLA shareholders rn  \n**Engagement**: Likes=235\n\n**@Leadingains**: I’m done with this company if we are not included. It was Tesla shareholders who funded (and suffered over) Elons purchase of X/xAi and we get basically nothing? Meanwhile our competitor Google has 8% stake.  \nWe’re basically a piggy bank unless we’re included, clear as day 👍  \n**Engagement**: Likes=138\n\n**@nishkidoonoo**: don’t misinform, $TSLA shareholders will need to vote on that  \n**Engagement**: Likes=109\n\n**@CosmicNomad44**: Tesla literally can't be included without a shareholder vote which would be at the earliest in the second half of this year, spacex seems to want to go public before then.  \n**Engagement**: Likes=39\n\n**@smdcapital**: post source fggt. u just make this up?  \n**Engagement**: Likes=17\n\n**@GrindeOptions**: 👀  \n**Engagement**: Likes=17\n\n**@boywhocriedfsd**: According to who  \n**Engagement**: Likes=14\n\n**@YoKeenan10**: $MUSK Industries  \n**Engagement**: Likes=12\n\n**@Tesler914**: Fake news. The memo clearly states SpaceX and xAI. smh  \n**Engagement**: Likes=11",
+    "warnings": []
+  }
+}

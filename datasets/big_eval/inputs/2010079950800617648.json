@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2010079950800617648",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:53.183Z",
+  "post": {
+    "id": "2010079950800617648",
+    "author_id": "855481986290524160",
+    "created_at": "2026-01-10T20:03:00.000Z",
+    "text": "Why the C-17 will never take off from an aircraft carrier—it’s not about power, but the complexity of the design and physics involved.\n\nThe C-17 Globemaster is among the largest military aircraft ever built. Its wings span about 52 meters—longer than an Olympic pool—and it weighs https://t.co/w6TS7YUwi4",
+    "media": [
+      {
+        "media_key": "13_2004597797048172544",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2004597797048172544/img/SlRmbmUZ5eUBmtZE.jpg",
+        "height": 484,
+        "width": 614,
+        "duration_ms": 14233,
+        "view_count": 3712898,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004597797048172544/vid/avc1/342x270/7xJC_iGfILX84UF1.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004597797048172544/vid/avc1/456x360/TMAarUSVxKCK4Chx.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004597797048172544/vid/avc1/614x484/PWMrLQbMAaXUcmN3.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2004597797048172544/pl/GfU0CRYNirdPLAbu.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 436,
+      "reply_count": 358,
+      "like_count": 7969,
+      "quote_count": 38,
+      "bookmark_count": 1483,
+      "impression_count": 7034475
+    },
+    "author_followers": 6173153,
+    "author_name": "Historic Vids",
+    "author_description": "Daily history lessons. Education through memes!",
+    "author_tweet_count": 27150
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2004597797048172544/vid/avc1/614x484/PWMrLQbMAaXUcmN3.mp4",
+          "description": {
+            "description": "A military transport aircraft, appearing to be a C-17 Globemaster III, is seen in a sequence where it rolls off the edge of an aircraft carrier deck or pier and crashes into the ocean, creating a large white splash.",
+            "ocrText": ""
+          },
+          "transcription": "Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@TimeTriping**: The LCA Navy lands on an aircraft carrier, decelerating from 240 kmph to 0 kmph in just 2.5 seconds (347 likes)\n\n**@OurLifeWithX**: Throwback to 2012: this C-17 accidentally landed at the small civilian airport Peter O. Knight, Florida, with a 3,000-foot runway, instead of MacDill AFB, which has an 11,000-foot runway. Here's the short takeoff video, unbelievable! (281 likes)\n\n**@JohnH_BBT**: It weighs around 140 cars Stupid bot (132 likes)\n\n**@0xHamadav**: That thing is basically a flying elephant. Imagine it trying to land on a carrier. (71 likes)\n\n**@adefunkemomo**: So basically, what you're telling me is that we just need to build a bigger boat. (71 likes)\n\n**@Asst_to_the_RM**: America did it FIRST and better (42 likes)\n\n**@Timheretoo**: I’m a civilian that has worked for 40 years in and around the military (Air Force and Army) and when I read this, I wondered who in the world actually could believe that a C-17 could be launched from an aircraft carrier? Then I remembered my reaction the very first time I actually saw one take off over my head. I was a mile past the end of a runway at Travis AFB at the time, and as it darkened the sky above me I actually wondered how it could possibly stay in the air. I even nervously glanced at the Airman I was standing with to see if he looked worried. (He seemed fine.) It didn’t seem to “fly.” It was more like it was being reluctantly shoved through the air by thousands of pounds of avgas and fire. As it roared past, the ground shook under our feet in its wake. I stood there with my mouth hanging open. It was just that big. If you haven’t been up close to one, you might imagine it’s just a “big plane.” Yeah… No. (21 likes)\n\n**@thefactitorium**: It isn't a lack of muscle; it is a lack of real estate. Physics is non-negotiable here. Lift is a function of speed over the wings, and you simply cannot get 580,000 pounds of aluminum moving fast enough in 300 feet without tearing the airframe apart. Trying to launch a C-17 off a carrier isn't a takeoff; it is just a very expensive way to test the plane's buoyancy. (17 likes)\n\n**@Uugher7**: gibberish All that matters is airflow over the wings if the boat is going 50knots, you would need a head wind of 100 knots C-130s can do it because the prop provides direct airflow over the wing https://www.youtube.com/watch?v=ar-poc38C84 (14 likes)\n\n**@cosmos_atom_**: no way a plane that big could even try on a carrier honestly (13 likes)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2037251661647786198",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:08:40.059Z",
+  "post": {
+    "id": "2037251661647786198",
+    "author_id": "763094579491008512",
+    "created_at": "2026-03-26T19:33:41.000Z",
+    "text": "🚨 JUST IN: The US House has PASSED a resolution supporting full funding for the Department of Homeland Security, 225-187\n\nOVER 95% PERCENT of Democrats who voted went against it.\n\n100% of voting Republicans supported it.\n\nImagine that.\n\nDemocrats are traitors! https://t.co/wAoauWtI9L",
+    "media": [
+      {
+        "media_key": "13_2037251324694454273",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2037251324694454273/img/uWf--CpCxGKsn6Qz.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 20816,
+        "view_count": 745739,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037251324694454273/vid/avc1/480x270/6KfZE6JuAOCO4Wie.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037251324694454273/vid/avc1/640x360/oBxpV13SBIG0r8TO.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037251324694454273/vid/avc1/1280x720/Xe5j3PKPikFxRIJb.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2037251324694454273/pl/BVDO1-WZzPydIfzP.m3u8?v=f36"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6502,
+      "reply_count": 749,
+      "like_count": 31005,
+      "quote_count": 141,
+      "bookmark_count": 776,
+      "impression_count": 1145868
+    },
+    "author_followers": 1108172,
+    "author_name": "Eric Daugherty",
+    "author_description": "Chief Content Officer @RightLineNews @FLVoiceNews | Marylander-turned-Floridian | Politics & breaking news alerts | “Men must vote” - Charlie Kirk",
+    "author_tweet_count": 86529
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2037251324694454273/vid/avc1/1280x720/Xe5j3PKPikFxRIJb.mp4",
+          "description": {
+            "description": "A series of frames showing the results of a vote in the U.S. House of Representatives. Frame 1 displays atogether widely-shot view of the House Chamber with a vote tally overlay for H. RES. 1128. Frame 2 shows a cross-fade transition between the chamber view and a close-up of the Speaker pro tempore. Frames 3 and 4 feature Representative Daniel Meuser presiding as Speaker pro tempore, with his name and title appearing in a graphic in the final frame.",
+            "ocrText": "ON AGREEING TO THE RESOLUTION,\nAS AMENDED\n\nH RES 1128\n\nYEA NAY PRES NV\nREPUBLICAN 215 2\nDEMOCRATIC 9 187 13 5\nINDEPENDENT 1\nTOTALS 225 187 13 7\nTIME REMAINING 0:00\n\nREP. DANIEL MEUSER\nSpeaker Pro Tempore"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- God & Country (@GodandCountryy): [image] Likes=751, Reposts=110, Quotes=4, Replies=31, Views=14086\n- Eric Daugherty (@EricLDaugh): Once again low IQ individuals are claiming I made up the fact this vote happened, so here is the official House clerk link to it: https://clerk.house.gov/Votes/2026102 Likes=483, Reposts=89, Quotes=0, Replies=34, Views=45301\n- Thomad 🇺🇸 (@FaithfulThomad): I can't believe we have credible threats against the country and most democrats refuse to fund the Department of Homeland Security. They only care about their own power. Likes=359, Reposts=56, Quotes=0, Replies=8, Views=11384\n- Matthew Skrzypczak (@MatthewSkrzypc1): Weird how you forgot to mention this was a non-binding resolution and not actual funding legislation, that Democrats tried five separate times to pass standalone bills funding TSA and FEMA and the Coast Guard and Republicans blocked every single one, and that the entire standoff exists because Democrats want basic reforms like requiring ICE agents to get judicial warrants before entering homes after federal agents shot and killed two people in Minneapolis. ICE already has 75 billion dollars from last year and is fully operational, so the only reason TSA agents are not getting paid is that Republicans refuse to fund those agencies separately while using their paychecks as a hostage strategy. But sure the people demanding federal agents follow the Constitution are the traitors.​​​​​​​​​​​​​​​​.. 🙄 Likes=194, Reposts=12, Quotes=0, Replies=57, Views=16702\n- S. Carlin (@carlin_sus46010): DEMOCRATS HATE AMERICA  AND HATE AMERICANS ‼️‼️THEY ARE DEFINITELY TRAITORS AND SHOULD LOSE THEIR SEAT ‼️‼️ Likes=149, Reposts=24, Quotes=0, Replies=24, Views=6297\n- 🇺🇸 MAGA 🇺🇸 Kenneth F Crowe (@KennethFCrowe1): [quoted post] Likes=144, Reposts=32, Quotes=0, Replies=4, Views=5239\n- Keyser🇺🇸 (@KeyserSoese): Democrats voted no on DHS funding, 95% against, while Republicans said yes. That’s sabotage. Likes=138, Reposts=0, Quotes=0, Replies=0, Views=3820\n- Birdie Marie (@BirdieMarie1): [image] Likes=136, Reposts=51, Quotes=0, Replies=3, Views=2571\n- CatDog99 (@dog99_cat): This isn't exactly \"Just in\".  This vote happened on March 5th (H.R. 7744).   The bill went to the Senate on March 9th.   It still sits in the Senate going nowhere due to Democrat obstruction.   If the bill is changed in any way, it will have to go back to the House. Likes=110, Reposts=0, Quotes=0, Replies=0, Views=7254\n- Derek Cressman (@DerekCressman): Sounds like a lot of posturing. Republicans control the House, Senate, White House and Supreme Court. Why don’t they just govern the country? Likes=105, Reposts=4, Quotes=0, Replies=45, Views=13125",
+    "warnings": []
+  }
+}

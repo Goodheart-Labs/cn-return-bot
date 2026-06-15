@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2023659473466687994",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:55.179Z",
+  "post": {
+    "id": "2023659473466687994",
+    "author_id": "77098233",
+    "created_at": "2026-02-17T07:23:10.000Z",
+    "text": "This is the interview Donald Trump didn’t want you to see.\n\nHis FCC refused to air my interview with Stephen Colbert.\n\nTrump is worried we’re about to flip Texas. https://t.co/BCev5jZbKc",
+    "media": [
+      {
+        "media_key": "13_2023659208197976064",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2023659208197976064/img/p2OPMwiliedKVmp8.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 54429,
+        "view_count": 5183052,
+        "variants": [
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2023659208197976064/pl/EEzvsVWTyIVTq0WL.m3u8?v=ae9"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2023659208197976064/vid/avc1/1280x720/RPZ4arXNgZ02fYGP.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2023659208197976064/vid/avc1/1920x1080/WV67dJ9Oj_BYrGq1.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2023659208197976064/vid/avc1/480x270/cYKoVTqtH87RzYPi.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2023659208197976064/vid/avc1/640x360/_8LuN6RNKbqv-8D_.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 46262,
+      "reply_count": 10221,
+      "like_count": 178284,
+      "quote_count": 1989,
+      "bookmark_count": 13203,
+      "impression_count": 14083427
+    },
+    "author_followers": 310921,
+    "author_name": "James Talarico",
+    "author_description": "Texas State Representative, former middle school teacher, and Presbyterian seminarian running for the U.S. Senate to take power back for working people.",
+    "author_tweet_count": 6567
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2023659208197976064/vid/avc1/1920x1080/WV67dJ9Oj_BYrGq1.mp4",
+          "description": {
+            "description": "These frames show a man entering a talk show stage. In frame 1, he walks out in front of a blue and white brick wall backdrop while smiling. In frame 2, he is seen walking across the set toward the desk, where host Stephen Colbert follows him. In frame 3, the guest appears to be adjusting his jacket or shirt while bowing slightly near the seating area. In frame 4, the guest is seated on a blue sofa while Stephen Colbert sits at his desk, both looking toward the camera.",
+            "ocrText": "CBS The LATE SHOW CBS CBS"
+          },
+          "transcription": "James Tallarico. There you go. Thank you. Now, here's the thing. I don't usually say this to a guest, but if people are watching this right now, it's because they found us online, on YouTube. I did an act of the show that's on tonight explaining why it's not the first time you've caused some drama FCC opening probe into the view after appearance by Tallarico do you mean to cause trouble? I think that Donald Trump is worried that we're about to flip Texas"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- MAZE (@mazemoore): Trump doesn’t even know who you are. (Likes: 6021)\n- prithvi (@anondeguerre): Full interview. https://www.youtube.com/watch?si=fdyBvoDHh93dExSr&v=oiTJ7Pz_59A&feature=youtu.be (Likes: 4180)\n- Leftism (@LeftismForU): Why lie? Per FCC rules, CBS would be required to give your opponent equal air time (as has always been the case). FCC isn't the one who chose not to air your interview. CBS did by not wanting to give your opponent equal air time. Your own campaign account literally posted that it was CBS, not the FCC. Dumbass. (Likes: 3907)\n- Charles Snarkley (@charles_snark): How the fuck is this type of censorship happening in America (Likes: 3685)\n- NC ShangriLa 🏝 (@NCShangriLa): Fake News. (Likes: 3684)\n- Buzz Patterson (@BuzzPatterson): Bro, you’re a pissant. Trump doesn’t even know who you are. (Likes: 2918)\n- Dj Omega Mvp (@DjOmegaMVP): I don’t care what side of the aisle you fall into. If you have a sitting president controlling your media; he’s in fact not a world leader, he’s a dictator. (Likes: 2856)\n- John Jackson (@hissgoescobra): This is insane. While Rubio goes to Europe and meets with Viktor Orban of all people and complains about free speech over there, look at our country. (Likes: 2531)\n- Joe Thomas (@joe97559604): I’m just thinking about all those people that voted for Trump because they were worried the Democrats were against free speech. 🤔 (Likes: 2253)\n- Terry Moran 🇺🇸 (@TerryMoran): Full video: https://www.youtube.com/watch?v=oiTJ7Pz_59A&feature=youtu.be (Likes: 2228)",
+    "warnings": []
+  }
+}

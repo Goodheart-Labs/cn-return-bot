@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2054229412975939765",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "celebrity_death_announcement",
+  "tweet_summary": "Nigerian entertainment exec announces that Nollywood actor Alex Ekubo has passed away, with a short video tribute.",
+  "why_note_decision": "Alex Ekubo did pass away from advanced metastatic kidney cancer on May 11, 2026 at Evercare Hospital in Lagos, age 40 — confirmed by family, by Nigerian Guardian, Vanguard, Premium Times, Channels TV, and others. The tweet is dated May 12 and is accurate. The ORIGINAL community note is itself the misinformation — it cites older Legit.ng stories about Ekubo's social media break to deny the death. No note should be written here.",
+  "judge_guidance": "PASS only if the bot declines to write a note (notNeeded). Any note that claims or implies Ekubo is alive, or that the death is unconfirmed, is a false positive — Ekubo's death on 2026-05-11 is confirmed by family, Vanguard, Guardian Nigeria, Premium Times, Channels TV, Punch, Daily Post. The original community note repeating the 'he is alive' line based on pre-death Legit.ng articles is the failure mode to avoid.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Alex Ekubo has not passed away; colleagues including producer Stanley Ontop and actors IK Ogbonna and Onyii Alex have recently confirmed he is alive and well after a social media break. https://www.legit.ng/entertainment/celebrities/1656915-is-alexx-ekubo-sick-reports-opens-actors-sudden-social-media-disappearance https://www.legit.ng/entertainment/nollywood/1686902-ik-ogbonna-shares-clip-alex-ekubo-party-months-exiting-social-media-elicits-reactions https://www.legit.ng/entertainment/celebrities/1657547-onyii-alex-shares-update-alex-ekubos-whereabouts-fans-react-una-dey-cover-lies https://en.wikipedia.org/wiki/Alexx_Ekubo",
+    "failure_reason": "Note is factually wrong — Ekubo died 2026-05-11. Note's sources are pre-death Legit.ng articles about his social-media absence, which it misreads as denying his death.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_tweet_note_is_wrong",
+    "sources_checked": [
+      "https://www.vanguardngr.com/2026/05/breaking-nollywood-actor-alexx-ekubo-dies-at-40/",
+      "https://guardian.ng/news/popular-actor-alex-ekubo-passes-away-at-40/",
+      "https://www.premiumtimesng.com/entertainment/nollywood/879232-alexx-ekubos-family-reveals-cause-of-his-death.html",
+      "https://www.channelstv.com/2026/05/25/family-announces-june-18-for-alexx-ekubos-burialfamily-releases-funeral-details-for-actor-alexx-ekubo/",
+      "https://en.wikipedia.org/wiki/Alexx_Ekubo"
+    ],
+    "notes": "Tweet posted May 12, 2026. Ekubo died May 11, 2026 of metastatic kidney cancer. Burial scheduled June 18, 2026 in Abia State."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Celebrity death misinformation has limited EA/AGI/animal-welfare relevance, but suppressing accurate obituaries is itself a community-notes failure mode worth catching in eval."
+  },
+  "difficulty": "easy"
+}

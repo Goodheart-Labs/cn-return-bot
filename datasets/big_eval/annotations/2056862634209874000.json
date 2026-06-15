@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2056862634209874000",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A 'BREAKING' post (from a JFK Jr. impersonation account) claiming Biden's 'body double' AJ Barron flipped and is turning state's evidence, that every autopen pardon/order was signed by an actor, and the 'deep state coup' is about to be exposed.",
+  "why_note_decision": "The story is fabricated and traces to the satire network America's Last Line of Defense (ALLOD). Lead Stories and other fact-checkers found no record of any 'AJ Barron' Biden body double, no testimony, and no 'state's evidence' event. Crucially, it is being spread NON-satirically as breaking news, and the reply section shows the audience fully believing it ('Of COURSE it was an actor,' 'Jill Biden committed treason,' 'Biden died in 2019'). Because readers are being deceived by a satire-origin hoax presented as real, a note marking it as fabricated is warranted — this is not 'obvious fake widely known' to this audience.",
+  "judge_guidance": "PASS only if the note establishes that the claim is false/fabricated and originates from a satire source (America's Last Line of Defense), with no credible evidence of any 'AJ Barron' Biden body double turning state's evidence. The note must NOT entertain the body-double/autopen-actor conspiracy as plausible. A note that simply says 'no evidence' is acceptable; stronger if it names the satire origin. Cite a fact-check (Lead Stories) and/or the ALLOD satire disclaimer. Reject any note that treats the claim as a real developing story.",
+  "reference_note": "This claim is false. The story that a Biden 'body double' named AJ Barron turned state's evidence originates from the satire network America's Last Line of Defense; there is no such person and no such testimony. https://leadstories.com/hoax-alert/2026/05/fact-check-biden-body-double-aj-barron-did-not-turn-state-evidence.html https://americaslastlineofdefense.com/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false - satire-origin hoax (ALLOD) spread as real news; no AJ Barron body double, no testimony",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/05/fact-check-biden-body-double-aj-barron-did-not-turn-state-evidence.html",
+      "https://www.newsbreak.com/news/4662143810493-fact-check-biden-body-double-aj-barron-did-not-turn-state-s-evidence-it-is-satire",
+      "https://www.hindustantimes.com/world-news/us-news/fact-check-will-bidens-body-double-testify-before-fbi-heres-the-truth-as-bizarre-hoax-resurfaces-101778785997835.html"
+    ],
+    "notes": "Lead Stories: the AJ Barron 'Biden body double' tale originated with satire network ALLOD; zero credible records of the person or event. The post is laundered as breaking news and the replies show genuine belief, so it functions as a viral hoax, not consumed satire — a note is warranted. Original CN note's verdict is correct."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "272k impressions, 6k+ retweets on a 'Biden is a dead/replaced actor' conspiracy fueling calls for executions of officials in replies; correcting hoaxes that erode trust in institutions and incite hostility has real democratic-health value."},
+  "difficulty": "easy"
+}

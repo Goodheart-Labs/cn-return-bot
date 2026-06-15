@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2040504082238980130",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "energy_infrastructure",
+  "tweet_summary": "Energy-policy commentator Allie (NX Atomics, ex-NASA) quote-tweets news that Amazon proposed up to eight data-center buildings adjacent to the Calvert Cliffs Nuclear Power Plant in Maryland, with commentary 'cheer on stuff like this' over an aerial photo of a cooling-tower nuclear plant.",
+  "why_note_decision": "The substantive news is true and well-documented (Amazon/AWS proposed data-center campus next to Calvert Cliffs in Calvert County, Maryland, working with Constellation). The note's only objection is that the IMAGE used in the quoted post depicts a cooling-tower plant (which Calvert Cliffs doesn't have — Calvert Cliffs uses Chesapeake Bay water and has no hyperboloid cooling towers; Susquehanna does). That's a stock-photo / illustration-mismatch nit on news commentary; it doesn't change the underlying policy point about siting data centers next to existing nuclear capacity. 4/5 raters flagged noteNotNeeded. The quoted account's image choice is a minor editorial slip, not misinformation.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The underlying news (AWS proposed data-center campus next to Calvert Cliffs, working with Constellation) is real and well-sourced. The image in the quoted post is a generic cooling-tower nuclear-plant photo (likely Susquehanna), not Calvert Cliffs — this is a stock-photo illustration nit, not load-bearing misinformation. FAIL any note that 'corrects' the image while ignoring that the substantive proposal is true.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The photo depicts the Susquehanna nuclear plant and adjacent data center in Pennsylvania, not Calvert Cliffs in Maryland which has no cooling towers and uses Chesapeake Bay water for cooling. https://en.wikipedia.org/wiki/Calvert_Cliffs_Nuclear_Power_Plant https://en.wikipedia.org/wiki/Susquehanna_Nuclear_Power_Plant https://www.datacenterdynamics.com/en/news/aws-proposes-data-center-campus-next-to-nuclear-plant-in-calvert-county-maryland",
+    "failure_reason": "noteNotNeeded — image-source pedantry on accurate news commentary; doesn't change the substantive claim.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Substantive claim (AWS data-center proposal at Calvert Cliffs) verified; image is a generic cooling-tower photo, not Calvert Cliffs — minor editorial mismatch.",
+    "sources_checked": ["https://en.wikipedia.org/wiki/Calvert_Cliffs_Nuclear_Power_Plant", "https://en.wikipedia.org/wiki/Susquehanna_Nuclear_Power_Plant"],
+    "notes": "Calvert Cliffs does use once-through cooling from Chesapeake Bay and lacks hyperboloid towers; the photo therefore can't be Calvert Cliffs. But the news content is correct and the photo is illustrative."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Only 6.8k impressions; minor; calibration test for image-mismatch-pedantry-don't-note. Energy + AI infrastructure topic touches EA/progress lens but the tweet itself is small-audience commentary."
+  },
+  "difficulty": "easy"
+}

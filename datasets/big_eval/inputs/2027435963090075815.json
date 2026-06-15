@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2027435963090075815",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:26.102Z",
+  "post": {
+    "id": "2027435963090075815",
+    "author_id": "1686228946986119168",
+    "created_at": "2026-02-27T17:29:36.000Z",
+    "text": "BREAKING: Charlie Dompler dead via overdose. 🕊️ https://t.co/TlwjEoWlsq",
+    "media": [
+      {
+        "media_key": "3_2027435959424319488",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCLmQ2ZXAAAaLyz.jpg",
+        "height": 1179,
+        "width": 1179
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1687,
+      "reply_count": 116,
+      "like_count": 19625,
+      "quote_count": 208,
+      "bookmark_count": 567,
+      "impression_count": 572955
+    },
+    "author_followers": 139341,
+    "author_name": "Daily Noud",
+    "author_description": "PARODY Hip-Hop News | Follow For Viral Content | These are fake stories | Not impersonating and not affiliated with @DailyLoud",
+    "author_tweet_count": 1624
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCLmQ2ZXAAAaLyz.jpg",
+          "description": {
+            "description": "A 2D cartoon illustration of Charlie Dompler from the animated series Smiling Friends. He is a yellow-skinned, rotund humanoid character with a long, drooping nose and simple black dot eyes. He is wearing a red hoodie, a brown baseball cap, dark blue pants, and white shoes. One hand is raised in a waving gesture, and his mouth is open as if speaking.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @GarfNumba1Fan: Source tells me Charlie is stable.  \n\nPlease god\n  (Likes: 759)\n\n- @nathanrobii: (video)\n  (Likes: 690)\n\n- @ProjektDarkalt: Don't buy no weed from the gas station\n  (Likes: 181)\n\n- @Mr_Moon_on_X: CHARLIE. WHAT DOES IT MEAN? CHARLIE. YOU WERE MY EVERYTHING.\n  (Likes: 101)\n\n- @RL3004: (video)\n  (Likes: 58)\n\n- @kovaq7: (video)\n  (Likes: 56)\n\n- @Crazy808Fails: We will be Frowning Friends from now on\n  (Likes: 48)\n\n- @RobGradyVO: I'm just gonna say it.\n  (Likes: 45)\n\n- @rosetylerfan00: Mr boss when he finds the person who sold Charlie the drugs\n  (Likes: 16)\n\n- @hfrpodcast: In Atlanta\n  (Likes: 15)",
+    "warnings": []
+  }
+}

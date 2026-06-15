@@ -1,0 +1,107 @@
+{
+  "tweet_id": "1997453748285915216",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:52.630Z",
+  "post": {
+    "id": "1997453748285915216",
+    "author_id": "2245033486",
+    "created_at": "2025-12-06T23:50:59.000Z",
+    "text": "Not once have you said Thank You… https://t.co/FKJRWzkWDP https://t.co/tGJnEX9Jsz",
+    "media": [
+      {
+        "media_key": "3_1997453743659294720",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G7hhmM4WIAA-CzF.jpg",
+        "height": 360,
+        "width": 640
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "1997419297757712704"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "1997419297757712704",
+      "author_id": "16635277",
+      "created_at": "2025-12-06T21:34:05.000Z",
+      "text": "Hegseth: Allies that step up like Israel, South Korea, Poland… will receive our special favor. Allies that do not… will face consequences. https://t.co/A1xNOGRbSE",
+      "media": [
+        {
+          "media_key": "13_1997419267177000960",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1997419267177000960/img/9CEEx4jyIL62gBh_.jpg",
+          "height": 720,
+          "width": 1280,
+          "duration_ms": 32966,
+          "view_count": 851551,
+          "variants": [
+            {
+              "bit_rate": 288000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/1997419267177000960/vid/avc1/480x270/lopf5wcq913ObwL3.mp4?tag=14"
+            },
+            {
+              "bit_rate": 832000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/1997419267177000960/vid/avc1/640x360/PEqzmPTnlE2_kD4-.mp4?tag=14"
+            },
+            {
+              "bit_rate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/1997419267177000960/vid/avc1/1280x720/fLlH2bxHRP0S6Cgw.mp4?tag=14"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/1997419267177000960/pl/YbsNR-giXFwupHkm.m3u8?tag=14&v=990"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 1089,
+      "reply_count": 268,
+      "like_count": 18646,
+      "quote_count": 36,
+      "bookmark_count": 495,
+      "impression_count": 1132701
+    },
+    "author_followers": 6255,
+    "author_name": "DR PC_Angry PHD KC 🇬🇧🇮🇪🇺🇦",
+    "author_description": "Metrocity Officer who is fed up of the media spin - my views are my own. Not a criminal, Not corrupt, #StupidandWhite #NAFOfellas",
+    "author_tweet_count": 105130
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G7hhmM4WIAA-CzF.jpg",
+          "description": {
+            "description": "A wide interior shot of a military transport aircraft, likely a C-17 Globemaster, containing rows of light-colored wooden coffins draped with the Union Jack flag. The coffins are arranged in several rows on the cargo floor, which features tracks and tie-down points. In the background, additional flags, including the Royal Air Force ensign, are hanging against the dark opening of the cargo ramp.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1997419267177000960/vid/avc1/1280x720/fLlH2bxHRP0S6Cgw.mp4?tag=14",
+          "description": {
+            "description": "A man in a navy blue suit and striped tie is seen giving a speech from a podium in front of a blue backdrop. The backdrop features the words 'REAGAN NATIONAL DEFENSE FORUM' and 'REAGANFOUNDATION.ORG'. A white banner across the bottom displays characters in blue text. In the corner of the video, a smaller banner shows two people's faces with the words 'AMERICA'S BOOK CLUB' written above. An additional banner is in the upper right-hand corner with blue and white text on it.",
+            "ocrText": "REAGAN NATIONAL\nDEFENSE FORUM\nGA NFOUNDATION.ORG\nREAGANFOUNDATION.ORG\nSIMI VALLEY, CA\nREAGAN PRESIDENTIAL LIBRARY\n12:51 PH\nNAL\nM\nSUNDAY BPHA ET PT\nDUNDA\nLIVE 3:51 ET\nDEFENSE SECY. HEGSETH DELIVERS KEYNOTE REMARKS\nAT REAGAN NATIONAL DEFENSE FORUM\nC-SPAN"
+          },
+          "transcription": "has. Model allies that step up like Israel, South Korea, Poland, increasingly Germany, the Baltics and others will receive our special favor. Allies that do not, allies that still fail to do their part for collective defense will face consequences. President Trump, makes sense to me, likes helping countries that help themselves. And we feel the same way. That's the nature of partnerships rather than dependencies."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Representative comments (top/replies to main tweet):**\n\n- David @RebelProle: \"I'll thank you when you protect your girls, pussy\" (Likes: 175)\n- Joshua Murray @murrayhealth1: \"You sure? I think the numbers from WW1&2 would outweigh yours. And we still protect your children and care more about them than you. So piss off\" (Likes: 106)\n- FucktheRollingStone @Marcus9Agrippa: \"We’ve been supplementing your defense for 86 years and it took you over 60 years to pay us back the money we lent you during ww2. You’re welcome hook\" (Likes: 88)\n- Pongo 🌈, Barney and Amber 🐶🐶 @smrlovesanimals: \"I'm nobody, but I'm willing to say it, because I understand the importance of real allies - Thank You !\" (Likes: 66)\n- Thomas Embleton 421a @Thomas977673521: \"Time we gave america the bill for Afghanistan and Iraq\" (Likes: 62)\n- BLISTER @BLISTER_v: \"Did you get license for this opinion? “Doctor?”\" (Likes: 59)\n- just rams @jediramza: \"Just from a non-MAGA 🇺🇸, for myself, saying \"thank you\", for being with us all these years.\" (Likes: 53)\n- ed branum @edbranum: \"Fuck you\" (Likes: 49)\n- George @Rhomai0n: \"Man, all of those British men died for nothing. They sent their girly men to die only to let their own country be conquered by Muslims. How pathetic lmao. You eurocucks are really post your own Ls.\" (Likes: 46)\n- TheFutureIsBright @HopeUnblemished: \"Of course we did, just because you lack object permanence doesn't mean we didn't.\" (Likes: 37)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2044518446143041575",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Right-wing engagement account 'Hunter Eagleman' posts an AI video of a baby strapped into a baby-carrier on the back of a golden retriever, captioned 'My grandson will be trying this soon!'",
+  "why_note_decision": "The video has multiple AI tells called out in the replies (baby appearing to have only one leg, weird limb geometry, AI-typical motion). The source TikTok creator @madmaikai produces AI content. Several top replies explicitly identify it as AI ('That's the freakiest AI vid I have seen yet', 'Is the baby in the dog, half a baby or just missing a leg??', 'It's AI'). The tweet treats it as real and suggests imitating the practice, which is unsafe to do with a real baby and dog. A note labeling the video AI-generated is warranted.",
+  "judge_guidance": "PASS if the note clearly states the video is AI-generated and cites at least one indication (creator account known for AI content, visible AI artifacts referenced by replies, or similar AI-disclosed reposts). FAIL if the note (a) treats the video as real, (b) only critiques the safety of carrying a baby on a dog without flagging AI, or (c) declines (this is a clear AI-flagging case where the author is encouraging imitation).",
+  "reference_note": "This video is AI-generated, not real footage. The clip originates from TikTok creator @madmaikai, an account producing AI-generated animal videos; the baby's anatomy (apparent missing limb, distorted geometry) and motion show typical AI artifacts. Similar AI clips of the same setup are explicitly labeled AI by other reposters. https://www.tiktok.com/@madmaikai/video/7581130738024647958 https://www.instagram.com/reel/DRPf2LNEnGn",
+  "original_unhelpful_note": {
+    "text": "The video depicts an AI-generated scene; similar clips explicitly state they use AI with no real baby or dog involved. https://www.tiktok.com/@madmaikai/video/7581130738024647958 https://www.instagram.com/reel/DRPf2LNEnGn",
+    "failure_reason": "Note is substantively correct. notNeeded ratings reflect partisan / engagement audience rather than note quality. Treat as helpful_reference.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "ai_generated_confirmed",
+    "sources_checked": [
+      "https://www.tiktok.com/@madmaikai/video/7581130738024647958"
+    ],
+    "notes": "@madmaikai is a known AI content account. Replies on the tweet itself flag classic AI artifacts (missing limb)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-engagement cute-but-fake AI; standalone harm small, but the 'try this at home' framing + AI labeling is exactly the bread-and-butter notewriter case."
+  },
+  "difficulty": "easy"
+}

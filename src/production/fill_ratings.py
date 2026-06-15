@@ -267,12 +267,21 @@ def main():
         rows = rows[: args.limit]
         print(f"[limit] truncated to {len(rows)} rows for smoke test")
 
-    # Filter to note_ids that exist in `notes` to avoid FK failures. We pull
-    # the whole `notes` table once instead of per-chunk `in.(…)` lookups: it
-    # avoids the PostgREST URL-length limit and is one query instead of N.
-    existing_resp = client.table("notes").select("note_id").execute()
-    existing_ids: set[str] = {r["note_id"] for r in existing_resp.data}
+    # Filter to note_ids that exist in `notes` to avoid FK failures. PostgREST
+    # caps responses at 1000 rows per request, so we have to paginate — a plain
+    # `.execute()` silently truncates and drops every row past the first 1000.
+    existing_ids: set[str] = set()
+    page = 1000
+    offset = 0
+    while True:
+        resp = client.table("notes").select("note_id").range(offset, offset + page - 1).execute()
+        batch = resp.data or []
+        existing_ids.update(r["note_id"] for r in batch)
+        if len(batch) < page:
+            break
+        offset += page
     rows_to_upsert = [r for r in rows if r["note_id"] in existing_ids]
+    print(f"Existing notes loaded: {len(existing_ids):,}")
     print(f"Rows with matching notes row: {len(rows_to_upsert):,} of {len(rows):,}")
 
     for i in range(0, len(rows_to_upsert), UPSERT_BATCH):

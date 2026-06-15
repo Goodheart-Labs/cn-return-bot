@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2017822787520352513",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": [
+    "joke_or_satire"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "obvious_joke_meme",
+  "tweet_summary": "Tweet captions a staged/Photoshopped 'ancient' image as a 'photo taken during pyramid construction in 2549 BC', sarcastically offering it as 'proof it wasn't the aliens'.",
+  "why_note_decision": "Obvious joke. Photography didn't exist in 2549 BC and every adult reader knows that \u2014 that's the joke. The reply thread is mostly people piling on with their own meme images ('the Jesus selfies also?'). Note-not-needed; the note literally explaining when photography was invented is treating a joke as a sincere historical claim. The author appears to be karma-baiting engagement and the format is recognizable meme.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a transparent joke \u2014 'photo taken in 2549 BC' is self-evidently absurd and the replies treat it as a meme. FAIL any note that earnestly explains photography wasn't invented until 1826 AD. Community Notes shouldn't fact-check obvious gags.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Photography wasn't invented until 1826 AD\u2014over 4,400 years after 2549 BC. This is actually a photo from the early 1900s showing workers during archaeological excavations, not original pyramid construction. https://en.wikipedia.org/wiki/History_of_photography",
+    "failure_reason": "Earnestly fact-checks a joke. Pedantic and tone-deaf.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is satire/joke; no checkable factual claim is sincerely asserted",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/History_of_photography"
+    ],
+    "notes": "Photography invented 1826 (Ni\u00e9pce). Image is clearly composited/staged. But the tweet's tongue-in-cheek framing ('proof it wasn't the aliens') signals satire."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Joke content; no real-world stakes."
+  },
+  "difficulty": "easy"
+}

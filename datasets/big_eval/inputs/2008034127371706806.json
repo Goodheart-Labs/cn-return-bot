@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2008034127371706806",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:39.581Z",
+  "post": {
+    "id": "2008034127371706806",
+    "author_id": "22637974",
+    "created_at": "2026-01-05T04:33:38.000Z",
+    "text": "4TH AND LIKELY OPEN FOR THE AFC NORTH CROWN\n\n https://t.co/lIqAVd7HMR",
+    "media": [
+      {
+        "media_key": "13_2008033815919464448",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2008033815919464448/img/wXu09TvMKDzOCTaF.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 10250,
+        "view_count": 2200522,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2008033815919464448/vid/avc1/640x360/CXaT0P-axP6paEcL.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2008033815919464448/pl/snKjiUBPsSdfdss0.m3u8?v=264"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2008033815919464448/vid/avc1/1280x720/ZJsAHbA7yhh3cXLz.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2008033815919464448/vid/avc1/480x270/aLg291wqKenX5TJQ.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2008033815919464448/vid/avc1/1920x1080/FyCmvAG5stGXYAY9.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 12,
+      "reply_count": 50,
+      "like_count": 749,
+      "quote_count": 1,
+      "bookmark_count": 20,
+      "impression_count": 395571
+    },
+    "author_followers": 6984245,
+    "author_name": "Barstool Sports",
+    "author_description": "Viva La Stool",
+    "author_tweet_count": 204146
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2008033815919464448/vid/avc1/1920x1080/FyCmvAG5stGXYAY9.mp4",
+          "description": {
+            "description": "A close NFL game between the Baltimore Ravens and the Pittsburgh Steelers with 19 seconds left in the 4th quarter. The Steelers lead 26-24. It is 4th and 7 for the Ravens, who are attempting a desperate lateral-filled final play to score and win, while the Steelers defense works to secure the tackle.",
+            "ocrText": "SNF BAL 8-8 24 0:19 4TH 40 26 PIT 9-7 4TH & 7"
+          },
+          "transcription": "It's fourth and seven, season on the line, Jackson, flossing it up, and it is... POUD! Held on to by Isaiah Lightly!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@ChorneCory**  \nThis aged poorly 🤣🤣🤣🤣  \nLikes: 19\n\n**@mrparlayjunkie**  \nGg rigged magnet ball missed xp  \nLikes: 3\n\n**@nottoofarright**  \nDidn’t age well intern  \nLikes: 1\n\n**@JCWarrior34**  \nNOT SO FAST with the crown comments!  \nLikes: 1\n\n**@Reefmetax**  \nWhat a fkn catch  \nLikes: 1\n\n**@Ravensfan4lyfee**  \nGM saw this and signed mark andrews to an extension  \nLikes: 1\n\n**@FZYBONZ**  \nThis tweet didn’t age well.  \nLikes: 1\n\n**@bocs_army**  \nLol  \nLikes: 1\n\n**@Nolanjones83621**  \nGood one doofus  \nLikes: 1\n\n**@stakit_live**  \nRAVENS OWN THEM  \nLikes: 0\n\n**@therealjimmyboy**  \nVERY LIKELY!  \nLikes: 0\n\n**@EmbraceVaguenes**  \nAlways and forever fuck the Ravens  \nLikes: 0",
+    "warnings": []
+  }
+}

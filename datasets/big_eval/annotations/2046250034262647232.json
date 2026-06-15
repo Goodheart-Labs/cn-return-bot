@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2046250034262647232",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["staged_or_scripted_content", "health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet (559k impressions) captioned 'This is what many Service People come back to. The sacrifice is real and many go through this alone.' shares a long video of an older man and tactical-gear-wearing figures pulling a young man from a window onto a porch, talking him down through a panic attack and breathing. Implicitly framed as real footage of a veteran's PTSD episode.",
+  "why_note_decision": "The original note correctly identifies the clip as a produced PTSD-awareness skit by 'Westcoast Creators of Network Media' and links the Facebook post. The Facebook post URL string contains the title 'PTSD-is-real-and-takes-our-strongest-loved-ones' and explicitly says 'this video was produced by'. Replies on the tweet split: many take it at face value as real, but the top critical replies ('Stop posting this fake military psyops', 'queen of fake videos', 'This is just fake garbage these jackasses arent even in the military') corroborate the staged nature. The 'tactical gear' look in the video also doesn't match real military or first-responder uniforms. A CN is warranted because (a) the tweet asserts this represents real veteran PTSD experience and (b) viewers (391 replies) are clearly being misled into thinking this is real — many sincerely react as if the soldier is real. The original note is minimal (only 2 raters) but factually right; ideally it would also flag that the people depicted are not service members and that the video, while scripted, was made for awareness purposes (not to deceive maliciously).",
+  "judge_guidance": "PASS if the note (a) identifies the video as a produced/scripted PTSD-awareness skit, not real footage of a veteran's panic attack, (b) attributes it to its creator (Westcoast Creators of Network Media, originally published on Facebook), and (c) cites the original Facebook post or another reputable trace. FAIL the note if it (a) doesn't establish the video is scripted, (b) attacks the creators as malicious without acknowledging the stated awareness purpose, (c) cites only random Reddit/Twitter accusations, or (d) leaves ambiguous whether the people depicted are actual service members (they are not). The original note is acceptable on minimum bar; a stronger note explicitly states 'the people shown are not actual service members'.",
+  "reference_note": "This video is a produced PTSD-awareness skit by 'Westcoast Creators of Network Media' — not real footage of service members. The people shown are actors, not active or former military personnel. The original Facebook post identifies it as 'produced by' the creators. https://www.facebook.com/WestcoastCreatorsofNetworkMedia/videos/ptsd-is-real-and-takes-our-strongets-loved-onesreels-this-video-was-produced-by-/26810848825185953",
+  "original_unhelpful_note": {
+    "text": "The video depicts a produced skit for PTSD awareness, not real footage of service members. https://www.facebook.com/WestcoastCreatorsofNetworkMedia/videos/ptsd-is-real-and-takes-our-strongets-loved-onesreels-this-video-was-produced-by-/26810848825185953",
+    "failure_reason": "under-rated / missing_key_points — note is correct and well-sourced but only 2 rating events, both 'not needed'. Likely under-noticed because tweet is emotional content and replies polarized.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "scripted_awareness_content_misrepresented_as_real",
+    "sources_checked": [
+      "https://www.facebook.com/WestcoastCreatorsofNetworkMedia/videos/ptsd-is-real-and-takes-our-strongets-loved-onesreels-this-video-was-produced-by-/26810848825185953"
+    ],
+    "notes": "The Facebook URL itself names it as 'produced by' Westcoast Creators of Network Media. Critical replies on the tweet ('Queen of fake videos', 'jackasses arent even in the military') corroborate. Could not find an independent fact-check (Lead Stories, Snopes), but the creators' own post is dispositive."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Emotional manipulation of viewers via fake 'veteran in crisis' content — drives engagement/follows on a misleading frame, and conflates scripted awareness content with real veteran experience; medium stakes for veterans-issues information ecosystem."
+  },
+  "difficulty": "medium"
+}

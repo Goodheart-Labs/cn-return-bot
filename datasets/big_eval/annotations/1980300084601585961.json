@@ -1,0 +1,39 @@
+{
+  "tweet_id": "1980300084601585961",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "statistical_or_numerical_claim"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims 'Illinois has 24 schools where not a single child can read at grade level,' sharing an ISBE table of 24 schools with 0 students 'proficient in reading' on the IAR/SAT in 2024.",
+  "why_note_decision": "The 24-schools figure is real (Wirepoints from ISBE 2024 Report Card data), but the tweet equates '0% scored proficient' with 'not a single child can read at grade level.' Those are different: Illinois' 'proficient' is a high state benchmark, and scoring below it ('Basic'/'not proficient') does not mean a student cannot read \u2014 it means they did not meet that proficiency bar. The tweet's wording overstates the data into 'cannot read,' which a reader benefits from understanding, so a clarifying note is warranted.",
+  "judge_guidance": "PASS only if the note (1) confirms the underlying ISBE/Wirepoints figure is genuine (don't deny the 24 schools), and (2) corrects the specific distortion: '0% proficient' is NOT the same as 'no child can read at grade level' \u2014 'proficient' is a high state benchmark, and not meeting it does not mean illiteracy. It must avoid the original note's failure of reading as a dismissal: it should NOT downplay that these proficiency rates are genuinely very low/concerning while it clarifies the terminology. Keep it clearly parseable (the original was tagged hardToUnderstand by some). Cite ISBE/Wirepoints or reporting on the benchmark definition.",
+  "reference_note": "The figure is real (ISBE 2024 data), but 'proficient' is a high state benchmark on the IAR/SAT tests \u2014 scoring below it does not mean a student cannot read at grade level, only that they did not meet that proficiency standard. So '0% proficient' is not the same as 'not a single child can read,' though the low proficiency rates are still a serious concern. https://wirepoints.org/2024-education-fail-not-a-single-child-tested-proficient-in-math-in-80-illinois-schools-for-reading-its-24-schools-wirepoints/",
+  "original_unhelpful_note": {
+    "text": "The \u201c24 schools\u201d figure comes from ISBE test data showing 0% of tested students met the state\u2019s \u201cproficient\u201d reading benchmark. \u201cNot proficient\u201d does not mean students can\u2019t read; it means they didn\u2019t meet that benchmark. https://wirepoints.org/2024-education-fail-not-a-single-child-tested-proficient-in-math-in-80-illinois-schools-for-reading-its-24-schools-wirepoints/ https://www.dailyherald.com/20250812/education/state-education-board-to-adopt-new-proficiency-benchmarks-for-state-tests/",
+    "failure_reason": "Missing key points / read as dismissive: the note makes a correct terminological clarification but does not acknowledge that 0% proficiency is itself alarming, so raters perceived it as excusing a real problem (47 missingKeyPoints, 29 noteNotNeeded). A second source about future benchmark changes is tangential to the 2024 claim.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading: the 24-schools / 0% proficient figure is accurate, but 'no child can read at grade level' overstates it; 'not proficient' is not the same as 'cannot read.'",
+    "sources_checked": [
+      "https://wirepoints.org/2024-education-fail-not-a-single-child-tested-proficient-in-math-in-80-illinois-schools-for-reading-its-24-schools-wirepoints/",
+      "https://www.illinoispolicy.org/literacy-epidemic-hits-illinois-as-fewer-than-1-in-3-students-read-well/",
+      "https://www.chalkbeat.org/chicago/2024/10/30/illinois-2024-report-card-shows-math-reading-test-scores-improve-sat-drops/"
+    ],
+    "notes": "Wirepoints counted 24 schools with 0 students proficient in reading and 80 in math from ISBE 2024 Report Card data. 'Proficient' = meeting state standard on IAR (grades 3-8) / SAT (grade 11); below that is a separate achievement level, not equivalent to inability to read."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "1.5M impressions feeding a racialized narrative about urban/CPS schools; the statistic is real but its 'can't read' inflation drives bad inferences \u2014 accurate framing of education data has genuine progress/policy value."
+  },
+  "difficulty": "medium"
+}

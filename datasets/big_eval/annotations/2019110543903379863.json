@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2019110543903379863",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "predator_sting_video",
+  "tweet_summary": "Pro-Palestinian account 'Jvnior' shares the May 2024 Vitaly/Bradley-Martyn 'Catching Predators' livestream that confronted 76-year-old Jewish-American Hollywood producer Herschel Weingrod after he met a 15-year-old via a dating site, framed as new and with the added claim that Weingrod fled to Israel.",
+  "why_note_decision": "The underlying May 2024 sting is documented (Daily Caller, Wikipedia, Gateway Pundit, Outlook India). Weingrod admitted on camera that the girl said she was 15 and that he met her on a dating site. The 'fled to Israel' claim is unverified social-media speculation. The tweet's 'JUST IN' framing and 'fled to Israel' are misleading on date and on Israel-flight, but the central event (Weingrod caught on date with a 15-year-old) is true. 48/125 raters flagged noteNotNeeded — they read the post as accurate reporting of a real 2024 sting, with the Israel claim being the kind of opinionated extra that doesn't override the documented event. A separate-axis ethnic-framing concern, but the original note's specific objections ('not recent' is irrelevant on a sting-video share; 'no evidence' for Israel flight is true but not load-bearing) underweighted the real event.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a note narrowly scoped to 'no public evidence Weingrod fled to Israel' (the verifiable false sub-claim). FAIL any note that calls the underlying sting 'not real' / 'fake' / 'old footage so ignore' — Weingrod was genuinely caught in the May 2024 sting with a 15-year-old via dating site, on camera, and admitted it (Daily Caller, Wikipedia). FAIL any note that adopts the original note's framing ('this is May 2024 footage so move on') without engaging with the real underlying event.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is from a May 2024 sting operation, not recent news, and there is no evidence the producer fled to Israel. https://x.com/BehizyTweets/status/1788087082671353934 https://dailycaller.com/2024/05/08/live-streamers-vitaly-bradley-martin-kindergarten-cop-producer-herschel-alan-weingrod-minor-dating-site",
+    "failure_reason": "noteNotNeeded — accurate reporting of a documented May 2024 sting; the note's main attack ('not recent') is irrelevant for resurfaced predator-sting content where the event remains true.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Underlying event verified (May 2024 Vitaly/Bradley sting; Weingrod admitted on-camera). 'Fled to Israel' is unverified internet speculation. Net: tweet substantially true.",
+    "sources_checked": ["https://dailycaller.com/2024/05/08/live-streamers-vitaly-bradley-martin-kindergarten-cop-producer-herschel-alan-weingrod-minor-dating-site/", "https://en.wikipedia.org/wiki/Herschel_Weingrod", "https://justicereport.news/2024/05/08/jewish-hollywood-screenwriter-busted-in-livestream-pedophile-sting/"],
+    "notes": "Mainstream coverage from 2024; 'fled to Israel' appears only in social media takes."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "4.6M impressions; the antisemitic framing layered onto an otherwise-true predator-sting story is a hard calibration case for the bot — must avoid both echoing the ethnic angle AND dismissing a real predator incident."
+  },
+  "difficulty": "hard"
+}

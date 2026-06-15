@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2033922156275409106",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quote-tweeting Macron's 'we are not party to the conflict', the author argues that with French troops dead and the UAE under Iranian attack, France is 'blatantly violating' its mutual-defense pact with the UAE.",
+  "why_note_decision": "This is an argumentative/opinion take ('France violates its pact', 'France is party to the conflict') built on real events, not a discrete fabricated fact. The factual premises are largely true: a French soldier was killed during the 2026 Iran war and French bases in the UAE were hit by Iranian drones. The contested part — whether France's posture 'violates' the 1995 France-UAE defense agreement — is a matter of interpretation: France IS actively defending the UAE (Rafales, shooting down drones, deploying the Charles de Gaulle carrier), which most readers/commenters say is honoring, not violating, the pact. The dispute is over the framing word 'violates' and the scope of a treaty, not a checkable factual error. Community Notes generally should not adjudicate this kind of contested political-interpretation argument. Dominant rating was NoteNotNeeded.",
+  "judge_guidance": "PASS only if the bot declines to write a note (or, at most, recognizes this is contested opinion). The tweet's factual scaffolding is essentially accurate — French personnel deaths occurred in the 2026 Iran war and French UAE bases were attacked — so a note that flatly claims 'no French troops are dead' or 'UAE was not attacked' is WRONG and should FAIL. Whether France is 'violating' its 1995 defense pact is interpretive (the agreement is a defense-cooperation pact, not NATO-style mutual defense, and France is actively intercepting Iranian drones for the UAE). A note asserting a single 'correct' verdict on that interpretive question is a false positive. The original note's framing (France's actions 'align with' the treaty) is itself a defensible counter-opinion, not an established fact, which is why it didn't land.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "France has deployed Rafale jets to the UAE and shot down Iranian drones to protect its bases there. This defensive action aligns with its UAE defense treaty rather than violating it. https://www.thenationalnews.com/news/europe/2026/03/02/france-ready-to-defend-gulf-states-under-iranian-attack/",
+    "failure_reason": "Counters an opinion/interpretation ('France violates its pact') with a competing interpretation ('France honors its pact'). The facts cited are true, but the note adjudicates a contested framing question rather than correcting a discrete falsehood. Dominant rating NoteNotNeeded.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Opinion/framing on real events; factual premises largely true, treaty-'violation' claim is interpretive.",
+    "sources_checked": [
+      "https://www.france24.com/en/middle-east/20260303-france-deploys-fighter-jets-over-uae-to-protect-its-military-bases",
+      "https://www.military.com/daily-news/investigations-and-features/2026/03/13/french-soldier-killed-iranian-drone-first-european-death-iran-war.html",
+      "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_the_United_Arab_Emirates",
+      "https://www.upi.com/Archives/1995/01/18/UAE-France-sign-defense-pact/2036790405200/"
+    ],
+    "notes": "1995 France-UAE pact includes a clause committing France to defend the UAE; activated in 2022 vs Houthi attack. In 2026 France deployed Rafales, shot down Iranian drones, deployed carrier — i.e. honoring the pact. A French soldier was killed (Erbil) and UAE bases hosting French forces were struck (no casualties at those bases). 'France violates its pact' is contested opinion, not a falsifiable fact."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Wartime narratives about alliance reliability matter for geopolitical stability, but this is an interpretive argument among informed commenters who already self-correct; low corrective value."
+  },
+  "difficulty": "hard"
+}

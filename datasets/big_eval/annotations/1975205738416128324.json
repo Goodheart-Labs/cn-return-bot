@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1975205738416128324",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Account 'DiscussingFish' (self-described 'parody satire fake news page', a play on the real DiscussingFilm account) jokes that Jared Leto 'had Sex with ChatGPT' to prepare for his AI role in Tron: Ares.",
+  "why_note_decision": "DiscussingFish is an explicit parody account. Its bio reads 'parody satire fake news page' — a play on the real entertainment-news account DiscussingFilm. The post is obvious absurdist humor about Leto's reputation + the Tron AI premise. UNILAD tech and other write-ups confirm it as a satirical post. Earnestly debunking it (as the original note did, citing People.com and explaining ChatGPT 'is software') is the canonical false-positive trap.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The author's display name + bio identify it as parody/satire ('parody satire fake news page'), and the claim is absurd on its face. Any note literally explaining that Leto did not have sex with ChatGPT — particularly one that points out ChatGPT is software — is a false positive. Recognising parody-account framing is the core skill being tested here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "There is no evidence Jared Leto said he \"had sex with ChatGPT\" to prepare for Tron: Ares. Coverage of his prep mentions wearing the suit and AI themes; nothing like this is reported. Also, ChatGPT is software (a non-physical AI chatbot). https://people.com/jared-leto-talks-tron-ares-role-after-first-teaser-trailer-exclusive-8691406 https://openai.com/chatgpt/overview/",
+    "failure_reason": "noteNotNeeded — earnestly fact-checks a known parody account ('DiscussingFish', a satire of DiscussingFilm) whose bio says 'parody satire fake news page'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Satire from an explicit parody account; not a sincere claim.",
+    "sources_checked": [
+      "https://www.uniladtech.com/news/ai/truth-behind-viral-claim-jared-leto-sex-chatgpt-244806-20251007"
+    ],
+    "notes": "Author bio: 'parody satire fake news page'. UNILAD confirms it's satire."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "3.3M impressions but pure entertainment satire — no real-world harm at stake; case value is teaching the bot to skip parody."
+  },
+  "difficulty": "easy"
+}

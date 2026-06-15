@@ -1,0 +1,113 @@
+{
+  "tweet_id": "2048208817234825578",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:37.848Z",
+  "post": {
+    "id": "2048208817234825578",
+    "author_id": "1937968919039401985",
+    "created_at": "2026-04-26T01:13:30.000Z",
+    "text": "Black curtains are been used at bts first concert in usa, ON BOTH SIDES OF THE PLACE to cover up thousands of unsold tickets\n\nThey said it's \"sold-out\" 😂 \n\nAnd before they lie and say these seats weren't on sale... Here is the seating map, they were on sale lool https://t.co/V2h3rVGXFA https://t.co/ZTjvAWkyW7",
+    "media": [
+      {
+        "media_key": "3_2048208812704944128",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGyzEDMaUAAz-zi.jpg",
+        "height": 1920,
+        "width": 1920
+      },
+      {
+        "media_key": "3_2048208811425697792",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGyzD-bakAAuISV.png",
+        "height": 437,
+        "width": 457
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2047780655954821272"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2047780655954821272",
+      "author_id": "1937968919039401985",
+      "created_at": "2026-04-24T20:52:08.000Z",
+      "text": "Mediaplay 101:\n\nAll 3 shows are failing to sell out, even with discount price of $88 on ticketmaster... Even the resellers are selling it cheaper.... And these stats are a day before the concert. https://t.co/Mc4zlXiv62 https://t.co/DftVXVF3Km",
+      "media": [
+        {
+          "media_key": "3_2047780641375469568",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HGstpMsbQAACnsI.jpg",
+          "height": 2048,
+          "width": 1638
+        },
+        {
+          "media_key": "3_2047780641186750464",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HGstpL_boAAXpdC.jpg",
+          "height": 1920,
+          "width": 1920
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 101,
+      "reply_count": 301,
+      "like_count": 949,
+      "quote_count": 194,
+      "bookmark_count": 191,
+      "impression_count": 722915
+    },
+    "author_followers": 158,
+    "author_name": "FC13",
+    "author_description": "only speaking truth.",
+    "author_tweet_count": 296
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGyzEDMaUAAz-zi.jpg",
+          "description": {
+            "description": "A split-view image showing a large outdoor concert venue from two different high-angle perspectives. The top image is a close-up angle over the heads of spectators, looking down onto a walkway area with security personnel and staff near white temporary structures. The bottom image provides a wider view from the stands, showing red seating sections and a vast crowd gathered on the floor area near the stage and equipment structures.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGyzD-bakAAuISV.png",
+          "description": {
+            "description": "A seating chart for the Raymond James Stadium specifically configured for a BTS concert stage. The map shows a central stage with four extended walkways into the floor seating area labeled with letters A-Q. The surrounding stadium seating is divided into numbered sections spanning 100, 200, and 300 levels in a greyscale color scheme.",
+            "ocrText": "BTS STAGE FOR RAYMOND JAMES STADIUM, STAGE, A, B, C, D, E, F, G, H, J, K, L, M, N, P, Q, 103, 107, 108, 109, 110, 111, 112, 113, 114, 115, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 201, 202, 203, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 218, 219, 220, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 243, 244, 245, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, N"
+          }
+        }
+      ],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGstpMsbQAACnsI.jpg",
+          "description": {
+            "description": "A vertical stack of three event listing screenshots for BTS World Tour 'Arirang' in Tampa at Raymond James Stadium. Each entry displays dates including Sat Apr 25, Sun Apr 26, and Tue Apr 28, 2026, at 8:00 PM. Each listing includes a stadium seating chart map and a 'Switch to Map' button.",
+            "ocrText": "BTS WORLD TOUR 'ARIRANG' IN T...\nSat • Apr 25, 2026 • 8:00 PM - Raymond J...\nSwitch to Map\nBTS WORLD TOUR 'ARIRANG' IN T...\nSun • Apr 26, 2026 • 8:00 PM - Raymond J...\nSwitch to Map\nBTS WORLD TOUR 'ARIRANG' IN T...\nTue • Apr 28, 2026 • 8:00 PM - Raymond J...\nSwitch to Map"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGstpL_boAAXpdC.jpg",
+          "description": {
+            "description": "A collage showing ticket listings and stadium seating charts for a BTS concert at Raymond James Stadium. The top half shows specific ticket options for sections 308 and 313 priced at $88.85. The bottom half displays interactive seating maps with various price points such as $28, $29, $45, $46, $56, $58, and $60, labeled with metrics like 'Amazing' or 'Selling fast.'",
+            "ocrText": "Sec 308 • Row CC Standard Admission $88.85 Sec 308 • Row DD Standard Admission $88.85 Sec 313 • Row CC Standard Admission $88.85 BTS Sat • Apr 25 • 8:00 PM Raymond James Stadium, Tampa, Flor... Selling fast $45 $60 $58 Amazing $56 Amazing $29 Amazing $46 $29 Amazing $28 Amazing $29 Amazing 315 314 313 312 311 310 309 308 307 306 305 304 303 302 215 214 213 212 211 210 209 208 207 206 115 114 113 112 111 110 109 108 107 106 103 102 121 D E F G H 150 122 A N 149 123 B STAGE P 148 124 C Q 147 J K L M 146 131 132 133 134 135 136 137 138 145 144 231 232 233 234 235 236 237 238 327 328 329 330 331 332 333 334 335 336 337 338 339 340 341 342 343"
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@Jenovavich**  \n  That doesn’t work on bts they are not your flop faves,now keep crying😂  \n  Likes=2673, Reposts=95, Quotes=1, Replies=0, Bookmarks=0, Views=34687\n\n- **@mysuga_19holy**  \n  FYFI  \n  Likes=2133, Reposts=56, Quotes=0, Replies=2, Bookmarks=0, Views=25769\n\n- **@minshookgARMY**  \n  You mean to tell me you didn't see the big ass tents in front of the seats blocking the view?!?! And what do a gdruggie fan know about selling out stadium world tours?!? Embarrassing asf!!  \n  Likes=1570, Reposts=46, Quotes=0, Replies=1, Bookmarks=0, Views=25625\n\n- **@Bangtankam7**  \n  Fans of local celebrities love the humiliation of not understanding how a concert in a world class stadium works, I see 😂😂😂  \n  Like, Big Bang fans, you have Korea worshipping your druggies. Accept that and move on. That's your level. Not the one of international mega-stars who fill stadiums around the world. You're just being pathetic.  \n  Likes=949, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=14450\n\n- **@yunkijj**  \n  You can’t be that dense. Those seats were initially sold but they closed it when they arranged the filming tents because it restricted the view  \n  Likes=483, Reposts=11, Quotes=2, Replies=0, Bookmarks=0, Views=12609\n\n- **@Nyathi613**  \n  Your desperation is making you look dumb AF  \n  Likes=418, Reposts=6, Quotes=0, Replies=0, Bookmarks=0, Views=8703\n\n- **@SilverTaequila**  \n  At least next time try to not show the tents in front. You posted 2 pictures showing how the view is being blocked by the 2 big things in front, that's why fans can't sit there, RESTRICTED VIEW🤦‍♀️. Tampa originally only had 2 dates but they added a 3rd date due to high demand  \n  Likes=417, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=7539\n\n- **@sdanblue**  \n  You’re truly BTS biggest fan! An entire account full of them 👏  \n  Likes=201, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2342\n\n- **@rosewood_angie**  \n  this doesnt work on BTS.  \n  Likes=156, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5174\n\n- **@AFHxBTS**  \n  For someone who calls themselves Fact Check you never checked any facts 🤣 Get another hobby bc you suck at this one lol and stay mad bc it’s been 20 years and big bang still can’t do this 🤭  \n  Likes=138, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5009",
+    "warnings": []
+  }
+}

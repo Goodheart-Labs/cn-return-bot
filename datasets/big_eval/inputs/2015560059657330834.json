@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2015560059657330834",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:58.359Z",
+  "post": {
+    "id": "2015560059657330834",
+    "author_id": "1551261351347109888",
+    "created_at": "2026-01-25T22:59:00.000Z",
+    "text": "A man who imitates the sounds he hears as close to the real thing as possible...and his friends' reactions. https://t.co/QZizUeu5Gj",
+    "media": [
+      {
+        "media_key": "13_2015533670719758336",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2015533670719758336/img/V57wQu3v0I3A3KWA.jpg",
+        "height": 1216,
+        "width": 720,
+        "duration_ms": 42515,
+        "view_count": 356484,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2015533670719758336/vid/avc1/320x540/Bf0zJgcamL3G94pr.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2015533670719758336/vid/avc1/480x810/7f_qATopBiC4kGd2.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2015533670719758336/vid/avc1/720x1216/nCxP7WsOKqcEumKn.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2015533670719758336/pl/yu-lYqD5rHO3_MpF.m3u8?v=6aa"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1417,
+      "reply_count": 165,
+      "like_count": 11610,
+      "quote_count": 122,
+      "bookmark_count": 3375,
+      "impression_count": 780376
+    },
+    "author_followers": 1283682,
+    "author_name": "The Best",
+    "author_description": "Pozitif content....",
+    "author_tweet_count": 8023
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2015533670719758336/vid/avc1/720x1216/nCxP7WsOKqcEumKn.mp4",
+          "description": {
+            "description": "A group of men are indoors, possibly in a dance studio. Two men are in the foreground, crouching. One man on the left is wearing a black hoodie and the other man on right is in a black t-shirt. The man on the right holds a basketball in his hands and makes it look like it popped or turned into a small white object, like a crumpled piece of paper or tissue, as he shows it to the camera. The man on the left and the group of men in the background react to this magic trick with surprise and excitement.",
+            "ocrText": "REAL\n\nSTUDIO\n\n@beatboxjcop"
+          },
+          "transcription": "Uwaaaaaaaaaa! Uwaaaaaa! Uwaaaaaa! Uwaaaaaa! Wow! Wow!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Author:** Mr Gambit (@TheNaijaGambit)  \n  **Text:** What type of reverse sliding angular creeping was that? 🤣🤣🤣  \n  **Engagement:** Likes=327, Reposts=0, Quotes=0, Replies=0, Views=22785\n\n- **Author:** sophie's dad (@sofia_karina)  \n  **Text:** fake as hell but very funny  \n  **Engagement:** Likes=190, Reposts=0, Quotes=0, Replies=0, Views=4420\n\n- **Author:** Cosmic Stanza (@CatsandDogsmem)  \n  **Text:** Dope 🔥  \n  **Engagement:** Likes=140, Reposts=0, Quotes=0, Replies=0, Views=6878\n\n- **Author:** LVH_kitsuki 🦊 (@LVHmaster)  \n  **Text:** That dude in the third sound tho. LMFAO.  \n  **Engagement:** Likes=69, Reposts=0, Quotes=0, Replies=0, Views=2624\n\n- **Author:** Quick Scenes (@quickmoviex)  \n  **Text:** It’s impressive how much personality and humor you can convey just through sound comedy doesn’t always need words.  \n  **Engagement:** Likes=41, Reposts=0, Quotes=0, Replies=0, Views=14059\n\n- **Author:** Mud Mileage (@mudNmileage)  \n  **Text:** What do we call this? 😂  \n  **Engagement:** Likes=28, Reposts=0, Quotes=0, Replies=0, Views=1960\n\n- **Author:** Joe Kerr (@thec0med1an)  \n  **Text:** Nothing like having a solid support system  \n  **Engagement:** Likes=19, Reposts=0, Quotes=0, Replies=0, Views=6677\n\n- **Author:** VALEN | privategal_raketph (@SB19raketera_56)  \n  **Text:** This guy be my new favorite hahahahahahahahahah  \n  **Engagement:** Likes=17, Reposts=0, Quotes=0, Replies=0, Views=1231\n\n- **Author:** Pas de nom (@si_o_Quee)  \n  **Text:** Do some asians think they are black americans now? The cultural appropriation & over exaggerated reactions, what are they doing?  \n  **Engagement:** Likes=17, Reposts=0, Quotes=0, Replies=0, Views=5213\n\n- **Author:** FCBKnight (@Mogambbooo)  \n  **Text:** I’m not here for the guy… I’m here for the friends reaction. Priceless 😂  \n  **Engagement:** Likes=11, Reposts=0, Quotes=0, Replies=0, Views=970",
+    "warnings": []
+  }
+}

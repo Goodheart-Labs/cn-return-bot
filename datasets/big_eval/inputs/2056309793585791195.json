@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2056309793585791195",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:49.516Z",
+  "post": {
+    "id": "2056309793585791195",
+    "author_id": "1502831572298436611",
+    "created_at": "2026-05-18T09:43:53.000Z",
+    "text": "He adopted a terrified dog locked in a cage for 4 years 😱 https://t.co/bbQy6NqWK0",
+    "media": [
+      {
+        "media_key": "7_2056309674585067521",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2056309674585067521/pu/img/LjsfiYPOHSQsEipe.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 68593,
+        "view_count": 162467,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2056309674585067521/pu/vid/avc1/320x568/7e6vqf5vpp09UIAD.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2056309674585067521/pu/vid/avc1/480x852/5lJKJFImCle5DVUm.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2056309674585067521/pu/vid/avc1/720x1280/_zvx_q147fMF3WqN.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2056309674585067521/pu/pl/-RJI_BQLR6gV4TWN.m3u8?v=f08"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1771,
+      "reply_count": 277,
+      "like_count": 18531,
+      "quote_count": 55,
+      "bookmark_count": 354,
+      "impression_count": 245506
+    },
+    "author_followers": 323040,
+    "author_name": "Crazy Moments",
+    "author_description": "Posting trending and viral videos around the world. Stay in the loop with what's buzzing! DM for credit or removal",
+    "author_tweet_count": 74974
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2056309674585067521/pu/vid/avc1/720x1280/_zvx_q147fMF3WqN.mp4",
+          "description": {
+            "description": "A tan and white dog is seen in a metal kennel at a shelter, its eyes wide with fear. A person reaches in and gently pets its head. The dog is then shown being carried in a burgundy blanket through a parking lot.",
+            "ocrText": "This dog's cruel previous owner kept it locked in a small cage for four years leaving it completely terrified.\nAt the shelter, a kind man gently reached in to softly stroke the fearful dog's head.\nHe adopted the dog, wrapping it in a warm blanket to safely carry it to his car."
+          },
+          "transcription": "Oh, you poor thing. You look so terrified sitting all alone in there. It's okay. I'm not going to hurt you. You're safe with me now. We are going home. No more cages for you ever again. Just a little bit further, you are doing so well on your first car ride. Take your time. Drink as much as you want, buddy. You are getting so strong. Good boy. Pull it. Get him. Pop those bubbles. Look how high you can jump. You look so handsome walking out here. What a good boy. Sweet dreams, my beautiful boy. You're safe forever now."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@thathawksgirl**: I love seeing this, but at the same time, even with a happy ending, it breaks my heart that before that they suffered so much… knowing that 4 years of his short life were sad, even if he’s now happy… it saddens me. They shouldn’t be sad not even for one day. (56 likes)\n- **@DoctorAngus**: This feels like AI. Maybe it’s just me, but something about this video seems off. I hope I’m wrong. (45 likes)\n- **@MiDiamondDave**: These videos are stupid. Not because it isn't a great story, but because it is a fake story. A dog like that wouldn't last 2 days in a shelter. He'd be adopted quickly. (23 likes)\n- **@PMPSco**: and gave it diarrhea on his first night in a new home! dogs cannot consume that much milk! (10 likes)\n- **@tcgoldrush**: What love does. (6 likes)\n- **@CASmyth1**: As if I don’t cry enough on this app 🤬 (6 likes, with photo)\n- **@ConnieBee16**: He drank milk and then shit all over the house, most likely.. Why would he give a dog milk? (4 likes)\n- **@LetUsPray9**: This is beautiful ❤️ (4 likes)\n- **@fattylumpkin108**: what is wrong with our species? there are WAY too many psychopaths now. Poor little dog. (4 likes)\n- **@cpa_girl**: Blessings to that kind man for adopting that beautiful doggie! 🥰 (4 likes)",
+    "warnings": []
+  }
+}

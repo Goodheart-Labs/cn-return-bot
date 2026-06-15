@@ -1,0 +1,59 @@
+{
+  "tweet_id": "2047697407228469446",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:14:12.585Z",
+  "post": {
+    "id": "2047697407228469446",
+    "author_id": "1315835060",
+    "created_at": "2026-04-24T15:21:20.000Z",
+    "text": "@DailyMail Elephants have a very sharp memory\n\nThey probably  remembered him for killing their family members https://t.co/4kC8IdjlQc",
+    "media": [
+      {
+        "media_key": "3_2047697405328392192",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGrh8OQWgAAMB8-.jpg",
+        "height": 1031,
+        "width": 1079
+      }
+    ],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "2047595251267711220"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 86,
+      "reply_count": 8,
+      "like_count": 1361,
+      "quote_count": 2,
+      "bookmark_count": 25,
+      "impression_count": 34907
+    },
+    "author_followers": 2847,
+    "author_name": "B maps",
+    "author_description": "",
+    "author_tweet_count": 72332
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HGrh8OQWgAAMB8-.jpg",
+          "description": {
+            "description": "A screenshot of an AI-generated search result about 'elephant memory'. The image shows a search query bubble at the top and a text summary explaining how elephants have exceptional long-term memory used for survival, social structure, and navigation. Several website icons and 'Cleveland Zoologica...' are listed as sources.",
+            "ocrText": "elephant memory\n+5\nElephants possess exceptional long-term memory, which is essential for their survival, social structure, and navigating difficult environments. They can remember locations of water and food over vast distances, recognize friends and foes after decades, and mourn the loss of family members. Their large brains allow for high intelligence and complex emotional lives. Cleveland Zoologica... +3"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@H6692016: First thing I thought of as well. (Likes=13)\n@BlkCaptQueeg: And they hold grudges Iike no other. (Likes=7)\n@BabyBoomerUK: Yes, that would not surprise me. (Likes=7)\n@crunch_sco4282: An elephant never forgets (Likes=4)\n@LilRdVet2: Yep... (Likes=3)\n@slammerrrrrr: Oh, definitely (Likes=2)\n@furtadoparana: Perfeita observacao (Likes=1)\n@DisaffectedZ: they don’t have rational souls (Likes=0)\n@PMCharlesTupper: It must be frustrating to them, that elephants want to recite a lost Homeric poem but no one will listen. (Likes=0)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2013987157782720732",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:15.805Z",
+  "post": {
+    "id": "2013987157782720732",
+    "author_id": "2329174031",
+    "created_at": "2026-01-21T14:48:51.000Z",
+    "text": "Did you know?\n\nSometimes Minecraft will generate \"arrow trees\", which point to the Stronghold, which is a dungeon that you go to to reach the final boss of the game. https://t.co/QS2WeLLPz6",
+    "media": [
+      {
+        "media_key": "3_2013987046646243328",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_MejGGWYAAGxgY.jpg",
+        "height": 1080,
+        "width": 1920
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 470,
+      "reply_count": 131,
+      "like_count": 30125,
+      "quote_count": 70,
+      "bookmark_count": 2999,
+      "impression_count": 1771056
+    },
+    "author_followers": 727,
+    "author_name": "Duncan",
+    "author_description": "im specnr | creator of seedqueue",
+    "author_tweet_count": 412
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_MejGGWYAAGxgY.jpg",
+          "description": {
+            "description": "A top-down screenshot from the video game Minecraft, showing an acacia tree at the border of a savanna and desert biome. A thin red outline is drawn around the blocky canopy of the tree. The background features sand blocks and dead bushes.",
+            "ocrText": "15:54"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Vivi_the_doe (@transgothwitch): bro wasnt lying (Likes=7843, Reposts=403, Replies=10)\n- Fell X_x (@Fell_x_x): (No text content) (Likes=3454, Reposts=12, Replies=1)\n- egglord (@eggloso): This is real. My father is John Arrowtree (Likes=2519, Reposts=0, Replies=0)\n- 🧚✨𝓼𝓱𝓾𝓽 𝓽𝓱𝓮 𝓯𝓾𝓬𝓴 𝓾𝓹✨🧚 (@LexBexTexMex): Well where the fuck do I go now (Likes=1848, Reposts=0, Replies=0)\n- Ghost (@GhostsSoup): (No text content) (Likes=1545, Reposts=0, Replies=0)\n- RationalOperator (@RationalAl): “Sometimes” is doing a lot here (Likes=1074, Reposts=0, Replies=0)\n- LBoomsky (@LBoomsky): no (Likes=880, Reposts=0, Replies=0)\n- Yeetachu (@YeetachuAnimate): (No text content) (Likes=657, Reposts=0, Replies=0)\n- Enderman (@Enderman): Bro ts is NOT real ✌️😭 (Likes=623, Reposts=0, Replies=0)\n- RID3 (@RID3mcsr): (No text content) (Likes=597, Reposts=0, Replies=0)",
+    "warnings": []
+  }
+}

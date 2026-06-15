@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2018514781641298403",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:08.887Z",
+  "post": {
+    "id": "2018514781641298403",
+    "author_id": "742371799116222464",
+    "created_at": "2026-02-03T02:40:00.000Z",
+    "text": "This isn't AI, this is just a normal day at Walmart. https://t.co/c6RfYWZOal",
+    "media": [
+      {
+        "media_key": "13_2018514672509427713",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2018514672509427713/img/Ql8jRQIUO50ds_j0.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 47415,
+        "view_count": 386863,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2018514672509427713/vid/avc1/320x568/HkPiHT-lPbANYn22.mp4?tag=16"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2018514672509427713/vid/avc1/480x852/KSNxBU87Ma_PsTru.mp4?tag=16"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2018514672509427713/vid/avc1/720x1280/M_V1yWNz7PPGXG2l.mp4?tag=16"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2018514672509427713/pl/Fu3qcru8Z0zK_9Yu.m3u8?tag=16&v=a30"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 474,
+      "reply_count": 291,
+      "like_count": 3617,
+      "quote_count": 104,
+      "bookmark_count": 1654,
+      "impression_count": 517075
+    },
+    "author_followers": 97548,
+    "author_name": "Klara",
+    "author_description": "Non-practicing intellectual\n\nChaotic neutral\n\nRunning at a mental speed of one thought per sometimes.\n\nYour favorite shitposters favorite shitposter.",
+    "author_tweet_count": 63999
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2018514672509427713/vid/avc1/720x1280/M_V1yWNz7PPGXG2l.mp4?tag=16",
+          "description": {
+            "description": "A man in a grocery store aisle, dressed in a grey tank top with 'Member 9/11' and a bald eagle on it, cut-off denim shorts, and a Confederate flag bandana, holds a cigarette in his mouth while a woman with a microphone interviews him. The scene then cuts to a separate, humorous clip of a person in a pink shirt climbing a tall indoor rock climbing wall that has been edited to appear inside a grocery store aisle.",
+            "ocrText": "Produce Cold Drinks Member 9/11"
+          },
+          "transcription": "We're here at Pleasant Mart in Shelby, North Carolina with the owner of Climbing Extravaganza. How's the day going? I done told the manager there's a fucking weight limit on this shit and he don't listen. Keeps letting them big women climb. When one of them come here with a lawsuit because they done blowed out, don't blame me. I'm getting dizzy up here, Curtis. My fingers are slipping. Damn, you're supposed to let us know when you want to come down. I can't hold on."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **SFC dean bruce (Ret) - @vetdb78**: You know it’s real cause she said “fangers.” (47 likes)\n- **Stumpy@MossyGreenLog - @MossyGreenLog**: OMG that shit is ACTUALLY the funniest thing I've seen in months. (28 likes)\n- **fart smella - @f4r75m3ll4**: I haven’t laughed this hard in a long time 😭 (22 likes)\n- **JessMessy - @JessicaHuRu**: Pist slop again and get blocked (22 likes)\n- **SamuraiRabbit - @lgtbyddrk**: Lies... I didn't see a single mountain dew anywhere. (14 likes)\n- **The Liberty Monk - @libertymonk**: This is what I voted for (13 likes)\n- **Pat fields - @Patfiel28409000**: This is AI. :/ (12 likes)\n- **JennaRaw - @JennaDoes360**: Walmart hits different. Can't compare it to other stores (10 likes)\n- **Mr J - @warcroft**: AI does fat chicks physics really good! (9 likes)\n- **The Beacons Are Lit 🇺🇸 - @WestResists**: Honestly the Member 9/11 shirt is based. I’d buy one. (9 likes)",
+    "warnings": []
+  }
+}

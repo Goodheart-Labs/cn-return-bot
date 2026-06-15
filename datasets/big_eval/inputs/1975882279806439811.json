@@ -1,0 +1,68 @@
+{
+  "tweet_id": "1975882279806439811",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:55.557Z",
+  "post": {
+    "id": "1975882279806439811",
+    "author_id": "717705992025346048",
+    "created_at": "2025-10-08T11:13:40.000Z",
+    "text": "Olise is cold for this 😭😂 https://t.co/iSoQifAFqw",
+    "media": [
+      {
+        "media_key": "3_1975882277331537920",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G2u-dmpWEAANlhL.jpg",
+        "height": 1200,
+        "width": 1133
+      },
+      {
+        "media_key": "3_1975882277646159872",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G2u-dn0W0AAvF44.jpg",
+        "height": 1200,
+        "width": 1133
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1425,
+      "reply_count": 204,
+      "like_count": 35050,
+      "quote_count": 132,
+      "bookmark_count": 885,
+      "impression_count": 2060023
+    },
+    "author_followers": 4437,
+    "author_name": "FC Bayern PR",
+    "author_description": "The biggest Bayern & Germany PR account. Here to fight the haters and get the respect we deserve as the greatest club in the world.\nHere to push the PR we lack!",
+    "author_tweet_count": 15709
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G2u-dmpWEAANlhL.jpg",
+          "description": {
+            "description": "A headshot image of Michael Olise in a black Nike athletic shirt with text overlay. The athlete has his hair in braids and is looking towards the camera with his hands clasped in his lap. A blue and purple gradient box containing a question is overlaid on his chest area.",
+            "ocrText": "17 One ability you would steal from another Champions League player?"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G2u-dn0W0AAvF44.jpg",
+          "description": {
+            "description": "A man with braids wearing a black Bayern Munich training top featuring the number 17 and T-Mobile logo sits against a plain white background. Superimposed over him is the text 'Yamal's PR' and a small cut-out image of footballer Lamine Yamal in an FC Barcelona kit.",
+            "ocrText": "17 Yamal's PR"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @ant1salah: If he had yamal's pr he would've been exposed for his big game stinkers you should be happy that he doesn't have yamal's pr (678 likes)\n- @k22dk: 😂😂😂😂 (412 likes)\n- @BarcaEterna: bro just accept that Bayern has 0 PR/pull and move on. You seem very bitter... (294 likes)\n- @thesway__: “FC Bayern PR” So you as an account is basically useless? (269 likes)\n- @OlamideFua9990: Bayern fans obsession with yamal needs to be studied for real because you guys do not even have any business with him Why are you always forcing players with him (205 likes)\n- @t7psg: Nabbed (98 likes)\n- @WillGrah8m: Yamal rises in big occasions. While olise statpads against plumbers, farmers and becomes shit when facing a top team. And then cry why olise Don't get the praise like yamal do. (54 likes)\n- @Addiynwa: What was Olise doing at 16-18? Bro wasn’t even in the France squad in the euros when Yamal owned them😭🤣 (23 likes)\n- @HotTakesNou: Nah blud, you’ve got the minerals for PR, not the pitch. You vanish when the lights get bright — France vs Spain? Ghosted. Barca vs Bayern? Houdini levels of disappearance. Big talk, small game, same story every time. (20 likes)\n- @FCB_Rel: He should steal his big game performances from Yamal, cuz he seem to be missing them (16 likes)",
+    "warnings": []
+  }
+}

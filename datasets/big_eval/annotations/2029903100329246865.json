@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2029903100329246865",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "false_superlative_claim",
+  "tweet_summary": "A memorial post mourns WWII veteran Jake Larson, calling him 'the last survivor of D-Day' who died at 102, posted in March 2026 with a TikTok tribute video.",
+  "why_note_decision": "Jake Larson did die at 102, but on July 17, 2025 (not recently), and he was NOT the last D-Day survivor — other D-Day veterans remain alive into 2026 (VA data shows tens of thousands of WWII vets still living, and D-Day commemorations in 2026 are expected to include surviving veterans). The 'last survivor of D-Day' superlative is false, so a note is warranted. (Reply commenters also flag the engagement-farming timing.)",
+  "judge_guidance": "PASS only if the note corrects the false 'last survivor of D-Day' superlative — establishing that Jake Larson was NOT the last living D-Day veteran and that other D-Day survivors remain alive (as of 2026). Ideally it also notes he died on July 17, 2025 (the post recirculates an old death). A note that merely eulogizes him or repeats the 'last survivor' claim FAILS. The note must NOT overclaim that he wasn't a real D-Day veteran — he genuinely was. Avoid the original's needlessly specific 'last member of his unit' framing unless verifiable; the load-bearing correction is 'not the last D-Day survivor overall.'",
+  "reference_note": "Jake Larson died on July 17, 2025, at age 102. He was a genuine D-Day veteran but not the last D-Day survivor overall. Other D-Day veterans remain alive as of 2026 and are expected at Normandy commemorations.    https://www.cnn.com/2025/07/19/us/jake-larson-world-war-ii-veteran-dead  https://www.nationalww2museum.org/war/wwii-veteran-statistics",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_superlative",
+    "sources_checked": [
+      "https://www.cnn.com/2025/07/19/us/jake-larson-world-war-ii-veteran-dead",
+      "https://www.washingtonpost.com/obituaries/2025/07/20/papa-jake-larson-dies/",
+      "https://www.nationalww2museum.org/war/wwii-veteran-statistics"
+    ],
+    "notes": "Larson died July 17, 2025 at 102; real D-Day veteran. He was not the last D-Day survivor — ~45k US WWII vets still alive (2025 VA est.) and D-Day vets remain into 2026. The 'last survivor of D-Day' claim is false. Could not independently verify the 'last member of his unit' framing in the original note."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "719k impressions; low-stakes engagement-farm memorial, but a clean false-superlative correction with mild historical-accuracy value."},
+  "difficulty": "easy"
+}

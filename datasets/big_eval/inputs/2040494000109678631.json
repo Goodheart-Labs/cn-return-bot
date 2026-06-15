@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2040494000109678631",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:05.654Z",
+  "post": {
+    "id": "2040494000109678631",
+    "author_id": "1938262633871822848",
+    "created_at": "2026-04-04T18:17:34.000Z",
+    "text": "Ashton Kutcher is estimated to have made $90 million as an actor over 25 years. \n\nHis $30 million investment in OpenAI is now up more than $1.25 billion in less than 3 years. https://t.co/4743ebNe8c",
+    "media": [
+      {
+        "media_key": "3_2040493814176194560",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFFKUCBaoAAJc45.jpg",
+        "height": 858,
+        "width": 1200
+      },
+      {
+        "media_key": "3_2040493853250326528",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFFKWTlakAAIDBU.png",
+        "height": 348,
+        "width": 680
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 352,
+      "reply_count": 240,
+      "like_count": 10984,
+      "quote_count": 101,
+      "bookmark_count": 963,
+      "impression_count": 5686739
+    },
+    "author_followers": 109391,
+    "author_name": "Polymarket Money",
+    "author_description": "Financial news & insights from @Polymarket — the world's largest prediction market.",
+    "author_tweet_count": 4238
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFFKUCBaoAAJc45.jpg",
+          "description": {
+            "description": "A medium shot of actor Ashton Kutcher standing on a stage behind a microphone. He is wearing a black tuxedo with a black bow tie and a white shirt. He is smiling slightly and pointing his right index finger forward towards the camera. The background consists of a dark stage with a vertical strip of orange and yellow light to the left.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFFKWTlakAAIDBU.png",
+          "description": {
+            "description": "The image depicts the official logo of the organization OpenAI on a plain white background. The logo consists of a black stylized hexagonal spiral icon on the left and the word 'OpenAI' written in a sans-serif font on the right.",
+            "ocrText": "OpenAI"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@GrantCardone**: \"People will read this and think I need to invest in AI. What they don’t tell you is he got a call when company was infant because he is celebrity & mostly because he had $30M to invest - you & I will almost NEVER get that call y\" (Likes: 687, Reposts: 19, Views: 30334)\n- **@VeryBullishGuy**: \"most people dont realize this dude was studying biochemical engineering at the university of iowa trying to find a cure for his twin brothers cerebral palsy before he ever stepped foot in hollywood. he dropped out got scouted as a model and stumbled into acting but the whole time his brain was wired for science and problem solving. in 2009 he cold connected with marc andreessen who got him into skype 18 months before microsoft acquired it and that was the moment everything clicked. then he links up with guy oseary and ron burkle in 2010, they pool $30 million of their OWN money into A Grade Investments and proceed to put $500k into uber, $2.5 million into airbnb, $3 million into spotify. turned that $30 mil into $250 million by 2016 and made the cover of forbes. but heres where it gets insane. hes known sam altman since altman founded loopt years ago. so when AI started heating up he wasnt guessing he literally knew the guy building the most important company in the space. sound ventures drops $30 million into openai when its valued around 20 to 30 billion and now that stake is worth 1.3 BILLION at the $852 billion valuation. 43x return. and he still hasnt sold a single share. this man is on track to be a billionaire and everyone still thinks hes just kelso from that 70s show\" (Likes: 490, Reposts: 8, Views: 69525)\n- **@dhiran_dev**: \"ashton playing 4d chess while we're all still on checkers... dude basically 40x'd his entire acting career in 3 years\" (Likes: 254, Views: 31561)\n- **@TheRealAdamG**: \"I remember granting him access to DALL-E 2 back in spring 2022.\" (Likes: 165, Views: 25688)\n- **@notthreadguy**: \"i’m sorry what\" (Likes: 67, Views: 23315)\n- **@JonahLupton**: \"Was it his personal capital or out of a fund?\" (Likes: 14, Views: 17867)\n- **@traumaonrye**: \"someone once told me Kutcher was the kind of actor who would edit a spreadsheet, so this makes sense\" (Likes: 9, Views: 7925)\n- **@hundenrufus**: \"Wasn't it suppose to be a non profit?\" (Likes: 9, Views: 4903)\n- **@mattob**: \"extremely talented investor 🤝\" (Likes: 8, Views: 6466)\n- **@denys_khomyn**: \"Ashton Kutcher staring at his high school journal trying to butterfly effect back in time to put his entire acting salary into the OpenAI seed round\" (Likes: 7, Views: 216)",
+    "warnings": []
+  }
+}

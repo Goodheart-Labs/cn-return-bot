@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2025298325482746047",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:35.252Z",
+  "post": {
+    "id": "2025298325482746047",
+    "author_id": "1955814653457534981",
+    "created_at": "2026-02-21T19:55:23.000Z",
+    "text": "We need better planning to protect animals on shared roads. https://t.co/FUZEofX8xC",
+    "media": [
+      {
+        "media_key": "7_2025298269643878400",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2025298269643878400/pu/img/2cnBnzjBBnrzaB67.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 10820,
+        "view_count": 1841385,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2025298269643878400/pu/vid/avc1/320x568/sEssT_n0DhNA0OZf.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2025298269643878400/pu/vid/avc1/480x852/7JeynxoDfAGSo36T.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2025298269643878400/pu/vid/avc1/720x1280/lU9klpDA-8xwmU6V.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2025298269643878400/pu/pl/YZf3HATz9T74XzZc.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 339,
+      "reply_count": 1306,
+      "like_count": 7325,
+      "quote_count": 216,
+      "bookmark_count": 1809,
+      "impression_count": 4261344
+    },
+    "author_followers": 5662,
+    "author_name": "Kenniah🦩",
+    "author_description": "ᵉᵛᵉʳʸ ‘ᵇʸ ᶜʰᵃⁿᶜᵉ’ ᶦˢ ᴳᵒᵈ ˢᵖᵉᵃᵏⁱⁿᵍ ⁱⁿ ˢⁱˡᵉⁿᶜᵉ",
+    "author_tweet_count": 28414
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2025298269643878400/pu/vid/avc1/720x1280/lU9klpDA-8xwmU6V.mp4",
+          "description": {
+            "description": "A giraffe with its head and neck extending above an open-topped wooden crate on a truck. It is being transported down a highway before apparently being thrown or falling off onto the road.",
+            "ocrText": ""
+          },
+          "transcription": "Tell me why you don't want me"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@ taylor good: @grok tell me this is AI (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=135)\n@ grok: The video is AI-generated and not real. However, it seems inspired by a 2014 incident in South Africa where a giraffe died after hitting its head on a bridge during transport, as reported by BBC and others. (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=11)\n@ grok: نعم، الحادثة الأساسية حقيقية وحدثت في جنوب أفريقيا عام 2014، حيث توفيت زرافة بعد اصطدام رأسها بجسر أثناء نقلها. لكن هذا الفيديو المحدد مزيف أو مولد بـAI، مع مشاهد مبالغ فيها لا تطابق التفاصيل الحقيقية. (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=18)\n@ grok: The viral video of the giraffe hitting a bridge is AI-generated and not real footage. It's inspired by a actual 2014 incident in South Africa where a giraffe died from head injuries during transport, but no video of that event exists. (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=5)\n@ sheryl blais: @grok is this video real? (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=7)\n@ alli: 😭😭😭 (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=2)\n@ itx_kenniah: You think it's about Ai generated (Likes=1, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=12023)\n@ grok: That's a giraffe. The video is real—it shows a 2014 incident in South Africa where a giraffe being transported in an open truck hit its head on an overpass and died, per reports from BBC and The Guardian. (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=43)\n@ incakura__: Oh No 🥹 (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=13)\n@ grok: This video looks AI-generated or edited—the giraffe's neck bends unnaturally. A real incident occurred in 2014 in South Africa where a giraffe hit a bridge and died, but no such graphic video exists from it. (Likes=0, Reposts=0, Quotes=0, Replies=0, Bookmarks=0, Views=14)",
+    "warnings": []
+  }
+}

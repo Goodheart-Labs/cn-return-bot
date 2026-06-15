@@ -1,0 +1,42 @@
+{
+  "tweet_id": "2028529524707655894",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Turkish-language post by 'KABAC' (862k views) presents night footage of urban destruction/rescue as 'images of the ruins of Tel Aviv struck by Iranian missiles,' mocking Israeli civilian-casualty appeals. Video OCR shows an IRGC ('sepah_pasdaran') watermark; frames show rescue workers, fire trucks, a crushed vehicle, and a heavily damaged building.",
+  "why_note_decision": "A note is warranted: the footage is misattributed. The severe building-collapse destruction shown is consistent with the March 1, 2026 Iranian missile strike on Beit Shemesh (Ramat Lehi neighborhood) that destroyed the Tiferet Israel synagogue and killed nine \u2014 NOT Tel Aviv, where damage from that salvo was far more limited (a building hit, one killed, broken glass/debris). Calling this 'the ruins of Tel Aviv' overstates Tel Aviv damage and mislocates a real Beit Shemesh tragedy. (A notorious fully AI-generated 'Tel Aviv destroyed' video also circulated in this period, so location/authenticity claims about such clips need care.)",
+  "judge_guidance": "PASS only if the note corrects the LOCATION mislabeling: the heavy-destruction footage is not Tel Aviv but matches the March 1, 2026 Iranian missile strike on Beit Shemesh (synagogue destroyed, 9 killed), while Tel Aviv's damage from that attack was comparatively limited \u2014 sourced to a reliable outlet (Times of Israel / Al Jazeera / Euronews / BBC / NYT / Amnesty). Written in Turkish is appropriate given the tweet's language. AVOID the original note's failure (rated notHelpfulOpinionSpeculation 8, Incorrect 7, SourcesMissingOrUnreliable 5): do NOT assert the precise Beit-Shemesh identification with unwarranted confidence if the clip cannot be verified \u2014 a separate AI-generated 'Tel Aviv destroyed' fake also circulated, so a note that confidently authenticates the WRONG clip should fail. The note must ground its Beit-Shemesh ID in the destruction/casualty evidence and not merely swap one unsourced location for another. A note that accepts the 'Tel Aviv ruins' framing, or that calls all such footage AI without basis, fails.",
+  "reference_note": "Bu g\u00f6r\u00fcnt\u00fcler Tel Aviv'i de\u011fil, 1 Mart 2026'da \u0130ran f\u00fczesinin vurdu\u011fu Beit \u015eeme\u015f'teki (Ramat Lehi) y\u0131k\u0131m\u0131 g\u00f6steriyor; sald\u0131r\u0131da Tiferet Israel sinagogu y\u0131k\u0131ld\u0131 ve 9 ki\u015fi \u00f6ld\u00fc. Ayn\u0131 sald\u0131r\u0131da Tel Aviv'deki hasar bir binayla ve cam k\u0131r\u0131klar\u0131/enkazla s\u0131n\u0131rl\u0131 kald\u0131 (1 \u00f6l\u00fc). https://www.timesofisrael.com/nine-people-killed-in-iranian-missile-strike-on-residential-area-in-beit-shemesh/ https://www.aljazeera.com/gallery/2026/3/1/iranian-missile-strike-on-israels-beit-shemesh-kills-nine-people",
+  "original_unhelpful_note": {
+    "text": "Bu g\u00f6r\u00fcnt\u00fcler Tel Aviv de\u011fil, \u0130ran f\u00fczesinin vurdu\u011fu Beit \u015eeme\u015f'teki y\u0131k\u0131m\u0131 g\u00f6steriyor; Tel Aviv'deki hasar cam k\u0131r\u0131klar\u0131 ve enkazla s\u0131n\u0131rl\u0131 kald\u0131. https://www.nytimes.com/2026/03/01/world/middleeast/9-killed-beit-shemesh-iranian-missiles.html https://www.bbc.com/news/videos/c363zr0n27yo https://www.euronews.com/video/2026/03/02/tel-aviv-residents-assess-damage-after-iranian-missile-strike-kills-one",
+    "failure_reason": "Direction is correct (real footage misattributed: Beit Shemesh, not Tel Aviv) and sources are solid (NYT/BBC/Euronews), but rated NOT_HELPFUL (16 ratings; dominant notHelpfulOpinionSpeculation 8, Incorrect 7, SourcesMissingOrUnreliable 5). The note asserts the Beit-Shemesh identification confidently, but the specific clip is hard to verify from the frames (and an AI-generated 'Tel Aviv destroyed' fake circulated simultaneously), so raters split on whether the relabeling was proven. The NYT source is paywalled.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.timesofisrael.com/nine-people-killed-in-iranian-missile-strike-on-residential-area-in-beit-shemesh/",
+      "https://www.aljazeera.com/gallery/2026/3/1/iranian-missile-strike-on-israels-beit-shemesh-kills-nine-people",
+      "https://www.euronews.com/video/2026/03/02/iranian-missile-strike-on-beit-shemesh-kills-at-least-nine-in-israel",
+      "https://honestreporting.com/tel-aviv-destroyed-viral-video-proves-the-dangers-of-ai-during-israel-iran-war/",
+      "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Israel"
+    ],
+    "notes": "March 1, 2026 Iranian salvo: heaviest destruction in Beit Shemesh (Ramat Lehi) \u2014 Tiferet Israel synagogue destroyed, 9 killed, ~46 injured, ~500m damage radius. Tel Aviv: a building struck, 1 killed, far lighter damage. The IRGC ('sepah_pasdaran') watermark and the real rescue-worker/fire-truck frames indicate genuine strike footage relabeled as 'Tel Aviv ruins.' CAVEAT: a separate fully AI-generated 'Tel Aviv destroyed' video also went viral days later (HonestReporting/Algemeiner), so I cannot fully confirm THIS clip is the real Beit Shemesh footage vs. another misattributed/AI clip from the AI frame description alone \u2014 but either way the 'ruins of Tel Aviv' label is false."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "862k impressions of war footage relabeled to overstate destruction of a major city; misattributed/AI war imagery distorting casualty and damage perception is a high-volume conflict-misinformation pattern with civic stakes."
+  },
+  "difficulty": "hard"
+}

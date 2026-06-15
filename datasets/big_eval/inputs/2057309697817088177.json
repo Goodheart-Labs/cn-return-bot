@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2057309697817088177",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:58.798Z",
+  "post": {
+    "id": "2057309697817088177",
+    "author_id": "1102",
+    "created_at": "2026-05-21T03:57:09.000Z",
+    "text": "Someone told me they pay their mortgage with a credit card (with no additional fee) and get all the points. This has to be wrong, right? Does any institution allow CC payment for mortgage and not add like a 2% fee, if they allow it at all?",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 7,
+      "reply_count": 295,
+      "like_count": 3138,
+      "quote_count": 12,
+      "bookmark_count": 889,
+      "impression_count": 3367426
+    },
+    "author_followers": 81128,
+    "author_name": "David Ulevitch 🇺🇸",
+    "author_description": "GP @a16z — Building American Dynamism 🇺🇸  — Anthropologist — Formerly Founder/CEO @OpenDNS — Lokah Samastah Sukhino Bhavantu",
+    "author_tweet_count": 16994
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@SirTomasRosicky**: Lol, so obviously a Bilt plant to push marketing. Nice one.  \n**Engagement**: Likes=511, Replies=9, Views=101054\n\n**@fkdupman**: My mortgage company won't allow payments from anything other than a linked checking account.  \n**Engagement**: Likes=360, Replies=7, Views=183082\n\n**@cremieuxrecueil**: That's Bilt! And to get the points, you do need to spend a certain amount, but that's probably worthwhile for a lot of people.  \n**Engagement**: Likes=296, Replies=7, Bookmarks=78, Views=440001\n\n**@pitdesi**: Was it a Bilt card? That looks like a credit card but is actually just ACHing money and giving you rewards for it  \n**Engagement**: Likes=206, Replies=4, Bookmarks=33, Views=435358\n\n**@team_juicebox**: we need a costco mortgage we can get 2% back for being an executive member that i can pay with using my costco credit card, another +2% to me. with my 2.5% mortgage the banks are basically paying me  \n**Engagement**: Likes=45, Replies=5, Views=15923\n\n**@DaneSpennce**: Most mortgage company's dont even allow a credit debit option  \n**Engagement**: Likes=41, Replies=2, Views=37044\n\n**@sdamico**: For Amex and Chase, if you redeem via business class airline tickets with point transfer, it's actually worth paying your taxes to a certain extent with a credit card.  \n**Engagement**: Likes=34, Bookmarks=5, Views=22946\n\n**@jayhancock1**: In the good old days -- 1980s -- you could buy American Express travelers checks with a card, book the card miles/ points & then deposit the checks in yr account & pay the balance.  \n**Engagement**: Likes=33, Replies=1, Views=47452\n\n**@SmallCapVal**: Was actually allowed to pay 16k of tuition at a college last week with zero added on fees. Was shocked.  \n**Engagement**: Likes=29, Views=51538\n\n**@putain817**: There’s no way any bank would let you turn secured debt into unsecured debt  \n**Engagement**: Likes=19, Replies=1, Views=9327",
+    "warnings": []
+  }
+}

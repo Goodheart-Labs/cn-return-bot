@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2057583151518535962",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:51.305Z",
+  "post": {
+    "id": "2057583151518535962",
+    "author_id": "2032877151561596928",
+    "created_at": "2026-05-21T22:03:46.000Z",
+    "text": "A Fox News guest wore a MASK when speaking about how evil Iran is today. \n\nLook at the neck ⬇️  https://t.co/FHFjgPVDwQ",
+    "media": [
+      {
+        "media_key": "13_2057470117160570880",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2057470117160570880/img/dMPeaElSbrnxAI_O.jpg",
+        "height": 832,
+        "width": 576,
+        "duration_ms": 35333,
+        "view_count": 8591336,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057470117160570880/vid/avc1/320x462/-asu6gBY9pjmhnBS.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057470117160570880/vid/avc1/480x692/suPMGgI6rA0SK7DN.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057470117160570880/vid/avc1/576x832/txO_u1aww8818d54.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2057470117160570880/pl/-Tis63mma1cpTnr2.m3u8?v=973"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2773,
+      "reply_count": 345,
+      "like_count": 10487,
+      "quote_count": 152,
+      "bookmark_count": 1146,
+      "impression_count": 374841
+    },
+    "author_followers": 148961,
+    "author_name": "Ethan Levins 🇺🇸",
+    "author_description": "Independent Journalist | American Christian | Truth Seeker | Find me everywhere below ⬇️ | News alerts https://t.co/qtUoQ8LCmg",
+    "author_tweet_count": 2116
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2057470117160570880/vid/avc1/576x832/txO_u1aww8818d54.mp4",
+          "description": {
+            "description": "A sequence of four frames from a television news broadcast featuring Vice Admiral Robert Harward (Ret.). He is a bald man wearing a tan blazer and a dark blue shirt. He is speaking directly into the camera against a blurred city skyline background. As the frames progress, his mouth opens wider to speak. The broadcast graphics change to show a scrolling ticker at the bottom containing news alerts regarding Iran's President and U.S. forces.",
+            "ocrText": "TikTok @_keeks... BREAKING NEWS VICE ADM ROBERT HARWARD RAN PRESIDENT: \"DIALOGUE DON ALERT RS FOX NEWS REPORT: I TikTok @_keeks... BREAKING NEWS VICE ADM ROBERT HARWARD IRAN PRESIDENT: \"DIALOGUE DO ALERT S U.S. HAS SHOWN FLEXIB REAKING NEWS ICE ADM ROBERT HARWARD (RE N PRESIDENT: \"DIALOGUE DOES ERT CONTINUE SOME PEACEFUL N OBEL G NEWS OBERT HARWARD (RET) I RETIRED NT: \"DIALOGUE DOES NOT MEAN NEWS CENTCOM SAYS U.S. FORC H TikTok @_keeks..."
+          },
+          "transcription": "In the eyes of the Iranian people, but the world global economy, which they're holding all hostage to, the more everybody comes to realize this is all about the IRGC. At the end of the day, we're going to have to need a government in Iran that not only hands over the nuclear material, stops threatening the Straits of Hormuz, but quits exporting the Islamic Revolution throughout the region, causing the collapse of Lebanon, Gaza, Yemen, Syria, and as well..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@destroyedfiles**: Is that (Admiral?) a real person, or... (202 likes, 9 reposts)  \n**@DailyMarcher**: People watching Fox News after this just wants to be mocked now. No self-respecting person will continue watching this TV (172 likes, 8 reposts)  \n**@RealPrincessJas**: He doesn’t even have an upper lip too!!!!! So it’s 110% a mask 😂 (172 likes)  \n**@FPindiana71802**: This pig 🐷 head bastard talking about Israel Iran never attacks any country (159 likes, 20 reposts)  \n**@NeoVoxum**: (No text content) [with photo] (137 likes, 16 reposts)  \n**@Caddie4jGuile**: WTF? What is going on? It really looks that bad from YT on my TV (113 likes, 13 reposts)  \n**@amorYvida62**: What in the Halloween is going in here?? (91 likes)  \n**@AnaEscobarShow**: [video link] (66 likes, 2 reposts)  \n**@neil_on_sea**: Endless propaganda for idiot boomers Iran is not a threat at all. It’s all made up to justify wars for Israel (62 likes, 4 reposts)  \n**@mhanna88**: Is that Bibi? (44 likes)",
+    "warnings": []
+  }
+}

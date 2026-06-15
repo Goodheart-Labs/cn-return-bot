@@ -1,0 +1,75 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Bitcoin whale 2009 wallet sold 1.24 billion BTC February 2026",
+        "Satoshi whale 1KFYo bitcoin wallet Coinbase 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Round 1 immediately surfaced a debunking article from FX Leaders (Feb 24 2026) titled 'The Truth about Oldest Bitcoin Whale Cashing Out', plus a CCN article asking 'Is It Accurate?'. Results describe the claim as based on a fake/edited screenshot that misrepresented routine Coinbase transactions. The Satoshi Whale 1KFYo wallet did exist and was sending ~40.647 BTC batches to Coinbase, but the narrative framing was misleading.",
+      "lesson": "The 'Satoshi Whale' tag and $1.24B figure were real enough to generate significant coverage. The core debunking angle: (1) the screenshot was edited/manipulated, (2) the $1.24B figure conflated network-wide data with a single wallet, (3) the wallet was possibly connected to Coinbase operational infrastructure, and (4) sending to Coinbase does not confirm a sale."
+    },
+    {
+      "queries": [
+        "\"oldest bitcoin whale\" \"$1.24 billion\" fake screenshot misleading February 2026",
+        "bitcoin 2009 whale sold entire stack fact check debunked 2026"
+      ],
+      "purpose": "targeted + brand-suffix",
+      "what_returned": "Confirmed multiple independent sources: FX Leaders, CCN/Yahoo Finance, Yellow.com all report the claim was misleading. Key findings: (1) the Arkham screenshot was edited, (2) the wallet may have been a Coinbase hot wallet or exchange-linked address, (3) $1.24B figure was an aggregation of network-wide losses across many wallets, not a single entity. Also found a ZyCrypto article attributing the wallet to 'Owen Gunden' — a named identity claim worth noting.",
+      "lesson": "The 'fake screenshot' angle is well-sourced. The wallet did send BTC to Coinbase but: the $1.24B total was fabricated by aggregation; the 'oldest whale' and '2009' provenance is unverified; and the framing 'sold his entire stack' and 'ask yourself why' implies intentional bearish signal-sending which is unsupported."
+    },
+    {
+      "queries": [
+        "arkham intelligence screenshot edited manipulated \"satoshi whale\" coinbase bitcoin 2026"
+      ],
+      "purpose": "refine — confirm screenshot manipulation specifically",
+      "what_returned": "FX Leaders and CCN confirmed screenshot was manipulated. Arkham Intelligence later confirmed the claim was false. The transfers shown were consistent with a Coinbase hot wallet doing routine operational moves, not a historic individual holder liquidating.",
+      "lesson": "Anti-hindsight check: I would have searched for 'satoshi whale' and '$1.24 billion' based purely on tweet content. The 'fake screenshot' lead came from round 1 results, not retrofitting. The Arkham Intelligence angle is natural since the image shows Arkham-style data. All searches were derivable from tweet text alone."
+    }
+  ],
+  "gold_queries": [
+    "Bitcoin whale 2009 wallet sold 1.24 billion BTC February 2026",
+    "Satoshi whale 1KFYo bitcoin Coinbase sell-off 2026",
+    "\"oldest bitcoin whale\" \"$1.24 billion\" fake screenshot misleading",
+    "bitcoin 2009 whale sold entire stack fact check debunked",
+    "arkham intelligence satoshi whale coinbase routine transactions 2026"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.fxleaders.com/news/2026/02/24/the-truth-about-oldest-bitcoin-whale-cashing-out/",
+      "title": "The Truth about Oldest Bitcoin Whale Cashing Out - Forex News by FX Leaders",
+      "found_via_query": "Bitcoin whale 2009 wallet sold 1.24 billion BTC February 2026",
+      "authority_reason": "Financial news outlet publishing a dedicated debunking article on the same day (Feb 24 2026); directly addresses the viral claim",
+      "what_it_establishes": "The $1.24B claim was based on a fake/edited screenshot. The transactions shown were routine Coinbase exchange activity. The $1.24B figure conflated network-wide realized losses across many wallets (Glassnode data) with a single entity's alleged sell-off."
+    },
+    {
+      "url": "https://finance.yahoo.com/news/bitcoin-oldest-2009-whale-sells-144215483.html",
+      "title": "Bitcoin's 'Oldest' 2009 Whale Reportedly Sells $1.24B BTC as Price Falls Below $65,000 — Is It Accurate? (CCN via Yahoo Finance)",
+      "found_via_query": "\"oldest bitcoin whale\" \"$1.24 billion\" fake screenshot misleading February 2026",
+      "authority_reason": "CCN is a mainstream crypto news outlet; article is an explicit accuracy investigation; Yahoo Finance syndication adds reach",
+      "what_it_establishes": "The screenshot was edited to falsely label a Coinbase-linked wallet as 'Satoshi Whale (1KFYo)'. Fixed-increment transfers (~40.646 BTC) are consistent with Coinbase hot wallet operations, not a single long-term holder liquidating. The 'sold his entire stack' framing is unsupported."
+    },
+    {
+      "url": "https://yellow.com/news/satoshi-whale-wallet-drains-80-of-holdings-in-weeks-routing-thousands-of-btc-to-coinbase",
+      "title": "'Satoshi Whale' Wallet Drains 80% Of Holdings In Weeks, Routing Thousands Of BTC To Coinbase | Yellow.com",
+      "found_via_query": "Satoshi whale 1KFYo bitcoin wallet Coinbase 2026",
+      "authority_reason": "Crypto news outlet with on-chain analysis; provides nuanced factual grounding on what the wallet actually did",
+      "what_it_establishes": "The 1KFYo wallet did send large amounts to Coinbase (from ~11,000 BTC to ~2,000 BTC), but: sending to a Coinbase deposit address does not confirm a sale (could be custody, collateral); the wallet is Arkham-labeled not verified; 'sold entire stack' is inaccurate since ~2,000 BTC remained; no major analytics firm confirmed an outright sale."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching the specific dollar figure '$1.24 billion' combined with 'Bitcoin whale 2009' and 'February 2026' immediately surfaced the debunking article",
+      "Including 'fake screenshot' in round 2 queries confirmed the manipulation angle across multiple sources",
+      "The wallet address label 'SATOSHI WHALE (1KFYo)' visible in the image was a strong unique identifier for targeted searches",
+      "Searching for the Arkham Intelligence connection (the dashboard visible in the image) helped confirm the screenshot manipulation angle"
+    ],
+    "what_hurt": [
+      "CCN article returned 403 (had to use Yahoo Finance syndication instead)",
+      "Searches for 'arkham satoshi whale manipulation' returned weaker results than the direct dollar-figure queries"
+    ],
+    "would_multipass_help": "no — round 1 alone surfaced the core debunking sources; the claim is well-documented and the key facts (edited screenshot, routine Coinbase transactions, $1.24B figure conflation) were all findable in a single pass",
+    "deepseek_advice": "For viral crypto whale claims accompanied by dashboard screenshots, immediately search the specific dollar amount + 'bitcoin whale' + the current year — these sensational claims are almost always debunked within 24-48 hours and the debunking articles rank highly. Identify any visible wallet address labels or platform names in the image description and include them as search terms, as they often serve as unique identifiers linking to fact-check coverage."
+  }
+}

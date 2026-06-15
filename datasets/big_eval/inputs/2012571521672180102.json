@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2012571521672180102",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:59.254Z",
+  "post": {
+    "id": "2012571521672180102",
+    "author_id": "1432026116420775940",
+    "created_at": "2026-01-17T17:03:37.000Z",
+    "text": "Mess with the bull as the saying goes. https://t.co/y781cmo0pH",
+    "media": [
+      {
+        "media_key": "13_2012571472783429632",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2012571472783429632/img/ctkrXP7loThtEvv-.jpg",
+        "height": 1280,
+        "width": 704,
+        "duration_ms": 10067,
+        "view_count": 563155,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012571472783429632/vid/avc1/320x580/9AiiXVnpgk0cIFto.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012571472783429632/vid/avc1/480x872/liFvKlkz8limVKZb.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012571472783429632/vid/avc1/704x1280/0KNXo1uJb6C_tPQs.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2012571472783429632/pl/i24FU2myOwbRNeV3.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1243,
+      "reply_count": 876,
+      "like_count": 11680,
+      "quote_count": 210,
+      "bookmark_count": 535,
+      "impression_count": 1253267
+    },
+    "author_followers": 153026,
+    "author_name": "Tiffany Savage 🇺🇸",
+    "author_description": "📖 Precincts Win Elections 📖 : https://t.co/1lPIGuSxsh",
+    "author_tweet_count": 73092
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2012571472783429632/vid/avc1/704x1280/0KNXo1uJb6C_tPQs.mp4",
+          "description": {
+            "description": "A close-up of a person with a shaved head and a soldier in full military fatigues, with the person with the shaved head getting into the face of the soldier in what appears to be an intensely confrontational manner. The soldier remains stoic throughout, including the second frame when the person has their mouth wide open in a scream directly into the soldier's face.",
+            "ocrText": "JUSTICE\nMATTER\nMOLES"
+          },
+          "transcription": "PERK peripheral"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Mark Taylor (@usspeculator)**: \"Thanks Tiffany! Post of the day.\" (70 likes)\n- **Bill Speros (@billsperos)**: \"AI video @mirandadevine\" (55 likes)\n- **Guy B. (@bezzarguy1)**: \"I wish it were true but that's AI\" (51 likes)\n- **MiltNFriedman (@PenneyVC)**: \"🤣\" (38 likes)\n- **Brian Dreyer 🇺🇸 (@Bwdreyer)**: \"So much respect for these guys🇺🇸 I couldn’t deal with that. 🇺🇸 I don’t want to say how many times I’ve watched this… hehehe..\" (30 likes)\n- **Bill Speros (@billsperos)**: \"@grok is this video AI\" (23 likes)\n- **GH Staigle (@GHStaigle)**: \"The lettering on his uniform lets me know this is AI\" (18 likes)\n- **CharlieSue 🙏🏻✝️🤍🌿 (@CharlieSue_USA)**: \"Daaamn 👀\" (16 likes)\n- **GMB (@GMB_615)**: \"Ai bullshit...\" (16 likes)\n- **damien (@ill_eat_the_sun)**: \"Another right wing crackpot proves she can be easily fooled by AI.\" (13 likes)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2015520423820083697",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:35.786Z",
+  "post": {
+    "id": "2015520423820083697",
+    "author_id": "1948440576140955648",
+    "created_at": "2026-01-25T20:21:30.000Z",
+    "text": "The U.S. military is expected to carry out a military operation against Iran today\n\n And tonight is being seen as a decisive moment for the country. https://t.co/lUBMJXuw8A",
+    "media": [
+      {
+        "media_key": "3_2015520421227937793",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_iRJPjWQAE_xb8.jpg",
+        "height": 687,
+        "width": 650
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1542,
+      "reply_count": 1566,
+      "like_count": 5383,
+      "quote_count": 185,
+      "bookmark_count": 123,
+      "impression_count": 210641
+    },
+    "author_followers": 72648,
+    "author_name": "BARRON TRUMP",
+    "author_description": "Son of the president 🇺🇸❤️ of United States of America 🇺🇸 (Commentary account), Not affiliated with any official entity.",
+    "author_tweet_count": 1697
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_iRJPjWQAE_xb8.jpg",
+          "description": {
+            "description": "A head-and-shoulders portrait shows Donald Trump, then President of the United States, speaking at a podium. He is wearing a dark suit, white shirt, and red tie. Behind him are the American flag and what appears to be a yellow flag. The podium features the Seal of the President of the United States. A 'UPI' watermark is visible in the bottom right corner.",
+            "ocrText": "UPI"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@ChristinaC10423**  \nI stand with my President. Save the Iranian people.  \nLikes: 237 | Reposts: 0 | Views: 7666\n\n**@mehradbamad**  \n(no text, video attached)  \nLikes: 152 | Reposts: 0 | Views: 3219\n\n**@TinaFay1978**  \nPlease don’t give us false hope! We can’t take it anymore. Our people have waited so long. Every minute is precious 😭😭🙏🙏  \nLikes: 100 | Reposts: 0 | Views: 3510\n\n**@H3ngam3h_h**  \nWe have heard it every day for 2 weeks now  \nLikes: 92 | Reposts: 0 | Views: 2707\n\n**@Aphiuga**  \nAct immediately. Every single minute matters. 🆘  \n#R2Pforlran #IranMassacre #IranRevolution2026  \nLikes: 67 | Reposts: 0 | Views: 2329\n\n**@iran_krd**  \nTalk about Iran don't stop talking about Iran  \n#IranMassacre  \n#KingRezaPahlavi  \nLikes: 38 | Reposts: 0 | Views: 523\n\n**@Arezo_9**  \nWe really hope this news is true  \nThe massacred people of Iran are crying out from the walls and streets of the cities:\"President Trump, please help!\"  \nLikes: 37 | Reposts: 0 | Views: 564\n\n**@StrFire_X**  \nMay God place His shield over you, over the U.S. troops, and over the people of Iran, and guard them in His mercy and strength.  \nLikes: 31 | Reposts: 0 | Views: 2364\n\n**@JohnLando127448**  \nWe Have Faith In Our President. Believe.  \nLikes: 26 | Reposts: 0 | Views: 2452\n\n**@GiManesh**  \nترامپ بزن و مردم ایران رو از چنگ این رژیم خونخوار نجات بده. ترامپ بزن!  \n#R2Pforlran  \n#IranRevoIution2026  \nLikes: 23 | Reposts: 0 | Views: 310",
+    "warnings": []
+  }
+}

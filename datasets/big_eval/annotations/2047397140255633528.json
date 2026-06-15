@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2047397140255633528",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Clip of RFK Jr. defending Trump's claim of a '600% drug price decrease,' arguing that if a drug rose $100->$600 (a 600% rise) then dropping $600->$100 is a '600% savings.'",
+  "why_note_decision": "A note is warranted: the math is wrong and was stated to defend a public-policy claim. Percentage change is computed relative to the starting value, so $100->$600 is a 500% increase (not 600%), and $600->$100 is an 83.3% decrease. A decrease cannot exceed 100% without the price going negative, so a '600% decrease' is impossible. The Democratic senator's point that a 600% drop is mathematically impossible was correct; RFK Jr.'s defense is not.",
+  "judge_guidance": "PASS only if the note correctly explains the percentage math: a price drop cannot exceed 100% (a 600% decrease is impossible / would imply a negative price), and ideally gives the correct figures ($600->$100 is an ~83.3% decrease). A correct note may also note that $100->$600 is a 500% increase, not 600%. FAIL if the note endorses RFK Jr.'s framing, calls the '600% savings' valid, omits the core point that a >100% decrease is impossible, or gets the correct percentages wrong. Tone must stay neutral/factual (the topic is highly partisan; argumentative or mocking phrasing risks notHelpfulArgumentativeOrBiased).",
+  "reference_note": "RFK Jr.'s example misstates percentage changes. From $100 to $600 is a 500% increase ((600-100)/100 × 100). From $600 to $100 is an 83.3% decrease ((100-600)/600 × 100). A 600% decrease from $600 would reach a negative price.    https://www.newsweek.com/rfk-jr-trump-different-way-calculating-drug-prices-warren-senate-11864840  https://www.cnn.com/2025/09/23/politics/fact-check-drug-prices-trump  https://www.calculatorsoup.com/calculators/algebra/percentage-decrease-calculator.php",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_math_error",
+    "sources_checked": [
+      "https://www.politifact.com/factchecks/2026/apr/23/robert-f-kennedy-jr/percentage-decreases-drug-prices-trump-math/",
+      "https://www.snopes.com/fact-check/rfk-trump-drug-price-math/",
+      "https://www.pbs.org/newshour/politics/fact-checking-rfk-jr-s-claim-theres-more-than-one-way-to-calculate-a-percentage-decrease"
+    ],
+    "notes": "PolitiFact rated RFK Jr.'s claim 'Pants on Fire.' A percentage decrease cannot exceed 100%; $600->$100 is 83.3%. ($100->$600 is a 500% increase; RFK's '600% rise' is also slightly off.) The note's figures are correct. Original note rated CURRENTLY_RATED_HELPFUL."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "10M+ impressions from a major journalist; correcting an innumerate justification for a federal drug-pricing claim (and modeling neutral cross-partisan correction) matters for policy literacy and progress."
+  },
+  "difficulty": "easy"
+}

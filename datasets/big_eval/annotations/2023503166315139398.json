@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2023503166315139398",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "creator_explainer_video",
+  "tweet_summary": "Zack D. Films (well-known 3D-animation explainer creator) posts a CGI-animated retelling of a real ATM jackpotting heist, captioned 'How Thieves Made An ATM Spit Out Cash 😮'.",
+  "why_note_decision": "Zack D. Films is a famous YouTube/short-form creator whose entire format since 2023 is CGI-animated retellings of real stories — this is universally known to his audience and is plainly visible from the obviously-3D style. ATM jackpotting attacks (where attackers install malware/hardware to force the ATM to dispense cash) are a documented, real crime category that the video summarizes accurately. The tweet does not claim it is surveillance footage; the video itself is clearly stylized 3D. The note pedantically labels the visuals as not 'real surveillance footage' — true but irrelevant since nobody claimed otherwise. Top reply: 'ai community notes are genius bro' (sarcastic). Classic false positive.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The post is by Zack D. Films, a creator universally known for CGI-animated explainers of real stories. The animation style is obvious, the tweet doesn't claim it's real surveillance, and ATM jackpotting is a genuine crime category accurately summarized. A note explaining 'this is 3D animation, not real footage' is pedantic — reject it.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows a 3D animated dramatization of ATM jackpotting, not real surveillance footage of an actual theft. https://zackdfilms.fandom.com/wiki/Zack_D._Films https://zackdfilms.recruitee.com/o/3d-generalist",
+    "failure_reason": "note_not_needed_pedantic",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://zackdfilms.fandom.com/wiki/Zack_D._Films",
+      "https://www.youtube.com/@zackdfilms"
+    ],
+    "notes": "Zack D. Films' content is 100% CGI since late 2023. ATM jackpotting is a real attack category. Tweet caption doesn't mislead about format."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Entertainment/educational short; no real harm. Pipeline learning: known explainer-creator formats don't need 'this is animated' notes."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1989040065407004945",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["conspiracy_and_viral_hoax", "fabricated_quote"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Tweet shares an Epstein-document email excerpt and claims Jeffrey Epstein asked his brother Mark whether Putin has photos of Trump 'blowing Bubba' (Bill Clinton).",
+  "why_note_decision": "The 60M-view tweet has two factual problems: (a) sender/recipient are reversed — per the email text in the image, MARK Epstein wrote the 'Ask him if Putin has photos of Trump blowing Bubba' line to Jeffrey, not vice-versa; (b) Mark Epstein publicly stated 'Bubba' was NOT Bill Clinton (Lead Stories fact-check, Nov 2025). HOWEVER, the original CN note has its own problems: it correctly fixes (a) but propagates (b) — it asserts 'Bubba is a nickname sometimes used for Bill Clinton,' which Mark Epstein explicitly denied. With 372 'note not needed' ratings on a tweet that is widely treated as a meme/joke about the Epstein documents, the community signal is that this was being shared as humor (replies are overwhelmingly joke replies — 'Im an atheist but...' 18K likes). A note that itself contains a contested claim (Bubba=Clinton) is worse than no note.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a note that BOTH (a) corrects the sender/recipient reversal (MARK wrote to Jeffrey, not the other way around) AND (b) explicitly notes that Mark Epstein has publicly stated 'Bubba' was NOT a reference to Bill Clinton. FAIL if the note repeats the original's mistake of asserting/implying Bubba = Bill Clinton without that caveat, or if it merely restates the tweet without these corrections.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The email was sent by Mark Epstein to Jeffrey Epstein, asking him to inquire with Bannon if Putin has 'the photos of Trump blowing Bubba' ('Bubba' is a nickname sometimes used for Bill Clinton). The post has the sender and recipient reversed.  https://leadstories.com/hoax-alert/2025/11/fact-check-epstein-brother-did-mention-trump-bubba-in-email.html",
+    "failure_reason": "Note correctly identifies the sender/recipient reversal but repeats the disputed 'Bubba = Bill Clinton' framing that Mark Epstein himself publicly denied. Community treats the tweet as joke/meme and rated Note Not Needed (372).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet does invert sender/recipient (Mark wrote to Jeffrey), AND its 'Bubba=Clinton' assumption is disputed by Mark Epstein. But the post functions as a viral political joke and the community didn't find a note useful.",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2025/11/fact-check-epstein-brother-did-mention-trump-bubba-in-email.html"
+    ],
+    "notes": "Per Lead Stories: Mark Epstein wrote the 'Putin photos of Trump blowing Bubba' line as part of a 'humorous private exchange between two brothers' and explicitly told media 'the reference to Bubba in this correspondence is not, in any way, a reference to former President Bill Clinton.'"
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "61M-impression Epstein/Trump post; high political-misinformation surface area. Borderline candidate for a note that pedantically corrects sender — but the safer pipeline behavior is to decline given the joke framing."
+  },
+  "difficulty": "hard"
+}

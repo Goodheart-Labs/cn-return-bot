@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2031011842470850861",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "politics_and_policy"],
+  "category_fit": "poor",
+  "suggested_category": "",
+  "tweet_summary": "blockgraze (a crypto/finance shitposter) writes 'I wish david sacks had been alive to see this war / he would have loved posting about it' — an obvious sarcastic joke that David Sacks (very much alive and currently Trump's AI czar) has become unrecognizable from his earlier libertarian self by enthusiastically supporting the Iran war on All-In podcast.",
+  "why_note_decision": "The tweet is a clear sarcastic joke ('dead inside' framing about Sacks). Replies confirm everyone gets the bit ('He's only dead inside.'; 'biggest scumbags…talking about how Iran war is 4d chess'). Treating it literally and citing a live X post to prove Sacks is biologically alive is exactly the kind of pedantic literal-reading the no-note signal exists to suppress. 12 NNN.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is obvious sarcasm — 'wish he had been alive to see this war / would have loved posting about it' is a joke about Sacks being unrecognizable / 'dead inside' due to his Iran-war posting on All-In, not a literal claim he is dead. Replies confirm everyone understands the bit. Any note explaining that David Sacks is biologically alive must FAIL — it misreads sarcasm as a factual claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "David Sacks posted on X on March 5, 2026, indicating he is alive. https://x.com/DavidSacks/status/2029421606938788196",
+    "failure_reason": "notHelpfulNoteNotNeeded — treats an obvious sarcastic joke as a literal death claim",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious_sarcasm",
+    "sources_checked": [
+      "https://fortune.com/2026/03/14/trump-ai-czar-david-sacks-us-iran-war-gulf-israel-desalination-water-uninhabitable/",
+      "https://x.com/DavidSacks"
+    ],
+    "notes": "Sacks is Trump's AI/crypto czar; was actively posting and on All-In in March 2026 commenting on the Iran war. Tweet is sarcastic, not literal."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Niche tech-politics joke; ~317k impressions. Low stakes but a clean false-positive trap on sarcasm."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2040251271332983064",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A nationalist account posts a German news clip with the false caption that 'Due to the Muslim population, German schools will no longer have musical education.' The video itself is actually a Hamburg news report about the city taking a stand AGAINST religious intimidation/discrimination in schools — including isolated incidents where some students called music lessons 'haram' — and announcing it will not tolerate such behavior. No ban on music education exists or is planned.",
+  "why_note_decision": "The tweet's headline claim is unambiguously false: Hamburg/Germany has not banned music lessons. Euronews EuroVerify and the Hamburg school senator (Xenia Bicke) explicitly state the opposite — Hamburg is reaffirming music education and pushing back against the isolated incidents. The clip the author embeds actually undermines his own claim. A note IS warranted; this is a viral (~700k views) false claim that misleads readers about both German policy and Muslims in Germany.",
+  "judge_guidance": "A correct note must (1) state that Hamburg / German schools are NOT banning, eliminating, or removing music education, AND (2) clarify what the source video actually reports: Hamburg authorities are responding to isolated incidents of religious intimidation (some students calling music lessons 'haram', etc.) by drawing a clear line against discrimination — i.e., the city is defending music education, not abolishing it. Bonus: identifying Hamburg specifically (not 'Germany') is good. The note must cite at least one credible source (Euronews EuroVerify, Welt, or the Hamburg school senator's statement). PASS the original-style note format (which does both). FAIL any note that endorses the tweet's framing, or that buries the lede by leading with 'incidents of intimidation' before clearly stating no ban exists.",
+  "reference_note": "False. Hamburg / German schools are NOT eliminating music education. The clip is a Hamburg news report about the city taking a stand against isolated incidents of religious intimidation (including some students calling music lessons 'haram'); the schools senator confirmed no ban is planned and such behavior won't be tolerated. https://www.euronews.com/video/2025/10/02/no-hamburg-has-not-banned-music-lessons-because-theyre-haram",
+  "original_unhelpful_note": {
+    "text": "While there are reports of religious intimidation in some Hamburg schools, including over music lessons deemed \"haram\" by some students, German schools are not eliminating music education. Officials confirm no ban is planned and such behavior won't be tolerated. https://www.euronews.com/video/2025/10/02/no-hamburg-has-not-banned-music-lessons-because-theyre-haram https://www.welt.de/regionales/hamburg/article256272356/uebergriffe-an-schulen-hamburg-zieht-klare-linie-gegen-religioesen-zwang.html",
+    "failure_reason": "Note is substantively correct and well-sourced, but it BURIES THE LEDE — it leads with 'reports of religious intimidation... including over music lessons deemed haram', which partially validates the tweet's framing, before getting to the actual correction ('German schools are not eliminating music education'). Raters tagged 'missing key points' (15) and 'incorrect' (11), likely because the opening concession lets the original misinformation breathe. A correction should lead with 'False — no ban exists' and only then add context.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false — Hamburg/Germany has not banned music education",
+    "sources_checked": [
+      "https://www.euronews.com/video/2025/10/02/no-hamburg-has-not-banned-music-lessons-because-theyre-haram"
+    ],
+    "notes": "Euronews EuroVerify fact-check confirms claim is false. The Hamburg news clip embedded in the tweet itself reports the OPPOSITE — Hamburg drawing a 'clear line against discrimination' and the schools senator saying such behavior 'will not be tolerated.' The tweet text inverts the video's meaning."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "~700k views; viral anti-Muslim disinformation that materially misrepresents both German policy and a minority religious community. Correcting it has modest EA value (civic discourse / minority-group reputation harm)."
+  },
+  "difficulty": "easy"
+}

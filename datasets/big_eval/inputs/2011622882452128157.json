@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2011622882452128157",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:58:46.007Z",
+  "post": {
+    "id": "2011622882452128157",
+    "author_id": "1502831572298436611",
+    "created_at": "2026-01-15T02:14:03.000Z",
+    "text": "This dog sniffed a gas leak… and saved her life... Real hero https://t.co/8mY65r3jVf",
+    "media": [
+      {
+        "media_key": "7_2011622843692580864",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2011622843692580864/pu/img/ADHqoBxnK_FAMJs7.jpg",
+        "height": 1250,
+        "width": 704,
+        "duration_ms": 10216,
+        "view_count": 945466,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2011622843692580864/pu/vid/avc1/320x568/5Lwaj1rByvLbWHob.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2011622843692580864/pu/vid/avc1/480x852/Gs_DtCEmh01bk1Ra.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2011622843692580864/pu/vid/avc1/704x1250/86sBxwmgiiIEAEOw.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2011622843692580864/pu/pl/lcWgHJN8V3LzuN73.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1670,
+      "reply_count": 597,
+      "like_count": 21934,
+      "quote_count": 128,
+      "bookmark_count": 1740,
+      "impression_count": 2585757
+    },
+    "author_followers": 323038,
+    "author_name": "Crazy Moments",
+    "author_description": "Posting trending and viral videos around the world. Stay in the loop with what's buzzing! DM for credit or removal",
+    "author_tweet_count": 74973
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2011622843692580864/pu/vid/avc1/704x1250/86sBxwmgiiIEAEOw.mp4",
+          "description": {
+            "description": "A CCTV recording in a kitchen. The first frame shows a German Shepherd on its hind legs reaching for a pot on the stove while a woman attempts to pull it away. The second frame, timestamped earlier, shows a large grease fire on the stove spreading through the kitchen with smoke filling the top of the frame.",
+            "ocrText": "2025-04-18 18:42:34\n2025-04-18 18:42:09"
+          },
+          "transcription": "Oh my god."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @nft_cryptogang: (image reply) Likes=1650, Reposts=14, Quotes=0, Replies=9, Views=79395\n- @StackOfTruths: 😂🤣 Likes=555, Reposts=0, Quotes=0, Replies=0, Views=74887\n- @TheTradingNinja: AI cause why her stupid ass just standing there after Likes=198, Reposts=0, Quotes=0, Replies=0, Views=30880\n- @Tyler_newhouse2: This is an AI video, also a gas leak wouldn’t like look like this  and this isn’t how it would happen too. Likes=86, Reposts=0, Quotes=0, Replies=0, Views=18312\n- @kayzywizzzy: Ai be doing too much these days Likes=65, Reposts=0, Quotes=0, Replies=0, Views=10064\n- @AnayezaKha78911: Well done to this brave and kind lady for saving a life 👏 Likes=46, Reposts=0, Quotes=0, Replies=0, Views=11750\n- @_Benksy_: Dogs know everything earlier Likes=31, Reposts=0, Quotes=0, Replies=0, Views=62163\n- @ZyntaFinance: Yeah, gas explodes and she just stands there holding a spoon Likes=16, Reposts=0, Quotes=0, Replies=0, Views=7470\n- @raggapegs: AI generated bullshit detected. Likes=5, Reposts=0, Quotes=0, Replies=0, Views=176\n- @MeeSowCorny: it's funny cuz there was a point in time where we'd love these videos because we knew it was real, now we question everything for ai Likes=3, Reposts=0, Quotes=0, Replies=0, Views=933",
+    "warnings": []
+  }
+}

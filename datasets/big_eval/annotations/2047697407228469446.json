@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2047697407228469446",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "animal_welfare_framing",
+  "tweet_summary": "Small account 'B maps' (2.8k followers) replies to a Daily Mail story about Ernie Dosio (75) being trampled by elephants while hunting in Gabon: 'Elephants have a very sharp memory. They probably remembered him for killing their family members.' Attached image is a Google AI-Overview snippet about elephant memory. 34.9k impressions.",
+  "why_note_decision": "Two pieces: (1) Elephants DO have well-documented exceptional long-term memory (Cleveland Zoological — the source in the screenshot itself — and broad scientific consensus); the AI Overview content is accurate. (2) The 'they remembered him' framing is explicit speculation by the user ('They probably remembered him...'), not a factual claim. Per Daily Mail/NY Post/LBC/Futurism/Fox News reporting on the Dosio incident, the elephants charged because the hunting party surprised them — they were forest elephant cows protecting a calf. There's no evidence of memory-based revenge. But this is OPINION/speculation in the original tweet, expressly hedged with 'probably' — not a falsifiable factual claim. The original note 'corrects' speculative musing on a news event, which is the classic noteNotNeeded false-positive pattern.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is explicitly speculative ('They probably remembered him for killing their family members') — opinion, not a factual claim. The underlying incident (Ernie Dosio trampled in Gabon while hunting antelope; elephants charged after his party surprised them) is well-reported. Any note 'correcting' the elephant-revenge speculation is a false positive on user opinion. FAIL any note that addresses the memory-revenge musing as a factual claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "There is no evidence the elephants recognized or remembered the hunter from prior kills; the herd charged after he and his guide surprised them in dense forest during an antelope hunt. https://www.dailymail.com/news/article-15761595/Millionaire-US-big-game-hunter-75-trampled-death-five-elephants-hunting-antelope-central-Africa.html https://nypost.com/2026/04/24/world-news/millionaire-big-game-hunter-75-trampled-to-death-by-five-elephants-while-eyeing-his-next-kill-in-africa",
+    "failure_reason": "noteNotNeeded — substance is accurate (no memory-revenge evidence; charge was a surprise encounter with calf), but the original tweet expressly hedges with 'probably' and is overt opinion. Correcting speculation = false positive.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is overt speculation; underlying incident (Dosio trampled in Gabon hunting antelope, surprise-encounter with cow elephants + calf) is real.",
+    "sources_checked": [
+      "https://www.foxnews.com/us/california-millionaire-trampled-death-elephants-african-hunting-expedition",
+      "https://www.lbc.co.uk/article/big-game-hunter-trampled-elephants-african-hunt-5HjdYDy_2/",
+      "https://futurism.com/science-energy/deer-vs-rhinoceros",
+      "https://kutv.com/news/nation-world/american-big-game-hunter-killed-trampled-herd-elephants-ernie-dosio-collect-africa-gabon-lope-okanda-rainforest-pacific-agrilands-california-lodi"
+    ],
+    "notes": "Elephants DO have well-documented long-term memory (Cleveland Zoological, broad consensus). 'Revenge for prior kills' is speculation — no evidence either way. Tweet is opinion."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-stakes; tests the bot's no-note instinct on overt user speculation ('they probably...') replying to a news event."
+  },
+  "difficulty": "easy"
+}

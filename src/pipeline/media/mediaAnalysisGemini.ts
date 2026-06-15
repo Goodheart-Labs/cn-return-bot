@@ -1,10 +1,12 @@
 /**
  * Gemini 3 Flash Media Analysis
  *
- * Analyzes tweet media using Gemini 3 Flash via OpenRouter.
+ * Analyzes tweet media using Gemini 3 Flash via the native Google Gen AI API
+ * (so it shares the free→paid key routing in ../llm/gemini).
  * - Images: direct vision call with structured JSON (description + OCR)
- * - Short videos (<= 3.5 min): pass entire video as base64 via video_url
- * - Long videos (> 3.5 min): extract 4 uniformly sampled frames via ffmpeg
+ * - Short videos (<= 3.5 min): pass entire video as inline base64 bytes
+ * - Frame-sampled videos: extract 5 equally-spaced frames across the clip via
+ *   ffmpeg (works for any length, including sub-5s clips)
  * - Audio: extract and transcribe with Groq Whisper
  */
 
@@ -15,7 +17,8 @@ import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
 import { GEMINI_MODEL } from "../cost-tracking/pricing";
-import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
+import { trackLlmCall } from "../cost-tracking/costTracker";
+import { geminiNativeGenerate, type GeminiContentPart } from "../llm/gemini";
 import {
   downloadVideoWithYtDlp,
   fetchAutoSubs,
@@ -24,9 +27,13 @@ import {
   type YtDlpMetadata,
 } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
+import { getBestMediaUrl } from "./bestMediaUrl";
 
 const execAsync = promisify(exec);
-const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes — short videos go to Gemini whole; long videos get 4-frame sampling
+// Native Gemini API takes the model id without the OpenRouter "google/" prefix.
+const GEMINI_NATIVE_MODEL = GEMINI_MODEL.replace(/^google\//, "");
+const FRAME_SAMPLE_COUNT = 5;              // equally-spaced frames sent for frame-sampled videos
+const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes — short videos go to Gemini whole; long videos get frame sampling
 const AUTO_SUBS_THRESHOLD_MS = 300_000;    // 5 minutes — above this we use auto-subs as the transcript and never run Whisper
 const LOW_QUALITY_THRESHOLD_MS = 900_000;  // 15 minutes — above this we request the lowest-resolution stream to cap download bytes
 
@@ -57,45 +64,69 @@ const VIDEO_PROMPT = `Analyze this video. Describe what happens and extract all 
 
 const FRAME_PROMPT = `These are frames extracted from a video. Describe what happens per frame and extract all visible text per frame`;
 
-const MEDIA_RESPONSE_FORMAT = {
-  type: "json_schema" as const,
-  json_schema: {
-    name: "media_description",
-    strict: true,
-    schema: {
-      type: "object",
-      properties: {
-        description: { type: "string", description: "A factual description of the media content" },
-        ocr_text: { type: "string", description: "All visible text, quoted exactly. Empty string if none." },
-      },
-      required: ["description", "ocr_text"],
-      additionalProperties: false,
-    },
+// Entities X tagged on the post (people, orgs, topics) — given to Gemini as a hint
+// to identify who/what is shown, since vision models often can't name people unaided.
+function entityHint(entities?: string[]): string {
+  if (!entities?.length) return "";
+  return `\n\nThe post is tagged with these entities (may appear in the media): ${entities.join(", ")}`;
+}
+
+// Gemini-flavoured schema (uppercase types) for the native responseSchema.
+const MEDIA_RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    description: { type: "STRING", description: "A factual description of the media content" },
+    ocr_text: { type: "STRING", description: "All visible text, quoted exactly. Empty string if none." },
   },
+  required: ["description", "ocr_text"],
 };
 
 // --- Helpers ---
 
-function parseMediaResponse(content: string): GeminiMediaDescription {
-  const parsed = JSON.parse(content);
-  return { description: parsed.description, ocrText: parsed.ocr_text };
+/** Readable view of the parts sent to a media call: text (prompt + entity hint)
+ *  verbatim, binary parts as a `[media: mime, N b64 chars]` placeholder so the
+ *  base64 bytes never bloat the log. */
+function formatMediaParts(parts: GeminiContentPart[]): string {
+  return parts
+    .map((part) =>
+      "text" in part
+        ? part.text
+        : `[media: ${part.inlineData.mimeType}, ${part.inlineData.data.length} b64 chars]`,
+    )
+    .join("\n");
 }
 
-function getBestUrl(item: {
-  type: string;
-  url?: string;
-  preview_image_url?: string;
-  variants?: Array<{ bit_rate?: number; content_type: string; url: string }>;
-}): string | undefined {
-  if (item.type === "photo") return item.url || item.preview_image_url;
-  if (item.variants?.length) {
-    const mp4s = item.variants
-      .filter((v) => v.content_type === "video/mp4")
-      .sort((a, b) => (b.bit_rate ?? 0) - (a.bit_rate ?? 0));
-    if (mp4s[0]) return mp4s[0].url;
-    return item.variants[0]?.url;
-  }
-  return item.url || item.preview_image_url;
+/** One native-Gemini media call: send the parts, record cost, map the JSON.
+ *  Logs input (prompt + entity hint + media placeholders) and output under the
+ *  call's cost name so every media description's I/O is inspectable. */
+async function analyzeMediaParts(parts: GeminiContentPart[], costName: string): Promise<GeminiMediaDescription> {
+  const log = getTweetLog();
+  log?.set(`${costName}.input`, formatMediaParts(parts));
+
+  const result = await geminiNativeGenerate({
+    model: GEMINI_NATIVE_MODEL,
+    userParts: parts,
+    responseSchema: MEDIA_RESPONSE_SCHEMA,
+  });
+  trackLlmCall({ name: costName, ...result.cost, tools: [] });
+
+  const parsed = result.parsed;
+  const description: GeminiMediaDescription = parsed
+    ? { description: parsed.description ?? "", ocrText: parsed.ocr_text ?? "" }
+    : { description: "", ocrText: "" };
+  log?.set(`${costName}.output`, description);
+  return description;
+}
+
+async function fetchImageInlineData(imageUrl: string): Promise<{ mimeType: string; data: string }> {
+  const dataUrlMatch = /^data:([^;]+);base64,(.*)$/s.exec(imageUrl);
+  if (dataUrlMatch) return { mimeType: dataUrlMatch[1]!, data: dataUrlMatch[2]! };
+
+  const response = await fetch(imageUrl, { redirect: "follow" });
+  if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
+  const mimeType = response.headers.get("content-type")?.split(";")[0]?.trim() || "image/jpeg";
+  const bytes = Buffer.from(await response.arrayBuffer());
+  return { mimeType, data: bytes.toString("base64") };
 }
 
 // --- Audio transcription (reusing Groq Whisper pattern) ---
@@ -125,30 +156,21 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
-async function describeImageFromUrl(imageUrl: string, costName: string): Promise<GeminiMediaItem> {
-  const messages = [
-    {
-      role: "user" as const,
-      content: [
-        { type: "text" as const, text: IMAGE_PROMPT },
-        { type: "image_url" as const, image_url: { url: imageUrl } },
-      ],
-    },
-  ];
+async function describeImage(
+  inline: { mimeType: string; data: string },
+  url: string,
+  costName: string,
+  entities?: string[],
+): Promise<GeminiMediaItem> {
+  const description = await analyzeMediaParts(
+    [{ text: IMAGE_PROMPT + entityHint(entities) }, { inlineData: inline }],
+    costName,
+  );
+  return { type: "image", url, description };
+}
 
-  const { response, costEntry } = await trackedLlmCreate(costName, {
-    model: GEMINI_MODEL,
-    messages,
-    response_format: MEDIA_RESPONSE_FORMAT,
-  });
-  trackLlmCall(costEntry);
-
-  const content = response.choices?.[0]?.message?.content ?? "";
-  return {
-    type: "image",
-    url: imageUrl,
-    description: parseMediaResponse(content),
-  };
+async function describeImageFromUrl(imageUrl: string, costName: string, entities?: string[]): Promise<GeminiMediaItem> {
+  return describeImage(await fetchImageInlineData(imageUrl), imageUrl, costName, entities);
 }
 
 // --- Video analysis ---
@@ -161,7 +183,22 @@ async function downloadVideo(videoUrl: string, tmpDir: string): Promise<string> 
   return videoPath;
 }
 
+/** True iff the clip carries an audio stream. Silent videos (common on X) make
+ *  the audio-extraction ffmpeg call error out, so we check first and skip it. */
+async function hasAudioStream(videoPath: string): Promise<boolean> {
+  try {
+    const { stdout } = await execAsync(
+      `ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 "${videoPath}"`,
+      { timeout: 10000 },
+    );
+    return stdout.trim().length > 0;
+  } catch {
+    return false;
+  }
+}
+
 async function extractAudio(videoPath: string, tmpDir: string): Promise<string> {
+  if (!(await hasAudioStream(videoPath))) return "";
   const audioPath = join(tmpDir, "audio.mp3");
   await execAsync(
     `ffmpeg -i "${videoPath}" -vn -acodec libmp3lame -ar 16000 -ac 1 "${audioPath}" -y 2>&1`,
@@ -173,76 +210,69 @@ async function extractAudio(videoPath: string, tmpDir: string): Promise<string> 
   return transcribeAudio(audioBuffer);
 }
 
-async function analyzeShortVideo(videoPath: string, costName: string): Promise<GeminiMediaDescription> {
+async function analyzeShortVideo(videoPath: string, costName: string, entities?: string[]): Promise<GeminiMediaDescription> {
   const videoBytes = await readFile(videoPath);
-  const b64 = videoBytes.toString("base64");
-  const dataUrl = `data:video/mp4;base64,${b64}`;
-
-  const messages = [
-    {
-      role: "user" as const,
-      content: [
-        { type: "text" as const, text: VIDEO_PROMPT },
-        { type: "video_url" as const, video_url: { url: dataUrl } } as any,
-      ],
-    },
-  ];
-
-  const { response, costEntry } = await trackedLlmCreate(costName, {
-    model: GEMINI_MODEL,
-    messages,
-    response_format: MEDIA_RESPONSE_FORMAT,
-  });
-  trackLlmCall(costEntry);
-
-  return parseMediaResponse(response.choices?.[0]?.message?.content ?? "");
+  return analyzeMediaParts(
+    [{ text: VIDEO_PROMPT + entityHint(entities) }, { inlineData: { mimeType: "video/mp4", data: videoBytes.toString("base64") } }],
+    costName,
+  );
 }
 
-async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costName: string): Promise<GeminiMediaDescription> {
+/** ffprobe a clip's duration in seconds; null if it can't be determined. */
+async function probeDurationSeconds(videoPath: string): Promise<number | null> {
+  try {
+    const { stdout } = await execAsync(
+      `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${videoPath}"`,
+      { timeout: 10000 },
+    );
+    const seconds = parseFloat(stdout.trim());
+    return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Extract FRAME_SAMPLE_COUNT equally-spaced frames across the whole clip and
+ *  send them to Gemini. The sampling rate is derived from the duration
+ *  (count / duration) so it works for any length — including sub-5s clips,
+ *  which a fixed "1 frame per 5s" rate would miss entirely. */
+async function analyzeVideoFrames(
+  videoPath: string,
+  tmpDir: string,
+  costName: string,
+  durationMs: number | undefined,
+  entities?: string[],
+): Promise<GeminiMediaDescription> {
+  const durationSec =
+    (durationMs && durationMs > 0 ? durationMs / 1000 : null) ?? (await probeDurationSeconds(videoPath));
+  // count / duration spreads FRAME_SAMPLE_COUNT frames evenly over the clip.
+  // Unknown duration → fall back to 1 fps (still yields frames; `-frames:v` caps).
+  const fps = durationSec ? FRAME_SAMPLE_COUNT / durationSec : 1;
+
   await execAsync(
-    `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v 4 "${tmpDir}/frame%03d.jpg" -y 2>&1`,
+    `ffmpeg -i "${videoPath}" -vf "fps=${fps},scale=640:-1" -frames:v ${FRAME_SAMPLE_COUNT} "${tmpDir}/frame%03d.jpg" -y 2>&1`,
     { timeout: 60000 },
   ).catch((err) => {
     console.error("[mediaAnalysisGemini] FFmpeg frame extraction error:", err.message);
   });
 
-  const frameDataUrls: string[] = [];
-  for (let i = 1; i <= 4; i++) {
+  const frameParts: GeminiContentPart[] = [];
+  for (let i = 1; i <= FRAME_SAMPLE_COUNT; i++) {
     const framePath = join(tmpDir, `frame${String(i).padStart(3, "0")}.jpg`);
     try {
       const frameStat = await stat(framePath);
       if (frameStat.size > 0) {
         const frameData = await readFile(framePath);
-        frameDataUrls.push(`data:image/jpeg;base64,${frameData.toString("base64")}`);
+        frameParts.push({ inlineData: { mimeType: "image/jpeg", data: frameData.toString("base64") } });
       }
     } catch {
       break;
     }
   }
 
-  if (frameDataUrls.length === 0) return { description: "", ocrText: "" };
+  if (frameParts.length === 0) return { description: "", ocrText: "" };
 
-  const messages = [
-    {
-      role: "user" as const,
-      content: [
-        { type: "text" as const, text: FRAME_PROMPT },
-        ...frameDataUrls.map((url) => ({
-          type: "image_url" as const,
-          image_url: { url },
-        })),
-      ],
-    },
-  ];
-
-  const { response, costEntry } = await trackedLlmCreate(costName, {
-    model: GEMINI_MODEL,
-    messages,
-    response_format: MEDIA_RESPONSE_FORMAT,
-  });
-  trackLlmCall(costEntry);
-
-  return parseMediaResponse(response.choices?.[0]?.message?.content ?? "");
+  return analyzeMediaParts([{ text: FRAME_PROMPT + entityHint(entities) }, ...frameParts], costName);
 }
 
 let ffmpegAvailable: boolean | null = null;
@@ -273,6 +303,7 @@ async function analyzeVideo(
    * - null: explicit "no transcript available, do NOT fall back to Whisper" (used for long videos to cap cost).
    */
   precomputedTranscript?: string | null,
+  entities?: string[],
 ): Promise<GeminiMediaItem> {
   const isLocal = isLocalPath(videoUrl);
   const tmpDir = join(tmpdir(), `cn-gemini-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -290,10 +321,10 @@ async function analyzeVideo(
         console.warn("[mediaAnalysisGemini] FFmpeg not available, skipping frames");
         description = { description: "", ocrText: "" };
       } else {
-        description = await analyzeLongVideoFrames(videoPath, tmpDir, costName);
+        description = await analyzeVideoFrames(videoPath, tmpDir, costName, durationMs, entities);
       }
     } else {
-      description = await analyzeShortVideo(videoPath, costName);
+      description = await analyzeShortVideo(videoPath, costName, entities);
     }
 
     const transcription = await resolveTranscription(videoPath, tmpDir, precomputedTranscript);
@@ -332,6 +363,7 @@ async function analyzeMediaItems(
   mediaItems: any[],
   namePrefix: string,
   strategy: "full_video" | "frames" = "frames",
+  entities?: string[],
 ): Promise<GeminiMediaItem[]> {
   if (!mediaItems?.length) return [];
 
@@ -343,9 +375,9 @@ async function analyzeMediaItems(
   let imageIdx = 0;
   const imageResults = await Promise.all(
     images
-      .map((img) => getBestUrl(img))
+      .map((img) => getBestMediaUrl(img))
       .filter((url): url is string => !!url)
-      .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`).catch((err) => {
+      .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`, entities).catch((err) => {
         console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
         return { type: "image" as const, url, description: { description: "", ocrText: "" } };
       })),
@@ -354,9 +386,9 @@ async function analyzeMediaItems(
 
   let videoIdx = 0;
   for (const video of videos) {
-    const videoUrl = getBestUrl(video);
+    const videoUrl = getBestMediaUrl(video);
     if (!videoUrl) continue;
-    results.push(await analyzeVideo(videoUrl, video.duration_ms, `${namePrefix}.video.${videoIdx++}`, strategy));
+    results.push(await analyzeVideo(videoUrl, video.duration_ms, `${namePrefix}.video.${videoIdx++}`, strategy, undefined, entities));
   }
 
   return results;
@@ -385,8 +417,7 @@ function imageMimeFromPath(filePath: string): string {
 
 async function describeImageFromLocalFile(filePath: string, costName: string): Promise<GeminiMediaItem> {
   const bytes = await readFile(filePath);
-  const dataUrl = `data:${imageMimeFromPath(filePath)};base64,${bytes.toString("base64")}`;
-  return describeImageFromUrl(dataUrl, costName);
+  return describeImage({ mimeType: imageMimeFromPath(filePath), data: bytes.toString("base64") }, filePath, costName);
 }
 
 /**
@@ -467,13 +498,14 @@ export async function analyzeMediaGemini(
   tweetMedia?: any[],
   quotedTweetMedia?: any[],
   strategy: "full_video" | "frames" = "frames",
+  entities?: string[],
 ): Promise<GeminiMediaResult> {
   const startMs = Date.now();
   const log = getTweetLog();
 
   const [tweetResults, quotedResults] = await Promise.all([
-    analyzeMediaItems(tweetMedia ?? [], "media.tweet", strategy),
-    analyzeMediaItems(quotedTweetMedia ?? [], "media.quoted", strategy),
+    analyzeMediaItems(tweetMedia ?? [], "media.tweet", strategy, entities),
+    analyzeMediaItems(quotedTweetMedia ?? [], "media.quoted", strategy, entities),
   ]);
 
   log?.set("media.gemini.tweetMedia", tweetResults);

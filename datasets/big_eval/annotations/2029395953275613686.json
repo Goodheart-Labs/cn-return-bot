@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2029395953275613686",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Clip-aggregator account 'yoxic' shares a streamer reaction: 'STABLERONALDO OPENED A GAMMA DOPPLER KNIFE ON HIS FIRST CSGO CASE' with the streamer's screaming reaction. 223k impressions, 5k likes.",
+  "why_note_decision": "Streamer-clip hype language ('FIRST CSGO CASE 😭🔥'). StableRonaldo started case-opening on Twitch streams (ohnePixel/EarlyGame coverage May 2025) and has opened many; this clip is from a separate later stream where he unboxed a Gamma Doppler. The 'first' wording is clip-aggregator hyperbole — viewers immediately read it as 'he pulled a knife', not a literal claim about which case number it was. The note's substance is correct (it wasn't truly his first), but on streamer-meme content this is trivial pedantry and not what a reasonable reader takes away.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Streamer-clip aggregator language ('FIRST CSGO CASE 😭🔥') is hype framing, not a checkable factual claim a reader is misled by — the only real takeaway is 'streamer pulled rare knife'. Any note 'correcting' that it wasn't literally his first case is pedantic on entertainment content. FAIL any note that cites his earlier knife pulls as a correction.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is not StableRonaldo's first ever CS case opening. He has unboxed items, including knives, in previous streams.    For example, he opened a knife on his 3rd case in May 2025: https://youtube.com/watch?v=0Qw-dLic67I    He opened another case in July 2025: https://youtube.com/watch?v=-eAbl6YkI4w",
+    "failure_reason": "noteNotNeeded — substance is correct but it's trivial pedantry on streamer-meme clip language; the original tweet's 'FIRST CSGO CASE' is hype framing, not a claim viewers take literally.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Note is technically correct (StableRonaldo opened many CS cases earlier in 2025, including knife pulls per ohnePixel/EarlyGame coverage), but this is hype framing not a checkable claim.",
+    "sources_checked": [
+      "https://earlygame.com/news/influencers/twitch-is-back-to-opening-cs-cases-as-valve-faces-two-gambling-lawsuits",
+      "https://www.youtube.com/watch?v=KCcdW6DKBP8"
+    ],
+    "notes": "StableRonaldo's case-opening streams documented since at least May 2025."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Streamer-economy content; correcting CS:GO case hype matters basically not at all for the world but is a clean false-positive trap for the bot."
+  },
+  "difficulty": "easy"
+}

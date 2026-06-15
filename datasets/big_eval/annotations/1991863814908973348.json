@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1991863814908973348",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "scams_fraud_finance"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Crypto influencer 'lynk' (301k followers) posts 'another 10% dip and saylor is liquidated btw' — claiming Michael Saylor / MicroStrategy (Strategy) would be liquidated by another 10% drop in Bitcoin's price.",
+  "why_note_decision": "The claim is false. MicroStrategy/Strategy's debt is primarily unsecured convertible notes with maturities 2027-2032; there is no margin-call mechanism tied to BTC price. Saylor himself has said the company faces no forced liquidation until BTC approaches ~$8,000 (and theoretical math puts the net-debt cover point around $20k/BTC). At the time of the tweet (Nov 2025), BTC was around $100k — many multiples above any liquidation threshold. Adam Back and other crypto experts in replies called the claim 'nonsense.' This kind of viral financial misinformation can drive panic selling and is worth correcting.",
+  "judge_guidance": "A correct note must state that Strategy/MicroStrategy CANNOT be liquidated by a 10% BTC drop because (1) its debt is primarily unsecured convertible notes with no margin-call mechanism tied to BTC price, AND/OR (2) Saylor/Strategy has stated and analysts confirm there is no forced liquidation until BTC falls to roughly $8,000-$20,000 — far below the price at time of post (~$100k in Nov 2025). The note must cite a credible source (Strategy filings, CCN, Yahoo Finance, 21Shares, Protos, etc.). PASS the original-style note. FAIL any note that endorses the liquidation framing, or that hedges in a way that leaves readers unsure whether the claim is true.",
+  "reference_note": "False. Strategy (formerly MicroStrategy) cannot be liquidated by a 10% BTC dip — its debt is mostly unsecured convertible notes (2027-2032 maturities) with no margin-call mechanism tied to BTC price. Saylor has said there is no forced-liquidation risk until BTC falls to roughly $8,000; theoretical net-debt cover is around $20,000/BTC. BTC was ~$100k at the time of this post. https://www.ccn.com/news/crypto/strategy-no-liquidation-bitcoin-reach-8000-hows-that-possible/",
+  "original_unhelpful_note": {
+    "text": "Claim that 10% BTC dip liquidates Saylor is false. MicroStrategy's liquidation price is ~$20,143/BTC. 10% dip from $100k = $90k, still 4x above liquidation. Debt is unsecured with no forced liquidation mechanism. https://protos.com/what-is-microstrategys-bitcoin-liquidation-price/",
+    "failure_reason": "Note is substantively correct but rated 'sources missing or unreliable' (3) — Protos.com is a niche crypto-news outlet, and the note cites only one source. Adding a more authoritative source (Strategy SEC filings, CCN, or a major outlet) and acknowledging the theoretical-vs-actual distinction (there's no real liquidation mechanism at all because the debt is unsecured) would strengthen it. Some raters likely also wanted citation of Saylor's own public statements.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false — no liquidation mechanism exists on a 10% BTC drop",
+    "sources_checked": [
+      "https://www.ccn.com/news/crypto/strategy-no-liquidation-bitcoin-reach-8000-hows-that-possible/",
+      "https://finance.yahoo.com/news/michael-saylor-strategy-no-liquidation-090216780.html",
+      "https://www.21shares.com/en-us/research/michael-saylors-bold-bitcoin-bet-and-strategys-risk-analysis"
+    ],
+    "notes": "Strategy's debt is mostly unsecured convertibles maturing 2027-2032 with no margin-call covenants. Theoretical net-debt break-even is ~$8-20k/BTC depending on calculation, far below the ~$100k spot price at the time of the tweet. Multiple credible sources and crypto experts (Adam Back in replies) confirm the claim is false."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Viral financial misinformation (~168k views, 301k-follower influencer) that could drive panic selling. EA/progress lens: market manipulation via false 'forced liquidation' claims is a real harm; correcting it has modest value."
+  },
+  "difficulty": "easy"
+}

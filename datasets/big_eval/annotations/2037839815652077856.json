@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2037839815652077856",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "overhyped_research_or_product"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Anti-vax account 'Red Pill Dispenser' shares a video of Dr. Peter McCullough claiming that COVID-19 mRNA-vaccinated people now have 'different DNA' than the unvaccinated, citing a Swedish in-vitro study (Aldén et al. 2022) on liver cancer cells.",
+  "why_note_decision": "The tweet promotes a checkable, widely-debunked claim that mRNA vaccines alter human DNA. The cited Swedish study (Aldén et al., MDPI) used the Huh7 liver cancer cell line in vitro and showed mRNA reverse-transcribed into DNA inside those cancer cells — it did NOT show genomic integration, did not study vaccinated people, and the authors themselves (Lund University Q&A) explicitly said it cannot be interpreted as proving DNA alteration in vaccinated humans. AP, AAP, AFP and Lund University all published fact-checks. A correction is clearly warranted.",
+  "judge_guidance": "PASS only if the note (a) makes clear that mRNA COVID vaccines do NOT alter human DNA in vaccinated people, and (b) addresses the specific Swedish study shown on-screen — noting it was an in-vitro experiment on Huh7 liver cancer cells, not on vaccinated humans, and that it did NOT demonstrate integration into the human genome. Citing the Lund University Q&A, the AP fact-check, or the Aldén et al. paper itself is the gold standard. Notes that just say 'McCullough is wrong' without engaging the study he cites should NOT pass. Notes that endorse the DNA-alteration claim should fail.",
+  "reference_note": "The Swedish study cited here does not show that mRNA COVID-19 vaccines alter human DNA. It was an in vitro lab experiment on liver cancer cells (Huh7 line), not evidence of changes in vaccinated people. The authors and Lund University clarified there is no proof of genomic integration.  https://www.lunduniversity.lu.se/article/qa-covid-19-vaccine-study-gains-attention  https://www.mdpi.com/1467-3045/44/3/73  https://apnews.com/article/fact-check-covid-vaccine-sweden-study-986569377766",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: mRNA vaccines do not alter human DNA; the Swedish study was an in vitro experiment on cancer cells and did not show genomic integration in humans.",
+    "sources_checked": [
+      "https://www.lunduniversity.lu.se/article/qa-covid-19-vaccine-study-gains-attention",
+      "https://www.mdpi.com/1467-3045/44/3/73",
+      "https://apnews.com/article/fact-check-covid-vaccine-sweden-study-986569377766",
+      "https://www.aap.com.au/factcheck/a-swedish-study-did-not-say-covid-vaccine-changes-human-dna/"
+    ],
+    "notes": "Multiple independent fact-checks (AP, AAP, Lund University) confirm McCullough misrepresents Aldén et al. The original note's framing is essentially correct; provisional 'no_note_needed' is wrong — this is a textbook health-misinfo correction."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "64k impressions on a high-follower anti-vax account promoting a foundational vaccine-DNA myth; mRNA-DNA falsehoods directly drive vaccine refusal that costs lives. Correcting them matters for public health."
+  },
+  "difficulty": "easy"
+}

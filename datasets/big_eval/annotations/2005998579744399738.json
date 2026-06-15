@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2005998579744399738",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "breaking_news_and_war", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Geopolitics account 'MonitorX' shares purported leaked Israeli MoD/IDF documents claiming the 'Samson Option' includes specific nuclear-strike targets in US cities (LA, NY, Colorado/NORAD), Moscow, Beijing, Berlin, etc., with delivery methods and kiloton yields.",
+  "why_note_decision": "The 'leaked' documents are widely regarded as a fabrication: native Hebrew speakers in the comments call out broken Hebrew grammar and obvious forgery markers; no credible news outlet or fact-checker authenticated the leak; the only sources circulating it are conspiracy/fringe outlets (State of the Nation, The People's Voice, vtforeignpolicy). The genuine 'Samson Option' is a deterrence doctrine (per Seymour Hersh's book and academic literature) — not a published target list with cities and yields. Treating these graphics as a real IDF document misleads ~450k impressions worth of readers into believing Israel has a written plan to nuke US cities. A correction is clearly warranted.",
+  "judge_guidance": "PASS only if the note (a) flags that the screenshotted 'IDF Samson Option targets' document is unverified / appears fabricated (Hebrew errors, no chain of custody, only fringe outlets are circulating it), AND (b) distinguishes the genuine 'Samson Option' doctrine (a last-resort deterrence concept discussed in Seymour Hersh's 1991 book) from a literal published target list with kiloton yields. Strong notes will cite Wikipedia's Samson Option article for the doctrine and note the absence of any mainstream verification of the 'leak.' Notes that simply repeat 'this is unverified' without addressing the fabrication signals are weaker but acceptable. Notes that TREAT the document as real should FAIL. Notes that argue the doctrine doesn't exist at all should also FAIL (it does, as deterrence theory).",
+  "reference_note": "The images of an 'IDF Samson Option target list' are not from any verified leak — no mainstream outlet or fact-checker has authenticated them, and Hebrew speakers note grammatical errors consistent with a forgery. The real 'Samson Option' is a deterrence doctrine described in Seymour Hersh's 1991 book, not a published list of US/Russian/Chinese city targets with yields. https://en.wikipedia.org/wiki/Samson_Option",
+  "original_unhelpful_note": {
+    "text": "Misleading: the 'Samson Option' is described as a last-resort deterrent against existential regional threats, not documented plans to strike US or allied cities. The posted 'leak' is unverified and has been flagged as likely fabricated by analysts. Sources: https://en.wikipedia.org/wiki/Samson_Option https://x.com/grok/status/1934690310380245085",
+    "failure_reason": "Sources are weak (Wikipedia + a Grok x.com post — raters tagged 'sources missing/unreliable' 10x). The forgery signals (Hebrew errors, no chain of custody) aren't named explicitly. Note's reasoning is OK but its citation quality is too weak to convince skeptical raters.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Fabricated/unverified: no mainstream source authenticates the leaked target list; Hebrew errors flagged by native speakers; only fringe outlets carry it.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Samson_Option",
+      "https://en.wikipedia.org/wiki/The_Samson_Option:_Israel's_Nuclear_Arsenal_and_American_Foreign_Policy",
+      "https://progressive.org/latest/the-samson-option-israels-plan-to-nuke-its-opponents-dilawar-20240624/"
+    ],
+    "notes": "Reviewing search results: only fringe/conspiracy sites (State of the Nation, The People's Voice, vtforeignpolicy, mitha.us) treat the leak as real. No Reuters/AP/AFP/Snopes coverage. In-thread Hebrew speakers (@talhagin, @eldeestephens) flag forgery. This is the same pattern as past fake-IDF-doc psyops."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "447k impressions of a fabricated 'leaked IDF nuclear targeting' document stoking war/conspiracy narratives at a sensitive geopolitical moment. Correcting fabricated war documents is exactly the highest-value use of community notes."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2008229485993488549",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:33.997Z",
+  "post": {
+    "id": "2008229485993488549",
+    "author_id": "1158139840866791424",
+    "created_at": "2026-01-05T17:29:55.000Z",
+    "text": "Microsoft is so fucking stupid.\n\nMicrosoft renamed Microsoft Office to Microsoft 365 Copilot App\n\nI'm not joking https://t.co/8to6CdRkze",
+    "media": [
+      {
+        "media_key": "3_2008229372860186624",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G96p-XzWQAAb0Oy.jpg",
+        "height": 1915,
+        "width": 1070
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1614,
+      "reply_count": 880,
+      "like_count": 23300,
+      "quote_count": 572,
+      "bookmark_count": 1231,
+      "impression_count": 1222616
+    },
+    "author_followers": 436891,
+    "author_name": "vx-underground",
+    "author_description": "The largest collection of malware source code, samples, and papers on the internet.\n\nPassword: infected",
+    "author_tweet_count": 23559
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G96p-XzWQAAb0Oy.jpg",
+          "description": {
+            "description": "A digital promotional graphic for the Microsoft 365 Copilot app featuring the colorful Copilot logo at the top. Below the logo is a headline and a descriptive paragraph explaining the app's functionality (formerly Office). Two call-to-action buttons, 'Download the app' and 'Buy Microsoft 365', are placed in the center. At the bottom, a stylized rendering shows the app interface on a laptop and a mobile phone screen.",
+            "ocrText": "Welcome to the Microsoft 365 Copilot app. The Microsoft 365 Copilot app (formerly Office) lets you create, share, and collaborate all in one place with your favorite apps now including Copilot.* Download the app. Buy Microsoft 365. Copilot. Your AI assistant for work. Catch up on meetings. Help me write. Get some ideas. What did they say? Message Copilot."
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@vxunderground**: Microsoft is doing this so they can pull some bullshit like, \"Look! See! Everyone uses Copilot!\"  \nLikes: 4243 | Reposts: 74 | Replies: 36 | Views: 87116\n\n**@vxdb**: (No text content)  \nLikes: 1061 | Reposts: 0 | Replies: 0 | Views: 37190\n\n**@ishraqkhann**: Microsoft took the most recognizable software brand on earth and replaced it with a name that sounds like a B2B SaaS startup nobody's heard of. Bold strategy.  \nLikes: 936 | Reposts: 0 | Replies: 0 | Views: 29904\n\n**@elvissun**: meanwhile in 2028  \nLikes: 653 | Reposts: 0 | Replies: 0 | Views: 41377\n\n**@phillymike223**: I thought my Word loading screen looked different today....  \nLikes: 528 | Reposts: 0 | Replies: 0 | Views: 9962\n\n**@IntCyberDigest**: I am officially renaming Microsoft to AI slop soft  \nLikes: 405 | Reposts: 0 | Replies: 0 | Views: 34761\n\n**@moyix**: It's dumb and brand destroying, yes, but note that the brand destruction actually happened back in 2020 when they renamed Office to \"Microsoft 365\" – it didn't have anything to do with AI.  \nLikes: 363 | Reposts: 0 | Replies: 0 | Views: 30636\n\n**@nitzukai**: HAHASHASHAHAH WHAT THE FUCK IS HAPPENING IT WAS ALREADY CALLED MICROSOFT 365 COPILOT BUT THEY ADDED \"app\" AS WELL NOW FNDJHKASGNFDJKAKDA  \nLikes: 311 | Reposts: 0 | Replies: 0 | Views: 20983\n\n**@0x1_0NE**: Microslop  \nLikes: 209 | Reposts: 0 | Replies: 0 | Views: 17601\n\n**@soolpurr**: \"Creating bullshit 365 days a year! ✨\"  \nLikes: 174 | Reposts: 0 | Replies: 0 | Views: 11825",
+    "warnings": []
+  }
+}

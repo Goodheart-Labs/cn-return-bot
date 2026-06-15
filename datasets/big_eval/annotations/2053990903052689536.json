@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2053990903052689536",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["statistical_or_numerical_claim", "politics_and_policy"],
+  "category_fit": "poor",
+  "suggested_category": "vague_policy_slogan",
+  "tweet_summary": "Commerce Secretary Howard Lutnick posts 'We're bringing back semiconductor manufacturing.' alongside a 33s video showing him meeting Tim Cook with on-screen captions like 'WE GOT TO WORK TOGETHER' and 'CONSUMER PRODUCT'.",
+  "why_note_decision": "The tweet text itself is a generic political slogan with no specific checkable numeric claim. The original note attacks a '20 billion semiconductors purchased last year' figure that does not appear in the tweet text or the OCR (which contains only 'ARE SERIOUS', 'WE GOT TO WORK TOGETHER', 'CONSUMER PRODUCT'). Without the actual video audio, we cannot confirm anyone in the clip said '20 billion semiconductors'; the note is therefore attacking a claim that may not be in the post — or at minimum is attacking content not present in the tweet text the reader sees. Even if Lutnick said something like that in the video, a stronger note would need to quote him precisely and pin the figure. Raters dominantly tagged 'noteNotNeeded' (12) and 'missingKeyPoints' (13), consistent with a note that goes off-target. Also: 1.05 trillion units in 2025 is correct, but the US-share figure '25%' is a sales-value share, not a unit share; the original note conflates units and dollars.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The tweet text is a vague political slogan with no specific verifiable factual claim ('We're bringing back semiconductor manufacturing'). Any note attacking a '20 billion' figure that is not actually in the tweet text or visible OCR is a false positive (this is the original note's failure). FAIL any note that fabricates or paraphrases a specific numeric claim not visible in the input. If the bot has separate evidence Lutnick made a specific verifiable false claim in the video audio, a note could PASS only if it (a) quotes the audio precisely, (b) cites the corrected figure with a reliable source, and (c) distinguishes unit volume vs sales value cleanly — but the default expectation here is DECLINE.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The claim in the video that the US purchased 20 billion semiconductors last year is incorrect; global unit sales reached 1.05 trillion in 2025, with the US as the top consumer market accounting for about 25% of global semiconductor sales. https://www.deloitte.com/us/en/insights/industry/technology/technology-media-telecom-outlooks/semiconductor-industry-outlook.html https://www.usitc.gov/sites/default/files/publications/332/executive_briefings/ebot_recent_developments_in_global_semiconductor_industry.pdf",
+    "failure_reason": "Attacks a numeric claim that doesn't appear in the tweet text/OCR; if it's from the audio, the note doesn't quote it; conflates unit volume with sales-value share. 13 'missing key points' and 12 'note not needed' votes indicate raters saw an off-target rebuttal.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet text is a vague slogan with no checkable specific claim; the '20 billion' figure the note targets is not visibly present in the post inputs we have",
+    "sources_checked": [
+      "https://www.semiconductors.org/global-annual-semiconductor-sales-increase-25-6-to-791-7-billion-in-2025/",
+      "https://www.wsts.org/76/Global-Semiconductor-Market-grows-26-in-2025-to-796B",
+      "https://www.tomshardware.com/tech-industry/semiconductors/semiconductor-industry-on-track-to-hit-usd1-trillion-in-sales-in-2026-sia-predicts-bumper-forecast-follows-usd791-7-billion-haul-for-2025"
+    ],
+    "notes": "2025 global figures: ~$791.7B revenue, ~1.05 trillion units. US is the top consumer market by sales value (~25%) but global unit share differs. Without a precise quote of what was actually said in the 33s video, no claim is rebuttable."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Cabinet-level account with 326k followers and 594k impressions; semiconductor policy matters for AGI compute supply chains, but the post itself is a content-free slogan — high potential importance, low actual content to correct."
+  },
+  "difficulty": "hard"
+}

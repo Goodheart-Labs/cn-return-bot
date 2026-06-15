@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2056156585953505754",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:29.432Z",
+  "post": {
+    "id": "2056156585953505754",
+    "author_id": "492566290",
+    "created_at": "2026-05-17T23:35:06.000Z",
+    "text": "Of course Fernando Mendoza is the only dude smiling 😂 https://t.co/28bEOSrfVj",
+    "media": [
+      {
+        "media_key": "3_2056156578957406208",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIjvg7tWsAAiXdv.jpg",
+        "height": 1262,
+        "width": 1200
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 110,
+      "reply_count": 61,
+      "like_count": 3600,
+      "quote_count": 22,
+      "bookmark_count": 83,
+      "impression_count": 628535
+    },
+    "author_followers": 1568438,
+    "author_name": "NFL Memes",
+    "author_description": "We make fun of your favorite football team. (Not affiliated with the NFL) Contact: NFLMemesContact@gmail.com",
+    "author_tweet_count": 16602
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HIjvg7tWsAAiXdv.jpg",
+          "description": {
+            "description": "A composite of three images showing a group of NFL rookies from the 2024 draft class posing for a group photo on a field. The top image shows the full group including players in jerseys from the Jets, Bills, Packers, Steelers, 49ers, Broncos, Chargers, and Eagles. The bottom two images are cropped zooms focusing on various players in the middle and back rows, including a player in a black jersey who is smiling broadly while others maintain more serious expressions.",
+            "ocrText": "RAVENS 15 Dolphins 7 EAGLES 37 Ravens 6 Dolphins 30 RAVENS 83 BILLS 13 10 17 49ERS 26 15 BRONCOS EAGLES 0 EAGLES 37 49ERS 15 Dolphins"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @ajcfootball (AJCFootball): Zachariah Branch and Emmett Johnson were smiling too but you cut them out of the image (Likes=370)\n- @Hughes1224 (Cory 🎮Hughes🎮): Guess when you cut off the picture you don't see the guys front and center. (Likes=324)\n- @EinhornWalfisch (Valera Irithyl): Ignoring the fact that you cropped the picture to make a bad joke, what's wrong with smiling during one of the happiest moments of your life? All the people that aren't smiling are fucking weird. (Likes=56)\n- @_CTwo_ (Chris C): They bout to cook you (Likes=44)\n- @DubsOnlyClubFF (Gregg Land): Cause you cropped out the other smiling players. 😞 (Likes=17)\n- @compSciMatt (Matthew): Only a matter of time before the Raiders ruin him (Likes=9)\n- @FaultyEquipment (Jeff Paul): He's got the perfect mentor in how to be a dweeb with Kirk Cousins (Likes=7)\n- @Zoid2814 (DrZ): he and Kirk Cousins will be like two peas in a pod (Likes=7)\n- @DocManhatten187 (Re Ese): Of course you cut smiles out of the photo to create a BS narrative. (Likes=5)\n- @Sydney_7777 (Sydney): Jonah Coleman is smiling!! GO BRONCOS!! 🧡💙🧡 (Likes=2)",
+    "warnings": []
+  }
+}

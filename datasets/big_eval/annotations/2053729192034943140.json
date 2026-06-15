@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2053729192034943140",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "politics_and_policy",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A clip (a Chelsea Handler roast bit) saying 'now that your favorite leader is making the draft mandatory, I assume all of you will be signing up to go fight in Iran,' reposted approvingly ('Brutal.') as a real political point.",
+  "why_note_decision": "Although delivered as a roast joke, the post amplifies it as a serious 'brutal' political dunk, and its factual premise -- that the draft is being 'made mandatory' and men will be sent 'to fight in Iran' -- is materially false and is being believed (replies argue both ways). In reality the Dec 2025 NDAA only AUTOMATES Selective Service registration (already legally required) for men 18-26 starting Dec 2026; it is not a draft, does not conscript anyone (Congress must separately authorize a draft), and has NO connection to the Iran conflict (passed with bipartisan support beforehand). A note clarifying this is warranted. The original note states these facts accurately.",
+  "judge_guidance": "PASS only if the note clarifies that the U.S. is NOT instituting a mandatory draft and no one is being conscripted to fight in Iran: the Dec 2025 NDAA merely AUTOMATES Selective Service registration (already required by law) for men 18-26, effective ~Dec 2026; an actual draft would require separate Congressional authorization, and the change has no connection to the Iran conflict. The note should distinguish 'automatic registration' from 'conscription.' FAIL if it concedes the draft is now mandatory, implies imminent conscription/deployment to Iran, or treats the registration change as a draft. It need not debate whether the clip is a joke; the required correction is the registration-vs-draft distinction. Neutral, factual tone.",
+  "reference_note": "No mandatory military draft is being instituted. The Dec 2025 NDAA only automates Selective Service registration -- already required by law -- for men 18-26 (starting ~Dec 2026). It is not conscription (a draft needs separate Congressional approval) and has no link to the Iran conflict. https://www.cnn.com/2026/04/09/politics/us-military-draft-registration-2026 https://www.sss.gov/about/",
+  "original_unhelpful_note": {
+    "text": "The US military draft is not being made mandatory. No draft has existed since 1973. The recent change automates Selective Service registration for eligible men which was already required by law. It does not mean anyone is being sent to fight in Iran. https://www.sss.gov/about/ https://thehill.com/policy/defense/5822914-automatic-registration-military-draft/ https://www.cnbc.com/2026/04/09/military-draft-registration-automatic-iran-war.html",
+    "failure_reason": "Substantively accurate; rated not-helpful with very low volume (5 ratings) split between note-not-needed and missing-key-points -- likely because raters viewed the source clip as an obvious joke not needing correction. The facts in the note are correct.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_premise_amplified_as_fact",
+    "sources_checked": [
+      "https://www.cnn.com/2026/04/09/politics/us-military-draft-registration-2026",
+      "https://time.com/article/2026/04/09/us-men-automatic-military-draft-change/",
+      "https://www.militarytimes.com/news/your-military/2026/04/08/automatic-registration-for-us-military-draft-eligible-men-to-begin-in-december/"
+    ],
+    "notes": "Automatic Selective Service registration (men 18-26) begins ~Dec 2026 under the Dec 2025 NDAA; explicitly NOT a draft, NOT conscription, and unconnected to Iran (passed bipartisanly beforehand). Source clip is a Chelsea Handler roast bit, but reposted as a serious point and widely taken literally."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2M views during US-Iran war fears; 'mandatory draft to fight in Iran' panic is high-salience misinformation, worth a calm registration-vs-draft clarification."
+  },
+  "difficulty": "medium"
+}

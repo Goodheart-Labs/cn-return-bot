@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2042295439450653120",
+  "role": "no_note_needed",
+  "needs_note": "no",
+  "categories": [
+    "manipulated_or_fabricated_evidence",
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "opinion_framing_no_correctable_claim",
+  "tweet_summary": "A Canadian account shares a screenshot from 'Rise Of Alberta' showing Elon Musk replying 'Yeah' to David Parker's pro-Alberta-independence post, and adds the opinion 'I literally warned yesterday about foreign interference by big US tech!'",
+  "why_note_decision": "No correction is warranted. Reporting (Western Standard, VOR News) indicates Musk did reply 'Yeah' to David Parker's Alberta-independence post and separately posted 'Canada is cooked' \u2014 so the screenshot appears AUTHENTIC, not edited. The tweet's only added assertion ('foreign interference by big US tech') is the author's opinion/characterization, not a checkable factual claim. The original note's specific factual claim (the screenshot is edited; Musk's real reply was 'h') contradicts the reporting and is itself incorrect.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note (or writes a note that does NOT falsely claim the screenshot was edited). The screenshot of Musk replying 'Yeah' to David Parker is corroborated by reporting as genuine, so any note asserting it is 'edited' / that Musk's actual reply was 'h' must FAIL \u2014 that is the original note's error. The 'foreign interference' line is subjective opinion and is not note-worthy. If a note is written at all, it could only neutrally note Musk's reply is real, but the correct action here is to decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The screenshot has been edited. Elon Musk's actual reply was \"h\", not \"Yeah\". His original post was \"Canada is cooked\", not \"Yeah\". This does not constitute an endorsement of Alberta independence. https://x.com/elonmusk/status/2042071826243973531 https://x.com/elonmusk/status/2042071143532966387",
+    "failure_reason": "Rated notHelpfulIncorrect. The note claims the screenshot was doctored and that Musk's real reply was 'h', but reporting indicates Musk genuinely replied 'Yeah' to David Parker's independence post (and separately posted 'Canada is cooked' as a standalone tweet \u2014 the note conflated the two). The note 'corrects' a true screenshot with a false claim of fabrication.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.westernstandard.news/news/musk-says-canada-is-cooked-alberta-independence-advocates-seize-the-moment/72560",
+      "https://www.vornews.com/news/canada-is-cooked-musk-endorsement-of-alberta-independence-sparks-political-firestorm/",
+      "https://x.com/elonmusk/status/2042071143532966387"
+    ],
+    "notes": "Multiple outlets report Musk replied 'Yeah' to David Parker's Alberta-independence post and separately posted 'Canada is cooked.' The screenshot in the tweet thus appears authentic. The 'foreign interference' framing is the poster's opinion. Caveat: I relied on secondary reporting paraphrasing the exchange rather than viewing the live reply thread, but the convergence of sources supports authenticity and contradicts the note's 'edited / reply was h' claim."
+  },
+  "media_reliability_flag": true,
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Small-reach post (2k-follower author, ~10k impressions). Political-influence discourse but low individual stakes; included mainly as a false-positive trap where the human note fabricated an 'edited screenshot' rebuttal."
+  },
+  "difficulty": "hard",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": true,
+  "no_note_reason": "",
+  "media_confidence": "high"
+}

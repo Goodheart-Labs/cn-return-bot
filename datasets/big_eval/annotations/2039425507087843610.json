@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2039425507087843610",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["staged_or_scripted_content"],
+  "category_fit": "partial",
+  "suggested_category": "thirst_trap_or_creator_content",
+  "tweet_summary": "An admiring 'thirst trap'-style post sharing a short video of a young woman behind a Taco Bell-style counter, with the joke caption 'That's a torta gaaaaddd damn!!'.",
+  "why_note_decision": "The tweet makes no factual claim. It is sexualized appreciation of a viral video. The original Community Note 'corrects' that the video is staged content by adult creator @txchnoslxt — but the OP never claimed it was an actual Taco Bell employee at work. Treating this as a 'misinformation' target is pedantry and the dominant unhelpful tag was correctly 'note not needed'. The bot should decline. Even the 'staged' framing is weak: comments already mention she's a creator, and there is no harm/misleading claim to correct.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive. The tweet contains zero checkable factual claims — it's a thirsty reaction post. If the bot writes a note explaining the video is staged or identifying the creator, FAIL: that's adding unsolicited context to a non-factual post, exactly the original note's failure.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is staged content featuring adult creator @txchnoslxt, who confirmed \"That's meeee,\" not genuine footage of a Taco Bell employee working. https://x.com/txchnoslxt/status/2039499402117787658",
+    "failure_reason": "Note not needed — OP made no claim that the woman was a real working employee; the post is admiration of a viral clip. The 'staged content' framing answers a question no one asked.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "no checkable claim",
+    "sources_checked": [],
+    "notes": "The OCR/safe text and comments make clear this is creator content; nothing in the tweet text claims authentic on-the-job footage."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Viral but no public-interest stakes — sexualized creator clip, no policy/health/safety implications."
+  },
+  "difficulty": "easy"
+}

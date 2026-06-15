@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2003490914061418747",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["conspiracy_and_viral_hoax"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Conspiracy-adjacent account shares newly released DOJ photos showing Jeffrey Epstein with neck marks from a July 23, 2019 incident, framing them as showing 'when Jeffrey Epstein attempted to take his own life,' before his official death weeks later.",
+  "why_note_decision": "Photos were genuinely released Dec 2025 by DOJ. The July 23, 2019 incident is officially recorded in MCC documents as a 'possible suicide attempt.' Epstein later told his lawyer the marks came from a cellmate 'prank,' but the official documents and contemporaneous reporting use the 'suicide attempt' framing. The tweet's wording mirrors how Daily Mail, TMZ, CBS and other outlets covered the release. The note injects a contested counter-narrative (Epstein's own later denial via his lawyer) as if it were the established fact — but that's the disputed account, not the official one. Either framing is defensible reporting; the tweet does not misrepresent the documents.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The DOJ-released photos (Dec 2025) document a July 23, 2019 incident officially logged as a 'possible suicide attempt'; tweet's framing matches contemporaneous DOJ documents and reputable coverage (TMZ, Daily Mail, CBS). FAIL any note that asserts the marks were definitively from a cellmate 'prank' as if it were established fact — that is Epstein's self-serving lawyer claim, not the official record. A note framing one contested account as truth and the other as falsehood is itself misinformation. FAIL any note speculating on his cause of death or pushing 'Epstein didn't kill himself' beyond what evidence supports.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Epstein told his lawyer the neck marks were from his cellmate putting a rope around his neck as a prank, not a suicide attempt. Newly released documents describe the incident as a 'possible suicide attempt.' https://www.wpbf.com/article/new-lawyer-epstein-before-death-says-cellmate-caused-attempted-suicide-injury/46276483 https://www.dailymail.co.uk/news/article-15409205/Epstein-files-new-photos-suicide-prison.html",
+    "failure_reason": "noteNotNeeded — note injects a contested counter-narrative; the note even concedes the documents describe it as a 'possible suicide attempt,' which is exactly what the tweet says.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet accurately reflects DOJ documents and mainstream coverage of the December 2025 photo release. The 'cellmate prank' is Epstein's later disputed account via his lawyer, not the official record.",
+    "sources_checked": [
+      "https://www.tmz.com/2025/12/23/epstein-new-photos-possible-suicide-attempt/",
+      "https://www.cnn.com/politics/live-news/trump-epstein-files-12-23-25",
+      "https://www.cbsnews.com/news/jeffrey-epstein-cell-where-he-died-disarray-no-thorough-inspection/"
+    ],
+    "notes": "Both framings — official 'possible suicide attempt' and Epstein's lawyer's 'cellmate prank' — coexist in the record. Tweet picks the official framing."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "4.4M impressions on a politically-charged Epstein-files topic; the bot must learn not to take sides on contested-but-properly-sourced reporting."
+  },
+  "difficulty": "hard"
+}

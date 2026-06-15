@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2016419692013916360",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "exaggerated_injury_or_health_claim",
+  "tweet_summary": "A pop-news account claims Red Velvet's Yeri 'broke her neck during Pilates,' with photos of her and a neck brace; the framing implies an actual neck fracture.",
+  "why_note_decision": "Yeri did report 'my neck broke while doing Pilates' herself, but the sourced reporting describes a Pilates neck injury treated with a brace, physical therapy, and steroid injections — no confirmed fracture, and she has a prior history of herniated-disc issues. The viral 'broke her neck' framing (echoed by alarmed replies: 'how did she not die') overstates an unconfirmed-fracture soft-tissue/disc injury. A note clarifying that no fracture has been confirmed is warranted to defuse the dramatized reading. This is borderline: the subject used the phrase herself, so the territory is exaggeration/translation of a colloquial statement rather than outright fabrication.",
+  "judge_guidance": "PASS only if the note clarifies that 'broke her neck' appears to be an exaggeration / colloquial phrasing: the reported treatment was a neck brace plus physical therapy and steroid injections, and no actual neck fracture has been confirmed (she has a prior history of disc/herniation issues). It must NOT deny that she had a real Pilates-related neck injury and was hospitalized — that part is true. A note that simply repeats 'she broke her neck' fails; a note that calls the whole story fake also fails. Cite K-pop/entertainment reporting on her actual injury.",
+  "reference_note": "Yeri shared that she injured her neck during Pilates and is wearing a neck brace while receiving physical therapy and steroid injections. \"Broke her neck\" is an exaggeration; no fracture has been reported, and she has prior history of herniated disc issues.  https://kbizoom.com/red-velvet-yeri-neck-injury-pilates-update  https://www.musicmundial.com/en/red-velvets-yeri-rushed-to-the-hospital-after-severe-pain-in-the-middle-of-a-performance",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading/exaggerated: Yeri had a real Pilates neck injury (brace + PT + steroid injections), but no fracture has been confirmed; 'broke her neck' overstates it. She herself used the phrase colloquially.",
+    "sources_checked": [
+      "https://www.ibtimes.co.uk/fact-check-did-red-velvets-yeri-really-break-her-neck-during-pilates-heres-what-we-know-1774737",
+      "https://www.koreaboo.com/news/red-velvet-member-breaks-neck-updates-fans-directly/",
+      "https://kbizoom.com/red-velvet-yeri-neck-injury-pilates-update/"
+    ],
+    "notes": "IBTimes fact-check notes the reporting does NOT confirm an actual fracture vs figurative phrasing; treatment was PT + steroid injections, consistent with a soft-tissue / disc issue rather than a broken vertebra. Yeri kept a light-hearted tone, which fans found odd for a true broken neck."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "4.5M impressions; mainly K-pop fan alarm. Correcting a sensationalized injury claim has modest value (reduces panic / health-myth that Pilates 'breaks necks') but no high-stakes societal stake."
+  },
+  "difficulty": "hard"
+}

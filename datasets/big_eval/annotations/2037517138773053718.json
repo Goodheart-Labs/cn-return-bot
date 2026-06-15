@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2037517138773053718",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["ai_generated_media", "joke_or_satire"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Curiosities account 'Massimo' (4.4M followers) shares the popular @animalwhispers88 'Eddie the hyena' clip — a man telling dad jokes while a hyena 'laughs' — with a wholesome caption and the source credit '[🎞️ animalwhispers88].'",
+  "why_note_decision": "The @animalwhispers88 hyena clips are AI-generated and the creator discloses this in their bio ('This is ai'), as Grok and multiple article sources confirm. The Massimo tweet credits the source account by handle in the caption itself, treating it as a wholesome curiosity rather than a literal pet-ownership claim. Comments are mixed between people enjoying the joke ('I seriously need a hyena to laugh at my jokes') and a couple genuinely asking if it's a real pet ('@grok wait does he have a hyena for a pet'). 3/5 raters flagged noteNotNeeded — low stakes; the source disclosure exists upstream; the post is shared as light entertainment. Borderline call: if anything, a note correcting 'this is AI / source account discloses AI' could marginally help, but the dominant rater signal is no-note and the original note's extra characterization ('fabricated content without disclosure') is wrong since the source DOES disclose.",
+  "judge_guidance": "PASS if the bot declines to write a note. ACCEPTABLE: a one-line factual note saying 'These hyena clips are AI-generated; source account @animalwhispers88 discloses this in its bio.' FAIL any note that characterizes the source as 'fabricating content without disclosure' (the bio explicitly states 'This is ai') or that solemnly debunks the existence of the hyena as if no one could tell.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video depicts an AI-generated hyena, not a real pet; the source account @animalwhispers88 creates fabricated content without disclosure. https://www.instagram.com/reel/DWRCqblGHWF/ https://x.com/sn1pertf2/status/2035144231610659093",
+    "failure_reason": "noteNotNeeded + partially incorrect — source account DOES disclose AI status ('This is ai' in bio); note's 'without disclosure' claim is false.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "AI-generated content; source account discloses; tweet credits the source account.",
+    "sources_checked": ["https://x.com/grok/status/2038318868133724608"],
+    "notes": "Grok response and creator bio both confirm AI status with disclosure; the note's 'without disclosure' framing is factually wrong."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "226k impressions on a popular curiosities account; tests calibration on AI-disclosed wholesome content where a small note could help but the original note's framing is off."
+  },
+  "difficulty": "medium"
+}

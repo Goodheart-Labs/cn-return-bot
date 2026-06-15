@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2028943273042100353",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:28.456Z",
+  "post": {
+    "id": "2028943273042100353",
+    "author_id": "288277167",
+    "created_at": "2026-03-03T21:19:06.000Z",
+    "text": "RAJU: Why shouldn't Congress assert its constitutional role and actually vote to declare war the way it did with Iraq and Afghanistan?\n\nFETTERMAN: Well, the last war we actually declared was World War 2\n\nRAJU: No. Iraq and Afghanistan.\n\nFETTERMAN: *stammers* https://t.co/Hw4wR4L8d6",
+    "media": [
+      {
+        "media_key": "13_2028943238980067329",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2028943238980067329/img/Ai0EJS60dtMqf-GU.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 35902,
+        "view_count": 622399,
+        "variants": [
+          {
+            "bit_rate": 288000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2028943238980067329/vid/avc1/480x270/IikxniT0lA4Tpvg9.mp4?tag=14"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2028943238980067329/vid/avc1/640x360/k9ekdKIwjfkMlI5p.mp4?tag=14"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2028943238980067329/vid/avc1/1280x720/iyNOPy44fd7yM8_S.mp4?tag=14"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2028943238980067329/pl/kYEF9rBwFOROaM8R.m3u8?tag=14&v=a0f"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1884,
+      "reply_count": 1592,
+      "like_count": 15033,
+      "quote_count": 464,
+      "bookmark_count": 1197,
+      "impression_count": 1476054
+    },
+    "author_followers": 1099410,
+    "author_name": "Aaron Rupar",
+    "author_description": "journalist. sign up for my newsletter, Public Notice (link below). Powered by @SnapStream (more info: https://t.co/2oHPuuFBnN).",
+    "author_tweet_count": 196257
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2028943238980067329/vid/avc1/1280x720/iyNOPy44fd7yM8_S.mp4?tag=14",
+          "description": {
+            "description": "A video sequence showing Senator John Fetterman speaking to members of the media at the U.S. Capitol. He is wearing a black hoodie. The background shows an indoor hallway with a plant and other reporters holding recording devices. C-SPAN2 graphics are visible at the bottom and right of the frame, indicating the topic is a briefing on U.S.-Israeli strikes on Iran.",
+            "ocrText": "U.S. CAPITOL 4:15 PM LIVE 7PM ET C-SPAN TX, NC & AR PRIMARY RESULTS LIVE 1:15 PT C-SPAN2 SENATORS SPEAK AHEAD OF CLOSED-DOOR BRIEFING ON U.S.-ISRAELI STRIKES ON IRAN"
+          },
+          "transcription": "Why should Congress assert its constitutional role and actually vote to declare war the way it did with Iraq and Afghanistan? Well, the last war we've actually declared was World War II. No, Iraq and Afghanistan. They're A-U-M-F. Afghanistan? Okay, so for me right now, what is it now? War powers resolution, 60 days, and we're 100 hours into this. Now, what's this point? I want to say on this, it's like, you know, we can't keep our government open. We've shut it down."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@EYakoby**: Fetterman is right.\n\nYou are an idiot.\n (Likes: 2220)\n\n- **@damintoell**: He's right, though.\n (Likes: 533)\n\n- **@uspolitics1111**: This guy is so cooked owned by israel\n (Likes: 531)\n\n- **@1967mustangman**: He’s the one with brian damage and he got it right.  What’s your excuse Rupar?\n (Likes: 324)\n\n- **@Linda__Stevens**: He needs to ask Bibi what his answer is supposed to be.\n (Likes: 284)\n\n- **@GriFdotpy**: I feel like this pretty much sums up Fetterman's time in the Senate\n (Likes: 281)\n\n- **@TheBear_____**: Hope this helps\n (Likes: 205)\n\n- **@the_resistor**: I prefer a Senator who has a clue.\n (Likes: 175)\n\n- **@WEdwarda**: No war wasn’t declared by Congress for Iraq and Afghanistan. Congress passed the authorization for use of military force after 9/11. Entirely different from a declaration of war.\n (Likes: 153)\n\n- **@NASA_Tim**: Except @JohnFetterman is 100% right, and you’re 100% retarded. There has been no congressional declaration of war since World War II.\n (Likes: 149)",
+    "warnings": []
+  }
+}

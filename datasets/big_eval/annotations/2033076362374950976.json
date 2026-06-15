@@ -1,0 +1,32 @@
+{
+  "tweet_id": "2033076362374950976",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "ai_generated_media"],
+  "category_fit": "poor",
+  "suggested_category": "ai_generated_media",
+  "tweet_summary": "A viral video presented as real footage of a giant container ship rolling completely over and sinking while bystanders film it.",
+  "why_note_decision": "A note is warranted: the video is AI-generated and presented as a real maritime disaster, which misleads viewers. Multiple tells corroborate this: containers stay perfectly bound as the hull rolls (top reply: 'no container falls'), the physics of the capsize are unnatural, and many commenters are explicitly asking Grok 'real or AI?'. Cargo ships of that size do not roll over and vanish in seconds like this.",
+  "judge_guidance": "PASS only if the note states the video is AI-generated / fabricated (not real footage) and ideally gives at least one concrete tell (e.g. containers do not detach, capsize physics are impossible for a ship that size). It must be concise and unambiguous. FAIL if the note treats the footage as a genuine accident, only vaguely says it 'may be' fake without committing, or invents specific false sourcing about a real shipwreck. The bot does not have to use the exact phrase '100% AI' but must clearly assert the media is synthetic/fabricated.",
+  "reference_note": "This video is 100% AI. Cargo ships of that magnitude do not sink that way -  https://x.com/grok/status/2033109816474796190?s=46&amp;t=W359R5J5Dz7o9q6VW2H65g",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_ai_generated",
+    "sources_checked": [
+      "tweet comments (multiple users flag AI; 'no container falls')",
+      "physical implausibility of a fully-laden container ship rolling 180 degrees and sinking in seconds with cargo intact"
+    ],
+    "notes": "Verdict rests on interpreting the video, which I cannot view directly. The AI media description naively narrates it as a real capsize, but the corroborating signals (locked containers, mass 'real or AI?' replies, impossible physics) strongly indicate synthetic video. The original note was rated CURRENTLY_RATED_HELPFUL."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "3.3M+ impressions on AI-fabricated disaster footage; combating synthetic-media misinformation that erodes shared epistemics is directly relevant to an AGI-safety / info-integrity lens."
+  },
+  "difficulty": "medium"
+}

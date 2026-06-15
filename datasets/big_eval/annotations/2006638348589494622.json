@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2006638348589494622",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "viral_curiosity",
+  "tweet_summary": "Viral light-curiosity post: JBL speaker covered in goose barnacles claimed to have floated 3 months in the ocean and still works; 20M impressions.",
+  "why_note_decision": "Original Reddit/YouTube source says 2 months, not 3. The note correctly identifies the discrepancy but raters overwhelmingly voted note-not-needed (14) — a one-month rounding-error on a viral feel-good clip about a barnacle-covered speaker is trivial pedantry. The story's substance (durable JBL speaker, washed ashore with marine growth) is real. This is a textbook false-positive: technically-true correction on a low-stakes lifestyle post.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The 2-vs-3-months discrepancy is trivial pedantry on a viral light-curiosity post; raters voted note-not-needed by a clear margin. Any note flagging this nitpick is a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The featured video originates from a source claiming the speaker floated for 2 months, not 3. https://www.youtube.com/shorts/BmZtpk05I6E https://www.reddit.com/r/JBL/comments/1octvxd/found_a_jbl_boombox_3_floating_in_the_ocean_for_2/",
+    "failure_reason": "Trivial pedantry on a low-stakes viral curiosity; 2-vs-3-month difference is not meaningful misinfo.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Underlying story real; 2 vs 3 months is trivial rounding error on lifestyle content.",
+    "sources_checked": [
+      "https://www.dailydot.com/culture/jbl-speaker-works-ocean-3-months/",
+      "https://www.reddit.com/r/JBL/comments/1octvxd/found_a_jbl_boombox_3_floating_in_the_ocean_for_2/"
+    ],
+    "notes": "Original Reddit post does say 2 months; tweet's 3 months is a minor exaggeration but immaterial to the feel-good claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Pure light-curiosity content — no consequential misinfo, classic FP trap."
+  },
+  "difficulty": "easy"
+}

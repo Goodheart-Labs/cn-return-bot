@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2036450550405808469",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:44.258Z",
+  "post": {
+    "id": "2036450550405808469",
+    "author_id": "2210485170",
+    "created_at": "2026-03-24T14:30:21.000Z",
+    "text": "EPIC GAMES LAYS OFF OVER 1,000 EMPLOYEES\n\n\"Today we’re laying off over 1000 Epic employees. I'm sorry we're here again. The downturn in Fortnite engagement that started in 2025 means we're spending significantly more than we're making, and we have to make major cuts to keep the https://t.co/Ibrsl1IFn3",
+    "media": [
+      {
+        "media_key": "3_2036450396970033155",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HELs2LIaIAMITsJ.jpg",
+        "height": 1080,
+        "width": 1920
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1178,
+      "reply_count": 1649,
+      "like_count": 19951,
+      "quote_count": 1657,
+      "bookmark_count": 2048,
+      "impression_count": 8711245
+    },
+    "author_followers": 4252307,
+    "author_name": "HYPEX",
+    "author_description": "All Latest Fortnite Leaks & News | Creator Code: HYPEX | Epic Games Partner\n\n24 🇲🇦 | downtobusinesshypex@gmail.com | Alt @itsRealHYPEX",
+    "author_tweet_count": 31376
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HELs2LIaIAMITsJ.jpg",
+          "description": {
+            "description": "The image features the official logo for the video game Fortnite in bold, white capital letters against a vibrant red background with a slight radial gradient.",
+            "ocrText": "FORTNITE"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Still_Dominant: Over 1,000 people losing their jobs because Fortnite engagement dropped… yet they’re still pouring millions into celebrity collabs, overpaying UEFN creators for brainrot maps, and chasing every trend. (10,021 likes)\n\n@BoopNL_: Just take away 50% of earnings from the guy who made Steal the Brainrot (7,485 likes)\n\n@karunblazijao: THEN. STOP. PAYING. THE. FUCKING. CREATIVE. MAPS (3,885 likes)\n\n@aixyno: this insane. stop giving these UEFN creators so much money and they would not be having these problems ffs (2,033 likes)\n\n@VLN4I: Maybe if 1 skin wast $17 we wouldn’t be here (1,924 likes)\n\n@ImLandonSigg: they can pay ai map creators though!!! holy fuck (911 likes)\n\n@HiggsFortnite: Just reduce prize pools? (902 likes)\n\n@bspideyy: why does it feel like fortnite is actually dying… (759 likes)\n\n@x103p: Dumbass company just killed their game lmfao whatever man (589 likes)\n\n@needlessrelic16: This Battle Pass and all the UI is so stupid why would anyone even buy this i dont even know what im getting or how to progress it and half the time i cant find the mode that I actually want to play like OG Fortnite or STW its straight filled with creative maps This is not what made Fortnite successful (308 likes)",
+    "warnings": []
+  }
+}

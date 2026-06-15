@@ -1,0 +1,33 @@
+[
+ {
+  "tweet_id": "2040707891091345733",
+  "url": "https://x.com/i/status/2040707891091345733",
+  "role": "unhelpful_argumentative_or_biased",
+  "needs_note": "yes",
+  "categories": [
+   "politics_and_policy",
+   "manipulated_or_fabricated_evidence"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Explosive Press Conference by @Pawankhera \n\nAssam Chief Minister Himanta Biswa Sarma’s wife holds passports from three countries\n\n1.  United Arab Emirates\n2.  Egypt\n3.  Antigua and Barbuda\n\nHow can an Indian citizen have passports from three countries? \n\n@himantabiswa The nation https://t.co/v7Ukc0uYXW",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2040703915763843072/vid/avc1/1280x576/foxvyLGvCp-OTQAf.mp4",
+    "description": {
+     "description": "A series of frames showing an Indian politician, Pawan Khera, addressing a press conference or giving an interview with a large backdrop of what appears to be a passport of Antigua and Barbuda. He is wearing a white shirt and a beige Nehru jacket (waistcoat) and speaks with varied hand gestures across the frames.",
+     "ocrText": "PASSPORT PASAPORTE Type PA Country code ATG BHUYAN RINIKI Nationality ANTIGUAN BARBUDAN Date of birth 31 JUL 73 Authority PASSPORT OF AB00573"
+    },
+    "transcription": "a citizen of India also? Because we have shown you three passports. One is the Golden Pass of UAE, Abu Dhabi, issued in Abu Dhabi. It is a living document, not an expired document. Number two, Egypt, living document, living passport, not an expired passport. Number three, Antigua Barbuda, living passport, not dead, not expired. How can an Indian national have three passports of three different countries? We will not tell you this. Because we will tell you something else which he did not tell you. What Amit Shah, who is the Prime Minister, and we hear, the whole country knows this, that Hemanta Biswasarma is Amit Shah's adopted son. He is like an adopted son of Amit Shah. The love he has for Jai Shah, he loves Hemanta Biswasarma a little less. And did the country's Prime Minister know that his daughter-in-law has three passports? Egypt, Egypt, Egypt."
+   }
+  ],
+  "tweet_summary": "Assam Congress amplifies a Pawan Khera press conference alleging that Assam CM Himanta Biswa Sarma's wife, Riniki Bhuyan Sarma, holds 'living' passports from the UAE, Egypt, and Antigua & Barbuda, insinuating illegality.",
+  "bad_note_text": "The alleged passports are forged, with inconsistencies in MRZ codes, expiry dates, spelling errors, and invalid QR codes; Assam Police confirmed the UAE document is fake via diplomatic channels. https://timesofindia.indiatimes.com/city/guwahati/sarma-wife-to-sue-khera-over-foreign-passports-claim/articleshow/130045302.cms https://www.ndtv.com/india-news/himanta-sarma-responds-after-congress-claims-his-wife-holds-3-passports-11314238",
+  "failure_reason": "argumentative_or_biased_and_weak_authority",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 17,
+  "why_note_decision": "The allegation rests on documents that India's Ministry of External Affairs publicly determined to be fraudulent; the MEA stated Riniki Bhuyan Sarma does not hold citizenship of any other country. So the tweet pushes a defamatory, checkable claim against a named public figure backed by forged evidence — exactly what a Community Note should correct. The provisional 'no_note_needed' is wrong; this is a genuine correction case (flip). The original note had the right substance but attributed the debunking to 'Assam Police... via diplomatic channels' and listed forensic minutiae argumentatively, wh…",
+  "reference_note": "India's Ministry of External Affairs examined the documents shown by Pawan Khera and found all three passports to be fraudulent; the MEA stated Riniki Bhuyan Sarma does not hold citizenship of any other country. https://www.indiatvnews.com/news/india/passport-documents-shown-by-pawan-khera-against-assam-cm-wife-are-fake-says-mea-sources-latest-updates-2026-04-23-1038655 https://dailypioneer.com/ne…"
+ }
+]

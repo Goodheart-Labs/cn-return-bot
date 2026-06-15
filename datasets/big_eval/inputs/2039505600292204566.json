@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2039505600292204566",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:58.802Z",
+  "post": {
+    "id": "2039505600292204566",
+    "author_id": "3605594008",
+    "created_at": "2026-04-02T00:50:01.000Z",
+    "text": "I was told this was an antisemitic conspiracy - a blood libel even. https://t.co/qMPlmJMKqB",
+    "media": [
+      {
+        "media_key": "3_2039505596349644800",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HE3HiLvXgAAOjzD.jpg",
+        "height": 1543,
+        "width": 1162
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8094,
+      "reply_count": 352,
+      "like_count": 31854,
+      "quote_count": 109,
+      "bookmark_count": 3436,
+      "impression_count": 436323
+    },
+    "author_followers": 272887,
+    "author_name": "Leonarda Jonie",
+    "author_description": "Backup account @Leonarda_Jonie. This account is pure satire. Thank you for coming to my Ted Talk.",
+    "author_tweet_count": 22220
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HE3HiLvXgAAOjzD.jpg",
+          "description": {
+            "description": "An image featuring a portrait of a man with glasses in the foreground, set against a background showing the flag of Israel and a depiction of the 9/11 attacks on the World Trade Center. In the top right corner, there is a circular inset of an older man with his head in his hands. Large text at the bottom makes a claim about the family of a 9/11 hijacker.",
+            "ocrText": "FAMILY OF 9/11 HIJACKER ZIAD JARRAH WERE JUST CONFIRMED TO BE ISRAELI SPIES."
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- W.R. Schock, QBD (@iontecs_pemf): [image] (Likes: 355)\n- Sam Parker 🇺🇸🧯 (@BasedSamParker): Google Mista‘arvim (Likes: 303)\n- Nathan G. 🇺🇲 (@ProBusiness_svc): #Never_Forget Epstein 911 [image] (Likes: 235)\n- Truth_teller 🇷🇺 (@Truthtellerftm): They were sent down to document the event! (Likes: 200)\n- Oren Barsky (@orenbarsky): You’re a Nazi cunt (Likes: 172)\n- Rob 🇦🇺🏴‍☠️ (@robthrills): [image] (Likes: 137)\n- TheBadGoy 🇺🇸 (@ItsSupreme__): [image] (Likes: 133)\n- Toad (@LearnToToad): Damn, @realchasegeiser wtf man (Likes: 101)\n- 🅿️ip Davis III (@PipDavis69420): “Blood libel” is the funniest phrase ever nobody pours blood heavier than Israel (Likes: 94)\n- UwUShortbus (@RafaelTorr42135): The jews did kill Simon of Trent and they are the ones blood libeling the Europeans. [image] (Likes: 83)",
+    "warnings": []
+  }
+}

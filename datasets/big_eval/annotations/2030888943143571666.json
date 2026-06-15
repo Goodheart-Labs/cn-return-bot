@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2030888943143571666",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "wholesome_animal_content",
+  "tweet_summary": "Large account 'Science girl' (5.9M followers) posts a clip captioned 'A massive rhino gently approaches a small deer, showing the quiet kindness that can exist in nature' (228k impressions). Top replies note both animals are playing/known to each other.",
+  "why_note_decision": "The video is genuine and was filmed at Wrocław Zoo in Poland (Snopes-confirmed Jan 2026 footage of male muntjac sparring with Indian rhino 'Marusia'). The tweet's 'quiet kindness in nature' framing is anthropomorphizing and arguably misleading (it's not 'in the wild' — it's in a captive zoo enclosure, and the muntjac was hormonally driven, not gentle). But the note's correction reads as pedantic on what is essentially a wholesome aesthetic post with no specific harmful misinformation. Raters mass-tagged noteNotNeeded (8/12).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The clip is real Wrocław Zoo footage (Snopes-verified Jan 2026); the tweet's 'kindness in nature' framing is anthropomorphizing fluff, not a checkable claim a reader is harmed by. Any note that 'corrects' it to 'this is a zoo, not the wild, and the muntjac was in rut' is pedantic on wholesome content. FAIL any note that frames the tweet as a misinfo case.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video was filmed at Wrocław Zoo in Poland. It shows a muntjac deer boldly approaching and interacting with a patient Indian rhino in captivity, not a rhino approaching a deer in the wild.    https://www.snopes.com/fact-check/rhino-deer-zoo-video  https://nypost.com/2026/01/12/world-news/tiny-deer-fights-2-ton-rhino-at-polish-zoo-incredible-video-shows  https://www.reuters.com/video/watch/idRW604212012026RP1",
+    "failure_reason": "noteNotNeeded dominant (8/12). Substance is correct (it's real Wrocław Zoo footage of a hormone-driven muntjac sparring with rhino) but pedantic on wholesome aesthetic content. Tweet doesn't explicitly claim 'in the wild'; the framing is poetic.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Footage is authentic Wrocław Zoo Jan 2026; the tweet's 'kindness' framing is fluff, not misinfo.",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/rhino-deer-zoo-video/",
+      "https://nypost.com/2026/01/12/world-news/tiny-deer-fights-2-ton-rhino-at-polish-zoo-incredible-video-shows",
+      "https://wjactv.com/news/offbeat/video-chinese-muntjac-deer-vs-giant-rhino-zoo-poland-animals-caught-on-camera-"
+    ],
+    "notes": "Muntjac was driven by hormones (mate in heat); rhino 'Marusia' treated lunges as play. Real footage. Tweet's 'kindness in nature' is anthropomorphizing but not a checkable factual claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Wholesome animal-content from a high-follower aggregator; not consequential — solid false-positive trap for the bot."
+  },
+  "difficulty": "easy"
+}

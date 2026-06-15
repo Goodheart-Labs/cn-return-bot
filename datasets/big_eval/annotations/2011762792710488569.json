@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2011762792710488569",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Self-described parody account 'DiscussingFish' posts a fake announcement that Gaten Matarazzo (Stranger Things) is starring as 'Smoke Jr. and Stack Jr.' in 'SINNERS: LEGACY', with Louis Leterrier replacing Ryan Coogler. The image is unrelated cast publicity. 4M+ impressions.",
+  "why_note_decision": "Account bio explicitly says 'parody satire fake news page'. Posts of this kind are a recurring joke format. Replies show clear awareness it is a bit ('Had to do a triple check', 'Gave me a heart attack', 'Direct to DVD sequels in the 2000s be like'). Although the original note is technically accurate (no sequel announced, Coogler said he won't make one), a Community Note on a self-declared parody account's joke is a textbook false-positive: it kills the joke and risks misinforming readers about the parody nature.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The account openly bills itself 'parody satire fake news page'. Replies treat it as a meme. A note 'fabricated, no sequel announced' is a classic satire/parody false positive. The bot must recognize parody-account framing.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This post from a parody account contains fabricated information. No sequel to the 2025 film Sinners titled SINNERS: LEGACY has been announced, and director Ryan Coogler has stated he has no plans for one.  https://x.com/DiscussingFish  https://www.forbes.com/sites/braedonmontgomery/2025/05/31/sinners-wont-get-a-sequel-and-thats-exactly-why-it-works",
+    "failure_reason": "noteNotNeeded — Community Note on an openly self-declared parody account; replies show readers understand it. Killing satire is not the bot's job.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "No sequel exists; account is overtly parody.",
+    "sources_checked": [
+      "Author bio: 'parody satire fake news page'",
+      "https://www.forbes.com/sites/braedonmontgomery/2025/05/31/sinners-wont-get-a-sequel-and-thats-exactly-why-it-works",
+      "Reply context: jokes, no one taking it literally"
+    ],
+    "notes": "Standard parody-account false-positive trap."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Entertainment parody; no EA/policy stakes. Important as a false-positive training signal."
+  },
+  "difficulty": "easy"
+}

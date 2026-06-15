@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2011007816966996288",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "Mario Nawfal (Jan 13, 2026) posts a night-time crowd video captioned 'last night' during the 2026 Iran protests/crackdown, framing it as ongoing defiance despite an internet blackout and reported deaths.",
+  "why_note_decision": "The 2026 Iran protests/massacre is a confirmed, ongoing event (Amnesty, Euronews, CNN, NCRI all document Jan 9–13 protests and a massive crackdown with 200+ bodies identified). The note disputes only the timestamp ('Jan 9, not last night'), citing an Instagram Reel + Euronews. Even if the footage is from Jan 9, similar protests continued through Jan 12–13 per Amnesty/NCRI; the 'last night' framing is a minor temporal slip on a real ongoing event, not material misinformation. Note is technically-true pedantry — and on a topic where AI-generated protest footage WAS circulating (per CyberPeace fact-check), so a note targeting the date instead of authenticity misses the real risk.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes a note that calls into question media authenticity (AI/old footage) with concrete evidence. Date-only pedantry ('this is from 4 days earlier') on ongoing protests is not helpful. A note must NOT claim 'no massacre is happening' — Amnesty documents 250+ deaths. A note IS warranted if the bot can verify the specific clip is reused/AI-generated; otherwise decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The attached video depicts protests in Tehran on January 9, 2026, not \"last night\" as claimed in the post.  https://www.instagram.com/reel/DTb1guoiIRj  https://www.euronews.com/2026/01/11/iran-cracks-down-on-protests-and-threatens-us-and-israel-of-retaliation-in-case-of-interve",
+    "failure_reason": "noteNotNeeded — pedantic date-of-footage correction on a tweet about an ongoing protest movement. Sources cited don't actually establish the date mismatch matters; misses the more important AI-footage / authenticity risk.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's broader claim (Iran protests ongoing despite blackout and crackdown) is well-supported. Note's narrow date-correction is plausible but minor; protests continued through the period.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_Iran_massacres",
+      "https://www.amnesty.org/en/latest/campaigns/2026/01/what-happened-at-the-protests-in-iran/",
+      "https://www.euronews.com/video/2026/01/14/videos-of-iran-protests-spread-as-internet-returns",
+      "https://cyberpeace.org/resources/blogs/ai-generated-video-falsely-linked-to-protests-in-iran"
+    ],
+    "notes": "AI-generated Iran-protest videos were circulating in Jan 2026 — that's the more important risk; date pedantry on real footage isn't."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Iran protests/massacre is high-stakes geopolitical event with hundreds dead; getting note-writing right here matters."
+  },
+  "difficulty": "hard"
+}

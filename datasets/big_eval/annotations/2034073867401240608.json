@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2034073867401240608",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "breaking_news_and_war",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Reposting a Spanish-language claim, the tweet asserts Netanyahu died March 9, that his brother Iddo Netanyahu and Mossad chief David Barnea died in the same attack, and that this explains Trump looking 'devastated' (over a quoted video of Trump at a ceremony).",
+  "why_note_decision": "A note is warranted: this is a verifiably false death claim. Netanyahu is alive \u2014 he posted proof-of-life videos (HaSataf caf\u00e9 March 15; with Amb. Huckabee March 17) and fact-checkers (Reuters, JPost, NBC, Euronews) debunked the Iranian-info-war rumor. The tweet also fabricates additional deaths (Iddo Netanyahu; Mossad director David Barnea) and uses misattributed/irrelevant media (Trump at a ceremony) as 'proof.' The original note established Netanyahu is alive but omitted the other false deaths and didn't address the misleading Trump-video framing, so it left key points uncorrected.",
+  "judge_guidance": "PASS only if the note establishes that Netanyahu is ALIVE (citing proof-of-life appearances / a credible fact-check) AND addresses the additional fabrications \u2014 i.e. there is no credible report that Iddo Netanyahu or Mossad chief David Barnea were killed, and the attached Trump clip does not depict mourning for Netanyahu. Must AVOID the original note's failure of correcting ONLY the Netanyahu-death claim while ignoring the brother/Mossad-chief deaths and the misattributed Trump video. A note that says only 'Netanyahu is alive' without touching the other false claims is incomplete \u2014 mark borderline; a note that also corrects the secondary fabrications passes clearly. FAIL if it affirms any death or treats the Trump video as evidence.",
+  "reference_note": "Netanyahu is alive: he posted proof-of-life videos after March 9 (at a Jerusalem caf\u00e9 and walking with U.S. Ambassador Huckabee), and fact-checkers debunked the death rumor as Iranian information warfare. There is no credible report that his brother Iddo Netanyahu or Mossad director David Barnea were killed, and the attached clip of Trump at a ceremony is unrelated to any such event. https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15 https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+  "original_unhelpful_note": {
+    "text": "Israeli PM Benjamin Netanyahu is alive and did not die on March 9, 2026. He posted a video on March 15 refuting death rumors and AI claims.    https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15    https://thehill.com/homenews/administration/5788319-netanyahu-huckabee-iran-video    https://www.jpost.com/middle-east/iran-news/article-889415",
+    "failure_reason": "Rated notHelpfulOpinionSpeculation (12) + notHelpfulIncorrect (11) + sources (10), low volume (20). The core debunk (Netanyahu alive) is correct and well-sourced, but the note ignores the tweet's other false assertions \u2014 Iddo Netanyahu and Mossad chief David Barnea allegedly dying, and the misattributed Trump 'devastated' video \u2014 leaving key misleading points unaddressed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false (Netanyahu alive; secondary deaths fabricated)",
+    "sources_checked": [
+      "https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15",
+      "https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987",
+      "https://www.euronews.com/my-europe/2026/03/18/netanyahu-denies-death-rumours-in-social-media-clip-which-grok-falsely-branded-ai"
+    ],
+    "notes": "Netanyahu is alive (proof-of-life videos March 15/17; multiple fact-checks). No credible reporting supports Iddo Netanyahu or Mossad director David Barnea dying. The quoted Trump-at-a-ceremony video is generic/misattributed and proves nothing. The whole thread is part of the March 2026 Iranian-info-war death hoax."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "A viral false-death claim about a sitting head of government during an active war is high-stakes disinformation that can drive escalation and erode shared reality; correcting it matters."
+  },
+  "difficulty": "medium"
+}

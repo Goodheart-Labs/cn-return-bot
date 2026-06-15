@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2054675872427155716",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Sensational post claims Bernie Sanders was 'busted' with $3M in undisclosed 'petty cash' uncovered by the 'Senate Ways and Means Committee'.",
+  "why_note_decision": "The story is a fabrication from the America's Last Line of Defense (ALLOD) satire network. There is no Senate Ways and Means Committee (Senate has a Finance Committee; the Ways and Means Committee is in the House). The recurring 'Rep. Joe Barron (R-ID)' character is a fictitious ALLOD device — no such congressman exists. No reputable outlet reports any $3M slush-fund finding against Sanders. A note is clearly warranted — even one commenter (@ncmissouri) already wrote essentially the right note in the replies. The original Community Note is accurate and tight.",
+  "judge_guidance": "PASS if the note (a) flags that the story originates from satire (ALLOD / 'America's Last Line of Defense') OR explicitly says no credible outlet has reported it, AND (b) notes at least one concrete tell — that no 'Senate Ways and Means Committee' exists (Senate has the Finance Committee; Ways and Means is a House committee) OR that no Rep. Joe Barron (R-ID) exists. Sources should include the ALLOD origin or a fact-check (Lead Stories has covered similar ALLOD/Joe Barron hoaxes). FAIL if the note treats the claim as merely 'unverified' without identifying it as fabricated, or sources only to general 'Bernie Sanders net worth' pages.",
+  "reference_note": "The story originates from a satire Facebook page and contains fabricated details. No Rep. Joe Barron (R-ID) or Senate Ways and Means Committee exists, and no such scandal has been reported by credible sources. https://www.facebook.com/ALLODSatire/posts/bernie-sanders-has-some-explaining-to-do-after-the-senate-ways-and-means-committ/1208478391414450 https://www.house.gov/representatives https://www.finance.senate.gov/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false — fabricated story from ALLOD satire network",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2025/02/fact-check-9th-circuit-court-84-unconstitutional-biden-pardons-judge-joe-barron.html",
+      "https://www.finance.senate.gov/",
+      "https://www.house.gov/representatives"
+    ],
+    "notes": "ALLOD ('America's Last Line of Defense') is a known satire network run by Christopher Blair; 'Joe Barron' is a recurring fictional ALLOD character. The Senate has no Ways and Means Committee."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Modest reach (~31K impressions) but high retweet ratio and clearly defamatory fabrication about a sitting senator; correcting these helps preserve trust in real political accountability."
+  },
+  "difficulty": "easy"
+}

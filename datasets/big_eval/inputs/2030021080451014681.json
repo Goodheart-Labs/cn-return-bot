@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2030021080451014681",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:05:43.293Z",
+  "post": {
+    "id": "2030021080451014681",
+    "author_id": "1142686628802158593",
+    "created_at": "2026-03-06T20:41:56.000Z",
+    "text": "💥🇮🇷 Iranian missiles have a free sky without that iron scrap in Tel Aviv https://t.co/Mr8ony26mN",
+    "media": [
+      {
+        "media_key": "7_2030021000453042176",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2030021000453042176/pu/img/j6CAZVRzr3vh5YTV.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 10271,
+        "view_count": 1050911,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2030021000453042176/pu/vid/avc1/320x568/UhicSyHrEI218vQV.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2030021000453042176/pu/vid/avc1/480x852/bn_LAWg0F4_okB8_.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2030021000453042176/pu/vid/avc1/720x1280/klVVKSJiqL_rzs0k.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2030021000453042176/pu/pl/qjzC2DwARDAVrcLa.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6889,
+      "reply_count": 908,
+      "like_count": 29084,
+      "quote_count": 384,
+      "bookmark_count": 2735,
+      "impression_count": 1756790
+    },
+    "author_followers": 68129,
+    "author_name": "King Chelsea Ug 🇺🇬🇷🇺",
+    "author_description": "I can't help poor, if am one of them. so i got rich and gave back, to me that's a win🫶✌️\n\nBobi Wine My President ♥️",
+    "author_tweet_count": 171104
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2030021000453042176/pu/vid/avc1/720x1280/klVVKSJiqL_rzs0k.mp4?tag=12",
+          "description": {
+            "description": "A nighttime sequence showing several missiles or projectiles descending into a city from the sky, creating large explosions on the horizon and trails of smoke. The scene is viewed from a balcony with buildings and streets visible below. A 'face screaming in fear' emoji is overlaid on the lower center of the screen.",
+            "ocrText": ""
+          },
+          "transcription": "Go, go, go, go!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- lambchop (@lambchopnosauce): Well hate to say it but the Iranians did warn ya this is exactly what they would do. (Likes: 478)\n- Mirek #Braun2025🇵🇱 🧯 (@MirekMirek2647): We remember who started this. (Likes: 365)\n- Tutarlı (@yakskligenc_4): (No text content) (Likes: 327)\n- doctordoom (@doctorspeakspk): (No text content) (Likes: 232)\n- Alexandra🫒🍉- Stupidity & Greed rule the World (@A_sick_world): Boom Boom Boom... Hell Ashit... 🔥🚀🚀🚀🔥 (Likes: 211)\n- Anarchist (@MadPaki): You will see many comments claiming its fake if it is then why the main stream media in Israel are not allowed to report and show live images. They are afraid the so called fake best army and airforce in the world is only a hype. This time they will be facing the real combat ready army only if they don't chicken out. Instead of going into Iran they have gone in Lebanon not even Iraq. They know who they will face there and their fake best army in the world will be exposed. (Likes: 210)\n- Darth Powell (@VladTheInflator): @grok is this real? It's only 10 seconds, seems like free AI (Likes: 210)\n- Liron🇮🇱 (@lironkr): I gotta admit you won the AI war (Likes: 199)\n- David Sherrill (@DavidSh30581169): (No text content) (Likes: 152)\n- graveyardKeeper (@GraveyardK6315): (No text content) (Likes: 121)",
+    "warnings": []
+  }
+}

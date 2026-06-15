@@ -14,6 +14,7 @@ import * as net from "net";
 import * as path from "path";
 import { getProdSupabaseCreds } from "./prodSupabaseCreds";
 import { parseCsvRecords } from "../utils/csv";
+import { csvRowToReviewItemInsert } from "../dashboard-shared/reviewUpload";
 
 const DASHBOARD_PORT = 8001;
 const DASHBOARD_HOST = "127.0.0.1";
@@ -145,30 +146,12 @@ async function uploadCsvToProdDashboard(csvPath: string, name: string): Promise<
 
   const CHUNK = 50;
   for (let i = 0; i < rows.length; i += CHUNK) {
-    const chunk = rows.slice(i, i + CHUNK).map((r) => ({
-      upload_id: upload.id,
-      url: r.url ?? "",
-      tweet_text: r.text || null,
-      needs_note: r.needs_note || null,
-      ground_truth_note: r.ground_truth_note || null,
-      bot_id: r.bot_id || null,
-      note_status: r.note_status || null,
-      outcome: r.outcome || null,
-      result: r.result || null,
-      note_text: r.note_text || null,
-      source_verification: r.source_verification || null,
-      evaluation_score: r.evaluation_score ? Number(r.evaluation_score) : null,
-      logs: r.logs ? safeParseJson(r.logs) : null,
-    }));
+    const chunk = rows.slice(i, i + CHUNK).map((r) => csvRowToReviewItemInsert(upload.id, r));
     const { error } = await client.from("review_dashboard_items").insert(chunk);
     if (error) throw error;
   }
 
   return upload.id as string;
-}
-
-function safeParseJson(s: string): unknown {
-  try { return JSON.parse(s); } catch { return s; }
 }
 
 function openUrlInBrowser(url: string): void {

@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2032599639703396545",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:35.721Z",
+  "post": {
+    "id": "2032599639703396545",
+    "author_id": "23865382",
+    "created_at": "2026-03-13T23:28:12.000Z",
+    "text": "So did they kill Netanyahu or not?",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 7254,
+      "reply_count": 5884,
+      "like_count": 100999,
+      "quote_count": 606,
+      "bookmark_count": 2498,
+      "impression_count": 9323511
+    },
+    "author_followers": 884373,
+    "author_name": "Ana Kasparian",
+    "author_description": "Executive Producer & Host of TYT",
+    "author_tweet_count": 10206
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Tony Montana (@9mmScorpion): No cares. He’s not the problem, the entirety of the entity is riddled with jewish supremacist. (Likes: 5213)\n- Henri Fjord (@henri_fjord): I don’t think we’re that lucky. Demons live seemingly forever in this world. (Likes: 3007)\n- HIONSPD 🇺🇸 (@hioncash): Well….. the chatter is strong….. 🤞🤞 (Likes: 2586)\n- Catta Lev 🇺🇸 (@93LegacyLivesOn): Millions are praying for a positive answer 🙏 (Likes: 2341)\n- Mattysuhbaddy (@mattydunk1988): Nope! He is still SO NOT dead. 🤣 (Likes: 2110)\n- Abdullah Hussain (@AbdullahHyD_7): You wake up realising Netanyahu has been deleted.🫠🤗 (Likes: 1566)\n- Syrian Girl (@Partisangirl): It’s starting to seem likely (Likes: 1495)\n- Matt Tardio (@angertab): Have you been snorting lines of Cenk's Quran again? (Likes: 1466)\n- Ryan Dawson (@RyLiberty): Look outside are there heart shaped clouds and sparkling trees? (Likes: 1457)\n- E_____M24 (@e___m824): No but Netanyahu has killed all your favorite terrorists (Likes: 1325)",
+    "warnings": []
+  }
+}

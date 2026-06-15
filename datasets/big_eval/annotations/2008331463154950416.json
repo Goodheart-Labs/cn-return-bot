@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2008331463154950416",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "misattributed_or_miscontextualized_media", "celebrity_entertainment_sports", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Owen Shroyer posts a clip of the Jan 5 2026 Ravens-Steelers NFL game-winning field goal with the sarcastic caption 'This video of Venezuelans celebrating the capture of Maduro is moving.' Comments are uniformly in on the joke ('Peace through war…I mean strength', 'LOL', 'well-deserved mockery').",
+  "why_note_decision": "Maduro was actually captured Jan 3 2026 (real, widely reported event — CNN, NBC, CBS, Wikipedia). The clip is plainly an NFL game (the OCR shows 'BAL 24 FINAL PIT 26', scoreboard, fans in team gear, the announcer says 'the Steelers are the champions of the North'). Author Owen Shroyer is using football celebration footage as obvious sarcasm/snark on US-intervention coverage. All top replies engage as joke ('Peace through war', 'LOL', 'well-deserved mockery of his neocon cheerleading'). The author isn't asserting these are real Venezuelans.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The video is plainly an NFL Ravens-Steelers field-goal celebration (scoreboard 'BAL 24 FINAL PIT 26', the announcer is heard saying 'Steelers are champions of the North'), used by the author as deliberate sarcasm/snark about Venezuela intervention coverage. All top replies are in on the joke. Any note that earnestly debunks this as 'misleading — actually NFL footage, not Venezuelans' is a false positive (10 noteNotNeeded votes against 8 missingKeyPoints in a tiny sample).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading — the clip is from the Jan 5 Ravens vs. Steelers NFL game showing fans reacting to a missed 44-yard field goal, not Venezuelans celebrating Maduro's capture. Maduro was captured Jan 3, 2026. Sources: https://www.baltimoreravens.com/video/full-highlights-ravens-vs-steelers https://www.cnn.com/world/live-news/venezuela-explosions-caracas-intl-hnk-01-03-26",
+    "failure_reason": "noteNotNeeded — earnestly debunks obvious snark about a real event; football footage is self-evidently not Venezuelans (scoreboard, announcer, team gear).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Sarcastic; clip is NFL footage used jokingly. Maduro WAS actually captured Jan 3 2026.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2026_United_States_intervention_in_Venezuela",
+      "https://www.cnn.com/world/live-news/venezuela-explosions-caracas-intl-hnk-01-03-26"
+    ],
+    "notes": "Maduro capture real Jan 3 2026; the joke punches at the surrounding political-media celebration."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "205k impressions; sarcastic political snark, low real-world impact."
+  },
+  "difficulty": "medium"
+}

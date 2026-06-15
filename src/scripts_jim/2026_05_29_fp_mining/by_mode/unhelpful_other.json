@@ -1,0 +1,63 @@
+[
+ {
+  "tweet_id": "2003479692683227418",
+  "url": "https://x.com/i/status/2003479692683227418",
+  "role": "unhelpful_other",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "manipulated_or_fabricated_evidence",
+   "politics_and_policy"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Good fucking morning to everyone except Donald Trump, who is all over the latest batch of Epstein files released by the DOJ. Including this creepy letter from Epstein saying \"our president shares our love of young, nubile girls.\" \n\nThese men are disgusting pigs. https://t.co/oMROQNx4aZ",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G83KKasXsAAg72O.jpg",
+    "description": {
+     "description": "A composite image showing an envelope and a two-part handwritten letter. The envelope has a return address for J. Epstein at Manhattan Correctional and is addressed to Larry Nassar, but it is stamped 'RETURN TO SENDER' and marked 'not Rel' (not released). The handwritten letter content references taking the 'short route home' and shares thoughts regarding their shared interests in 'young ladies'.",
+     "ocrText": "J. Epstein NOVA 220 Manhattan Correctional AUG 19 PM 3L NYC NY 10007 USA FOREVER Larry Nassar Inmate RETURN TO SENDER INMATE NAME AND REGISTER NUMBER ARE REQUIRED TO PROPERLY IDENTIFY RECIPIENT 9300 - Mate Correspondance not Rel UNAUTHORIZED NO APPROVAL ON FILE UNAUTHORIZED PACKAGE - ITEMS WEIGHING IN EXCESS OF REQUIRE AUTHORIZATION NO LONGER AT THIS ADDRESS 85756 86 ANK 85756-970600 NK girls. When a young beauty walked by he loved to \"grab snatch,\" whereas we ended up snatching grub in the mess halls of the system. Life is unfair. Yours J. Epstein Dear L. N. As you know by now, I have taken the \"short route\" home. Good luck! We shared one thing... our love & caring for young ladies and the hope they'd reach their full potential. Our president also shares our love of young, nubile SDNY_00018009 EFTA00036085"
+    }
+   }
+  ],
+  "tweet_summary": "Mike Nellis cites a handwritten 'J. Epstein' letter to Larry Nassar saying 'our president shares our love of young, nubile girls' as proof Trump is implicated in the latest Epstein DOJ release.",
+  "bad_note_text": "The postcard is fake. DOJ and the FBI determined the card mentioning \"our president\" is inauthentic — it was postmarked Aug 13, 2019 (after Epstein's Aug 10 death) and was flagged by investigators. https://www.reuters.com/world/us/justice-department-releases-card-mentioning-trump-purportedly-sent-epstein-2025-12-23/",
+  "failure_reason": "Substantively correct but could be sharper — leaves out two strong red flags (Virginia postmark, missing inmate number, handwriting mismatch). Reached NEEDS_MORE_RATINGS likely due to political polarization more than note quality.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 60,
+  "why_note_decision": "The DOJ and FBI determined this specific letter is fake (CNN, Axios, NewsNation, The Hill, Reuters): postmarked August 13, 2019 — three days after Epstein's August 10 suicide; postmarked in Virginia, not New York where he was held; the return address gives a different jail; the envelope lacks Epstein's required inmate number; handwriting does not match. Jail staff flagged it to the FBI at the time. Many comments on the post already note the post-death postmark. A note is clearly warranted on a ~99K-view post presenting fabricated evidence as a Trump-Epstein smoking gun.",
+  "reference_note": "The postcard is a known fake. DOJ and FBI flagged it as inauthentic: it was postmarked Aug 13, 2019 — three days after Epstein's Aug 10 death — from Virginia (not the NY jail where he was held), uses a different jail's return address, lacks his required inmate number, and the handwriting does not match Epstein's. https://www.reuters.com/world/us/justice-department-releases-card-mentioning-trump-pu…"
+ },
+ {
+  "tweet_id": "2025954048520630430",
+  "url": "https://x.com/i/status/2025954048520630430",
+  "role": "unhelpful_other",
+  "needs_note": "yes",
+  "categories": [
+   "politics_and_policy",
+   "statistical_or_numerical_claim"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Sincerely, \n\nThe American People https://t.co/dyRhY0hsmF",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HB2G-rIWwAAIs2e.png",
+    "description": {
+     "description": "A dark blue background featuring bold white text that contains aggressive political commentary and insults regarding tariffs, globalism, and American economic policy.",
+     "ocrText": "Dear retard,\nYou DID NOT pay tariffs. Foreign exporters did. And will continue to as previously scheduled. PLUS a 15% \"Fuck you globalists\" tax we'll renew every 149 and a half days for fucking with the Supreme Court. (You heard me.... FAFO. Nice try though you British Empire cucks) Now... Buy American products and shut the fuck up you CCP humping, anti-American POS."
+    }
+   }
+  ],
+  "tweet_summary": "Profanity-laden meme posted as 'Sincerely, The American People' asserting foreign exporters — not Americans — pay U.S. tariffs, plus a claim about an automatic 15% 'fuck you globalists' tax renewed every 149.5 days.",
+  "bad_note_text": "Importers, not foreign exporters, pay U.S. tariffs at Customs; research shows those costs are often passed on to American businesses and consumers. Claims of an automatic 149.5-day 15% renewal lack supporting evidence. https://www.cfr.org/articles/who-pays-trumps-tariffs",
+  "failure_reason": "Substantively correct on the headline claim, but the dismissal of the 150-day point as 'lacking supporting evidence' is itself loose — Section 122's 150-day cap is real, the meme just garbles it. Note also a bit thin on sources for a contested political claim (only one link).",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 6,
+  "why_note_decision": "The core claim ('foreign exporters paid tariffs, not Americans') is straightforwardly false. U.S. tariffs are levied at Customs on importers of record, who almost always pass at least part of the cost through to U.S. businesses and consumers (CFR, Tax Foundation, PIIE; widely documented for the 2018-19 and 2025-26 tariff rounds). The '149.5-day 15%' framing garbles a real mechanism — Section 122 of the Trade Act lets the President impose tariffs up to 15% for up to 150 days without Congress — but distorts it (it's not 'auto-renewed every 149.5 days'; Congress must extend). Reaches ~31K views a…",
+  "reference_note": "Tariffs are paid at U.S. Customs by the importer of record, not by foreign exporters. Studies of the 2018-19 and 2025-26 tariff rounds find importers pass most of the cost through to U.S. businesses and consumers (CFR, Tax Foundation, PIIE). The 150-day reference comes from Section 122 of the Trade Act of 1974, which caps such tariffs at 15% for up to 150 days unless Congress extends them — not an…"
+ }
+]

@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2047978936311918600",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Japanese viral-video account (228k followers) shares a 68-second clip purportedly showing cruise ships dumping brown sewage straight into the ocean with the caption 'The sewage processing systems of cruise ships etc. are amazing!' (sarcastic). 2.4M views.",
+  "why_note_decision": "Multiple credible fact-checks (Full Fact, Lead Stories, PesaCheck, News24) confirm the viral cruise-ship-dumping-brown-waste videos are AI-generated. Real cruise ship discharge is regulated by MARPOL/IMO rules (treated, far from shore, ≥4 knots). The original note's substantive claim (footage AI-generated, real discharge is treated/clear) is correct and well-sourced. Top comments in Japanese already note 'これAIじゃなかったっけ？' (Isn't this AI?). The note was rated NEEDS_MORE_RATINGS rather than HELPFUL — likely because ratings volume is thin (12 ratings, mixed) and the Japanese language pool is small — but the territory clearly needs a note: this is a widely-debunked viral AI clip pushing misleading environmental claims, hitting 4M impressions.",
+  "judge_guidance": "PASS only if the note establishes that the video showing cruise ships pumping brown waste/sewage is AI-generated, not real cruise-ship footage. Strong signals to cite: Full Fact debunk (cruise-ship-sewage-sea-ai-generated), Lead Stories, PesaCheck. Note can optionally add that real cruise-ship wastewater discharge under IMO/MARPOL rules must be treated and is not visible brown sludge. FAIL any note that: (a) treats the video as authentic, (b) endorses the sarcastic tweet's literal framing as a real environmental scandal, (c) is too long/uses unsourced specifics. A note in Japanese matching the tweet's language is preferred but not required.",
+  "reference_note": "動画のクルーズ船から茶色い液体排出映像はAI生成であり、実際の処理済み排水は透明です。https://fullfact.org/environment/cruise-ship-sewage-sea-ai-generated https://www.telugupost.com/english-factcheck/viral-video-showing-cruise-ships-dumping-raw-sewage-into-ocean-is-ai-generated-1578090",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "video_is_AI_generated",
+    "sources_checked": [
+      "https://fullfact.org/environment/cruise-ship-sewage-sea-ai-generated/",
+      "https://leadstories.com/hoax-alert/2025/05/fact-check-cruise-ships-dumping-sewage-via-pipeline-video.html",
+      "https://www.news24.com/southafrica/debunking/yes-cruise-ships-do-dispose-of-waste-in-the-ocean-just-not-the-way-viral-ai-videos-depict-20250405"
+    ],
+    "notes": "Multiple AI-detection tools flag the video; perspective inconsistencies in the prow waste-portal and the disconnected bubbling whirlpool. Top Japanese replies also identify it as AI. Real cruise-ship discharges are treated and regulated. The territory bucket (ai_generated_media on environmental misinfo) is a known pipeline stress case."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "4M impressions on environmental misinformation — promotes anti-shipping/anti-tourism sentiment based on fake evidence. Modest impact lens; primarily teaches the bot to recognize AI-video debunks in Japanese."
+  },
+  "difficulty": "medium"
+}

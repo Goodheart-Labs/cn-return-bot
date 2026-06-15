@@ -1,0 +1,359 @@
+[
+ {
+  "tweet_id": "2001353420809089086",
+  "url": "https://x.com/i/status/2001353420809089086",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "no",
+  "categories": [
+   "staged_or_scripted_content",
+   "celebrity_entertainment_sports"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "New fear unlocked: 😨 https://t.co/XDKGk7eGHL",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2001353372150980608/vid/avc1/886x652/-RQiAdCR_YaEm1JZ.mp4",
+    "description": {
+     "description": "A bald, shirtless man in blue swim trunks and a young girl in a purple swimsuit are climbing stairs at a water park. They arrive at the top where there is a circular opening for a water slide. The man asks the girl if he can go first. The girl then sits down and prepares to enter the water slide.",
+     "ocrText": "FUCKBOY @fuckboyproblems 1.3M 13.2K would you mind if I go first"
+    },
+    "transcription": "Excuse me, would you mind if I go first? May I go first?"
+   }
+  ],
+  "tweet_summary": "A 'New fear unlocked: 😨' reaction tweet over a viral water-park clip from the 2021 Polish thriller Small World, in which a shirtless man at the top of a slide asks a little girl 'may I go first?' — used as creepy-vibe content. Audio/visuals are cinematic and the clip is widely circulated as a film snippet.",
+  "bad_note_text": "Misleading — the clip is a scripted scene from the 2021 Polish thriller Small World (Światło), shown in the film's trailer and documented on IMDb. It's cinematic fiction, not a real-life predator incident. Evidence: https://www.imdb.com/title/tt14319068/ https://www.youtube.com/watch?v=8dlnYQLbRg8",
+  "failure_reason": "Corrects a claim the tweet didn't quite make; readers already treat it as a clip, not breaking news. Raters tagged 'note not needed' and 'missing key points'. Also gets the Polish title slightly wrong (the film's Polish title is 'Small World', not 'Światło').",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 21,
+  "why_note_decision": "The tweet is a one-line emotional reaction, not a factual claim that a real predator was filmed. The video is a known scene from Patryk Vega's Small World (2021), surfaced repeatedly on TikTok with that attribution. Comments mostly read it as a creepy vignette without asserting it's real footage of a crime; a few warn parents not to let kids go alone, but no checkable misleading claim is being made by the author. A note clarifying 'this is from a movie' has some informational value but the dominant rater verdict was 'note not needed,' and the original note also drew 'missing key points' tags (…",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2014958165889318978",
+  "url": "https://x.com/i/status/2014958165889318978",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "no",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "🚨⚡️Ukrainian Mechanics Teach Zelensky's Recruitment Staff a Harsh Lesson! 🇺🇦🛠️\n\nWorkers in a car repair shop beat military recruitment center (TCC) employees after they tried to forcibly drag their colleague from his workplace to mobilize him into the army in the city of Izmail. https://t.co/G0jUiicHFH",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2014957525767225348/vid/avc1/1920x1056/T4IYnuhfwuFxjFeD.mp4",
+    "description": {
+     "description": "The video shows a group of men in a garage setting, likely in Russia as indicated by the overlay text. In the first frame, one man is walking across the garage towards a white car raised on a lift, while another man stands near the car. As the frames progress, a third man joins them, and they are seen standing and talking near the back of the raised white vehicle. Two of the men are wearing camouflage jackets. The scene appears to be captured on a security camera, showing a cluttered workshop environment with various tools and parts visible in the background.",
+     "ocrText": "Russia news | الموجز الروسي"
+    },
+    "transcription": "Storbritannia Thank you for watching."
+   }
+  ],
+  "tweet_summary": "Russian-propaganda-leaning account 'RussiaNews' shares CCTV footage of Ukrainian auto-shop workers brawling with TCC (military recruitment) personnel, framed as happening in Izmail.",
+  "bad_note_text": "This footage shows a clash at an auto repair shop in Odesa on August 13, 2025, between civilians and TCC staff attempting to detain men for mobilization violations, not a new incident in Izmail.  https://24tv.ua/biyka-ttsk-odesi-sto-13-serpnya-politsiya-zatrimala-pravoporushnikiv_n2894378  https://dumskaya.net/news/massovaya-draka-ttsk-i-grazhdanskih-v-odesse-v-v-188676/ua",
+  "failure_reason": "noteNotNeeded — pedantic city-name correction on an essentially-accurate clip; doesn't change the meaning.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 57,
+  "why_note_decision": "The underlying event — Ukrainian civilians fighting TCC mobilization officers — is real and widely documented (multiple Odesa-region incidents through 2025). The original note's only objection is that the city is Odesa (Aug 13, 2025), not Izmail. That city-name pedantry doesn't change anything substantive (same region, same TCC-vs-civilian dynamic, same year). 29/57 raters flagged noteNotNeeded. The framing 'Ukrainians beat recruiters' is accurate; the city correction is trivia, not a misleading-claim correction.",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2019110543903379863",
+  "url": "https://x.com/i/status/2019110543903379863",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "no",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "celebrity_entertainment_sports"
+  ],
+  "difficulty": "hard",
+  "tweet_text": "🚨 JUST IN: \n\n🇺🇸🇮🇱 76-year-old Hollywood Jewish Israeli producer Herschel Weingrod was caught having lunch with a random 15-year-old child. Just a few weeks later, he fled the country to israel.\n\n https://t.co/8TycnnoRMu",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2019089641539072001/pu/vid/avc1/960x720/m1WmiYjGyhouiYHB.mp4",
+    "description": {
+     "description": "A man in a baseball cap and grey t-shirt stands over an older man seated in a booth at an outdoor patio, engaging in a conversation. In the first frame, a woman in a plaid shirt is seated next to the older man, but she leans out of the frame in the subsequent shots. The men appear to be having a meaningful exchange as the younger man leans on the table and the older man gestures with his hands.",
+     "ocrText": "ZRH"
+    },
+    "transcription": "What's your name? Oh, fuck. What's your name? Who are you? What's your name? Who are you? Why are you sitting with my fucking daughter? What's your name? What is your name? Boris. My name is Boris. Boris. What's your name? Shake my hand. What's the problem? Why are you sitting with my fucking daughter? You know how old she is? I don't know. I have no idea. You have no idea? I have no idea. You have no idea? No. The fuck you thought was going to happen here? Nothing. I work. I have a pizza. I don't know. Pizza? Yeah, you don't know? How old is she? Red. You know how old she is? I matched with her. She was 23. 23. Is that what the conversation looked like? You know what the text message is? She was 23 on a dating site. On a dating site. Yes. Yeah? Yes, she was 23 on a dating site. How old is she? I have no idea. Lila, how old are you? I'm sorry. She was 23 on a dating site. All we've done is... So she didn't tell you how old she was? She did. She did? Yeah. How old is she? She said she was 15. How did she tell you how old she actually is? She said she was 15. She says she's 15. Why are you here? Why are you sitting here? I'm just having a... With a fucking 15-year-old? I'm having a pizza. Pizza pizza with a fucking 15 It not against the law You think that okay I think it not against the law It not against the law No Is that all you spoke about to her We just been talking Really? Yeah, we've been talking and flirting. It's not a big deal. Where are you going? I ordered a pizza. I'm going to go. Okay, have a seat. Have a seat. Why? I'll sit with you. I'll eat pizza with you. We're just having pizza, right? Sit right here. Sorry. Sit right here. I don't know. Excuse me, sir. Excuse me. You said you wanted to kiss, touch, and lick, whatever? Yeah. Right? Yeah. It's just weird. I don't understand what people say. So you're a pedophile trying to meet a 15-year-old. Oh, shit. I'm sorry. It's not a boy. It's a girl. Whoa. Yeah, you are. Wait. You need to hear audio. You need to hear audio. Look at this guy. Clown. All right. Let's go. Let's go. Yeah, yeah, I'm going to stay. What are you doing? I'm like, we can't grab him. Yeah. Yeah, yeah, you can't."
+   }
+  ],
+  "tweet_summary": "Pro-Palestinian account 'Jvnior' shares the May 2024 Vitaly/Bradley-Martyn 'Catching Predators' livestream that confronted 76-year-old Jewish-American Hollywood producer Herschel Weingrod after he met a 15-year-old via a dating site, framed as new and with the added claim that Weingrod fled to Israel.",
+  "bad_note_text": "This video is from a May 2024 sting operation, not recent news, and there is no evidence the producer fled to Israel. https://x.com/BehizyTweets/status/1788087082671353934 https://dailycaller.com/2024/05/08/live-streamers-vitaly-bradley-martin-kindergarten-cop-producer-herschel-alan-weingrod-minor-dating-site",
+  "failure_reason": "noteNotNeeded — accurate reporting of a documented May 2024 sting; the note's main attack ('not recent') is irrelevant for resurfaced predator-sting content where the event remains true.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 125,
+  "why_note_decision": "The underlying May 2024 sting is documented (Daily Caller, Wikipedia, Gateway Pundit, Outlook India). Weingrod admitted on camera that the girl said she was 15 and that he met her on a dating site. The 'fled to Israel' claim is unverified social-media speculation. The tweet's 'JUST IN' framing and 'fled to Israel' are misleading on date and on Israel-flight, but the central event (Weingrod caught on date with a 15-year-old) is true. 48/125 raters flagged noteNotNeeded — they read the post as accurate reporting of a real 2024 sting, with the Israel claim being the kind of opinionated extra that…",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2023768998861808027",
+  "url": "https://x.com/i/status/2023768998861808027",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "no",
+  "categories": [
+   "health_medical_science",
+   "celebrity_entertainment_sports"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "A trend among young people in China: For fear of obesity and in order to feel full, they place a plastic bag over their mouth while eating.\n\nhttps://t.co/WZmOHS9LvO",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2023558905096531972/pu/vid/avc1/720x1280/wLsFJpamcpdwMytP.mp4",
+    "description": {
+     "description": "A collection of video frames featuring individuals eating. The first frame shows a woman with dark hair in a tan coat covering her mouth. The second frame depicts a woman in a pink sweatshirt using chopsticks to eat meat. The third and fourth frames show a woman in a black jacket and a white face mask pulled down, eating with a spoon.",
+     "ocrText": "HE TO KLL"
+    },
+    "transcription": "Mira, en China hay personas que están metiéndose plástico en la boca antes de comer. ¿Pero por qué lo hacen y qué se supone que logra esto? En realidad allí se ha vuelto popular una tendencia bastante extraña. Antes de comer su comida favorita, la gente se coloca un plástico transparente en la boca, lo mantiene ahí por unos segundos y luego lo saca junto con la comida y la tira. Ellos creen que de esta forma el cerebro piensa que realmente ya comieron ese alimento y que así pueden hacer dieta sin consumirlo. Sin embargo, este truco es completamente falso, pero aún así muchas personas siguen creyendo en él, Especialistas en nutrición explican que engañar al cerebro de esta forma no funciona a largo plazo. El cerebro no solo reconoce el acto de masticar, sino también la digestión, las calorías y los nutrientes que realmente entran al cuerpo. Por eso, cuando se usan estos trucos, el hambre vuelve con más fuerza y muchas personas terminan comiendo más después. Además, meter plástico en la boca puede causar asfixia, infecciones, irritación en la garganta y hasta microcortes en la boca. Aún así, este tipo de ideas se hacen virales porque prometen resultados rápidos sin esfuerzo."
+   }
+  ],
+  "tweet_summary": "Curated 'China pulse' account describes a viral Chinese weight-loss trend of placing plastic over the mouth while eating; underlying video (Spanish-language explainer) clarifies people put plastic wrap inside the mouth, chew, then spit food + wrap.",
+  "bad_note_text": "The described trend involves placing plastic wrap inside the mouth to chew and spit out food without swallowing, not putting a plastic bag over the mouth while eating. https://www.dexerto.com/entertainment/bizarre-plastic-eating-trend-for-weight-loss-goes-viral-in-china-3321014",
+  "failure_reason": "noteNotNeeded — pedantic mechanic-correction on a real reported trend; tweet's substance (a harmful Chinese weight-loss practice involving plastic and the mouth) is correct.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 79,
+  "why_note_decision": "Both the tweet and the note describe essentially the same fringe weight-loss practice. The note's only correction is the mechanical detail: 'inside mouth, chewed and spit' vs 'bag over mouth.' The tweet's phrasing ('place a plastic bag over their mouth while eating') is loose but not load-bearingly wrong — it's the same harmful pseudo-dietary practice, sourced to the same Chinese trend reporting (Dexerto). 40/79 raters flagged noteNotNeeded. The tweet's actual concern (health-harmful weight-loss trend) is intact regardless of bag-over vs wrap-inside.",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2027669583101038938",
+  "url": "https://x.com/i/status/2027669583101038938",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "no",
+  "categories": [
+   "ai_generated_media",
+   "joke_or_satire",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Trump makes a major announcement about the war with Iran \n\nhttps://t.co/rBYbPRf89B",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2016946251200118784/vid/avc1/1080x1080/uUCohVyQq61hWCVn.mp4",
+    "description": {
+     "description": "An AI-generated sequence of frames featuring Donald Trump at a presidential podium on the deck of an aircraft carrier. In the background, Benjamin Netanyahu is seen reacting as Trump leans over the podium with an exaggerated expression of screaming or laughter. Several fighter jets are parked in the distance.",
+     "ocrText": "SEAL OF THE PRESIDENT OF THE UNITED STATES"
+    },
+    "transcription": "Oh, Donald, why haven't you attacked Iran yet? If you don't attack soon, I will release the Epstein files. Ah, shh. Okay, BB, I'll do whatever you want. Ah! Ah!"
+   }
+  ],
+  "tweet_summary": "Anti-Trump meme account 'Darth Powell' captions an AI-generated comic clip of Trump on an aircraft carrier with Netanyahu in the background, with a satirical Epstein-files dialogue, captioned 'Trump makes a major announcement about the war with Iran.'",
+  "bad_note_text": "The video is manipulated with fake audio depicting nonexistent dialogue about Epstein files; Trump announced military action against Iran in a separate Truth Social video, not on an aircraft carrier. https://truthsocial.com/@realDonaldTrump/posts/116147082884192486 https://www.nbcnews.com/world/iran/live-blog/israel-iran-live-updates-rcna261099",
+  "failure_reason": "noteNotNeeded — fact-checks obvious AI political satire as if it were a real announcement.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 46,
+  "why_note_decision": "Obvious AI political-satire meme: Trump and Netanyahu in an exaggerated cartoonish scene with absurd dialogue ('release the Epstein files' / 'I'll do whatever you want'). The 8.3M views and 161k likes flow to a meme-account whose followers and commenters universally treat it as satire (#EpsteinWar, 'Board of Peace starts its first war'). No reasonable viewer interprets the literal animation as a real Trump announcement. 37/46 raters flagged noteNotNeeded. The note's solemn 'this is fake audio + Trump's real announcement was on Truth Social' over-explains the joke.",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2028953063998763183",
+  "url": "https://x.com/i/status/2028953063998763183",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "yes",
+  "categories": [
+   "breaking_news_and_war"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "⚡️🚨 Initial unconfirmed reports from Iranian witness channels that an F15 was shot down and police went to capture the pilot \n\n- stay tuned for confirmation",
+  "media_description": [],
+  "tweet_summary": "Middle East Observer (376K followers) posts an 'unconfirmed initial report' from 'Iranian witness channels' that a US F-15 was shot down by Iran and police went to capture the pilot — telling readers to 'stay tuned for confirmation.'",
+  "bad_note_text": "Unverified Iranian claims of an F-15 shootdown and pilot capture contradict US CENTCOM: three US F-15s were downed by Kuwaiti air defences in Kuwait in a friendly-fire incident and all pilots ejected and were recovered. https://www.centcom.mil/MEDIA/PRESS-RELEASES/Press-Release-View/Article/4418568/three-us-f-15s-involved-in-friendly-fire-incident-in-kuwait-pilots-safe",
+  "failure_reason": "Note is largely correct, but raters lean 'note not needed' on a low-volume hedged rumor post. Borderline rater fatigue; the correction itself is accurate and useful.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 12,
+  "why_note_decision": "Even though the author hedges with 'unconfirmed,' the tweet circulates a specific factual claim (US F-15 shot down by Iran, pilot captured) that mainstream sources directly contradict: on March 1 2026, CENTCOM confirmed three US F-15Es were downed by Kuwaiti friendly fire (not by Iran), and all six aircrew ejected safely and were recovered. The 'Iranian witness channel' framing is exactly the kind of rumor-laundering that benefits from a corrective note before it spreads further. The original note correctly cited CENTCOM and was structurally sound; raters tagged 'note not needed' partly becaus…",
+  "reference_note": "US CENTCOM confirmed three US F-15Es were downed by Kuwaiti air defenses in a friendly-fire incident on Mar 1, 2026; all six aircrew ejected and were recovered. No US aircraft was shot down by Iran and no pilot was captured. https://www.centcom.mil/MEDIA/PRESS-RELEASES/Press-Release-View/Article/4418568/three-us-f-15s-involved-in-friendly-fire-incident-in-kuwait-pilots-safe"
+ },
+ {
+  "tweet_id": "2031091781786276155",
+  "url": "https://x.com/i/status/2031091781786276155",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "breaking_news_and_war"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "BREAKING NEWS 🔥 🔥 🔥 \n\n'israeli' media unconfirmed reports Itamar Ben Gvir involved in 'car crash' when he has actually been killed in an Iranian missile strike on his home. https://t.co/0XUHjbIO0f",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HC_jNmBWYAE0Yva.jpg",
+    "description": {
+     "description": "A close-up photograph of Itamar Ben-Gvir, an Israeli politician, speaking into microphones. He is wearing rectangular glasses and a dark suit. In the background, there is a blurry wall with directional signage including an arrow and silhouettes indicating a restroom or handicap-accessible area.",
+     "ocrText": "14"
+    }
+   }
+  ],
+  "tweet_summary": "UK news-style account 'UNN' (114k followers) declares 'BREAKING NEWS 🔥🔥🔥' that Itamar Ben-Gvir has been killed in an Iranian missile strike on his home — and that Israeli media's 'car crash' framing is a cover-up. 1.42M impressions, 21k likes, 4.7k RTs, image of Ben-Gvir. Replies celebrate the alleged death.",
+  "bad_note_text": "Rumors of Itamar Ben-Gvir's death in an Iranian missile strike, misreported as a car crash, are unconfirmed. No reliable sources report his death or a 2026 crash. He was active as of March 4, 2026. A prior crash occurred in 2024.    https://www.timesofisrael.com/liveblog_entry/government-ministers-accuse-ag-of-harming-iran-war-effort-with-call-to-fire-ben-gvir  https://www.timesofisrael.com/nine-people-killed-in-iranian-missile-strike-on-residential-area-in-beit-shemesh  https://www.reuters.com/world/middle-east/israeli-minister-ben-gvir-slightly-hurt-car-accident-2024-04-26  https://en.wikipe…",
+  "failure_reason": "Substantively correct (Ben-Gvir alive) but rated NOT_HELPFUL (42 ratings; dominant notHelpfulNoteNotNeeded 19, then OpinionSpeculation 14, MissingKeyPoints 14, SourcesMissingOrUnreliable 11). Hedging language ('unconfirmed/no reliable sources') reads as weak; the unrelated 2024 car-crash line muddies the message; no citation of Ben-Gvir's own 'I'm alive' post or a dedicated fact-check (PolitiFact/AFP) despite their existence.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 42,
+  "why_note_decision": "Clear death hoax. PolitiFact, Yahoo/AFP fact-check, EBU Spotlight, IBTimes UK, and The Jewish Chronicle all confirm Ben-Gvir is alive — he posted 'I'm alive' on X on March 10, 2026. The hoax was part of a pro-Iran disinfo wave that also targeted Netanyahu and David Barnea. With 1.42M impressions and celebratory replies a note IS needed. The original note's substance is correct; it was rated NOT_HELPFUL likely because (a) it leans on 'unconfirmed/no reliable sources' instead of citing Ben-Gvir's own 'I'm alive' post + a fact-checker, and (b) the 'A prior crash occurred in 2024' line muddies the…",
+  "reference_note": "Itamar Ben-Gvir is alive. He posted 'I'm alive' on X on March 10, 2026 after viral pro-Iran hoaxes claimed he was killed in an Iranian missile strike. PolitiFact, AFP and EBU Spotlight have debunked the rumor; the same wave also falsely targeted Netanyahu and Mossad chief David Barnea. https://www.politifact.com/factchecks/2026/mar/11/tweets/Israel-Minister-Ben-Gvir-no-dead/ https://www.yahoo.com/…"
+ },
+ {
+  "tweet_id": "2031780631131095289",
+  "url": "https://x.com/i/status/2031780631131095289",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "no",
+  "categories": [
+   "joke_or_satire",
+   "celebrity_entertainment_sports",
+   "fabricated_quote"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "Timothée Chalamet is under fire for calling Helen Keller “not real”\n\n“There’s zero chance she existed. You expect me to believe that girl managed to fly an airplane?” https://t.co/T38d0zv0hq",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HDJVtzRXoAAIlH9.jpg",
+    "description": {
+     "description": "A medium shot of actor Timothée Chalamet during a talk show appearance. He has dark wavy hair, a thin mustache, and a soul patch. He is wearing a light orange button-down shirt over a white undershirt and a thin gold chain necklace. He is looking slightly to his left while speaking. The background consists of a blurred studio audience.",
+     "ocrText": ""
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HDJVtzHXwAAlbwV.jpg",
+    "description": {
+     "description": "A black and white profile portrait of Helen Keller as a young woman. She is shown from the chest up, facing right with her eyes closed or looking slightly downward. She has her hair pulled back into a bun and is wearing a high-collared white lace dress with concentric patterns. The background is a plain, solid light color.",
+     "ocrText": ""
+    }
+   }
+  ],
+  "tweet_summary": "Daily Noud (X handle @DailyNoud, bio: 'PARODY Hip-Hop News | These are fake stories | Not affiliated with @DailyLoud') posts a fabricated quote attributing to Timothée Chalamet 'There's zero chance she existed' about Helen Keller.",
+  "bad_note_text": "This post from parody account @DailyNoud fabricates a quote attributed to Timothée Chalamet; the account's bio states &quot;These are fake stories.&quot; https://x.com/DailyNoud",
+  "failure_reason": "noteNotNeeded — the note itself confirms the account is explicitly labeled parody, making the note redundant with X's own parody disclosure.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 9,
+  "why_note_decision": "Account is explicitly labeled PARODY in its bio AND its handle is the punning '@DailyNoud' (parody of @DailyLoud). The quote is invented for comedic effect — multiple commenters note the parody status ('people falling for parody accounts that are now LABELED as parody accounts is such a funny concept'). 5/9 raters flagged noteNotNeeded. X's own labeling system handles this. Even if some readers fall for it, the platform's parody-labeling solves it; community-noting confessed parody is a clear false-positive.",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2036936648152211845",
+  "url": "https://x.com/i/status/2036936648152211845",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "A dad’s reaction to his daughter choosing a black man for prom https://t.co/ajxXnc8chS",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/HESnFGoW4AAHXqE.jpg",
+    "description": {
+     "description": "A split image containing a photo on the left and a screenshot of a text message conversation on the right. The photo shows an interracial couple dressed for a formal event like a prom, standing on a boardwalk. The text conversation appears to be between a daughter and her father, displaying hateful, racist, and abusive messages from the father responding to her choice of date.",
+     "ocrText": "AT&T 4G 6:09 AM 66% Messages Daddy Details Message Yesterday 11:10 PM We are done I won't be coming to your graduation. Nor will I pay for your college. Go live with the N*****s I went to prom with a black guy so that's a problem racist much Yes I am your dead to me K Don't ever contact me again we are through. Go ahead be a FUCKIN whore leave me out of it. I'm canceling your phone Monday you can't do this I'm done with you. I didn't do anything wrong Delivered Shut the fuck up you have no right to talk to me anymore Go live with the FUCKIN N*****s Your pictures are already off my walls You can go to hell What the Fuck is wrong with you? I'm canceling your phone and your insurance we are done. You want to mingle with Subhumans I'll treat you accordingly."
+    }
+   }
+  ],
+  "tweet_summary": "Account 'Loud Outside' (573k followers) shares a screenshot of an interracial prom photo + a father's racist text rant with caption 'A dad's reaction to his daughter choosing a black man for prom'. 2.2M impressions, 12.5k likes, 691 RTs. Reply section is dominated by white-supremacist/racist 'good father' takes from accounts cheering the abuse.",
+  "bad_note_text": "The screenshot depicts a 2017 incident involving Anna Hayes in Arkansas, not a recent event. https://www.dailymail.co.uk/lifestyle/article-4478232/Dad-s-racist-rant-daughter-took-black-friend-prom.html https://rollingout.com/2017/05/06/white-racist-father-disowns-daughter-attended-prom-black-student",
+  "failure_reason": "Substantively correct date attribution but rated notHelpfulNoteNotNeeded (25/47), with MissingKeyPoints (17). Note is very terse — could anchor the location (Lake Village, AR), confirm the messages are real (not staged), and use a higher-quality outlet (BuzzFeed/AP-style) over Daily Mail/Rolling Out.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 47,
+  "why_note_decision": "The screenshot is the 2017 Anna Hayes (Lake Village, Arkansas) incident, widely covered by Daily Mail, BuzzFeed, AOL, Rolling Out, and Raw Story in May 2017. Reposting it 8.5 years later without that context misleads readers into thinking this is a recent event — and the racist reply mob treats it as such. Author of the account is a generic 'entertainment/news' aggregator; tweet does NOT date the event. A note IS warranted to date it. The original note's date attribution is correct; raters likely voted notHelpfulNoteNotNeeded (25/47) because the underlying conduct is so vile that 'it's old' fe…",
+  "reference_note": "These text messages are real but from May 2017 — the 'Anna Hayes' incident in Lake Village, Arkansas, where a senior's father disowned her over her Black prom date. Reposting it without context misrepresents a 2017 event as recent. https://www.buzzfeednews.com/article/stephaniemcneal/people-are-sending-a-ton-of-support-to-this-teen-who-was https://rollingout.com/2017/05/06/white-racist-father-diso…"
+ },
+ {
+  "tweet_id": "2037517138773053718",
+  "url": "https://x.com/i/status/2037517138773053718",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "no",
+  "categories": [
+   "ai_generated_media",
+   "joke_or_satire"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "No one laughs at your dad jokes like a hyena\n\n[🎞️ animalwhispers88]\nhttps://t.co/BoymxDQliB",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/amplify_video/2037248054340829185/vid/avc1/2160x3840/YQ0E1_mS_2sCeI87.mp4",
+    "description": {
+     "description": "A series of video frames showing a man telling jokes to a spotted hyena named Eddie. In the first two frames, the man and Eddie are in a car wearing matching red knit beanies with 'Eddie's Pack' patches. Eddie appears to laugh or yawn at the man's jokes. In the third frame, they are in a Different car with orange seats, and in the fourth frame, they are indoors seated on a leather sofa against a log cabin wall.",
+     "ocrText": "EDDIE'S PACK @ANIMALWHISPERS88 EDDIE! DID YOU KNOW I ONCE BOUGHT A DOG FROM A BLACKSMITH? EDDIE'S PACK @ANIMALWHISPERS88 @ANIMALWHISPERS88 NOW I TALK WITH AN AXE SCENT @ANIMALWHISPERS88 HEY EDDIE, HAVE YOU HEARD OF THE NEW MOVIE CALLED CONSTIPATION?"
+    },
+    "transcription": "Eddie, did you know I once bought a dog from a blacksmith? As soon as we got it home, it made a bolt for the door. Hey, Eddie, I accidentally sprayed Axe Body Spray into my mouth. Now I talk with an ax... Hey, Eddie, have you heard of the new movie called Constipation? Hasn't come out yet. Candy, do you know I have a fear of German sausages? I always fear the worst."
+   }
+  ],
+  "tweet_summary": "Curiosities account 'Massimo' (4.4M followers) shares the popular @animalwhispers88 'Eddie the hyena' clip — a man telling dad jokes while a hyena 'laughs' — with a wholesome caption and the source credit '[🎞️ animalwhispers88].'",
+  "bad_note_text": "The video depicts an AI-generated hyena, not a real pet; the source account @animalwhispers88 creates fabricated content without disclosure. https://www.instagram.com/reel/DWRCqblGHWF/ https://x.com/sn1pertf2/status/2035144231610659093",
+  "failure_reason": "noteNotNeeded + partially incorrect — source account DOES disclose AI status ('This is ai' in bio); note's 'without disclosure' claim is false.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 5,
+  "why_note_decision": "The @animalwhispers88 hyena clips are AI-generated and the creator discloses this in their bio ('This is ai'), as Grok and multiple article sources confirm. The Massimo tweet credits the source account by handle in the caption itself, treating it as a wholesome curiosity rather than a literal pet-ownership claim. Comments are mixed between people enjoying the joke ('I seriously need a hyena to laugh at my jokes') and a couple genuinely asking if it's a real pet ('@grok wait does he have a hyena for a pet'). 3/5 raters flagged noteNotNeeded — low stakes; the source disclosure exists upstream; t…",
+  "reference_note": ""
+ },
+ {
+  "tweet_id": "2038979377527246991",
+  "url": "https://x.com/i/status/2038979377527246991",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "yes",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "politics_and_policy"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "日本の公園で「桜は日本のものだなんて二度と言わないでください。桜は中国原産」というプラカードを掲げた中国人が現れる\nhttps://t.co/s8SwBwQ9cC",
+  "media_description": [],
+  "tweet_summary": "Japanese aggregator account 'エックス速報' (195k followers, 488k views) claims that 'a Chinese person appeared in a Japanese park holding a placard saying never claim cherry blossoms are Japanese — they originated in China.' The post is a quote/repost driving Sino-Japanese animosity in replies. Per the cited Record China article (and confirmed in replies), the photo was actually posted on Chinese platform Xiaohongshu (RED) on March 29 2026 showing a man in hanfu in China, not Japan.",
+  "bad_note_text": "この出来事は中国の公園で起きたものであり、日本ではありません。https://www.recordchina.co.jp/b973720-s25-c30-d0052.html",
+  "failure_reason": "Note is correct and concise but rated NEEDS_MORE_RATINGS (only 19 ratings, dominated by NoteNotNeeded 3). Likely too terse — doesn't quote the originating platform (Xiaohongshu) or date, making it easy for raters who don't click the link to dismiss as unsupported. Adding 'posted on Xiaohongshu (中国SNSの小紅書) on March 29 2026' would strengthen it. Also the topic is politically charged (Sino-Japanese antagonism) which makes raters less inclined to mark helpful.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 19,
+  "why_note_decision": "A note IS warranted. The tweet's headline claim ('in a Japanese park') is false — the photo originated on Xiaohongshu in China, not in Japan. This is a meaningful location swap (488k views) that materially changes the framing (from 'Chinese provocateur invading Japan' to 'Chinese internet content posted within China'), and it's directly fueling anti-Chinese sentiment in the replies. Provisional 'no_note_needed' is wrong; the note's correction is exactly the right kind of factual fix Community Notes is built for.",
+  "reference_note": "この出来事は中国の公園で起きたものであり、日本ではありません。元画像は2026年3月29日頃、中国のSNS『小紅書（Xiaohongshu/RED）』に投稿されたもので、漢服を着た男性が中国国内で撮影されています。 https://www.recordchina.co.jp/b973720-s25-c30-d0052.html"
+ },
+ {
+  "tweet_id": "2042705018521088317",
+  "url": "https://x.com/i/status/2042705018521088317",
+  "role": "unhelpful_note_not_needed",
+  "needs_note": "no",
+  "categories": [
+   "misattributed_or_miscontextualized_media",
+   "politics_and_policy"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Pedro Sánchez announced that Spain has officially recognized the State of Palestine, with its capital in East Jerusalem.\n\n https://t.co/snJ2bpqCO4",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/2042592494525853696/pu/vid/avc1/1280x720/bpNv-ys12r7nF23d.mp4",
+    "description": {
+     "description": "A man in a navy blue suit and tie, Pedro Sánchez, is seen giving a speech from a podium in front of the Spanish and European Union flags. He is standing at a lectern with the Spanish coat of arms in an outdoor setting with brick walls and green bushes visible. A red logo with a 'T' is present in the top right corner throughout.",
+     "ocrText": "Today T"
+    },
+    "transcription": "Good morning. I would like to inform you that at the meeting of the Council of Ministers that will be held today, the government of Spain will approve the official recognition of Palestine as a state. With this decision, Spain joins the more than 140 countries that already recognize Palestine. This is a historic decision that has a single goal, to contribute to achieving peace between Israelis and Palestinians."
+   }
+  ],
+  "tweet_summary": "Curated content account 'GBX' tweets in April 2026 that 'Pedro Sánchez announced that Spain has officially recognized the State of Palestine, with its capital in East Jerusalem,' accompanied by the actual Sánchez Council of Ministers address (from May 28, 2024).",
+  "bad_note_text": "Spain recognized the State of Palestine on May 28, 2024; the claim of a new announcement in April 2026 is incorrect. https://www.lamoncloa.gob.es/lang/en/gobierno/councilministers/paginas/2024/20240528-council-press-conference.aspx https://en.wikipedia.org/wiki/International_recognition_of_Palestine",
+  "failure_reason": "noteNotNeeded — the underlying event is real, the video is the real speech, and the tweet's present-perfect phrasing is technically accurate; the 'new announcement' counter-claim attacks framing the tweet doesn't quite assert.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 11,
+  "why_note_decision": "The substantive claim is true: Spain DID officially recognize the State of Palestine with East Jerusalem as its capital, announced May 28, 2024 by Sánchez at the Council of Ministers — the very speech in the attached video. The tweet uses present-perfect / undated phrasing ('Sánchez announced that Spain has officially recognized'), which is technically accurate even years later. The original note's claim that 'a new announcement in April 2026 is incorrect' attacks a temporal-framing the tweet doesn't quite make; the video is real, the event is real, the only ambiguity is whether readers might …",
+  "reference_note": ""
+ }
+]

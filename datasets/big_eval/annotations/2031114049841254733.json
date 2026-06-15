@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2031114049841254733",
+  "role": "unhelpful_irrelevant_sources",
+  "provisional_role": "unhelpful_irrelevant_sources",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Posts a video of nighttime missile/explosion activity captioned 'It's raining hell in Tel Aviv and there isn't ONE interceptor missile in sight!' - implying current (March 2026) Iranian missiles are hitting Tel Aviv unopposed by Israeli air defenses.",
+  "why_note_decision": "The tweet pushes two checkable claims: that the footage is current March 2026 Tel Aviv strikes, and that Israeli interceptors were absent. Both are misleading. During the March 2026 Iran-Israel exchanges, Israeli interceptors WERE launched over Tel Aviv (Al Jazeera, Reuters), so 'not ONE interceptor in sight' is false; and old conflict footage was widely recycled and presented as current (a commenter flags 'This is not current!'). A note is warranted to correct the misattributed/decontextualized footage and the false 'no interceptors' claim. I can confirm the interceptor-presence point from reporting; the precise origin of the specific clip I cannot independently verify (the original note's '2024 Nevatim' attribution is plausible but unconfirmed).",
+  "judge_guidance": "A correct note must do at least one of: (1) establish that the footage is not verified current Tel Aviv footage - old/unrelated conflict video was recycled and presented as the March 2026 strikes; and/or (2) correct the 'not ONE interceptor in sight' claim by noting Israeli air defenses DID launch interceptors over Tel Aviv during the March 2026 Iranian missile attacks (per Reuters/Al Jazeera). PASS only if the note relies on reliable reporting for the interceptor/strike context and does not itself assert an unverified origin as fact. The original's specific failure (IrrelevantSources): it asserted the clip is 'recycled from Iran's 2024 Nevatim airbase attack' with sources that establish the 2026 context but do NOT prove the clip's 2024 origin - so a correct note should AVOID stating a precise unproven source for the footage. FAIL if the note confidently pins the clip to a specific past event without verification, or if it endorses the 'no interceptors' claim.",
+  "reference_note": "Israeli air defenses did launch interceptors over Tel Aviv during the March 2026 Iranian missile attacks, so the claim that there 'isn't ONE interceptor in sight' is misleading, and this clip is not verified as current Tel Aviv footage - old conflict video has been recycled and presented as the 2026 strikes. https://www.aljazeera.com/video/newsfeed/2026/3/7/iranian-missiles-over-tel-aviv-prompt-sirens-interceptor-launches https://www.reuters.com/world/middle-east/israeli-military-says-iranian-missiles-hit-central-israel-2026-03-03/",
+  "original_unhelpful_note": {
+    "text": "The video is recycled from Iran's 2024 missile attack on Nevatim airbase, not current 2026 strikes on Tel Aviv. Reports confirm Israeli interceptors have launched against Iranian missiles over Tel Aviv in March 2026, though some impacts occurred.    https://www.aljazeera.com/video/newsfeed/2026/3/7/iranian-missiles-over-tel-aviv-prompt-sirens-interceptor-launches    https://www.reuters.com/world/middle-east/israeli-military-says-iranian-missiles-hit-central-israel-2026-03-03/    https://edition.cnn.com/2026/03/08/world/video/israel-tel-aviv-iranian-missile-damage-vrtc",
+    "failure_reason": "Irrelevant sources: the note's interceptor/context claims are well-sourced, but its headline claim that the clip is 'recycled from Iran's 2024 Nevatim airbase attack' is not actually supported by the cited links (which cover 2026 events), so raters tagged IrrelevantSources (5). The unproven precise-origin attribution is the weak point.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "tweet MISLEADING: 'no interceptors' false; footage not verified as current Tel Aviv",
+    "sources_checked": [
+      "https://www.aljazeera.com/video/newsfeed/2026/3/7/iranian-missiles-over-tel-aviv-prompt-sirens-interceptor-launches",
+      "https://www.reuters.com/world/middle-east/israeli-military-says-iranian-missiles-hit-central-israel-2026-03-03/",
+      "https://en.wikipedia.org/wiki/October_2024_Iranian_strikes_on_Israel"
+    ],
+    "notes": "March 2026 reporting confirms Israeli interceptors launched over Tel Aviv during Iranian missile attacks, contradicting 'not ONE interceptor in sight.' Recycled-footage framing is supported by replies ('This is not current!') but the exact 2024-Nevatim origin claimed by the original note is unverified."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Wartime misattributed footage during Iran-Israel escalation; correcting recycled-war-footage and false 'defenses failed' claims supports accurate conflict reporting and reduces escalatory misinformation."
+  },
+  "difficulty": "hard"
+}

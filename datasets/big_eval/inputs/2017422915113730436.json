@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2017422915113730436",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:28.295Z",
+  "post": {
+    "id": "2017422915113730436",
+    "author_id": "1392864463204782082",
+    "created_at": "2026-01-31T02:21:19.000Z",
+    "text": "RELEASE THE NAME OF THIS SENDER! https://t.co/zu52bEqLhY",
+    "media": [
+      {
+        "media_key": "3_2017422912269987840",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_9Tcy-WMAAyjjQ.jpg",
+        "height": 503,
+        "width": 1070
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4850,
+      "reply_count": 406,
+      "like_count": 57695,
+      "quote_count": 151,
+      "bookmark_count": 1750,
+      "impression_count": 3279916
+    },
+    "author_followers": 1317900,
+    "author_name": "War Monitor",
+    "author_description": "I do news | Donate: https://t.co/CkqsdOqqhV",
+    "author_tweet_count": 75971
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_9Tcy-WMAAyjjQ.jpg",
+          "description": {
+            "description": "A screenshot of an email header and message body. The recipient's email address is redacted with a black bar. The sender is identified as Jeffrey Epstein, with a timestamp from April 24, 2009. The body of the email contains two questions and a comment about a video.",
+            "ocrText": "To:\nFrom: Jeffrey Epstein\nSent: Fri 4/24/2009 3:36:38 PM\nwhere are you? are you ok , I loved the torture video"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @onlydjnezz (DJNeZZ): Sender is Jeffrey Epstein my nïggæ \n\nAre you blind??\n\nThe receiver must be the one to be exposed (Likes: 3613)\n- @Reil76 (🇨🇦Wayne🇨🇦): [image] (Likes: 1026)\n- @OneTweetAwayMan (Tech Pro Dude): It says From: Jeffrey Epstein \n\nIt's right there... (Likes: 900)\n- @KellieIdaho (Kellie): …. [images] (Likes: 721)\n- @MikeDePorch45 (Mike DePorch 🇺🇸): What’s gonna happen then? Nothing (Likes: 442)\n- @XelonMaster (DYGEN): Every single one should go to jail (Likes: 128)\n- @DatFishGuy (Mothman): [image] (Likes: 138)\n- @hypnoticmonkee1 (bingo bango): It is frustrating that they know who it is. The Pam's, the Kash's etc. Vile ain't they. Protecting men who done heinous acts on children. Sick fcukers (Likes: 95)\n- @ky_statesman (Kentucky Statesman): John Podesta. (Likes: 69)\n- @RSpoormaker (Roland from Holland🇳🇱): Sender is Jeffrey Epstein, btw (Likes: 67)",
+    "warnings": []
+  }
+}

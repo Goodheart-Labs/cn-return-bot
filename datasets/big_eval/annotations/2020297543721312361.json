@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2020297543721312361",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Kalshi FC (sports-betting/football news account) posts a hype caption about Messi scoring 'against Barcelona' over a clip of an Inter Miami preseason friendly. The on-screen overlay shows 'BSC 0-0 MIA' (i.e. Barcelona SC), and the top reply (547 likes) clarifies 'It's Barcelona SC from Ecuador'. The match was Inter Miami vs Barcelona SC in Quito, Feb 7-8 2026.",
+  "why_note_decision": "Tweet uses 'Barcelona' loosely (hype caption from a football-news account). The on-screen scoreline overlay reads 'BSC' (Barcelona SC), and the very top reply already clarifies it's the Ecuadorian club — visible to everyone who reads the post. While some casual readers might initially assume FC Barcelona, the actual claim ('Messi scored against Barcelona') is literally true (Barcelona SC is named Barcelona) and the misimpression risk is low given the on-screen 'BSC' tag and the top pinned-by-likes clarification. Note is technically informative but pedantic on a sports hype caption that's already self-correcting in the thread.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The match clip's own scoreline overlay shows 'BSC' (Barcelona SC) and the top reply already clarifies it's the Ecuadorian Barcelona SC. The tweet's loose 'Barcelona' phrasing is sports-hype shorthand, not misinformation. A pedantic 'actually Barcelona SC Ecuador, not FC Barcelona' note is the kind of false-positive Community Notes shouldn't write on preseason-friendly hype.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Messi scored against Barcelona SC of Ecuador in a preseason friendly, not FC Barcelona of Spain. https://www.espn.com/soccer/story/_/id/47862450/lionel-messi-goal-inter-miami-preseason-barcelona-friendly https://sportstar.thehindu.com/football/lionel-messi-scored-vs-barcelona-sc-holds-inter-miami-to-a-2-2-draw-fcb-vs-mia-goals-highlights/article70606449.ece",
+    "failure_reason": "noteNotNeeded — pedantic clarification on a hype caption from a football-betting account; the clip's own 'BSC' scoreline and the top reply already disambiguate.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Messi did score for Inter Miami vs Barcelona Sporting Club (Ecuador) in a preseason friendly on Feb 7-8 2026 (2-2 draw). Tweet's 'Barcelona' is loose shorthand but literally true (BSC is named Barcelona).",
+    "sources_checked": [
+      "https://www.espn.com/soccer/story/_/id/47862450/lionel-messi-goal-inter-miami-preseason-barcelona-friendly",
+      "https://www.cbssports.com/soccer/news/lionel-messi-goal-highlight-inter-miami-barcelona-friendly-2026/",
+      "https://www.intermiamicf.com/news/match-recap-inter-miami-cf-and-barcelona-s-c-face-off-in-front-of-an-electric-crowd-in-guayaquil-ecuador",
+      "On-screen 'BSC 0-0 MIA' overlay + top reply clarifying"
+    ],
+    "notes": "Real goal in a real Inter Miami preseason friendly vs Barcelona SC Ecuador; not a fabrication; disambiguation is already in the thread."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports-hype caption; no EA/policy stakes. Useful false-positive training example."
+  },
+  "difficulty": "easy"
+}

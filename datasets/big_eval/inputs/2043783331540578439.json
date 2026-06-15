@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2043783331540578439",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:05:07.135Z",
+  "post": {
+    "id": "2043783331540578439",
+    "author_id": "2018753567788572672",
+    "created_at": "2026-04-13T20:08:12.000Z",
+    "text": "🚨 A new CBS poll shows Republican approval of Donald Trump jumping 3 points to 92.5%.\n\nAre you among the 92.5%?\n\nA. Hell yeah\nB. No\n\nIF Yes, Give me a THUMBS-UP👍!!\n\nMAKE THIS GO VIRAL ON 𝕏. LET’S GO 👏 https://t.co/GHhV0XDGNV",
+    "media": [
+      {
+        "media_key": "13_2043783235994562560",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2043783235994562560/img/8ZughzXTGibi30fv.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 22546,
+        "view_count": 63599,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2043783235994562560/vid/avc1/320x568/cP45Z_dgHdu8BNbE.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2043783235994562560/vid/avc1/480x852/yXjAtQudFoXKsbQt.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2043783235994562560/vid/avc1/720x1280/LN5JumarSy9lYMhD.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2043783235994562560/pl/KkANhFlTxs4bzl8c.m3u8?v=7b4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3402,
+      "reply_count": 5197,
+      "like_count": 13678,
+      "quote_count": 444,
+      "bookmark_count": 147,
+      "impression_count": 164612
+    },
+    "author_followers": 17958,
+    "author_name": "Today Updates 🇺🇸",
+    "author_description": "🚨Breaking News Daily! We speak from the right side of the line.  \nConservative news. Unfiltered opinion.\nNot affiliated with any campaign. political commentary",
+    "author_tweet_count": 659
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2043783235994562560/vid/avc1/720x1280/LN5JumarSy9lYMhD.mp4",
+          "description": {
+            "description": "A capture of four frames showing Donald Trump greeting supporters in a restaurant setting. In the first and second frames, he is seen shaking hands and interacting with elderly patrons seated at a table, surrounded by his security and staff members. The third frame shows a group of diners at a round table, some taking photos with their phones, with a vintage-style tractor poster on the wall behind them. The fourth frame shows Trump walking through the restaurant aisle, past a man in a cowboy hat, as other patrons observe and take photos.",
+            "ocrText": "Model \"S\" 200 TRACTORS"
+          },
+          "transcription": "Thank you. Thank you, thank you. I love you. Right from the beginning. Iowa-Niles. Right from the beginning, Iowa. Thank you, Mrs. Prenn. We have to wait."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Richard Carrier (@Richard28085664): President Trump is the Best Commander In Chief in my lifetime, he is the Only President that is & has not been owned by the Billionaire Globalists & Our Enemy Leaders from around the World! No One & I mean No one owns him or can buy him! He is true American for True Americans! (186 likes, 42 reposts, 55 replies)\n- Greg (@GGrove90968): A. (175 likes, 24 reposts, 23 replies)\n- Chris Bosley (@chris_bosley): Trump is doing even better than I expected! America 1st. (137 likes, 0 reposts, 0 replies)\n- Merry (@merrylynn06): A.. HELL YES (119 likes, 0 reposts, 0 replies)\n- MAGAMarc (@MarcGendro79046): Yes! Love Trump! 🫶❤️💪👍👏🇺🇸 (98 likes, 10 reposts, 10 replies)\n- Empire of Satire (@EmpireofSatire): There is not now, nor will there ever be a President like Trump, he is luminous, and clairvoyant, and even more than this, he is funny. He brought hope back to America. (48 likes, 0 reposts, 0 replies)\n- Cindy (@cnewob1): @TodayUpdates0 Excuse me Trump approval rating is 38%. Lies lies lies. (47 likes, 0 reposts, 0 replies)\n- The German Shepherd ⚡ (@TheGermanHerd): https://www.usatoday.com/story/news/2026/03/27/donald-trump-approval-rating-today-what-is-lowest-presidential-approval-rating-ever-latest-poll/89317731007/ come back to reality. there is no proof any poll exists and you know that. (41 likes, 0 reposts, 0 replies)\n- Joseph Milosevich (@JosephMilo20945): Hell yes 100% behind that man. Best president of my lifetime and I've been around a while (38 likes, 4 reposts, 2 replies)\n- Paschal McCloskey (@PaschalMcClosk1): Yes I’m the 105% guy. (25 likes, 0 reposts, 0 replies)",
+    "warnings": []
+  }
+}

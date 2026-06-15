@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2057699041639625076",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:09.386Z",
+  "post": {
+    "id": "2057699041639625076",
+    "author_id": "1328082031474053120",
+    "created_at": "2026-05-22T05:44:16.000Z",
+    "text": "They’re not even trying to hide it anymore. https://t.co/Z6Y2yB5h6W",
+    "media": [
+      {
+        "media_key": "13_2057698850995867648",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2057698850995867648/img/hJ9104rL5gs49jg9.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 9079,
+        "view_count": 721905,
+        "variants": [
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057698850995867648/vid/avc1/640x360/OidfilB5dMn3w78b.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057698850995867648/vid/avc1/1280x720/1pNp7a4pdgxy1E-L.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057698850995867648/vid/avc1/480x270/LHnjhfpGVxLhdsGo.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2057698850995867648/pl/k_TRGCuMeGqQCTMr.m3u8"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2057698850995867648/vid/avc1/1920x1080/eXF1onLJJ70mSzv9.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3180,
+      "reply_count": 175,
+      "like_count": 27735,
+      "quote_count": 99,
+      "bookmark_count": 1606,
+      "impression_count": 1202182
+    },
+    "author_followers": 33699,
+    "author_name": "Forbidden HQ 🐇",
+    "author_description": "Welcome to Forbidden Studios 🐇 Creating art, satire, and designs that expose psyops and question the narrative. Shop the truth at https://t.co/3HUxqkydJ3",
+    "author_tweet_count": 1279
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2057698850995867648/vid/avc1/1920x1080/eXF1onLJJ70mSzv9.mp4",
+          "description": {
+            "description": "A man in a tan jacket is on a Fox News broadcast titled 'Iran President: \"Dialogue Does Not Mean Surrender\"'. In the first frame, the man is adjusting his collar. In the second frame, the man's appearance has been digitally altered to show him with sidecurls, a beard, and a kippah, as he laughs and claps his hands.",
+            "ocrText": "LIVE\n@WearForbidden\nBREAKING NEWS\nFOX NEWS channel\nIRAN PRESIDENT: \"DIALOGUE DOES NOT MEAN SURRENDER\"\nFOX NEWS ALERT\nROCKY MOUNTAIN\n-K-R-\nE-E-I\nTODAY TO"
+          },
+          "transcription": "Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@BigO_Entelechy**  \nOy vey I did nazi that coming 🤣  \nLikes: 58 | Reposts: 0 | Replies: 0 | Views: 5361\n\n**@Buntu_Bokweni**  \n😂😂  \nLikes: 55 | Reposts: 0 | Replies: 0 | Views: 6471\n\n**@_AnimusLibertas**  \n🤣😭  \nLikes: 33 | Reposts: 2 | Replies: 0 | Views: 4738\n\n**@sheldon_matos**  \nGotta say, AI has come a looong way  \nLikes: 18 | Reposts: 0 | Replies: 0 | Views: 2585\n\n**@SeaSign__**  \nThis Reason of Simpson Movie  \nLikes: 12 | Reposts: 3 | Replies: 2 | Views: 943\n\n**@foardeetou**  \nWhy would they use a human in a mask when they don’t even need the human anymore? AI can fake the whole thing  \nLikes: 7 | Reposts: 0 | Replies: 3 | Views: 5966\n\n**@JoDavis3**  \nSo it was Howard Lutnick all along.  \nLikes: 4 | Reposts: 0 | Replies: 0 | Views: 703\n\n**@GigaSoggy**  \nIt's unreal how good this is. 🤣  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 1989\n\n**@stockswithtom**  \nReal footage btw  \nLikes: 3 | Reposts: 0 | Replies: 0 | Views: 40\n\n**@TruthIsDead22**  \nThis is probably accurate  \nLikes: 2 | Reposts: 0 | Replies: 0 | Views: 379",
+    "warnings": []
+  }
+}

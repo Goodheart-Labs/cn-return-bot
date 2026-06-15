@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2038393465361379589",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:05:49.833Z",
+  "post": {
+    "id": "2038393465361379589",
+    "author_id": "279390084",
+    "created_at": "2026-03-29T23:10:48.000Z",
+    "text": "\"My own daughter can't tell the difference.\"\nComedy is illegal now. https://t.co/ffJclgtljO",
+    "media": [
+      {
+        "media_key": "3_2038393406569811968",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEnUAN8XkAAXwKE.jpg",
+        "height": 1051,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 119,
+      "reply_count": 162,
+      "like_count": 1499,
+      "quote_count": 29,
+      "bookmark_count": 72,
+      "impression_count": 98412
+    },
+    "author_followers": 7591735,
+    "author_name": "Anonymous",
+    "author_description": "We are Anonymous, we are legion, we do not forgive, we do not forget. Expect us. \n\nHere to counter propaganda and un-fuck your mind!",
+    "author_tweet_count": 218146
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEnUAN8XkAAXwKE.jpg",
+          "description": {
+            "description": "An image composition featuring a family photo at a baseball stadium on the left, a social media post from Erika Kirk in the upper right, and four reaction/parody style images of individuals with distorted facial features in the bottom right. The social media text expresses frustration about a video parody causing confusion for the woman's daughter. A Reddit watermark is visible at the bottom.",
+            "ocrText": "Erika Kirk @MrsErikaKirk X.com My own little daughter came to me thinking she had seen me in that video. That's how far this has gone. A grown man turned me into a costume, spread it to millions of people, and now even my child is confused and hurt by it. Y'all keep calling it comedy, but there's nothing funny about bringing this kind of humiliation to my family bs PURPLE MMXIV PURPLE MMXXV Posted in r/SipsTea by u/TrumpsNostrils reddit"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@catsanterre**: Your very young daughter has access to social media and came to you saying she had seen it!!!??? (Likes: 213, Reposts: 5, Replies: 4)  \n**@TimHannan**: Why would she thinks it’s her? Could it be the fireworks (Likes: 68)  \n**@Double_Anarchy3**: Sounds like bad parenting. (Likes: 47)  \n**@lynne_prior**: Says a lot when even her own kid can’t tell the difference… #monstermom (Likes: 39)  \n**@CCandacejoe**: [image] (Likes: 26)  \n**@UrielVBlackwood**: [image] (Likes: 26)  \n**@Master_of_jack**: Your daughter needs glasses or… (Likes: 22)  \n**@ExscapeVelozity**: I mean, how do you not recognize your own mother? Any child who thinks any woman with blond hair is her mother is in deep trouble. (Likes: 22)  \n**@warmone36**: That's such a whopping ass lie. What's your toddler doing online looking at Druski😂 (Likes: 19)  \n**@KristenL75**: Weird. My kids haven’t seen the video. Must be because I’m actually paying attention to what they’re doing & keeping them off social media instead of gallivanting around the country telling all the other women that they should be tradwives. (Likes: 19)",
+    "warnings": []
+  }
+}

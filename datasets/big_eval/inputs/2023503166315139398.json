@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2023503166315139398",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:11.416Z",
+  "post": {
+    "id": "2023503166315139398",
+    "author_id": "1795475238806851584",
+    "created_at": "2026-02-16T21:02:04.000Z",
+    "text": "How Thieves Made An ATM Spit Out Cash 😮 https://t.co/iquyFCkL86",
+    "media": [
+      {
+        "media_key": "7_2023503083376922624",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2023503083376922624/pu/img/9axV_UbSAqZ1idTl.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 38677,
+        "view_count": 298994,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2023503083376922624/pu/vid/avc1/320x568/DLnC55-mCOBiE2KT.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2023503083376922624/pu/vid/avc1/480x852/VEBQhOhR_Er4Blip.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2023503083376922624/pu/vid/avc1/720x1280/aqcd6-_xQC9m6H2M.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2023503083376922624/pu/pl/7nTSF4GyarLN_rCp.m3u8?tag=12&v=27e"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 207,
+      "reply_count": 38,
+      "like_count": 3969,
+      "quote_count": 8,
+      "bookmark_count": 586,
+      "impression_count": 251593
+    },
+    "author_followers": 436898,
+    "author_name": "Zack D. Films",
+    "author_description": "A Collection of Things I Find Interesting\n(Zack D. Films’ Official Account)",
+    "author_tweet_count": 2899
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2023503083376922624/pu/vid/avc1/720x1280/aqcd6-_xQC9m6H2M.mp4?tag=12",
+          "description": {
+            "description": "A close-up of an ATM being opened by two individuals wearing masks, accompanied by the caption \"Opened it\".",
+            "ocrText": "ATM \n │ATM 600 \n WITHDRAW CASH \n DEPOSIT CASH \n BALANCE ENQUIRY \n Opened it"
+          },
+          "transcription": "They unlocked the ATM, opened it, then closed it again, without taking any money. But, hours later, they came back. One man stood in front, holding up his phone, and the ATM suddenly started dumping cash. You see, they had secretly installed software that let them take control. So, when the phone sent the signal, the ATM thought it was being told to pay out. The machine spit out bills until about $175,000 was gone. And even though the whole thing was caught on camera, the thieves were never identified."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Vritijaa :)** (@Baddism140979): \"Them robbers :\" (Likes:102, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:4260)\n- **BelowFlames** (@BelowFlames): \"ai community notes are genius bro\" (Likes:43, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:2925)\n- **Vicerhatech | AI • Crypto • Gist** (@vicerhatech): \"Thieves be doing wonders 😂😂\" (Likes:31, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:3769)\n- **June🖤** (@Purple__Win): \"Link me up with these robbers asap I got a gig😩😩\" (Likes:17, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:3070)\n- **Vicerhatech | AI • Crypto • Gist** (@vicerhatech): \"@grok how true was this invent and what does someone have to know to learn this technique\" (Likes:8, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:6011)\n- **Big Famzi** (@BigFamzii): \"They probably worked there before\" (Likes:7, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:2554)\n- **Inf4mous** (@Inf4m0ux): \"They were playing Watch Dogs IRL\" (Likes:5, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:1588)\n- **🔥🌋BlazeAmation🌋🔥** (@BlazeT0rnado): \"WatchDogs ass hacking 😭🙏\" (Likes:3, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:241)\n- **Billy BoP** (@Billy6003139092): \"Why u making a vid bout me delete this zack\" (Likes:2, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:647)\n- **Abdulla   𝕏🇵🇸** (@DemonLord307): \"Most probably Ex-staff\" (Likes:2, Reposts:0, Quotes:0, Replies:0, Bookmarks:0, Views:874)",
+    "warnings": []
+  }
+}

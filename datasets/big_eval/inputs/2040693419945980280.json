@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2040693419945980280",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:21.309Z",
+  "post": {
+    "id": "2040693419945980280",
+    "author_id": "1465438438879019021",
+    "created_at": "2026-04-05T07:30:00.000Z",
+    "text": "🚨 URGENT: 🇺🇸 U.S. Pilot Reportedly Captured in 🇮🇶 Iraq https://t.co/wSx5xNhDNR",
+    "media": [
+      {
+        "media_key": "13_2040640106479194112",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2040640106479194112/img/nUicAL_CzJQ3VDO1.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 97033,
+        "view_count": 11523,
+        "variants": [
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040640106479194112/vid/avc1/720x1280/TAI7s2PzBwhskt65.mp4"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040640106479194112/vid/avc1/320x568/0IEmnxoIUw1llL2S.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040640106479194112/vid/avc1/480x852/rqGR6PcJm4ZmZHyR.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2040640106479194112/pl/rX6cnCPElUBYeiqv.m3u8?v=0df"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2040640106479194112/vid/avc1/1080x1920/Wi4KuLLlFInW87NM.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 210,
+      "reply_count": 34,
+      "like_count": 601,
+      "quote_count": 17,
+      "bookmark_count": 68,
+      "impression_count": 28478
+    },
+    "author_followers": 245366,
+    "author_name": "World War 3",
+    "author_description": "\"Welcome to our channel, your go-to source for breaking news and UFO discoveries. Stay updated on the latest global events. #BREAKINGNEWS #ALIENS #WORLDWAR3",
+    "author_tweet_count": 19215
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2040640106479194112/vid/avc1/1080x1920/Wi4KuLLlFInW87NM.mp4",
+          "description": {
+            "description": "Each frame depicts a still image of a man in a military-style jacket against a plain white wall with a large shadow behind him. The man appears to be the same in all four frames, which are presented with identical text overlays. The overlay claims he is a 'USA Pilot Was Caught In Iraq' with a date of '4.4.2026', implying a future or fictional scenario, often associated with misinformation or 'what-if' social media content creators.",
+            "ocrText": "@WORLDWAR_3_ USA Pilot Was Caught In Iraq 4.4.2026"
+          },
+          "transcription": "Can you give your name and drive, please? Colonel David William Iberly Ismi Al-Aqid David William Iberly What's your nationality, David? United States Al-Walaik Mutahidah Jinsiyat Al-Ambrikiyah What's the kind of your plane and which squadron? F-15 from the 4th Tactical Fighter Wing I lead a F-15 plane back to the 4th Tactical Fighter Wing. Where is the base of that squadron? In Al-Kharj. The base of that squadron is in Kharj. And where is that? In Central Saudi Arabia. It is a base in the middle of Saudi Arabia. What was your target in Iraq? Scud missiles and associated chemical facilities. My target in Iraq was to hit scud bases and attached chemical facilities. And how were you shot down? I don't know. I don't know how our plane was shot down. David, how were you injured in the neck, please? I believe it was during the ejection or when I hit the ground."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Ryan Dawson** (@RyLiberty): \"Thats from 1991\"  \nLikes: 43 | Reposts: 0 | Replies: 0\n\n**Tal Hagin** (@talhagin): \"Fake news This happened in 1991.\"  \nLikes: 25 | Reposts: 0 | Replies: 0\n\n**Mazen Boustany** (@BoustanyMazen): \"Fake news moron\"  \nLikes: 3 | Reposts: 0 | Replies: 0\n\n**Bernard Godwill** (@Be_God_): [image only]  \nLikes: 2 | Reposts: 0 | Replies: 0\n\n**Blackend** (@PNorarevian): \"That video is old from Iraqi War.\"  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**Crystal Clear** (@Crystal99977100): \"This is a 1991 video\"  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**Monica Koehn** (@Monica_Koehn): \"You idiot\"  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**Dave** (@DHurray): \"This is old footage\"  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**Nathan Hawkins** (@NathanHawk7773): \"This is from the gulf War\"  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**Hindustani_Hindu** (@Sanatani_Gujju): \"In 1991 you idiot.\"  \nLikes: 0 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

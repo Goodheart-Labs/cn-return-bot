@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1982180851103244653",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:13.990Z",
+  "post": {
+    "id": "1982180851103244653",
+    "author_id": "819994707061248001",
+    "created_at": "2025-10-25T20:21:56.000Z",
+    "text": "🚨BREAKING: A video is going viral in MAGA world of an ICE agent violently pushing a woman to the ground for approaching him in Chicago. \n\nI’m sorry but you have to be mentally deranged to cheer this on. \n\n“Don’t tread on me?” Y’all need a new slogan.\n\n https://t.co/oOzZujTZcQ",
+    "media": [
+      {
+        "media_key": "13_1982173489076293632",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1982173489076293632/img/tAPLTOKbBGfUVEsr.jpg",
+        "height": 1026,
+        "width": 576,
+        "duration_ms": 13764,
+        "view_count": 2320153,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1982173489076293632/vid/avc1/320x570/7BwbNL5UOy7Uf6tO.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1982173489076293632/vid/avc1/480x854/A2rzIDJTe25z_kv7.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1982173489076293632/vid/avc1/576x1026/J47JELPDZ-mAF-gw.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1982173489076293632/pl/_05lWwqRuY7PZwdw.m3u8?v=c0f"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6819,
+      "reply_count": 12890,
+      "like_count": 23676,
+      "quote_count": 757,
+      "bookmark_count": 1259,
+      "impression_count": 2136241
+    },
+    "author_followers": 1219183,
+    "author_name": "CALL TO ACTIVISM",
+    "author_description": "Founded by Joe Gallina to expose MAGA corruption, defend democracy, and uplift those fighting for truth and justice. 6 million+ followers across our platforms.",
+    "author_tweet_count": 64949
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1982173489076293632/vid/avc1/576x1026/J47JELPDZ-mAF-gw.mp4",
+          "description": {
+            "description": "A close-up view of a street in a residential neighborhood shows a man in tactical gear exiting a white vehicle parked on the side of the road. In the foreground, a person is seated on the ground, likely filming the scene. The street is lined with cars and several buildings, suggesting an urban setting. A TikTok watermark is visible in the lower left corner.",
+            "ocrText": "Tik Tok\n@ zone.musica"
+          },
+          "transcription": "Get up, get up, get up, get up. Get up, get up. Fuck. ."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **J Stewart (@triffic_stuff_)**: Why is she attacking federal officers?  \nHe may have slightly overreacted but she shouldn’t be putting her hands on the officer. (Likes: 4640, Replies: 160)\n- **El Centro Sector Border Patrol (@USBPChiefELC)**: Next time, you should consider showing the video in its entirety instead of leaving out the parts where she assaults a federal agent. 🤷‍♂️ We are actively working to identify her and subsequently federally charge her. (Likes: 3714)\n- **Hugo Ruiz (@Margarita_Mtn)**: Tell the whole story, you cockbag (Likes: 3109, Reposts: 342)\n- **Jammles (@jammles9)**: Show the whole video (Likes: 1713, Reposts: 170)\n- **Jim Hirth 🇺🇲 (@jimhirth2012)**: 😂😂😂😂😂😂😂😂😂😂😂😂 fat fuck! (Likes: 1173)\n- **JustTheFacts! ⚓️ 🇺🇸🦅 (@JustTheFacts_68)**: [Image reply] (Likes: 1160)\n- **Alan West (@mypoliticalx)**: Democrats made this happen. Period (Likes: 1059)\n- **ZyroFoxtrot🇺🇸⭐️🇺🇸⭐️🇺🇸⭐️🇺🇸 (@ZyroFoxtrot)**: DEPORT ALL ILLEGALS NOW! (Likes: 1021, Reposts: 122)\n- **Devon Eriksen (@Devon_Eriksen_)**: But they're not treading on me, are they?  \nThey're treading on you. (Likes: 1017)\n- **The Savage Patriot (@Bearded_Vet)**: [Image reply] (Likes: 938)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2040707891091345733",
+  "role": "unhelpful_argumentative_or_biased",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "manipulated_or_fabricated_evidence"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Assam Congress amplifies a Pawan Khera press conference alleging that Assam CM Himanta Biswa Sarma's wife, Riniki Bhuyan Sarma, holds 'living' passports from the UAE, Egypt, and Antigua & Barbuda, insinuating illegality.",
+  "why_note_decision": "The allegation rests on documents that India's Ministry of External Affairs publicly determined to be fraudulent; the MEA stated Riniki Bhuyan Sarma does not hold citizenship of any other country. So the tweet pushes a defamatory, checkable claim against a named public figure backed by forged evidence — exactly what a Community Note should correct. The provisional 'no_note_needed' is wrong; this is a genuine correction case (flip). The original note had the right substance but attributed the debunking to 'Assam Police... via diplomatic channels' and listed forensic minutiae argumentatively, which likely drove the 'argumentative/biased' ratings.",
+  "judge_guidance": "PASS only if the note establishes that the passports shown by Khera were officially found to be FORGED/FRAUDULENT and that Riniki Bhuyan Sarma does NOT hold foreign citizenship — citing the authoritative source (India's Ministry of External Affairs, which examined them via diplomatic channels). The note may mention document inconsistencies but must lead with the authoritative debunk, not a long argumentative list of MRZ/QR-code nitpicks. FAIL if the note merely asserts the claim is 'propaganda' or attacks Congress without the MEA finding, or if it leans only on a weaker authority (e.g. 'Assam Police') without the MEA's citizenship determination. Must read as neutral, sourced fact, not partisan rebuttal.",
+  "reference_note": "India's Ministry of External Affairs examined the documents shown by Pawan Khera and found all three passports to be fraudulent; the MEA stated Riniki Bhuyan Sarma does not hold citizenship of any other country. https://www.indiatvnews.com/news/india/passport-documents-shown-by-pawan-khera-against-assam-cm-wife-are-fake-says-mea-sources-latest-updates-2026-04-23-1038655 https://dailypioneer.com/news/mea-debunks-fake-passport-claims-against-sarmas-wife",
+  "original_unhelpful_note": {
+    "text": "The alleged passports are forged, with inconsistencies in MRZ codes, expiry dates, spelling errors, and invalid QR codes; Assam Police confirmed the UAE document is fake via diplomatic channels. https://timesofindia.indiatimes.com/city/guwahati/sarma-wife-to-sue-khera-over-foreign-passports-claim/articleshow/130045302.cms https://www.ndtv.com/india-news/himanta-sarma-responds-after-congress-claims-his-wife-holds-3-passports-11314238",
+    "failure_reason": "argumentative_or_biased_and_weak_authority",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/forged-evidence allegation. The MEA found all three passports fraudulent and confirmed Riniki Bhuyan Sarma holds no foreign citizenship.",
+    "sources_checked": [
+      "https://www.indiatvnews.com/news/india/passport-documents-shown-by-pawan-khera-against-assam-cm-wife-are-fake-says-mea-sources-latest-updates-2026-04-23-1038655",
+      "https://dailypioneer.com/news/mea-debunks-fake-passport-claims-against-sarmas-wife",
+      "https://www.msn.com/en-in/news/insight/sarma-wife-file-fir-over-alleged-fake-passports-row/gm-GME447ABEC"
+    ],
+    "notes": "The MEA (the authoritative source for passport/citizenship validity) declared the documents fraudulent and confirmed no foreign citizenship. Sarma and his wife filed FIRs. The 'Golden Visa is not a passport' point in the replies is also accurate context. A neutral, MEA-sourced correction is warranted; the original note's reliance on 'Assam Police' and a forensic-detail list weakened it."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Defamatory forged-document attack on a sitting state CM's family during an election cycle; correcting forged-evidence political smears supports informed democratic discourse."
+  },
+  "difficulty": "medium"
+}

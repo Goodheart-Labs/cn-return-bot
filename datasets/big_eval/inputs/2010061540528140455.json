@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2010061540528140455",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:09:44.581Z",
+  "post": {
+    "id": "2010061540528140455",
+    "author_id": "1550512528089911296",
+    "created_at": "2026-01-10T18:49:51.000Z",
+    "text": "Florida banned cloud seeding and just like that, the clouds from my childhood came back. https://t.co/cKvfptuNLJ",
+    "media": [
+      {
+        "media_key": "3_2010061535217913856",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-UsUQdXEAAKCl7.jpg",
+        "height": 1536,
+        "width": 2048
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 655,
+      "reply_count": 287,
+      "like_count": 12560,
+      "quote_count": 41,
+      "bookmark_count": 448,
+      "impression_count": 214925
+    },
+    "author_followers": 125142,
+    "author_name": "The Lectern Guy🇺🇸",
+    "author_description": "Prince Lectern Guy  | Sovereign of the sacred lectern, monarch of magnificent monologues, chastiser of the unchastised.",
+    "author_tweet_count": 55090
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-UsUQdXEAAKCl7.jpg",
+          "description": {
+            "description": "A wide outdoor shot under a bright blue sky filled with scattered white cumulus clouds. In the foreground, there are light poles and a paved or park-like area where several figures are visible near the horizon. A line of trees runs across the middle ground, separating the activity area from the distant landscape.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @CrystalKat88: [image only] (Likes: 195)\n- @kcos108: Not in Tampa. (Likes: 182)\n- @forliberty08: Not in South Carolina. Cloud seeding going strong. (Likes: 163)\n- @RichOnTheFarm: Beautiful sky today! I just sent the girls out to get another pony for the farm...I offered to drive but they insisted I stay home and finish chores 😂 (Likes: 160)\n- @digitalshane_: Funny how that works (Likes: 125)\n- @MathewJFicht: When the government shutdown occurred last year, we experienced normal cloud cover and more sunshine in Ohio. (Likes: 66)\n- @rehmee: everyone \"tHeRe'S nO sUcH tHiNg As ClOuD sEeDiNg\" govt (bans it) everyone \"oh lol\" (Likes: 61)\n- @mason_withrow: They still spray here in Satellite Beach, FL-I literally have thousands of chemtrail photos. (Likes: 52)\n- @Kathlee37292275: Not in Central Florida. Every single day and night it’s non stop. (Likes: 41)\n- @b_gimpl1234: Just depends what day it is. (Likes: 41)",
+    "warnings": []
+  }
+}

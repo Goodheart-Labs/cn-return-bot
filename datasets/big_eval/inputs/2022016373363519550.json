@@ -1,0 +1,49 @@
+{
+  "tweet_id": "2022016373363519550",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:39.245Z",
+  "post": {
+    "id": "2022016373363519550",
+    "author_id": "184310053",
+    "created_at": "2026-02-12T18:34:05.000Z",
+    "text": "You voted for Cuomo https://t.co/ai3IDhOZ7k",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2021972931572904281"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2021972931572904281",
+      "author_id": "1549746186772430849",
+      "created_at": "2026-02-12T15:41:27.000Z",
+      "text": "Hasan's not gay. He's not an immigrant. He is a multi-millionaire who gets more views the worse things are. \n\nHe has more to benefit from a Trump/Vance presidency than 99.99% of Americans",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 168,
+      "reply_count": 47,
+      "like_count": 5833,
+      "quote_count": 16,
+      "bookmark_count": 134,
+      "impression_count": 487608
+    },
+    "author_followers": 2401,
+    "author_name": "WokeJunior",
+    "author_description": "sharp as a cue ball",
+    "author_tweet_count": 291917
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **bleakbunni** (@kaybnuuy): its rly funny how you guys can only lie  \n  Engagement: 612 likes, 0 reposts, 0 quotes, 0 replies\n- **Rimmy** (@Rimmy_Downunder): Scumfuck liar  \n  Engagement: 252 likes, 0 reposts, 0 quotes, 0 replies\n- **Freedom Fed** (@fedtanyl): No the fuck they didn't  \n  Engagement: 174 likes, 0 reposts, 0 quotes, 0 replies\n- **Sandeep: 76** (@Sanderp117): You’re really bad at this  \n  Engagement: 165 likes, 0 reposts, 0 quotes, 0 replies\n- **Wock Purdy** (@WockPurdy): Why not just delete the obvious lie  \n  Engagement: 152 likes, 0 reposts, 0 quotes, 0 replies\n- **Frylock** (@Blueelectron4): Leftists like you lie as often as MAGA. The far left and MAGA are always just 2 sides of the same coin.  \n  Engagement: 141 likes, 0 reposts, 0 quotes, 0 replies\n- **Andrew the Psycho-Statistician** (@Great_Chumpion): Basil did not, Basil actually did the lesser of two evil thing and their vote trickled down the rank choice vote to Mamdani.  \n  Engagement: 125 likes, 0 reposts, 0 quotes, 0 replies\n- **Marcie Bandwidth** (@M4rcieBandwidth): It really is grotesque just how willing you guys are to lie about easily fact-checked nonsense, all because you know your audience also won't care enough to double-check your lie  \n  Engagement: 96 likes, 0 reposts, 0 quotes, 0 replies\n- **Exploded by Graduate Written Exam** (@analyticabyss): I’d advise against tweeting obvious falsehoods  \n  Engagement: 86 likes, 0 reposts, 0 quotes, 0 replies\n- **MY** (@Juimper): (image of ballot)  \n  Engagement: 86 likes, 0 reposts, 0 quotes, 0 replies",
+    "warnings": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "tweet_id": "1999064913155633547",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A video asks why 'so many athletes suddenly stopped wearing wireless headphones', implying they did so because Bluetooth/EMF radiation is a health threat ('the biggest threat to public health').",
+  "why_note_decision": "There is no evidence of a widespread shift of athletes away from Bluetooth for health reasons; the premise rests on a few anecdotes (e.g. an Aaron Rodgers joke). Public-health bodies (WHO etc.) find wireless earbuds emit low non-ionizing RF well below safety limits with no established cancer/neurological link. The video (846K-follower account, 877K impressions) promotes EMF health misinformation, so a correction is warranted. I disagree with the provisional no-note because this is a checkable, misleading health claim with real reach.",
+  "judge_guidance": "PASS only if the note (1) states there is no evidence athletes have broadly abandoned Bluetooth for health/radiation reasons, and (2) notes that wireless earbuds emit low-level non-ionizing RF below regulatory safety limits with no established link to cancer or brain harm, citing a credible health authority/fact-check. It must avoid endorsing the EMF-danger premise. A note that validates the radiation-health-threat claim, or merely says 'athletes prefer wired', without addressing the false health premise should FAIL.",
+  "reference_note": "Misleading - there's no evidence athletes have abruptly abandoned Bluetooth for health reasons. Public health agencies say wireless earbuds emit low non-ionizing RF below safety limits and aren't linked to cancer; choices often come down to battery, fit or convenience. https://www.health.com/condition/cancer/bluetooth-wireless-headphones-cancer https://blackdotresearch.sg/have-professional-athletes-stopped-using-bluetooth-wireless-headphones-due-to-radiation-and-electromagnetic-fields-being-emitted-from-them/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading - no evidence of a health-driven abandonment of Bluetooth; RF from earbuds is non-ionizing, below safety limits, no established cancer/brain-harm link",
+    "sources_checked": [
+      "https://blackdotresearch.sg/have-professional-athletes-stopped-using-bluetooth-wireless-headphones-due-to-radiation-and-electromagnetic-fields-being-emitted-from-them/",
+      "https://www.healthline.com/health-news/are-wireless-headphones-dangerous",
+      "https://www.cancercenter.com/community/blog/2021/08/do-wireless-devices-cause-cancer"
+    ],
+    "notes": "Fact-checks: no widespread shift away from Bluetooth; trend stems partly from an Aaron Rodgers joke. WHO/Healthline/Reuters find no confirmed link to cancer; Bluetooth emits 10-400x less RF than phones. Wired preferences are usually battery/fit/convenience."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "877K impressions from a large account spreading EMF/anti-wireless health fear; correcting science-denial health misinformation has clear public-health value."},
+  "difficulty": "medium"
+}

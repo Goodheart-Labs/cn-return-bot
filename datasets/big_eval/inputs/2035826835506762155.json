@@ -1,0 +1,90 @@
+{
+  "tweet_id": "2035826835506762155",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:00:42.514Z",
+  "post": {
+    "id": "2035826835506762155",
+    "author_id": "4405444820",
+    "created_at": "2026-03-22T21:11:56.000Z",
+    "text": "Tatum went to Duke? I thought he went to Kentucky https://t.co/hdWYJyNRkg",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2035044271166779677"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2035044271166779677",
+      "author_id": "1497380112215465988",
+      "created_at": "2026-03-20T17:22:18.000Z",
+      "text": "They drafted Fultz and Lonzo over this💀 https://t.co/x2Ifp6zIia https://t.co/fPTWU73Nk6",
+      "media": [
+        {
+          "media_key": "13_2035044120054374400",
+          "type": "video",
+          "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2035044120054374400/img/0xhKncsNH6Ctiucc.jpg",
+          "height": 720,
+          "width": 720,
+          "duration_ms": 179079,
+          "view_count": 408553,
+          "variants": [
+            {
+              "bit_rate": 432000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2035044120054374400/vid/avc1/320x320/G3Je-Oh3HQ2OEJRp.mp4"
+            },
+            {
+              "bit_rate": 832000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2035044120054374400/vid/avc1/540x540/f49XHl41MsIQeVPS.mp4"
+            },
+            {
+              "bit_rate": 1280000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/amplify_video/2035044120054374400/vid/avc1/720x720/1uwvJ4fSgd2oT85m.mp4"
+            },
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/amplify_video/2035044120054374400/pl/7dQTpYcr1cXNilOn.m3u8?v=944"
+            }
+          ]
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 1,
+      "reply_count": 32,
+      "like_count": 621,
+      "quote_count": 0,
+      "bookmark_count": 30,
+      "impression_count": 141853
+    },
+    "author_followers": 218291,
+    "author_name": "𝘖𝘯𝘺𝘹𝘏𝘰𝘰𝘱𝘴",
+    "author_description": "",
+    "author_tweet_count": 162770
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2035044120054374400/vid/avc1/720x720/1uwvJ4fSgd2oT85m.mp4",
+          "description": {
+            "description": "The four frames capture scenes from different college basketball games where the primary focus is on the Duke Blue Devils. In the first three frames, games take place on the Duke home court (Cameron Indoor Stadium), while the final frame shows a tournament game on a neutral court. The scoreboards show Duke competing against North Carolina (46-51), NC State (51-50), Florida State (34-51), and Notre Dame (71-69).",
+            "ocrText": "OTV HOOPS Castrol O'Reilly AUTO PARTS Conference Group North Carolina 46 18 Duke 51 2nd 16:30 FOULS: 1 18-5 (6-4) FOULS: 3 POSS. rejected. NC State 51 17 Duke 50 2nd 13:50 FOULS 3 15-4 FOULS 3 POSS. NC THE LEAD NFL NBA NCAAM T25 KE BASKETBALL Florida State 34 17 Duke 51 2nd 14:13 FOULS: 3 22-7 (10-6) FOULS: 3 POSS. FLOR SPN's Josina Anderson: \"The door is still open to find some commo #ACCTORNEY theACC.com 2017 NEW YORK LIFE ACC TOURNAMENT Duke 71 3 Notre Dame 69 2nd 0:41 FOULS: 8 25-8 (12-6) FOULS: 4 BONUS POSS: (7) Arizona meet for Pac-12 crown (11 ET, ESPN)"
+          },
+          "transcription": "There were 22 points. Gotta put Ken DeMeeks in more ball screen situations, make him guard. Tatum! You've got a chance to put it on the floor and give yourself an open shot. Duke with two out of ten in that. Blue guys, plays great defense. What a trap. See if you can get Duke to turn it over. Going for the home run ball to Tatum! Mismatch here, they'll clear the floor. Got it, Jake! Tatum working on Kapita. Wow. On the offensive end. Tatum reps the end zone. Top-notch competition. Got Zyger and Duke playing. Duke's playing better than I've seen them earlier this year. Very few contested shots out on the perimeter, and they've got guys who can make the contenders 0 for 6. He's guarding Allen right now. Tatum. the transition now here comes person ability to get open points in Duke's first two games here with the ACC tournament one-on-one with hits step back jumper got Wow because our wearing out the paint Tata essentially you like to see that emotion under four and a half left at Cameron Indoor Tatum whirling in Stips in right there Great defense Tatum's on the pass. There it is! Tatum great spin move. Tatum got a mismatch with Mitchell. A fade away from the baseline. Hard. right up on him eight to shoot Into it instead kicks to Tatum The great pass they found a lead for the Blue Devils chance to get one up Holloman either way Seven on the shot clock a mad hero some hero for Mike's chefs. Yeah, we passed the ball plays defense Get some steals the flexures and seen much of the talented freshmen from Estonia in northern Europe I Think more multiple guys for wake up to touch it on every position before you take that And now five on the shot clock in in trouble. Hey, that's gonna have to pull up God This is contains wheelhouse he launches a three that's another Well, they got it to the right guy, and there's three seconds on the shot clock. He's made them all so far. Heat! Tatum tips it away. Jones has it. Tatum finishes."
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @BigDoinks101: Hoodgenius not knowing ball lol. I’d say I’m surprised, but you are a bucks fan, so I’m not (112 likes)\n- @kishswim: U trolling? (44 likes)\n- @Sircharlesknow: Are you stupid or dumb? (13 likes)\n- @PhillyDunk: https://t.co/BE9mxRY4Sz (9 likes)\n- @CASTLE_WRLD: engagement bait (8 likes)\n- @VPmoneyy: Blatant mental illness (2 likes)\n- @r_christensen4: (No text content) (2 likes)\n- @thesamejosias: They’re tearing you up for a simple misconception 😭😭 (0 likes)\n- @dhaze0: you don’t know hoops🤦🏿 (0 likes)\n- @mahmod_user: Hoodmisinformed (0 likes)",
+    "warnings": []
+  }
+}

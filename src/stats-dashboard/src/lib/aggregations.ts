@@ -1,42 +1,17 @@
 import type {
-  ABFilters,
   ChartGranularity,
   CnStatus,
+  DailyOriginCount,
   NoteRecord,
   NoteSort,
   PipelineRunAggregate,
   PipelineRunDayBucket,
 } from "./types";
-
-// ─── A/B-pick filter ─────────────────────────────────────────────────────────
-
-export function noteMatchesAbFilters(note: NoteRecord, filters: ABFilters): boolean {
-  for (const [slot, variant] of Object.entries(filters)) {
-    if (!variant) continue;
-    if (note.ab_test_picks?.[slot] !== variant) return false;
-  }
-  return true;
-}
-
-export function aggMatchesAbFilters(agg: PipelineRunAggregate, filters: ABFilters): boolean {
-  for (const [slot, variant] of Object.entries(filters)) {
-    if (!variant) continue;
-    if (agg.ab_test_picks?.[slot] !== variant) return false;
-  }
-  return true;
-}
-
-function runDayMatchesAbFilters(day: PipelineRunDayBucket, filters: ABFilters): boolean {
-  for (const [slot, variant] of Object.entries(filters)) {
-    if (!variant) continue;
-    if (day.ab_test_picks?.[slot] !== variant) return false;
-  }
-  return true;
-}
+import { matchesAbFilters, type ABFilters } from "../../../dashboard-shared/abFilters";
 
 export function filterNotes(notes: NoteRecord[], filters: ABFilters): NoteRecord[] {
   const hasFilter = Object.values(filters).some(Boolean);
-  return hasFilter ? notes.filter((n) => noteMatchesAbFilters(n, filters)) : notes;
+  return hasFilter ? notes.filter((n) => matchesAbFilters(n.ab_test_picks, filters)) : notes;
 }
 
 // ─── Time bucketing ──────────────────────────────────────────────────────────
@@ -53,6 +28,17 @@ export function bucketKey(submittedAt: string, granularity: ChartGranularity): s
   const daysSinceMonday = (dayOfWeekUtc + 6) % 7;
   const monday = new Date(d.getTime() - daysSinceMonday * ONE_DAY_MS);
   return monday.toISOString().slice(0, 10);
+}
+
+// Drop the in-progress week — a partial-week bar that drags the chart down
+// until Sunday. No-op for daily granularity. Works on any keyed bucket.
+export function dropInProgressWeek<T extends { key: string }>(
+  buckets: T[],
+  granularity: ChartGranularity,
+): T[] {
+  if (granularity !== "weekly") return buckets;
+  const currentWeekKey = bucketKey(new Date().toISOString(), "weekly");
+  return buckets.filter((b) => b.key !== currentWeekKey);
 }
 
 export function bucketLabel(key: string, granularity: ChartGranularity): string {
@@ -132,7 +118,7 @@ export function bucketize(
 
   if (runsByDay) {
     for (const day of runsByDay) {
-      if (!runDayMatchesAbFilters(day, filters)) continue;
+      if (!matchesAbFilters(day.ab_test_picks, filters)) continue;
       const nonCandidate = day.total_count - day.submitted_count;
       if (nonCandidate <= 0) continue;
       const key = bucketKey(`${day.date}T00:00:00Z`, granularity);
@@ -142,6 +128,44 @@ export function bucketize(
     }
   }
 
+  return [...byKey.values()].sort((a, b) => a.key.localeCompare(b.key));
+}
+
+// ─── Origin share (% of all rated-helpful notes) ─────────────────────────────
+
+export interface ShareBucket {
+  key: string;
+  label: string;
+  ours: number;
+  otherAi: number;
+  human: number;
+  total: number;
+}
+
+/**
+ * Bucket the per-day origin counts (helpful notes split into ours / top other
+ * AI / total) into the chart's granularity. Human-written is the remainder:
+ * total − ours − otherAi (clamped ≥ 0 against any dump rounding).
+ */
+export function bucketizeOrigin(
+  counts: DailyOriginCount[],
+  granularity: ChartGranularity,
+): ShareBucket[] {
+  const byKey = new Map<string, ShareBucket>();
+  for (const c of counts) {
+    const key = bucketKey(`${c.day}T00:00:00Z`, granularity);
+    let bucket = byKey.get(key);
+    if (!bucket) {
+      bucket = { key, label: bucketLabel(key, granularity), ours: 0, otherAi: 0, human: 0, total: 0 };
+      byKey.set(key, bucket);
+    }
+    bucket.ours += c.helpful_ours;
+    bucket.otherAi += c.helpful_other_ai;
+    bucket.total += c.helpful_total;
+  }
+  for (const bucket of byKey.values()) {
+    bucket.human = Math.max(0, bucket.total - bucket.ours - bucket.otherAi);
+  }
   return [...byKey.values()].sort((a, b) => a.key.localeCompare(b.key));
 }
 
@@ -171,7 +195,7 @@ export function computeHeadlineMetrics(
   const totalViews = filteredNotes.reduce((sum, n) => sum + n.view_count, 0);
   const viewsOnHelpful = helpfulNotes.reduce((sum, n) => sum + n.view_count, 0);
 
-  const matchingAggregates = aggregates.filter((a) => aggMatchesAbFilters(a, filters));
+  const matchingAggregates = aggregates.filter((a) => matchesAbFilters(a.ab_test_picks, filters));
   const totalCost = matchingAggregates.reduce((sum, a) => sum + a.total_cost, 0);
   const helpfulInCostEra = helpfulNotes.filter((n) => n.cost != null);
 

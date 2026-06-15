@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2036675715228422191",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:49:32.409Z",
+  "post": {
+    "id": "2036675715228422191",
+    "author_id": "750759915774291969",
+    "created_at": "2026-03-25T05:25:04.000Z",
+    "text": "How BRO maintains roads can serve as a case study for corrupt contractors. https://t.co/27TE536jRV",
+    "media": [
+      {
+        "media_key": "7_2036675677978787840",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2036675677978787840/pu/img/jCNWzuAcUkeKlCkS.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 21849,
+        "view_count": 53886,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2036675677978787840/pu/vid/avc1/320x568/sWVMyg1Edzn1V_v6.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2036675677978787840/pu/vid/avc1/480x852/FuHIrajvCU_CD62V.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2036675677978787840/pu/vid/avc1/720x1280/ctNl2EMloloCHWUS.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2036675677978787840/pu/pl/u1LDYsTZbeJlsVLf.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 394,
+      "reply_count": 53,
+      "like_count": 3777,
+      "quote_count": 18,
+      "bookmark_count": 238,
+      "impression_count": 112716
+    },
+    "author_followers": 125323,
+    "author_name": "🚨Indian Gems",
+    "author_description": "🚨You will get all Global Commentary Gems | Political Gems | Cricket Gems | Entertainment Gems | Infra Gems here only |",
+    "author_tweet_count": 45002
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2036675677978787840/pu/vid/avc1/720x1280/ctNl2EMloloCHWUS.mp4",
+          "description": {
+            "description": "A high-altitude mountain highway winds through a misty valley towards the Sonamarg Tunnel. Fog and low-hanging clouds cling to the steep, green mountain slopes. The road is well-maintained with clear markings and yellow-and-black hazard barriers. As the camera moves forward, it approaches the entrance of the 'Sonamarg Tunnel,' which is decorated with signage and flags.",
+            "ocrText": "HEIGHT LIMIT 5.5m Ganderbal Gagangir WELCOME SONAMARG TUNNEL EGRESS TUNNEL"
+          },
+          "transcription": "ہاں ہاں کہی نہ لگے من کیا ہے یہ سونا پن ہاں ہاں ہاں ہاں ہر گھڑی اب خیالوں میں کہہ رہا ہے کوئی"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Loveena🕉️ (@loveena_joshi06): If BRO can build and maintain roads in extreme conditions, what stops contractors elsewhere? As long as middlemen exist, development will always be diluted by corruption. (Likes: 65)\n- idkXwho (@idk_who_19): Visit places where BRO builds roads  you’ll clearly see the difference between a corrupt and a non-corrupt system. Babus have been robbing India for a long time (Likes: 25)\n- Abhinav Singh (@Caatalystt): I once worked under a project director who was on deputation in NHAI. His aura was unmatched. Theyvare not regular civil engineers. Working in even extreme conditions and delivering the projects is commendable. On my trip to Manali, I had seen some humorous quotes that were intended to warn road users. Creative. 👉 Be Gentle on my Curves. 👉 If you are married, divorce speed. 👉 After whisky, driving is risky. BRO at your service. 🫡 (Likes: 19)\n- holdthedoor (@holdthedoor46): 😕😕 (Likes: 18)\n- Sideline Scribe (@Sidelinescribe): Case study for Politicians and contractors 😂😅 (Likes: 15)\n- Arvind Pandey (@PandeyjiBuilds): Road managed by institutions are always of high standard than road managed by government authorities like PWD or NHAI (Likes: 10)\n- RAdm MD Suresh (Retd) (@Moochikal): Not for Contractors- they will do as demanded. Our national problem is this \"demand\"...BRO asks for strong, sustainable roads in terrible terrain, other govt agencies ask for \"benefits\"!which cause roads to become terrible terrain very quickly. Therein lies the rub. Contractor will deliver- higher directive must be correct. #CitizensAngst #AnguishedTaxPayer #VotersAngst #UrbanInfrastructure #ViksitBharat2047 (Likes: 8)\n- Mohandas Bharamchand Gandhi (@H13122Hawk): Privatise BRO. We have Hadani Infrastructure, Breliance Construction. Hell & Tea. The list is endless. (Likes: 6)\n- Tyler Durden (@Real_SumitKumar): If you go towards Shri Badrinath Dham you’ll realize how well the BRO has maintained the road infrastructure. (Likes: 6)\n- Rahul Agrawal (@RahulAgraw8032): Not contractor, it's Blood sucking parasites, humans flash eater known as SARKARI BABU aka IAS/IPS (Likes: 5)",
+    "warnings": []
+  }
+}

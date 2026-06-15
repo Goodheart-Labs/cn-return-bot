@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2009446769034448941",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post says 'Another Legal Observer shot at in Pennsylvania. When will this madness end' over a video. The video is NOT the Ren\u00e9e Good case \u2014 comments and the author identify it as the October 2025 Pennsylvania incident where 21-year-old Dalton Janiczek rammed and ran over Plymouth Township police officers with a Mercedes G-Wagon and was shot; the author later calls his 'Legal Observer' label satire.",
+  "why_note_decision": "A note is warranted: the post sarcastically frames a man charged with attempted murder of police (for deliberately ramming officers) as an innocent 'Legal Observer shot at', which misleads readers who take it literally. But the correct note must identify the ACTUAL event \u2014 the PA Janiczek attack \u2014 not the Minneapolis Ren\u00e9e Good shooting. The original note got the event wrong entirely.",
+  "judge_guidance": "PASS only if the note correctly identifies the video as the October 2025 Pennsylvania incident in which Dalton Janiczek (Lower Gwynedd, PA) rammed/ran over Plymouth Township police officers with a Mercedes G-Wagon and was shot, and was charged with attempted murder of police \u2014 i.e. it corrects the misleading 'innocent Legal Observer shot at' framing, sourced reliably (Inquirer / 6abc / CBS Philadelphia / NBC10). CRITICAL FAILURE TO AVOID: the original note wrongly claimed 'The shooting of Ren\u00e9e Good occurred in Minneapolis, MN, not Pennsylvania' \u2014 it confused this clip with the unrelated Minneapolis Ren\u00e9e Good case. A passing note MUST NOT identify this as the Ren\u00e9e Good / Minneapolis shooting, and MUST NOT 'correct' the Pennsylvania location (the incident really is in PA). FAIL if it references Ren\u00e9e Good, Minneapolis, or claims the location is wrong.",
+  "reference_note": "This video is the Oct 24, 2025 Plymouth Township, PA incident: 21-year-old Dalton Janiczek of Lower Gwynedd rammed and repeatedly ran over police officers with a Mercedes G-Wagon during a traffic stop and was shot. He was charged with attempted murder of police; a DA ruled the officer's shooting justified. He was not a 'legal observer'. https://www.inquirer.com/crime/dalton-janiczek-shooting-officer-cleared-20251114.html https://6abc.com/post/dalton-lee-janiczek-arrest-video-shows-drivers-parking-lot-rampage-injured-plymouth-twp-officers/18078045/",
+  "original_unhelpful_note": {
+    "text": "The shooting of Ren\u00e9e Good occurred in Minneapolis, MN, not Pennsylvania, as the post claims. https://radio.wpsu.org/2026-01-08/what-we-know-one-day-after-the-killing-of-renee-good-by-an-ice-agent-in-minneapolis",
+    "failure_reason": "Rated notHelpfulIncorrect (9), notHelpfulMissingKeyPoints (8), notHelpfulNoteNotNeeded (7). The note misidentified the video entirely: it assumed the clip was the Minneapolis Ren\u00e9e Good ICE shooting and 'corrected' the location to MN. But the video is the unrelated Oct 2025 Pennsylvania Dalton Janiczek case (he really did ram officers in PA), so the tweet's 'Pennsylvania' is correct and the note's core correction is false. Commenters (including the author) had already flagged it as the PA Janiczek incident.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.inquirer.com/crime/dalton-janiczek-shooting-officer-cleared-20251114.html",
+      "https://6abc.com/post/dalton-lee-janiczek-arrest-video-shows-drivers-parking-lot-rampage-injured-plymouth-twp-officers/18078045/",
+      "https://www.cbsnews.com/philadelphia/news/dalton-janiczek-court-plymouth-township-police-officers/",
+      "https://en.wikipedia.org/wiki/Killing_of_Ren%C3%A9e_Good"
+    ],
+    "notes": "The video is the Oct 24, 2025 Plymouth Township/Lower Gwynedd, PA incident: Dalton Janiczek (21) reversed into a squad car, accelerated at an officer, was shot, then circled back and ran the wounded officer over several times before crashing into a second patrol car. Charged with attempted murder of police; Montgomery Co. DA ruled the shooting justified. This is NOT the Minneapolis Ren\u00e9e Good ICE shooting that the original note claimed. The tweet's 'shot at in Pennsylvania' is geographically accurate; the misleading element is the sarcastic 'innocent Legal Observer' framing of an attempted-murder suspect."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.5M impressions; misframing an attempted-murder-of-police suspect as an innocent 'legal observer' distorts a charged immigration/policing narrative \u2014 modest civic-trust stakes, lower than the fatal-shooting cases."
+  },
+  "difficulty": "hard"
+}

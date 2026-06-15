@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2047057493210091993",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:58:42.501Z",
+  "post": {
+    "id": "2047057493210091993",
+    "author_id": "4640585592",
+    "created_at": "2026-04-22T20:58:33.000Z",
+    "text": "☕️ Trump family drama spilling out… \n\nKai Trump says she’ll NEVER accept Bettina Anderson—who’s engaged to her dad, Don Jr.—and wanted Kimberly Guilfoyle as her new mom instead.😬 https://t.co/nc7tpPcPWZ",
+    "media": [
+      {
+        "media_key": "13_2047057433864949760",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2047057433864949760/img/dA_OQznFp-leY84F.jpg",
+        "height": 1024,
+        "width": 576,
+        "duration_ms": 66933,
+        "view_count": 606497,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047057433864949760/vid/avc1/320x568/NA7v_pI8zeed-PIO.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047057433864949760/vid/avc1/480x852/_VBdstJxoEiYDUsS.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2047057433864949760/vid/avc1/576x1024/-ImwdShDEp1NWpcS.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2047057433864949760/pl/VzregDXnbfnPgvd3.m3u8?v=16c"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 308,
+      "reply_count": 350,
+      "like_count": 1488,
+      "quote_count": 70,
+      "bookmark_count": 571,
+      "impression_count": 1024871
+    },
+    "author_followers": 139994,
+    "author_name": "💕 Brittany Belle 💕",
+    "author_description": "💕Award-winning author ✨ | Unapologetically pro-democracy | Texas ≠ Trump | Making sense out of nonsense | Witty takes, sharp rants & a love for facts 💕",
+    "author_tweet_count": 107109
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2047057433864949760/vid/avc1/576x1024/-ImwdShDEp1NWpcS.mp4",
+          "description": {
+            "description": "A video sequence starting with Kai Trump speaking in an interview about family matters, followed by footage of Donald Trump Jr. and Kimberly Guilfoyle walking outside, another clip of Kai Trump in a golf cart, and finishing with Donald Trump walking through a doorway near the Seal of the President.",
+            "ocrText": "Kai Trump Kimberly Guilfoyle is the right person for dad and for our family Kimberly has been by Dad's side for seven years @yin19042szx AI-generated TikTok"
+          },
+          "transcription": "Kimberly Guilfoyle is the right person for dad and for our family. I will never accept Bettina Anderson as my mother. Kimberly has been by dad's side for seven years. She understands his career and, more importantly, the rhythm of our Trump family. She's a former prosecutor, a former Fox News anchor, and also served as finance chair for grandpa's campaign. She campaigned for grandpa and accompanied dad to events. She's gentle and patient with us kids, never overly eager to please, yet always reassuring. Grandpa has always trusted her and later nominated her as ambassador to Greece, which speaks volumes. She's long been one of us, family. Bettina is nothing like her. She's a Danish model and socialite. Her only connection to dad was a brief rumor at the Ambani wedding in India in 2025. Not even a formal relationship, let alone integration into our family. Her world is fashion parties and flashbulbs. It clashes completely with dad's political career and our family life. even if Aunt Ivanka approves of her I absolutely refuse to accept her as my mother"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@IfSixWere9**: You have a mom she’s alive. She’s living with Tiger Woods. You don’t need to accept anyone else as your mother. I know you don’t wanna hear this, but your father is an asshole. You seem nice.  \n(Likes: 83)\n\n**@flora_patria**: This is AI. Omg. The Trump family does not air their dirty laundry. She would never do that  \n(Likes: 62)\n\n**@terrancegavan**: The level of stupidity and the expectation of privilege is staggering  \nShe's a wee spoiled fascist with the reckoning power of a drunken ferret on black tar heroin. \nShe's been into ad's cocaine stash and she will be in rehab in less than a year!! Nepo whacko! Fucking moron!  \n(Likes: 28)\n\n**@TraitorCrater**: Is Bettina not enough of a grifter for her?  \n(Likes: 27)\n\n**@Teach4Freedom**: They need to start suing these fake AI vultures!!  \n(Likes: 27)\n\n**@kaga1e**: Should someone point out that this brat already has a mom and is not in need of a new one. You know, Junior’s ex wife that gave birth to her.  \n(Likes: 26)\n\n**@scottieducati**: Gavin hit it first!-  \n(Likes: 26)\n\n**@ridiculoustimes**: I doubt this is real, but I love the irony of “I don’t like Bettina because she is a socialite and her whole world is fashion and parties.”\nLike Aunt Ivanka.  \n(Likes: 25)\n\n**@Sallymj56**: I am shocked that in 2026 that most of you cannot tell this is AI  \n(Likes: 20)\n\n**@TracyW90507439**: Who’s gonna tell her?\nHer dad has no “political career”.  \n(Likes: 17)",
+    "warnings": []
+  }
+}

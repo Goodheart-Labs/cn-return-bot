@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2043772236801134904",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_price_tag",
+  "tweet_summary": "Tweet claims Olena Zelenska wore a $1,580 shirt, juxtaposed with civilians struggling, implying ostentatious spending during the war. Image shows a side-by-side of Zelenska in a white embroidered blouse and an Instagram screenshot with a '$1 580' price tag overlaid.",
+  "why_note_decision": "The image circulated with a fabricated $1,580 price label that does not appear in the designer's original Instagram post. Replies and Ukrainian press identify the blouse as a Ukrainian vyshyvanka (KARAVAY/'FRANKO' per the original note; other reporting puts comparable Zelenska vyshyvankas at ~$175-$255). The pricing claim is a checkable, misleading anti-Zelensky propaganda meme worth correcting.",
+  "judge_guidance": "A correct note must (1) state that the '$1,580' price tag in the image was added/overlaid and does not appear in the designer's original Instagram post, AND/OR (2) identify the blouse as an embroidered Ukrainian vyshyvanka from a Ukrainian designer at a far lower real price (Ukrainian vyshyvankas of this style typically retail in the low-hundreds of USD, not $1,580). The note must cite at least one source supporting that the price overlay is fabricated or that the actual product is from a Ukrainian brand at a lower price. PASS if the note clearly establishes the price tag was added/fabricated. It should NOT merely call the tweet 'opinion' or argue about Zelensky's character — it must address the specific factual claim about the $1,580 price.",
+  "reference_note": "The '$1,580' price tag was added to the image and does not appear in the designer's original Instagram post. The blouse is an embroidered vyshyvanka by Ukrainian brand KARAVAY (model FRANKO); comparable Zelenska vyshyvankas have retailed around $175-$255.",
+  "original_unhelpful_note": {
+    "text": "The $1,580 price label was added to the image and does not appear in the designer's Instagram post. The blouse is the FRANKO model by Ukrainian brand KARAVAY. https://life.nv.ua/ukr/olena-zelenska-na-velikden-z-yavilasya-v-osobliviy-vishitiy-sorochci-vid-ukrajinskoji-dizaynerki-foto-50599662.html",
+    "failure_reason": "Note is substantively correct (price overlay was fabricated; brand identification matches Ukrainian press) but stalled at NEEDS_MORE_RATINGS with many 'missing key points' / 'note not needed' tags — likely because raters wanted the actual price stated, or because the single Ukrainian-language source was hard to verify. The note is on-topic but under-sourced and missing the real price as a concrete anchor.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — price tag fabricated/overlaid on image of a real Ukrainian-brand vyshyvanka",
+    "sources_checked": [
+      "https://life.nv.ua/ukr/olena-zelenska-na-velikden-z-yavilasya-v-osobliviy-vishitiy-sorochci-vid-ukrajinskoji-dizaynerki-foto-50599662.html",
+      "https://newsukraine.rbc.ua/news/ukraine-s-first-lady-wears-traditional-embroidered-1747247380.html",
+      "https://www.ukrinform.net/rubric-factcheck/4040831-russian-fake-olena-zelenska-invented-meeting-with-melania-trump-and-bought-luxury-clothing-worth-eur-1m.html"
+    ],
+    "notes": "Ukrainian press and the designer's Instagram screenshot (visible in the image's OCR — '$1 580' appears as a separate overlay, not in the original Instagram caption text) corroborate that the price tag was added. Replies independently report seeing similar vyshyvankas for ~$200 in shops. Pattern matches prior Russian-origin fake claims about Zelenska's luxury spending (Ukrinform fact-check)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "245k impressions on a war-related disinformation meme; correcting fabricated-price-tag propaganda has modest but real value for information integrity around the Ukraine war."
+  },
+  "difficulty": "medium"
+}

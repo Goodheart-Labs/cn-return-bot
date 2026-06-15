@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2013924875757371711",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["statistical_or_numerical_claim", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Crypto influencer headline: 'China is dumping U.S. treasuries and instead buying gold on a massive scale.' Paired with Trump-Xi handshake image and gold-nugget photo.",
+  "why_note_decision": "Mainstream reporting (Global Times, IDN Financials, Blockonomi, Economy.ac) explicitly describes China's November 2025 Treasury position at $682.6B as 'lowest since 2008' alongside record gold accumulation — i.e. the 'dumping treasuries / buying gold' framing tracks credible reporting. The original note tries to reframe this as a 'gradual decline rather than massive dumping' citing TIC data and gold.org, but that framing is a counter-narrative, not a clear factual correction. NotHelpfulNoteNotNeeded=9 (dominant). The bot should not 'correct' a tweet that accurately summarizes major outlets.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Tweet's core claim aligns with mainstream reporting on China's Treasury reduction and 15-month gold-buying streak. Any note that tries to soften 'dumping' into 'gradual decline' is injecting a contested framing rather than correcting a fact, and is the canonical false positive here. If a note IS written, it must NOT understate the documented Treasury drop (lowest since 2008) or the record gold accumulation.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "China's US Treasury holdings fell $6.1 billion to $682.6 billion in November 2025, continuing a gradual decline rather than massive dumping. Central bank gold purchases have been steady at about 1 tonne per month.",
+    "failure_reason": "Reframes accurate reporting (lowest Treasury holdings since 2008, record gold-buying streak) as a 'gradual decline rather than massive dumping' — a contested counter-narrative, not a fact correction. Community rated NoteNotNeeded.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "accurately summarizes mainstream reporting on China's treasury reduction and gold accumulation",
+    "sources_checked": [
+      "https://www.globaltimes.cn/page/202601/1353386.shtml",
+      "https://www.idnfinancials.com/news/60486/china-continue-to-dump-us-bonds-gold-reserve-rise-30-000-troy-ounce",
+      "https://blockonomi.com/chinas-u-s-treasury-holdings-fall-to-lowest-share-since-2001-amid-gold-accumulation/"
+    ],
+    "notes": "Nov 2025 Treasuries $682.6B (lowest since Sept 2008); China's holdings down >10% since start of 2025; gold reserves at 2,308 tonnes (~$370B) after 15 straight months of purchases."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2.6M impressions; macro/finance narratives matter for understanding US-China decoupling — but here the tweet's framing is supported by mainstream sources."
+  },
+  "difficulty": "medium"
+}

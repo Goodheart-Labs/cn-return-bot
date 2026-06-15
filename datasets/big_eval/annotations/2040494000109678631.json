@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2040494000109678631",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports", "statistical_or_numerical_claim"],
+  "category_fit": "partial",
+  "suggested_category": "misleading_financial_framing",
+  "tweet_summary": "Polymarket Money contrasts Ashton Kutcher's ~$90M acting career with his '$30 million investment in OpenAI' now 'up more than $1.25 billion,' implying Kutcher personally turned $30M into ~$1.3B.",
+  "why_note_decision": "The framing is misleading: the $30M was invested by Sound Ventures, a VC fund Kutcher co-founded with outside limited partners, not his personal money, so the ~$1.3B paper gain accrues mostly to the fund's LPs/GPs, not to Kutcher alone. A note clarifying the fund structure prevents readers from inferring a personal ~$1.25B windfall. The note is currently rated helpful.",
+  "judge_guidance": "PASS only if the note clarifies that the $30M OpenAI stake was made by Sound Ventures (a VC fund co-founded by Kutcher with outside investors), not Kutcher's personal funds, so the ~$1.3B is the fund's value distributed among its LPs/GPs rather than a personal gain for Kutcher. It should not deny the underlying facts (the $30M Sound Ventures stake is real and is now worth roughly $1.3B). A note that merely repeats the tweet, or that wrongly claims the investment/valuation is fake, should not pass. Acknowledging Kutcher's carried-interest/GP share is fine but the core correction is fund-vs-personal.",
+  "reference_note": "The $30 million OpenAI investment was made by Sound Ventures, a VC fund Kutcher co-founded with Guy Oseary and outside limited partners, not Kutcher's personal funds. As a fund, the ~$1.3B paper value would be distributed among its limited and general partners, so it is not a personal $1.25B gain for Kutcher. https://variety.com/2023/digital/news/ashton-kutcher-guy-oseary-sound-ventures-ai-investment-fund-1235599939/ https://www.venturecapitaljournal.com/lps-add-more-to-ai-fund-from-sound-ventures-backer-of-openai/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading framing: the $30M was a Sound Ventures (fund) investment with outside LPs, not Kutcher's personal money; the ~$1.3B is fund value, not a personal Kutcher gain.",
+    "sources_checked": [
+      "https://variety.com/2023/digital/news/ashton-kutcher-guy-oseary-sound-ventures-ai-investment-fund-1235599939/",
+      "https://www.celebritynetworth.com/articles/celebrity/leaked-openai-equity-spreadsheet-reveals-ashton-kutcher-invested-30-million-and-its-worth-1-3-billion-right-now/",
+      "https://www.venturecapitaljournal.com/lps-add-more-to-ai-fund-from-sound-ventures-backer-of-openai/"
+    ],
+    "notes": "Sound Ventures (founded 2015 by Kutcher & Guy Oseary, >$1B AUM, $240M AI fund in 2023) made the $30M OpenAI investment, now ~$1.3B at OpenAI's ~$852B valuation. It is a fund with outside LPs; gains split among LPs and GPs (Kutcher earns a carried-interest/GP share, not the full $1.25B). The tweet's 'his $30 million investment' phrasing implies personal funds, which is the misleading element. One in-thread reply even asks 'his personal capital or out of a fund?' — confirming the ambiguity the note resolves."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "5.7M impressions on a viral get-rich finance narrative; clarifying fund-vs-personal structure has real value against retail FOMO/financial-literacy distortion around AI investing."
+  },
+  "difficulty": "medium"
+}

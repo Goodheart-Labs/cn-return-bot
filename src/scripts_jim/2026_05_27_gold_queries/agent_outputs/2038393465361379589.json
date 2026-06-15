@@ -1,0 +1,81 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Erika Kirk parody video viral controversy",
+        "Druski Erika Kirk parody costume"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Multiple mainstream sources (NBC New York, Newsweek, Complex, MSN, The Nation, Snopes) confirm Druski posted a real viral parody on March 25, 2026 titled 'How Conservative Women in America Act'. Video went viral with 400M+ views. Erika Kirk is widow of Charlie Kirk and CEO of Turning Point USA. Snopes and Primetimer results already appeared in search snippets suggesting the daughter tweet shown in the image may be fake.",
+      "lesson": "The tweet image shows what purports to be Erika Kirk's social media post about her daughter. But search results immediately flagged a Snopes fact-check titled 'Did Erika Kirk share post responding to Druski video?' - suggesting the image in the tweet is fabricated."
+    },
+    {
+      "queries": [
+        "Erika Kirk daughter couldn't tell difference Druski parody viral reaction",
+        "Erika Kirk daughter tweet fake fabricated Snopes debunked Druski"
+      ],
+      "purpose": "targeted — verify whether the daughter post shown in the tweet image is real or fake",
+      "what_returned": "Confirmed: The alleged Erika Kirk post about her daughter being confused by Druski's video is FABRICATED. Snopes debunked it. Primetimer published 'Did Erika Kirk tweet that her own daughter mistook Druski for her? Viral post claim debunked'. Multiple fake posts attributed to Kirk circulated — including one about calling for the video to be taken down and one about messaging Elon Musk. Neither Kirk nor Druski made public contact with each other.",
+      "lesson": "Anti-hindsight check: I found this by searching the daughter quote from the image — that's a natural query from reading the image text. The Snopes result came up organically in round 1 already. This is a clean, discoverable finding."
+    }
+  ],
+  "gold_queries": [
+    "Erika Kirk daughter Druski parody video fake tweet debunked",
+    "Druski Erika Kirk viral parody skit March 2026",
+    "Erika Kirk fake social media post Snopes fact check",
+    "Did Erika Kirk post about daughter confusing Druski video"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.snopes.com/fact-check/erika-kirk-druski-response/",
+      "title": "Did Erika Kirk share post responding to Druski video? | Snopes.com",
+      "found_via_query": "Erika Kirk daughter tweet fake fabricated Snopes debunked Druski",
+      "authority_reason": "Snopes is a leading fact-checking organization",
+      "what_it_establishes": "The alleged Erika Kirk post about her daughter being confused by Druski's video is fabricated. Reverse image search found no authentic post from Kirk. The image lacks timestamp and authentic engagement metrics. Multiple fake posts attributed to Kirk circulated; neither party made public contact with each other."
+    },
+    {
+      "url": "https://www.primetimer.com/features/did-erika-kirk-tweet-that-her-own-daughter-mistook-druski-for-her-viral-post-claim-debunked",
+      "title": "Did Erika Kirk tweet that her own daughter mistook Druski for her? Viral post claim debunked - PRIMETIMER",
+      "found_via_query": "Erika Kirk daughter couldn't tell difference Druski parody viral reaction",
+      "authority_reason": "Entertainment/media publication with explicit debunk article",
+      "what_it_establishes": "Independent corroboration that the daughter tweet is fake/fabricated."
+    },
+    {
+      "url": "https://www.newsweek.com/druski-sparks-anger-after-dressing-as-erika-kirk-for-latest-skit-11737840",
+      "title": "Druski Sparks Anger After Dressing as Erika Kirk For Latest Skit - Newsweek",
+      "found_via_query": "Erika Kirk parody video viral controversy",
+      "authority_reason": "Mainstream news publication (Newsweek)",
+      "what_it_establishes": "Druski's parody video is real and went viral on March 25, 2026; Erika Kirk is CEO of Turning Point USA and widow of Charlie Kirk. Context establishes the real events that gave rise to the fabricated posts."
+    },
+    {
+      "url": "https://www.nbcnewyork.com/news/druski-erika-kirk-parody-skit/6481805/",
+      "title": "Druski trending for viral Erika Kirk drag video – NBC New York",
+      "found_via_query": "Erika Kirk parody video viral controversy",
+      "authority_reason": "Mainstream NBC News affiliate",
+      "what_it_establishes": "Confirms Druski's parody video is real, went massively viral, and Erika Kirk is the CEO of Turning Point USA."
+    },
+    {
+      "url": "https://www.complex.com/pop-culture/a/jaelaniturnerwilliams/erika-kirk-calls-out-druski-whiteface-skit",
+      "title": "Erika Kirk Appears to Call Out Druski for Wearing 'Whiteface' in Parody",
+      "found_via_query": "Druski Erika Kirk parody costume",
+      "authority_reason": "Complex is a mainstream pop culture publication",
+      "what_it_establishes": "Erika Kirk's real response came via The Charlie Kirk Show (not a social media post), where she complained about 'comedians dressing up in whiteface' — not via the fabricated social media posts circulating online."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching the tweet image text verbatim ('Erika Kirk daughter couldn't tell difference') immediately surfaced the debunk articles",
+      "Snopes appeared in round 1 results organically — the named person + 'parody video' query was sufficient",
+      "Searching the comedian's name (Druski) — visible in comments on the tweet — anchored the event quickly",
+      "The Primetimer debunk article title was explicit and unambiguous"
+    ],
+    "what_hurt": [
+      "Several key URLs (Snopes, Primetimer, NBC New York) returned 402/403/405 errors on WebFetch, preventing direct content verification",
+      "MSN aggregator pages returned empty content",
+      "Had to rely on search snippet summaries for key fact-check conclusions rather than full article text"
+    ],
+    "would_multipass_help": "no — the core finding (fake tweet) was clear from round 1 search snippets. A second pass adds confirmation but not new conclusions.",
+    "deepseek_advice": "When a tweet shows a screenshot of someone else's alleged social media post, immediately search '[person name] [key quote from post] fake debunked' — fabricated screenshots of public figures are very common and fact-checkers often debunk them within days. Also check comments for named individuals (Druski appeared in comments) to anchor the underlying real event."
+  }
+}

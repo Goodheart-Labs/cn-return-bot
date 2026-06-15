@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2012922128367022371",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Owen Shroyer posts a video he describes as a 'massive protest against Netanyahu outside his home in Israel,' framing it as a current escalating protest suppressed by 'intelligence assets', tweeted 18 Jan 2026.",
+  "why_note_decision": "A note IS warranted: the video is the well-circulated 23 March 2025 Azza Street / Rehavia clash outside Netanyahu's Jerusalem residence (police barricades, hostage-deal / Shin Bet protest), not a January 2026 event. The tweet implies recency ('these protests keep getting bigger') and misattributes provenance. The original note correctly identifies the March 2025 source but raters flagged 'missing key points' — likely because it doesn't say the clip is being reused months later to misrepresent the current situation, and does not address the 'intelligence assets' insinuation.",
+  "judge_guidance": "PASS a note that (a) states the footage is from a March 2025 protest at Netanyahu's Jerusalem residence on Azza Street, not a recent/January 2026 event, and (b) cites a contemporaneous source (Times of Israel, NPR, ABC, or similar) reporting the March 2025 protests. FAIL if the note merely calls the post 'misleading' without specifying the actual date/event, FAIL if it accepts the video as current, and FAIL if it does not include at least one credible dated source for the March 2025 protest. A correct note must be clearly more precise than 'old video' boilerplate.",
+  "reference_note": "The video is footage from the 23 March 2025 protest on Azza Street outside Netanyahu's Jerusalem residence, when thousands clashed with police over the move to fire the Shin Bet chief and Attorney General — not a recent January 2026 event. https://www.timesofisrael.com/major-protests-in-jerusalem-as-government-seeks-to-fire-shin-bet-chief-renews-gaza-war/ https://www.npr.org/2025/03/25/nx-s1-5339490/israel-protests-netanyahu-hostages-gaza-war",
+  "original_unhelpful_note": {
+    "text": "The video shows a protest from March 2025 outside Netanyahu's Jerusalem residence on Azza Street, not a recent event. https://x.com/ShaykhSulaiman/status/1903062590541988058 https://www.timesofisrael.com/liveblog-march-23-2025 https://www.abc.net.au/news/2025-03-20/netanyahu-protest-home-after-gaza-strikes-corruption/105073994",
+    "failure_reason": "Correctly identifies the date but raters flagged 'missing key points' — likely because the note doesn't anchor the specific event (Shin Bet / AG firing protest of 23 March 2025) and the lead source is an X link rather than primary reporting; the second TOI URL is also a bare liveblog root.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — video is from March 2025, presented as current",
+    "sources_checked": [
+      "https://www.timesofisrael.com/major-protests-in-jerusalem-as-government-seeks-to-fire-shin-bet-chief-renews-gaza-war/",
+      "https://www.npr.org/2025/03/25/nx-s1-5339490/israel-protests-netanyahu-hostages-gaza-war",
+      "https://www.timesofisrael.com/protesters-clash-with-police-in-jerusalem-as-thousands-march-against-government/"
+    ],
+    "notes": "The 23 March 2025 protests on Azza Street are well documented and match the visuals (barricades, traffic light, police pulling barricades). The tweet's video has the underlying media_key 13_1903062514604154881 — the leading '1903' Twitter media ID range corresponds to March 2025 uploads, consistent with the March 2025 origin."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "231k impressions on a politically charged war-narrative misattribution; correcting reused war/protest footage matters for information ecosystem health around Gaza/Iran reporting."
+  },
+  "difficulty": "medium"
+}

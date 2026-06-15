@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2040474166290178199",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:56:34.187Z",
+  "post": {
+    "id": "2040474166290178199",
+    "author_id": "1986852813071392769",
+    "created_at": "2026-04-04T16:58:46.000Z",
+    "text": "Netflix is reportedly removing the Household Sharing ban after a 15% drop in global subscribers. https://t.co/VevmQSdBNI",
+    "media": [
+      {
+        "media_key": "3_2040474161446088704",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFE4cF5bcAAbX0j.jpg",
+        "height": 1200,
+        "width": 1200
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3784,
+      "reply_count": 841,
+      "like_count": 81923,
+      "quote_count": 1794,
+      "bookmark_count": 3379,
+      "impression_count": 6687809
+    },
+    "author_followers": 50541,
+    "author_name": "Hoops Crave",
+    "author_description": "Craving Hoops Culture 🏀 | parody account not affiliated with @PopCrave",
+    "author_tweet_count": 790
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFE4cF5bcAAbX0j.jpg",
+          "description": {
+            "description": "A red, three-dimensional capital letter 'N' centered on a solid black background. The letter is designed to look like a folded ribbon, with shadows indicating depth where the diagonal stroke overlaps the vertical ones, consistent with the Netflix brand icon.",
+            "ocrText": "N"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@cueromacho444: omg we did it guys. This is the first step to take down capitalism (7537 likes)\n@virgilelesouple: I KNOW WHY THEY ARE LOSING SUBSCRIBERS (2175 likes)\n@nonnssoo: Still not subscribing to that bs😂 (1585 likes)\n@Zebby_98: I cancelled because where the hell is my Steel Ball Run (1424 likes)\n@BeyondMediaHQ: It’s more than that, it’s because of price increases too. (1262 likes)\n@Goldbacky: I WONDER WHY THE 15% DROP (1090 likes)\n@heisfamez: The ban was always a scam to milk more money. Now that it cost them millions of users they’re reversing it quietly. Netflix doesn’t care about you, they only care when their stock starts bleeding out. (841 likes)\n@thepharmwriter: 🤣🤣 sorry I have to laugh. They banned family sharing and increased prices. What were they expecting (469 likes)\n@Cjoygreat: Netflix cracking down on password sharing, watching subscribers drop 15 percent and then quietly reversing course is the most expensive lesson in reading your customer base the streaming industry has seen 😭 (417 likes)\n@Lilsmylefrmdae: Netflix and chill ppl (343 likes)",
+    "warnings": []
+  }
+}

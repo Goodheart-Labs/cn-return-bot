@@ -1,0 +1,21 @@
+{
+  "tweet_id": "2034353641696735520",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "conspiracy_and_viral_hoax", "ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Account 'America News Times' claims 'CONFIRMED BY ISRAEL: Netanyahu is officially dea...' (cut off with 'View more'), over a photo of Netanyahu, as part of viral mid-March-2026 death-rumor wave.",
+  "why_note_decision": "The claim is false. Netanyahu is alive. Israel never confirmed his death; the rumors originated from Iranian state media / pro-regime accounts during the late-Feb 2026 US-Israel military campaign vs Iran. Netanyahu posted multiple proof-of-life videos (March 12, 13, 15, 16) including at the HaSataf café in Jerusalem. A clip Grok briefly mislabelled as AI was actually authentic (low-quality compression made his hand look like it had six fingers). A correcting note IS clearly warranted. Provisional 'no note needed' is wrong — the tweet has 16.7M impressions and the false 'CONFIRMED BY ISRAEL' framing is exactly the kind of breaking-news misinfo notes exist for. The original note correctly establishes Netanyahu is alive and cites primary sources; the 'sources missing or unreliable' rater complaints likely reflect mixed source quality (gov.il, Reuters, Euronews, France24 are fine; the Wikipedia / Snopes-style aggregation could be more direct).",
+  "judge_guidance": "PASS if the note clearly states (1) Netanyahu is alive; (2) no official Israeli source confirmed his death; and (3) cites at least one strong primary or wire source — Israeli PM's office statement (gov.il), Reuters, France24, Euronews, or his actual proof-of-life video. The note should not say the video used to debunk the rumor is AI-generated — it is authentic. FAIL if the note: (a) hedges on whether Netanyahu is alive; (b) cites only weak aggregator sources; (c) repeats the original note's specific issue of leaning on Snopes / unverifiable sources only; (d) accepts the 'CONFIRMED BY ISRAEL' framing. A correct note must be unambiguous and primary-source-backed.",
+  "reference_note": "Netanyahu is alive. Israel has not confirmed his death; the viral rumor originated during the Feb-Mar 2026 Israel-Iran conflict and was pushed by Iranian state media. Netanyahu posted authenticated proof-of-life videos on March 12, 13, 15 and 16 (the HaSataf café footage was confirmed real, not AI). https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15 https://www.euronews.com/my-europe/2026/03/18/netanyahu-denies-death-rumours-in-social-media-clip-which-grok-falsely-branded-ai",
+  "original_unhelpful_note": null,
+  "fact_check": {"agrees_correction_needed": true, "claim_verdict": "false — Netanyahu alive, no Israeli confirmation of death", "sources_checked": ["https://www.nbcnews.com/tech/misinformation/netanyahu-death-rumors-ai-debunked-rcna263987", "https://www.euronews.com/my-europe/2026/03/18/netanyahu-denies-death-rumours-in-social-media-clip-which-grok-falsely-branded-ai", "https://www.cbc.ca/news/world/netanyahu-video-proof-of-life-iran-israel-9.7132558"], "notes": "Iranian disinfo origin; Netanyahu posted multiple proof-of-life videos; HaSataf café footage authenticated. Grok briefly flagged a low-quality version of a real video as AI due to compression artifacts."},
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "16.7M impressions on breaking-news-during-war misinfo about a head of state. High-stakes both for direct info integrity and for understanding how viral death-hoaxes propagate during conflict."},
+  "difficulty": "easy"
+}

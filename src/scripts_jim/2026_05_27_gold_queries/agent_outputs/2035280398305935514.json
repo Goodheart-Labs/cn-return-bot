@@ -1,0 +1,72 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Noa Lang injury Anfield PSG UEFA review stadium",
+        "PSG request UEFA investigate Anfield stadium Liverpool Champions League"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Multiple results immediately showing Noa Lang plays for Galatasaray (not PSG), and it was Galatasaray that filed the UEFA complaint — the tweet's core attribution is wrong. PSG did play Liverpool at Anfield but in a separate (later) Champions League tie.",
+      "lesson": "The first round immediately surfaced the key factual error: wrong club. The tweet writer apparently confused PSG's upcoming CL quarter-final against Liverpool with Galatasaray's earlier round 16 match."
+    },
+    {
+      "queries": [
+        "Noa Lang Galatasaray Liverpool Anfield injury thumb advertising board March 2026",
+        "Galatasaray complaint UEFA Anfield Noa Lang PSG not involved"
+      ],
+      "purpose": "targeted + refine",
+      "what_returned": "Confirmed: match was Liverpool 4-0 Galatasaray on 19 March 2026 (CL round of 16 second leg). Galatasaray filed formal complaint with UEFA and threatened lawsuit. Multiple authoritative sources: Goal.com, OneFootball, Yahoo Sports, empireofthekop.com. No PSG involvement.",
+      "lesson": "Anti-hindsight check: If I only knew the tweet claimed PSG requested this review, querying for both Galatasaray and PSG versions was valid. The second query explicitly testing PSG involvement returned zero evidence of PSG filing anything, confirming the misattribution."
+    }
+  ],
+  "gold_queries": [
+    "Noa Lang injury Anfield PSG UEFA review stadium",
+    "Noa Lang Galatasaray Liverpool Anfield injury thumb advertising board March 2026",
+    "Galatasaray complaint UEFA Anfield Noa Lang advertising hoarding",
+    "PSG request UEFA investigate Anfield stadium Liverpool Champions League"
+  ],
+  "found_sources": [
+    {
+      "url": "https://www.empireofthekop.com/2026/03/19/galatasaray-file-complaint-to-uefa-threaten-legal-action-noa-lang-injury/",
+      "title": "Galatasaray file complaint to UEFA and threaten legal action after incident at Anfield",
+      "found_via_query": "Galatasaray complaint UEFA Anfield Noa Lang PSG not involved",
+      "authority_reason": "Liverpool-focused football news site with direct quote from Galatasaray's general secretary; date-stamped 19 March 2026",
+      "what_it_establishes": "Galatasaray (not PSG) filed the UEFA complaint; Noa Lang plays for Galatasaray; match was Liverpool 4-0 Galatasaray on 19 March 2026; complaint was about advertising hoarding safety"
+    },
+    {
+      "url": "https://www.goal.com/en/lists/uefa-liverpool-launch-investigation-noa-lang-injury-galatasaray-star-collided-advertising-board/blt14f4a72dc8d03dd1",
+      "title": "UEFA & Liverpool launch investigation into Noa Lang injury after Galatasaray star collided with advertising board",
+      "found_via_query": "Noa Lang injury Anfield PSG UEFA review stadium",
+      "authority_reason": "Goal.com is a major international football publication",
+      "what_it_establishes": "Noa Lang is a Galatasaray player (on loan from Napoli); UEFA and Liverpool jointly launched the investigation; no PSG involvement"
+    },
+    {
+      "url": "https://onefootball.com/en/news/galatasaray-file-complaint-after-noa-langs-serious-injury-at-anfield-42585469",
+      "title": "Galatasaray file complaint after Noa Lang's serious injury at Anfield",
+      "found_via_query": "Noa Lang injury Anfield PSG UEFA review stadium",
+      "authority_reason": "OneFootball aggregates official club and wire sources",
+      "what_it_establishes": "Galatasaray filed complaint; Lang suffered partial thumb severing; match was in the Champions League round of 16"
+    },
+    {
+      "url": "https://sports.yahoo.com/articles/galatasaray-sue-uefa-compensation-noa-064000273.html",
+      "title": "Galatasaray to sue UEFA for compensation after Noa Lang's freak injury at Liverpool",
+      "found_via_query": "Galatasaray complaint UEFA Anfield Noa Lang PSG not involved",
+      "authority_reason": "Yahoo Sports aggregates AP/Reuters wire content",
+      "what_it_establishes": "Galatasaray pursuing lawsuit for compensation; no PSG involvement"
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching for the player name + injury + stadium + UEFA immediately surfaced the correct club (Galatasaray), revealing the misattribution in the tweet",
+      "Running a second query explicitly checking PSG involvement confirmed the absence of any PSG complaint",
+      "Multiple corroborating sources from Goal.com, OneFootball, Yahoo Sports, empireofthekop.com all aligned on the same facts"
+    ],
+    "what_hurt": [
+      "The tweet's context (PSG Türkiye fan account, Turkish-language post) was plausible framing for a Galatasaray story — could have briefly caused confusion between two separate CL ties at Anfield",
+      "The image in the tweet shows a PSG jersey, which made the PSG connection seem plausible and could mislead readers who don't read carefully"
+    ],
+    "would_multipass_help": "no — the error was identified in round 1; additional passes only confirmed what was already clear",
+    "deepseek_advice": "When a tweet attributes a specific action (complaint, lawsuit, request) to a club, first verify which club the named player actually belongs to — misattribution of club is a common error pattern. Search '[player name] [club]' before accepting the tweet's framing."
+  }
+}

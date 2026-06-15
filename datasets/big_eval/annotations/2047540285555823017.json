@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2047540285555823017",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["health_medical_science", "overhyped_research_or_product", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post says 'Psilocybin extends life of human cells by 50% in wild new study,' linking to coverage of a real aging study.",
+  "why_note_decision": "The claim is accurate. A 2025 Emory study (npj Aging) found that psilocin (psilocybin's active metabolite) extended the lifespan of cultured human skin and lung cells by ~51-57% in vitro. The tweet correctly says 'human cells' (not human bodies) and the ~50% figure is right. The original note's clarifications (it was psilocin; effects in living humans untested) are true but pedantic, since the tweet never claimed human longevity. No correction is needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately reports a real study: psilocin (the active form of psilocybin) extended cultured human skin/lung cell lifespan by ~51-57% in vitro (Emory, npj Aging, 2025). The tweet says 'human cells,' which is correct — it does not claim humans live 50% longer. A note 'correcting' it to note it was psilocin/in-vitro/untested-in-people is pedantic on an already-accurate headline and is a false positive — FAIL it. Any note that implies the tweet is false fails.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The study used psilocin, the active metabolite of psilocybin, to extend the lifespan of lab-grown human lung and skin cells by 29-57% in vitro; effects in living humans remain untested. https://www.nature.com/articles/s41514-025-00244-x",
+    "failure_reason": "Pedantic clarification of an already-accurate claim; the tweet said 'human cells' and ~50%, which matches the study, so no correction was needed.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "True: psilocin extended cultured human skin/lung cell lifespan ~51-57% in vitro (2025 Emory study); tweet's 'human cells, ~50%' is accurate.",
+    "sources_checked": [
+      "https://www.sciencealert.com/psilocybin-extends-life-of-human-cells-by-50-in-wild-new-study",
+      "https://news.emory.edu/stories/2025/07/hs_psilocybin_aging_study_10-07-2025/story.html",
+      "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12238350/"
+    ],
+    "notes": "Treated lung cells took 57% longer and skin cells 51% longer to reach senescence at 100uM psilocin; mice study showed 30% survival increase. The tweet's wording ('human cells', '50%') is faithful; the metabolite/in-vitro nuance is a true but unnecessary footnote, not a correction of a false claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "480k impressions on a science-hype topic; mildly worth nuance but the tweet is accurate, so it's primarily a false-positive trap for over-eager pedantic notes."
+  },
+  "difficulty": "medium"
+}

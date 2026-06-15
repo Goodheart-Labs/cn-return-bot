@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { loadStatsSnapshot } from "./lib/loadData";
 import type {
-  ABFilters,
   ChartGranularity,
   ChartMode,
   NoteSort,
   StatsSnapshot,
 } from "./lib/types";
+import type { ABFilters } from "../../dashboard-shared/abFilters";
 import {
-  bucketKey,
   bucketize,
+  bucketizeOrigin,
   computeHeadlineMetrics,
+  dropInProgressWeek,
   filterNotes,
   sortNotesForList,
 } from "./lib/aggregations";
@@ -19,7 +20,7 @@ import { MetricsHeader } from "./components/MetricsHeader";
 import { ChartControls, ChartLegend } from "./components/ChartControls";
 import { BarChart } from "./components/BarChart";
 import { NoteList } from "./components/NoteList";
-import { AbFilterPanel } from "./components/ABFilters";
+import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
 
@@ -47,19 +48,25 @@ export function App() {
     [snapshot, filtersForData],
   );
   const useNonCandidate = devMode && showNonCandidate;
-  const buckets = useMemo(() => {
-    const all = bucketize(
-      filteredNotes,
-      granularity,
-      useNonCandidate ? snapshot?.pipeline_runs_by_day : undefined,
-      filtersForData,
-    );
-    if (granularity !== "weekly") return all;
-    // Hide the in-progress week — it's a partial-week bar that drags the
-    // chart down until Sunday.
-    const currentWeekKey = bucketKey(new Date().toISOString(), "weekly");
-    return all.filter((b) => b.key !== currentWeekKey);
-  }, [filteredNotes, granularity, useNonCandidate, snapshot, filtersForData]);
+  const buckets = useMemo(
+    () =>
+      dropInProgressWeek(
+        bucketize(
+          filteredNotes,
+          granularity,
+          useNonCandidate ? snapshot?.pipeline_runs_by_day : undefined,
+          filtersForData,
+        ),
+        granularity,
+      ),
+    [filteredNotes, granularity, useNonCandidate, snapshot, filtersForData],
+  );
+  // "% of all" share buckets: platform-wide, so independent of the AB filters
+  // (those only scope our own notes).
+  const shareBuckets = useMemo(
+    () => dropInProgressWeek(bucketizeOrigin(snapshot?.daily_note_origin_counts ?? [], granularity), granularity),
+    [snapshot, granularity],
+  );
   const metrics = useMemo(
     () =>
       snapshot
@@ -130,6 +137,7 @@ export function App() {
         <div ref={chartRef} className="w-full">
           <BarChart
             buckets={buckets}
+            shareBuckets={shareBuckets}
             granularity={granularity}
             mode={mode}
             width={chartWidth}

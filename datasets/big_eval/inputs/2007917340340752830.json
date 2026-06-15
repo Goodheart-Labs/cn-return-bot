@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2007917340340752830",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:36.844Z",
+  "post": {
+    "id": "2007917340340752830",
+    "author_id": "872526804",
+    "created_at": "2026-01-04T20:49:33.000Z",
+    "text": "If this is goodbye, Travis — know this: you’re the greatest tight end of all time, and your legacy is forever cemented in Kansas City. ❤️💛 https://t.co/sq8MxgD85Z",
+    "media": [
+      {
+        "media_key": "3_2007917337639366657",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G92OLiBXsAEFHCr.jpg",
+        "height": 1536,
+        "width": 1024
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 109,
+      "reply_count": 27,
+      "like_count": 1519,
+      "quote_count": 15,
+      "bookmark_count": 31,
+      "impression_count": 104536
+    },
+    "author_followers": 6350,
+    "author_name": "Starcade Media",
+    "author_description": "Noah Gronniger & Clint Switzer - @ArrowheadAllies 210K FB group, 77K FB, 10K IG, 12K TikTok, credentialed media by NFL, NCAA, Mizzou, etc https://t.co/n8FKW2UCPx",
+    "author_tweet_count": 29361
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G92OLiBXsAEFHCr.jpg",
+          "description": {
+            "description": "A photograph taken from behind Travis Kelce, a Kansas City Chiefs football player wearing his white jersey with the number 87 and his name on the back. He is standing at midfield of Allegiant Stadium with one hand raised toward a cheering crowd. A large stadium screen in the background displays the message 'Thanks For Everything Travis'.",
+            "ocrText": "allegiant stadium\nThanks For Everything Travis\nKELCE\n87\nRisligers"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@everslay13**: who is that… (Likes: 64)  \n**@Novaya_Tofana**: I know you didn't post the ai garbage on Taylor Swifts Internet 😭 (Likes: 25)  \n**@mez90584759**: You should be ashamed. Delete this AI crap (Likes: 10)  \n**@my_eyes_violet**: AI slop (Likes: 7)  \n**@JeezLaWeez1984**: Kelce was great…but no.. (Likes: 3)  \n**@ProxCentauriB**: You're amazing,@tkelce. I hope you enjoy your life and retirement. Thank you,Travis! (Likes: 3)  \n**@limonca88**: Can you just stop with the shitty ai pics that don't even look like Trav (Likes: 3)  \n**@kait518**: Can we stop with this AI trash? (Likes: 3)  \n**@whyshedisappred**: THE FOOT BACKWARDS 😭😭😭😭😭😭😭 AI CHOP (Likes: 2)  \n**@kcginger13**: This is obviously AI slop. Trav’s feet don’t go backwards & the logo is messed up. If you’re going to be an actual media acct, learn basic design. (Likes: 2)",
+    "warnings": []
+  }
+}

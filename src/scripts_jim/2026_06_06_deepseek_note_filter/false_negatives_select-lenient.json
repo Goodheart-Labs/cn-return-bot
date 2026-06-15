@@ -1,0 +1,131 @@
+[
+  {
+    "runId": "16c6c5b4-0842-44db-af32-9a9bf5cd2896",
+    "tweetId": "2062815479618773335",
+    "tweetUrl": "https://x.com/i/status/2062815479618773335",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "We don’t hate men enough https://t.co/7CV8DCqnVI",
+    "variant": "select-lenient",
+    "predNeedsNote": false,
+    "predReason": "The post's factual claim is that a rest area in Indiana has urinals shaped like female mannequins, as shown in the attached image. The research findings do not contain any evidence that this claim is false — there is no verification or debunking of the existence of such a restroom. The findings are inconclusive about the truth of the claim itself. Without evidence that the claim is materially false, the second precondition (materially false) is not met. Therefore, a Community Note is not needed.",
+    "queries": [
+      "Indiana rest area urinals mannequin women",
+      "rest stop urinal mannequin women Indiana",
+      "Indiana highway rest area urinal art controversy"
+    ],
+    "numCandidates": 17,
+    "numSelected": 1,
+    "numFetched": 1,
+    "fullInputChars": 2723,
+    "costUsd": 0.009070175199999999
+  },
+  {
+    "runId": "19b57981-075b-4c7a-9502-d6d97b70ed68",
+    "tweetId": "2062103985784344846",
+    "tweetUrl": "https://x.com/i/status/2062103985784344846",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "PROTEST 🇳🇬✊: More Crowds Gather In Abeokuta As Demonstrations Over Abducted Oyo Schoolchildren And Teachers Gain Momentum. https://t.co/7BHKM3mSJw",
+    "variant": "select-lenient",
+    "predNeedsNote": false,
+    "predReason": "The post claims that crowds are gathering in Abeokuta to protest the abduction of Oyo schoolchildren and teachers, and search results from multiple credible news outlets confirm that such protests did occur on June 1, 2026, and were widely reported. The claim is materially accurate, so a community note is not needed.",
+    "queries": [
+      "Abeokuta protest Oyo schoolchildren abduction June 2026",
+      "Oyo schoolchildren abduction Abeokuta protest 2026",
+      "Nigeria protest Abeokuta abducted schoolchildren teachers 2026"
+    ],
+    "numCandidates": 16,
+    "numSelected": 5,
+    "numFetched": 5,
+    "fullInputChars": 2224,
+    "costUsd": 0.0203767822
+  },
+  {
+    "runId": "3a76197c-59b1-46e4-8f95-222fe808da6e",
+    "tweetId": "2060050771555525095",
+    "tweetUrl": "https://x.com/i/status/2060050771555525095",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "There are few things more cursed than a man whose hips are wider than his shoulders. https://t.co/D7LPJEdtd0",
+    "variant": "select-lenient",
+    "predNeedsNote": false,
+    "predReason": "The tweet claims the person in the video is a 'man' with hips wider than shoulders, making a falsifiable assertion about gender and body proportions. However, the provided research findings do not contain any evidence confirming or refuting this claim — the only search result is an unrelated tweet comparing stereotyped 'builds' with net worth figures, not about the specific person or their anatomy. Since the findings are inconclusive and do not establish material falsehood, a Community Note is not warranted based on this evidence alone.",
+    "queries": [
+      "\"Amlewatthi Bhavnagar Dholera highway\"",
+      "\"Pure gujrati build\"",
+      "man with tilak and glasses checkered shirt purple trousers highway",
+      "Gujarati highway video person gender"
+    ],
+    "numCandidates": 21,
+    "numSelected": 3,
+    "numFetched": 1,
+    "fullInputChars": 2402,
+    "costUsd": 0.014271083
+  },
+  {
+    "runId": "45d16d8a-fd2f-4f31-8e50-f3234b49c16b",
+    "tweetId": "2059409485358129653",
+    "tweetUrl": "https://x.com/i/status/2059409485358129653",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "I JUST REALIZED THIS YEAR’S CHRISTMAS WILL BE 24/25/26 https://t.co/3wJYMgJ3ZG",
+    "variant": "select-lenient",
+    "predNeedsNote": false,
+    "predReason": "query writer returned no queries after 3 attempts — opinion/joke/non-checkable",
+    "queries": [],
+    "queryAttempts": 3,
+    "numCandidates": 0,
+    "numSelected": 0,
+    "numFetched": 0,
+    "fullInputChars": 2192,
+    "costUsd": 0.008792999999999999
+  },
+  {
+    "runId": "50ae2808-3a14-4703-8215-6740e7200f51",
+    "tweetId": "2061680073011343394",
+    "tweetUrl": "https://x.com/i/status/2061680073011343394",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "The way he puts his little paws behind his back to mimic the keeper is pure genius.\nHe's got that \"retired and taking a morning stroll\" energy down perfectly! https://t.co/qlbO2aLWbw",
+    "variant": "select-lenient",
+    "predNeedsNote": false,
+    "predReason": "The post claims a panda is genuinely mimicking a zookeeper with a charming pose, but the research findings address only an unrelated AI panda hoax (a stuffed toy ad) and provide no evidence about this specific video's authenticity. Since the post's central claim — that this is real, spontaneous animal behavior — is a falsifiable fact, but the research does not confirm it is false (it simply lacks evidence), the 'materially false' precondition is not met. Therefore, a note is not warranted based on the given findings.",
+    "queries": [
+      "panda walks behind keeper mimicking video original source",
+      "AI or real panda walking behind keeper viral video fact check",
+      "zoo panda follows keeper on hind legs viral video 2026"
+    ],
+    "numCandidates": 17,
+    "numSelected": 3,
+    "numFetched": 1,
+    "fullInputChars": 2728,
+    "costUsd": 0.013186009
+  },
+  {
+    "runId": "63a782f0-bd94-4dfe-b10d-c94dac0258f8",
+    "tweetId": "2060130221915856985",
+    "tweetUrl": "https://x.com/i/status/2060130221915856985",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "I might lose followers for this, but it must be said\n\nDenying the atrocities of the Residential Schools is just as bad as Holocaust denial\n\nBoth should be ILLEGAL in Canada",
+    "variant": "select-lenient",
+    "predNeedsNote": false,
+    "predReason": "The post's central claim is a normative and legal opinion (that denial of residential school atrocities should be illegal and is 'just as bad' as Holocaust denial), not an assertion of a falsifiable fact about the past or present. The research findings confirm the occurrence of atrocities, so the premise is factually supported; the post does not make a false claim of fact. Thus, the first precondition (falsifiable fact) does not meaningfully apply, and the third (sincere) is met but moot. A note would address a policy opinion, not correct a factual error.",
+    "queries": [
+      "Canadian Residential Schools atrocities evidence Truth and Reconciliation Commission"
+    ],
+    "queryAttempts": 1,
+    "numCandidates": 6,
+    "numSelected": 3,
+    "numFetched": 3,
+    "fullInputChars": 2666,
+    "costUsd": 0.008958184000000001
+  }
+]

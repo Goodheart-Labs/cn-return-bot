@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2039505600292204566",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "antisemitic_conspiracy", "breaking_news_and_war"],
+  "category_fit": "poor",
+  "suggested_category": "antisemitic_conspiracy_9_11",
+  "tweet_summary": "An account labeled 'pure satire' (Leonarda Jonie) shares an image with text 'FAMILY OF 9/11 HIJACKER ZIAD JARRAH WERE JUST CONFIRMED TO BE ISRAELI SPIES,' captioned 'I was told this was an antisemitic conspiracy — a blood libel even.' Replies amplify overt antisemitic framing.",
+  "why_note_decision": "The image's claim is misleading on multiple counts: (1) the 'just confirmed' framing is false — the Jarrah/Mossad story refers to events from 2008–2009, when Lebanese authorities arrested Ali al-Jarrah and his brother Yousef for allegedly spying for Israel; (2) Ali al-Jarrah was Ziad Jarrah's UNCLE, not 'family' in the immediate-family sense the meme implies, and reporting at the time (NYT) noted the two were ~20 years apart and not close; (3) the implication that this implicates Israel in 9/11 is a conspiracy leap unsupported by the 9/11 Commission or any mainstream investigation. The author's bio claims 'pure satire,' but the post is functionally an antisemitic-conspiracy meme — the satire framing does not undo the misleading factual implication, which the 31K likes and replies treat as real. A note IS warranted; the original note is partly correct (the cousin/uncle relation, the not-close detail, NYT cite) but doesn't address the deeper falsehoods (the 'just confirmed' temporal framing, the conspiracy implication for 9/11) and was rated NOT_HELPFUL with high 'missing key points' tags.",
+  "judge_guidance": "A correct note must (1) state Ali al-Jarrah's alleged Mossad ties were reported in 2008–2009, not 'just confirmed,' (2) clarify that Ali was Ziad Jarrah's uncle (an elder relative ~20 years older) and reporting indicates they were not close, (3) note that the 9/11 Commission and mainstream investigations attribute the 9/11 attacks to al-Qaeda and find no evidence of Israeli involvement, (4) cite the NYT 2009 piece (nytimes.com/2009/02/19/world/middleeast/19lebanon.html) or equivalent neutral source. MUST avoid the original note's failure of being too narrow — it must address the 'just confirmed' falsehood and the 9/11 conspiracy implication, not only the family-relationship pedantry. PASS if it (a) corrects the timing, (b) clarifies the relationship, AND (c) flags the 9/11 conspiracy implication as unsupported. FAIL if it only nitpicks the family-relation term.",
+  "reference_note": "The Jarrah/Mossad story is from 2008–2009, not 'just confirmed': Lebanese authorities arrested Ali al-Jarrah — Ziad Jarrah's uncle, ~20 years older and not close to him — for allegedly spying for Israel. The 9/11 Commission and US investigations attribute 9/11 to al-Qaeda; no mainstream evidence links Israel to the attacks. https://www.nytimes.com/2009/02/19/world/middleeast/19lebanon.html",
+  "original_unhelpful_note": {
+    "text": "Ali Jarrah and 9/11 hijacker Ziad Jarrah were cousins separated by 20 years who did not know each other well. https://www.nytimes.com/2009/02/19/world/middleeast/19lebanon.html",
+    "failure_reason": "Too narrow — only addresses the family-relation framing and the 'not close' detail; doesn't push back on the 'just confirmed' (it's old news) framing or the implied 9/11-Israel conspiracy. Also uses 'cousins' where reporting describes Ali as Ziad's uncle. Raters tagged 'note not needed', 'missing key points', 'argumentative'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — meme repackages a 17-year-old story as breaking news to imply Israeli 9/11 involvement; mainstream investigations attribute 9/11 to al-Qaeda",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Ziad_Jarrah",
+      "https://vinnews.com/2009/02/22/beirut-lebanese-israeli-spy-cousin-to-one-of-the-911-hijackers/",
+      "https://wikispooks.com/wiki/Ali_al-Jarrah"
+    ],
+    "notes": "Ali al-Jarrah was an uncle/elder relative of Ziad Jarrah, arrested in Lebanon in 2008 for alleged Mossad spying activity (cited as reporting on regional politics, not US affairs). The 'just confirmed' framing is misleading; the 9/11 conspiracy implication is unsupported."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "31K likes / 436K impressions on an antisemitic-coded 9/11 conspiracy meme; correcting these narratives matters for information-environment health and reducing real-world hostility toward Jewish people."
+  },
+  "difficulty": "hard"
+}

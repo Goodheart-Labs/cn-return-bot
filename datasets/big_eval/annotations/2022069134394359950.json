@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2022069134394359950",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports", "joke_or_satire"],
+  "category_fit": "poor",
+  "suggested_category": "joke_or_satire",
+  "tweet_summary": "MNMuse tweets a clearly satirical 'NBA suspension' list for Jaden McDaniels after his viral dunk on Deni Avdija (an Israeli player), demanding a $500K anti-hate donation, antisemitism training, and meetings with the ADL/Silver/Netanyahu — read as a joke about over-the-top consequences.",
+  "why_note_decision": "The post is obvious satire/joke — the demands (meeting Netanyahu over a basketball dunk, etc.) and the comments thread are unmistakably humorous. The provisional 'overhyped_research_or_product' category is wrong; this is sports humor. Commenters are joking along. No reasonable reader treats this as a real NBA press release, and McDaniels in fact kept playing.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive: the tweet is unmistakable satire/joke about an NBA dunk, not a checkable factual claim. Pedantically 'fact-checking' the satire (e.g. 'McDaniels was not actually suspended') is precisely the failure to avoid.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "False: McDaniels was not suspended after the Feb. 11 dunk — game recaps and player logs show he continued playing. The \"suspension\" list is a satirical exaggeration; a social-media reel labels it an \"unhinged satirical suspension list.\" https://sports.yahoo.com/articles/timberwolves-jaden-mcdaniels-posterizes-deni-015743466.html https://www.instagram.com/reel/DUrqNhKEs4B",
+    "failure_reason": "Fact-checks an obvious joke; raters tagged 'note not needed' and 'missing key points' (the key point being that it is satire and no correction is warranted).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "joke/satire — no real NBA suspension occurred, but the tweet itself is patently humorous, not a deceptive factual claim",
+    "sources_checked": [
+      "https://hardwoodheroics.com/nba-fansjaden-mcdaniels-suspended-dunk/",
+      "https://sports.yahoo.com/articles/timberwolves-jaden-mcdaniels-posterizes-deni-015743466.html"
+    ],
+    "notes": "No NBA suspension exists. The tweet's tone (Netanyahu meeting demand, $500K anti-hate fine for a basketball dunk) is self-evident parody and the replies treat it as such."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports humor with no policy or safety stakes; correcting it has negligible world-impact through any EA/progress/AGI/animal-welfare lens."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2030077895658401996",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["joke_or_satire", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Author posts a clip with sarcastic caption claiming 'Iran is winning, this is Tel Aviv right now' — the video is an EA video game cutscene (OCR shows 'ELECTRONIC ARTS PRESENTS') and replies are uniformly in on the joke (Tusken raiders, Temu robots, etc.).",
+  "why_note_decision": "The video carries an on-screen 'Electronic Arts Presents' watermark and depicts a stylized desert/sword scene from a game — every top reply treats it as obvious satire about pro-Iran propaganda. No reasonable viewer takes this as real footage of Tel Aviv; correcting it pedantically is the classic false-positive trap.",
+  "judge_guidance": "PASS only if the bot declines to write a note (the tweet is overt sarcasm; the clip openly displays 'Electronic Arts Presents'). Any note literally rebutting the 'this is Tel Aviv' caption is a false positive. The original NOT_HELPFUL note did exactly that — a correct response must avoid earnestly debunking what is plainly a joke.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video is from a video game, not real footage of Tel Aviv. Iranian missiles have triggered sirens and caused limited damage/debris in Israel (including Tel Aviv area), but reports show most intercepted with no widespread destruction as implied. https://www.aljazeera.com/video/newsfeed/2026/3/7/iranian-missiles-over-tel-aviv-prompt-sirens-interceptor-launches https://www.timesofisrael.com/liveblog-march-07-2026 https://www.nytimes.com/live/2026/03/07/world/iran-war-trump-israel-lebanon",
+    "failure_reason": "noteNotNeeded — earnestly fact-checks an overt joke whose own footage shows 'Electronic Arts Presents'; replies are all in on the joke.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is sarcastic; the clip is openly a video game (EA watermark on screen); not a factual claim about Tel Aviv.",
+    "sources_checked": [],
+    "notes": "OCR 'ELECTRONIC ARTS PRESENTS' + uniformly joking replies confirm satirical framing."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-follower author, ~465k impressions; a note here is purely a false-positive trap and irrelevant to high-impact misinfo."
+  },
+  "difficulty": "easy"
+}

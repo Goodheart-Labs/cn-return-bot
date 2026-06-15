@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2022484206463357338",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Richard Woodruff (130k followers) claims that 9-year-old Ukrainian gymnast Oleksandra Paskal (who lost her leg in a 2022 Russian missile strike) 'has ALREADY been banned for life from the Olympics' because showing her prosthetic leg is 'politics' unfair to neutral Russian athletes and the IOC. Video shows her performing rhythmic gymnastics at a Ukrainian tournament.",
+  "why_note_decision": "The claim is false. Paskal is 9 years old; the minimum age for Olympic gymnastics is 16, so she is not even eligible to be banned. No IOC ruling, statement, or news report supports the existence of a lifetime ban — multiple feature articles (Yahoo Sports, Ukrainska Pravda, Globe and Mail, Star Tribune) describe her aspirations and her recent bronze medal, none mention any IOC ban. This is viral fabricated outrage-bait (1.28M impressions, 13k likes) that materially misleads readers about both the IOC's actions and Paskal's status. A note IS warranted.",
+  "judge_guidance": "A correct note must (1) state that Oleksandra Paskal has NOT been banned from the Olympics — there is no IOC statement, ruling, or credible news report supporting such a ban, AND (2) note that she is far below the minimum competition age (16 for Olympic gymnastics), making the framing of a lifetime ban implausible on its face. The note must cite a credible source (IOC gymnastics age requirements via FIG/gymnastics.sport, or any of the major feature articles about Paskal that contradict the ban claim — AP, Yahoo Sports, Ukrainska Pravda, Globe and Mail). PASS the original-style note. FAIL any note that endorses the ban claim, hedges in a way that leaves the ban claim plausible, or focuses on whether prosthetics 'should' be allowed rather than the factual question of whether a ban exists.",
+  "reference_note": "There is no Olympic ban on Oleksandra Paskal. No IOC statement or credible news report supports the claim. She is 9 years old and well below the minimum Olympic gymnastics age (16), so a ban is implausible on its face. Multiple recent feature articles describe her aspirations and a recent bronze medal — none mention any IOC ban. https://www.gymnastics.sport/publicdir/rules/files/en_Olympic%20Qualification%20System%20Paris%202024%20RG.pdf https://sports.yahoo.com/article/dreaming-olympic-glory-story-8-144314631.html",
+  "original_unhelpful_note": {
+    "text": "Oleksandra Paskal, a 9-year-old Ukrainian gymnast who lost her leg in a 2022 Russian missile strike, has not been banned from the Olympics. She is too young to compete (minimum age 16). No evidence or IOC statement supports the claim of a ban. https://en.wikipedia.org/wiki/Age_requirements_in_gymnastics https://www.gymnastics.sport/publicdir/rules/files/en_Olympic%20Qualification%20System%20Paris%202024%20RG.pdf https://apnews.com/video/ukraine-olympic-games-rhythmic-gymnastics-national-national-bb9fb93a64a64946a4349a2053e2dba1 https://english.nv.ua/life/young-ukrainian-gymnast-wins-gold-medal-after-losing-leg-in-russian-missile-strike-50329630.html",
+    "failure_reason": "Note is substantively correct and well-sourced but rated 'missing key points' (35) and 'argumentative' (13) — likely because the issue is emotionally charged (pro-Ukraine audience reading a sympathetic story) and raters wanted more context about what is true about Paskal (her real gymnastics achievements, the inspirational nature of the video) before the rebuttal. Also rated 'note not needed' (31) by people who believed the ban claim and didn't want it corrected.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false — no IOC ban exists; she is below minimum Olympic gymnastics age",
+    "sources_checked": [
+      "https://sports.yahoo.com/article/dreaming-olympic-glory-story-8-144314631.html",
+      "https://www.pravda.com.ua/eng/articles/2025/03/13/7502735/",
+      "https://www.startribune.com/russias-war-threatens-ukraines-olympic-future-not-just-the-present-a-young-gymnast-offers-hope/600379321"
+    ],
+    "notes": "No IOC ruling exists. Paskal is 9 (below the FIG minimum age of 16 for Olympic gymnastics). Multiple feature articles from 2024-2026 describe her continued competition and achievements (incl. recent bronze) with zero mention of an Olympic ban. The 'IOC banned a 9-year-old for showing her prosthetic' story is fabricated."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.28M impressions on emotionally-charged fabricated outrage targeting both a child amputee and the IOC. Correcting fabricated Ukraine-war framings (in either direction) has modest information-integrity value."
+  },
+  "difficulty": "easy"
+}

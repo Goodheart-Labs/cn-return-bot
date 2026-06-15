@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2031784520194634013",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["breaking_news_and_war", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Author reports a 'MASSIVE non-nuclear explosion in Qom, Iran' attached to footage of a mushroom-cloud blast over a city, with 'lots of speculation' that the US used a GBU-57 MOP. Explicitly framed as speculation.",
+  "why_note_decision": "Multiple outlets (Iran International, Kurdistan24, Reuters/AA, NCRI) confirm a real, deadly explosion in Qom on Mar 11 2026 attributed by Iranian officials to US/Israeli strikes — possibly bunker busters. The MOP attribution is explicitly hedged in the tweet as 'speculation'. A separate fact-check (m9.news) notes some viral clips circulating that day were actually Beirut-2020 footage, but we can't confirm THIS particular clip is the misattributed one (AI desc 'mushroom cloud over city' matches both events). Net: tweet's main claim (massive explosion in Qom) is true; MOP claim is flagged as speculation. The original note disputes only the MOP detail, which isn't the core claim.",
+  "judge_guidance": "PASS only if the bot declines to write a note OR writes one that surgically addresses the specific point that would matter (e.g. 'the attached video may be unrelated Beirut-2020 footage') — but only if it cites such a verification. Do NOT pass a note that merely disputes whether MOP/bunker-busters were used — the tweet itself flags MOP as speculation, multiple outlets report bunker-buster claims by Iranian sources, and a real fatal explosion in Qom did occur on Mar 11 2026 amid US/Israeli strikes. The original NOT_HELPFUL note attacked the hedged speculation, missing that the underlying event is real and the speculation is appropriately framed.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Explosions were reported in Qom, Iran, amid ongoing US-Israel strikes on military sites. However, no confirmed reports indicate US use of the GBU-57 MOP in this incident. The MOP was first used in 2025 against nuclear facilities.    https://en.wikipedia.org/wiki/GBU-57A/B_MOP https://www.airandspaceforces.com/pentagon-restock-massive-ordinance-penetrator-bombs-dropped-b-2s-iran https://www.iranintl.com/en/202603086973 https://www.aljazeera.com/news/2026/3/6/tehran-hit-by-heavy-bombing-on-day-seven-of-us-israel-war-on-iran",
+    "failure_reason": "noteNotNeeded — disputes a 'speculation' the tweet already labels as speculation, while the underlying massive Qom explosion is real and corroborated by multiple sources.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Real explosion in Qom on Mar 11 2026 confirmed; MOP attribution explicitly framed as speculation in tweet.",
+    "sources_checked": [
+      "https://www.iranintl.com/en/202603086973",
+      "https://www.kurdistan24.net/en/story/903541/explosion-in-qom-kills-six-as-iranian-media-allege-us-israeli-strikes",
+      "https://www.m9.news/usa-news/qom-explosion-fact-check-beirut-video/"
+    ],
+    "notes": "Six killed, Iranian officials blamed US/Israeli strikes incl. bunker-buster claims. One fact-check flags that some viral clips circulating that day were re-used Beirut-2020 footage, but we can't verify THIS exact clip is mislabeled from the AI description alone."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "6M+ impressions on active-war content; getting the false-positive call right matters for trust in the notewriter during fast-moving conflict reporting."
+  },
+  "difficulty": "hard"
+}

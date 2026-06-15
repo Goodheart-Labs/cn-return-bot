@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2020927508171063715",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:00.773Z",
+  "post": {
+    "id": "2020927508171063715",
+    "author_id": "4627222575",
+    "created_at": "2026-02-09T18:27:19.000Z",
+    "text": "Stealing from a Turkish man was a bad idea for that immigrant \n\nGod damn he whooped him\n\nhttps://t.co/2yFixaJqTQ",
+    "media": [
+      {
+        "media_key": "7_1989218739187769344",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1989218739187769344/pu/img/_HEMJ0J5UEn7pcqh.jpg",
+        "height": 842,
+        "width": 720,
+        "duration_ms": 33066,
+        "view_count": 6341339,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1989218739187769344/pu/vid/avc1/320x374/F3K8RITsZdFVVrK6.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1989218739187769344/pu/vid/avc1/480x560/Ub8oZdMwwNyYUeDp.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1989218739187769344/pu/vid/avc1/720x842/3nAo4z-QamTR3hbL.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1989218739187769344/pu/pl/if4csZgthP9lRvAs.m3u8?tag=12&v=dbf"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2135,
+      "reply_count": 692,
+      "like_count": 31566,
+      "quote_count": 133,
+      "bookmark_count": 1568,
+      "impression_count": 639544
+    },
+    "author_followers": 379740,
+    "author_name": "0HOUR1",
+    "author_description": "",
+    "author_tweet_count": 85896
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1989218739187769344/pu/vid/avc1/720x842/3nAo4z-QamTR3hbL.mp4?tag=12",
+          "description": {
+            "description": "A man wearing a black shirt with 'SECURITY' printed on the back and camouflage shorts is seen physically restraining and forcibly removing another man in a grey sweatshirt from an indoor dining establishment. The security guard holds the individual firmly by the arms and torso, maneuvering him toward the exit through a narrow aisle between wooden tables and chairs. The setting appears to be a cafe or restaurant with flags on the walls and warm lighting. A watermark with the crescent and star of the Turkish flag is centrally overlaid on the frames.",
+            "ocrText": "SECURITY BEYOGLU SON DAKIKA"
+          },
+          "transcription": "درسته ویلا مردم مردم مردم مردم دارو باز کن دارو باز کن مردم خواهید گشت چه چیزی خواهید گشت اوی اوی اوی چیزی خواهید گشت چوژین پایین نتونم دارم تون داریم آخ، افشت چونی نیست؟"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @TheMAGAZorro: Immigrant was lucky he only got a beating (0 likes, 344 views)\n- @MattSybrant6563: I love watching a good ass whooping (0 likes, 370 views)\n- @deathsarus: Not only that, he'll have to deal with the turkish police afterwards You don't deal with the turkish police (0 likes, 329 views)\n- @Jeanneofdarc: Okulda Coğrafya öğretmediler mi (3 likes, 424 views)\n- @tapur19on4: (image attached) (21 likes, 1379 views)\n- @SarmonJr: Now read the community note (0 likes, 7 views)\n- @grok: According to reports, Turkish actor and restaurant owner Bahadır Ünlü assaulted his Iranian employee İsmail N., alleging theft and account irregularities. Ünlü was arrested for intentional injury following the incident in Istanbul. (0 likes, 13 views)\n- @khaakbb: Sure buddy 🤣 u don’t know history, ottomans never conquered Iran (0 likes, 23 views)\n- @WhoisCaree: Half turkis half iranian. İn iran so many Turks living (0 likes, 8 views)\n- @Turk_Defeater: no you are subjected to arab religion for ever your sultans your whole history was formed due to arabic culture (0 likes, 29 views)",
+    "warnings": []
+  }
+}

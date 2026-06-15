@@ -1,0 +1,1156 @@
+[
+  {
+    "url": "https://www.facebook.com/photo.php?fbid=982113224486408&set=a.850196581011407&id=100080632194001",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 437342
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "googlebot",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "archive.is",
+          "status": 429,
+          "contentClass": "empty",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    }
+  },
+  {
+    "url": "https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 8472
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "googlebot",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "archive.is",
+          "status": 429,
+          "contentClass": "empty",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    }
+  },
+  {
+    "url": "https://www.reuters.com/business/energy/bessent-urges-china-step-up-diplomacy-iran-ahead-trump-xi-summit-2026-05-04/",
+    "iter2_classification": "fetch_failed_http_401",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "failed",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 401,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 4208
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 4208,
+        "preview": "# Bessent urges China to step up diplomacy on Iran ahead of Trump-Xi summit\n\n![White House press briefing in Washington, D.C.](https://www.reuters.com"
+      }
+    }
+  },
+  {
+    "url": "https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/lineups/",
+    "iter2_classification": "fetch_error_network",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "error": "The operation timed out.",
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 73762
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 734,
+        "preview": "# History: Man Utd 0-1 Atleti | Line-ups: UEFA Champions League 2021/22 Round of 16\n\nThe Wayback Machine - http://web.archive.org/web/20260209214359/h"
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "error": "The operation timed out.",
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 415
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 415,
+        "preview": "# History: Man Utd 0-1 Atleti | Line-ups: UEFA Champions League 2021/22 Round of 16\n\n![UEFA.COM](https://img.uefa.com/imgml/uefacom/elements/main-nav/"
+      }
+    }
+  },
+  {
+    "url": "https://factcheck.afp.com/doc.afp.com.76UX8KE",
+    "iter2_classification": "fetch_failed_http_403",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 92167
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 16495,
+        "preview": "# Exaggerated claims about Russia’s cancer vaccine Enteromix sweep across Africa\n\nThe Wayback Machine - http://web.archive.org/web/20260304075053/http"
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 15031
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 15031,
+        "preview": "# Exaggerated claims about Russia’s cancer vaccine Enteromix sweep across Africa\n\n[![Home](/themes/custom/factuel/afp-logo-light.svg)](https://factche"
+      }
+    }
+  },
+  {
+    "url": "https://factcheck.afp.com/doc.afp.com.87W89G3",
+    "iter2_classification": "fetch_failed_http_403",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 80818
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 5848,
+        "preview": "# Video of Gaza children wading through floods is AI-generated\n\nThe Wayback Machine - http://web.archive.org/web/20260114200815/https://factcheck.afp."
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 4888
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 4888,
+        "preview": "# Video of Gaza children wading through floods is AI-generated\n\n[![Home](/themes/custom/factuel/afp-logo-light.svg)](https://factcheck.afp.com/ \"Home\""
+      }
+    }
+  },
+  {
+    "url": "https://www.senate.gov/about/powers-procedures/declarations-of-war.htm",
+    "iter2_classification": "fetch_failed_http_403",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "failed",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 453
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 453,
+        "preview": "# About Declarations of War by Congress\n\nThe Constitution grants Congress the sole power to declare war. Congress has declared war on 11 occasions, in"
+      }
+    }
+  },
+  {
+    "url": "https://constitution.congress.gov/browse/essay/artI-S8-C11-2-3/ALDE_00013914/",
+    "iter2_classification": "fetch_failed_http_403",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 70690
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 2374,
+        "preview": "# Declarations of War vs. Authorizations for Use of Military Force (AUMF) | Constitution Annotated | Congress.gov | Library of Congress\n\nArticle I, Se"
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "googlebot",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 2374
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 2374,
+        "preview": "# Declarations of War vs. Authorizations for Use of Military Force (AUMF) | Constitution Annotated | Congress.gov | Library of Congress\n\nArticle I, Se"
+      }
+    }
+  },
+  {
+    "url": "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US/",
+    "iter2_classification": "fetch_failed_http_401",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "failed",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 401,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 3086
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 3086,
+        "preview": "# Fact check: Bumps on car steering wheel are not in Braille\n\n![Reuters Fact Check](https://www.reuters.com/resizer/v2/https%3A%2F%2Farchive-images.pr"
+      }
+    }
+  },
+  {
+    "url": "https://www.instagram.com/p/DUWHli8gTpK/",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 811292
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "short",
+          "chars": 157
+        },
+        {
+          "how": "googlebot",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "archive.is",
+          "status": 429,
+          "contentClass": "empty",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    }
+  },
+  {
+    "url": "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+    "iter2_classification": "fetch_failed_http_401",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "failed",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 401,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 2470
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 2470,
+        "preview": "# Fact Check: Netanyahu’s press conference dispels death rumours\n\nIsraeli Prime Minister Benjamin Netanyahu has dispelled ​widespread rumours of his d"
+      }
+    }
+  },
+  {
+    "url": "https://www.facebook.com/NBCBayArea/videos/police-investigating-santana-row-attack-as-possible-hate-crime/2384729795331069/",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 665160
+        }
+      ],
+      "final": {
+        "class": "short",
+        "chars": 152,
+        "preview": "A brutal attack outside a restaurant on Santana Row is being investigated as a possible hate crime, police say: http://nbcbay.com/mR4qvXL | NBC Bay Ar"
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "short",
+          "chars": 152
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "googlebot",
+          "status": 200,
+          "contentClass": "short",
+          "chars": 152
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "archive.is",
+          "status": 429,
+          "contentClass": "empty",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    }
+  },
+  {
+    "url": "https://www.reuters.com/fact-check/image-depicting-jeffrey-epstein-tel-aviv-was-created-with-ai-2026-02-26/",
+    "iter2_classification": "fetch_failed_http_401",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "failed",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 401,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 3146
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 3146,
+        "preview": "# Fact Check: Image depicting Jeffrey Epstein in Tel Aviv was created with AI\n\nAn AI-generated image of a bearded Jeffrey Epstein has been shared onli"
+      }
+    }
+  },
+  {
+    "url": "https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 164303
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 14663,
+        "preview": "# Image of Jeffrey Epstein in Tel Aviv is AI-generated\n\n### Stand up for the facts!\n\nOur only agenda is to publish the truth so you can be an informed"
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 14663
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 14663,
+        "preview": "# Image of Jeffrey Epstein in Tel Aviv is AI-generated\n\n### Stand up for the facts!\n\nOur only agenda is to publish the truth so you can be an informed"
+      }
+    }
+  },
+  {
+    "url": "https://www.reuters.com/article/world/fact-check-trump-did-not-call-republicans-the-dumbest-group-of-voters-idUSKBN2342DH/",
+    "iter2_classification": "fetch_failed_http_401",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 401,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "failed",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 401,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 4081
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 4081,
+        "preview": "# Fact check: Trump did not call Republicans “the dumbest group of voters”\n\nAn old quote falsely attributed to Donald Trump has recently resurfaced on"
+      }
+    }
+  },
+  {
+    "url": "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 176703
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 7416,
+        "preview": "# “The fascists of the future will call themselves anti-fascists.” Not WSC.\n\n### **Q: Did Churchill say this?**\n\nI’m a reporter writing to ask whether"
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 7416
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 7416,
+        "preview": "# “The fascists of the future will call themselves anti-fascists.” Not WSC.\n\n### **Q: Did Churchill say this?**\n\nI’m a reporter writing to ask whether"
+      }
+    }
+  },
+  {
+    "url": "https://www.trueachievements.com/news/asha-sharma-xbox-gamertag",
+    "iter2_classification": "fetch_failed_http_403",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "failed",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "googlebot",
+          "status": 402,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "archive.is",
+          "status": 429,
+          "contentClass": "empty",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    }
+  },
+  {
+    "url": "https://www.facebook.com/pressoneph/posts/factcheck-a-facebook-reel-racking-up-over-400000-views-falsely-depicts-us-missil/1425155566297826/",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 400,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 7232
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "short",
+          "chars": 60
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "googlebot",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 529
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 529,
+        "preview": "PressOne.PH - #FactCheck: A Facebook reel racking up over... Facebook Log In PressOne.PH&#x27;s Post PressOne.PH 4d · Shared with Public #FactCheck : "
+      }
+    }
+  },
+  {
+    "url": "https://www.instagram.com/reel/DToWOookcl4/?hl=de",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 813954
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "googlebot",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "error": "no snapshot",
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "archive.is",
+          "status": 429,
+          "contentClass": "empty",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    }
+  },
+  {
+    "url": "https://news.un.org/en/story/2026/03/1167199",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 200,
+          "contentClass": "fetched",
+          "chars": 98979
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 6000,
+        "preview": "# UN resolution urges reparations for slavery’s ‘historical wrongs’\n\n## UN resolution urges reparations for slavery’s ‘historical wrongs’\n\nThe resolut"
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "good",
+          "chars": 6000
+        }
+      ],
+      "final": {
+        "class": "good",
+        "chars": 6000,
+        "preview": "# UN resolution urges reparations for slavery’s ‘historical wrongs’\n\n## UN resolution urges reparations for slavery’s ‘historical wrongs’\n\nThe resolut"
+      }
+    }
+  },
+  {
+    "url": "https://www.bls.gov/news.release/pdf/cpi.pdf",
+    "iter2_classification": "very_short_body",
+    "current": {
+      "strategyName": "current",
+      "attempts": [
+        {
+          "how": "desktop",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "mobile",
+          "status": 403,
+          "contentClass": "failed",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "status": 429,
+          "error": "wayback availability",
+          "contentClass": "failed",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    },
+    "v2": {
+      "strategyName": "v2",
+      "attempts": [
+        {
+          "how": "desktop+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "mobile+headers",
+          "status": 200,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "googlebot",
+          "status": 403,
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "wayback",
+          "status": 429,
+          "error": "wayback availability",
+          "contentClass": "empty",
+          "chars": 0
+        },
+        {
+          "how": "archive.is",
+          "status": 429,
+          "contentClass": "empty",
+          "chars": 0
+        }
+      ],
+      "final": {
+        "class": "empty",
+        "chars": 0,
+        "preview": ""
+      }
+    }
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2056058915121766400",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "manipulated_or_fabricated_evidence",
+    "statistical_or_numerical_claim",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "fabricated_poll",
+  "tweet_summary": "An engagement-poll post about removing Pete Hegseth shows a graphic claiming '\ud83d\udea8 NEW POLL: 75% of Americans say Pete Hegseth should be removed from office.'",
+  "why_note_decision": "The '75%' figure in the graphic is fabricated \u2014 no credible poll shows 75% of Americans wanting Hegseth removed. The real, identifiable poll on this question is a J.L. Partners/Daily Mail survey (Mar 25-27, 1,001 registered voters) showing 54% backing his resignation and 22% saying he should stay. The graphic inflates that to a fake '75% of Americans / removed from office' statistic with a 'NEW POLL' siren framing, which is a checkable false numerical claim being spread as fact. A note correcting the fabricated number is warranted. Provisional 'no_note' is wrong.",
+  "judge_guidance": "A correct note must establish that the '75% of Americans say Hegseth should be removed' statistic is fabricated/unsupported, and should cite the real figure: a J.L. Partners/Daily Mail poll found ~54% support his resignation and ~22% say he should stay. PASS if the note flags '75%' as unsupported AND supplies the actual poll numbers with a reliable source (The Hill / Newsweek / Daily Mail-J.L. Partners). FAIL if it (a) merely opines on Hegseth, (b) says 'no note needed', or (c) repeats the 75% figure. The original note had the right correction but cite-quality/relevance dragged it down, so a correct note must cleanly tie the real 54% poll to the fake 75% graphic.",
+  "reference_note": "The '75%' figure is fabricated; no credible poll shows 75% of Americans want Hegseth removed. The actual poll on this question, by J.L. Partners/Daily Mail (Mar 25-27, 1,001 registered voters), found 54% support his resignation and 22% say he should stay. https://thehill.com/policy/defense/5220560-hegseth-resign-poll-waltz-vance-signalgate-atlantic-goldberg",
+  "original_unhelpful_note": {
+    "text": "The graphic depicts a fabricated poll; no credible survey shows 75% of Americans want Pete Hegseth removed from office. A J.L. Partners/Daily Mail poll found 54% of voters support his resignation. https://thehill.com/policy/defense/5220560-hegseth-resign-poll-waltz-vance-signalgate-atlantic-goldberg https://www.theguardian.com/us-news/2025/mar/31/pete-hegseth-republican-voters",
+    "failure_reason": "Substance is correct (75% fabricated; real poll 54% resign) but rated notHelpfulIncorrect(3)/OpinionSpeculation(2)/Argumentative(2). Low rating volume (6); calling it 'fabricated' without showing the graphic is literally a fake number vs a misreported real poll may have read as overreach to some raters. A correct note states the real number plainly and labels 75% unsupported.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False: '75% removed' is fabricated; real J.L. Partners/Daily Mail poll = 54% resign, 22% stay.",
+    "sources_checked": [
+      "https://thehill.com/policy/defense/5220560-hegseth-resign-poll-waltz-vance-signalgate-atlantic-goldberg",
+      "https://www.newsweek.com/more-republicans-want-pete-hegseth-resign-stay-poll-2052704",
+      "https://news.meaww.com/fact-check-did-a-poll-show-most-americans-wanted-pete-hegseth-impeached-and-prosecuted"
+    ],
+    "notes": "No poll supports '75% of Americans want Hegseth removed'. J.L. Partners/Daily Mail poll (Mar 25-27, 1,001 registered voters, +/-3.4): 54% back resignation, 22% say stay. A separate viral '75% want him impeached/prosecuted, per CNN' claim is also false (CNN never reported it)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Fabricated polling numbers distort public perception of opinion on a cabinet official; correcting invented statistics protects the integrity of public-opinion discourse, moderate value."
+  },
+  "difficulty": "easy"
+}

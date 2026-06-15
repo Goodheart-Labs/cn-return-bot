@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2030008248279912626",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["politics_and_policy", "misattributed_or_miscontextualized_media"],
+  "category_fit": "partial",
+  "suggested_category": "",
+  "tweet_summary": "NewsWire reports that Condoleezza Rice was seen entering the White House on March 6, 2026 (per CNN). The illustrative image is a 2004 file photo of Rice with President George W. Bush at her Secretary of State nomination announcement.",
+  "why_note_decision": "The substantive claim is TRUE: Rice did visit the White House on 6 March 2026 — she attended a Trump-chaired roundtable on college sports/NIL in the East Room (confirmed by multiple outlets including Yahoo Sports, CBS Sports, The Daily Beast, IBTimes). Using a 2004 file photo as illustration is standard for news wire posts and isn't deceptive — the visit itself is real and the photo is of the same person being reported on. The note pedantically points at the file photo while the headline claim it would be 'correcting' is true. 20 raters tagged NNN.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The substantive claim is true: Condoleezza Rice did enter the White House on 6 March 2026 to attend a Trump-chaired college sports / NIL roundtable (confirmed by Yahoo Sports, CBS Sports, The Daily Beast, IBTimes). Using a 2004 stock photo of Rice as illustration is standard news-wire practice. Any note implying the underlying visit didn't happen, or framing the use of a file photo as deceptive when the visit itself is real, is a false positive and must FAIL. (A note merely captioning 'photo is 2004 file' without context that the actual visit happened would also confuse readers and should FAIL.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The photo shows Condoleezza Rice in November 2004 during President Bush's announcement of her nomination as Secretary of State, not her recent White House visit. https://georgewbush-whitehouse.archives.gov/news/releases/2004/11/20041116-3.html https://x.com/KristenhCNN/status/2030004003145183609",
+    "failure_reason": "notHelpfulNoteNotNeeded — the visit being reported is real; flagging the use of a stock photo without contextualizing that the underlying event is true misleads readers into thinking the whole story is fake",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_underlying_event",
+    "sources_checked": [
+      "https://sports.yahoo.com/articles/donald-trump-picks-fix-college-031953454.html",
+      "https://www.cbssports.com/college-football/news/president-trump-college-sports-reform-committees-nil/",
+      "https://www.thedailybeast.com/key-iraq-war-architect-at-white-house-as-iran-war-rages/",
+      "https://www.ibtimes.co.uk/condoleezza-rice-hard-line-stance-iran-white-house-visit-1783850"
+    ],
+    "notes": "Rice attended a White House roundtable on college sports / NIL chaired by Trump on 6 March 2026. The headline claim ('seen entering White House — CNN') is accurate. The 2004 photo is being used as a wire-service stock illustration."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "~7M impressions on a politically charged framing (Iraq War architect at the WH amid Iran war); EA/progress lens: surfacing accurate context about NIL meeting vs Iran-war reading matters for political discourse, but the tweet itself isn't false."
+  },
+  "difficulty": "medium"
+}

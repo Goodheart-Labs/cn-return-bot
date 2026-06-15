@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2002049386734624816",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:02.316Z",
+  "post": {
+    "id": "2002049386734624816",
+    "author_id": "1157545116095143936",
+    "created_at": "2025-12-19T16:12:24.000Z",
+    "text": "She did this to a memorial of the Bondi Beach victims\n\nabsolutely sick. \n\nhttps://t.co/UIihkGO3tZ",
+    "media": [
+      {
+        "media_key": "13_2001896581193195520",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2001896581193195520/img/Gn7CVzWhH0YOVp1c.jpg",
+        "height": 360,
+        "width": 640,
+        "duration_ms": 28471,
+        "view_count": 2910967,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2001896581193195520/vid/avc1/480x270/_Ja4rXByqpL1R6BW.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2001896581193195520/vid/avc1/640x360/F9kj9JdAzOQNoqG_.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2001896581193195520/pl/mMIWvq2aMEa43r2e.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2545,
+      "reply_count": 908,
+      "like_count": 11719,
+      "quote_count": 218,
+      "bookmark_count": 630,
+      "impression_count": 752247
+    },
+    "author_followers": 113906,
+    "author_name": "Tablesalt 🇨🇦🇺🇸",
+    "author_description": "Professional red-piller. \n\nI've ratioed the Prime Minister of Canada. \n\nSponsor a post: https://t.co/zwpD6EnyNQ",
+    "author_tweet_count": 31945
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2001896581193195520/vid/avc1/640x360/F9kj9JdAzOQNoqG_.mp4",
+          "description": {
+            "description": "A sequence of four security camera frames from a shopping mall showing two individuals near a Hanukkah menorah. In the first frame, a man and a woman wearing a hijab walk toward a menorah enclosed by stanchions. In the second frame, the woman stands next to the menorah while the man observes. In the third frame, they both walk away into a darker corridor, and in the fourth frame, the area appears empty as they have exited the field of view.",
+            "ocrText": "2023 12 18 18:08"
+          },
+          "transcription": "(transcription failed: Command failed: ffmpeg -i \"/var/folders/n4/l4rh4y3n4lz2b0h3p52h20240000gn/T/cn-gemini-1779720709525-)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@dkreative1**: 🤦🏼‍♀️ Imagine if this attack targeted Muslims and a Jewish woman did this. The outrage would be deafening. (Likes: 793)\n- **@ConcreteXCrypto**: She had to go back and get them all (Likes: 481)\n- **@AnnHilton22**: We are NOT the same. I refuse to live with inbreds who live to rape, destroy, and kill. (Likes: 469)\n- **@jezscacuzz**: The clapping by her husband. They are not going to stop. (Likes: 467)\n- **@Viralvid_89**: (image attached) (Likes: 225)\n- **@GeoPipefitter**: There's your moderate Islam on display. whoa and the bitch came back to finish it off 🤣🤣🤣 what a psycho (Likes: 169)\n- **@aarohi_vns**: that Whole community is sick (Likes: 134)\n- **@wosgnn**: Whites can't even imagine what a muslim is taught 24/7... You all are too stupid... (Likes: 113)\n- **@dieseldude2010**: Just a hateful race of people!! The world doesn’t benefit from their existence at all. (Likes: 92)\n- **@J2421Jeff**: This must be more of that right wing extremism that the Australian Prime Minister has been talking about. Taking away the average Australian’s right to free speech should fix it. (Likes: 90)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2052347768673571129",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["health_medical_science", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Japanese-language vaccine-injury account quote-tweets an English post showing Pfizer's 5.3.6 cumulative post-authorization document with 'Hantavirus pulmonary infection' visible in the list, headline 'There was hantavirus lung infection as a side effect of the COVID vaccine!!' (コロナワクチンの副作用にハンタウィルス肺感染があった‼️). Quoted tweet frames 'Fear Virus being pushed by the media (Hantavirus) was also listed as an adverse side effect of the covid vaccines.'",
+  "why_note_decision": "Classic misreading of the Pfizer AESI list. The document is Pfizer's 5.3.6 Cumulative Analysis of Post-Authorization Adverse Event Reports (FDA-CBER-2021-5683-0000086) Appendix 1 — a list of ~1,233 Adverse Events of Special Interest (AESIs) Pfizer agreed to MONITOR after rollout. These are conditions to flag IF they occur post-vaccination, NOT conditions Pfizer has identified as caused by the vaccine. Hantavirus is transmitted via rodent excreta and has no plausible biological link to mRNA vaccination; its inclusion on the surveillance list is a comprehensive-net design choice, not a causal claim. This is a Lead Stories / Full Fact / Reuters-debunked claim. 428k impressions on a sensitive vaccine-safety topic in a Japanese audience prone to vaccine-injury narratives — note is clearly warranted. The original note (in Japanese) actually does this well: explains AESI surveillance, distinguishes it from causation, explains hantavirus transmission via rodent excreta, cites both the Pfizer document and Lead Stories' fact-check. Rater signal is mostly noteNotNeeded(2)/missingKeyPoints(2)/opinionSpeculation(2)/incorrect(1) at low volume (26 ratings) — borderline. I'll classify as helpful_reference because the note is well-constructed and the failure signal is weak/mixed; treating it as the bar for what a good note looks like.",
+  "judge_guidance": "PASS criteria: the note must establish that (a) hantavirus pulmonary infection appears in Pfizer's 5.3.6 document as an Adverse Event of Special Interest (AESI) — a pre-defined list of conditions for post-authorization SURVEILLANCE, not a list of vaccine side effects; (b) inclusion on the AESI list does NOT imply causation by the vaccine — it means 'flag this condition if it happens after vaccination'; (c) hantavirus is contracted from rodent (e.g., deer mouse) excreta and has no biological mechanism linking it to mRNA vaccines. Cite the Pfizer 5.3.6 document or Lead Stories / Full Fact / Reuters / AFP fact-check. FAIL any note that (a) accepts hantavirus as a vaccine side effect, (b) hedges into 'we don't know yet', or (c) doesn't explain the AESI vs side-effect distinction (this is the key point — without it the correction doesn't land). Language matches the post (Japanese is OK but English also fine — judge on content not language).",
+  "reference_note": "この一覧はPfizerの5.3.6文書付録1にあるAESI（特別監視対象有害事象）リストです。これは接種後に発生したら報告・調査する対象の症状を網羅的に集めたもので、ワクチンが引き起こす副作用として確認されたものではありません。ハンタウイルスはネズミ等の排泄物から感染するウイルスで、mRNAワクチンとの生物学的な因果関係はありません。https://leadstories.com/hoax-alert/2026/05/fact-check-document-does-not-show-hantavirus-as-side-effect-of-covid-19-vaccines.html https://fullfact.org/health/hantavirus-not-listed-side-effect-pfizer-covid-19-vaccine/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading — hantavirus is on Pfizer's AESI surveillance list, NOT a documented side effect. AESI inclusion does not imply causation.",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/05/fact-check-document-does-not-show-hantavirus-as-side-effect-of-covid-19-vaccines.html",
+      "https://fullfact.org/health/hantavirus-not-listed-side-effect-pfizer-covid-19-vaccine/",
+      "https://www.yahoo.com/news/articles/fact-check-document-does-not-005657342.html"
+    ],
+    "notes": "Multiple fact-checkers (Lead Stories, Full Fact, AFP via Yahoo) converge on the same explanation: Appendix 1 of Pfizer 5.3.6 is a 1,233-condition surveillance list, not a side-effect inventory. Hantavirus has no plausible mechanistic link to mRNA vaccines."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "428k impressions on a vaccine-safety conspiracy claim in a Japanese audience already primed for vaccine-injury narratives; the AESI-vs-side-effect misreading is a recurring vector for vaccine hesitancy. Correcting it has real public-health value."
+  },
+  "difficulty": "medium"
+}

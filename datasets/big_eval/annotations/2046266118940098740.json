@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2046266118940098740",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "viral_old_video_no_recency_claim",
+  "tweet_summary": "@Dailymeow (a 11.7k-follower cats-content account) posts a 15-second clip showing a man climbing down a ladder while a tabby cat clings to his leg with all four paws, captioned generically: 'The cat climbed a tree in the yard but couldn't get back down...'. 115k impressions.",
+  "why_note_decision": "The video is genuine — filmed July 11 2020 in Meishan, Sichuan, China (confirmed by Newsflare/TMZ). The note's facts are correct. But the tweet makes NO recency claim: it just retells the literal events of the video in generic past-tense ('the cat climbed a tree'). Nothing in the tweet asserts this is recent footage. The note adds 'not a recent event' to dispute a recency claim the tweet never made. Community correctly downrated it (5 noteNotNeeded vs 4 missingKeyPoints) — viewers were not misled into thinking this was today's news.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the tweet describes the video literally and makes NO claim about when/where it was filmed. The note's '2020 Meishan' fact is correct but irrelevant — the bot's job is fact-checking claims, not adding production-date trivia to viral animal videos. FAIL any note that (a) repeats the original failure of stating the video's date as if a recency claim was made, (b) treats a generic 'cat got stuck in a tree' caption as a temporal misrepresentation. Old viral videos shared without a 'this just happened' claim do not need notes.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video shows a cat rescue from July 2020 in Meishan, China, not a recent event. https://www.youtube.com/watch?v=GwshkSQ-Qcw https://www.newsflare.com/video/367940/cat-clings-to-rescuers-leg-tightly-when-being-saved-from-tree-in-china",
+    "failure_reason": "note_not_needed — accurate sourcing but no recency claim in the tweet to correct. Pedantic 'old video' note on lighthearted cat content.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "video_authentic_no_misrepresentation",
+    "sources_checked": [
+      "https://www.newsflare.com/video/367940/cat-clings-to-rescuers-leg-tightly-when-being-saved-from-tree-in-china",
+      "https://www.tmz.com/2020/07/15/cat-rescue-video-clings-to-rescuers-leg-tree-china/"
+    ],
+    "notes": "Original video confirmed: July 11 2020, Meishan, Sichuan. But the tweet does not claim this is recent footage — it just narrates the cat clinging behaviour seen in the clip."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Lighthearted cat content. False-positive suppression matters — pipeline must not date-stamp every viral animal clip."
+  },
+  "difficulty": "easy"
+}

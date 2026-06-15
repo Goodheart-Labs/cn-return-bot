@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2036035230037901378",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "TaraBull's tweet (1M+ views, 1.7M impressions) claims 'Police just uncovered a YouTube view farm after a sting operation' with video showing rows of phones mounted to a wall/ceiling and uniformed personnel — Portuguese audio. The video is presented as real police bodycam footage of a Brazilian raid.",
+  "why_note_decision": "Brazilian fact-checkers — most prominently G1's 'Fato ou Fake' and Estadão Verifica — confirmed in December 2025 that the viral video is AI-generated, not real police footage. Tells include distorted police insignia, cables that lead into solid walls, mismatched doors, and the absence of any Brazilian police record of such an operation. Hive Moderation flagged AI artifacts. (Note: there WAS a real, separate view-farm bust in Macaé, RJ around the same period, but the specific clip TaraBull posted is the AI fake.) A CN is clearly warranted. The original note correctly identifies it as AI-generated and cites the G1/Fato ou Fake debunk. Raters tagged it 32× 'sources missing/unreliable' — the friction is that the note cites only G1 Fato ou Fake (Portuguese-language, behind a paywall-like cookie wall for many US users) and doesn't add an English-language source or a direct AI-detection reference, despite both being available.",
+  "judge_guidance": "PASS if the note (a) clearly states the video is AI-generated, not real police bodycam footage of a raid, (b) cites a reputable Brazilian fact-check (G1 'Fato ou Fake', Estadão Verifica, AFP) AND ideally adds an English-language source or AI-detector reference (e.g. mmnews.tv, Hive Moderation), and (c) optionally distinguishes this clip from the real, separate Brazilian view-farm bust in Macaé from December 2025 so readers don't conclude all view-farm news is fake. FAIL the note if it (a) merely says 'looks fake' / 'AI artifacts' without citing a fact-check, (b) confuses the AI clip with the real Macaé bust as if both are fake, (c) cites only blog/Reddit threads, or (d) is in only Portuguese with no English citation. The original note covers (a) and a single source — pass on minimum bar but a stronger note adds a second English source.",
+  "reference_note": "This video is AI-generated, not real footage of a Brazilian police raid on a YouTube view farm. Brazilian fact-checkers (G1 Fato ou Fake; Estadão Verifica) and AI-detection tools identified distorted police insignia, cables entering solid walls, and the absence of any official police record. A separate, real view-farm bust did occur in Macaé, RJ in December 2025 but is unrelated to this clip. https://g1.globo.com/fato-ou-fake/noticia/2025/12/03/e-fake-video-que-mostra-policia-achando-fabrica-de-visualizacoes-de-conteudos-do-youtube-cena-foi-criada-com-inteligencia-artificial.ghtml https://mmnews.tv/viral-brazil-view-farm-raid-exposed-as-high-tech-fake/",
+  "original_unhelpful_note": {
+    "text": "The video is AI-generated and does not depict a real police raid on a YouTube view farm. Brazilian fact-checkers confirmed the scene is fake, with no such event occurring. https://g1.globo.com/fato-ou-fake/noticia/2025/12/03/e-fake-video-que-mostra-policia-achando-fabrica-de-visualizacoes-de-conteudos-do-youtube-cena-foi-criada-com-inteligencia-artificial.ghtml",
+    "failure_reason": "sources_missing_or_unreliable / partially_wrong — note is directionally right but (1) cites only a single Portuguese-language source that many US raters can't easily verify, (2) says 'no such event occurring' which is too strong because there WAS a real, separate view-farm bust in Macaé that audiences may conflate.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "ai_generated_fake_footage",
+    "sources_checked": [
+      "https://g1.globo.com/fato-ou-fake/noticia/2025/12/03/e-fake-video-que-mostra-policia-achando-fabrica-de-visualizacoes-de-conteudos-do-youtube-cena-foi-criada-com-inteligencia-artificial.ghtml",
+      "https://mmnews.tv/viral-brazil-view-farm-raid-exposed-as-high-tech-fake/",
+      "https://weraveyou.com/2026/03/youtube-view-farm-brazil-police-operation/",
+      "https://www.newsflare.com/video/816106/brazilian-police-bust-illegal-view-farm-inflating-stats-for-youtube-music-videos"
+    ],
+    "notes": "The specific clip TaraBull shared is AI-generated. A separate real view-farm bust in Macaé, RJ (Dec 2025) is unrelated; some aggregators were briefly fooled but the clip's police insignia, cables-into-walls, and missing police records confirm AI provenance."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.7M impressions of AI-faked 'police bust' footage erodes trust in real footage — and the meta-irony (audience cheering 'nothing is authentic' under an AI-generated clip) makes correcting this valuable for media literacy."
+  },
+  "difficulty": "medium"
+}

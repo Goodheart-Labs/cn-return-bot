@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2017567355098820906",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet captions a viral video as 'Dave Bautista receives ceremonial belt whipping after earning his purple belt in Brazilian jiu-jitsu, honoring Gracie fighter tradition.' The footage is genuinely Bautista's 2014 purple-belt gauntlet ceremony at Gracie Fighter Jiu-Jitsu.",
+  "why_note_decision": "The tweet's description of what's in the video is exactly correct: Bautista, purple belt, ceremonial gauntlet (belt-whipping) tradition at Gracie Fighter Jiu-Jitsu. The tweet does not claim the footage is new or recent — no 'just', 'today', or temporal claim. The note 'corrects' this by noting the video is from 2014 (when he got purple) and that he received brown in 2023, but the tweet never asserted otherwise. Comments treat it as nostalgia content ('Kids these days really don't know what it felt like to experience Batista's entrance'). This is trivial pedantry: the note adds context the tweet didn't deny.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The tweet's caption accurately describes what's depicted (Bautista's purple-belt gauntlet ceremony at Gracie Fighter Jiu-Jitsu) without claiming it is recent. A note pointing out the footage is from 2014 or noting his subsequent 2023 brown belt is pedantic — the tweet never contradicted those facts. Reject any note that treats this as misinformation.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This footage is from Dave Bautista's 2014 purple belt promotion ceremony; he earned brown belt in 2023. https://www.youtube.com/watch?v=iv9xpZhUUpU https://www.elitesports.com/blogs/news/american-actor-and-wwe-star-dave-bautista-promoted-to-bjj-brown-belt",
+    "failure_reason": "note_not_needed_pedantic",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://budovideos.com/blogs/budo-blog/16709015-wwes-dave-batista-gets-promoted-to-purple-belt-by-cesar-gracie",
+      "https://www.youtube.com/watch?v=iv9xpZhUUpU",
+      "https://www.elitesports.com/blogs/news/american-actor-and-wwe-star-dave-bautista-promoted-to-bjj-brown-belt"
+    ],
+    "notes": "Footage matches Bautista's 2014 purple belt gauntlet at Cesar Gracie's gym. Tweet caption describes the event accurately and doesn't assert timing."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "~12M impressions; harmless nostalgia. Pipeline learning: 'this is from year X' isn't a needed note when the tweet doesn't assert recency."
+  },
+  "difficulty": "easy"
+}

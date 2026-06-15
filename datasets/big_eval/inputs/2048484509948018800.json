@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2048484509948018800",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:09.462Z",
+  "post": {
+    "id": "2048484509948018800",
+    "author_id": "716634913487847425",
+    "created_at": "2026-04-26T19:29:00.000Z",
+    "text": "NUR MAL SO❗️\n\n2025 belegte KIEW 🇺🇦 den 3. Platz in Europa bei BENTLEY-Verkäufen. Es wurden meist Highend-Modelle zwischen 400.000 - 450.000 $ verkauft.\n\n1. Platz: Padua 🇮🇹 \n\n2. Platz: Rotterdam 🇳🇱 \n\nÜBRIGENS, Donnerstag wurde das 90-Mrd.-EU-Darlehen für die UKRAINE freigegeben. https://t.co/U5la8XUvj7",
+    "media": [
+      {
+        "media_key": "3_2048484502113062912",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HG2tzSRXkAA3jU4.jpg",
+        "height": 872,
+        "width": 1320
+      },
+      {
+        "media_key": "3_2048484502230700032",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HG2tzStakAA8wnO.jpg",
+        "height": 700,
+        "width": 730
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1837,
+      "reply_count": 468,
+      "like_count": 5446,
+      "quote_count": 81,
+      "bookmark_count": 183,
+      "impression_count": 148650
+    },
+    "author_followers": 135512,
+    "author_name": "Georg Pazderski",
+    "author_description": "Privatperson, Diplom-Betriebswirt, ehemals Berufssoldat. Hobbys: Lesen, Sport, Natur, Motorradfahren  (Follow und RT sind keine Zustimmung)",
+    "author_tweet_count": 18046
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HG2tzSRXkAA3jU4.jpg",
+          "description": {
+            "description": "A luxury car showroom featuring a dark purple Bentley Continental GT in the foreground and an orange Bentley Bentayga in the background. Large floor-to-ceiling windows line the left side, revealing an outdoor road environment. To the right, a prominent black wall displays the silver Bentley winged 'B' logo and the word 'BENTLEY'.",
+            "ocrText": "B BENTLEY"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HG2tzStakAA8wnO.jpg",
+          "description": {
+            "description": "A close-up, black and white portrait of Volodymyr Zelenskyy looking directly into the camera with a somber and tired expression. He has short dark hair and a groomed beard and mustache.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@uanews3**  \nЗа підсумками 2025 року глобальні продажі автомобілів Bentley перевищили 10 000 одиниць.  \nПродажі в Україні: У 2025 році в Україні було продано 20 нових автомобілів Bentley.  \nТому - висновок. Ти брехливий російський бот.  \n(Likes: 531)\n\n**@ITUADE**  \nDas Bentley-Verkaufshaus hat den 3. Platz unter Bentley Bureaus gewonnen - es geht aber nicht um die Verkäufe, sondern um \"comprehensive system measures 12 key KPIs, covering all aspects of dealership performance\"  \nAber na ja, Sie sind von der AfD, deshalb wundert mich das nicht.  \n(Likes: 442)\n\n**@vesstnik**  \n• Ukraine registered ~20 Bentley vehicles in 2025. This figure comes from official car registration data and is widely cited across sources.  \n• This is for the entire country (with Kyiv as the only official dealership).  \nAgain: twenty cars per year sold. So stop lying.  \n(Likes: 411)\n\n**@Steven164725**  \nTag 1525 der 3tägigen Spezialoperation und die Putinfanboys versuchen uns weiterhin zu verklickern, alles Geld in der Ukraine versinkt in Korruption 😂😂  \nHeisst dann wohl, ohne Korruption und mit Geld für den Krieg hätte Kiew schon Moskau erobert??  \n(Likes: 258)\n\n**@soldakov**  \nТи знову збрехав  \n(Likes: 179)\n\n**@KopfVorm71690**  \n🤭  \n(Likes: 70)\n\n**@alpha53964**  \nNatürlich geben Sie wie üblich keinerlei Quellen für Ihre Behauptungen an. Wie auch, denn alles, was Sie von sich geben, ist verlogene russische Propagandascheiße für geistig Unterbelichtete.  \nHier der AFP-Faktencheck:  \nhttps://faktencheck.afp.com/doc.afp.com.A73D3G3  \n(Likes: 67)\n\n**@ManuelZeller82**  \nMuss man sich das so vorstellen. Die afdler bekommen am Montag so ein bullshitpaket aus Moskaus nebst Anweisungen, wann welcher Post rauszuhauen ist?  \n(Likes: 66)\n\n**@PetrenkoAndryi**  \n@grok Is it true that Bentleys are the best-selling cars in Ukraine, as claimed in this post?  \n(Likes: 65)\n\n**@proud_cat80**  \nDas ist eine glatte Lüge und Manipulation. Das ist ein russischer Bot.  \n(Likes: 63)",
+    "warnings": []
+  }
+}

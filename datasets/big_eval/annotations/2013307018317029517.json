@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2013307018317029517",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["statistical_or_numerical_claim", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "news_report_pedantic_dispute",
+  "tweet_summary": "TMZ reports a rogue elephant in India has killed 22 people over 10 days and remains at large, with video of villagers near the elephant.",
+  "why_note_decision": "Web search corroborates the tweet: multiple mainstream outlets (TMZ, AOL, Complex, Daily Caller, Discover Magazine, Al Bawaba) all report 22 dead over 10 days in Chaibasa, Jharkhand, including an expert killed trying to manage it. The note's claim of '20 over 9 days (January 1-9)' relies on cited sources but contradicts the bulk of contemporary reporting which says 22 in 10 days — TMZ's own framing. Even if some earlier counts were 20, the most recent figure (22) is what was being reported when TMZ posted. This is at worst a minor numeric pedantic dispute between sources, and the note's correction is itself contested.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. TMZ's reporting (22 dead, 10 days) is corroborated by AOL, Complex, Al Bawaba, Daily Caller, and Discover Magazine. The original note's attempt to correct the figure to '20 over 9 days' is itself contested by the broader news record and amounts to trivial pedantry over a fast-moving casualty figure. A correct bot should NOT write a note disputing the 22/10 figure.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Multiple reports confirm the elephant killed 20 people over 9 days (January 1-9), not 22 over 10 days. https://www.bbc.com/news/articles/cn0ygqjvq1ko https://www.cbsnews.com/news/elephant-kills-20-people-india-officials",
+    "failure_reason": "incorrect_or_trivial_pedantry",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.tmz.com/2026/01/19/wild-elephant-kills-people-in-india/",
+      "https://www.aol.com/articles/killer-elephant-leaves-22-people-173121754.html",
+      "https://www.complex.com/life/a/backwoodsaltar/elephant-kills-22-people-india",
+      "https://dailycaller.com/2026/01/19/india-rogue-elephant-22-attacks-violent/",
+      "https://www.discovermagazine.com/a-deadly-elephant-rampage-highlights-growing-human-wildlife-crisis-48567"
+    ],
+    "notes": "Most outlets corroborate TMZ's figures (22 dead, 10 days). The note's '20 over 9 days' is from earlier BBC/CBS coverage; numbers updated as the rampage continued."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Tragic event with ~15M impressions; numeric pedantry on casualty counts doesn't materially mislead readers. Pipeline must learn not to second-guess mainstream reporting on freshly-updated figures."
+  },
+  "difficulty": "medium"
+}

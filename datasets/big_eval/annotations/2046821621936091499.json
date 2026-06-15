@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2046821621936091499",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Doctor account shows an animated anatomy video about nasal/sinus irrigation with saline rinse, captioned 'This is how you actually clear your sinuses'. 20.8M views.",
+  "why_note_decision": "The video shows mainstream, medically-accepted information about nasal saline irrigation — it's standard ENT care for rhinosinusitis (one top reply even says exactly that). The tweet itself doesn't claim anything false. The original CN note adds a safety reminder (use distilled/sterile/boiled water, not tap, to avoid rare Naegleria infections) — which is good advice but isn't correcting a misleading claim. Adding supplementary safety advice is not the same as correcting misinformation. Dominant rater feedback was 'note not needed' (5).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet/video accurately depicts standard medical practice for sinus irrigation; the only thing to add would be a safety reminder (use distilled/sterile/boiled-cooled water), but that's supplementary safety info, not a correction of a false claim. Any note that adds safety reminders without identifying an actual misleading claim FAILS — Community Notes are for correcting misinformation, not for adding unsolicited safety footnotes to accurate medical content.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "To safely perform nasal irrigation as shown, use only distilled, sterile, or boiled and cooled water to avoid rare but serious infections from tap water. https://www.cdc.gov/naegleria/prevention/sinus-rinsing.html https://www.fda.gov/consumers/consumer-updates/rinsing-your-sinuses-neti-pots-safe",
+    "failure_reason": "Note is correct and sourced (CDC + FDA) but is a supplementary safety reminder, not a correction of a misleading claim — exactly what raters flagged as 'note not needed'. Community Notes aren't designed for adding caveats to accurate medical content.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Video depicts standard, medically-accepted nasal-irrigation practice; no false claim to correct.",
+    "sources_checked": [
+      "https://www.cdc.gov/naegleria/prevention/sinus-rinsing.html",
+      "https://www.fda.gov/consumers/consumer-updates/rinsing-your-sinuses-neti-pots-safe"
+    ],
+    "notes": "Saline nasal irrigation is standard care for sinusitis. CDC/FDA do recommend distilled/sterile/boiled water to avoid Naegleria — a valid safety reminder, but the tweet doesn't claim tap water is fine, so there's no misleading claim to correct."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Standard medical practice content with high view count but no actual misinformation to correct."
+  },
+  "difficulty": "easy"
+}

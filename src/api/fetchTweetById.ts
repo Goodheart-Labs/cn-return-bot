@@ -29,7 +29,12 @@ export async function fetchTweetById(tweetId: string): Promise<Post> {
     timeout: 30000,
   });
 
-  const posts = parsePostsResponse(response.data);
+  // /2/tweets/{id} returns data.data as a single object; parsePostsResponse
+  // expects an array (from the multi-tweet endpoint). Wrap to match.
+  const posts = parsePostsResponse({
+    ...response.data,
+    data: response.data?.data ? [response.data.data] : undefined,
+  });
 
   if (posts.length === 0) {
     throw new Error(`Tweet ${tweetId} not found or inaccessible`);

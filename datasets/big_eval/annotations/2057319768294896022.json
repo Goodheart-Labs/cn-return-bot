@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2057319768294896022",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "health_medical_science",
+    "overhyped_research_or_product"
+  ],
+  "category_fit": "poor",
+  "suggested_category": "fabricated_announcement",
+  "tweet_summary": "A small tech account posts 'BREAKING: Vishal Sikka has joined Anthropic' with a photo of Sikka and a stylized 'ANTHROP\\C' logo image.",
+  "why_note_decision": "The claim is false: Vishal Sikka is the founder/CEO of Vianai Systems (and former Infosys CEO); there is no announcement or evidence he joined Anthropic as of May 2026. Although several replies treat it skeptically/as a joke (Rajinikanth/Infosys memes, 'Source: trust me bro', 'Fake news'), it is presented as a 'BREAKING' news announcement and drew 672K impressions, and many readers ask sincerely ('is this true?'). A note is warranted to flag the unverified/false claim. The original note's MissingKeyPoints failure: it states Sikka's actual role (Vianai CEO) but never explicitly says the 'joined Anthropic' claim is unsubstantiated/unconfirmed \u2014 it just juxtaposes facts, leaving the central correction implicit.",
+  "judge_guidance": "A correct note must explicitly state that the claim is unsubstantiated/false: there is no announcement from Anthropic or credible reporting that Vishal Sikka joined Anthropic, and he is the founder/CEO of Vianai Systems (former Infosys CEO). PASS only if it directly says the 'joined Anthropic' claim is unconfirmed/false, not merely that Sikka leads Vianai. FAIL if it only restates his Vianai role without rebutting the joining claim (the original note's defect), and FAIL if it asserts as fact that he did NOT join in some absolute way it can't support \u2014 'no evidence/announcement' framing is correct. If the bot instead declines as a transparent joke that is acceptable only if it explicitly judges it non-misleading, but given the 'BREAKING' framing and sincere replies, writing the corrective note is the preferred outcome.",
+  "reference_note": "There is no announcement from Anthropic or credible reporting that Vishal Sikka has joined the company. Sikka is the founder and CEO of Vianai Systems and former CEO of Infosys. https://en.wikipedia.org/wiki/Vishal_Sikka https://www.vian.ai/who-we-are-vishal",
+  "original_unhelpful_note": {
+    "text": "Vishal Sikka is the founder and CEO of Vianai Systems, not Anthropic. https://en.wikipedia.org/wiki/Vishal_Sikka https://www.vian.ai/who-we-are-vishal https://anthropic.com/company",
+    "failure_reason": "MissingKeyPoints: states Sikka's real role but never explicitly says the 'joined Anthropic' claim is unconfirmed/false; the correction is left implicit, and a corporate 'about' page is a weak source for a negative.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/unsubstantiated: no evidence Sikka joined Anthropic; he remains Vianai Systems founder/CEO.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Vishal_Sikka",
+      "https://www.vian.ai/who-we-are-vishal"
+    ],
+    "notes": "No announcement from Anthropic or reputable outlet; replies treat it as a meme/fake, but it is framed as breaking news with sincere 'is this true?' replies."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "672K impressions but low real-world stakes; a fabricated executive-hire announcement is mildly relevant to AI-industry information hygiene but not consequential."
+  },
+  "difficulty": "easy"
+}

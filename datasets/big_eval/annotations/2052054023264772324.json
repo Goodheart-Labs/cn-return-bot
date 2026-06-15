@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2052054023264772324",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "manipulated_or_fabricated_evidence",
+    "celebrity_entertainment_sports"
+  ],
+  "category_fit": "good",
+  "suggested_category": "fake_celebrity_quote",
+  "tweet_summary": "Tweet by parody account '`' (5.5k followers, but the tweet got 2.6M views and 81k likes) attributes a fabricated quote to Maxx Morando about taking Miley Cyrus's last name after marriage and 'standing behind her legacy.' Account bio says 'PARODY ACCOUNT. Don't take the posts seriously,' but the post itself has no parody indicator and many replies (e.g. 'A man comfortable in his masculinity', 'huge shift from her last marriage') engage with the quote as real.",
+  "why_note_decision": "A note IS warranted despite the parody label. Although the account bio identifies as parody, the individual tweet does not \u2014 and at 2.6M views with replies treating the quote as a real statement, the parody disclaimer is functionally invisible to most viewers. Fabricated quotes attributed to identifiable real people (Maxx Morando is a real musician engaged to Miley Cyrus since Dec 2 2025) are exactly the kind of unattributed misinformation Community Notes is designed to flag. The note's two corrections (fabricated quote + boyfriend vs. fianc\u00e9) are both accurate and useful. Provisional 'no_note_needed' undervalues how parody-account quote fabrications about real celebrities can spread as genuine.",
+  "judge_guidance": "PASS only if the note (a) flags the quote as fabricated with no credible source, AND (b) flags that the account is a self-declared parody account (per bio), AND ideally (c) notes Morando is Cyrus's fianc\u00e9 (engaged Dec 2 2025 at Avatar: Fire and Ash premiere, per Rolling Stone/People/ABC News), not 'boyfriend' Max. AVOID citing only that the engagement is recent \u2014 the core misleader is the fabricated quote. A note that ONLY corrects boyfriend\u2192fianc\u00e9 while leaving the fake quote unchallenged FAILS. A note that treats the post as a genuine statement and tries to debate the substance FAILS. Source should be a credible outlet (Rolling Stone, People, ABC News, Yahoo).",
+  "reference_note": "The quoted statement attributed to Maxx Morando is fabricated \u2014 it does not appear in any verifiable source, and this tweet is from a self-described parody account (per its bio: 'PARODY ACCOUNT. Don't take the posts seriously.'). Morando is also Cyrus's fianc\u00e9, not 'boyfriend' \u2014 they got engaged on December 2, 2025 at the Avatar: Fire and Ash premiere. https://www.rollingstone.com/music/music-news/miley-cyrus-maxx-morando-engaged-1235475946/ https://abcnews.com/GMA/Culture/miley-cyrus-engaged-boyfriend-maxx-morando-after-4/story?id=128043079",
+  "original_unhelpful_note": {
+    "text": "This post is from a self-described parody account, and the quote attributed to Maxx Morando is fabricated \u2014 no such statement exists in any verifiable source. Morando is also Cyrus's fianc\u00e9, not boyfriend; they got engaged in December 2025. https://www.rollingstone.com/music/music-news/miley-cyrus-maxx-morando-engaged-1235475946/",
+    "failure_reason": "Note is essentially correct but flagged NoteNotNeeded (3 of 6) \u2014 likely because raters thought the parody bio disclaimer was sufficient. Note could be strengthened by quoting the bio text verbatim ('Don't take the posts seriously') so raters who don't click through can verify the parody claim. Single source is also thin \u2014 adding ABC News / People would help.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "fabricated",
+    "sources_checked": [
+      "https://www.rollingstone.com/music/music-news/miley-cyrus-maxx-morando-engaged-1235475946/",
+      "https://abcnews.com/GMA/Culture/miley-cyrus-engaged-boyfriend-maxx-morando-after-4/story?id=128043079",
+      "https://graziamagazine.com/us/articles/who-is-maxx-morando-miley-cyrus-fiance/"
+    ],
+    "notes": "Confirmed: Cyrus and Morando engaged Dec 2 2025 at Avatar: Fire and Ash premiere. Multiple sources confirm engagement. No credible outlet has reported the quote about Morando taking Cyrus's last name; the quote does not appear in any interview. Account bio explicitly says 'PARODY ACCOUNT. Don't take the posts seriously' but the tweet itself does not indicate parody. Replies treat the quote as real."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2.6M views on a fabricated celebrity quote; low policy/safety stakes but a clear example of parody-account fabrications spreading as genuine. Info-integrity value in flagging that bio-level disclaimers don't propagate to individual tweets when they go viral."
+  },
+  "difficulty": "easy"
+}

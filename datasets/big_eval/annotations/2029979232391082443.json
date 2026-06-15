@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2029979232391082443",
+  "role": "unhelpful_irrelevant_sources",
+  "provisional_role": "unhelpful_irrelevant_sources",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A 405k-follower account posts a video captioned as an 'Iranian missile exploding near US soldiers at Prince Sultan Air Base in Saudi Arabia' (March 2026), adding that Saudi Arabia was secretly letting the US/Israel operate from the base.",
+  "why_note_decision": "A note is warranted. The early-March 2026 Iranian missiles aimed at Prince Sultan Air Base were INTERCEPTED by Saudi defenses, with no reported damage or casualties (Long War Journal, Arab News) \u2014 so a video of a missile 'exploding near US soldiers' there is not accurate documentation of that event. The footage is consistent with reused older war footage (old-footage recycling was rampant in this conflict per AAP). The original note's specific identification (2020 Al Asad attack footage) is plausible but not something I can confirm frame-by-frame; the robustly verifiable point is that the early-March Saudi-base strikes were intercepted without the depicted casualties/damage. Readers benefit from that correction.",
+  "judge_guidance": "PASS only if the note establishes that the early-March 2026 Iranian missile attempts on Prince Sultan Air Base were INTERCEPTED by Saudi air defenses with no reported damage or casualties, so the video does not show what it claims (a missile exploding near US soldiers at that base); strong notes add that the footage appears to be older/recycled war footage. The note MUST cite a loadable, on-point source for the interception (e.g. Arab News, Long War Journal, or Wikipedia '2026 Iranian strikes on Saudi Arabia') AND, if it names a specific original source for the clip (e.g. the 2020 Al Asad attack), that identification must be genuinely supportable \u2014 do NOT assert a precise original-event attribution the evidence cannot back. FAIL the original note's specific failure: do NOT cite sources that don't actually match/identify the video (it was rated notHelpfulIrrelevantSources) \u2014 e.g. a DVIDS Al Asad video link that doesn't demonstrably correspond to this clip. FAIL any note that accepts the video as authentic documentation of a March 2026 Prince Sultan strike with casualties.",
+  "reference_note": "This video does not show what is claimed. Iran's early-March 2026 missiles targeting Prince Sultan Air Base in Saudi Arabia were intercepted by Saudi air defenses, with no reported damage or casualties \u2014 there was no missile 'exploding near US soldiers' at the base as described. Old and unrelated war footage was widely recycled during this conflict. https://www.arabnews.com/node/2635432/saudi-arabia https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Saudi_Arabia",
+  "original_unhelpful_note": {
+    "text": "The video shows Iran's 2020 missile attack on Al Asad Air Base in Iraq, not a recent strike on Prince Sultan Air Base in Saudi Arabia. Saudi defenses intercepted the 2026 missiles, with no damage or casualties reported.    https://www.dvidshub.net/video/785331/al-asad-tbm-attack    https://www.arabnews.com/node/2635432/saudi-arabia    https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Saudi_Arabia",
+    "failure_reason": "Rated notHelpfulIrrelevantSources (27) \u2014 the dominant reason on a 49-rating note. The note confidently identifies the clip as 2020 Al Asad footage and cites a DVIDS Al Asad video, but raters found the source did not actually match/prove the misattribution (the AI media description of the clip is vague night-sky frames, so a precise origin ID is hard to substantiate). The interception point is well-supported, but the specific 'this is the 2020 Al Asad video' claim outran what the cited evidence shows.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://www.longwarjournal.org/archives/2026/03/iranian-drone-and-missile-barrages-strike-arab-states-across-the-region-march-9-10-updates.php",
+      "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Saudi_Arabia",
+      "https://www.aap.com.au/factcheck/ai-clips-old-footage-add-to-iran-war-misinformation/"
+    ],
+    "notes": "Long War Journal: Saudi forces intercepted two ballistic missiles targeting Prince Sultan Air Base near Al Kharj (March 9-10), no damage/casualties reported in that window. Later strikes (Mar 27) caused damage but the tweet is dated Mar 6, before that. The depicted 'missile exploding near US soldiers' at the base is not supported. I could not independently confirm the clip is specifically the 2020 Al Asad footage, but old-footage recycling was confirmed widespread; the safest correction is the no-casualty interception fact, not a precise origin claim."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "216k-impression wartime miscontextualized-media post inflating a casualty event during an active war; correcting misattributed strike footage matters for accurate conflict reporting and de-escalation."
+  },
+  "difficulty": "hard"
+}

@@ -1,0 +1,107 @@
+[
+  {
+    "url": "https://www.facebook.com/photo.php?fbid=982113224486408&set=a.850196581011407&id=100080632194001",
+    "classification": "very_short_body",
+    "body_head": "Facebook"
+  },
+  {
+    "url": "https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/",
+    "classification": "very_short_body",
+    "body_head": "Reddit - Please wait for verification"
+  },
+  {
+    "url": "https://www.reuters.com/business/energy/bessent-urges-china-step-up-diplomacy-iran-ahead-trump-xi-summit-2026-05-04/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "url": "https://www.uefa.com/uefachampionsleague/match/2033908--man-utd-vs-atleti/lineups/",
+    "classification": "fetch_error_network",
+    "body_head": "Fetch error: The operation timed out."
+  },
+  {
+    "url": "https://factcheck.afp.com/doc.afp.com.76UX8KE",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "url": "https://factcheck.afp.com/doc.afp.com.87W89G3",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "url": "https://www.senate.gov/about/powers-procedures/declarations-of-war.htm",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "url": "https://constitution.congress.gov/browse/essay/artI-S8-C11-2-3/ALDE_00013914/",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "url": "https://www.reuters.com/article/world/fact-check-bumps-on-car-steering-wheel-are-not-in-braille-idUSKBN25V1US/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "url": "https://www.instagram.com/p/DUWHli8gTpK/",
+    "classification": "very_short_body",
+    "body_head": "Instagram"
+  },
+  {
+    "url": "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "url": "https://www.facebook.com/NBCBayArea/videos/police-investigating-santana-row-attack-as-possible-hate-crime/2384729795331069/",
+    "classification": "very_short_body",
+    "body_head": "A brutal attack outside a restaurant on Santana Row is being investigated as a possible hate crime, police say: http://nbcbay.com/mR4qvXL | NBC Bay Area"
+  },
+  {
+    "url": "https://www.reuters.com/fact-check/image-depicting-jeffrey-epstein-tel-aviv-was-created-with-ai-2026-02-26/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "url": "https://www.politifact.com/factchecks/2026/feb/06/social-media/jeffrey-epstein-tel-aviv-fake-image-AI/",
+    "classification": "very_short_body",
+    "body_head": "# Image of Jeffrey Epstein in Tel Aviv is AI-generated"
+  },
+  {
+    "url": "https://www.reuters.com/article/world/fact-check-trump-did-not-call-republicans-the-dumbest-group-of-voters-idUSKBN2342DH/",
+    "classification": "fetch_failed_http_401",
+    "body_head": "Fetch failed: HTTP 401"
+  },
+  {
+    "url": "https://winstonchurchill.hillsdale.edu/fascists-anti-fascists/",
+    "classification": "very_short_body",
+    "body_head": "# \u201cThe fascists of the future will call themselves anti-fascists.\u201d Not WSC."
+  },
+  {
+    "url": "https://www.trueachievements.com/news/asha-sharma-xbox-gamertag",
+    "classification": "fetch_failed_http_403",
+    "body_head": "Fetch failed: HTTP 403"
+  },
+  {
+    "url": "https://www.facebook.com/pressoneph/posts/factcheck-a-facebook-reel-racking-up-over-400000-views-falsely-depicts-us-missil/1425155566297826/",
+    "classification": "very_short_body",
+    "body_head": "Facebook This browser isn&#039;t supported Use Facebook app tap to use a supported browser Safari Chrome"
+  },
+  {
+    "url": "https://www.instagram.com/reel/DToWOookcl4/?hl=de",
+    "classification": "very_short_body",
+    "body_head": "Instagram"
+  },
+  {
+    "url": "https://news.un.org/en/story/2026/03/1167199",
+    "classification": "very_short_body",
+    "body_head": "# UN resolution urges reparations for slavery\u2019s \u2018historical wrongs\u2019"
+  },
+  {
+    "url": "https://www.bls.gov/news.release/pdf/cpi.pdf",
+    "classification": "very_short_body",
+    "body_head": "[fetched via Wayback Machine snapshot]\n\n# Wayback Machine\n\nThe Wayback Machine - http://web.archive.org/web/20260526162442/https://www.bls.gov/news.release/pdf/cpi.pdf"
+  }
+]

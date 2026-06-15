@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2034695718829461682",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:13.910Z",
+  "post": {
+    "id": "2034695718829461682",
+    "author_id": "780460754910732288",
+    "created_at": "2026-03-19T18:17:16.000Z",
+    "text": "The ‘SPIDER-MAN: BRAND NEW DAY’ trailer launch was bigger than the first ‘GTA 6’ trailer launch.\n\nGTA 6 - 475M\nBrand New Day - 718.6M https://t.co/3P87roBgNu",
+    "media": [
+      {
+        "media_key": "3_2034695713482055680",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDyw-JwboAA0N-0.jpg",
+        "height": 880,
+        "width": 880
+      },
+      {
+        "media_key": "3_2034695713334968321",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDyw-JNXQAECSHu.jpg",
+        "height": 2048,
+        "width": 2048
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2795,
+      "reply_count": 517,
+      "like_count": 46253,
+      "quote_count": 350,
+      "bookmark_count": 2375,
+      "impression_count": 1712500
+    },
+    "author_followers": 2907860,
+    "author_name": "DiscussingFilm",
+    "author_description": "Your leading source for quick reliable news. Home for healthy and liberating discussion on all things pop culture. (Affiliate links shared earn us commissions)",
+    "author_tweet_count": 72706
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDyw-JwboAA0N-0.jpg",
+          "description": {
+            "description": "A high-angle, cinematic shot of Spider-Man swinging through a New York City skyscraper canyon. He is wearing his classic red and blue suit with white lenses. In the lower right corner, another character in a black and white tactical suit is seen perched on a metal landing platform. The background features tall office buildings and a street below, with sunlight glinting off one of the structures.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDyw-JNXQAECSHu.jpg",
+          "description": {
+            "description": "An illustration in a stylized video game art style featuring a man and a woman on a wooden dock. The man in the foreground wears a blue patterned short-sleeve shirt over a white tee and khaki cargo pants, aiming a handgun forward. The woman stands slightly behind him to the left, wearing a black tank top and denim shorts, holding a handgun in one hand and a silver briefcase in the other. The background depicts a coastal city with skyscrapers under a clear sky, a palm tree, a police boat in the water, and a helicopter in the air.",
+            "ocrText": "VICE BEACH POLICE"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Lampontheapp**  \nGTA 6 will generate 3X revenue at launch tho  \nLikes: 1849 | Reposts: 17 | Replies: 24 | Views: 70382\n\n**@dfwlu**  \nonly the GOAT can  \nLikes: 1181 | Reposts: 33 | Replies: 8 | Views: 62961\n\n**@Butterme287760**  \nSpider-Man Brand New Day to GTA 6:  \nLikes: 820 | Reposts: 10 | Replies: 4 | Views: 31810\n\n**@shivvnp**  \n718M vs 475M and GTA 6 will still break the internet harder on release day  \nLikes: 349 | Reposts: 1 | Replies: 8 | Views: 28301\n\n**@selmosalvatore**  \nSpiderman >>> GTA 6  \nLikes: 282 | Reposts: 12 | Replies: 11 | Views: 24461\n\n**@AdX10t**  \nPosting the trailer on Zendaya’s page doesn’t make it the biggest trailer of all time  \nLikes: 255 | Reposts: 0 | Replies: 0 | Views: 16602\n\n**@GameRoll_**  \nGTA 6 Trailer 2*  \nLikes: 250 | Reposts: 0 | Replies: 0 | Views: 8416\n\n**@LonerSkii**  \nRockstarGames after seeing this  \nLikes: 171 | Reposts: 0 | Replies: 0 | Views: 8274\n\n**@nkrockzz88**  \n@RockstarGames  \nLikes: 123 | Reposts: 6 | Replies: 0 | Views: 5630\n\n**@ShadePJ**  \nLet’s see who make the most amount of money on DAY ONE  \nLikes: 102 | Reposts: 0 | Replies: 0 | Views: 8883",
+    "warnings": []
+  }
+}

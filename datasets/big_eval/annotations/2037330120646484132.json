@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2037330120646484132",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "manipulated_or_fabricated_evidence",
+    "politics_and_policy"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Image-overlay meme of AOC with the impact-font caption: 'Republicans are trying to rig elections by only allowing U.S. citizens to vote!' \u2014 posted without a satire/parody label and amplified by replies treating it as a real quote.",
+  "why_note_decision": "Snopes, Media Bias/Fact Check, factually.co, and AOC's press secretary all confirm AOC never said this. The quote originated as satire (Genesius Times) but is being amplified as a real statement. Multiple replies in this tweet's thread accept it as genuine ('I could 100% see her saying this'). Original note correctly says the quote is not real but used weak sources (her X feed and a factcheck.org category page) instead of citing the dedicated Snopes/MBFC fact-checks. Reference note should cite those.",
+  "judge_guidance": "PASS if the note (1) states the quote is fabricated/not a real AOC statement, and (2) cites a dedicated reputable fact-check (Snopes article specifically debunking this quote, Media Bias/Fact Check, AFP, Reuters, or AP). PASS also if it notes the meme originated from a satire site (Genesius Times). FAIL if the note: relies only on 'searches of her X feed return nothing' or generic factcheck.org category links (the original note's failure), treats it as possibly real, or calls it merely 'unverified' without a fact-check source.",
+  "reference_note": "Rep. Alexandria Ocasio-Cortez never said this. Snopes and other fact-checkers confirm the quote is fabricated; her press secretary denied it. The line originated from satire site Genesius Times. https://www.snopes.com/fact-check/aoc-gop-rig-elections-quote/ https://mediabiasfactcheck.com/fact-check-did-aoc-say-gop-rig-elections-by-allowing-citizens-only/",
+  "original_unhelpful_note": {
+    "text": "This is not a real quote from Rep. Ocasio-Cortez. Searches of her official X account return no such statement, and fabricated quotes attributed to her are common. https://x.com/AOC https://www.factcheck.org/person/alexandria-ocasio-cortez/",
+    "failure_reason": "sources_missing_or_unreliable \u2014 links a general X profile and a topic-page on factcheck.org rather than a dedicated fact-check of this specific fabricated quote (Snopes, MBFC, factually.co, MSN all have direct debunks).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_fabricated_quote",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/aoc-gop-rig-elections-quote/",
+      "https://mediabiasfactcheck.com/fact-check-did-aoc-say-gop-rig-elections-by-allowing-citizens-only/",
+      "https://factually.co/fact-checks/politics/aoc-claim-republicans-rig-elections-citizenship-voting-307793",
+      "https://genesiustimes.com/aoc-republicans-are-trying-to-rig-elections-by-only-allowing-us-citizens-to-vote/"
+    ],
+    "notes": "AOC press secretary on record: 'She did not say that.' Quote traces to satire site Genesius Times."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Fabricated quotes attributed to prominent politicians degrade civic discourse; 41K-impression post by a 242K-follower account adds to a broader misinformation pattern."
+  },
+  "difficulty": "easy"
+}

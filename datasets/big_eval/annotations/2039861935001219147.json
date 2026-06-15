@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2039861935001219147",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["politics_and_policy", "legal_or_court_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Rep. Thomas Massie tells incoming Acting AG Blanche he has 30 days to release Epstein files or be criminally liable under the Epstein Files Transparency Act (H.R. 4405).",
+  "why_note_decision": "H.R. 4405 (Public Law 119-38, signed Nov 19, 2025) DOES require the Attorney General to make Epstein records public within 30 days of enactment. The original note correctly states the bill's 30-day records release but claims 'the Act contains no provisions for criminal liability' — this is technically a real point (the bill's enforcement mechanism is contempt/judicial review, not specific criminal penalties on the AG), but Massie's framing is standard political-pressure rhetoric on a real legal obligation. Raters dominantly tagged it note-not-needed (16) and missing-key-points (14) — they did not view the criminal-liability framing as misleading enough to warrant correction. The post is high-volume but the original note is a partisan pedantry intervention; raters did not consider it helpful.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Massie's tweet correctly references H.R. 4405's 30-day release deadline (Public Law 119-38, signed Nov 19, 2025). The 'criminally liable' framing is political rhetoric on a real legal obligation; the underlying 30-day deadline is accurate. Any note technically litigating whether the bill has explicit criminal-liability language without context is a false positive that raters rejected.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "According to the text of H.R. 4405, the Epstein Files Transparency Act mandates a records release within 30 days of enactment (Nov 19, 2025), not leadership changes. The Act contains no provisions for criminal liability. https://www.congress.gov/bill/119th-congress/house-bill/4405/text/rds",
+    "failure_reason": "Partisan pedantry — confirms the substantive 30-day deadline Massie cited, then nitpicks the 'criminally liable' rhetoric without genuine misinformation impact.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's 30-day claim is accurate per H.R. 4405. 'Criminally liable' is political rhetoric on a real legal obligation.",
+    "sources_checked": [
+      "https://www.congress.gov/bill/119th-congress/house-bill/4405/text",
+      "https://en.wikipedia.org/wiki/Epstein_Files_Transparency_Act",
+      "https://www.congress.gov/119/plaws/publ38/PLAW-119publ38.pdf"
+    ],
+    "notes": "Bill was signed Nov 19, 2025; 30-day deadline ~Dec 19, 2025. Massie tweet from April 2026 is in context of acting AG transition."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "High-profile political accountability message from sitting Congressman with millions of views — getting note FP suppression right here matters."
+  },
+  "difficulty": "medium"
+}

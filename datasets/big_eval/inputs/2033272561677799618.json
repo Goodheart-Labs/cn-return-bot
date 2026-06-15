@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2033272561677799618",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:00.447Z",
+  "post": {
+    "id": "2033272561677799618",
+    "author_id": "2032877151561596928",
+    "created_at": "2026-03-15T20:02:09.000Z",
+    "text": "This is a different man. \n\nNetanyahu is no longer with us https://t.co/ArW01zbhq8",
+    "media": [
+      {
+        "media_key": "3_2033272557294796800",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDeinj0bQAAJL91.jpg",
+        "height": 959,
+        "width": 959
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6033,
+      "reply_count": 2045,
+      "like_count": 36938,
+      "quote_count": 460,
+      "bookmark_count": 1250,
+      "impression_count": 1658440
+    },
+    "author_followers": 148962,
+    "author_name": "Ethan Levins 🇺🇸",
+    "author_description": "Independent Journalist | American Christian | Truth Seeker | Find me everywhere below ⬇️ | News alerts https://t.co/qtUoQ8LCmg",
+    "author_tweet_count": 2116
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDeinj0bQAAJL91.jpg",
+          "description": {
+            "description": "A split-screen image of Benjamin Netanyahu. On the left, he is wearing a formal dark suit, white shirt, and red tie with a yellow ribbon pin and Israeli flag pin against a purple background. On the right, he is shown in a more casual brown jacket, holding a green coffee cup, with a caption in Hebrew at the bottom.",
+            "ocrText": "SATAF\nמכים באיראן חזז"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@muziretto**  \n(No text content)  \nLikes: 1392 | Reposts: 80 | Replies: 14 | Views: 56086\n\n**@Truthtellerftm**  \nYet another AI video!  \nLikes: 1215 | Reposts: 142 | Replies: 36 | Views: 68243\n\n**@ViralNewsNYC**  \nTake that American flag off your profile and add the ISIS flag .. you joined the terrorists team  \nLikes: 549 | Reposts: 0 | Replies: 0 | Views: 9957\n\n**@mblankfeld**  \nThis is also a different man  \nLikes: 541 | Reposts: 0 | Replies: 0 | Views: 20044\n\n**@toffael**  \n(No text content)  \nLikes: 338 | Reposts: 37 | Replies: 6 | Views: 42709\n\n**@jennessie7**  \nMust be some good coffee ☕️😂  \nLikes: 322 | Reposts: 0 | Replies: 0 | Views: 15345\n\n**@HeruNugraha82**  \n(No text content)  \nLikes: 287 | Reposts: 0 | Replies: 0 | Views: 19048\n\n**@NAFOMossadUnit**  \n🙄  \nLikes: 223 | Reposts: 0 | Replies: 0 | Views: 10660\n\n**@HAIM__GOZALI**  \nYou need to buy 🧠 you can find in Amazon in a good price  \nLikes: 183 | Reposts: 0 | Replies: 0 | Views: 1670\n\n**@TheworldNewNow**  \nI agree💀💀  \nLikes: 145 | Reposts: 15 | Replies: 6 | Views: 18845",
+    "warnings": []
+  }
+}

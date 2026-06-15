@@ -1,0 +1,42 @@
+{
+  "tweet_id": "2027817956000858503",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:52.903Z",
+  "post": {
+    "id": "2027817956000858503",
+    "author_id": "537709549",
+    "created_at": "2026-02-28T18:47:30.000Z",
+    "text": "@TheKingCenter Iran bombed them.",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "replied_to",
+        "id": "2027764873354957110"
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 416,
+      "reply_count": 151,
+      "like_count": 7770,
+      "quote_count": 2,
+      "bookmark_count": 12,
+      "impression_count": 50795
+    },
+    "author_followers": 1912333,
+    "author_name": "Laura Loomer",
+    "author_description": "Investigative Journalist 🇺🇸 Free Spirit🇺🇸Founder of LOOMERED. Host of @LoomerUnleashed Former @Project_Veritas operative. 📸 America First ✡️ Feisty Jewess",
+    "author_tweet_count": 108791
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@Siya_Hlohla: Laura Stop lying (19 likes)\n@DanBerry777: Once again fake news from an alleged source in Iran who still has control of the media outlets in Iran. Bomb these sources of disinformation! (12 likes)\n@MannsterRick: Anyone see a post from that account when Iran gunned down 30,000 protestors last month in cold blood? (10 likes)\n@Kevjoseph6: https://t.co/N3VXIzNrJN (6 likes)\n@Square4Joe: Are you going to be following everyone else and saying this without Proof? (6 likes)\n@momslistening: TDS runs deep on these twats. No ability to think or find truth just believe whatever their party tells them. (6 likes)\n@realAlexVIvanov: You’re a liar, 🤥 Mossad agent. (6 likes)\n@Itsthedamnguns: They can't launch a rocket, but they're a nuclear threat to the US. Which one is true you floating faced fugmutt (5 likes)\n@Nichols2127: Wow. I’m kind of surprised Larry “Isreal First” Loomer would say Iran bombed Iran. But makes perfect sense. 🤦🏻‍♂️ (5 likes)\n@Thercy_: Jewish swines always lying (4 likes)",
+    "warnings": []
+  }
+}

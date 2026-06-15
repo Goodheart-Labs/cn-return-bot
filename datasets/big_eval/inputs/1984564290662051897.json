@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1984564290662051897",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:03.669Z",
+  "post": {
+    "id": "1984564290662051897",
+    "author_id": "1466783923",
+    "created_at": "2025-11-01T10:12:52.000Z",
+    "text": "The great Motability rip off grows….\n\nNow they are giving you £750 cash back with taxpayers cash\n\nNo deposit needed \n\nNo wonder the scam continues https://t.co/MvaA94fxfj",
+    "media": [
+      {
+        "media_key": "3_1984564284131536896",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G4qWs6WWcAA-O6g.jpg",
+        "height": 2048,
+        "width": 2048
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 700,
+      "reply_count": 683,
+      "like_count": 3236,
+      "quote_count": 99,
+      "bookmark_count": 53,
+      "impression_count": 187293
+    },
+    "author_followers": 389561,
+    "author_name": "Richard Tice MP 🇬🇧",
+    "author_description": "MP for Boston & Skegness | Deputy Leader & Shadow Business, Trade & Energy @reformparty_uk 🇬🇧➡️",
+    "author_tweet_count": 23012
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G4qWs6WWcAA-O6g.jpg",
+          "description": {
+            "description": "A field of grass featuring a blue informational banner for Motability. The banner displays four different colored cars and promotional text regarding an advance payment and cashback offer. In the background, there is a red rectangular structure and a building partially visible with a 'Not Only Sofas' sign.",
+            "ocrText": "Not Only Sofas, Motability, £NIL ADVANCE PAYMENT PLUS £750 CASHBACK"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Reform Party UK Exposed 🇬🇧 (@reformexposed): Richard Tice is lying.\n\nThe £750 Motability New Vehicle Payment was funded by the Motability scheme itself, not directly by the taxpayer.\n\nIt also stopped in January 2025. (Likes: 1557, Reposts: 294, Views: 18153)\n- Woke Lefty 🫣 (@SalfordMe2023): 'Oh, what a tangled web we weave when first we practice to deceive'\n\nWhat you don't tell people is that the majority of subscribers in receipt of motability cars are taxpayers.\n\nYou also forget to mention that PIP isn't means tested.\n\nYou reek of hate and regret. (Likes: 212, Reposts: 0, Views: 3542)\n- Tudorman (@Tudorman7): Motability is a registered charity,\nimagine attacking charities that help the disabled,our armed forces veterans,\nhow low will Reform go?\nLooks like the disabled/veterans now have targets on their backs for Reform SM snipers,\nso much for \"helping our own first\"\nWho will be next? (Likes: 166, Reposts: 0, Views: 1886)\n- Aaron. (@Stuff_by_Aaron): Knowingly lying to the public again @ticerichard.\n\nAlso, why is Reform's tactic to constantly punch down? (Likes: 146, Reposts: 0, Views: 1647)\n- Clare (@ClareHathaway1): First disabled kids wanting to stop their school transport, now disabled people. Why do you hate disabled people so much? You obviously think disabled children and adults should stay at home and not be seen in public as they don't deserve adequate transport. Despicable man. (Likes: 122, Reposts: 0, Views: 1152)\n- Enough (@WeHadFreeSpeech): Tice I voted reform in the last election.\n\nI cancelled my membership because of nonsense like this.\n\nFacts matter. And with your platform you should be checking if the information you are posting is accurate before you put it out.\n\nThis scheme ended almost a year ago. (Likes: 54, Reposts: 0, Views: 822)\n- Lady Muck (@MariePurdy8): Meanwhile, the billionaires continue to dodge their taxes and 4 million kids live in poverty in this country.\n\nWe see what you’re trying to do. (Likes: 56, Reposts: 0, Views: 702)\n- exSubmarine Biker .🇬🇧🏴‍☠️ 🇬🇧 🇬🇧() (@RetsofNevets): Richard as a disabled ex serviceman and @reformparty_uk voter I have to ask why do you hate me ? Do you understand how the scheme works ? Do you understand that without Motability I’d be stuck in my house permanently? I ask again why do you hate me ? (Likes: 47, Reposts: 0, Views: 855)\n- Politics Reformed (@politicReformed): The sooner we stop this scam, the better, get a system that works for people who are really disabled, not for fraudsters (Likes: 33, Reposts: 0, Views: 1897)\n- WasAcop (@WasAcop): I remember stopping quite a few mobility cars where the driver wasn’t the owner, just a named person… many used for criminal purposes.\n\nYou can name people with zero disability to drive the car.\n\nA good start: allow only two persons to drive—the applicant plus one other, not the entire family. (Likes: 29, Reposts: 0, Views: 3684)",
+    "warnings": []
+  }
+}

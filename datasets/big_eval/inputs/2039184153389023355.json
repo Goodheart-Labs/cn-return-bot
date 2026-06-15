@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2039184153389023355",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:42.496Z",
+  "post": {
+    "id": "2039184153389023355",
+    "author_id": "1394211991116451843",
+    "created_at": "2026-04-01T03:32:43.000Z",
+    "text": "Prabowo Subianto has stepped down. https://t.co/T9it8SPuf5",
+    "media": [
+      {
+        "media_key": "3_2039184151451181056",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEyjLoLaoAAjp7p.jpg",
+        "height": 561,
+        "width": 1001
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4864,
+      "reply_count": 1926,
+      "like_count": 32729,
+      "quote_count": 6637,
+      "bookmark_count": 1212,
+      "impression_count": 1828654
+    },
+    "author_followers": 190973,
+    "author_name": "Indonesian Pop Base",
+    "author_description": "@PopBase’s branch for Indonesian pop culture related entertainment, news, award show coverage, chart updates, statistics, and more. | indo@popbase.tv",
+    "author_tweet_count": 14139
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEyjLoLaoAAjp7p.jpg",
+          "description": {
+            "description": "A man in a grey suit and striped tie stands behind a podium featuring the Garuda Pancasila, the national emblem of Indonesia. He is set against a dark teal curtain background.",
+            "ocrText": "BPMI Setpres"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **lief 🌟🇵🇸🍉 (@centildikit)**: ya Allah i just woke up and got my hopes so high (6.3K likes, 379 reposts)\n- **Pika (@Piter_Kastangel)**: pesanku untuk @iPopBase : (2.8K likes, 104 reposts)\n- **Kevin Yusuf (@KevinYusuf16)**: Woilah kirain mimpi basah jadi kenyataan, ternyata april mop cik😹 (2.1K likes, 69 reposts)\n- **$ (@ridhoooni)**: gua kira iPoopBase, ternyata iPopBase beneran langsung tercengang, kemudian baru ingat hari ini 1 april Tai (1.2K likes)\n- **neohistoria Indonesia (@neohistoria_id)**: Sementara tukar peran @iPoopBased (702 likes)\n- **Aurelia V (@senjatanuklir)**: i was just woke up man (470 likes)\n- **🦉🦉 (@amusingamused)**: GUE KESELEK... JAHAT LU GANGGU GUE PUASAAAAA 😮‍💨😮‍💨 (201 likes)\n- **Ramal (@dalamkonteks)**: KONTOLLLLLLLLLLLLLLLL GW UDH TERIAK (186 likes)\n- **Tony Dickson (@ItsMeDickson)**: LIAT TANGGAL NIGGA (136 likes, 9 reposts)\n- **United Focus Indonesia (@utdfocusid)**: Kamu boongin aku ya? (103 likes)",
+    "warnings": []
+  }
+}

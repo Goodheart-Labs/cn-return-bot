@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2028854757213847895",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "platform_manipulation"],
+  "category_fit": "poor",
+  "suggested_category": "misrepresented_platform_policy",
+  "tweet_summary": "A viral post claims that Archive of Our Own (AO3) allows erotic fanfiction depicting children, incest, rape, zoophilia and necrophilia but bans pro-Palestine content, urging people to stop donating to the site.",
+  "why_note_decision": "The central factual claim — that being pro-Palestine is banned on AO3 — is false. AO3 does not prohibit pro-Palestine fiction or writers; what was removed/restricted was solicitation of donations and money collection (banned for ANY cause under AO3/OTW ToS), and a separate dispute involved a volunteer's chat-status slogan. Many pro-Palestine works remain on the platform. The tweet misrepresents platform policy, so a correction is warranted.",
+  "judge_guidance": "PASS only if the note establishes that AO3 does NOT ban pro-Palestine content/writers, and explains that what was actually removed/restricted was solicitation of donations or money collection (which AO3 prohibits for any cause/charity), not pro-Palestine expression itself. The note should make clear pro-Palestine fiction is permitted. A note that endorses or leaves unchallenged the 'pro-Palestine is banned' framing FAILS. The note need not adjudicate the separate erotica/ToS claims; the load-bearing correction is the false 'pro-Palestine is banned' claim.",
+  "reference_note": "There is nothing on ao3 that prevents pro-Palestine fanfiction or writers. The removed works are from people who post donation links or non-transformative work, which are against terms of service for ANY charity/money collection or cause. CSEM/illegal content is also banned.   https://archiveofourown.org/works/58278472/chapters/150256348#workskin  https://archiveofourown.org/tos_faq?language_id=en",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://archiveofourown.org/tos_faq?language_id=en",
+      "https://archiveofourown.org/admin_posts/29125?show_comments=true"
+    ],
+    "notes": "AO3 does not ban pro-Palestine works. The controversy involved (a) a volunteer's slogan in OTW chat and (b) removal of works/comments soliciting donations, which violate AO3's ToS prohibition on money collection for any cause. Pro-Palestine fiction remains permitted. Reply consensus corroborates this."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "medium", "lens_rationale": "1M impressions stoking a false censorship narrative around a charitable nonprofit; correcting platform-policy misinformation has modest information-integrity value."},
+  "difficulty": "medium"
+}

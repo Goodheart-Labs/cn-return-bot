@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2006395901426737233",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["celebrity_entertainment_sports", "health_medical_science"],
+  "category_fit": "partial",
+  "suggested_category": "explainer_animation",
+  "tweet_summary": "Zack D. Films posts a 3D-animated short retelling the well-known story of Amou Haji, the Iranian 'world's dirtiest man' who avoided bathing for ~60 years and died in 2022 shortly after his first wash.",
+  "why_note_decision": "The animation accurately summarizes the documented Amou Haji story (BBC/Guardian, 2022). The clip is clearly an explainer animation, not presented as live footage, and the tweet's claim ('refused to bathe for 60 years') is true. The original note's quibble — that he became ill some time after the wash rather than immediately as the animation 'shows' — is a pedantic nitpick about animation pacing. Dominant NotHelpfulNoteNotNeeded=29; no note is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet's headline claim is true and the medium is an obvious explainer animation. A note about animation-pacing fidelity (e.g. 'he died months later, not immediately') is the canonical false positive here. If a note is written, it must NOT repeat the original's failure of nitpicking timing in an animated retelling.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video dramatizes the story of Amou Haji, an Iranian man who avoided bathing for over 60 years. He died at age 94 a few months after his first wash, having become ill shortly afterward but not immediately as shown.",
+    "failure_reason": "Pedantic timing correction on a clearly-stylized animated explainer; tweet's underlying claim is correct. Community rated NoteNotNeeded.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true — Amou Haji's story is well documented; he died in October 2022 at ~94 a few months after his first wash",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Amou_Haji",
+      "https://www.theguardian.com/world/2022/oct/25/worlds-dirtiest-man-dies-in-iran-at-94-a-few-months-after-first-wash"
+    ],
+    "notes": "Born ~1928, died Oct 23 2022 in Dezhgah, Fars province; lived as hermit avoiding bathing for ~60 years."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "4.6M impressions but no factual stakes; a useful false-positive trap for pedantic media-pacing corrections."
+  },
+  "difficulty": "easy"
+}

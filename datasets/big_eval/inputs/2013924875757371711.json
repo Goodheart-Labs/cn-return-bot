@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2013924875757371711",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:41.954Z",
+  "post": {
+    "id": "2013924875757371711",
+    "author_id": "1353384573435056128",
+    "created_at": "2026-01-21T10:41:21.000Z",
+    "text": "💥BREAKING:\n\n🇺🇸🇨🇳 China is dumping U.S. treasuries and instead buying gold on a massive scale. https://t.co/rnv58v0SuV",
+    "media": [
+      {
+        "media_key": "3_2013924871638495232",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_LmACJWMAAEEpE.jpg",
+        "height": 783,
+        "width": 719
+      },
+      {
+        "media_key": "3_2013924871730823169",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_LmACfXAAEAMKu.jpg",
+        "height": 619,
+        "width": 619
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3121,
+      "reply_count": 640,
+      "like_count": 28904,
+      "quote_count": 334,
+      "bookmark_count": 995,
+      "impression_count": 2636821
+    },
+    "author_followers": 1591897,
+    "author_name": "Crypto Rover",
+    "author_description": "#Bitcoin Crypto YouTuber (200K+ SUBS) | TG: cryptoroveryt | Cryptocurrency investments are high risk, volatile, and can be dangerous. All tweets are NFA.",
+    "author_tweet_count": 68864
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_LmACJWMAAEEpE.jpg",
+          "description": {
+            "description": "A close-up photograph of Donald Trump and Xi Jinping shaking hands. Donald Trump, on the left, is wearing a dark suit with a red tie and is leaning in close to Xi Jinping as if speaking to him privately. Xi Jinping, on the right, is wearing a dark suit with a blue patterned tie and has his head tilted slightly downward with a faint smile. The background is a solid black.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_LmACfXAAEAMKu.jpg",
+          "description": {
+            "description": "A close-up photograph of numerous raw gold nuggets of varying sizes. One large, irregularly shaped nugget takes center stage, while smaller nuggets are scattered around it on a textured golden surface. The background is filled with blurred golden shapes, creating a shallow depth of field. All the nuggets have a rough, metallic texture and a bright yellow-gold color.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@GoldSilverHQ** (705 likes)  \n[Image only - no text]\n\n**@TheMoneyApe** (164 likes)  \nChina said “paper promises are risky”  \nand switched straight to shiny metal mode\n\n**@BeAlterEgos** (103 likes)  \nReject modernity (Fiat). Embrace tradition (Shiny Rocks). Even China knows paper money is a scam.\n\n**@chainspect_app** (73 likes)  \nWhy not digital gold tho 👀\n\n**@marcismus** (58 likes)  \nSo funny to see the Battle between them  \n[Video]\n\n**@KashKysh** (54 likes)  \nSo what's gonna be the fate of Bitcoin now\n\n**@SamPeterToT** (50 likes)  \nWhen central banks buy gold, I stop arguing narratives and start tracking flows. Follow what governments do, not what headlines say. That rule has saved me more than once\n\n**@ski_puppy_base** (39 likes)  \nTrump will be the reason for the downfall of the USA\n\n**@Adamski_eth** (36 likes)  \nOh well...  \n[Video]\n\n**@ImCryptOpus** (27 likes)  \nGold’s magnet is strong as fiat fades, smart move\n\n**@icomaki2** (24 likes)  \nWise move by China, gold's stability matters.",
+    "warnings": []
+  }
+}

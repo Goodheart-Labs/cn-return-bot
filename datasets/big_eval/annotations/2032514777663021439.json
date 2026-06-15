@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2032514777663021439",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "The U.S. Department of Labor posts 'That Friday feeling when wages are going up and prices are coming down for American workers,' with a celebratory GIF.",
+  "why_note_decision": "The 'prices are coming down' half is false against the official data the agency itself publishes: CPI rose 0.3% month-over-month in February 2026 and annual inflation held at 2.4% — prices went up, not down. (Real wages did rise ~1.4% over the year, so the 'wages going up' half is accurate.) A government account asserting falling prices contrary to BLS data is a checkable, high-reach economic claim that warrants a corrective note.",
+  "judge_guidance": "PASS only if the note corrects the specific false claim that prices are 'coming down': per BLS CPI data, consumer prices ROSE (0.3% in February 2026; ~2.4% year-over-year), i.e. inflation continued, prices did not fall. It is fine (and accurate) to acknowledge that real wages did rise over the year — do NOT 'correct' the wages claim, which is true. The strongest note pairs the price-rise correction with the BLS source. A note that denies wages rose, or that endorses 'prices coming down,' or that vaguely calls the post a lie without the CPI figure, should FAIL. Cite BLS CPI / real earnings releases.",
+  "reference_note": "Per the BLS, prices did not come down: the CPI rose 0.3% in February 2026 and annual inflation was 2.4% (prices rose). Real average hourly earnings did rise (~1.4% over the year), so wages outpaced inflation, but prices increased rather than fell.    https://www.bls.gov/news.release/cpi.nr0.htm    https://www.bls.gov/news.release/realer.nr0.htm",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Half false: 'wages going up' is accurate (real average hourly earnings +~1.4% YoY to Feb 2026), but 'prices are coming down' is false — CPI rose 0.3% MoM in Feb 2026 and annual inflation held at 2.4% (prices rose).",
+    "sources_checked": [
+      "https://www.bls.gov/news.release/cpi.nr0.htm",
+      "https://www.bls.gov/news.release/archives/cpi_02132026.htm",
+      "https://www.bls.gov/opub/ted/2026/real-average-hourly-earnings-up-1-4-percent-over-the-12-months-ending-february-2026.htm"
+    ],
+    "notes": "BLS Feb 2026 CPI: +0.3% MoM, +2.4% YoY (prices rising, not falling). BLS real earnings: real average hourly earnings up ~1.4% over the 12 months ending Feb 2026, so wages did rise in real terms. The original note correctly affirms real-wage gains while debunking 'prices coming down.'"
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "5.1M impressions from an official U.S. government account misstating inflation against its own agency's data; correcting government economic disinformation has real civic/epistemic value for an informed public."
+  },
+  "difficulty": "medium"
+}

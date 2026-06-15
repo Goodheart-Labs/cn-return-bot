@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2029971128974766461",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "misattributed_or_miscontextualized_media",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Large pro-Iran account (846k followers) posts 'BREAKING: Footage from Prince Sultan Air Base in Saudi Arabia shows Iranian ballistic missile exploding right near U.S. troops', attaching the viral clip.",
+  "why_note_decision": "A note is warranted: the attached video is recycled footage. Full Fact (3 Mar) and PolitiFact (4 Mar) confirm it is the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port, not a 2026 Saudi strike; a top commenter says 'Old video stop posting bs'. The post's whole premise ('footage from Prince Sultan shows a missile exploding near US troops') is false on the footage, so the misleading core is the misattributed video, not just the interception outcome.",
+  "judge_guidance": "PASS only if the note tells the reader the VIDEO does NOT show a real Iranian missile strike on Prince Sultan Air Base and identifies it as old/recycled footage (July 2024 Israeli airstrike on Yemen's Hodeidah port), backed by a verifiable fact-check (Full Fact / PolitiFact / AFP). The original note FAILED specifically by never debunking the footage \u2014 it only said 'the missiles targeting the base were intercepted with no impact', which concedes the false 'this is Prince Sultan footage' framing and merely argues outcome. So a passing note MUST debunk the misattributed video itself; a note that only argues 'missiles were intercepted / no damage' without establishing the clip is old is a FAIL (it repeats the original's mistake). Also FAIL any note that affirms the clip as genuine Prince Sultan footage.",
+  "reference_note": "This is old footage, not Prince Sultan Air Base. Fact-checkers identified the clip as the aftermath of a July 2024 Israeli airstrike on Yemen's Hodeidah port. Iranian missiles fired toward the base on March 6, 2026 were intercepted by Saudi defenses with no impact reported that day. https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false https://www.politifact.com/factchecks/2026/mar/04/tweets/iran-strikes-airbase-yemen-explosion/",
+  "original_unhelpful_note": {
+    "text": "The missiles targeting Prince Sultan Air Base were intercepted and destroyed by Saudi air defenses before reaching the base, with no impacts or damage reported. https://www.timesofisrael.com/liveblog_entry/3770447 https://www.kurdistan24.net/en/story/898358/saudi-arabia-announces-interception-of-three-ballistic-missiles-targeting-prince-sultan-air-base",
+    "failure_reason": "Rated notHelpfulIncorrect (8) with notHelpfulIrrelevantSources (4) and notHelpfulOpinionSpeculation (4). The fatal flaw: the note never addresses that the VIDEO is recycled July 2024 Yemen footage. By only stating 'the missiles were intercepted with no impact', it implicitly accepts the false premise that this is genuine Prince Sultan footage and just argues the outcome \u2014 leaving the central misinformation (misattributed video) unchallenged. The absolute 'no impacts or damage' clause was also contested in the fog of war.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading",
+    "sources_checked": [
+      "https://fullfact.org/conflict/iran-bomb-us-airbase-saudi-arabia-video-false/",
+      "https://www.politifact.com/factchecks/2026/mar/04/tweets/iran-strikes-airbase-yemen-explosion/",
+      "https://www.arabnews.com/node/2635432/saudi-arabia"
+    ],
+    "notes": "Same recycled July 2024 Hodeidah clip circulated across the 6 Mar 2026 'Prince Sultan strike' wave. Real 6 Mar missiles toward the base were intercepted with no impact that day; later strikes (~14/27 Mar) damaged US aircraft. The correct correction is the video misattribution, which the original note omitted entirely."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "846k-follower account spreading recycled footage as 'BREAKING' war news in an active conflict; debunking misattributed war media curbs escalation-fueling disinformation, an EA/progress concern."
+  },
+  "difficulty": "hard"
+}

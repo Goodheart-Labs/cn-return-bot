@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2019130673681035726",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["politics_and_policy", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "'BREAKING' post claims House Democrats are 'just 2 votes away from impeaching Trump before March 31', with 1.16M impressions and a Trump portrait image.",
+  "why_note_decision": "The claim is misleading on the basic mechanics of impeachment. Democrats are the House minority (214 seats vs Republicans' 218, with 3 vacancies), so they cannot impeach on their own — a majority is needed and would require Republican votes, not '2 more Democratic votes'. The most recent impeachment resolution (Rep. Al Green's) was tabled in December 2025 (237-140, with many Democrats voting present), and no impeachment vote was scheduled for before March 31, 2026. 'Just 2 votes away' is a fabricated countdown that misrepresents both the seat math and the calendar. With 1.16M impressions, a note adding the seat reality is valuable. Provisional 'no_note' is wrong.",
+  "judge_guidance": "A correct note must establish that (1) Democrats are the House minority (~214 vs ~218 R, 3 vacancies) and cannot impeach without Republican votes — so 'just 2 votes away' is false, and (2) no impeachment vote was scheduled before March 31, 2026; the last resolution was tabled in December 2025. PASS if the note conveys the minority seat math and the absence of any scheduled vote, with a reliable source (House clerk/Ballotpedia/Reuters). FAIL if it accepts the '2 votes away' framing, omits the seat-count reality, or just says 'no note needed'. The original note had the right facts but was dinged for being seen as not-needed/missing-key-points, so a correct note must crisply tie the seat math to why the headline is false.",
+  "reference_note": "Misleading: Democrats are the House minority (about 214 seats vs Republicans' 218, with 3 vacancies), so impeachment cannot pass on Democratic votes alone — a House majority requires Republican support. No impeachment vote was scheduled before March 31; the last impeachment resolution was tabled in December 2025. https://clerk.house.gov/Votes/2025322 https://ballotpedia.org/United_States_House_of_Representatives_elections,_2026",
+  "original_unhelpful_note": {
+    "text": "No current vote to impeach President Trump is scheduled in the House. Democrats hold 214 seats, while Republicans hold 218 (with 3 vacancies), so bipartisan support would be needed. The last resolution was tabled in December 2025. https://ballotpedia.org/United_States_House_of_Representatives_elections,_2026 https://clerk.house.gov/Votes/2025322 https://www.reuters.com/world/us/trump-house-republicans-if-we-dont-win-midterms-i-will-get-impeached-2026-01-06",
+    "failure_reason": "Facts are correct (minority math, tabled resolution) but rated NoteNotNeeded(4)/MissingKeyPoints(3). The note leads with 'no vote scheduled' rather than directly debunking the '2 votes away' hook, so some raters saw it as not clearly engaging the claim. A correct note should foreground why '2 votes away' is mechanically false.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading: Democrats are the minority and cannot impeach without GOP votes; no such vote was scheduled.",
+    "sources_checked": [
+      "https://pressgallery.house.gov/member-data/party-breakdown",
+      "https://thehill.com/homenews/house/5644815-al-green-trump-impeachment-articles/",
+      "https://www.nbcnews.com/politics/2026-election/trump-predicts-impeachment-if-republicans-lose-2026-midterms-rcna252604"
+    ],
+    "notes": "Feb 2026 House: R 218 / D 214 / 3 vacancies. Al Green's impeachment resolution tabled Dec 2025 (motion to table 237-140, ~47 Dems present, 23 for tabling). No vote scheduled before March 31. 'Just 2 votes away' is false."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "A 1.16M-impression false claim about a constitutional process feeds misplaced expectations and erodes basic civic understanding; correcting the impeachment mechanics has real epistemic value."
+  },
+  "difficulty": "medium"
+}

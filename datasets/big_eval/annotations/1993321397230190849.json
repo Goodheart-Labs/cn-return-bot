@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1993321397230190849",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["health_medical_science"],
+  "category_fit": "partial",
+  "suggested_category": "scientific_illiteracy_rage_bait",
+  "tweet_summary": "A viral clickbait post amplifies a woman's Aldi video reacting with alarm that 'ALL THE FOOD IS FAKE' because nearly every item carries a 'Contains a bioengineered food ingredient' label.",
+  "why_note_decision": "The tweet's headline claim ('ALL THE FOOD IS FAKE') is vague rhetorical/opinion framing, not a precise checkable factual assertion. The one checkable nugget — that the 'bioengineered' label is everywhere — is true, and the label is simply the USDA-mandated GMO disclosure effective Jan 1, 2022. The post conveys ignorance/alarm rather than a falsifiable claim, and the top replies (1800+, 1300+ likes) already supply the correction in force. Community Notes is for correcting checkable false statements, not debunking hyperbolic rage-bait that the audience is already self-correcting. Borderline, but no-note is the right call.",
+  "judge_guidance": "PASS only if the bot declines to write a note, OR (acceptable but not required) writes a tight, neutral note stating the 'Contains a bioengineered food ingredient' label is the USDA-mandated GMO disclosure (National Bioengineered Food Disclosure Standard, mandatory since Jan 1, 2022) — which is why it appears widely — and does NOT mean food is 'fake' or unsafe. FAIL any note that wanders into a GMO safety debate, cites contested 'X% of scientists' opinion stats, or treats 'all food is fake' as a literal factual claim to be litigated. The original note's drift into FDA/AAAS safety editorializing is the failure mode to avoid; prefer declining.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The \"contains bioengineered food ingredients\" label is a USDA-mandated disclosure for GMOs, effective since 2022. This explains its recent prevalence on labels. GMOs are deemed safe by the FDA and 88% of AAAS scientists.  https://www.ams.usda.gov/rules-regulations/be  https://www.fda.gov/food/agricultural-biotechnology/gmo-crops-animal-food-and-beyond  https://www.pewresearch.org/science/2015/01/29/public-and-scientists-views-on-science-and-society/",
+    "failure_reason": "note_not_needed_and_editorializing_safety_debate",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Mostly opinion/rage-bait. The factual core (the label is ubiquitous) is true; the label is the USDA-mandated bioengineered/GMO disclosure (mandatory since Jan 1, 2022), not evidence food is 'fake.' No precise false claim to correct.",
+    "sources_checked": [
+      "https://www.npr.org/2022/01/05/1070212871/usda-bioengineered-food-label-gmo",
+      "https://www.ams.usda.gov/rules-regulations/be/faq/disclosure",
+      "https://www.federalregister.gov/documents/2018/12/21/2018-27283/national-bioengineered-food-disclosure-standard"
+    ],
+    "notes": "The 'bioengineered' label is real and federally mandated since 2022, which fully explains its prevalence. The tweet's 'all food is fake' is hyperbole/opinion. Top replies already debunk it heavily. The original note's added 'GMOs are safe per FDA / 88% of AAAS scientists' pulls in a contested safety/opinion debate, which is why it drew opinion/incorrect tags."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "3.9M impressions of food-science illiteracy; minor public-understanding stakes, but it's self-correcting in replies and not a precise checkable claim, so EA/progress value of a note is low."
+  },
+  "difficulty": "medium"
+}

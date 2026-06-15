@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1994449046916731187",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["politics_and_policy"],
+  "category_fit": "poor",
+  "suggested_category": "political_opinion_characterization",
+  "tweet_summary": "Sen. Scott Wiener quotes/characterizes Trump's real Thanksgiving 2025 Truth Social post (the screenshot in the tweet is the genuine post), framing it as Trump declaring '53M non-citizens criminals' and announcing denaturalization, 'reverse migration' and 'whites-only immigration'.",
+  "why_note_decision": "The underlying screenshot is Trump's authentic Thanksgiving 2025 post, which really does cite a 53M foreign-born figure, calls most of them welfare/prison/gang/cartel cases, and announces a permanent migration pause, denaturalization, and 'REVERSE MIGRATION'. Wiener's tweet is an op-ed characterization of that real post ('declares 53M criminals', 'whites-only immigration', 'Reichstag Fire'). These are contested political interpretations of genuinely-made statements, not checkable factual fabrications. The original note tried to 'debunk' the 53M figure as if the tweet author invented it, but the figure is Trump's own and the policies described are real. A note here injects a contested counter-framing onto accurate reporting of a public official's words.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet accurately reflects a real Trump Truth Social post (shown in the image): the 53M foreign-population figure, mass-deportation/denaturalization/'reverse migration' plans are all genuinely his. The author's gloss ('whites-only', 'Reichstag Fire', 'declares them all criminals') is political opinion about a real document, not a fabricated fact. Any note that (a) treats the 53M figure as the author's own invention to be debunked, or (b) 'corrects' Wiener's characterization of real Trump statements, is a false positive. The original note's specific failure was citing a 2024 FactCheck.org article about a different Trump chart and implying the tweet fabricated the claim — a correct response must avoid that and recognize the post is contested opinion on accurate reporting.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading: Trump's \"53M\" mixes legal and unauthorized foreign-born and wrongly implies they're all criminals; FactCheck has debunked similar claims. Media report his migration pause and denaturalization plans, but denaturalization is reported as targeted, not a blanket purge. https://www.factcheck.org/2024/04/trumps-misleading-chart-on-illegal-immigration/",
+    "failure_reason": "Note treats the tweet as if it fabricated the 53M claim and 'corrects' the author, but the figure and policies are Trump's own real Thanksgiving post; cites an unrelated 2024 FactCheck article. Rated notHelpfulIncorrect / NoteNotNeeded — it argues against an accurate characterization of a public official's statements (opinion target).",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet accurately characterizes a real Trump Thanksgiving 2025 post; author's framing is contested opinion, not fabrication.",
+    "sources_checked": [
+      "https://www.npr.org/2025/11/28/nx-s1-5623787/trump-vows-to-permanently-pause-migration-from-poor-nations-in-social-media-screed",
+      "https://time.com/7337279/trump-thanksgiving-message-immigration-pause-third-world-travel-ban-afghanistan/",
+      "https://www.nbcnews.com/politics/immigration/trump-administration-working-expand-effort-strip-citizenship-foreign-b-rcna255427"
+    ],
+    "notes": "Trump's post really cites 53M 'official foreign population (Census)', says most are welfare/failed-nation/prison/gang/cartel, and announces permanent migration pause, denaturalization, end of benefits, and 'REVERSE MIGRATION'. Denaturalization effort is real and being expanded (NBC). Wiener's 'whites-only' / 'declares them all criminals' is characterization, not a falsifiable claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "High-stakes immigration/denaturalization rhetoric from a sitting president affects rule-of-law norms, but the tweet is a senator's accurate (if charged) summary; little misinformation to correct, so corrective value is low."
+  },
+  "difficulty": "medium"
+}

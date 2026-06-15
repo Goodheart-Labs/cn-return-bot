@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2056010787341189418",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["staged_or_scripted_content"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Tweet presents a video of a teacher slapping a student as a real classroom altercation and asks viewers whether the teacher was right to hit her back.",
+  "why_note_decision": "The video is a scripted skit produced by social-media creator Kenyon W (KenyonWShow), who routinely produces dramatized teacher-student conflict scenes. The tweet presents it as a real incident inviting moral judgement, so a context note is warranted. One commenter ('This woman does tons of skits. This is fake.') and many engaged users believing it is real confirm the misleading framing.",
+  "judge_guidance": "PASS if the note (1) states the video is a scripted/staged skit, not a real classroom incident, (2) attributes it to creator Kenyon W (KenyonWShow / @kinyawn) or links to the original skit upload, and (3) provides at least one source (Facebook KenyonWShow page, TikTok @kinyawn, or equivalent). FAIL if the note treats the incident as real, debates whether striking was justified, or only says 'unverified' without identifying it as a known scripted creator's skit.",
+  "reference_note": "This video is a scripted skit produced by creator Kenyon W (KenyonWShow / @kinyawn on TikTok), not a real classroom incident. https://www.facebook.com/KenyonWShow/videos/student-slaps-teacher-then-immediately-gets-taught-a-lesson/991053859064934/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "staged_scripted",
+    "sources_checked": [
+      "https://www.facebook.com/KenyonWShow/videos/student-slaps-teacher-then-immediately-gets-taught-a-lesson/991053859064934/",
+      "https://www.tiktok.com/@kinyawn/video/7321971408983231790",
+      "https://www.facebook.com/KenyonWShow/videos/student-throws-shoe-at-teacher-and-she-goes-off/985176789206313/"
+    ],
+    "notes": "Kenyon W (Wellington) runs a known channel producing classroom conflict skits. Multiple uploads in this exact format with the same actors confirm staging."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "586K views and inflammatory race/gender framing ('young white female ... slapped him'); correcting staged-content-as-news erodes a common engagement-farming pattern."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,361 @@
+/**
+ * Pure-data half of the A/B test framework. The runtime helpers
+ * (`runABTests`, `withForcedPicks`, `resolvePicks`, …) live in
+ * `abTests.ts` because they pull in `node:async_hooks`. This file is
+ * browser-safe — only `import type` references to BotConfig — so the
+ * dashboards can pull `AB_TESTS` in directly to derive slot/variant
+ * declaration order.
+ */
+
+import type { BotConfig } from "./botConfig";
+
+// --- Types ---
+
+/**
+ * A prerequisite value is either the exact value to match (===) or a list of
+ * acceptable values (membership). Disjunctions like `botId: ["agent",
+ * "multi-agent"]` work without predicate functions.
+ */
+export type Prerequisites = {
+  [K in keyof BotConfig]?: BotConfig[K] | BotConfig[K][];
+};
+
+export interface ABVariant {
+  /** Tag stored under ab_test_picks[testName]. */
+  name: string;
+  overrides: Partial<BotConfig>;
+}
+
+export interface ABTest {
+  /** Key in ab_test_picks. */
+  name: string;
+  /** Optional gate. Test is skipped (no entry in picks) when prerequisites mismatch. */
+  prerequisites?: Prerequisites;
+  variants: { variant: ABVariant; weight: number }[];
+  /**
+   * Variant to assume when a `pipeline_runs.ab_test_picks` dict lacks this
+   * test's key — e.g. for rows written before the test existed. Consumers
+   * must read picks through `getPick` / `resolvePicks` for this to apply.
+   *
+   * Leave unset for prereq-gated tests: "missing" there means "the test
+   * didn't fire," and the helpers can't tell that apart from "the test
+   * didn't exist yet."
+   */
+  defaultVariant?: string;
+}
+
+// --- AB_TESTS data ---
+
+export const BOT_TEST: ABTest = {
+  name: "bot",
+  variants: [
+    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
+    { variant: { name: "cheap-bot", overrides: {
+      botId: "cheap-bot",
+      model: "deepseek/deepseek-v4-flash",
+      search_model: "deepseek/deepseek-v4-flash",
+      writer_model: "deepseek/deepseek-v4-flash",
+      note_needed_judge: true,
+      // gemini-3-flash judge: big_eval val swap from deepseek-v4-flash roughly
+      // halved the hard-FP rate (35%→14%) while gaining coverage (57%→68% PASS).
+      note_judge_model: "google/gemini-3-flash-preview",
+      verifier_model: "deepseek/deepseek-v4-flash",
+      // Source verifier runs Gemini media analysis on TikTok / Instagram /
+      // YouTube / image URLs and treats the analysis as the source's content.
+      // Text-LLM verifier stays on DeepSeek; only the media-description sub-
+      // system uses Gemini (since DeepSeek has no vision).
+      verifier_accepts_media_sources: true,
+      web_search: "searxng",
+      // Enable test-time reasoning on deepseek-v4-flash. Cheap, and improves
+      // the judge's "is this dispute substantive" classification + the writer's
+      // "find a dispute or return nothing" decision-making.
+      reasoning_effort: "high",
+    }}, weight: 0 },
+    { variant: { name: "multi-agent", overrides: {
+      botId: "multi-agent",
+      model: "google/gemini-3-flash-preview",
+    }}, weight: 0 },
+    { variant: { name: "agent", overrides: {
+      botId: "agent",
+      model: "google/gemini-3-flash-preview",
+    }}, weight: 0 },
+    { variant: { name: "opus-main",                  overrides: { botId: "opus-main" }},                 weight: 0 },
+    { variant: { name: "opus-main-v2",               overrides: { botId: "opus-main-v2" }},              weight: 0 },
+    { variant: { name: "opus-main-no-source-check",  overrides: { botId: "opus-main-no-source-check" }}, weight: 0 },
+    { variant: { name: "opus-direct",                overrides: { botId: "opus-direct" }},               weight: 0 },
+    { variant: { name: "opus-direct-grok",           overrides: { botId: "opus-direct-grok" }},          weight: 0 },
+    { variant: { name: "opus-main-v2-grok",          overrides: { botId: "opus-main-v2-grok" }},         weight: 0 },
+    { variant: { name: "opus-multi-source",          overrides: { botId: "opus-multi-source" }},         weight: 0 },
+    { variant: { name: "opus-bridging",              overrides: { botId: "opus-bridging" }},             weight: 0 },
+    { variant: { name: "opus-research",              overrides: { botId: "opus-research" }},             weight: 0 },
+  ],
+};
+
+// Variants for simple-bot ship at the existing 100% sonnet46-native split.
+// Other archs land variant-by-variant in commits 4-7 with non-zero weights.
+const SIMPLE_BOT_SEARCH_TEST: ABTest = {
+  name: "simple_bot_search",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    // Non-uniform weights: sonnet46-native is the primary arm; the rest carry
+    // smaller exploratory weights, with the weaker/redundant variants pinned to
+    // 0 (still declared so their historical picks resolve).
+    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 10 },
+    { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
+    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
+    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 1 },
+    { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
+    { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
+    { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 1 },
+    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
+  ],
+};
+
+const SIMPLE_BOT_WRITER_TEST: ABTest = {
+  name: "simple_bot_writer",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 100 },
+    { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
+  ],
+};
+
+// Source checker (text-LLM source verifier) model for simple-bot. Baseline is
+// Gemini-flash (DEFAULT_CONFIG.verifier_model); this 50/50 split trials
+// deepseek-v4-flash as the verifier. Media analysis is unaffected — it always
+// runs on Gemini regardless of verifier_model. Prereq-gated to simple-bot, so
+// no defaultVariant.
+const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
+  name: "simple_bot_verifier",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 50 },
+  ],
+};
+
+// Extra LLM step between writer and source verifier that judges whether the
+// proposed note is actually warranted. When "on", the search step's system
+// prompt is simplified (criteria for "when a note is needed" move into the
+// judge's prompt). Prereq-gated to simple-bot, so no defaultVariant.
+const NOTE_NEEDED_JUDGE_TEST: ABTest = {
+  name: "note_needed_judge",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off",              overrides: { note_needed_judge: false }                                                                 }, weight: 100 },
+    { variant: { name: "deepseek-v4flash", overrides: { note_needed_judge: true, note_judge_model: "deepseek/deepseek-v4-flash" }                  }, weight: 0 },
+  ],
+};
+
+// Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
+// skips it when no note is warranted (recorded as rejected / prefilter_no_note).
+// This is what makes the large feed affordable. Mostly-on, with a 20% "off"
+// holdout so we can measure in prod how often the bot writes a note on posts the
+// prefilter would have cut (the real false-negative rate). defaultVariant "off"
+// so historical rows (no pick) resolve to no-prefilter via resolvePicks.
+const NOTE_PREFILTER_TEST: ABTest = {
+  name: "note_prefilter",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 20 },
+    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 80 },
+  ],
+};
+
+// Model used for cheap-bot's note-needed judge (the primary FP guard). The
+// BOT_TEST cheap-bot variant sets the baseline (gemini-3-flash); this test
+// swaps just the judge model, holding writer/verifier/search constant so a
+// cached writer-output replay isolates the judge model as the only variable.
+// gemini3flash won the big_eval val A/B (lowest hard-FP at 14%, 68% PASS) over
+// deepseek-v4flash (35% FP), deepseek-v4pro (16% FP, over-rejects good notes),
+// and sonnet46 (18% FP). Prereq-gated to cheap-bot, so no defaultVariant
+// (resolvePicks can't evaluate prereqs; a missing pick already falls back to
+// BOT_TEST's note_judge_model).
+const CHEAP_BOT_JUDGE_MODEL_TEST: ABTest = {
+  name: "cheap_bot_judge_model",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "gemini3flash",     overrides: { note_judge_model: "google/gemini-3-flash-preview" } }, weight: 100 },
+    { variant: { name: "deepseek-v4flash", overrides: { note_judge_model: "deepseek/deepseek-v4-flash"   } }, weight: 0 },
+    { variant: { name: "deepseek-v4pro",   overrides: { note_judge_model: "deepseek/deepseek-v4-pro"     } }, weight: 0 },
+    { variant: { name: "sonnet46",         overrides: { note_judge_model: "anthropic/claude-sonnet-4.6"  } }, weight: 0 },
+  ],
+};
+
+// Run gemini-3-flash for exactly the two steps where it most improved the
+// big_eval val — the search analyzer (evidence synthesis) and the note-needed
+// judge (the FP guard) — and keep deepseek-v4-flash everywhere else (query
+// writer, satire detector, writer, verifier). note_judge_model is already
+// gemini via CHEAP_BOT_JUDGE_MODEL_TEST, so this test routes the analyzer to
+// gemini (search_analyzer_model) and pins the satire detector back to deepseek
+// (satire_model) — which otherwise shares note_judge_model. Placed after
+// CHEAP_BOT_JUDGE_MODEL_TEST so its overrides win. Prereq-gated to cheap-bot,
+// so no defaultVariant.
+const CHEAP_BOT_GEMINI_STEPS_TEST: ABTest = {
+  name: "cheap_bot_gemini_steps",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "deepseek-baseline", overrides: {} }, weight: 0 },
+    { variant: { name: "gemini-analyzer-judge", overrides: {
+      search_analyzer_model: "google/gemini-3-flash-preview",
+      satire_model: "deepseek/deepseek-v4-flash",
+    } }, weight: 100 },
+  ],
+};
+
+// Replace the query-writer → SearXNG → analyzer chain with a single Gemini
+// native-search call (googleSearch): Gemini issues its own queries and returns
+// a findings brief directly. The writer/judge/verifier gates are unchanged. The
+// cheap-bot orchestrator branches on web_search="native_gemini"; search_model
+// is set to gemini here because the native variant's search call must hit
+// Gemini. Prereq-gated to cheap-bot, so no defaultVariant.
+const CHEAP_BOT_NATIVE_SEARCH_TEST: ABTest = {
+  name: "cheap_bot_native_search",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "searxng", overrides: {} }, weight: 50 },
+    { variant: { name: "native-gemini", overrides: {
+      web_search: "native_gemini",
+      search_model: "google/gemini-3-flash-preview",
+    } }, weight: 50 },
+  ],
+};
+
+const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
+  name: "verifier_media_sources",
+  variants: [
+    { variant: { name: "reject", overrides: { verifier_accepts_media_sources: false } }, weight: 0 },
+    { variant: { name: "accept", overrides: { verifier_accepts_media_sources: true  } }, weight: 100 },
+  ],
+};
+
+// Two-call claim-based source verifier vs the single-call accept/reject flow.
+// claim-based: extract the note's distinct claims, then map each to its
+// supporting cited sources; submit the good sources iff every claim has one.
+// Not prereq-gated (verifySources runs in both simple- and cheap-bot), so
+// defaultVariant "classic" lets historical rows resolve to the old flow.
+const VERIFIER_CLAIM_BASED_TEST: ABTest = {
+  name: "verifier_claim_based",
+  defaultVariant: "classic",
+  variants: [
+    { variant: { name: "classic",     overrides: { verifier_claim_based: false } }, weight: 50 },
+    { variant: { name: "claim-based", overrides: { verifier_claim_based: true  } }, weight: 50 },
+  ],
+};
+
+const AGENT_SEARCH_TEST: ABTest = {
+  name: "agent_search",
+  prerequisites: { botId: ["agent", "multi-agent"] },
+  variants: [
+    { variant: { name: "perplexity", overrides: { web_search: "perplexity" }},          weight: 1 },
+    { variant: { name: "searxng",    overrides: { web_search: "searxng" }},             weight: 1 },
+    { variant: { name: "searxngsum", overrides: { web_search: "searxng_summarized" }},  weight: 1 },
+  ],
+};
+
+const AGENT_PARALLEL_TEST: ABTest = {
+  name: "agent_parallel",
+  prerequisites: { botId: ["agent", "multi-agent"] },
+  variants: [
+    { variant: { name: "seq", overrides: { parallel_research: false }}, weight: 1 },
+    { variant: { name: "par", overrides: { parallel_research: true }},  weight: 1 },
+  ],
+};
+
+// Pseudo A/B test: records the feed size in `pipeline_runs.ab_test_picks.feed_size`.
+// `generateCandidates` forces the pick to the size the fetch actually used.
+// Pre-existing rows (no `feed_size` key) resolve to "small".
+const FEED_SIZE_TEST: ABTest = {
+  name: "feed_size",
+  defaultVariant: "small",
+  variants: [
+    { variant: { name: "small", overrides: { feed_size: "small" }}, weight: 100 },
+    { variant: { name: "large", overrides: { feed_size: "large" }}, weight: 0 },
+    { variant: { name: "xl",    overrides: { feed_size: "xl"    }}, weight: 0 },
+    { variant: { name: "xxl",   overrides: { feed_size: "xxl"   }}, weight: 0 },
+  ],
+};
+
+const SEARCH_ANALYZER_TEST: ABTest = {
+  name: "search_analyzer",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_analyzer: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { search_analyzer: true  } }, weight: 100 },
+  ],
+};
+
+// Pre-search satire gate: reads post + comments + profile (no note), early-exits
+// before the query writer when the post is overt satire the audience is in on.
+// High-precision; the note-needed judge keeps a lighter satire backstop.
+const SATIRE_DETECTOR_TEST: ABTest = {
+  name: "satire_detector",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { satire_detector: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { satire_detector: true  } }, weight: 100 },
+  ],
+};
+
+// Pin every cheap-bot LLM call to temperature 0. At the model's default
+// temperature the judge/verifier are so non-deterministic that ~58% of eval
+// rows flipped run-to-run, swamping any prompt-change signal. Prereq-gated to
+// cheap-bot so the other bots keep their default sampling.
+const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
+  name: "cheap_bot_temperature",
+  prerequisites: { botId: "cheap-bot" },
+  variants: [
+    { variant: { name: "default", overrides: {} },               weight: 0 },
+    { variant: { name: "zero",    overrides: { temperature: 0 } }, weight: 100 },
+  ],
+};
+
+// Eval-score cutoff for submission. The X eval gate keeps a note iff
+// `claim_opinion_score >= eval_submit_threshold`. Baseline is 0 (the historical
+// hardcoded cutoff) at 50%; the five lower cutoffs each get 10% to measure how
+// many extra notes submit — and how they perform — as we relax the gate. Not
+// prereq-gated (the eval gate runs for every bot in processTweet), so
+// defaultVariant "0" lets pre-existing rows resolve to the old cutoff.
+const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
+  name: "eval_submit_threshold",
+  defaultVariant: "0",
+  variants: [
+    { variant: { name: "0",    overrides: { eval_submit_threshold: 0    } }, weight: 50 },
+    { variant: { name: "-0.5", overrides: { eval_submit_threshold: -0.5 } }, weight: 10 },
+    { variant: { name: "-1.0", overrides: { eval_submit_threshold: -1.0 } }, weight: 10 },
+    { variant: { name: "-1.5", overrides: { eval_submit_threshold: -1.5 } }, weight: 10 },
+    { variant: { name: "-2.0", overrides: { eval_submit_threshold: -2.0 } }, weight: 10 },
+    { variant: { name: "-2.5", overrides: { eval_submit_threshold: -2.5 } }, weight: 10 },
+  ],
+};
+
+export const AB_TESTS: ABTest[] = [
+  BOT_TEST,
+  SIMPLE_BOT_SEARCH_TEST,
+  SIMPLE_BOT_WRITER_TEST,
+  SIMPLE_BOT_VERIFIER_TEST,
+  NOTE_NEEDED_JUDGE_TEST,
+  NOTE_PREFILTER_TEST,
+  CHEAP_BOT_JUDGE_MODEL_TEST,
+  CHEAP_BOT_GEMINI_STEPS_TEST,
+  CHEAP_BOT_NATIVE_SEARCH_TEST,
+  VERIFIER_MEDIA_SOURCES_TEST,
+  VERIFIER_CLAIM_BASED_TEST,
+  SEARCH_ANALYZER_TEST,
+  SATIRE_DETECTOR_TEST,
+  CHEAP_BOT_TEMPERATURE_TEST,
+  AGENT_SEARCH_TEST,
+  AGENT_PARALLEL_TEST,
+  FEED_SIZE_TEST,
+  EVAL_SUBMIT_THRESHOLD_TEST,
+];

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2006395901426737233",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:39.780Z",
+  "post": {
+    "id": "2006395901426737233",
+    "author_id": "1795475238806851584",
+    "created_at": "2025-12-31T16:03:54.000Z",
+    "text": "The Man Who Refused To Bathe For 60 Years 😨 https://t.co/bqvPUGVwCj",
+    "media": [
+      {
+        "media_key": "7_2006395724196384770",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2006395724196384770/pu/img/hpq7BIbIyVxrhhvd.jpg",
+        "height": 1920,
+        "width": 1080,
+        "duration_ms": 31637,
+        "view_count": 12015670,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2006395724196384770/pu/vid/avc1/320x568/cA3sMrzHXAgZ-sSl.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2006395724196384770/pu/vid/avc1/480x852/O6HwPKArffyDqTBW.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2006395724196384770/pu/vid/avc1/720x1280/hbp057VYJ08D2zgO.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2006395724196384770/pu/pl/GTYhDpSTpbPt5r9s.m3u8?tag=12"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 728,
+      "reply_count": 430,
+      "like_count": 18964,
+      "quote_count": 887,
+      "bookmark_count": 3825,
+      "impression_count": 4684737
+    },
+    "author_followers": 436898,
+    "author_name": "Zack D. Films",
+    "author_description": "A Collection of Things I Find Interesting\n(Zack D. Films’ Official Account)",
+    "author_tweet_count": 2899
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2006395724196384770/pu/vid/avc1/720x1280/hbp057VYJ08D2zgO.mp4?tag=12",
+          "description": {
+            "description": "A 3D animated video showing a man with poor hygiene and the negative physical effects associated with it. In the first frame, a man with a disgusted expression looks at a swollen, red inflamed finger. The second frame shows an elderly man with gray hair and skin caked in dirt flexing his muscles while green gas and flies surround his head. The third frame shows the same dirty man lying in a pile of soil next to a shovel and a trash can. The final frame shows the man's face covered in sores and dirt as he blows smoke out of his mouth.",
+            "ocrText": "would make him sick\\nSaying the dirt\\nto sleep in\\nout of a pipe"
+          },
+          "transcription": "He thought taking a bath would make him sick, so for over 60 years he refused to wash, saying the dirt kept him healthy. Instead, he left his home and dug a shallow hole to sleep in. He ate only roadkill and smoked animal poop out of a pipe. And instead of cutting his hair, he burned it over a fire. Over the years, he became the dirtiest man in the world. Until someone finally convinced him to take a bath, and he died shortly after."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Emerald Apple (@AI_EmeraldApple):** Looks like maybe @Asmongold is on to something.  \n**Engagement:** 1838 likes\n\n**Superior ⚡ (@superiorcrpt):** Arrest the man that convinced him to shower  \n**Engagement:** 1516 likes\n\n**Sowdy (@The_Real_Sowdy):** We all know who will be the next one  \n**Engagement:** 1083 likes\n\n**Shaun Marksbury (@marksbury):** The bath upset a delicate balance and finally let in all the diseases he had been carrying.  \n**Engagement:** 859 likes\n\n**32DreaMe (@32DreaMe):** His nickname is -Amou Haji •Born August 20, 1928 •Passed October 23, 2022 •@ age 94 He lived in the village of -Dezh Gah in Fars province. He became a hermit due to \"emotional setbacks\" after experiencing heartbreak. •Amou Haji was celibate, ate carrion that he found (especially rotting porcupines), drank water from puddles and rusty oil cans, smoked animal dung using an old pipe, wore a war helmet to fend off cold, and lived in a hole that he had dug himself, or occasionally in a cinder block house constructed for him by local people. •To manage his hair, he burned off the excesses with a flame. His skin was covered with soot because he \"bathed\" in smoke to cleanse himself.  \n**Engagement:** 745 likes\n\n**TomahawkFL (@TomahawkFL):** [image attached]  \n**Engagement:** 570 likes\n\n**Poncho (@ft_analytics91):** The bath killed him 🤦🏾‍♂️  \n**Engagement:** 241 likes\n\n**Dante Sparda (@Dante___Sparda_):** Asmongold lore goes hard  \n**Engagement:** 219 likes\n\n**‘Fena (@Afomisenufena_):** Isn’t there supposed to be a manslaughter charge for the person that forced him to take a bath  \n**Engagement:** 164 likes\n\n**Graphics CGI (@GraphicsCGI):** His DNA 🧬 had accepted the dirt  \n**Engagement:** 62 likes",
+    "warnings": []
+  }
+}

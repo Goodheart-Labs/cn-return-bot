@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1999999737379143950",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:45.662Z",
+  "post": {
+    "id": "1999999737379143950",
+    "author_id": "1534421378505527301",
+    "created_at": "2025-12-14T00:27:50.000Z",
+    "text": "Russia has announced a major medical breakthrough after confirming that a cancer vaccine will soon be offered free to patients around the world, a move that could reshape global cancer care. The vaccine targets the molecular markers found on tumor cells and trains the immune https://t.co/pTyFSIRUax",
+    "media": [
+      {
+        "media_key": "3_1999999722359279616",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G8FtJqoa0AAj6DO.jpg",
+        "height": 1350,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3922,
+      "reply_count": 929,
+      "like_count": 14566,
+      "quote_count": 293,
+      "bookmark_count": 1560,
+      "impression_count": 576270
+    },
+    "author_followers": 129489,
+    "author_name": "Shining Science",
+    "author_description": "Sky above, science within — your guide to the universe.",
+    "author_tweet_count": 6408
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G8FtJqoa0AAj6DO.jpg",
+          "description": {
+            "description": "A digital image featuring Vladimir Putin in a suit and tie, holding a glass vial labeled 'CANCER VACCINE' in his right hand. The background consists of the Russian flag. Below the image is a black text block with a headline in yellow and white text regarding Russian cancer vaccines.",
+            "ocrText": "CANCER VACCINE RUSSIA CONFIRMS CANCER VACCINE WILL SOON BE GIVEN FREE TO PATIENTS ALL OVER THE WORLD"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Maksym Borodin (@adnashmyash)**: Only Russian vaccine exists  \nLikes: 178 | Reposts: 0 | Replies: 0 | Views: 5209\n\n**Harshal (@HarshalHin)**: Pharma companies will not be happy with this... The real money is in giving treatment just enough so u keep coming back. There is no real money in 100% cure/prevention.  \nLikes: 97 | Reposts: 0 | Replies: 0 | Views: 6563\n\n**Chris NFT (33.3%){👻,👻}🦎 🌿🤌³¹³ (@Chris_NFToken)**: just another fake shit made in russia, the putler trolls r running out of ideas 🤡  \nLikes: 62 | Reposts: 0 | Replies: 0 | Views: 11086\n\n**🇨🇭 naFONDUE 🧀 (@NAFOndue)**: (image attached)  \nLikes: 45 | Reposts: 0 | Replies: 0 | Views: 856\n\n**Cleytus (@CleytusLive)**: (image attached)  \nLikes: 31 | Reposts: 0 | Replies: 0 | Views: 5319\n\n**Lieve (@chipke7)**: Good that it is found in Russia, were it in the EU or US it would be in a vault already never to come out again.  \nLikes: 29 | Reposts: 0 | Replies: 0 | Views: 1728\n\n**✌️Additional Content✌️ (@verygoodalexei)**: We must stop russia now. Otherwise, once they are done curing cancer in ukraine, europe is next  \nLikes: 23 | Reposts: 0 | Replies: 0 | Views: 2465\n\n**SitaravammaputrSamba (@sambapanthangi)**: Hope Indian oncology department closely work with Russia on this cancer vaccine availability and make it available for millions of patients in India  \nLikes: 22 | Reposts: 0 | Replies: 0 | Views: 1793\n\n**Cliff Rhodes (@cliffrhodes)**: This is a very dangerous road to take for Mr. Putin, as we all know that WEF, UN, WHO, EU, all want to reduce world population from 8+ billion people to just around 1+ billion people or less. What will they do or attempt to do, when their plan for the spread of worldwide cancer growth is stopped cold in its tracks?  \nLikes: 20 | Reposts: 0 | Replies: 0 | Views: 3336\n\n**ShadowOfFire (@ShadowOfTheHell)**: #Propaganda #BioNTech has long since reached clinical reality with its #cancerVaccines: mRNA therapies in Phase 2 trials, strong efficacy signals in melanoma and breast cancer, and real-world human data. While others talk about \"breakthroughs,\" BioNTech delivers results.  \nLikes: 14 | Reposts: 0 | Replies: 0 | Views: 670",
+    "warnings": []
+  }
+}

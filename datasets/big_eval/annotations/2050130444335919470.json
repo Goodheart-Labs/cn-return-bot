@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2050130444335919470",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["misattributed_or_miscontextualized_media", "health_medical_science"],
+  "category_fit": "partial",
+  "suggested_category": "engagement_farming_personal_story",
+  "tweet_summary": "Personal post by Sabiha (6.4k followers, 3.4M views) celebrating that her 'mom is cancer free' alongside a video of a woman ringing a chemo bell. Replies allege the account is a content/engagement farm reposting the same cancer-free claim with different unrelated media; the woman in the video is not the poster's mother.",
+  "why_note_decision": "A note is not warranted on this single tweet. The claim 'My mom is cancer free' is a personal, non-checkable statement about a private individual — Community Notes does not function well as a tool for adjudicating whether a random account's family-medical anecdote is sincere. The note's allegation (content-farming across multiple tweets with mismatched videos) is plausible but mostly a framing/opinion judgment rather than a discrete fact a third-party reader benefits from being corrected on. Raters overwhelmingly tagged this NoteNotNeeded (3) — they correctly see this as a low-stakes engagement-farming pattern, not viral misinformation needing a fact-check.",
+  "judge_guidance": "PASS only if the bot declines to write a note (any note here is a false positive). The tweet is a personal anecdote about a private person's cancer recovery, with no verifiable public claim to correct. A bot that writes a note accusing the account of engagement farming, lying about a parent, or cross-references other tweets to argue inconsistency should FAIL — even if the cross-tweet pattern is real, a note on this specific post is opinion/speculation about a private person's family.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This account posts multiple conflicting cancer-free claims using unrelated media that do not match its profile picture, including this video of a Black woman and claims of the poster being cancer-free for 1 year and 8 years. https://x.com/Sabiha1278/status/2050130444335919470 https://x.com/Sabiha1278/status/2050130767280480295 https://x.com/Sabiha1278/status/2050130745029808507 https://x.com/Sabiha1278/status/2050130693125197922 https://x.com/Sabiha1278",
+    "failure_reason": "Note is essentially an accusation of dishonesty/engagement farming against a private individual based on cross-tweet pattern-matching. Raters flagged NoteNotNeeded (3), SpamHarassmentOrAbuse (2), and OpinionSpeculation (1) — the note reads as harassment/speculation rather than fact-correction. Even if the account is a content farm, the appropriate response is to ignore/downvote, not to publish a Community Note on a personal medical claim.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "personal_claim_not_independently_verifiable",
+    "sources_checked": [
+      "https://x.com/Sabiha1278/status/2050130444335919470"
+    ],
+    "notes": "The tweet's text is a one-line personal celebration ('My mom is Cancer free! Last chemo session'). The video shows a generic chemo-bell celebration. Without identifying the woman in the video, we can't confirm she is or isn't the poster's mother. Even if the account does repost similar claims (replies suggest it does), a Community Note is not the right vehicle for accusing a small account of personal dishonesty. The note's chain-of-five-X-links does not establish a publicly-relevant misinformation harm."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "3.4M impressions on a personal-anecdote farming pattern; low information-integrity stakes. From an EA/progress lens, correcting personal engagement-farming on small accounts is not a meaningful suppression-of-misleading-views target."
+  },
+  "difficulty": "medium"
+}

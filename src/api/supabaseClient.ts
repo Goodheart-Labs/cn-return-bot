@@ -625,6 +625,92 @@ export class SupabaseLogger {
     }
   }
 
+  // ============================================
+  // Misinfo monitoring sightings (XXL-feed pre-pass)
+  // ============================================
+
+  /**
+   * All sightings recorded so far, keyed "<tweetId>:<topicId>". One read per
+   * run so the pre-pass can tell which keyword-matched posts are *new* (worth
+   * upserting + evaluating with the selection LLM) versus already-seen.
+   */
+  async getMisinfoSightingKeys(): Promise<Set<string>> {
+    const rows = await this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
+      (client) => client.from("misinfo_monitoring_sightings").select("id, tweet_id, topic_id"),
+      "id",
+      "getMisinfoSightingKeys",
+    );
+    return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
+  }
+
+  /**
+   * Sightings that need a note (needs_note=true) but haven't been processed
+   * yet (processed_run_id is null) — the carry-over backlog the pre-pass works
+   * through, oldest first.
+   */
+  async getPendingMisinfoSightings(): Promise<Array<{ tweet_id: string; topic_id: string }>> {
+    return this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
+      (client) => client.from("misinfo_monitoring_sightings")
+        .select("id, tweet_id, topic_id")
+        .eq("needs_note", true)
+        .is("processed_run_id", null),
+      "id",
+      "getPendingMisinfoSightings",
+    );
+  }
+
+  /** Insert newly-matched sightings; existing (tweet, topic) pairs are ignored. */
+  async upsertMisinfoSightings(rows: Array<{
+    tweet_id: string;
+    topic_id: string;
+    feed_size: string;
+    impression_count?: number;
+    author_name?: string;
+  }>): Promise<void> {
+    if (!rows.length) return;
+    const { error } = await this.client
+      .from("misinfo_monitoring_sightings")
+      .upsert(rows, { onConflict: "tweet_id,topic_id", ignoreDuplicates: true });
+    if (error) {
+      console.error("[SupabaseLogger] Error upserting misinfo sightings:", error);
+      throw error;
+    }
+  }
+
+  /** Write back the selection LLM's verdict for a batch of sightings. */
+  async recordMisinfoVerdicts(updates: Array<{
+    tweet_id: string;
+    topic_id: string;
+    needs_note: boolean;
+    selection_reason?: string;
+  }>): Promise<void> {
+    const evaluatedAt = new Date().toISOString();
+    for (const u of updates) {
+      const { error } = await this.client
+        .from("misinfo_monitoring_sightings")
+        .update({ needs_note: u.needs_note, selection_reason: u.selection_reason, evaluated_at: evaluatedAt })
+        .eq("tweet_id", u.tweet_id)
+        .eq("topic_id", u.topic_id);
+      if (error) {
+        console.error("[SupabaseLogger] Error recording misinfo verdict:", error);
+        throw error;
+      }
+    }
+  }
+
+  /** Stamp a sighting as processed once its pre-pass pipeline run completes. */
+  async markMisinfoProcessed(tweetId: string, topicId: string, runId: string): Promise<void> {
+    const { error } = await this.client
+      .from("misinfo_monitoring_sightings")
+      .update({ processed_run_id: runId, processed_at: new Date().toISOString() })
+      .eq("tweet_id", tweetId)
+      .eq("topic_id", topicId);
+    if (error) {
+      console.error("[SupabaseLogger] Error marking misinfo sighting processed:", error);
+      throw error;
+    }
+  }
+
   /**
    * Get summary stats across ALL scraped notewriter notes using reconciled data.
    * Excludes junk-tier notes. Includes notes that predate bot tracking.

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2056116841769291987",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["ai_generated_media"],
+  "category_fit": "partial",
+  "suggested_category": "accurate_reporting_of_ai_image",
+  "tweet_summary": "A news-aggregator account ('Remarks') reports that Trump posted an AI image 'appearing to depict a nuclear strike' — showing Trump in a Space Force command center pressing a red button with mushroom-cloud monitors. The image itself is the news.",
+  "why_note_decision": "The tweet accurately describes what Trump actually posted on Truth Social: an AI-generated image of himself in a Space Force command center with monitors showing missile/laser strikes and mushroom clouds. Multiple outlets (Newsweek, IBTimes, Mediaite, Alternet) reported this exact event around May 17, 2026. The qualifier 'appearing to depict' is appropriately hedged. No reasonable reader would think this is a real photo; the original note inserted unrelated Snopes/IBT links and was incomplete (cut off mid-sentence), which is why raters overwhelmingly tagged it noteNotNeeded and incorrect.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is accurate reporting that Trump posted this AI image — adding a note saying 'this image is AI-generated' is redundant (the tweet says so) and a false positive. Any note that treats the tweet's reporting as misleading, or that tries to debunk the image content as if the tweet endorsed it, fails.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The image shows space-based lasers, Space Force insignia, and  https://www.snopes.com/fact-check/trump-55-posts-3-hours/ https://www.ibtimes.co.uk/trump-ai-military-image-gulf-tensions-1796493",
+    "failure_reason": "Note-not-needed and incoherent: sentence cuts off mid-clause, no actual correction stated, and the tweet itself already characterizes the image accurately.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet accurately reports a real Trump Truth Social post; image is AI-generated as the tweet implies ('appearing to depict').",
+    "sources_checked": [
+      "https://www.ibtimes.co.uk/trump-ai-military-image-gulf-tensions-1796493",
+      "https://www.mediaite.com/online/trump-posts-bonkers-image-of-himself-firing-missiles-at-earth-from-space/",
+      "https://www.alternet.org/trump-nuclear-war-meme/"
+    ],
+    "notes": "Trump posted the image on May 17, 2026. Multiple mainstream outlets confirm the event."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "President posting a nuclear-war AI meme is newsworthy; accurate reporting of it shouldn't be noted. Suppressing accurate reporting via spurious notes degrades the information ecosystem."
+  },
+  "difficulty": "easy"
+}

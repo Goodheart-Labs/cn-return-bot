@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2038350235487944718",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war", "ai_generated_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Iran Embassy SA posts an obviously-AI-generated propaganda image of a US soldier screaming while sand explodes around him, captioned 'Iran's soil kills its enemies.'",
+  "why_note_decision": "The image is overtly stylized AI propaganda from an official Iranian embassy account — no viewer would interpret it as a documentary photo. The caption is a rhetorical slogan/opinion, not a checkable factual claim. The original note alleges AI imagery falsely depicting US military setbacks, but no specific reader would be misled into thinking this is a real photo of a real event. Raters tagged it note-not-needed (with low overall volume of 19). The cited Full Fact / CNN links are about other AI propaganda images during the Iran war but don't specifically debunk this image.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The image is obvious AI propaganda from an official embassy account paired with a rhetorical slogan — there is no checkable false factual claim. Any note here is a false positive. If somehow a note IS written, it must NOT cite Full Fact's 'captured US soldiers' link as if it debunks THIS specific image (it doesn't).",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This image is AI-generated and does not depict a real event. Fact-checkers and experts have identified a surge in fabricated AI imagery and propaganda falsely claiming to show U.S. military setbacks or casualties during the conflict.     https://fullfact.org/conflict/captured-us-soldiers-iran-image-fake  https://www.cnn.com/2026/03/11/politics/fake-ai-images-videos-iran-war",
+    "failure_reason": "Overcorrects on obvious AI propaganda art — no one would interpret the image as documentary; the caption is rhetoric, not a factual claim a reader would believe.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Image is obvious AI/propaganda art; caption is rhetorical slogan, not a checkable claim.",
+    "sources_checked": [
+      "https://fullfact.org/conflict/captured-us-soldiers-iran-image-fake",
+      "https://www.poynter.org/fact-checking/2026/fake-videos-strikes-iran/"
+    ],
+    "notes": "Embassy account; no audience confusion about whether the image is real. Rhetorical war propaganda, not misinfo."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Obvious propaganda art — low misinformation impact; mainly a false-positive trap."
+  },
+  "difficulty": "medium"
+}

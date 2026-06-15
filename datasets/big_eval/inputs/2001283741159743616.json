@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2001283741159743616",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:04:43.985Z",
+  "post": {
+    "id": "2001283741159743616",
+    "author_id": "1151913018936053760",
+    "created_at": "2025-12-17T13:30:00.000Z",
+    "text": "THIS IS LIFE IN GAZA!\n\nDON'T STOP TALKING ABOUT PALESTINE! https://t.co/o5EdUZwX6W",
+    "media": [
+      {
+        "media_key": "13_2001221794414346248",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2001221794414346248/img/vKksSr4RV3WYqRVF.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 30371,
+        "view_count": 54158,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2001221794414346248/vid/avc1/320x568/qr8ke3H0qX9ruM6l.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2001221794414346248/vid/avc1/480x852/pT0EFSYWxGysv9f6.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2001221794414346248/vid/avc1/720x1280/xgGxhcmF1Vwcl5YT.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2001221794414346248/pl/UnT-IwhXtjldeO2i.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3466,
+      "reply_count": 1330,
+      "like_count": 6885,
+      "quote_count": 97,
+      "bookmark_count": 114,
+      "impression_count": 122558
+    },
+    "author_followers": 3867255,
+    "author_name": "Jackson Hinkle 🇺🇸",
+    "author_description": "Follow: @LegitTargets & @ACPMain thedivewithjackson@gmail.com",
+    "author_tweet_count": 47967
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2001221794414346248/vid/avc1/720x1280/xgGxhcmF1Vwcl5YT.mp4",
+          "description": {
+            "description": "A set of video frames showing a flooded indoor area. A young boy in a brown jacket is seen using a small broom to move water across a grey, wet floor. The space contains basic items such as a white bucket collecting rainwater drips, a metal bowl with dishes sitting on a low wooden bench, and black plastic sheeting used as walls. The boy later looks directly at the camera. A watermark 'abdallah_naem' is consistently visible in all frames.",
+            "ocrText": "abdallah_naem"
+          },
+          "transcription": "موسيقى شكرا"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@dbalsz**: (No text content)  \nLikes: 177 | Reposts: 0 | Replies: 0 | Views: 1350\n\n**@DeboraVeldman**: There is a guy with a hose somewhere.....  \nLikes: 95 | Reposts: 0 | Replies: 0 | Views: 1275\n\n**@TheJewishAlly**: https://t.co/LeuAlw22da  \nLikes: 83 | Reposts: 0 | Replies: 0 | Views: 5205\n\n**@TheJewishAlly**: Don’t stop talking about the magic of Gaza having so much water when the weather is 👇👇 just research or google it ….. and follow @GAZAWOOD1 for behind the scenes in Gaza  \nLikes: 72 | Reposts: 0 | Replies: 0 | Views: 1624\n\n**@dickballxy**: No it isn't.  \nLikes: 49 | Reposts: 0 | Replies: 0 | Views: 1583\n\n**@durham_trev**: 🤣🤣🤣really  \nLikes: 40 | Reposts: 0 | Replies: 0 | Views: 802\n\n**@MichalSabra**: I think it’s time to move onto your next grift. People don’t care about gaza  \nLikes: 24 | Reposts: 0 | Replies: 0 | Views: 957\n\n**@leoniko22**: This is life in Tel-Aviv now!  \nLikes: 15 | Reposts: 0 | Replies: 0 | Views: 1072\n\n**@Nerobenzboy**: 🤣🤡 what is he doing with the broom? 🧹 trying to push the water away or what? These clowns are so dramatic, so sorry for that little boy living with adults like that.  \nLikes: 10 | Reposts: 0 | Replies: 0 | Views: 156\n\n**@Affeemail**: Poor kid, why isn't someone doing something...educate him..you cant sweep water like that out your tent  \nLikes: 10 | Reposts: 0 | Replies: 0 | Views: 215",
+    "warnings": []
+  }
+}

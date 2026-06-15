@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1985675392586264946",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["platform_manipulation"],
+  "category_fit": "partial",
+  "suggested_category": "ai_moderation_takedown",
+  "tweet_summary": "Dexerto reports that tech YouTuber 'Enderman' says YouTube's AI wrongly terminated his ~350K-subscriber channel after linking him to an unrelated banned non-English account.",
+  "why_note_decision": "The tweet is an accurate summary of Enderman's own public statements about his termination. The CN note effectively repeats the same facts (YouTube linked his channel to a banned one; TeamYouTube responded with a tracking number; still terminated). It adds no correction — it confirms the reporting. Raters overwhelmingly chose Note Not Needed (43) because there is no claim to correct.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive — the tweet accurately conveys Enderman's claim, and there is no contested fact to debunk. A bot note that merely restates the same details (TeamYouTube reply, tracking number) is redundant; a note that injects skepticism without sources contradicting Enderman is unfounded.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Enderman stated his YouTube channel was terminated by AI mistakenly linking it to an unrelated banned account. YouTube's support team replied on X and provided an email review with tracking number 1-8609000040619, but the channel remains terminated as of Nov 4, 2025.  https://x.com/TeamYouTube/status/1985624186153214387",
+    "failure_reason": "Note adds no correction — it restates the tweet's own framing. Raters chose Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet accurately reports Enderman's account of events; no misleading claim that requires correction.",
+    "sources_checked": [
+      "https://x.com/TeamYouTube/status/1985624186153214387",
+      "https://x.com/endermanch/status/1985362817491623960"
+    ],
+    "notes": "TeamYouTube publicly engaged with Enderman; the termination + AI-link narrative comes directly from Enderman and YouTube support communications."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Creator-economy story relevant to AI moderation policy debates but not high-stakes via EA/safety lens."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1989457167712489531",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "obvious_fake_widely_known",
+  "categories": ["ai_generated_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Linus Ekenstam ('AI Evangelist' with 238K followers) posts an AI-generated video captioned 'Men just want one thing. GTA6 Gameplay' featuring a tank reversing through a crowded beach.",
+  "why_note_decision": "Author is publicly an 'AI Evangelist' who consistently shares AI-generated content. Replies overwhelmingly recognize it as AI ('This is ai', 'AI SLOP', 'bro this is just ai slop', 'gen AI'). The framing is the same 'Men want one thing' meme template — clearly a joke fake-GTA6 trailer made with AI. The note pedantically corrects that GTA VI releases Nov 19 2026 and 'no official gameplay has been shared yet' — but no reasonable viewer would have believed this AI clip was real Rockstar gameplay. Raters chose Note Not Needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note here is a false positive — the video is openly an AI-generated meme by an AI-content creator, recognized as AI by the audience. A note explaining the real GTA VI release date is over-fact-checking obvious AI humor.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Grand Theft Auto VI releases on November 19, 2026, and no official gameplay has been shared yet. This video is not from the game.  https://www.rockstargames.com/newswire/article/ak3ak31a49a221/grand-theft-auto-vi-is-now-set-to-launch-november-19-2026",
+    "failure_reason": "Note states facts that no reasonable viewer would dispute — author is a known AI evangelist, commenters all flag the video as AI. Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Video is AI-generated; the post is meme/joke framing rather than a sincere leak claim.",
+    "sources_checked": [
+      "https://www.rockstargames.com/newswire/article/ak3ak31a49a221/grand-theft-auto-vi-is-now-set-to-launch-november-19-2026"
+    ],
+    "notes": "GTA VI release date confirmed as Nov 19, 2026; tweet author is well-known AI promoter."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Gaming/meme tweet; no broader stake."
+  },
+  "difficulty": "easy"
+}

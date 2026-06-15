@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1993849082671190093",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:52.536Z",
+  "post": {
+    "id": "1993849082671190093",
+    "author_id": "96015533",
+    "created_at": "2025-11-27T01:07:19.000Z",
+    "text": "Today’s shooting has Democrat fingerprints all over it.\n\n❌Biden caused the disastrous withdrawal from Afghanistan in ‘21\n\n❌A wave of unvetted Afghans flooded into the US\n\n❌We warned Democrats but they didn’t listen\n\nWhat happened? The shooter came here from Afghanistan in ‘21. https://t.co/e65ncUVm1K",
+    "media": [
+      {
+        "media_key": "13_1993848972750761984",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1993848972750761984/img/5hm3J7KIZDs4uwTB.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 110091,
+        "view_count": 109619,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1993848972750761984/vid/avc1/480x270/TWTRIiZOZ4L9F6YQ.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1993848972750761984/vid/avc1/640x360/WD0yHDTIH782FYPf.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1993848972750761984/vid/avc1/1280x720/ClpMDgpxftf75M6l.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1993848972750761984/pl/FS6G5z1KbVTm-ZYc.m3u8?v=a69"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3692,
+      "reply_count": 2848,
+      "like_count": 14575,
+      "quote_count": 215,
+      "bookmark_count": 228,
+      "impression_count": 237831
+    },
+    "author_followers": 1170533,
+    "author_name": "Byron Donalds",
+    "author_description": "Trump-Endorsed Republican for Governor of Florida, Congressman, Husband, Father, and Follower of Christ Proudly Serving SWFL. Official Account: @RepDonaldsPress",
+    "author_tweet_count": 17372
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1993848972750761984/vid/avc1/1280x720/ClpMDgpxftf75M6l.mp4",
+          "description": {
+            "description": "A man on the news talking about the recent activity of the National Guards.",
+            "ocrText": "NEWSMAX\r\n7:15 ET LIVE\r\nBREAKING NEWS\r\nCBS: NAT'L GUARD SHOOTER ENTERED U.S. IN 2021\r\nHEGSETH: TRUMP REQUESTS 500 MORE GUARDSMEN FOR D.C.\r\nHEGSETH:"
+          },
+          "transcription": "(transcription failed: Groq API error: 429 {\"error\":{\"message\":\"Rate limit reached for model `whisper-large-v3` in organiza)"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Wu Tang is for the Children (@WUTangKids)**: Shooter was granted asylum in April under your dear leader so STFU you fat slob. Engagement: 2283 likes, 13386 views\n- **Political Punk (@actingliketommy)**: He was granted asylum BY TRUMP. Lol you fucking piece of shit. Engagement: 250 likes, 1505 views\n- **CobaltDaisy (@CobaltDaisy)**: If your reaction to a national crisis is to lash out at Democrats, that’s not leadership, it’s a reflex born of emptiness. When tragedy hits, and all you can offer is blame, you reveal you’re not equipped for the moment. Someone that morally vacant has no business serving in Congress. Engagement: 184 likes, 2333 views\n- **Popular Liberal 🇺🇸 (@PopularLiberal)**: Republicans are ruining America. Engagement: 177 likes, 2052 views\n- **Bluedog (@HereLiesBlueDog)**: Fuck you asshole! Trump granted him asylum (a word he doesn’t understand) in April of 2025. Go fuck yourself! Engagement: 163 likes, 1488 views\n- **Reality Pit Stop 🇺🇸 (@justicenow_alan)**: Up until now you have been annoying and dumb. Now you are an insufferable asshole. Engagement: 161 likes, 939 views\n- **Judy 🇨🇦 (@ottawawanderer)**: His asylum was approved in April of 2025 - under Trump. How are MAGAts going to spin that one Byron? Engagement: 113 likes, 1156 views\n- **Virginia Voter X (@VirginiaVoterX)**: Leaders don’t seek to use such tragedy to divide America. Engagement: 88 likes, 1015 views\n- **DERRICK Independent Bernie Bro #NeverTrump! EVER! (@Der_Mayfield)**: Hey dipshit Mush Mouth, do you really not know ... Law enforcement sources have confirmed that the suspect in the November 26, 2025, Washington D.C. shooting, Rahmanullah Lakanwal, was granted asylum in April 2025 by the Trump administration. Please remove your tongue from Trump's ass; it's not very becoming for the next Tim Scott. Engagement: 83 likes, 1224 views\n- **PoliticOhMyGawd (@PoliticOhMyGawd)**: ❌And he was granted asylum…when? MAGA never seems to finish their stories for some reason. 🤡 Engagement: 49 likes, 527 views",
+    "warnings": []
+  }
+}

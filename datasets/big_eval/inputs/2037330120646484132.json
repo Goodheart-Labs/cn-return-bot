@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2037330120646484132",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:10:53.783Z",
+  "post": {
+    "id": "2037330120646484132",
+    "author_id": "1830302921789259776",
+    "created_at": "2026-03-27T00:45:27.000Z",
+    "text": "https://t.co/nYA4zRFWLQ",
+    "media": [
+      {
+        "media_key": "3_2037330116569972737",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEYM8mBbwAEKq4h.jpg",
+        "height": 1477,
+        "width": 1162
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1525,
+      "reply_count": 548,
+      "like_count": 4983,
+      "quote_count": 148,
+      "bookmark_count": 75,
+      "impression_count": 41003
+    },
+    "author_followers": 242538,
+    "author_name": "Hunter Eagleman™",
+    "author_description": "America First - @GuntherEagleman’s Twin Brother - 30 year LEO -  Retired Homicide Detective - Let’s do this!",
+    "author_tweet_count": 288812
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEYM8mBbwAEKq4h.jpg",
+          "description": {
+            "description": "A close-up photograph of U.S. Representative Alexandria Ocasio-Cortez speaking, with impact font text overlaid on the bottom portion of the image making a political statement.",
+            "ocrText": "\"Republicans are trying to rig elections by only allowing U.S. citizens to vote!\""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- SK (@SteCK1878): 🤡 (36 likes)\n- One Bad Dude (@OneBadDude_): I hear they put peanut butter on her teeth to make it look like she’s really talking (22 likes)\n- MaMaSTORM (@MaMaStorm7): Stupid to the core. I would bet she can’t even make a drinkable margarita. (14 likes)\n- Dabreadmanyo (@dabreadmanyo): Duh (6 likes)\n- Baxter 💫 𓅓 (@BaxterSaxster): I wouldn’t trust anyone who hangs around Bernie Sanders. That’s for damn sure. (5 likes)\n- Broda (@Broda_web4): idk @nickshirleyy says her education is suspect 🤣🤣✌️ (5 likes)\n- Jason Springer (@springej971): Ahh! She’s on to us! (5 likes)\n- Trump rocks (@Trumpro93674431): 🤣🤣🤣 I could 100% see her saying this! She really is that dumb 🇺🇸🇺🇸🍻 (4 likes)\n- cody (@CodyJ87884): And the Democrats actually feel this in their hearts (3 likes)\n- Patriotic 🇺🇸Suzanne⭐️⭐️⭐️ (@suzost): The next big hope for Democrats in 2028. 🤡 (3 likes)",
+    "warnings": []
+  }
+}

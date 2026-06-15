@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2036035230037901378",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:06:23.109Z",
+  "post": {
+    "id": "2036035230037901378",
+    "author_id": "1374968033265864706",
+    "created_at": "2026-03-23T11:00:01.000Z",
+    "text": "Police just uncovered a YouTube 'view farm' after a sting operation... Phones mounted to the ceiling running nonstop for fake views. https://t.co/kbu4O40HIF",
+    "media": [
+      {
+        "media_key": "13_2036016201265221632",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2036016201265221632/img/RAuTv0iZfTkXm-gh.jpg",
+        "height": 932,
+        "width": 716,
+        "duration_ms": 18538,
+        "view_count": 1028137,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036016201265221632/vid/avc1/320x416/LPJ82lCHOlrzhOD-.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036016201265221632/vid/avc1/480x624/PdkDN9zUb2VMyyI7.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2036016201265221632/vid/avc1/716x932/zFO8qwjiyCgjmQbb.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2036016201265221632/pl/xwrlX8ONmgKv5cPa.m3u8?v=5b1"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 7663,
+      "reply_count": 947,
+      "like_count": 25238,
+      "quote_count": 579,
+      "bookmark_count": 3085,
+      "impression_count": 1735826
+    },
+    "author_followers": 1473772,
+    "author_name": "TaraBull",
+    "author_description": "#SpacesHost | Truth Slayer | ↗️ I follow all Subscribers • Let's end the establishment media • ʟɪꜱᴛᴇɴ ᴡɪᴛʜ ᴄᴜʀɪᴏꜱɪᴛʏ. ꜱᴘᴇᴀᴋ ᴡɪᴛʜ ʜᴏɴᴇꜱᴛʏ. ᴀᴄᴛ ᴡɪᴛʜ ɪɴᴛᴇɢʀɪᴛʏ.",
+    "author_tweet_count": 135114
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2036016201265221632/vid/avc1/716x932/zFO8qwjiyCgjmQbb.mp4",
+          "description": {
+            "description": "A series of four frames from a video showing an extensive array of smartphones set up in rows on walls and shelving units, commonly referred to as a 'click farm' or 'bot farm'. The first two frames display grids of phones mounted on vertical panels with numerous charging cables. The third frame shows a dimly lit aisle between two racks of glowing smartphones. The final frame features police or security personnel in uniforms examining the facility.",
+            "ocrText": ""
+          },
+          "transcription": "Olha isso. Meu Deus do céu, são centenas. Os dados no YouTube, é uma fazenda de visualização. Quem montou isso aqui gastou uma fortuna. A gente precisa chamar o pessoal da inteligência agora. O celular até o teto. Parece uma colmeia. Vai dar um trabalho."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@Zatarra8675309**: If they would do this for youtube views, what would they do for votes?  \nEngagement: 890 likes\n\n**@AmericasBadger**: So, these are the people “liking” BrooklynDads posts!?  \nEngagement: 547 likes\n\n**@Mattmulhern11**: Hey! Don't take down our followers! We're \"influencers!\"  \nEngagement: 406 likes\n\n**@cloudtechbigunk**: Just remember, when you’re going back and forward with a bot online….. this is the what you’re arguing with…. A phone on a wall in a motel closet 😭  \nEngagement: 395 likes\n\n**@Astrovids23**: (image)  \nEngagement: 346 likes\n\n**@KObregonWriter**: Nothing is authentic anymore, everything is fake  \nEngagement: 252 likes\n\n**@PHD228**: Farming been around for a long time. Why doesn’t it stop, that ad revenue is good $$ but at the sacrifice of quality content 🤷🏽‍♂️👨🏽‍💻  \nEngagement: 235 likes\n\n**@ReiteConMig0**: Views farm  \nEngagement: 166 likes\n\n**@sn00ted**: this explains artists who are big on streams but can't go on tour  \nEngagement: 116 likes\n\n**@TheDonkWrangler**: God Almighty! Is everything just fake and scams today? What the hell happened to our world?  \nEngagement: 107 likes",
+    "warnings": []
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "tweet_id": "1989755354670838043",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "statistical_or_numerical_claim",
+    "politics_and_policy"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "political_claim_factcheck",
+  "tweet_summary": "Rep. Nancy Mace claims President Trump 'ended eight wars in eight months,' calling him the 'President of Peace.'",
+  "why_note_decision": "The 'eight wars in eight months' figure is a specific, checkable claim that major fact-checkers (CNN, AP/US News, Axios) have found to be a significant exaggeration: the list counts non-wars (e.g. the Egypt-Ethiopia dam dispute) and conflicts that did not actually end (DRC-Rwanda, Thailand-Cambodia flared again), and parties disputed US involvement (India-Pakistan). A clarifying note benefits the 193k+ readers, so a note IS warranted \u2014 contrary to the provisional no-note label.",
+  "judge_guidance": "PASS only if the note (1) addresses the specific 'eight wars in eight months' figure and explains it is an overstatement, citing concrete examples (e.g. the Egypt-Ethiopia matter is a diplomatic dam dispute not a war; the DRC-Rwanda and Thailand-Cambodia conflicts continued after the announced deals; India disputed US mediation), and (2) attributes this to named fact-checks (AP, CNN, Axios). It must AVOID the original note's failures: do not be vaguely argumentative ('multiple fact-checkers found no evidence...') without specifics, and do not cite a single possibly-wrong URL. It should be neutral and factual, not a partisan rebuttal of whether Trump deserves credit at all. A note that just says 'this is false/opinion' without enumerating the actual problems is too weak.",
+  "reference_note": "The 'eight wars in eight months' figure is disputed by fact-checkers. The list counts a non-war (the Egypt-Ethiopia Nile dam diplomatic dispute) and conflicts that did not actually end: fighting in the DRC-Rwanda and Thailand-Cambodia conflicts resumed after the announced agreements, and India rejected US mediation of its Pakistan ceasefire. Trump played a diplomatic role in several, but 'ended eight wars' overstates both the count and the permanence. https://apnews.com/article/fact-check-trump-eight-wars-ended https://www.axios.com/2025/10/10/gaza-trump-wars-ended-israel-nobel-prize",
+  "original_unhelpful_note": {
+    "text": "Misleading: multiple fact-checkers found no evidence Trump 'ended eight wars in eight months.' Several cited conflicts continued or were limited diplomatic shifts/ceasefires, not full war endings. See CNN fact-check: https://www.cnn.com/2025/11/03/politics/fact-check-trump-cbs-interview",
+    "failure_reason": "Vague and lightly sourced: 'multiple fact-checkers found no evidence' with no specific examples, and the single CNN URL (dated 11/03) is unverifiable / does not resolve to the relevant fact-check (the actual CNN/AP checks are dated Oct & Dec 2025). Reporters tagged it OpinionSpeculation/ArgumentativeOrBiased because it reads as assertion rather than enumerated evidence.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading/false: 'ended eight wars in eight months' is a significant exaggeration per AP, CNN and Axios.",
+    "sources_checked": [
+      "https://www.usnews.com/news/politics/articles/2025-10-13/fact-focus-with-a-truce-in-israel-trump-now-says-hes-ended-eight-wars-his-numbers-are-off",
+      "https://www.axios.com/2025/10/10/gaza-trump-wars-ended-israel-nobel-prize",
+      "https://www.cnn.com/2025/10/17/politics/fact-check-trump-president-end-war"
+    ],
+    "notes": "AP FACT FOCUS: the eight figure counts a non-war (Egypt-Ethiopia dam dispute) and conflicts that continued (DRC-Rwanda deal unsigned by lead rebels; Thailand-Cambodia fighting resumed). India rejected third-party mediation of its Pakistan ceasefire. Trump had real diplomatic involvement in some, but the sweeping 'ended eight wars' claim is overstated."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "A sitting US Representative amplifying a quantified foreign-policy claim to 540k followers; accurate accounting of war/peace outcomes is high-value for the public's grasp of geopolitics."
+  },
+  "difficulty": "medium"
+}

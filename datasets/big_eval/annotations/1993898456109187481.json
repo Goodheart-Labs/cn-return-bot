@@ -1,0 +1,38 @@
+{
+  "tweet_id": "1993898456109187481",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["conspiracy_and_viral_hoax", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Lara Logan (1.4M followers) asks rhetorically whether the CIA orchestrated the Nov 26 2025 DC National Guard shooting because the suspect (Rahmanullah Lakanwal) was identified as a former member of the CIA-backed Kandahar Strike Force in Afghanistan.",
+  "why_note_decision": "Logan poses CIA orchestration as a question rather than asserting it, and the underlying fact she relies on (suspect was a Kandahar Strike Force / CIA-trained Zero Unit member) is true per NBC, CBS, Time, and CNN reporting. The original CN note agrees with the factual premise (yes, he was in the CIA-backed Kandahar Strike Force), then notes 'no evidence the CIA orchestrated the shooting' — which is technically correct but pushes back against a rhetorical question. Community rated Note Not Needed (44). The tweet is framing/speculation by a partisan commentator, not a falsifiable assertion. This is a borderline case but the community signal is that JAQing-off conspiracy framing is not optimally addressed by a CN.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet poses a rhetorical question rather than asserting CIA orchestration; the underlying fact (suspect's CIA-backed unit history) is accurate. A note here either (a) merely confirms the tweet's factual premise (adds nothing), or (b) refutes a claim the tweet didn't actually make. Borderline — but community raters strongly chose Note Not Needed.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The suspect was a member of the CIA-backed Kandahar Strike Force and served alongside US forces against the Taliban. There is no evidence the CIA orchestrated the shooting. The victims are in critical condition.  https://www.nbcnews.com/news/us-news/suspect-national-guard-shooting-served-us-troops-afghanistan-relative-rcna246170",
+    "failure_reason": "Note confirms the tweet's factual premise, then rebuts a claim posed as a rhetorical question. Raters chose Note Not Needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Underlying claim (suspect's CIA-backed Kandahar Strike Force history) is true. The 'CIA orchestrated' framing is speculative opinion posed as a question — not a falsifiable assertion needing correction.",
+    "sources_checked": [
+      "https://www.nbcnews.com/news/us-news/suspect-national-guard-shooting-served-us-troops-afghanistan-relative-rcna246170",
+      "https://time.com/7337538/dc-shooting-cia-afghanistan-suspect/",
+      "https://www.cbsnews.com/news/suspect-dc-national-guard-shooting-afghan-national-what-we-know/",
+      "https://www.cnn.com/2025/11/27/us/dc-national-guard-shooting-victims-suspect-hnk"
+    ],
+    "notes": "Major outlets confirmed Lakanwal worked with CIA-backed Afghan paramilitary 'Zero Unit'/Kandahar Strike Force until 2021 withdrawal. No evidence of any current CIA direction."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.9M-impression conspiracy from a major partisan voice during breaking-news event — high-stakes misinformation surface; close call whether a note is appropriate, but community said no."
+  },
+  "difficulty": "hard"
+}

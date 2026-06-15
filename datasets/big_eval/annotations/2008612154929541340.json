@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2008612154929541340",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "manipulated_or_fabricated_evidence", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A viral video claims a 42-year-old mechanic named Mark Delcourt escaped from a U.S. hospital where staff were harvesting organs from patients without family; the tweet endorses it as 'THEY WANT OUR ORGANS.'",
+  "why_note_decision": "The video is a fabricated mashup: Lead Stories and Snopes both confirm the clips are unrelated footage from a UK underground bunker, a Florida sheriff, and an Egyptian addiction-treatment-center escape. No hospital, location, date, or news report corroborates the story. A note correcting this clear hoax is warranted on a viral (2.8M-impression) post pushing conspiracy.",
+  "judge_guidance": "PASS if the note (1) states the video is a fabricated/hoax narrative not depicting a real event, (2) makes clear at least one of its specific origins (e.g., the footage is a mashup of unrelated clips from incidents in places like Egypt/UK/US that do not depict organ harvesting), and (3) cites a credible fact-check (Lead Stories, Snopes, AFP, Reuters, or equivalent). FAIL if the note implies the event might be real, hedges that organ harvesting is plausible here, or relies only on absence-of-news arguments without identifying the misuse of footage.",
+  "reference_note": "The video is a fabricated mashup of unrelated clips from incidents in Egypt, the UK, and the US that do not depict organ harvesting. https://leadstories.com/hoax-alert/2026/01/fact-check-baseless-video-about-mark-delcourts-escape-from-an-organ-harvesting-hospital-is-mashup-of-unrelated-clips.html",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false_fabricated",
+    "sources_checked": [
+      "https://leadstories.com/hoax-alert/2026/01/fact-check-baseless-video-about-mark-delcourts-escape-from-an-organ-harvesting-hospital-is-mashup-of-unrelated-clips.html",
+      "https://www.snopes.com/fact-check/mark-delcourt-hospital-escape-story/",
+      "https://www.snopes.com/fact-check/mechanic-organ-harvesting-hospital/"
+    ],
+    "notes": "Two independent fact-checkers (Lead Stories, Snopes) traced footage to a UK bunker, a Florida sheriff, and an Egyptian rehab center escape. No hospital named, no police report, no credible reporting of any such raid."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "2.8M impressions of a fabricated narrative fueling distrust of hospitals/doctors directly damages public-health norms; correcting viral conspiracy that erodes institutional trust is high-leverage."
+  },
+  "difficulty": "easy"
+}

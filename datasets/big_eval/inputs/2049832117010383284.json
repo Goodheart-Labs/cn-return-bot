@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2049832117010383284",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:25.119Z",
+  "post": {
+    "id": "2049832117010383284",
+    "author_id": "1071484733543079936",
+    "created_at": "2026-04-30T12:43:55.000Z",
+    "text": "JUST IN: US seized $450 million in Iranian crypto",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 308,
+      "reply_count": 302,
+      "like_count": 3999,
+      "quote_count": 131,
+      "bookmark_count": 148,
+      "impression_count": 814650
+    },
+    "author_followers": 394839,
+    "author_name": "Kalshi",
+    "author_description": "Trade on anything.",
+    "author_tweet_count": 12415
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@SBlockspy: This just proves crypto isnt some untouchable anonymous system.. governmnts can and will step in when big money + sanctions are involved (254 likes)\n@soundofwars: Wait, wasn't it made with purpose that it can't be tracked and seized? (181 likes)\n@VividThoughts_1: If you ever thought crypto was a safe haven free from government interference (99 likes)\n@hackapreneur: Wtf is going on? This is not the decentralization we yearned for Well, it never was a pure cryptocurrency in that sense I think USDT should have governance token where holders can participate in Decsion making through DAO Usdc/Usdt is a centralised scam? Or it was never decentralised? Crypto is no longer crypto RIP (58 likes)\n@justtalfredo: The correct term is STOLE not seized 😂 (48 likes)\n@kindworldlabs: but aren't we decentralised? (44 likes)\n@Tapeseee: Genuinely asking, how the actual f*ck do you seize crypto? Did they beat the key or secret phrase out of someone? (34 likes)\n@2ctv: We were lied to that crypto is decentralized lol such a big fallacy!! A dollar with a freeze function was always a dollar with a freeze function The crypto label was just branding everything is now decentralized on the front end and centralized on the back end same with any other stable coins.. they all got freezing function Where can we put our money safe? (20 likes)",
+    "warnings": []
+  }
+}

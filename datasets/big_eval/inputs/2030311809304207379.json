@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2030311809304207379",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:42.839Z",
+  "post": {
+    "id": "2030311809304207379",
+    "author_id": "707278892801765377",
+    "created_at": "2026-03-07T15:57:11.000Z",
+    "text": "Iran is winning the war! They just released a video of their air force shooting down a US fighter. https://t.co/lLJqZ52cqd",
+    "media": [
+      {
+        "media_key": "7_2030297273838817280",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2030297273838817280/pu/img/NClPDoq_zs_jHNeH.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 10125,
+        "view_count": 15780438,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2030297273838817280/pu/vid/avc1/320x568/Cn80ocHZs1LfLQgC.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2030297273838817280/pu/vid/avc1/480x852/AtbbbM8XFdtVHb-R.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2030297273838817280/pu/vid/avc1/720x1280/Bfu_UnoKe2L2PO0u.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2030297273838817280/pu/pl/zR3uHOMe_As-bVAp.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4449,
+      "reply_count": 3548,
+      "like_count": 46403,
+      "quote_count": 1324,
+      "bookmark_count": 7879,
+      "impression_count": 11248422
+    },
+    "author_followers": 113528,
+    "author_name": "MAGS",
+    "author_description": "MAGA 🇺🇸 MAHA 🇺🇸 BARBZ 🇺🇸 Forever!",
+    "author_tweet_count": 266448
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2030297273838817280/pu/vid/avc1/720x1280/Bfu_UnoKe2L2PO0u.mp4",
+          "description": {
+            "description": "A figure riding a flying carpet and aiming a firearm at a military jet. The images are likely digitally altered to create the scene.",
+            "ocrText": ""
+          },
+          "transcription": "Thanks for watching!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@GordoDan_**  \nEsto es IA, dejen de hacer publicaciones falsas  \nLikes: 3225 | Reposts: 0 | Views: 49233\n\n**@Lauren3veMemes**  \nThis is what ai was meant for ☠️☠️☠️  \nLikes: 1132 | Reposts: 0 | Views: 113270\n\n**@Apostate__Monk**  \nI can't believe that this video required community notes to actually note that it's made using AI, I can't believe it.  \nLikes: 349 | Reposts: 0 | Views: 68239\n\n**@jadechelsea826**  \nWhy are people so desperate for the US to lose this war? I honestly don’t understand how degenerate these people can be.  \nLikes: 275 | Reposts: 0 | Views: 51080\n\n**@DumbassPhotoshp**  \nPalestinian astronauts confirmed it, therefore it’s real.  \nLikes: 248 | Reposts: 0 | Views: 22913\n\n**@GuntherEagleman**  \nLOL!!! 😂  \nLikes: 169 | Reposts: 0 | Views: 8084\n\n**@isthisai**  \nThis video is AI generated 🔎  \nLikes: 101 | Reposts: 0 | Views: 113655\n\n**@KMSharp72**  \nIran is winning. Time to break out the heavy artillery.  \nLikes: 104 | Reposts: 0 | Views: 11177\n\n**@Texas_Opinions**  \nThe Iranian Air Force is on patrol.  \nLikes: 103 | Reposts: 0 | Views: 10145\n\n**@CommieSmasher47**  \nNotice that your engagement goes skyrocketing when you say Iran is winning.  \nLikes: 60 | Reposts: 0 | Views: 32437",
+    "warnings": []
+  }
+}

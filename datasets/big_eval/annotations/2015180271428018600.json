@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2015180271428018600",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["breaking_news_and_war", "politics_and_policy"],
+  "category_fit": "partial",
+  "suggested_category": "use_of_force_by_federal_agents",
+  "tweet_summary": "An NYU professor (Aasma Shaukat MD MPH) mourns her former research assistant Alex Pretti, an ICU nurse killed by ICE in Minneapolis. Calls him 'kindest, sweetest human... with a bright future.'",
+  "why_note_decision": "The tweet is grief expression with one factual claim that is mildly off: Alex Pretti was killed by CBP agents (Border Patrol agent Jesus Ochoa and CBP officer Raymundo Gutierrez), not technically by 'ICE' — he was killed during ICE/CBP-coordinated immigration enforcement (Operation Metro Surge). However, ICE/CBP/HSI are operationally grouped under DHS immigration enforcement and the public/press shorthand 'ICE' for federal immigration enforcement is widespread (CNN, NBC, PBS, Wikipedia all use 'federal immigration agents' or 'ICE-led operations'). The original AI note pedantically corrects 'ICE' to 'CBP' — that's exactly the trivial_pedantry pattern that loses notes. Other tweet facts (Alex was an ICU nurse, was her former RA, was killed) are all confirmed. Most of the tweet is emotional/elegiac and not falsifiable. Raters tagged notHelpfulMissingKeyPoints (521) and notHelpfulNoteNotNeeded (509). No note needed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a grieving condolence with one minor factual imprecision (ICE vs CBP — Pretti was actually shot by CBP officers during a joint immigration enforcement operation, but 'ICE' is widely-used shorthand for federal immigration enforcement and used by major outlets). Correcting 'ICE' to 'CBP' is the textbook trivial_pedantry failure that the original note made. The bot MUST NOT write a 'well actually it was CBP' note. If it must engage, the bot might note that the deceased was armed and there's dispute about the circumstances — but even that injects contested counter-narrative into a condolence post.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Alex Pretti was shot and killed by a U.S. Border Patrol agent from Customs and Border Protection during an immigration enforcement operation in Minneapolis, not by ICE agents.    https://en.wikipedia.org/wiki/Killing_of_Alex_Pretti  https://www.npr.org/2026/01/24/nx-s1-5687276/man-shot-dead-minneapolis  https://abcnews.go.com/US/alex-pretti-icu-nurse-killed-federal-agent-minneapolis/story?id=129525591",
+    "failure_reason": "Pedantic CBP-vs-ICE correction on a grieving condolence tweet. Major outlets use 'ICE' as shorthand for federal immigration enforcement; the distinction is technically right but adds nothing readers benefit from. Classic trivial_pedantry.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "minor imprecision (ICE vs CBP), not misleading",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Killing_of_Alex_Pretti",
+      "https://www.nbcnews.com/news/us-news/alex-pretti-fatally-shot-federal-officers-minneapolis-identified-paren-rcna255758",
+      "https://www.propublica.org/article/alex-pretti-shooting-cbp-agents-identified-jesus-ochoa-raymundo-gutierrez",
+      "https://www.npr.org/2026/01/27/g-s1-107608/alex-pretti-death-internal-review-immigration"
+    ],
+    "notes": "Pretti was shot by CBP officers (Border Patrol Jesus Ochoa + CBP Raymundo Gutierrez), not ICE specifically. But the operation was Operation Metro Surge — a joint immigration enforcement op. Mainstream outlets routinely use 'ICE' for these shorthand."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "4.8M views; a real death in federal immigration enforcement. Pedantry notes here damage trust badly."
+  },
+  "difficulty": "easy"
+}

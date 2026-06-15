@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2012682789070524500",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:14.781Z",
+  "post": {
+    "id": "2012682789070524500",
+    "author_id": "2898790691",
+    "created_at": "2026-01-18T00:25:45.000Z",
+    "text": "🚨 NEW AUDIO: Karoline Leavitt just threatened CBS News over Trump’s interview:\n\n“Air it in full… or we’ll sue your ass off.”\n\nThe White House is now openly trying to bully the media into compliance.\n\nThis isn’t “transparency.” It’s intimidation. https://t.co/8pMBBJzYhC",
+    "media": [
+      {
+        "media_key": "13_2012682736071262208",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2012682736071262208/img/MGxn_wqghsGv2Lzv.jpg",
+        "height": 618,
+        "width": 1168,
+        "duration_ms": 22800,
+        "view_count": 2891227,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012682736071262208/vid/avc1/510x270/g3lBggL2hOp_J467.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012682736071262208/vid/avc1/680x360/cKZWzWVFnK8ju1yX.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2012682736071262208/vid/avc1/1168x618/RDb4BfJEMNF46V3S.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2012682736071262208/pl/zIQy0x8By__OtEO4.m3u8?v=fbd"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 9225,
+      "reply_count": 15809,
+      "like_count": 54670,
+      "quote_count": 1115,
+      "bookmark_count": 4628,
+      "impression_count": 5431338
+    },
+    "author_followers": 301046,
+    "author_name": "Brian Allen",
+    "author_description": "🇺🇸✝️ Podcast Host | Editorial & messaging consulting → DM | Cited by NY Post, HuffPost, Yahoo | @allenanalysisHQ",
+    "author_tweet_count": 41293
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2012682736071262208/vid/avc1/1168x618/RDb4BfJEMNF46V3S.mp4",
+          "description": {
+            "description": "A blonde woman in a light-colored dress is shown in a medium-up shot against a blue sky. An animated white audio waveform overlay moves across her chest throughout the frames. In the background, there is a blurry crowd of people on a sunny day.",
+            "ocrText": ""
+          },
+          "transcription": "...way, went right at Ellen. Hey. Okay, make sure you guys don't cut the tape. Make sure the interview is out in full. Yeah, we're doing it. Yeah. He said it's not out in full. We'll sue your ass off. Oh, great, okay. Uh, he always says that. I think that went perfectly. We only have 19 minutes and 30 seconds. So, 13 minutes. How long did we talk? I think it's 30 seconds. Yeah, 30 seconds will be out. Yeah, yeah, yeah. I appreciate you, Carolyn."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Kimberly Klacik (@kimKBaltimore)**: \"She’s requesting it to be released in full, not edited. A great job on her part.\" (Likes: 7941, Views: 53438)\n- **Cynical Publius (@CynicalPublius)**: \"Airing complete, unedited interviews so the public can judge things for themselves is fascism. Airing incomplete, highly edited interviews so the public cannot judge things for themselves is democracy.\" (Likes: 7216, Reposts: 465, Views: 90897)\n- **Jaeger Media (@jaegermedia1)**: \"Bullying = not letting the media gaslight the public anymore Lmao\" (Likes: 5677, Views: 64153)\n- **Courage Is A Habit (@CourageHabit)**: \"“Air it full” is bullying? LOL! You woke dipshits are so desperate for legacy media to lie. You know that if things are aired without edits you would lose badly.\" (Likes: 5127, Views: 76948)\n- **Proud American (@JimSTruthBTold)**: \"Um. You want them to selectively edit it? Is that what you’re saying??\" (Likes: 4247, Views: 70386)\n- **🫃🏼💉🇺🇦🇮🇷🇨🇺Hollaria Briden, Esq. (@HollyBriden)**: \"Airing full interviews is fascism.\" (Likes: 3171, Views: 26398)\n- **Ellie May❤️🤍💙 (@officialellymay)**: \"So because they said air a video in full that’s problematic for you??\" (Likes: 3129, Views: 39590)\n- **Dr Manhattva (@Manhattva)**: \"“Air it in full” is totally appropriate. You jackass.\" (Likes: 2662, Views: 35845)\n- **Greg Katz (@GregKatz02)**: \"CBS News is a failure. The bureau must be replaced.\" (Likes: 2491, Views: 147947)\n- **Chris 🇺🇸 (@ChrisRoboMars)**: \"“Air it in full.” You reply with “this isn’t transparency” You just can’t make this shit up, we’re living in the Idiocracy period.\" (Likes: 1991, Views: 18493)",
+    "warnings": []
+  }
+}

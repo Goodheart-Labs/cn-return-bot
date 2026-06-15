@@ -1,5 +1,4 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { AllNoteScores } from "../score/noteScores";
 
 // --- Config type ---
 
@@ -8,23 +7,65 @@ export type VideoDescriptionStrategy = "full_video" | "frames";
 /** Feed sizes accepted by X's eligible-posts API. */
 export type FeedSize = "small" | "large" | "xl" | "xxl";
 
-export interface ScoreFilter {
-  score: keyof AllNoteScores;
-  op: "gte" | "lte";
-  threshold: number;
-}
-
 export interface BotConfig {
   /** Which bot to run. Set by the BOT_TEST A/B test (or forced via withForcedPicks). */
   botId: string;
   model: string;
   /** Step-specific model overrides. Each defaults to `model` when unset. */
   search_model?: string;
+  /** Model for the cheap-bot search analyzer. Defaults to `search_model` then
+   *  `model`. Decouples the analyzer from the query writer (which also reads
+   *  `search_model`) so they can run on different models. */
+  search_analyzer_model?: string;
   writer_model?: string;
   /** Defaults to gemini-3-flash-preview via DEFAULT_CONFIG (no A/B test). */
   verifier_model?: string;
   /** If true, the source verifier surfaces an automated Gemini analysis (yt-dlp for video/audio/Instagram-photo, direct vision call for image URLs) for cited media URLs and treats that as the source's content. Defaults to false. */
   verifier_accepts_media_sources?: boolean;
+  /**
+   * If true, the source verifier runs the two-call claim-based flow: one call
+   * extracts the note's distinct factual claims, a second maps each claim to the
+   * cited sources that support it. A source is "good" iff it supports ≥1 claim;
+   * the note is accepted iff every claim has ≥1 supporting source. Defaults to
+   * false (the single-call accept/reject flow). Set by VERIFIER_CLAIM_BASED_TEST.
+   */
+  verifier_claim_based?: boolean;
+  /**
+   * When true, the simple-bot pipeline runs an extra LLM step between writer
+   * and source verifier that judges whether a note is actually warranted for
+   * the post. The search step's system prompt is also simplified — the "when
+   * NOT to set correction_needed" criteria move into the judge's prompt.
+   * Defaults to false (no judge step, full search prompt).
+   */
+  note_needed_judge?: boolean;
+  /** Model for the note-needed-judge step. Defaults to `model` when unset. */
+  note_judge_model?: string;
+  /**
+   * When true, a cheap deepseek-v4-flash "note-needed prefilter" runs BEFORE the
+   * bot (query writer → SearXNG → analyzer → reframed note-needed judge). If it
+   * decides no note is needed, the bot is skipped and the run is recorded as
+   * rejected / prefilter_no_note. Lets a large feed be screened cheaply. Set by
+   * NOTE_PREFILTER_TEST; defaults false.
+   */
+  note_prefilter?: boolean;
+  /** Model for the cheap-bot satire detector. Defaults to `note_judge_model`
+   *  then `model`. Decouples the satire detector from the note-needed judge
+   *  (which also reads `note_judge_model`) so they can run on different models. */
+  satire_model?: string;
+  /**
+   * If set, passed through to OpenRouter as `reasoning_effort` for every LLM
+   * call made by this bot. Useful when the configured model supports test-time
+   * reasoning (e.g. deepseek-v4-flash with extended reasoning). Falsy = omit.
+   */
+  reasoning_effort?: "low" | "medium" | "high";
+  /**
+   * If set, passed through to OpenRouter as `temperature` for every LLM call
+   * made by this bot. cheap-bot pins this to 0 (via the `cheap_bot_temperature`
+   * A/B test) so its judge/verifier/writer decisions are deterministic enough
+   * to hill-climb — at default temperature ~58% of eval rows flipped run-to-run.
+   * Unset = model default.
+   */
+  temperature?: number;
   web_search:
     | "native"             // Anthropic web_search via OpenRouter
     | "native_gemini"      // Google Gen AI native API + googleSearch tool
@@ -35,10 +76,29 @@ export interface BotConfig {
     | "searxng"            // tool-calling loop: model calls google_search (raw SearXNG)
     | "searxng_summarized";// tool-calling loop: model calls google_search (SearXNG → Gemini summary)
   video_description_strategy: VideoDescriptionStrategy;
-  scoreFilters: ScoreFilter[];
   parallel_research: boolean;
+  /** When true, an LLM step between search and writer distills raw search
+   *  snippets into a structured research brief. Defaults to false. */
+  search_analyzer?: boolean;
+  /**
+   * When true (cheap-bot only), a pre-search LLM gate reads the post + comments
+   * + author profile — WITHOUT the proposed note — and decides whether the post
+   * is overt satire that the audience is in on. A positive verdict early-exits
+   * the pipeline with no_correction, skipping search + writer + judge. The
+   * detector is high-precision by design (it fires only when the room is in on
+   * the joke, not on fabricated content imitating real media), so the
+   * note-needed judge keeps a lighter satire backstop for the cases it misses.
+   * Defaults to false.
+   */
+  satire_detector?: boolean;
   /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
   feed_size: FeedSize;
+  /**
+   * Minimum X eval-score (`claim_opinion_score`) at which a note is submitted.
+   * The note is gated out when `score < eval_submit_threshold`. Defaults to 0
+   * (the historical hardcoded cutoff). Set by EVAL_SUBMIT_THRESHOLD_TEST.
+   */
+  eval_submit_threshold: number;
 }
 
 // --- Default config ---
@@ -49,9 +109,9 @@ export const DEFAULT_CONFIG: BotConfig = {
   verifier_model: "google/gemini-3-flash-preview", // simple-bot has always verified with gemini-flash
   web_search: "perplexity",
   video_description_strategy: "frames",
-  scoreFilters: [],
   parallel_research: false,
   feed_size: "small",
+  eval_submit_threshold: 0,
 };
 
 // --- AsyncLocalStorage ---
@@ -66,4 +126,20 @@ export function getBotConfig(): BotConfig {
   const config = configStorage.getStore();
   if (!config) throw new Error("getBotConfig() called outside withBotConfig()");
   return config;
+}
+
+/**
+ * Per-call LLM tuning derived from the bot config (reasoning_effort +
+ * temperature). Both are omitted when unset so the model's own defaults apply.
+ * Spread into every `trackedLlmCreate` params object so a bot's tuning is
+ * applied uniformly across its pipeline stages.
+ */
+export function llmTuningParams(config: BotConfig): {
+  reasoning_effort?: "low" | "medium" | "high";
+  temperature?: number;
+} {
+  return {
+    ...(config.reasoning_effort ? { reasoning_effort: config.reasoning_effort } : {}),
+    ...(config.temperature !== undefined ? { temperature: config.temperature } : {}),
+  };
 }

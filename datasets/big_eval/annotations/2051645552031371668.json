@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2051645552031371668",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "joke_or_satire",
+  "tweet_summary": "Account 'Sr. Ruqueza' (@infarruco, 90k followers — explicitly labeled 'cuenta parodia' in bio) posts a 2016 Alcázar (note: 'Alcasar' — deliberate misspelling, parody mark) bullfight clip with a Spanish-bullfight cosplay flourish, calling the woman his daughter and 'TOP 1 EN TENDENCIAS DE ESPAÑA Y LATINOAMÉRICA'. 258k impressions, 2.2k likes. Replies engage in obvious in-joke banter ('cornudo (tú)', 'tu hija casi se queda huérfana', sexualized teasing).",
+  "why_note_decision": "The account bio EXPLICITLY identifies as 'cuenta parodia' (parody account). The deliberate misspelling 'Alcasar' (vs real 'Alcázar de San Juan'), the 'Forbes 30u30 Seleccionador @EnMaroc 🇲🇦' bio, and the entire reply section reading as in-joke banter confirm it is parody. The clip itself may be real bullfight footage from the 2016 Alcázar de San Juan feria (which did exist per municipal records and torosalcazardesanjuan.com) — but the framing ('my daughter Sara', 'TOP 1 in trends') is overt parody. The original note correctly identifies parody but then attempts a substantive 'this video doesn't match real 2016 events' correction that's both unnecessary AND probably wrong (the clip may well be from an actual 2016 Alcázar bullfight — the parody is in the personal attribution, not the footage). Raters mass-tagged noteNotNeeded (5/12). The note is a false positive on explicit parody content.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The author's bio explicitly says 'cuenta parodia' (parody account); the post is in-joke Spanish-language humor (deliberate 'Alcasar' misspelling, claiming a stranger as 'my daughter Sara'). Any note 'correcting' the personal attribution or the event details on a parody account is a false positive on satire. FAIL any note that addresses the bullfight or 'Sara' as if they were factual claims.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Esta cuenta de parodia muestra un video que no corresponde a eventos reales de la feria de Alcázar de San Juan 2016, limitada a una corrida formal con toreros profesionales. https://x.com/infarruco https://cosasdealcazardesanjuan.wordpress.com/2016/09/03/toros-en-alcazar-de-san-juan-feria-y-fiestas-2016/ https://www.mundotoro.com/noticia/figuras-en-alcazar-de-san-juan/1294300",
+    "failure_reason": "noteNotNeeded — correctly flags the parody account but then over-corrects the bullfight footage itself, which is gratuitous on overt joke content. Linking to the parody account's own profile as a 'source' is also weak.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Parody. Author account bio explicitly says 'cuenta parodia'. In-joke Spanish humor.",
+    "sources_checked": [
+      "https://x.com/infarruco",
+      "https://cosasdealcazardesanjuan.wordpress.com/2016/09/03/toros-en-alcazar-de-san-juan-feria-y-fiestas-2016/"
+    ],
+    "notes": "Account labels itself as parody. Deliberate 'Alcasar' misspelling. Entire reply thread reads as in-joke banter, not deception."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Spanish-language parody account, low-stakes; clean false-positive trap for satire detection."
+  },
+  "difficulty": "easy"
+}

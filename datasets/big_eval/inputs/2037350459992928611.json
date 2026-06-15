@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2037350459992928611",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:50.639Z",
+  "post": {
+    "id": "2037350459992928611",
+    "author_id": "1638544323536130049",
+    "created_at": "2026-03-27T02:06:16.000Z",
+    "text": "🚨🚨| Luis Suárez misses to TAP IN A WIDE OPEN GOAL !!!!!!!!!!!! 🤯🫣\n https://t.co/RfCaaBuZuZ",
+    "media": [
+      {
+        "media_key": "7_2037320193110953985",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2037320193110953985/pu/img/NssxC8We__Aaho2S.jpg",
+        "height": 1080,
+        "width": 1920,
+        "duration_ms": 15189,
+        "view_count": 2578463,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2037320193110953985/pu/vid/avc1/480x270/nVuthidQ-OKxdTp7.mp4?tag=12"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2037320193110953985/pu/vid/avc1/640x360/Pl_I4DpUdxstZ2T9.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2037320193110953985/pu/vid/avc1/1280x720/UkqAo7NlPzq0xvOW.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2037320193110953985/pu/pl/kYUb33xtX-gso4ni.m3u8?tag=12&v=fe4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 105,
+      "reply_count": 66,
+      "like_count": 4947,
+      "quote_count": 43,
+      "bookmark_count": 162,
+      "impression_count": 529647
+    },
+    "author_followers": 555558,
+    "author_name": "CentreGoals.",
+    "author_description": "An all-round coverage of European football 🇪🇺⚽️",
+    "author_tweet_count": 24555
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2037320193110953985/pu/vid/avc1/1280x720/UkqAo7NlPzq0xvOW.mp4?tag=12",
+          "description": {
+            "description": "A sequence of frames from an international friendly soccer match between Croatia and Colombia, featuring a scoring opportunity. In the first frame (28:19), the camera shows a wide view of the pitch with several players and the soccer ball near the center field line. In the second frame (28:24), the action moves closer to the goal, where an athlete in a yellow jersey, the goalkeeper, and several players in checkered and blue jerseys are positioned around the penalty area. In the final frame (28:29), a player in a blue jersey with the number 24 is highlighted as they seemingly move towards the goal after a shot, with the ball seen reflecting off the goal structure while other players look on.",
+            "ocrText": "INTERNATIONAL FRIENDLY\n28:19 CROATIA 1 - 1 COLOMBIA\nUNIVERSAL ORLANDO RESORT\nTURKISH AIRLINES TURKISH AIRLINES TURKISH AIRLINES TURKISH AIRLINES\nLIVE\nFS2\n28:24 CROATIA 1 - 1 COLOMBIA\nTURKISH AIRLINES TURKISH AIRLINE\nLIVE\nFS2\n28:29 CROATIA 1 - 1 COLOMBIA\nTURKISH AIRLINES TURKISH AIRLINES\nLIVE\nFS2"
+          },
+          "transcription": "...the stadium. Diaz definitely onside here. He set up Suarez perfectly there. But he got it completely wrong."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Blessing Moses, MBA (@mblexxyn): Not my Luis Suarez 😩 (249 likes)\n- ERME_SPORTS (@e_formental10): Not Uruguayan Luis Suarez = not my problem (21 likes)\n- Big Stan (@Bigg_Stann_): Mehn, They’ve got to give this guy another name before he Tarnish the name Suarez’s 😭 (15 likes)\n- lamine yamal penalty king (@yamalhattrick): Finished player Benzema always been clear (10 likes)\n- (fan) m-fcb (@FCBmike23): Yoooo that’s so bad (3 likes)\n- getIn (@GetInJor): Not the vampire Suarez, by the way. (3 likes)\n- EPL 🏆 (@Afc_gains): You guys should've seen him in his prime 👿 (3 likes)\n- Ask_again (@Undis__puted): Please Next time differentiate which suarez (1 like)\n- Ogunmepkon (@_ogunmekpon): Next time you put “Sporting’s Luis Suarez” 👍 (1 like)\n- Blessing Fáṣìpẹ̀ 🇳🇬 (@Blessingfash): NO WAY Luis Suárez missing that?! Open goal, tap-in… that’s one you score in your sleep! (1 like)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2019521557236768955",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:09.651Z",
+  "post": {
+    "id": "2019521557236768955",
+    "author_id": "1332477587399053313",
+    "created_at": "2026-02-05T21:20:34.000Z",
+    "text": "🚨WATCH: MAGA CRIES ABOUT BITCOIN \n\n https://t.co/WjE3FpLvYl",
+    "media": [
+      {
+        "media_key": "13_2019482958206210049",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2019482958206210049/img/pku6L4_S_lUtbUyc.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 54633,
+        "view_count": 764644,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2019482958206210049/vid/avc1/320x568/HEetQ2jMLauLBTFC.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2019482958206210049/vid/avc1/480x852/cf86pEWcjrV1Smjs.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2019482958206210049/vid/avc1/720x1280/vD21g6X7ZT1nsDX6.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2019482958206210049/pl/WZ5Ragh0ka-JFObN.m3u8?v=660"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 321,
+      "reply_count": 151,
+      "like_count": 2127,
+      "quote_count": 53,
+      "bookmark_count": 166,
+      "impression_count": 121586
+    },
+    "author_followers": 229365,
+    "author_name": "Spencer Hakimian",
+    "author_description": "Founder of Tolou Capital Management. Daily Podcast on YouTube. Daily Shorts on Instagram.",
+    "author_tweet_count": 188980
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2019482958206210049/vid/avc1/720x1280/vD21g6X7ZT1nsDX6.mp4",
+          "description": {
+            "description": "A man wearing a red 'Make America Great Again 45-47' hat is seen in various states of movement and exclamation in what appears to be a home office or studio setting. In each frame, he is captured mid-action, suggesting an energetic or heated reaction to content on his computer monitor, which shows a figure resembling Donald Trump.",
+            "ocrText": "[{\"frame_1\": \"MAKE AMERICA GREAT AGAIN 45-47 TRUMP\"}, {\"frame_2\": \"MAKE AMERICA GREAT AGAIN 45-47 US YOU MAKE\"}, {\"frame_3\": \"ARE RICH IS\"}, {\"frame_4\": \"TRUMP YOU LAUNCH A\"}]"
+          },
+          "transcription": "I'm tired of winning! I'm tired of losing all my money! You promised us you'd make crypto great again! You promised us we'd be rich! The only people that are rich is you and your family who have to lose slimeball! You lost the meme coin! You launched a paperware crypto that no one wants! You get bribed by all the crypto officials! You pardoned criminals to destroy the market! Eric Trump says Q4 would be unbelievable for our bank Oh, it's pretty unbelievable It's pretty unbelievable how much money I've lost Eric Trump, Donald Trump, Donald Trump Jr. You guys destroyed my life The only person I would trust is Barrett Trump Because he's 8 feet tall Barrett, you tell me what to do Because right now, I hate the Trump family"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@Chilearmy123**: This video is from a couple months ago but yeah the feelings are still there \n\nAlso we returned the maga hat after making the vid 😂 (71 likes, 7113 views)\n- **@all4lvoe12**: It wasn’t snuff films. Or child rape. It wasn’t multiple scams or lies. It wasn’t the insults, slander, or felonies. It’s only about bitcoin…tracks… (34 likes, 698 views)\n- **@CashezMazz**: NOT AGAIN (19 likes, 1789 views)\n- **@ajoenamedjoe**: I'm not watching MAGA cry about Bitcoin, I'm watching a poorly scripted skit with horrible camera work (14 likes, 886 views)\n- **@IamFed2**: So, satisfying to watch 😁 (14 likes, 674 views)\n- **@BurgessBoston**: It is true. 8 foot tall people are very trustworthy. (14 likes, 1053 views)\n- **@ashrobin**: I think Barron is my favorite Trump too tbh (9 likes, 1702 views)\n- **@KevinMuruta**: MAGA is a scam (7 likes, 444 views)\n- **@marcone_charles**: My day just got better watching this, sorry to NORMAL PEOPLE WITH BITCOIN.\nBut this MAGA ASSHOLE AND RHE TRUMPS MAKE IT A GOOD DAY. GET RID OF THE HAT AND THE ANGER 😠 😡 👿 😤 (5 likes, 339 views)\n- **@fuadmb**: who is going to tell him Barron sold two weeks ago😂😂😂 (4 likes, 213 views)",
+    "warnings": []
+  }
+}

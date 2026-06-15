@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2025296268746993694",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:17.635Z",
+  "post": {
+    "id": "2025296268746993694",
+    "author_id": "750683331260321792",
+    "created_at": "2026-02-21T19:47:13.000Z",
+    "text": "🚨 New data from the Chandra X-ray Observatory shows a massive 230-light-year \"fracture\" in a galactic filament. https://t.co/0Si927H5QB",
+    "media": [
+      {
+        "media_key": "3_2025296259808940032",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HBtMN8LW0AAtTTP.jpg",
+        "height": 2048,
+        "width": 1650
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1137,
+      "reply_count": 723,
+      "like_count": 13356,
+      "quote_count": 686,
+      "bookmark_count": 2412,
+      "impression_count": 1127713
+    },
+    "author_followers": 1548462,
+    "author_name": "Curiosity",
+    "author_description": "Curiosity-driven content across science, history, and culture. Sharing knowledge and stories that spark curiosity.\nct: curiosityonx@gmail.com\nSub for only $3⤴️.",
+    "author_tweet_count": 17887
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HBtMN8LW0AAtTTP.jpg",
+          "description": {
+            "description": "A high-resolution photograph of the Milky Way galaxy, featuring a dense field of stars in shades of white, blue, and orange. A prominent dark, jagged line of interstellar dust clouds, known as a great rift, bisects the composition diagonally from the bottom left to the top right, with a larger void-like accumulation in the center.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**The WatchMan (@TheWatchMan247x)**: That long dark line or streak you see cutting through the bright band is called the Great Rift or Dark Rift. It is not empty space. It is actually huge clouds of dust and gas inside our own galaxy. These clouds are so thick that they block the light from stars behind them. That is why it looks like a big black river running through the stars. (221 likes)\n\n**Gammadocious (@Gammadocious)**: the mythical Goat Sea (158 likes)\n\n**Elbridge (@Pubs1787)**: This will fix it (119 likes)\n\n**Based Vtuber Astro (@Based_Vtuber)**: I knew it (116 likes)\n\n**FEDORABLE THE HORRIBLE (@FedorableL)**: It’s the proto form of the Eye of Terror (90 likes)\n\n**Mehmet (@xenit_v0)**: This is real photo source: https://chandra.cfa.harvard.edu/photo/2025/bone/ (65 likes)\n\n**TetragrammaDoom (@TetragrammaDoom)**: Noted 🌚 (55 likes)\n\n**Jeff Mybalzitch (@Jeff_BigBalz)**: That was in a Star Trek original series episode: 🖖 (38 likes)\n\n**chill Squid (@chill_Squid)**: The Cicatrix Maledictum (35 likes)\n\n**Mfalme (@mfalmemwafrica)**: They're coming...... (34 likes)",
+    "warnings": []
+  }
+}

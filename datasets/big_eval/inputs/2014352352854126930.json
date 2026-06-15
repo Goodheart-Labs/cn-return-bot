@@ -1,0 +1,72 @@
+{
+  "tweet_id": "2014352352854126930",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:14.970Z",
+  "post": {
+    "id": "2014352352854126930",
+    "author_id": "177101260",
+    "created_at": "2026-01-22T15:00:00.000Z",
+    "text": "A $20 trillion concept proposes a 3,400-mile underwater tunnel connecting London and New York, potentially reducing a 7-hour flight to a 1-hour train ride.\nhttps://t.co/Qw4O0V3MtX",
+    "media": [
+      {
+        "media_key": "13_1947618265041166336",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1947618265041166336/img/erwKV2RSXME2fw14.jpg",
+        "height": 640,
+        "width": 360,
+        "duration_ms": 91855,
+        "view_count": 6817513,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1947618265041166336/vid/avc1/320x568/19r89zQSQafsNgMp.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1947618265041166336/vid/avc1/360x640/2Z-Xtj4kwNQsD2rp.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1947618265041166336/pl/QbojVkr-M0ymjDgK.m3u8?v=b27"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 420,
+      "reply_count": 3192,
+      "like_count": 3938,
+      "quote_count": 328,
+      "bookmark_count": 741,
+      "impression_count": 3016479
+    },
+    "author_followers": 4360802,
+    "author_name": "Massimo",
+    "author_description": "Engineer. Selecting and curating pictures and videos trying to awaken your sense of wonder since 2014. Science, tech, art, weather, space, the unusual around us",
+    "author_tweet_count": 469775
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1947618265041166336/vid/avc1/360x640/2Z-Xtj4kwNQsD2rp.mp4",
+          "description": {
+            "description": "A factual description of the media content",
+            "ocrText": "All visible text, quoted exactly. Empty string if none."
+          },
+          "transcription": "Did you know that there will be a tunnel connecting London to New York? Imagine hopping on a train in London, gliding effortlessly across continents and oceans, and stepping off in the heart of New York City in less than an hour. Picture spending your day working in the bustling metropolis, taking a small walk, and then catching the evening train back home to London, all in the same day. Sound like sci-fi, right? Well, the project known as the $20 trillion transatlantic train tunnel is getting more real than you can imagine. Yes, transatlantic, which means that this tunnel will connect the European continent with the North American continent. It would span 3,400 miles under the ocean, making the current seven-hour flight seem ancient. And who knows, you might see Atlantis while you're on the way, but Londoners are no strangers to underwater tunnels. The Channel Tunnel already connects England to France, and even offers direct train rides to Paris, Brussels, and Amsterdam. Still, a tunnel to NYC would take engineering to a whole new level. What makes this difficult to build? Well, the extreme underwater pressure, safety challenges and environmental concerns are some of the reasons. But let's not forget the giant elephant in the room, the $20 trillion price tag for this project. That's basically the GDP of the US, and a quarter of the world's entire GDP. This is why we're probably not going to see this project come to light for the next few decades. But who knows, maybe your kids will hop on this tunnel one day and go from Camden, London, to Dalton School in New York every day."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Kyle Geditz (@KyleGermany7)**: So a train would travel 5 times the speed of sound (716 likes)\n- **Ron Collins (@RonaldLCollins)**: Might be the worst idea in history. (447 likes)\n- **worldisinsane (@SxyHyper16SS)**: Stupid. Why would we want to be connected to that place. (118 likes)\n- **Tommy (@TommyPettonJr)**: What could go wrong? (96 likes)\n- **biggrunty (@condondanielp)**: So get a car that 3400 mph. A plane goes about 550 mph. The math does not work! (92 likes)\n- **Ian F (@mr_walls11)**: You lost me at $20 trillion 👀 (53 likes)\n- **Fisherman (@FishermanWords)**: Why would America want to be connected to the UK? (51 likes)\n- **Tuffer (@TufferB)**: We cannot even repair potholes in our motorway infrastructure. (50 likes)\n- **( Parody ) John Denver ✌️ (@JohnDParody)**: Make Mexico pay for it. (47 likes)\n- **Chief_Engineer (@ChiefEngineerCE)**: What if. It already exists. (36 likes)",
+    "warnings": []
+  }
+}

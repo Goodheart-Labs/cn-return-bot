@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2034569420199080305",
+  "role": "unhelpful_opinion_speculation",
+  "provisional_role": "unhelpful_opinion_speculation",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "conspiracy_and_viral_hoax",
+    "breaking_news_and_war"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Post by 'StarPlatinum' (5.2M views) asserts 'Netanyahu is not alive', stacking circumstantial 'evidence': that Ariel Sharon's death took 8 years to confirm, and that a USAF C-17 'flying hospital' left Tel Nof on March 11 bound for Germany, supposedly matching an emergency.",
+  "why_note_decision": "A note is warranted: this is a checkable death-hoax claim with high reach. Netanyahu is alive. He posted authentic proof-of-life cafe videos on March 15-16, 2026 (HaSataf cafe, Jerusalem, which confirmed the footage) and appeared at a March 19 Jerusalem press conference. The Ariel Sharon analogy is irrelevant (Sharon was publicly known to be in a coma, not secretly dead), and the C-17 'flying hospital to Germany' is unsubstantiated flight-tracking speculation that proves nothing about Netanyahu's status.",
+  "judge_guidance": "PASS only if the note affirmatively establishes Netanyahu is alive, citing his proof-of-life appearances (cafe videos c. March 15-16 2026 and/or the March 19 Jerusalem press conference) from a reliable outlet (Reuters / Snopes / Times of Israel / Al Jazeera / CBC). A strong note also neutralizes the post's specific 'evidence': the Sharon-took-8-years analogy is a false parallel and the C-17/Germany flight is unverified and irrelevant. AVOID the original note's failure (rated notHelpfulOpinionSpeculation 49, Incorrect 36, NoteNotNeeded 33): do not state 'he is alive' as bare assertion without nailing down a dated, sourced public appearance, and do not adopt an argumentative/biased tone (the original drew 23 ArgumentativeOrBiased + 12 SpamHarassment flags). A note that merely calls the post 'speculation' without sourced proof-of-life fails.",
+  "reference_note": "Netanyahu is alive. He posted authentic videos from a Jerusalem cafe on March 15-16, 2026 (the cafe confirmed the footage) and appeared publicly at a March 19 Jerusalem press conference. There is no evidence he is dead; the Ariel Sharon comparison and the C-17 flight claim are unsubstantiated. https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15 https://www.timesofisrael.com/in-video-netanyahu-mocks-conspiracy-theories-about-his-death/",
+  "original_unhelpful_note": {
+    "text": "Israeli PM Benjamin Netanyahu is alive as of March 19, 2026. He has appeared publicly since March 11, including in videos, debunking death rumors.    https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15  https://www.snopes.com/news/2026/03/12/benjamin-netanyahu-dead-rumor  https://www.aljazeera.com/video/newsfeed/2026/3/13/netanyahu-says-israeli-strikes-killed-iranian-nuclear-scientists",
+    "failure_reason": "Substance correct and sources are strong (Reuters/Snopes/Al Jazeera), yet rated NOT_HELPFUL (97 ratings; dominant notHelpfulOpinionSpeculation 49, Incorrect 36, NoteNotNeeded 33, ArgumentativeOrBiased 23, MissingKeyPoints 31). The note is terse and does not rebut the post's specific hooks (the Sharon analogy, the C-17/Germany flight), so on a hot conspiracy thread raters treated it as a flat opinion. Heavy brigading on this viral post likely inflated the NOT_HELPFUL ratings.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false",
+    "sources_checked": [
+      "https://www.reuters.com/world/middle-east/netanyahu-posts-video-response-iran-rumours-that-he-is-dead-2026-03-15",
+      "https://www.timesofisrael.com/in-video-netanyahu-mocks-conspiracy-theories-about-his-death/",
+      "https://www.palestinechronicle.com/fact-check-where-is-netanyahu-and-why-are-questions-spreading-online/",
+      "https://www.cbc.ca/news/world/netanyahu-video-proof-of-life-iran-israel-9.7132558"
+    ],
+    "notes": "Netanyahu alive: cafe proof-of-life videos March 15-16, public March 19 press conference. He did miss a March 14 security cabinet meeting (chaired by FM Katz), which fueled rumors, but absence from one meeting is not death. The C-17 'flying hospital to Germany' claim is unverified flight-tracking speculation with no corroboration; the Sharon-8-years analogy is a non-sequitur."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "5.2M impressions on a head-of-state death hoax during an active war; flight-tracking pseudo-forensics lending false credibility to misinfo is a recurring epistemic-harm pattern worth correcting."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2057105681707409412",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["legal_or_court_claim", "breaking_news_and_war"],
+  "category_fit": "partial",
+  "suggested_category": "viral_crime_misframing",
+  "tweet_summary": "Elon Musk (240M followers) quote-tweets a post about Henry Nowak's killing, claiming Nowak was running from someone who stabbed him and stole his phone, and that 'police in the UK attacked him instead of his murderer.' Got 58M impressions.",
+  "why_note_decision": "This is a high-impact post on a real, ongoing murder trial with several material distortions. (1) 'Attacked' is overstated — police HANDCUFFED Nowak, they didn't physically assault him; the handcuffing was based on Vickrum Digwa's on-scene claim that Nowak had been the aggressor and used racial slurs. (2) 'Stole his phone' is not in the reporting and appears fabricated. (3) Calling Digwa 'his murderer' is prejudicial — Digwa is on trial, denies murder, and claims self-defense (now partly contradicted by forensic toxicology). A note IS warranted to correct the 'attacked'/'stole phone' details and to add that this is an ongoing trial, but the original note misses the phone-theft fabrication and softens 'attacked' without flagging it.",
+  "judge_guidance": "PASS if the note (1) clarifies Nowak was HANDCUFFED by police (not physically attacked) — police acted on Digwa's on-scene claim that Nowak had been the aggressor and racially abused him; AND (2) notes Digwa is on trial for murder and denies the charge (claiming self-defense). Bonus: flag that 'stole his phone' is not in published reporting on the case. FAIL notes that (a) call Digwa the 'murderer' as fact (trial pending), (b) deny that handcuffing the dying stabbing victim happened, or (c) simply call the tweet false without distinguishing 'attacked' vs 'handcuffed.'",
+  "reference_note": "Police handcuffed (did not physically attack) Nowak after the alleged attacker, Vickrum Digwa, told officers Nowak had started a drunken fight and racially abused him; the cuffs were removed when Nowak collapsed. Digwa is currently on trial for murder, denies the charge, and claims self-defense — a claim partly contradicted by forensic toxicology. 'Stole his phone' is not in the published reporting. https://en.wikipedia.org/wiki/Killing_of_Henry_Nowak https://www.bbc.com/news/articles/cy8257elr81o",
+  "original_unhelpful_note": {
+    "text": "Police did not attack Henry Nowak. According to trial testimony, officers handcuffed the already-stabbed victim after his attacker accused him of racism. Vickrum Digwa, a British man, is on trial for murder and claims self-defense. https://www.bbc.com/news/articles/cy8257elr81o",
+    "failure_reason": "missing_key_points: correctly distinguishes handcuffing from 'attack' but omits that the 'stole his phone' detail is not supported by reporting, and doesn't note that Digwa's self-defense claim has been partly contradicted in court",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "mixed_with_distortions",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/Killing_of_Henry_Nowak",
+      "https://www.bbc.com/news/articles/cy8257elr81o",
+      "https://www.ibtimes.co.uk/southampton-student-murder-trial-jury-shown-mobile-footage-1798165",
+      "https://spectator.com/article/why-did-the-police-cuff-henry-nowak/"
+    ],
+    "notes": "Killing of Henry Nowak (Dec 3 2025, Portswood, Southampton). Police did handcuff the stabbing victim after Digwa's on-scene claim of racial abuse. Toxicology contradicted intoxication claim. Trial ongoing as of May 2026 — Digwa charged with murder, manslaughter, carrying knife; denies all. Phone-theft claim is not in published reporting."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "58M impressions from Elon on an ongoing murder trial; misframings risk jury contamination and stoke racially charged narratives."
+  },
+  "difficulty": "hard"
+}

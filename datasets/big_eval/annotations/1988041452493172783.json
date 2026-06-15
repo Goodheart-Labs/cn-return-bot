@@ -1,0 +1,40 @@
+{
+  "tweet_id": "1988041452493172783",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": [
+    "celebrity_entertainment_sports",
+    "joke_or_satire"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "joke_or_meme",
+  "tweet_summary": "NBACentel (a NBA parody account) posts 'Anthony Davis \ud83d\udc40\ud83d\udc40' with an unflattering candid photo of Davis. The caption is purely reactionary \u2014 no factual claim.",
+  "why_note_decision": "The tweet text is just '\ud83d\udc40\ud83d\udc40' \u2014 there's no checkable factual claim. The author is NBACentel, an explicitly labeled parody/meme account. The comments are all jokes ('niggas traded weight too', '2nd trimester', 'fat suit'). The photo itself may exaggerate Davis's actual size (fact-checks confirm he gained ~15 lbs intentionally and the viral photo's angle exaggerates the appearance), but the tweet doesn't make a claim about how much weight he gained. A note saying 'actually he only gained 15 lbs' is correcting jokes in the comments, not the tweet. The original note also tries to debunk a claim the tweet never explicitly makes; raters flagged it as noteNotNeeded/opinion-speculation.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet itself ('Anthony Davis \ud83d\udc40\ud83d\udc40') makes no factual claim \u2014 any note debunking weight-gain claims is reaching past the tweet to correct the comment section. FAIL if the bot writes a note treating the joke caption as a sincere medical/physical claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The viral image used here exaggerates Anthony Davis's body size. A fact-check finds it misrepresents his physique. Davis said he had some managed offseason weight gain, not the dramatic change implied.  https://ca.sports.yahoo.com/news/did-anthony-davis-gain-weight-145040773.html https://www.newsweek.com/sports/nba/mavericks-anthony-davis-breaks-silence-weight-10819047",
+    "failure_reason": "Note-not-needed: the tweet itself makes no claim (just '\ud83d\udc40\ud83d\udc40'); the note debunks an implication the tweet doesn't state, on a parody/meme account.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "The photo's framing/angle does exaggerate Davis's actual size; he did gain ~15 lbs intentionally. But the tweet text makes no falsifiable claim.",
+    "sources_checked": [
+      "https://ca.sports.yahoo.com/news/did-anthony-davis-gain-weight-145040773.html",
+      "https://sports.yahoo.com/article/mavericks-fans-sound-alarm-anthony-154857082.html",
+      "https://heavy.com/sports/nba/dallas-mavericks/anthony-davis-preseason-weight-gain/"
+    ],
+    "notes": "Davis reported to camp at ~268 lbs (~15 lbs heavier than Lakers playing weight), intentional for durability. Viral photo angle/clothing exaggerated appearance."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports tabloid content; no policy/safety relevance."
+  },
+  "difficulty": "easy"
+}

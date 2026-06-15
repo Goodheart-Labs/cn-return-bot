@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2009464500865650962",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "ai_detector_misuse",
+  "tweet_summary": "A screenshot from isitai.com says Taylor Swift's song 'CANCELLED!' lyrics are 93.75% AI-generated; the OP presents this as proof Swift used AI to write the song.",
+  "why_note_decision": "Public-facing AI text detectors are well-known to produce high false-positive rates on human-written text, including Shakespeare's Macbeth, the Bible, Harry Potter, and Bohemian Rhapsody (VentureBeat, Cybernews, Stanford HAI). OpenAI's own classifier was ~26% accurate. A '93.75% AI' result from isitai.com is not credible evidence. The original Community Note flags this correctly with strong sources. Raters tagged 'note not needed' likely from partisan/anti-Swift sentiment rather than substance — the fact that even Swift fans in the replies agree the song is bad doesn't change whether AI detectors are credible. A correction IS warranted because a low-quality 'AI detection' screenshot is being elevated as proof.",
+  "judge_guidance": "PASS if the note (a) flags that consumer AI text detectors have a well-documented record of false positives on famous human-written work (Macbeth, Bible, Harry Potter, etc.) and (b) explains the 93.75% figure is therefore not reliable evidence. Strong sources: VentureBeat (Macbeth), Cybernews (Bible/Harry Potter), Stanford HAI on bias against non-native English writers. FAIL if the note merely defends Swift or critiques the song's quality; FAIL if it claims the detector is correct.",
+  "reference_note": "Consumer AI text detectors are unreliable and have flagged famous human-written works as AI-generated, including Shakespeare's Macbeth, the Bible, and Harry Potter. A 93.75% result from isitai.com is not credible evidence that the lyrics were AI-written. https://venturebeat.com/ai/chatgpt-detection-tool-thinks-macbeth-was-generated-by-ai-what-happens-now https://cybernews.com/editorial/your-essay-was-ai-generated-so-was-the-bible-harry-potter/ https://hai.stanford.edu/news/ai-detectors-biased-against-non-native-english-writers",
+  "original_unhelpful_note": {
+    "text": "AI detectors have misidentified human-written text as AI-generated, including Shakespeare's plays and the Bible. Results like 93.75% are not accurate. https://venturebeat.com/ai/chatgpt-detection-tool-thinks-macbeth-was-generated-by-ai-what-happens-now https://cybernews.com/editorial/your-essay-was-ai-generated-so-was-the-bible-harry-potter/ https://hai.stanford.edu/news/ai-detectors-biased-against-non-native-english-writers",
+    "failure_reason": "Substantively correct with good sources; the 'note not needed' rating reflects partisan downvoting / fan dynamics rather than substance. Slight 'missing key points' tag may reflect that the note didn't directly say 'this doesn't prove Swift used AI'.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading — AI detector output is not reliable evidence",
+    "sources_checked": [
+      "https://venturebeat.com/ai/chatgpt-detection-tool-thinks-macbeth-was-generated-by-ai-what-happens-now",
+      "https://cybernews.com/editorial/your-essay-was-ai-generated-so-was-the-bible-harry-potter/",
+      "https://www.stealthgpt.ai/blog/the-danger-of-ai-detectors-originality-ai"
+    ],
+    "notes": "Multiple credible sources document AI detectors flagging classic human texts. OpenAI's own classifier was ~26% accurate. Reply from @l1thiumwhisper notes detector also flagged Machado de Assis (1881)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.4M impressions; AI-detector epistemology matters as 'AI slop' accusations become common. Correcting misuse of AI detectors helps general AI literacy."
+  },
+  "difficulty": "easy"
+}

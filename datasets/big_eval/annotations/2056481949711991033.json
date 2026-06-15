@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2056481949711991033",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A Brazilian streamer speculates/asks in Portuguese whether striker João Pedro's injury was real or a tactical excuse, after Rayan was called up to the World Cup 2026 squad.",
+  "why_note_decision": "Tweet is a question/speculation ('será que...?' = 'I wonder if...'), not a factual assertion. The replies and reporting clarify the mechanics (Neymar took João Pedro's slot; Rayan replaced the injured Estêvão), but the OP is just wondering aloud. The original note 'corrects' an implication the OP only gestures at — the post itself contains no false claim. Raters correctly tagged it 'note not needed'.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a rhetorical question / fan speculation, not a factual claim. Any note 'explaining' the convocation logic (Neymar replaced João Pedro, Rayan replaced Estêvão) is the original note's mistake — answering a question the OP never asserted as fact. FAIL if the bot writes any note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "João Pedro não foi convocado por opção técnica, sem lesão grave; Rayan substituiu o lesionado Estevão, com Neymar na lista. https://www.olympics.com/pt/noticias/copa-do-mundo-2026-lista-convocados-brasil https://www.lance.com.br/futebol-internacional/joao-pedro-tem-situacao-atualizada-apos-susto-na-final-da-copa-da-inglaterra.html",
+    "failure_reason": "OP only asks a question; the note answers a non-existent assertion. Raters tagged 'note not needed' / 'missing key points'.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "no factual claim — OP poses a question",
+    "sources_checked": [
+      "https://www.olympics.com/pt/noticias/copa-do-mundo-2026-lista-convocados-brasil"
+    ],
+    "notes": "The note's substantive content (Neymar in, João Pedro out by choice, Rayan replacing injured Estêvão) matches reporting — but there is no claim to correct."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Niche Brazilian football debate, ~30K impressions; no public-interest impact."
+  },
+  "difficulty": "easy"
+}

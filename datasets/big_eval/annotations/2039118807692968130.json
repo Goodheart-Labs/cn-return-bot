@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2039118807692968130",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "politics_and_policy", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims actor Ben Stiller has 'turned on' NYC Mayor Mamdani and is blasting him (alongside Robert De Niro) over a proposed wealth tax, after endorsing/voting for him.",
+  "why_note_decision": "There is no evidence Ben Stiller or Robert De Niro criticized Mamdani; the De Niro 'leaving NYC over Mamdani' quote was fabricated by a satirical page (debunked by Snopes), and the tax framing is also misrepresented (proposals target high earners' income, not a flat net-worth levy). Commenters note searching the names returns only this tweet. A correction is warranted.",
+  "judge_guidance": "PASS only if the note states there is no credible evidence Ben Stiller (or Robert De Niro) criticized Mamdani, and that the De Niro angle traces to a debunked satirical/fabricated post. Bonus correctness if it notes the tax claim is mischaracterized (income tax on high earners, not an 8% net-worth wealth tax). Cite a fact-check (Snopes) and/or reputable reporting. A note that treats the quotes as real, or that argues the politics without flagging fabrication, should FAIL.",
+  "reference_note": "There is no evidence Ben Stiller or Robert De Niro have criticized Mayor Mamdani. Rumors regarding De Niro have been debunked, and reports indicate tax proposals target high earners' income, not an 8% net worth levy. https://www.snopes.com/fact-check/robert-de-niro-nyc-mamdani https://www.bloomberg.com/news/articles/2026-03-06/a-sliver-of-nyc-s-wealthy-has-unusual-rallying-cry-tax-me-more",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false/fabricated - no evidence Stiller or De Niro criticized Mamdani; De Niro quote came from a satire page, tax framing misrepresented",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/robert-de-niro-nyc-mamdani/",
+      "https://www.yahoo.com/news/articles/fact-check-robert-niro-not-181006319.html"
+    ],
+    "notes": "Snopes: the De Niro 'no choice but to leave NYC' story originated from satirical Facebook page 'America's Last Line of Defense' ('Nothing on this page is real'). No reporting supports Stiller blasting Mamdani."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "921K impressions on a fabricated political-celebrity story stoking culture-war narratives; correcting invented quotes supports a healthier information ecosystem (progress/epistemics lens)."},
+  "difficulty": "easy"
+}

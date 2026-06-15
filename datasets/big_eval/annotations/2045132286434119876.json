@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2045132286434119876",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "insider_reporting_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Reporter Tyler Horka tweets that Pope Leo XIV 'is anticipated to be in attendance' for the Notre Dame–Villanova college basketball doubleheader in Rome on Nov 1.",
+  "why_note_decision": "The press releases say the teams will have a planned papal audience ahead of the games — Pope Leo XIV is not confirmed to attend the games themselves. The OP himself replied in the thread clarifying: 'the Pope is not planning to attend the actual games but there is a planned audience with Pope Leo XIV set to take place ahead of the game(s).' So the OP already self-corrected in the most-liked reply. The OP's original word was 'anticipated to be in attendance' — vague reporter framing rather than a hard claim. The original Community Note is technically accurate but raters tagged it 'note not needed' because the clarification is already pinned in the replies and the framing dispute is wording, not a substantive falsehood.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The OP already clarified in his own most-liked reply that the Pope will have an audience with the teams, not attend the games. Any note here duplicates the reporter's own clarification and policies framing rather than fact. FAIL if the bot writes any note — that's the original note's mistake.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The Pope is scheduled for an audience with the teams ahead of the games, not to attend the games themselves. https://fightingirish.com/mens-womens-basketball-to-open-2026-27-season-in-rome https://villanova.com/news/2026/4/17/mens-basketball-mens-and-womens-basketball-to-open-2026-27-at-eternal-city-tip-off.aspx",
+    "failure_reason": "Substantively correct but the OP himself clarified the same point in the top reply (178 likes); raters tagged 'note not needed'. The framing 'anticipated to be in attendance' is reporter hedging, not misinfo.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "framing-only — papal audience confirmed; game attendance not confirmed but OP's own follow-up reply already clarifies",
+    "sources_checked": [
+      "https://fightingirish.com/mens-womens-basketball-to-open-2026-27-season-in-rome/",
+      "https://villanova.com/news/2026/4/17/mens-basketball-mens-and-womens-basketball-to-open-2026-27-at-eternal-city-tip-off.aspx"
+    ],
+    "notes": "Press releases confirm a 'planned audience with Pope Leo XIV' ahead of the games. The OP added that clarification himself."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "1.7M impressions but no public-interest stakes; sports-scheduling framing nuance."
+  },
+  "difficulty": "easy"
+}

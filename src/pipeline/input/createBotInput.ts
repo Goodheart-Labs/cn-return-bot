@@ -10,11 +10,15 @@ import { getTweetLog } from "../utils/tweetLog";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
 import { fetchTweetComments } from "./comments";
+import { detectMadeWithAiLabel } from "./madeWithAiLabel";
+import { readInputCache, writeInputCache, readInputCacheMem, writeInputCacheMem } from "./inputCache";
 
 export interface BotInput {
   mediaResult: GeminiMediaResult;
   authorHistory?: AuthorNoteHistory;
   comments?: string;
+  /** X showed a "Made with AI" provenance label on the post's media. */
+  mediaMadeWithAiLabel: boolean;
   warnings: string[];
 }
 
@@ -37,20 +41,32 @@ function isMediaOnlyPost(post: Post): boolean {
 
 export async function createBotInput(post: Post, logTag: string): Promise<BotInput> {
   const config = getBotConfig();
+  const strategy = config.video_description_strategy;
+  // In-memory first (prefilter built it this run), then the file cache (eval).
+  const memCached = readInputCacheMem(post.id, strategy);
+  if (memCached) return memCached;
+  const cached = readInputCache(post.id, strategy);
+  if (cached) {
+    writeInputCacheMem(post.id, strategy, cached);
+    return cached;
+  }
+
   const log = getTweetLog();
   const warnings: string[] = [];
 
   let mediaResult: GeminiMediaResult = { tweetMedia: [], quotedTweetMedia: [] };
   const hasTweetMedia = post.media?.length > 0;
   const hasQuotedMedia = (post.referenced_tweet_data?.media?.length ?? 0) > 0;
+  const hasMedia = hasTweetMedia || hasQuotedMedia;
   const mediaOnly = isMediaOnlyPost(post);
 
-  if (hasTweetMedia || hasQuotedMedia) {
+  if (hasMedia) {
     try {
       mediaResult = await analyzeMediaGemini(
         post.media,
         post.referenced_tweet_data?.media,
         config.video_description_strategy,
+        post.entities,
       );
     } catch (err: any) {
       const msg = `Media analysis failed: ${err.message}`;
@@ -61,6 +77,11 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
       warnings.push(msg);
     }
   }
+
+  // Only posts with media can carry the "Made with AI" label, so gate the
+  // (browser-based) check on media presence to keep the page-load off text-only
+  // posts. Fails open — never blocks note generation.
+  const mediaMadeWithAiLabel = hasMedia ? await detectMadeWithAiLabel(post.id, logTag) : false;
 
   // Author history (best-effort)
   let authorHistory: AuthorNoteHistory | undefined;
@@ -86,6 +107,10 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
     tweetCount: post.author_tweet_count,
     noteHistory: authorHistory ?? null,
   });
+  log?.set("inputs.mediaMadeWithAiLabel", mediaMadeWithAiLabel);
 
-  return { mediaResult, authorHistory, comments, warnings };
+  const result: BotInput = { mediaResult, authorHistory, comments, mediaMadeWithAiLabel, warnings };
+  writeInputCache(post, strategy, result);
+  writeInputCacheMem(post.id, strategy, result);
+  return result;
 }

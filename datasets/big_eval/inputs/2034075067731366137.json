@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2034075067731366137",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:40.727Z",
+  "post": {
+    "id": "2034075067731366137",
+    "author_id": "1841181851538636806",
+    "created_at": "2026-03-18T01:11:02.000Z",
+    "text": "#BREAKING: 𝕏 will soon let users restrict both posts and replies by region or country. https://t.co/kK0yMWEvu1",
+    "media": [
+      {
+        "media_key": "3_2034075062442332160",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDp8fgdbEAA4ShE.jpg",
+        "height": 819,
+        "width": 556
+      },
+      {
+        "media_key": "3_2034075062429724672",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDp8fgaasAAPSoa.jpg",
+        "height": 1056,
+        "width": 555
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 3694,
+      "reply_count": 2933,
+      "like_count": 31653,
+      "quote_count": 6184,
+      "bookmark_count": 3505,
+      "impression_count": 11124282
+    },
+    "author_followers": 73276,
+    "author_name": "Insider Wire",
+    "author_description": "U.S. News and Politics. World News at @InsiderWN.",
+    "author_tweet_count": 10694
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDp8fgdbEAA4ShE.jpg",
+          "description": {
+            "description": "A screenshot of a mobile application's interface showing a 'Filter by region' menu. The screen is in dark mode, listing several geographical regions like North America, South America, and Europe with a checkbox next to each. A watermark '@aaronp613' is visible in the center.",
+            "ocrText": "Cancel Drafts Post < Filter by region North America @aaronp613 South America Europe East Asia Australasia Africa Southeast Asia South Asia Central Asia West Asia"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDp8fgaasAAPSoa.jpg",
+          "description": {
+            "description": "A screenshot of a mobile app's user interface overlay menu titled 'Who can reply?' displaying various audience permission options with blue circular icons. 'Everyone' is currently selected with a green checkmark. Other options include 'Your Subscribers', 'Accounts you follow', 'Only accounts you mention', 'Verified accounts', and 'Regions'. A watermark username '@aaronp613' is visible near the bottom left.",
+            "ocrText": "Who can reply? Pick who can reply to this post. Keep in mind that anyone mentioned can always reply. Everyone Your Subscribers Accounts you follow @ Only accounts you mention Verified accounts @aaronp613 Regions"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "@SYS_04_: No more posts from India (8110 likes)\n@MBrant75: This will be the fastest thing I’ve ever done. (4485 likes)\n@tmac1400: Elon saaaarrr you cannot redeem this!!! (3271 likes)\n@zachxbt: Will be restricting Africa & South Asia for all replies & posts once it becomes available. Will not restrict SEA since Singapore is in the region. Imagine in the short term the feature is good for reducing AI slop / bots but over time bad actors adapt. (3094 likes)\n@Leonardaisfunny: It’s over for India. (3029 likes)\n@ItIsHoeMath: Next do race (1987 likes)\n@CursedPuns: indians after reading the news. (1958 likes)\n@NFL_DOINKS: No more 4th worlders on my timeline. (1310 likes)\n@Tittieboi4U: BLESS UP!!! 🙌🏻 (1229 likes)\n@NorthmanKnox: Cool. Now, I don't have to see any more posts from Indians threatening to rape my mother, my grandmother, my wife, and my daughter. (1174 likes)",
+    "warnings": []
+  }
+}

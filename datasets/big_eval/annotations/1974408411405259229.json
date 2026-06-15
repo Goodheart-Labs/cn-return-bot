@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1974408411405259229",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["staged_or_scripted_content"],
+  "category_fit": "partial",
+  "suggested_category": "loose_terminology",
+  "tweet_summary": "Nigerian media exec Dami Adenuga (947k followers) shares a 13-second video of a man at night opening a damaged utility/distribution box labeled 'Nationwide Debt Collectors' / 'Quick Cash Loan' (South Africa). Caption: 'He went to steal cables from a transformer and this happened to him.' 10M impressions, 77k likes.",
+  "why_note_decision": "The original note's only substantive correction is pedantic: the box is labeled 'Debt Collectors Nationwide' rather than being a standard utility transformer, and provides a real company phone number. This is loose-terminology nitpicking — 'transformer' is colloquial South-African shorthand for any street-level electrical distribution box, and cable theft from such boxes (including ones with stickered signage) is a documented daily occurrence (City Power, IOL, TimesLive reports). The note doesn't establish that the event didn't happen, doesn't dispute the outcome, and the company name on the box is incidental to the substantive claim ('person tried to steal cables and got electrocuted'). Community correctly downvoted: 10 missingKeyPoints, 11 noteNotNeeded, 7 incorrect, 6 irrelevantSources.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the tweet's substantive claim (cable theft + electrocution) is plausible/consistent with documented South-African incidents, and the only 'correction' available is to nitpick the word 'transformer' vs the company-stickered box. FAIL any note that: (a) repeats the original note's pedantic correction over the label of the box (this is the exact failure mode the rating reflects), (b) cites unrelated Eaton/transformer reference URLs as if they're relevant, (c) substitutes 'this is the wrong company phone number' for actual fact-checking. If the bot has no evidence that the event itself is staged/fake (which the AI media description does NOT support — it shows night footage of a real person at a real box), it must decline.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "For context, the box is a cardboard container labeled &quot;Debt Collectors Nationwide&quot; with phone 011 681 4065, unlike metal electrical transformers. The real company's phone is 084 699 8680.  https://nationwidecollections.co.za/contact/  https://www.eaton.com/us/en-us/products/low-voltage-power-distribution-control-systems/transformers/pad-mounted-transformer.html",
+    "failure_reason": "trivial_pedantry — corrects the word 'transformer' over the actual claim (cable-theft electrocution), and cites tangential sources (Eaton transformer product page, an unrelated debt-collection company). Note also implies the box is 'cardboard' which is not supported by the video.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "claim_is_loose_but_plausible_no_clear_misinformation",
+    "sources_checked": [
+      "https://www.timeslive.co.za/news/south-africa/2026-02-26-live-cable-kills-thief-leaving-parts-of-roodepoort-in-darkness/",
+      "https://www.iol.co.za/news/south-africa/gauteng/suspected-cable-thief-electrocuted-to-death-plunges-parts-of-west-rand-into-darkness-853d57d8-3754-493d-a3a5-d3b7658898d8",
+      "https://www.artikels.afriforum.co.za/en/cable-theft-here-are-the-facts/"
+    ],
+    "notes": "Cable theft from South African distribution boxes is well-documented; deaths from same are common. The 'Nationwide Debt Collectors' decal does not negate the underlying event. Could not verify the specific incident in the clip, but no evidence it's staged."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "low",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "10M-view video but cable-theft electrocution is local-news territory; the lesson here is the bot needs to distinguish 'pedantically incorrect word choice' from 'misinformation worth correcting'."
+  },
+  "difficulty": "medium"
+}

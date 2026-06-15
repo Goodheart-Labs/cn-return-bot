@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2051478725884342748",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:39.205Z",
+  "post": {
+    "id": "2051478725884342748",
+    "author_id": "1138458175663988738",
+    "created_at": "2026-05-05T01:46:57.000Z",
+    "text": "Racquel Chevremont teamed up with March For Our Lives to deliver a message on gun violence at the #MetGala with a bulletproof dress that reads: “Gun Violence Is Killing Our Kids”\n\nThe bulletproof dress was designed by Clarence Ruth. https://t.co/HO6AVwakwq",
+    "media": [
+      {
+        "media_key": "3_2051478706011738112",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHhRA5AbkAAnkLi.jpg",
+        "height": 1365,
+        "width": 2048
+      },
+      {
+        "media_key": "3_2051478706011717632",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHhRA5AbQAA-bEf.jpg",
+        "height": 1365,
+        "width": 2048
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 543,
+      "reply_count": 163,
+      "like_count": 7631,
+      "quote_count": 50,
+      "bookmark_count": 205,
+      "impression_count": 672057
+    },
+    "author_followers": 3397869,
+    "author_name": "Pop Base",
+    "author_description": "Pop Base is your best source for all pop culture related entertainment, news, award show coverage, chart updates, statistics and more. | email@popbase.tv",
+    "author_tweet_count": 89365
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHhRA5AbkAAnkLi.jpg",
+          "description": {
+            "description": "A photograph of a woman with long dark hair wearing a bright orange bulletproof-style vest over a tan corset dress. The vest has black text printed on the front. She is standing outdoors under metallic scaffolding with other figures partially visible on the sides.",
+            "ocrText": "GUN VIOLENCE IS KILLING OUR KIDS"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHhRA5AbQAA-bEf.jpg",
+          "description": {
+            "description": "A man in a navy blue suit is adjusting a red garment on a mannequin torso in front of a window. The garment appears to be a conceptual or tactical-style red vest with straps and panels over a beige under-layer. The room is brightly lit by natural light with a white lamp visible in the foreground.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**regular guy** (@regularguyguns): \"Body armor purchased or transferred to someone after 2022 in NYS is illegal and could be a felony if the prosecution is feeling punchy, \n\nSucks to be that mutant you’re promoting I guess.\"\nLikes=1643\n\n**Brett Hobbs** (@basedjorts): \"Body armor is illegal in New York. Will she be arrested for breaking the law?\"\nLikes=716\n\n**RevenantingSplines** (@revenantsplines): \"Gun grabbers like her and the orgs that think like her think it should be a crime to own body armor.\"\nLikes=480\n\n**Damn Daniel** (@Lieutenant_Dam): \"Nothing says \"I'm making a difference\" like wearing a tactical vest to a $75,000 dinner. 🙄\"\nLikes=414\n\n**Sgt K 'Charge Your Paddles' Onyx** (@SgtKOnyx): \"Body armor being illegal to possess in New York makes this hilarious\"\nLikes=224\n\n**piq and 69 others** (@piq9117): \"they are so ignorant of the gun laws they support. body armor is illegal for civilians in new york\"\nLikes=148\n\n**Spaceballs The X Account** (@Grunt2A): \"Racquel Chevremont committed a felony in the State of New York by being in possession of body armor.\n\nClarence Ruth aided in this felony along with everyone at March for our Lives.\n\nRICO coils be attached for this grand conspiracy\"\nLikes=131\n\n**ConeOfArc** (@ConeOfArc): \"Don't hire Clarence to design real body armor because it's supposed to cover your organs not just the upper chest\"\nLikes=128\n\n**Joe Devore** (@z3r0_burn): \"So a group campaigning against civilians owning body armor gave body armor to a person to show it off as the only way to protect children.\n\nMake it make sense.\"\nLikes=125\n\n**Tunnel Jew 🇮🇱** (@TokarevEnjoyer): \"Does she support NY's bulletproof vest ban?\"\nLikes=85",
+    "warnings": []
+  }
+}

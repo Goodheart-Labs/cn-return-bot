@@ -1,0 +1,87 @@
+{
+  "tweet_id": "2037517138773053718",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:01.944Z",
+  "post": {
+    "id": "2037517138773053718",
+    "author_id": "177101260",
+    "created_at": "2026-03-27T13:08:35.000Z",
+    "text": "No one laughs at your dad jokes like a hyena\n\n[🎞️ animalwhispers88]\nhttps://t.co/BoymxDQliB",
+    "media": [
+      {
+        "media_key": "13_2037248054340829185",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2037248054340829185/img/SihXExa35__rxez3.jpg",
+        "height": 3840,
+        "width": 2160,
+        "duration_ms": 38633,
+        "view_count": 417959,
+        "variants": [
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037248054340829185/vid/avc1/480x852/hGcSR4yhUjD0cQgX.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037248054340829185/vid/avc1/1080x1920/8KfUNd1jZvNKF4jd.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2037248054340829185/pl/5-lriSSnd5hV87xw.m3u8?v=45f"
+          },
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037248054340829185/vid/avc1/320x568/Y8IysPpUB74PKQvR.mp4"
+          },
+          {
+            "bit_rate": 25128000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037248054340829185/vid/avc1/2160x3840/YQ0E1_mS_2sCeI87.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2037248054340829185/vid/avc1/720x1280/NZJ_ztEx1lr_SL41.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 393,
+      "reply_count": 74,
+      "like_count": 2714,
+      "quote_count": 49,
+      "bookmark_count": 688,
+      "impression_count": 226207
+    },
+    "author_followers": 4360811,
+    "author_name": "Massimo",
+    "author_description": "Engineer. Selecting and curating pictures and videos trying to awaken your sense of wonder since 2014. Science, tech, art, weather, space, the unusual around us",
+    "author_tweet_count": 469775
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2037248054340829185/vid/avc1/2160x3840/YQ0E1_mS_2sCeI87.mp4",
+          "description": {
+            "description": "A series of video frames showing a man telling jokes to a spotted hyena named Eddie. In the first two frames, the man and Eddie are in a car wearing matching red knit beanies with 'Eddie's Pack' patches. Eddie appears to laugh or yawn at the man's jokes. In the third frame, they are in a Different car with orange seats, and in the fourth frame, they are indoors seated on a leather sofa against a log cabin wall.",
+            "ocrText": "EDDIE'S PACK @ANIMALWHISPERS88 EDDIE! DID YOU KNOW I ONCE BOUGHT A DOG FROM A BLACKSMITH? EDDIE'S PACK @ANIMALWHISPERS88 @ANIMALWHISPERS88 NOW I TALK WITH AN AXE SCENT @ANIMALWHISPERS88 HEY EDDIE, HAVE YOU HEARD OF THE NEW MOVIE CALLED CONSTIPATION?"
+          },
+          "transcription": "Eddie, did you know I once bought a dog from a blacksmith? As soon as we got it home, it made a bolt for the door. Hey, Eddie, I accidentally sprayed Axe Body Spray into my mouth. Now I talk with an ax... Hey, Eddie, have you heard of the new movie called Constipation? Hasn't come out yet. Candy, do you know I have a fear of German sausages? I always fear the worst."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@boriskarloff34**  \nI seriously need a hyena to laugh at my jokes. My life would be complete.  \nLikes: 27\n\n**@Doe127J**  \n[video reply]  \nLikes: 25\n\n**@Seanconnor0289**  \nThat’s just as funny as it is terrifying.  \nLikes: 24\n\n**@MisterIneffable**  \nI thought that was Kamala Harris in a new gig…  \nLikes: 11\n\n**@JEANNIE10987**  \nNow that’s a best friend! Laughs at all your jokes!  \nLikes: 5\n\n**@spacefan90gus**  \n@grok wait does he have a hyena for a pet  \nLikes: 4\n\n**@LaMoraEric**  \nMy dog doesn’t even smirk at my jokes  \nLikes: 3\n\n**@argus03**  \nMy favorite post of the day  \nLikes: 2\n\n**@raychix**  \ni tell these jokes to my friends, and they look at me like that too  \nLikes: 2\n\n**@jgcrawfish**  \nThis makes me want a hyena, bad  \nLikes: 1",
+    "warnings": []
+  }
+}

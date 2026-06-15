@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2037350459992928611",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Football account CentreGoals posts a viral clip captioned 'Luis Suárez misses to TAP IN A WIDE OPEN GOAL' from a Croatia vs Colombia international friendly. The video commentary names 'Suarez' (with Diaz setting him up) — i.e. Colombian striker Luis Javier Suárez (Sporting CP), whose full name is in fact Luis Suárez.",
+  "why_note_decision": "The player's actual name IS Luis Suárez (full: Luis Javier Suárez Charris) — he plays for Sporting CP and Colombia. The tweet is accurate; the OCR even shows 'COLOMBIA' on screen and the commentator says 'Suarez' setting up off Diaz. The note is pedantic in clarifying he's not the Uruguayan Luis Suárez of Inter Miami — useful if a reader were genuinely confused, but the on-screen team name and commentator made it clear, and most replies already correctly identified the player. 7 NNN on only 10 raters; small sample but consistent with note-not-needed framing. The Uruguayan Suárez plays for Inter Miami in MLS; he wouldn't be playing in an international friendly for Colombia. Context is sufficient.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The player in the clip is Colombian striker Luis Javier Suárez (Sporting CP) — and his actual name IS Luis Suárez. The on-screen graphic shows 'COLOMBIA' and the broadcast commentary names 'Suarez' off a Diaz assist, so the context already identifies the player. Any note 'clarifying' that this isn't Uruguayan Luis Suárez is technically true but trivial pedantry — the tweet is not misleading because the video itself establishes that this is Colombia's Suárez. A correct response is no note. (A note that incorrectly suggested the headline name was wrong would also FAIL.)",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This is Colombian striker Luis Javier Suárez of Sporting CP, not Uruguayan Luis Suárez of Inter Miami. https://www.semana.com/deportes/articulo/luis-suarez-lo-fallo-frente-al-arco-y-luis-diaz-no-lo-podia-creer-blooper-en-el-colombia-vs-croacia/202640 https://www.deportesrcn.com/futbol/seleccion-colombia/luis-javier-suarez-fallo-gol-cantado-contra-croacia-en-fecha-fifa-148163",
+    "failure_reason": "notHelpfulNoteNotNeeded / trivial_pedantry — clip itself shows COLOMBIA on screen and a Diaz assist; player's real name is Luis Suárez; note is unnecessary clarification",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true_clarification_not_needed",
+    "sources_checked": [
+      "https://tribuna.com/amp/en/blogs/the-new-luis-suarez-colombian-striker-fluffs-chance-that-wou/",
+      "https://en.wikipedia.org/wiki/Luis_Su%C3%A1rez_(footballer,_born_1997)",
+      "https://fbref.com/en/players/eeba07f8/Luis-Javier-Suarez"
+    ],
+    "notes": "Colombian striker Luis Javier Suárez Charris plays for Sporting CP. Miss occurred ~28th minute of Croatia–Colombia friendly. Tweet caption is accurate (his name is Luis Suárez)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports trivia; 530k impressions. Trivial pedantry trap."
+  },
+  "difficulty": "easy"
+}

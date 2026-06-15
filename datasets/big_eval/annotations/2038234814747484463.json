@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2038234814747484463",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "poor",
+  "suggested_category": "feelgood_animal_content",
+  "tweet_summary": "A Wildlife SOS video of Gracie the sloth bear exploring a grassy, tree-filled space, captioned 'rescued after years of living in captivity... her reaction to newfound freedom.'",
+  "why_note_decision": "The tweet's substantive claims are accurate: Gracie is a sloth bear rescued in March 2026 from the illegal 'dancing bear' trade and brought to Wildlife SOS's Agra Bear Rescue Facility, where she now lives in a naturalistic enclosure after years of cruelty. The tweet never claims she was 'released into the wild' — 'newfound freedom' is an emotional characterization of going from a cruel handler to a spacious sanctuary, which is fair. The original note debunks a claim the tweet did not make. The framing word 'freedom' is sentiment, not a checkable falsehood, so no correction is warranted.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. Any note is a false positive. The tweet accurately conveys that Gracie was rescued from captivity by Wildlife SOS and is now in a far better environment; 'newfound freedom' is emotive framing, not a claim that she was released into the wild. A note 'correcting' that she is in an enclosure rather than the wild would be attacking a strawman and pedantically policing sentiment. Reject any such note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows Gracie exploring an enclosure at Wildlife SOS's Agra Bear Rescue Facility for long-term care, not released into the wild. https://wildlifesos.org/our-work/bear/gracie https://www.facebook.com/wildlifesosindia/videos/1274544367435778",
+    "failure_reason": "Corrects a claim the tweet never made (the tweet says 'newfound freedom' from captivity, not 'released into the wild'); polices emotive framing rather than a checkable falsehood — note not needed.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true/accurate - Gracie was genuinely rescued from the dancing-bear trade and is in a naturalistic sanctuary enclosure; 'newfound freedom' is fair emotive framing, and the tweet does not claim a wild release",
+    "sources_checked": [
+      "https://wildlifesos.org/our-work/bear/gracie/",
+      "https://news.wildlifesos.org/ending-years-of-torment-for-sloth-bear-gracie/",
+      "https://www.deccanherald.com/environment/wildlife/sloth-bear-rescued-from-dancing-trade-in-jamtara-getting-treated-in-agra-3942303"
+    ],
+    "notes": "Wildlife SOS confirms Gracie was rescued from illegal dancing-bear captivity in Jharkhand (March 2026), brought to the Agra Bear Rescue Facility, and lives in an enclosure designed to mimic a natural environment; her tree-climbing is highlighted as a rehabilitation milestone. The tweet's framing is accurate; the note over-reads 'freedom' as 'wild release.'"
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {"prominence": "low", "lens_rationale": "Animal-welfare positive content that is broadly accurate; from an animal-welfare lens, noting it would suppress true, awareness-raising rescue content — actively counterproductive to correct."},
+  "difficulty": "medium"
+}

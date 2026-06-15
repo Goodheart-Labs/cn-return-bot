@@ -1,0 +1,31 @@
+{
+  "tweet_id": "2038393465361379589",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "misattributed_or_miscontextualized_media", "fabricated_quote"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "An 'Anonymous' account with 7.6M followers shares a screenshot purporting to be a tweet from Erika Kirk complaining that her daughter mistook a Druski parody video for her real mother. Caption: 'Comedy is illegal now.'",
+  "why_note_decision": "Snopes investigated and found no authentic Erika Kirk post matching this text. Reverse image searches return only other users circulating the same screenshot; the alleged tweet has no timestamp, no engagement metrics, and the Reddit watermark indicates it originated on r/SipsTea (u/TrumpsNostrils). Druski's parody video did exist (posted March 25, 2026, 'How Conservative Women in America act'), but Erika Kirk's response is fabricated. Attributing a fake quote to a real public figure on a 7.6M-follower account meets the bar for a CN.",
+  "judge_guidance": "PASS if the note establishes that the screenshot of Erika Kirk's purported tweet is fabricated/not from an authentic X post — citing Snopes or equivalent, noting absence of engagement metrics / timestamp, and ideally referencing the r/SipsTea origin. The note may acknowledge the underlying Druski parody video is real. REJECT if the note treats the screenshot as genuine, debates Druski's comedy, or fails to call out the fabrication.",
+  "reference_note": "The screenshot purporting to show Erika Kirk's tweet about her daughter being confused by Druski's parody is fabricated. Snopes found no authentic Erika Kirk post matching the text; the image lacks a timestamp or engagement metrics and traces to a Reddit r/SipsTea post. Druski's parody video (posted March 25 2026) is real, but Kirk's quoted response is not. https://www.snopes.com/fact-check/erika-kirk-druski-response/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "fabricated_screenshot_of_public_figure",
+    "sources_checked": [
+      "https://www.snopes.com/fact-check/erika-kirk-druski-response/"
+    ],
+    "notes": "No authentic Erika Kirk tweet matches; Reddit watermark visible; no engagement metrics shown; Druski parody is real but Kirk's response is fabricated."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "98k impressions but amplified by a 7.6M-follower account; fabricated quotes attributed to public figures are a core misinformation pattern worth correcting."
+  },
+  "difficulty": "easy"
+}

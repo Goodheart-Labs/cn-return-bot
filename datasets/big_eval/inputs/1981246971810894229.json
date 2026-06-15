@@ -1,0 +1,53 @@
+{
+  "tweet_id": "1981246971810894229",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:11.641Z",
+  "post": {
+    "id": "1981246971810894229",
+    "author_id": "4688151132",
+    "created_at": "2025-10-23T06:31:02.000Z",
+    "text": "Google Maps notify police if you go over the speed limit for more than 3 seconds https://t.co/n1fFl0bOSS",
+    "media": [
+      {
+        "media_key": "3_1981246965473046528",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G37NnjVXcAA27Iz.jpg",
+        "height": 1919,
+        "width": 1919
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 63,
+      "reply_count": 50,
+      "like_count": 2257,
+      "quote_count": 19,
+      "bookmark_count": 125,
+      "impression_count": 147527
+    },
+    "author_followers": 290045,
+    "author_name": "Soren Iverson",
+    "author_description": "New ideas daily. Building @iverson and @stompersapp",
+    "author_tweet_count": 4502
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G37NnjVXcAA27Iz.jpg",
+          "description": {
+            "description": "A digital illustration showing a navigation app on a smartphone screen. The map displays a blue arrow on Route 101 near Eel Creek and Lakeside State Airport. Overlaid on the map is a fake warning notification showing a 45 MPH speed limit and a current speed of 61 MPH. The notification states 'You are speeding' and 'Slow down or we notify the police', with an active progress bar counting down to call the police.",
+            "ocrText": "Sherwood St, Lakeside State Airport-9S3, Eel Creek, Airport Way, Wildwood Dr, 101, Sherry Barbie Ln, Spinreel Rd, 61 MPH, 45 MPH, You are speeding, Slow down or we notify the police, Wait what?, Calling police in 2s"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- mo² (@0xmmo): I would literally take this over the current design which COVERS THE SPEED LIMIT TO TELL YOU THERE'S POLICE RIGHT AHEAD (104 likes)\n- Guido Lange (@GuidoLange): Delete this post forever, please. Don’t open Pandora’s box here.😅 (75 likes)\n- Wilzer Jean-Baptiste (@wilzerjb): Unironically will be a real feature one day. (30 likes)\n- bdog4159 (@bdog4159): lol (14 likes)\n- Andrei Iancu (@andrei_iancu_): Next: Stripe takes the money automatically from your card to pay it. (13 likes)\n- Dakota Sumner (@dakotasumner_): “But officer, the guitar solo on crazy train was playing” (9 likes)\n- Georgi (@GotinGeorgiG): Seeing that red button will make me crash immediately (7 likes)\n- Tahi (@TahiGichigi): me: (3 likes)\n- Yaroslav H. (@yaroslavhorbach): the \"Wait what?\" button is so funny 🤭 (3 likes)\n- Luis Hauenstein (@luishXYZ): not a joke, european cars basically have this (an annoying beeper if you're too fast) (2 likes)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2031780631131095289",
+  "role": "unhelpful_note_not_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": ["joke_or_satire", "celebrity_entertainment_sports", "fabricated_quote"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Daily Noud (X handle @DailyNoud, bio: 'PARODY Hip-Hop News | These are fake stories | Not affiliated with @DailyLoud') posts a fabricated quote attributing to Timothée Chalamet 'There's zero chance she existed' about Helen Keller.",
+  "why_note_decision": "Account is explicitly labeled PARODY in its bio AND its handle is the punning '@DailyNoud' (parody of @DailyLoud). The quote is invented for comedic effect — multiple commenters note the parody status ('people falling for parody accounts that are now LABELED as parody accounts is such a funny concept'). 5/9 raters flagged noteNotNeeded. X's own labeling system handles this. Even if some readers fall for it, the platform's parody-labeling solves it; community-noting confessed parody is a clear false-positive.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The source account @DailyNoud is explicitly labeled PARODY in its X handle and bio ('PARODY Hip-Hop News | These are fake stories'). FAIL any note that fact-checks the Chalamet quote as if from a real news source — parody accounts already disclose; piling pedantic notes on them is the canonical false-positive pattern.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This post from parody account @DailyNoud fabricates a quote attributed to Timothée Chalamet; the account's bio states &quot;These are fake stories.&quot; https://x.com/DailyNoud",
+    "failure_reason": "noteNotNeeded — the note itself confirms the account is explicitly labeled parody, making the note redundant with X's own parody disclosure.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Self-labeled parody; no real claim to correct.",
+    "sources_checked": [],
+    "notes": "Account name, handle, and bio all flag parody."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "1.6M impressions but a fully-disclosed parody account; calibration test for don't-note-parody."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2015560059657330834",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports", "staged_or_scripted_content"],
+  "category_fit": "partial",
+  "suggested_category": "performance_video_pedantic_label",
+  "tweet_summary": "Video of Korean beatboxer JCOP (Si Young Kim) imitating sounds in a studio with his crew reacting with exaggerated enthusiasm; tweet describes it as 'a man who imitates the sounds he hears as close to the real thing as possible...and his friends' reactions.'",
+  "why_note_decision": "JCOP is a real, accomplished Korean beatboxer (Si Young Kim, ~8M Instagram followers, judge at 2017 Korea Beatbox Championship). The beatbox sounds in his videos are genuinely produced by him; the studio-setting/crew-reactions format is just his content style. The tweet's framing ('imitates the sounds...and his friends' reactions') is essentially accurate. The note's claim that this is a 'staged comedic performance...with scripted sound imitations and exaggerated reactions' is a pedantic re-labeling: it's a comedic performance video, yes, but the *core skill* (real beatboxing) is real, and the tweet doesn't claim spontaneity. Reader comments largely enjoy the performance; one says 'fake as hell but very funny' — they already get it.",
+  "judge_guidance": "PASS only if the bot declines to write a note; any note here is a false positive. The video is a comedic studio performance by a real, accomplished Korean beatboxer (JCOP / Si Young Kim). The tweet's caption accurately describes what's shown. A note labeling this 'staged' or 'scripted' adds nothing the audience doesn't already infer and unfairly implies deception — fail any such note.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This video is a staged comedic performance by Korean beatboxer JCOP (Si Young Kim) and his crew, with scripted sound imitations and exaggerated reactions for entertainment.    https://www.youtube.com/user/BeatboxJCOP  https://www.instagram.com/beatbox_jcop/",
+    "failure_reason": "note_not_needed_pedantic",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.instagram.com/beatbox_jcop/",
+      "https://www.youtube.com/channel/UCdX5KXiCTPYWYZscfphgQ4g",
+      "https://en.namu.wiki/w/%EA%B9%80%EC%8B%9C%EC%98%81"
+    ],
+    "notes": "JCOP is a well-known Korean beatboxer; the studio video format is his content style. Tweet caption is accurate."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Entertainment content; no harm risk. Pipeline learning: studio-style content from creators isn't 'staged misinformation'."
+  },
+  "difficulty": "easy"
+}

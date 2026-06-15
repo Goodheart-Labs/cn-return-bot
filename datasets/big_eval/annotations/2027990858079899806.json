@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2027990858079899806",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Pro-Trump commentator argues that critics ('doomers and shills') are wrong and that Trump is 'winning the optics battle' in the aftermath of the Feb 28, 2026 US/Israel strikes that killed Khamenei. The attached image is an AI-style hero portrait of Trump.",
+  "why_note_decision": "The tweet is partisan opinion / spin about how Trump is being perceived politically. It makes no falsifiable factual claim that a note can correct: it does not deny that US troops died, doesn't quote casualty figures, doesn't make a specific quantitative or attribution claim. The reference note tries to rebut a 'support' implication that the tweet never actually makes and ends up looking argumentative; raters tagged it Opinion/Speculation, Missing Sources and Note Not Needed. The author's stance is checkable only against subjective things like 'optics' and 'midterms lost', which are forecasting and framing rather than facts. Confirmed background: strikes did happen, at least 3 US service members were killed in retaliation, and many Iranians did celebrate Khamenei's death; none of that turns this opinion tweet into a misleading factual claim.",
+  "judge_guidance": "PASS only if the bot declines to write a note (or explicitly returns 'no note needed'). Any note here is a false positive: the tweet is partisan framing/opinion about how Trump's Iran strikes are being received, not a checkable factual claim. In particular, FAIL any note that (a) rebuts a 'broad Iranian support' claim the tweet never makes, (b) lectures the reader about US casualties or lack of post-strike plan as if the tweet had denied them, or (c) reads as argumentative editorializing against the author's political opinion. A correct system recognizes this as opinion/spin and abstains.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Initial accounts said strikes hit Iranian leaders with no US ground troops. Subsequent reporting documented US casualties in retaliation and lawmakers warned of no post-strike plan. Some Iranians celebrated, but that doesn't prove broad or lasting support. https://www.reuters.com/world/us/us-lawmakers-see-no-trump-plan-iran-following-strikes-2026-03-01",
+    "failure_reason": "Rebuts claims the tweet never actually makes; injects political counter-spin into an opinion post. Rated NOT_HELPFUL / Note Not Needed and Opinion/Speculation by raters.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is opinion/spin; underlying factual context (strikes occurred, US casualties, some Iranian celebrations) is real but the tweet doesn't deny any of it.",
+    "sources_checked": [
+      "https://www.npr.org/2026/03/01/nx-s1-5731365/us-israeli-strikes-region",
+      "https://en.wikipedia.org/wiki/2026_Iran_war",
+      "https://www.cnn.com/2026/02/28/world/video/iran-strikes-khamenei-dead-celebrations"
+    ],
+    "notes": "Confirmed: Operation Epic Fury Feb 28 2026 killed Khamenei; 3+ US service members killed in Iranian retaliatory strikes; documented celebrations in multiple Iranian cities and LA. None of these facts are contradicted by the tweet."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "~92k impressions on a war-framing post; the topic (US/Iran war, casualties, regime change) is high-stakes, but this individual post is opinion noise rather than load-bearing misinformation."
+  },
+  "difficulty": "medium"
+}

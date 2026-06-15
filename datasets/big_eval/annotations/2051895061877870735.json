@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2051895061877870735",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Fan account claims 'Custom mask created for Katy Perry's Met Gala appearance sees massive demand among Gen Z and introverts, with Stella McCartney reportedly receiving a surge of orders.' Photo shows the mask in a museum-style display crediting 'Stella McCartney by Miodrag Guberinic'.",
+  "why_note_decision": "Two distinct factual problems: (1) The mask is designed by Miodrag Guberinic — Stella McCartney designed the GOWN, not the mask. The plaque in the very image the tweet attaches says 'Worn by Katy Perry / Stella McCartney / by Miodrag Guberinic' which the tweet misreads as Stella McCartney designing the mask. (2) The 'massive demand among Gen Z and introverts' / 'surge of orders' claim is fabricated — there's no reporting of any such consumer demand or that the mask is for sale (it's a one-off art piece). Top reply ('ain't nobody said a damn thing about this mask why you lying' with 2,339 likes) confirms audience reads this as fabrication. Engagement is modest (82k impressions, 25 replies) but the misattribution is clean and verifiable. The original note is largely correct but raters only volume-2 sample, dominated by 'noteNotNeeded' (2). Borderline — but the lie is concrete and the note CAN be written well, so I'll classify as failure (note warranted, original was OK but very low signal).",
+  "judge_guidance": "PASS criteria: the note must establish that (a) the mask was designed by Miodrag Guberinic, NOT Stella McCartney (McCartney designed the gown; the plaque in the tweet's own photo says this), and (b) there is no reporting of any surge in orders or consumer demand — the mask is a custom one-off art piece, not a retail product. Cite a credible Met Gala / fashion source. FAIL any note that (a) accepts the Stella McCartney mask attribution, (b) accepts the 'surge in orders' claim, or (c) misreads the plaque the way the tweet did. Bonus if the note quotes the plaque text directly. Be concise — the original was on-point in one sentence.",
+  "reference_note": "The mask was designed by Miodrag Guberinic, not Stella McCartney (McCartney designed Perry's gown); the plaque visible in the tweet's own photo confirms this. The mask is a one-off custom piece — no reporting of any surge in orders or that it is available for sale. https://www.eonline.com/news/1431636/met-gala-2026-katy-perry-wears-astronaut-mask",
+  "original_unhelpful_note": {
+    "text": "The mask worn by Katy Perry at the Met Gala was a custom design by Miodrag Guberinic, not Stella McCartney, and there are no reports of it being available for purchase or any surge in orders. https://www.vogue.com/article/katy-perry-met-gala-2026-stella-mccartney",
+    "failure_reason": "Note is substantively correct; failure signal is only 2x noteNotNeeded out of 4 ratings — extremely low sample. Borderline; including as a failure row because the underlying tweet IS misleading on two checkable points and the bot should still write a good note here.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading — McCartney designed the gown; the mask is by Miodrag Guberinic. No surge-in-orders reporting exists.",
+    "sources_checked": [
+      "https://www.eonline.com/news/1431636/met-gala-2026-katy-perry-wears-astronaut-mask",
+      "https://www.ibtimes.co.uk/katy-perry-2026-met-gala-look-1795094",
+      "https://www.birdsadvice.com/katy-perry-mask-met-gala-2026-hidden-meaning/"
+    ],
+    "notes": "Multiple outlets credit Guberinic for the mask and McCartney for the gown. The plaque in the tweet's own photo also states this explicitly."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "83k impressions on fashion-attribution misinformation; low EA stakes — a clean test of basic image-OCR/attribution correction."
+  },
+  "difficulty": "easy"
+}

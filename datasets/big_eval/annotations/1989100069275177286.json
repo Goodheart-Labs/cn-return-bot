@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1989100069275177286",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "ai_generated_media",
+  "tweet_summary": "DIY-tips account jokes 'Patient heard how much the ambulance ride costs and dipped mid-route 💀' alongside a viral video showing a stretcher rolling out of a moving ambulance with text overlay 'PATIENT FALLS OUT OF MOVING AMBULANCE WITH STRETCHER DRIVER UNAWARE, VIDEO GOES VIRAL.'",
+  "why_note_decision": "The specific viral video shown is AI-generated, NOT the real 2023 Tamil Nadu Coonoor incident the original note cites. FACTLY, Newschecker, and youturn confirm the AI origin: text 'ambulance' reverses as the vehicle moves, the door is half-missing, stretcher and oxygen mask remain motionless during the fall, AI-detection tools score it 91% AI. While the tweet's caption is comedic, the underlying video is being presented as real-news ('VIDEO GOES VIRAL' text overlay) and multiple replies still treat it as real. A note clarifying the video is AI-generated is warranted on a 2.3M-impression post.",
+  "judge_guidance": "PASS if the note (1) states the video is AI-generated / not a real ambulance incident, AND (2) cites a fact-check confirming it (FACTLY, Newschecker, or youturn). Bonus if it notes visual giveaways (reversed 'ambulance' text, missing door half, motionless stretcher). FAIL any note that: (a) claims the video shows a real 2023 Tamil Nadu Coonoor incident (the original note's incorrect attribution), (b) only fact-checks the 'ambulance cost' joke premise, or (c) calls the video real without verification.",
+  "reference_note": "This video is AI-generated, not a real incident. Fact-checkers identified visual giveaways including reversed 'ambulance' text, a half-missing door, and a motionless stretcher/oxygen mask. A separate real 2023 Tamil Nadu Coonoor ambulance fall exists but is a different video. https://factly.in/this-video-of-a-patient-falling-from-an-ambulance-on-the-yamuna-expressway-is-ai-generated/ https://newschecker.in/fact-check/ai-deepfake/does-video-show-patient-rolling-out-of-ambulance-on-tamil-nadu-highway",
+  "original_unhelpful_note": {
+    "text": "Post falsely claims patient left ambulance due to costs. This shows a real 2023 Tamil Nadu incident where patient accidentally fell when rear door opened over speed bump - not intentional exit over ambulance fees. https://english.mathrubhumi.com/news/india/shocking-patient-falls-out-of-moving-ambulance-in-tamil-nadu-video-uc28bni5",
+    "failure_reason": "incorrect — confuses two different videos. The real 2023 Tamil Nadu Coonoor incident is a separate clip; this viral video is AI-generated, as confirmed by FACTLY, Newschecker, and youturn fact-checks.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "ai_generated_fake",
+    "sources_checked": [
+      "https://factly.in/this-video-of-a-patient-falling-from-an-ambulance-on-the-yamuna-expressway-is-ai-generated/",
+      "https://newschecker.in/fact-check/ai-deepfake/does-video-show-patient-rolling-out-of-ambulance-on-tamil-nadu-highway",
+      "https://en.youturn.in/factcheck/ai-video-of-patient-falling-out-of-moving-ambulance.html"
+    ],
+    "notes": "Multiple Indian fact-checkers ID the clip as AI-generated. Visual artifacts: reversed 'ambulance' text on the vehicle, missing door half, motionless stretcher/oxygen mask, AI detectors score 91% AI."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2.3M-impression AI-generated medical video misrepresented as real news; correct attribution matters as AI-generated 'news' videos are a growing misinformation vector."
+  },
+  "difficulty": "hard"
+}

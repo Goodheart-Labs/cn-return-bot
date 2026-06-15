@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2048765539980661105",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "statistical_or_numerical_claim",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Using a Copernicus 1995-2024 temperature-trend map, the author claims annual mean temperature in 'every country' has been rising 1-1.5 degrees per decade, but India is an 'anomaly' warming less than the rest of the world.",
+  "why_note_decision": "The headline statistic is false: global mean warming is ~0.27 C/decade (1996-2025, ERA5), and the map's own scale tops out at 2 C/decade with most land at ~0.2-0.6 \u2014 nowhere near '1-1.5 C/decade for every country.' That quantified error is checkable and worth correcting. However, the tweet's secondary thrust (India warming less than the global average \u2014 an 'anomaly') is broadly TRUE per the data, so a correct note must fix the rate without falsely 'rebutting' the India point. A note IS warranted, but the original note got the India direction backwards and is itself incorrect.",
+  "judge_guidance": "PASS only if the note corrects the false rate \u2014 global warming is roughly 0.2-0.3 C/decade, NOT 1-1.5 C/decade, and the map's color scale shows this. The note must NOT repeat the original note's error of claiming India warmed FASTER than the global average (~0.5 C/decade) \u2014 that is wrong; India is among the slower-warming land regions (~0.15-0.2 C/decade per IPCC), so the tweet's 'India is an anomaly / warmed less' framing is actually broadly correct. A correct note fixes the per-decade number while NOT contradicting that India warmed below the global average. FAIL any note that asserts India warmed faster/'rather than the least,' or that denies the global rate is far below 1 C/decade.",
+  "reference_note": "The per-decade figure is overstated: global mean surface warming is about 0.2-0.3 C/decade (Copernicus/ERA5 puts 1996-2025 at ~0.27 C/decade), not 1-1.5 C/decade \u2014 the map's scale confirms most land sits around 0.2-0.6 C/decade. India is indeed among the lower-warming land regions (~0.15-0.2 C/decade per IPCC), so it does warm below the global average. https://climate.copernicus.eu/climate-indicators/temperature",
+  "original_unhelpful_note": {
+    "text": "The map shows global average warming of 0.26\u00b0C per decade from 1995-2024, not 1-1.5\u00b0C/decade; India warmed faster than this average (~0.5\u00b0C/decade) rather than the least. https://climate.copernicus.eu/climate-indicators/temperature",
+    "failure_reason": "Half right, half wrong: correctly debunks the '1-1.5 C/decade' rate, but its second clause ('India warmed faster... rather than the least, ~0.5 C/decade') is incorrect \u2014 India warms slower than the global average (~0.15-0.2 C/decade per IPCC), so the tweet's 'India is an anomaly' point is actually broadly true. Reporters tagged it Incorrect (dominant) for this reversed India claim.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Tweet's '1-1.5 C/decade for every country' is false (real ~0.27 C/decade global). Tweet's 'India warming less than the world' is broadly true. Original note's 'India warmed faster (~0.5 C/decade)' is false.",
+    "sources_checked": [
+      "https://climate.copernicus.eu/climate-indicators/temperature",
+      "https://journals.plos.org/climate/article?id=10.1371%2Fjournal.pclm.0000724",
+      "https://www.dataforindia.com/temperature-trends-in-india/"
+    ],
+    "notes": "Copernicus/ERA5: global rate 0.21 C/decade (1979-2025), 0.27 C/decade (1996-2025). India warms slower than the global land+ocean average \u2014 IPCC-aligned estimates put Indian warming around 0.15-0.2 C/decade, with parts of north India up to ~0.2; the Indo-Gangetic plain warms least. So India IS comparatively an anomaly with less warming, contradicting the original note's 'faster/rather than the least.'"
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "355k impressions; climate-data literacy matters for progress, and both the tweet's inflated rate and the note's reversed India claim distort the science \u2014 a precise correction has real educational value."
+  },
+  "difficulty": "hard"
+}

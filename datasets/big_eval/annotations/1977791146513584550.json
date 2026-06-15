@@ -1,0 +1,38 @@
+{
+  "tweet_id": "1977791146513584550",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["misattributed_or_miscontextualized_media", "celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Marcus d'Osint (commentary account, 32k followers) shares a screenshot collage juxtaposing the IDF's Oct 13 2025 'Noa Argamani and Avinatan Or reunited' post with a 'Suppressed News' reply-screenshot showing Argamani in a yellow bikini at the August 2024 'Back to Life' rave (the famous post-rescue celebration). Caption 'This is wild. The internet cannot and will not forget!' — clearly making a joking/mocking comparison. 6.5M impressions, 111k likes.",
+  "why_note_decision": "The original note's facts are correct (the yellow-bikini photo is from Argamani's August 2024 'Back to Life' celebration after her June 2024 rescue; Avinatan Or was still held captive then; they reunited Oct 13 2025 when he was released). But the tweet is overt joke/meme content — it isn't claiming the bikini photo IS the reunion, it's setting up a punchline contrast (reunion-tweet vs. partying-while-he-was-captive screenshot). Top reply ('Erika Kirk vibes', 2.8k likes) confirms the joke reading. The community overwhelmingly rejected the note (28 noteNotNeeded, 23 missingKeyPoints) — recognizing the post as snark, not misinformation. A correct bot should decline.",
+  "judge_guidance": "PASS only if the bot declines to write a note. Any note is a false positive: the tweet is overt joke/meme commentary (juxtaposition with 'This is wild' caption is the punchline structure), not a sincere claim that the bikini photo IS the reunion. FAIL any note that: (a) explains the bikini photo is from Aug 2024 as if correcting misinformation (this is what the original note did and the community rejected it), (b) treats the joking quote-screenshot as if the OP were sincerely asserting Argamani 'cheated' or hadn't been waiting for Or — that's the joke's setup, not its claim, (c) moralizes about disrespect to hostages. If the bot doesn't recognize meme/joke structure here, it will keep writing pedantic notes like this one.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "This photo is from a party Noa Argamani held in August 2024 after her rescue to celebrate life. During this period, she advocated for the release of remaining hostages, including her boyfriend Avinatan Or. They reunited in October 2025 after his release.  https://en.wikipedia.org/wiki/Kidnapping_of_Noa_Argamani  https://nypost.com/2024/08/26/world-news/freed-hamas-hostage-noa-argamani-throws-party-to-celebrate-life/  https://nypost.com/2025/10/13/world-news/torn-apart-hostages-avinatan-or-girlfriend-noa-argamani-finally-reunite/",
+    "failure_reason": "joke_or_meme — note treats overt snark/meme content as a literal factual misclaim. Adds defensive 'she advocated for his release' framing that reads as opinion.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet_is_joke_meme_not_factual_claim",
+    "sources_checked": [
+      "https://knowyourmeme.com/memes/events/noa-argamani-post-rescue-rave-back-to-life-party",
+      "https://en.wikipedia.org/wiki/Noa_Argamani",
+      "https://en.wikipedia.org/wiki/Kidnapping_of_Noa_Argamani",
+      "https://www.foxnews.com/world/couple-separated-kidnapped-during-oct-7-hamas-attack-finally-reunited-hostage-ordeal"
+    ],
+    "notes": "Bikini photo confirmed from Aug 2024 'Back to Life' celebration. Argamani rescued June 2024; Avinatan Or released Oct 2025 (reunion confirmed by Fox, NYP, IDF). All the note's facts are correct, but the tweet is a meme/punchline, not a sincere claim that needed factual correction."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "6.5M-impression viral juxtaposition meme about a former hostage; significant cultural visibility. Bot needs to recognize joke-image juxtaposition as a non-checkable rhetorical form."
+  },
+  "difficulty": "hard"
+}

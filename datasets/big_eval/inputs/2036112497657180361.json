@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2036112497657180361",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:50:27.048Z",
+  "post": {
+    "id": "2036112497657180361",
+    "author_id": "15411797",
+    "created_at": "2026-03-23T16:07:03.000Z",
+    "text": "Battlefield Hardline servers on consoles will be shut down on June 22, 2026 https://t.co/3dVt5f0lSH",
+    "media": [
+      {
+        "media_key": "3_2036111808130326528",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEG45taWIAASZ6S.jpg",
+        "height": 702,
+        "width": 702
+      },
+      {
+        "media_key": "3_2036111813859774464",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HEG46CwWkAAP9KD.png",
+        "height": 576,
+        "width": 574
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 337,
+      "reply_count": 295,
+      "like_count": 7088,
+      "quote_count": 225,
+      "bookmark_count": 561,
+      "impression_count": 637181
+    },
+    "author_followers": 4997232,
+    "author_name": "CharlieIntel",
+    "author_description": "Leading source for gaming news, including Call of Duty: Modern Warfare 4, Warzone, GTA VI, Gears of War, Battlefield, Halo, Xbox, PS5, more. @Dexerto.",
+    "author_tweet_count": 80821
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEG45taWIAASZ6S.jpg",
+          "description": {
+            "description": "The image is the promotional cover art for the video game Battlefield Hardline. It features a collage design composed of several smaller vertical and horizontal panels showing different elements of the game's theme. These include a close-up of a man's face, stacks of 100-dollar bills, a firearm with bullets, a tactical SWAT vest, a cityscape with skyscrapers, and a SWAT armored vehicle. Centered across the image is the large stylised title of the game.",
+            "ocrText": "BATTLEFIELD TM HARDLINE SWAT SWAT"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HEG46CwWkAAP9KD.png",
+          "description": {
+            "description": "A close-up portrait of a bald man with light facial hair wearing sunglasses, a grey button-down shirt, and a tactical vest equipped with shotgun shells, a radio, and a holstered handgun. He is holding a shotgun over his right shoulder. His right arm is visible, showing ornate tattoos and bracelets. The lighting is warm and bright, coming from the side.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**azero (@wakeupA0)**: overhated game, have great memories on this (981 likes)\n\n**StillDominant 🎯 (@Still_Dominant)**: Underrated gem. The heist & hotspot modes were peak Battlefield chaos. They really just celebrated 11 years to announce this... brutal 🥲 (298 likes)\n\n**PEAK MADS!☺️ (@LORDCOSMOERA)**: It hurts… so much (163 likes)\n\n**Jason (@Certinfy)**: I really enjoyed the campaign on this. You could use stealth for a majority of it and handcuff enemies instead of going all out guns blazing. Such an underrated game. (114 likes)\n\n**𝔇𝔯𝔢 (@drizzymfndre)**: Nomore cops vs robbers (97 likes)\n\n**Blueice (@meetblueice)**: End of an era. Say what you want about Hardline, but that cops & robbers vibe was insanely fun. Time to hop on for one last heist before June 22. 🫡 (92 likes)\n\n**Lurp (@lurpmart)**: My best clip was on this game (62 likes, 2 reposts)\n\n**KZR7 (@_kzr7)**: the memories will live on, game was really fun, and really overhated for what it was… at least we still have one active server on pc :/ (46 likes)\n\n**Fault | Cronus Zen Scripts (@JKFault)**: hardline been on life support for years and they finally decided to pull the plug. respect for the 12 people still playing tho (31 likes)\n\n**Slippin' (@who1827483)**: Visceral Game's final breath (29 likes)",
+    "warnings": []
+  }
+}

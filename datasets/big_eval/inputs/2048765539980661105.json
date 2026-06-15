@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2048765539980661105",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:53.247Z",
+  "post": {
+    "id": "2048765539980661105",
+    "author_id": "14349184",
+    "created_at": "2026-04-27T14:05:43.000Z",
+    "text": "If you are in India, and have to share one fact to your friends and family this summer, use this:\n\nIn the last many decades, the whole world has been heating up. Annual mean temperature in every country has been rising 1-1.5 degrees a decade.\n\nBut India has been an anomaly. It https://t.co/huJ8ZQJB0w",
+    "media": [
+      {
+        "media_key": "3_2048765467188494336",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HG6tVmvbgAAuLEe.jpg",
+        "height": 1485,
+        "width": 2048
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2812,
+      "reply_count": 304,
+      "like_count": 9932,
+      "quote_count": 85,
+      "bookmark_count": 1480,
+      "impression_count": 355273
+    },
+    "author_followers": 300962,
+    "author_name": "Aravind",
+    "author_description": "I talk about issues long before they happen. Now and then in touch with Turiya. I post conspiracies and nothing I say is real. Don't believe anything I post.",
+    "author_tweet_count": 24987
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HG6tVmvbgAAuLEe.jpg",
+          "description": {
+            "description": "A world map showing the linear trend in annual surface air temperature from 1995 to 2024. The map uses a color scale ranging from dark blue (cooling) to dark red (warming), indicating changes in degrees Celsius per decade. Most of the globe is covered in shades of orange and red, indicating a general warming trend particularly in the Arctic, while a few small areas in the oceans show slight cooling in light blue.",
+            "ocrText": "Linear trend in annual surface air temperature for 1995-2024\nData: ERA5 • Credit: C3S/ECMWF\nTrend (°C/decade)\n-2 -1.5 -1 -0.6 -0.4 -0.2 -0.1 0 0.1 0.2 0.4 0.6 1 1.5 2\nPROGRAMME OF THE EUROPEAN UNION\nCopernicus Europe's eyes on Earth\nClimate Change Service\nIMPLEMENTED BY\nECMWF"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Siddheya Kulkarni (@Asymtode712)**  \n  This shows that even as a developing nation, we're managing our environment better than the narrative suggests. The conservation efforts are paying well off with forests and wildlife & it's good to see some positive numbers amid all the heat talks.  \n  **Engagement:** 111 likes, 6 reposts, 3 replies\n\n- **Upendra M Pradhan (@UpendraMPradhan)**  \n  Quantity of Forest is not quality to the Quality of Forest  \n  While the forest cover has increased, the denseness of the forest is decreasing. Old growth forest, that are the real carbon sinks are cut down and replaced with fast growing trees and shrubs...  \n  Hence, the heat  \n  **Engagement:** 99 likes, 7 reposts, 14 replies\n\n- **Lotus Awakened (@SaffronOnX)**  \n  The can't COPE with temperature of 2005 vs 2026  \n  And even one prediction by Muji bhai \" Garmi ke saath Balck pilling badhega\"😂  \n  **Engagement:** 89 likes, 0 reposts, 0 replies\n\n- **Kuldeep (@KuldeepD746)**  \n  Fake, where is the data source for this information? Green cover is lost almost everywhere. Heat is increasing because of industrialisation so as pollution. Muppets like you are the reason real voices are being suppressed.  \n  **Engagement:** 80 likes, 2 reposts, 4 replies\n\n- **Praveen Kumar (@imPraveenk)**  \n  Your whole explanation is like GDP is increasing, overall spending is increasing but when I or people look at themselves or their relatives and friends or their house-helps, they find everyone is struggling and finding it tough to cope up with the inflation and daily price increment of necessary things. All these data have no significance if lives of people are not more comfortable and uplifted as compared to ten years back, and all such presentations should be thrown in the dustbin.  \n  **Engagement:** 38 likes, 4 reposts, 14 replies\n\n- **Diwakar|दिवाकर|દિવાકર|திவாகர் (@TSKUPid)**  \n  People love complaining, but hate accepting good news.  \n  India still has problems, nobody denies that. But pretending nothing has improved is just dishonest. A country with this much population, development pressure, and poverty still managing to increase forest cover, protect wildlife, and stay relatively better on emissions deserves some credit.🤔  \n  **Engagement:** 29 likes, 0 reposts, 0 replies\n\n- **Rooh Baba ラーフル (@rahulkshyp)**  \n  Just like the andh bhakts and the blind haters you too are just cherry picking data to pad up ur own political viewpoint   \n  The most hilarious thing is you trying to defend some politicians who don’t even know you exist 😸😸😸  \n  Use your skills wisely and you’ll progress in life  \n  **Engagement:** 18 likes, 0 reposts, 0 replies\n\n- **Shridhar V (@Shridhar_07)**  \n  The argument for wildlife conservation is very strong, tiger, rhino, asiatic lion populations all up significantly in 2 decades.  \n  That part is worth celebrating loudly. The temperature numbers need a recheck though. India warms around 0.15C per decade per IPCC, not 0.5-1.  \n  Good stories don’t need shaky stats.  \n  **Engagement:** 4 likes, 0 reposts, 0 replies",
+    "warnings": []
+  }
+}

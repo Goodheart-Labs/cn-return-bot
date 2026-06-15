@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2050005057836339601",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:46.596Z",
+  "post": {
+    "id": "2050005057836339601",
+    "author_id": "2043101032066998272",
+    "created_at": "2026-05-01T00:11:07.000Z",
+    "text": "Breaking: Kash Patel resigns as head of FBI to take a position at JP Morgan https://t.co/tMdbduMBOt",
+    "media": [
+      {
+        "media_key": "3_2050004881105211392",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHMUk_YX0AAaD4F.png",
+        "height": 619,
+        "width": 495
+      },
+      {
+        "media_key": "3_2050004902852562944",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHMUmQZWEAAYCm2.png",
+        "height": 224,
+        "width": 224
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 874,
+      "reply_count": 216,
+      "like_count": 23588,
+      "quote_count": 96,
+      "bookmark_count": 619,
+      "impression_count": 668633
+    },
+    "author_followers": 41018,
+    "author_name": "Poop World Order",
+    "author_description": "India superpower by 2030",
+    "author_tweet_count": 937
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHMUk_YX0AAaD4F.png",
+          "description": {
+            "description": "A formal portrait of Kashyap 'Kash' Patel, an American attorney and former government official. He is wearing a dark grey plaid suit, a light blue dress shirt, and a navy blue tie with a subtle pattern. He has a beard and dark hair. He is standing in front of two flags: the American flag on the left and a blue flag with gold elements and stars on the right. An American flag pin is visible on his left lapel.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHMUmQZWEAAYCm2.png",
+          "description": {
+            "description": "A head-and-shoulders professional portrait of a woman with blonde hair, smiling at the camera. She is wearing a dark blue or black top with decorative buttons. The background is a soft-focus, blurred office or city environment.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @HashmiMohi: whats wrong with this motherfuckers eye sockets, is it deficiency of some sort or a side effect of eating poop (33 likes)\n- @AtlantaPress: Here is a picture from outside JP Morgan, yesterday (36 likes)\n- @NajibHaruna_: I am resigning my associateship position too from my law firm for JP Morgan. I need that experience 😁 (7 likes)\n- @WhitemanRev: I wonder how many immigrant applicants they’ve been inundated with since that story broke. (7 likes)\n- @Mynamis_Private: That nasty fucker would prematurely ejaculate every time she used an ethnic slur against him 🤣. (6 likes)\n- @dongkong269: Spider Kash is on the case. (6 likes)\n- @woodlandwizard1: Grok thinks his eyes have been edited “for comedic exaggeration” 😂😂😂 (5 likes)\n- @anarchistbogan: Full support spider kash saaaar (4 likes)\n- @Smetcalf55: He has requested to go by Spiderkash 😏 (4 likes)\n- @Yvonne1Future: Are you serious? Shri Thanedar resigned and joined JP Morgan and Patel too? What's in the bucket of this bank? American Bank is going to be India Bank soon or what? (3 likes)",
+    "warnings": []
+  }
+}

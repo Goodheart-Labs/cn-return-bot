@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2042786327079313434",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:01:50.101Z",
+  "post": {
+    "id": "2042786327079313434",
+    "author_id": "1894782734612000768",
+    "created_at": "2026-04-11T02:06:28.000Z",
+    "text": "⚠️ - Magdalena Bay will reportedly perform a live version of ‘Second Sleep’ alongside Olivia Rodrigo on SNL, tomorrow! https://t.co/hHtejwUHrK",
+    "media": [
+      {
+        "media_key": "3_2042786316551667712",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFlvVO4XQAAvBgT.jpg",
+        "height": 1179,
+        "width": 897
+      },
+      {
+        "media_key": "3_2042786324734971904",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFlvVtXakAAtQss.jpg",
+        "height": 599,
+        "width": 476
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 22,
+      "reply_count": 11,
+      "like_count": 1167,
+      "quote_count": 11,
+      "bookmark_count": 51,
+      "impression_count": 42761
+    },
+    "author_followers": 3776,
+    "author_name": "magbay charts & updates! 🇵🇸",
+    "author_description": "the latest updates for argentinian synth-pop duo, MAGDALENA BAY! dm us for tweet requests. not affiliated with magbay or their team",
+    "author_tweet_count": 2281
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFlvVO4XQAAvBgT.jpg",
+          "description": {
+            "description": "A medium shot captures a woman with long brown hair spinning during twilight. She is wearing a vibrant pink feathered top or boa over a matching pink garment, paired with dark denim jeans. Her arms are outstretched, and her hair is caught in motion. The background features a dark, silhouetted landscape under a purple-tinted dusk sky.",
+            "ocrText": "rodrigocrave"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFlvVtXakAAtQss.jpg",
+          "description": {
+            "description": "A man and a woman are posed in a futuristic, disco-inspired setting against a dark background with rainbow lens flare effects. The man on the left is seated, wearing a shiny metallic gold jacket over a black shirt, rainbow-patterned trousers, and gold boots. The woman on the right wears a metallic gold top over a black long-sleeved shirt, a gold skirt, glittery purple leggings, and black platform boots. Both figures are accented with bright starburst light reflections.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Author: diloph (osaurus) (@itb0fmymind), Text: I MOVED 💔, Engagement: 15 likes\n- Author: Ife :) (@caresha66), Text: is this real 🥹, Engagement: 8 likes\n- Author: Hallowmore (@hallowmore), Text: Who are these people?! Anything is better than those Geese fuckers I guess., Engagement: 8 likes\n- Author: Shane (@Worstofgen_), Text: I just discovered them this week. That'd be cool to see ngl., Engagement: 5 likes\n- Author: dabi is so in love 💘 (@dabisversion), Text: bitch i moved 😭😭😭, Engagement: 4 likes\n- Author: D (@increasingfear), Text: i hate you, Engagement: 3 likes\n- Author: Chaeri (@kingerbutterfly), Text: What., Engagement: 2 likes\n- Author: Ryland. (@RylandonAux), Text: Um, Engagement: 2 likes\n- Author: LeBum (@HaterOwner3456), Text: Olivia is going to get bodied 😭, Engagement: 0 likes\n- Author: fleur 【= T𖥦T =】 (@yuqisfather), Text: i lowkey moved., Engagement: 0 likes",
+    "warnings": []
+  }
+}

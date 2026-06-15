@@ -1,0 +1,41 @@
+{
+  "tweet_id": "1993710314337259741",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "statistical_or_numerical_claim",
+    "politics_and_policy",
+    "misattributed_or_miscontextualized_media"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "misleading_political_statistic",
+  "tweet_summary": "WH Press Secretary Karoline Leavitt tweets 'Thanksgiving Cheapest in Years with Trump Back in Office' with a link, attributing falling Thanksgiving dinner costs to Trump.",
+  "why_note_decision": "The Farm Bureau survey did show Thanksgiving dinner costs down 5% in 2025 \u2014 that IS a real data point. But the headline is misleading: (1) the AFBF survey notes it's the THIRD consecutive year of declining prices (so the trend started under Biden), (2) the bulk of the drop is from one item (16-lb turkey down 16%) while 5 of 11 items went UP (sweet potatoes +37%, veggie tray +61%, etc.), (3) the partisan causal attribution ('with Trump back in office') has no economic basis \u2014 Trump took office Jan 2025 and turkey prices reflect supply factors unrelated to him. FactCheck.org specifically called this framing misleading. So the tweet IS misleading in implying Trump caused it. The original note cites factcheck.org but is sloppy: it says 'drop largely reflects fewer items in retailer bundles and promotions' which doesn't match the actual AFBF methodology (the survey prices individual items, not bundles). The note's substance is wrong on the mechanism \u2014 the real fact-check is that prices were already declining and the gain is item-specific (mostly turkey).",
+  "judge_guidance": "PASS criteria: A correct note must (1) acknowledge the AFBF survey did find a ~5% drop, (2) clarify it's the THIRD consecutive year of declining prices (started before Trump's return), AND/OR (3) note that 5 of 11 items rose in price (sweet potatoes +37%, veggie tray +61%) \u2014 the drop is concentrated in turkey, and (4) Thanksgiving 2025 meal still costs ~18% more than 5 years ago. FAIL if the note (a) repeats the original's incorrect 'fewer items in retailer bundles' mechanism (AFBF surveys individual items, not bundles), (b) just denies prices fell, or (c) attributes any of the decline causally to Trump. Cite FactCheck.org or AFBF.",
+  "reference_note": "Misleading \u2014 the AFBF Thanksgiving survey did find costs down ~5% to $55.18 for a 10-person meal, but it's the third consecutive year of declines (started under Biden), 5 of 11 items rose in price (sweet potatoes +37%, veggie tray +61%, beef +10%), and the meal still costs ~18% more than 5 years ago. The drop is concentrated in turkey (-16%) due to supply factors, not policy. https://www.fb.org/market-intel/thanksgiving-dinner-cost-analysis-moderate-decline https://www.factcheck.org/2025/11/trump-serves-a-misleading-thanksgiving-meal-statistic/",
+  "original_unhelpful_note": {
+    "text": "Thanksgiving dinner costs fell in 2025 vs 2024, but fact\u2011checkers say the drop largely reflects fewer items in retailer bundles and promotions \u2014 not proven to be caused by Trump's return. https://www.factcheck.org/2025/11/trump-serves-a-misleading-thanksgiving-meal-statistic/",
+    "failure_reason": "Substance is partly right (correct that causation to Trump is unproven) but the 'fewer items in retailer bundles' mechanism is wrong \u2014 AFBF prices individual items, not bundles. Missing key points: third year of declines, 5 items rose, meal still ~18% above 5 years ago.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading framing \u2014 prices did fall ~5%, but causal attribution to Trump is unsupported and the framing omits that this is year 3 of declines, that 5 items rose, and that prices are still ~18% above 5 years ago.",
+    "sources_checked": [
+      "https://www.fb.org/market-intel/thanksgiving-dinner-cost-analysis-moderate-decline",
+      "https://www.fb.org/news-release/cost-of-thanksgiving-dinner-declines",
+      "https://www.keysnews.com/news/national/farm-bureau-thanksgiving-meal-costs-down-5-from-last-year-but-up-18-from-five/article_d995fd20-680b-4d5c-ab35-196136b0b42e.html"
+    ],
+    "notes": "AFBF 40th annual survey: $55.18 for 10 people, down 5%. Third year of declining prices. Turkey -16% drives the drop; 5 items rose (sweet potatoes +37%, veggie tray +61%, beef +10%, milk/cream up)."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "WH Press Secretary tweet with 127K impressions on a politicized economic claim. Misleading framing of cost-of-living data from official accounts has outsized effect on public understanding."
+  },
+  "difficulty": "medium"
+}

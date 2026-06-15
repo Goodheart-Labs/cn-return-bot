@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2052736022254068203",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:39.921Z",
+  "post": {
+    "id": "2052736022254068203",
+    "author_id": "904630459539312640",
+    "created_at": "2026-05-08T13:03:00.000Z",
+    "text": "A never-before-seen owl has been found in the USA.\n\nWhile snowy  owls are known for their white feathers, this owl, nicknamed \"Rusty\" by locals, has an unexplained reddish-orange appearance. https://t.co/NUnEITZoyN",
+    "media": [
+      {
+        "media_key": "3_2052725652269289472",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHy_GtzX0AA4pPf.jpg",
+        "height": 723,
+        "width": 723
+      },
+      {
+        "media_key": "3_2052725667578490880",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHy_Hm1XsAAavQ8.jpg",
+        "height": 1080,
+        "width": 1080
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 4691,
+      "reply_count": 505,
+      "like_count": 54443,
+      "quote_count": 1438,
+      "bookmark_count": 7893,
+      "impression_count": 4070624
+    },
+    "author_followers": 301038,
+    "author_name": "Pubity",
+    "author_description": "Informative, entertaining and breaking news.",
+    "author_tweet_count": 11408
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHy_GtzX0AA4pPf.jpg",
+          "description": {
+            "description": "A close-up photograph of an owl perched atop a weathered wooden post against a clear, light blue sky. The owl features a striking color pattern with a bright orange-red head and similar highlights on its wings and tail feathers. Its body is covered in white feathers with dark brown scalloped patterns. The owl's eyes are yellow and facing towards the camera.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHy_Hm1XsAAavQ8.jpg",
+          "description": {
+            "description": "A close-up photograph of a bird of prey, possibly a hawk or falcon, captured in flight against a solid white background. The bird's plumage is uniquely colored with bright orange and white feathers, accented by black spots and barring. It is banking to the left with its wings spread wide to reveal the intricate patterns on its underwings and tail.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@LimeDotJPG**: are absolutely sure it's not like last time (Likes=1563, Reposts=26, Replies=7)\n**@thewardoll**: Protect this creature at all costs. Tell no one when he was spotted. Let him soar the skies in peace. Just send us a photo every now and then so we know he's okay. (Likes=764, Reposts=10, Replies=6)\n**@flingkong24**: You sure it's not curry like the last time there was an orange version of a white bird? (Likes=396, Reposts=0, Replies=0)\n**@HookandPine**: Eastern Screech Owls can have Erythrism which is a rare genetic mutation that can cause normal pigment to be reddish-orange. Does not seem documented in Snowy Owls though. Very cool photos though! (Likes=245, Reposts=0, Replies=0)\n**@dilucsmodel**: How do I make this about diluc (Likes=223, Reposts=15, Replies=0)\n**@offshoreoddity**: This is old news from winter 2025. The theory is since it hung out near an airport that it was covered in de-icer or fire retardant. Only one biologist suggested a genetic mutation but most think it's just covered in something. (Likes=153, Reposts=1, Replies=0)\n**@hbsworld**: everyone saying rare mutation but bro probably just took a bath in the east river and has two weeks left to live (Likes=146, Reposts=0, Replies=0)\n**@chesscom**: Yo, new bird update just dropped (Likes=132, Reposts=3, Replies=4)\n**@gobirdsbro**: Looks like Talonflame (Likes=85, Reposts=0, Replies=0)\n**@ammuumu**: Is this going to be the same as that seagull that was covered in curry and people thought it was phoenix (Likes=83, Reposts=0, Replies=0)",
+    "warnings": []
+  }
+}

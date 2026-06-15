@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2011382269697814907",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "unhelpful_missing_key_points",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "statistical_or_numerical_claim",
+    "health_medical_science"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Quoting a clip of Nadhim Zahawi announcing COVID vaccine-as-condition-of-entry rules, the poster claims the UK 'lost 20% of our care workers because of this creatures vax mandates'.",
+  "why_note_decision": "The 20% figure is false and inflated by ~5x. The best empirical study (University of Nottingham, Management Science 2023) found the care-home vaccine mandate caused a NET reduction of about 3-4% of staff (14,000-19,000 of ~470,000) in English elderly care homes -- not 20%. A note is warranted to correct the inflated statistic. The original note states the correct figure and is substantively accurate; it was likely rated not-helpful for tone/context reasons rather than for being wrong.",
+  "judge_guidance": "PASS only if the note corrects the '20%' figure with the actual evidence: the UK care-home COVID vaccine mandate caused roughly a 3-4% NET staff reduction (~14,000-19,000 workers out of ~470,000), per the University of Nottingham / Management Science (2023) study -- i.e. about a fifth of the claimed loss, not 20% of the workforce. The note MUST cite a credible source (Nottingham study / The Conversation summary). FAIL if it omits the correct ~3-4% figure, repeats or concedes the 20% claim, or is purely argumentative. Avoid the original's risk of reading as one-sided -- state the number plainly and neutrally.",
+  "reference_note": "The claim that 20% of care workers were lost is wrong. The English care-home COVID vaccine mandate caused a net reduction of about 3-4% of staff (roughly 14,000-19,000 of ~470,000), per University of Nottingham research published in Management Science (2023). https://www.nottingham.ac.uk/news/mandatory-covid-vaccines-care-home-workers-reduction-in-staff https://theconversation.com/the-covid-vaccine-mandate-in-english-care-homes-led-to-fewer-staff-and-may-not-have-reduced-resident-deaths-203201",
+  "original_unhelpful_note": {
+    "text": "The UK's mandatory COVID vaccine policy for care home workers led to a net loss of 3-4% of staff (14,000-19,000 workers out of ~470,000), not 20%. https://www.nottingham.ac.uk/news/mandatory-covid-vaccines-care-home-workers-reduction-in-staff https://theconversation.com/the-covid-vaccine-mandate-in-english-care-homes-led-to-fewer-staff-and-may-not-have-reduced-resident-deaths-203201",
+    "failure_reason": "Substantively correct and well sourced; rated not-helpful most likely on tone/'note-not-needed' grounds in a hostile partisan thread, and arguably for not engaging the emotional framing. The core numeric correction is accurate.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "misleading_inflated_statistic",
+    "sources_checked": [
+      "https://www.nottingham.ac.uk/news/mandatory-covid-vaccines-care-home-workers-reduction-in-staff",
+      "https://www.eurekalert.org/news-releases/993872",
+      "https://medicalxpress.com/news/2023-06-mandatory-covid-vaccines-home-workers.html"
+    ],
+    "notes": "Net reduction ~3-4% (14,000-19,000) in elderly care homes. A gross figure of 28,000-41,000 fewer unvaccinated staff vs counterfactual exists, but the NET workforce reduction was ~4%. Either way, '20%' is unsupported and roughly 5x too high."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Health/vaccine-policy misinformation to 226k-follower account; inflated harm claims feed anti-vaccine narratives, a real public-health cost."
+  },
+  "difficulty": "easy"
+}

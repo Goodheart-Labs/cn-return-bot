@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2045174433875140853",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["manipulated_or_fabricated_evidence", "misattributed_or_miscontextualized_media", "platform_manipulation"],
+  "category_fit": "partial",
+  "suggested_category": "forged_official_document",
+  "tweet_summary": "Nigeria Police New Media Officer posts what is purported to be Matthew Chukuemeka Adebiyi's UK passport biodata page to support claims about his parentage (Igbo mother, Yoruba father) and counter 'tribal' framing of his murder/drug charges. The image shows a Type-P 'PASSPORT' with issuing authority 'FCDO' and a ~6-month validity (13 Apr 2026 → 26 Oct 2026).",
+  "why_note_decision": "UK standard adult passports (Type P) are issued by HM Passport Office for 10 years. The FCDO issues Emergency Travel Documents — but those are not standard 'PASSPORT/PASSEPORT' biodata pages and don't carry passport-style fields the way this image does. The specific combination of 'Type P', 'Authority FCDO', and ~6-month validity does not match any legitimate UK passport format documented at gov.uk. Multiple reply commenters spotted the same inconsistency, and the image was the basis for the tweet's claim. A note that flags the document's inauthenticity is genuinely useful to the 2.1M people who saw the post. Note: passports don't show tribal affiliation anyway, so the document — even if real — wouldn't establish the parentage claim.",
+  "judge_guidance": "PASS if the note flags the passport image as inauthentic / likely fabricated, citing the gov.uk rule that UK adult passports are issued by HM Passport Office (not FCDO) for 10 years (not ~6 months). The note may also note that a UK passport biodata page would not show tribal/ethnic parentage in any case. REJECT if the note (a) accepts the passport as authentic, (b) endorses the tribal-parentage claim as established by the document, or (c) merely opines on the tribal-politics framing without addressing the document.",
+  "reference_note": "The passport image is inauthentic. UK adult passports (Type P) are issued by HM Passport Office for 10 years' validity; this image shows issuing authority 'FCDO' and a ~6-month validity window (13 Apr 2026 → 26 Oct 2026), which doesn't match any standard UK passport. A UK passport biodata page also doesn't record tribal or ethnic parentage, so the document — even if genuine — couldn't establish the claim about Adebiyi's parents. https://www.gov.uk/government/publications/types-of-british-passports/types-of-british-passports-accessible https://www.gov.uk/apply-first-adult-passport",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "document_used_to_support_claim_is_inauthentic",
+    "sources_checked": [
+      "https://www.gov.uk/government/publications/types-of-british-passports/types-of-british-passports-accessible",
+      "https://www.gov.uk/apply-first-adult-passport",
+      "https://en.wikipedia.org/wiki/British_passport"
+    ],
+    "notes": "Type-P UK passports are issued by HM Passport Office for 10 years. FCDO issues Emergency Travel Documents but those are not standard biodata-format passports. The 6-month validity + FCDO + Type P combination doesn't match any documented UK travel document. In-thread replies independently identified the same anomalies."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "2.16M impressions on a politically-charged tribal-tensions narrative in Nigeria using a forged official document; corrects forgery, modest EA value."
+  },
+  "difficulty": "medium"
+}

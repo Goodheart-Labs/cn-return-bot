@@ -1,0 +1,200 @@
+[03:38:38] === START binary search (low=4s, high=30s, precision=2s, phase1=20, phase2=50) ===
+[03:38:38] 
+--- Phase 1 iter 1: low=4s high=30s  testing mid=18s ---
+[03:38:38]   phase1 mid=18s: starting 20 hits @ 18s interval (run_tag=r18718)
+[03:38:38]     hit 1/20 q='trump tariff steel 2026 r18718 q0…' status=200 results=10 315ms err=None
+[03:38:56]     hit 2/20 q='biden inflation 2026 r18718 q1…' status=200 results=10 405ms err=None
+[03:39:15]     hit 3/20 q='china taiwan invasion threat r18718 q2…' status=200 results=10 537ms err=None
+[03:39:33]     hit 4/20 q='climate change ocean temperature record …' status=200 results=10 472ms err=None
+[03:39:51]     hit 5/20 q='elon musk neuralink demo r18718 q4…' status=200 results=10 990ms err=None
+[03:40:10]     hit 6/20 q='openai gpt5 announcement r18718 q5…' status=200 results=10 1700ms err=None
+[03:40:27]     hit 7/20 q='ukraine drone strikes kursk r18718 q6…' status=200 results=10 586ms err=None
+[03:40:45]     hit 8/20 q='fed interest rate decision 2026 r18718 q…' status=200 results=10 454ms err=None
+[03:41:03]     hit 9/20 q='supreme court abortion ruling 2026 r1871…' status=200 results=10 476ms err=None
+[03:41:21]     hit 10/20 q='covid origin lab leak report r18718 q9…' status=200 results=10 455ms err=None
+[03:41:39]     hit 11/20 q='amazon rainforest deforestation 2026 r18…' status=200 results=10 488ms err=None
+[03:41:57]     hit 12/20 q='ev tesla recall 2026 r18718 q11…' status=200 results=7 473ms err=None
+[03:42:15]     hit 13/20 q='israel gaza ceasefire talks r18718 q12…' status=200 results=10 501ms err=None
+[03:42:35]     hit 14/20 q='uk election labour win r18718 q13…' status=200 results=10 2202ms err=None
+[03:42:51]     hit 15/20 q='boeing 737 safety report 2026 r18718 q14…' status=200 results=10 437ms err=None
+[03:43:09]     hit 16/20 q='apple vision pro sales r18718 q15…' status=200 results=10 440ms err=None
+[03:43:27]     hit 17/20 q='russia sanctions oil r18718 q16…' status=200 results=10 455ms err=None
+[03:43:45]     hit 18/20 q='north korea missile test 2026 r18718 q17…' status=200 results=10 445ms err=None
+[03:44:03]     hit 19/20 q='venezuela election results 2026 r18718 q…' status=200 results=10 500ms err=None
+[03:44:21]     hit 20/20 q='argentina milei economy r18718 q19…' status=200 results=10 428ms err=None
+[03:44:21]   phase1 mid=18s: SUCCESS (20 hits, no rate-limit signal)
+[03:44:21]   inter-test settle 15s
+[03:44:36] 
+--- Phase 1 iter 2: low=4s high=18s  testing mid=12s ---
+[03:44:36]   phase1 mid=12s: starting 20 hits @ 12s interval (run_tag=r19076)
+[03:44:37]     hit 1/20 q='trump tariff steel 2026 r19076 q0…' status=200 results=10 299ms err=None
+[03:44:49]     hit 2/20 q='biden inflation 2026 r19076 q1…' status=200 results=10 514ms err=None
+[03:45:01]     hit 3/20 q='china taiwan invasion threat r19076 q2…' status=200 results=10 515ms err=None
+[03:45:13]     hit 4/20 q='climate change ocean temperature record …' status=200 results=10 436ms err=None
+[03:45:25]     hit 5/20 q='elon musk neuralink demo r19076 q4…' status=200 results=10 452ms err=None
+[03:45:37]     hit 6/20 q='openai gpt5 announcement r19076 q5…' status=200 results=10 479ms err=None
+[03:45:49]     hit 7/20 q='ukraine drone strikes kursk r19076 q6…' status=200 results=10 701ms err=None
+[03:46:01]     hit 8/20 q='fed interest rate decision 2026 r19076 q…' status=200 results=10 475ms err=None
+[03:46:13]     hit 9/20 q='supreme court abortion ruling 2026 r1907…' status=200 results=10 496ms err=None
+[03:46:25]     hit 10/20 q='covid origin lab leak report r19076 q9…' status=200 results=10 541ms err=None
+[03:46:37]     hit 11/20 q='amazon rainforest deforestation 2026 r19…' status=200 results=10 555ms err=None
+[03:46:49]     hit 12/20 q='ev tesla recall 2026 r19076 q11…' status=200 results=10 482ms err=None
+[03:47:01]     hit 13/20 q='israel gaza ceasefire talks r19076 q12…' status=200 results=10 614ms err=None
+[03:47:13]     hit 14/20 q='uk election labour win r19076 q13…' status=200 results=10 417ms err=None
+[03:47:25]     hit 15/20 q='boeing 737 safety report 2026 r19076 q14…' status=200 results=10 707ms err=None
+[03:47:37]     hit 16/20 q='apple vision pro sales r19076 q15…' status=200 results=10 450ms err=None
+[03:47:49]     hit 17/20 q='russia sanctions oil r19076 q16…' status=200 results=10 408ms err=None
+[03:48:03]     hit 18/20 q='north korea missile test 2026 r19076 q17…' status=200 results=10 2067ms err=None
+[03:48:13]     hit 19/20 q='venezuela election results 2026 r19076 q…' status=200 results=10 636ms err=None
+[03:48:25]     hit 20/20 q='argentina milei economy r19076 q19…' status=200 results=10 829ms err=None
+[03:48:27]   phase1 mid=12s: SUCCESS (20 hits, no rate-limit signal)
+[03:48:27]   inter-test settle 15s
+[03:48:42] 
+--- Phase 1 iter 3: low=4s high=12s  testing mid=8s ---
+[03:48:42]   phase1 mid=8s: starting 20 hits @ 8s interval (run_tag=r19322)
+[03:48:42]     hit 1/20 q='trump tariff steel 2026 r19322 q0…' status=200 results=10 258ms err=None
+[03:48:51]     hit 2/20 q='biden inflation 2026 r19322 q1…' status=200 results=10 452ms err=None
+[03:48:59]     hit 3/20 q='china taiwan invasion threat r19322 q2…' status=200 results=10 510ms err=None
+[03:49:07]     hit 4/20 q='climate change ocean temperature record …' status=200 results=10 559ms err=None
+[03:49:15]     hit 5/20 q='elon musk neuralink demo r19322 q4…' status=200 results=10 499ms err=None
+[03:49:23]     hit 6/20 q='openai gpt5 announcement r19322 q5…' status=200 results=10 539ms err=None
+[03:49:31]     hit 7/20 q='ukraine drone strikes kursk r19322 q6…' status=200 results=10 833ms err=None
+[03:49:39]     hit 8/20 q='fed interest rate decision 2026 r19322 q…' status=200 results=10 498ms err=None
+[03:49:47]     hit 9/20 q='supreme court abortion ruling 2026 r1932…' status=200 results=10 499ms err=None
+[03:49:55]     hit 10/20 q='covid origin lab leak report r19322 q9…' status=200 results=10 607ms err=None
+[03:50:03]     hit 11/20 q='amazon rainforest deforestation 2026 r19…' status=200 results=10 526ms err=None
+[03:50:11]     hit 12/20 q='ev tesla recall 2026 r19322 q11…' status=200 results=6 557ms err=None
+[03:50:19]     hit 13/20 q='israel gaza ceasefire talks r19322 q12…' status=200 results=10 529ms err=None
+[03:50:27]     hit 14/20 q='uk election labour win r19322 q13…' status=200 results=10 404ms err=None
+[03:50:35]     hit 15/20 q='boeing 737 safety report 2026 r19322 q14…' status=200 results=10 590ms err=None
+[03:50:43]     hit 16/20 q='apple vision pro sales r19322 q15…' status=200 results=10 475ms err=None
+[03:50:51]     hit 17/20 q='russia sanctions oil r19322 q16…' status=200 results=10 563ms err=None
+[03:50:59]     hit 18/20 q='north korea missile test 2026 r19322 q17…' status=200 results=10 477ms err=None
+[03:51:07]     hit 19/20 q='venezuela election results 2026 r19322 q…' status=200 results=10 393ms err=None
+[03:51:15]     hit 20/20 q='argentina milei economy r19322 q19…' status=200 results=10 379ms err=None
+[03:51:15]   phase1 mid=8s: SUCCESS (20 hits, no rate-limit signal)
+[03:51:15]   inter-test settle 15s
+[03:51:30] 
+--- Phase 1 iter 4: low=4s high=8s  testing mid=6s ---
+[03:51:30]   phase1 mid=6s: starting 20 hits @ 6s interval (run_tag=r19490)
+[03:51:31]     hit 1/20 q='trump tariff steel 2026 r19490 q0…' status=200 results=10 342ms err=None
+[03:51:37]     hit 2/20 q='biden inflation 2026 r19490 q1…' status=200 results=10 470ms err=None
+[03:51:43]     hit 3/20 q='china taiwan invasion threat r19490 q2…' status=200 results=10 499ms err=None
+[03:51:49]     hit 4/20 q='climate change ocean temperature record …' status=200 results=10 442ms err=None
+[03:51:55]     hit 5/20 q='elon musk neuralink demo r19490 q4…' status=200 results=10 327ms err=None
+[03:52:01]     hit 6/20 q='openai gpt5 announcement r19490 q5…' status=200 results=10 524ms err=None
+[03:52:07]     hit 7/20 q='ukraine drone strikes kursk r19490 q6…' status=200 results=10 464ms err=None
+[03:52:13]     hit 8/20 q='fed interest rate decision 2026 r19490 q…' status=200 results=10 471ms err=None
+[03:52:19]     hit 9/20 q='supreme court abortion ruling 2026 r1949…' status=200 results=10 419ms err=None
+[03:52:25]     hit 10/20 q='covid origin lab leak report r19490 q9…' status=200 results=10 368ms err=None
+[03:52:31]     hit 11/20 q='amazon rainforest deforestation 2026 r19…' status=200 results=10 525ms err=None
+[03:52:37]     hit 12/20 q='ev tesla recall 2026 r19490 q11…' status=200 results=9 547ms err=None
+[03:52:43]     hit 13/20 q='israel gaza ceasefire talks r19490 q12…' status=200 results=10 492ms err=None
+[03:52:49]     hit 14/20 q='uk election labour win r19490 q13…' status=200 results=10 528ms err=None
+[03:52:55]     hit 15/20 q='boeing 737 safety report 2026 r19490 q14…' status=200 results=10 466ms err=None
+[03:53:01]     hit 16/20 q='apple vision pro sales r19490 q15…' status=200 results=10 511ms err=None
+[03:53:07]     hit 17/20 q='russia sanctions oil r19490 q16…' status=200 results=10 497ms err=None
+[03:53:13]     hit 18/20 q='north korea missile test 2026 r19490 q17…' status=200 results=10 414ms err=None
+[03:53:19]     hit 19/20 q='venezuela election results 2026 r19490 q…' status=200 results=0 641ms err=None
+[03:53:25]     hit 20/20 q='argentina milei economy r19490 q19…' status=200 results=0 537ms err=None
+[03:53:25]   phase1 mid=6s: SUCCESS (20 hits, no rate-limit signal)
+[03:53:25]   inter-test settle 15s
+[03:53:40] 
+=== Phase 1 done: minimum safe interval (20-hit) = 6s ===
+[03:53:40] 
+--- Phase 2 attempt 1: confirm 50 hits @ 6s ---
+[03:53:41]   pre-test canary returned 0 results (status=200); waiting 200s
+[03:57:01]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:00:22]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:03:42]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:07:03]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:10:24]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:13:44]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:17:05]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:20:26]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:23:46]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:27:07]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:30:27]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:33:48]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:37:08]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:40:29]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:43:50]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:47:10]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:50:31]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:53:52]   pre-test canary returned 0 results (status=200); waiting 200s
+[04:57:12]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:00:33]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:03:54]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:07:14]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:10:35]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:13:56]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:17:16]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:20:37]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:23:58]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:27:18]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:30:39]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:33:59]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:37:20]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:40:41]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:44:01]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:47:22]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:50:42]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:54:03]   pre-test canary returned 0 results (status=200); waiting 200s
+[05:57:24]   pre-test canary returned 0 results (status=200); waiting 200s
+[06:00:45]   pre-test canary returned 0 results (status=200); waiting 200s
+[06:04:05]   pre-test canary returned 0 results (status=200); waiting 200s
+[06:07:26]   pre-test canary returned 0 results (status=200); waiting 200s
+[06:10:46]   phase2 conf=6s: starting 50 hits @ 6s interval (run_tag=r19620)
+[06:10:47]     hit 1/50 q='trump tariff steel 2026 r19620 q0…' status=200 results=10 343ms err=None
+[06:10:53]     hit 2/50 q='biden inflation 2026 r19620 q1…' status=200 results=9 411ms err=None
+[06:10:59]     hit 3/50 q='china taiwan invasion threat r19620 q2…' status=200 results=10 486ms err=None
+[06:11:05]     hit 4/50 q='climate change ocean temperature record …' status=200 results=10 501ms err=None
+[06:11:11]     hit 5/50 q='elon musk neuralink demo r19620 q4…' status=200 results=10 427ms err=None
+[06:11:17]     hit 6/50 q='openai gpt5 announcement r19620 q5…' status=200 results=10 372ms err=None
+[06:11:23]     hit 7/50 q='ukraine drone strikes kursk r19620 q6…' status=200 results=10 404ms err=None
+[06:11:29]     hit 8/50 q='fed interest rate decision 2026 r19620 q…' status=200 results=10 423ms err=None
+[06:11:35]     hit 9/50 q='supreme court abortion ruling 2026 r1962…' status=200 results=10 484ms err=None
+[06:11:41]     hit 10/50 q='covid origin lab leak report r19620 q9…' status=200 results=10 501ms err=None
+[06:11:47]     hit 11/50 q='amazon rainforest deforestation 2026 r19…' status=200 results=10 463ms err=None
+[06:11:53]     hit 12/50 q='ev tesla recall 2026 r19620 q11…' status=200 results=5 494ms err=None
+[06:11:59]     hit 13/50 q='israel gaza ceasefire talks r19620 q12…' status=200 results=10 431ms err=None
+[06:12:05]     hit 14/50 q='uk election labour win r19620 q13…' status=200 results=10 460ms err=None
+[06:12:11]     hit 15/50 q='boeing 737 safety report 2026 r19620 q14…' status=200 results=10 323ms err=None
+[06:12:17]     hit 16/50 q='apple vision pro sales r19620 q15…' status=200 results=10 467ms err=None
+[06:12:23]     hit 17/50 q='russia sanctions oil r19620 q16…' status=200 results=10 456ms err=None
+[06:12:29]     hit 18/50 q='north korea missile test 2026 r19620 q17…' status=200 results=10 488ms err=None
+[06:12:35]     hit 19/50 q='venezuela election results 2026 r19620 q…' status=200 results=10 354ms err=None
+[06:12:41]     hit 20/50 q='argentina milei economy r19620 q19…' status=200 results=10 481ms err=None
+[06:12:47]     hit 21/50 q='japan earthquake 2026 noto r19620 q20…' status=200 results=10 363ms err=None
+[06:12:53]     hit 22/50 q='india election modi r19620 q21…' status=200 results=10 382ms err=None
+[06:12:59]     hit 23/50 q='germany afd election r19620 q22…' status=200 results=10 370ms err=None
+[06:13:05]     hit 24/50 q='france macron pension reform r19620 q23…' status=200 results=10 413ms err=None
+[06:13:11]     hit 25/50 q='iran israel attack r19620 q24…' status=200 results=10 392ms err=None
+[06:13:17]     hit 26/50 q='south africa election anc r19620 q25…' status=200 results=10 490ms err=None
+[06:13:23]     hit 27/50 q='indonesia election prabowo r19620 q26…' status=200 results=10 384ms err=None
+[06:13:29]     hit 28/50 q='brazil floods 2026 r19620 q27…' status=200 results=10 425ms err=None
+[06:13:35]     hit 29/50 q='spain elections sanchez r19620 q28…' status=200 results=10 425ms err=None
+[06:13:41]     hit 30/50 q='italy meloni migration r19620 q29…' status=200 results=10 426ms err=None
+[06:13:47]     hit 31/50 q='saudi crown prince visit r19620 q30…' status=200 results=10 386ms err=None
+[06:13:53]     hit 32/50 q='australia bushfire warning r19620 q31…' status=200 results=6 622ms err=None
+[06:13:59]     hit 33/50 q='canada wildfire smoke r19620 q32…' status=200 results=10 467ms err=None
+[06:14:05]     hit 34/50 q='mexico cartel crackdown r19620 q33…' status=200 results=4 420ms err=None
+[06:14:11]     hit 35/50 q='turkey lira inflation r19620 q34…' status=200 results=7 401ms err=None
+[06:14:17]     hit 36/50 q='egypt suez canal traffic r19620 q35…' status=200 results=9 384ms err=None
+[06:14:23]     hit 37/50 q='poland border ukraine r19620 q36…' status=200 results=10 488ms err=None
+[06:14:29]     hit 38/50 q='south korea opposition leader r19620 q37…' status=200 results=10 415ms err=None
+[06:14:35]     hit 39/50 q='philippines south china sea r19620 q38…' status=200 results=10 408ms err=None
+[06:14:41]     hit 40/50 q='vietnam factory output r19620 q39…' status=200 results=4 386ms err=None
+[06:14:47]     hit 41/50 q='thailand election results r19620 q40…' status=200 results=10 566ms err=None
+[06:14:53]     hit 42/50 q='malaysia anwar policy r19620 q41…' status=200 results=6 709ms err=None
+[06:14:59]     hit 43/50 q='singapore election results r19620 q42…' status=200 results=10 462ms err=None
+[06:15:05]     hit 44/50 q='new zealand election labour r19620 q43…' status=200 results=10 456ms err=None
+[06:15:11]     hit 45/50 q='ireland sinn fein r19620 q44…' status=200 results=10 408ms err=None
+[06:15:17]     hit 46/50 q='scotland independence vote r19620 q45…' status=200 results=10 466ms err=None
+[06:15:23]     hit 47/50 q='netherlands election results r19620 q46…' status=200 results=10 563ms err=None
+[06:15:29]     hit 48/50 q='belgium government formation r19620 q47…' status=200 results=10 553ms err=None
+[06:15:35]     hit 49/50 q='greece tourism record r19620 q48…' status=200 results=10 501ms err=None
+[06:15:41]     hit 50/50 q='portugal socialist government r19620 q49…' status=200 results=4 474ms err=None
+[06:15:41]   phase2 conf=6s: SUCCESS (50 hits, no rate-limit signal)
+[06:15:41] 
+=== FINAL ANSWER: 6s passes 50 consecutive google hits ===

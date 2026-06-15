@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2013275340064395642",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:08.435Z",
+  "post": {
+    "id": "2013275340064395642",
+    "author_id": "1212783083272855552",
+    "created_at": "2026-01-19T15:40:20.000Z",
+    "text": "A video said to be from Iran shows a teacher sitting alone in an empty classroom and breaking down in tears. The footage suggests that many of his students may no longer be alive. @potkazar https://t.co/9VcDI4sIaX",
+    "media": [
+      {
+        "media_key": "13_2013275260792012800",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2013275260792012800/img/VYkPtTxUSOhZ3jm5.jpg",
+        "height": 810,
+        "width": 888,
+        "duration_ms": 18923,
+        "view_count": 1017640,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2013275260792012800/vid/avc1/296x270/MwquaHsTou0iyBiX.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2013275260792012800/pl/gmokY_6cD0J90MXJ.m3u8?v=cfc"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2013275260792012800/vid/avc1/394x360/bY3MUw5i7Rlrs0-s.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2013275260792012800/vid/avc1/888x810/kpz7D1TWXW7IotHO.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2013275260792012800/vid/avc1/788x720/N4jmuLB1lRYcgJOZ.mp4"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5282,
+      "reply_count": 1187,
+      "like_count": 16547,
+      "quote_count": 376,
+      "bookmark_count": 717,
+      "impression_count": 360756
+    },
+    "author_followers": 1425901,
+    "author_name": "Open Source Intel",
+    "author_description": "Monitoring Real-Time News & Open Source Intelligence • Middle East • US • Global • Geopolitics  Anything on my mind • Newsletter • Signal Tips: Osint.613",
+    "author_tweet_count": 101390
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2013275260792012800/vid/avc1/888x810/kpz7D1TWXW7IotHO.mp4",
+          "description": {
+            "description": "A man in a navy blue jacket is crying in his office. He pulls some tissue paper and clears his tears. He is sitting on a chair across the desk with some files. The man in the picture looks sad. ",
+            "ocrText": "Teno\r\n"
+          },
+          "transcription": "Thank you."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Top/replies:**\n\n@ShiaphobiaLB: That’s a story that never happened.  \n(Likes: 192)\n\n@LakiusMaximus: @realDonaldTrump are you paying attention????  \n(Likes: 169)\n\n@Apuntes_: It's not. it's from one month ago and he was crying for a child student that had passed away. https://www.instagram.com/reels/DSx9TGyjeS8/  \n(Likes: 151)\n\n@McBidis: The world betrayed them  \n(Likes: 148)\n\n@Amiran_Zizovi: This is truly heartbreaking, the human cost of such instability is immense.  \n(Likes: 128)\n\n@IranCaspianSea: “heads are bloodied, but unbowed.” We Iranians will reclaim our beloved Iran. Javid Shah #RiseIran  \n(Likes: 119)\n\n@Germanistani: I bet the Groypers and Islam-simping bastards are getting ready to call this one \"Israeli propaganda\" , too - and fuck them very much for it. This is just gutting. Really hurts the soul deeply, doesn't it? Those kids died as heroes, but they are still gone, leaving behind endless grief, as seen in this video.  \n(Likes: 61)\n\n@LanisterThe: This is so heartbreaking. The world watches on without doing anything.  \n(Likes: 54)\n\n@Chasmole: Terrible acting. You Israelis getting weak on your propaganda  \n(Likes: 32)\n\n@TheUAPMinute: Oh my lord this is sad.  \n(Likes: 26)",
+    "warnings": []
+  }
+}

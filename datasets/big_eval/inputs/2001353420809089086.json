@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2001353420809089086",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:39.828Z",
+  "post": {
+    "id": "2001353420809089086",
+    "author_id": "36749572",
+    "created_at": "2025-12-17T18:06:53.000Z",
+    "text": "New fear unlocked: 😨 https://t.co/XDKGk7eGHL",
+    "media": [
+      {
+        "media_key": "13_2001353372150980608",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2001353372150980608/img/cvxK0B9XTcd9P4ez.jpg",
+        "height": 652,
+        "width": 886,
+        "duration_ms": 19758,
+        "view_count": 12586158,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2001353372150980608/vid/avc1/366x270/VfXG0Oh7UYuddjX_.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2001353372150980608/vid/avc1/488x360/P3Aw-1MpzP2DDkOm.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2001353372150980608/vid/avc1/886x652/-RQiAdCR_YaEm1JZ.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2001353372150980608/pl/w54fwffkvNkaiuz0.m3u8?v=c82"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2631,
+      "reply_count": 1711,
+      "like_count": 54450,
+      "quote_count": 1367,
+      "bookmark_count": 12626,
+      "impression_count": 25495992
+    },
+    "author_followers": 867922,
+    "author_name": "AlphaFox",
+    "author_description": "X Fox 🇺🇸🦊✝️",
+    "author_tweet_count": 96530
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2001353372150980608/vid/avc1/886x652/-RQiAdCR_YaEm1JZ.mp4",
+          "description": {
+            "description": "A bald, shirtless man in blue swim trunks and a young girl in a purple swimsuit are climbing stairs at a water park. They arrive at the top where there is a circular opening for a water slide. The man asks the girl if he can go first. The girl then sits down and prepares to enter the water slide.",
+            "ocrText": "FUCKBOY @fuckboyproblems 1.3M 13.2K would you mind if I go first"
+          },
+          "transcription": "Excuse me, would you mind if I go first? May I go first?"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Southern FFA Family (@FFAFamily): This is why you never send your child anywhere alone. (Likes: 7895)\n- Leads (@LeadsTechX): Camera man be like (Likes: 2382)\n- CryptO'brian (@Crypto_Obrian): Can I unwatch this ? (Likes: 2135)\n- Soulja Brasi (@iamsouljabrasi): To the person that wrote this and gave other weird mfs ideas (Likes: 1849)\n- Temi 犹太杀手 (@T3mistocle): Stop this shi rn (Likes: 1763)\n- ♡Land Of ILLUSION♡ (@Landofillusion1): This is why you NEVER ALLOW YOUR CHILD TO GO ALONE (Likes: 1388)\n- 𝗠𝗮𝘇𝗶 𝗦𝗮𝗺𝘀𝗼𝗻™ (@MaziSamson): This video just made me so uncomfortable tonight (Likes: 708)\n- Roo13 (@Roo13_60): That is so creepy. I would never let my kid go up there by herself or himself for that matter you never know who is lurking in those places.👀😒😡 (Likes: 146)\n- Jonathan DJ Powers (@DJpowers69): Uuuuuuuh (Likes: 146)\n- SgtPepper (@SgtpepperM): Yea man, must suck being the only two people at the water park using that slide. (Likes: 134)",
+    "warnings": []
+  }
+}

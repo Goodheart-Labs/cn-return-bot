@@ -1,0 +1,49 @@
+{
+  "tweet_id": "1978387014132097258",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:07:55.014Z",
+  "post": {
+    "id": "1978387014132097258",
+    "author_id": "80233893",
+    "created_at": "2025-10-15T09:06:35.000Z",
+    "text": "Israel rapes or tortures 83% of their child hostages https://t.co/br7bjTEzXV",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "1978102482774503617"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "1978102482774503617",
+      "author_id": "1841113170229776389",
+      "created_at": "2025-10-14T14:15:57.000Z",
+      "text": "Israel hasn't released any of the child hostages it has kidnapped.\n\nIsrael still holds 323 Palestinian children. \n\n83% of them report being tortured. Pure evil.",
+      "media": []
+    },
+    "public_metrics": {
+      "retweet_count": 7350,
+      "reply_count": 959,
+      "like_count": 26304,
+      "quote_count": 93,
+      "bookmark_count": 713,
+      "impression_count": 633819
+    },
+    "author_followers": 912916,
+    "author_name": "Jake Shields",
+    "author_description": "former UFC/MMA fighter and 5-time world champion- Host of the Fight Back podcast (@ShieldsClips)",
+    "author_tweet_count": 114072
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @xIsraelExposedx: It's closer to 86% actually (Likes: 398)\n- @racistnature: 83% reported. Which means 100% are raped. (Likes: 106)\n- @DRag38879: [image] (Likes: 96)\n- @jonnybraham: You’ve completely lost the plot, and you’re not even getting paid to post your sick fantasies on here (Likes: 94)\n- @617TAXICAB: [image] (Likes: 80)\n- @ka208399: [image] (Likes: 79)\n- @haivry: It’s fantastic how Jake has such exact information about what goes on in Israeli prisons so that he can give a number of 83%, or else he knows nothing and just makes numbers up? I can do that too: 117% of what Jake tweets are comple lies! See, it’s easy. (Likes: 74)\n- @amusicalweapon: Jake Shields rapes or tortures 83% of his child hostages. (Likes: 60)\n- @DumbFxckFinder: Palestines number 1 cheerleader keeps it goin (Likes: 42)\n- @VibesPatrol: The Israeli government is one of the most nefarious in the planet. They don’t care. They are giving their own soldiers PTSD and mental problems on mass because of it. Even IDF soldiers are sick of it: [quoted video] (Likes: 36)",
+    "warnings": []
+  }
+}

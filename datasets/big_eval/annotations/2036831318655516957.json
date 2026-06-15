@@ -1,0 +1,41 @@
+{
+  "tweet_id": "2036831318655516957",
+  "role": "no_note_needed",
+  "needs_note": "no",
+  "categories": [
+    "politics_and_policy",
+    "overhyped_research_or_product"
+  ],
+  "category_fit": "poor",
+  "suggested_category": "true_claim_no_correction_needed",
+  "tweet_summary": "Collin Rugg posts that First Lady Melania Trump walked out with an AI-powered humanoid robot at the White House, quoting her calling it 'the first American-made humanoid in the White House' during the Fostering the Future Together summit hosting 45 nations.",
+  "why_note_decision": "The tweet is TRUE. On 25 Mar 2026 Melania Trump did walk side-by-side with the humanoid robot 'Figure 03' at the White House during the summit, and the robot called itself a US-made humanoid \u2014 confirmed by NPR, Fox, NBC, CNN, PBS, Fortune, CNBC and the video's own C-SPAN transcript ('I'm Figure 3, a humanoid built in the United States of America'). No correction is warranted; any note asserting the event didn't happen is a false positive.",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note (or writes a note affirming the event is real / adds only neutral non-corrective context). The tweet's core claim \u2014 Melania Trump appeared with a real American-made humanoid robot (Figure 03 by Figure AI) at the White House summit \u2014 is verified true. Any note that claims 'no humanoid robot was introduced or walked out with her', or otherwise denies the event, must FAIL: that is exactly the original note's incorrect claim. Treat the AI media description (which DOES describe a humanoid robot) and the C-SPAN transcript as corroborating reality here.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Official coverage of Melania Trump's Fostering the Future Together summit confirms no humanoid robot was introduced or walked out with her. https://www.c-span.org/event/public-affairs-event/first-lady-gives-opening-remarks-at-children-and-technology-summit/441523 https://www.whitehouse.gov/briefings-statements/2026/03/first-lady-melania-trumps-fostering-the-future-together-assembles-leaders-from-45-nations-and-28-tech-entities",
+    "failure_reason": "Flatly false. Rated notHelpfulIncorrect (31) with high volume (54 ratings). The robot (Figure 03) demonstrably did walk out with Melania Trump per the same C-SPAN coverage the note cites; the note hallucinated a denial of a true, widely-reported event.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.npr.org/2026/03/26/nx-s1-5761898/melania-trump-robot-education-technology-ai",
+      "https://www.foxnews.com/politics/melania-trump-welcomes-humanoid-robot-white-house-historic-ai-summit",
+      "https://fortune.com/2026/03/25/melania-trump-humanoid-robot/",
+      "https://www.cnbc.com/2026/03/26/figure-ai-the-robotics-company-hosted-by-melania-trump.html"
+    ],
+    "notes": "Figure AI's Figure 03 humanoid walked the red carpet beside Melania Trump and addressed the summit; Figure CEO Brett Adcock called it the first humanoid robot in the White House. The tweet is accurate; the original note is the misinformation here."
+  },
+  "media_reliability_flag": false,
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Large-reach post (2.5M-follower author, 1.1M impressions) about real-world AI/robotics adoption at the highest level of government; a false 'this didn't happen' note would itself erode trust in Community Notes on an AGI-relevant topic."
+  },
+  "difficulty": "easy",
+  "provisional_role": "unhelpful_incorrect",
+  "disagrees_with_provisional": true,
+  "no_note_reason": "",
+  "media_confidence": "high"
+}

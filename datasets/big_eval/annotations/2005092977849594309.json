@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2005092977849594309",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["overhyped_research_or_product", "celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "personal_anecdote",
+  "tweet_summary": "Influencer says their new iPhone 17 Pro was still at 100% after an hour of music at the gym, calling the battery 'insane'.",
+  "why_note_decision": "This is a personal anecdote / impression about battery life, not a checkable factual claim. The original note cites two MacRumors forum threads to explain that iPhones hold at 100% longer than the underlying capacity warrants — interesting but well outside what a Community Note should adjudicate. Massive NotHelpfulNoteNotNeeded=52 confirms readers see it as a false positive.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an anecdote/opinion about subjective phone performance — not a misleading factual claim warranting correction. Any note explaining iPhone battery-percentage rounding behavior is a false positive on opinion content. The bot must avoid the original note's failure of treating a hype anecdote as a falsifiable claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "iPhone battery indicators often remain at 100% for 30 minutes to over an hour after unplugging due to how Apple designs the percentage display to stay full longer than actual capacity depletes. This is standard behavior, not unique to the iPhone 17 Pro.",
+    "failure_reason": "Anecdotal/impressionistic tweet treated as a falsifiable hardware claim; forum-thread sources are unreliable, and the dominant rating is NotHelpfulNoteNotNeeded (52).",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "opinion/anecdote — no checkable claim",
+    "sources_checked": [],
+    "notes": "Subjective battery experience; even if Apple's percentage display lingers at 100%, this is not misinformation."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Consumer tech hype tweet; near-zero EA/progress/safety stakes."
+  },
+  "difficulty": "easy"
+}

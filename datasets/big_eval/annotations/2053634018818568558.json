@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2053634018818568558",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["overhyped_research_or_product", "ai_generated_media"],
+  "category_fit": "partial",
+  "suggested_category": "fabricated_product_announcement",
+  "tweet_summary": "A post shows a slick 'Introducing GPT-6' graphic with the caption 'WHATTTTTT???????' implying OpenAI has announced or released GPT-6.",
+  "why_note_decision": "The 'Introducing GPT-6' graphic is fake. As of the post date (May 11, 2026) OpenAI's latest model was GPT-5.5 (released April 23, 2026); GPT-6 had not been announced or released. The image is a fabricated/mock announcement. A note clarifying this is warranted, though several replies already suspect it's fake.",
+  "judge_guidance": "PASS only if the note establishes that the GPT-6 announcement graphic is fake/fabricated and that OpenAI has not announced or released GPT-6, with GPT-5.5 being the latest model at the time. A note that treats GPT-6 as a real release FAILS. The correction must name that no such announcement exists; pointing to OpenAI's official channels as the verification path is good practice.",
+  "reference_note": "The depicted GPT-6 announcement is fake; OpenAI has not released or announced GPT-6, with GPT-5.5 (released April 2026) as the latest model. https://openai.com/blog/ https://help.openai.com/en/articles/9624314-model-release-notes",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "fabricated",
+    "sources_checked": [
+      "https://releasebot.io/updates/openai",
+      "https://felloai.com/all-we-know-about-chatgpt-6/"
+    ],
+    "notes": "OpenAI released GPT-5.5 (codename Spud) on Apr 23, 2026; GPT-6 was not announced/released as of May 2026 (projected Q3-Q4 2026). The 'Introducing GPT-6' image is a fabricated announcement."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "211k impressions; a fake AI-product announcement — directly in the AI-progress lens but low real-world consequence since it's quickly self-correcting and obviously a mock-up."},
+  "difficulty": "easy"
+}

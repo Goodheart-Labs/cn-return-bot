@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2020163585821888605",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media"],
+  "category_fit": "good",
+  "suggested_category": "old_footage_recirculated",
+  "tweet_summary": "Post 'Judge overturns election after Democrats caught ballot stuffing' shares a Fox News clip of a CT judge overturning a Democratic mayoral primary over absentee-ballot surveillance video; presented as a current event with no date.",
+  "why_note_decision": "The video is real but from 2023: it shows the Bridgeport, CT Democratic mayoral primary (Ganim vs Gomes) that a judge ordered re-run in Nov 2023 after surveillance video of absentee-ballot mishandling. It is recirculated here (Feb 2026, 349K impressions) with no date, implying a fresh nationwide 'Democrats caught ballot stuffing' event. Comments treat it as current proof of fraud ('2000 Mules wasn't a conspiracy'). The missing context — that this is a 2.5-year-old, local, already-adjudicated CT primary dispute, not a new or 'election'-deciding event — is materially misleading, so a note is warranted. The tweet also overstates it as overturning an 'election' (it was a party primary, ordered re-run). Provisional 'no_note' is wrong.",
+  "judge_guidance": "A correct note must establish that this footage is from 2023 and concerns the Bridgeport, Connecticut Democratic mayoral PRIMARY (Ganim/Gomes), which a judge ordered re-run in November 2023 over absentee-ballot mishandling — not a recent or general 'election' overturn. PASS if the note supplies the 2023 date, the Bridgeport/primary specifics, and a reliable source (CT Mirror / CT Public / NBC CT). FAIL if it (a) accepts the framing of a current/general-election event, (b) omits the 2023 date, or (c) merely says 'no note needed'. The original note had the right facts; its weakness was being perceived as not-needed/missing-key-points, so a correct note should lead with 'this is old (2023) footage' to defuse the 'breaking' framing.",
+  "reference_note": "This is 2023 footage. A Connecticut judge ordered a re-run of Bridgeport's Democratic mayoral PRIMARY (Ganim vs Gomes) in November 2023 after surveillance video showed absentee-ballot mishandling. It was a local primary dispute, not a recent or general-election overturn. https://ctmirror.org/2023/11/01/bridgeport-primary-election-ruling-ganim-gomes/ https://www.ctpublic.org/news/2023-11-01/ct-judge-overturns-results-of-bridgeport-mayoral-primary-just-days-before-election",
+  "original_unhelpful_note": {
+    "text": "The video and ruling are from 2023: A CT judge voided Bridgeport's Democratic mayoral primary results due to surveillance video showing multiple absentee ballot drops violating state law, casting doubt on the outcome. No such overturn has occurred recently. https://www.ctpublic.org/news/2023-11-01/ct-judge-overturns-results-of-bridgeport-mayoral-primary-just-days-before-election https://ctmirror.org/2023/11/01/bridgeport-primary-election-ruling-ganim-gomes/ https://www.wbur.org/news/2023/11/02/connecticut-judge-overturns-results-of-mayoral-primary-just-days-before-election",
+    "failure_reason": "Facts correct (2023 Bridgeport primary, absentee-ballot mishandling) but heavily rated NoteNotNeeded(21)/MissingKeyPoints(19)/Argumentative(10) — likely seen as not clearly rebutting the 'Democrats caught ballot stuffing' framing and slightly editorializing ('casting doubt'). A tighter note leads with the 2023 date and the primary/not-election distinction without editorial coloring.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Real but miscontextualized: 2023 Bridgeport CT Democratic primary re-run, recirculated as a current event.",
+    "sources_checked": [
+      "https://ctmirror.org/2023/11/01/bridgeport-primary-election-ruling-ganim-gomes/",
+      "https://www.ctpublic.org/news/2023-11-01/ct-judge-overturns-results-of-bridgeport-mayoral-primary-just-days-before-election",
+      "https://www.nbcconnecticut.com/news/local/judge-orders-new-bridgeport-mayoral-primary-after-surveillance-videos-show-possible-ballot-stuffing/3138308/"
+    ],
+    "notes": "Sept 2023 primary: Ganim beat Gomes by 251 votes; Gomes sued after video of a Democratic town-committee official dropping multiple absentee ballots. Nov 1, 2023 a Superior Court judge ordered a new primary. Both campaigns were implicated. It was a primary re-run, not a general-election overturn, and is ~2.5 years old."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Recirculated old footage fueling 'systemic voter fraud' narratives (349K impressions) corrodes trust in elections; restoring the 2023/primary context has real value for democratic integrity."
+  },
+  "difficulty": "medium"
+}

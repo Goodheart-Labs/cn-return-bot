@@ -1,0 +1,37 @@
+{
+  "tweet_id": "1996527936900317687",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": [
+    "health_medical_science"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "physics_demo_correct",
+  "tweet_summary": "A 3D-animated video asks whether 100 magnets can stop a 9mm bullet, and the on-screen narration explains that the bullet passes straight through because lead/copper bullets are non-magnetic.",
+  "why_note_decision": "The tweet's video/transcript itself delivers the correct physics: bullets are non-magnetic so the magnets don't stop them. The OCR even shows 'N N N S S Are Not Magnetic'. The note repeats the same conclusion the video already states, so it's a redundant correction. Eddy-current / induction quibbles in replies are a sub-point but the tweet's headline message is accurate, so no note is warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note (any note here is a false positive \u2014 the tweet's video already gives the correct answer that bullets are non-magnetic and pass through). A note that 'corrects' the tweet by repeating what the video itself says should fail. A note that introduces eddy-current/induction nuance is not warranted either \u2014 the tweet is a casual physics-demo and any note is overreach.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No, 100 magnets cannot stop a bullet. Most bullets are lead/copper (non-magnetic). Tests show even 1000+ powerful magnets fail to stop bullets due to speed and momentum overwhelming magnetic forces. https://www.kjmagnetics.com/blog/curving-bullets-with-magnets",
+    "failure_reason": "Note repeats the tweet's own conclusion \u2014 the tweeted video explicitly states bullets are non-magnetic and pass through. Note-not-needed.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet's video accurately conveys that non-magnetic bullets aren't stopped by magnets",
+    "sources_checked": [
+      "https://www.kjmagnetics.com/blog/curving-bullets-with-magnets"
+    ],
+    "notes": "Bullet jackets are typically copper-clad lead; neither is ferromagnetic. The video's own narration says the bullet passes through."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Light science-demo content; no real-world misinformation impact. Doesn't move the needle on AGI safety, EA, or animal welfare."
+  },
+  "difficulty": "easy"
+}

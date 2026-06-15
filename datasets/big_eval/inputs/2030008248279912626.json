@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2030008248279912626",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:30.654Z",
+  "post": {
+    "id": "2030008248279912626",
+    "author_id": "1178773799287885825",
+    "created_at": "2026-03-06T19:50:56.000Z",
+    "text": "Former Bush National Security Advisor and Secretary of State Condoleezza Rice seen entering White House — CNN https://t.co/B0YRGHljnU",
+    "media": [
+      {
+        "media_key": "3_2030008201870012416",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HCwJtEOXcAAiESq.jpg",
+        "height": 1763,
+        "width": 2500
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1029,
+      "reply_count": 577,
+      "like_count": 8898,
+      "quote_count": 1489,
+      "bookmark_count": 1377,
+      "impression_count": 6957880
+    },
+    "author_followers": 150953,
+    "author_name": "NewsWire",
+    "author_description": "U.S. and world news.  Turn on notifications. Powered by @Polymarket. Bet on politics, elections and more: https://t.co/1n3rw5Pass",
+    "author_tweet_count": 22684
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCwJtEOXcAAiESq.jpg",
+          "description": {
+            "description": "President George W. Bush speaks at a lectern with Condoleezza Rice standing beside him. The President is wearing a dark pinstripe suit and a red tie, while Rice is wearing a cream-colored jacket. The presidential seal is visible on the lectern.",
+            "ocrText": "ESIDENT OF THE UNIT"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @felpix_: they calling her outta retirement (2.2K likes)\n- @NA8STRADAMUS: nO nEw WaRs (911 likes)\n- @GodEmperorGavin: She’s your girl if you wanna get into a forever war! (903 likes)\n- @Jeremypacheco: Condoleezza Rice walking into the White House after Iran started getting rekt. (827 likes)\n- @MimiNiMwafrika: She has experience with Middle East \nTrump is desperate for an exit strategy 😅 (644 likes)\n- @M5squared: So they have no plan and need some help. (344 likes)\n- @rev_felix: You gotta be fuckin' kidding me. (223 likes)\n- @JustinFleenor: Iraq 2003, is that you? (149 likes)\n- @Popeikue: Fact Check:\nWhite House sources and attendee confirmations clarify the visit was not related to foreign policy, Iran, or Middle East strategy.\nRice attended a pre-scheduled White House roundtable on the future of college athletics... (42 likes)\n- @WebgirlHere: She's part owner of the Denver Broncos. It's about the NIL meeting today. Relax or at least quite spreading disinformation. (37 likes)",
+    "warnings": []
+  }
+}

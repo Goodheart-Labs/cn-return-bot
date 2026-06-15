@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2014630182796083580",
+  "role": "unhelpful_sources_missing_or_unreliable",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "ai_generated_media"
+  ],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Posts a gym mirror-selfie image captioned 'Sydney Sweeney & Ana de Armas', presented as a real candid photo of the two actresses.",
+  "why_note_decision": "The image is AI-generated: it traces to a circulating 'Gemini Nano Banana Pro' prompt producing Sweeney/de Armas gym selfies, and no such real photo exists. Commenters genuinely ask 'is this real?' / tag Grok to check, showing real deception of a 3M-impression audience depicting real people. A note flagging it as AI is warranted. I disagree with the provisional no-note because viewers are actually being misled, not in on an obvious joke. However, the ORIGINAL note's method (proving AI by absence from the actresses' Instagram accounts) is weak and unreliable, which is why it failed.",
+  "judge_guidance": "PASS only if the note states the image is AI-generated (synthetic) and is not a real photo of Sydney Sweeney and Ana de Armas, supported by a RELIABLE basis (e.g. AI-detection / provenance tracing to a known AI prompt, or telltale generation artifacts) rather than merely 'it's not on their Instagram'. It must avoid the original note's failure of arguing from absence on Instagram, which doesn't reliably prove an image is fake. A note that treats the photo as real, or that proves 'fake' only via 'not on their official accounts', should FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The image depicting Sydney Sweeney and Ana de Armas at the gym is AI-generated, as no such photo exists on their official Instagram accounts. https://www.instagram.com/sydneysweeney/ https://www.instagram.com/ana.dearmas/",
+    "failure_reason": "Unreliable sourcing: infers 'AI-generated' from absence on the actresses' Instagram, which is not evidence an image is synthetic (celebrities don't post every real photo). Correct conclusion, weak/argument-from-silence basis - dominant rating was notHelpfulSourcesMissingOrUnreliable.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "AI-generated image of real people presented as a real photo",
+    "sources_checked": [
+      "https://x.com/xmliisu/status/2009993284609859953",
+      "https://x.com/YaseenK7212/status/2010254562318319651"
+    ],
+    "notes": "The exact 'Sweeney & de Armas at the gym' selfie matches widely-shared Gemini Nano Banana Pro AI prompts; multiple near-identical AI variants exist. No authentic source for such a photo. Verdict hinges on interpreting an image the AI description (which already reads it as a plausible real selfie) could mis-call."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "3M impressions but low-stakes glamour deepfake; value is mainly in normalizing AI-image disclosure of real people."
+  },
+  "difficulty": "medium"
+}

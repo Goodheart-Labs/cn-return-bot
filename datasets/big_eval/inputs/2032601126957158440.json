@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2032601126957158440",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:12.660Z",
+  "post": {
+    "id": "2032601126957158440",
+    "author_id": "1449140157903482882",
+    "created_at": "2026-03-13T23:34:07.000Z",
+    "text": "BREAKING: 🇮🇷🇺🇸 Iran strikes 5 US Air Force refueling planes at Prince Sultan air base in Saudi Arabia, WSJ reports. https://t.co/EDodUYYY81",
+    "media": [
+      {
+        "media_key": "3_2032601121991131136",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDU_84ZXgAA43oY.jpg",
+        "height": 1321,
+        "width": 2000
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8290,
+      "reply_count": 1036,
+      "like_count": 42087,
+      "quote_count": 415,
+      "bookmark_count": 1371,
+      "impression_count": 2268087
+    },
+    "author_followers": 2069566,
+    "author_name": "BRICS News",
+    "author_description": "We are an independent media company bringing you unparalleled coverage of all-things geopolitics & BRICS News in real-time. Not an official government account.",
+    "author_tweet_count": 12604
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDU_84ZXgAA43oY.jpg",
+          "description": {
+            "description": "A formation of multiple gray U.S. Air Force KC-135 Stratotanker aircraft parked in a line on an asphalt tarmac at an airbase. The aircraft belong to the Air National Guard (ANG), with tail markings indicating units like the 185th Air Refueling Wing. Several ground power units are positioned in front of the planes, and large hangar buildings are visible in the background under an overcast sky.",
+            "ocrText": "U.S. AIR FORCE, 00316, ANG, 23566, 72604, 10310, SIOUX CITY, 185 ARW, 0057"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @CashezMazz: \"So so deep\" (Likes=1271, Reposts=176, Replies=13, Views=88825)\n- @TheWeb3Patriot: \"We are losing a lot of resources fighting this war…\" (Likes=928, Reposts=0, Replies=0, Views=30623)\n- @FroemelAndy: \"Iran is not going down easy. They have to win this war for humanity.\" (Likes=563, Reposts=0, Replies=0, Views=8736)\n- @shadrinios: \"The IRGC is gaining ground on the battlefield, while Trump is dominating the media.\" (Likes=500, Reposts=0, Replies=0, Views=13934)\n- @RSA_Xenophobe: \"(image only)\" (Likes=435, Reposts=0, Replies=0, Views=18035)\n- @Kaleem493: \"Iranian drone attacks are unstoppable. Huge damages to US military Hardwares.\" (Likes=329, Reposts=0, Replies=0, Views=9614)\n- @exlaws24: \"My tax dollar striking the equipment my tax dollar funded\" (Likes=267, Reposts=15, Replies=12, Views=29553)\n- @rayanjuni0r: \"We feast, long live Iran\" (Likes=228, Reposts=0, Replies=0, Views=7064)\n- @Igwe_simba: \"Take out the tankers and the bombers will be grounded 💯\" (Likes=227, Reposts=0, Replies=0, Views=16965)\n- @NazyInyass: \"This is funny 😂🤣\" (Likes=223, Reposts=0, Replies=0, Views=27179)",
+    "warnings": []
+  }
+}

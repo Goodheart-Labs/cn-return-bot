@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2052862535364157550",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "poor",
+  "suggested_category": "lifestyle_hack",
+  "tweet_summary": "User shares a 5-Minute Crafts-style video demonstrating a pizza-box-folding hack that converts the box into a smaller storage container for leftover slices, captioned 'I was today years old when I found out you could do this…'.",
+  "why_note_decision": "The tweet is a lifestyle hack demo. The hack is real — some Domino's boxes have perforations specifically for this. The note's claims ('difficult to execute', 'doesn't stay sealed', 'mangles slices') are opinion / mixed-utility critique, not factual debunk. Many replies share the same opinion but that doesn't make the tweet misleading — the video plainly shows the hack working. Community correctly tagged notHelpfulNoteNotNeeded + notHelpfulOpinionSpeculation.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet makes no checkable misleading claim — sharing a lifestyle hack with the caption 'I just learned this' is not misinformation. A note critiquing the hack's utility is opinion/speculation and a clear false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The pizza box folding hack is difficult to execute with thick cardboard, doesn't stay sealed without tape, and mangles the slices.",
+    "failure_reason": "opinion_or_framing: subjective critique dressed as a correction; not a factual claim being made by the tweet",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "no factual claim to fact-check; hack is shown and works in the video",
+    "sources_checked": [],
+    "notes": "Hack is widely documented; pizza boxes from Domino's have these perforations by design."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "low", "lens_rationale": "viral lifestyle hack; trivial stakes"},
+  "difficulty": "easy"
+}

@@ -1,0 +1,82 @@
+{
+  "tweet_id": "2004965810805293223",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:40.899Z",
+  "post": {
+    "id": "2004965810805293223",
+    "author_id": "942030678769786880",
+    "created_at": "2025-12-27T17:21:14.000Z",
+    "text": "We got our first bit of new info on The Elder Scrolls 6 in over 7 years:\n\nTodd Howard has confirmed TES6 will have MORE TREES than Skyrim! https://t.co/k1xTJNGbtP",
+    "media": [
+      {
+        "media_key": "13_2004965718299672576",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2004965718299672576/img/QsRNHKHHbwCZ8GWK.jpg",
+        "height": 1080,
+        "width": 1912,
+        "duration_ms": 12283,
+        "view_count": 267287,
+        "variants": [
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004965718299672576/vid/avc1/1274x720/t7QNQhTAhIj6EbLV.mp4"
+          },
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004965718299672576/vid/avc1/478x270/CoQR3f2nuHlXbO2A.mp4"
+          },
+          {
+            "bit_rate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004965718299672576/vid/avc1/1912x1080/IzNGqBqDE7pzJ09s.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2004965718299672576/vid/avc1/636x360/1gE56b3TFbIQrOJn.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2004965718299672576/pl/oZBdEozyr4RaHy78.m3u8?v=ae0"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 310,
+      "reply_count": 286,
+      "like_count": 9193,
+      "quote_count": 171,
+      "bookmark_count": 935,
+      "impression_count": 634875
+    },
+    "author_followers": 117623,
+    "author_name": "Synth Potato🥔",
+    "author_description": "Game Reviewer & Content Creator | Threads/Reviews/News | As featured on @RockstarGames @NME @ComicBook @IGN | Turn on notifs!🔔 | Contact: ameer@synthpotato.com",
+    "author_tweet_count": 66700
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2004965718299672576/vid/avc1/1912x1080/IzNGqBqDE7pzJ09s.mp4",
+          "description": {
+            "description": "A close-up of a middle-aged man with brown hair, in a gray t-shirt, stands in the Bethesda Softworks office. He is looking at the camera and talking, gesturing with his hands. Behind him, there's a staircase and a logo on the wall.",
+            "ocrText": "BETHESDA"
+          },
+          "transcription": "Are there going to be more trees in the Elder Scrolls VI, Mr. Aram, or less? Are there going to be more trees in Elder Scrolls VI or less? More. Most definitely more."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **avrona🇵🇱 🇺🇦 (@Avronaofficial)**: Sweet, in another 7 years time, we'll get an update on the number of rocks!  \n  Engagement: 316 likes\n\n- **ash (@ashtoon_)**: Video from AnyAustin on youtube btw  \n  Engagement: 307 likes\n\n- **LevendiPro (@LevendiPro)**: That means more oxygen, which means more powerful magic??  \n  Engagement: 129 likes\n\n- **Vore (@Xerukal)**: truly worth the wait, thank you so much toddsworth  \n  Engagement: 74 likes\n\n- **mnhKay (@MnhKay)**: He probably saw that recent video essay about why Skyrim has so many trees😭😭  \n  Engagement: 36 likes\n\n- **Kyler_.m (@Kylerm146110M)**: This is how starved people are for info this being news is diabolical  \n  Engagement: 28 likes\n\n- **Nukeclear W1nter🍗 (@Gamer4life111)**: Wow, more trees…  \n  Engagement: 21 likes\n\n- **zalla00 (@Lordzalla00)**: more trees....in hammerfell? A desert region?.....Okay...  \n  Engagement: 18 likes\n\n- **Quero ser incel mas minha esposa não deixa (@brunotngz)**: My GPU:  \n  Engagement: 14 likes\n\n- **Hijinks (@Hijinksss)**: 6 … 7  \n  Engagement: 12 likes",
+    "warnings": []
+  }
+}

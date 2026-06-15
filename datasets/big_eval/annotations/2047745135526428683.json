@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2047745135526428683",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "statistical_or_numerical_claim", "politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A pro-Trump account posts an animated 'LayoffHedge' infographic captioned 'Graph shows H-1B visa holders legally migrating to the United States,' showing cumulative figures rising to ~6.9M by 2025, implying that many H-1B workers are entering the US.",
+  "why_note_decision": "The animation's own labels say it tracks cumulative LCA (Labor Condition Application) filings 2015-2025, NOT actual H-1B visa holders migrating. New H-1B visas are statutorily capped at 85,000/year (65,000 + 20,000 advanced-degree), and the total active H-1B population is roughly 600,000-750,000 — far below the ~6.9M figure. An LCA is a prerequisite employers file; one worker/position can generate multiple filings and many never become visas. Presenting cumulative LCA filings as people 'migrating' inflates the number by ~10x, which a reader benefits from understanding. A top reply (@bhanubonu) independently makes this exact point. A note is warranted.",
+  "judge_guidance": "PASS only if the note corrects the core conflation: the figures are cumulative LCA filings (potential H-1B positions), NOT actual H-1B workers who migrated, AND it anchors reality with at least one concrete number (new H-1B visas capped at 85,000/year, or total active H-1B workers ~600K-730K). It must NOT simply call the post 'racist' or argue the merits of immigration (the original raters penalized argumentative notes). A note that accepts the ~5-7M 'visa holders' framing fails. Cite USCIS/Pew or the cap statute.",
+  "reference_note": "This animation shows cumulative Labor Condition Application (LCA) filings for potential H-1B positions from 2015-2025, not actual H-1B visa holders migrating. New H-1B visas are capped at 85,000/year; total active H-1B workers ~730,000.    https://www.uscis.gov/working-in-the-united-states/h-1b-specialty-occupations    https://layoffhedge.com/h1b    https://www.pewresearch.org/short-reads/2025/03/04/what-we-know-about-the-us-h-1b-visa-program",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading: the graphic plots cumulative LCA filings, not H-1B people migrating. New H-1B visas are capped at 85,000/yr; active H-1B population ~600K-750K, an order of magnitude below the ~6.9M cumulative figure.",
+    "sources_checked": [
+      "https://www.uscis.gov/working-in-the-united-states/h-1b-specialty-occupations",
+      "https://flag.dol.gov/programs/LCA",
+      "https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-1b-specialty-occupations/h-1b-cap-season"
+    ],
+    "notes": "USCIS confirms the 65K+20K = 85K annual cap. DOL confirms LCAs precede and exceed approved visa petitions (one position/worker can drive several filings). The graphic's own OCR text says 'H-1B LCA filings' and 'DOL LCA x USCIS country-of-birth shares,' confirming it is filings, not migrants."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "930K impressions, 1.2M video views, large pro-Trump account; the inflated figure fuels xenophobic immigration narratives (replies call India a 'shithole'). Correcting a 10x statistical inflation that drives policy sentiment has real informational/progress value."
+  },
+  "difficulty": "medium"
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2010799197650633083",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:08:43.902Z",
+  "post": {
+    "id": "2010799197650633083",
+    "author_id": "1768361599591481344",
+    "created_at": "2026-01-12T19:41:02.000Z",
+    "text": "BREAKING: Greta Thunberg reportedly on a flotilla to Iran to provide aid to the Islamic regime. https://t.co/pbGbi7AS4z",
+    "media": [
+      {
+        "media_key": "3_2010799194005446656",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-fLNplWIAAY5M7.jpg",
+        "height": 646,
+        "width": 968
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 852,
+      "reply_count": 523,
+      "like_count": 10062,
+      "quote_count": 117,
+      "bookmark_count": 179,
+      "impression_count": 431849
+    },
+    "author_followers": 22446,
+    "author_name": "Niqab Nancy 🍉🍗",
+    "author_description": "Harvard student. Pregnant. Journalist. Anti-dolphin. Palestinian 🇯🇴",
+    "author_tweet_count": 8080
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-fLNplWIAAY5M7.jpg",
+          "description": {
+            "description": "The image shows climate activist Greta Thunberg and another woman standing on a boat or balcony, both waving to people off-camera. The woman on the left wears a keffiyeh and a black t-shirt with text, while Greta Thunberg wears a white t-shirt with a red and black message related to Palestine. A flag, which appears to be Palestinian, is visible on the left side of the frame.",
+            "ocrText": "EE ALL LETINE T THE NO TO CIDENT NTIALISM"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **John Aziz (@aziz0nomics)**: ????  \n  Likes: 285 | Reposts: 0 | Replies: 0 | Views: 27568\n\n- **TechiGuru 🇸🇻 (@digiteccc)**: Sick  \n  Likes: 135 | Reposts: 0 | Replies: 0 | Views: 28516\n\n- **Peter Baum (@baum_p)**: The Irish Jew haters would go but don’t know where Iran is ….  \n  Likes: 92 | Reposts: 0 | Replies: 0 | Views: 20550\n\n- **Cinecienta (@ZahnElke)**: Yes, she would if she could. 😅  \n  Likes: 72 | Reposts: 0 | Replies: 0 | Views: 1507\n\n- **Ece (@osfp)**: Probably fake for humor lol but I fckn hate this Greta b1tch :/  \n  Likes: 62 | Reposts: 0 | Replies: 0 | Views: 13058\n\n- **Ora Levitt 🇮🇱 חיילת צה\"ל 🇮🇱 עם ישראל חי (@IDFsoldiergirl)**: The Ayatollah has been asking for her.  \n  Likes: 30 | Reposts: 0 | Replies: 0 | Views: 11470\n\n- **Jeffrey Weichsel (@jeffreyweichsel)**: I really want this to be true for some reason.  \n  Likes: 24 | Reposts: 0 | Replies: 0 | Views: 14142\n\n- **Placeholder.hl (@PlaceholderKey)**: Greta is so consumed by evil, it's literally changing her outside appearance to something that's grotesque. She is a ridiculously ugly human being.  \n  Likes: 22 | Reposts: 0 | Replies: 0 | Views: 11463\n\n- **Brian Dunham (@galtback6)**: Oh look, the Gretard.  \n  Likes: 20 | Reposts: 0 | Replies: 0 | Views: 815\n\n- **I Woke Up (@drewidia)**: They are going to be whale hunting with the UN along the way.  \n  Likes: 17 | Reposts: 0 | Replies: 0 | Views: 7184",
+    "warnings": []
+  }
+}

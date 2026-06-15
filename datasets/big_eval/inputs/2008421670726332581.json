@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2008421670726332581",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:13:09.878Z",
+  "post": {
+    "id": "2008421670726332581",
+    "author_id": "1834166688171896832",
+    "created_at": "2026-01-06T06:13:35.000Z",
+    "text": "Donut Labs from Finland have just announced the first Solid State Battery that is commercially available!\n\nMade to last 100.000 cycles, and uses abundant, affordable, and geopolitically safe materials. \n\nEurope is building the NXT generation of technology 🇪🇺 https://t.co/YGaPiPHhRq",
+    "media": [
+      {
+        "media_key": "3_2008421668276846592",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G99Y3cDWwAAj7fA.jpg",
+        "height": 1079,
+        "width": 1091
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 484,
+      "reply_count": 105,
+      "like_count": 4072,
+      "quote_count": 48,
+      "bookmark_count": 326,
+      "impression_count": 250258
+    },
+    "author_followers": 44010,
+    "author_name": "NXT EU",
+    "author_description": "Building the Pan-European movement for progress. Together we can build the NXT generation of politics.",
+    "author_tweet_count": 9055
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G99Y3cDWwAAj7fA.jpg",
+          "description": {
+            "description": "An infographic comparing the charge cycles of different battery types using a bar chart on a dark background. It lists 'Typical Lithium-ion' at 1000-1500 cycles with a very short bar, 'High-end Lithium-ion' at 5000 cycles with a slightly longer bar, and 'Donut Battery' at 100,000 cycles with a significantly longer bar.",
+            "ocrText": "Typical Lithium-ion 1000-1500 cycles High-end Lithium-ion 5000 cycles Donut Battery 100,000 cycles"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @_Fernandes_Yo: \"I'm sorry but their presentation had all the red flags of a snake oil vendor. Too good to be true. Scientific breakthroughs too big to not have heard about years prior. Something's off about this company.\" (Likes: 70)\n- @MagellanQuest: \"Important, no rare earths.\" (Likes: 52)\n- @Radu_Reloaded: \"Only a eurotard could have come up with \"geopolitically safe materials\". 😂\" (Likes: 39)\n- @LazerErik: \"Where order? Ah, not for order\" (Likes: 31)\n- @ErukanuSenpai: \"Well thats cool and all but Price? What materials are used? Capacity?\" (Likes: 28)\n- @PetrNmeek8: \"Sounds good, but I will belive it after independent tests. We hear about miraculous battery technologies every day and most of it is crap.\" (Likes: 24)\n- @PedroCoSilva: \"Let's wait for hard irrefutable evidence before we celebrate 🥳\" (Likes: 22)\n- @Tbakjensen: \"Finland is back 🤠\" (Likes: 21)\n- @Paul_Briley: \"CATL sodium battery allows 5 minute recharge, 3,000km range, common mineral, cheap, functions in cold climate, already in mass production.\" (Likes: 17)\n- @ForzenStur: \"Both Europe and China are making breakthroughs in battery technology because gov policies mandates EV sales. US will lose this race, both EVs and EV component design & manufacturing.\" (Likes: 10)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "tweet_id": "2043596826230817235",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A dramatic image of five young people running hand-in-hand through a field, captioned as a real photo of young men in Gaza forming a human shield to protect a Palestinian girl from Israeli snipers.",
+  "why_note_decision": "The image is AI-generated, not a real photograph. Multiple repliers independently identify a Google Gemini AI watermark in the bottom-right corner, and the scene's composition is characteristic of generative AI. The tweet presents it as a literal real event ('This isn't a movie... This photo shows...'), which is false. AI-generated war imagery passed off as real is a checkable, high-impact misrepresentation, so a note is warranted.",
+  "judge_guidance": "PASS only if the note states the image is AI-generated (not a real photograph of a real event in Gaza) and ideally points to the identifying evidence (a Google Gemini watermark in the bottom-right corner). A correct note must NOT endorse the framing that this is a genuine photograph of men shielding a girl from snipers. It is acceptable for the note to also clarify that the visually-similar real history (Great March of Return protests) is a separate matter, but the core required claim is 'AI-generated, not real.' Reject any note that treats the image as authentic or that argues only about the politics of the conflict instead of the image's provenance.",
+  "reference_note": "This photo is AI-generated, as shown by the Google Gemini watermark in the bottom-right corner. It does not depict a real event in Gaza. https://apnews.com/article/artificial-intelligence-hamas-israel-misinformation-ai-gaza-a1bb303b637ffbbb9cbc3aa1e000db47",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false - image is AI-generated, not a real photograph",
+    "sources_checked": [
+      "https://apnews.com/article/artificial-intelligence-hamas-israel-misinformation-ai-gaza-a1bb303b637ffbbb9cbc3aa1e000db47",
+      "https://www.rollingstone.com/politics/politics-features/israel-hamas-misinformation-fueled-ai-images-1234863586/"
+    ],
+    "notes": "Two separate replies (@D4abrightfuture, @PEATHRUS_X) independently flag the bottom-right Google Gemini watermark and call the image AI. Gemini-generated images carry a visible Gemini logo/SynthID watermark. The AI media description did not mention a watermark (AI descriptions commonly miss watermarks), so corroboration rests on the replies plus the known Gemini watermark behavior. The original CN note's verdict is correct; reference note kept (with the SciNews link swapped for the more topical AP article on AI Gaza misinfo)."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "351k impressions, 37k likes; AI-fabricated war imagery passed as real inflames an already volatile conflict and erodes trust in genuine evidence — high-value to correct."},
+  "difficulty": "medium"
+}

@@ -1,0 +1,40 @@
+{
+  "tweet_id": "2056701604447797752",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": [
+    "fabricated_quote",
+    "ai_generated_media",
+    "politics_and_policy"
+  ],
+  "category_fit": "poor",
+  "suggested_category": "fabricated_quote_image",
+  "tweet_summary": "An anti-AIPAC reply showing a woodcut-style image of JFK holding a sign that reads 'AIPAC IS A FOREIGN AGENT' with his signature, presented as if JFK made that statement.",
+  "why_note_decision": "The image fabricates a JFK quote/endorsement that he never made. AIPAC is a US-registered domestic lobby, not a foreign agent. The historical fact is that ROBERT Kennedy (as AG), not JFK, ordered AIPAC's predecessor (the American Zionist Council) to register as a foreign agent in 1962 \u2014 and that effort was later abandoned in 1965. Readers seeing a 'JFK said' image will believe JFK personally branded AIPAC a foreign agent, which is false. A reply in-thread even flags it as AI-fabricated. This is a classic fabricated-quote image and warrants a note. The original note got the substance right but is hard to parse and missed the key point that the image itself is fabricated (AI/woodcut, not a real JFK photo or document).",
+  "judge_guidance": "PASS criteria: (1) Note must say the JFK 'AIPAC IS A FOREIGN AGENT' quote/sign is fabricated \u2014 JFK never publicly said or signed this. (2) Should note the related actual history: under JFK, the DOJ (led by RFK) asked AIPAC's predecessor the American Zionist Council to register as a foreign agent in 1962; the effort was dropped by 1965. (3) Should clarify AIPAC itself is a US-registered domestic lobby, not currently a foreign agent. FAIL if the note repeats the false claim that JFK said this, or if it just argues AIPAC's lobbying status without addressing the fabricated quote.",
+  "reference_note": "The image is fabricated; JFK never made this statement or signed any such sign. The Kennedy administration's DOJ (under AG Robert Kennedy) asked AIPAC's predecessor, the American Zionist Council, to register as a foreign agent in 1962, but that requirement was abandoned by 1965. AIPAC is registered as a domestic US lobby. https://en.wikipedia.org/wiki/American_Zionist_Council https://www.wrmea.org/jfk-assassination/robert-kennedy-s-attempt-to-register-aipac-as-a-foreign-agent.html",
+  "original_unhelpful_note": {
+    "text": "JFK never made this statement. The Kennedy administration's DOJ ordered AIPAC's predecessor, the American Zionist Council, to register as a foreign agent in 1962 \u2014 but Kennedy never publicly called out AIPAC by name or made this quote. https://en.wikipedia.org/wiki/American_Zionist_Council https://en.wikipedia.org/wiki/AIPAC",
+    "failure_reason": "Substance correct but missing key point \u2014 the image itself is fabricated/AI-woodcut, not just the words. The note also fails to make AIPAC's current status (US-registered domestic lobby) clear, which is the real-world misimpression the tweet creates.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading \u2014 quote/sign attributed to JFK is fabricated; RFK (not JFK) made the foreign-agent registration request, against AZC (not AIPAC), in 1962, and the effort was dropped.",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/American_Zionist_Council",
+      "https://www.wrmea.org/jfk-assassination/robert-kennedy-s-attempt-to-register-aipac-as-a-foreign-agent.html"
+    ],
+    "notes": "AIPAC is currently registered as a US domestic 501(c)(4) lobby, not under FARA. The image is a stylized woodcut making JFK appear to personally endorse the 'foreign agent' framing."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Fabricated historical-quote images on geopolitical lobby topics drive durable false beliefs; correcting matters for political discourse quality."
+  },
+  "difficulty": "medium"
+}

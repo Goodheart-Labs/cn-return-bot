@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2040248192785088645",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:54:52.563Z",
+  "post": {
+    "id": "2040248192785088645",
+    "author_id": "1601768561650941954",
+    "created_at": "2026-04-04T02:00:49.000Z",
+    "text": "BREAKING: A leaked report from Argentina reveals plans to accept 300,000 Israelis and create a mini-state, establishing a private community in burned areas of Patagonia called “Private Neighborhood Josué, Prophet of Israel.” https://t.co/dsSYin0vYf",
+    "media": [
+      {
+        "media_key": "3_2040248190784663552",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HFBq63lacAAfqfr.jpg",
+        "height": 864,
+        "width": 1536
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2712,
+      "reply_count": 621,
+      "like_count": 7514,
+      "quote_count": 460,
+      "bookmark_count": 1065,
+      "impression_count": 1097949
+    },
+    "author_followers": 269473,
+    "author_name": "The General",
+    "author_description": "Follow my newsletter: https://t.co/YkWYmR9j5P",
+    "author_tweet_count": 11629
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HFBq63lacAAfqfr.jpg",
+          "description": {
+            "description": "A wide shot shows a man kneeling on a sidewalk and hugging a small, light-colored dog. In the background, a house is being consumed by huge bright orange flames and thick grey smoke fills the sky behind it. The house is behind a low concrete wall topped with a metal fence. The street in front is empty except for the man and his dog.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@GenericSnarky**  \nOkay so they for sure started that fire then right?  \nLikes: 1920\n\n**@FracturedLight0**  \nThat’s how it starts. Then they have a right to exist in Argentina. You know what happens next  \nLikes: 1280\n\n**@TheWatcherX1**  \nisrael started as a neighborhood by the way.  \nLikes: 710\n\n**@TheWatcherX1**  \nHow convenient that the entire area they are moving to mysteriously burned down and allowed them to buy the land extremely cheap. 🤷‍♂️  \nAnd the Argentinian president:  \nLikes: 405\n\n**@MantoothTy**  \nIf this is true hard to understand why Argentinians aren’t storming government buildings tonight. This would be justification for overthrowing your government.  \nLikes: 402\n\n**@HaikuLaurence**  \nJews burned the land...  \nLikes: 318\n\n**@strikesatchii**  \nhttps://t.co/EIV2NBS4uM  \nLikes: 386\n\n**@The_Simulation2**  \nArgentina dont let them do it!!! Yall better fight!!!! It has never gone well for the host nation EVER!!! DO NOT LET THEM!!!  \nLikes: 289\n\n**@LezTonny**  \n\"Private Neighborhood Josué, Prophet of Israel.”  \nthis is how they start.. 50 years later, argentina is the promised land by God from 5000 years ago..  \nLikes: 238\n\n**@Noneofyabiznaz**  \nIt was them starting the fires in Argentina  \nLikes: 201",
+    "warnings": []
+  }
+}

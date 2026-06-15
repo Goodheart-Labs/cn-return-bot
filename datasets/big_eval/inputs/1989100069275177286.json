@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1989100069275177286",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:04:15.504Z",
+  "post": {
+    "id": "1989100069275177286",
+    "author_id": "1001344472",
+    "created_at": "2025-11-13T22:36:26.000Z",
+    "text": "Patient heard how much the ambulance ride costs and dipped mid-route 💀 https://t.co/df5uhPiW0r",
+    "media": [
+      {
+        "media_key": "13_1989100048140103681",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/1989100048140103681/img/qwlhiaIrEvoKYMUG.jpg",
+        "height": 736,
+        "width": 716,
+        "duration_ms": 15066,
+        "view_count": 1290977,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1989100048140103681/vid/avc1/320x328/XnLHWe0xdetGxqer.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1989100048140103681/vid/avc1/480x492/xlBPirOCnQmpGRqF.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/1989100048140103681/vid/avc1/716x736/3dkbeXQkV9cnXbUy.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/1989100048140103681/pl/heNXHc5Mw9mt7LZF.m3u8"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1504,
+      "reply_count": 734,
+      "like_count": 9192,
+      "quote_count": 189,
+      "bookmark_count": 1406,
+      "impression_count": 2308158
+    },
+    "author_followers": 28956,
+    "author_name": "DIY",
+    "author_description": "Follow Me For Daily Konten DIY Home Tips & Tricks",
+    "author_tweet_count": 232962
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/1989100048140103681/vid/avc1/716x736/3dkbeXQkV9cnXbUy.mp4",
+          "description": {
+            "description": "A series of three frames showing an ambulance on a highway with its rear doors open. In the first frame, a medical stretcher with a patient on it has just exited the back of the moving ambulance. In the second frame, the ambulance continues to drive away as the stretcher rolls independently behind it on the asphalt. The third frame shows only the stretcher and patient rolling down the highway as the ambulance has moved further ahead out of the primary focus. All frames include a news-style text overlay at the bottom.",
+            "ocrText": "PATIENT FALLS OUT OF MOVING AMBULANCE WITH STRETCHER DRIVER UNAWARE, VIDEO GOES VIRAL"
+          },
+          "transcription": "Mira eso nena, la puerta se abrió. Ay Dios mío, la puerta se abrió. Se cayó, se quedó en la carretera. ¿Qué pasó? ¿Qué es eso? ¿Qué hablas ahí? ¿Qué pasó? ¿Usted me escucha? La ambulancia ni cuenta se vio. ¿Qué? Oye, oye, yo voy a llamar al club 111. Mantén la cámara mami, que vean lo que pasó. Voy a llamar la..."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @_datboii_drelo: Aint there supposed to be someone in the back of the ambulance (171 likes)\n- @Herbertonic: simpsons did it (132 likes)\n- @mirceabrs: This is clearly AI because... Who was filming? (109 likes)\n- @ChubbyTrevno: Homie wanted to go home... (37 likes)\n- @Mr_A_J_: Fuck AI!! Stop it!! (31 likes)\n- @drgdfyi: (No text content) (30 likes)\n- @Bonemantle: Why do I keep thinking of Benny Hill suddenly sitting up in the stretcher looking around only for the ambulance to stop with scantily clad nurses popping out to wheel him back in? (8 likes)\n- @soup2nuts198170: AI generated - but, with US healthcare in its current state, completely believable to me. (2 likes)\n- @Gangbusta187: They told him his wife is waiting for him at the hospital (2 likes)\n- @OleKoisa: Patient is never alone in the ambulance, medics are there so this is an AI generated video. (2 likes)",
+    "warnings": []
+  }
+}

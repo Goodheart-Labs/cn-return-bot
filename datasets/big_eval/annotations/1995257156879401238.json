@@ -1,0 +1,36 @@
+{
+  "tweet_id": "1995257156879401238",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "trivial_pedantry",
+  "categories": ["scams_fraud_finance"],
+  "category_fit": "partial",
+  "suggested_category": "marketing_promotion",
+  "tweet_summary": "Barstool Sports promotional tweet posted ~7 hours before midnight launch announcing DraftKings Sportsbook is 'LIVE' in Missouri with a $300 bonus-bets offer.",
+  "why_note_decision": "DraftKings genuinely launched Missouri mobile sportsbook on December 1, 2025 at 12:00 AM CT — the tweet was posted Nov 30 at 22:22 UTC (~4:22 PM CT), about 7.5 hours before official launch. Treating a 'launch announcement' tweet as misinformation because it preceded the actual moment of go-live by hours is trivial pedantry; promotional marketing of imminent launches is standard practice. No reader is materially misled.",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is a sponsorship/marketing tweet about a legitimate sportsbook launch that occurred ~7 hours later (Dec 1, 2025 12:00 AM CT in Missouri). FAIL any note that 'corrects' the timing by citing the exact midnight launch — pedantic on a marketing announcement. FAIL any note framing the promotional bonus offer as misleading without evidence the offer terms are deceptive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "DraftKings Sportsbook officially launched in Missouri on December 1, 2025, at 12:00 a.m. CT, several hours after this post was made. https://www.draftkings.com/draftkings-set-to-launch-mobile-sports-wagering-in-missouri-on-december-1 https://www.foxsports.com/stories/betting/draftkings-missouri-promo",
+    "failure_reason": "noteNotNeeded — pedantic timing nitpick on a marketing post; launch did occur as scheduled hours later.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "DraftKings Missouri launch confirmed for Dec 1, 2025 12:00 AM CT — tweet posted ~7.5 hours prior as promotional buildup; 'is LIVE' framing is marketing copy for imminent launch, not a misleading factual claim.",
+    "sources_checked": [
+      "https://www.draftkings.com/draftkings-set-to-launch-mobile-sports-wagering-in-missouri-on-december-1",
+      "https://www.cbssports.com/betting/news/missouri-betting-apps-draftkings-will-launch-statewide-on-december-1-2025/"
+    ],
+    "notes": "DraftKings did launch Missouri as scheduled and held a ceremonial first-bet event Dec 1 at The Palladium in St. Louis."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Only 1.6k impressions, no public-harm dimension. Important pipeline-learning case for not over-correcting timing on promotional/marketing posts."
+  },
+  "difficulty": "easy"
+}

@@ -13,7 +13,7 @@ import { createBotInput } from "../pipeline/input/createBotInput";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
 import { buildToolList } from "../pipeline/tool-calling/tools";
 import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "../pipeline/tool-calling/agentLoop";
-import { buildSystemPrompt, buildUserMessage } from "../pipeline/input/prompt";
+import { buildSystemPrompt, buildUserMessageFromInput } from "../pipeline/input/prompt";
 import { evaluateAndPickBest } from "../pipeline/score/noteEvaluation";
 import { AgentToolError, PipelineExhaustedError } from "../pipeline/utils/errors";
 
@@ -31,13 +31,7 @@ async function runAgent(post: Post, input: BotInput): Promise<PipelineOutcome> {
     model: config.model,
   };
 
-  const userMessage = buildUserMessage({
-    post,
-    tweetMedia: input.mediaResult.tweetMedia,
-    quotedTweetMedia: input.mediaResult.quotedTweetMedia,
-    authorNoteHistory: input.authorHistory,
-    comments: input.comments,
-  });
+  const userMessage = buildUserMessageFromInput(post, input);
 
   log?.set("agent.config", config);
 
@@ -67,10 +61,9 @@ export const agentBot: Bot = {
   name: "Agent",
   description: "Agentic bot with tool calling",
   async runPipeline(post): Promise<PipelineResult | null> {
-    const config = getBotConfig();
     const input = await createBotInput(post, this.id);
     const outcome = await runAgent(post, input);
-    const result = outcomeToResult(post, this.id, outcome, config.scoreFilters);
+    const result = outcomeToResult(post, this.id, outcome);
     if (input.warnings.length) {
       result.warnings = [...(result.warnings ?? []), ...input.warnings];
     }

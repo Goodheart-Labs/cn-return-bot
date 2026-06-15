@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2052033201347117157",
+  "role": "unhelpful_missing_key_points",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["conspiracy_and_viral_hoax", "health_medical_science"],
+  "category_fit": "partial",
+  "suggested_category": "climate_environment_misinfo",
+  "tweet_summary": "Viral 'illuminatibot' account (2.5M followers) claims Bill Gates is funding a company that wants to 'CUT DOWN 70 million acres of trees and bury them underground' to stop climate change, framing it as 'madness'.",
+  "why_note_decision": "Materially false / misleading at high reach (381k impressions, 11k likes, 5k retweets, very conspiratorial comment section). Fact-check sources (AP, Reuters, Green Matters) confirm: (a) the 70-million-acres figure is the U.S. Forest Service's plan to thin forests for wildfire prevention, not Gates'; (b) Kodama Systems, which is partly funded by Gates' Breakthrough Energy Ventures, buries leftover biomass from that thinning — small trees that wouldn't become lumber — not 70M acres of forests; (c) the goal is wildfire risk reduction + carbon storage, not deforestation. A clear, well-sourced correction is warranted.",
+  "judge_guidance": "PASS if the note explains both (a) the 70-million-acres figure refers to a U.S. Forest Service forest-thinning program, NOT a Gates-directed clearcutting plan, AND (b) Kodama Systems buries small/leftover biomass from forest thinning to store carbon, not whole forests. Sources should be reputable fact-checks (AP, Reuters, Green Matters) or primary Kodama / Forest Service materials. FAIL if the note (a) accepts the framing that Gates is cutting down 70M acres, (b) is purely defensive without explaining the actual project, or (c) only cites Kodama's own website without independent corroboration.",
+  "reference_note": "The 70 million acres refers to a U.S. Forest Service forest-thinning plan for wildfire prevention, not a Gates-directed project. Kodama Systems (partly Gates-backed) buries leftover biomass from that thinning — small trees that wouldn't become lumber — to store carbon, rather than clearcutting healthy forests. https://apnews.com/article/fact-check-bill-gates-climate-change-trees-global-warming-758018152043 https://www.reuters.com/fact-check/gates-backed-venture-will-not-chop-down-70-million-acres-trees-2023-10-06",
+  "original_unhelpful_note": {
+    "text": "The 70 million acres refers to the U.S. Forest Service's plan to thin forests for wildfire prevention; Gates-backed Kodama Systems buries leftover biomass from that thinning, not cuts down forests. https://apnews.com/article/fact-check-bill-gates-climate-change-trees-global-warming-758018152043 https://www.reuters.com/fact-check/gates-backed-venture-will-not-chop-down-70-million-acres-trees-2023-10-06",
+    "failure_reason": "Note is substantively correct and well-sourced (AP + Reuters fact-checks), but raters dominantly flagged 'note not needed' (7) and 'opinion/speculation' (6) — likely because the highly conspiratorial, partisan audience of illuminatibot is unlikely to rate corrections of Gates conspiracy claims as helpful. The note itself is solid; this is largely a partisan-rating-base failure rather than a content failure.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Tweet is misleading — conflates a USFS forest-thinning program with Gates funding clearcuts; misrepresents what Kodama does.",
+    "sources_checked": [
+      "https://apnews.com/article/fact-check-bill-gates-climate-change-trees-global-warming-758018152043",
+      "https://www.reuters.com/fact-check/gates-backed-venture-will-not-chop-down-70-million-acres-trees-2023-10-06",
+      "https://www.greenmatters.com/climate-action/bill-gates-cutting-down-trees"
+    ],
+    "notes": "Kodama Systems raised $6.6M including from Gates' Breakthrough Energy Ventures; targets small trees in Eastern Sierras that wouldn't become lumber, buries them in Nevada for carbon storage. The 70M-acre figure is USFS, not Kodama."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "Massive reach (381k impressions, 2.5M-follower conspiracy account) spreading climate/Gates conspiracy theory; this kind of content systemically poisons public discourse on climate solutions and a clear correction is high-value. Counterfactually exactly what CN exists for."
+  },
+  "difficulty": "medium"
+}

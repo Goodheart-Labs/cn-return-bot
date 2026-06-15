@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2032426973394587728",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:48.969Z",
+  "post": {
+    "id": "2032426973394587728",
+    "author_id": "312696314",
+    "created_at": "2026-03-13T12:02:05.000Z",
+    "text": "BREAKING🚨: The US just bombed autistic and down syndrome workers at a special cafe made to give the a place to work. \"Cafe Downtism\" https://t.co/uye2DDJbWG",
+    "media": [
+      {
+        "media_key": "13_2032426447600803840",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2032426447600803840/img/RE5JcH1gAIr-Hy5X.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 104954,
+        "view_count": 442876,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032426447600803840/vid/avc1/320x568/kLm1GJTTuS-nQ_0U.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032426447600803840/vid/avc1/480x852/byTFVM9fYRTIrSV6.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2032426447600803840/vid/avc1/720x1280/L0VTTS1u8SaF6CIx.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2032426447600803840/pl/oSxN-yffocHkWSQ3.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 8777,
+      "reply_count": 907,
+      "like_count": 26616,
+      "quote_count": 455,
+      "bookmark_count": 1920,
+      "impression_count": 952437
+    },
+    "author_followers": 566751,
+    "author_name": "Syrian Girl",
+    "author_description": "Dr. Maram Susli PhD Journalist|Scientist| analyst \nhttps://t.co/8YmFbGYpZv \nContact: syriangirlpartisan@gmail.com",
+    "author_tweet_count": 39783
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2032426447600803840/vid/avc1/720x1280/L0VTTS1u8SaF6CIx.mp4",
+          "description": {
+            "description": "A close-up of a fireman working on a fire scene, with several other firemen standing nearby.",
+            "ocrText": "TEIRAN\nFIGHTER"
+          },
+          "transcription": "我還沒去過我還沒去過,我還沒去過,我還沒去過了迷茫迷茫迷茫迷茫迷茫迷茫我還不想玩那麼多遊戲啊你還不去那裡吧你去哪兒啊大家在那裡都在那裡啊你還在那裡去那裡吧這回車子是由雨水向南到西風,因為雨水流動車輪,所以在雨中,還有一個陷阱。雨水會向南向北,谢谢大家"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Kleaj🇦🇺 (@Kleaj22): First it’s children, now disabled, tomorrow will be the elderly.  \n  Likes: 633\n\n- The Listener (@Be_The_Listener): \"Cafe Downtism supports young people with disabilities by giving them employment and an opportunity to shine.\"  \n  https://www.middleeasteye.net/features/tehrans-little-secret-cafe-where-disability-no-barrier-talent  \n  Likes: 384\n\n- Wait,what?🇦🇫 (@storm685114): [Image]  \n  Likes: 329\n\n- Patrick Nealis (@Patrick_Nealis): This exact same video was posted on threads on February 4th… that was weeks before Epic Fury began (February 28th).  \n  Likes: 215\n\n- David Atatürk (@David_Salonica): Why? As someone who works in disability support with down syndrome clients this is demonic. 😞😞😞  \n  Likes: 177\n\n- shah in (@Soreniannnnnnn): Don’t share propaganda  \n  Likes: 145\n\n- 13eard (@13earded): How much you getting paid to spread goat fucker propaganda  \n  Likes: 108\n\n- 🎒Yasmin (@Yasthetwit): [Image]  \n  Likes: 93\n\n- Parisa (@loveparisa): Disgusting. The 3Pstein coalition likes to bomb women, children and disabled people.  \n  Likes: 72\n\n- Julliet Njeri 🇰🇪 (@JullietNjeri): The people who voted against food being a human right have bombed a cafe that employs people living with disabilities  \n  Likes: 56",
+    "warnings": []
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "tweet_id": "2030802961278861784",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["misattributed_or_miscontextualized_media", "statistical_or_numerical_claim"],
+  "category_fit": "good",
+  "suggested_category": "wrong_location_attribution",
+  "tweet_summary": "A thread claims that in 2021, 42 owls 'in the UK' died after a vitamin supplement erroneously contained 1000x the intended Vitamin B6, traced to Japanese firm Asuka Animal Health.",
+  "why_note_decision": "The substance of the story is real (42 owls died from a ~1000x Vitamin B6 overdose due to a mg/g unit error, involving Japanese manufacturing), but the tweet says the owls died 'in the UK.' They actually died in Japan — the owls were imported from the UK, and the supplement was made/mislabeled in the Japan supply chain. This is a concrete, checkable location error that multiple top commenters also flag, so a brief geographic-correction note is warranted.",
+  "judge_guidance": "PASS only if the note corrects the specific location error: the owl deaths occurred in JAPAN (2021), not the UK; the owls were imported from the UK and a Japanese firm mislabeled the dosage. It must NOT deny the core event (the ~1000x Vitamin B6 overdose killing 42 owls is real). Appropriate caution that no official Japanese government (MAFF/MHLW) statement confirms all details is acceptable but optional; the load-bearing correction is the country. A note that disputes the overdose itself, or that repeats 'in the UK,' should FAIL. Japanese-language phrasing is fine. Cite a credible source (petition/reporting) rather than only the tweet.",
+  "reference_note": "「英国で死亡」という場所の記述が誤りで、実際は日本国内での出来事です。フクロウは英国から輸入されたもので、誤った用量表示のサプリメントは日本の企業（飛鳥動物用医薬品）側で製造・調合されました。なお、農林水産省や厚生労働省などによる公式発表は確認できていないため、詳細は留意が必要です。    https://www.change.org/p/42-owls-died-japan-must-raise-feed-and-supplement-safety-to-global-standards",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Partly misleading: the 1000x Vitamin B6 overdose killing 42 owls is real, but the deaths occurred in Japan in 2021, not 'in the UK' — the owls were imported from the UK; a Japanese firm misread a 360mg→360g unit and overdosed the supplement.",
+    "sources_checked": [
+      "https://www.change.org/p/42-owls-died-japan-must-raise-feed-and-supplement-safety-to-global-standards",
+      "https://www.change.org/p/42-owls-died-from-a-supplement-with-over-one-third-vitamin-b6"
+    ],
+    "notes": "Search results and top replies (e.g. @AskDrKamlesh, @PurnL) consistently state the deaths happened in Japan with UK-imported owls and a mg/g labeling error mistaken for grams, giving ~1000x B6. The note's geographic correction is accurate; its caution about lack of an official MAFF/MHLW statement is reasonable since coverage is largely petition/social-media based."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "5.7M views; an animal-welfare incident where the manufacturing-error lesson (unit confusion in feed/supplements) is genuinely valuable, but the only inaccuracy is location — correction improves accuracy of an important safety story without much real-world stakes."
+  },
+  "difficulty": "medium"
+}

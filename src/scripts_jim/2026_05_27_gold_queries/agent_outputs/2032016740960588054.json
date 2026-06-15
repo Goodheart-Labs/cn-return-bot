@@ -1,0 +1,80 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "attack Oman oil facilities 2026",
+        "Iran drone strike Oman oil infrastructure 2026"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Multiple high-authority sources (Al Jazeera, Bloomberg, Wikipedia, OilPrice, CNN) all reporting Iranian Shahed drone strikes on Oman's Port of Salalah on March 11, 2026, plus a JPost article directly about the Iranian embassy's false flag claim.",
+      "lesson": "The event is extremely well-documented. Wikipedia has a dedicated article '2026 Iranian strikes on Oman'. The tweet's claim is directly contradicted by IRGC's own claim of responsibility, Shahed drone wreckage, and multiple governments."
+    },
+    {
+      "queries": [
+        "Oman Salalah drone attack Shahed Iran evidence attribution March 2026"
+      ],
+      "purpose": "targeted — confirm Shahed drone attribution and IRGC contradictory statements",
+      "what_returned": "Confirmed: IRGC's Khatam al-Anbiya Central Headquarters claimed responsibility for targeting 'a support vessel of the aggressor American army' at Salalah. Also confirmed: Oman called it 'heinous'. Iran's denial thus contradicts its own IRGC's public claim.",
+      "lesson": "The most powerful evidence is the IRGC's own claim of responsibility, which the Iran Embassy SA tweet directly contradicts. WebFetch on thenewregion.com confirmed Oman's condemnation without direct attribution to Iran."
+    }
+  ],
+  "gold_queries": [
+    "Iran drone strike Oman Salalah port oil March 2026",
+    "IRGC claim responsibility Oman Salalah attack 2026",
+    "2026 Iranian strikes on Oman Wikipedia",
+    "Iran embassy South Africa Oman false flag",
+    "Oman Salalah drone attack Shahed attribution evidence"
+  ],
+  "found_sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_Oman",
+      "title": "2026 Iranian strikes on Oman - Wikipedia",
+      "found_via_query": "attack Oman oil facilities 2026",
+      "authority_reason": "Wikipedia synthesis article with citations from multiple primary sources; dedicated article title alone confirms Iran is the named actor",
+      "what_it_establishes": "Documents the full campaign of Iranian drone strikes on Oman starting Feb 28, 2026. Iran's General Staff denied ordering strikes on Omani territory while IRGC separately claimed responsibility for targeting US-used facilities. Iranian Shahed drones confirmed as the weapon."
+    },
+    {
+      "url": "https://www.jpost.com/middle-east/iran-news/article-889778",
+      "title": "Iranian embassy in South Africa labels drone strike on Oman's oil facilities 'false flag operation'",
+      "found_via_query": "attack Oman oil facilities 2026",
+      "authority_reason": "Jerusalem Post — established international news outlet; directly covers this tweet's claim",
+      "what_it_establishes": "Confirms the Iran Embassy SA post was real and that Iran denied involvement, but the embassy 'did not say whose operation it was'. British maritime security firm Ambrey confirmed the strike. Oman's state agency reported no disruption to oil supplies."
+    },
+    {
+      "url": "https://www.aljazeera.com/video/newsfeed/2026/3/11/oil-facilities-in-omans-salalah-port-ablaze-after-drone-strikes",
+      "title": "Oil facilities in Oman's Salalah port ablaze after drone strikes | Al Jazeera",
+      "found_via_query": "attack Oman oil facilities 2026",
+      "authority_reason": "Al Jazeera — major international broadcaster with regional expertise",
+      "what_it_establishes": "Visual confirmation of drone strikes on Salalah port oil facilities on March 11, 2026; ship crew filmed the strike."
+    },
+    {
+      "url": "https://www.bloomberg.com/news/articles/2026-03-11/operations-suspended-at-oman-port-as-drones-hit-fuel-tanks",
+      "title": "Iran War: Drones Strike Fuel Tanks at Oman's Salalah Port, Operations Suspended - Bloomberg",
+      "found_via_query": "Iran drone strike Oman oil infrastructure 2026",
+      "authority_reason": "Bloomberg — major financial/news outlet with authoritative Middle East coverage",
+      "what_it_establishes": "Confirms drones hit fuel tanks at Salalah, operations suspended; Maersk paused all port operations. Frames it in the context of the broader 2026 Iran war."
+    },
+    {
+      "url": "https://thenewregion.com/posts/4972",
+      "title": "Oman says targeted in 'heinous' Iranian drone strikes",
+      "found_via_query": "Oman Salalah drone attack Shahed Iran evidence attribution March 2026",
+      "authority_reason": "The New Region — specialist Middle East news outlet; headline alone is significant as Oman's government response",
+      "what_it_establishes": "Oman's government condemned the attack as 'heinous' and pledged to take all necessary measures. IRGC claimed responsibility, saying it targeted 'a support vessel of the aggressor American army' at Salalah while claiming to 'respect Omani sovereignty'."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Simple event-first query ('attack Oman oil facilities 2026') immediately surfaced a Wikipedia article with dedicated title '2026 Iranian strikes on Oman' — the title alone is dispositive",
+      "JPost article directly covering this tweet's false flag claim appeared in first-round results without needing a targeted query",
+      "The IRGC's contradictory self-incrimination (claiming responsibility while Iranian officials denied involvement) is the strongest counter-evidence and appeared in round-2 results",
+      "Searching for the weapon type ('Shahed') confirmed attribution via physical evidence angle"
+    ],
+    "what_hurt": [
+      "Nothing significantly hurt — this event is exceptionally well-documented with near-unanimous source attribution to Iran",
+      "Iran's denial strategy (IRGC claims responsibility, Foreign Ministry denies) creates surface-level ambiguity that a naive one-shot LLM might treat as genuine uncertainty"
+    ],
+    "would_multipass_help": "no — the first two queries immediately returned Wikipedia, Bloomberg, Al Jazeera, CNN, and a JPost article directly about the false flag claim. All the meaningful evidence was in round 1.",
+    "deepseek_advice": "For official-account denial tweets during active conflicts, always search the event name + year first (e.g., '2026 Iranian strikes on Oman') — Wikipedia often has a dedicated article that resolves attribution definitively. Then search for the specific denial ('Iran embassy false flag Oman') to find fact-check coverage of the exact claim. Look for contradictions within the denying party's own statements (IRGC claiming responsibility while the Foreign Ministry denies)."
+  }
+}

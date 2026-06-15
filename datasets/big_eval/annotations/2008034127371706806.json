@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2008034127371706806",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Barstool Sports live-tweets 4TH AND LIKELY OPEN FOR THE AFC NORTH CROWN! during the dramatic final play of Ravens vs Steelers on Jan 4 2026; the Ravens converted 4th-and-7 to Mark Andrews, then later missed a 44-yard field goal at the buzzer and lost 26-24.",
+  "why_note_decision": "This is a live in-game reaction tweet that 'aged poorly' as the comment thread says. Barstool wasn't making a verifiable factual claim about the final outcome — it was hype about an ongoing play. A note explaining what actually happened (Ravens missed the FG, Pittsburgh won, AFC North decided) is just providing the play-by-play that any reader can already see by checking the score. No misinformation; just a sports beat tweet that didn't predict the future correctly.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is real-time sports commentary that aged poorly, not a factual misrepresentation — Barstool wasn't claiming the game was over. Any note 'correcting' the outcome (Pittsburgh won 26-24, FG missed) is fact-checking hype rather than misinformation and is a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Ravens did convert that 4th-and-7, but later missed a 44-yard field goal as time expired; Pittsburgh won 26-24 and clinched the AFC North — the division wasn't left \"likely open.\" https://www.espn.com/nfl/game/_/gameId/401772960/ravens-steelers",
+    "failure_reason": "Treats hype/live-reaction commentary as if it were a factual claim about the eventual outcome. Raters tagged 'note not needed', 'argumentative or biased', and 'missing key points'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "tweet is real-time hype that did age poorly, but is not a factual misclaim",
+    "sources_checked": [
+      "https://www.espn.com/nfl/game/_/gameId/401772960/ravens-steelers",
+      "https://www.steelers.com/news/steelers-defeat-ravens-26-24-win-afc-north"
+    ],
+    "notes": "Steelers won 26-24 on Jan 4 2026 after Tyler Loop missed a 44-yard FG at time expired; Pittsburgh clinched AFC North. Tweet's premise wasn't a falsifiable statement; it was hype about the live moment."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports hype, zero policy stakes; correcting noise here has no EA/welfare relevance."
+  },
+  "difficulty": "easy"
+}

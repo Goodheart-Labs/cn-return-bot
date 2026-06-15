@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2016313026161299803",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:51:59.251Z",
+  "post": {
+    "id": "2016313026161299803",
+    "author_id": "1355721251180961792",
+    "created_at": "2026-01-28T00:51:01.000Z",
+    "text": "The Left said his name over and over again. \n\nThe Left never said her name. https://t.co/WEHYZBr0Hk",
+    "media": [
+      {
+        "media_key": "3_2016313023246336000",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_tiAwKXgAAGjxd.jpg",
+        "height": 1304,
+        "width": 1320
+      },
+      {
+        "media_key": "3_2016313023242088449",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G_tiAwJWsAEsNHH.jpg",
+        "height": 447,
+        "width": 447
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 7720,
+      "reply_count": 3041,
+      "like_count": 57012,
+      "quote_count": 481,
+      "bookmark_count": 946,
+      "impression_count": 13041010
+    },
+    "author_followers": 1745926,
+    "author_name": "Gunther Eagleman™",
+    "author_description": "David J. Freeman - Political Commentator - America First - MAGA - Christian",
+    "author_tweet_count": 473395
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_tiAwKXgAAGjxd.jpg",
+          "description": {
+            "description": "A close-up headshot of a smiling man with a beard and glasses, wearing light blue scrubs. An American flag is visible in the background on the left.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G_tiAwJWsAEsNHH.jpg",
+          "description": {
+            "description": "A close-up portrait of a young woman with long blonde hair, bright brown eyes, and a neutral facial expression. She appears to be wearing minimal or no makeup against a plain, light-colored background.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Klassical Thoughts - @KlassicalThoug1**: Yeah  \nLikes: 13311 | Reposts: 327 | Replies: 16\n\n**MisterFister, PhD - @MrFisterThe3rd**: Dipshit you never said her name either.  \nLikes: 12139 | Reposts: 0 | Replies: 0\n\n**MAX MEMES - @VitoComedy**: She wasnt murdered by agents of the state  \nLikes: 5575 | Reposts: 0 | Replies: 0\n\n**Hamilton - @SongsByHamilton**: You only know her name because she was killed by a black person and you could use it to spread your racism. Nevermind that he was an unhoused, diagnosed paranoid schizophrenic without access to medication. Had she been killed in Ukraine by Russians, you wouldn’t give a damn.  \nLikes: 3381 | Reposts: 110 | Replies: 35\n\n**Jacob Israel - @JacobIsrae31027**: (Image)  \nLikes: 2781 | Reposts: 79 | Replies: 31\n\n**Mina Mina Fella 🇬🇱 - @DonbasBabushka**: She was Ukranian and you hate Ukraine for defending themselves, you disgusting hypocrite.  \nLikes: 2184 | Reposts: 59 | Replies: 11\n\n**Ty Rose 🌹 - @rosesfortywild**: Didn’t her family tell you to shut the fuck up and stop using their daughter’s name and photo for your stupid ass propaganda?  \nLikes: 2074 | Reposts: 0 | Replies: 0\n\n**Borzou Daragahi 🖊🗒 - @borzou**: This is what people think of you (Image)  \nLikes: 1278 | Reposts: 0 | Replies: 0\n\n**SHREDDY 🔜 IFC GFM MFF - @shreddyfox**: (Image)  \nLikes: 952 | Reposts: 20 | Replies: 1\n\n**MMA Babes - @MMABabes**: He was a good guy helped disabled veterans. (Image)  \nLikes: 927 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

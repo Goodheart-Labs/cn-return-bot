@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2049179884291768807",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:12:59.262Z",
+  "post": {
+    "id": "2049179884291768807",
+    "author_id": "1225234593789423616",
+    "created_at": "2026-04-28T17:32:10.000Z",
+    "text": "NEW: \n\n🇮🇷🇺🇸 Iran has transferred 15 unexploded US missiles to \"technical and research units\" for reverse engineering, according to Iranian media\n\nThis includes a fully intact GBU-57 bunker buster that failed to detonate during strikes on Iran's nuclear sites. https://t.co/7oCwpXvnnM",
+    "media": [
+      {
+        "media_key": "3_2049179863953846272",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHAmOq_aMAAcCRg.jpg",
+        "height": 1365,
+        "width": 2048
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 1748,
+      "reply_count": 174,
+      "like_count": 7323,
+      "quote_count": 60,
+      "bookmark_count": 365,
+      "impression_count": 175426
+    },
+    "author_followers": 657113,
+    "author_name": "Megatron",
+    "author_description": "Breaking news | Geopolitics | War monitoring\nSupport: https://t.co/z52M4ovE0C | https://t.co/JsTMGFACtV\nTgram: https://t.co/hI2fMt3CAZ",
+    "author_tweet_count": 23375
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HHAmOq_aMAAcCRg.jpg",
+          "description": {
+            "description": "A wide shot shows two military personnel in camouflage uniforms standing in a hangar next to a large, olive-drab training ordnance mounted on a heavy-duty transport vehicle. The ordnance is marked with 'TRAINER' and 'NOT FOR FLIGHT'. The hangar features industrial infrastructure like conduits, a control panel, and a polished gray floor.",
+            "ocrText": "TRAINER\nNOT FOR FLIGHT\n1035"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@gregalmonte_**  \n(No text content)  \nEngagement: Likes=211, Reposts=0, Quotes=0, Replies=0, Views=7345\n\n**@MuhammadAli_PhD**  \nIran's expertise in reverse engineering is quite good. In fact their science and technology base is at par with any advanced western nation.  \nAfter all they have introduced a number of modern weapons to the battle field despite crippling sanctions for decades.  \nEngagement: Likes=113, Reposts=0, Quotes=0, Replies=0, Views=7026\n\n**@bossmuhadan**  \nThis is good. They will eventually use America's technology against them or their ally Israel in the long run.  \nEngagement: Likes=108, Reposts=0, Quotes=0, Replies=0, Views=3617\n\n**@MrHarry198**  \nThey have all kinds of crazy stuff under those mountains.  \nThey can fight like this for years.  \nEngagement: Likes=100, Reposts=0, Quotes=0, Replies=0, Views=3019\n\n**@FromTheBigBang**  \nTehran turns American hardware into a DIY kit as the Pentagon’s most powerful bunker buster becomes the crown jewel of Iran’s reverse-engineering lab.  \nEngagement: Likes=87, Reposts=0, Quotes=0, Replies=0, Views=6194\n\n**@SaulTebols**  \nWhen Iran is finished with their research, they should deliver that bunker buster to mileikowsky as a gift.  \nEngagement: Likes=26, Reposts=0, Quotes=0, Replies=0, Views=1876\n\n**@xstelixxx**  \nThis is what the unexploded ordnance found looks like  \nEngagement: Likes=12, Reposts=2, Quotes=0, Replies=2, Views=3706\n\n**@REDACTEDJokes**  \nThe problem is they need to reverse engineer a B2 bomber to deliver it.  \nEngagement: Likes=11, Reposts=0, Quotes=0, Replies=0, Views=2034\n\n**@IggyBolshevik**  \nThey also said they captured Seal Team 6.  \nEngagement: Likes=9, Reposts=0, Quotes=0, Replies=0, Views=1213\n\n**@info_channels**  \nNow, imagine GBU-57 powered by Khorramshar missile.  \nEngagement: Likes=9, Reposts=0, Quotes=0, Replies=5, Views=2574",
+    "warnings": []
+  }
+}

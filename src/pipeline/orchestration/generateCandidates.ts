@@ -13,101 +13,112 @@ import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByRecencyAndImpressions } from "./utils/tweetSorting";
-import { AB_TESTS, runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from "../ab-testing/abTests";
+import { runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from "../ab-testing/abTests";
+import { AB_TESTS } from "../ab-testing/abTestsData";
 import { withBotConfig, type FeedSize } from "../ab-testing/botConfig";
 import { withCostTracker } from "../cost-tracking/costTracker";
+import { withMonitoringContext, type MonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
-const RETRIES_ENABLED = false;
-// Flip to "large" (or "xl"/"xxl") to use a bigger feed; FALLBACK_FEED_SIZE
-// kicks in if the bigger feed 403s. "small" is the safe default.
-const PREFERRED_FEED_SIZE: FeedSize = "small";
-const FALLBACK_FEED_SIZE: FeedSize = "small";
+// We screen a large feed cheaply with the note-needed prefilter, then run the
+// bot only on what it flags. Walk the feed tiers smallest-first (small is the
+// premium/curated subset; each larger tier is a superset) and fill up to
+// maxPosts: take new posts from `small`, then top up from `large`, then `xl`,
+// then `xxl`, deduping against tiers already taken. Each post is tagged with the
+// tier it came from (recorded per-post in ab_test_picks.feed_size). Deeper tiers
+// are only fetched when shallower ones don't fill maxPosts.
+const FEED_SIZE_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
+
+/** A post plus the feed tier it was sourced from (recorded as its feed_size pick). */
+interface SourcedPost {
+  post: Post;
+  feedSize: FeedSize;
+}
 
 // ---------------------------------------------------------------------------
 // Post fetching
 // ---------------------------------------------------------------------------
 
-/**
- * Tries `PREFERRED_FEED_SIZE` first, falls back to `FALLBACK_FEED_SIZE` on any
- * fetch error (the larger feed sometimes returns 403). Returned `feedSize` is
- * the size that actually worked — propagated into ab_test_picks.feed_size so
- * the record matches what the API gave us, not what we asked for.
- */
-async function fetchWithFeedSizeFallback(
-  skipPostIds: Set<string>
-): Promise<{ feedSize: FeedSize; posts: Post[] }> {
-  try {
-    const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(PREFERRED_FEED_SIZE));
-    console.log(`[generate] Feed: ${PREFERRED_FEED_SIZE}`);
-    return { feedSize: PREFERRED_FEED_SIZE, posts };
-  } catch (err) {
-    console.warn(`[generate] Feed ${PREFERRED_FEED_SIZE} failed (${(err as Error)?.message}); retrying with ${FALLBACK_FEED_SIZE}`);
-    const posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(FALLBACK_FEED_SIZE));
-    console.log(`[generate] Feed: ${FALLBACK_FEED_SIZE} (fallback)`);
-    return { feedSize: FALLBACK_FEED_SIZE, posts };
-  }
-}
-
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
-  maxPosts: number
-): Promise<{ posts: Post[]; feedSize: FeedSize; newCount: number; retryCount: number }> {
-  let skipPostIds = new Set<string>();
-  let knownTweetIds = new Set<string>();
+  maxPosts: number,
+  prefetchedSkipPostIds?: Set<string>,
+  prefetchedKnownTweetIds?: Set<string>,
+): Promise<{ posts: SourcedPost[] }> {
+  let skipPostIds = prefetchedSkipPostIds;
+  let knownTweetIds = prefetchedKnownTweetIds;
 
-  if (supabaseLogger) {
+  // Fetch whatever the caller didn't pre-fetch. runPipeline pre-fetches both
+  // (shared with the misinfo pre-pass) so notes/pipeline_runs aren't scanned
+  // twice per run; other callers fetch here.
+  if (supabaseLogger && (!skipPostIds || !knownTweetIds)) {
     try {
-      [skipPostIds, knownTweetIds] = await Promise.all([
+      const [skip, known] = await Promise.all([
         supabaseLogger.getSkipTweetIds(),
         supabaseLogger.getKnownTweetIds(),
       ]);
-      console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${knownTweetIds.size} already in tweets table`);
+      skipPostIds = skipPostIds ?? skip;
+      knownTweetIds = knownTweetIds ?? known;
     } catch (err) {
       console.warn("[generate] Failed to get known tweet IDs:", err);
     }
   }
+  skipPostIds = skipPostIds ?? new Set<string>();
+  knownTweetIds = knownTweetIds ?? new Set<string>();
+  console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${knownTweetIds.size} already in tweets table`);
 
-  const { feedSize, posts } = await fetchWithFeedSizeFallback(skipPostIds);
+  // Walk the ladder smallest-first, accumulating new posts until we hit maxPosts.
+  // A tweet is "new" iff it wasn't already in the tweets table. We dedupe against
+  // tiers already taken (larger tiers are supersets). Insert every new post we
+  // see (insert-only, so engagement on existing rows stays frozen) so subsequent
+  // runs treat them as known and we stop re-processing the backlog. A tier that
+  // errors (larger feeds sometimes 403) is skipped, not fatal.
+  const selected: SourcedPost[] = [];
+  const takenIds = new Set<string>();
+  const allNew: Post[] = [];
 
-  // A tweet is "new" iff it wasn't already in the tweets table before this
-  // fetch. Insert the new ones now so subsequent runs see them as known and
-  // we stop re-processing the same backlog. Insert-only (not upsert) so
-  // engagement metrics on existing rows stay frozen at first sight.
-  const newPosts = posts.filter((p) => !knownTweetIds.has(p.id));
-  const retryPosts = posts.filter((p) => knownTweetIds.has(p.id));
-
-  if (supabaseLogger && newPosts.length) {
+  for (const feedSize of FEED_SIZE_LADDER) {
+    if (selected.length >= maxPosts) break;
+    let posts: Post[];
     try {
-      await supabaseLogger.bulkInsertNewTweets(newPosts);
-      console.log(`[generate] Inserted ${newPosts.length} new tweets`);
+      posts = await fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds, 50, buildPostSelection(feedSize));
+    } catch (err) {
+      console.warn(`[generate] Feed ${feedSize} failed (${(err as Error)?.message}); skipping tier`);
+      continue;
+    }
+    const newPosts = sortByRecencyAndImpressions(
+      posts.filter((p) => !knownTweetIds!.has(p.id) && !takenIds.has(p.id)),
+    );
+    console.log(`[generate] Feed ${feedSize}: ${posts.length} posts, ${newPosts.length} new`);
+    for (const post of newPosts) {
+      takenIds.add(post.id);
+      allNew.push(post);
+      if (selected.length < maxPosts) selected.push({ post, feedSize });
+    }
+  }
+
+  if (supabaseLogger && allNew.length) {
+    try {
+      await supabaseLogger.bulkInsertNewTweets(allNew);
+      console.log(`[generate] Inserted ${allNew.length} new tweets`);
     } catch (err) {
       console.warn("[generate] Failed to bulk-insert tweets:", err);
     }
   }
 
-  // Fill remaining slots with retries (submission step handles the daily cap)
-  const retrySlots = RETRIES_ENABLED ? Math.max(0, maxPosts - newPosts.length) : 0;
-
-  const sortedNew = sortByRecencyAndImpressions(newPosts);
-  const sortedRetry = sortByRecencyAndImpressions(retryPosts);
-  const selectedNew = sortedNew.slice(0, maxPosts);
-  const selectedRetry = sortedRetry.slice(0, Math.min(retrySlots, maxPosts - selectedNew.length));
-  const selected = [...selectedNew, ...selectedRetry];
-
-  console.log(`[generate] Processing ${selectedNew.length} new + ${selectedRetry.length} retry = ${selected.length} tweets`);
-
-  for (const [i, p] of selected.entries()) {
-    const imp = p.public_metrics?.impression_count ?? 0;
-    const age = ageInHours(p);
-    const tag = knownTweetIds.has(p.id) ? " [retry]" : "";
-    console.log(`[generate]   #${i + 1}: ${p.id} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago${tag}`);
+  const bySize: Partial<Record<FeedSize, number>> = {};
+  for (const s of selected) bySize[s.feedSize] = (bySize[s.feedSize] ?? 0) + 1;
+  console.log(`[generate] Processing ${selected.length} tweets: ${JSON.stringify(bySize)}`);
+  for (const [i, s] of selected.entries()) {
+    const imp = s.post.public_metrics?.impression_count ?? 0;
+    const age = ageInHours(s.post);
+    console.log(`[generate]   #${i + 1}: ${s.post.id} | ${s.feedSize} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago`);
   }
 
-  return { posts: selected, feedSize, newCount: selectedNew.length, retryCount: selectedRetry.length };
+  return { posts: selected };
 }
 
 function logMediaBreakdown(posts: Post[]): void {
@@ -132,44 +143,52 @@ export interface TweetProcessedEvent {
   botId: string;
 }
 
-export interface GenerateCandidatesOptions {
-  maxPosts: number;
-  onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+/**
+ * A post to process, optionally with the misinfo-monitoring context that
+ * injects a topic's reference document into the bot's research step. Regular
+ * small-feed posts carry no monitoring context.
+ */
+export interface ProcessPostItem {
+  post: Post;
+  monitoring?: MonitoringContext;
+  /** Feed this post came from; recorded as its feed_size pick. Falls back to
+   *  the run-level `feedSize` option when unset (e.g. the misinfo pre-pass). */
+  feedSize?: FeedSize;
 }
 
-export async function generateCandidates(
+export interface ProcessPostsOptions {
+  /** feed_size pick recorded on each run; the size the fetch actually used. */
+  feedSize: FeedSize;
+  onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+  /** Log prefix so the misinfo pre-pass and regular pass are distinguishable. */
+  label?: string;
+}
+
+/**
+ * Run the per-post pipeline over `items` concurrently: AB-pick a bot, wrap it
+ * in the per-tweet ALS contexts (forced picks, monitoring, tweet log, bot
+ * config, cost tracker), process, score, and collect candidates. Shared by the
+ * regular small-feed pass and the XXL-feed misinfo pre-pass.
+ */
+export async function processPosts(
+  items: ProcessPostItem[],
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, onTweetProcessed }: GenerateCandidatesOptions,
+  { feedSize, onTweetProcessed, label = "generate" }: ProcessPostsOptions,
 ): Promise<Candidate[]> {
+  if (!items.length) return [];
+
   const commit = process.env.GITHUB_SHA;
-
   const outerForcedPicks = getForcedPicks();
-  if (Object.keys(outerForcedPicks).length > 0) {
-    console.log(`[generate] Forced picks: ${JSON.stringify(outerForcedPicks)}`);
-  }
-  const botProbs = getBotProbabilities();
-  const activeBots = botProbs.filter((b) => b.probability > 0);
-  console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
-  // Fetch posts
-  const { posts, feedSize, newCount, retryCount } = await fetchPosts(supabaseLogger, maxPosts);
-  if (!posts.length) {
-    console.log("[generate] No eligible posts found.");
-    return [];
-  }
-  logMediaBreakdown(posts);
-
-  // Process posts concurrently
   const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
   const allLogs: TweetLogMap[] = [];
   const candidates: Candidate[] = [];
 
-  // Force feed_size pick to the size the fetch actually used (preferred
-  // normally, fallback after API failure) so the recorded pick matches reality.
-  const feedSizePick = { ...outerForcedPicks, feed_size: feedSize };
-
-  for (const [idx, post] of posts.entries()) {
-    queue.add(() => withForcedPicks(feedSizePick, async () => {
+  for (const [idx, item] of items.entries()) {
+    // Force the feed_size pick to the feed THIS post came from (small vs large
+    // fill); falls back to the run-level size for callers that don't tag posts.
+    const feedSizePick = { ...outerForcedPicks, feed_size: item.feedSize ?? feedSize };
+    queue.add(() => withForcedPicks(feedSizePick, () => withMonitoringContext(item.monitoring, async () => {
       // Forced picks (if any) are already in ALS — set up by runPipeline.ts
       // via withForcedPicks. runABTests honours them for whichever tests fire.
       const { config, picks } = runABTests(AB_TESTS);
@@ -180,7 +199,7 @@ export async function generateCandidates(
 
       const log = createTweetLog();
       log.set("tweet.index", idx + 1);
-      log.set("tweet.total", posts.length);
+      log.set("tweet.total", items.length);
 
       const tweetResult = await withTweetLog(log, () =>
         withBotConfig(config, () =>
@@ -189,7 +208,7 @@ export async function generateCandidates(
             log.set("bot.picks", picks);
             log.set("bot.config", config);
             return processSingleTweet({
-              post,
+              post: item.post,
               bot: selectedBot,
               logger: supabaseLogger,
               commitSha: commit,
@@ -203,14 +222,14 @@ export async function generateCandidates(
 
       const botId = getLoggedBotId(selectedBot.id, log);
       if (onTweetProcessed) {
-        try { await onTweetProcessed({ post, tweetResult, log, botId }); }
-        catch (err) { console.warn("[generate] onTweetProcessed hook failed:", err); }
+        try { await onTweetProcessed({ post: item.post, tweetResult, log, botId }); }
+        catch (err) { console.warn(`[${label}] onTweetProcessed hook failed:`, err); }
       }
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        candidates.push({ post, tweetResult, botId });
+        candidates.push({ post: item.post, tweetResult, botId });
       }
-    }));
+    })));
   }
 
   await queue.onIdle();
@@ -219,9 +238,47 @@ export async function generateCandidates(
     console.log("::endgroup::");
     console.log("::group::Run summary");
   }
-  console.log(`[generate] ${candidates.length} candidates (${newCount} new + ${retryCount} retry processed), ${posts.length - candidates.length} rejected`);
+  console.log(`[${label}] ${candidates.length} candidates, ${items.length - candidates.length} rejected (of ${items.length} processed)`);
   console.log(formatRunSummary(allLogs, feedSize));
   if (process.env.CI) console.log("::endgroup::");
 
   return candidates;
+}
+
+export interface GenerateCandidatesOptions {
+  maxPosts: number;
+  /** Pre-fetched by runPipeline and shared with the misinfo pre-pass to avoid
+   *  double-scanning notes/pipeline_runs/tweets. Omitted callers fetch them. */
+  skipPostIds?: Set<string>;
+  knownTweetIds?: Set<string>;
+  onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+}
+
+export async function generateCandidates(
+  supabaseLogger: SupabaseLogger | null,
+  { maxPosts, skipPostIds, knownTweetIds, onTweetProcessed }: GenerateCandidatesOptions,
+): Promise<Candidate[]> {
+  const outerForcedPicks = getForcedPicks();
+  if (Object.keys(outerForcedPicks).length > 0) {
+    console.log(`[generate] Forced picks: ${JSON.stringify(outerForcedPicks)}`);
+  }
+  const botProbs = getBotProbabilities();
+  const activeBots = botProbs.filter((b) => b.probability > 0);
+  console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
+
+  const { posts } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
+  if (!posts.length) {
+    console.log("[generate] No eligible posts found.");
+    return [];
+  }
+  logMediaBreakdown(posts.map((s) => s.post));
+
+  // Run-level label for the summary only; per-post feed_size is set on each item.
+  // posts are ladder-ordered, so the last one is the deepest tier reached.
+  const runFeedSize = posts[posts.length - 1]!.feedSize;
+  return processPosts(
+    posts.map((s) => ({ post: s.post, feedSize: s.feedSize })),
+    supabaseLogger,
+    { feedSize: runFeedSize, onTweetProcessed, label: "generate" },
+  );
 }

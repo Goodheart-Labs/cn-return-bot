@@ -7,7 +7,6 @@
  */
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";
-import { getBotConfig } from "../pipeline/ab-testing/botConfig";
 import { createBotInput } from "../pipeline/input/createBotInput";
 import { runMultiAgentPipeline } from "../pipeline/multi-agent/orchestrator";
 
@@ -16,10 +15,9 @@ export const multiAgentBot: Bot = {
   name: "Multi-Agent",
   description: "Researcher → Notewriter → Source Verifier pipeline",
   async runPipeline(post): Promise<PipelineResult | null> {
-    const config = getBotConfig();
     const input = await createBotInput(post, this.id);
     const outcome = await runMultiAgentPipeline(post, input);
-    const result = outcomeToResult(post, this.id, outcome, config.scoreFilters);
+    const result = outcomeToResult(post, this.id, outcome);
     if (input.warnings.length) {
       result.warnings = [...(result.warnings ?? []), ...input.warnings];
     }

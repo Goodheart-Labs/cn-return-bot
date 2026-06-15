@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2009240597442466247",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:55:18.628Z",
+  "post": {
+    "id": "2009240597442466247",
+    "author_id": "1288703831484792832",
+    "created_at": "2026-01-08T12:27:42.000Z",
+    "text": "The US Police MURDERED this MOTHER! https://t.co/VetzjEIFYe",
+    "media": [
+      {
+        "media_key": "3_2009240586713280513",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-JBqw9XsAEySTI.jpg",
+        "height": 501,
+        "width": 399
+      },
+      {
+        "media_key": "3_2009240586734231552",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-JBqxCXYAABj_o.jpg",
+        "height": 619,
+        "width": 495
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2646,
+      "reply_count": 962,
+      "like_count": 21304,
+      "quote_count": 47,
+      "bookmark_count": 226,
+      "impression_count": 203886
+    },
+    "author_followers": 50001,
+    "author_name": "Christopher Helali",
+    "author_description": "Researcher. Geopolitical Analyst. Journalist @DD_Geopolitics. International Secretary of @ACPMain.",
+    "author_tweet_count": 14477
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-JBqw9XsAEySTI.jpg",
+          "description": {
+            "description": "A blonde woman with a joyful expression is kneeling on the floor of what appears to be a dressing room or backstage area. She is wearing a black graphic t-shirt and black leggings, reaching her hand out toward the camera. Next to her, a small blonde toddler in a matching black outfit is leaning against her. Both are wearing pink and white sneakers. The background features light-colored cinder block walls and a leather jacket draped over a chair.",
+            "ocrText": "KISS"
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/G-JBqxCXYAABj_o.jpg",
+          "description": {
+            "description": "A close-up photograph featuring a woman wearing a camo-patterned trucker hat with yellow lettering, kissing a young child on the cheek. The child, who has blonde hair and a white tank top, is making a silly face with their tongue out and has animal face paint whiskers on their cheeks. The image has a light leak effect on the left side.",
+            "ocrText": "DARLING"
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**Representative Comments:**\n\n- **Author:** Texas2AAttorney (@CJGRISHAM)  \n  **Text:** It's a shame she committed actions that cost her life. She should have about her kids before trying to kill a cop.  \n  **Engagement:** Likes=242, Views=7116\n\n- **Author:** Adam Francisco (@adamfrancisco_)  \n  **Text:** That’s an actress This is Renee Good.  \n  **Engagement:** Likes=127, Views=3426\n\n- **Author:** ⚡️GERMANIC⚡️ (@fuggetaboutityo)  \n  **Text:** Only a few million more and we can return to normal  \n  **Engagement:** Likes=76, Views=1344\n\n- **Author:** Patrick Kerby (@Patrickkerby58)  \n  **Text:** Stay home with your kids Karen.  \n  **Engagement:** Likes=67, Views=2094\n\n- **Author:** Richard 🇬🇧🏴󠁧󠁢󠁥󠁮󠁧󠁿 (@RicardoEyes)  \n  **Text:** She tried to kill a man  \n  **Engagement:** Likes=63, Views=1901\n\n- **Author:** #ARYANBARBARIAN (@russelstephens)  \n  **Text:** Great  \n  **Engagement:** Likes=46, Views=600\n\n- **Author:** Intel Report Daily (@TruthNinja316)  \n  **Text:** Stupid games, stupid prizes.  \n  **Engagement:** Likes=39, Views=4905\n\n- **Author:** Momo (@thedivaszn)  \n  **Text:** Baby this is Renee Paquette. She’s an interviewer for AEW  \n  **Engagement:** Likes=30, Views=1034\n\n- **Author:** Real Cynthia Hughes (@cynthfromjersey)  \n  **Text:** No Renee Good got herself killed, there fixed it for you.  \n  **Engagement:** Likes=23, Views=3285\n\n- **Author:** Pitmaster (@CryptKeeper_06)  \n  **Text:** lol she lost custody of her kids cuz she is a pos.. she impeded law enforcement for no reason cuz she is retarded.. she caused her own demise and is a horrible human being  \n  **Engagement:** Likes=21, Views=4565",
+    "warnings": []
+  }
+}

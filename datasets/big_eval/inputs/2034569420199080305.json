@@ -1,0 +1,68 @@
+{
+  "tweet_id": "2034569420199080305",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:53:30.925Z",
+  "post": {
+    "id": "2034569420199080305",
+    "author_id": "1500166468851412998",
+    "created_at": "2026-03-19T09:55:24.000Z",
+    "text": "Netanyahu is not alive.\n\nIt took 8 years to confirm the death of Ariel Sharon, former Prime Minister of Israel. \n\nIt’s also known that on March 11 at 5:45am, a USAF C-17 departed from Tel Nof. \n\nIt’s a “flying hospital.” \nDestination: Germany. \n\nThe timing matches an emergency https://t.co/mMLGpNxiN9",
+    "media": [
+      {
+        "media_key": "3_2034569412259266560",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDw-GdCWwAAnz5O.jpg",
+        "height": 1642,
+        "width": 1320
+      },
+      {
+        "media_key": "3_2034569412255129600",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDw-GdBXoAAqLY_.jpg",
+        "height": 1308,
+        "width": 1320
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 7050,
+      "reply_count": 1219,
+      "like_count": 57286,
+      "quote_count": 383,
+      "bookmark_count": 7440,
+      "impression_count": 5244491
+    },
+    "author_followers": 99138,
+    "author_name": "StarPlatinum",
+    "author_description": "| Writer | | Ambassador @kalshi |",
+    "author_tweet_count": 99308
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDw-GdCWwAAnz5O.jpg",
+          "description": {
+            "description": "A close-up side profile of Benjamin Netanyahu wearing a navy suit, a white shirt, and a red tie. He is looking down and to the left against a neutral brown background.",
+            "ocrText": ""
+          }
+        },
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDw-GdBXoAAqLY_.jpg",
+          "description": {
+            "description": "A close-up photograph of Benjamin Netanyahu, the Prime Minister of Israel, looking slightly to the side with a serious expression. He has grey hair and is wearing a dark pinstripe suit, a white shirt, and a blue tie. The background shows blurred seating and wood paneling, characteristic of a government chamber or assembly hall.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Sona (∇, ∇)**: he’s fine. see [image] (Likes: 7329, Reposts: 134, Quotes: 6, Replies: 48, Views: 381662)\n- **viiibe**: dude.. just stay safe man. These guys are ruthless. (Likes: 258, Reposts: 0, Quotes: 0, Replies: 0, Views: 217446)\n- **Jimmy Amato**: Saying shit like this just makes you antisemites disguised as anti colonialists look so fucking stupid, he's obviously not dead- and it doesnt benefit your ideology whatsoever to spread such rumors. (Likes: 136, Reposts: 2, Quotes: 0, Replies: 153, Views: 62802)\n- **CryptogemsX 🇵🇹**: Bro farming views with fake news Study this acc downfall (Likes: 120, Reposts: 0, Quotes: 0, Replies: 7, Views: 138265)\n- **Kawaii 🫆**: [image] (Likes: 114, Reposts: 0, Quotes: 0, Replies: 0, Views: 6635)\n- **W.R. Schock, QBD**: The photos of him after the bombing on 3/2/26 are showing up 100% real by forensic tools. It does look like he didn't make it. https://t.co/c6f8kr5YVP (Likes: 112, Reposts: 28, Quotes: 3, Replies: 0, Views: 12745)\n- **trunoest**: you actually believe that? didn't know you were based like that LOL (Likes: 87, Reposts: 0, Quotes: 0, Replies: 0, Views: 236393)\n- **Arif | Youtube Strategist**: [image] (Likes: 81, Reposts: 0, Quotes: 0, Replies: 0, Views: 5779)\n- **Josh Long**: The real question nobody can answer is why has he missed 8 straight security cabinet meetings in the middle of a war? But he can go to the countryside to make an appearance at a cafe to combat rumors of previous AI videos. Make it make sense. (Likes: 57, Reposts: 0, Quotes: 0, Replies: 0, Views: 3566)\n- **meddlin mango**: I’m sorry, but I still think it’s hilarious he runs away to Germany when in need of escape or assistance. The irony. (Likes: 56, Reposts: 0, Quotes: 0, Replies: 0, Views: 4513)",
+    "warnings": []
+  }
+}

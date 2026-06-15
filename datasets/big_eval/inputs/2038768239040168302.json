@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2038768239040168302",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:07:01.459Z",
+  "post": {
+    "id": "2038768239040168302",
+    "author_id": "1138842105856573445",
+    "created_at": "2026-03-31T00:00:01.000Z",
+    "text": "This is what happens when creativity meets fandom https://t.co/4YYKbCGjmX",
+    "media": [
+      {
+        "media_key": "7_2038066614222962688",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2038066614222962688/pu/img/M4-WPzG3xuM0Y8rI.jpg",
+        "height": 822,
+        "width": 612,
+        "duration_ms": 15000,
+        "view_count": 151725,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2038066614222962688/pu/vid/avc1/320x428/RTkWkC3zRFTt3feq.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2038066614222962688/pu/vid/avc1/480x644/dj9KQ_9E80L6YvOQ.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2038066614222962688/pu/vid/avc1/612x822/UP3ojtkHn-TvLOkO.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2038066614222962688/pu/pl/6eKmmb_1wrV7T_RP.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 267,
+      "reply_count": 47,
+      "like_count": 2541,
+      "quote_count": 14,
+      "bookmark_count": 341,
+      "impression_count": 134507
+    },
+    "author_followers": 4308506,
+    "author_name": "Out of Context Human Race",
+    "author_description": "The ORIGINAL Out of Context Human Race page! No Copyright intended. DMs open for business enquiries.📲",
+    "author_tweet_count": 52971
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2038066614222962688/pu/vid/avc1/612x822/UP3ojtkHn-TvLOkO.mp4?tag=12",
+          "description": {
+            "description": "A hand-made sculpture of Goku from Dragon Ball Z, constructed entirely from matches, is shown in a sequence of three images. In the first frame, a person uses a burning match to light the base of the sculpture. In the second frame, a bright orange flame rapidly travels up the figure, creating a visual effect similar to a Super Saiyan aura. In the third frame, the match ends are charred black, and the fire begins to subside.",
+            "ocrText": ""
+          },
+          "transcription": "Música"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Zora - @ZorathValiant: He turned to .. (12 likes, 0 reposts, 0 quotes, 0 replies, 495 views)\n- DJninesixteen - @BuzzVibeNews: Of all the things that were ever AI, this was AI the most. Still cool but AI... (10 likes, 0 reposts, 0 quotes, 0 replies, 164 views)\n- Kay 😈🤍 - @crypto_kcee: Wow! Bro literally created the irl version 🔥 (10 likes, 0 reposts, 0 quotes, 0 replies, 560 views)\n- BrokenNPC - @_BrokenNPC: Not very creative considering it's AI (8 likes, 0 reposts, 0 quotes, 0 replies, 141 views)\n- DumbButThinking - @DumbButThinking: Only smart people like me can say that it is AI. 😭 (7 likes, 0 reposts, 1 quote, 0 replies, 179 views)\n- Mateusz Włodarczyk - @mat_wlodarczyk: *when creativity meets AI (6 likes, 0 reposts, 0 quotes, 0 replies, 179 views)\n- w.d.gaster - @Bonehashira2309: This is ai (3 likes, 0 reposts, 0 quotes, 0 replies, 64 views)\n- Alexis R - @42Jrg: Kinda looks like Ai to me 🥱 (3 likes, 0 reposts, 1 quote, 0 replies, 64 views)\n- skinnyspliff - @LilRemy662644: This is More like when uncreativity meets AI (1 like, 0 reposts, 0 quotes, 0 replies, 111 views)\n- Broo.eth - @brooeth: Creativity? More like remixing misery with hype where’s the real craft? (1 like, 0 reposts, 0 quotes, 0 replies, 742 views)",
+    "warnings": []
+  }
+}

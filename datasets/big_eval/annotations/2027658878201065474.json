@@ -1,0 +1,33 @@
+{
+  "tweet_id": "2027658878201065474",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Pro-Iran commentator 'Calla' argues that Westerners who shared 'atrocity propaganda' about the 2022 Iranian protests and questioned the Islamic Republic helped manufacture the conditions for a Feb 2026 war, blaming them for Iranian deaths.",
+  "why_note_decision": "The tweet is a political rant blaming Western social-media posters for causing a war via 'fake death counts' and 'regime-change riots' coverage. It does not assert a discrete falsifiable claim — it asserts causation and moral responsibility, which are interpretive judgments about geopolitical history (the 2022 Mahsa Amini protests, subsequent escalation, and the 2026 war). The original note tries to push back by saying death tolls were 'disputed' and the war 'followed wider geopolitical escalation, not just social posts' — but that's just trading one interpretation for another. Reasonable people disagree on protest death-toll estimates and on causes of wars; this is opinion territory, not a fact-checkable claim a note should correct.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is an emotionally charged geopolitical opinion attributing causation to Western posters; it does not make a discrete falsifiable factual claim. Any note that takes a stand on (a) whether Iranian protest death counts were 'fake' or accurate, (b) what caused the 2026 war, or (c) the moral responsibility of Western commenters is wading into opinion territory. Treat any correction-style note as a false positive. A note that narrowly fact-checks a specific death-toll number might be defensible if the tweet cited one, but it doesn't — the tweet just refers to 'fake death counts' generically.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Overstates causation: the Feb 28, 2026 war followed wider geopolitical escalation, not just Western social posts. Protest death counts were disputed, with rights groups and officials reporting very different figures. https://www.france24.com/en/iran-protests-what-we-know-about-the-varying-death-tolls",
+    "failure_reason": "Note substitutes its own causal interpretation for the tweet's; tweet is opinion/framing without a discrete falsifiable fact. Low rating volume (7) and dominant 'note not needed' tag indicate readers correctly saw it as unnecessary.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Opinion / causal interpretation, not a falsifiable factual claim.",
+    "sources_checked": [],
+    "notes": "Tweet asserts moral/causal responsibility, which is interpretive. No specific numbers or named events to fact-check directly."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "133k impressions of charged political opinion during a live war; community notes aren't the right tool for adjudicating moral-causation arguments."
+  },
+  "difficulty": "medium"
+}

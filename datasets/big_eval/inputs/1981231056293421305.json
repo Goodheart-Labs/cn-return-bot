@@ -1,0 +1,72 @@
+{
+  "tweet_id": "1981231056293421305",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:06:28.246Z",
+  "post": {
+    "id": "1981231056293421305",
+    "author_id": "467342751",
+    "created_at": "2025-10-23T05:27:47.000Z",
+    "text": "Gym trainer accidentally killed his client and made it look like a gym accident. https://t.co/GnO3V9Ped6",
+    "media": [
+      {
+        "media_key": "7_1981230995144617984",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1981230995144617984/pu/img/VGHNyfmvfnMfNIbP.jpg",
+        "height": 576,
+        "width": 576,
+        "duration_ms": 96230,
+        "view_count": 2903418,
+        "variants": [
+          {
+            "bit_rate": 432000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1981230995144617984/pu/vid/avc1/320x320/HrArP1STT5ukrVOH.mp4?tag=12"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1981230995144617984/pu/vid/avc1/576x576/4WH0lDPtWUGxEpl3.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1981230995144617984/pu/pl/mXM64FB6bWTfKP8R.m3u8?tag=12"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 404,
+      "reply_count": 144,
+      "like_count": 7667,
+      "quote_count": 39,
+      "bookmark_count": 3602,
+      "impression_count": 3105205
+    },
+    "author_followers": 31338,
+    "author_name": "Proper Radgie 🤝 Massive Softie = A Peng Ting",
+    "author_description": "God is the greatest • Tech 💻 •  Software Engineer • #LFC 🔴",
+    "author_tweet_count": 203236
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1981230995144617984/pu/vid/avc1/576x576/4WH0lDPtWUGxEpl3.mp4?tag=12",
+          "description": {
+            "description": "A man at a gym realizes a trainee has been injured or killed when a barbell fell onto his neck. The panicked man holds the unconscious trainee's head and tells him he's going to get him to a doctor. The trainer is clearly distraught and seen crying in the last frame.",
+            "ocrText": "TikTok\n@snackmovie0\nOH SHIT\nI'M GOING TO GET YOU\nTO A DOCTOR OKAY\nTHE TRAINER\nACCIDENTALLY KILLED HIS CLIENT\nCRUSHING IT ONTO THE MAN'S NECK\nTHE BRICK HOUSE\nBROOKLYN"
+          },
+          "transcription": "Is that a discus throw? Oh shit. Shit, shit, shit, shit. No, no, no, no, no, no, no. I got you. I got you. I'm gonna get you to a doctor, okay? You are so fucked. The trainer accidentally killed his client. He placed the man on the bench press and then lifted the barbell, crushing it onto the man's neck. He staged it as a gym accident. Afterward, he wiped his fingerprints off the barbell and smudged the man's fingerprints onto it. Then he left. When the first gym goers discovered the man's body... Oh shit! He's dead! Hey, hey, call 911. Hey, what's going on out here? Call 911 right now. Oh, my God, what happened? Police investigation concluded the man had died in a gym accident. The police even reassured the trainer. However, one woman suspected something was amiss about the man's death. She had met him at the gym. He was a fitness enthusiast who strictly followed safety protocols. Such a basic mistake shouldn't have happened. So she tracked down the trainer, secretly adding him as a friend on her fitness tracker. Later, hiding in the sauna room, she observed the trainer still working out at dawn. But she accidentally gave him a life. The trainer immediately sensed something was wrong. She locked the woman inside the sauna room, turned on the heating switch, and prepared to bake the woman alive. The woman felt utterly hopeless. Suddenly, she thought of her friend. She sent a distress signal to her friend through her workout routine. Hineys meant H, arm circles meant F, lunges meant L, push-ups meant P. Her friend instantly understood the distress signal. She sneaked into the gym and successfully rescued the woman. But just as they prepared to leave, the trainer spotted them. A fight ensued. Using his immense strength, the trainer knocked them both down. As he prepared to kill them, his wife called out to him. Only then did the trainer snap back to reality. He was filled with regret. Persuaded by his wife, the trainer decided to turn himself in."
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @LuckytheBard: \"Why would he wipe his fingerprints off the bar? His fingerprints are probably on every bar if he works there. That couldn't be used against him.\" (Likes: 36)\n- @BrentSwancer: \"\"Accidentally\"? What exactly is accidental about hurling a freaking weight plate at a guy's throat? lol\" (Likes: 33)\n- @Gallowz37797: \"Even if he successfully killed the girl in the sauna, 2 deaths in one gym maybe days apart is gonna raise a lot of suspicion from the police\" (Likes: 21)\n- @jadedarsenalfan: \"Wtf is that method man? 🤣\" (Likes: 15)\n- @askirawa1: \"Forensic investigation won’t allow him to go free\" (Likes: 13)\n- @PeakScenes: \"How did he mistakenly throw that to the man’s neck\" (Likes: 10)\n- @ScigNephew: \"Dumbest shit ever. Should have got away with it.\" (Likes: 7)\n- @bam_keith: \"Is… is that Method Man?\" (Likes: 6)\n- @Madman604: \"Who just tosses a weight plate? Ever?\" (Likes: 4)\n- @volswagga: \"She couldn’t have just called her friend on the watch?\" (Likes: 3)",
+    "warnings": []
+  }
+}

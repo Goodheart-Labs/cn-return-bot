@@ -1,0 +1,93 @@
+{
+  "rounds": [
+    {
+      "queries": [
+        "Ben Stiller endorses Zohran Mamdani NYC mayor",
+        "Ben Stiller Zohran Mamdani wealth tax criticism",
+        "Robert De Niro Zohran Mamdani endorsement"
+      ],
+      "purpose": "exploratory",
+      "what_returned": "Snopes fact-check debunking De Niro leaving NYC story; Yahoo/Lead Stories fact-check on same; MEAWW fact-check on De Niro + wealth tax; Deadline celebrity endorsers list (no Stiller); Gad Saad tweet seeming to accept Stiller story; Time.com endorsement list. De Niro confirmed to have praised Mamdani in Nov 2025 ('Hopes comes from Mamdani'). Multiple fact-checkers trace De Niro criticism to 'America's Last Line of Defense' satire page.",
+      "lesson": "De Niro angle is well-fact-checked and false. Ben Stiller angle is murkier - some Facebook posts repeat it but no authoritative confirmation. Anti-hindsight: these queries flow naturally from the tweet's claims."
+    },
+    {
+      "queries": [
+        "Ben Stiller 'Mamdani' fact check fabricated fake story",
+        "Ben Stiller Mamdani wealth tax statement tweet March 2026"
+      ],
+      "purpose": "targeted - verifying Ben Stiller claim",
+      "what_returned": "No fact-check site has published a specific Ben Stiller/Mamdani debunk. No credible news outlet confirms Stiller made this statement. MEAWW fact-check covers De Niro but not Stiller. Facebook posts repeat the story uncritically. Gad Saad X post ('Oh so @BenStiller is no longer a fan') suggests some real-but-vague signal, but no primary Stiller statement found.",
+      "lesson": "Ben Stiller claim lacks any primary source or credible outlet confirmation. The story pattern mirrors other known fabrications from the same fake-news ecosystem."
+    },
+    {
+      "queries": [
+        "Ben Stiller Zohran Mamdani endorsed campaign celebrity 2025",
+        "Robert De Niro 'hasn't worked in years' filmography 2024 2025 2026"
+      ],
+      "purpose": "refine - verify specific sub-claims",
+      "what_returned": "Deadline gallery of Mamdani celebrity endorsers: 15+ names listed (Ramy Youssef, Cynthia Nixon, Mark Ruffalo, etc.) - Ben Stiller NOT on list. De Niro active career confirmed: Zero Day (Netflix 2025), Killers of the Flower Moon (2023), Focker In-Law (2026 upcoming), The Whisper Man (2026). 'Hasn't worked in years' is clearly false.",
+      "lesson": "Stiller not confirmed as endorser. De Niro 'no work' claim is straightforwardly false per IMDB/filmography sites."
+    },
+    {
+      "queries": [
+        "Ben Stiller Mamdani wealth tax 'pied-a-terre' criticism statement real"
+      ],
+      "purpose": "brand-suffix / final targeted check",
+      "what_returned": "No results connecting Ben Stiller to pied-a-terre tax criticism. Pied-a-terre tax announced April 2026, after the March 31 tweet - timing mismatch. Only business community critics (Ken Griffin etc.) appear in credible coverage.",
+      "lesson": "Timeline is wrong: the specific wealth tax policy (pied-a-terre on $5M+ homes) was announced in April 2026, after this tweet was posted March 31, 2026. The story is internally incoherent."
+    }
+  ],
+  "gold_queries": [
+    "Ben Stiller Zohran Mamdani endorsement celebrity 2025",
+    "Robert De Niro Zohran Mamdani wealth tax criticism fact check",
+    "Zohran Mamdani celebrity endorsers list",
+    "Robert De Niro recent movies 2024 2025 2026 filmography",
+    "Ben Stiller Mamdani 'turns on' OR 'blasts' snopes OR leadstories OR factcheck"
+  ],
+  "found_sources": [
+    {
+      "url": "https://news.meaww.com/fact-check-did-robert-de-niro-call-out-zohran-mamdani-over-second-home-wealth-tax",
+      "title": "Fact Check: Did Robert De Niro call out Zohran Mamdani over 'second home wealth tax?'",
+      "found_via_query": "Robert De Niro Zohran Mamdani endorsement",
+      "authority_reason": "Dedicated fact-check article directly addressing the claim in this tweet",
+      "what_it_establishes": "Verdict FALSE: De Niro did not criticize Mamdani over a wealth tax. The claim originated from a satirical Facebook page ('America's Last Line of Defense') that explicitly states 'Nothing on this page is real.' No credible media outlet confirmed the story."
+    },
+    {
+      "url": "https://www.yahoo.com/news/articles/fact-check-robert-niro-not-181006319.html",
+      "title": "Fact Check: Robert De Niro NOT Leaving New York Now Mamdani Is Mayor -- Liberal Trolling From Satire Page",
+      "found_via_query": "Robert De Niro Zohran Mamdani endorsement",
+      "authority_reason": "Lead Stories fact-check syndicated via Yahoo News",
+      "what_it_establishes": "De Niro fabricated quote about leaving NYC due to Mamdani's wealth tax originated from 'America's Last Line of Defense' satire page run by Christopher Blair. De Niro actually praised Mamdani."
+    },
+    {
+      "url": "https://deadline.com/gallery/zohran-mamdani-celebrity-endorsements/",
+      "title": "Zohran Mamdani Celebrity Supporters: Bowen Yang To Lorde",
+      "found_via_query": "Ben Stiller Zohran Mamdani endorsed campaign celebrity 2025",
+      "authority_reason": "Deadline is a mainstream entertainment/news outlet with a comprehensive gallery of Mamdani celebrity endorsers",
+      "what_it_establishes": "Ben Stiller is NOT among the documented celebrity endorsers of Mamdani. 15+ celebrities are listed (Mark Ruffalo, Cynthia Nixon, Lorde, etc.) but Stiller is absent. The premise that Stiller 'endorsed and voted for' Mamdani is unsubstantiated."
+    },
+    {
+      "url": "https://thecinemaholic.com/all-upcoming-robert-de-niro-movies-and-tv-shows/",
+      "title": "Robert De Niro: Every Upcoming Movie and TV Show in 2026 and 2027",
+      "found_via_query": "Robert De Niro 'hasn't worked in years' filmography 2024 2025 2026",
+      "authority_reason": "Comprehensive filmography compilation from entertainment news site confirming recent and upcoming work",
+      "what_it_establishes": "De Niro starred in Netflix's Zero Day (2025), appeared in Killers of the Flower Moon (2023), has Focker In-Law (2026) and The Whisper Man (2026) upcoming. Claim he 'hasn't worked in years' is false."
+    }
+  ],
+  "verdict": "found_sources",
+  "insights": {
+    "what_helped": [
+      "Searching for the De Niro claim directly (well-fact-checked, easy to find) — then using that to contextualize the Stiller claim",
+      "Checking authoritative celebrity endorsement lists (Deadline) to verify the premise rather than just the conclusion",
+      "Searching filmography databases to fact-check the 'hasn't worked in years' sub-claim",
+      "Adding 'fact check' to the De Niro query to surface Snopes/MEAWW/Lead Stories directly"
+    ],
+    "what_hurt": [
+      "Gad Saad's X post ('Oh so @BenStiller is no longer a fan') created ambiguity — he may have been reacting to the same fabricated story, not a real Stiller statement",
+      "Facebook posts repeating the claim made it look more credible than it was before checking the original sources",
+      "No single fact-checker has published a dedicated Ben Stiller/Mamdani debunk yet, making the Stiller portion harder to definitively nail down"
+    ],
+    "would_multipass_help": "yes — a second pass specifically looking for the original viral source of the Ben Stiller claim (which Facebook page, which tweet thread) and checking if any primary Stiller statement exists on his own social media would close the remaining uncertainty. The De Niro angle is fully confirmed false; the Stiller angle is unconfirmed but highly suspicious given the same fake-news ecosystem.",
+    "deepseek_advice": "For tweets making parallel celebrity-X-politician claims, search for the most checkable sub-claim first (here: De Niro's recent work, established celebrity endorser lists) and use 'fact check' as a suffix — the De Niro angle was already debunked by multiple outlets, which reveals the tweet's fabrication pattern. Also check if claimed events are temporally coherent: here the 'wealth tax' was announced after the tweet was posted, an internal contradiction a one-shot model can surface by noting the tweet date vs. known policy timeline."
+  }
+}

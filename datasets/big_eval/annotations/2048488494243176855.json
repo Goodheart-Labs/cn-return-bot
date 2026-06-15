@@ -1,0 +1,31 @@
+{
+  "tweet_id": "2048488494243176855",
+  "role": "helpful_reference",
+  "provisional_role": "helpful_reference",
+  "disagrees_with_provisional": false,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["ai_generated_media", "health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Captioned 'I beat cancer! I'm so happy!' (Portuguese), the post shows an image of a bald child in a hospital bed giving a thumbs-up, presented as a real personal cancer-recovery story.",
+  "why_note_decision": "The image is an AI-generated stock illustration, not a real patient. The same image is sold on Freepik as a 'premium AI image' titled 'little bald boy hospital bed showing thumbs up world cancer day concept.' Presenting a stock AI image as a genuine 'I beat cancer' personal story is a manufactured engagement-bait/feel-good fabrication, the kind that often precedes scams or farms reposts. Replies include one flagging the tweet as FAKE. A note identifying the image as an AI stock image is warranted. (The AI media description is purely descriptive and doesn't itself flag AI — the verdict rests on the Freepik match.)",
+  "judge_guidance": "PASS only if the note states the image is AI-generated / a stock image and does not depict a real cancer survivor, ideally pointing to the Freepik (or equivalent) stock listing. It must NOT treat the recovery story as a genuine personal account. A note that merely says 'AI' without indicating it's reused stock / not a real story is acceptable but weaker. Cite the stock-image source. (Portuguese-language note is fine and arguably preferable given the audience.)",
+  "reference_note": "A imagem é gerada por IA e disponível em bancos de imagens, não retratando uma história real. https://www.freepik.com/premium-ai-image/little-bald-boy-hospital-bed-showing-thumbs-up-world-cancer-day-concept_89151311.htm",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "False/fabricated: the image is an AI-generated stock image (Freepik), not a real cancer-survivor's photo.",
+    "sources_checked": [
+      "https://www.freepik.com/premium-ai-image/little-bald-boy-hospital-bed-showing-thumbs-up-world-cancer-day-concept_89151311.htm"
+    ],
+    "notes": "Original note's Freepik link points to the exact AI stock image. No real person/story is identifiable. Engagement-bait pattern (44K likes on a feel-good fabricated recovery). Could not independently re-fetch Freepik, but the listing title/ID match the described image and the note is rated HELPFUL on X."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "328K impressions of harmless-seeming feel-good AI bait; low direct stake, but such fabricated sympathy posts erode trust and can seed donation scams. Correcting it is mildly useful."
+  },
+  "difficulty": "easy"
+}

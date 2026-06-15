@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2049702745783882104",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["statistical_or_numerical_claim", "politics_and_policy", "breaking_news_and_war"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Kobeissi Letter says 'BREAKING: US Treasury Secretary Bessent says the US has seized $450 million in Iranian cryptocurrency.' No media; claim is purely about a dollar amount.",
+  "why_note_decision": "The tweet inflates and mischaracterizes Bessent's actual announcement. Reuters, CNN, US News, Investing.com, CoinDesk and Fox Business all report Bessent announced FROZEN (not seized) cryptocurrency tied to Iran totaling $344 million on April 24, 2026, as part of Operation Economic Fury — not $450M, and not 'seized'. The $106M overstatement is a checkable, prominent error (392k impressions, 6,468 likes, propagating across crypto Twitter). Original note correctly cites $344M and Reuters, but raters dominated 'noteNotNeeded' (14) and 'missingKeyPoints' (8) — likely because the note didn't address the 'seized' vs 'frozen' distinction (which is technically important: USDT frozen by Tether ≠ asset seized by Treasury) and led with only the dollar figure. A correct note must hit both: wrong amount AND wrong verb.",
+  "judge_guidance": "PASS criteria: the note must establish that (a) the correct amount is $344 million (not $450 million), as announced by Treasury Secretary Bessent on April 24 2026 in connection with Operation Economic Fury, and (b) the funds were FROZEN (Tether USDT blacklisted at the issuer) not 'seized' by the US Treasury — these are different actions. Cite Reuters, CNN, or US Treasury. FAIL any note that (a) accepts $450M as accurate, (b) ignores the frozen-vs-seized distinction, or (c) cites unrelated Iran crypto stories. Bonus if note mentions Operation Economic Fury and Tether's role.",
+  "reference_note": "Treasury Secretary Bessent announced $344 million (not $450 million) in cryptocurrency tied to Iran on April 24, 2026, as part of 'Operation Economic Fury.' The funds were frozen at the stablecoin issuer (Tether USDT blacklist) rather than seized by Treasury. https://www.reuters.com/world/middle-east/us-sanctions-wallets-tied-iran-freezing-344-million-cryptocurrency-bessent-says-2026-04-24 https://www.cnn.com/2026/04/24/politics/us-freezes-cryptocurrency-iran",
+  "original_unhelpful_note": {
+    "text": "The US Treasury Department froze $344 million in cryptocurrency linked to Iran via sanctions on April 24, not $450 million as claimed. https://www.reuters.com/world/middle-east/us-sanctions-wallets-tied-iran-freezing-344-million-cryptocurrency-bessent-says-2026-04-24 https://www.thestreet.com/crypto/markets/treasury-secretary-unveils-economic-fury-to-freeze-344m",
+    "failure_reason": "Substantively right on the $344M figure but raters dominated 'noteNotNeeded' (14) and 'Missing Key Points' (8) — likely because note doesn't address frozen-vs-seized and reads as pure number-quibble. Borderline pass; classified as failure-row because audience signal says note is not landing.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Misleading — actual figure is $344M (not $450M); action was a freeze (Tether USDT blacklist) not a Treasury seizure.",
+    "sources_checked": [
+      "https://www.reuters.com/world/middle-east/us-sanctions-wallets-tied-iran-freezing-344-million-cryptocurrency-bessent-says-2026-04-24",
+      "https://www.cnn.com/2026/04/24/politics/us-freezes-cryptocurrency-iran",
+      "https://www.coindesk.com/policy/2026/04/24/tether-s-usd344-million-usdt-freeze-linked-to-u-s-economic-fury-against-iran-regime",
+      "https://www.foxbusiness.com/politics/treasury-freezes-344m-crypto-operation-economic-fury-pushes-iran-industrial-breaking-point"
+    ],
+    "notes": "All major outlets converge on $344M and 'freezing' language; CoinDesk clarifies the mechanism is Tether blacklisting USDT wallets."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "392k impressions from a market-news amplifier (Kobeissi Letter, 1.9M followers); financial/sanctions misinformation in a crypto-policy context has modest downstream impact on trader sentiment."
+  },
+  "difficulty": "easy"
+}

@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2024120192867910053",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:04.314Z",
+  "post": {
+    "id": "2024120192867910053",
+    "author_id": "1464711194321854464",
+    "created_at": "2026-02-18T13:53:54.000Z",
+    "text": "I STAND 100% WITH BO LOUDON!!! https://t.co/VxotGfFnLo",
+    "media": [
+      {
+        "media_key": "3_2024120188782678017",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HBcelmMWkAEypPu.jpg",
+        "height": 1602,
+        "width": 1273
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 5119,
+      "reply_count": 1431,
+      "like_count": 25541,
+      "quote_count": 182,
+      "bookmark_count": 240,
+      "impression_count": 245823
+    },
+    "author_followers": 57572,
+    "author_name": "Hillbilly",
+    "author_description": "Old army veteran that loves old westerners and nascar no trains period also no DMs. no trains please none no DMs no DMS",
+    "author_tweet_count": 126835
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HBcelmMWkAEypPu.jpg",
+          "description": {
+            "description": "The image features a young man in a black t-shirt and a red cap that says 'MAKE OLYMPICS GREAT AGAIN'. His shirt bears a message about U.S. Olympic athletes. Behind him, there are two red-circled insets: one showing Donald Trump with a young man, and another showing an American flag. Bold text across the top makes a claim about a supposed U.S. Olympic skier named Bo Loudon.",
+            "ocrText": "BREAKING: U.S. OLYMPIC SKIER BO LOUDON JUST REFUSED TO JOIN HIS ANTI-AMERICAN TEAMMATES, INSTEAD WEARING THIS SHIRT AND HAT! GIVE HIM A FOLLOW TO SUPPORT HIM! MAKE OLYMPICS GREAT AGAIN TURNING POINT ACTION ANY U.S. OLYMPIC ATHLETE THAT TRASHES THE U.S. SHOULD BE KICKED OUT."
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- TheRealThelmaJohnson (@TheRealThelmaJ1): Fake Likes=454\n- Iammatteo (@VP1985_CA): WTF are you talking about? Bo Loudon is not a US Olympic skier. He is a paid right-wing influencer who is literally a fucking moron and dumber than rocks. Likes=147\n- SlaminJ (@IBSlaminJ): I do not want any anti Americans representing me in the olympics - kick their hinnys out of the games and let them come back to their lefist klan. Likes=83\n- angry buni 🤬 (@theangriestbuni): I believe in everyone having the right to say what they wish. I believe staying silent is being complicit. America has the ability to change the narrative. You know who looks like a sheep who just goes along with everything they are told, Bo Loudon. Bo sounds like a coward. Likes=74\n- The Nation of Rick (@Nordabilly): These little pricks bashing America on foreign soil should be banned from competing for life! Same with politicians ‼️ Likes=74\n- America (@RhondaStovpm): Love this young man!🇺🇸 Way to stand up for your country Bo! 🇺🇸🤛🏻🇺🇸🤛🏻🇺🇸 Likes=45\n- Dave Mac 🇨🇦🇨🇦🇨🇦 (@Davemac2362): No, Bo Loudon is not on the Olympic ski team. The Bo Loudon you're referring to (the 19-year-old conservative influencer and close friend of Barron Trump) is not a member of any U.S. Olympic skiing team (or any country's Olympic ski team). Recent online claims and viral posts (especially on Instagram, Facebook, and X) portraying him as a U.S. Olympic skier—such as \"winning gold,\" calling for teammates' disqualification over patriotism issues, or refusing to join \"anti-American\" teammates—are false or satirical/misleading content, often from pro-Trump or MAGA accounts. Likes=34\n- DoomBaby (@rewind1nonly): You have our full support, Bo . Likes=31\n- Johannes Maria (@luo_yuehan): Anyone who criticizes the US government and Trump, you mean? Bo London supports a sex offender and ICE terrorists. Likes=29\n- Rogelio (@Nickguantanimo): (video) Likes=26",
+    "warnings": []
+  }
+}

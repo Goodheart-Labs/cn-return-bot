@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2034353641696735520",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:03:51.269Z",
+  "post": {
+    "id": "2034353641696735520",
+    "author_id": "1243244472839720962",
+    "created_at": "2026-03-18T19:37:59.000Z",
+    "text": "CONFIRMED BY ISRAEL 🇮🇱\n\nNetanyahu is official Dea... View more https://t.co/bBAyXd0PGY",
+    "media": [
+      {
+        "media_key": "3_2034353639419232256",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDt520kbQAAtYyi.jpg",
+        "height": 840,
+        "width": 889
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 532,
+      "reply_count": 989,
+      "like_count": 7901,
+      "quote_count": 57,
+      "bookmark_count": 837,
+      "impression_count": 16691134
+    },
+    "author_followers": 123098,
+    "author_name": "America News Times - ANT",
+    "author_description": "USA Military updates & News | Military analysis & commentary Open-source information only | Not affiliated with U.S. government. Individual Source & News.",
+    "author_tweet_count": 13020
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HDt520kbQAAtYyi.jpg",
+          "description": {
+            "description": "A close-up photograph of Benjamin Netanyahu wearing a dark suit, white shirt, and light blue tie. He is adjusting a small rectangular earpiece in his right ear while looking slightly to his left with a serious expression. A blue background is visible behind him.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Aman - @desserstsoul**: He prove he is alive (864 likes, 48 reposts, 42 replies)\n- **Arif | Youtube Strategist - @arifdzns**: (No text content - image) (416 likes, 14 reposts)\n- **सत्य सनातन 'मोदी का परिवार' - @REAL___HINDUVT**: Do you all support Israel? (405 likes, 7 reposts, 350 replies)\n- **الله اکبر - @faryadgar**: Reality (236 likes, 19 reposts)\n- **Miguel Díaz - @SACAGAMERWI**: (No text content - image) (230 likes)\n- **Aseel Swaid - @aseelswaid9**: (No text content - video) (220 likes, 19 reposts)\n- **AFOLABI - @Afolab_241**: @grok verify this?? Real or fake?? (220 likes, 8 reposts)\n- **𝐙𝐮𝐛𝐚𝐢𝐫𝐑🕊 - @iiZub22**: A reminder to Iran! #Iranwins #Netanyahu (133 likes)\n- **Its Life After All - @LOTAMOSANA**: You're joking right (109 likes)\n- **𝐙𝐮𝐛𝐚𝐢𝐫𝐑🕊 - @iiZub22**: Messing with the wrong people be Like : (100 likes)",
+    "warnings": []
+  }
+}

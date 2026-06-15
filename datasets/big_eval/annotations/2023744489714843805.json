@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2023744489714843805",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["politics_and_policy"],
+  "category_fit": "poor",
+  "suggested_category": "personal_anecdote_opinion",
+  "tweet_summary": "Matthias Schmidt (EU founder, 88k followers) recounts a personal anecdote about witnessing a stabbing in Berlin city center and claims the police asked him to describe the attacker's ethnicity, then frames himself as being 'shocked at this racially motivated question.' It is a viral opinion/framing post about whether police asking for ethnicity is racist, not a verifiable news claim.",
+  "why_note_decision": "The post is a first-person anecdote whose core point is an opinion (whether asking about ethnicity is racist). The specific factual hook (a Berlin city-center stabbing on 17 Feb 2026) is a routine kind of incident that may or may not have been logged in public police press releases; absence from one press feed does not prove it didn't happen. The original note overclaims by asserting NO stabbing matched, which most raters correctly flagged as note-not-needed (27 NNN, with 23 missingKeyPoints reflecting that this is really about a framing dispute, not a fact dispute). A correction is not warranted.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a personal anecdote whose substantive content is an opinion about police questioning practices; absence from one Berlin police press feed is not sufficient evidence the stabbing did not occur, and the opinion ('shocked it's racist to describe ethnicity') is not fact-checkable. Any note that flatly asserts 'no such stabbing occurred' on the basis of a police-press-release feed is a false positive and must FAIL.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No stabbing matching this description occurred in Berlin city center on February 17, 2026, according to police press releases and local news. https://www.berlin.de/polizei/polizeimeldungen https://www.tagesschau.de/thema/berlin",
+    "failure_reason": "notHelpfulNoteNotNeeded — overclaims a negative on a routine anecdote that wouldn't necessarily generate a press release; the post is primarily opinion/framing about police questioning practices, not a checkable claim",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "unverifiable_anecdote_with_opinion_framing",
+    "sources_checked": [
+      "https://www.berlin.de/polizei/polizeimeldungen",
+      "https://en.wikipedia.org/wiki/Berlin_Holocaust_memorial_stabbing"
+    ],
+    "notes": "No public coverage of a 17 Feb 2026 city-center stabbing matching Schmidt's anecdote; Berlin police only publish a subset of incidents. Routine knife incidents in Berlin are not uncommon. The post is primarily a framing/opinion piece, not a checkable claim."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "3.6M impressions on an inflammatory ethnicity/policing narrative that fuels far-right and anti-immigrant framing in Europe; impact more about discourse quality than a factual misinformation correction."
+  },
+  "difficulty": "medium"
+}

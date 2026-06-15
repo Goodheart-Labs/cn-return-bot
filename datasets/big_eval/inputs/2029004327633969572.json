@@ -1,0 +1,66 @@
+{
+  "tweet_id": "2029004327633969572",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:09:15.139Z",
+  "post": {
+    "id": "2029004327633969572",
+    "author_id": "1554117546235740161",
+    "created_at": "2026-03-04T01:21:43.000Z",
+    "text": "believe it or not, this is the most efficient way to pack 298 squares into a container https://t.co/57lAFyQiib",
+    "media": [],
+    "referenced_tweets": [
+      {
+        "type": "quoted",
+        "id": "2029000314649518478"
+      }
+    ],
+    "referenced_tweet_data": {
+      "id": "2029000314649518478",
+      "author_id": "89266660",
+      "created_at": "2026-03-04T01:05:46.000Z",
+      "text": "we can go deeper https://t.co/G10RV6ihfF",
+      "media": [
+        {
+          "media_key": "3_2029000312392916992",
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HCh1CLVWIAArkdI.jpg",
+          "height": 640,
+          "width": 640
+        }
+      ]
+    },
+    "public_metrics": {
+      "retweet_count": 318,
+      "reply_count": 32,
+      "like_count": 13415,
+      "quote_count": 16,
+      "bookmark_count": 521,
+      "impression_count": 463260
+    },
+    "author_followers": 20597,
+    "author_name": "frye",
+    "author_description": "just here to have fun in the replies",
+    "author_tweet_count": 25234
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HCh1CLVWIAArkdI.jpg",
+          "description": {
+            "description": "An abstract digital artwork consisting of a recursive fractal-like pattern. Numerous black squares containing text and yellow icons are arranged in larger diamond and square formations on a white background. The pattern repeats at different scales and angles across the canvas.",
+            "ocrText": "The pattern repeats numerous times; text is too small to be legible throughout the image."
+          }
+        }
+      ]
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **@lion_tender**: Dang a new 28 dropped late last year? (683 likes)\n- **@Burgercube**: Assuming the “298” is a typo and the picture actually shows exactly 289 squares, the most efficient way to pack them would just be a simple 17×17 grid (192 likes)\n- **@___frye**: this one is maddening because it really feels like we should have figured it out without a computer (255 likes)\n- **@todamath**: Bro thinks 17 * 17 is 298💀 (177 likes)\n- **@Observer_ofyou**: No shit (105 likes)\n- **@ricky_m_w**: Intuitively it seems like this would have to be true. But I don’t trust my intuition when it comes to math. (76 likes)\n- **@CALVINGINEERING**: Wait, are people really convinced that this makes any kind of sense? (15 likes)\n- **@italianlongbow**: i think you are absolutely WRONG. look at how much empty space there is (10 likes)\n- **@AKHomeproject**: i know the meme but why wouldnt it be a mass of squares with the meme pattern inside it at some location(s) (7 likes)\n- **@RandomSprint**: I'm triggered (7 likes)",
+    "warnings": []
+  }
+}

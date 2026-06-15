@@ -1,0 +1,34 @@
+{
+  "tweet_id": "2013020006255091774",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "accurate_reporting_contested",
+  "categories": ["politics_and_policy"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "A reply telling Matt Gaetz's wife 'Your husband raped a child', quote-tweeting a wholesome family photo she posted.",
+  "why_note_decision": "The post is a hyperbolic political characterization built on substantiated findings: the House Ethics Committee concluded there was substantial evidence Gaetz violated state laws including statutory rape, having paid for sex with a 17-year-old. The dispute is over the framing word ('raped' vs 'statutory rape with a minor'), not a fabricated fact. The original note claims 'no legal finding or evidence of rape', which is itself misleading because statutory-rape findings DO exist; the DOJ declining federal sex-trafficking charges is a different standard. So no corrective note is warranted, and any note 'defending' Gaetz risks being a false positive (the community heavily rated the original note Incorrect/Missing-key-points).",
+  "judge_guidance": "PASS only if the bot DECLINES to write a note. The underlying allegation references real, substantiated House Ethics findings (substantial evidence of statutory rape / paid sex with a 17-year-old); the reply is a heated characterization, not a fabricated factual claim. A note asserting 'there is no evidence of rape' is itself misleading (it ignores the statutory-rape finding and conflates it with the DOJ's separate decision not to bring FEDERAL sex-trafficking charges) and would be a false positive. Any note here should FAIL, especially one minimizing the Ethics findings.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "While the House Ethics Committee found evidence that Matt Gaetz paid for sex with a 17-year-old, the Department of Justice closed its investigation without filing any charges. There is no legal finding or evidence of rape. https://www.npr.org/2024/12/23/nx-s1-5233060/matt-gaetz-ethics-report-released",
+    "failure_reason": "Incorrect/note-not-needed: claims 'no legal finding or evidence of rape' while the House Ethics Committee found substantial evidence of statutory rape (sex with a 17-year-old). Conflates the DOJ's separate federal sex-trafficking decision with the existence of rape evidence, effectively minimizing substantiated findings.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "substantially accurate characterization - House Ethics found substantial evidence of statutory rape (paid sex with 17-year-old); 'raped a child' is heated framing of a substantiated finding, not fabrication",
+    "sources_checked": [
+      "https://www.npr.org/2024/12/23/nx-s1-5233060/matt-gaetz-ethics-report-released",
+      "https://www.nbcnews.com/politics/congress/matt-gaetz-report-house-ethics-committee-sexual-allegations-rcna184702",
+      "https://www.cbsnews.com/news/matt-gaetz-ethics-report-released/"
+    ],
+    "notes": "Ethics Committee: substantial evidence Gaetz violated state laws on statutory rape/prostitution, incl. twice having sex with a 17-year-old who received $400. DOJ declined FEDERAL sex-trafficking charges (different statute/standard). The original note's 'no evidence of rape' is incorrect."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {"prominence": "high", "lens_rationale": "3.3M impressions, 156K likes on a major political-accountability topic; getting the note WRONG (minimizing substantiated findings) would be actively harmful, so declining is the right call."},
+  "difficulty": "hard"
+}

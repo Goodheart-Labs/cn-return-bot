@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2012474305079083452",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:59:26.430Z",
+  "post": {
+    "id": "2012474305079083452",
+    "author_id": "1372213470838546438",
+    "created_at": "2026-01-17T10:37:18.000Z",
+    "text": "The last ingredient was missing to complete the meal https://t.co/Ywp6beAIoI",
+    "media": [
+      {
+        "media_key": "7_2012474290659045377",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/2012474290659045377/pu/img/yn1dqr1yOTREKzOx.jpg",
+        "height": 528,
+        "width": 884,
+        "duration_ms": 10193,
+        "view_count": 13819654,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2012474290659045377/pu/vid/avc1/452x270/aHFkoaexyz8xhabE.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2012474290659045377/pu/vid/avc1/602x360/EUPXShefFnMyU8S1.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/2012474290659045377/pu/vid/avc1/884x528/4-hmo9FIibGJXFnC.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/2012474290659045377/pu/pl/uOKMr556q6URr8QJ.m3u8?v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 2263,
+      "reply_count": 1024,
+      "like_count": 22894,
+      "quote_count": 494,
+      "bookmark_count": 3687,
+      "impression_count": 5348252
+    },
+    "author_followers": 555902,
+    "author_name": "The Best Viral Vids🔥",
+    "author_description": "We want you to have a good time and laugh with the videos we post.\nThanks for following me!",
+    "author_tweet_count": 1932
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/2012474290659045377/pu/vid/avc1/884x528/4-hmo9FIibGJXFnC.mp4",
+          "description": {
+            "description": "A woman is seen cooking in a kitchen, monitored by a security camera. She is using a large wok and covers it with a lid. Behind her, a white and brown cat is perched on a shelf by the sink, eventually jumping down as the woman continues to prepare the meal.",
+            "ocrText": "2025-10-06 18:40:23 REC CAM\n2025-10-06 18:40:28 REC CAM"
+          },
+          "transcription": "AHHHHH! AHHHHH! Meow! Meow! Meow!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- kainft.somi (@kai_nft__): Car went survival mode (Likes: 870, Reposts: 0, Replies: 0, Views: 59486)\n- Kian ($/acc) (@klirphyy): the cat😭😭😭😭 (Likes: 846, Reposts: 0, Replies: 0, Views: 84121)\n- Midas Trend (@RealMidasTrend): So disgusting! It’s Ai generated! (Likes: 205, Reposts: 0, Replies: 0, Views: 35103)\n- Me Ligt (@paddingzero): When will ai fix this finger problem? (Likes: 85, Reposts: 0, Replies: 0, Views: 3455)\n- JCREW (@jcrew_eth): please no more ai slop (Likes: 65, Reposts: 0, Replies: 0, Views: 54379)\n- Benjamin Chan (@ItsMeBenChan): cat reacted 3 business days later (Likes: 43, Reposts: 0, Replies: 0, Views: 58205)\n- WallofWTF💀 (@WallofWTF): That cat reaction🤣 (Likes: 35, Reposts: 0, Replies: 0, Views: 7011)\n- ❎e k ℹ️ (@XekiHlongwane): Look @ the cat 🐈‍⬛ (Likes: 25, Reposts: 0, Replies: 0, Views: 24932)\n- 🤔எனக்கொரு டவுட்டு!? (@Thaadikkaran): Fresh meat meal ready (Likes: 13, Reposts: 0, Replies: 0, Views: 39296)\n- robbie (@robbielacky): cat reaction is hilarious, hahah (Likes: 10, Reposts: 0, Replies: 0, Views: 5315)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,130 @@
+[
+ {
+  "tweet_id": "1993505307301994620",
+  "url": "https://x.com/i/status/1993505307301994620",
+  "role": "unhelpful_hard_to_understand",
+  "needs_note": "yes",
+  "categories": [
+   "statistical_or_numerical_claim",
+   "politics_and_policy"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "Find someone who looks at you the way Tucker looks at a loaf of bread that costs the average Russian worker 3 days wages https://t.co/pyrTgV7WFc",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G6pagw2X0AEieur.jpg",
+    "description": {
+     "description": "A political commentator in a blue puffer jacket holding up a large loaf of bread while grocery shopping in a supermarket setting. He appears to be talking or reacting with an open mouth while looking at the bread.",
+     "ocrText": "TC"
+    }
+   }
+  ],
+  "tweet_summary": "Joel Berry (Babylon Bee writer) tweets a meme-format jab at Tucker Carlson with a photo of him examining a loaf of bread, claiming the bread 'costs the average Russian worker 3 days wages'.",
+  "bad_note_text": "Claim that the loaf equals three days' wages is false. A 1 lb loaf in Russia costs ~50–65 RUB while average monthly wages are ~92,000 RUB, so bread is a tiny fraction of a day's pay, not multiple days' wages. https://www.numbeo.com/cost-of-living/country_result.jsp?country=Russia https://tradingeconomics.com/russia/wages",
+  "failure_reason": "Hard-to-understand phrasing ('Claim that the loaf equals three days' wages is false') and weak sourcing for a viral claim. Substance is correct but execution led raters to mostly tag noteNotNeeded — perhaps because the awkward writing made it feel like sealioning a joke.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 21,
+  "why_note_decision": "Although phrased as a joke meme ('find someone who looks at you the way...'), the embedded factual claim ('3 days wages for a loaf of bread in Russia') is concrete, viral, and false by roughly two orders of magnitude. A loaf costs ~50-65 RUB; average monthly Russian wage is ~100,000 RUB, so daily wage is ~3,000-4,000 RUB. Bread is ~1-2% of a day's wage, not 3 days. The author is a well-known commentator with 176K followers; the post has 4K likes and 128K impressions; commenters are confused ('how is anyone alive', 'must have a phd in stupidity to believe this'). The original note's facts are c…",
+  "reference_note": "False — bread costs a small fraction of a day's wage in Russia, not 3 days. A loaf typically runs ~50–65 RUB while average wages are ~3,000–4,000 RUB per day (~100,000 RUB/month). https://www.numbeo.com/cost-of-living/country_result.jsp?country=Russia https://tradingeconomics.com/russia/wages"
+ },
+ {
+  "tweet_id": "1998347694922768506",
+  "url": "https://x.com/i/status/1998347694922768506",
+  "role": "unhelpful_hard_to_understand",
+  "needs_note": "yes",
+  "categories": [
+   "health_medical_science",
+   "statistical_or_numerical_claim"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "In 1994, Japan ceased all mandatory vaccines for children under 24 months old.\n\nCan you guess what happened next? https://t.co/ox63yTyPYg",
+  "media_description": [
+   {
+    "type": "video",
+    "url": "https://video.twimg.com/ext_tw_video/1998347673087205376/pu/vid/avc1/720x1280/3rov2nuHwegLtp6Z.mp4?tag=12",
+    "description": {
+     "description": "A young toddler with blonde hair walks on a paved path outdoors, seemingly entering a building in the final frame. Overlaid text across the series makes claims regarding Japan's vaccination policies and infant mortality rates in comparison to the United States.",
+     "ocrText": "[{\"frame\": 1, \"text\": \"In 1994 Japan ceased all mandated vaccines for any child under 24 months old\"}, {\"frame\": 2, \"text\": \"Japan's infant mortality rate is one of the lowest in the world..\"}, {\"frame\": 3, \"text\": \"Japan's infant mortality rate is one of the lowest in the world.. And the US? One of the highest in the world\"}]"
+    },
+    "transcription": "Outro Music"
+   }
+  ],
+  "tweet_summary": "Anti-vax video claims 'In 1994 Japan ceased all mandatory vaccines for children under 24 months,' implying this is why Japan has one of the world's lowest infant mortality rates while the US has one of the highest.",
+  "bad_note_text": "Japan did end vaccine mandates in 1994, making them recommended. For context, infants under 2 still receive routine vaccines with &gt;95% coverage. Infant mortality declined steadily before 1994; no link to policy change. US has higher IMR among developed countries.    https://fred.stlouisfed.org/series/SPDYNIMRTINJPN    https://www.sciencedirect.com/science/article/pii/S0264410X23002827    https://www.jpeds.or.jp/uploads/files/English%20version%20Japanese%20Immunization%20Schedule.pdf",
+  "failure_reason": "Leads by conceding 'Japan did end vaccine mandates in 1994,' partly validating the misleading framing, and is choppy/hard to parse with an unescaped '&gt;'; the rebuttal of the causal anti-vax implication is buried.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 67,
+  "why_note_decision": "The claim is false/misleading. In 1994 Japan made childhood vaccination voluntary rather than mandatory — it did not 'cease all vaccines'; coverage stayed very high (~99% DTaP). Japan's low infant mortality is not caused by ending mandates, and the US-vs-Japan comparison is driven by other factors (reporting definitions, healthcare). Snopes, AP, and Full Fact all rate this false. From an 846k-follower account at 323k impressions, this anti-vax health misinformation warrants a clear correction.",
+  "reference_note": "Misleading. In 1994 Japan made childhood vaccines voluntary, not mandatory — it did not stop vaccinating under-2s; coverage remains very high (~99% for DTaP). Japan's low infant mortality is not caused by this change, and the US-Japan gap reflects reporting and healthcare differences, not vaccine policy. https://www.snopes.com/fact-check/japan-1994-children-vaccines/ https://apnews.com/article/fac…"
+ },
+ {
+  "tweet_id": "2010220501143376038",
+  "url": "https://x.com/i/status/2010220501143376038",
+  "role": "unhelpful_hard_to_understand",
+  "needs_note": "yes",
+  "categories": [
+   "manipulated_or_fabricated_evidence"
+  ],
+  "difficulty": "easy",
+  "tweet_text": "🚨🎙️Jurgen Klopp : \n\n\"Cristiano has achieved everything, he can retire anytime. Messi still has a lot to win in football. \" https://t.co/pL1hlNWWyo",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G-WX_46aMAAedpn.jpg",
+    "description": {
+     "description": "A close-up photograph of Jürgen Klopp, the former manager of Liverpool FC, looking pensively to the side. He is wearing a dark blue New Balance training shirt with the Liverpool club crest and the AXA sponsor logo. A circular logo for 'ANFIELD WATCH' is visible in the top right corner.",
+     "ocrText": "ANFIELD WATCH ****** L.F.C. AXA"
+    }
+   },
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G-WX_4ha0AEvHV3.jpg",
+    "description": {
+     "description": "A medium shot of professional soccer player Cristiano Ronaldo wearing a black and white striped Juventus jersey. He has a focused, slightly pained expression on his face while looking toward the side. The background shows a blurred stadium setting with another player partially visible.",
+     "ocrText": "adidas Juventus Jeep"
+    }
+   }
+  ],
+  "tweet_summary": "A Ronaldo fan account attributes a quote to Jurgen Klopp: 'Cristiano has achieved everything, he can retire anytime. Messi still has a lot to win in football.'",
+  "bad_note_text": "This alleged quote from Jürgen Klopp is fabricated, as no credible sources confirm it. Klopp has actually said Messi is better than Ronaldo and the best he's seen. Sources: https://www.upi.com/Sports_News/Soccer/2020/05/13/Liverpools-Jurgen-Klopp-says-Lionel-Messi-is-better-than-Cristiano-Ronaldo/4231589371825/ https://www.youtube.com/watch?v=J332NciQYeQ https://www.goal.com/en-us/news/liverpool-klopp-hails-messi-longevity-argentina-world-cup-triumph/blta61d25b62f7a7e2c",
+  "failure_reason": "Tagged HardToUnderstand (dominant): garbled author name ('Jürgen' mojibake), three piled-on sources, and an editorializing 'Messi is better than Ronaldo' aside that reads as taking a side in the fan debate rather than just stating the quote is fake.",
+  "original_note_status": "NEEDS_MORE_RATINGS",
+  "current_status": "NEEDS_MORE_RATINGS",
+  "rating_volume": 81,
+  "why_note_decision": "The quote is fabricated — there is no credible record of Klopp saying it, and it contradicts his repeatedly-stated view (he has called Messi the best player he has ever seen). It is presented as a genuine Klopp statement, so a note flagging the quote as fake is warranted, contrary to the provisional no-note.",
+  "reference_note": "This quote is not authentic — there is no credible record of Jurgen Klopp saying it, and it's part of a wave of fabricated Klopp quotes (often with the names swapped). On record, Klopp has repeatedly called Messi the best player he has ever seen. https://www.goal.com/en-us/news/liverpool-klopp-hails-messi-longevity-argentina-world-cup-triumph/blta61d25b62f7a7e2c"
+ },
+ {
+  "tweet_id": "2017422915113730436",
+  "url": "https://x.com/i/status/2017422915113730436",
+  "role": "unhelpful_hard_to_understand",
+  "needs_note": "yes",
+  "categories": [
+   "conspiracy_and_viral_hoax",
+   "manipulated_or_fabricated_evidence"
+  ],
+  "difficulty": "medium",
+  "tweet_text": "RELEASE THE NAME OF THIS SENDER! https://t.co/zu52bEqLhY",
+  "media_description": [
+   {
+    "type": "image",
+    "url": "https://pbs.twimg.com/media/G_9Tcy-WMAAyjjQ.jpg",
+    "description": {
+     "description": "A screenshot of an email header and message body. The recipient's email address is redacted with a black bar. The sender is identified as Jeffrey Epstein, with a timestamp from April 24, 2009. The body of the email contains two questions and a comment about a video.",
+     "ocrText": "To:\nFrom: Jeffrey Epstein\nSent: Fri 4/24/2009 3:36:38 PM\nwhere are you? are you ok , I loved the torture video"
+    }
+   }
+  ],
+  "tweet_summary": "War Monitor (1.3M followers, 3.3M views) posts a screenshot of a 4/24/2009 email from Jeffrey Epstein to a redacted recipient saying 'where are you? are you ok, I loved the torture video,' captioned 'RELEASE THE NAME OF THIS SENDER!' — but the sender is already visible in the image (Epstein); the recipient is what's redacted.",
+  "bad_note_text": "In the image from Epstein-related court filings, the sender is Jeffrey Epstein (visible in \"From:\"). The recipient is redacted and not identified in public versions of the document. Sources: https://www.courtlistener.com/docket/4355835/giuffre-v-maxwell/ https://www.documentcloud.org/documents/6250471-Epstein-Flight-Logs-Lolita-Express",
+  "failure_reason": "Hard to understand / missing key points: substantively correct at the time of writing, but the sources are unrelated dockets (Giuffre-v-Maxwell, flight logs) that don't show this specific email, and the note doesn't surface the later (Feb 2026) identification of Sulayem. NoteNotNeeded was the dominant tag because raters thought the clarification was obvious.",
+  "original_note_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "current_status": "CURRENTLY_RATED_NOT_HELPFUL",
+  "rating_volume": 82,
+  "why_note_decision": "The tweet is confused about which party is redacted, and the confusion is going viral. Top replies all say variants of 'the sender IS visible — it's Epstein. The recipient is redacted.' This is a checkable misframing on a high-impact Epstein-files thread, so a note is warranted. The original note correctly clarifies that the sender is Epstein and recipient is redacted — substantively right. It was rated NOT_HELPFUL likely because (a) it doesn't address that everyone already knows this from the comments and (b) raters thought 'release the name' might be shorthand for 'release the recipient's na…",
+  "reference_note": "The screenshot shows the sender (Jeffrey Epstein) — it is the RECIPIENT that's redacted. Reporting from Feb 2026 identified the recipient as Sultan Ahmed bin Sulayem, chairman of Dubai-based DP World, per Rep. Thomas Massie and Deputy AG Todd Blanche. https://www.snopes.com/fact-check/epstein-torture-email-sultan/ https://www.cnbc.com/2026/02/12/epstein-files-sultan-ahmed-bin-sulayem-dp-world-emai…"
+ }
+]

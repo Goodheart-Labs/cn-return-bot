@@ -1,0 +1,35 @@
+{
+  "tweet_id": "1982121294125736327",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "good",
+  "suggested_category": "sports_hyperbole",
+  "tweet_summary": "SleeperNFL fake-breaking-news ribbing the 1-5 Baltimore Ravens with 'BREAKING - The Baltimore Ravens have been eliminated from the playoffs' on Oct 25, 2025.",
+  "why_note_decision": "This is obvious sports-account hyperbole/trolling — at 1-5 with 11 games remaining the Ravens were mathematically alive (~5% playoff odds per playoffstatus.com) but functionally dire. The replies treat it as a joke ('come outside stupid fucking sleeper account', 'in ur dreamz btch', 'Easiest bookmark of my life'). Pedantically correcting hyperbole with playoff-odds math is a classic notHelpfulNoteNotNeeded failure mode (15 raters tagged it that way out of 39 — the dominant reason).",
+  "judge_guidance": "PASS only if the bot declines to write a note. This is sports-troll hyperbole on a fan/news account, not a checkable factual claim; readers and commenters clearly read it as a joke. A note citing playoff-odds tables to debunk the 'eliminated' wording is pedantic and a false positive.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The Ravens are not eliminated from playoff contention. As of Oct 25, 2025, they are 1-5 with 11 games left and a ~5% chance of making the playoffs.  https://www.playoffstatus.com/nfl/ravensstandings.html  https://en.wikipedia.org/wiki/2025_Baltimore_Ravens_season  https://www.pro-football-reference.com/teams/rav/2025.htm",
+    "failure_reason": "Trivial pedantry — the tweet is obvious hyperbole on a fan-engagement account; literal playoff-odds correction misreads register.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "hyperbole_not_factual_claim",
+    "sources_checked": [
+      "https://en.wikipedia.org/wiki/2025_Baltimore_Ravens_season"
+    ],
+    "notes": "1-5 Ravens at Oct 25, 2025 were mathematically alive. Tweet is a sports-account hyperbole post."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Sports trolling; no meaningful EA/AGI/animal-welfare stakes. Useful in eval as a clean 'don't write a note on hyperbole' case."
+  },
+  "difficulty": "easy"
+}

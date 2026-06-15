@@ -1,0 +1,38 @@
+{
+  "tweet_id": "2042091345574031515",
+  "role": "unhelpful_incorrect",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["overhyped_research_or_product", "health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Dom Lucre (1.7M followers) posts 'BREAKING' that 'scientists have created a pill called LOT-002' that 'can extend the lifespan of dogs by many years', with company 'Loyal' aiming to get it on market by 2027.",
+  "why_note_decision": "Multiple material inaccuracies in a high-reach (957k impressions, 6.3k likes) health/science claim: (1) the drug is LOY-002, not 'LOT-002' (LOT-006-002 is just the trial bottle label visible in the video); (2) Loyal targets ~1 year of additional healthy lifespan in senior dogs (10+ years old, 14+ lb), not 'many years'; (3) the drug is still in FDA review — only two of three required technical sections accepted as of the tweet date, the final review is expected in 2027 but the drug isn't approved or on the market. Worth correcting both for science accuracy and to manage expectations of grieving pet owners (visible in comments) who might be misled about timing or efficacy.",
+  "judge_guidance": "PASS if the note corrects at least two of: (a) the drug name (LOY-002, not LOT-002), (b) the magnitude of lifespan extension (~1 year of healthy lifespan in senior dogs, NOT 'many years'), (c) the regulatory status (still in FDA conditional-approval review, not yet approved or available to consumers, 2027 is a target for final review not market launch). Sources should include Loyal's own posts or reputable veterinary press (dvm360, Veterinary Practice News). FAIL if the note (a) accepts 'many years lifespan extension' as accurate, (b) implies the drug is already approved or available, or (c) only nitpicks the typo without addressing the overstated efficacy claim.",
+  "reference_note": "The drug is LOY-002 (the tweet's 'LOT-002' is the trial bottle code) by the company Loyal. It is still in FDA conditional-approval review — two of three required technical sections accepted, with the final section expected to be reviewed in 2027 (not on-market by 2027). Loyal targets ~1 additional year of healthy lifespan for senior dogs (10+ years old, 14+ lb), not 'many years'. https://loyal.com/posts/loy-002-tas https://www.dvm360.com/view/lifespan-extension-drug-in-development-for-senior-dogs-reaches-a-new-milestone",
+  "original_unhelpful_note": {
+    "text": "The drug is LOY-002 (not LOT-002) by Loyal, still in FDA clinical trials seeking conditional approval and not yet available; it targets ~1.8 years healthy lifespan extension in senior dogs (10+ years, 14+ lb), not many years. https://loyal.com/posts/loy-002-tas https://loyal.com/posts/metabolic-dysfunction",
+    "failure_reason": "Note has the right facts but very low rating volume (only 16 ratings, dominant 'note not needed' at just 3). Probably hasn't reached enough raters yet rather than being content-failed. The note is substantively accurate; the '1.8 years' figure may be slightly high vs. published 'around a year' — worth verifying. Citing only loyal.com (the company's own site) twice reduces source diversity.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "Tweet is materially misleading on drug name, lifespan-extension magnitude, and regulatory/availability status.",
+    "sources_checked": [
+      "https://loyal.com/posts/loy-002-tas",
+      "https://www.dvm360.com/view/lifespan-extension-drug-in-development-for-senior-dogs-reaches-a-new-milestone",
+      "https://www.veterinarypracticenews.com/fda-accepts-safety-data-canine-longevity-drug/",
+      "https://www.businesswire.com/news/home/20260113476778/en/Loyal-Receives-FDA-Acceptance-of-Safety-Package-for-Senior-Dog-Lifespan-Extension-Drug"
+    ],
+    "notes": "LOY-002 has Reasonable Expectation of Effectiveness (RXE) and Target Animal Safety (TAS) sections accepted; final section under review for 2027. Intended for senior dogs (10+, 14+ lb). Not yet on market."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "medium",
+    "lens_rationale": "Health/science claim from a 1.7M-follower account about pet longevity, with emotionally vulnerable audience (visible in comments). Correcting overhyped lifespan claims is moderately valuable; not high-stakes but matters for science communication and pet-owner expectations."
+  },
+  "difficulty": "medium"
+}

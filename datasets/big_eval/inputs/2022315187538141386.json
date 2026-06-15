@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2022315187538141386",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:05:25.397Z",
+  "post": {
+    "id": "2022315187538141386",
+    "author_id": "1434606274793152512",
+    "created_at": "2026-02-13T14:21:28.000Z",
+    "text": "Great catch there. https://t.co/13rhL2qjuQ",
+    "media": [
+      {
+        "media_key": "13_2022315118114328577",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2022315118114328577/img/W-Xin4lwuwZ3rn8k.jpg",
+        "height": 1098,
+        "width": 576,
+        "duration_ms": 18318,
+        "view_count": 2544645,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022315118114328577/vid/avc1/320x610/YBP-5idY95Ywejn_.mp4"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022315118114328577/vid/avc1/480x914/7QdPwp-vG__4qspZ.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2022315118114328577/vid/avc1/576x1098/xnnaQePRv0iqsQt-.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2022315118114328577/pl/kgvEhRDSfcR3vYYH.m3u8?v=d31"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 167,
+      "reply_count": 37,
+      "like_count": 5897,
+      "quote_count": 6,
+      "bookmark_count": 775,
+      "impression_count": 2772295
+    },
+    "author_followers": 222060,
+    "author_name": "Johnny",
+    "author_description": "If you want to find the secrets of the universe, think in terms of energy, frequency and vibration.\n\n333\n\nQuestion the Narrative",
+    "author_tweet_count": 43789
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2022315118114328577/vid/avc1/576x1098/xnnaQePRv0iqsQt-.mp4",
+          "description": {
+            "description": "A humorous ice fishing sequence showing a person pulling a fish out of a hole in the ice, only to reveal that they have placed a dinosaur head toy over the fish's head. The person, wearing a beanie and boots, holds up the 'dino-fish' for the camera inside a blue ice fishing tent. The video concludes with a TikTok end screen.",
+            "ocrText": "TikTok @ autrain_6hit_2.0 TRACTOR SUPPLY CO EYOYO @ autrain_6hit_2...."
+          },
+          "transcription": "What are you doing, Hyde? Got a fucking monster! Holy fuck! Holy fuck!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "**@PineSap97**: Disrespectful to the resource. These kinds of people shouldn’t be allowed to buy a fishing license  \nLikes: 28 | Reposts: 0 | Replies: 0\n\n**@LawYoung81**: Total bullshit. Nobody would ever put their hand that close to a living fish’s mouth with those kind of teeth in it  \nLikes: 8 | Reposts: 0 | Replies: 2\n\n**@jaket578**: Stop disrespecting living creatures.  \nLikes: 6 | Reposts: 0 | Replies: 0\n\n**@madeyoulook76**: LMAO 🤣  \nLikes: 2 | Reposts: 0 | Replies: 0\n\n**@NicholasCrossm3**: Could anyone please help? https://www.gofundme.com/f/fdpa8a-support-nicks-journey-through-tough-times/fb/o?attribution_id=sl%3A36f30c8f-a998-4dc7-ad95-5091a75338a6&ts=1771012203000&utm_campaign=natman_today_topbar_android&utm_content=amp14_t2&utm_medium=customer&utm_source=copy_link  \nLikes: 2 | Reposts: 0 | Replies: 0\n\n**@JasmineShriver5**: Great mask😂  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**@BecauseSheena**: Why are there community notes for this video? 😂  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**@AAATHESPIDERS**: is the fish ok :{  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**@chilltnj**: 🤣🤣🤣🤣🤣🤣🤣  \nLikes: 1 | Reposts: 0 | Replies: 0\n\n**@RazorGeir**: Trout Rex 😂  \nLikes: 0 | Reposts: 0 | Replies: 0",
+    "warnings": []
+  }
+}

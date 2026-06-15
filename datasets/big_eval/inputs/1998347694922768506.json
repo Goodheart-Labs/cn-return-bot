@@ -1,0 +1,77 @@
+{
+  "tweet_id": "1998347694922768506",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T15:02:12.985Z",
+  "post": {
+    "id": "1998347694922768506",
+    "author_id": "1529763962094596097",
+    "created_at": "2025-12-09T11:03:12.000Z",
+    "text": "In 1994, Japan ceased all mandatory vaccines for children under 24 months old.\n\nCan you guess what happened next? https://t.co/ox63yTyPYg",
+    "media": [
+      {
+        "media_key": "7_1998347673087205376",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/ext_tw_video_thumb/1998347673087205376/pu/img/fSRqNY5yfmpdk_0y.jpg",
+        "height": 1280,
+        "width": 720,
+        "duration_ms": 13188,
+        "view_count": 259290,
+        "variants": [
+          {
+            "bit_rate": 632000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1998347673087205376/pu/vid/avc1/320x568/H24GSXhLEs2KRs9H.mp4?tag=12"
+          },
+          {
+            "bit_rate": 950000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1998347673087205376/pu/vid/avc1/480x852/gKIrJnhfqHe2ZnwG.mp4?tag=12"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1998347673087205376/pu/vid/avc1/720x1280/3rov2nuHwegLtp6Z.mp4?tag=12"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1998347673087205376/pu/pl/oZI8LC8irhy14pgL.m3u8?tag=12&v=cfc"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 6506,
+      "reply_count": 371,
+      "like_count": 20232,
+      "quote_count": 192,
+      "bookmark_count": 3128,
+      "impression_count": 322981
+    },
+    "author_followers": 846129,
+    "author_name": "Wide Awake Media",
+    "author_description": "Covering current events, geopolitics, the climate agenda, health, and everything in between.\n\nSupport us:\nhttps://t.co/YVlWNinTLl",
+    "author_tweet_count": 20949
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/ext_tw_video/1998347673087205376/pu/vid/avc1/720x1280/3rov2nuHwegLtp6Z.mp4?tag=12",
+          "description": {
+            "description": "A young toddler with blonde hair walks on a paved path outdoors, seemingly entering a building in the final frame. Overlaid text across the series makes claims regarding Japan's vaccination policies and infant mortality rates in comparison to the United States.",
+            "ocrText": "[{\"frame\": 1, \"text\": \"In 1994 Japan ceased all mandated vaccines for any child under 24 months old\"}, {\"frame\": 2, \"text\": \"Japan's infant mortality rate is one of the lowest in the world..\"}, {\"frame\": 3, \"text\": \"Japan's infant mortality rate is one of the lowest in the world.. And the US? One of the highest in the world\"}]"
+          },
+          "transcription": "Outro Music"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @ScaryEurope: (image, no text) (132 likes)\n- @Corrin1029: (image, no text) (126 likes)\n- @michele_705: \"Here in the US, policy makers go after moms who co-sleep, always blaming the parents for a SIDS death in one way or another. Most Japanese moms co-sleep, still with one of the lowest SIDS death rates in the world.\" (58 likes)\n- @JonDavidson7111: \"They get their kids vaccinated anyway. Japan isn't polluted with bullshit claims the way we are.\" (55 likes)\n- @collapsedwave1: \"Almost no American parents weigh the risk/ benefits of vaccines, it's truly sad. All safety studies show best course of action: No shots before 2 No shots when sick No multiple shots at once No mmr before 3 You can do all of this & still meet school guidelines!\" (54 likes)\n- @NaanVi0lence: \"Holy fucking disinformation scatman! 1. There's barely any Japanese being born as it is. 2. Better healthcare than the US all round. 3. 97% of kids under 2 are vaccinated in Japan. 4. Suck a fart, cunt!\" (53 likes)\n- @MattBornong: \"Japan doesn't need a mandatory schedule for vaccines, they do it voluntarily. https://apnews.com/article/fact-check-japan-us-infant-mortality-data-vaccines-958016270455\" (53 likes)\n- @ScienceQriosity: \"Compete nonsense.\" (51 likes)\n- @LewisWithrow5: \"Fact-checks from Reuters, AP News, and Snopes confirm this is false: Japan recommends and administers vaccines to infants under 2, with high coverage rates; a 1994 law revision ended mandates for some vaccines like measles but did not halt childhood immunization programs.\" (50 likes)\n- @I_Love_Pirohy: \"There was a point in time when the harm associated with vaccination was made known. Very grateful America is pulling away from mandatory vaccination.\" (41 likes)",
+    "warnings": []
+  }
+}

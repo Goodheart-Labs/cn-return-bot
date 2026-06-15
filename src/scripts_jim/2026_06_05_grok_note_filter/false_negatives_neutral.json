@@ -1,0 +1,166 @@
+[
+  {
+    "runId": "16c6c5b4-0842-44db-af32-9a9bf5cd2896",
+    "tweetId": "2062815479618773335",
+    "tweetUrl": "https://x.com/i/status/2062815479618773335",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "We don’t hate men enough https://t.co/7CV8DCqnVI",
+    "grokNeedsNote": false,
+    "grokReason": "The post consists of an opinionated statement paired with a real photo of novelty urinals and makes no false factual claims about location or context.",
+    "searchCalls": 1,
+    "citations": [
+      "https://x.com/i/status/2062815479618773335"
+    ],
+    "costUsd": 0.02061625
+  },
+  {
+    "runId": "19b57981-075b-4c7a-9502-d6d97b70ed68",
+    "tweetId": "2062103985784344846",
+    "tweetUrl": "https://x.com/i/status/2062103985784344846",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "PROTEST 🇳🇬✊: More Crowds Gather In Abeokuta As Demonstrations Over Abducted Oyo Schoolchildren And Teachers Gain Momentum. https://t.co/7BHKM3mSJw",
+    "grokNeedsNote": false,
+    "grokReason": "Unable to retrieve post content via available tools to evaluate any claims.",
+    "searchCalls": 4,
+    "citations": [],
+    "costUsd": 0.0395775
+  },
+  {
+    "runId": "36c685d2-1852-417f-9e7d-5fb146b56ed3",
+    "tweetId": "2060860391379304578",
+    "tweetUrl": "https://x.com/i/status/2060860391379304578",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "@davidsirota @grahamformaine @LeverNews Fleeting moment lol Wow you are a lousy journalist &amp; judge of charter ! Hope you cashed your check from his campaign . https://t.co/1W8Gr90Ejb",
+    "grokNeedsNote": false,
+    "grokReason": "The post is a personal opinion/insult with no verifiable factual claim that could be corrected by a note.",
+    "searchCalls": 4,
+    "citations": [
+      "https://x.com/ulryfam5/status/2060860391379304578"
+    ],
+    "costUsd": 0.03568125
+  },
+  {
+    "runId": "37fbe383-082b-40c7-9e37-4cb809b0e6c0",
+    "tweetId": "2061772525349093519",
+    "tweetUrl": "https://x.com/i/status/2061772525349093519",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "‼️BOMBSHELL: French Biostatistician &amp; 25-Year Pharma WHISTLEBLOWER Christine Cotton Comes Forward — Claims the Pfizer COVID Vaccine Given to the Public Was NEVER the One Tested in the Clinical Trials🤯\n \nChristine Cotton — a biostatistician with 25 years of experience in clinical https://t.co/g3tFEOv7I9 https://t.co/Wcn2k7Vl0U",
+    "grokNeedsNote": false,
+    "grokReason": "The post accurately reports Christine Cotton's real June 2 2026 suicide note and her documented claims about Pfizer vaccine trials without false assertions or misleading context.",
+    "searchCalls": 4,
+    "citations": [
+      "https://www.youtube.com/watch?v=Uw45AYCwFfI",
+      "https://www.forevermissed.com/christine-cotton/about",
+      "https://x.com/i/status/2062989519490597327",
+      "https://x.com/i/status/2063007651231936757",
+      "https://x.com/i/status/2062994173142139367",
+      "https://x.com/toobaffled/status/2061939460829589625",
+      "https://www.youtube.com/watch?v=bZPtZ6r1PH4",
+      "https://www.facebook.com/ann.wooledge/posts/just-seriously-no-words/10241886938740969/",
+      "https://www.facebook.com/groups/manchesterunited7/posts/1610131707333556/",
+      "https://www.instagram.com/p/DZF6XWuhgnR/",
+      "https://www.preciousmemoriessheveport.com/obituary/CHRISTINE-COTTON",
+      "https://www.goldengatefuneralhome.com/obituaries/christine-cotton",
+      "https://www.instagram.com/p/DZGIQe4leem/",
+      "https://www.kuhnfuneralhomes.com/obituaries/christine-h-krzyzanowski",
+      "https://www.facebook.com/groups/1091718155609107/posts/1781286389985610/",
+      "https://x.com/i/status/2062976389406470650",
+      "https://www.youtube.com/watch?v=P57HbRekOjI",
+      "https://x.com/i/status/2061772525349093519",
+      "https://x.com/i/status/2062957796908265901",
+      "https://x.com/grok/status/2062125671627829692"
+    ],
+    "costUsd": 0.06470875
+  },
+  {
+    "runId": "45d16d8a-fd2f-4f31-8e50-f3234b49c16b",
+    "tweetId": "2059409485358129653",
+    "tweetUrl": "https://x.com/i/status/2059409485358129653",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "I JUST REALIZED THIS YEAR’S CHRISTMAS WILL BE 24/25/26 https://t.co/3wJYMgJ3ZG",
+    "grokNeedsNote": false,
+    "grokReason": "The post is a clear joke/engagement bait with intentionally absurd date formatting for humor, not a serious false claim.",
+    "searchCalls": 1,
+    "citations": [
+      "https://x.com/i/status/2059409485358129653"
+    ],
+    "costUsd": 0.02302125
+  },
+  {
+    "runId": "4ecbbed7-2127-4171-9d3b-91254ec00cce",
+    "tweetId": "2059849193447899492",
+    "tweetUrl": "https://x.com/i/status/2059849193447899492",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "Zohran is hilarious because nothing he’s done has substantively changed the trajectory of NYC and people love or hate him based purely on vibes\n\nHe literally has done nothing that matters lmfao https://t.co/mBv82jb022",
+    "grokNeedsNote": false,
+    "grokReason": "The post expresses a subjective political opinion about a mayor's impact rather than making a verifiable false factual claim.",
+    "searchCalls": 1,
+    "citations": [
+      "https://x.com/i/status/2059849193447899492"
+    ],
+    "costUsd": 0.0199825
+  },
+  {
+    "runId": "55f55474-726c-4084-b054-24943b60d039",
+    "tweetId": "2062006890637242606",
+    "tweetUrl": "https://x.com/i/status/2062006890637242606",
+    "label": "wants_note",
+    "outcome": "submitted",
+    "outcomeReason": null,
+    "tweetText": "“Been in combat” probably not what Pelley meant to say in the NYT interview: https://t.co/EJySuENYo1",
+    "grokNeedsNote": false,
+    "grokReason": "The post expresses a subjective opinion about wording/meaning rather than asserting a verifiable false fact.",
+    "searchCalls": 3,
+    "citations": [
+      "https://www.threads.com/@nypost/post/DZIJUUalFvs/fired-minutes-star-scott-pelley-roasted-for-claiming-he-was-in-combat-in-iraq/",
+      "https://www.yahoo.com/entertainment/tv/articles/fired-60-minutes-star-scott-142857871.html",
+      "https://www.facebook.com/60minutes/videos/ukrainians-escaping-war-and-joining-the-fight-share-their-stories/287571140164847/",
+      "https://www.youtube.com/watch?v=2o7TAgoCyTg",
+      "https://x.com/i/status/2062006890637242606",
+      "https://www.cbsnews.com/video/the-lasting-toll-of-the-wars-in-iraq-and-afghanistan/",
+      "https://www.thedailybeast.com/maga-coded-cbs-anchor-tony-dokoupil-speaks-out-in-tribute-to-brutally-axed-colleague-scott-pelley/",
+      "https://www.foxnews.com/media/scott-pelley-mocked-for-claiming-he-was-in-combat-in-afghanistan-and-iraq-after-cbs-news-firing.amp",
+      "https://www.aol.com/news/scott-pelley-ripped-claiming-combat-162430139.html",
+      "https://www.youtube.com/watch?v=RSO6076Q-Fo",
+      "https://www.facebook.com/christinaloreynews/posts/scott-pelley-has-risked-his-life-in-combat-zones-in-afghanistan-iraq-and-ukraine/1408689174411657/"
+    ],
+    "costUsd": 0.04477125
+  },
+  {
+    "runId": "63f6e297-226e-4d10-b7dc-5ba793e70d91",
+    "tweetId": "2060821100934627796",
+    "tweetUrl": "https://x.com/i/status/2060821100934627796",
+    "label": "wants_note",
+    "outcome": "rejected",
+    "outcomeReason": "low_evaluation_score",
+    "tweetText": "If it walks like a Nazi.\nAnd quacks like a Nazi.\nGuess what? It’s a bloody Nazi. https://t.co/JlEI054vwh https://t.co/K2Y9PgtuLt",
+    "grokNeedsNote": false,
+    "grokReason": "Post ID does not exist or cannot be fetched, so no claim to correct.",
+    "searchCalls": 5,
+    "citations": [
+      "https://www.lowes.com/pd/Zicbol-17W-Natural-Oak-LED-Pendant-Light-with-Linear-Design-Warm-White/7130934",
+      "https://www.ebay.com/p/1872599151",
+      "https://www.amazon.com/JULLISON-Selectable-Recessed-27K-30K-35K-40K-50K-Driverless/dp/B0BWYKG3GJ",
+      "https://www.schoolspecialty.com/ziploc-1-gallon-freezer-bag-2-1116-millimeter-250-count-1595287?srsltid=AfmBOorQ7NukoChAHAMgGGn05baduHGGTpxfV5fyJbTP8cjbxJyjc2u0",
+      "https://www.newegg.com/box-partners/p/0CE-00YE-00003?srsltid=AfmBOopWQa3TkEwnnRryq97DkP5yHkiWuMXRDzOV-rHL2Lv9jldSQWu2",
+      "https://www.inyopools.com/Products/02200015047951.htm",
+      "https://www.tayp.org/products/10239228/",
+      "https://www.mscdirect.com/product/details/45929148",
+      "https://fliphtml5.com/jygb/dfgx/Pro_Fulfillment_Center_Catalog/",
+      "https://www.redstonefoods.com/products/00810M--sour-patch-kids-coal-holiday-theater-box-black-rasp"
+    ],
+    "costUsd": 0.04825
+  }
+]

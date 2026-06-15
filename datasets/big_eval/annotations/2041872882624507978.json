@@ -1,0 +1,30 @@
+{
+  "tweet_id": "2041872882624507978",
+  "role": "helpful_reference",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": true,
+  "needs_note": "yes",
+  "no_note_reason": "",
+  "categories": ["scams_fraud_finance", "statistical_or_numerical_claim", "misattributed_or_miscontextualized_media", "conspiracy_and_viral_hoax"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Claims an 'unnamed' trader placed a $52M oil short right before the Iran peace agreement and made $174M in 3 hours, implying it was Barron Trump (paired with his photo) profiting from insider knowledge.",
+  "why_note_decision": "The screenshot misrepresents the figures: the $174M is the wallet's ALL-TIME PNL (a Hyperliquid perps dashboard total), not a 3-hour profit, and the displayed BRENTOIL position actually shows a LOSS (PNL approx -$3.1M), entry $102.13. A $52M 5x short on a ~14% oil drop could not yield $174M. The Barron Trump attribution is baseless (no evidence; fact-checkers could not link any trader to the Trump family). I disagree with the provisional no-note: the tweet makes a specific false numerical claim plus a false identity attribution to a 1.4M-impression/62K-like audience, so a correction is warranted.",
+  "judge_guidance": "PASS only if the note (1) explains the $174M is the account's ALL-TIME PNL on a Hyperliquid perps dashboard, not a profit made in 3 hours, and that the oil position shown does not support a $174M gain (a ~$52M short on a ~14% drop yields on the order of single-digit millions, and the screenshot's BRENTOIL position is actually negative), AND (2) notes there is no evidence the trader is Barron Trump / the Trump family. Cite Hyperliquid dashboard semantics and/or a fact-check (Snopes). A note that affirms '$174M in 3 hours', or that asserts Barron/Trump made the trade, should FAIL.",
+  "reference_note": "The screenshot is a Hyperliquid crypto perpetuals dashboard, not traditional oil markets; the $174M is the account's ALL-TIME PNL, not a 3-hour gain, and the shown BRENTOIL position is actually at a loss. A ~$52M short on a ~14% drop could not yield $174M. There is no evidence the trader is Barron Trump. https://hyperliquid.gitbook.io/hyperliquid-docs/trading/entry-price-and-pnl https://www.snopes.com/news/2026/04/14/trump-iran-insider-trading/",
+  "original_unhelpful_note": null,
+  "fact_check": {
+    "agrees_correction_needed": true,
+    "claim_verdict": "false/misleading - $174M is all-time perps PNL not a 3-hour profit; oil position shown is a loss; Barron Trump attribution unsupported",
+    "sources_checked": [
+      "https://www.snopes.com/news/2026/04/14/trump-iran-insider-trading/",
+      "https://hyperliquid.gitbook.io/hyperliquid-docs/trading/entry-price-and-pnl",
+      "https://www.msn.com/en-in/news/world/did-barron-trump-buy-oil-worth-30-million-two-days-before-us-and-israel-struck-iran-viral-claims-fact-checked/ar-AA1XGBnu"
+    ],
+    "notes": "Screenshot OCR: 'ALL TIME' PNL +$174,044,824.61; BRENTOIL 5X ISO position PNL -$3,144,044.77, entry $102.13. Hyperliquid PNL graphs are cumulative account metrics. Snopes could not link the oil shorts to anyone, let alone the Trump family; the Barron $30M oil claim is baseless."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {"prominence": "high", "lens_rationale": "1.4M impressions, 62K likes, 17K reposts on a viral insider-trading conspiracy; correcting fabricated financial/attribution claims has clear epistemic value."},
+  "difficulty": "hard"
+}

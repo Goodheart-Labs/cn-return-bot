@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/",
+    "success": true,
+    "status_code": 200,
+    "markdown_chars": 3459,
+    "good": true,
+    "preview": "[ Skip to main content ](https://www.reddit.com/r/GetNoted/comments/1rt9xyh/de_niro_and_mamdani/?solution=bfa88e6398ef7e07bfa88e6398ef7e07&js_challenge=1&token=bbbe4bf1c9a2b5160829c4be34da58613d14e98ee8ef2bade0efa4c7ebdbc924&jsc_orig_r=#main-content)\nOpen menu Open navigation [ ](https://www.reddit.com/)Go to Reddit Home\nr/GetNoted\n[ Sign Up ](https://www.reddit.com/register/)Sign up for Reddit [ ",
+    "error": ""
+  },
+  {
+    "url": "https://www.instagram.com/p/DUWHli8gTpK/",
+    "success": true,
+    "status_code": 200,
+    "markdown_chars": 0,
+    "good": false,
+    "preview": "",
+    "error": ""
+  },
+  {
+    "url": "https://www.facebook.com/NBCBayArea/videos/police-investigating-santana-row-attack-as-possible-hate-crime/2384729795331069/",
+    "success": true,
+    "status_code": 200,
+    "markdown_chars": 46121,
+    "good": true,
+    "preview": "Facebook\n[Log In](https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&next=https%3A%2F%2Fwww.facebook.com%2FNBCBayArea%2Fvideos%2Fpolice-investigating-santana-row-attack-as-possible-hate-crime%2F2384729795331069%2F)\nLog In\n[Forgot Account?](https://www.facebook.com/recover/initiate?ars=royal_blue_bar)\n# [Video](https://www.facebook.com/watch/)\n[Home](https://www.facebook.com",
+    "error": ""
+  },
+  {
+    "url": "https://www.instagram.com/reel/DToWOookcl4/?hl=de",
+    "success": true,
+    "status_code": 200,
+    "markdown_chars": 32705,
+    "good": true,
+    "preview": "[Instagram](https://www.instagram.com/?hl=de)\n[Anmelden](https://www.instagram.com/accounts/login/?next=%2Freel%2FDToWOookcl4%2F%3Fhl%3Dde&source=desktop_nav)\n[Registrieren](https://www.instagram.com/accounts/emailsignup/)\nSchlie\u00dfen\n![uncrustamemess Profilbild](https://scontent-ber1-1.cdninstagram.com/v/t51.82787-19/539752314_18339010183203374_994826213095929272_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_",
+    "error": ""
+  },
+  {
+    "url": "https://www.trueachievements.com/news/asha-sharma-xbox-gamertag",
+    "success": true,
+    "status_code": 200,
+    "markdown_chars": 13480,
+    "good": true,
+    "preview": "[TrueAchievements](https://www.trueachievements.com/)\n  * Gaming\nNews\n[Xbox News](https://www.trueachievements.com/news)[Community News](https://www.trueachievements.com/newslist/community)[Site Updates](https://www.trueachievements.com/news/tags/site-feature)[Xbox Live Status](https://www.trueachievements.com/xbox-live-status)[Suggest News](https://www.trueachievements.com/suggestnews.aspx)\nGamin",
+    "error": ""
+  },
+  {
+    "url": "https://www.bls.gov/news.release/pdf/cpi.pdf",
+    "success": false,
+    "status_code": 200,
+    "markdown_chars": 0,
+    "good": false,
+    "preview": "",
+    "error": "Blocked by anti-bot protection: Structural: minimal_text, no_content_elements (174 bytes, 0 chars visible)"
+  },
+  {
+    "url": "https://www.facebook.com/photo.php?fbid=982113224486408&set=a.850196581011407&id=100080632194001",
+    "success": true,
+    "status_code": 200,
+    "markdown_chars": 25196,
+    "good": true,
+    "preview": "Facebook\n[Log In](https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&next=https%3A%2F%2Fwww.facebook.com%2Fphoto.php%3Ffbid%3D982113224486408%26set%3Da.850196581011407%26id%3D100080632194001)\nLog In\n[Forgot Account?](https://www.facebook.com/recover/initiate?ars=royal_blue_bar)\n![May be an image of text that says 'CELEBS Talk BEN STILLER BACKTRACKS ON SUPPORT FOR NYC MAYOR ",
+    "error": ""
+  },
+  {
+    "url": "https://www.reuters.com/fact-check/netanyahus-press-conference-dispels-death-rumours-2026-03-24/",
+    "success": false,
+    "status_code": 401,
+    "markdown_chars": 0,
+    "good": false,
+    "preview": "",
+    "error": "Blocked by anti-bot protection: DataDome captcha"
+  }
+]

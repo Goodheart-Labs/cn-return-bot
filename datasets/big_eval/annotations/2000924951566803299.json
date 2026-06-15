@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2000924951566803299",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["ai_generated_media"],
+  "category_fit": "partial",
+  "suggested_category": "ai_video_obvious_joke",
+  "tweet_summary": "A short joke caption ('They playing 143 on blast at this kfc') over a clearly AI-generated clip showing a person freefalling off a skyscraper down a giant glass slide labelled with KFC branding — shared as absurdist humor, not as a real event.",
+  "why_note_decision": "The video is unmistakably AI-generated and the tweet is a joke; reply after reply identifies it as AI ('only in an AI generated video', 'niggas just AI generate anything', 'Garbage AI video'). There is no checkable misleading claim — the author makes no claim that this is real, and the audience overwhelmingly understands it isn't. Original note's effort to debunk the 'KFC skyscraper slide' is fact-checking a joke that no one believed.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is a one-line joke over an obvious-AI clip; comments consistently identify it as AI. Any note 'debunking' the slide as fake (or the KFC element as nonexistent) is a false positive — the post makes no claim that this is a real KFC, slide, or event.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "Misleading — the clip shows an extreme glass skyscraper slide, which are paid tourist attractions like LA's OUE SkySlide. Similar videos have been AI-generated, and there are no KFC locations with high-rise glass slides. Sources: https://abcnews.go.com/Lifestyle/introducing-skyslide-glass-slide-1000-feet-air/story?id=40171035 https://app.kling-ai.com/global/ai-video/dubai-slide-extreme-descent-skyscrapers/296056211314789",
+    "failure_reason": "Debunks a joke nobody believed; hedges ('similar videos have been AI-generated') instead of stating it; cites a real LA tourist attraction that just confuses readers. Raters tagged 'note not needed', 'missing key points', and 'hard to understand'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "obvious joke + obvious AI video; no genuine factual claim about reality is made",
+    "sources_checked": [
+      "https://adage.com/technology/ai/aa-fake-ai-generated-kfc-ad-causes-creativity-debate/",
+      "https://www.emarketer.com/content/fake-ai-generated-kfc-ad-ignites-debate-over-ethical-adoption"
+    ],
+    "notes": "AI-generated KFC content went viral earlier in 2025; the video here is consistent with that. Replies treat it as AI throughout. Nothing factual to correct."
+  },
+  "media_reliability_flag": true,
+  "media_confidence": "medium",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Trivial viral joke; no policy/safety/welfare stakes. AI-media-literacy angle exists but this specific case is so obvious it teaches nothing."
+  },
+  "difficulty": "easy"
+}

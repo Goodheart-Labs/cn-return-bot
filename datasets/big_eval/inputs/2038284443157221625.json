@@ -1,0 +1,53 @@
+{
+  "tweet_id": "2038284443157221625",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:52:31.810Z",
+  "post": {
+    "id": "2038284443157221625",
+    "author_id": "1574095209838919681",
+    "created_at": "2026-03-29T15:57:35.000Z",
+    "text": "12-year-old Star Wars child actor Jake Lloyd says that he is retiring from acting forever due to nonstop harassment from adult Star Wars fans, including death threats and sexually-explicit messages. https://t.co/owpDv18ujA",
+    "media": [
+      {
+        "media_key": "3_2038284437754961920",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HElw5ZeXYAAgY60.jpg",
+        "height": 1000,
+        "width": 1500
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 206,
+      "reply_count": 84,
+      "like_count": 7616,
+      "quote_count": 77,
+      "bookmark_count": 315,
+      "impression_count": 265502
+    },
+    "author_followers": 332952,
+    "author_name": "2001 Live",
+    "author_description": "Live-posting as a reporter embedded in history. Curated by @MannyMarotta. Companion to @50YearsAgoLive, @100YearsAgoLive, and @250YearsAgoLive. DM for business.",
+    "author_tweet_count": 14665
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "image",
+          "url": "https://pbs.twimg.com/media/HElw5ZeXYAAgY60.jpg",
+          "description": {
+            "description": "A close-up shot of a young boy with blond, bowl-cut hair, appearing to be young Anakin Skywalker from Star Wars. He wears a tan, textured tunic over a dark shirt and carries a black backpack with thick straps. He has a concerned or thoughtful expression on his face against a bright, hazy background.",
+            "ocrText": ""
+          }
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- @artofthekills: The Star Wars fandom couldn’t possibly get more toxic than this. (Likes: 575)\n- @JCeacc: Imagine hating a 10 year old boy, because you didn't like a movie about space wizards. (Likes: 563)\n- @howboutthemsox: George Lucas ruined Star Wars with this trilogy. He needs to sell the IP off so we can finally get good Star Wars movies again (Likes: 286)\n- @CEOofPoeDameron: You people are assholes (Likes: 122)\n- @salmontub: Surely this is a lesson learnt and the next guy who plays Anakin will be welcomed into the fandom with open arms (Likes: 116)\n- @pskpspspss: That’s sick, really glad he called it out so we can nip it in the bud now and make sure it’s not an issue in the future (Likes: 57)\n- @TrevorOfficialR: To be fair, he ruined Star Wars single-handedly and deserves to be punished… (Likes: 40)\n- @BitsyCeluloide: Actually, the bullying and harassment came from the media. (Likes: 29)\n- @momovolution2: Something his mother would deny in the future. (Likes: 23)\n- @tezzm0sis: Full Dive : https://www.youtube.com/watch?v=k7Vu6eZCNI0&feature=youtu.be (Likes: 17)",
+    "warnings": []
+  }
+}

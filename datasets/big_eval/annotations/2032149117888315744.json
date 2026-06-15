@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2032149117888315744",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "joke_or_meme",
+  "categories": ["celebrity_entertainment_sports"],
+  "category_fit": "partial",
+  "suggested_category": "joke_or_satire",
+  "tweet_summary": "Account 'cateila' posts a clip from Brown Dust 2's 'Slap Slap Pop' minigame (close-up rhythm-game butt-slapping over a 'beach' character) with the joking caption 'this new wuwa rythym game' (suggesting Wuthering Waves released this). 4.47M impressions, 42k likes. OP's own replies confirm: 'It IS brown dust 2', 'go like RT comment and I'll tell you game name'.",
+  "why_note_decision": "OP's own follow-up replies and most engagement explicitly identify the clip as Brown Dust 2, not Wuthering Waves. The 'wuwa rythym game' caption is a transparent gag — gacha-game Twitter joke playing on the fact that Wuwa (Wuthering Waves) did just release a v3.2 rhythm event ('Soar to the Beat'). Replies engage with it as a joke, OP confirms the actual game one comment later. Note's substance is correct (it IS Brown Dust 2's Slap Slap Pop, not Wuwa) but this is overt joke content. Raters mass-tagged noteNotNeeded (6/16).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The 'this new wuwa rythym game' caption is overtly a gacha-game joke (OP's own next reply says 'It IS brown dust 2'); the clip is genuinely from Brown Dust 2's Slap Slap Pop and Wuwa really did release a separate v3.2 rhythm event, but no reasonable reader is misled — this is in-group humor on gaming Twitter. Any 'this is Brown Dust 2 not Wuthering Waves' note is a false positive on overt jokes. FAIL any note that addresses the game-identification claim.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The video shows gameplay from Brown Dust 2's &quot;Slap Slap Pop&quot; rhythm mini-game, not Wuthering Waves. Wuthering Waves' version 3.2 rhythm event is a Muse Dash collab with chibi-style gameplay.    https://www.browndust2.com/en-us/news/view?id=8014  https://www.ldshop.gg/blog/wuthering-waves/wuthering-waves-3-2-update-summary.html",
+    "failure_reason": "noteNotNeeded — correct game-identification but trivial on what is overtly a gacha-game joke; OP's own follow-up reply says 'It IS brown dust 2'.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Clip is genuinely Brown Dust 2 (OP confirms). Wuthering Waves 3.2 has a real but unrelated rhythm event ('Soar to the Beat'). Tweet is a joke.",
+    "sources_checked": [
+      "https://www.browndust2.com/en-us/news/view?id=8014",
+      "https://www.youtube.com/watch?v=ZpXd1aNAfBs",
+      "https://www.escapistmagazine.com/news-brown-dust-2-fans-got-so-irate-over-gooning-censorship-the-developers-have-walked-it-back/"
+    ],
+    "notes": "OP's own replies disclose the actual game. Joke caption — not deceptive intent."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Gacha-game Twitter humor; zero real-world stakes; clean false-positive trap for the bot."
+  },
+  "difficulty": "easy"
+}

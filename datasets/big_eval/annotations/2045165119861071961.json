@@ -1,0 +1,39 @@
+{
+  "tweet_id": "2045165119861071961",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "satire_parody",
+  "categories": [
+    "health_medical_science",
+    "joke_or_satire"
+  ],
+  "category_fit": "partial",
+  "suggested_category": "satire_parody",
+  "tweet_summary": "Tweet sarcastically announces a 'SHOCKING revelation' that mRNA vaccines biologically age recipients '12 months for every year' after the jab.",
+  "why_note_decision": "Author Neil Stone is an infectious-diseases clinician-scientist with a long sarcasm habit ('Officially the 1st person to use word #Covid'); all the top replies are jokes in on the bit ('I'm living proof. I'm 6 years older than when I got it 6 years ago'; 'My autistic son had the MMR and ended up with double autism'). This is satire mocking anti-vax tropes \u2014 '12 months per year' = normal aging is the punchline. The note plays it straight and cites a real JAMA study, missing the joke. Raters correctly flagged note-not-needed. A literal-reading bot might miss this \u2014 the satire signal lives in the impossible-by-construction claim and the unanimous joking reply thread.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The claim 'mRNA ages you 12 months per year' is logically equivalent to 'mRNA causes normal aging' \u2014 that's the joke. The author is a clinician-scientist and replies are unanimously joking in on the bit. FAIL any note that earnestly cites peer-reviewed studies to debunk this \u2014 it treats satire as misinformation. The satire signal: (1) author bio is a real ID doctor, (2) the '12 months per year' phrasing is mathematically equivalent to normal aging, (3) replies are all jokes. A bot that can't read this signal should default to declining rather than writing a serious correction.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "No peer-reviewed study has found mRNA vaccines cause accelerated biological aging. A 4-year study of over 2 million vaccinated adults found no increased all-cause mortality compared to unvaccinated individuals. https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2842305",
+    "failure_reason": "Earnestly fact-checks an obvious satire post by an ID doctor; missed the '12 months per year = normal aging' joke and the reply context.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "Tweet is satire by an ID clinician-scientist mocking anti-vax claims; no checkable claim is sincerely made",
+    "sources_checked": [
+      "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2842305",
+      "https://www.dkfz.de/en/news/press-releases/detail/mrna-rejuvenates-aging-immune-system-the-liver-as-a-fountain-of-youth"
+    ],
+    "notes": "No peer-reviewed evidence mRNA vaccines cause accelerated aging; if anything, mRNA tech is being explored for immune-system rejuvenation. But the tweet is a joke \u2014 '12 months per year' = aging at the normal rate."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Low-engagement satire post; the original note actively misreads tone."
+  },
+  "difficulty": "medium"
+}

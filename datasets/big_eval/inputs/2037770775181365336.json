@@ -1,0 +1,36 @@
+{
+  "tweet_id": "2037770775181365336",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T14:57:44.117Z",
+  "post": {
+    "id": "2037770775181365336",
+    "author_id": "1335132884278108161",
+    "created_at": "2026-03-28T05:56:27.000Z",
+    "text": "X users by country (2025)\n\n🇺🇸 United States — 105.1M\n🇯🇵 Japan — 74.5M\n🇮🇩 Indonesia — 23.6M\n🇵🇱 Poland — 23.3M\n🇮🇳 India — 23.1M\n🇬🇧 United Kingdom — 19.3M\n🇹🇷 Turkey — 18.5M\n🇩🇪 Germany — 17.4M\n🇲🇽 Mexico — 16.6M\n🇸🇦 Saudi Arabia — 15.7M\n🇹🇭 Thailand — 13.6M\n🇭🇰 Hong Kong — 12.8M\n🇫🇷",
+    "media": [],
+    "public_metrics": {
+      "retweet_count": 430,
+      "reply_count": 386,
+      "like_count": 2698,
+      "quote_count": 263,
+      "bookmark_count": 540,
+      "impression_count": 1279030
+    },
+    "author_followers": 5091305,
+    "author_name": "World of Statistics",
+    "author_description": "There are three kinds of lies: lies, damned lies, and statistics. @Kalshi partner.",
+    "author_tweet_count": 50102
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- Andy Boreham 安柏然 (@AndyBxxx): @grok what is the population of Hong Kong? | Likes=179\n- Albert (@Albert_jjjjj): HK has 13M users with a 7M population 😂 too many mainlanders vpn to here😂 | Likes=147\n- 𝕎𝕚𝕖𝕝𝕞𝕠𝕫𝕟𝕪 ℍ𝕦𝕓𝕖𝕣𝕥 (@wielmoznyhubert): JEST NAS WIĘCEJ NIŻ HINDUSÓW!!! | Likes=106\n- Markku Ristola 🇫🇮 🇸🇪 (@svegfinne): Of Finland's 5.6M, 7.7M uses X/Twitter? Make it make sense. | Likes=95\n- The Search (@TheSearch01): X users by Countries 2025 | Likes=86\n- 𝗠𝗶𝗰𝗵𝗮𝗲𝗹 𝗞𝗼𝘃𝗲 (@michael_kove): They really need to stop counting \"VPN users\"... Poland, for example, with population of ~38M - there is NO WAY ~60% of Poles are on Twitter. your babcia i dziadek are definitely NOT on X. | Likes=65\n- Global Analytics (@Global_data1): 📊 X Users vs Population 🌍 🇯🇵 Japan → 74.5M / 125M 🇺🇸 USA → 105.1M / 335M 🇮🇩 Indonesia → 23.6M / 280M 🇮🇳 India → 23.1M / 1.43B 🔥 Reality Check: ➡️ Japan = highest adoption rate 👑 ➡️ USA = scale + influence 💪 ➡️ India = massive untapped potential 🚀 | Likes=41\n- Ru Chern Chong (@ruchernchong): How is Singapore having 8.1 million users with 6.0 million residents? | Likes=25\n- God's_own (@Netarflow): 105M Americans on X but still can't find jobs? Bro, y'all got the most users AND the most 'jobless' vibes in 2026. Meanwhile Nigeria with 7.3M is out here running the timeline and the culture. Stay unemployed,King 👑 🇳🇬🇳🇬 | Likes=18\n- Razee Thapa (@razeethapa): TikTok users by country (2025) [full list provided in reply] | Likes=18",
+    "warnings": []
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "tweet_id": "2056144975818064019",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "opinion_or_framing",
+  "categories": ["ai_generated_media"],
+  "category_fit": "partial",
+  "suggested_category": "ai_authorship_opinion",
+  "tweet_summary": "A small account (6.4k followers) quote-tweets a praising post about an essay and complains 'someone publishing an AI-written article' is bad — but the underlying essay is excerpted from a real Times of India blog post 'The quiet grief of adult friendship' by Pranav Jain.",
+  "why_note_decision": "The tweet's central claim — that the essay is AI-written — is a subjective stylistic judgment, not a verifiable fact. Multiple comments in the thread point to AI 'tells' (sentence fragments, full-stop cadence) but these are heuristics, not proof. The essay exists under Pranav Jain's byline at TOI's 'Civil Irony' blog; the author hasn't disclosed AI use, but absence of disclosure also doesn't prove it's human-written. Either way, this is opinion/framing — a stylistic critique, not a checkable factual claim a reader is being deceived about. The original note's framing ('no indication it is AI-generated') is also not a verifiable counter-claim — current detectors are unreliable.",
+  "judge_guidance": "PASS only if the bot declines to write a note. The essay's authorship attribution to Pranav Jain at TOI is real and verifiable; whether AI was involved in drafting is unknowable from outside and is a stylistic judgment, not a checkable fact. Any note that confidently asserts the essay is (or is not) AI-written FAILS — there is no reliable way to prove this from current evidence, and the AI-vs-human debate is the subjective complaint the tweet is making. A note simply pointing to the TOI byline would also FAIL because that doesn't address the substantive 'is this AI?' question and isn't the kind of correction worth elevating.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The shared essay is an excerpt from a blog post titled \"The quiet grief of adult friendship\" by Pranav Jain, with no indication it is AI-generated. https://timesofindia.indiatimes.com/blogs/civil-irony/the-quiet-grief-of-adult-friendship",
+    "failure_reason": "Note tries to refute an inherently unverifiable claim (whether the essay was AI-drafted) by saying 'no indication' — but absence of indication isn't evidence of absence. The 'AI-written' claim is stylistic/opinion, not a factual claim a note can adjudicate. Raters flagged 'missing key points' (4) and 'incorrect' (3) — likely because the note doesn't really address the tweet's complaint.",
+    "original_status": "NEEDS_MORE_RATINGS"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "The essay's byline (Pranav Jain, TOI Civil Irony blog) is real; whether AI assisted in drafting is unverifiable.",
+    "sources_checked": [
+      "https://timesofindia.indiatimes.com/blogs/civil-irony/"
+    ],
+    "notes": "Stylistic claims that text is 'AI-written' are not currently provable or disprovable from a published piece alone."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "low",
+    "lens_rationale": "Small-account stylistic debate about AI-vs-human writing. Low world-impact."
+  },
+  "difficulty": "easy"
+}

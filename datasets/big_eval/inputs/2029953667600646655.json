@@ -1,0 +1,77 @@
+{
+  "tweet_id": "2029953667600646655",
+  "video_description_strategy": "frames",
+  "cached_at": "2026-05-25T20:11:40.905Z",
+  "post": {
+    "id": "2029953667600646655",
+    "author_id": "1879644163769335808",
+    "created_at": "2026-03-06T16:14:03.000Z",
+    "text": "OPERATION EPIC FURY\n\n• Destroy Iran’s missile arsenal.\n• Destroy their navy.\n• Ensure they NEVER get a nuclear weapon.\n\nLocked in. https://t.co/ika3MMJmZT",
+    "media": [
+      {
+        "media_key": "13_2029953560113467395",
+        "type": "video",
+        "preview_image_url": "https://pbs.twimg.com/amplify_video_thumb/2029953560113467395/img/Rrw6O2dU2xE7P6l_.jpg",
+        "height": 720,
+        "width": 1280,
+        "duration_ms": 43043,
+        "view_count": 5606830,
+        "variants": [
+          {
+            "bit_rate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029953560113467395/vid/avc1/480x270/h2BXLqpTsBK2zV6X.mp4"
+          },
+          {
+            "bit_rate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029953560113467395/vid/avc1/640x360/6LksuFtoAViD_I_v.mp4"
+          },
+          {
+            "bit_rate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/amplify_video/2029953560113467395/vid/avc1/1280x720/bv24WJOEK8EbzboQ.mp4"
+          },
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/amplify_video/2029953560113467395/pl/WLKmWI57KKCHICHE.m3u8?v=753"
+          }
+        ]
+      }
+    ],
+    "public_metrics": {
+      "retweet_count": 11472,
+      "reply_count": 10183,
+      "like_count": 84835,
+      "quote_count": 4638,
+      "bookmark_count": 11277,
+      "impression_count": 17928952
+    },
+    "author_followers": 4699934,
+    "author_name": "The White House",
+    "author_description": "The Golden Age of America Begins Right Now.\n📱 Text USA to 45470 to receive alerts.",
+    "author_tweet_count": 15262
+  },
+  "botInput": {
+    "mediaResult": {
+      "tweetMedia": [
+        {
+          "type": "video",
+          "url": "https://video.twimg.com/amplify_video/2029953560113467395/vid/avc1/1280x720/bv24WJOEK8EbzboQ.mp4",
+          "description": {
+            "description": "A satirical video edit using assets from the Grand Theft Auto video game series layered over thermal military footage of an explosion at sea. Frame 1 shows CJ from GTA: San Andreas with his iconic meme line. Frame 2 shows a vehicle exploding in thermal view labeled 'UNCLASSIFIED'. Frame 3 shows a ship exploding through a targeting reticle. Frame 4 shows the 'wasted' screen from GTA V overlaying the thermal blast footage.",
+            "ocrText": "Ah shit, here we go again. UNCLASSIFIED. 3M. wasted."
+          },
+          "transcription": "Aw shit, here we go again Aw shit, here we go again Aw shit, here we go again Ah shit, here we go again Thanks for watching!"
+        }
+      ],
+      "quotedTweetMedia": []
+    },
+    "authorHistory": {
+      "helpfulNotes": [],
+      "totalHelpful": 0
+    },
+    "comments": "- **Ian Carroll (@IanCarrollShow)**: So it's not a regime change war? I had it on good authority that Trump already completely OBLITERATED their nuclear program and any reporting to the contrary was fake news... So wtf are we doing other than sucking Israel off? (Likes: 14198, Reposts: 895, Replies: 216)\n- **ayman (@ayman_web3)**: \"let’s just keep posting gen z bait videos on the white house page, so nobody will talks about the epstein files\" (Likes: 12606, Reposts: 377, Replies: 62)\n- **JohnnyVomits (@JohnnyVomits)**: The White House is really using clips from Grand Theft Auto in pro-war propaganda. Lol. We officially live in the dumbest timeline imaginable. (Likes: 11032, Reposts: 328, Replies: 44)\n- **Alex Cole (@acnewsitics)**: American soldiers are dying for this dumb war and these clowns are using images from a video game. Total disrespect. (Likes: 6138, Reposts: 328, Replies: 38)\n- **Christopher Helali (@ChrisHelali)**: OPERATION EPSTEIN’S FURY (Likes: 5910, Reposts: 94, Replies: 11)\n- **Kaguya’s Top Gal (@hayasaka_aryan)**: Reddit Occupied Government (Likes: 3868, Reposts: 82, Replies: 18)\n- **Tony Rigatoni (@tonyrigatonee)**: No matter how many of these edits you make gen z will never be on your side (Likes: 1737, Reposts: 17, Replies: 8)\n- **JohnnyVomits (@JohnnyVomits)**: Ah shit, here we go again. (Likes: 1212, Reposts: 36, Replies: 12)\n- **Dexie (@dexiewrites)**: warmongering pedophile bombing children in Iran and calling it ‘help’ (Likes: 1166, Reposts: 101, Replies: 14)\n- **Hadi (@HadiNasrallah)**: Grow up. Jesus (Likes: 1136, Reposts: 17, Replies: 7)",
+    "warnings": []
+  }
+}

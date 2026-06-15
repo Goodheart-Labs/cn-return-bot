@@ -1,0 +1,37 @@
+{
+  "tweet_id": "2003612899714171039",
+  "role": "no_note_needed",
+  "provisional_role": "no_note_needed",
+  "disagrees_with_provisional": false,
+  "needs_note": "no",
+  "no_note_reason": "true_claim",
+  "categories": ["health_medical_science"],
+  "category_fit": "good",
+  "suggested_category": "",
+  "tweet_summary": "Stanford infectious-diseases doctor Jake Scott replies to a vaccine-skeptic quote: two of three 2025 US measles deaths were previously healthy unvaccinated school-aged children; the third was an immunocompromised adult who could not safely receive the live vaccine.",
+  "why_note_decision": "Tweet matches CDC/MMWR characterization of the three 2025 measles deaths. The original note tries to 'correct' by asserting 'no official reports indicating immunocompromise' for the New Mexico adult, but multiple credible sources (Your Local Epidemiologist; broad outbreak reporting) describe the adult as immunocompromised, and CDC's own update reports the death context. The doctor's tweet is accurate; the note is the false positive (dominant NotHelpfulNoteNotNeeded=14 alongside NotHelpfulIncorrect=10).",
+  "judge_guidance": "PASS only if the bot declines to write a note. The tweet is from a credentialed ID physician and aligns with CDC/MMWR reporting. Any note that contradicts the immunocompromised characterization of the third death or that suggests the children were not previously healthy is a false positive. The bot must not repeat the original note's specific failure of denying the immunocompromised status without strong sourcing.",
+  "reference_note": "",
+  "original_unhelpful_note": {
+    "text": "The two measles deaths in Texas 2025 were in previously healthy unvaccinated school-aged children; the third death was in an unvaccinated adult in New Mexico, with no official reports indicating immunocompromise.",
+    "failure_reason": "Tweet is accurate per CDC/MMWR and physician reporting; the note's 'no official reports indicating immunocompromise' clause contradicts widely reported context and reads as a false-positive correction of a true claim by a credentialed expert.",
+    "original_status": "CURRENTLY_RATED_NOT_HELPFUL"
+  },
+  "fact_check": {
+    "agrees_correction_needed": false,
+    "claim_verdict": "true",
+    "sources_checked": [
+      "https://www.cdc.gov/mmwr/volumes/74/wr/mm7414a1.htm",
+      "https://yourlocalepidemiologist.substack.com/p/third-measles-death",
+      "https://www.nejm.org/doi/full/10.1056/NEJMra2504516"
+    ],
+    "notes": "CDC MMWR + epidemiology coverage describe two unvaccinated school-aged children in Texas and an unvaccinated adult in New Mexico; the adult was reported as immunocompromised in multiple outlets, matching the doctor's framing."
+  },
+  "media_reliability_flag": false,
+  "media_confidence": "high",
+  "importance": {
+    "prominence": "high",
+    "lens_rationale": "248k impressions; vaccine misinformation is a high-stakes EA/progress topic (preventable deaths, public-health trust). Suppressing false-positive notes that undermine credentialed experts on vaccines is exactly the kind of error the pipeline must avoid."
+  },
+  "difficulty": "medium"
+}
