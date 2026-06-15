@@ -8,7 +8,7 @@ import type {
   FailureModeInfo,
 } from "./types";
 import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
-import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
+import { fetchAllRows, fetchAllRowsParallel, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
 
 // ─── Production data ─────────────────────────────────────────────────────────
@@ -301,6 +301,111 @@ export async function fetchDashboardData(sinceIso: string): Promise<DashboardDat
   return assembleDashboardData({ canonical, missedOppCompeting, lowEvalRuns });
 }
 
+// The review loaders show *rated* notes (CN has resolved them helpful/unhelpful),
+// not raw most-recent — the freshest notes are almost all NEEDS_MORE_RATINGS,
+// which would leave the review list empty. needs_more_ratings notes aren't loaded
+// here at all; the rated set is the review list.
+const RATED_NOTE_STATUSES = ["CURRENTLY_RATED_HELPFUL", "CURRENTLY_RATED_NOT_HELPFUL"];
+
+/**
+ * Default-view first-paint loader: the newest `limit` notes whose cn_status is
+ * in `cnStatuses`, plus the tweets, ratings, and annotations to render them.
+ * Callers pass the statuses the default filter shows (e.g. just
+ * CURRENTLY_RATED_NOT_HELPFUL) so the very set the user lands on paints first.
+ * Deliberately skips the competing_notes and pipeline_runs primaries (the slow
+ * scans — the missed-opp competing query alone is ~2s), so it lands in ~1s. The
+ * cost: no lost-to-competitor / missed-opp / low-eval items and no competitor
+ * comparisons until fetchAllRatedDashboardData merges in behind it. Failure types
+ * here come from cn_status alone (exact for rated_helpful / rated_unhelpful /
+ * needs_more_ratings).
+ */
+export async function fetchRecentNotesLight(cnStatuses: string[], limit: number): Promise<DashboardData> {
+  console.log(`[data] Default-view paint: up to ${limit} notes (${cnStatuses.join("/")})...`);
+  const { data, error } = await supabase
+    .from("notes")
+    .select(CANONICAL_LIST_COLUMNS)
+    .in("cn_status", cnStatuses)
+    .order("submitted_at", { ascending: false, nullsFirst: false })
+    .limit(limit);
+  if (error) throw error;
+  const canonical = data ?? [];
+  const noteIds = canonical.map((n: any) => n.note_id);
+  const tweetIds = [...new Set(canonical.map((n: any) => n.tweet_id).filter(Boolean))];
+
+  const [tweets, publicDumpRatings, annotations] = await Promise.all([
+    tweetIds.length
+      ? fetchInBatches<any>(supabase, "tweets", TWEETS_LIST_COLUMNS, "tweet_id", tweetIds, undefined, "tweets_light")
+      : Promise.resolve([] as any[]),
+    noteIds.length
+      ? fetchInBatches<any>(supabase, "note_ratings_from_public_dump", PUBLIC_DUMP_RATING_COLUMNS, "note_id", noteIds, undefined, "public_dump_light")
+      : Promise.resolve([] as any[]),
+    fetchAnnotationsForTargets(noteIds),
+  ]);
+
+  return {
+    canonical,
+    competing: [],
+    submittedRuns: [],
+    missedRuns: [],
+    lowEvalRuns: [],
+    lowEvalScores: [],
+    annotations,
+    tweets,
+    publicDumpRatings,
+  };
+}
+
+// Missed opps and low-eval rejections are off by default and far more numerous
+// (thousands), so we cap them rather than pull every row; the rated review list
+// itself is loaded in full. Bump if those categories ever need complete loading.
+const SECONDARY_CATEGORY_CAP = 500;
+
+/**
+ * Loads the complete rated review set: EVERY rated note (helpful + unhelpful),
+ * paginated, plus a recent slice of the secondary categories (missed opps,
+ * low-eval rejections). No "load more" — the rated list is small enough (~700
+ * notes) to load whole, so the default view shows all of its items at once.
+ * Reuses assembleDashboardData, so satellites stay scoped to these primaries.
+ */
+export async function fetchAllRatedDashboardData(): Promise<DashboardData> {
+  console.log("[data] Loading all rated notes…");
+
+  const [canonical, missedRes, lowEvalRes] = await Promise.all([
+    fetchAllRowsParallel<any>(
+      () =>
+        supabase
+          .from("notes")
+          .select(CANONICAL_LIST_COLUMNS)
+          .in("cn_status", RATED_NOTE_STATUSES)
+          .order("submitted_at", { ascending: false, nullsFirst: false })
+          .order("note_id", { ascending: true }),
+      "all_rated_notes",
+    ),
+    supabase
+      .from("competing_notes")
+      .select("*")
+      .is("our_note_id", null)
+      .eq("current_status", "CURRENTLY_RATED_HELPFUL")
+      .not("pipeline_run_id", "is", null)
+      .order("created_at_millis", { ascending: false })
+      .limit(SECONDARY_CATEGORY_CAP),
+    supabase
+      .from("pipeline_runs")
+      .select(LOW_EVAL_RUN_COLUMNS)
+      .eq("outcome_reason", "low_evaluation_score")
+      .order("created_at", { ascending: false })
+      .limit(SECONDARY_CATEGORY_CAP),
+  ]);
+  if (missedRes.error) throw missedRes.error;
+  if (lowEvalRes.error) throw lowEvalRes.error;
+
+  return assembleDashboardData({
+    canonical,
+    missedOppCompeting: missedRes.data ?? [],
+    lowEvalRuns: lowEvalRes.data ?? [],
+  });
+}
+
 /**
  * Tag-anchored loader: every production item ever tagged with one of `tags`,
  * ignoring the date window. Cheap because it starts from the small annotations
@@ -521,11 +626,13 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
  * annotations table, pulling only the failure_modes column.
  */
 export async function fetchProductionTagCounts(): Promise<Map<string, number>> {
-  const rows = await fetchAllRows<any>(
-    supabase
-      .from("review_dashboard_annotations")
-      .select("failure_modes")
-      .eq("source", "production"),
+  const rows = await fetchAllRowsParallel<any>(
+    () =>
+      supabase
+        .from("review_dashboard_annotations")
+        .select("failure_modes")
+        .eq("source", "production")
+        .order("target_id", { ascending: true }),
     "production_tag_counts",
   );
   const counts = new Map<string, number>();
@@ -551,13 +658,18 @@ export async function fetchProductionTagCounts(): Promise<Map<string, number>> {
  */
 export async function fetchProductionCounts(): Promise<Record<FailureType, number>> {
   const [notes, helpfulCompeting, missed, lowEval] = await Promise.all([
-    fetchAllRows<any>(supabase.from("notes").select("note_id, cn_status"), "count_notes"),
-    fetchAllRows<any>(
-      supabase
-        .from("competing_notes")
-        .select("our_note_id")
-        .eq("current_status", "CURRENTLY_RATED_HELPFUL")
-        .not("our_note_id", "is", null),
+    fetchAllRowsParallel<any>(
+      () => supabase.from("notes").select("note_id, cn_status").order("note_id", { ascending: true }),
+      "count_notes",
+    ),
+    fetchAllRowsParallel<any>(
+      () =>
+        supabase
+          .from("competing_notes")
+          .select("our_note_id")
+          .eq("current_status", "CURRENTLY_RATED_HELPFUL")
+          .not("our_note_id", "is", null)
+          .order("our_note_id", { ascending: true }),
       "count_helpful_competing",
     ),
     supabase
