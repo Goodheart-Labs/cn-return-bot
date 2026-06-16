@@ -36,6 +36,14 @@ Return JSON:
 - findings: a research summary with the full https:// source URL written inline next to each claim.
 - correction_needed: true only if the post has a clear factual error backed by direct contradicting evidence.`;
 
+/** Appended to the search prompt when `config.search_political_sources` is on
+ *  (SIMPLE_BOT_POLITICAL_SOURCES_TEST). Steers sourcing toward the author's own
+ *  political side so a note is more likely to bridge / be rated helpful. */
+export const SEARCH_POLITICAL_SOURCES_INSTRUCTION = `
+
+## Political topics
+For political posts, prefer sources associated with the post author's own political side when they support the correction, if possible. A note is far more likely to be rated helpful when it cites sources the author's own audience already trusts.`;
+
 /** `referenceBlock` is the misinfo pre-pass ground-truth article (already
  *  formatted), or null in the regular pipeline. `simple` swaps the detailed base
  *  for the terse variant. */

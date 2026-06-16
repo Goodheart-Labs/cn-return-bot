@@ -14,6 +14,7 @@ import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,
   SIMPLE_WRITER_SYSTEM_PROMPT,
+  WRITER_FEWSHOT_EXAMPLES,
   WRITER_RESPONSE_FORMAT,
   buildWriterUserMessage,
   buildWriterRetryMessage,
@@ -30,7 +31,8 @@ const MAX_NOTE_CHARS = 280;
 export async function runWriter(userMessage: string, findings: string): Promise<WriterResult> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const systemPrompt = config.simple_prompts ? SIMPLE_WRITER_SYSTEM_PROMPT : WRITER_SYSTEM_PROMPT;
+  const basePrompt = config.simple_prompts ? SIMPLE_WRITER_SYSTEM_PROMPT : WRITER_SYSTEM_PROMPT;
+  const systemPrompt = config.writer_examples ? basePrompt + WRITER_FEWSHOT_EXAMPLES : basePrompt;
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },

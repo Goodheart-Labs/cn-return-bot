@@ -15,6 +15,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 import {
   buildSearchSystemPrompt,
+  SEARCH_POLITICAL_SOURCES_INSTRUCTION,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -55,11 +56,13 @@ function appendSonarCitations(findings: string, annotations: any[] | undefined):
  *  pre-pass ground-truth article when one is active (covers every simple-bot
  *  search provider, since they all build their prompt from here). */
 export function getSearchSystemPrompt(): string {
+  const config = getBotConfig();
   const monitoring = getMonitoringContext();
-  return buildSearchSystemPrompt({
+  const base = buildSearchSystemPrompt({
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
-    simple: getBotConfig().simple_prompts ?? false,
+    simple: config.simple_prompts ?? false,
   });
+  return config.search_political_sources ? base + SEARCH_POLITICAL_SOURCES_INSTRUCTION : base;
 }
 
 // --- Public types ---

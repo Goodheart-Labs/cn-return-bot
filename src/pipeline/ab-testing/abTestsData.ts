@@ -128,15 +128,45 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
 };
 
 // Swap simple-bot's search + writer system prompts for maximally-terse variants
-// (the shared verifier / user-message prompts are untouched). Prereq-gated to
-// simple-bot, so no defaultVariant. Ships dormant (simple weight 0) — bump the
-// "simple" weight to start the experiment, since simple-bot carries live traffic.
+// (the shared verifier / user-message prompts are untouched). Tests whether the
+// long criteria lists pull their weight. Live 50/50 on simple-bot. Prereq-gated
+// to simple-bot, so no defaultVariant.
 const SIMPLE_BOT_PROMPTS_TEST: ABTest = {
   name: "simple_bot_prompts",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "detailed", overrides: { simple_prompts: false } }, weight: 100 },
-    { variant: { name: "simple",   overrides: { simple_prompts: true  } }, weight: 0   },
+    { variant: { name: "detailed", overrides: { simple_prompts: false } }, weight: 50 },
+    { variant: { name: "simple",   overrides: { simple_prompts: true  } }, weight: 50 },
+  ],
+};
+
+// Append an instruction to simple-bot's SEARCH prompt to prefer, for political
+// posts, sources associated with the post author's own political side — the
+// bridging bet that a correction cited to the author's own trusted outlets is
+// more likely to be rated helpful. Live 50/50 on simple-bot. Prereq-gated to
+// simple-bot, so no defaultVariant.
+const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
+  name: "simple_bot_political_sources",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_political_sources: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { search_political_sources: true  } }, weight: 50 },
+  ],
+};
+
+// Append a few-shot block of real, well-performing notes (all simple, direct,
+// and short) to simple-bot's writer system prompt, testing whether concrete
+// examples pull the writer toward that "simple and nice" style vs the
+// principles-only prompt. Holds the writer model + every other step constant,
+// so the prompt is the only variable. Live 50/50 on simple-bot — watch the
+// helpful/FP rate of the `on` arm. Prereq-gated to simple-bot, so no
+// defaultVariant.
+const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
+  name: "simple_bot_writer_examples",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { writer_examples: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { writer_examples: true  } }, weight: 50 },
   ],
 };
 
@@ -309,6 +339,8 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
   SIMPLE_BOT_PROMPTS_TEST,
+  SIMPLE_BOT_WRITER_EXAMPLES_TEST,
+  SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
