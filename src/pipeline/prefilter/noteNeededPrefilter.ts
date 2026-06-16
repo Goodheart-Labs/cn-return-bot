@@ -52,7 +52,7 @@ const PREFILTER_CONFIG: BotConfig = {
 };
 
 // Reframed note-needed judge: same three preconditions as the real cheap-bot
-// judge (src/pipeline/simple-bot/judge.ts), but it receives post + research
+// judge (src/pipeline/cheap-bot/judge.ts), but it receives post + research
 // findings instead of a proposed note (the prefilter skips the writer).
 const JUDGE_SYSTEM_PROMPT = `You are a Community Notes quality judge for X/Twitter. You receive an original post and research findings from a web search. Decide whether the post NEEDS a Community Note.
 

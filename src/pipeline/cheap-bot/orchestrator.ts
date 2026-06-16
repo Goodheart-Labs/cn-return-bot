@@ -23,7 +23,7 @@ import { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError, type 
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
 import { verifySources, type SourceVerification } from "../verify/sourceVerifier";
-import { runNoteNeededJudge } from "../simple-bot/judge";
+import { runNoteNeededJudge } from "./judge";
 import { runWriter, type WriterResult } from "../simple-bot/writer";
 import { searchWithGeminiNative } from "../simple-bot/searchDispatch";
 import { trackLlmCall } from "../cost-tracking/costTracker";
