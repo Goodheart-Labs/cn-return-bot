@@ -99,6 +99,7 @@ metrics are LATEST values, refreshed every pipeline run touching the tweet
 | `media` | JSONB | raw X-API media array `[{type, url, ...}]` |
 | `referenced_tweets` | JSONB | nullable, `[{type, id}]` |
 | `referenced_tweet_data` | JSONB | nullable, `{id, author_id, created_at, text, media[]}` |
+| `raw_tweet` | JSONB | complete raw X-API tweet object — every field the eligible-posts endpoint returns (`article`, `note_tweet`, `entities`, `lang`, `possibly_sensitive`, `matched_media_notes`, `suggested_source_links`, …) plus its expansions resolved inline under `includes` (`author`, `media` incl. `alt_text`, `referenced_tweets`, `polls`, `place`). NULL for rows first seen before migration 045. |
 | `has_video`, `has_photo` | BOOLEAN | derived from `media` for fast filtering |
 | `media_count` | INTEGER | derived |
 | `video_duration_ms` | INTEGER | derived |
