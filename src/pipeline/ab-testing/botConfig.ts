@@ -90,6 +90,13 @@ export interface BotConfig {
    * Defaults to false.
    */
   satire_detector?: boolean;
+  /**
+   * When true (simple-bot only), the search and writer steps use maximally-terse
+   * "simple" prompt variants instead of the detailed defaults — tests whether the
+   * long criteria lists are pulling their weight. Set by SIMPLE_BOT_PROMPTS_TEST;
+   * defaults false. Doesn't touch the shared source-verifier / user-message prompts.
+   */
+  simple_prompts?: boolean;
   /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
   feed_size: FeedSize;
   /**

@@ -56,7 +56,10 @@ function appendSonarCitations(findings: string, annotations: any[] | undefined):
  *  search provider, since they all build their prompt from here). */
 export function getSearchSystemPrompt(): string {
   const monitoring = getMonitoringContext();
-  return buildSearchSystemPrompt(monitoring ? buildReferenceBlock(monitoring) : null);
+  return buildSearchSystemPrompt({
+    referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
+    simple: getBotConfig().simple_prompts ?? false,
+  });
 }
 
 // --- Public types ---

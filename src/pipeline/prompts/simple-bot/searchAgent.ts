@@ -29,15 +29,24 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
+/** Maximally-terse variant (SIMPLE_BOT_PROMPTS_TEST = simple). */
+export const SIMPLE_SEARCH_SYSTEM_PROMPT = `Investigate whether this X/Twitter post contains a factual error worth a Community Note. Search the web for evidence.
+
+Return JSON:
+- findings: a research summary with the full https:// source URL written inline next to each claim.
+- correction_needed: true only if the post has a clear factual error backed by direct contradicting evidence.`;
+
 /** `referenceBlock` is the misinfo pre-pass ground-truth article (already
- *  formatted), or null in the regular pipeline. */
-export function buildSearchSystemPrompt(referenceBlock: string | null): string {
-  if (!referenceBlock) return SEARCH_SYSTEM_PROMPT;
-  return `${SEARCH_SYSTEM_PROMPT}
+ *  formatted), or null in the regular pipeline. `simple` swaps the detailed base
+ *  for the terse variant. */
+export function buildSearchSystemPrompt(params: { referenceBlock: string | null; simple: boolean }): string {
+  const base = params.simple ? SIMPLE_SEARCH_SYSTEM_PROMPT : SEARCH_SYSTEM_PROMPT;
+  if (!params.referenceBlock) return base;
+  return `${base}
 
 A reference document on this post's topic is provided below. Treat it as ground truth and include its Source URL inline in the findings as a citation.
 
-${referenceBlock}`;
+${params.referenceBlock}`;
 }
 
 // OpenAI-flavoured schema (strict json_schema), used by Anthropic via OpenRouter.

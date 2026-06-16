@@ -127,6 +127,19 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   ],
 };
 
+// Swap simple-bot's search + writer system prompts for maximally-terse variants
+// (the shared verifier / user-message prompts are untouched). Prereq-gated to
+// simple-bot, so no defaultVariant. Ships dormant (simple weight 0) — bump the
+// "simple" weight to start the experiment, since simple-bot carries live traffic.
+const SIMPLE_BOT_PROMPTS_TEST: ABTest = {
+  name: "simple_bot_prompts",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "detailed", overrides: { simple_prompts: false } }, weight: 100 },
+    { variant: { name: "simple",   overrides: { simple_prompts: true  } }, weight: 0   },
+  ],
+};
+
 // Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
 // skips it when no note is warranted (recorded as rejected / prefilter_no_note).
 // This is what makes the large feed affordable. Mostly-on, with a 20% "off"
@@ -295,6 +308,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
+  SIMPLE_BOT_PROMPTS_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,

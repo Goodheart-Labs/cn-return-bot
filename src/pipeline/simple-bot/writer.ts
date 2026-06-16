@@ -13,6 +13,7 @@ import { countSubmittedNoteLength } from "../utils/noteLength";
 import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,
+  SIMPLE_WRITER_SYSTEM_PROMPT,
   WRITER_RESPONSE_FORMAT,
   buildWriterUserMessage,
   buildWriterRetryMessage,
@@ -29,9 +30,10 @@ const MAX_NOTE_CHARS = 280;
 export async function runWriter(userMessage: string, findings: string): Promise<WriterResult> {
   const log = getTweetLog();
   const config = getBotConfig();
+  const systemPrompt = config.simple_prompts ? SIMPLE_WRITER_SYSTEM_PROMPT : WRITER_SYSTEM_PROMPT;
 
   const messages: ChatMessage[] = [
-    { role: "system", content: WRITER_SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt },
     { role: "user", content: buildWriterUserMessage(userMessage, findings) },
   ];
 
