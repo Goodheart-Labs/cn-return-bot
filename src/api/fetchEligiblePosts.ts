@@ -27,6 +27,8 @@ export type Post = {
   id: string;
   author_id: string;
   created_at: string;
+  // Full post body: note_tweet.text for long-form (>280) posts, else the
+  // tweet's text. Never the truncated form.
   text: string;
   media: any[];
   referenced_tweets?: ReferencedTweet[];
@@ -265,7 +267,11 @@ export function parsePostsResponse(data: any): Post[] {
         id: tweet.id,
         author_id: tweet.author_id,
         created_at: tweet.created_at,
-        text: tweet.text,
+        // Long-form (>280 char) posts truncate `text` and end it in a t.co
+        // self-link; the complete body lives in note_tweet.text. Prefer it so
+        // the bots — and tweets.text — see the whole post. The untouched API
+        // values are still preserved verbatim in `raw`.
+        text: tweet.note_tweet?.text ?? tweet.text,
         media,
         referenced_tweets: tweet.referenced_tweets || undefined,
         referenced_tweet_data: referencedTweetData,
