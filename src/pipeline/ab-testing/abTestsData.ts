@@ -144,19 +144,6 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   ],
 };
 
-// Extra LLM step between writer and source verifier that judges whether the
-// proposed note is actually warranted. When "on", the search step's system
-// prompt is simplified (criteria for "when a note is needed" move into the
-// judge's prompt). Prereq-gated to simple-bot, so no defaultVariant.
-const NOTE_NEEDED_JUDGE_TEST: ABTest = {
-  name: "note_needed_judge",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off",              overrides: { note_needed_judge: false }                                                                 }, weight: 100 },
-    { variant: { name: "deepseek-v4flash", overrides: { note_needed_judge: true, note_judge_model: "deepseek/deepseek-v4-flash" }                  }, weight: 0 },
-  ],
-};
-
 // Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
 // skips it when no note is warranted (recorded as rejected / prefilter_no_note).
 // This is what makes the large feed affordable. Mostly-on, with a 20% "off"
@@ -344,7 +331,6 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
-  NOTE_NEEDED_JUDGE_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,

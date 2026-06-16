@@ -31,11 +31,10 @@ export interface BotConfig {
    */
   verifier_claim_based?: boolean;
   /**
-   * When true, the simple-bot pipeline runs an extra LLM step between writer
-   * and source verifier that judges whether a note is actually warranted for
-   * the post. The search step's system prompt is also simplified — the "when
-   * NOT to set correction_needed" criteria move into the judge's prompt.
-   * Defaults to false (no judge step, full search prompt).
+   * When true, the pipeline runs an extra LLM step between writer and source
+   * verifier that judges whether a note is actually warranted for the post.
+   * cheap-bot's primary FP guard (always on there via BOT_TEST). Defaults to
+   * false (no judge step).
    */
   note_needed_judge?: boolean;
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */

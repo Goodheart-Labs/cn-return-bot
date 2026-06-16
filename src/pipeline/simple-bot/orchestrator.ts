@@ -10,14 +10,12 @@
 
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
-import { getBotConfig } from "../ab-testing/botConfig";
 import type { BotInput } from "../input/createBotInput";
 import { buildUserMessageFromInput } from "../input/prompt";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
 import { withWriterCache, type WriterStageResult } from "../replay/writerCache";
-import { runNoteNeededJudge } from "./judge";
 import { runSearch } from "./search";
 import { runWriter } from "./writer";
 
@@ -56,22 +54,9 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   };
 }
 
-/** Note-needed judge (when enabled) → source verifier. Runs on every full
- *  pipeline and on every cache replay. */
+/** Source verifier. Runs on every full pipeline and on every cache replay. */
 async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" }>): Promise<PipelineOutcome> {
   const { userMessage, findings, noteText, sources } = stage;
-
-  if (getBotConfig().note_needed_judge) {
-    const judge = await runNoteNeededJudge({
-      postContext: userMessage,
-      researcherFindings: findings,
-      noteText,
-      sources,
-    });
-    if (!judge.noteNeeded) {
-      return { type: "no_correction", reason: judge.reasoning };
-    }
-  }
 
   const verification = await verifySources({
     noteText,
