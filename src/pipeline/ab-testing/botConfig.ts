@@ -90,6 +90,29 @@ export interface BotConfig {
    * Defaults to false.
    */
   satire_detector?: boolean;
+  /**
+   * When true (simple-bot only), the search and writer steps use maximally-terse
+   * "simple" prompt variants instead of the detailed defaults — tests whether the
+   * long criteria lists are pulling their weight. Set by SIMPLE_BOT_PROMPTS_TEST;
+   * defaults false. Doesn't touch the shared source-verifier / user-message prompts.
+   */
+  simple_prompts?: boolean;
+  /**
+   * When true (simple-bot only), the search agent's system prompt is appended
+   * with an instruction to prefer, for political posts, sources associated with
+   * the post author's own political side — the bridging idea that a note is more
+   * likely to be rated helpful when it cites sources the author's audience
+   * already trusts. Set by SIMPLE_BOT_POLITICAL_SOURCES_TEST; defaults false.
+   */
+  search_political_sources?: boolean;
+  /**
+   * When true, the writer's system prompt is appended with a few-shot block of
+   * real notes the community rated helpful — all simple, direct, and short — to
+   * pull the writer toward that "simple and nice" style. Set by
+   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false. Composes with the base
+   * prompt (detailed or `simple_prompts`).
+   */
+  writer_examples?: boolean;
   /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
   feed_size: FeedSize;
   /**

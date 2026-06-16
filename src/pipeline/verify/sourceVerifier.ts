@@ -22,6 +22,9 @@ import {
   type MediaSourceDescription,
 } from "../media/mediaAnalysisGemini";
 import { fetchTweetViaSyndication, type SyndicationTweet } from "./fetchTweet";
+import { buildVerifierSystemPrompt, VERIFY_RESPONSE_FORMAT } from "../prompts/verify/sourceVerification";
+import { CLAIM_EXTRACTION_SYSTEM_PROMPT, CLAIM_EXTRACTION_RESPONSE_FORMAT } from "../prompts/verify/claimExtraction";
+import { buildClaimSupportSystemPrompt, CLAIM_SUPPORT_RESPONSE_FORMAT } from "../prompts/verify/claimSupport";
 
 export interface SourceVerification {
   /** Reasoning for the verification decision. */
@@ -33,33 +36,6 @@ export interface SourceVerification {
   /** True iff good_sources together cover every factual claim. */
   accepted: boolean;
 }
-
-const RESPONSE_FORMAT = {
-  type: "json_schema" as const,
-  json_schema: {
-    name: "source_verification",
-    strict: true,
-    schema: {
-      type: "object",
-      properties: {
-        reasoning: { type: "string", description: "Why the note was accepted or rejected, and a short note on any bad_sources." },
-        good_sources: {
-          type: "array",
-          items: { type: "string" },
-          description: "Verbatim URLs from the cited sources that support a factual claim in the note. Twitter/X links come with the fetched tweet text — judge them on that content like any other source.",
-        },
-        bad_sources: {
-          type: "array",
-          items: { type: "string" },
-          description: "Verbatim URLs from the cited sources that failed to fetch or that do not support any factual claim in the note.",
-        },
-        accepted: { type: "boolean", description: "True iff good_sources together cover every factual claim in the note." },
-      },
-      required: ["reasoning", "good_sources", "bad_sources", "accepted"],
-      additionalProperties: false,
-    },
-  },
-};
 
 function isTwitterUrl(url: string): boolean {
   try {
@@ -229,30 +205,6 @@ async function fetchAsWebPage(url: string): Promise<FetchedSource> {
   return { url, content: `### ${url}\n${content}`, fetched: !isFetchError };
 }
 
-function buildSystemPrompt(acceptsMediaSources: boolean): string {
-  const mediaRule = acceptsMediaSources
-    ? `- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).`
-    : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
-
-  return `You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.
-
-Scope — what to ignore:
-- Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.
-- If a "Research findings" section is present, it is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under "Note's cited sources".
-- Sources marked "[from search snippet]" were not fully fetched; evaluate them based on the available title and snippet text.
-
-Classification rules for each cited source:
-- Twitter/X links (x.com, twitter.com): the tweet's text and author are fetched and shown. Good only if that tweet content directly supports a factual claim in the note; otherwise bad. If a tweet is marked "could not be fetched", accept it as good — we can't read it, so don't penalize it.
-- Any other source → good only if it (a) was successfully fetched (no "Fetch failed:" / "Fetch error:" / "Non-text content:" marker) AND (b) its content directly supports at least one factual claim in the note. Otherwise bad.
-${mediaRule}
-
-Output:
-- good_sources: verbatim URLs (exactly as listed) that pass the rules above.
-- bad_sources: every other cited URL — failed-to-fetch, irrelevant, or contradicts the note.
-- Every cited URL must appear in exactly one of good_sources or bad_sources. Do not invent URLs.
-- accepted: true iff good_sources together cover every factual claim in the note. Otherwise false, and name the unsupported claim in reasoning.`;
-}
-
 export interface VerifySourcesParams {
   noteText: string;
   sources: string[];
@@ -323,7 +275,7 @@ async function runClassicVerification(
   const log = getTweetLog();
   const config = getBotConfig();
   const messagesLogPrefix = `${logPrefix}.messages`;
-  const systemPrompt = buildSystemPrompt(acceptMediaSources);
+  const systemPrompt = buildVerifierSystemPrompt(acceptMediaSources);
 
   const userMessage = [
     `## Context`,
@@ -344,7 +296,7 @@ async function runClassicVerification(
       { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
-    responseFormat: RESPONSE_FORMAT,
+    responseFormat: VERIFY_RESPONSE_FORMAT,
     schemaHint: `{ "good_sources": string[], "bad_sources": string[], "accepted": boolean, "reasoning": string }`,
   });
 
@@ -366,30 +318,6 @@ export interface ClaimExtraction {
   claims: string[];
 }
 
-const CLAIM_EXTRACTION_FORMAT = {
-  type: "json_schema" as const,
-  json_schema: {
-    name: "note_claims",
-    strict: true,
-    schema: {
-      type: "object",
-      properties: {
-        claims: {
-          type: "array",
-          items: { type: "string" },
-          description: "The distinct factual claims asserted by the note, each a self-contained verifiable statement.",
-        },
-      },
-      required: ["claims"],
-      additionalProperties: false,
-    },
-  },
-};
-
-const CLAIM_EXTRACTION_SYSTEM_PROMPT = `Extract the distinct atomic claims made.
-
-Output JSON: { "claims": string[] }`;
-
 /** First claim-based call: break the note into its distinct factual claims. */
 export async function extractClaims(noteText: string, costPrefix: string): Promise<string[]> {
   const config = getBotConfig();
@@ -400,7 +328,7 @@ export async function extractClaims(noteText: string, costPrefix: string): Promi
       { role: "system" as const, content: CLAIM_EXTRACTION_SYSTEM_PROMPT },
       { role: "user" as const, content: `## Proposed community note\n${noteText}` },
     ],
-    responseFormat: CLAIM_EXTRACTION_FORMAT,
+    responseFormat: CLAIM_EXTRACTION_RESPONSE_FORMAT,
     schemaHint: `{ "claims": string[] }`,
   });
   return parsed.claims ?? [];
@@ -409,59 +337,6 @@ export async function extractClaims(noteText: string, costPrefix: string): Promi
 interface ClaimSupport {
   reasoning: string;
   claim_support: { claim: string; supporting_sources: string[] }[];
-}
-
-const CLAIM_SUPPORT_FORMAT = {
-  type: "json_schema" as const,
-  json_schema: {
-    name: "claim_support",
-    strict: true,
-    schema: {
-      type: "object",
-      properties: {
-        reasoning: { type: "string", description: "Brief note on which claims are unsupported, if any." },
-        claim_support: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              claim: { type: "string" },
-              supporting_sources: {
-                type: "array",
-                items: { type: "string" },
-                description: "Verbatim cited URLs whose content directly supports this claim. May be empty.",
-              },
-            },
-            required: ["claim", "supporting_sources"],
-            additionalProperties: false,
-          },
-        },
-      },
-      required: ["reasoning", "claim_support"],
-      additionalProperties: false,
-    },
-  },
-};
-
-function buildClaimSupportSystemPrompt(acceptsMediaSources: boolean): string {
-  const mediaRule = acceptsMediaSources
-    ? `- Media URLs (videos, audio, images) appear with an automated content analysis block (title, summary, on-screen/visible text, transcript). Treat that block as the source's content. If it could not be analyzed you'll see the raw page or a fetch error instead.`
-    : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) provide ZERO evidence — you cannot watch them, so never list them as supporting.`;
-
-  return `For each factual claim of a proposed community note, list the cited source URLs whose content directly supports that claim.
-
-Rules:
-- A source supports a claim only if its fetched content states or clearly implies that claim. If it doesn't, omit it for that claim.
-- Twitter/X links come with the fetched tweet text and author; list one as supporting a claim only if that tweet text states or clearly implies the claim. A tweet marked "could not be fetched" supports a claim only when the claim is about that post itself.
-- A source that failed to fetch ("Fetch failed:" / "Fetch error:" / "Non-text content:") supports nothing.
-${mediaRule}
-
-Scope — what to ignore:
-- The original post and any "Research findings" are background, not sources. Only URLs under "Note's cited sources" may be listed.
-- Sources marked "[from search snippet]" were not fully fetched; judge them from the available snippet.
-
-Output JSON: { "reasoning": string, "claim_support": [{ "claim": string, "supporting_sources": string[] }] }
-- Include every claim, in the order given. Use the verbatim cited URLs. supporting_sources may be empty when nothing supports the claim.`;
 }
 
 async function runClaimBasedVerification(
@@ -498,7 +373,7 @@ async function runClaimBasedVerification(
       { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
-    responseFormat: CLAIM_SUPPORT_FORMAT,
+    responseFormat: CLAIM_SUPPORT_RESPONSE_FORMAT,
     schemaHint: `{ "reasoning": string, "claim_support": [{ "claim": string, "supporting_sources": string[] }] }`,
   });
 

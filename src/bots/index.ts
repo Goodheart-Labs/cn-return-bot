@@ -6,17 +6,6 @@
  */
 
 import { Bot } from "./types";
-import { opusMain } from "./opus-main";
-import { opusMainV2 } from "./opus-main-v2";
-import { opusMainNoSourceCheck } from "./opus-main-no-source-check";
-import { opusDirect } from "./opus-direct";
-import { opusDirectGrok } from "./opus-direct-grok";
-import { opusMainV2Grok } from "./opus-main-v2-grok";
-import { opusMultiSource } from "./opus-multi-source";
-import { opusBridging } from "./opus-bridging";
-import { opusResearch } from "./opus-research";
-import { agentBot } from "./agent";
-import { multiAgentBot } from "./multi-agent";
 import { simpleBot } from "./simple-bot";
 import { cheapBot } from "./cheap-bot";
 
@@ -35,18 +24,16 @@ import { cheapBot } from "./cheap-bot";
 //   gemini-3-flash gemini-3-flash.ts    80841a5      Gemini 2.0 Flash
 //   multi-search   multi-search.ts      80841a5      multi-source search variant
 //   deepseek       deepseek.ts          80841a5      DeepSeek model variant
-//
-// ORPHANED PIPELINE COMPONENTS (only used by retired bots, safe to delete):
-//   src/pipeline/multiSourceSearch.ts   — only used by multi-search
-//   src/pipeline/predictionScores.ts    — post-submit predictor, no longer called
+//   opus-main, opus-main-v2, opus-main-no-source-check, opus-direct,
+//   opus-direct-grok, opus-main-v2-grok, opus-multi-source, opus-bridging,
+//   opus-research, agent, multi-agent — all weight-0; retired when the prompts/
+//   folder landed. Took their note-writer / search / verify-single helpers with
+//   them (write/writeNote{Legacy,Direct,Bridging,MultiSource}, search/*,
+//   verify/sourceVerification, multi-agent/*, input/prompt, tool-calling tool
+//   schemas + buildToolList).
 // =============================================================================
 
-const ALL_BOTS: Bot[] = [
-  agentBot, multiAgentBot, simpleBot, cheapBot,
-  opusMain, opusMainV2, opusMainNoSourceCheck,
-  opusDirect, opusDirectGrok, opusMainV2Grok,
-  opusMultiSource, opusBridging, opusResearch,
-];
+const ALL_BOTS: Bot[] = [simpleBot, cheapBot];
 
 export function getEnabledBots(): Bot[] {
   return ALL_BOTS;
