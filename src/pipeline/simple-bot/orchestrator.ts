@@ -11,7 +11,7 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
-import { buildUserMessageFromInput } from "../input/prompt";
+import { buildUserMessageFromInput } from "../prompts/input/userMessage";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";

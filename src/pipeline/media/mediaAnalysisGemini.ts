@@ -27,6 +27,7 @@ import {
   type YtDlpMetadata,
 } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
+import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT } from "../prompts/media/mediaAnalysis";
 import { getBestMediaUrl } from "./bestMediaUrl";
 
 const execAsync = promisify(exec);
@@ -55,14 +56,6 @@ export interface GeminiMediaResult {
   tweetMedia: GeminiMediaItem[];
   quotedTweetMedia: GeminiMediaItem[];
 }
-
-// --- Prompts ---
-
-const IMAGE_PROMPT = `Analyze this image. Describe what it shows and extract all visible text.`;
-
-const VIDEO_PROMPT = `Analyze this video. Describe what happens and extract all visible text.`;
-
-const FRAME_PROMPT = `These are frames extracted from a video. Describe what happens per frame and extract all visible text per frame`;
 
 // Entities X tagged on the post (people, orgs, topics) — given to Gemini as a hint
 // to identify who/what is shown, since vision models often can't name people unaided.

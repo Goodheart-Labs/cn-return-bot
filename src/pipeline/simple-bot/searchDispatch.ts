@@ -13,6 +13,12 @@ import { xaiNativeGenerate } from "../llm/xai";
 import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, executeToolCall } from "../tool-calling/tools";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
+import {
+  buildSearchSystemPrompt,
+  SEARCH_RESPONSE_FORMAT,
+  SEARCH_INLINE_RESPONSE_SCHEMA,
+  SEARCH_PROMPTED_JSON_INSTRUCTION,
+} from "../prompts/simple-bot/searchAgent";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../cost-tracking/pricing";
 import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
@@ -45,82 +51,13 @@ function appendSonarCitations(findings: string, annotations: any[] | undefined):
   return `${findings}\n\n${header}\n${missing.join("\n")}`;
 }
 
-// --- Shared prompt + schema ---
-
-const SEARCH_SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
-
-Your job: investigate whether the post below contains a factual error that would benefit from a community note. Use the web_search tool to find evidence.
-
-## Output format
-Return JSON with two fields:
-- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
-- correction_needed: true only if the post contains a clear factual error supported by direct contradicting evidence.
-
-## When NOT to set correction_needed = true
-- Opinions, satire, jokes, hyperbole
-- Posts that are factually correct
-- When you can't find strong contradicting evidence
-- When the "error" is too minor or pedantic
-
-## Sourcing rules
-- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
-- Include what each source says that's relevant.
-- If no correction is needed, the findings can be brief — just explain why.`;
-
+/** Resolve the search system prompt for the current run, injecting the misinfo
+ *  pre-pass ground-truth article when one is active (covers every simple-bot
+ *  search provider, since they all build their prompt from here). */
 export function getSearchSystemPrompt(): string {
-  // Misinfo pre-pass: inject the topic's ground-truth article (covers every
-  // simple-bot search provider, since they all build their prompt from here).
-  // Treat it as ground truth and cite its Source URL in the findings.
   const monitoring = getMonitoringContext();
-  if (!monitoring) return SEARCH_SYSTEM_PROMPT;
-  return `${SEARCH_SYSTEM_PROMPT}
-
-A reference document on this post's topic is provided below. Treat it as ground truth and include its Source URL inline in the findings as a citation.
-
-${buildReferenceBlock(monitoring)}`;
+  return buildSearchSystemPrompt(monitoring ? buildReferenceBlock(monitoring) : null);
 }
-
-// OpenAI-flavoured schema (strict json_schema), used by Anthropic via OpenRouter.
-const OPENAI_RESPONSE_FORMAT = {
-  type: "json_schema" as const,
-  json_schema: {
-    name: "simple_bot_search",
-    strict: true,
-    schema: {
-      type: "object",
-      properties: {
-        findings: {
-          type: "string",
-          description: "Research summary with full https:// source URLs inline next to each claim.",
-        },
-        correction_needed: {
-          type: "boolean",
-          description: "True iff the post contains a clear factual error worth correcting.",
-        },
-      },
-      required: ["findings", "correction_needed"],
-      additionalProperties: false,
-    },
-  },
-};
-
-// Inline JSON schema used by Gemini's responseSchema and as a prompt
-// instruction for Grok. Uppercase types follow Gemini's convention.
-const INLINE_RESPONSE_SCHEMA = {
-  type: "OBJECT",
-  properties: {
-    findings: { type: "STRING" },
-    correction_needed: { type: "BOOLEAN" },
-  },
-  required: ["findings", "correction_needed"],
-};
-
-// Prompt-level JSON instruction for providers that can't accept a
-// response_format we'd route to: OpenAI's web_search_preview (rejects
-// json_schema) and Perplexity Sonar (no endpoint advertises json_schema/
-// json_object support, so provider.require_parameters 404s the request).
-const PROMPTED_JSON_INSTRUCTION =
-  "Respond with strict JSON only matching: { findings: string, correction_needed: boolean }";
 
 // --- Public types ---
 
@@ -193,7 +130,7 @@ async function searchWithAnthropicNative(
       { role: "user" as const, content: userMessage },
     ],
     tools: [WEB_SEARCH_TOOL],
-    response_format: OPENAI_RESPONSE_FORMAT,
+    response_format: SEARCH_RESPONSE_FORMAT,
   } as any);
 
   const content = response.choices?.[0]?.message?.content ?? "";
@@ -223,7 +160,7 @@ export async function searchWithGeminiNative(
     systemInstruction: systemPrompt,
     userMessage,
     enableGoogleSearch: true,
-    responseSchema: INLINE_RESPONSE_SCHEMA,
+    responseSchema: SEARCH_INLINE_RESPONSE_SCHEMA,
   });
 
   if (!result.parsed) {
@@ -260,7 +197,7 @@ async function searchWithGrokNative(
     systemPrompt,
     userMessage,
     enableXSearch: true,
-    responseSchema: INLINE_RESPONSE_SCHEMA,
+    responseSchema: SEARCH_INLINE_RESPONSE_SCHEMA,
   });
 
   if (!result.parsed) {
@@ -304,7 +241,7 @@ async function searchWithOpenaiNative(
   const response = await llm.create({
     model,
     messages: [
-      { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}\n\n${PROMPTED_JSON_INSTRUCTION}` },
+      { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}` },
     ],
     tools: [{ type: "web_search_preview" }] as any,
     max_tokens: OPENAI_MAX_TOKENS,
@@ -343,7 +280,7 @@ async function searchWithSonarBundled(
   // request ("No endpoints found that can handle the requested parameters").
   // Ask for JSON in the prompt and parse it instead — Sonar reliably emits
   // valid JSON when instructed.
-  const systemPrompt = `${getSearchSystemPrompt()}\n\n${PROMPTED_JSON_INSTRUCTION}`;
+  const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   // Sonar models ground the response in web search automatically; no tool needed.
@@ -411,7 +348,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
       messages,
       tools,
       tool_choice: forceToolCall ? "required" : "auto",
-      ...(forceToolCall ? {} : { response_format: OPENAI_RESPONSE_FORMAT }),
+      ...(forceToolCall ? {} : { response_format: SEARCH_RESPONSE_FORMAT }),
     } as any);
     addTokenCost(totalCost, extractOpenRouterCost(response));
 
@@ -471,7 +408,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
         content: "Stop searching. Return your final findings as JSON now.",
       },
     ],
-    response_format: OPENAI_RESPONSE_FORMAT,
+    response_format: SEARCH_RESPONSE_FORMAT,
   } as any);
   addTokenCost(totalCost, extractOpenRouterCost(finalResp));
   const finalContent = finalResp.choices?.[0]?.message?.content ?? "";

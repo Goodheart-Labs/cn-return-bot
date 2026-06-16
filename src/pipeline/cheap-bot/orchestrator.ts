@@ -18,7 +18,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { getBotConfig } from "../ab-testing/botConfig";
-import { buildUserMessageFromInput } from "../input/prompt";
+import { buildUserMessageFromInput } from "../prompts/input/userMessage";
 import { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError, type SearxngResult } from "../tool-calling/tools";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";

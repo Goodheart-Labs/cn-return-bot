@@ -15,7 +15,7 @@ import { type AgentState, initAgentState, addUserMessage, runAgentTurn } from ".
 import { evaluateAndPickBest, type EvaluatedNote } from "../score/noteEvaluation";
 import { verifySources } from "../verify/sourceVerifier";
 import { createResearcherDef } from "./researcher";
-import { buildUserMessageFromInput } from "../input/prompt";
+import { buildUserMessageFromInput } from "../prompts/input/userMessage";
 import { createNotewriterDef } from "./notewriter";
 import { AgentToolError, PipelineExhaustedError } from "../utils/errors";
 

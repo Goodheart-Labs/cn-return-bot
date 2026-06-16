@@ -13,7 +13,8 @@ import { createBotInput } from "../pipeline/input/createBotInput";
 import { getTweetLog } from "../pipeline/utils/tweetLog";
 import { buildToolList } from "../pipeline/tool-calling/tools";
 import { initAgentState, addUserMessage, runAgentTurn, type AgentDef } from "../pipeline/tool-calling/agentLoop";
-import { buildSystemPrompt, buildUserMessageFromInput } from "../pipeline/input/prompt";
+import { buildSystemPrompt } from "../pipeline/input/prompt";
+import { buildUserMessageFromInput } from "../pipeline/prompts/input/userMessage";
 import { evaluateAndPickBest } from "../pipeline/score/noteEvaluation";
 import { AgentToolError, PipelineExhaustedError } from "../pipeline/utils/errors";
 
