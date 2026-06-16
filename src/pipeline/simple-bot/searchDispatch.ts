@@ -47,7 +47,7 @@ function appendSonarCitations(findings: string, annotations: any[] | undefined):
 
 // --- Shared prompt + schema ---
 
-const SEARCH_SYSTEM_PROMPT_FULL = `You are a research agent for Community Notes fact-checking on X/Twitter.
+const SEARCH_SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
 Your job: investigate whether the post below contains a factual error that would benefit from a community note. Use the web_search tool to find evidence.
 
@@ -67,34 +67,13 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-// Simplified prompt used when config.note_needed_judge is true. A downstream
-// judge step owns the "is a note warranted?" decision, so this prompt drops
-// the criteria and asks the search step to focus on gathering evidence.
-const SEARCH_SYSTEM_PROMPT_SIMPLIFIED = `You are a research agent for Community Notes fact-checking on X/Twitter.
-
-Your job: investigate the post below for factual errors and gather evidence. Use the web_search tool. A separate step will judge whether a community note is warranted, so do not be conservative — surface any factual error you find, even if you're unsure it rises to the level of a note.
-
-## Output format
-Return JSON with two fields:
-- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
-- correction_needed: true if you found a factual error in the post supported by direct contradicting evidence; false only if the post is plainly correct or you found no contradicting evidence at all.
-
-## Sourcing rules
-- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
-- Include what each source says that's relevant.
-- If correction_needed is false, the findings can be brief — just explain why.`;
-
 export function getSearchSystemPrompt(): string {
-  const base = getBotConfig().note_needed_judge
-    ? SEARCH_SYSTEM_PROMPT_SIMPLIFIED
-    : SEARCH_SYSTEM_PROMPT_FULL;
-
   // Misinfo pre-pass: inject the topic's ground-truth article (covers every
   // simple-bot search provider, since they all build their prompt from here).
   // Treat it as ground truth and cite its Source URL in the findings.
   const monitoring = getMonitoringContext();
-  if (!monitoring) return base;
-  return `${base}
+  if (!monitoring) return SEARCH_SYSTEM_PROMPT;
+  return `${SEARCH_SYSTEM_PROMPT}
 
 A reference document on this post's topic is provided below. Treat it as ground truth and include its Source URL inline in the findings as a citation.
 
