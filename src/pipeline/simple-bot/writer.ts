@@ -9,7 +9,7 @@
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
-import { countSubmittedNoteLength } from "../write/writeNote";
+import { countSubmittedNoteLength } from "../utils/noteLength";
 import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,

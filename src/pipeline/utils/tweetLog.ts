@@ -61,52 +61,6 @@ export function getLoggedBotIdentity(
 }
 
 // ---------------------------------------------------------------------------
-// LLM call logging helper
-// ---------------------------------------------------------------------------
-
-/** Flatten an OpenAI messages array into a single readable string. */
-export function formatLlmMessages(messages: any[]): string {
-  return messages
-    .map((msg: any) => {
-      const role = msg.role as string;
-      let content: string;
-      if (typeof msg.content === "string") {
-        content = msg.content;
-      } else if (Array.isArray(msg.content)) {
-        content = msg.content
-          .map((part: any) => {
-            if (part.type === "text") return part.text;
-            if (part.type === "image_url") return "[image]";
-            return "";
-          })
-          .filter(Boolean)
-          .join("\n");
-      } else {
-        content = String(msg.content ?? "");
-      }
-      return `[${role}]\n${content}`;
-    })
-    .join("\n\n");
-}
-
-/**
- * Log an LLM call under a named label.
- * Writes `<label>.context`, `<label>.response`, `<label>.durationMs`.
- */
-export function logLlmCall(
-  label: string,
-  messages: any[],
-  response: string,
-  durationMs: number
-) {
-  const log = getTweetLog();
-  if (!log) return;
-  log.set(`${label}.context`, formatLlmMessages(messages));
-  log.set(`${label}.response`, response);
-  log.set(`${label}.durationMs`, durationMs);
-}
-
-// ---------------------------------------------------------------------------
 // Dot-key nesting (flat map → nested object for serialization)
 // ---------------------------------------------------------------------------
 

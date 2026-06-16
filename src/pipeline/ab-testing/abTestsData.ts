@@ -71,23 +71,6 @@ export const BOT_TEST: ABTest = {
       // "find a dispute or return nothing" decision-making.
       reasoning_effort: "high",
     }}, weight: 0 },
-    { variant: { name: "multi-agent", overrides: {
-      botId: "multi-agent",
-      model: "google/gemini-3-flash-preview",
-    }}, weight: 0 },
-    { variant: { name: "agent", overrides: {
-      botId: "agent",
-      model: "google/gemini-3-flash-preview",
-    }}, weight: 0 },
-    { variant: { name: "opus-main",                  overrides: { botId: "opus-main" }},                 weight: 0 },
-    { variant: { name: "opus-main-v2",               overrides: { botId: "opus-main-v2" }},              weight: 0 },
-    { variant: { name: "opus-main-no-source-check",  overrides: { botId: "opus-main-no-source-check" }}, weight: 0 },
-    { variant: { name: "opus-direct",                overrides: { botId: "opus-direct" }},               weight: 0 },
-    { variant: { name: "opus-direct-grok",           overrides: { botId: "opus-direct-grok" }},          weight: 0 },
-    { variant: { name: "opus-main-v2-grok",          overrides: { botId: "opus-main-v2-grok" }},         weight: 0 },
-    { variant: { name: "opus-multi-source",          overrides: { botId: "opus-multi-source" }},         weight: 0 },
-    { variant: { name: "opus-bridging",              overrides: { botId: "opus-bridging" }},             weight: 0 },
-    { variant: { name: "opus-research",              overrides: { botId: "opus-research" }},             weight: 0 },
   ],
 };
 
@@ -240,25 +223,6 @@ const VERIFIER_CLAIM_BASED_TEST: ABTest = {
   ],
 };
 
-const AGENT_SEARCH_TEST: ABTest = {
-  name: "agent_search",
-  prerequisites: { botId: ["agent", "multi-agent"] },
-  variants: [
-    { variant: { name: "perplexity", overrides: { web_search: "perplexity" }},          weight: 1 },
-    { variant: { name: "searxng",    overrides: { web_search: "searxng" }},             weight: 1 },
-    { variant: { name: "searxngsum", overrides: { web_search: "searxng_summarized" }},  weight: 1 },
-  ],
-};
-
-const AGENT_PARALLEL_TEST: ABTest = {
-  name: "agent_parallel",
-  prerequisites: { botId: ["agent", "multi-agent"] },
-  variants: [
-    { variant: { name: "seq", overrides: { parallel_research: false }}, weight: 1 },
-    { variant: { name: "par", overrides: { parallel_research: true }},  weight: 1 },
-  ],
-};
-
 // Pseudo A/B test: records the feed size in `pipeline_runs.ab_test_picks.feed_size`.
 // `generateCandidates` forces the pick to the size the fetch actually used.
 // Pre-existing rows (no `feed_size` key) resolve to "small".
@@ -340,8 +304,6 @@ export const AB_TESTS: ABTest[] = [
   SEARCH_ANALYZER_TEST,
   SATIRE_DETECTOR_TEST,
   CHEAP_BOT_TEMPERATURE_TEST,
-  AGENT_SEARCH_TEST,
-  AGENT_PARALLEL_TEST,
   FEED_SIZE_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
 ];
