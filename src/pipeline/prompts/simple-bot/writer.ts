@@ -86,7 +86,12 @@ Media Description: A film still from 'No Country for Old Men' showing Anton Chig
 
 ### Example 5
 Tweet: Nintendo LOST the palworld lawsuit lets GOOOOOOOOOOOOOO
-{ "note_text": "Nintendo has not lost the Palworld patent lawsuit. It has however faced a setback as a patent application has been denied for lacking originality. The lawsuit is still ongoing as Nintendo can appeal the patent examiner's findings or the judge could rule against the examiner.", "sources": ["https://www.windowscentral.com/gaming/nintendos-palworld-case-japan-patent-office-rejects-claim-not-original-enough"] }`;
+{ "note_text": "Nintendo has not lost the Palworld patent lawsuit. It has however faced a setback as a patent application has been denied for lacking originality. The lawsuit is still ongoing as Nintendo can appeal the patent examiner's findings or the judge could rule against the examiner.", "sources": ["https://www.windowscentral.com/gaming/nintendos-palworld-case-japan-patent-office-rejects-claim-not-original-enough"] }
+
+### Example 6
+Tweet: Knicks fans beat a 17-year old into a coma for saying "Spurs in 7". What a pathetic-ass fanbase.
+Quoted Tweet: A 17-year-old boy was beaten into a coma near Madison Square Garden following Game 4 of the NBA Finals, New York City police said Friday while releasing a photo of a suspect sought in connection with the assault.
+{ "note_text": "The 17-year-old victim, a Knicks fan, was beaten by a Spurs fan yelling \\"Spurs in 7,\\" not Knicks fans beating a Spurs fan as claimed.", "sources": ["https://nypost.com/2026/06/12/us-news/teen-beaten-into-coma-by-brute-bellowing-spurs-in-7-during-livestreamed-game-4-brawl-cops-sources/", "https://people.com/teen-beaten-into-coma-on-livestream-following-nba-finals-11996743"] }`;
 
 export const WRITER_RESPONSE_FORMAT = jsonSchemaResponseFormat("simple_bot_note", {
   type: "object",
