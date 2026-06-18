@@ -653,10 +653,12 @@ export function App() {
         />
       </div>
 
-      {/* A/B test filters — collapsed by default so you don't see the slots/variants
-          stream in as data loads (abSlots is derived from the progressively-loaded
-          items). The toggle bar is the section header; the panel's own header is hidden. */}
-      {abSlots.length > 0 && (
+      {/* A/B test filters. The toggle bar is ALWAYS shown in production (not gated on
+          abSlots) so it doesn't pop in and shift the layout when the slots — derived
+          from the progressively-loaded items — arrive a beat later. Collapsed by
+          default; expanding before the data lands shows a "Loading…" placeholder.
+          The bar is the section header; the panel's own header is hidden. */}
+      {(dataset.type === "production" || abSlots.length > 0) && (
         <div className="mb-4">
           <div className="flex items-center gap-2">
             <button
@@ -679,7 +681,11 @@ export function App() {
           </div>
           {abOpen && (
             <div className="mt-2">
-              <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
+              {abSlots.length > 0 ? (
+                <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
+              ) : (
+                <div className="text-sm text-gray-400 px-3 py-2">Loading…</div>
+              )}
             </div>
           )}
         </div>
