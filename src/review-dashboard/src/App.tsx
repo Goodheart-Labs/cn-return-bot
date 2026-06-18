@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import type {
   ReviewItem,
   DatasetOption,
@@ -9,9 +9,10 @@ import type {
 } from "./lib/types";
 import { FAILURE_TYPE_CONFIG } from "./lib/types";
 import { resolveRatingCounts } from "../../dashboard-shared/Ratings";
-import { WINDOW_DAYS_STEP } from "../../dashboard-shared/productionView";
+import { FULLY_LOADED_FAILURE_TYPES } from "../../dashboard-shared/productionView";
 import {
   fetchDashboardData,
+  fetchDefaultStatusData,
   fetchDashboardDataByTags,
   buildDashboardItems,
   fetchLogsForRuns,
@@ -27,11 +28,11 @@ import {
   pruneUnusedFailureModes,
 } from "./lib/data";
 
-// Production fetches are bounded by a date window on notes.submitted_at. The
-// initial load covers the last WINDOW_DAYS_STEP days; "Load older notes" extends
-// the window by another step. Keeping the window small is what makes the first
-// paint fast — see fetchDashboardData. WINDOW_DAYS_STEP is shared with the server
-// prefetch (productionView).
+// The WINDOWED (non-default) types are bounded by a date window on
+// notes.submitted_at: the initial load covers the last WINDOW_DAYS_STEP days; the
+// "Load next N days" footer extends it by another step. The standard selection is
+// loaded in full (no window) — see fetchDefaultStatusData.
+const WINDOW_DAYS_STEP = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 // Failure types whose pills show a seen-aware count (how many are left to review
@@ -39,6 +40,11 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // cn_status-derived categories we can classify from the lightweight pill data;
 // the rest (needs-more-ratings, missed, low-eval) keep their all-time totals.
 const SEEN_AWARE_FAILURE_TYPES: FailureType[] = ["rated_helpful", "rated_unhelpful", "lost_to_competitor"];
+
+// The "standard selection" we load in full (no window); everything else is
+// windowed. Used to decide whether the "Load next N days" footer has anything
+// more to load. See productionView.FULLY_LOADED_FAILURE_TYPES.
+const FULLY_LOADED = new Set<FailureType>(FULLY_LOADED_FAILURE_TYPES);
 
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
@@ -66,6 +72,26 @@ function defaultFilters(source: "production" | "dataset_run"): FilterState {
   // Production opens on "All" (seen + unseen); dataset-run review still defaults
   // to "Unseen" so you work through the un-reviewed ones.
   return { seen: source === "production" ? "all" : "unseen", failureTypes, failureModes: new Set() };
+}
+
+// Union two production item lists by id. `winners` overwrite `base` on overlap:
+// the windowed fetch carries competing/missed/low-eval + in-window ab_test_picks,
+// so it wins over the full-default rows; out-of-window default notes exist only in
+// `base`, so they survive.
+function mergeItemsById(base: ReviewItem[], winners: ReviewItem[]): ReviewItem[] {
+  const byId = new Map(base.map((i) => [i.id, i]));
+  for (const w of winners) byId.set(w.id, w);
+  return [...byId.values()];
+}
+
+// Re-apply in-session annotation edits (you can only edit visible notes, all in
+// `prev`) onto a freshly-fetched list, so a load landing mid-edit can't revert it.
+function preserveAnnotations(prev: ReviewItem[], next: ReviewItem[]): ReviewItem[] {
+  const prevAnn = new Map(prev.map((i) => [i.id, i.annotation]));
+  return next.map((i) => {
+    const edited = prevAnn.get(i.id);
+    return edited ? { ...i, annotation: edited } : i;
+  });
 }
 
 function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
@@ -126,8 +152,9 @@ export function App() {
   // (metadata only, no TOAST). Logs are lazy-loaded per visible card and cached
   // here keyed by pipeline_run id.
   const [logsByRunId, setLogsByRunId] = useState<Map<string, Record<string, unknown>>>(new Map());
-  // Production date-window size, in days. Extends in WINDOW_DAYS_STEP increments
-  // via "Load older notes". Dataset runs ignore this (bounded uploads).
+  // Date-window size for the WINDOWED (non-default) types, in days. Extends in
+  // WINDOW_DAYS_STEP increments via the "Load next N days" footer. The standard
+  // selection ignores this (loaded in full). Dataset runs ignore it too.
   const [windowDays, setWindowDays] = useState(WINDOW_DAYS_STEP);
 
   // Load uploads and failure mode catalog on mount
@@ -156,48 +183,62 @@ export function App() {
     [dataset.type, filters.failureModes],
   );
 
-  // Load data when dataset changes. For production we fetch ALL metadata
-  // (canonical + competing + pipeline_runs sans logs) in one shot; logs are
-  // lazy-loaded per visible card in a separate effect below. Dataset runs
-  // keep their original one-shot fetch (bounded set, already includes logs).
+  // Monotonic id so a re-fire (dataset switch / window extend) that lands out of
+  // order can't clobber the newer view: each setState is gated on it.
+  const loadSeq = useRef(0);
+
+  // Load data when the dataset / window / tag filter changes. Production is a
+  // HYBRID: the standard selection (default-on types) is loaded in FULL — no
+  // window — so it's always complete; everything else is windowed. Tag filtering
+  // swaps both for an all-time fetch of everything tagged. Pill counts are all-time
+  // (a separate effect). Dataset runs keep their one-shot fetch (already include logs).
   const loadData = useCallback(async () => {
+    const seq = ++loadSeq.current;
     setLoading(true);
     setError(null);
     try {
       if (dataset.type === "production") {
-        // The list is windowed; the pill counts are all-time (fetched once by a
-        // separate effect), so we don't set them here. Selecting tags swaps the
-        // window for an all-time fetch of everything ever tagged, so the pills
-        // filter across all history (see fetchDashboardDataByTags).
         const tags = [...filters.failureModes];
-        if (tags.length === 0) {
-          // Instant first paint: the server prefetches the default (unhelpful)
-          // window and injects it as window.__DEFAULT_VIEW__. Paint it with zero
-          // round-trips, then load the full window (which also brings in
-          // competing / missed / low-eval) and replace. Consumed once, so window
-          // extends and later reloads fetch fresh.
-          const injected = (window as any).__DEFAULT_VIEW__;
-          (window as any).__DEFAULT_VIEW__ = null;
-          if (injected?.canonical?.length) {
-            setItems(buildDashboardItems(injected));
-            setLoading(false);
-          }
+        if (tags.length > 0) {
+          const data = await fetchDashboardDataByTags(tags);
+          if (seq !== loadSeq.current) return;
+          setItems(buildDashboardItems(data));
+          setLogsByRunId(new Map());
+          return;
         }
-        const data = tags.length > 0
-          ? await fetchDashboardDataByTags(tags)
-          : await fetchDashboardData(new Date(Date.now() - windowDays * MS_PER_DAY).toISOString());
-        setItems(buildDashboardItems(data));
+        // Instant first paint: the server injects the FULL default set as
+        // window.__DEFAULT_VIEW__. Paint it with zero round-trips, then reload.
+        // Consumed once, so window extends and later reloads fetch fresh.
+        const injected = (window as any).__DEFAULT_VIEW__;
+        (window as any).__DEFAULT_VIEW__ = null;
+        if (injected?.canonical?.length) {
+          setItems(buildDashboardItems(injected));
+          setLoading(false);
+        }
+        // The standard selection in full (no window, carries ab_test_picks via
+        // submitted runs) UNIONed with the windowed everything-else. Windowed rows
+        // win on id overlap (competing/missed/low-eval + in-window ab data);
+        // out-of-window default notes survive; in-session annotation edits preserved.
+        const windowSince = new Date(Date.now() - windowDays * MS_PER_DAY).toISOString();
+        const [defaultData, windowData] = await Promise.all([
+          fetchDefaultStatusData(),
+          fetchDashboardData(windowSince),
+        ]);
+        if (seq !== loadSeq.current) return;
+        const merged = mergeItemsById(buildDashboardItems(defaultData), buildDashboardItems(windowData));
+        setItems((prev) => preserveAnnotations(prev, merged));
         setLogsByRunId(new Map());
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
+        if (seq !== loadSeq.current) return;
         setItems(loaded);
         setCounts(await fetchDatasetRunCounts(dataset.id!));
       }
     } catch (err: any) {
       console.error("Failed to load data:", err);
-      setError(err?.message ?? "Failed to load data");
+      if (seq === loadSeq.current) setError(err?.message ?? "Failed to load data");
     } finally {
-      setLoading(false);
+      if (seq === loadSeq.current) setLoading(false);
     }
     // productionTagKey is the stable proxy for filters.failureModes (read above).
   }, [dataset, windowDays, productionTagKey]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -343,8 +384,47 @@ export function App() {
     [filtered, logsByRunId],
   );
   const tagFilterActive = dataset.type === "production" && filters.failureModes.size > 0;
-  // An all-time tag fetch already loaded everything tagged; no window to extend.
-  const canLoadMore = dataset.type === "production" && !tagFilterActive;
+  // The "Load next N days" footer is relevant only when a WINDOWED (non-default)
+  // type is selected — the standard selection is loaded in full, so there's nothing
+  // more to load for it. Hidden under a tag filter (all-time) and for dataset runs.
+  const windowedTypeSelected =
+    dataset.type === "production" &&
+    !tagFilterActive &&
+    [...filters.failureTypes].some((ft) => !FULLY_LOADED.has(ft));
+
+  // The boundary: the OLDEST loaded windowed note. Below it (older) only the
+  // fully-loaded standard notes remain — that's where loading the next window
+  // helps. Newest-first order means windowed notes (recent) cluster near the top.
+  const lastWindowedId = useMemo(() => {
+    for (let i = visible.length - 1; i >= 0; i--) {
+      if (!FULLY_LOADED.has(visible[i].failureType)) return visible[i].id;
+    }
+    return null;
+  }, [visible]);
+
+  // Only surface the footer once you've scrolled PAST that boundary — the last
+  // windowed note has left the top of the viewport, so only the fully-loaded
+  // standard notes remain on screen (the user's "you're at week 2" case). Or
+  // immediately if no windowed notes are loaded at all. A scroll listener (rAF-
+  // throttled) rather than IntersectionObserver, which doesn't fire when you jump
+  // straight past the boundary.
+  const [scrolledPastWindow, setScrolledPastWindow] = useState(false);
+  useEffect(() => {
+    if (!windowedTypeSelected) { setScrolledPastWindow(false); return; }
+    if (!lastWindowedId) { setScrolledPastWindow(true); return; }
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const el = document.getElementById(`note-${lastWindowedId}`);
+      setScrolledPastWindow(!!el && el.getBoundingClientRect().bottom < 0);
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
+    check();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { window.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
+  }, [windowedTypeSelected, lastWindowedId]);
+
+  const showLoadMore = windowedTypeSelected && scrolledPastWindow;
 
   // The list is newest-first, so the top is often freshly-submitted notes with
   // no ratings yet. Offer a jump to the first note that actually has ratings —
@@ -644,7 +724,7 @@ export function App() {
             : dataset.type === "production"
               ? tagFilterActive
                 ? `${visible.length} notes · all time, tagged${loadingLogs ? " · loading logs…" : ""}`
-                : `${visible.length} notes · last ${windowDays} days${loadingLogs ? " · loading logs…" : ""}`
+                : `${visible.length} notes · standard selection + last ${windowDays} days${loadingLogs ? " · loading logs…" : ""}`
               : `${filtered.length} items shown`}
         </div>
         {firstRatedIndex > 0 && (
@@ -675,15 +755,17 @@ export function App() {
         ))}
       </div>
 
-      {/* Load more */}
-      {canLoadMore && (
-        <div className="flex justify-center mt-6">
+      {/* "Load next window" footer — pinned to the viewport bottom, shown once you
+          scroll past the windowed notes into the standard-only region (only the
+          fully-loaded default notes remain there). */}
+      {showLoadMore && (
+        <div className="fixed bottom-0 left-0 right-0 z-20 px-4 py-3 bg-white/95 backdrop-blur border-t border-gray-200 flex justify-center">
           <button
             onClick={handleLoadMore}
             disabled={loading}
             className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50"
           >
-            {loading ? "Loading…" : `Load older notes (+${WINDOW_DAYS_STEP} days)`}
+            {loading ? "Loading…" : `Load next ${WINDOW_DAYS_STEP} days (currently last ${windowDays} days)`}
           </button>
         </div>
       )}

@@ -9,7 +9,7 @@ import type {
 } from "./types";
 import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
-import { CANONICAL_LIST_COLS, TWEET_LIST_COLS, PUBLIC_DUMP_RATING_COLS } from "../../../dashboard-shared/productionView";
+import { CANONICAL_LIST_COLS, TWEET_LIST_COLS, PUBLIC_DUMP_RATING_COLS, DEFAULT_VIEW_STATUSES, DEFAULT_VIEW_LIMIT } from "../../../dashboard-shared/productionView";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
 
 // ─── Production data ─────────────────────────────────────────────────────────
@@ -287,6 +287,33 @@ export async function fetchDashboardData(sinceIso: string): Promise<DashboardDat
   ]);
 
   return assembleDashboardData({ canonical, missedOppCompeting, lowEvalRuns });
+}
+
+/**
+ * Full default-set loader: EVERY note whose cn_status is in `cnStatuses` (the
+ * default-on production statuses — today just CURRENTLY_RATED_NOT_HELPFUL), with
+ * NO date window, so the reviewer's standard selection is always complete and
+ * never needs "load more". Reuses assembleDashboardData, so these notes carry
+ * submitted-run ab_test_picks (A/B list-filtering works out of window) and
+ * competing data (lost-to-competitor reclassification). The set is small
+ * (~hundreds, under one page); `limit` is just a safety cap. Missed opps / low-eval
+ * aren't in the default set, so their primaries are empty.
+ */
+export async function fetchDefaultStatusData(
+  cnStatuses: string[] = DEFAULT_VIEW_STATUSES,
+  limit: number = DEFAULT_VIEW_LIMIT,
+): Promise<DashboardData> {
+  console.log(`[data] Loading full default set (${cnStatuses.join("/")})…`);
+  const canonical = await fetchAllRows<any>(
+    supabase
+      .from("notes")
+      .select(CANONICAL_LIST_COLUMNS)
+      .in("cn_status", cnStatuses)
+      .order("submitted_at", { ascending: false, nullsFirst: false })
+      .limit(limit),
+    "default_status_canonical",
+  );
+  return assembleDashboardData({ canonical, missedOppCompeting: [], lowEvalRuns: [] });
 }
 
 /**

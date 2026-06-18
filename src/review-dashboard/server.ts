@@ -3,8 +3,8 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import dotenv from "dotenv";
 import {
-  WINDOW_DAYS_STEP,
-  DEFAULT_VIEW_CN_STATUS,
+  DEFAULT_VIEW_STATUSES,
+  DEFAULT_VIEW_LIMIT,
   CANONICAL_LIST_COLS,
   TWEET_LIST_COLS,
   PUBLIC_DUMP_RATING_COLS,
@@ -19,20 +19,17 @@ const supabaseKey = useLocal ? process.env.LOCAL_SUPABASE_SERVICE_KEY : process.
 const PORT = 8001;
 
 // ─── Server-side default-view prefetch ───────────────────────────────────────
-// The client's first paint is the default review view: the newest rated-unhelpful
-// notes in the recent window. Fetching that from the browser costs a cold
-// connection + a couple of round-trips (~1–4s). Instead the server fetches it once
-// at startup (paying the one cold hit before the page is ever opened) and injects
-// it into the HTML, so the page paints from data already in the document — zero
-// client round-trips. The client then runs its normal windowed load and replaces
-// the snapshot with the full set (incl. competing / missed / low-eval), so a
-// slightly stale snapshot here only affects the first instant of the first paint.
+// The client's first paint is the default review view: ALL default-status notes
+// (the standard selection — today rated-unhelpful), no date window. Fetching that
+// from the browser costs a cold connection + a couple of round-trips (~1–4s).
+// Instead the server fetches it once at startup (paying the one cold hit before the
+// page is ever opened) and injects it into the HTML, so the page paints from data
+// already in the document — zero client round-trips. The client then re-loads the
+// full default set (with ab_test_picks) + the windowed rest and replaces this, so a
+// slightly stale, ab-pick-less snapshot here only affects the first instant.
 //
-// Window, status, and column lists all come from productionView (shared with the
-// client loader) so the prefetch can't drift from what the client renders.
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-const DEFAULT_VIEW_STATUSES = [DEFAULT_VIEW_CN_STATUS];
-const DEFAULT_VIEW_LIMIT = 1000; // safety cap; the windowed default is small
+// Status and column lists come from productionView (shared with the client loader)
+// so the prefetch can't drift from what the client renders.
 const CANONICAL_COLS = CANONICAL_LIST_COLS.join(",");
 const TWEET_COLS = TWEET_LIST_COLS.join(",");
 const RATING_COLS = PUBLIC_DUMP_RATING_COLS.join(",");
@@ -55,10 +52,9 @@ function inList(values: string[]): string {
 async function fetchDefaultView(): Promise<any | null> {
   if (!supabaseUrl || !supabaseKey) return null;
   try {
-    const sinceIso = new Date(Date.now() - WINDOW_DAYS_STEP * MS_PER_DAY).toISOString();
     const statusList = inList(DEFAULT_VIEW_STATUSES);
     const canonical = await sb(
-      `notes?select=${CANONICAL_COLS}&cn_status=in.${encodeURIComponent(statusList)}&submitted_at=gte.${sinceIso}&order=submitted_at.desc.nullslast&limit=${DEFAULT_VIEW_LIMIT}`,
+      `notes?select=${CANONICAL_COLS}&cn_status=in.${encodeURIComponent(statusList)}&order=submitted_at.desc.nullslast&limit=${DEFAULT_VIEW_LIMIT}`,
     );
     const noteIds = canonical.map((n) => n.note_id);
     const tweetIds = [...new Set(canonical.map((n) => n.tweet_id).filter(Boolean))] as string[];
