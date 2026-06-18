@@ -143,14 +143,15 @@ const SIMPLE_BOT_PROMPTS_TEST: ABTest = {
 // Append an instruction to simple-bot's SEARCH prompt to prefer, for political
 // posts, sources associated with the post author's own political side — the
 // bridging bet that a correction cited to the author's own trusted outlets is
-// more likely to be rated helpful. Live 50/50 on simple-bot. Prereq-gated to
-// simple-bot, so no defaultVariant.
+// more likely to be rated helpful. Scaled down to a 10% holdout on simple-bot
+// (was 50/50) — "off" is now the primary arm. Prereq-gated to simple-bot, so no
+// defaultVariant.
 const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
   name: "simple_bot_political_sources",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { search_political_sources: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { search_political_sources: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { search_political_sources: false } }, weight: 90 },
+    { variant: { name: "on",  overrides: { search_political_sources: true  } }, weight: 10 },
   ],
 };
 

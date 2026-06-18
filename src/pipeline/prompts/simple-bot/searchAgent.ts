@@ -30,7 +30,7 @@ Return JSON with two fields:
 - If no correction is needed, the findings can be brief — just explain why.`;
 
 /** Maximally-terse variant (SIMPLE_BOT_PROMPTS_TEST = simple). */
-export const SIMPLE_SEARCH_SYSTEM_PROMPT = `Investigate whether this X/Twitter post contains a factual error worth a Community Note. Search the web for evidence.
+export const SIMPLE_SEARCH_SYSTEM_PROMPT = `Investigate whether this X/Twitter post contains a factual error worth a Community Note or not. Search the web to find out whats going on in the world.
 
 Return JSON:
 - findings: a research summary with the full https:// source URL written inline next to each claim.
