@@ -9,6 +9,7 @@ import type {
 } from "./types";
 import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
+import { CANONICAL_LIST_COLS, TWEET_LIST_COLS, PUBLIC_DUMP_RATING_COLS, DEFAULT_VIEW_STATUSES, DEFAULT_VIEW_LIMIT } from "../../../dashboard-shared/productionView";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
 
 // ─── Production data ─────────────────────────────────────────────────────────
@@ -101,18 +102,7 @@ function computeCompetitorLeadTag(
 // merge, tweet text/handle and current_core_status no longer live on this
 // table — text comes from tweets (joined by tweet_id), and we prefer
 // current_status (cn_status) per CLAUDE.md.
-const CANONICAL_LIST_COLUMNS = [
-  "note_id",
-  "tweet_id",
-  "note_text",
-  "submitted_at",
-  "first_seen_at",
-  "cn_status",
-  "view_count",
-  "rating_count",
-  "helpful_count",
-  "not_helpful_count",
-].join(", ");
+const CANONICAL_LIST_COLUMNS = CANONICAL_LIST_COLS.join(", ");
 
 // pipeline_runs without the logs TOAST column — used for the metadata fetch
 // that drives the list. Logs are lazy-loaded per visible card. Tweet text /
@@ -126,11 +116,9 @@ const PIPELINE_METADATA_COLUMNS =
 const LOW_EVAL_RUN_COLUMNS =
   "id, tweet_id, note_text, note_status, outcome, outcome_reason, bot_name, created_at, ab_test_picks";
 
-const TWEETS_LIST_COLUMNS =
-  "tweet_id, text, media, referenced_tweet_data, author_handle, has_photo, has_video, media_count";
+const TWEETS_LIST_COLUMNS = TWEET_LIST_COLS.join(", ");
 
-const PUBLIC_DUMP_RATING_COLUMNS =
-  "note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date";
+const PUBLIC_DUMP_RATING_COLUMNS = PUBLIC_DUMP_RATING_COLS.join(", ");
 
 export interface DashboardData {
   canonical: any[];
@@ -299,6 +287,33 @@ export async function fetchDashboardData(sinceIso: string): Promise<DashboardDat
   ]);
 
   return assembleDashboardData({ canonical, missedOppCompeting, lowEvalRuns });
+}
+
+/**
+ * Full default-set loader: EVERY note whose cn_status is in `cnStatuses` (the
+ * default-on production statuses — today just CURRENTLY_RATED_NOT_HELPFUL), with
+ * NO date window, so the reviewer's standard selection is always complete and
+ * never needs "load more". Reuses assembleDashboardData, so these notes carry
+ * submitted-run ab_test_picks (A/B list-filtering works out of window) and
+ * competing data (lost-to-competitor reclassification). The set is small
+ * (~hundreds, under one page); `limit` is just a safety cap. Missed opps / low-eval
+ * aren't in the default set, so their primaries are empty.
+ */
+export async function fetchDefaultStatusData(
+  cnStatuses: string[] = DEFAULT_VIEW_STATUSES,
+  limit: number = DEFAULT_VIEW_LIMIT,
+): Promise<DashboardData> {
+  console.log(`[data] Loading full default set (${cnStatuses.join("/")})…`);
+  const canonical = await fetchAllRows<any>(
+    supabase
+      .from("notes")
+      .select(CANONICAL_LIST_COLUMNS)
+      .in("cn_status", cnStatuses)
+      .order("submitted_at", { ascending: false, nullsFirst: false })
+      .limit(limit),
+    "default_status_canonical",
+  );
+  return assembleDashboardData({ canonical, missedOppCompeting: [], lowEvalRuns: [] });
 }
 
 /**
@@ -514,44 +529,77 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
   return items;
 }
 
+// ─── Production pill data ────────────────────────────────────────────────────
+
+const PILL_PAGE = 1000;
+// Page requests per wave for fetchAllRowsParallel. Local to the dashboard (the
+// shared serial fetchAllRows covers everyone else) and used only for the one
+// genuinely multi-page scan below.
+const PILL_CONCURRENCY = 8;
+
 /**
- * All-time tag usage counts for production items — the failure-mode pills
- * should report how many items carry each tag across all history, not just
- * however many happen to be in the loaded window. Cheap: one scan of the small
- * annotations table, pulling only the failure_modes column.
+ * Parallel pagination for the all-time notes scan — the bottleneck of the
+ * once-per-session pill-count load. `makeQuery` returns a FRESH query each call
+ * (concurrent `.range()`s can't share a builder) with a stable ORDER BY so the
+ * page ranges partition the same ordered set. Worth it only for multi-page tables;
+ * the other count scans are single-page and stay on serial fetchAllRows.
  */
-export async function fetchProductionTagCounts(): Promise<Map<string, number>> {
-  const rows = await fetchAllRows<any>(
-    supabase
-      .from("review_dashboard_annotations")
-      .select("failure_modes")
-      .eq("source", "production"),
-    "production_tag_counts",
-  );
-  const counts = new Map<string, number>();
-  for (const r of rows) {
-    for (const m of r.failure_modes ?? []) counts.set(m, (counts.get(m) ?? 0) + 1);
+async function fetchAllRowsParallel<T>(makeQuery: () => any, label?: string): Promise<T[]> {
+  const all: T[] = [];
+  let offset = 0;
+  let done = false;
+  while (!done) {
+    const ranges: Array<[number, number]> = [];
+    for (let k = 0; k < PILL_CONCURRENCY; k++) {
+      ranges.push([offset, offset + PILL_PAGE - 1]);
+      offset += PILL_PAGE;
+    }
+    const pages = await Promise.all(ranges.map(([from, to]) => makeQuery().range(from, to)));
+    for (const { data, error } of pages) {
+      if (error) throw error;
+      if (data && data.length) all.push(...(data as T[]));
+      if (!data || data.length < PILL_PAGE) done = true;
+    }
   }
-  return counts;
+  if (label) console.log(`[data] ${label}: ${all.length} rows`);
+  return all;
 }
 
-// ─── Production counts ───────────────────────────────────────────────────────
+type AbPicks = Record<string, string> | null;
+
+export interface ProductionPillData {
+  // All-time category counts for the filter-bar pills.
+  counts: Record<FailureType, number>;
+  // All-time tag usage counts for the failure-mode pills.
+  tagCounts: Map<string, number>;
+  // Per-note {noteId, failureType, seen, abTestPicks}, all-time — lets the UI
+  // recompute the rated pills under the seen + A/B filters ("how many left to
+  // review" in this variant, not the all-time total). noteId so the UI can
+  // override with live state for loaded notes.
+  notesSeen: { noteId: string; failureType: FailureType; seen: boolean; abTestPicks: AbPicks }[];
+  // Per-annotation {targetId, failureModes, seen, abTestPicks}, all-time — same,
+  // for tag pills.
+  annotationsSeen: { targetId: string; failureModes: string[]; seen: boolean; abTestPicks: AbPicks }[];
+}
 
 /**
- * All-time production category counts for the filter-bar pills. These are
- * deliberately NOT windowed — the list shows the last N days, but the pills
- * report the full picture, so "Rated Helpful 475" doesn't shrink to whatever
- * happens to be loaded.
- *
- * Cheap because it pulls only the two tiny columns needed to classify (no text,
- * no TOAST): every note's `cn_status`, the `our_note_id`s with a helpful
- * competitor (to mark lost-to-competitor), and a head-count of missed
- * opportunities. Classification mirrors buildDashboardItems via
+ * All-time data behind the filter-bar pills, in one pass. Deliberately NOT
+ * windowed — the list shows the last N days, but the pills report the full
+ * picture, so "Rated Helpful 475" doesn't shrink to whatever happens to be
+ * loaded. Carries each note's / annotation's `seen` flag so the UI can render
+ * seen-aware counts without re-fetching. Cheap: only the tiny columns needed to
+ * classify (no text, no TOAST). Classification mirrors buildDashboardItems via
  * `cnStatusToFailureType`.
  */
-export async function fetchProductionCounts(): Promise<Record<FailureType, number>> {
-  const [notes, helpfulCompeting, missed, lowEval] = await Promise.all([
-    fetchAllRows<any>(supabase.from("notes").select("note_id, cn_status"), "count_notes"),
+export async function fetchProductionPillData(): Promise<ProductionPillData> {
+  const [notes, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
+    // The notes scan is the bottleneck of this once-per-session load (~4 pages);
+    // paginate it in parallel. The others are single-page, so they stay serial.
+    // Stable ORDER BY note_id so the concurrent page ranges partition cleanly.
+    fetchAllRowsParallel<any>(
+      () => supabase.from("notes").select("note_id, cn_status, tweet_id").order("note_id", { ascending: true }),
+      "count_notes",
+    ),
     fetchAllRows<any>(
       supabase
         .from("competing_notes")
@@ -570,18 +618,63 @@ export async function fetchProductionCounts(): Promise<Record<FailureType, numbe
       .from("pipeline_runs")
       .select("id", { count: "exact", head: true })
       .eq("outcome_reason", "low_evaluation_score"),
+    fetchAllRows<any>(
+      supabase
+        .from("review_dashboard_annotations")
+        .select("target_id, seen, failure_modes")
+        .eq("source", "production"),
+      "production_annotations",
+    ),
+    // A/B picks per note for A/B-aware pill counts. Keyed by tweet_id off the
+    // submitted run, mirroring buildDashboardItems; only runs that carry picks,
+    // so it stays small (notes without picks just never match an A/B filter).
+    fetchAllRows<any>(
+      supabase
+        .from("pipeline_runs")
+        .select("tweet_id, ab_test_picks")
+        .eq("outcome", "submitted")
+        .not("ab_test_picks", "is", null),
+      "ab_picks",
+    ),
   ]);
 
   const helpfulCompetitorNoteIds = new Set(helpfulCompeting.map((c: any) => c.our_note_id));
+  const seenByTargetId = new Map<string, boolean>();
+  for (const a of annotationRows) seenByTargetId.set(a.target_id, !!a.seen);
+  const abPicksByTweet = new Map<string, AbPicks>();
+  for (const r of abRuns) abPicksByTweet.set(r.tweet_id, r.ab_test_picks ?? null);
+  const tweetByNoteId = new Map<string, string>();
+  for (const note of notes) tweetByNoteId.set(note.note_id, note.tweet_id);
+  const picksForNoteId = (noteId: string): AbPicks => abPicksByTweet.get(tweetByNoteId.get(noteId) ?? "") ?? null;
+
   const counts = Object.fromEntries(
     Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
   ) as Record<FailureType, number>;
+  const notesSeen: ProductionPillData["notesSeen"] = [];
   for (const note of notes) {
-    counts[cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id))]++;
+    const failureType = cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id));
+    counts[failureType]++;
+    notesSeen.push({
+      noteId: note.note_id,
+      failureType,
+      seen: seenByTargetId.get(note.note_id) ?? false,
+      abTestPicks: abPicksByTweet.get(note.tweet_id) ?? null,
+    });
   }
   counts.missed_opportunity = missed.count ?? 0;
   counts.filtered_low_eval_score = lowEval.count ?? 0;
-  return counts;
+
+  const tagCounts = new Map<string, number>();
+  const annotationsSeen: ProductionPillData["annotationsSeen"] = [];
+  for (const a of annotationRows) {
+    const failureModes = a.failure_modes ?? [];
+    for (const m of failureModes) tagCounts.set(m, (tagCounts.get(m) ?? 0) + 1);
+    // target_id is a bare note_id for canonical notes (the common case); prefixed
+    // missed/low-eval targets have no note tweet, so no A/B picks.
+    annotationsSeen.push({ targetId: a.target_id, failureModes, seen: !!a.seen, abTestPicks: picksForNoteId(a.target_id) });
+  }
+
+  return { counts, tagCounts, notesSeen, annotationsSeen };
 }
 
 // ─── Dataset run data ────────────────────────────────────────────────────────

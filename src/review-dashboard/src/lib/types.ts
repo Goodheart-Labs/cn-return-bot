@@ -122,7 +122,7 @@ export interface FailureTypeConfig {
 
 export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   // --- Production types ---
-  rated_helpful: { label: "Rated Helpful", defaultOn: true, production: true, datasetRun: false, color: "bg-green-100 text-green-800" },
+  rated_helpful: { label: "Rated Helpful", defaultOn: false, production: true, datasetRun: false, color: "bg-green-100 text-green-800" },
   rated_unhelpful: { label: "Rated Unhelpful", defaultOn: true, production: true, datasetRun: false, color: "bg-red-100 text-red-800" },
   lost_to_competitor: { label: "Lost to competitor", defaultOn: false, production: true, datasetRun: false, color: "bg-orange-100 text-orange-800" },
   missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: false, color: "bg-yellow-100 text-yellow-800" },

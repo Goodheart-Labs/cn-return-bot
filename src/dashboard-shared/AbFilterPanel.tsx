@@ -4,10 +4,14 @@ export function AbFilterPanel({
   slots,
   filters,
   onChange,
+  hideHeader = false,
 }: {
   slots: ABTestSlotInfo[];
   filters: ABFilters;
   onChange: (filters: ABFilters) => void;
+  // Omit the title + "Clear all" row — for callers that supply their own header
+  // (e.g. a collapsible <summary>). Defaults to showing it.
+  hideHeader?: boolean;
 }) {
   if (!slots.length) return null;
   const handleSet = (slot: string, variant: string) => {
@@ -20,17 +24,19 @@ export function AbFilterPanel({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium text-gray-800">A/B test filters</h3>
-        {hasAny && (
-          <button
-            onClick={() => onChange({})}
-            className="text-xs text-blue-600 hover:text-blue-800"
-          >
-            Clear all
-          </button>
-        )}
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-medium text-gray-800">A/B test filters</h3>
+          {hasAny && (
+            <button
+              onClick={() => onChange({})}
+              className="text-xs text-blue-600 hover:text-blue-800"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {slots.map((slot) => (
           <label key={slot.name} className="flex flex-col gap-1 text-sm">
