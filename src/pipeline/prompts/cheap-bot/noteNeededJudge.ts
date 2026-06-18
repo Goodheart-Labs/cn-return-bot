@@ -1,33 +1,21 @@
 /**
- * Simple Bot — Note-Needed Judge
+ * Prompt — cheap-bot note-needed judge.
  *
- * Extra LLM step between writer and source verifier. Decides whether the
- * proposed note is actually warranted given the post + research findings.
- * The full criteria for "when a note is needed" live here so the search
- * step's system prompt can be simplified.
- *
- * Activated when config.note_needed_judge is true.
+ * Decides whether a proposed note is warranted (post + proposed note + sources).
+ * cheap-bot's primary false-positive guard. See runNoteNeededJudge in
+ * src/pipeline/cheap-bot/judge.ts.
  */
 
-import { getBotConfig } from "../ab-testing/botConfig";
-import { getTweetLog } from "../utils/tweetLog";
-import { STEP, COST } from "../utils/noteWriterSteps";
-import { runJsonLlmCall } from "../utils/jsonLlmCall";
-
-export interface JudgeResult {
-  noteNeeded: boolean;
-  reasoning: string;
-}
+import { jsonSchemaResponseFormat } from "../responseFormat";
 
 /**
- * The note-needed judge is shared by simple-bot and cheap-bot. When
- * `satireFilteredUpstream` is true (cheap-bot's pre-search satire detector is
- * on), the heavy satire/comedy guidance is trimmed to a one-line backstop —
+ * When `satireFilteredUpstream` is true (cheap-bot's pre-search satire detector
+ * is on), the heavy satire/comedy guidance is trimmed to a one-line backstop —
  * overt satire is already filtered before the writer runs, so the judge only
  * needs to catch the borderline cases the high-precision detector missed.
- * When false (simple-bot), the full satire guidance stays.
+ * When false, the full satire guidance stays.
  */
-function buildSystemPrompt(satireFilteredUpstream: boolean, hasFindings: boolean): string {
+export function buildJudgeSystemPrompt(satireFilteredUpstream: boolean): string {
   const precondition3 = satireFilteredUpstream
     ? `3. **Sincere, not satire** — the post presents the claim as sincere fact, not obvious satire/parody/joke (judged from the post itself, not a bio label). Overt satire is already filtered upstream, so abstain here only for clear jokes it missed. This is NOT a reason to abstain on a sincere false claim just because some replies correct it — replies don't travel with the post.`
     : `3. **Sincere, not satire** — the post presents the claim as sincere fact, not obvious satire, parody, or a recognizable joke/meme (judged from the post itself, not a bio label). The "a reasonable reader would not be deceived" test exists ONLY to spot satire/jokes — it is NOT a reason to abstain on a sincerely-asserted false claim just because some replies or quote-tweets correct it. Replies do not travel with the post and most viewers never read them, so a note is still needed.`;
@@ -44,11 +32,7 @@ Replies that CORRECT a sincere false claim do NOT remove the need for a note —
 
 Replies are a signal only about whether the post is satire vs sincere — never a reason to abstain on a sincere false claim. Commenters reacting as if the claim is real point to a sincere post; commenters flagging it as fake/satire/a joke point to satire. A few confused replies on an obvious joke do not override precondition #3. Crucially, replies that CORRECT a sincere false claim do NOT remove the need for a note — the note serves the majority of viewers who never read the replies. A post built to imitate real media (a fake news headline, official statement, or screenshot) is sincere-by-imitation and still needs a note.`;
 
-  const inputsDescription = hasFindings
-    ? `an original post, research findings, and a proposed community note (with its cited sources)`
-    : `an original post and a proposed community note (with its cited sources)`;
-
-  return `You are a Community Notes quality judge for X/Twitter. You receive ${inputsDescription}. Your job: decide whether the note should actually be published.
+  return `You are a Community Notes quality judge for X/Twitter. You receive an original post and a proposed community note (with its cited sources). Your job: decide whether the note should actually be published.
 
 Publish a note ONLY if all three hold:
 1. **Falsifiable fact** — the post asserts a specific, checkable claim about a past or present state of the world. NOT a prediction, opinion, value judgment, or rhetorical generalization.
@@ -76,65 +60,29 @@ Return JSON with two fields:
 - reasoning: one or two sentences. If you abstain, name which precondition failed.`;
 }
 
-const RESPONSE_FORMAT = {
-  type: "json_schema" as const,
-  json_schema: {
-    name: "note_needed_judge",
-    strict: true,
-    schema: {
-      type: "object",
-      properties: {
-        reasoning: { type: "string", description: "One or two sentences of analysis, written BEFORE the verdict so the decision is conditioned on it." },
-        note_needed: { type: "boolean", description: "True iff the proposed note should be published." },
-      },
-      required: ["reasoning", "note_needed"],
-      additionalProperties: false,
-    },
-  },
-};
-
-export async function runNoteNeededJudge(params: {
+export function buildJudgeUserMessage(params: {
   postContext: string;
-  researcherFindings?: string;
   noteText: string;
   sources: string[];
-}): Promise<JudgeResult> {
-  const log = getTweetLog();
-  const config = getBotConfig();
-  const model = config.note_judge_model ?? config.model;
-
-  const sections = [
+}): string {
+  return [
     `## Original post`,
     params.postContext,
-  ];
-  if (params.researcherFindings) {
-    sections.push(``, `## Research findings`, params.researcherFindings);
-  }
-  sections.push(
     ``,
     `## Proposed community note`,
     params.noteText,
     ``,
     `## Note's cited sources`,
     params.sources.length ? params.sources.join("\n") : "(none)",
-  );
-  const userMessage = sections.join("\n");
-
-  const systemPrompt = buildSystemPrompt(!!config.satire_detector, !!params.researcherFindings);
-  const messages = [
-    { role: "system" as const, content: systemPrompt },
-    { role: "user" as const, content: userMessage },
-  ];
-  log?.set(`${STEP.noteNeededJudge}.messages.0`, { systemPrompt, userMessage, model });
-
-  const parsed = await runJsonLlmCall<{ note_needed: boolean; reasoning: string }>({
-    costName: COST.noteNeededJudge,
-    model,
-    messages,
-    responseFormat: RESPONSE_FORMAT,
-    schemaHint: `{ "reasoning": string, "note_needed": boolean }`,
-  });
-  log?.set(`${STEP.noteNeededJudge}.messages.1`, { content: parsed });
-
-  return { noteNeeded: !!parsed.note_needed, reasoning: parsed.reasoning ?? "" };
+  ].join("\n");
 }
+
+export const JUDGE_RESPONSE_FORMAT = jsonSchemaResponseFormat("note_needed_judge", {
+  type: "object",
+  properties: {
+    reasoning: { type: "string", description: "One or two sentences of analysis, written BEFORE the verdict so the decision is conditioned on it." },
+    note_needed: { type: "boolean", description: "True iff the proposed note should be published." },
+  },
+  required: ["reasoning", "note_needed"],
+  additionalProperties: false,
+});

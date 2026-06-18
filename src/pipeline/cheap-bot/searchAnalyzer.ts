@@ -14,14 +14,7 @@ import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
-
-const SYSTEM_PROMPT = `You receive a social-media post and raw search results. Distill them into a research brief.
-
-Think step by step: what does the post claim, what do the search results say, and if the post is wrong, what's actually true?
-
-Write a brief (a few paragraphs) with specific names, dates, numbers, and all relevant source URLs inline (Its important that you include the full source URLs). Only use information from the search results.
-
-If a reference document is provided, treat it as ground truth for the topic and include its Source URL inline as a citation.`;
+import { SEARCH_ANALYZER_SYSTEM_PROMPT, buildSearchAnalyzerUserMessage } from "../prompts/cheap-bot/searchAnalyzer";
 
 export async function runSearchAnalyzer(
   postContext: string,
@@ -35,7 +28,7 @@ export async function runSearchAnalyzer(
   // grounds its brief in it and surfaces the Source URL as a citation.
   const monitoring = getMonitoringContext();
   const referenceBlock = monitoring ? `${buildReferenceBlock(monitoring)}\n\n` : "";
-  const userMessage = `${referenceBlock}${postContext}\n\n## Raw search results\n\n${rawFindings}`;
+  const userMessage = buildSearchAnalyzerUserMessage({ referenceBlock, postContext, rawFindings });
 
   // Quick yes/no next to the analysis so injection is verifiable at a glance;
   // the full injected text shows under search_analyzer.messages.0.
@@ -45,12 +38,12 @@ export async function runSearchAnalyzer(
 
   // Log the full input alongside the output, matching the messages.0 /
   // messages.1 convention of the other note_writer_steps.
-  log?.set(`${STEP.searchAnalyzer}.messages.0`, { systemPrompt: SYSTEM_PROMPT, userMessage, model });
+  log?.set(`${STEP.searchAnalyzer}.messages.0`, { systemPrompt: SEARCH_ANALYZER_SYSTEM_PROMPT, userMessage, model });
 
   const { response, costEntry } = await trackedLlmCreate(COST.searchAnalyzer, {
     model,
     messages: [
-      { role: "system" as const, content: SYSTEM_PROMPT },
+      { role: "system" as const, content: SEARCH_ANALYZER_SYSTEM_PROMPT },
       { role: "user" as const, content: userMessage },
     ],
     ...llmTuningParams(config),

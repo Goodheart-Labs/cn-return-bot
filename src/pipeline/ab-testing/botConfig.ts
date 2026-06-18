@@ -31,11 +31,10 @@ export interface BotConfig {
    */
   verifier_claim_based?: boolean;
   /**
-   * When true, the simple-bot pipeline runs an extra LLM step between writer
-   * and source verifier that judges whether a note is actually warranted for
-   * the post. The search step's system prompt is also simplified — the "when
-   * NOT to set correction_needed" criteria move into the judge's prompt.
-   * Defaults to false (no judge step, full search prompt).
+   * When true, the pipeline runs an extra LLM step between writer and source
+   * verifier that judges whether a note is actually warranted for the post.
+   * cheap-bot's primary FP guard (always on there via BOT_TEST). Defaults to
+   * false (no judge step).
    */
   note_needed_judge?: boolean;
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
@@ -91,6 +90,29 @@ export interface BotConfig {
    * Defaults to false.
    */
   satire_detector?: boolean;
+  /**
+   * When true (simple-bot only), the search and writer steps use maximally-terse
+   * "simple" prompt variants instead of the detailed defaults — tests whether the
+   * long criteria lists are pulling their weight. Set by SIMPLE_BOT_PROMPTS_TEST;
+   * defaults false. Doesn't touch the shared source-verifier / user-message prompts.
+   */
+  simple_prompts?: boolean;
+  /**
+   * When true (simple-bot only), the search agent's system prompt is appended
+   * with an instruction to prefer, for political posts, sources associated with
+   * the post author's own political side — the bridging idea that a note is more
+   * likely to be rated helpful when it cites sources the author's audience
+   * already trusts. Set by SIMPLE_BOT_POLITICAL_SOURCES_TEST; defaults false.
+   */
+  search_political_sources?: boolean;
+  /**
+   * When true, the writer's system prompt is appended with a few-shot block of
+   * real notes the community rated helpful — all simple, direct, and short — to
+   * pull the writer toward that "simple and nice" style. Set by
+   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false. Composes with the base
+   * prompt (detailed or `simple_prompts`).
+   */
+  writer_examples?: boolean;
   /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
   feed_size: FeedSize;
   /**

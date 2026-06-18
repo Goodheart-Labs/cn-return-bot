@@ -18,7 +18,12 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import { createBotInput } from "../input/createBotInput";
-import { buildUserMessageFromInput } from "../input/prompt";
+import { buildUserMessageFromInput } from "../prompts/input/userMessage";
+import {
+  PREFILTER_JUDGE_SYSTEM_PROMPT,
+  PREFILTER_JUDGE_RESPONSE_FORMAT,
+  buildPrefilterJudgeUserMessage,
+} from "../prompts/prefilter/noteNeededJudge";
 import { runQueryWriter } from "../cheap-bot/queryWriter";
 import { runSearchAnalyzer } from "../cheap-bot/searchAnalyzer";
 import { fetchSearxngResults, formatSearxngResults, type SearxngResult } from "../tool-calling/tools";
@@ -49,49 +54,6 @@ const PREFILTER_CONFIG: BotConfig = {
   temperature: 0,
   feed_size: "small",
   eval_submit_threshold: 0, // unused — prefilter runs before the bot / eval gate
-};
-
-// Reframed note-needed judge: same three preconditions as the real cheap-bot
-// judge (src/pipeline/simple-bot/judge.ts), but it receives post + research
-// findings instead of a proposed note (the prefilter skips the writer).
-const JUDGE_SYSTEM_PROMPT = `You are a Community Notes quality judge for X/Twitter. You receive an original post and research findings from a web search. Decide whether the post NEEDS a Community Note.
-
-A note is needed ONLY if all three hold:
-1. **Falsifiable fact** — the post asserts a specific, checkable claim about a past or present state of the world. NOT a prediction, opinion, value judgment, or rhetorical generalization.
-2. **Materially false** — that claim is actually false or materially misleading against the research findings; not merely reframed, incomplete, or pedantic.
-3. **Sincere, not satire** — the post presents the claim as sincere fact, not obvious satire, parody, or a recognizable joke/meme (judged from the post itself, not a bio label).
-
-If any fails, return note_needed=false. The note must address a claim the post actually makes — but a false superlative or absolute the post asserts ("lowest ever", "the first", "none") IS such a claim, not a tangential detail.
-
-## Common abstain cases
-- **Predictions / unresolved matters** — the claim is about a future or not-yet-settled event.
-- **Accurate but reframed** — the underlying claim is true and a note would only re-spin it. If the findings say the claim is essentially accurate, abstain.
-- **Author already disclosed** — the author truthfully states the content's nature (AI-generated, satire, fiction).
-- **Pedantic** — a recency or detail nitpick that doesn't change the claim's meaning.
-- **Self-disambiguating post** — the post's OWN media or caption reveals its non-serious nature, or is itself the corrective evidence. Corrective *replies* do NOT count — they don't travel with the post.
-
-## Exception — fabricated quotes / non-events
-"No evidence found" is sufficient grounds for a note ONLY when correcting a fabricated quote or a non-event ("X never said Y", "Z did not happen") attributed to a real public figure with no in-tweet disambiguation.
-
-Return JSON with two fields:
-- reasoning: one or two sentences, written BEFORE the verdict.
-- note_needed: boolean. True only if all three preconditions hold.`;
-
-const JUDGE_RESPONSE_FORMAT = {
-  type: "json_schema" as const,
-  json_schema: {
-    name: "prefilter_note_needed",
-    strict: true,
-    schema: {
-      type: "object",
-      properties: {
-        reasoning: { type: "string" },
-        note_needed: { type: "boolean" },
-      },
-      required: ["reasoning", "note_needed"],
-      additionalProperties: false,
-    },
-  },
 };
 
 export interface PrefilterVerdict {
@@ -139,16 +101,16 @@ async function gatherFindings(userMessage: string, queries: string[]): Promise<s
 
 async function runPrefilterJudge(postContext: string, findings: string): Promise<{ needsNote: boolean; reasoning: string }> {
   const log = getTweetLog();
-  const userMessage = `## Original post\n${postContext}\n\n## Research findings\n${findings}`;
-  log?.set(`${STEP.noteNeededJudge}.messages.0`, { systemPrompt: JUDGE_SYSTEM_PROMPT, userMessage, model: DEEPSEEK });
+  const userMessage = buildPrefilterJudgeUserMessage(postContext, findings);
+  log?.set(`${STEP.noteNeededJudge}.messages.0`, { systemPrompt: PREFILTER_JUDGE_SYSTEM_PROMPT, userMessage, model: DEEPSEEK });
   const parsed = await runJsonLlmCall<{ note_needed: boolean; reasoning: string }>({
     costName: COST.noteNeededJudge,
     model: DEEPSEEK,
     messages: [
-      { role: "system", content: JUDGE_SYSTEM_PROMPT },
+      { role: "system", content: PREFILTER_JUDGE_SYSTEM_PROMPT },
       { role: "user", content: userMessage },
     ],
-    responseFormat: JUDGE_RESPONSE_FORMAT,
+    responseFormat: PREFILTER_JUDGE_RESPONSE_FORMAT,
     schemaHint: `{ "reasoning": string, "note_needed": boolean }`,
   });
   log?.set(`${STEP.noteNeededJudge}.messages.1`, { content: parsed });

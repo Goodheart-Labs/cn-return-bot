@@ -23,9 +23,3 @@ export class UnfetchableSourcesError extends PipelineError {
 export class ModelOutputInvalidError extends PipelineError {
   readonly outcomeReason = "model_output_invalid";
 }
-
-/** Multi-agent / agent loop ran out of turns without producing a verdict. */
-export class PipelineExhaustedError extends PipelineError {}
-
-/** Agent invoked its `error` tool to signal it gave up. */
-export class AgentToolError extends PipelineError {}

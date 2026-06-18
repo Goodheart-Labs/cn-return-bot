@@ -71,23 +71,6 @@ export const BOT_TEST: ABTest = {
       // "find a dispute or return nothing" decision-making.
       reasoning_effort: "high",
     }}, weight: 0 },
-    { variant: { name: "multi-agent", overrides: {
-      botId: "multi-agent",
-      model: "google/gemini-3-flash-preview",
-    }}, weight: 0 },
-    { variant: { name: "agent", overrides: {
-      botId: "agent",
-      model: "google/gemini-3-flash-preview",
-    }}, weight: 0 },
-    { variant: { name: "opus-main",                  overrides: { botId: "opus-main" }},                 weight: 0 },
-    { variant: { name: "opus-main-v2",               overrides: { botId: "opus-main-v2" }},              weight: 0 },
-    { variant: { name: "opus-main-no-source-check",  overrides: { botId: "opus-main-no-source-check" }}, weight: 0 },
-    { variant: { name: "opus-direct",                overrides: { botId: "opus-direct" }},               weight: 0 },
-    { variant: { name: "opus-direct-grok",           overrides: { botId: "opus-direct-grok" }},          weight: 0 },
-    { variant: { name: "opus-main-v2-grok",          overrides: { botId: "opus-main-v2-grok" }},         weight: 0 },
-    { variant: { name: "opus-multi-source",          overrides: { botId: "opus-multi-source" }},         weight: 0 },
-    { variant: { name: "opus-bridging",              overrides: { botId: "opus-bridging" }},             weight: 0 },
-    { variant: { name: "opus-research",              overrides: { botId: "opus-research" }},             weight: 0 },
   ],
 };
 
@@ -106,7 +89,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 2 },
     { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 2 },
-    { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 1 },
+    { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
@@ -144,16 +127,47 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   ],
 };
 
-// Extra LLM step between writer and source verifier that judges whether the
-// proposed note is actually warranted. When "on", the search step's system
-// prompt is simplified (criteria for "when a note is needed" move into the
-// judge's prompt). Prereq-gated to simple-bot, so no defaultVariant.
-const NOTE_NEEDED_JUDGE_TEST: ABTest = {
-  name: "note_needed_judge",
+// Swap simple-bot's search + writer system prompts for maximally-terse variants
+// (the shared verifier / user-message prompts are untouched). Tests whether the
+// long criteria lists pull their weight. Live 50/50 on simple-bot. Prereq-gated
+// to simple-bot, so no defaultVariant.
+const SIMPLE_BOT_PROMPTS_TEST: ABTest = {
+  name: "simple_bot_prompts",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off",              overrides: { note_needed_judge: false }                                                                 }, weight: 100 },
-    { variant: { name: "deepseek-v4flash", overrides: { note_needed_judge: true, note_judge_model: "deepseek/deepseek-v4-flash" }                  }, weight: 0 },
+    { variant: { name: "detailed", overrides: { simple_prompts: false } }, weight: 50 },
+    { variant: { name: "simple",   overrides: { simple_prompts: true  } }, weight: 50 },
+  ],
+};
+
+// Append an instruction to simple-bot's SEARCH prompt to prefer, for political
+// posts, sources associated with the post author's own political side — the
+// bridging bet that a correction cited to the author's own trusted outlets is
+// more likely to be rated helpful. Scaled down to a 10% holdout on simple-bot
+// (was 50/50) — "off" is now the primary arm. Prereq-gated to simple-bot, so no
+// defaultVariant.
+const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
+  name: "simple_bot_political_sources",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_political_sources: false } }, weight: 90 },
+    { variant: { name: "on",  overrides: { search_political_sources: true  } }, weight: 10 },
+  ],
+};
+
+// Append a few-shot block of real, well-performing notes (all simple, direct,
+// and short) to simple-bot's writer system prompt, testing whether concrete
+// examples pull the writer toward that "simple and nice" style vs the
+// principles-only prompt. Holds the writer model + every other step constant,
+// so the prompt is the only variable. Live 50/50 on simple-bot — watch the
+// helpful/FP rate of the `on` arm. Prereq-gated to simple-bot, so no
+// defaultVariant.
+const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
+  name: "simple_bot_writer_examples",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { writer_examples: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { writer_examples: true  } }, weight: 50 },
   ],
 };
 
@@ -253,25 +267,6 @@ const VERIFIER_CLAIM_BASED_TEST: ABTest = {
   ],
 };
 
-const AGENT_SEARCH_TEST: ABTest = {
-  name: "agent_search",
-  prerequisites: { botId: ["agent", "multi-agent"] },
-  variants: [
-    { variant: { name: "perplexity", overrides: { web_search: "perplexity" }},          weight: 1 },
-    { variant: { name: "searxng",    overrides: { web_search: "searxng" }},             weight: 1 },
-    { variant: { name: "searxngsum", overrides: { web_search: "searxng_summarized" }},  weight: 1 },
-  ],
-};
-
-const AGENT_PARALLEL_TEST: ABTest = {
-  name: "agent_parallel",
-  prerequisites: { botId: ["agent", "multi-agent"] },
-  variants: [
-    { variant: { name: "seq", overrides: { parallel_research: false }}, weight: 1 },
-    { variant: { name: "par", overrides: { parallel_research: true }},  weight: 1 },
-  ],
-};
-
 // Pseudo A/B test: records the feed size in `pipeline_runs.ab_test_picks.feed_size`.
 // `generateCandidates` forces the pick to the size the fetch actually used.
 // Pre-existing rows (no `feed_size` key) resolve to "small".
@@ -344,7 +339,9 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
-  NOTE_NEEDED_JUDGE_TEST,
+  SIMPLE_BOT_PROMPTS_TEST,
+  SIMPLE_BOT_WRITER_EXAMPLES_TEST,
+  SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
@@ -354,8 +351,6 @@ export const AB_TESTS: ABTest[] = [
   SEARCH_ANALYZER_TEST,
   SATIRE_DETECTOR_TEST,
   CHEAP_BOT_TEMPERATURE_TEST,
-  AGENT_SEARCH_TEST,
-  AGENT_PARALLEL_TEST,
   FEED_SIZE_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
 ];
