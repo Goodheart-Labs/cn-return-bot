@@ -17,7 +17,6 @@ export interface ReviewItem {
   // Our note
   noteId?: string;
   noteText?: string;
-  sourceUrl?: string;
   status?: string;
   coreStatus?: string;
   viewCount?: number;
@@ -80,7 +79,8 @@ export type ProductionFailureType =
   | "rated_unhelpful"
   | "lost_to_competitor"
   | "missed_opportunity"
-  | "needs_more_ratings";
+  | "needs_more_ratings"
+  | "filtered_low_eval_score";
 
 // V2 dataset run categories (from evaluateResults categorizeRowV2)
 export type DatasetCategoryV2 =
@@ -122,11 +122,12 @@ export interface FailureTypeConfig {
 
 export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   // --- Production types ---
-  rated_helpful: { label: "Rated Helpful", defaultOn: true, production: true, datasetRun: false, color: "bg-green-100 text-green-800" },
+  rated_helpful: { label: "Rated Helpful", defaultOn: false, production: true, datasetRun: false, color: "bg-green-100 text-green-800" },
   rated_unhelpful: { label: "Rated Unhelpful", defaultOn: true, production: true, datasetRun: false, color: "bg-red-100 text-red-800" },
   lost_to_competitor: { label: "Lost to competitor", defaultOn: false, production: true, datasetRun: false, color: "bg-orange-100 text-orange-800" },
   missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: false, color: "bg-yellow-100 text-yellow-800" },
   needs_more_ratings: { label: "Needs More Ratings", defaultOn: false, production: true, datasetRun: false, color: "bg-blue-100 text-blue-800" },
+  filtered_low_eval_score: { label: "Filtered (low eval score)", defaultOn: false, production: true, datasetRun: false, color: "bg-teal-100 text-teal-800" },
 
   // --- V2 dataset categories: noteworthy ---
   nw_success:                   { label: "Success",              defaultOn: true,  production: false, datasetRun: true, color: "bg-green-100 text-green-800",  group: "noteworthy" },

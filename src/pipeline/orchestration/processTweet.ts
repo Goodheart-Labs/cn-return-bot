@@ -18,7 +18,7 @@ import { shouldSubmitNote } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
 import { PipelineError } from "../utils/errors";
 import { aggregateAndLogCosts } from "../cost-tracking/costTracker";
-import { countNoteLength, joinNoteAndUrl } from "../write/writeNote";
+import { countNoteLength, joinNoteAndUrl } from "../utils/noteLength";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import { runNoteNeededPrefilter } from "../prefilter/noteNeededPrefilter";
@@ -152,7 +152,7 @@ async function computeEvaluationScore(
   noteText: string
 ): Promise<{ score?: number; shouldSubmit?: boolean; error?: string }> {
   try {
-    const result = await shouldSubmitNote(postId, noteText, 0);
+    const result = await shouldSubmitNote(postId, noteText, getBotConfig().eval_submit_threshold);
     return {
       score: result.score,
       shouldSubmit: result.error ? undefined : result.shouldSubmit,

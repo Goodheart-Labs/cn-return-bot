@@ -5,7 +5,8 @@
  * (so it shares the free→paid key routing in ../llm/gemini).
  * - Images: direct vision call with structured JSON (description + OCR)
  * - Short videos (<= 3.5 min): pass entire video as inline base64 bytes
- * - Long videos (> 3.5 min): extract 4 uniformly sampled frames via ffmpeg
+ * - Frame-sampled videos: extract 5 equally-spaced frames across the clip via
+ *   ffmpeg (works for any length, including sub-5s clips)
  * - Audio: extract and transcribe with Groq Whisper
  */
 
@@ -26,11 +27,13 @@ import {
   type YtDlpMetadata,
 } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
+import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT } from "../prompts/media/mediaAnalysis";
+import { getBestMediaUrl } from "./bestMediaUrl";
 
 const execAsync = promisify(exec);
 // Native Gemini API takes the model id without the OpenRouter "google/" prefix.
 const GEMINI_NATIVE_MODEL = GEMINI_MODEL.replace(/^google\//, "");
-const LONG_VIDEO_FRAME_COUNT = 4;          // uniformly-sampled frames sent for long videos
+const FRAME_SAMPLE_COUNT = 5;              // equally-spaced frames sent for frame-sampled videos
 const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes — short videos go to Gemini whole; long videos get frame sampling
 const AUTO_SUBS_THRESHOLD_MS = 300_000;    // 5 minutes — above this we use auto-subs as the transcript and never run Whisper
 const LOW_QUALITY_THRESHOLD_MS = 900_000;  // 15 minutes — above this we request the lowest-resolution stream to cap download bytes
@@ -53,14 +56,6 @@ export interface GeminiMediaResult {
   tweetMedia: GeminiMediaItem[];
   quotedTweetMedia: GeminiMediaItem[];
 }
-
-// --- Prompts ---
-
-const IMAGE_PROMPT = `Analyze this image. Describe what it shows and extract all visible text.`;
-
-const VIDEO_PROMPT = `Analyze this video. Describe what happens and extract all visible text.`;
-
-const FRAME_PROMPT = `These are frames extracted from a video. Describe what happens per frame and extract all visible text per frame`;
 
 // Entities X tagged on the post (people, orgs, topics) — given to Gemini as a hint
 // to identify who/what is shown, since vision models often can't name people unaided.
@@ -127,23 +122,6 @@ async function fetchImageInlineData(imageUrl: string): Promise<{ mimeType: strin
   return { mimeType, data: bytes.toString("base64") };
 }
 
-function getBestUrl(item: {
-  type: string;
-  url?: string;
-  preview_image_url?: string;
-  variants?: Array<{ bit_rate?: number; content_type: string; url: string }>;
-}): string | undefined {
-  if (item.type === "photo") return item.url || item.preview_image_url;
-  if (item.variants?.length) {
-    const mp4s = item.variants
-      .filter((v) => v.content_type === "video/mp4")
-      .sort((a, b) => (b.bit_rate ?? 0) - (a.bit_rate ?? 0));
-    if (mp4s[0]) return mp4s[0].url;
-    return item.variants[0]?.url;
-  }
-  return item.url || item.preview_image_url;
-}
-
 // --- Audio transcription (reusing Groq Whisper pattern) ---
 
 async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
@@ -198,7 +176,22 @@ async function downloadVideo(videoUrl: string, tmpDir: string): Promise<string> 
   return videoPath;
 }
 
+/** True iff the clip carries an audio stream. Silent videos (common on X) make
+ *  the audio-extraction ffmpeg call error out, so we check first and skip it. */
+async function hasAudioStream(videoPath: string): Promise<boolean> {
+  try {
+    const { stdout } = await execAsync(
+      `ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 "${videoPath}"`,
+      { timeout: 10000 },
+    );
+    return stdout.trim().length > 0;
+  } catch {
+    return false;
+  }
+}
+
 async function extractAudio(videoPath: string, tmpDir: string): Promise<string> {
+  if (!(await hasAudioStream(videoPath))) return "";
   const audioPath = join(tmpDir, "audio.mp3");
   await execAsync(
     `ffmpeg -i "${videoPath}" -vn -acodec libmp3lame -ar 16000 -ac 1 "${audioPath}" -y 2>&1`,
@@ -218,16 +211,46 @@ async function analyzeShortVideo(videoPath: string, costName: string, entities?:
   );
 }
 
-async function analyzeLongVideoFrames(videoPath: string, tmpDir: string, costName: string, entities?: string[]): Promise<GeminiMediaDescription> {
+/** ffprobe a clip's duration in seconds; null if it can't be determined. */
+async function probeDurationSeconds(videoPath: string): Promise<number | null> {
+  try {
+    const { stdout } = await execAsync(
+      `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${videoPath}"`,
+      { timeout: 10000 },
+    );
+    const seconds = parseFloat(stdout.trim());
+    return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Extract FRAME_SAMPLE_COUNT equally-spaced frames across the whole clip and
+ *  send them to Gemini. The sampling rate is derived from the duration
+ *  (count / duration) so it works for any length — including sub-5s clips,
+ *  which a fixed "1 frame per 5s" rate would miss entirely. */
+async function analyzeVideoFrames(
+  videoPath: string,
+  tmpDir: string,
+  costName: string,
+  durationMs: number | undefined,
+  entities?: string[],
+): Promise<GeminiMediaDescription> {
+  const durationSec =
+    (durationMs && durationMs > 0 ? durationMs / 1000 : null) ?? (await probeDurationSeconds(videoPath));
+  // count / duration spreads FRAME_SAMPLE_COUNT frames evenly over the clip.
+  // Unknown duration → fall back to 1 fps (still yields frames; `-frames:v` caps).
+  const fps = durationSec ? FRAME_SAMPLE_COUNT / durationSec : 1;
+
   await execAsync(
-    `ffmpeg -i "${videoPath}" -vf "fps=1/5,scale=640:-1" -frames:v ${LONG_VIDEO_FRAME_COUNT} "${tmpDir}/frame%03d.jpg" -y 2>&1`,
+    `ffmpeg -i "${videoPath}" -vf "fps=${fps},scale=640:-1" -frames:v ${FRAME_SAMPLE_COUNT} "${tmpDir}/frame%03d.jpg" -y 2>&1`,
     { timeout: 60000 },
   ).catch((err) => {
     console.error("[mediaAnalysisGemini] FFmpeg frame extraction error:", err.message);
   });
 
   const frameParts: GeminiContentPart[] = [];
-  for (let i = 1; i <= LONG_VIDEO_FRAME_COUNT; i++) {
+  for (let i = 1; i <= FRAME_SAMPLE_COUNT; i++) {
     const framePath = join(tmpDir, `frame${String(i).padStart(3, "0")}.jpg`);
     try {
       const frameStat = await stat(framePath);
@@ -291,7 +314,7 @@ async function analyzeVideo(
         console.warn("[mediaAnalysisGemini] FFmpeg not available, skipping frames");
         description = { description: "", ocrText: "" };
       } else {
-        description = await analyzeLongVideoFrames(videoPath, tmpDir, costName, entities);
+        description = await analyzeVideoFrames(videoPath, tmpDir, costName, durationMs, entities);
       }
     } else {
       description = await analyzeShortVideo(videoPath, costName, entities);
@@ -345,7 +368,7 @@ async function analyzeMediaItems(
   let imageIdx = 0;
   const imageResults = await Promise.all(
     images
-      .map((img) => getBestUrl(img))
+      .map((img) => getBestMediaUrl(img))
       .filter((url): url is string => !!url)
       .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`, entities).catch((err) => {
         console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
@@ -356,7 +379,7 @@ async function analyzeMediaItems(
 
   let videoIdx = 0;
   for (const video of videos) {
-    const videoUrl = getBestUrl(video);
+    const videoUrl = getBestMediaUrl(video);
     if (!videoUrl) continue;
     results.push(await analyzeVideo(videoUrl, video.duration_ms, `${namePrefix}.video.${videoIdx++}`, strategy, undefined, entities));
   }

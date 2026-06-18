@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared } from "./paging";
+import type { Post } from "./fetchEligiblePosts";
 
 // Database types
 export interface Notewriter {
@@ -303,31 +304,12 @@ export class SupabaseLogger {
 
   /**
    * Bulk insert tweets from fetched eligibility-endpoint posts. Derives
-   * has_video / has_photo / media_count / video_duration_ms from post.media.
+   * has_video / has_photo / media_count / video_duration_ms from post.media,
+   * and stores the complete raw X-API object in raw_tweet.
    * Insert-only: rows whose tweet_id already exists are skipped, so engagement
    * metrics remain frozen at first sight.
    */
-  async bulkInsertNewTweets(posts: Array<{
-    id: string;
-    author_id?: string;
-    text?: string;
-    created_at?: string;
-    media?: any[];
-    referenced_tweets?: any[];
-    referenced_tweet_data?: any;
-    public_metrics?: {
-      impression_count?: number;
-      like_count?: number;
-      retweet_count?: number;
-      reply_count?: number;
-      quote_count?: number;
-      bookmark_count?: number;
-    };
-    author_followers?: number;
-    author_name?: string;
-    author_description?: string;
-    author_tweet_count?: number;
-  }>): Promise<void> {
+  async bulkInsertNewTweets(posts: Post[]): Promise<void> {
     if (!posts.length) return;
     const now = new Date().toISOString();
     const rows = posts.map((post) => {
@@ -350,6 +332,7 @@ export class SupabaseLogger {
         media: post.media ?? null,
         referenced_tweets: post.referenced_tweets ?? null,
         referenced_tweet_data: post.referenced_tweet_data ?? null,
+        raw_tweet: post.raw ?? null,
         has_video: !!videoMedia,
         has_photo: post.media?.some((m) => m.type === "photo") ?? false,
         media_count: post.media?.length ?? 0,

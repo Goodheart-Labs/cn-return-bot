@@ -1,8 +1,14 @@
 /**
  * Source Verifier
  *
- * Single LLM call that checks whether cited sources actually support a community note.
- * Fetches source content, then asks the model to accept or reject.
+ * Checks whether cited sources actually support a community note. Two flows,
+ * picked by config.verifier_claim_based:
+ *   - classic (default): one LLM call categorizes each cited source good/bad and
+ *     accepts iff the good ones cover every claim.
+ *   - claim-based: one call extracts the note's distinct claims, a second maps
+ *     each claim to its supporting cited sources. A source is good iff it
+ *     supports ≥1 claim; the note is accepted iff every claim has ≥1 supporter.
+ * Both share the same source-fetching cascade and return a SourceVerification.
  */
 
 import { handleWebFetch } from "../tool-calling/tools";
@@ -23,6 +29,10 @@ import {
   verifierModelSupportsImages,
   type VerifierImage,
 } from "./verifierImages";
+import { fetchTweetViaSyndication, type SyndicationTweet } from "./fetchTweet";
+import { buildVerifierSystemPrompt, VERIFY_RESPONSE_FORMAT } from "../prompts/verify/sourceVerification";
+import { CLAIM_EXTRACTION_SYSTEM_PROMPT, CLAIM_EXTRACTION_RESPONSE_FORMAT } from "../prompts/verify/claimExtraction";
+import { buildClaimSupportSystemPrompt, CLAIM_SUPPORT_RESPONSE_FORMAT } from "../prompts/verify/claimSupport";
 
 export interface SourceVerification {
   /** Reasoning for the verification decision. */
@@ -34,33 +44,6 @@ export interface SourceVerification {
   /** True iff good_sources together cover every factual claim. */
   accepted: boolean;
 }
-
-const RESPONSE_FORMAT = {
-  type: "json_schema" as const,
-  json_schema: {
-    name: "source_verification",
-    strict: true,
-    schema: {
-      type: "object",
-      properties: {
-        reasoning: { type: "string", description: "Why the note was accepted or rejected, and a short note on any bad_sources." },
-        good_sources: {
-          type: "array",
-          items: { type: "string" },
-          description: "Verbatim URLs from the cited sources that support a factual claim in the note. Twitter/X links are always good if they appear in the cited sources.",
-        },
-        bad_sources: {
-          type: "array",
-          items: { type: "string" },
-          description: "Verbatim URLs from the cited sources that failed to fetch or that do not support any factual claim in the note.",
-        },
-        accepted: { type: "boolean", description: "True iff good_sources together cover every factual claim in the note." },
-      },
-      required: ["reasoning", "good_sources", "bad_sources", "accepted"],
-      additionalProperties: false,
-    },
-  },
-};
 
 function isTwitterUrl(url: string): boolean {
   try {
@@ -170,7 +153,7 @@ async function fetchOneSource(
   collectImages: boolean,
 ): Promise<FetchedSource> {
   if (isTwitterUrl(url)) {
-    return { url, content: `### ${url}\nTwitter/X link — accepted without fetching.`, fetched: true, images: [] };
+    return fetchTwitterSource(url, costName, logKey, acceptMediaSources, collectImages);
   }
   if (acceptMediaSources) {
     const media = await tryMediaDescription(url, costName, logKey, collectImages);
@@ -179,9 +162,45 @@ async function fetchOneSource(
   return fetchAsWebPage(url, collectImages);
 }
 
+/** Fetch a cited X post so the verifier can read it, rather than blind-accepting.
+ *  Video tweets go through the yt-dlp cascade (when media is accepted); the rest
+ *  fall back to the syndication endpoint for text + author. Only when both fail
+ *  (deleted/protected/unavailable) do we accept it unread. */
+async function fetchTwitterSource(
+  url: string,
+  costName: string,
+  logKey: string,
+  acceptMediaSources: boolean,
+  collectImages: boolean,
+): Promise<FetchedSource> {
+  if (acceptMediaSources) {
+    const media = await tryDescribeMedia(url, costName, logKey, collectImages);
+    if (media) return media;
+  }
+  const tweet = await fetchTweetViaSyndication(url);
+  if (tweet) return { url, content: formatTweetSection(url, tweet), fetched: true, images: [] };
+  return { url, content: `### ${url}\nTwitter/X link — tweet could not be fetched (deleted, protected, or unavailable); accepted without content.`, fetched: true, images: [] };
+}
+
+function formatTweetSection(url: string, tweet: SyndicationTweet): string {
+  const lines = [
+    `### ${url}`,
+    `Twitter/X post by ${tweet.authorName} (@${tweet.authorHandle}).`,
+    tweet.createdAt ? `Published: ${tweet.createdAt}` : null,
+    `Tweet text: ${tweet.text}`,
+  ].filter((l): l is string => l !== null);
+  return lines.join("\n");
+}
+
 /** Returns null when the URL isn't a media host or the cascade failed (caller falls through to handleWebFetch). */
 async function tryMediaDescription(url: string, costName: string, logKey: string, collectImages: boolean): Promise<FetchedSource | null> {
   if (!isMediaHost(url)) return null;
+  return tryDescribeMedia(url, costName, logKey, collectImages);
+}
+
+/** Run the yt-dlp/gallery-dl cascade + Gemini analysis, or null if it can't
+ *  extract media (text-only post, removed content, unsupported host). */
+async function tryDescribeMedia(url: string, costName: string, logKey: string, collectImages: boolean): Promise<FetchedSource | null> {
   try {
     const media = await describeMediaFromUrl(url, costName);
     const images = collectImages && media.imageDataUrl
@@ -189,8 +208,6 @@ async function tryMediaDescription(url: string, costName: string, logKey: string
       : [];
     return { url, content: formatCascadeMediaSection(url, media), fetched: true, images };
   } catch (err: any) {
-    // Neither yt-dlp nor gallery-dl could handle this URL (text-only post,
-    // removed content, private account, or host not yet supported).
     getTweetLog()?.set(`${logKey}.media_error`, err?.message ?? "unknown error");
     return null;
   }
@@ -207,35 +224,7 @@ async function fetchAsWebPage(url: string, collectImages: boolean): Promise<Fetc
   return { url, content: `### ${url}\n${content}`, fetched: !isFetchError, images };
 }
 
-function buildSystemPrompt(acceptsMediaSources: boolean, attachImages: boolean): string {
-  const mediaRule = acceptsMediaSources
-    ? `- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).`
-    : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
-
-  const imageRule = attachImages
-    ? `\n\nImages: some images are attached, and an "Attached images" manifest lists which image is from the post vs. each cited source. A post often shows an image/scene, and a cited source may show a SIMILAR BUT DIFFERENT event, place, or time. Compare them: if the post's image and a source's image are not the same event, that source does not support a claim that they are — treat it as bad and do not accept a note that asserts a connection the images contradict.`
-    : "";
-
-  return `You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.${imageRule}
-
-Scope — what to ignore:
-- Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.
-- If a "Research findings" section is present, it is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under "Note's cited sources".
-- Sources marked "[from search snippet]" were not fully fetched; evaluate them based on the available title and snippet text.
-
-Classification rules for each cited source:
-- Twitter/X links (x.com, twitter.com) → always good.
-- Any other source → good only if it (a) was successfully fetched (no "Fetch failed:" / "Fetch error:" / "Non-text content:" marker) AND (b) its content directly supports at least one factual claim in the note. Otherwise bad.
-${mediaRule}
-
-Output:
-- good_sources: verbatim URLs (exactly as listed) that pass the rules above.
-- bad_sources: every other cited URL — failed-to-fetch, irrelevant, or contradicts the note.
-- Every cited URL must appear in exactly one of good_sources or bad_sources. Do not invent URLs.
-- accepted: true iff good_sources together cover every factual claim in the note. Otherwise false, and name the unsupported claim in reasoning.`;
-}
-
-export async function verifySources(params: {
+export interface VerifySourcesParams {
   noteText: string;
   sources: string[];
   postContext: string;
@@ -245,13 +234,13 @@ export async function verifySources(params: {
    *  images. Only used when the A/B flag + model are vision-capable. */
   mediaResult?: GeminiMediaResult;
   turnNumber: number;
-}): Promise<SourceVerification> {
-  const log = getTweetLog();
+}
+
+export async function verifySources(params: VerifySourcesParams): Promise<SourceVerification> {
   const config = getBotConfig();
   const model = config.verifier_model ?? config.model;
   const costPrefix = `${COST.sourceVerifier}.turn.${params.turnNumber}`;
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
-  const messagesLogPrefix = `${logPrefix}.messages`;
 
   const collectImages = (config.verifier_sees_images ?? false) && verifierModelSupportsImages(model);
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
@@ -264,19 +253,29 @@ export async function verifySources(params: {
     params.snippetsByUrl,
   );
 
+  // verifier_sees_images: attach the post's images plus any images pulled from
+  // the cited sources, so the verifier can catch out-of-context media. Only the
+  // classic flow consumes these; gated to vision-capable models above.
   const images = collectImages
     ? [...collectPostImages(params.mediaResult), ...sourceImages]
     : [];
-  const attachImages = images.length > 0;
-  const systemPrompt = buildSystemPrompt(acceptMediaSources, attachImages);
 
-  const messageParts = [
-    `## Context`,
-    `Current date (UTC): ${new Date().toISOString()}`,
-    ``,
-    `## Proposed community note`,
-    params.noteText,
-    ``,
+  if (totalNonTwitter > 0 && fetchedCount === 0) {
+    throw new UnfetchableSourcesError(
+      `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,
+    );
+  }
+
+  return config.verifier_claim_based
+    ? runClaimBasedVerification(params, sections, costPrefix, logPrefix)
+    : runClassicVerification(params, sections, acceptMediaSources, images, costPrefix, logPrefix);
+}
+
+/** Shared tail of the verifier user message: the fetched cited sources plus the
+ *  post and research findings as background. The head (the note, or the
+ *  extracted claims) is prepended by each flow. */
+function buildSourcesContext(sections: string, params: VerifySourcesParams): string {
+  const parts = [
     `## Note's cited sources (verify these)`,
     sections,
     ``,
@@ -284,12 +283,45 @@ export async function verifySources(params: {
     params.postContext,
   ];
   if (params.researcherFindings) {
-    messageParts.push(``, `## Research findings (background — not a source)`, params.researcherFindings);
+    parts.push(``, `## Research findings (background — not a source)`, params.researcherFindings);
   }
+  return parts.join("\n");
+}
 
-  const payload = attachImages ? buildImagePayload(images) : null;
-  if (payload) messageParts.push(``, payload.manifest);
-  const userMessage = messageParts.join("\n");
+/** Restrict a model-returned URL list to URLs the writer actually cited. A
+ *  misbehaving model could echo URLs from the research findings or hallucinate;
+ *  the submitted note must never carry a URL the writer didn't choose. */
+function clampToCited(urls: string[] | undefined, citedSet: Set<string>): string[] {
+  return (urls ?? []).filter((u) => citedSet.has(u));
+}
+
+// --- Classic flow: single accept/reject call ---
+
+async function runClassicVerification(
+  params: VerifySourcesParams,
+  sections: string,
+  acceptMediaSources: boolean,
+  images: VerifierImage[],
+  costPrefix: string,
+  logPrefix: string,
+): Promise<SourceVerification> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const messagesLogPrefix = `${logPrefix}.messages`;
+
+  const payload = images.length > 0 ? buildImagePayload(images) : null;
+  const systemPrompt = buildVerifierSystemPrompt(acceptMediaSources, !!payload);
+
+  const userMessage = [
+    `## Context`,
+    `Current date (UTC): ${new Date().toISOString()}`,
+    ``,
+    `## Proposed community note`,
+    params.noteText,
+    ``,
+    buildSourcesContext(sections, params),
+    ...(payload ? [``, payload.manifest] : []),
+  ].join("\n");
 
   const userContent: ChatMessage["content"] = payload
     ? [{ type: "text", text: userMessage }, ...payload.parts]
@@ -301,35 +333,134 @@ export async function verifySources(params: {
     images: payload?.images.map((img, i) => ({ index: i + 1, origin: img.origin, url: img.url.slice(0, 80) })),
   });
 
-  if (totalNonTwitter > 0 && fetchedCount === 0) {
-    throw new UnfetchableSourcesError(
-      `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,
-    );
-  }
-
   const parsed = await runJsonLlmCall<SourceVerification>({
     costName: costPrefix,
-    model,
+    model: config.verifier_model ?? config.model,
     messages: [
       { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userContent },
     ],
-    responseFormat: RESPONSE_FORMAT,
+    responseFormat: VERIFY_RESPONSE_FORMAT,
     schemaHint: `{ "good_sources": string[], "bad_sources": string[], "accepted": boolean, "reasoning": string }`,
   });
 
-  // Defensive: clamp good_sources/bad_sources to URLs the writer actually
-  // cited. A misbehaving model could echo URLs from the research findings
-  // section or hallucinate; we never want the final submitted note to carry
-  // a URL the writer didn't choose.
   const citedSet = new Set(params.sources);
   const result: SourceVerification = {
-    good_sources: (parsed.good_sources ?? []).filter((u) => citedSet.has(u)),
-    bad_sources: (parsed.bad_sources ?? []).filter((u) => citedSet.has(u)),
+    good_sources: clampToCited(parsed.good_sources, citedSet),
+    bad_sources: clampToCited(parsed.bad_sources, citedSet),
     accepted: !!parsed.accepted,
     reasoning: parsed.reasoning ?? "",
   };
 
   log?.set(`${messagesLogPrefix}.1`, { content: result });
   return result;
+}
+
+// --- Claim-based flow: extract claims, then map each to supporting sources ---
+
+export interface ClaimExtraction {
+  claims: string[];
+}
+
+/** First claim-based call: break the note into its distinct factual claims. */
+export async function extractClaims(noteText: string, costPrefix: string): Promise<string[]> {
+  const config = getBotConfig();
+  const parsed = await runJsonLlmCall<ClaimExtraction>({
+    costName: `${costPrefix}.claims`,
+    model: config.verifier_model ?? config.model,
+    messages: [
+      { role: "system" as const, content: CLAIM_EXTRACTION_SYSTEM_PROMPT },
+      { role: "user" as const, content: `## Proposed community note\n${noteText}` },
+    ],
+    responseFormat: CLAIM_EXTRACTION_RESPONSE_FORMAT,
+    schemaHint: `{ "claims": string[] }`,
+  });
+  return parsed.claims ?? [];
+}
+
+interface ClaimSupport {
+  reasoning: string;
+  claim_support: { claim: string; supporting_sources: string[] }[];
+}
+
+async function runClaimBasedVerification(
+  params: VerifySourcesParams,
+  sections: string,
+  costPrefix: string,
+  logPrefix: string,
+): Promise<SourceVerification> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const messagesLogPrefix = `${logPrefix}.messages`;
+  const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
+
+  const claims = await extractClaims(params.noteText, costPrefix);
+  log?.set(`${logPrefix}.claims`, claims);
+
+  const systemPrompt = buildClaimSupportSystemPrompt(acceptMediaSources);
+  const userMessage = [
+    `## Context`,
+    `Current date (UTC): ${new Date().toISOString()}`,
+    ``,
+    `## Claims to verify`,
+    claims.map((c, i) => `${i + 1}. ${c}`).join("\n"),
+    ``,
+    buildSourcesContext(sections, params),
+  ].join("\n");
+
+  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage });
+
+  const parsed = await runJsonLlmCall<ClaimSupport>({
+    costName: costPrefix,
+    model: config.verifier_model ?? config.model,
+    messages: [
+      { role: "system" as const, content: systemPrompt },
+      { role: "user" as const, content: userMessage },
+    ],
+    responseFormat: CLAIM_SUPPORT_RESPONSE_FORMAT,
+    schemaHint: `{ "reasoning": string, "claim_support": [{ "claim": string, "supporting_sources": string[] }] }`,
+  });
+
+  const result = deriveVerificationFromClaims(claims, parsed, params.sources);
+  log?.set(`${messagesLogPrefix}.1`, { content: result });
+  return result;
+}
+
+/** A source is good iff it supports at least one claim (after clamping to cited
+ *  URLs). The note is accepted iff there is at least one claim and every claim
+ *  has at least one cited supporting source. */
+function deriveVerificationFromClaims(
+  claims: string[],
+  parsed: ClaimSupport,
+  cited: string[],
+): SourceVerification {
+  const citedSet = new Set(cited);
+  const support = parsed.claim_support ?? [];
+
+  const goodSet = new Set<string>();
+  const unsupportedClaims: string[] = [];
+  for (const entry of support) {
+    const supporters = clampToCited(entry.supporting_sources, citedSet);
+    supporters.forEach((u) => goodSet.add(u));
+    if (supporters.length === 0) unsupportedClaims.push(entry.claim);
+  }
+
+  // The model must return a support entry for every extracted claim. If it
+  // dropped some, those claims went unevaluated — treat that as not-accepted
+  // rather than silently submitting a note with an unverified claim.
+  const allClaimsCovered = support.length >= claims.length;
+  const accepted = claims.length > 0 && allClaimsCovered && unsupportedClaims.length === 0;
+  const reasonParts = [parsed.reasoning?.trim()].filter(Boolean) as string[];
+  if (unsupportedClaims.length > 0) {
+    reasonParts.push(`Unsupported claim(s): ${unsupportedClaims.map((c) => `"${c}"`).join("; ")}`);
+  }
+  if (claims.length === 0) reasonParts.push("Claim extraction returned no claims.");
+  else if (!allClaimsCovered) reasonParts.push(`Verifier mapped only ${support.length} of ${claims.length} claims.`);
+
+  return {
+    good_sources: [...goodSet],
+    bad_sources: cited.filter((u) => !goodSet.has(u)),
+    accepted,
+    reasoning: reasonParts.join(" ") || (accepted ? "All claims supported." : "No claims supported."),
+  };
 }

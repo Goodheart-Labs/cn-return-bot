@@ -14,13 +14,13 @@
  *   --reversed              process newest-last
  *   --concurrency <n>       parallel workers (default 5)
  *   --name <label>          name for dashboard upload (default: derived)
- *   --from-db [level]       replay each tweet's most recent cheap-bot run, reusing
+ *   --from-db [level]       replay each tweet's most recent prod run, reusing
  *                           data from its prod logs. Levels (each includes the
  *                           previous), default `tweet`:
  *                             tweet  reuse the post (no X fetch); rebuild everything else
  *                             input  also reuse the full input (comments, media, author)
  *                             note   also reuse the written note → only the gates re-run
- *                           Forces --bot cheap-bot.
+ *                           Defaults to --bot simple-bot (override with --bot).
  */
 
 import "dotenv/config";
@@ -87,26 +87,24 @@ function rankLevel(level: ReplayLevel): number {
   return REPLAY_LEVELS.indexOf(level);
 }
 
-/** Seed the replay caches from prod logs up to `level`, then force cheap-bot.
+/** Seed the replay caches from prod logs up to `level`, defaulting to simple-bot.
  *  Each level reuses more from the logged run (post → input → note); the
- *  existing cache-read paths short-circuit the corresponding pipeline stages. */
+ *  existing cache-read paths short-circuit the corresponding pipeline stages.
+ *  Both simple-bot and cheap-bot support the writer cache, so either may be
+ *  forced via --bot; with none given we default to simple-bot (production). */
 async function seedFromDb(
   inputs: InputRow[],
   forcedPicks: Record<string, string>,
   level: ReplayLevel,
 ): Promise<void> {
-  if (forcedPicks.bot && forcedPicks.bot !== "cheap-bot") {
-    console.error(`[tryoutNotes] --from-db only works with cheap-bot (got --bot ${forcedPicks.bot})`);
-    process.exit(1);
-  }
-  forcedPicks.bot = "cheap-bot";
+  if (!forcedPicks.bot) forcedPicks.bot = "simple-bot";
 
   if (rankLevel(level) >= rankLevel("input") && !process.env.BIG_EVAL_INPUT_CACHE) {
     process.env.BIG_EVAL_INPUT_CACHE = DEFAULT_INPUT_CACHE_DIR;
     console.log(`[tryoutNotes] --from-db ${level}: input cache → ${DEFAULT_INPUT_CACHE_DIR}`);
   }
-  if (rankLevel(level) >= rankLevel("note") && !process.env.CHEAP_BOT_WRITER_CACHE) {
-    process.env.CHEAP_BOT_WRITER_CACHE = DEFAULT_WRITER_CACHE_DIR;
+  if (rankLevel(level) >= rankLevel("note") && !process.env.WRITER_CACHE) {
+    process.env.WRITER_CACHE = DEFAULT_WRITER_CACHE_DIR;
     console.log(`[tryoutNotes] --from-db ${level}: writer cache → ${DEFAULT_WRITER_CACHE_DIR}`);
   }
 

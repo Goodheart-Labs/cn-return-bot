@@ -11,7 +11,7 @@ import { extractText, getDocumentProxy } from "unpdf";
 import TurndownService from "turndown";
 import { xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
-import { countNoteLength } from "../write/writeNote";
+import { countNoteLength } from "../utils/noteLength";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getBrowser } from "../utils/browserManager";
 import {
@@ -21,42 +21,13 @@ import {
   type TokenCost,
 } from "../cost-tracking/pricing";
 import { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError, type SearxngResult } from "./searxng";
+import { buildSearxngSummarizePrompt } from "../prompts/tool-calling/searxngSummarize";
 export { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError };
 export type { SearxngResult };
 
 const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced" });
 
 // --- Tool schemas ---
-
-export const GROK_SEARCH_TOOL = {
-  type: "function" as const,
-  function: {
-    name: "grok_search",
-    description: "Search X/Twitter using Grok for related tweets (potentially with their comments) and latest news.",
-    parameters: {
-      type: "object" as const,
-      properties: {
-        query: { type: "string" as const, description: "What to search for on X/Twitter." },
-      },
-      required: ["query"],
-    },
-  },
-};
-
-export const PERPLEXITY_SEARCH_TOOL = {
-  type: "function" as const,
-  function: {
-    name: "perplexity_search",
-    description: "Search the web using Perplexity AI.",
-    parameters: {
-      type: "object" as const,
-      properties: {
-        prompt: { type: "string" as const, description: "The search prompt. Can include rich context" },
-      },
-      required: ["prompt"],
-    },
-  },
-};
 
 export const GOOGLE_SEARCH_TOOL = {
   type: "function" as const,
@@ -88,87 +59,9 @@ export const WEB_FETCH_TOOL = {
   },
 };
 
-export const PROPOSE_NOTES_TOOL = {
-  type: "function" as const,
-  function: {
-    name: "propose_notes",
-    description: "Propose 3-4 community note variants. The system evaluates each and picks the best.",
-    parameters: {
-      type: "object" as const,
-      properties: {
-        notes: {
-          type: "array" as const,
-          items: {
-            type: "object" as const,
-            properties: {
-              note_text: {
-                type: "string" as const,
-                description: "The community note text. Target 240-260 non-URL characters. Hard max 275.",
-              },
-              sources: {
-                type: "array" as const,
-                items: { type: "string" as const },
-                description: "Source URLs for this note variant.",
-              },
-            },
-            required: ["note_text", "sources"],
-          },
-          minItems: 1,
-        },
-      },
-      required: ["notes"],
-    },
-  },
-};
-
-export const NO_CORRECTION_TOOL = {
-  type: "function" as const,
-  function: {
-    name: "no_correction_needed",
-    description:
-      "Call when no community note should be written (opinion/satire, correct post, or insufficient evidence).",
-    parameters: {
-      type: "object" as const,
-      properties: {
-        reason: { type: "string" as const, description: "Why no correction is needed." },
-      },
-      required: ["reason"],
-    },
-  },
-};
-
-// Claude built-in tools (OpenRouter passthrough)
+// Claude built-in web search tool (OpenRouter passthrough), used by simple-bot's
+// native-search dispatch.
 export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
-export const CODE_EXECUTION_TOOL = { type: "code_execution_20250522" as const, name: "code_execution" };
-
-// --- Build tool list ---
-
-export function buildToolList(): any[] {
-  const config = getBotConfig();
-  const isAnthropic = config.model.startsWith("anthropic/");
-  const tools: any[] = [
-    GROK_SEARCH_TOOL,
-    PROPOSE_NOTES_TOOL,
-    NO_CORRECTION_TOOL,
-  ];
-
-  if (isAnthropic) {
-    tools.push(CODE_EXECUTION_TOOL);
-  }
-
-  // Web search: native (Claude web_search via OpenRouter), perplexity, or searxng
-  if (config.web_search === "native") {
-    tools.push(WEB_SEARCH_TOOL);
-  } else if (config.web_search === "searxng" || config.web_search === "searxng_summarized") {
-    tools.push(GOOGLE_SEARCH_TOOL);
-  } else {
-    tools.push(PERPLEXITY_SEARCH_TOOL);
-  }
-
-  tools.push(WEB_FETCH_TOOL);
-
-  return tools;
-}
 
 // --- Tool handlers ---
 
@@ -251,15 +144,6 @@ export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> 
   }
 }
 
-function buildSearxngSummarizePrompt(query: string, results: SearxngResult[]): string {
-  return `You are a research assistant. The user searched for: "${query}"
-
-Here are the search results:
-${formatSearxngResults(results)}
-
-Summarize the most relevant findings. Include the URLs of the most important sources inline in your summary. Include a lot of URLs. Focus on factual claims and verifiable information.`;
-}
-
 export async function handleGoogleSearchSummarized(query: string): Promise<ToolResult> {
   let results: SearxngResult[];
   try {
@@ -268,7 +152,7 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
     return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
   }
 
-  const prompt = buildSearxngSummarizePrompt(query, results);
+  const prompt = buildSearxngSummarizePrompt(query, formatSearxngResults(results));
 
   const response = await llm.create({
     model: GEMINI_MODEL,

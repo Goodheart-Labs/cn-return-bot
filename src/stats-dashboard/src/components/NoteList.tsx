@@ -1,11 +1,11 @@
 import { useState } from "react";
 import type { NoteRecord, NoteSort } from "../lib/types";
 import { TweetCard } from "../../../dashboard-shared/TweetCard";
+import { OurNoteCard } from "../../../dashboard-shared/OurNoteCard";
 import { Ratings } from "../../../dashboard-shared/Ratings";
 import { cnStatusBadge } from "../lib/aggregations";
 import { formatViews } from "../lib/format";
 
-const NOTE_URL_PREFIX = "https://x.com/i/communitynotes/n/";
 const PAGE_SIZE = 10;
 
 const SORT_OPTIONS: { value: NoteSort; label: string }[] = [
@@ -105,32 +105,7 @@ function StatsNoteCard({ note }: { note: NoteRecord }) {
         </div>
       )}
 
-      {note.note_text && (
-        <div className="bg-blue-50 rounded p-3 border border-blue-100">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-blue-600 font-medium">Our note</span>
-            <a
-              href={NOTE_URL_PREFIX + note.note_id}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-500 hover:underline"
-            >
-              View note ↗
-            </a>
-          </div>
-          <p className="text-sm text-gray-800 whitespace-pre-wrap">{note.note_text}</p>
-          {note.source_url && (
-            <a
-              href={note.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-500 hover:underline mt-1 block"
-            >
-              {note.source_url}
-            </a>
-          )}
-        </div>
-      )}
+      <OurNoteCard noteId={note.note_id} noteText={note.note_text} />
     </article>
   );
 }

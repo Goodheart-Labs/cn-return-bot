@@ -1,6 +1,7 @@
 import type {
   ChartGranularity,
   CnStatus,
+  DailyOriginCount,
   NoteRecord,
   NoteSort,
   PipelineRunAggregate,
@@ -27,6 +28,17 @@ export function bucketKey(submittedAt: string, granularity: ChartGranularity): s
   const daysSinceMonday = (dayOfWeekUtc + 6) % 7;
   const monday = new Date(d.getTime() - daysSinceMonday * ONE_DAY_MS);
   return monday.toISOString().slice(0, 10);
+}
+
+// Drop the in-progress week — a partial-week bar that drags the chart down
+// until Sunday. No-op for daily granularity. Works on any keyed bucket.
+export function dropInProgressWeek<T extends { key: string }>(
+  buckets: T[],
+  granularity: ChartGranularity,
+): T[] {
+  if (granularity !== "weekly") return buckets;
+  const currentWeekKey = bucketKey(new Date().toISOString(), "weekly");
+  return buckets.filter((b) => b.key !== currentWeekKey);
 }
 
 export function bucketLabel(key: string, granularity: ChartGranularity): string {
@@ -116,6 +128,44 @@ export function bucketize(
     }
   }
 
+  return [...byKey.values()].sort((a, b) => a.key.localeCompare(b.key));
+}
+
+// ─── Origin share (% of all rated-helpful notes) ─────────────────────────────
+
+export interface ShareBucket {
+  key: string;
+  label: string;
+  ours: number;
+  otherAi: number;
+  human: number;
+  total: number;
+}
+
+/**
+ * Bucket the per-day origin counts (helpful notes split into ours / top other
+ * AI / total) into the chart's granularity. Human-written is the remainder:
+ * total − ours − otherAi (clamped ≥ 0 against any dump rounding).
+ */
+export function bucketizeOrigin(
+  counts: DailyOriginCount[],
+  granularity: ChartGranularity,
+): ShareBucket[] {
+  const byKey = new Map<string, ShareBucket>();
+  for (const c of counts) {
+    const key = bucketKey(`${c.day}T00:00:00Z`, granularity);
+    let bucket = byKey.get(key);
+    if (!bucket) {
+      bucket = { key, label: bucketLabel(key, granularity), ours: 0, otherAi: 0, human: 0, total: 0 };
+      byKey.set(key, bucket);
+    }
+    bucket.ours += c.helpful_ours;
+    bucket.otherAi += c.helpful_other_ai;
+    bucket.total += c.helpful_total;
+  }
+  for (const bucket of byKey.values()) {
+    bucket.human = Math.max(0, bucket.total - bucket.ours - bucket.otherAi);
+  }
   return [...byKey.values()].sort((a, b) => a.key.localeCompare(b.key));
 }
 

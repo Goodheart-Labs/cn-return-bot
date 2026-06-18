@@ -28,6 +28,7 @@ import type {
   NoteRecord,
   PipelineRunAggregate,
   PipelineRunDayBucket,
+  DailyOriginCount,
 } from "./src/lib/types";
 import { resolvePicks } from "../pipeline/ab-testing/abTests.ts";
 import { AB_TESTS } from "../pipeline/ab-testing/abTestsData.ts";
@@ -46,7 +47,6 @@ const NOTE_COLUMNS = [
   "note_id",
   "tweet_id",
   "note_text",
-  "source_url",
   "submitted_at",
   "first_seen_at",
   "cn_status",
@@ -66,7 +66,6 @@ interface RawNoteRow {
   note_id: string;
   tweet_id: string;
   note_text: string | null;
-  source_url: string | null;
   submitted_at: string | null;
   first_seen_at: string;
   cn_status: string | null;
@@ -203,7 +202,6 @@ function joinNotes(
       not_helpful_count: note.not_helpful_count ?? 0,
       rating_count: note.rating_count ?? 0,
       note_text: note.note_text ?? "",
-      source_url: note.source_url,
       ab_test_picks: run?.ab_test_picks ?? null,
       cost: run?.cost == null ? null : Number(run.cost),
       tweet: tweet
@@ -282,11 +280,22 @@ async function loadPublicRatings(): Promise<RawPublicDumpRatingRow[]> {
   );
 }
 
+async function loadDailyOriginCounts(): Promise<DailyOriginCount[]> {
+  return fetchAllRows<DailyOriginCount>(
+    supabase
+      .from("daily_note_origin_counts")
+      .select("day, helpful_total, helpful_ours, helpful_other_ai")
+      .order("day", { ascending: true }),
+    "daily_note_origin_counts",
+  );
+}
+
 async function buildSnapshot(): Promise<StatsSnapshot> {
-  const [notes, pipelineRuns, publicRatings] = await Promise.all([
+  const [notes, pipelineRuns, publicRatings, dailyOriginCounts] = await Promise.all([
     loadNotes(),
     loadAllPipelineRuns(),
     loadPublicRatings(),
+    loadDailyOriginCounts(),
   ]);
   const tweetIds = [...new Set(notes.map((n) => n.tweet_id).filter(Boolean))];
   const tweets = tweetIds.length ? await loadTweets(tweetIds) : [];
@@ -306,6 +315,7 @@ async function buildSnapshot(): Promise<StatsSnapshot> {
     pipeline_run_aggregates: pipelineRunAggregates,
     pipeline_runs_by_day: pipelineRunsByDay,
     ab_test_slots: abTestSlots,
+    daily_note_origin_counts: dailyOriginCounts,
   };
 }
 
@@ -317,7 +327,7 @@ async function main() {
   writeFileSync(outPath, JSON.stringify(snapshot));
   const sizeKb = (Buffer.byteLength(JSON.stringify(snapshot)) / 1024).toFixed(1);
   console.log(`[build-data] Wrote ${outPath} (${sizeKb} KB)`);
-  console.log(`[build-data] notes=${snapshot.notes.length} aggregates=${snapshot.pipeline_run_aggregates.length} run_days=${snapshot.pipeline_runs_by_day.length} slots=${snapshot.ab_test_slots.length}`);
+  console.log(`[build-data] notes=${snapshot.notes.length} aggregates=${snapshot.pipeline_run_aggregates.length} run_days=${snapshot.pipeline_runs_by_day.length} slots=${snapshot.ab_test_slots.length} origin_days=${snapshot.daily_note_origin_counts.length}`);
 }
 
 main().catch((err) => {

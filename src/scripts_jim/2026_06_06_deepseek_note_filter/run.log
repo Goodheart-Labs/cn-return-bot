@@ -1,0 +1,277 @@
+✅ Test "Post 0" passed for goal "search context"
+✅ Test "Post 1" passed for goal "search context"
+✅ Test "Post 2" passed for goal "search context"
+✅ Test "Post 3" passed for goal "search context"
+✅ Test "Post 4" passed for goal "search context"
+✅ Test "Post 5" passed for goal "search context"
+✅ Test "Post 6" passed for goal "search context"
+✅ Test "Post 7" passed for goal "search context"
+✅ Test "Post 8" passed for goal "search context"
+✅ Test "Post 9" passed for goal "search context"
+✅ Test "Post 10" passed for goal "search context"
+📝 Registering implementation "version one" for goal "search context"
+✅ Defined implementation "version one" for goal "search context"
+🔗 Creating derived tests for goal "write note with search" from implementation "version one" of goal "search context"
+✅ Successfully created derived tests for goal "write note with search" from "search context.version one"
+📝 Registering implementation "write note v1" for goal "write note with search"
+✅ Defined implementation "write note v1" for goal "write note with search"
+deepseek note-filter — rows=100, variants=base-neutral,base-lenient,select-neutral,select-lenient
+
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 1/100 done
+[2061712251178946955] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article[data-testid="tweet"]') to be visible
+ (assuming no label)
+  row 2/100 done
+  row 3/100 done
+  row 4/100 done
+  row 5/100 done
+  row 6/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 7/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 8/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[2062103985784344846] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article[data-testid="tweet"]') to be visible
+ (assuming no label)
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 9/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 10/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+  row 11/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 12/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 13/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 14/100 done
+  row 15/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 16/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 17/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 18/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 19/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 20/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 21/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 22/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 23/100 done
+  row 24/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 25/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[mediaAnalysisGemini] Audio extraction failed: Command failed: ffmpeg -i "/tmp/claude-501/cn-gemini-1780703345979-2sxty23p0v8/video.mp4" -vn -acodec libmp3lame -ar 16000 -ac 1 "/tmp/claude-501/cn-gemini-1780703345979-2sxty23p0v8/audio.mp3" -y 2>&1
+  row 26/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 27/100 done
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+  row 28/100 done
+  row 29/100 done
+  row 30/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 31/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 32/100 done
+  row 33/100 done
+  row 34/100 done
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 35/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 36/100 done
+  row 37/100 done
+  row 38/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] Retryable error (paid key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+  row 39/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+  row 40/100 done
+[mediaAnalysisGemini] Image analysis failed: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+  row 41/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 42/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 43/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[2060821100934627796] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article[data-testid="tweet"]') to be visible
+ (assuming no label)
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[searxng] provider=google suspended for 3600s; cycle will skip it until cool-down
+  row 44/100 done
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 45/100 done
+  row 46/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 47/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 48/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 49/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 50/100 done
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: invalid function id: 136
+Warning: TT: invalid function id: 136
+  row 51/100 done
+  row 52/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 53/100 done
+  row 54/100 done
+  row 55/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 56/100 done
+  row 57/100 done
+  row 58/100 done
+  row 59/100 done
+  row 60/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 61/100 done
+  row 62/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 63/100 done
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 64/100 done
+  row 65/100 done
+  row 66/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+  row 67/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+  row 68/100 done
+  row 69/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+  row 70/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 71/100 done
+  row 72/100 done
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 73/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 74/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 75/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 76/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 100s)
+  row 77/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 78/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 79/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 80/100 done
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 70s)
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 81/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 82/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+  row 83/100 done
+[searxng] provider=brave suspended for 180s; cycle will skip it until cool-down
+[llm] Retryable error (attempt 1/4, model: deepseek/deepseek-v4-flash): ? The operation timed out.. Retrying in 1000ms...
+[llm] Retryable error (attempt 1/4, model: deepseek/deepseek-v4-flash): ? The operation timed out.. Retrying in 1000ms...
+[llm] Retryable error (attempt 1/4, model: deepseek/deepseek-v4-flash): ? The operation timed out.. Retrying in 1000ms...
+[llm] Retryable error (attempt 1/4, model: deepseek/deepseek-v4-flash): ? The operation timed out.. Retrying in 1000ms...
+[gemini] Retryable error (paid key, attempt 2/4, model: gemini-3-flash-preview): 23 The operation timed out.. Retrying in 4000ms...
+  row 84/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 85/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 86/100 done
+  row 87/100 done
+  row 88/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 89/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 90/100 done
+  row 91/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (paid key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+  row 92/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 93/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 94/100 done
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+  row 95/100 done
+  row 96/100 done
+  row 97/100 done
+  row 98/100 done
+  row 99/100 done
+  row 100/100 done
+=== base-neutral ===
+  TP=41 FN=9 TN=36 FP=14 errored=0  (sum=100)
+  false-negative rate (wants_note -> filter says no): 18.0%  (9/50)
+  correctly filtered (no_note -> filter says no):     72.0%  (36/50)
+  total filtered out: 45/100   avg cost/tweet: $0.0135
+  FN by reason: {"(submitted)":6,"low_evaluation_score":3}
+
+=== base-lenient ===
+  TP=42 FN=8 TN=32 FP=18 errored=0  (sum=100)
+  false-negative rate (wants_note -> filter says no): 16.0%  (8/50)
+  correctly filtered (no_note -> filter says no):     64.0%  (32/50)
+  total filtered out: 40/100   avg cost/tweet: $0.0135
+  FN by reason: {"(submitted)":5,"low_evaluation_score":3}
+
+=== select-neutral ===
+  TP=39 FN=11 TN=30 FP=20 errored=0  (sum=100)
+  false-negative rate (wants_note -> filter says no): 22.0%  (11/50)
+  correctly filtered (no_note -> filter says no):     60.0%  (30/50)
+  total filtered out: 41/100   avg cost/tweet: $0.0140
+  FN by reason: {"(submitted)":7,"low_evaluation_score":4}
+
+=== select-lenient ===
+  TP=40 FN=10 TN=28 FP=22 errored=0  (sum=100)
+  false-negative rate (wants_note -> filter says no): 20.0%  (10/50)
+  correctly filtered (no_note -> filter says no):     56.0%  (28/50)
+  total filtered out: 38/100   avg cost/tweet: $0.0140
+  FN by reason: {"(submitted)":6,"low_evaluation_score":4}
+
+Wrote results_*, false_negatives_*, false_positives_*, metrics.json to /Users/jimmaar/Github/cn-return-bot/src/scripts_jim/2026_06_06_deepseek_note_filter
