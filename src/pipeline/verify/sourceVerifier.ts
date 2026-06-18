@@ -254,8 +254,8 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
   );
 
   // verifier_sees_images: attach the post's images plus any images pulled from
-  // the cited sources, so the verifier can catch out-of-context media. Only the
-  // classic flow consumes these; gated to vision-capable models above.
+  // the cited sources, so the verifier can catch out-of-context media. Both
+  // flows consume these; gated to vision-capable models above.
   const images = collectImages
     ? [...collectPostImages(params.mediaResult), ...sourceImages]
     : [];
@@ -267,7 +267,7 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
   }
 
   return config.verifier_claim_based
-    ? runClaimBasedVerification(params, sections, costPrefix, logPrefix)
+    ? runClaimBasedVerification(params, sections, images, costPrefix, logPrefix)
     : runClassicVerification(params, sections, acceptMediaSources, images, costPrefix, logPrefix);
 }
 
@@ -295,6 +295,29 @@ function clampToCited(urls: string[] | undefined, citedSet: Set<string>): string
   return (urls ?? []).filter((u) => citedSet.has(u));
 }
 
+/** Attach the verifier's images to a base user message. Appends the "Attached
+ *  images" manifest to the text and returns multimodal content parts; with no
+ *  images it returns the plain string. `attach` tells the caller whether to
+ *  include the image-comparison rule in its system prompt. Shared by both flows. */
+function attachVerifierImages(baseUserMessage: string, images: VerifierImage[]): {
+  attach: boolean;
+  userMessage: string;
+  userContent: ChatMessage["content"];
+  imageLog?: { index: number; origin: string; url: string }[];
+} {
+  if (images.length === 0) {
+    return { attach: false, userMessage: baseUserMessage, userContent: baseUserMessage };
+  }
+  const payload = buildImagePayload(images);
+  const userMessage = `${baseUserMessage}\n\n${payload.manifest}`;
+  return {
+    attach: true,
+    userMessage,
+    userContent: [{ type: "text", text: userMessage }, ...payload.parts],
+    imageLog: payload.images.map((img, i) => ({ index: i + 1, origin: img.origin, url: img.url.slice(0, 80) })),
+  };
+}
+
 // --- Classic flow: single accept/reject call ---
 
 async function runClassicVerification(
@@ -309,29 +332,21 @@ async function runClassicVerification(
   const config = getBotConfig();
   const messagesLogPrefix = `${logPrefix}.messages`;
 
-  const payload = images.length > 0 ? buildImagePayload(images) : null;
-  const systemPrompt = buildVerifierSystemPrompt(acceptMediaSources, !!payload);
+  const { attach, userMessage, userContent, imageLog } = attachVerifierImages(
+    [
+      `## Context`,
+      `Current date (UTC): ${new Date().toISOString()}`,
+      ``,
+      `## Proposed community note`,
+      params.noteText,
+      ``,
+      buildSourcesContext(sections, params),
+    ].join("\n"),
+    images,
+  );
+  const systemPrompt = buildVerifierSystemPrompt(acceptMediaSources, attach);
 
-  const userMessage = [
-    `## Context`,
-    `Current date (UTC): ${new Date().toISOString()}`,
-    ``,
-    `## Proposed community note`,
-    params.noteText,
-    ``,
-    buildSourcesContext(sections, params),
-    ...(payload ? [``, payload.manifest] : []),
-  ].join("\n");
-
-  const userContent: ChatMessage["content"] = payload
-    ? [{ type: "text", text: userMessage }, ...payload.parts]
-    : userMessage;
-
-  log?.set(`${messagesLogPrefix}.0`, {
-    systemPrompt,
-    userMessage,
-    images: payload?.images.map((img, i) => ({ index: i + 1, origin: img.origin, url: img.url.slice(0, 80) })),
-  });
+  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage, images: imageLog });
 
   const parsed = await runJsonLlmCall<SourceVerification>({
     costName: costPrefix,
@@ -386,6 +401,7 @@ interface ClaimSupport {
 async function runClaimBasedVerification(
   params: VerifySourcesParams,
   sections: string,
+  images: VerifierImage[],
   costPrefix: string,
   logPrefix: string,
 ): Promise<SourceVerification> {
@@ -397,25 +413,28 @@ async function runClaimBasedVerification(
   const claims = await extractClaims(params.noteText, costPrefix);
   log?.set(`${logPrefix}.claims`, claims);
 
-  const systemPrompt = buildClaimSupportSystemPrompt(acceptMediaSources);
-  const userMessage = [
-    `## Context`,
-    `Current date (UTC): ${new Date().toISOString()}`,
-    ``,
-    `## Claims to verify`,
-    claims.map((c, i) => `${i + 1}. ${c}`).join("\n"),
-    ``,
-    buildSourcesContext(sections, params),
-  ].join("\n");
+  const { attach, userMessage, userContent, imageLog } = attachVerifierImages(
+    [
+      `## Context`,
+      `Current date (UTC): ${new Date().toISOString()}`,
+      ``,
+      `## Claims to verify`,
+      claims.map((c, i) => `${i + 1}. ${c}`).join("\n"),
+      ``,
+      buildSourcesContext(sections, params),
+    ].join("\n"),
+    images,
+  );
+  const systemPrompt = buildClaimSupportSystemPrompt(acceptMediaSources, attach);
 
-  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage });
+  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage, images: imageLog });
 
   const parsed = await runJsonLlmCall<ClaimSupport>({
     costName: costPrefix,
     model: config.verifier_model ?? config.model,
     messages: [
       { role: "system" as const, content: systemPrompt },
-      { role: "user" as const, content: userMessage },
+      { role: "user" as const, content: userContent },
     ],
     responseFormat: CLAIM_SUPPORT_RESPONSE_FORMAT,
     schemaHint: `{ "reasoning": string, "claim_support": [{ "claim": string, "supporting_sources": string[] }] }`,

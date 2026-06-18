@@ -7,12 +7,16 @@
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
-export function buildClaimSupportSystemPrompt(acceptsMediaSources: boolean): string {
+export function buildClaimSupportSystemPrompt(acceptsMediaSources: boolean, attachImages = false): string {
   const mediaRule = acceptsMediaSources
     ? `- Media URLs (videos, audio, images) appear with an automated content analysis block (title, summary, on-screen/visible text, transcript). Treat that block as the source's content. If it could not be analyzed you'll see the raw page or a fetch error instead.`
     : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) provide ZERO evidence — you cannot watch them, so never list them as supporting.`;
 
-  return `For each factual claim of a proposed community note, list the cited source URLs whose content directly supports that claim.
+  const imageRule = attachImages
+    ? `\n\nImages: some images are attached, with an "Attached images" manifest naming each one's origin (the post vs. a cited source). A post often shows an image/scene, and a cited source may show a SIMILAR BUT DIFFERENT event, place, or time. Compare them: do not list a source as supporting a claim that its image matches the post's unless the two images are actually the same event.`
+    : "";
+
+  return `For each factual claim of a proposed community note, list the cited source URLs whose content directly supports that claim.${imageRule}
 
 Rules:
 - A source supports a claim only if its fetched content states or clearly implies that claim. If it doesn't, omit it for that claim.
