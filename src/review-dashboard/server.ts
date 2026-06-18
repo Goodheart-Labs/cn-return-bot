@@ -2,6 +2,13 @@ import { serve } from "bun";
 import { readFileSync } from "fs";
 import { join } from "path";
 import dotenv from "dotenv";
+import {
+  WINDOW_DAYS_STEP,
+  DEFAULT_VIEW_CN_STATUS,
+  CANONICAL_LIST_COLS,
+  TWEET_LIST_COLS,
+  PUBLIC_DUMP_RATING_COLS,
+} from "../dashboard-shared/productionView";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
@@ -13,20 +20,22 @@ const PORT = 8001;
 
 // ─── Server-side default-view prefetch ───────────────────────────────────────
 // The client's first paint is the default review view: the newest rated-unhelpful
-// notes. Fetching that from the browser costs a cold connection + two round-trips
-// (~1.3–3.8s). Instead the server fetches it once at startup (paying the one cold
-// hit before the page is ever opened) and injects it into the HTML, so the page
-// paints from data already in the document — zero client round-trips. The client's
-// phase-2 load then refreshes everything live, so a slightly stale snapshot here
-// only ever affects the first instant of the first paint.
+// notes in the recent window. Fetching that from the browser costs a cold
+// connection + a couple of round-trips (~1–4s). Instead the server fetches it once
+// at startup (paying the one cold hit before the page is ever opened) and injects
+// it into the HTML, so the page paints from data already in the document — zero
+// client round-trips. The client then runs its normal windowed load and replaces
+// the snapshot with the full set (incl. competing / missed / low-eval), so a
+// slightly stale snapshot here only affects the first instant of the first paint.
 //
-// Column lists and the default status mirror data.ts (CANONICAL_LIST_COLUMNS etc.)
-// and App.tsx (DEFAULT_VIEW_STATUSES) — keep them in sync if those change.
-const DEFAULT_VIEW_STATUSES = ["CURRENTLY_RATED_NOT_HELPFUL"];
-const DEFAULT_VIEW_LIMIT = 1000; // load the whole default category; it's small
-const CANONICAL_COLS = "note_id,tweet_id,note_text,source_url,submitted_at,first_seen_at,cn_status,view_count,rating_count,helpful_count,not_helpful_count";
-const TWEET_COLS = "tweet_id,text,media,referenced_tweet_data,author_handle,has_photo,has_video,media_count";
-const RATING_COLS = "note_id,helpful_count,somewhat_helpful_count,not_helpful_count,helpful_tag_counts,not_helpful_tag_counts,dump_date";
+// Window, status, and column lists all come from productionView (shared with the
+// client loader) so the prefetch can't drift from what the client renders.
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const DEFAULT_VIEW_STATUSES = [DEFAULT_VIEW_CN_STATUS];
+const DEFAULT_VIEW_LIMIT = 1000; // safety cap; the windowed default is small
+const CANONICAL_COLS = CANONICAL_LIST_COLS.join(",");
+const TWEET_COLS = TWEET_LIST_COLS.join(",");
+const RATING_COLS = PUBLIC_DUMP_RATING_COLS.join(",");
 
 async function sb(path: string): Promise<any[]> {
   const res = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
@@ -40,15 +49,16 @@ function inList(values: string[]): string {
   return `(${values.map((v) => `"${v}"`).join(",")})`;
 }
 
-// Returns a DashboardData-shaped object (competing/runs empty — same as the
-// client's fetchRecentNotesLight), or null if the prefetch fails (client falls
-// back to fetching for itself).
+// Returns a DashboardData-shaped object (competing/runs empty — the client's
+// windowed load fills those in when it replaces this), or null if the prefetch
+// fails (the client then fetches the window for itself).
 async function fetchDefaultView(): Promise<any | null> {
   if (!supabaseUrl || !supabaseKey) return null;
   try {
+    const sinceIso = new Date(Date.now() - WINDOW_DAYS_STEP * MS_PER_DAY).toISOString();
     const statusList = inList(DEFAULT_VIEW_STATUSES);
     const canonical = await sb(
-      `notes?select=${CANONICAL_COLS}&cn_status=in.${encodeURIComponent(statusList)}&order=submitted_at.desc.nullslast&limit=${DEFAULT_VIEW_LIMIT}`,
+      `notes?select=${CANONICAL_COLS}&cn_status=in.${encodeURIComponent(statusList)}&submitted_at=gte.${sinceIso}&order=submitted_at.desc.nullslast&limit=${DEFAULT_VIEW_LIMIT}`,
     );
     const noteIds = canonical.map((n) => n.note_id);
     const tweetIds = [...new Set(canonical.map((n) => n.tweet_id).filter(Boolean))] as string[];

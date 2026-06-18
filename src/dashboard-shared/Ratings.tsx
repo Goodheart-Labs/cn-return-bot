@@ -16,6 +16,20 @@ interface Props {
   allowExpand?: boolean;
 }
 
+// The counts the badge shows — public-dump first, scraped fallback otherwise.
+// Exported so callers can ask "does this note have ratings?" with the exact rule
+// the badge uses: a note has ratings iff helpful + notHelpful > 0.
+export function resolveRatingCounts(
+  publicDumpRatings: PublicDumpRatings | null | undefined,
+  fallbackHelpfulCount?: number | null,
+  fallbackNotHelpfulCount?: number | null,
+): { helpful: number; notHelpful: number } {
+  return {
+    helpful: publicDumpRatings?.helpful_count ?? fallbackHelpfulCount ?? 0,
+    notHelpful: publicDumpRatings?.not_helpful_count ?? fallbackNotHelpfulCount ?? 0,
+  };
+}
+
 export function Ratings({
   publicDumpRatings,
   fallbackHelpfulCount,
@@ -23,8 +37,7 @@ export function Ratings({
   allowExpand = true,
 }: Props) {
   const [openBucket, setOpenBucket] = useState<TagBucket | null>(null);
-  const helpful = publicDumpRatings?.helpful_count ?? fallbackHelpfulCount ?? 0;
-  const notHelpful = publicDumpRatings?.not_helpful_count ?? fallbackNotHelpfulCount ?? 0;
+  const { helpful, notHelpful } = resolveRatingCounts(publicDumpRatings, fallbackHelpfulCount, fallbackNotHelpfulCount);
   if (helpful + notHelpful === 0) return null;
 
   const canExpand = allowExpand && !!publicDumpRatings;
