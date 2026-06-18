@@ -69,9 +69,8 @@ function defaultFilters(source: "production" | "dataset_run"): FilterState {
       failureTypes.add(ft);
     }
   }
-  // Production opens on "All" (seen + unseen); dataset-run review still defaults
-  // to "Unseen" so you work through the un-reviewed ones.
-  return { seen: source === "production" ? "all" : "unseen", failureTypes, failureModes: new Set() };
+  // Default to "Unseen" so you work through the notes you haven't reviewed yet.
+  return { seen: "unseen", failureTypes, failureModes: new Set() };
 }
 
 // Union two production item lists by id. `winners` overwrite `base` on overlap:
