@@ -502,43 +502,32 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
   return items;
 }
 
-/**
- * All-time tag usage counts for production items — the failure-mode pills
- * should report how many items carry each tag across all history, not just
- * however many happen to be in the loaded window. Cheap: one scan of the small
- * annotations table, pulling only the failure_modes column.
- */
-export async function fetchProductionTagCounts(): Promise<Map<string, number>> {
-  const rows = await fetchAllRows<any>(
-    supabase
-      .from("review_dashboard_annotations")
-      .select("failure_modes")
-      .eq("source", "production"),
-    "production_tag_counts",
-  );
-  const counts = new Map<string, number>();
-  for (const r of rows) {
-    for (const m of r.failure_modes ?? []) counts.set(m, (counts.get(m) ?? 0) + 1);
-  }
-  return counts;
+// ─── Production pill data ────────────────────────────────────────────────────
+
+export interface ProductionPillData {
+  // All-time category counts for the filter-bar pills.
+  counts: Record<FailureType, number>;
+  // All-time tag usage counts for the failure-mode pills.
+  tagCounts: Map<string, number>;
+  // Per-note {noteId, failureType, seen}, all-time — lets the UI recompute the
+  // rated pills under the seen filter ("how many left to review", not the all-time
+  // total). noteId so the UI can override with live state for loaded notes.
+  notesSeen: { noteId: string; failureType: FailureType; seen: boolean }[];
+  // Per-annotation {targetId, failureModes, seen}, all-time — same, for tag pills.
+  annotationsSeen: { targetId: string; failureModes: string[]; seen: boolean }[];
 }
 
-// ─── Production counts ───────────────────────────────────────────────────────
-
 /**
- * All-time production category counts for the filter-bar pills. These are
- * deliberately NOT windowed — the list shows the last N days, but the pills
- * report the full picture, so "Rated Helpful 475" doesn't shrink to whatever
- * happens to be loaded.
- *
- * Cheap because it pulls only the two tiny columns needed to classify (no text,
- * no TOAST): every note's `cn_status`, the `our_note_id`s with a helpful
- * competitor (to mark lost-to-competitor), and a head-count of missed
- * opportunities. Classification mirrors buildDashboardItems via
+ * All-time data behind the filter-bar pills, in one pass. Deliberately NOT
+ * windowed — the list shows the last N days, but the pills report the full
+ * picture, so "Rated Helpful 475" doesn't shrink to whatever happens to be
+ * loaded. Carries each note's / annotation's `seen` flag so the UI can render
+ * seen-aware counts without re-fetching. Cheap: only the tiny columns needed to
+ * classify (no text, no TOAST). Classification mirrors buildDashboardItems via
  * `cnStatusToFailureType`.
  */
-export async function fetchProductionCounts(): Promise<Record<FailureType, number>> {
-  const [notes, helpfulCompeting, missed, lowEval] = await Promise.all([
+export async function fetchProductionPillData(): Promise<ProductionPillData> {
+  const [notes, helpfulCompeting, missed, lowEval, annotationRows] = await Promise.all([
     fetchAllRows<any>(supabase.from("notes").select("note_id, cn_status"), "count_notes"),
     fetchAllRows<any>(
       supabase
@@ -558,18 +547,40 @@ export async function fetchProductionCounts(): Promise<Record<FailureType, numbe
       .from("pipeline_runs")
       .select("id", { count: "exact", head: true })
       .eq("outcome_reason", "low_evaluation_score"),
+    fetchAllRows<any>(
+      supabase
+        .from("review_dashboard_annotations")
+        .select("target_id, seen, failure_modes")
+        .eq("source", "production"),
+      "production_annotations",
+    ),
   ]);
 
   const helpfulCompetitorNoteIds = new Set(helpfulCompeting.map((c: any) => c.our_note_id));
+  const seenByTargetId = new Map<string, boolean>();
+  for (const a of annotationRows) seenByTargetId.set(a.target_id, !!a.seen);
+
   const counts = Object.fromEntries(
     Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
   ) as Record<FailureType, number>;
+  const notesSeen: ProductionPillData["notesSeen"] = [];
   for (const note of notes) {
-    counts[cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id))]++;
+    const failureType = cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id));
+    counts[failureType]++;
+    notesSeen.push({ noteId: note.note_id, failureType, seen: seenByTargetId.get(note.note_id) ?? false });
   }
   counts.missed_opportunity = missed.count ?? 0;
   counts.filtered_low_eval_score = lowEval.count ?? 0;
-  return counts;
+
+  const tagCounts = new Map<string, number>();
+  const annotationsSeen: ProductionPillData["annotationsSeen"] = [];
+  for (const a of annotationRows) {
+    const failureModes = a.failure_modes ?? [];
+    for (const m of failureModes) tagCounts.set(m, (tagCounts.get(m) ?? 0) + 1);
+    annotationsSeen.push({ targetId: a.target_id, failureModes, seen: !!a.seen });
+  }
+
+  return { counts, tagCounts, notesSeen, annotationsSeen };
 }
 
 // ─── Dataset run data ────────────────────────────────────────────────────────

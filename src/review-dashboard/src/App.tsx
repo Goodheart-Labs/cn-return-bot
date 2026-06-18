@@ -15,8 +15,7 @@ import {
   fetchDashboardDataByTags,
   buildDashboardItems,
   fetchLogsForRuns,
-  fetchProductionCounts,
-  fetchProductionTagCounts,
+  fetchProductionPillData,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
   fetchUploads,
@@ -34,6 +33,13 @@ import {
 // paint fast — see fetchDashboardData. WINDOW_DAYS_STEP is shared with the server
 // prefetch (productionView).
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+// Failure types whose pills show a seen-aware count (how many are left to review
+// under the current seen filter) instead of the all-time total. Limited to the
+// cn_status-derived categories we can classify from the lightweight pill data;
+// the rest (needs-more-ratings, missed, low-eval) keep their all-time totals.
+const SEEN_AWARE_FAILURE_TYPES: FailureType[] = ["rated_helpful", "rated_unhelpful", "lost_to_competitor"];
+
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
 import { DatasetSelector } from "./components/DatasetSelector";
@@ -105,6 +111,11 @@ export function App() {
   // session and adjusted optimistically on tag edits. Dataset runs derive
   // counts from their (fully loaded) items instead.
   const [productionTagCounts, setProductionTagCounts] = useState<Map<string, number>>(new Map());
+  // All-time {failureType, seen} per note and {failureModes, seen} per annotation,
+  // so the rated/tag pills can show counts under the current seen filter (how many
+  // are left to review) rather than the all-time total. Fetched with the counts.
+  const [notesSeen, setNotesSeen] = useState<{ noteId: string; failureType: FailureType; seen: boolean }[]>([]);
+  const [annotationsSeen, setAnnotationsSeen] = useState<{ targetId: string; failureModes: string[]; seen: boolean }[]>([]);
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -206,21 +217,65 @@ export function App() {
     loadData();
   }, [loadData]);
 
-  // Production pill counts are all-time and independent of the date window, so
-  // fetch them once per production session rather than on every window extension.
+  // Production pill data is all-time and independent of the date window, so fetch
+  // it once per production session rather than on every window extension. One
+  // pass returns the all-time counts plus the per-note / per-annotation seen
+  // flags the seen-aware pills derive from.
   useEffect(() => {
     if (dataset.type !== "production") return;
-    fetchProductionCounts()
-      .then(setCounts)
-      .catch((e) => console.warn("Failed to fetch production counts:", e));
-    fetchProductionTagCounts()
-      .then(setProductionTagCounts)
-      .catch((e) => console.warn("Failed to fetch production tag counts:", e));
+    fetchProductionPillData()
+      .then(({ counts, tagCounts, notesSeen, annotationsSeen }) => {
+        setCounts(counts);
+        setProductionTagCounts(tagCounts);
+        setNotesSeen(notesSeen);
+        setAnnotationsSeen(annotationsSeen);
+      })
+      .catch((e) => console.warn("Failed to fetch production pill data:", e));
   }, [dataset]);
 
   // Sort items by date (stable memo so renders don't re-sort unnecessarily).
   const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
   const filtered = sortedItems.filter(matchesFilters(filters, abFilters));
+
+  // Loaded items keyed by id — their annotation state is the live truth and wins
+  // over the all-time pill data below. You can only edit a visible note, so every
+  // in-session seen/tag change is in here, which keeps the counts live without a
+  // refetch (mark a note seen and the "left to review" count drops immediately).
+  const itemById = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);
+
+  // Seen-aware production pill counts: for the rated categories the pills report
+  // how many are left under the current seen filter, not the all-time total. Based
+  // on all-time notesSeen (so the window doesn't undercount), with loaded notes
+  // overridden by live state. When seen = "all" the all-time counts already match.
+  const displayCounts = useMemo(() => {
+    if (dataset.type !== "production" || filters.seen === "all") return counts;
+    const wantSeen = filters.seen === "seen";
+    const derived = { ...counts };
+    for (const ft of SEEN_AWARE_FAILURE_TYPES) derived[ft] = 0;
+    for (const n of notesSeen) {
+      if (!SEEN_AWARE_FAILURE_TYPES.includes(n.failureType)) continue;
+      const live = itemById.get(n.noteId);
+      const seen = live ? !!live.annotation?.seen : n.seen;
+      if (seen === wantSeen) derived[n.failureType]++;
+    }
+    return derived;
+  }, [dataset.type, counts, notesSeen, itemById, filters.seen]);
+
+  // Seen-aware tag counts: same idea for the failure-mode pills. Merge by id so
+  // loaded notes use their live annotation (tags added/removed this session count).
+  const displayTagCounts = useMemo(() => {
+    if (dataset.type !== "production" || filters.seen === "all") return productionTagCounts;
+    const wantSeen = filters.seen === "seen";
+    const byId = new Map<string, { failureModes: string[]; seen: boolean }>();
+    for (const a of annotationsSeen) byId.set(a.targetId, { failureModes: a.failureModes, seen: a.seen });
+    for (const i of items) byId.set(i.id, { failureModes: i.annotation?.failureModes ?? [], seen: !!i.annotation?.seen });
+    const derived = new Map<string, number>();
+    for (const { failureModes, seen } of byId.values()) {
+      if (seen !== wantSeen) continue;
+      for (const m of failureModes) derived.set(m, (derived.get(m) ?? 0) + 1);
+    }
+    return derived;
+  }, [dataset.type, productionTagCounts, annotationsSeen, items, filters.seen]);
 
   // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS
   // declaration order so dropdowns match the stats dashboard layout.
@@ -247,9 +302,9 @@ export function App() {
   }, [items]);
 
   // Counts used to sort and label the pills (and order the card selector).
-  // Production items are only partially loaded (date window), so use the
+  // Production items are only partially loaded (date window), so use the seen-aware
   // all-time counts there; deriving from items would undercount.
-  const tagCounts = dataset.type === "production" ? productionTagCounts : itemTagCounts;
+  const tagCounts = dataset.type === "production" ? displayTagCounts : itemTagCounts;
 
   const sortedFailureModes = useMemo(() => {
     const list = showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed);
@@ -502,7 +557,7 @@ export function App() {
         <FilterBar
           source={dataset.type}
           filters={filters}
-          counts={counts}
+          counts={displayCounts}
           onFiltersChange={setFilters}
         />
       </div>
