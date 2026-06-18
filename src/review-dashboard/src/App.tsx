@@ -131,6 +131,8 @@ export function App() {
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
   const [abFilters, setAbFilters] = useState<ABFilters>({});
+  // A/B filter section is collapsed by default (its slots stream in as data loads).
+  const [abOpen, setAbOpen] = useState(false);
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   // All-time tag usage for production pills, fetched once per production
   // session and adjusted optimistically on tag edits. Dataset runs derive
@@ -653,24 +655,34 @@ export function App() {
 
       {/* A/B test filters — collapsed by default so you don't see the slots/variants
           stream in as data loads (abSlots is derived from the progressively-loaded
-          items). The summary is the section header; the panel's own header is hidden. */}
+          items). The toggle bar is the section header; the panel's own header is hidden. */}
       {abSlots.length > 0 && (
-        <details className="mb-4">
-          <summary className="flex items-center gap-2 cursor-pointer select-none text-sm font-medium text-gray-700 py-1">
-            <span>A/B test filters{abActive ? ` · ${abActiveCount} active` : ""}</span>
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setAbOpen((o) => !o)}
+              aria-expanded={abOpen}
+              className="flex flex-1 items-center gap-2 text-left text-sm font-medium text-gray-700 px-3 py-2 rounded-md border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              <span className={`text-gray-400 transition-transform ${abOpen ? "rotate-90" : ""}`}>▶</span>
+              <span>A/B test filters</span>
+              {abActive && <span className="text-xs text-blue-600">· {abActiveCount} active</span>}
+            </button>
             {abActive && (
               <button
-                onClick={(e) => { e.preventDefault(); setAbFilters({}); }}
-                className="text-xs font-normal text-blue-600 hover:text-blue-800"
+                onClick={() => setAbFilters({})}
+                className="text-xs text-blue-600 hover:text-blue-800"
               >
                 Clear all
               </button>
             )}
-          </summary>
-          <div className="mt-2">
-            <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
           </div>
-        </details>
+          {abOpen && (
+            <div className="mt-2">
+              <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
+            </div>
+          )}
+        </div>
       )}
 
       {/* Failure mode filter pills */}
@@ -739,7 +751,7 @@ export function App() {
             : dataset.type === "production"
               ? tagFilterActive
                 ? `${visible.length} notes · all time, tagged${loadingLogs ? " · loading logs…" : ""}`
-                : `${visible.length} notes · standard selection + last ${windowDays} days${loadingLogs ? " · loading logs…" : ""}`
+                : `${visible.length} notes${loadingLogs ? " · loading logs…" : ""}`
               : `${filtered.length} items shown`}
         </div>
         {firstRatedIndex > 0 && (
