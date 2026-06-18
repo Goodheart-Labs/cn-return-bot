@@ -114,8 +114,8 @@ export function App() {
   // All-time {failureType, seen} per note and {failureModes, seen} per annotation,
   // so the rated/tag pills can show counts under the current seen filter (how many
   // are left to review) rather than the all-time total. Fetched with the counts.
-  const [notesSeen, setNotesSeen] = useState<{ noteId: string; failureType: FailureType; seen: boolean }[]>([]);
-  const [annotationsSeen, setAnnotationsSeen] = useState<{ targetId: string; failureModes: string[]; seen: boolean }[]>([]);
+  const [notesSeen, setNotesSeen] = useState<{ noteId: string; failureType: FailureType; seen: boolean; abTestPicks: Record<string, string> | null }[]>([]);
+  const [annotationsSeen, setAnnotationsSeen] = useState<{ targetId: string; failureModes: string[]; seen: boolean; abTestPicks: Record<string, string> | null }[]>([]);
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -243,12 +243,17 @@ export function App() {
   // refetch (mark a note seen and the "left to review" count drops immediately).
   const itemById = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);
 
-  // Seen-aware production pill counts: for the rated categories the pills report
-  // how many are left under the current seen filter, not the all-time total. Based
-  // on all-time notesSeen (so the window doesn't undercount), with loaded notes
-  // overridden by live state. When seen = "all" the all-time counts already match.
+  // True when any A/B slot is filtered. An empty A/B filter matches everything,
+  // so the seen-aware counts already double as A/B-aware ones — we only need the
+  // recompute when at least one of the seen / A/B filters is actually narrowing.
+  const abActive = useMemo(() => Object.values(abFilters).some(Boolean), [abFilters]);
+
+  // Seen- and A/B-aware production pill counts: for the rated categories the pills
+  // report how many are left under the current seen + A/B filters, not the all-time
+  // total. Based on all-time notesSeen (so the window doesn't undercount), with
+  // loaded notes overridden by live state. No active filter → all-time counts.
   const displayCounts = useMemo(() => {
-    if (dataset.type !== "production" || filters.seen === "all") return counts;
+    if (dataset.type !== "production" || (filters.seen === "all" && !abActive)) return counts;
     const wantSeen = filters.seen === "seen";
     const derived = { ...counts };
     for (const ft of SEEN_AWARE_FAILURE_TYPES) derived[ft] = 0;
@@ -256,26 +261,30 @@ export function App() {
       if (!SEEN_AWARE_FAILURE_TYPES.includes(n.failureType)) continue;
       const live = itemById.get(n.noteId);
       const seen = live ? !!live.annotation?.seen : n.seen;
-      if (seen === wantSeen) derived[n.failureType]++;
+      const picks = live ? live.abTestPicks : n.abTestPicks;
+      if (filters.seen !== "all" && seen !== wantSeen) continue;
+      if (!matchesAbFilters(picks ?? null, abFilters)) continue;
+      derived[n.failureType]++;
     }
     return derived;
-  }, [dataset.type, counts, notesSeen, itemById, filters.seen]);
+  }, [dataset.type, counts, notesSeen, itemById, filters.seen, abFilters, abActive]);
 
-  // Seen-aware tag counts: same idea for the failure-mode pills. Merge by id so
-  // loaded notes use their live annotation (tags added/removed this session count).
+  // Seen- and A/B-aware tag counts: same idea for the failure-mode pills. Merge by
+  // id so loaded notes use their live annotation (tags added/removed this session).
   const displayTagCounts = useMemo(() => {
-    if (dataset.type !== "production" || filters.seen === "all") return productionTagCounts;
+    if (dataset.type !== "production" || (filters.seen === "all" && !abActive)) return productionTagCounts;
     const wantSeen = filters.seen === "seen";
-    const byId = new Map<string, { failureModes: string[]; seen: boolean }>();
-    for (const a of annotationsSeen) byId.set(a.targetId, { failureModes: a.failureModes, seen: a.seen });
-    for (const i of items) byId.set(i.id, { failureModes: i.annotation?.failureModes ?? [], seen: !!i.annotation?.seen });
+    const byId = new Map<string, { failureModes: string[]; seen: boolean; abTestPicks: Record<string, string> | null }>();
+    for (const a of annotationsSeen) byId.set(a.targetId, { failureModes: a.failureModes, seen: a.seen, abTestPicks: a.abTestPicks });
+    for (const i of items) byId.set(i.id, { failureModes: i.annotation?.failureModes ?? [], seen: !!i.annotation?.seen, abTestPicks: i.abTestPicks ?? null });
     const derived = new Map<string, number>();
-    for (const { failureModes, seen } of byId.values()) {
-      if (seen !== wantSeen) continue;
+    for (const { failureModes, seen, abTestPicks } of byId.values()) {
+      if (filters.seen !== "all" && seen !== wantSeen) continue;
+      if (!matchesAbFilters(abTestPicks ?? null, abFilters)) continue;
       for (const m of failureModes) derived.set(m, (derived.get(m) ?? 0) + 1);
     }
     return derived;
-  }, [dataset.type, productionTagCounts, annotationsSeen, items, filters.seen]);
+  }, [dataset.type, productionTagCounts, annotationsSeen, items, filters.seen, abFilters, abActive]);
 
   // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS
   // declaration order so dropdowns match the stats dashboard layout.

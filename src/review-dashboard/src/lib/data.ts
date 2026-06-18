@@ -504,17 +504,21 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
 
 // ─── Production pill data ────────────────────────────────────────────────────
 
+type AbPicks = Record<string, string> | null;
+
 export interface ProductionPillData {
   // All-time category counts for the filter-bar pills.
   counts: Record<FailureType, number>;
   // All-time tag usage counts for the failure-mode pills.
   tagCounts: Map<string, number>;
-  // Per-note {noteId, failureType, seen}, all-time — lets the UI recompute the
-  // rated pills under the seen filter ("how many left to review", not the all-time
-  // total). noteId so the UI can override with live state for loaded notes.
-  notesSeen: { noteId: string; failureType: FailureType; seen: boolean }[];
-  // Per-annotation {targetId, failureModes, seen}, all-time — same, for tag pills.
-  annotationsSeen: { targetId: string; failureModes: string[]; seen: boolean }[];
+  // Per-note {noteId, failureType, seen, abTestPicks}, all-time — lets the UI
+  // recompute the rated pills under the seen + A/B filters ("how many left to
+  // review" in this variant, not the all-time total). noteId so the UI can
+  // override with live state for loaded notes.
+  notesSeen: { noteId: string; failureType: FailureType; seen: boolean; abTestPicks: AbPicks }[];
+  // Per-annotation {targetId, failureModes, seen, abTestPicks}, all-time — same,
+  // for tag pills.
+  annotationsSeen: { targetId: string; failureModes: string[]; seen: boolean; abTestPicks: AbPicks }[];
 }
 
 /**
@@ -527,8 +531,8 @@ export interface ProductionPillData {
  * `cnStatusToFailureType`.
  */
 export async function fetchProductionPillData(): Promise<ProductionPillData> {
-  const [notes, helpfulCompeting, missed, lowEval, annotationRows] = await Promise.all([
-    fetchAllRows<any>(supabase.from("notes").select("note_id, cn_status"), "count_notes"),
+  const [notes, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
+    fetchAllRows<any>(supabase.from("notes").select("note_id, cn_status, tweet_id"), "count_notes"),
     fetchAllRows<any>(
       supabase
         .from("competing_notes")
@@ -554,11 +558,27 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
         .eq("source", "production"),
       "production_annotations",
     ),
+    // A/B picks per note for A/B-aware pill counts. Keyed by tweet_id off the
+    // submitted run, mirroring buildDashboardItems; only runs that carry picks,
+    // so it stays small (notes without picks just never match an A/B filter).
+    fetchAllRows<any>(
+      supabase
+        .from("pipeline_runs")
+        .select("tweet_id, ab_test_picks")
+        .eq("outcome", "submitted")
+        .not("ab_test_picks", "is", null),
+      "ab_picks",
+    ),
   ]);
 
   const helpfulCompetitorNoteIds = new Set(helpfulCompeting.map((c: any) => c.our_note_id));
   const seenByTargetId = new Map<string, boolean>();
   for (const a of annotationRows) seenByTargetId.set(a.target_id, !!a.seen);
+  const abPicksByTweet = new Map<string, AbPicks>();
+  for (const r of abRuns) abPicksByTweet.set(r.tweet_id, r.ab_test_picks ?? null);
+  const tweetByNoteId = new Map<string, string>();
+  for (const note of notes) tweetByNoteId.set(note.note_id, note.tweet_id);
+  const picksForNoteId = (noteId: string): AbPicks => abPicksByTweet.get(tweetByNoteId.get(noteId) ?? "") ?? null;
 
   const counts = Object.fromEntries(
     Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
@@ -567,7 +587,12 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
   for (const note of notes) {
     const failureType = cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id));
     counts[failureType]++;
-    notesSeen.push({ noteId: note.note_id, failureType, seen: seenByTargetId.get(note.note_id) ?? false });
+    notesSeen.push({
+      noteId: note.note_id,
+      failureType,
+      seen: seenByTargetId.get(note.note_id) ?? false,
+      abTestPicks: abPicksByTweet.get(note.tweet_id) ?? null,
+    });
   }
   counts.missed_opportunity = missed.count ?? 0;
   counts.filtered_low_eval_score = lowEval.count ?? 0;
@@ -577,7 +602,9 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
   for (const a of annotationRows) {
     const failureModes = a.failure_modes ?? [];
     for (const m of failureModes) tagCounts.set(m, (tagCounts.get(m) ?? 0) + 1);
-    annotationsSeen.push({ targetId: a.target_id, failureModes, seen: !!a.seen });
+    // target_id is a bare note_id for canonical notes (the common case); prefixed
+    // missed/low-eval targets have no note tweet, so no A/B picks.
+    annotationsSeen.push({ targetId: a.target_id, failureModes, seen: !!a.seen, abTestPicks: picksForNoteId(a.target_id) });
   }
 
   return { counts, tagCounts, notesSeen, annotationsSeen };
