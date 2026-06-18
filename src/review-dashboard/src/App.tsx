@@ -287,6 +287,7 @@ export function App() {
   // so the seen-aware counts already double as A/B-aware ones — we only need the
   // recompute when at least one of the seen / A/B filters is actually narrowing.
   const abActive = useMemo(() => Object.values(abFilters).some(Boolean), [abFilters]);
+  const abActiveCount = useMemo(() => Object.values(abFilters).filter(Boolean).length, [abFilters]);
 
   // Seen- and A/B-aware production pill counts: for the rated categories the pills
   // report how many are left under the current seen + A/B filters, not the all-time
@@ -650,11 +651,26 @@ export function App() {
         />
       </div>
 
-      {/* A/B test filters */}
+      {/* A/B test filters — collapsed by default so you don't see the slots/variants
+          stream in as data loads (abSlots is derived from the progressively-loaded
+          items). The summary is the section header; the panel's own header is hidden. */}
       {abSlots.length > 0 && (
-        <div className="mb-4">
-          <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} />
-        </div>
+        <details className="mb-4">
+          <summary className="flex items-center gap-2 cursor-pointer select-none text-sm font-medium text-gray-700 py-1">
+            <span>A/B test filters{abActive ? ` · ${abActiveCount} active` : ""}</span>
+            {abActive && (
+              <button
+                onClick={(e) => { e.preventDefault(); setAbFilters({}); }}
+                className="text-xs font-normal text-blue-600 hover:text-blue-800"
+              >
+                Clear all
+              </button>
+            )}
+          </summary>
+          <div className="mt-2">
+            <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
+          </div>
+        </details>
       )}
 
       {/* Failure mode filter pills */}
