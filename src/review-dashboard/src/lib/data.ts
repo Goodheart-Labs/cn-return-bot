@@ -531,6 +531,40 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
 
 // ─── Production pill data ────────────────────────────────────────────────────
 
+const PILL_PAGE = 1000;
+// Page requests per wave for fetchAllRowsParallel. Local to the dashboard (the
+// shared serial fetchAllRows covers everyone else) and used only for the one
+// genuinely multi-page scan below.
+const PILL_CONCURRENCY = 8;
+
+/**
+ * Parallel pagination for the all-time notes scan — the bottleneck of the
+ * once-per-session pill-count load. `makeQuery` returns a FRESH query each call
+ * (concurrent `.range()`s can't share a builder) with a stable ORDER BY so the
+ * page ranges partition the same ordered set. Worth it only for multi-page tables;
+ * the other count scans are single-page and stay on serial fetchAllRows.
+ */
+async function fetchAllRowsParallel<T>(makeQuery: () => any, label?: string): Promise<T[]> {
+  const all: T[] = [];
+  let offset = 0;
+  let done = false;
+  while (!done) {
+    const ranges: Array<[number, number]> = [];
+    for (let k = 0; k < PILL_CONCURRENCY; k++) {
+      ranges.push([offset, offset + PILL_PAGE - 1]);
+      offset += PILL_PAGE;
+    }
+    const pages = await Promise.all(ranges.map(([from, to]) => makeQuery().range(from, to)));
+    for (const { data, error } of pages) {
+      if (error) throw error;
+      if (data && data.length) all.push(...(data as T[]));
+      if (!data || data.length < PILL_PAGE) done = true;
+    }
+  }
+  if (label) console.log(`[data] ${label}: ${all.length} rows`);
+  return all;
+}
+
 type AbPicks = Record<string, string> | null;
 
 export interface ProductionPillData {
@@ -559,7 +593,13 @@ export interface ProductionPillData {
  */
 export async function fetchProductionPillData(): Promise<ProductionPillData> {
   const [notes, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
-    fetchAllRows<any>(supabase.from("notes").select("note_id, cn_status, tweet_id"), "count_notes"),
+    // The notes scan is the bottleneck of this once-per-session load (~4 pages);
+    // paginate it in parallel. The others are single-page, so they stay serial.
+    // Stable ORDER BY note_id so the concurrent page ranges partition cleanly.
+    fetchAllRowsParallel<any>(
+      () => supabase.from("notes").select("note_id, cn_status, tweet_id").order("note_id", { ascending: true }),
+      "count_notes",
+    ),
     fetchAllRows<any>(
       supabase
         .from("competing_notes")
