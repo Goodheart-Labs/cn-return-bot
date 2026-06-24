@@ -156,6 +156,20 @@ const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
   ],
 };
 
+// Swap simple-bot's SEARCH prompt for an "anti-pedantic" variant that only
+// flags a correction when the post's main claim / argument is wrong, never a
+// minor side error — the bet that pedantic nitpicks hurt the helpful/FP rate.
+// Composes with SIMPLE_BOT_PROMPTS_TEST (the terse base has its own variant).
+// Live 50/50 on simple-bot. Prereq-gated to simple-bot, so no defaultVariant.
+const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
+  name: "simple_bot_anti_pedantic",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 50 },
+  ],
+};
+
 // Append a few-shot block of real, well-performing notes (all simple, direct,
 // and short) to simple-bot's writer system prompt, testing whether concrete
 // examples pull the writer toward that "simple and nice" style vs the
@@ -341,6 +355,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
   SIMPLE_BOT_PROMPTS_TEST,
+  SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   NOTE_PREFILTER_TEST,

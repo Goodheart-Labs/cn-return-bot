@@ -106,6 +106,14 @@ export interface BotConfig {
    */
   search_political_sources?: boolean;
   /**
+   * When true (simple-bot only), the search agent uses the "anti-pedantic"
+   * prompt variant, which only flags a correction when the post's main claim /
+   * argument is wrong (not a minor side error). Composes with `simple_prompts`
+   * (each base has its own anti-pedantic variant). Set by
+   * SIMPLE_BOT_ANTI_PEDANTIC_TEST; defaults false.
+   */
+  search_anti_pedantic?: boolean;
+  /**
    * When true, the writer's system prompt is appended with a few-shot block of
    * real notes the community rated helpful — all simple, direct, and short — to
    * pull the writer toward that "simple and nice" style. Set by
