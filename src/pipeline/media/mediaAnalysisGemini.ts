@@ -16,6 +16,7 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
+import { addWarning } from "../utils/warnings";
 import { GEMINI_MODEL } from "../cost-tracking/pricing";
 import { trackLlmCall } from "../cost-tracking/costTracker";
 import { geminiNativeGenerate, type GeminiContentPart } from "../llm/gemini";
@@ -325,6 +326,7 @@ async function analyzeVideo(
     return { type: "video", url: videoUrl, description, transcription };
   } catch (err: any) {
     console.error("[mediaAnalysisGemini] Video analysis failed:", err.message);
+    addWarning(`Video analysis failed, no description (${videoUrl}): ${err.message?.slice(0, 150)}`);
     return { type: "video", url: videoUrl, description: { description: "", ocrText: "" }, };
   } finally {
     try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
@@ -372,6 +374,7 @@ async function analyzeMediaItems(
       .filter((url): url is string => !!url)
       .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`, entities).catch((err) => {
         console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
+        addWarning(`Image analysis failed, no description (${url}): ${err.message?.slice(0, 150)}`);
         return { type: "image" as const, url, description: { description: "", ocrText: "" } };
       })),
   );

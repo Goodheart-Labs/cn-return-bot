@@ -21,10 +21,6 @@ export const simpleBot: Bot = {
   async runPipeline(post): Promise<PipelineResult | null> {
     const input = await createBotInput(post, this.id);
     const outcome = await runSimpleBotPipeline(post, input);
-    const result = outcomeToResult(post, this.id, outcome);
-    if (input.warnings.length) {
-      result.warnings = [...(result.warnings ?? []), ...input.warnings];
-    }
-    return result;
+    return outcomeToResult(post, this.id, outcome);
   },
 };

@@ -17,6 +17,7 @@ import { runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from
 import { AB_TESTS } from "../ab-testing/abTestsData";
 import { withBotConfig, type FeedSize } from "../ab-testing/botConfig";
 import { withCostTracker } from "../cost-tracking/costTracker";
+import { withWarnings } from "../utils/warnings";
 import { withMonitoringContext, type MonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
@@ -202,18 +203,20 @@ export async function processPosts(
       log.set("tweet.total", items.length);
 
       const tweetResult = await withTweetLog(log, () =>
-        withBotConfig(config, () =>
-          withCostTracker(() => {
-            log.set("bot.id", config.botId);
-            log.set("bot.picks", picks);
-            log.set("bot.config", config);
-            return processSingleTweet({
-              post: item.post,
-              bot: selectedBot,
-              logger: supabaseLogger,
-              commitSha: commit,
-            });
-          }),
+        withWarnings(() =>
+          withBotConfig(config, () =>
+            withCostTracker(() => {
+              log.set("bot.id", config.botId);
+              log.set("bot.picks", picks);
+              log.set("bot.config", config);
+              return processSingleTweet({
+                post: item.post,
+                bot: selectedBot,
+                logger: supabaseLogger,
+                commitSha: commit,
+              });
+            }),
+          ),
         ),
       );
 
