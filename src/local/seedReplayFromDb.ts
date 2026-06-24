@@ -107,7 +107,6 @@ function reconstructBotInput(logs: any): BotInput | null {
     authorHistory: inputs?.author?.noteHistory ?? undefined,
     comments: inputs?.comments?.text ?? undefined,
     mediaMadeWithAiLabel: !!inputs?.mediaMadeWithAiLabel,
-    warnings: [],
   };
 }
 

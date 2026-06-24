@@ -124,7 +124,8 @@ gets retried).
 | `outcome` | TEXT | `submitted` / `candidate` / `rejected` / `failed` / `filtered` / `in_progress`. See [outcome_reason taxonomy](#outcome_reason-taxonomy) below for which reasons attach to which outcomes. |
 | `outcome_reason` | TEXT | semantic category. See [taxonomy](#outcome_reason-taxonomy) below. |
 | `final_stage` | TEXT | last stage reached: `started` / `scoring` / `source_trust` / `note_writing` / `check` / `evaluation` / `candidate` / `submission`. Always `error` when `outcome='failed'`. |
-| `error_message` | TEXT | **non-NULL whenever `outcome='failed'`** — the exception's `.message`. NULL otherwise. |
+| `error_message` | TEXT | **non-NULL whenever `outcome='failed'`** — the exception's `.message`. NULL otherwise (errors only; non-fatal warnings live in `warnings`). |
+| `warnings` | TEXT[] | non-fatal warnings collected during the run (e.g. `Image analysis: Gemini failed, used Claude Haiku fallback (<url>)`, `Video analysis failed, no description`). NULL when none. Populated only for runs after the migration 046 deploy. |
 | `note_id` | TEXT | refers to `notes.note_id` (when submitted) |
 | `note_text` | TEXT | bot's generated note (kept even for non-submitted runs — useful for review) |
 | `evaluation_score` | DOUBLE PRECISION | the bot's self-eval score |
@@ -157,7 +158,7 @@ Indexes: `tweet_id`, `outcome`, `final_stage`, `(outcome, created_at DESC) WHERE
 **Invariants** (post-refactor):
 - `outcome='failed'` ⇒ `error_message` is non-NULL and `logs->'error'->>'stack'` is populated.
 - `outcome='failed'` ⇒ `final_stage='error'`.
-- `outcome IN ('candidate','submitted','rejected')` ⇒ `error_message` is NULL (or contains only non-fatal warnings).
+- `outcome IN ('candidate','submitted','rejected')` ⇒ `error_message` is NULL. Non-fatal warnings (if any) are in `warnings`, not `error_message`.
 
 ---
 

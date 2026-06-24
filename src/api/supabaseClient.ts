@@ -393,6 +393,7 @@ export class SupabaseLogger {
       outcome: "submitted" | "filtered" | "failed" | "rejected" | "candidate";
       outcome_reason?: string;
       error_message?: string;
+      warnings?: string[];
       final_stage: string;
       note_id?: string;
       bot_name?: string;
@@ -413,6 +414,7 @@ export class SupabaseLogger {
         outcome: data.outcome,
         outcome_reason: data.outcome_reason,
         error_message: data.error_message,
+        warnings: data.warnings,
         final_stage: data.final_stage,
         note_id: data.note_id,
         bot_name: data.bot_name,
