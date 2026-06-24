@@ -29,12 +29,43 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
+/** Anti-pedantic variant of the detailed prompt: only corrects the post's main
+ *  claim / argument, never a minor side error. Selected when
+ *  `config.search_anti_pedantic` is on (SIMPLE_BOT_ANTI_PEDANTIC_TEST). */
+export const SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC = `You are a research agent for Community Notes fact-checking on X/Twitter.
+
+Your job: investigate whether the posts main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.
+
+## Output format
+Return JSON with two fields:
+- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
+- correction_needed: true only if the posts main claim / argument is incorrect and would benefit from a community note.
+
+## When NOT to set correction_needed = true
+- The correction does not address the main claim / argument of the post
+- Opinions, satire, jokes, hyperbole
+- Posts that are factually correct
+- When you can't find strong contradicting evidence
+- When the "error" is too minor or pedantic
+
+## Sourcing rules
+- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
+- Include what each source says that's relevant.
+- If no correction is needed, the findings can be brief — just explain why.`;
+
 /** Maximally-terse variant (SIMPLE_BOT_PROMPTS_TEST = simple). */
 export const SIMPLE_SEARCH_SYSTEM_PROMPT = `Investigate whether this X/Twitter post contains a factual error worth a Community Note or not. Search the web to find out whats going on in the world.
 
 Return JSON:
 - findings: a research summary with the full https:// source URL written inline next to each claim.
 - correction_needed: true only if the post has a clear factual error backed by direct contradicting evidence.`;
+
+/** Anti-pedantic + terse variant (simple_prompts × search_anti_pedantic). */
+export const SIMPLE_SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC = `Investigate whether this X/Twitter post contains a factual error worth a Community Note or not. Search the web to find out whats going on in the world.
+
+Return JSON:
+- findings: a research summary with the full https:// source URL written inline next to each claim.
+- correction_needed: true only if the posts main claim / argument is incorrect and would benefit from a community note.`;
 
 /** Appended to the search prompt when `config.search_political_sources` is on
  *  (SIMPLE_BOT_POLITICAL_SOURCES_TEST). Steers sourcing toward the author's own
@@ -44,17 +75,30 @@ export const SEARCH_POLITICAL_SOURCES_INSTRUCTION = `
 ## Political topics
 For political posts, prefer sources associated with the post author's own political side when they support the correction, if possible. A note is far more likely to be rated helpful when it cites sources the author's own audience already trusts.`;
 
-/** `referenceBlock` is the misinfo pre-pass ground-truth article (already
- *  formatted), or null in the regular pipeline. `simple` swaps the detailed base
- *  for the terse variant. */
-export function buildSearchSystemPrompt(params: { referenceBlock: string | null; simple: boolean }): string {
-  const base = params.simple ? SIMPLE_SEARCH_SYSTEM_PROMPT : SEARCH_SYSTEM_PROMPT;
+/** Picks the base search prompt from the 2×2 of {detailed, terse} ×
+ *  {standard, anti-pedantic}, then appends the misinfo pre-pass ground-truth
+ *  article when one is active (`referenceBlock`, else null in the regular
+ *  pipeline). `simple` = SIMPLE_BOT_PROMPTS_TEST; `antiPedantic` =
+ *  SIMPLE_BOT_ANTI_PEDANTIC_TEST. */
+export function buildSearchSystemPrompt(params: {
+  referenceBlock: string | null;
+  simple: boolean;
+  antiPedantic: boolean;
+}): string {
+  const base = selectSearchBasePrompt(params.simple, params.antiPedantic);
   if (!params.referenceBlock) return base;
   return `${base}
 
 A reference document on this post's topic is provided below. Treat it as ground truth and include its Source URL inline in the findings as a citation.
 
 ${params.referenceBlock}`;
+}
+
+function selectSearchBasePrompt(simple: boolean, antiPedantic: boolean): string {
+  if (simple) {
+    return antiPedantic ? SIMPLE_SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC : SIMPLE_SEARCH_SYSTEM_PROMPT;
+  }
+  return antiPedantic ? SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC : SEARCH_SYSTEM_PROMPT;
 }
 
 // OpenAI-flavoured schema (strict json_schema), used by Anthropic via OpenRouter.
