@@ -16,6 +16,7 @@ import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
 import { shouldSubmitNote } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
+import { getWarnings } from "../utils/warnings";
 import { PipelineError } from "../utils/errors";
 import { aggregateAndLogCosts } from "../cost-tracking/costTracker";
 import { countNoteLength, joinNoteAndUrl } from "../utils/noteLength";
@@ -44,7 +45,6 @@ export interface ScoreEntry {
 export interface BotPipelineOutput {
   result: PipelineResult | null;
   content: PostContent;
-  warnings?: string[];
 }
 
 export interface Outcome {
@@ -64,7 +64,6 @@ export interface ProcessTweetResult {
   noteText?: string;
   scores: ScoreEntry[];
   pipelineRunId: string | null;
-  warnings?: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -92,14 +91,17 @@ async function runBotPipeline(
 
   const result = await bot.runPipeline(post, content);
 
-  const warnings = result?.warnings?.length
-    ? result.warnings.map((w) => `[WARNING] ${w}`)
-    : undefined;
-  if (warnings) {
-    log?.set("warnings", warnings);
-  }
+  return { result, content };
+}
 
-  return { result, content, warnings };
+/** Warnings collected this run (e.g. media Haiku fallback). Mirrors them into
+ *  the tweet log so they also appear in the logs dump, and returns the array
+ *  (undefined when none) for the pipeline_runs.warnings column. */
+function collectWarnings(): string[] | undefined {
+  const warnings = getWarnings();
+  if (!warnings.length) return undefined;
+  getTweetLog()?.set("warnings", warnings);
+  return warnings;
 }
 
 // ---------------------------------------------------------------------------
@@ -298,13 +300,11 @@ function buildSuccessCompletionData(
   logs: Record<string, unknown> | undefined,
   cost: number | undefined,
 ): Parameters<SupabaseLogger["completePipelineRun"]>[1] {
-  const warningText = warnings?.join("; ");
-  const errorParts = [warningText, outcome.errorMessage].filter(Boolean);
-
   return {
     outcome: outcome.outcome,
     outcome_reason: outcome.outcomeReason,
-    error_message: errorParts.length ? errorParts.join(" | ").slice(0, 2000) : undefined,
+    error_message: outcome.errorMessage?.slice(0, 2000),
+    warnings,
     final_stage: outcome.finalStage,
     bot_name: bot.name,
     ab_test_picks: bot.picks,
@@ -354,6 +354,7 @@ async function recordFailedRun(
         outcome: "failed",
         outcome_reason: outcomeReason,
         error_message: message.slice(0, ERROR_MESSAGE_MAX_LEN),
+        warnings: collectWarnings(),
         final_stage: "error",
         bot_name: loggedBot.name,
         ab_test_picks: loggedBot.picks,
@@ -373,7 +374,6 @@ async function recordFailedRun(
     finalStage: "error",
     scores: [],
     pipelineRunId,
-    warnings: [`[ERROR] ${message}`],
   };
 }
 
@@ -429,7 +429,6 @@ async function runPrefilterGate(
     finalStage: "prefilter",
     scores: [],
     pipelineRunId,
-    warnings: [],
   };
 }
 
@@ -451,7 +450,7 @@ export async function processSingleTweet(
     const prefiltered = await runPrefilterGate(logger, pipelineRunId, post, bot);
     if (prefiltered) return prefiltered;
 
-    const { result, warnings } = await runBotPipeline(post, bot);
+    const { result } = await runBotPipeline(post, bot);
     if (!result) {
       throw new PipelineError("Bot returned null without throwing");
     }
@@ -475,6 +474,7 @@ export async function processSingleTweet(
     }
 
     const cost = aggregateAndLogCosts()?.cost;
+    const warnings = collectWarnings();
 
     if (logger && pipelineRunId) {
       const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
@@ -497,7 +497,6 @@ export async function processSingleTweet(
       noteText: joinNoteAndUrl(result.noteResult.note, result.noteResult.url),
       scores: scoring.scores,
       pipelineRunId,
-      warnings,
     };
   } catch (err: any) {
     return await recordFailedRun(logger, pipelineRunId, post, bot, err);

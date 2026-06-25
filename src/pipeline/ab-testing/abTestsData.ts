@@ -80,12 +80,14 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    // Non-uniform weights: sonnet46-native is the primary arm; the rest carry
-    // smaller exploratory weights, with the weaker/redundant variants pinned to
-    // 0 (still declared so their historical picks resolve).
-    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 10 },
+    // Non-uniform weights: sonnet46-native, opus48-native and grok43-native each
+    // carry weight 5 as the primary arm; the rest carry smaller exploratory
+    // weights, with the weaker/redundant variants pinned to 0 (still declared so
+    // their historical picks resolve).
+    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 5 },
+    { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 5 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
-    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
+    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 5 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 2 },
     { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 2 },
@@ -123,7 +125,7 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
-    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 50 },
+    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 0  },
   ],
 };
 
@@ -152,6 +154,20 @@ const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
   variants: [
     { variant: { name: "off", overrides: { search_political_sources: false } }, weight: 90 },
     { variant: { name: "on",  overrides: { search_political_sources: true  } }, weight: 10 },
+  ],
+};
+
+// Swap simple-bot's SEARCH prompt for an "anti-pedantic" variant that only
+// flags a correction when the post's main claim / argument is wrong, never a
+// minor side error — the bet that pedantic nitpicks hurt the helpful/FP rate.
+// Composes with SIMPLE_BOT_PROMPTS_TEST (the terse base has its own variant).
+// Live 50/50 on simple-bot. Prereq-gated to simple-bot, so no defaultVariant.
+const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
+  name: "simple_bot_anti_pedantic",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 50 },
   ],
 };
 
@@ -340,6 +356,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
   SIMPLE_BOT_PROMPTS_TEST,
+  SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   NOTE_PREFILTER_TEST,

@@ -19,8 +19,6 @@ export interface PipelineResult {
     status: string;
   };
   checkResult?: string;
-  /** Non-fatal warnings (e.g. media analysis failed but pipeline continued) */
-  warnings?: string[];
 }
 
 export type PipelineOutcome =
