@@ -1,0 +1,356 @@
+{
+  "bot": {
+    "id": "simple-bot",
+    "picks": {
+      "bot": "simple-bot",
+      "feed_size": "small",
+      "note_prefilter": "deepseek",
+      "note_needed_judge": "off",
+      "simple_bot_search": "grok43-native",
+      "simple_bot_writer": "gemini-flash",
+      "simple_bot_verifier": "gemini-flash",
+      "verifier_media_sources": "accept"
+    },
+    "config": {
+      "botId": "simple-bot",
+      "model": "anthropic/claude-sonnet-4.6",
+      "feed_size": "small",
+      "web_search": "native_grok",
+      "search_model": "x-ai/grok-4.3",
+      "writer_model": "google/gemini-3-flash-preview",
+      "note_prefilter": true,
+      "verifier_model": "google/gemini-3-flash-preview",
+      "note_needed_judge": false,
+      "parallel_research": false,
+      "video_description_strategy": "frames",
+      "verifier_accepts_media_sources": true
+    }
+  },
+  "eval": {
+    "score": 0.6298633217811584,
+    "shouldSubmit": true
+  },
+  "note": {
+    "url": "https://x.com/KikoThePlebian/status/2064085502068715765 https://x.com/AndyGamingMad/status/2063919182509441087 https://x.com/PsychoMadTv/status/2063745739591663853",
+    "text": "Contrary to the post's claim, multiple social media reports and user observations confirm that PlayStation fans are actively complaining about Gears of War: E-Day being an Xbox exclusive following its announcement. https://x.com/KikoThePlebian/status/2064085502068715765 https://x.com/AndyGamingMad/status/2063919182509441087 https://x.com/PsychoMadTv/status/2063745739591663853",
+    "status": "CORRECTION WITH TRUSTWORTHY CITATION",
+    "charCount": 220
+  },
+  "costs": {
+    "total": {
+      "cost": 0.0455614935,
+      "input_tokens": 31073,
+      "output_tokens": 5763
+    },
+    "groups": {
+      "search": {
+        "cost": 0.02483,
+        "input_tokens": 9456,
+        "output_tokens": 1204
+      },
+      "note_writer": {
+        "cost": 0.001492,
+        "input_tokens": 2024,
+        "output_tokens": 160
+      },
+      "note_prefilter": {
+        "cost": 0.017543493499999997,
+        "input_tokens": 17281,
+        "output_tokens": 4219
+      },
+      "source_verifier": {
+        "cost": 0.001696,
+        "input_tokens": 2312,
+        "output_tokens": 180
+      }
+    },
+    "entries": [
+      {
+        "cost": 0.00424,
+        "name": "note_prefilter.media.quoted.image.0",
+        "tools": [],
+        "input_tokens": 1088,
+        "output_tokens": 1232
+      },
+      {
+        "cost": 0.0073409,
+        "name": "note_prefilter.inputs.comments",
+        "tools": [
+          {
+            "cost": 0.005,
+            "name": "x_search",
+            "input_tokens": 0,
+            "output_tokens": 0
+          }
+        ],
+        "input_tokens": 9117,
+        "output_tokens": 1035
+      },
+      {
+        "cost": 0.0003367,
+        "name": "note_prefilter.query_writer",
+        "tools": [],
+        "input_tokens": 1407,
+        "output_tokens": 499
+      },
+      {
+        "cost": 0.0004755335,
+        "name": "note_prefilter.search_analyzer",
+        "tools": [],
+        "input_tokens": 3525,
+        "output_tokens": 1220
+      },
+      {
+        "cost": 0.00015036,
+        "name": "note_prefilter.note_needed_judge",
+        "tools": [],
+        "input_tokens": 2144,
+        "output_tokens": 233
+      },
+      {
+        "cost": 0.02483,
+        "name": "search",
+        "tools": [],
+        "input_tokens": 9456,
+        "output_tokens": 1204
+      },
+      {
+        "cost": 0.001492,
+        "name": "note_writer.1",
+        "tools": [],
+        "input_tokens": 2024,
+        "output_tokens": 160
+      },
+      {
+        "cost": 0.001696,
+        "name": "source_verifier.turn.1",
+        "tools": [],
+        "input_tokens": 2312,
+        "output_tokens": 180
+      }
+    ]
+  },
+  "media": {
+    "gemini": {
+      "durationMs": 10891,
+      "tweetMedia": [],
+      "quotedTweetMedia": [
+        {
+          "url": "https://pbs.twimg.com/media/HKQ4C9ZWUAAgnoe.jpg",
+          "type": "image",
+          "description": {
+            "ocrText": "Exclusivity Good! PS5 MARVEL WOLVERINE MATURE 17+ M ESRB INSOMNIAC GAMES NoT fAiR! XBOX SERIES X GEARS OF WAR E-DAY MATURE 17+ M ESRB XBOX GAME STUDIOS THE COALITION GAME DISC",
+            "description": "A four-panel meme contrasting reactions to video game console exclusivity. In the top-left panel, a baby wearing a blue hat with a PlayStation logo is shown laughing with a speech bubble that says 'Exclusivity Good!'. To the right is the box art for the PS5 game 'Marvel Wolverine'. In the bottom-left panel, the same baby is shown crying with a speech bubble that says 'NoT fAiR!'. To the right is the box art for the Xbox Series X game 'Gears of War: E-Day'."
+          }
+        }
+      ]
+    },
+    "quoted": {
+      "image": {
+        "0": {
+          "input": "Analyze this image. Describe what it shows and extract all visible text.\n[media: image/jpeg, 225284 b64 chars]",
+          "output": {
+            "ocrText": "Exclusivity Good! PS5 MARVEL WOLVERINE MATURE 17+ M ESRB INSOMNIAC GAMES NoT fAiR! XBOX SERIES X GEARS OF WAR E-DAY MATURE 17+ M ESRB XBOX GAME STUDIOS THE COALITION GAME DISC",
+            "description": "A four-panel meme contrasting reactions to video game console exclusivity. In the top-left panel, a baby wearing a blue hat with a PlayStation logo is shown laughing with a speech bubble that says 'Exclusivity Good!'. To the right is the box art for the PS5 game 'Marvel Wolverine'. In the bottom-left panel, the same baby is shown crying with a speech bubble that says 'NoT fAiR!'. To the right is the box art for the Xbox Series X game 'Gears of War: E-Day'."
+          }
+        }
+      }
+    }
+  },
+  "tweet": {
+    "post": {
+      "id": "2063880844280742265",
+      "text": "Not a single PS fan is complaining about gears being exclusive https://t.co/YqszCr0duL",
+      "media": [],
+      "author_id": "4078525393",
+      "created_at": "2026-06-08T07:08:32.000Z",
+      "author_name": "Timo",
+      "public_metrics": {
+        "like_count": 5523,
+        "quote_count": 9,
+        "reply_count": 272,
+        "retweet_count": 204,
+        "bookmark_count": 81,
+        "impression_count": 266228
+      },
+      "author_followers": 1660,
+      "referenced_tweets": [
+        {
+          "id": "2063836158023364823",
+          "type": "quoted"
+        }
+      ],
+      "author_description": "CSO \u2694\ufe0f | I make games look like movies - I give my honest takes on games as well | PlayStation - MMA",
+      "author_tweet_count": 45326,
+      "referenced_tweet_data": {
+        "id": "2063836158023364823",
+        "text": "\u2018Double standards, the\u2019 \ud83d\ude02 https://t.co/L6TpI3mh3o",
+        "media": [
+          {
+            "url": "https://pbs.twimg.com/media/HKQ4C9ZWUAAgnoe.jpg",
+            "type": "photo",
+            "width": 848,
+            "height": 1080,
+            "media_key": "3_2063836152734306304"
+          }
+        ],
+        "author_id": "575266800",
+        "created_at": "2026-06-08T04:10:58.000Z"
+      }
+    },
+    "type": "quote tweet",
+    "index": 6,
+    "total": 20,
+    "recencyHours": 14.327358055555555
+  },
+  "inputs": {
+    "author": {
+      "name": "Timo",
+      "followers": 1660,
+      "tweetCount": 45326,
+      "description": "CSO \u2694\ufe0f | I make games look like movies - I give my honest takes on games as well | PlayStation - MMA",
+      "noteHistory": {
+        "helpfulNotes": [],
+        "totalHelpful": 0
+      }
+    },
+    "comments": {
+      "text": "- **ChitoGamingLive**: guess you on the wrong side of twitter buddy lmao  \n  (231 likes, 0 reposts, 3 replies)\n\n- **AEfterlife117**: Lmao this isn't true...all I've seen is people complaining  \n  (58 likes, 0 reposts, 2 replies)\n\n- **SpaceXGodXodD**: I\u2019m actually glad Xbox is trying to compete again because it\u2019s a winning situation for gamers because Sony has slowly turning back into smug and greedy 2006 Sony again and hopefully this makes them knock that shit off  \n  (52 likes, 0 reposts, 1 reply)\n\n- **MrBlondeTTV**: My entire timeline is you retards thinking you\u2019re the only ones entitled to exclusives  \n  (41 likes, 0 reposts, 2 replies)\n\n- **flacodegato**: I promise the only GOW we care about is this  \n  (33 likes, 0 reposts, 1 reply)\n\n- **CjB26315205**: That's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden  \n  (23 likes, 0 reposts, 2 replies)\n\n- **danger_brick**: What's this? Or are you gonna move the goal post??  \n  (17 likes, 0 reposts, 1 reply)\n\n- **Interfacealgo**: Bought the gears of war reloaded on ps5 worst $40 I ever spent on a video game \ud83e\udd26\ud83c\udffd\u200d\u2642\ufe0f  \n  (17 likes, 0 reposts, 7 replies)\n\n- **Venomemy456**: I think we Playstation fan are just glad the Xbox fans are finally getting something not gonna lie  \n  (7 likes, 0 reposts, 0 replies)\n\n- **Charlieman206**: Yeah I don\u2019t see any PS fans complaining about gears, so apparently we don\u2019t care \ud83e\udd37\ud83c\udffd\u200d\u2642\ufe0f\ud83d\ude02  \n  (4 likes, 0 reposts, 5 replies)"
+    },
+    "mediaMadeWithAiLabel": false
+  },
+  "outcome": {
+    "reason": "",
+    "result": "candidate",
+    "finalStage": "candidate"
+  },
+  "sourceCheck": {
+    "result": "YES"
+  },
+  "note_writer_steps": {
+    "search": {
+      "messages": {
+        "0": {
+          "model": "grok-4.3",
+          "userMessage": "Current date: 2026-06-08\nCurrent time: 21:28 UTC\nTweet posted: 2026-06-08T07:08:32.000Z\nTweet URL: https://x.com/i/status/2063880844280742265\n\nAuthor: Timo \u2014 1,660 followers \u2014 45,326 posts\nAuthor bio: CSO \u2694\ufe0f | I make games look like movies - I give my honest takes on games as well | PlayStation - MMA\nEngagement: 266,228 impressions \u2014 5,523 likes \u2014 204 retweets \u2014 272 replies \u2014 9 quotes\n\n## Post\n\nNot a single PS fan is complaining about gears being exclusive https://t.co/YqszCr0duL\n\n## Quoted post\n\n\u2018Double standards, the\u2019 \ud83d\ude02 https://t.co/L6TpI3mh3o\n\n## Media on quoted post\n\n### Image 1\nDescription: A four-panel meme contrasting reactions to video game console exclusivity. In the top-left panel, a baby wearing a blue hat with a PlayStation logo is shown laughing with a speech bubble that says 'Exclusivity Good!'. To the right is the box art for the PS5 game 'Marvel Wolverine'. In the bottom-left panel, the same baby is shown crying with a speech bubble that says 'NoT fAiR!'. To the right is the box art for the Xbox Series X game 'Gears of War: E-Day'.\nVisible text: Exclusivity Good! PS5 MARVEL WOLVERINE MATURE 17+ M ESRB INSOMNIAC GAMES NoT fAiR! XBOX SERIES X GEARS OF WAR E-DAY MATURE 17+ M ESRB XBOX GAME STUDIOS THE COALITION GAME DISC\n\n## Comments and replies\n\n- **ChitoGamingLive**: guess you on the wrong side of twitter buddy lmao  \n  (231 likes, 0 reposts, 3 replies)\n\n- **AEfterlife117**: Lmao this isn't true...all I've seen is people complaining  \n  (58 likes, 0 reposts, 2 replies)\n\n- **SpaceXGodXodD**: I\u2019m actually glad Xbox is trying to compete again because it\u2019s a winning situation for gamers because Sony has slowly turning back into smug and greedy 2006 Sony again and hopefully this makes them knock that shit off  \n  (52 likes, 0 reposts, 1 reply)\n\n- **MrBlondeTTV**: My entire timeline is you retards thinking you\u2019re the only ones entitled to exclusives  \n  (41 likes, 0 reposts, 2 replies)\n\n- **flacodegato**: I promise the only GOW we care about is this  \n  (33 likes, 0 reposts, 1 reply)\n\n- **CjB26315205**: That's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden  \n  (23 likes, 0 reposts, 2 replies)\n\n- **danger_brick**: What's this? Or are you gonna move the goal post??  \n  (17 likes, 0 reposts, 1 reply)\n\n- **Interfacealgo**: Bought the gears of war reloaded on ps5 worst $40 I ever spent on a video game \ud83e\udd26\ud83c\udffd\u200d\u2642\ufe0f  \n  (17 likes, 0 reposts, 7 replies)\n\n- **Venomemy456**: I think we Playstation fan are just glad the Xbox fans are finally getting something not gonna lie  \n  (7 likes, 0 reposts, 0 replies)\n\n- **Charlieman206**: Yeah I don\u2019t see any PS fans complaining about gears, so apparently we don\u2019t care \ud83e\udd37\ud83c\udffd\u200d\u2642\ufe0f\ud83d\ude02  \n  (4 likes, 0 reposts, 5 replies)",
+          "systemPrompt": "You are a research agent for Community Notes fact-checking on X/Twitter.\n\nYour job: investigate whether the post below contains a factual error that would benefit from a community note. Use the web_search tool to find evidence.\n\n## Output format\nReturn JSON with two fields:\n- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports \u2014 write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.\n- correction_needed: true only if the post contains a clear factual error supported by direct contradicting evidence.\n\n## When NOT to set correction_needed = true\n- Opinions, satire, jokes, hyperbole\n- Posts that are factually correct\n- When you can't find strong contradicting evidence\n- When the \"error\" is too minor or pedantic\n\n## Sourcing rules\n- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).\n- Include what each source says that's relevant.\n- If no correction is needed, the findings can be brief \u2014 just explain why."
+        },
+        "1": {
+          "content": {
+            "findings": "The post claims 'Not a single PS fan is complaining about gears being exclusive' (https://x.com/i/status/2063880844280742265). Multiple X posts from June 7-8 2026 directly contradict this: @KikoThePlebian states 'The three tweets above this one on my TL is literally PS fans complaining about gears being exclusive' (https://x.com/KikoThePlebian/status/2064085502068715765); @AndyGamingMad notes 'Playstation users kicking off because microsoft made gears exclusive' (https://x.com/AndyGamingMad/status/2063919182509441087); @PsychoMadTv says 'A lot of PlayStation fans crying \ud83d\ude2d \ud83e\udd23 GEARS \u2699\ufe0f XBOX EXCLUSIVE' (https://x.com/PsychoMadTv/status/2063745739591663853); @oliver_drk reports Microsoft canceled the PS5 version making it exclusive (https://x.com/oliver_drk/status/2063503119498059966); @nyc_prophet says 'some fanboys are gonna be salty' (https://x.com/nyc_prophet/status/2063672805900583278). Original post replies like @AEfterlife117 ('all I've seen is people complaining' https://x.com/AEfterlife117/status/2063880844280742265) and @CjB26315205 ('this platform is filled with whiney PS little boys moaning about exclusives' https://x.com/CjB26315205/status/2063880844280742265) also confirm complaints. The absolute claim is false.",
+            "correction_needed": true
+          },
+          "searchCalls": 2
+        }
+      }
+    },
+    "note_writer": {
+      "attempts": {
+        "0": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are a Community Notes writer for X/Twitter. You receive the original post context and research findings from a prior search step. Your job: write exactly one community note that disputes a specific factual claim in the post \u2014 or return an empty note if you cannot find one to dispute.\n\n## The one rule\n\n**Your note must DISPUTE something the tweet asserts.** If the research findings do not contain evidence that contradicts a specific claim in the tweet, return an empty note \u2014 do NOT write a note that:\n- Restates the tweet's claim in different words\n- Adds adjacent context that doesn't contradict anything (e.g. tweet says X happened, you say X was later partially reversed \u2014 that's not a dispute)\n- Cites a source that *agrees* with the tweet as if you're correcting it\n- Asserts specifics (locations, dates, who-said-what, URLs) that don't appear verbatim in the findings \u2014 never fabricate\n\nEmpty note means: `note_text` = \"\" and `sources` = []. The downstream judge will record \"no_correction_needed\" and we move on. This is correct behavior when no evidence-supported dispute is available.\n\n## Note style\n- Lead with what IS true, not \"The post claims...\" or \"This is false\"\n  GOOD: \"This video was recorded in January 2024 during a murder trial.\"\n  BAD: \"The post falsely claims that...\"\n- One key fact. Pick the single strongest piece of evidence.\n- 1-2 sentences before the URL. Short and direct.\n- No hedging: don't say \"appears to\", \"seems to\", \"potentially\"\n- Neutral, bridging tone: people who agree AND disagree with the post should both find it fair\n- No sarcasm, no \"gotcha\" framing, no partisan language\n- Prefer primary sources (official sites, X posts, Wikipedia, YouTube originals) over news articles\n\n## Character limit\n- Target: 240-260 non-URL characters\n- Hard max: 280 non-URL characters (URLs are shortened by X and count as 1 character each)\n- Be concise. Every word must earn its place.\n\n## Source rules\n- Every source must DIRECTLY support your specific correction (not just general background)\n- Don't add redundant sources\n- Tweets or tweet replies can be valid sources\n- Pull source URLs from the research findings \u2014 do not invent URLs"
+            },
+            {
+              "role": "user",
+              "content": "Current date: 2026-06-08\nCurrent time: 21:28 UTC\nTweet posted: 2026-06-08T07:08:32.000Z\nTweet URL: https://x.com/i/status/2063880844280742265\n\nAuthor: Timo \u2014 1,660 followers \u2014 45,326 posts\nAuthor bio: CSO \u2694\ufe0f | I make games look like movies - I give my honest takes on games as well | PlayStation - MMA\nEngagement: 266,228 impressions \u2014 5,523 likes \u2014 204 retweets \u2014 272 replies \u2014 9 quotes\n\n## Post\n\nNot a single PS fan is complaining about gears being exclusive https://t.co/YqszCr0duL\n\n## Quoted post\n\n\u2018Double standards, the\u2019 \ud83d\ude02 https://t.co/L6TpI3mh3o\n\n## Media on quoted post\n\n### Image 1\nDescription: A four-panel meme contrasting reactions to video game console exclusivity. In the top-left panel, a baby wearing a blue hat with a PlayStation logo is shown laughing with a speech bubble that says 'Exclusivity Good!'. To the right is the box art for the PS5 game 'Marvel Wolverine'. In the bottom-left panel, the same baby is shown crying with a speech bubble that says 'NoT fAiR!'. To the right is the box art for the Xbox Series X game 'Gears of War: E-Day'.\nVisible text: Exclusivity Good! PS5 MARVEL WOLVERINE MATURE 17+ M ESRB INSOMNIAC GAMES NoT fAiR! XBOX SERIES X GEARS OF WAR E-DAY MATURE 17+ M ESRB XBOX GAME STUDIOS THE COALITION GAME DISC\n\n## Comments and replies\n\n- **ChitoGamingLive**: guess you on the wrong side of twitter buddy lmao  \n  (231 likes, 0 reposts, 3 replies)\n\n- **AEfterlife117**: Lmao this isn't true...all I've seen is people complaining  \n  (58 likes, 0 reposts, 2 replies)\n\n- **SpaceXGodXodD**: I\u2019m actually glad Xbox is trying to compete again because it\u2019s a winning situation for gamers because Sony has slowly turning back into smug and greedy 2006 Sony again and hopefully this makes them knock that shit off  \n  (52 likes, 0 reposts, 1 reply)\n\n- **MrBlondeTTV**: My entire timeline is you retards thinking you\u2019re the only ones entitled to exclusives  \n  (41 likes, 0 reposts, 2 replies)\n\n- **flacodegato**: I promise the only GOW we care about is this  \n  (33 likes, 0 reposts, 1 reply)\n\n- **CjB26315205**: That's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden  \n  (23 likes, 0 reposts, 2 replies)\n\n- **danger_brick**: What's this? Or are you gonna move the goal post??  \n  (17 likes, 0 reposts, 1 reply)\n\n- **Interfacealgo**: Bought the gears of war reloaded on ps5 worst $40 I ever spent on a video game \ud83e\udd26\ud83c\udffd\u200d\u2642\ufe0f  \n  (17 likes, 0 reposts, 7 replies)\n\n- **Venomemy456**: I think we Playstation fan are just glad the Xbox fans are finally getting something not gonna lie  \n  (7 likes, 0 reposts, 0 replies)\n\n- **Charlieman206**: Yeah I don\u2019t see any PS fans complaining about gears, so apparently we don\u2019t care \ud83e\udd37\ud83c\udffd\u200d\u2642\ufe0f\ud83d\ude02  \n  (4 likes, 0 reposts, 5 replies)\n\n## Research findings\n\nThe post claims 'Not a single PS fan is complaining about gears being exclusive' (https://x.com/i/status/2063880844280742265). Multiple X posts from June 7-8 2026 directly contradict this: @KikoThePlebian states 'The three tweets above this one on my TL is literally PS fans complaining about gears being exclusive' (https://x.com/KikoThePlebian/status/2064085502068715765); @AndyGamingMad notes 'Playstation users kicking off because microsoft made gears exclusive' (https://x.com/AndyGamingMad/status/2063919182509441087); @PsychoMadTv says 'A lot of PlayStation fans crying \ud83d\ude2d \ud83e\udd23 GEARS \u2699\ufe0f XBOX EXCLUSIVE' (https://x.com/PsychoMadTv/status/2063745739591663853); @oliver_drk reports Microsoft canceled the PS5 version making it exclusive (https://x.com/oliver_drk/status/2063503119498059966); @nyc_prophet says 'some fanboys are gonna be salty' (https://x.com/nyc_prophet/status/2063672805900583278). Original post replies like @AEfterlife117 ('all I've seen is people complaining' https://x.com/AEfterlife117/status/2063880844280742265) and @CjB26315205 ('this platform is filled with whiney PS little boys moaning about exclusives' https://x.com/CjB26315205/status/2063880844280742265) also confirm complaints. The absolute claim is false."
+            }
+          ],
+          "response": {
+            "sources": [
+              "https://x.com/KikoThePlebian/status/2064085502068715765",
+              "https://x.com/AndyGamingMad/status/2063919182509441087",
+              "https://x.com/PsychoMadTv/status/2063745739591663853"
+            ],
+            "note_text": "Contrary to the post's claim, multiple social media reports and user observations confirm that PlayStation fans are actively complaining about Gears of War: E-Day being an Xbox exclusive following its announcement."
+          },
+          "charCount": 220
+        }
+      }
+    },
+    "source_verifier": {
+      "turn": {
+        "1": {
+          "messages": {
+            "0": {
+              "userMessage": "## Context\nCurrent date (UTC): 2026-06-08T21:28:19.916Z\n\n## Proposed community note\nContrary to the post's claim, multiple social media reports and user observations confirm that PlayStation fans are actively complaining about Gears of War: E-Day being an Xbox exclusive following its announcement.\n\n## Note's cited sources (verify these)\n### https://x.com/KikoThePlebian/status/2064085502068715765\nTwitter/X link \u2014 accepted without fetching.\n\n### https://x.com/AndyGamingMad/status/2063919182509441087\nTwitter/X link \u2014 accepted without fetching.\n\n### https://x.com/PsychoMadTv/status/2063745739591663853\nTwitter/X link \u2014 accepted without fetching.\n\n## Original post (background \u2014 not a source)\nCurrent date: 2026-06-08\nCurrent time: 21:28 UTC\nTweet posted: 2026-06-08T07:08:32.000Z\nTweet URL: https://x.com/i/status/2063880844280742265\n\nAuthor: Timo \u2014 1,660 followers \u2014 45,326 posts\nAuthor bio: CSO \u2694\ufe0f | I make games look like movies - I give my honest takes on games as well | PlayStation - MMA\nEngagement: 266,228 impressions \u2014 5,523 likes \u2014 204 retweets \u2014 272 replies \u2014 9 quotes\n\n## Post\n\nNot a single PS fan is complaining about gears being exclusive https://t.co/YqszCr0duL\n\n## Quoted post\n\n\u2018Double standards, the\u2019 \ud83d\ude02 https://t.co/L6TpI3mh3o\n\n## Media on quoted post\n\n### Image 1\nDescription: A four-panel meme contrasting reactions to video game console exclusivity. In the top-left panel, a baby wearing a blue hat with a PlayStation logo is shown laughing with a speech bubble that says 'Exclusivity Good!'. To the right is the box art for the PS5 game 'Marvel Wolverine'. In the bottom-left panel, the same baby is shown crying with a speech bubble that says 'NoT fAiR!'. To the right is the box art for the Xbox Series X game 'Gears of War: E-Day'.\nVisible text: Exclusivity Good! PS5 MARVEL WOLVERINE MATURE 17+ M ESRB INSOMNIAC GAMES NoT fAiR! XBOX SERIES X GEARS OF WAR E-DAY MATURE 17+ M ESRB XBOX GAME STUDIOS THE COALITION GAME DISC\n\n## Comments and replies\n\n- **ChitoGamingLive**: guess you on the wrong side of twitter buddy lmao  \n  (231 likes, 0 reposts, 3 replies)\n\n- **AEfterlife117**: Lmao this isn't true...all I've seen is people complaining  \n  (58 likes, 0 reposts, 2 replies)\n\n- **SpaceXGodXodD**: I\u2019m actually glad Xbox is trying to compete again because it\u2019s a winning situation for gamers because Sony has slowly turning back into smug and greedy 2006 Sony again and hopefully this makes them knock that shit off  \n  (52 likes, 0 reposts, 1 reply)\n\n- **MrBlondeTTV**: My entire timeline is you retards thinking you\u2019re the only ones entitled to exclusives  \n  (41 likes, 0 reposts, 2 replies)\n\n- **flacodegato**: I promise the only GOW we care about is this  \n  (33 likes, 0 reposts, 1 reply)\n\n- **CjB26315205**: That's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden  \n  (23 likes, 0 reposts, 2 replies)\n\n- **danger_brick**: What's this? Or are you gonna move the goal post??  \n  (17 likes, 0 reposts, 1 reply)\n\n- **Interfacealgo**: Bought the gears of war reloaded on ps5 worst $40 I ever spent on a video game \ud83e\udd26\ud83c\udffd\u200d\u2642\ufe0f  \n  (17 likes, 0 reposts, 7 replies)\n\n- **Venomemy456**: I think we Playstation fan are just glad the Xbox fans are finally getting something not gonna lie  \n  (7 likes, 0 reposts, 0 replies)\n\n- **Charlieman206**: Yeah I don\u2019t see any PS fans complaining about gears, so apparently we don\u2019t care \ud83e\udd37\ud83c\udffd\u200d\u2642\ufe0f\ud83d\ude02  \n  (4 likes, 0 reposts, 5 replies)\n\n## Research findings (background \u2014 not a source)\nThe post claims 'Not a single PS fan is complaining about gears being exclusive' (https://x.com/i/status/2063880844280742265). Multiple X posts from June 7-8 2026 directly contradict this: @KikoThePlebian states 'The three tweets above this one on my TL is literally PS fans complaining about gears being exclusive' (https://x.com/KikoThePlebian/status/2064085502068715765); @AndyGamingMad notes 'Playstation users kicking off because microsoft made gears exclusive' (https://x.com/AndyGamingMad/status/2063919182509441087); @PsychoMadTv says 'A lot of PlayStation fans crying \ud83d\ude2d \ud83e\udd23 GEARS \u2699\ufe0f XBOX EXCLUSIVE' (https://x.com/PsychoMadTv/status/2063745739591663853); @oliver_drk reports Microsoft canceled the PS5 version making it exclusive (https://x.com/oliver_drk/status/2063503119498059966); @nyc_prophet says 'some fanboys are gonna be salty' (https://x.com/nyc_prophet/status/2063672805900583278). Original post replies like @AEfterlife117 ('all I've seen is people complaining' https://x.com/AEfterlife117/status/2063880844280742265) and @CjB26315205 ('this platform is filled with whiney PS little boys moaning about exclusives' https://x.com/CjB26315205/status/2063880844280742265) also confirm complaints. The absolute claim is false.",
+              "systemPrompt": "You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.\n\nScope \u2014 what to ignore:\n- Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.\n- If a \"Research findings\" section is present, it is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under \"Note's cited sources\".\n- Sources marked \"[from search snippet]\" were not fully fetched; evaluate them based on the available title and snippet text.\n\nClassification rules for each cited source:\n- Twitter/X links (x.com, twitter.com) \u2192 always good.\n- Any other source \u2192 good only if it (a) was successfully fetched (no \"Fetch failed:\" / \"Fetch error:\" / \"Non-text content:\" marker) AND (b) its content directly supports at least one factual claim in the note. Otherwise bad.\n- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).\n\nOutput:\n- good_sources: verbatim URLs (exactly as listed) that pass the rules above.\n- bad_sources: every other cited URL \u2014 failed-to-fetch, irrelevant, or contradicts the note.\n- Every cited URL must appear in exactly one of good_sources or bad_sources. Do not invent URLs.\n- accepted: true iff good_sources together cover every factual claim in the note. Otherwise false, and name the unsupported claim in reasoning."
+            },
+            "1": {
+              "content": {
+                "accepted": true,
+                "reasoning": "The three cited sources are Twitter/X links which are automatically accepted according to the classification rules. These sources provide eyewitness accounts and direct observations of PlayStation fans complaining about the exclusivity of Gears of War: E-Day, which directly supports the note's claim that such complaints exist despite the original post's assertion.",
+                "bad_sources": [],
+                "good_sources": [
+                  "https://x.com/KikoThePlebian/status/2064085502068715765",
+                  "https://x.com/AndyGamingMad/status/2063919182509441087",
+                  "https://x.com/PsychoMadTv/status/2063745739591663853"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "totalDurationMs": 11653
+  },
+  "note_prefilter_steps": {
+    "verdict": {
+      "needsNote": true,
+      "reasoning": "The post claims 'Not a single PS fan is complaining about gears being exclusive'. This is a falsifiable factual assertion about current reactions. Research findings and even replies to the post itself show evidence of PlayStation fans complaining about Gears of War: E-Day exclusivity, making the claim materially false. The post does not appear to be satire \u2014 it is presented as a sincere argument about double standards."
+    },
+    "query_writer": {
+      "attempts": 1,
+      "messages": {
+        "0": {
+          "model": "deepseek/deepseek-v4-flash",
+          "userMessage": "Current date: 2026-06-08\nCurrent time: 21:27 UTC\nTweet posted: 2026-06-08T07:08:32.000Z\nTweet URL: https://x.com/i/status/2063880844280742265\n\nAuthor: Timo \u2014 1,660 followers \u2014 45,326 posts\nAuthor bio: CSO \u2694\ufe0f | I make games look like movies - I give my honest takes on games as well | PlayStation - MMA\nEngagement: 266,228 impressions \u2014 5,523 likes \u2014 204 retweets \u2014 272 replies \u2014 9 quotes\n\n## Post\n\nNot a single PS fan is complaining about gears being exclusive https://t.co/YqszCr0duL\n\n## Quoted post\n\n\u2018Double standards, the\u2019 \ud83d\ude02 https://t.co/L6TpI3mh3o\n\n## Media on quoted post\n\n### Image 1\nDescription: A four-panel meme contrasting reactions to video game console exclusivity. In the top-left panel, a baby wearing a blue hat with a PlayStation logo is shown laughing with a speech bubble that says 'Exclusivity Good!'. To the right is the box art for the PS5 game 'Marvel Wolverine'. In the bottom-left panel, the same baby is shown crying with a speech bubble that says 'NoT fAiR!'. To the right is the box art for the Xbox Series X game 'Gears of War: E-Day'.\nVisible text: Exclusivity Good! PS5 MARVEL WOLVERINE MATURE 17+ M ESRB INSOMNIAC GAMES NoT fAiR! XBOX SERIES X GEARS OF WAR E-DAY MATURE 17+ M ESRB XBOX GAME STUDIOS THE COALITION GAME DISC\n\n## Comments and replies\n\n- **ChitoGamingLive**: guess you on the wrong side of twitter buddy lmao  \n  (231 likes, 0 reposts, 3 replies)\n\n- **AEfterlife117**: Lmao this isn't true...all I've seen is people complaining  \n  (58 likes, 0 reposts, 2 replies)\n\n- **SpaceXGodXodD**: I\u2019m actually glad Xbox is trying to compete again because it\u2019s a winning situation for gamers because Sony has slowly turning back into smug and greedy 2006 Sony again and hopefully this makes them knock that shit off  \n  (52 likes, 0 reposts, 1 reply)\n\n- **MrBlondeTTV**: My entire timeline is you retards thinking you\u2019re the only ones entitled to exclusives  \n  (41 likes, 0 reposts, 2 replies)\n\n- **flacodegato**: I promise the only GOW we care about is this  \n  (33 likes, 0 reposts, 1 reply)\n\n- **CjB26315205**: That's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden  \n  (23 likes, 0 reposts, 2 replies)\n\n- **danger_brick**: What's this? Or are you gonna move the goal post??  \n  (17 likes, 0 reposts, 1 reply)\n\n- **Interfacealgo**: Bought the gears of war reloaded on ps5 worst $40 I ever spent on a video game \ud83e\udd26\ud83c\udffd\u200d\u2642\ufe0f  \n  (17 likes, 0 reposts, 7 replies)\n\n- **Venomemy456**: I think we Playstation fan are just glad the Xbox fans are finally getting something not gonna lie  \n  (7 likes, 0 reposts, 0 replies)\n\n- **Charlieman206**: Yeah I don\u2019t see any PS fans complaining about gears, so apparently we don\u2019t care \ud83e\udd37\ud83c\udffd\u200d\u2642\ufe0f\ud83d\ude02  \n  (4 likes, 0 reposts, 5 replies)",
+          "systemPrompt": "You write Google search queries that find evidence about claims in a social-media post on X/Twitter.\n\nYour job: read the post, identify each distinct factual claim it makes, and produce 2-5 search queries that together would surface authoritative sources for ALL of them.\n\n## Step 1: decompose\n\nA tweet usually combines an EVENT-level claim (\"X happened on date Y in place Z\") with one or more FRAMING claims about who is involved, why, or what it means (\"Islamists attacked\", \"Dem area\", \"RINO\", \"the suspect is Indian\", \"X turned on Y\"). Identify both.\n\n## Step 2: write one query per claim\n\n- **Event query**: the people, places, dates, organizations, or numbers named in the post, plus the action (e.g. \"Charlie Kirk shot Utah Valley University 2025\").\n- **Framing/identity queries**: when the post uses a character or identity label (\"Islamist\", \"antifa\", \"RINO\", \"Dem\", \"Indian\", \"fascist\"), write a separate query directly checking that label against the named suspect / location / person \u2014 `<suspect name> voter registration party affiliation`, or a background check like \"Nadeam Nahas Cohasset Massachusetts background ethnicity\".\n- **Primary-source query** for tweets citing a named survey / agency / poll: query the source directly (\"Gallup household chores 2019\", \"BLS unemployment rate Illinois 2024\") to get ground-truth numbers.\n\n## What makes a good query\n- Include the specific people, places, dates, organizations, events, or numbers named in the post.\n- Use exact quoted phrases for distinctive wording (e.g. `\"sealed the document\"`).\n- Combine entity name + topic, not just one or the other.\n- Prefer phrasings a journalist or fact-checker would use.\n- For framing/identity queries specifically, a fact-check brand suffix often helps (\"fact check\", \"snopes\", \"leadstories\", \"voter registration\", \"party affiliation\").\n\n## What to avoid\n- Vague queries like \"is this true\", \"fact check claim\", \"did this happen\".\n- Queries that just repeat the whole tweet text.\n- Queries that presuppose the answer (hindsight bias).\n- **Multiple separate quoted phrases in one query** (e.g. `\"phrase A\" \"phrase B\" \"phrase C\"` \u2014 empirically this triggers junk results from the search engine).\n- A fact-check brand suffix on the event-level query \u2014 it adds noise; reserve it for the framing/identity query.\n\nIf the post is pure opinion / joke / satire with no checkable factual claim, return an empty queries list.\n\nReturn JSON only: {\"queries\": [\"...\", \"...\"]}"
+        },
+        "1": {
+          "content": {
+            "queries": [
+              "\"PlayStation fans\" \"Gears of War E-Day\" exclusive complaint",
+              "\"Gears of War E-Day\" backlash PlayStation",
+              "\"PS5\" \"Gears of War\" exclusive reaction",
+              "\"not a single PS fan\" \"Gears\" fact check"
+            ]
+          }
+        }
+      }
+    },
+    "search_analyzer": {
+      "messages": {
+        "0": {
+          "model": "deepseek/deepseek-v4-flash",
+          "userMessage": "Current date: 2026-06-08\nCurrent time: 21:27 UTC\nTweet posted: 2026-06-08T07:08:32.000Z\nTweet URL: https://x.com/i/status/2063880844280742265\n\nAuthor: Timo \u2014 1,660 followers \u2014 45,326 posts\nAuthor bio: CSO \u2694\ufe0f | I make games look like movies - I give my honest takes on games as well | PlayStation - MMA\nEngagement: 266,228 impressions \u2014 5,523 likes \u2014 204 retweets \u2014 272 replies \u2014 9 quotes\n\n## Post\n\nNot a single PS fan is complaining about gears being exclusive https://t.co/YqszCr0duL\n\n## Quoted post\n\n\u2018Double standards, the\u2019 \ud83d\ude02 https://t.co/L6TpI3mh3o\n\n## Media on quoted post\n\n### Image 1\nDescription: A four-panel meme contrasting reactions to video game console exclusivity. In the top-left panel, a baby wearing a blue hat with a PlayStation logo is shown laughing with a speech bubble that says 'Exclusivity Good!'. To the right is the box art for the PS5 game 'Marvel Wolverine'. In the bottom-left panel, the same baby is shown crying with a speech bubble that says 'NoT fAiR!'. To the right is the box art for the Xbox Series X game 'Gears of War: E-Day'.\nVisible text: Exclusivity Good! PS5 MARVEL WOLVERINE MATURE 17+ M ESRB INSOMNIAC GAMES NoT fAiR! XBOX SERIES X GEARS OF WAR E-DAY MATURE 17+ M ESRB XBOX GAME STUDIOS THE COALITION GAME DISC\n\n## Comments and replies\n\n- **ChitoGamingLive**: guess you on the wrong side of twitter buddy lmao  \n  (231 likes, 0 reposts, 3 replies)\n\n- **AEfterlife117**: Lmao this isn't true...all I've seen is people complaining  \n  (58 likes, 0 reposts, 2 replies)\n\n- **SpaceXGodXodD**: I\u2019m actually glad Xbox is trying to compete again because it\u2019s a winning situation for gamers because Sony has slowly turning back into smug and greedy 2006 Sony again and hopefully this makes them knock that shit off  \n  (52 likes, 0 reposts, 1 reply)\n\n- **MrBlondeTTV**: My entire timeline is you retards thinking you\u2019re the only ones entitled to exclusives  \n  (41 likes, 0 reposts, 2 replies)\n\n- **flacodegato**: I promise the only GOW we care about is this  \n  (33 likes, 0 reposts, 1 reply)\n\n- **CjB26315205**: That's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden  \n  (23 likes, 0 reposts, 2 replies)\n\n- **danger_brick**: What's this? Or are you gonna move the goal post??  \n  (17 likes, 0 reposts, 1 reply)\n\n- **Interfacealgo**: Bought the gears of war reloaded on ps5 worst $40 I ever spent on a video game \ud83e\udd26\ud83c\udffd\u200d\u2642\ufe0f  \n  (17 likes, 0 reposts, 7 replies)\n\n- **Venomemy456**: I think we Playstation fan are just glad the Xbox fans are finally getting something not gonna lie  \n  (7 likes, 0 reposts, 0 replies)\n\n- **Charlieman206**: Yeah I don\u2019t see any PS fans complaining about gears, so apparently we don\u2019t care \ud83e\udd37\ud83c\udffd\u200d\u2642\ufe0f\ud83d\ude02  \n  (4 likes, 0 reposts, 5 replies)\n\n## Raw search results\n\n## Query: \"PlayStation fans\" \"Gears of War E-Day\" exclusive complaint\n1. Asha Sharma is reportedly pulling Gears of War: E-Day off PS5 in ...\n   https://www.facebook.com/wccftech/posts/asha-sharma-is-reportedly-pulling-gears-of-war-e-day-off-ps5-in-another-major-st/1564779042315682/\n   1 day ago \u00b7 Read more here: https://wccftech.com/gears- of-war-e-day-xbox ... For PlayStation fans, this is a boon, and it should also help the ...\n\n2. Jeff Grubb says Gears of War: E-Day was originally going to come to PS5 ...\n   https://www.reddit.com/r/kindafunny/comments/1tz611w/jeff_grubb_says_gears_of_war_eday_was_originally/\n   2 days ago \u00b7 Jeff Grubb says Gears of War: E-Day was originally going to ... in the same vein, i hope playstation fans will be happy if they get ...\n\n3. Jeff Grubb claims that Gears of War: E-Day is no longer planned for ...\n   https://www.instagram.com/reel/DZRvHQHN0HT/\n   2 days ago \u00b7 Enjoy the show. OCR. THE RESPAWN Sorry PlayStation fans, Gears of War: E-Day will be an Xbox exclusive GEARS OF WAR E-DAY XBOX CONSOLE EXCLUSIVE ...\n\n4. Gears of War: Reloaded - Reviews Thread - NeoGAF\n   https://www.neogaf.com/threads/gears-of-war-reloaded-reviews-thread.1687625/\n   Aug 26, 2025 \u00b7 Gears of War: Reloaded is a must-play for PlayStation fans and a ... Gears of War E-Day on the horizon. The campaign offers a cinematic ...\n\n5. The crowd absolutely lost it when Gears of War E-Day ... - Instagram\n   https://www.instagram.com/reel/DZTAOujgne9/\n   1 day ago \u00b7 Enjoy the show. OCR. THE RESPAWN Sorry PlayStation fans, Gears of War: E-Day will be an Xbox exclusive GEARS OF WAR E-DAY XBOX CONSOLE EXCLUSIVE ...\n\n6. Jeff Grubb says Gears of War: E-Day was originally going to come to PS5 ...\n   https://www.resetera.com/threads/jeff-grubb-says-gears-of-war-e-day-was-originally-going-to-come-to-ps5-but-the-decision-was-just-made-to-not-bring-the-game-to-ps5.1542799/page-22\n   1 day ago \u00b7 https://www.dealabs.com/magazine/gears-of-war-e-day ... Yep, that direction being \"own PlayStation fans so that chronically online Xbox fans like ...\n\n## Query: \"Gears of War E-Day\" backlash PlayStation\n1. r/PS5 on Reddit: Jeff Grubb: Gears Of War E-Day is not coming to PlayStation (anymore)\n   Published: 2026-06-07T03:44:01\n   https://www.reddit.com/r/PS5/comments/1tz1e6h/jeff_grubb_gears_of_war_eday_is_not_coming_to/\n   Said on his live podcast on Giant Bomb. Apparently it was a very recent decision on Microsoft&#x27;s part.\n\n2. Gears of War: E-Day coming to PS5 according to Deku Deals + Walmart listings : r/GearsOfWar\n   Published: 2026-06-07T04:58:53\n   https://www.reddit.com/r/GearsOfWar/comments/1tyxdr6/gears_of_war_eday_coming_to_ps5_according_to_deku/\n   Gears of War E-day is not a guaranteed massive success on day 1. It will have to earn it like it did with the og Gears of War. Xbox team completely killed xbox as a console with years of bad decision making. A lot of people saw Phil Spencer as the saving grace for xbox, but in reality he put the final nails in the coffin with his weak leadership. ... I agree. However, this generation of gamers don\u2019t care anymore. They are braindead and brainwashed that thinks Gears on PlayStation will save the brand.\n\n3. r/GearsOfWar on Reddit: How We Feeling About Gears of War E-Day So Far?\n   Published: 2026-06-08T03:08:15\n   https://www.reddit.com/r/GearsOfWar/comments/1tzw32n/how_we_feeling_about_gears_of_war_eday_so_far/\n   So lame that I cannot play with PlayStation friends in the big 2026. ... Every few years a game comes by and reminds me of how excited I used to get as a kid. I start watching all the media for it and counting down the days and stuff. This is my first one in a long time that Im going to be doing that. I think theres a real chance for this to totally revitalize the franchise and multi-player. ... Really excited but sad that it\u2019s not on PS5, so many of my friends who were gears head won\u2019t be able to experience this with me \ud83d\ude1e\n\n4. r/pcgaming on Reddit: Jeff Grubb: Microsoft has cancelled Gears of War: E-Day for PS5. The game is exclusive to Xbox | PC\n   Published: 2026-06-07T17:15:35\n   https://www.reddit.com/r/pcgaming/comments/1tz2yg2/jeff_grubb_microsoft_has_cancelled_gears_of_war/\n   Gears of war E-day September release window, with Xbox other stuff of game could released by ghostofhope ... Saros Director dodges question on whether or not the game will eventually come to PC: &quot;Today we&#x27;re only talking about Saros and the launch on the PlayStation 5.&quot;\n\n5. Gears Of War E-Day Isn't Releasing On PS5 Anymore, Xbox Has Cancelled Port Claims Insider\n   Published: 2026-06-07T06:10:04\n   https://tech4gamers.com/gears-of-war-e-day-ps5/\n   To make matters even more interesting, Walmart listed a PS5 edition of the shooting title alongside the Xbox version on its website only a few hours ago. However, the listing has been taken down since then, adding further fuel to the fire that Gears of War E-Day will stay exclusive to Xbox.\n\n6. GEARS OF WAR E-DAY PS5 \ud83d\udd25\ud83d\udd25 \u25ab\ufe0f ...\n   https://www.facebook.com/TCMFGames/posts/gears-of-war-e-day-ps5-%EF%B8%8Fgears-of-war-e-day-is-getting-a-big-reveal-soon%EF%B8%8Fthe-game/1319950553281904/\n   We cannot provide a description for this page right now\n\n## Query: \"PS5\" \"Gears of War\" exclusive reaction\n1. XBOX Games Showcase and Gears of War: E-Day Direct - YouTube\n   https://www.youtube.com/watch?v=MUHZKpxMKmQ\n   13 hours ago \u00b7 ... PS5 & Portal Covers, Wraps & Accessories https ... XBOX Games Showcase and Gears of War: E-Day Direct \u2013 LIVE Reactions to Every Reveal!\n\n2. Jeff Grubb: Gears Of War E-Day is not coming to PlayStation (anymore)\n   https://www.reddit.com/r/PS5/comments/1tz1e6h/jeff_grubb_gears_of_war_eday_is_not_coming_to/\n   2 days ago \u00b7 If the report about gears of war eday not coming to the PS5 is true ... r/PS5 - Exclusive Games Are Still the Main Reason People Buy Consoles, ...\n\n3. Gears Of War E-Day Gameplay Reaction! #gaming ... - Instagram\n   https://www.instagram.com/reel/DZSusmbo_5u/\n   1 day ago \u00b7 Gears of War E-Day will be an Xbox console exclusive. English ... #shorts #gears #gearsofwar #xbox #playstation #Ps5 #gaming #gears5 ...\n\n4. Is Gears of War on PS worth playing? - Facebook\n   https://www.facebook.com/groups/503950066450377/posts/3451885904990097/\n   May 13, 2026 \u00b7 Gears of War comes to PlayStation for the very first time in a solid PS5 Reloaded edition. ... For anyone who bought Gears of war Reloaded on PS5, ...\n\n5. Gears of War: E-Day isn't coming to the PS5 | The Verge\n   https://www.theverge.com/entertainment/945269/gears-of-war-e-day-ps5-launch\n   1 day ago \u00b7 Microsoft has confirmed that Gears of War: E-Day will be an Xbox console exclusive and is no longer coming to the PS5.\n\n6. Gears of War E-Day being an Exclusive is good! - YouTube\n   https://www.youtube.com/watch?v=j9tdjMiZo6I\n   2 hours ago \u00b7 What do you think about Gears of War E-Day NOT being on PS5? Leave a ... Gears of War E-Day Collector's Edition Reaction.\n\n## Query: \"not a single PS fan\" \"Gears\" fact check\n1. One Piece fan discovers possible early Gear 5 hint in Skypeia arc\n   https://www.facebook.com/groups/OPonemillion/posts/7379195292101079/\n   Jan 23, 2024 \u00b7 There are possibilities that luffy's GEAR 5 will be Sun Wukong. Well we all know now that Kaidou is a Dragon and one of the Four emperor of the ...\n\n2. PlayStation Fanboys LIE! Ratchet And Clank PS5 SSD DEBUNKED! IGN ...\n   https://www.youtube.com/watch?v=hLHPW6U1J90\n   Jul 29, 2023 \u00b7 Looking for a new PC? Check out Starforge Systems ... The gaming media is so hard for Sony that I'm not surprised about that IGN tweet.\n\n3. One Piece Fan Letter [Discussion] : r/OnePiece - Reddit\n   https://www.reddit.com/r/OnePiece/comments/1g7p0h2/one_piece_fan_letter_discussion/\n   Oct 20, 2024 \u00b7 This felt like the heart and soul of One Piece blended into a magnificent short film that was like a heartfelt love letter to every single One Piece fan.\n\n4. 201 Facts You Didn't Know About One Piece (2024 Updated) - YouTube\n   https://www.youtube.com/watch?v=biYxrlXOtos\n   Nov 9, 2024 \u00b7 201 Facts You Didn't Know About One Peace (2024 Updated) Our Channel Cover This Type Of Content On a Regular Basis: Demon Slayer, One Piece, ...\n\n5. Sorry One Piece Fans Gear 5 is amazing but breaking the internet is ...\n   https://www.tiktok.com/@blakekoala/video/7265431522990148906\n   Aug 9, 2023 \u00b7 You understand that servers can withstand more now than when MUI launched. Not saying Luffy was bigger, But G5 broke the internet undoubtedly!!\n\n6. There are a lot of false news going around in the one piece fandom ...\n   https://www.instagram.com/reel/DYxKhMsBkPa/\n   May 25, 2026 \u00b7 K2 NOT ONE OP FAN HAS 10 @technerd0404 Anosvoldigaux SAID TS Lol which fans? ... truth but not fix the system. This discussion delves into ...",
+          "systemPrompt": "You receive a social-media post and raw search results. Distill them into a research brief.\n\nThink step by step: what does the post claim, what do the search results say, and if the post is wrong, what's actually true?\n\nWrite a brief (a few paragraphs) with specific names, dates, numbers, and all relevant source URLs inline (Its important that you include the full source URLs). Only use information from the search results.\n\nIf a reference document is provided, treat it as ground truth for the topic and include its Source URL inline as a citation."
+        },
+        "1": {
+          "content": "## Research Brief: Reaction to Gears of War: E-Day Exclusivity\n\n### What the Post Claims\nThe tweet from Timo (@Timo, June 8, 2026) states: \u201cNot a single PS fan is complaining about gears being exclusive\u201d (https://x.com/i/status/2063880844280742265). The post quotes a meme that contrasts PlayStation fans celebrating the exclusivity of *Marvel\u2019s Wolverine* while crying over the Xbox/PC exclusivity of *Gears of War: E-Day*, implying a double standard. The tweet sarcastically claims that no PlayStation fan is actually upset about the Gears exclusivity.\n\n### What Search Results Reveal\nContrary to the tweet\u2019s claim, multiple sources document widespread disappointment and complaints from PlayStation fans regarding *Gears of War: E-Day* being an Xbox console exclusive. On June 7, 2026, Jeff Grubb reported on Giant Bomb that Microsoft had cancelled the PS5 version of the game, a decision he said was made very recently (https://www.reddit.com/r/PS5/comments/1tz1e6h/jeff_grubb_gears_of_war_eday_is_not_coming_to/). The Verge confirmed on June 7 that \u201cMicrosoft has confirmed that Gears of War: E-Day will be an Xbox console exclusive and is no longer coming to the PS5\u201d (https://www.theverge.com/entertainment/945269/gears-of-war-e-day-ps5-launch). \n\nReactions on Reddit include comments like \u201cReally excited but sad that it\u2019s not on PS5, so many of my friends who were gears head won\u2019t be able to experience this with me\u201d (https://www.reddit.com/r/GearsOfWar/comments/1tzw32n/how_we_feeling_about_gears_of_war_eday_so_far/). Another Reddit thread on r/PS5 from June 7 shows users discussing the cancellation, with one user noting that \u201cexclusive games are still the main reason people buy consoles,\u201d implying frustration (https://www.reddit.com/r/PS5/comments/1tz1e6h/jeff_grubb_gears_of_war_eday_is_not_coming_to/). Instagram posts with OCR text such as \u201cSorry PlayStation fans, Gears of War: E-Day will be an Xbox exclusive\u201d were shared widely (https://www.instagram.com/reel/DZRvHQHN0HT/; https://www.instagram.com/reel/DZTAOujgne9/). \n\nEven the tweet\u2019s own replies contradict the claim: user AEfterlife117 wrote \u201cLmao this isn't true...all I've seen is people complaining,\u201d and CjB26315205 said \u201cThat's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden\u201d (https://x.com/i/status/2063880844280742265). A report from tech4gamers on June 7 also noted that Walmart briefly listed a PS5 edition before taking it down, adding fuel to the backlash (https://tech4gamers.com/gears-of-war-e-day-ps5/).\n\n### What Is Actually True\nThe tweet\u2019s assertion that \u201cnot a single PS fan is complaining\u201d is demonstrably false. While some PlayStation fans may not care, a significant number have expressed disappointment and frustration online following the confirmed exclusivity of *Gears of War: E-Day*. The decision was publicly reported by multiple outlets on June 7, 2026, and social media reactions\u2014both on the tweet itself and across Reddit, Instagram, and news sites\u2014show clear evidence of complaints from PlayStation fans. The meme that the tweet quotes actually highlights the double standard, not the absence of complaints. In reality, many PS fans are complaining about the loss of a previously anticipated cross-platform release."
+        }
+      },
+      "referenceInjected": false
+    },
+    "note_needed_judge": {
+      "messages": {
+        "0": {
+          "model": "deepseek/deepseek-v4-flash",
+          "userMessage": "## Original post\nCurrent date: 2026-06-08\nCurrent time: 21:27 UTC\nTweet posted: 2026-06-08T07:08:32.000Z\nTweet URL: https://x.com/i/status/2063880844280742265\n\nAuthor: Timo \u2014 1,660 followers \u2014 45,326 posts\nAuthor bio: CSO \u2694\ufe0f | I make games look like movies - I give my honest takes on games as well | PlayStation - MMA\nEngagement: 266,228 impressions \u2014 5,523 likes \u2014 204 retweets \u2014 272 replies \u2014 9 quotes\n\n## Post\n\nNot a single PS fan is complaining about gears being exclusive https://t.co/YqszCr0duL\n\n## Quoted post\n\n\u2018Double standards, the\u2019 \ud83d\ude02 https://t.co/L6TpI3mh3o\n\n## Media on quoted post\n\n### Image 1\nDescription: A four-panel meme contrasting reactions to video game console exclusivity. In the top-left panel, a baby wearing a blue hat with a PlayStation logo is shown laughing with a speech bubble that says 'Exclusivity Good!'. To the right is the box art for the PS5 game 'Marvel Wolverine'. In the bottom-left panel, the same baby is shown crying with a speech bubble that says 'NoT fAiR!'. To the right is the box art for the Xbox Series X game 'Gears of War: E-Day'.\nVisible text: Exclusivity Good! PS5 MARVEL WOLVERINE MATURE 17+ M ESRB INSOMNIAC GAMES NoT fAiR! XBOX SERIES X GEARS OF WAR E-DAY MATURE 17+ M ESRB XBOX GAME STUDIOS THE COALITION GAME DISC\n\n## Comments and replies\n\n- **ChitoGamingLive**: guess you on the wrong side of twitter buddy lmao  \n  (231 likes, 0 reposts, 3 replies)\n\n- **AEfterlife117**: Lmao this isn't true...all I've seen is people complaining  \n  (58 likes, 0 reposts, 2 replies)\n\n- **SpaceXGodXodD**: I\u2019m actually glad Xbox is trying to compete again because it\u2019s a winning situation for gamers because Sony has slowly turning back into smug and greedy 2006 Sony again and hopefully this makes them knock that shit off  \n  (52 likes, 0 reposts, 1 reply)\n\n- **MrBlondeTTV**: My entire timeline is you retards thinking you\u2019re the only ones entitled to exclusives  \n  (41 likes, 0 reposts, 2 replies)\n\n- **flacodegato**: I promise the only GOW we care about is this  \n  (33 likes, 0 reposts, 1 reply)\n\n- **CjB26315205**: That's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden  \n  (23 likes, 0 reposts, 2 replies)\n\n- **danger_brick**: What's this? Or are you gonna move the goal post??  \n  (17 likes, 0 reposts, 1 reply)\n\n- **Interfacealgo**: Bought the gears of war reloaded on ps5 worst $40 I ever spent on a video game \ud83e\udd26\ud83c\udffd\u200d\u2642\ufe0f  \n  (17 likes, 0 reposts, 7 replies)\n\n- **Venomemy456**: I think we Playstation fan are just glad the Xbox fans are finally getting something not gonna lie  \n  (7 likes, 0 reposts, 0 replies)\n\n- **Charlieman206**: Yeah I don\u2019t see any PS fans complaining about gears, so apparently we don\u2019t care \ud83e\udd37\ud83c\udffd\u200d\u2642\ufe0f\ud83d\ude02  \n  (4 likes, 0 reposts, 5 replies)\n\n## Research findings\n## Research Brief: Reaction to Gears of War: E-Day Exclusivity\n\n### What the Post Claims\nThe tweet from Timo (@Timo, June 8, 2026) states: \u201cNot a single PS fan is complaining about gears being exclusive\u201d (https://x.com/i/status/2063880844280742265). The post quotes a meme that contrasts PlayStation fans celebrating the exclusivity of *Marvel\u2019s Wolverine* while crying over the Xbox/PC exclusivity of *Gears of War: E-Day*, implying a double standard. The tweet sarcastically claims that no PlayStation fan is actually upset about the Gears exclusivity.\n\n### What Search Results Reveal\nContrary to the tweet\u2019s claim, multiple sources document widespread disappointment and complaints from PlayStation fans regarding *Gears of War: E-Day* being an Xbox console exclusive. On June 7, 2026, Jeff Grubb reported on Giant Bomb that Microsoft had cancelled the PS5 version of the game, a decision he said was made very recently (https://www.reddit.com/r/PS5/comments/1tz1e6h/jeff_grubb_gears_of_war_eday_is_not_coming_to/). The Verge confirmed on June 7 that \u201cMicrosoft has confirmed that Gears of War: E-Day will be an Xbox console exclusive and is no longer coming to the PS5\u201d (https://www.theverge.com/entertainment/945269/gears-of-war-e-day-ps5-launch). \n\nReactions on Reddit include comments like \u201cReally excited but sad that it\u2019s not on PS5, so many of my friends who were gears head won\u2019t be able to experience this with me\u201d (https://www.reddit.com/r/GearsOfWar/comments/1tzw32n/how_we_feeling_about_gears_of_war_eday_so_far/). Another Reddit thread on r/PS5 from June 7 shows users discussing the cancellation, with one user noting that \u201cexclusive games are still the main reason people buy consoles,\u201d implying frustration (https://www.reddit.com/r/PS5/comments/1tz1e6h/jeff_grubb_gears_of_war_eday_is_not_coming_to/). Instagram posts with OCR text such as \u201cSorry PlayStation fans, Gears of War: E-Day will be an Xbox exclusive\u201d were shared widely (https://www.instagram.com/reel/DZRvHQHN0HT/; https://www.instagram.com/reel/DZTAOujgne9/). \n\nEven the tweet\u2019s own replies contradict the claim: user AEfterlife117 wrote \u201cLmao this isn't true...all I've seen is people complaining,\u201d and CjB26315205 said \u201cThat's a massive lie as this platform is filled with whiney PS little boys moaning about exclusives all of a sudden\u201d (https://x.com/i/status/2063880844280742265). A report from tech4gamers on June 7 also noted that Walmart briefly listed a PS5 edition before taking it down, adding fuel to the backlash (https://tech4gamers.com/gears-of-war-e-day-ps5/).\n\n### What Is Actually True\nThe tweet\u2019s assertion that \u201cnot a single PS fan is complaining\u201d is demonstrably false. While some PlayStation fans may not care, a significant number have expressed disappointment and frustration online following the confirmed exclusivity of *Gears of War: E-Day*. The decision was publicly reported by multiple outlets on June 7, 2026, and social media reactions\u2014both on the tweet itself and across Reddit, Instagram, and news sites\u2014show clear evidence of complaints from PlayStation fans. The meme that the tweet quotes actually highlights the double standard, not the absence of complaints. In reality, many PS fans are complaining about the loss of a previously anticipated cross-platform release.",
+          "systemPrompt": "You are a Community Notes quality judge for X/Twitter. You receive an original post and research findings from a web search. Decide whether the post NEEDS a Community Note.\n\nA note is needed ONLY if all three hold:\n1. **Falsifiable fact** \u2014 the post asserts a specific, checkable claim about a past or present state of the world. NOT a prediction, opinion, value judgment, or rhetorical generalization.\n2. **Materially false** \u2014 that claim is actually false or materially misleading against the research findings; not merely reframed, incomplete, or pedantic.\n3. **Sincere, not satire** \u2014 the post presents the claim as sincere fact, not obvious satire, parody, or a recognizable joke/meme (judged from the post itself, not a bio label).\n\nIf any fails, return note_needed=false. The note must address a claim the post actually makes \u2014 but a false superlative or absolute the post asserts (\"lowest ever\", \"the first\", \"none\") IS such a claim, not a tangential detail.\n\n## Common abstain cases\n- **Predictions / unresolved matters** \u2014 the claim is about a future or not-yet-settled event.\n- **Accurate but reframed** \u2014 the underlying claim is true and a note would only re-spin it. If the findings say the claim is essentially accurate, abstain.\n- **Author already disclosed** \u2014 the author truthfully states the content's nature (AI-generated, satire, fiction).\n- **Pedantic** \u2014 a recency or detail nitpick that doesn't change the claim's meaning.\n- **Self-disambiguating post** \u2014 the post's OWN media or caption reveals its non-serious nature, or is itself the corrective evidence. Corrective *replies* do NOT count \u2014 they don't travel with the post.\n\n## Exception \u2014 fabricated quotes / non-events\n\"No evidence found\" is sufficient grounds for a note ONLY when correcting a fabricated quote or a non-event (\"X never said Y\", \"Z did not happen\") attributed to a real public figure with no in-tweet disambiguation.\n\nReturn JSON with two fields:\n- reasoning: one or two sentences, written BEFORE the verdict.\n- note_needed: boolean. True only if all three preconditions hold."
+        },
+        "1": {
+          "content": {
+            "reasoning": "The post claims 'Not a single PS fan is complaining about gears being exclusive'. This is a falsifiable factual assertion about current reactions. Research findings and even replies to the post itself show evidence of PlayStation fans complaining about Gears of War: E-Day exclusivity, making the claim materially false. The post does not appear to be satire \u2014 it is presented as a sincere argument about double standards.",
+            "note_needed": true
+          }
+        }
+      }
+    },
+    "fetch_and_format_search": {
+      "findings": "## Query: \"PlayStation fans\" \"Gears of War E-Day\" exclusive complaint\n1. Asha Sharma is reportedly pulling Gears of War: E-Day off PS5 in ...\n   https://www.facebook.com/wccftech/posts/asha-sharma-is-reportedly-pulling-gears-of-war-e-day-off-ps5-in-another-major-st/1564779042315682/\n   1 day ago \u00b7 Read more here: https://wccftech.com/gears- of-war-e-day-xbox ... For PlayStation fans, this is a boon, and it should also help the ...\n\n2. Jeff Grubb says Gears of War: E-Day was originally going to come to PS5 ...\n   https://www.reddit.com/r/kindafunny/comments/1tz611w/jeff_grubb_says_gears_of_war_eday_was_originally/\n   2 days ago \u00b7 Jeff Grubb says Gears of War: E-Day was originally going to ... in the same vein, i hope playstation fans will be happy if they get ...\n\n3. Jeff Grubb claims that Gears of War: E-Day is no longer planned for ...\n   https://www.instagram.com/reel/DZRvHQHN0HT/\n   2 days ago \u00b7 Enjoy the show. OCR. THE RESPAWN Sorry PlayStation fans, Gears of War: E-Day will be an Xbox exclusive GEARS OF WAR E-DAY XBOX CONSOLE EXCLUSIVE ...\n\n4. Gears of War: Reloaded - Reviews Thread - NeoGAF\n   https://www.neogaf.com/threads/gears-of-war-reloaded-reviews-thread.1687625/\n   Aug 26, 2025 \u00b7 Gears of War: Reloaded is a must-play for PlayStation fans and a ... Gears of War E-Day on the horizon. The campaign offers a cinematic ...\n\n5. The crowd absolutely lost it when Gears of War E-Day ... - Instagram\n   https://www.instagram.com/reel/DZTAOujgne9/\n   1 day ago \u00b7 Enjoy the show. OCR. THE RESPAWN Sorry PlayStation fans, Gears of War: E-Day will be an Xbox exclusive GEARS OF WAR E-DAY XBOX CONSOLE EXCLUSIVE ...\n\n6. Jeff Grubb says Gears of War: E-Day was originally going to come to PS5 ...\n   https://www.resetera.com/threads/jeff-grubb-says-gears-of-war-e-day-was-originally-going-to-come-to-ps5-but-the-decision-was-just-made-to-not-bring-the-game-to-ps5.1542799/page-22\n   1 day ago \u00b7 https://www.dealabs.com/magazine/gears-of-war-e-day ... Yep, that direction being \"own PlayStation fans so that chronically online Xbox fans like ...\n\n## Query: \"Gears of War E-Day\" backlash PlayStation\n1. r/PS5 on Reddit: Jeff Grubb: Gears Of War E-Day is not coming to PlayStation (anymore)\n   Published: 2026-06-07T03:44:01\n   https://www.reddit.com/r/PS5/comments/1tz1e6h/jeff_grubb_gears_of_war_eday_is_not_coming_to/\n   Said on his live podcast on Giant Bomb. Apparently it was a very recent decision on Microsoft&#x27;s part.\n\n2. Gears of War: E-Day coming to PS5 according to Deku Deals + Walmart listings : r/GearsOfWar\n   Published: 2026-06-07T04:58:53\n   https://www.reddit.com/r/GearsOfWar/comments/1tyxdr6/gears_of_war_eday_coming_to_ps5_according_to_deku/\n   Gears of War E-day is not a guaranteed massive success on day 1. It will have to earn it like it did with the og Gears of War. Xbox team completely killed xbox as a console with years of bad decision making. A lot of people saw Phil Spencer as the saving grace for xbox, but in reality he put the final nails in the coffin with his weak leadership. ... I agree. However, this generation of gamers don\u2019t care anymore. They are braindead and brainwashed that thinks Gears on PlayStation will save the brand.\n\n3. r/GearsOfWar on Reddit: How We Feeling About Gears of War E-Day So Far?\n   Published: 2026-06-08T03:08:15\n   https://www.reddit.com/r/GearsOfWar/comments/1tzw32n/how_we_feeling_about_gears_of_war_eday_so_far/\n   So lame that I cannot play with PlayStation friends in the big 2026. ... Every few years a game comes by and reminds me of how excited I used to get as a kid. I start watching all the media for it and counting down the days and stuff. This is my first one in a long time that Im going to be doing that. I think theres a real chance for this to totally revitalize the franchise and multi-player. ... Really excited but sad that it\u2019s not on PS5, so many of my friends who were gears head won\u2019t be able to experience this with me \ud83d\ude1e\n\n4. r/pcgaming on Reddit: Jeff Grubb: Microsoft has cancelled",
+      "resultCount": 24
+    }
+  }
+}
