@@ -125,7 +125,7 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
-    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 50 },
+    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 0  },
   ],
 };
 
