@@ -12,6 +12,11 @@ src/stats-dashboard/public/
 test-runs/
 dataset_runs/
 
+# Local run outputs / caches (regeneratable; kept on disk, not committed)
+/output/
+/podcast_results/
+/podcast_results.zip
+
 # code coverage
 coverage
 *.lcov
@@ -76,6 +81,7 @@ create-notes-routine-dynamic.yml
 
 # Claude Code local settings (machine-specific permissions)
 .claude/settings.local.json
+.claude/*.lock
 
 # CN public-data dump (downloaded TSVs — large, regeneratable)
 src/scripts_jim/cn_data/
@@ -90,6 +96,10 @@ src/scripts_jim/**/batches/
 src/scripts_jim/**/results/
 src/scripts_jim/**/__pycache__/
 src/scripts_jim/**/*.jsonl
+src/scripts_jim/**/*.npy
+src/scripts_jim/**/*.html
+src/scripts_jim/2026_05_29_xxl_feed_monitor/from_actions/feed_dump.md
+src/scripts_jim/2026_06_12_note_embedding_clusters/notes.json
 src/scripts_jim/2026_05_09_broken_search_variants/url_fetch_buckets.json
 src/scripts_jim/2026_05_09_broken_search_variants/searxng_url_match.json
 src/scripts_jim/2026_05_09_json_parse_failures/invalid_output_buckets.json
