@@ -36,6 +36,8 @@
  *   --concurrency <n>       parallel pipeline workers (default 5)
  *   --name <label>          dashboard run label
  *   --no-dashboard          skip the dashboard upload (JSON output only)
+ *   --picks "t=v,t2=v2"     force A/B variants by test name (merged over defaults)
+ *   --check-all             run every claim, ignoring Opus's confident-true skip
  *
  * Every run that fetches a transcript also writes transcript.txt (timestamped)
  * into its output folder.
@@ -84,6 +86,8 @@ interface VideoMeta {
   url: string;
   id: string;
   title: string;
+  /** Date the video was published (ISO YYYY-MM-DD); used as the claim's "posted" date. */
+  uploadDate?: string;
 }
 
 interface ExtractedClaim {
@@ -91,11 +95,13 @@ interface ExtractedClaim {
   claim: string;
   /** Opus's truth judgement from its own knowledge (7-point scale). */
   judgement: string;
-  /** Verbatim transcript span the claim rests on. */
-  quote: string;
-  /** Start time in the video, in seconds (YouTube only — absent for text transcripts). */
+  /** Verbatim transcript excerpt with all the context needed to evaluate the claim. */
+  context: string;
+  /** Start of the context in the video, in seconds (YouTube only — absent for text transcripts). */
   timestampSeconds?: number;
-  /** Deep-link into the video at the claim's timestamp (YouTube only). */
+  /** End of the context in the video, in seconds — lets us later cut a clip (YouTube only). */
+  endTimestampSeconds?: number;
+  /** Deep-link into the video at the context start (YouTube only). */
   videoLink?: string;
 }
 
@@ -130,6 +136,21 @@ interface Args {
   concurrency: number;
   name?: string;
   dashboard: boolean;
+  /** A/B picks to force, as variant names keyed by test name (merged over the defaults). */
+  picks: Record<string, string>;
+  /** Run every claim through the pipeline, ignoring Opus's confident-true skip. */
+  checkAll: boolean;
+}
+
+/** Parse `--picks "test=variant,test2=variant2"` into a forced-picks map. */
+function parsePicks(s: string | undefined): Record<string, string> {
+  if (!s) return {};
+  const out: Record<string, string> = {};
+  for (const pair of s.split(",")) {
+    const [k, v] = pair.split("=");
+    if (k?.trim() && v?.trim()) out[k.trim()] = v.trim();
+  }
+  return out;
 }
 
 function parseArgs(): Args {
@@ -169,6 +190,8 @@ function parseArgs(): Args {
     concurrency: num("--concurrency") ?? 5,
     name: flag("--name"),
     dashboard: !args.includes("--no-dashboard"),
+    picks: parsePicks(flag("--picks")),
+    checkAll: args.includes("--check-all"),
   };
 }
 
@@ -196,12 +219,11 @@ function shouldFactCheck(judgement: string): boolean {
   return idx === -1 || idx >= FACT_CHECK_FROM; // unknown / error judgement → check to be safe
 }
 
-function extractionSystemPrompt(withTimestamps: boolean): string {
+function extractionSystemPrompt(): string {
   const fields = [
     `- "claim": the neutral, self-contained statement.`,
+    `- "context": a verbatim excerpt from the transcript around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the transcript has all the context needed to evaluate it.`,
     `- "judgement": how true the claim is, using only your own knowledge — one of: ${JUDGEMENTS.join(", ")}.`,
-    `- "quote": the verbatim transcript text the claim is based on.`,
-    ...(withTimestamps ? [`- "timestampSeconds": the start time (the number in [brackets]) of the line where the quote begins.`] : []),
   ];
   return `You extract checkable factual claims from a transcript.
 
@@ -217,8 +239,10 @@ For each claim return:
 ${fields.join("\n")}`;
 }
 
+// Plain text for the LLM — timestamps are derived from the cues afterwards
+// (context-time-span), so no [seconds] markers to leak into the verbatim context.
 function renderTranscript(cues: SubtitleCue[]): string {
-  return cues.map((c) => `[${Math.floor(c.start)}] ${c.text}`).join("\n");
+  return cues.map((c) => c.text).join("\n");
 }
 
 /** Seconds → "m:ss" (or "h:mm:ss" past an hour) for the human-readable transcript.txt. */
@@ -240,17 +264,13 @@ function writeTranscriptTxt(folderPath: string, transcriptTxt: string): string {
   return p;
 }
 
-function claimsResponseFormat(withTimestamps: boolean) {
+function claimsResponseFormat() {
   const properties: Record<string, unknown> = {
     claim: { type: "string", description: "Neutral, self-contained restatement of the claim." },
+    context: { type: "string", description: "Verbatim transcript excerpt around the claim, with all the context needed to evaluate it." },
     judgement: { type: "string", enum: [...JUDGEMENTS], description: "How true the claim is, from your own knowledge." },
-    quote: { type: "string", description: "Verbatim transcript text the claim is based on." },
   };
-  const required = ["claim", "judgement", "quote"];
-  if (withTimestamps) {
-    properties.timestampSeconds = { type: "number", description: "Start time in seconds (the number in [brackets])." };
-    required.push("timestampSeconds");
-  }
+  const required = ["claim", "context", "judgement"];
   return jsonSchemaResponseFormat("video_claims", {
     type: "object",
     properties: { claims: { type: "array", items: { type: "object", properties, required, additionalProperties: false } } },
@@ -262,19 +282,18 @@ function claimsResponseFormat(withTimestamps: boolean) {
 interface RawClaim {
   claim: string;
   judgement: string;
-  quote: string;
-  timestampSeconds?: number;
+  context: string;
 }
 
 /** One Opus extraction call over a rendered transcript (segment or chunk). */
-async function runExtraction(transcriptForLlm: string, withTimestamps: boolean): Promise<RawClaim[]> {
+async function runExtraction(transcriptForLlm: string): Promise<RawClaim[]> {
   const response: any = await llm.create({
     model: CLAIM_EXTRACTION_MODEL,
     messages: [
-      { role: "system", content: extractionSystemPrompt(withTimestamps) },
+      { role: "system", content: extractionSystemPrompt() },
       { role: "user", content: transcriptForLlm },
     ],
-    response_format: claimsResponseFormat(withTimestamps),
+    response_format: claimsResponseFormat(),
     reasoning_effort: "high",
   } as any);
   const content = response.choices?.[0]?.message?.content ?? "{}";
@@ -290,36 +309,68 @@ function normalize(s: string): string {
 }
 
 /**
- * Snap the model's timestamp to the cue whose (short) text is the longest
- * substring of the quote — gives a precise deep-link. Falls back to the
- * model-reported timestamp when nothing lines up.
+ * Time span of a context excerpt: the earliest start and latest end among the
+ * cues whose text falls inside the (verbatim) context. start → deep-link,
+ * [start, end] → clip bounds. Returns {} when nothing lines up.
  */
 const MIN_SNAP_MATCH_CHARS = 12;
-function snapTimestamp(quote: string, cues: SubtitleCue[], fallback: number): number {
-  const q = normalize(quote);
-  if (!q) return fallback;
-  let best = fallback;
-  let bestLen = 0;
+function contextTimeSpan(context: string, cues: SubtitleCue[]): { start?: number; end?: number } {
+  const ctx = normalize(context);
+  if (!ctx) return {};
+  let start: number | undefined;
+  let end: number | undefined;
   for (const cue of cues) {
     const t = normalize(cue.text);
-    if (t.length > bestLen && q.includes(t)) {
-      best = cue.start;
-      bestLen = t.length;
+    if (t.length >= MIN_SNAP_MATCH_CHARS && ctx.includes(t)) {
+      if (start === undefined || cue.start < start) start = cue.start;
+      if (end === undefined || cue.end > end) end = cue.end;
     }
   }
-  return bestLen >= MIN_SNAP_MATCH_CHARS ? best : fallback;
+  return { start, end };
+}
+
+// Cue version of chunkTranscript: keep each Opus call exhaustive on long videos
+// (a single giant call summarizes/samples) while preserving timestamps per cue.
+function chunkCues(cues: SubtitleCue[]): SubtitleCue[][] {
+  const chunks: SubtitleCue[][] = [];
+  let cur: SubtitleCue[] = [];
+  let curLen = 0;
+  for (const cue of cues) {
+    const lineLen = cue.text.length + 12; // ~"[12345] " overhead per rendered line
+    if (cur.length && curLen + lineLen > EXTRACTION_CHUNK_CHARS) {
+      chunks.push(cur);
+      cur = [];
+      curLen = 0;
+    }
+    cur.push(cue);
+    curLen += lineLen;
+  }
+  if (cur.length) chunks.push(cur);
+  return chunks;
 }
 
 /** YouTube path: timestamped cues → claims with snapped timestamps + deep-links. */
-async function extractClaims(cues: SubtitleCue[], video: VideoMeta): Promise<ExtractedClaim[]> {
-  const raws = await runExtraction(
-    `Transcript segment (lines are "[startSeconds] text"):\n\n${renderTranscript(cues)}`,
-    true,
+async function extractClaims(cues: SubtitleCue[], video: VideoMeta, concurrency: number): Promise<ExtractedClaim[]> {
+  const chunks = chunkCues(cues);
+  const queue = new PQueue({ concurrency });
+  const perChunk = await Promise.all(
+    chunks.map((chunk) => queue.add(() => runExtraction(`Transcript segment:\n\n${renderTranscript(chunk)}`))),
   );
-  return raws.map((c) => {
-    const timestampSeconds = snapTimestamp(c.quote, cues, c.timestampSeconds ?? 0);
-    return { claim: c.claim, judgement: c.judgement, quote: c.quote, timestampSeconds, videoLink: buildVideoLink(video.id, timestampSeconds) };
-  });
+  return perChunk
+    .flat()
+    .filter((c): c is RawClaim => !!c)
+    .map((c) => {
+      // Resolve the context's span against the full cue list (chunk-edge safe).
+      const { start, end } = contextTimeSpan(c.context, cues);
+      return {
+        claim: c.claim,
+        judgement: c.judgement,
+        context: c.context,
+        timestampSeconds: start,
+        endTimestampSeconds: end,
+        videoLink: start !== undefined ? buildVideoLink(video.id, start) : undefined,
+      };
+    });
 }
 
 // Long transcripts are chunked so each Opus call stays exhaustive (one giant
@@ -341,28 +392,36 @@ function chunkTranscript(text: string): string[] {
   return chunks;
 }
 
-/** Text path: a plain transcript (no timestamps) → claims (quote is the citation). */
+/** Text path: a plain transcript (no timestamps) → claims (no video timestamps). */
 async function extractClaimsFromText(text: string, concurrency: number): Promise<ExtractedClaim[]> {
   const chunks = chunkTranscript(text);
   const queue = new PQueue({ concurrency });
   const perChunk = await Promise.all(
-    chunks.map((chunk) => queue.add(() => runExtraction(`Transcript excerpt:\n\n${chunk}`, false))),
+    chunks.map((chunk) => queue.add(() => runExtraction(`Transcript excerpt:\n\n${chunk}`))),
   );
   return perChunk
     .flat()
     .filter((c): c is RawClaim => !!c)
-    .map((c) => ({ claim: c.claim, judgement: c.judgement, quote: c.quote }));
+    .map((c) => ({ claim: c.claim, judgement: c.judgement, context: c.context }));
 }
 
-/** Fetch just id + title via --print (full -J metadata busts execSync's buffer on YouTube). */
+/** yt-dlp's upload_date is YYYYMMDD; convert to ISO YYYY-MM-DD (undefined if absent). */
+function parseUploadDate(raw: string): string | undefined {
+  const m = raw.trim().match(/^(\d{4})(\d{2})(\d{2})$/);
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : undefined;
+}
+
+/** Fetch id + title + upload date via --print (full -J metadata busts execSync's buffer on YouTube). */
 function fetchVideoMeta(url: string): VideoMeta {
+  // upload_date first, title last: a multi-line title is absorbed by titleParts
+  // without swallowing the other fields.
   const out = execFileSync(
     "yt-dlp",
-    ["--skip-download", "--no-warnings", "--print", "%(id)s", "--print", "%(title)s", url],
+    ["--skip-download", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url],
     { encoding: "utf8", timeout: 120_000 },
   );
-  const [id = "", ...titleParts] = out.trim().split("\n");
-  return { url, id, title: titleParts.join(" ").trim() };
+  const [uploadDate = "", id = "", ...titleParts] = out.trim().split("\n");
+  return { url, id, title: titleParts.join(" ").trim(), uploadDate: parseUploadDate(uploadDate) };
 }
 
 function fetchTranscriptSegment(video: VideoMeta, begin: number, end: number | null, lang: string): SubtitleCue[] {
@@ -384,21 +443,28 @@ function fetchTranscriptSegment(video: VideoMeta, begin: number, end: number | n
 // Stage 2: run the pipeline on each claim
 // ---------------------------------------------------------------------------
 
-// simple-bot with the cheap note-needed prefilter forced on; the remaining A/B
-// dimensions (search provider, writer, verifier) sample as in production.
-const FORCED_PICKS = { bot: "simple-bot", note_prefilter: "deepseek" } as const;
+// simple-bot with the cheap note-needed prefilter on by default; --picks overrides
+// any of these (and forces other A/B dimensions) for the run.
+const BASE_FORCED_PICKS: Record<string, string> = { bot: "simple-bot", note_prefilter: "deepseek" };
 
 /** Result for a claim the pipeline didn't run (skipped as confident-true, or errored). */
 function nonRunResult(claim: ExtractedClaim, outcome: string, outcomeReason: string): ClaimResult {
   return { ...claim, needsCorrection: false, outcome, outcomeReason, noteStatus: null, correction: "", sources: [] };
 }
 
+// Fact-check the claim WITH its transcript context, not in isolation: the
+// surrounding text carries nuance the neutral restatement drops. Falls back to
+// the bare claim when re-checking an old claims.json that has no context.
 function buildClaimPost(claim: ExtractedClaim, video: VideoMeta, index: number): Post {
+  const transcript = claim.context?.trim();
+  const text = transcript ? `Text from Transcript: ${transcript}\nClaim: ${claim.claim}` : claim.claim;
   return {
     id: `${video.id}-${index}`,
     author_id: "unknown",
-    created_at: new Date().toISOString(),
-    text: claim.claim,
+    // The video's publish date is the claim's "posted" date (mirrors the tweet
+    // pipeline). Falls back to now for text-transcript runs with no video date.
+    created_at: video.uploadDate ?? new Date().toISOString(),
+    text,
     media: [],
   };
 }
@@ -409,10 +475,11 @@ async function checkClaim(
   index: number,
   total: number,
   logger: SupabaseLogger | null,
+  forcedPicks: Record<string, string>,
 ): Promise<{ result: ClaimResult; csvRow: string }> {
   const post = buildClaimPost(claim, video, index);
 
-  const { config, picks } = withForcedPicks(FORCED_PICKS, () => runABTests(AB_TESTS));
+  const { config, picks } = withForcedPicks(forcedPicks, () => runABTests(AB_TESTS));
   const bot = getBotById(config.botId);
   if (!bot) throw new Error(`No bot registered for id "${config.botId}"`);
 
@@ -440,7 +507,11 @@ async function checkClaim(
     correction: pr?.noteResult.note ?? "",
     sources: pr?.searchContextResult.citations ?? [],
   };
-  const csvRow = resultToCsvRow({ url: claim.videoLink ?? "" }, getLoggedBotId(bot.id, log), tweetResult, "", log);
+  // Podcasts have no eval ground truth, so the dashboard `result` column carries
+  // a simple note / no-note label (drives the Note / No Note pills) instead of a
+  // V2 category. `candidate` means the bot wrote a correction.
+  const resultLabel = tweetResult.outcome === "candidate" ? "note" : "no_note";
+  const csvRow = resultToCsvRow({ url: claim.videoLink ?? "" }, getLoggedBotId(bot.id, log), tweetResult, resultLabel, log);
   return { result, csvRow };
 }
 
@@ -451,7 +522,7 @@ function printClaim(index: number, total: number, r: ClaimResult): void {
   const lines = [
     `\n--- ${index + 1}/${total} --- ${head}`,
     `  claim:  ${r.claim}  [opus: ${r.judgement}]`,
-    `  quote:  "${r.quote}"`,
+    `  context: "${r.context}"`,
   ];
   if (r.videoLink) lines.push(`  at:     ${r.videoLink}`);
   if (r.correction) lines.push(`  note:   ${r.correction}`);
@@ -498,20 +569,24 @@ async function runPipelineOnClaims(claimsFile: ClaimsFile, args: Args, transcrip
   writeClaimsJson(output.folderPath, claimsFile);
   if (transcriptTxt) writeTranscriptTxt(output.folderPath, transcriptTxt);
 
+  const forcedPicks = { ...BASE_FORCED_PICKS, ...args.picks };
+  console.log(`[checkYoutubeClaims] Forced picks: ${JSON.stringify(forcedPicks)}${args.checkAll ? " · --check-all (no judgement skip)" : ""}`);
+
   const results: (ClaimResult | null)[] = new Array(claims.length).fill(null);
   const queue = new PQueue({ concurrency: args.concurrency });
   let skipped = 0;
 
   for (const [i, claim] of claims.entries()) {
-    // Opus is confident this is true → no need to spend the pipeline on it.
-    if (!shouldFactCheck(claim.judgement)) {
+    // Opus is confident this is true → no need to spend the pipeline on it
+    // (unless --check-all forces every hand-picked claim through).
+    if (!args.checkAll && !shouldFactCheck(claim.judgement)) {
       results[i] = nonRunResult(claim, "skipped", `judged ${claim.judgement}`);
       skipped++;
       continue;
     }
     queue.add(async () => {
       try {
-        const { result, csvRow } = await checkClaim(claim, video, i, claims.length, logger);
+        const { result, csvRow } = await checkClaim(claim, video, i, claims.length, logger, forcedPicks);
         results[i] = result;
         output.appendRow(csvRow);
         printClaim(i, claims.length, result);
@@ -610,7 +685,7 @@ async function main() {
   }
 
   console.log(`[checkYoutubeClaims] ${cues.length} transcript cues in ${span} — extracting claims with ${CLAIM_EXTRACTION_MODEL}...`);
-  const claims = await extractClaims(cues, video);
+  const claims = await extractClaims(cues, video, args.concurrency);
   console.log(`[checkYoutubeClaims] Extracted ${claims.length} claims`);
   const claimsFile: ClaimsFile = { video, range: { beginMin: args.begin, endMin: args.end }, claims };
 
@@ -620,7 +695,7 @@ async function main() {
     writeTranscriptTxt(dir.folderPath, transcriptTxt);
     for (const [i, c] of claims.entries()) {
       const at = c.videoLink ? `\n  at:    ${c.videoLink}` : "";
-      console.log(`\n--- ${i + 1}/${claims.length} --- [${c.judgement}]\n  claim: ${c.claim}\n  quote: "${c.quote}"${at}`);
+      console.log(`\n--- ${i + 1}/${claims.length} --- [${c.judgement}]\n  claim: ${c.claim}\n  context: "${c.context}"${at}`);
     }
     console.log(`\n[checkYoutubeClaims] Wrote ${claimsPath}`);
     return;
