@@ -24,6 +24,7 @@ interface NoteCardProps {
 function reviewItemToTweet(item: ReviewItem): Tweet {
   return {
     tweetId: item.tweetId,
+    sourceUrl: item.sourceUrl,
     text: item.tweetText,
     handle: item.tweetHandle,
     hasPhoto: item.hasPhoto,

@@ -33,9 +33,30 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
   );
 }
 
+// "View on <domain>" label: nicer names for the common hosts, bare hostname
+// otherwise.
+function sourceLinkLabel(url: string): string {
+  let host: string;
+  try {
+    host = new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "source";
+  }
+  if (host === "x.com" || host === "twitter.com") return "X";
+  if (host === "youtube.com" || host === "youtu.be") return "YouTube";
+  return host;
+}
+
 export function TweetCard({ tweet }: { tweet: Tweet }) {
   const media = extractMedia(tweet.media, tweet.referencedTweetData);
-  const tweetUrl = `https://x.com/i/status/${tweet.tweetId}`;
+  // Prefer an explicit source link (e.g. timestamped YouTube for podcast items);
+  // otherwise fall back to the X status URL. Hide the link entirely when neither
+  // is available (e.g. a podcast item whose link hasn't been backfilled yet).
+  const sourceUrl = tweet.sourceUrl?.trim()
+    ? tweet.sourceUrl
+    : tweet.tweetId
+      ? `https://x.com/i/status/${tweet.tweetId}`
+      : null;
 
   return (
     <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">
@@ -53,14 +74,16 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
             <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded">video</span>
           )}
         </div>
-        <a
-          href={tweetUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-500 hover:underline"
-        >
-          View on X ↗
-        </a>
+        {sourceUrl && (
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-500 hover:underline"
+          >
+            View on {sourceLinkLabel(sourceUrl)} ↗
+          </a>
+        )}
       </div>
 
       {tweet.text && (

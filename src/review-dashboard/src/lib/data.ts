@@ -727,6 +727,7 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
     id: row.id,
     source: "dataset_run" as const,
     tweetId: row.url?.match(/status\/(\d+)/)?.[1] ?? "",
+    sourceUrl: row.url || undefined,
     tweetText: row.tweet_text,
     noteText: row.note_text,
     createdAt: row.created_at,
@@ -745,24 +746,6 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
     annotation: annotationMap.get(row.id),
     failureType: resultToFailureType(row.result),
   }));
-}
-
-export async function fetchDatasetRunCounts(uploadId: string): Promise<Record<FailureType, number>> {
-  const counts = Object.fromEntries(
-    Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
-  ) as Record<FailureType, number>;
-
-  const { data } = await supabase
-    .from("review_dashboard_items")
-    .select("result")
-    .eq("upload_id", uploadId);
-
-  for (const row of data ?? []) {
-    const ft = resultToFailureType(row.result);
-    counts[ft]++;
-  }
-
-  return counts;
 }
 
 // ─── Annotations ─────────────────────────────────────────────────────────────

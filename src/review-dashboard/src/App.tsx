@@ -18,7 +18,6 @@ import {
   fetchLogsForRuns,
   fetchProductionPillData,
   fetchDatasetRunItems,
-  fetchDatasetRunCounts,
   fetchUploads,
   fetchFailureModes,
   upsertAnnotation,
@@ -65,7 +64,10 @@ const { slotOrder: AB_TEST_SLOT_ORDER, variantOrder: AB_TEST_VARIANT_ORDER } =
 function defaultFilters(source: "production" | "dataset_run"): FilterState {
   const failureTypes = new Set<FailureType>();
   for (const [ft, cfg] of Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, typeof FAILURE_TYPE_CONFIG[FailureType]][]) {
-    if (cfg.defaultOn && (source === "production" ? cfg.production : cfg.datasetRun)) {
+    // Uploads default every applicable pill ON (FilterBar hides absent ones, so
+    // you see everything in the upload); production keeps its curated defaults.
+    const applies = source === "production" ? cfg.production : cfg.datasetRun;
+    if (applies && (source === "dataset_run" || cfg.defaultOn)) {
       failureTypes.add(ft);
     }
   }
@@ -233,7 +235,8 @@ export function App() {
         const loaded = await fetchDatasetRunItems(dataset.id!);
         if (seq !== loadSeq.current) return;
         setItems(loaded);
-        setCounts(await fetchDatasetRunCounts(dataset.id!));
+        // Pill counts are derived from the fully-loaded items (itemCategoryCounts),
+        // so no separate count query is needed for dataset runs.
       }
     } catch (err: any) {
       console.error("Failed to load data:", err);
@@ -291,12 +294,22 @@ export function App() {
   const abActive = useMemo(() => Object.values(abFilters).some(Boolean), [abFilters]);
   const abActiveCount = useMemo(() => Object.values(abFilters).filter(Boolean).length, [abFilters]);
 
+  // Dataset-run pill counts: derived from the fully-loaded items by category.
+  const itemCategoryCounts = useMemo(() => {
+    const c = Object.fromEntries(
+      Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
+    ) as Record<FailureType, number>;
+    for (const item of items) c[item.failureType] = (c[item.failureType] ?? 0) + 1;
+    return c;
+  }, [items]);
+
   // Seen- and A/B-aware production pill counts: for the rated categories the pills
   // report how many are left under the current seen + A/B filters, not the all-time
   // total. Based on all-time notesSeen (so the window doesn't undercount), with
   // loaded notes overridden by live state. No active filter → all-time counts.
   const displayCounts = useMemo(() => {
-    if (dataset.type !== "production" || (filters.seen === "all" && !abActive)) return counts;
+    if (dataset.type !== "production") return itemCategoryCounts;
+    if (filters.seen === "all" && !abActive) return counts;
     const wantSeen = filters.seen === "seen";
     const derived = { ...counts };
     for (const ft of SEEN_AWARE_FAILURE_TYPES) derived[ft] = 0;
@@ -310,7 +323,7 @@ export function App() {
       derived[n.failureType]++;
     }
     return derived;
-  }, [dataset.type, counts, notesSeen, itemById, filters.seen, abFilters, abActive]);
+  }, [dataset.type, counts, itemCategoryCounts, notesSeen, itemById, filters.seen, abFilters, abActive]);
 
   // Seen- and A/B-aware tag counts: same idea for the failure-mode pills. Merge by
   // id so loaded notes use their live annotation (tags added/removed this session).
@@ -358,19 +371,29 @@ export function App() {
   // all-time counts there; deriving from items would undercount.
   const tagCounts = dataset.type === "production" ? displayTagCounts : itemTagCounts;
 
+  // For dataset-run uploads, scope the tag UI to the tags actually used in this
+  // upload (derived from the fully-loaded items) — a podcast upload shouldn't
+  // show X-eval tags. Production keeps the full all-time catalog. New tags are
+  // still creatable via the picker (they appear once assigned).
+  const scopeToUpload = dataset.type === "dataset_run";
+  const uploadScopedCatalog = useMemo(
+    () => (scopeToUpload ? failureModeCatalog.filter((m) => (itemTagCounts.get(m.name) ?? 0) > 0) : failureModeCatalog),
+    [failureModeCatalog, scopeToUpload, itemTagCounts],
+  );
+
   const sortedFailureModes = useMemo(() => {
-    const list = showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed);
+    const list = showFixedTags ? uploadScopedCatalog : uploadScopedCatalog.filter((m) => !m.fixed);
     return [...list].sort((a, b) => {
       const ca = tagCounts.get(a.name) ?? 0;
       const cb = tagCounts.get(b.name) ?? 0;
       if (cb !== ca) return cb - ca;
       return a.name.localeCompare(b.name);
     });
-  }, [failureModeCatalog, tagCounts, showFixedTags]);
+  }, [uploadScopedCatalog, tagCounts, showFixedTags]);
 
   const activeFailureModes = useMemo(
-    () => failureModeCatalog.filter((m) => !m.fixed),
-    [failureModeCatalog],
+    () => uploadScopedCatalog.filter((m) => !m.fixed),
+    [uploadScopedCatalog],
   );
 
   // Fold lazy-loaded logs into the items the list is about to render. Without

@@ -3,6 +3,10 @@ export interface ReviewItem {
   id: string;
   source: "production" | "dataset_run";
   tweetId: string;
+  // Raw external link for the item (dataset runs): an X status URL for tweet
+  // uploads, a timestamped YouTube link for podcast uploads. Drives the
+  // "View on <domain>" link; undefined for production (falls back to tweetId).
+  sourceUrl?: string;
   tweetText?: string;
   tweetHandle?: string;
   hasPhoto?: boolean;
@@ -103,7 +107,11 @@ export type DatasetCategoryV2 =
   | "nnw_fp_published"
   | "nnw_eval_disagrees";
 
-export type FailureType = ProductionFailureType | DatasetCategoryV2 | "uncategorized";
+// Podcast runs have no eval ground truth, so the `result` column carries a
+// simple note / no-note label instead of a V2 category.
+export type PodcastCategory = "note" | "no_note";
+
+export type FailureType = ProductionFailureType | DatasetCategoryV2 | PodcastCategory | "uncategorized";
 
 export interface FilterState {
   seen: "all" | "seen" | "unseen";
@@ -151,6 +159,10 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   nnw_fp_published:               { label: "FP published",       defaultOn: true,  production: false, datasetRun: true, color: "bg-pink-100 text-pink-800",   group: "non_noteworthy" },
   nnw_eval_disagrees:             { label: "Eval disagrees",     defaultOn: true,  production: false, datasetRun: true, color: "bg-purple-100 text-purple-800", group: "non_noteworthy" },
 
+  // --- Podcast categories (result = note/no_note; no eval ground truth) ---
+  note:    { label: "Note",    defaultOn: true, production: false, datasetRun: true, color: "bg-green-100 text-green-800" },
+  no_note: { label: "No Note", defaultOn: true, production: false, datasetRun: true, color: "bg-gray-100 text-gray-600" },
+
   // --- Shared ---
   uncategorized: { label: "Uncategorized", defaultOn: false, production: true, datasetRun: true, color: "bg-gray-100 text-gray-500" },
 };
@@ -172,6 +184,8 @@ export function resultToFailureType(result: string | undefined | null): FailureT
   if (!result) return "uncategorized";
   if (V2_CATEGORIES.has(result)) return result as DatasetCategoryV2;
   switch (result) {
+    case "note": return "note";
+    case "no_note": return "no_note";
     case "correct": return "nw_success";
     case "incorrect": return "nw_published_bad";
     case "missed": return "nw_miss_writer_abstained";

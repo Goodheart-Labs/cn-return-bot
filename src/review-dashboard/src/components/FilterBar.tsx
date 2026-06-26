@@ -44,8 +44,13 @@ export function FilterBar({ source, filters, counts, onFiltersChange }: FilterBa
     onFiltersChange({ ...filters, seen: order[(idx + 1) % order.length]! });
   };
 
+  // Production shows every applicable pill. Dataset-run uploads show only the
+  // categories actually present in the upload (count > 0), so a podcast upload
+  // surfaces just Note / No Note and an eval upload just its real categories.
   const visibleTypes = (Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, FailureTypeConfig][])
-    .filter(([, cfg]) => source === "production" ? cfg.production : cfg.datasetRun);
+    .filter(([ft, cfg]) =>
+      source === "production" ? cfg.production : cfg.datasetRun && (counts[ft] ?? 0) > 0,
+    );
 
   const hasGroups = visibleTypes.some(([, cfg]) => cfg.group);
 
