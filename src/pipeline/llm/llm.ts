@@ -73,6 +73,23 @@ function hasEmptyContent(result: OpenAI.Chat.Completions.ChatCompletion): boolea
   return typeof content === "string" && content.trim().length === 0;
 }
 
+/** A 200 OK that's actually an upstream error: OpenRouter passes provider
+ * overloads through as a choice with finish_reason "error" (native_finish_reason
+ * e.g. "overloaded_error") and ~empty content — NOT an exception — or includes a
+ * top-level `error` object. These clear on their own, so treat them as retryable.
+ * Returns a short reason string, or null when the response looks fine. */
+function responseErrorReason(result: any): string | null {
+  if (result?.error) {
+    const e = result.error;
+    return `provider error: ${e?.code ?? ""} ${String(e?.message ?? "").slice(0, 120)}`.trim();
+  }
+  const choice = result?.choices?.[0];
+  if (choice?.finish_reason === "error") {
+    return `finish_reason=error (${choice?.native_finish_reason ?? "unknown"})`;
+  }
+  return null;
+}
+
 /**
  * Wrap an LLM create call with retry + exponential backoff.
  * Retries on OpenRouter "400 Provider returned error", 429, 502, 503, network
@@ -92,18 +109,25 @@ async function callWithRetry(
   } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming;
 
   let lastError: any;
+  let lastBadReason: string | null = null;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
       const result = await getClient().chat.completions.create(routedParams);
-      if (hasEmptyContent(result) && attempt < MAX_RETRIES) {
+      // A 200 can still be a failure: an upstream overload (finish_reason
+      // "error") or a silent empty body. Both are retryable — they usually clear.
+      const badReason = responseErrorReason(result) ?? (hasEmptyContent(result) ? "empty content" : null);
+      if (!badReason) return result;
+      lastBadReason = badReason;
+      if (attempt < MAX_RETRIES) {
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
-          `[llm] Empty content (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}). Retrying in ${backoff}ms...`
+          `[llm] ${badReason} (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}). Retrying in ${backoff}ms...`
         );
         await sleep(backoff);
         continue;
       }
-      return result;
+      // Exhausted on a bad-but-not-thrown response — fall through to the throw
+      // after the loop (a clear error beats returning empty → "model_output_invalid").
     } catch (err: any) {
       lastError = err;
       if (attempt < MAX_RETRIES && isRetryableError(err)) {
@@ -120,6 +144,9 @@ async function callWithRetry(
       }
       throw err;
     }
+  }
+  if (lastBadReason) {
+    throw new Error(`[model: ${params.model}] upstream returned ${lastBadReason} after ${MAX_RETRIES + 1} attempts`);
   }
   throw lastError;
 }

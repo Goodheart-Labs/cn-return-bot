@@ -115,6 +115,9 @@ export async function dispatchSearch(
 
 // --- Helpers ---
 
+// Extra search re-fetches when the model returns unparseable JSON (overload garble).
+const SEARCH_PARSE_RETRIES = 2;
+
 async function searchWithAnthropicNative(
   userMessage: string,
   costName: string,
@@ -125,34 +128,44 @@ async function searchWithAnthropicNative(
   const systemPrompt = getSearchSystemPrompt();
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
-  const response = await llm.create({
-    model,
-    messages: [
-      // Mark the per-topic-stable system prompt as an Anthropic prefix-cache
-      // breakpoint (passed through by OpenRouter). Anthropic doesn't cache
-      // automatically and only caches >=1024 tokens, so this is a no-op for the
-      // regular pipeline and kicks in when the misinfo reference document is
-      // injected — repeated across every post of the same topic.
-      {
-        role: "system" as const,
-        content: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
-      },
-      { role: "user" as const, content: userMessage },
-    ],
-    tools: [WEB_SEARCH_TOOL],
-    response_format: SEARCH_RESPONSE_FORMAT,
-  } as any);
+  const messages = [
+    // Mark the per-topic-stable system prompt as an Anthropic prefix-cache
+    // breakpoint (passed through by OpenRouter). Anthropic doesn't cache
+    // automatically and only caches >=1024 tokens, so this is a no-op for the
+    // regular pipeline and kicks in when the misinfo reference document is
+    // injected — repeated across every post of the same topic.
+    {
+      role: "system" as const,
+      content: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
+    },
+    { role: "user" as const, content: userMessage },
+  ];
 
-  const content = response.choices?.[0]?.message?.content ?? "";
-  const parsed = parseSearchJson(content, "searchWithAnthropicNative");
-  log?.set(`${STEP.search}.messages.1`, { content: parsed });
-
-  const cost = extractOpenRouterCost(response);
-  return {
-    findings: parsed.findings,
-    correctionNeeded: parsed.correction_needed,
-    costEntry: { name: costName, ...cost, tools: [] },
-  };
+  // An overloaded provider can return non-empty but garbled/truncated/duplicated
+  // JSON (e.g. "{", two objects concatenated) — not an error-shaped response the
+  // llm client can catch, so it slips through to the parser. Re-fetch a couple
+  // times; a clean response usually follows.
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= SEARCH_PARSE_RETRIES; attempt++) {
+    const response = await llm.create({ model, messages, tools: [WEB_SEARCH_TOOL], response_format: SEARCH_RESPONSE_FORMAT } as any);
+    const content = response.choices?.[0]?.message?.content ?? "";
+    try {
+      const parsed = parseSearchJson(content, "searchWithAnthropicNative");
+      log?.set(`${STEP.search}.messages.1`, { content: parsed });
+      const cost = extractOpenRouterCost(response);
+      return {
+        findings: parsed.findings,
+        correctionNeeded: parsed.correction_needed,
+        costEntry: { name: costName, ...cost, tools: [] },
+      };
+    } catch (err) {
+      lastErr = err;
+      if (attempt < SEARCH_PARSE_RETRIES) {
+        console.warn(`[search] opus native returned unparseable output (attempt ${attempt + 1}/${SEARCH_PARSE_RETRIES + 1}), re-fetching...`);
+      }
+    }
+  }
+  throw lastErr;
 }
 
 export async function searchWithGeminiNative(
