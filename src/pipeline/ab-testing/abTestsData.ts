@@ -126,6 +126,7 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   variants: [
     { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 0  },
+    { variant: { name: "opus48",           overrides: { verifier_model: "anthropic/claude-opus-4.8"     }}, weight: 0  },
   ],
 };
 
@@ -283,6 +284,20 @@ const VERIFIER_CLAIM_BASED_TEST: ABTest = {
   ],
 };
 
+// Reason-then-judge source verifier: per source, gather verbatim snippets + a
+// plain-language explanation of how each supports/refutes the note, THEN judge
+// good/bad. Orthogonal to verifier_claim_based — both flows have a citations
+// variant, so the two tests mix freely. Not prereq-gated (verifySources runs in
+// both bots), so defaultVariant "off" lets historical rows resolve.
+const VERIFIER_CITATIONS_TEST: ABTest = {
+  name: "verifier_citations",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off", overrides: { verifier_citations: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { verifier_citations: true  } }, weight: 50 },
+  ],
+};
+
 // Pseudo A/B test: records the feed size in `pipeline_runs.ab_test_picks.feed_size`.
 // `generateCandidates` forces the pick to the size the fetch actually used.
 // Pre-existing rows (no `feed_size` key) resolve to "small".
@@ -365,6 +380,7 @@ export const AB_TESTS: ABTest[] = [
   CHEAP_BOT_NATIVE_SEARCH_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,
+  VERIFIER_CITATIONS_TEST,
   SEARCH_ANALYZER_TEST,
   SATIRE_DETECTOR_TEST,
   CHEAP_BOT_TEMPERATURE_TEST,
