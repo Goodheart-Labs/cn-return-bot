@@ -38,7 +38,10 @@ export function buildUserMessage(params: {
   parts.push(`Current date: ${now.toISOString().split("T")[0]}`);
   parts.push(`Current time: ${now.toISOString().split("T")[1]!.slice(0, 5)} UTC`);
   parts.push(`Tweet posted: ${post.created_at}`);
-  parts.push(`Tweet URL: https://x.com/i/status/${post.id}`);
+  // Only real (numeric) tweet ids form a valid URL. Synthetic posts — e.g. the
+  // podcast pipeline's `${videoId}-${index}` ids — would otherwise emit a bogus
+  // link that confuses the model, so omit it for them.
+  if (/^\d+$/.test(post.id)) parts.push(`Tweet URL: https://x.com/i/status/${post.id}`);
 
   // Author info
   const authorParts: string[] = [];
