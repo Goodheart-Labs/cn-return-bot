@@ -75,6 +75,14 @@ export const SEARCH_POLITICAL_SOURCES_INSTRUCTION = `
 ## Political topics
 For political posts, prefer sources associated with the post author's own political side when they support the correction, if possible. A note is far more likely to be rated helpful when it cites sources the author's own audience already trusts.`;
 
+/** Appended to the search prompt when `config.search_note_likely` is on
+ *  (SIMPLE_BOT_NOTE_LIKELY_TEST). A prior that a note is probably needed, to push
+ *  the agent to investigate hard rather than default to "no correction". */
+export const SEARCH_NOTE_LIKELY_INSTRUCTION = `
+
+## Message from the developer
+Please assume that a community note is needed`;
+
 /** Picks the base search prompt from the 2×2 of {detailed, terse} ×
  *  {standard, anti-pedantic}, then appends the misinfo pre-pass ground-truth
  *  article when one is active (`referenceBlock`, else null in the regular

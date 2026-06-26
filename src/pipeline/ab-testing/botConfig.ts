@@ -123,6 +123,13 @@ export interface BotConfig {
    */
   search_anti_pedantic?: boolean;
   /**
+   * When true (simple-bot only), the search prompt is told a community note is
+   * probably needed — a prior that biases the agent toward surfacing the error
+   * instead of defaulting to "no correction". Used for re-checking hand-picked
+   * claims. Set by SIMPLE_BOT_NOTE_LIKELY_TEST; defaults false.
+   */
+  search_note_likely?: boolean;
+  /**
    * When true, the writer's system prompt is appended with a few-shot block of
    * real notes the community rated helpful — all simple, direct, and short — to
    * pull the writer toward that "simple and nice" style. Set by
