@@ -77,11 +77,22 @@ For political posts, prefer sources associated with the post author's own politi
 
 /** Appended to the search prompt when `config.search_note_likely` is on
  *  (SIMPLE_BOT_NOTE_LIKELY_TEST). A prior that a note is probably needed, to push
- *  the agent to investigate hard rather than default to "no correction". */
+ *  the agent to investigate hard rather than default to "no correction". The
+ *  contradicting "## When NOT to set correction_needed" section is stripped in
+ *  the same case (see stripWhenNotToCorrectSection). */
 export const SEARCH_NOTE_LIKELY_INSTRUCTION = `
 
 ## Message from the developer
-Please assume that a community note is needed`;
+I believe that this tweet needs a correction. Please provide a correction and make sure to set correction_needed to true even if you are uncertain!`;
+
+/** Removes the "## When NOT to set correction_needed = true" block (everything
+ *  up to the next "## " heading). Used together with SEARCH_NOTE_LIKELY_INSTRUCTION:
+ *  the "assume a correction is needed" prior directly contradicts that
+ *  don't-correct guidance, so we drop it. No-op on prompts that lack the section
+ *  (the terse variants). */
+export function stripWhenNotToCorrectSection(prompt: string): string {
+  return prompt.replace(/\n\n## When NOT to set correction_needed = true\n[\s\S]*?(?=\n\n## )/, "");
+}
 
 /** Picks the base search prompt from the 2×2 of {detailed, terse} ×
  *  {standard, anti-pedantic}, then appends the misinfo pre-pass ground-truth

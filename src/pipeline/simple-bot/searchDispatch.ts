@@ -17,6 +17,7 @@ import {
   buildSearchSystemPrompt,
   SEARCH_POLITICAL_SOURCES_INSTRUCTION,
   SEARCH_NOTE_LIKELY_INSTRUCTION,
+  stripWhenNotToCorrectSection,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -65,7 +66,9 @@ export function getSearchSystemPrompt(): string {
     antiPedantic: config.search_anti_pedantic ?? false,
   });
   let prompt = config.search_political_sources ? base + SEARCH_POLITICAL_SOURCES_INSTRUCTION : base;
-  if (config.search_note_likely) prompt += SEARCH_NOTE_LIKELY_INSTRUCTION;
+  if (config.search_note_likely) {
+    prompt = stripWhenNotToCorrectSection(prompt) + SEARCH_NOTE_LIKELY_INSTRUCTION;
+  }
   return prompt;
 }
 
