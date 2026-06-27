@@ -143,13 +143,13 @@ async function main() {
 
     // --misinfo-only skips the regular pipeline, so the daily-writing-limit
     // gate (which only governs that pass) doesn't apply.
-    const maxPosts = misinfoOnly
-      ? 0
+    const { maxPosts, estimate } = misinfoOnly
+      ? { maxPosts: 0, estimate: 0 }
       : isLocal
-        ? MAX_POSTS_LOCAL
+        ? { maxPosts: MAX_POSTS_LOCAL, estimate: MAX_POSTS_LOCAL }
         : supabaseLogger
           ? await computeMaxPosts(supabaseLogger)
-          : MAX_POSTS_FALLBACK;
+          : { maxPosts: MAX_POSTS_FALLBACK, estimate: MAX_POSTS_FALLBACK };
 
     if (!misinfoOnly && maxPosts === 0) {
       console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
@@ -199,6 +199,7 @@ async function main() {
       ? []
       : await generateCandidates(supabaseLogger, {
           maxPosts,
+          estimate,
           skipPostIds,
           knownTweetIds,
           onTweetProcessed,

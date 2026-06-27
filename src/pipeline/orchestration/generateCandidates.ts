@@ -31,7 +31,19 @@ const BACKLOG_LIMIT = 1000;
 // then `xxl`, deduping against tiers already taken. Each post is tagged with the
 // tier it came from (recorded per-post in ab_test_picks.feed_size). Deeper tiers
 // are only fetched when shallower ones don't fill maxPosts.
-const FEED_SIZE_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
+const FULL_FEED_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
+const SMALL_ONLY_LADDER: FeedSize[] = ["small"];
+
+// Only broaden past the curated small feed when we estimate we need to process
+// a lot of tweets to hit the writing limit. When the estimate is low the small
+// feed alone supplies enough fresh, higher-quality posts, so we skip the larger
+// tiers entirely. The estimate is uncapped (unlike maxPosts), so the threshold
+// can sensibly exceed MAX_POSTS_CAP.
+const BROADEN_FEED_ESTIMATE_THRESHOLD = 40;
+
+function selectFeedLadder(estimate: number): FeedSize[] {
+  return estimate >= BROADEN_FEED_ESTIMATE_THRESHOLD ? FULL_FEED_LADDER : SMALL_ONLY_LADDER;
+}
 
 /** A post plus the feed tier it was sourced from (recorded as its feed_size pick). */
 interface SourcedPost {
@@ -46,6 +58,7 @@ interface SourcedPost {
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
   maxPosts: number,
+  estimate: number,
   prefetchedSkipPostIds?: Set<string>,
   prefetchedKnownTweetIds?: Set<string>,
 ): Promise<{ posts: SourcedPost[] }> {
@@ -81,7 +94,9 @@ async function fetchPosts(
   const takenIds = new Set<string>();
   const allNew: Post[] = [];
 
-  for (const feedSize of FEED_SIZE_LADDER) {
+  const feedLadder = selectFeedLadder(estimate);
+  console.log(`[generate] estimate=${estimate} → feed ladder [${feedLadder.join(", ")}]`);
+  for (const feedSize of feedLadder) {
     if (selected.length >= maxPosts) break;
     let posts: Post[];
     try {
@@ -250,6 +265,9 @@ export async function processPosts(
 
 export interface GenerateCandidatesOptions {
   maxPosts: number;
+  /** Uncapped estimate of posts needed to hit the writing limit; selects feed
+   *  breadth (full ladder when high, small-only otherwise). */
+  estimate: number;
   /** Pre-fetched by runPipeline and shared with the misinfo pre-pass to avoid
    *  double-scanning notes/pipeline_runs/tweets. Omitted callers fetch them. */
   skipPostIds?: Set<string>;
@@ -259,7 +277,7 @@ export interface GenerateCandidatesOptions {
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, skipPostIds, knownTweetIds, onTweetProcessed }: GenerateCandidatesOptions,
+  { maxPosts, estimate, skipPostIds, knownTweetIds, onTweetProcessed }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const outerForcedPicks = getForcedPicks();
   if (Object.keys(outerForcedPicks).length > 0) {
@@ -269,7 +287,7 @@ export async function generateCandidates(
   const activeBots = botProbs.filter((b) => b.probability > 0);
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
-  const { posts } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
+  const { posts } = await fetchPosts(supabaseLogger, maxPosts, estimate, skipPostIds, knownTweetIds);
   if (!posts.length) {
     console.log("[generate] No eligible posts found.");
     return [];
