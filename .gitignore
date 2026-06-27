@@ -92,6 +92,8 @@ src/production/_aggregates_cache.json
 src/scripts_jim/**/venv/
 src/scripts_jim/**/.venv/
 src/scripts_jim/**/*.mp4
+src/scripts_jim/**/*.zip
+src/scripts_jim/**/output/
 src/scripts_jim/**/batches/
 src/scripts_jim/**/results/
 src/scripts_jim/**/__pycache__/
