@@ -86,6 +86,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     // their historical picks resolve).
     { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 5 },
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 5 },
+    { variant: { name: "opus47-native",           overrides: { search_model: "anthropic/claude-opus-4.7",         web_search: "native" }},        weight: 0 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 5 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
@@ -127,6 +128,7 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
     { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 0  },
     { variant: { name: "opus48",           overrides: { verifier_model: "anthropic/claude-opus-4.8"     }}, weight: 0  },
+    { variant: { name: "opus47",           overrides: { verifier_model: "anthropic/claude-opus-4.7"     }}, weight: 0  },
   ],
 };
 
