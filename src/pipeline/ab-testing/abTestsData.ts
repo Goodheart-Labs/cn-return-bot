@@ -185,6 +185,18 @@ const SIMPLE_BOT_NOTE_LIKELY_TEST: ABTest = {
   ],
 };
 
+// Use the podcast-transcript search prompt (input is a claim + transcript
+// context, not an X post). Off in prod (weight 0 on); forced on by the podcast
+// pipeline (checkYoutubeClaims). Prereq-gated to simple-bot, so no defaultVariant.
+const SIMPLE_BOT_PODCAST_TEST: ABTest = {
+  name: "search_podcast",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_podcast: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { search_podcast: true  } }, weight: 0   },
+  ],
+};
+
 // Append a few-shot block of real, well-performing notes (all simple, direct,
 // and short) to simple-bot's writer system prompt, testing whether concrete
 // examples pull the writer toward that "simple and nice" style vs the
@@ -386,6 +398,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_PROMPTS_TEST,
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   SIMPLE_BOT_NOTE_LIKELY_TEST,
+  SIMPLE_BOT_PODCAST_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   NOTE_PREFILTER_TEST,

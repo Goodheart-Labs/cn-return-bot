@@ -130,6 +130,14 @@ export interface BotConfig {
    */
   search_note_likely?: boolean;
   /**
+   * When true (simple-bot only), the search step uses the podcast-transcript
+   * prompt — the input is a claim drawn from a podcast plus surrounding
+   * transcript context, not an X post. Combined with search_note_likely to pick
+   * the "find the error" variant. Forced on by the podcast pipeline
+   * (checkYoutubeClaims). Set by SIMPLE_BOT_PODCAST_TEST; defaults false.
+   */
+  search_podcast?: boolean;
+  /**
    * When true, the writer's system prompt is appended with a few-shot block of
    * real notes the community rated helpful — all simple, direct, and short — to
    * pull the writer toward that "simple and nice" style. Set by

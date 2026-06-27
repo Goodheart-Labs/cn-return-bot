@@ -443,9 +443,10 @@ function fetchTranscriptSegment(video: VideoMeta, begin: number, end: number | n
 // Stage 2: run the pipeline on each claim
 // ---------------------------------------------------------------------------
 
-// simple-bot with the cheap note-needed prefilter on by default; --picks overrides
-// any of these (and forces other A/B dimensions) for the run.
-const BASE_FORCED_PICKS: Record<string, string> = { bot: "simple-bot", note_prefilter: "deepseek" };
+// simple-bot with the cheap note-needed prefilter on by default, plus the
+// podcast-transcript search prompt (every claim here is a transcript excerpt, not
+// an X post); --picks overrides any of these (and forces other A/B dimensions).
+const BASE_FORCED_PICKS: Record<string, string> = { bot: "simple-bot", note_prefilter: "deepseek", search_podcast: "on" };
 
 /** Result for a claim the pipeline didn't run (skipped as confident-true, or errored). */
 function nonRunResult(claim: ExtractedClaim, outcome: string, outcomeReason: string): ClaimResult {
