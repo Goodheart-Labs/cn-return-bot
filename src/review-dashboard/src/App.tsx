@@ -52,15 +52,11 @@ import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import {
-  abTestOrdering,
   buildAbTestSlots,
   matchesAbFilters,
   type ABFilters,
 } from "../../dashboard-shared/abFilters";
 import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
-
-const { slotOrder: AB_TEST_SLOT_ORDER, variantOrder: AB_TEST_VARIANT_ORDER } =
-  abTestOrdering(AB_TESTS);
 
 function defaultFilters(source: "production" | "dataset_run"): FilterState {
   const failureTypes = new Set<FailureType>();
@@ -146,6 +142,10 @@ export function App() {
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Gate the A/B filter panel on the full recent-notes fetch finishing, so its
+  // "recently varied" detection sees every pick from the window — not just the
+  // injected first-paint subset.
+  const [recentNotesLoaded, setRecentNotesLoaded] = useState(false);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -196,6 +196,7 @@ export function App() {
   const loadData = useCallback(async () => {
     const seq = ++loadSeq.current;
     setLoading(true);
+    setRecentNotesLoaded(false);
     setError(null);
     try {
       if (dataset.type === "production") {
@@ -205,6 +206,7 @@ export function App() {
           if (seq !== loadSeq.current) return;
           setItems(buildDashboardItems(data));
           setLogsByRunId(new Map());
+          setRecentNotesLoaded(true);
           return;
         }
         // Instant first paint: the server injects the FULL default set as
@@ -229,11 +231,13 @@ export function App() {
         const merged = mergeItemsById(buildDashboardItems(defaultData), buildDashboardItems(windowData));
         setItems((prev) => preserveAnnotations(prev, merged));
         setLogsByRunId(new Map());
+        setRecentNotesLoaded(true);
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
         if (seq !== loadSeq.current) return;
         setItems(loaded);
         setCounts(await fetchDatasetRunCounts(dataset.id!));
+        setRecentNotesLoaded(true);
       }
     } catch (err: any) {
       console.error("Failed to load data:", err);
@@ -329,14 +333,14 @@ export function App() {
     return derived;
   }, [dataset.type, productionTagCounts, annotationsSeen, items, filters.seen, abFilters, abActive]);
 
-  // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS
-  // declaration order so dropdowns match the stats dashboard layout.
+  // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS declaration
+  // order so dropdowns match the stats dashboard layout. createdAt drives the
+  // "recently varied" flag the panel uses to hide dormant tests by default.
   const abSlots = useMemo(
     () =>
       buildAbTestSlots(
-        items.map((i) => i.abTestPicks),
-        AB_TEST_SLOT_ORDER,
-        AB_TEST_VARIANT_ORDER,
+        items.map((i) => ({ picks: i.abTestPicks, at: i.createdAt })),
+        AB_TESTS,
       ),
     [items],
   );
@@ -681,7 +685,7 @@ export function App() {
           </div>
           {abOpen && (
             <div className="mt-2">
-              {abSlots.length > 0 ? (
+              {recentNotesLoaded && abSlots.length > 0 ? (
                 <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
               ) : (
                 <div className="text-sm text-gray-400 px-3 py-2">Loading…</div>
