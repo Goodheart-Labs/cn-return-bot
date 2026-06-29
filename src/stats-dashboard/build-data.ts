@@ -27,6 +27,7 @@ import type {
   StatsSnapshot,
   NoteRecord,
   PipelineRunAggregate,
+  AbOutcomeAggregate,
   PipelineRunDayBucket,
   DailyOriginCount,
 } from "./src/lib/types";
@@ -138,6 +139,27 @@ function buildPipelineAggregates(runs: RawPipelineRunRow[]): PipelineRunAggregat
     total_cost: v.total_cost,
     run_count: v.run_count,
   }));
+}
+
+// Per-full-pick run outcome counts for the A/B comparison panel. `total`
+// excludes only in-progress (non-terminal) runs; `candidate` counts any run
+// that produced a gate-passing note (candidate or submitted).
+function buildAbOutcomeAggregates(runs: RawPipelineRunRow[]): AbOutcomeAggregate[] {
+  const byKey = new Map<string, AbOutcomeAggregate>();
+  for (const run of runs) {
+    if (run.outcome === "in_progress") continue;
+    const key = picksKey(run.ab_test_picks);
+    let agg = byKey.get(key);
+    if (!agg) {
+      agg = { ab_test_picks_key: key, ab_test_picks: run.ab_test_picks, total: 0, candidate: 0, submitted: 0, cost: 0 };
+      byKey.set(key, agg);
+    }
+    agg.total++;
+    if (run.outcome === "candidate" || run.outcome === "submitted") agg.candidate++;
+    if (run.outcome === "submitted") agg.submitted++;
+    agg.cost += Number(run.cost ?? 0);
+  }
+  return [...byKey.values()];
 }
 
 function buildPipelineRunsByDay(runs: RawPipelineRunRow[]): PipelineRunDayBucket[] {
@@ -295,6 +317,7 @@ async function buildSnapshot(): Promise<StatsSnapshot> {
 
   const noteRecords = joinNotes(notes, pipelineRuns, tweets, publicRatings);
   const pipelineRunAggregates = buildPipelineAggregates(pipelineRuns);
+  const abOutcomeAggregates = buildAbOutcomeAggregates(pipelineRuns);
   const pipelineRunsByDay = buildPipelineRunsByDay(pipelineRuns);
   const abTestSlots = buildAbTestSlots(
     pipelineRuns.map((r) => ({ picks: r.ab_test_picks, at: r.created_at })),
@@ -305,6 +328,7 @@ async function buildSnapshot(): Promise<StatsSnapshot> {
     generated_at: new Date().toISOString(),
     notes: noteRecords,
     pipeline_run_aggregates: pipelineRunAggregates,
+    ab_outcome_aggregates: abOutcomeAggregates,
     pipeline_runs_by_day: pipelineRunsByDay,
     ab_test_slots: abTestSlots,
     daily_note_origin_counts: dailyOriginCounts,
@@ -319,7 +343,7 @@ async function main() {
   writeFileSync(outPath, JSON.stringify(snapshot));
   const sizeKb = (Buffer.byteLength(JSON.stringify(snapshot)) / 1024).toFixed(1);
   console.log(`[build-data] Wrote ${outPath} (${sizeKb} KB)`);
-  console.log(`[build-data] notes=${snapshot.notes.length} aggregates=${snapshot.pipeline_run_aggregates.length} run_days=${snapshot.pipeline_runs_by_day.length} slots=${snapshot.ab_test_slots.length} origin_days=${snapshot.daily_note_origin_counts.length}`);
+  console.log(`[build-data] notes=${snapshot.notes.length} aggregates=${snapshot.pipeline_run_aggregates.length} outcome_aggs=${snapshot.ab_outcome_aggregates.length} run_days=${snapshot.pipeline_runs_by_day.length} slots=${snapshot.ab_test_slots.length} origin_days=${snapshot.daily_note_origin_counts.length}`);
 }
 
 main().catch((err) => {
