@@ -40,6 +40,19 @@ export interface PipelineRunAggregate {
   run_count: number;
 }
 
+// Per-full-pick-combination run outcome counts, used by the A/B comparison
+// panel to compute candidate-share and "all runs" denominators. Keyed by the
+// full ab_test_picks dict (default-filled via resolvePicks); the client
+// projects these onto whichever tests it is splitting by and sums.
+export interface AbOutcomeAggregate {
+  ab_test_picks_key: string;
+  ab_test_picks: Record<string, string> | null;
+  total: number; // terminal runs: outcome !== "in_progress"
+  candidate: number; // outcome in {candidate, submitted}
+  submitted: number; // outcome === "submitted"
+  cost: number; // summed LLM cost (USD) over terminal runs; null costs count as 0
+}
+
 // Per-day rollup of pipeline_runs so the dashboard can compute
 // non-candidate counts (runs that didn't end up as a submitted note) per
 // bucket without shipping every individual run row.
@@ -63,6 +76,7 @@ export interface StatsSnapshot {
   generated_at: string;
   notes: NoteRecord[];
   pipeline_run_aggregates: PipelineRunAggregate[];
+  ab_outcome_aggregates: AbOutcomeAggregate[];
   pipeline_runs_by_day: PipelineRunDayBucket[];
   ab_test_slots: ABTestSlotInfo[];
   daily_note_origin_counts: DailyOriginCount[];

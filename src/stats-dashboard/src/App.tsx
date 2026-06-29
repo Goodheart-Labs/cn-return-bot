@@ -21,6 +21,9 @@ import { ChartControls, ChartLegend } from "./components/ChartControls";
 import { BarChart } from "./components/BarChart";
 import { NoteList } from "./components/NoteList";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
+import { AbComparisonPanel } from "./components/AbComparisonPanel";
+import { buildAbCombos, type AbComparisonStat } from "./lib/abComparison";
+import type { ConfidenceLevel } from "./lib/confidenceIntervals";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
 
@@ -37,6 +40,11 @@ export function App() {
   const [devMode, setDevMode] = useState(false);
   const [showNonCandidate, setShowNonCandidate] = useState(false);
   const [abFilters, setAbFilters] = useState<ABFilters>({});
+  const [cmpDims, setCmpDims] = useState<string[]>([]);
+  const [cmpStat, setCmpStat] = useState<AbComparisonStat>("pct_helpful");
+  const [cmpIncludeNonCandidate, setCmpIncludeNonCandidate] = useState(false);
+  const [cmpLevel, setCmpLevel] = useState<ConfidenceLevel>(95);
+  const [cmpHidden, setCmpHidden] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     loadStatsSnapshot().then(setSnapshot).catch((err) => setError(err.message));
@@ -73,6 +81,13 @@ export function App() {
         ? computeHeadlineMetrics(snapshot.notes, snapshot.pipeline_run_aggregates, filtersForData)
         : null,
     [snapshot, filtersForData],
+  );
+  const abCombos = useMemo(
+    () =>
+      devMode && snapshot
+        ? buildAbCombos(snapshot.notes, snapshot.ab_outcome_aggregates, cmpDims, filtersForData)
+        : [],
+    [devMode, snapshot, cmpDims, filtersForData],
   );
   const sortedNotes = useMemo(() => sortNotesForList(filteredNotes, sort), [filteredNotes, sort]);
   const writingLimitMetrics = useMemo(
@@ -115,6 +130,23 @@ export function App() {
           slots={snapshot.ab_test_slots}
           filters={abFilters}
           onChange={setAbFilters}
+        />
+      )}
+
+      {devMode && (
+        <AbComparisonPanel
+          slots={snapshot.ab_test_slots}
+          combos={abCombos}
+          dims={cmpDims}
+          onDimsChange={setCmpDims}
+          stat={cmpStat}
+          onStatChange={setCmpStat}
+          includeNonCandidate={cmpIncludeNonCandidate}
+          onIncludeNonCandidateChange={setCmpIncludeNonCandidate}
+          level={cmpLevel}
+          onLevelChange={setCmpLevel}
+          hidden={cmpHidden}
+          onHiddenChange={setCmpHidden}
         />
       )}
 
