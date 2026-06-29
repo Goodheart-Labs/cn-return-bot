@@ -8,7 +8,7 @@ import { readWritingLimit } from "./writingLimit";
 
 const WRITING_LIMIT_WINDOW_HOURS = 24;
 const RATE_SAMPLE_WINDOW_HOURS = 32;
-const MAX_POSTS_CAP = 20;
+const MAX_POSTS_CAP = 30;
 const SAFETY_MULTIPLIER = 1.25;
 const FALLBACK_MAX_POSTS = 5;
 const MIN_RUNS_FOR_RATE = 20;
