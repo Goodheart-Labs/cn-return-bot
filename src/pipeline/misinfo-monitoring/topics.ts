@@ -16,9 +16,10 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { MisinfoTopicId } from "./topicIds";
 
 export interface MisinfoTopic {
-  id: string;
+  id: MisinfoTopicId;
   title: string;
   documentUrl: string;
   matches: (blob: string) => boolean;
@@ -37,7 +38,7 @@ const ENERGY =
   /(energy|electricit|\bkwh\b|\bwatt|carbon|emission|\bco2\b|climate|power grid|fossil|environment|footprint|greenhouse)/;
 
 interface TopicSpec {
-  id: string;
+  id: MisinfoTopicId;
   title: string;
   documentUrl: string;
   matches: (t: string) => boolean;

@@ -203,7 +203,12 @@ export async function processPosts(
   for (const [idx, item] of items.entries()) {
     // Force the feed_size pick to the feed THIS post came from (small vs large
     // fill); falls back to the run-level size for callers that don't tag posts.
-    const feedSizePick = { ...outerForcedPicks, feed_size: item.feedSize ?? feedSize };
+    // Misinfo pre-pass posts carry a MonitoringContext — record that they came
+    // from monitoring and which topic; regular posts sample the default no/none.
+    const monitoringPicks: Record<string, string> = item.monitoring
+      ? { misinfo_monitoring: "yes", misinfo_topic: item.monitoring.topicId }
+      : {};
+    const feedSizePick = { ...outerForcedPicks, feed_size: item.feedSize ?? feedSize, ...monitoringPicks };
     queue.add(() => withForcedPicks(feedSizePick, () => withMonitoringContext(item.monitoring, async () => {
       // Forced picks (if any) are already in ALS — set up by runPipeline.ts
       // via withForcedPicks. runABTests honours them for whichever tests fire.

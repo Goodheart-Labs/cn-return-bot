@@ -8,6 +8,7 @@
  */
 
 import type { BotConfig } from "./botConfig";
+import { MISINFO_TOPIC_IDS } from "../misinfo-monitoring/topicIds";
 
 // --- Types ---
 
@@ -297,6 +298,32 @@ const FEED_SIZE_TEST: ABTest = {
   ],
 };
 
+// Pseudo A/B tests: record whether a run came from the XXL-feed misinfo
+// pre-pass and, if so, which topic it matched. `processPosts` forces both picks
+// from the item's MonitoringContext; regular runs carry no monitoring, so they
+// sample the default arm (`no` / `none`). Empty overrides — these record only,
+// they drive no behaviour (the reference document is injected via
+// MonitoringContext, independent of BotConfig).
+const MISINFO_MONITORING_TEST: ABTest = {
+  name: "misinfo_monitoring",
+  defaultVariant: "no",
+  variants: [
+    { variant: { name: "no",  overrides: {} }, weight: 100 },
+    { variant: { name: "yes", overrides: {} }, weight: 0 },
+  ],
+};
+
+// One variant per topic id (kept in sync with topics.ts via MISINFO_TOPIC_IDS),
+// so a forced topic pick always resolves in findVariantByName.
+const MISINFO_TOPIC_TEST: ABTest = {
+  name: "misinfo_topic",
+  defaultVariant: "none",
+  variants: [
+    { variant: { name: "none", overrides: {} }, weight: 100 },
+    ...MISINFO_TOPIC_IDS.map((id) => ({ variant: { name: id, overrides: {} }, weight: 0 })),
+  ],
+};
+
 const SEARCH_ANALYZER_TEST: ABTest = {
   name: "search_analyzer",
   prerequisites: { botId: "cheap-bot" },
@@ -369,5 +396,7 @@ export const AB_TESTS: ABTest[] = [
   SATIRE_DETECTOR_TEST,
   CHEAP_BOT_TEMPERATURE_TEST,
   FEED_SIZE_TEST,
+  MISINFO_MONITORING_TEST,
+  MISINFO_TOPIC_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
 ];
