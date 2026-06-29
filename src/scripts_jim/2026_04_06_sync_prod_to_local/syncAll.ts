@@ -26,6 +26,7 @@ const SYNC_SPECS: SyncSpec[] = [
   { local: "tweets", prod: "__skip__" },          // tweets is local-only (no prod equivalent)
   { local: "notes", prod: "canonical_note_information" }, // merged: prod canonical has the superset of rows
   { local: "pipeline_runs" },
+  { local: "misinfo_monitoring_sightings" }, // after pipeline_runs: processed_run_id FKs to it
   { local: "pipeline_scores" },
   { local: "scraped_notewriter_snapshots" },
   { local: "competing_notes" },
@@ -33,7 +34,20 @@ const SYNC_SPECS: SyncSpec[] = [
   { local: "pipeline_state" },
 ];
 
-const PK: Record<string, string> = { pipeline_state: "key", tweets: "tweet_id" };
+const PK: Record<string, string> = {
+  pipeline_state: "key",
+  tweets: "tweet_id",
+  // `id` is GENERATED ALWAYS identity (can't be inserted), so dedupe on the
+  // natural key and let local regenerate ids (see DROP_BEFORE_INSERT).
+  misinfo_monitoring_sightings: "tweet_id,topic_id",
+};
+
+// Columns stripped before insert because the local table generates them
+// (GENERATED ALWAYS identity). They're still fetched/ordered on; only dropped
+// from the insert payload so Postgres assigns fresh values.
+const DROP_BEFORE_INSERT: Record<string, string[]> = {
+  misinfo_monitoring_sightings: ["id"],
+};
 
 function env(key: string): string {
   const v = process.env[key];
@@ -216,6 +230,9 @@ async function main() {
         console.warn(`  bot_id mapping failed (non-fatal): ${e.message}`);
       }
     }
+
+    const dropCols = DROP_BEFORE_INSERT[lt];
+    if (dropCols) for (const r of rows) for (const c of dropCols) delete (r as any)[c];
 
     plan.push({ lt, pt, pk, rows });
   }
