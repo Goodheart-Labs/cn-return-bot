@@ -2,12 +2,11 @@
  * Sync all tables from production Supabase to local Supabase.
  * Read-only on prod. Local tables are cleared and re-populated.
  *
- * Schema-aware: handles the canonical_note_information → notes merge from
- * migration 034 (the source of truth in prod is `canonical_note_information`
- * for the row population, with `notes.notewriter_id`/`submitted_at` overlaid
- * on top). Skips tables that don't exist locally (e.g. dropped bot_configs,
- * unmatched_scraped_notes, run_snapshots) and prod columns that don't exist
- * locally (e.g. dropped current_*_status).
+ * Schema-aware: prod merged canonical_note_information into `notes` (May 2026),
+ * so notes syncs straight from prod.notes. Skips tables that don't exist locally
+ * (e.g. dropped bot_configs, unmatched_scraped_notes, run_snapshots), prod
+ * columns that don't exist locally (e.g. dropped current_*_status), and columns
+ * too large to fetch in bulk (see SKIP_COLUMNS — pipeline_runs.logs).
  *
  * Usage: bun run src/scripts_jim/2026_04_06_sync_prod_to_local/syncAll.ts
  */
@@ -24,7 +23,7 @@ type SyncSpec = { local: string; prod?: string };
 const SYNC_SPECS: SyncSpec[] = [
   { local: "notewriters" },
   { local: "tweets", prod: "__skip__" },          // tweets is local-only (no prod equivalent)
-  { local: "notes", prod: "canonical_note_information" }, // merged: prod canonical has the superset of rows
+  { local: "notes" }, // prod merged canonical_note_information into notes (May 2026)
   { local: "pipeline_runs" },
   { local: "misinfo_monitoring_sightings" }, // after pipeline_runs: processed_run_id FKs to it
   { local: "pipeline_scores" },
@@ -47,6 +46,14 @@ const PK: Record<string, string> = {
 // from the insert payload so Postgres assigns fresh values.
 const DROP_BEFORE_INSERT: Record<string, string[]> = {
   misinfo_monitoring_sightings: ["id"],
+};
+
+// Columns never fetched from prod: huge JSONB that detoasts on a full-table scan
+// and trips prod's statement_timeout. Synced as NULL locally.
+// TODO: if a local workflow needs pipeline_runs.logs, backfill it via a separate
+// keyset-paginated pass (small batches, projected paths) instead of bulk select.
+const SKIP_COLUMNS: Record<string, string[]> = {
+  pipeline_runs: ["logs"],
 };
 
 function env(key: string): string {
@@ -87,19 +94,27 @@ async function fetchAll(
   columns: string[],
   orderCol: string,
 ): Promise<any[]> {
+  // Keyset pagination on orderCol (a unique, sortable cursor — pk/id for every
+  // synced table). OFFSET pagination rescans `offset` rows per page, which trips
+  // prod's statement_timeout on large tables (e.g. pipeline_scores ~500k rows);
+  // a `> cursor` lookup uses the index and stays flat. orderCol must be in the
+  // selection to read the cursor — add it if the caller didn't.
+  const cols = columns.includes(orderCol) ? columns : [...columns, orderCol];
   const rows: any[] = [];
-  let offset = 0;
+  let cursor: unknown = null;
   while (true) {
-    const { data, error } = await client
+    let query = client
       .from(table)
-      .select(columns.join(","))
+      .select(cols.join(","))
       .order(orderCol, { ascending: true })
-      .range(offset, offset + BATCH - 1);
+      .limit(BATCH);
+    if (cursor !== null) query = query.gt(orderCol, cursor as never);
+    const { data, error } = await query;
     if (error) throw new Error(`Fetch ${table}: ${error.message}`);
     if (!data?.length) break;
     rows.push(...data);
     if (data.length < BATCH) break;
-    offset += BATCH;
+    cursor = (data[data.length - 1] as Record<string, unknown>)[orderCol];
   }
   return rows;
 }
@@ -182,7 +197,8 @@ async function main() {
       continue;
     }
 
-    const sharedCols = [...localCols[lt]!].filter((c) => prodCols[pt]!.has(c));
+    const skipCols = new Set(SKIP_COLUMNS[lt] ?? []);
+    const sharedCols = [...localCols[lt]!].filter((c) => prodCols[pt]!.has(c) && !skipCols.has(c));
     if (sharedCols.length === 0) {
       console.log(`${lt}: no shared columns with prod.${pt}; skipping`);
       continue;
@@ -191,45 +207,6 @@ async function main() {
     const orderCol = sharedCols.includes(pk) ? pk : sharedCols.includes("id") ? "id" : sharedCols[0]!;
     console.log(`${lt} ← prod.${pt}: fetching ${sharedCols.length} columns`);
     const rows = await fetchAll(prod, pt, sharedCols, orderCol);
-
-    if (lt === "notes" && pt === "canonical_note_information") {
-      // Overlay notewriter_id + submitted_at from prod's legacy notes table.
-      try {
-        const overlay = await fetchAll(prod, "notes", ["note_id", "notewriter_id", "submitted_at"], "note_id");
-        const byId = new Map(overlay.map((o: any) => [o.note_id, o]));
-        for (const r of rows) {
-          const o = byId.get(r.note_id);
-          if (o) {
-            if (o.notewriter_id != null) r.notewriter_id = o.notewriter_id;
-            if (o.submitted_at != null) r.submitted_at = o.submitted_at;
-          }
-        }
-        console.log(`  overlaid notewriter_id/submitted_at on ${overlay.length} notes`);
-      } catch (e: any) {
-        console.warn(`  overlay from prod.notes failed (non-fatal): ${e.message}`);
-      }
-    }
-
-    if (lt === "pipeline_runs") {
-      // prod's bot_id is the variant-encoded form (renamed to bot_name_long
-      // by migration 031). Refetch it explicitly and split into the new
-      // bot_name + bot_name_long columns. bot_config stays NULL — it didn't
-      // exist on prod.
-      try {
-        const refetch = await fetchAll(prod, "pipeline_runs", ["id", "bot_id"], "id");
-        const byId = new Map(refetch.map((r: any) => [r.id, r.bot_id]));
-        for (const r of rows) {
-          const botId = byId.get(r.id);
-          if (botId) {
-            r.bot_name_long = botId;
-            r.bot_name = botId.split("_")[0];
-          }
-        }
-        console.log(`  mapped bot_id → bot_name_long/bot_name on ${refetch.length} runs`);
-      } catch (e: any) {
-        console.warn(`  bot_id mapping failed (non-fatal): ${e.message}`);
-      }
-    }
 
     const dropCols = DROP_BEFORE_INSERT[lt];
     if (dropCols) for (const r of rows) for (const c of dropCols) delete (r as any)[c];
