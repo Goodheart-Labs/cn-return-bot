@@ -19,7 +19,7 @@ import { buildPostSelection } from "../orchestration/utils/feedSizeStrategy";
 import type { FeedSize } from "../ab-testing/botConfig";
 import type { Candidate } from "../orchestration/submitCandidates";
 import { processPosts, type ProcessPostItem, type TweetProcessedEvent } from "../orchestration/generateCandidates";
-import { MISINFO_TOPICS } from "./topics";
+import { MISINFO_TOPICS, type MisinfoTopic } from "./topics";
 import { matchPostsByTopic } from "./keywordFilter";
 import { selectPostsNeedingNote } from "./selectPostsNeedingNote";
 import { loadDumpFeed } from "./loadDumpFeed";
@@ -114,7 +114,9 @@ function buildWorkList(
   pending: Array<{ tweet_id: string; topic_id: string }>,
   postById: Map<string, Post>,
 ): Array<{ item: ProcessPostItem; topicId: string }> {
-  const topicById = new Map(MISINFO_TOPICS.map((t) => [t.id, t]));
+  // Keyed by the raw (untrusted) DB topic_id string, so a stale/unknown id from
+  // the sightings ledger just misses and is skipped below.
+  const topicById = new Map<string, MisinfoTopic>(MISINFO_TOPICS.map((t) => [t.id, t]));
   const seen = new Set<string>();
   const work: Array<{ item: ProcessPostItem; topicId: string }> = [];
 
