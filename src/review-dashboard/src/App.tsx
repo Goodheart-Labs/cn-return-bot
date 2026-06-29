@@ -519,6 +519,22 @@ export function App() {
     }
   };
 
+  const handleHighValueToggle = async (id: string, highValue: boolean) => {
+    const source = dataset.type === "production" ? "production" : "dataset_run";
+    try {
+      await upsertAnnotation(source as "production" | "dataset_run", id, { highValue });
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, annotation: { ...item.annotation, highValue, seen: item.annotation?.seen ?? false, failureModes: item.annotation?.failureModes ?? [] } }
+            : item,
+        ),
+      );
+    } catch (err: any) {
+      console.error("Failed to update high_value:", err);
+    }
+  };
+
   const handleFailureModesChange = async (id: string, modes: string[]) => {
     const source = dataset.type === "production" ? "production" : "dataset_run";
     const prevModes = items.find((item) => item.id === id)?.annotation?.failureModes ?? [];
@@ -780,6 +796,7 @@ export function App() {
               failureModeUsage={tagCounts}
               showFixed={showFixedTags}
               onSeenToggle={handleSeenToggle}
+              onHighValueToggle={handleHighValueToggle}
               onFailureModesChange={handleFailureModesChange}
               onCreateFailureMode={handleCreateFailureMode}
               onCommentChange={handleCommentChange}

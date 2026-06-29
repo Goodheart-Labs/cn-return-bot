@@ -417,6 +417,7 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
       seen: a.seen,
       failureModes: a.failure_modes ?? [],
       comment: a.comment,
+      highValue: a.high_value ?? false,
     });
   }
 
@@ -720,6 +721,7 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
       seen: a.seen,
       failureModes: a.failure_modes ?? [],
       comment: a.comment,
+      highValue: a.high_value ?? false,
     });
   }
 
@@ -770,7 +772,7 @@ export async function fetchDatasetRunCounts(uploadId: string): Promise<Record<Fa
 export async function upsertAnnotation(
   source: "production" | "dataset_run",
   targetId: string,
-  update: Partial<{ seen: boolean; failureModes: string[]; comment: string }>,
+  update: Partial<{ seen: boolean; failureModes: string[]; comment: string; highValue: boolean }>,
 ): Promise<void> {
   // Try update first (preserves fields not being changed)
   const { data: existing } = await supabase
@@ -785,6 +787,7 @@ export async function upsertAnnotation(
     if (update.seen !== undefined) changes.seen = update.seen;
     if (update.failureModes !== undefined) changes.failure_modes = update.failureModes;
     if (update.comment !== undefined) changes.comment = update.comment;
+    if (update.highValue !== undefined) changes.high_value = update.highValue;
 
     const { error } = await supabase
       .from("review_dashboard_annotations")
@@ -800,6 +803,7 @@ export async function upsertAnnotation(
         seen: update.seen ?? false,
         failure_modes: update.failureModes ?? [],
         comment: update.comment ?? null,
+        high_value: update.highValue ?? false,
         updated_at: new Date().toISOString(),
       });
     if (error) throw error;
