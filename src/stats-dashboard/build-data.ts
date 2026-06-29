@@ -22,7 +22,7 @@ import {
   fetchAllRows,
   fetchInBatches,
 } from "../dashboard-shared/supabasePaging";
-import { abTestOrdering, buildAbTestSlots } from "../dashboard-shared/abFilters";
+import { buildAbTestSlots } from "../dashboard-shared/abFilters";
 import type {
   StatsSnapshot,
   NoteRecord,
@@ -163,13 +163,6 @@ function buildPipelineRunsByDay(runs: RawPipelineRunRow[]): PipelineRunDayBucket
   return [...byDayKey.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 
-// Slot and variant ordering hints derived from AB_TESTS declaration order so
-// the dashboard renders the filter panel in the same order that AB_TESTS
-// declares. Slots / variants that exist in historical pipeline_runs but no
-// longer in AB_TESTS get appended alphabetically by the shared helper.
-const { slotOrder: AB_TEST_SLOT_ORDER, variantOrder: AB_TEST_VARIANT_ORDER } =
-  abTestOrdering(AB_TESTS);
-
 function joinNotes(
   notes: RawNoteRow[],
   runs: RawPipelineRunRow[],
@@ -304,9 +297,8 @@ async function buildSnapshot(): Promise<StatsSnapshot> {
   const pipelineRunAggregates = buildPipelineAggregates(pipelineRuns);
   const pipelineRunsByDay = buildPipelineRunsByDay(pipelineRuns);
   const abTestSlots = buildAbTestSlots(
-    pipelineRuns.map((r) => r.ab_test_picks),
-    AB_TEST_SLOT_ORDER,
-    AB_TEST_VARIANT_ORDER,
+    pipelineRuns.map((r) => ({ picks: r.ab_test_picks, at: r.created_at })),
+    AB_TESTS,
   );
 
   return {
