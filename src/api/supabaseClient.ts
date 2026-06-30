@@ -332,22 +332,23 @@ export class SupabaseLogger {
   }
 
   /**
-   * Newest known numeric note that has no notewriter-scraper snapshot yet.
+   * Oldest known numeric note that has no notewriter-scraper snapshot yet.
    *
-   * Incremental scrape needs this backlog anchor: after a partial recent scrape,
-   * "newest scraped note" becomes recent again, but older known notes can still
-   * be unsynced. We intentionally compute this client-side from paginated reads
-   * instead of relying on a PostgREST anti-join, because these tables are small
-   * and the local set difference is straightforward.
+   * Incremental scrape needs the oldest backlog anchor: after a partial recent
+   * scrape, "newest scraped note" becomes recent again, but older known notes
+   * can still be unsynced. Stopping ~1 week before the oldest unsynced note
+   * makes the pass cover the entire known backlog. We intentionally compute this
+   * client-side from paginated reads instead of relying on a PostgREST anti-join,
+   * because these tables are small and the local set difference is straightforward.
    */
-  async getNewestUnscrapedNoteId(): Promise<string | null> {
+  async getOldestUnscrapedNoteId(): Promise<string | null> {
     const notes = await this.fetchAllRows<{ note_id: string }>(
       (client) => client.from("notes")
         .select("note_id")
         .not("note_id", "like", "tweet_%")
         .not("note_id", "like", "unavailable_%"),
       "note_id",
-      "getNewestUnscrapedNoteId.notes",
+      "getOldestUnscrapedNoteId.notes",
     );
 
     const snapshots = await this.fetchAllRows<{ id: string; note_id: string }>(
@@ -356,7 +357,7 @@ export class SupabaseLogger {
         .not("note_id", "like", "tweet_%")
         .not("note_id", "like", "unavailable_%"),
       "id",
-      "getNewestUnscrapedNoteId.snapshots",
+      "getOldestUnscrapedNoteId.snapshots",
     );
 
     const scrapedIds = new Set(
@@ -369,7 +370,7 @@ export class SupabaseLogger {
       .filter((id) => /^\d+$/.test(id) && !scrapedIds.has(id));
 
     if (unscrapedIds.length === 0) return null;
-    return unscrapedIds.reduce((max, id) => (BigInt(id) > BigInt(max) ? id : max));
+    return unscrapedIds.reduce((min, id) => (BigInt(id) < BigInt(min) ? id : min));
   }
 
   // ============================================

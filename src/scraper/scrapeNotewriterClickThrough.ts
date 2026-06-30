@@ -19,7 +19,7 @@
  *    --fresh: Open a new tab and start from top (otherwise reuses existing tab)
  *    --start-from <noteId>: Scroll to this note ID before scraping
  *    --stop-at <noteId>: Stop scraping when reaching this note ID (instead of BOTTOM_NOTE_ID)
- *    --incremental: Scrape from the top and auto-stop ~1 week before the newest
+ *    --incremental: Scrape from the top and auto-stop ~1 week before the oldest
  *                   known note that has not been scraped yet. If there is no
  *                   unsynced backlog, auto-stop ~1 week before the newest note
  *                   already observed by this scraper for fresh view counts.
@@ -1214,25 +1214,29 @@ async function main() {
 
   // --incremental: unattended daily mode. First catch up known notes that do
   // not have any scraper snapshots yet: scrape from the top until ~1 week
-  // before the newest unsynced note. Once there is no unsynced backlog, fall
+  // before the oldest unsynced note. Once there is no unsynced backlog, fall
   // back to the daily resampling window anchored on the newest scraped note.
   if (args.includes('--incremental')) {
     const RESAMPLE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
     const INCREMENTAL_MAX_NOTES = 100_000;
     freshStart = true;
     maxNotes = INCREMENTAL_MAX_NOTES;
-    const newestUnscrapedNoteId = await supabase.getNewestUnscrapedNoteId();
-    const newestScrapedNoteId = newestUnscrapedNoteId ? null : await supabase.getNewestScrapedNoteId();
-    const anchorNoteId = newestUnscrapedNoteId ?? newestScrapedNoteId;
+    const oldestUnscrapedNoteId = await supabase.getOldestUnscrapedNoteId();
+    const newestScrapedNoteId = oldestUnscrapedNoteId ? null : await supabase.getNewestScrapedNoteId();
+    const anchorNoteId = oldestUnscrapedNoteId ?? newestScrapedNoteId;
     if (anchorNoteId) {
       const cutoffMillis = snowflakeToMillis(anchorNoteId) - RESAMPLE_WINDOW_MS;
-      stopAtNoteId = millisToSnowflakeFloor(cutoffMillis);
-      if (newestUnscrapedNoteId) {
-        console.log(`🔁 Incremental: newest known note without a scraper snapshot ${newestUnscrapedNoteId} (${snowflakeToDate(newestUnscrapedNoteId).toISOString().slice(0, 10)}).`);
-        console.log(`   Catching up backlog from top, stopping ~1 week before that at note <= ${stopAtNoteId} (${new Date(cutoffMillis).toISOString().slice(0, 10)}).\n`);
+      const rawStopAtNoteId = millisToSnowflakeFloor(cutoffMillis);
+      stopAtNoteId = rawStopAtNoteId < BOTTOM_NOTE_ID ? BOTTOM_NOTE_ID : rawStopAtNoteId;
+      const clampInfo = stopAtNoteId !== rawStopAtNoteId
+        ? ` (clamped to bottom note ${BOTTOM_NOTE_ID})`
+        : "";
+      if (oldestUnscrapedNoteId) {
+        console.log(`🔁 Incremental: oldest known note without a scraper snapshot ${oldestUnscrapedNoteId} (${snowflakeToDate(oldestUnscrapedNoteId).toISOString().slice(0, 10)}).`);
+        console.log(`   Catching up backlog from top, stopping ~1 week before that at note <= ${stopAtNoteId} (${new Date(cutoffMillis).toISOString().slice(0, 10)})${clampInfo}.\n`);
       } else {
         console.log(`🔁 Incremental: all known notes have snapshots; newest scraped note ${newestScrapedNoteId} (${snowflakeToDate(newestScrapedNoteId!).toISOString().slice(0, 10)}).`);
-        console.log(`   Re-sampling from top, stopping ~1 week back at note <= ${stopAtNoteId} (${new Date(cutoffMillis).toISOString().slice(0, 10)}).\n`);
+        console.log(`   Re-sampling from top, stopping ~1 week back at note <= ${stopAtNoteId} (${new Date(cutoffMillis).toISOString().slice(0, 10)})${clampInfo}.\n`);
       }
     } else {
       console.log(`🔁 Incremental: DB has no known numeric notes/snapshots yet — doing a full pass to BOTTOM_NOTE_ID.\n`);

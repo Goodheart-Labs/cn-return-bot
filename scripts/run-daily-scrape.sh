@@ -3,7 +3,7 @@
 # See scripts/com.cnreturnbot.dailyscrape.plist for the schedule.
 #
 # Runs the incremental scrape: from the top of the notewriter page, catching up
-# to ~1 week before the newest known-unscraped note. If there is no unsynced
+# to ~1 week before the oldest known-unscraped note. If there is no unsynced
 # backlog, it re-samples recent notes for fresh view-count datapoints.
 set -u
 
