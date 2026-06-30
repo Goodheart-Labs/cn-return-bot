@@ -91,7 +91,22 @@ Tweet: Nintendo LOST the palworld lawsuit lets GOOOOOOOOOOOOOO
 ### Example 6
 Tweet: Knicks fans beat a 17-year old into a coma for saying "Spurs in 7". What a pathetic-ass fanbase.
 Quoted Tweet: A 17-year-old boy was beaten into a coma near Madison Square Garden following Game 4 of the NBA Finals, New York City police said Friday while releasing a photo of a suspect sought in connection with the assault.
-{ "note_text": "The 17-year-old victim, a Knicks fan, was beaten by a Spurs fan yelling \\"Spurs in 7,\\" not Knicks fans beating a Spurs fan as claimed.", "sources": ["https://nypost.com/2026/06/12/us-news/teen-beaten-into-coma-by-brute-bellowing-spurs-in-7-during-livestreamed-game-4-brawl-cops-sources/", "https://people.com/teen-beaten-into-coma-on-livestream-following-nba-finals-11996743"] }`;
+{ "note_text": "The 17-year-old victim, a Knicks fan, was beaten by a Spurs fan yelling \\"Spurs in 7,\\" not Knicks fans beating a Spurs fan as claimed.", "sources": ["https://nypost.com/2026/06/12/us-news/teen-beaten-into-coma-by-brute-bellowing-spurs-in-7-during-livestreamed-game-4-brawl-cops-sources/", "https://people.com/teen-beaten-into-coma-on-livestream-following-nba-finals-11996743"] }
+
+### Example 7
+Tweet: GTA 6 has reportedly surpassed 50 million pre-orders, generating an estimated $4+ billion in revenue before launch. Rockstar might be the only company capable of turning a game that isn't even out yet into a multi billion dollar success. Gaming history is being rewritten before release.
+Media Description: A promotional graphic styled after the Grand Theft Auto VI box art — the white "VI" logo over a neon purple-and-orange Miami sunset with palm trees and a sports car — overlaid with the text "50 MILLION+ COPIES SOLD" and "$4+ BILLION IN REVENUE".
+{ "note_text": "No official pre-order figures for GTA VI have been released since pre-orders opened on June 25; analyst estimates predict $1 billion in pre-orders (about 12.5 million units), not 50 million or $4 billion.", "sources": ["https://www.forbes.com/sites/maryroeloffs/2026/06/24/pre-orders-for-grand-theft-auto-vi-decades-most-anticipated-game-will-open-thursday", "https://www.take2games.com/ir/news/rockstar-games-announces-pre-orders-grand-theft-auto-vi"] }
+
+### Example 8
+Tweet: Gianni Infantino was pictured at both Group E games, despite them kicking off at the same time. 🤔 The images showed him in each stadium are just 10 minutes apart, despite the stadiums being located hours apart. 😂
+Media Description: A two-panel broadcast comparison. The top panel (TRNDR watermark) shows an "ECU 0-0 GER" scoreboard reading 1:51 with FIFA President Gianni Infantino seated in the stands. The bottom panel (BBC) shows a "CUR 0-1 IVC 11:25" scoreboard with Infantino seated and gesturing among other officials.
+{ "note_text": "Contains digitally altered image. First image is from Iran vs New Zealand match.", "sources": ["https://x.com/timdene/status/2070305714782761122"] }
+
+### Example 9
+Tweet: Did the Simpsons really the predict 3D printer?
+Media Description: A clip from The Simpsons episode "Mathlete's Feat" (season 26, aired 2015) showing a 3D printer in operation, shared as supposed evidence the show "predicted" 3D printing.
+{ "note_text": "The first 3D printing technologies were invented in the 1980s; the depicted episode aired May 17, 2015.", "sources": ["https://en.wikipedia.org/wiki/3D_printing", "https://en.wikipedia.org/wiki/The_Simpsons_season_26"] }`;
 
 export const WRITER_RESPONSE_FORMAT = jsonSchemaResponseFormat("simple_bot_note", {
   type: "object",
